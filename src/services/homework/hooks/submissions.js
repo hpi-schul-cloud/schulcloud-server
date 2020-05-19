@@ -287,6 +287,39 @@ const hasDeletePermission = (hook) => {
 	return Promise.reject(new errors.Forbidden());
 };
 
+const hasViewPermission = async (hook) => {
+	const currentUserId = hook.params.account.userId;
+
+	// user is submitter
+	const submissionUserId = hook.result.studentId.toString();
+	if (submissionUserId === currentUserId) {
+		return Promise.resolve(hook);
+	}
+
+	// user is team member
+	const teamMemberIds = hook.result.teamMembers.map((m) => m.toString());
+	if (teamMemberIds.includes(currentUserId)) {
+		return Promise.resolve(hook);
+	}
+
+	// user is course teacher
+	try {
+		const homeworkService = hook.app.service('/homework');
+		const courseService = hook.app.service('/courses');
+		const homework = await homeworkService.get(hook.result.homeworkId);
+		const course = await courseService.get(homework.courseId);
+		const teacherIds = course.teacherIds.map((t) => t.toString());
+		if (teacherIds.includes(currentUserId)) {
+			return Promise.resolve(hook);
+		}
+	} catch (err) {
+		Promise.reject(new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach homework service" }));
+	}
+
+	// user is someone else and not authorized
+	return Promise.reject(new errors.Forbidden());
+};
+
 exports.before = () => ({
 	all: [authenticate('jwt'), stringifyUserId],
 	find: [
@@ -345,7 +378,7 @@ exports.before = () => ({
 exports.after = {
 	all: [],
 	find: [filterApplicableSubmissions],
-	get: [],
+	get: [hasViewPermission],
 	create: [],
 	update: [],
 	patch: [],

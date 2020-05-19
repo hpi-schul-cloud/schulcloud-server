@@ -5,11 +5,13 @@ const testObjects = require('../helpers/testObjects')(app);
 const { expect } = chai;
 
 
-async function createSubmission(teachers, student) {
+async function createSubmission(teachers, students) {
 	const originalTeacher = teachers[0];
+	const submitter = students[0];
+	const studentIds = students.map((s) => s._id);
 	const course = await testObjects.createTestCourse({
 		teacherIds: teachers.map((t) => t._id),
-		userIds: [student._id],
+		userIds: studentIds,
 		schoolId: originalTeacher.schoolId,
 	});
 	const homework = await testObjects.createTestHomework({
@@ -27,7 +29,8 @@ async function createSubmission(teachers, student) {
 		schoolId: course.schoolId,
 		courseId: course._id,
 		homeworkId: homework._id,
-		studentId: student._id,
+		studentId: submitter._id,
+		teamMembers: studentIds,
 		comment: 'egal wie dicht du bist, Goethe war Dichter.',
 	});
 }
@@ -64,7 +67,7 @@ describe('submission service', function test() {
 			courseId: course._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(student);
-		params.query = {}
+		params.query = {};
 		const result = await app.service('submissions').create({
 			schoolId: course.schoolId,
 			courseId: course._id,
@@ -84,7 +87,7 @@ describe('submission service', function test() {
 			testObjects.createTestUser({ roles: ['teacher'] }),
 			testObjects.createTestUser({ roles: ['student'] }),
 		]);
-		const submission = await createSubmission([teacher], student)
+		const submission = await createSubmission([teacher], [student]);
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		const result = await app.service('submissions').patch(submission._id, { grade: 99 }, params);
 		expect(result).to.not.be.undefined;
@@ -97,7 +100,7 @@ describe('submission service', function test() {
 			testObjects.createTestUser({ roles: ['teacher'] }),
 			testObjects.createTestUser({ roles: ['student'] }),
 		]);
-		const submission = await createSubmission([teacher], student);
+		const submission = await createSubmission([teacher], [student]);
 		const file = await testObjects.createTestFile({ owner: teacher._id, refOwnerModel: 'user' });
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		const result = await app
@@ -115,7 +118,7 @@ describe('submission service', function test() {
 			testObjects.createTestUser({ roles: ['teacher'] }),
 			testObjects.createTestUser({ roles: ['student'] }),
 		]);
-		const submission = await createSubmission([originalTeacher, coTeacher], student)
+		const submission = await createSubmission([originalTeacher, coTeacher], [student]);
 		const params = await testObjects.generateRequestParamsFromUser(coTeacher);
 		const result = await app.service('submissions').patch(submission._id, { grade: 0 }, params);
 		expect(result).to.not.be.undefined;
@@ -129,7 +132,7 @@ describe('submission service', function test() {
 			testObjects.createTestUser({ roles: ['teacher'] }),
 			testObjects.createTestUser({ roles: ['student'] }),
 		]);
-		const submission = await createSubmission([originalTeacher, coTeacher], student)
+		const submission = await createSubmission([originalTeacher, coTeacher], [student]);
 		const params = await testObjects.generateRequestParamsFromUser(coTeacher);
 		const result = await app.service('submissions').patch(submission._id, { grade: 100 }, params);
 		expect(result).to.not.be.undefined;
@@ -144,7 +147,7 @@ describe('submission service', function test() {
 			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
 			testObjects.createTestUser({ roles: ['student'], schoolId }),
 		]);
-		const submission = await createSubmission([originalTeacher], student)
+		await createSubmission([originalTeacher], [student]);
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = {};
 		const result = await app.service('submissions').find(params);
@@ -154,16 +157,51 @@ describe('submission service', function test() {
 
 	it('student can not FIND other students submissions', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
-		const [teacher, otherStudent, student] = await Promise.all([
+		const [teacher, student, otherStudent] = await Promise.all([
 			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
 			testObjects.createTestUser({ roles: ['student'], schoolId }),
 			testObjects.createTestUser({ roles: ['student'], schoolId }),
 		]);
-		await createSubmission([teacher], student);
+		await createSubmission([teacher], [student]);
 		const params = await testObjects.generateRequestParamsFromUser(otherStudent);
 		params.query = {};
 		const result = await app.service('submissions').find(params);
 		expect(result).to.not.be.undefined;
 		expect(result.total).to.equal(0);
+	});
+
+	it('student can not GET other students submissions', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool();
+		const [teacher, student, otherStudent] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+		]);
+		const submission = await createSubmission([teacher], [student]);
+		const params = await testObjects.generateRequestParamsFromUser(otherStudent);
+		params.query = {};
+		try {
+			await app.service('submissions').get(submission._id, params);
+			throw new Error('should have failed.');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed.');
+			expect(err.code).to.equal(403);
+		}
+	});
+
+	it('team member can GET team submissions', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool();
+		const [teacher, submitter, teamMember] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+		]);
+		const submission = await createSubmission([teacher], [submitter, teamMember]);
+		const submissionService = app.service('submissions');
+		const params = await testObjects.generateRequestParamsFromUser(teamMember);
+		params.query = {};
+		const result = await submissionService.get(submission._id, params);
+		expect(result).to.haveOwnProperty('_id');
+		expect(result.comment).to.eq('egal wie dicht du bist, Goethe war Dichter.');
 	});
 });
