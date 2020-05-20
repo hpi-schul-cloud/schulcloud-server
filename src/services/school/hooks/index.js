@@ -18,6 +18,15 @@ const SchoolYearFacade = require('../logic/year');
 
 let years = null;
 
+/**
+ * Safe function to retrieve result data from context
+ * The function returns context.result.data if the result is paginated or context.result if not.
+ * If context doesn't contain result than empty list is returned
+ * @param context
+ * @returns {*}
+ */
+const getResultDataFromContext = (context) => ((context.result) ? (context.result.data || context.result) : []);
+
 const isTeamCreationByStudentsEnabled = (currentSchool) => {
 	const { enableStudentTeamCreation } = currentSchool;
 	const STUDENT_TEAM_CREATION_SETTING = Configuration.get('STUDENT_TEAM_CREATION');
@@ -51,7 +60,8 @@ const setStudentsCanCreateTeams = async (context) => {
 	try {
 		switch (context.method) {
 			case 'find':
-				context.result.data.forEach((school) => {
+				// if the result was paginated it contains context.result.data, otherwise context.result
+				getResultDataFromContext(context).forEach((school) => {
 					school.isTeamCreationByStudentsEnabled = isTeamCreationByStudentsEnabled(school);
 				});
 				break;
@@ -116,7 +126,6 @@ const createDefaultStorageOptions = (hook) => {
 		});
 };
 
-
 const decorateYears = async (context) => {
 	await expectYearsDefined();
 	const addYearsToSchool = (school) => {
@@ -126,9 +135,7 @@ const decorateYears = async (context) => {
 	try {
 		switch (context.method) {
 			case 'find':
-				context.result.data.forEach((school) => {
-					addYearsToSchool(school);
-				});
+				getResultDataFromContext(context).forEach((school) => addYearsToSchool(school));
 				break;
 			case 'get':
 				addYearsToSchool(context.result);
