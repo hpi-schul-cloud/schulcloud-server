@@ -52,7 +52,12 @@ const insertSubmissionData = (context) => {
 
 				return Promise.resolve(context);
 			})
-			.catch(() => Promise.reject(new GeneralError({ message: "can't reach submission service" })));
+			.catch((err) => {
+				if (err.code === 403) {
+					return Promise.reject(err);
+				}
+				return Promise.reject(new GeneralError({ message: "can't reach submission service" }));
+			});
 	}
 	return Promise.resolve(context);
 };
