@@ -30,7 +30,7 @@ class EtherpadClient {
 		}
 
 		this.err = {
-			createGroupPad: 'Could not create given pad for group.',
+			createOrGetGroupPad: 'Could not create/get given pad for group.',
 			createSession: 'Could not create a session for the given user.',
 			createOrGetGroup: 'Could not create/get this group.',
 			createOrGetAuthor: 'Could not create/get this author.',
@@ -109,7 +109,7 @@ class EtherpadClient {
 		return rp(this.createSettings({
 			endpoint: 'createGroupPad',
 		}, params))
-		.then((res) => this.handleEtherpadResponse(res, this.err.createGroupPad))
+		.then((res) => this.handleEtherpadResponse(res))
 		.catch((err) => {
 			// pad is already there, just return the constructed pad path
 			if(err.code === 409) {
@@ -121,7 +121,7 @@ class EtherpadClient {
 					}
 				}
 			}
-			this.handleEtherpadError(err, this.err.createGroupPad);
+			this.handleEtherpadError(err, this.err.createOrGetGroupPad);
 		});
 	}
 }
