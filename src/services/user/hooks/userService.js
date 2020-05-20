@@ -416,14 +416,14 @@ const enforceRoleHierarchyOnDelete = async (context) => {
 
 /**
  * Check that the authenticated user posseses the rights to create a user with the given roles. This is only checked for external requests.
- * @param {*} context 
+ * @param {*} context
  */
 const enforceRoleHierarchyOnCreate = async (context) => {
 	const user = await context.app.service('users').get(context.params.account.userId, { $populate: 'roles' });
 
 	// superhero may create users with every role
 	if (user.roles.filter((u) => (u.name === 'superhero')).length > 0) {
-		Promise.resolve(context);
+		return Promise.resolve(context);
 	}
 
 	await Promise.all(context.data.roles.map(async (roleId) => {
