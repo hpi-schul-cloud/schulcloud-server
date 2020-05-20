@@ -170,11 +170,10 @@ describe('start server', () => {
 									return;
 								}
 
-								// Bad Reqzest
+								// Bad Request
 								should.equal(res.status, 400);
-								should.equal(res.body.message, 'Email Domain Blocked');
+								should.equal(res.body.message, 'EMAIL_DOMAIN_BLOCKED');
 
-								// should.equal(res.message, 'Email Domain Blocked');
 								resolve();
 							});
 					});

@@ -73,7 +73,7 @@ Ihr ${SC_SHORT_TITLE} Team`;
  */
 const clearResultAndForceSuccessIfNotBlockedEmailDomain = (context) => {
 	// Only pass error: Email Domain Blocked
-	if (context.error && context.error.code === 400 && context.error.message === 'Email Domain Blocked') {
+	if (context.error && context.error.code === 400 && context.error.message === 'EMAIL_DOMAIN_BLOCKED') {
 		return context;
 	}
 

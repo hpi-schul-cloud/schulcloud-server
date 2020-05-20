@@ -21,6 +21,7 @@ describe('[utils] disposableEmail', () => {
 
 	it('check true (exact match)', () => {
 		expect(isDisposableEmail('user@my10minutemail.com')).is.true;
+		expect(isDisposableEmail('user@my10minutemail.com  ')).is.true;
 		expect(isDisposableEmail('user@my10minuteMAIL.com')).is.true;
 		expect(isDisposableEmail('user@info.tm')).is.true;
 	});
