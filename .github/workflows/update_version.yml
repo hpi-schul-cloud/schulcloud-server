@@ -2,7 +2,7 @@ name: Update package version
 on:
   create:
     branches:
-      - "release/"
+      - 'release/**'
 jobs:
   UPDATE:
     runs-on: ubuntu-latest
@@ -14,6 +14,10 @@ jobs:
         with:
           separator: 'release/'
       - name: Update package version
-        run: npm version ${{steps.substring.outputs.value}}
+        run: npm --no-git-tag-version version ${{steps.substring.outputs.value}}
+      - name: Commit
+        uses: stefanzweifel/git-auto-commit-action@v4.3.0
+        with:
+          commit_message: 'change package version'
       - name: push changes
         run: git push
