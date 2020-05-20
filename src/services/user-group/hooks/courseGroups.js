@@ -1,35 +1,57 @@
-const { authenticate } = require('@feathersjs/authentication');
-const _ = require('lodash');
-const globalHooks = require('../../../hooks');
+const {
+	NotFound,
+	BadRequest,
+} = require('@feathersjs/errors');
+const {
+	hasRoleNoHook,
+} = require('../../../hooks');
+const { equal } = require('../../../helper/compare').ObjectId;
 
-const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
+const restrictToUsersCourses = async (context) => {
+	const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
+	if (userIsSuperhero) return context;
 
-exports.before = {
-	all: [authenticate('jwt')],
-	find: [globalHooks.hasPermission('COURSE_VIEW'), restrictToCurrentSchool],
-	get: [],
-	create: [globalHooks.hasPermission('COURSEGROUP_CREATE')],
-	update: [globalHooks.hasPermission('COURSEGROUP_EDIT'), restrictToCurrentSchool],
-	patch: [globalHooks.hasPermission('COURSEGROUP_EDIT'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
-	remove: [
-		globalHooks.hasPermission('COURSEGROUP_CREATE'),
-		restrictToCurrentSchool,
-		globalHooks.permitGroupOperation,
-	],
+	const { userId } = context.params.account;
+	const usersCourses = await context.app.service('courses').find({
+		query: {
+			$or: [
+				{ userIds: userId },
+				{ teacherIds: userId },
+				{ substitutionIds: userId },
+			],
+		},
+	});
+	const usersCoursesIds = usersCourses.data.map((c) => c._id);
+
+	if (context.method === 'create') {
+		if (!context.data.courseId) {
+			throw new BadRequest('courseId required');
+		}
+	}
+
+	if (['create', 'patch', 'update'].includes(context.method)) {
+		if (context.data.courseId && !usersCoursesIds.some((uid) => equal(uid, context.data.courseId))) {
+			throw new NotFound('invalid courseId');
+		}
+	}
+
+	if (['find', 'patch', 'update', 'remove'].includes(context.method)) {
+		context.params.query.$and = (context.params.query.$and || []);
+		context.params.query.$and.push({
+			courseId: { $in: usersCoursesIds },
+		});
+	}
+	return context;
 };
 
-exports.after = {
-	all: [],
-	find: [],
-	get: [
-		globalHooks.ifNotLocal(
-			globalHooks.denyIfNotCurrentSchool({
-				errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
-			}),
-		),
-	],
-	create: [],
-	update: [],
-	patch: [],
-	remove: [],
+const denyIfNotInCourse = async (context) => {
+	const { userId } = context.params.account;
+	const course = await context.app.service('courses').get(context.result.courseId);
+	const userInCourse = course.userIds.some((id) => equal(id, userId))
+		|| course.teacherIds.some((id) => equal(id, userId))
+		|| course.substitutionIds.some((id) => equal(id, userId));
+	if (!userInCourse) throw new NotFound(`no record found for id '${context.id}'`);
+	return context;
 };
+
+module.exports = { denyIfNotInCourse, restrictToUsersCourses };

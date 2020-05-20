@@ -3,7 +3,6 @@ const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 // const logger = require('../../../logger');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
-
 const { userModel } = require('../model');
 const { hasEditPermissionForUser } = require('../hooks/index.hooks');
 const {
@@ -32,6 +31,10 @@ const {
 	handleClassId,
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
+	enforceRoleHierarchyOnCreate,
+	filterResult,
+	generateRegistrationLink,
+	includeOnlySchoolRoles,
 } = require('../hooks/userService');
 
 class UserService {
@@ -86,21 +89,24 @@ const userHooks = {
 			iff(isProvider('external'), restrictToCurrentSchool),
 			mapRoleFilterQuery,
 			addCollation,
+			iff(isProvider('external'), includeOnlySchoolRoles),
 		],
 		get: [authenticate('jwt')],
 		create: [
 			checkJwt(),
 			pinIsVerified,
+			iff(isProvider('external'), restrictToCurrentSchool),
+			iff(isProvider('external'), enforceRoleHierarchyOnCreate),
 			sanitizeData,
 			checkUnique,
 			checkUniqueAccount,
+			generateRegistrationLink,
 			resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 		],
 		update: [
 			iff(isProvider('external'), disallow()),
 			authenticate('jwt'),
 			sanitizeData,
-			hasEditPermissionForUser,
 			resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name'),
 		],
 		patch: [
@@ -108,7 +114,8 @@ const userHooks = {
 			iff(isProvider('external'), securePatching),
 			permitGroupOperation,
 			sanitizeData,
-			hasEditPermissionForUser,
+			iff(isProvider('external'), hasEditPermissionForUser),
+			iff(isProvider('external'), restrictToCurrentSchool),
 			resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 			updateAccountUsername,
 		],
@@ -122,6 +129,7 @@ const userHooks = {
 		find: [
 			decorateAvatar,
 			decorateUsers,
+			iff(isProvider('external'), filterResult),
 		],
 		get: [
 			decorateAvatar,
@@ -131,16 +139,18 @@ const userHooks = {
 				denyIfNotCurrentSchool({
 					errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
 				})),
+			iff(isProvider('external'), filterResult),
 		],
 		create: [
 			handleClassId,
 		],
-		update: [],
-		patch: [],
+		update: [iff(isProvider('external'), filterResult)],
+		patch: [iff(isProvider('external'), filterResult)],
 		remove: [
 			pushRemoveEvent,
 			removeStudentFromClasses,
 			removeStudentFromCourses,
+			iff(isProvider('external'), filterResult),
 		],
 	},
 };

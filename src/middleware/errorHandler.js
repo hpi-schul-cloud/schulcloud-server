@@ -67,10 +67,11 @@ const secretDataKeys = (() => [
 	'PASSWORD_HASH',
 	'password_new',
 	'accessToken',
+	'ticket',
 ].map((k) => k.toLocaleLowerCase())
 )();
 const filter = (data) => {
-	const newData = Object.assign({}, data);
+	const newData = { ...data };
 	Object.keys(newData).forEach((key) => {
 		// secretDataKeys are lower keys
 		if (secretDataKeys.includes(key.toLocaleLowerCase())) {

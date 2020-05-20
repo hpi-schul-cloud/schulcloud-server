@@ -27,6 +27,7 @@ const getAllUsers = (ref, schoolId, role, clientQuery) => {
 	};
 	if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
 	if (clientQuery.firstName) query.firstName = clientQuery.firstName;
+	if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 	return ref.app.service('usersModel').find({ collation: { locale: 'de', caseLevel: true }, query });
 };
 
@@ -172,12 +173,12 @@ class AdminUsers {
 					return consentStatus.$in.includes(userStatus);
 				}
 				return true;
-			});
+			}).splice($skip || 0, $limit || 25);
 
 			return {
 				total,
-				limit: $limit,
-				skip: $skip,
+				limit: $limit || 25,
+				skip: $skip || 0,
 				data: filteredUsers,
 			};
 		} catch (err) {

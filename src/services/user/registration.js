@@ -1,5 +1,6 @@
+const { Configuration } = require('@schul-cloud/commons');
 const errors = require('@feathersjs/errors');
-const userModel = require('../user/model');
+const userModel = require('./model');
 const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const { getAge } = require('../../utils');
@@ -92,7 +93,7 @@ const registerUser = function register(data, params, app) {
 	let parent = null; let user = null; let oldUser = null; let account = null; let consent = null; let
 		consentPromise = null;
 
-	return new Promise(((resolve, reject) => {
+	return new Promise(((resolve) => {
 		resolve();
 	})).then(() => {
 		let classPromise = null; let
@@ -117,10 +118,12 @@ const registerUser = function register(data, params, app) {
 		.then((response) => {
 			user = response.user;
 			oldUser = response.oldUser;
+			if (!oldUser && data.sso !== 'true') return Promise.reject('Ungültiger Link');
 		})).then(() => {
+		const consentSkipCondition = Configuration.get('SKIP_CONDITIONS_CONSENT');
 		if ((user.roles || []).includes('student')) {
 			// wrong birthday object?
-			if (user.birthday instanceof Date && isNaN(user.birthday)) {
+			if (user.birthday instanceof Date && Number.isNaN(user.birthday)) {
 				return Promise.reject(new errors.BadRequest(
 					'Fehler bei der Erkennung des ausgewählten Geburtstages.'
 						+ ' Bitte lade die Seite neu und starte erneut.',
@@ -133,7 +136,8 @@ const registerUser = function register(data, params, app) {
 					`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler`
 						+ `nicht ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre oder älter sein.`,
 				));
-			} if (!data.parent_email && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
+			} if (!data.parent_email && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS
+				&& !consentSkipCondition.includes('student')) {
 				return Promise.reject(new errors.BadRequest(
 					`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler`
 						+ ` nicht jünger als ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre sein.`,
@@ -282,10 +286,6 @@ const registerUser = function register(data, params, app) {
 
 module.exports = function (app) {
 	class RegistrationService {
-		constructor() {
-
-		}
-
 		create(data, params) {
 			return registerUser(data, params, app);
 		}
