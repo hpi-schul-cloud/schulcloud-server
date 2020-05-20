@@ -265,20 +265,22 @@ const hasViewPermission = async (context, submission, currentUserId) => {
 			return submission;
 		}
 
-		const courseService = context.app.service('/courses');
-		const course = await courseService.get(homework.courseId);
-		const teacherIds = course.teacherIds.map((t) => t.toString());
-		const substitutionIds = (course.substitutionIds || []).map((s) => s.toString())
+		if (homework.courseId) {
+			const courseService = context.app.service('/courses');
+			const course = await courseService.get(homework.courseId);
+			const teacherIds = course.teacherIds.map((t) => t.toString());
+			const substitutionIds = (course.substitutionIds || []).map((s) => s.toString())
 
-		// user is course or substitution teacher
-		if (teacherIds.includes(currentUserId) || substitutionIds.includes(currentUserId)) {
-			return submission;
-		}
+			// user is course or substitution teacher
+			if (teacherIds.includes(currentUserId) || substitutionIds.includes(currentUserId)) {
+				return submission;
+			}
 
-		// user is course student and submissions are public
-		const courseStudentIds = course.userIds.map((u) => u.toString());
-		if (courseStudentIds.includes(currentUserId) && homework.publicSubmissions) {
-			return submission;
+			// user is course student and submissions are public
+			const courseStudentIds = course.userIds.map((u) => u.toString());
+			if (courseStudentIds.includes(currentUserId) && homework.publicSubmissions) {
+				return submission;
+			}
 		}
 
 		// user is part of a courseGroup
