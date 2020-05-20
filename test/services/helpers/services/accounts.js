@@ -5,7 +5,9 @@ const createTestAccount = (app) => (accountParameters, system, user) => {
 	if (system) {
 		accountParameters.systemId = system._id;
 	}
-	accountParameters.userId = user._id;
+	if (user) {
+		accountParameters.userId = user._id;
+	}
 	return app.service('accounts').create(accountParameters)
 		.then((account) => {
 			createdaccountsIds.push(account._id.toString());

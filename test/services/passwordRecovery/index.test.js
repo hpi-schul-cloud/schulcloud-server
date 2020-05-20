@@ -1,10 +1,10 @@
 const assert = require('assert');
 const app = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(app);
 
 const passwordRecoveryService = app.service('passwordRecovery');
-const accountService = app.service('/accounts');
 
-const PORT = 5254;
+const PORT = 0;
 
 describe('passwordRecovery service', () => {
 	let server;
@@ -21,18 +21,14 @@ describe('passwordRecovery service', () => {
 
 	before((done) => {
 		server = app.listen(PORT, async () => {
-			savedAccount = await accountService.create(newAccount);
+			savedAccount = await testObjects.createTestAccount(newAccount);
 			await passwordRecoveryService.create({ username: recoveryUsername });
 			done();
 		});
 	});
 
 	after((done) => {
-		passwordRecoveryService.find()
-			.then((result) => {
-				passwordRecoveryService.remove(result.data[0]);
-			});
-		accountService.remove(savedAccount._id);
+		testObjects.cleanup();
 		server.close(done);
 	});
 
