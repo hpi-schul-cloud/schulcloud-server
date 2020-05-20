@@ -95,6 +95,7 @@ const userHooks = {
 		create: [
 			checkJwt(),
 			pinIsVerified,
+			iff(isProvider('external'), restrictToCurrentSchool),
 			iff(isProvider('external'), enforceRoleHierarchyOnCreate),
 			sanitizeData,
 			checkUnique,
@@ -106,7 +107,6 @@ const userHooks = {
 			iff(isProvider('external'), disallow()),
 			authenticate('jwt'),
 			sanitizeData,
-			iff(isProvider('external'), hasEditPermissionForUser),
 			resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name'),
 		],
 		patch: [
@@ -115,6 +115,7 @@ const userHooks = {
 			permitGroupOperation,
 			sanitizeData,
 			iff(isProvider('external'), hasEditPermissionForUser),
+			iff(isProvider('external'), restrictToCurrentSchool),
 			resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 			updateAccountUsername,
 		],
