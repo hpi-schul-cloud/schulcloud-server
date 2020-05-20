@@ -39,7 +39,7 @@ async function createSubmission(teachers, students, publicSubmission = false, su
 }
 
 describe('submission service', function test() {
-	this.timeout(10000);
+	this.timeout(4000);
 	let server;
 
 	before((done) => {
