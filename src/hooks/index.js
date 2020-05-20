@@ -802,7 +802,7 @@ exports.blockDisposableEmail = (property, optional = true) => async (context) =>
 	}
 
 	// blacklisted
-	if (Configuration.get('FEATURE_BLOCK_DISPOSABLE_EMAIL_DOMAINS')) {
+	if (Configuration.get('BLOCK_DISPOSABLE_EMAIL_DOMAINS')) {
 		if (isDisposableEmail(context.data[property])) {
 			throw new BadRequest('Email Domain Blocked');
 		}

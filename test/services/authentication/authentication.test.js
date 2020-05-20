@@ -137,15 +137,15 @@ describe('start server', () => {
 		describe('disposable email domains', () => {
 			let originalConfiguration;
 			before(() => {
-				originalConfiguration = Configuration.get('FEATURE_BLOCK_DISPOSABLE_EMAIL_DOMAINS');
+				originalConfiguration = Configuration.get('BLOCK_DISPOSABLE_EMAIL_DOMAINS');
 			});
 
 			after(() => {
-				Configuration.set('FEATURE_BLOCK_DISPOSABLE_EMAIL_DOMAINS', originalConfiguration);
+				Configuration.set('BLOCK_DISPOSABLE_EMAIL_DOMAINS', originalConfiguration);
 			});
 
 			it('should be blocked if activated', () => new Promise((resolve, reject) => {
-				Configuration.set('FEATURE_BLOCK_DISPOSABLE_EMAIL_DOMAINS', true);
+				Configuration.set('BLOCK_DISPOSABLE_EMAIL_DOMAINS', true);
 				const testDisposableAccount = {
 					username: `${Date.now()}poweruser@my10minutemail.com`,
 					password: 'passwordA',
@@ -181,7 +181,7 @@ describe('start server', () => {
 			}));
 
 			it('should not be blocked if deactivated', () => new Promise((resolve, reject) => {
-				Configuration.set('FEATURE_BLOCK_DISPOSABLE_EMAIL_DOMAINS', false);
+				Configuration.set('BLOCK_DISPOSABLE_EMAIL_DOMAINS', false);
 				const testDisposableAccount = {
 					username: `${Date.now()}poweruser@my10minutemail.com`,
 					password: 'passwordA',

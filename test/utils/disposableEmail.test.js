@@ -32,29 +32,29 @@ describe('[utils] disposableEmail', () => {
 	describe('custom blacklist', () => {
 		let originalConfiguration;
 		beforeEach(() => {
-			if (Configuration.has('ADDITIONAL_BLACKLISTED_EMAIL_TOP_LEVEL_DOMAINS')) {
-				originalConfiguration = Configuration.get('ADDITIONAL_BLACKLISTED_EMAIL_TOP_LEVEL_DOMAINS');
+			if (Configuration.has('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS')) {
+				originalConfiguration = Configuration.get('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS');
 			}
 		});
 
 		afterEach(() => {
-			Configuration.set('ADDITIONAL_BLACKLISTED_EMAIL_TOP_LEVEL_DOMAINS', originalConfiguration);
+			Configuration.set('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS', originalConfiguration);
 		});
 
 		it('empty', () => {
-			Configuration.set('ADDITIONAL_BLACKLISTED_EMAIL_TOP_LEVEL_DOMAINS', '');
+			Configuration.set('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS', '');
 			expect(isDisposableEmail('user@schul-cloud.org')).is.false;
 		});
 
 
 		it('block', () => {
-			Configuration.set('ADDITIONAL_BLACKLISTED_EMAIL_TOP_LEVEL_DOMAINS', 'some.domain,schul-cloud.org,more.de');
+			Configuration.set('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS', 'some.domain,schul-cloud.org,more.de');
 			expect(isDisposableEmail('user@schul-cloud.org')).is.true;
 			expect(isDisposableEmail('user@other.org')).is.false;
 		});
 
 		it('block sub', () => {
-			Configuration.set('ADDITIONAL_BLACKLISTED_EMAIL_TOP_LEVEL_DOMAINS', 'any.tld,schul-cloud.org');
+			Configuration.set('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS', 'any.tld,schul-cloud.org');
 			expect(isDisposableEmail('user@test.schul-cloud.org')).is.true;
 		});
 	});
