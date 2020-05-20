@@ -242,7 +242,7 @@ const hasDeletePermission = (context) => {
 const hasViewPermission = async (context, submission, currentUserId) => {
 	// user is submitter
 	const submissionUserId = submission.studentId.toString();
-	if (equalIds(submission.studentId, currentUserId) {
+	if (equalIds(submission.studentId, currentUserId)) {
 		return submission;
 	}
 
