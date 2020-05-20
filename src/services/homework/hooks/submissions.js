@@ -296,7 +296,7 @@ const hasViewPermission = async (hook) => {
 		return Promise.resolve(hook);
 	}
 
-	// user is team member
+	// user is team member (should only be available if team work for this homework is enabled)
 	const teamMemberIds = hook.result.teamMembers.map((m) => m.toString());
 	if (teamMemberIds.includes(currentUserId)) {
 		return Promise.resolve(hook);
@@ -308,14 +308,16 @@ const hasViewPermission = async (hook) => {
 		const homework = await homeworkService.get(hook.result.homeworkId);
 		const course = await courseService.get(homework.courseId);
 		const teacherIds = course.teacherIds.map((t) => t.toString());
+		const substitutionIds = course.substitutionIds.map((s) => s.toString())
 
-		// user is course teacher
-		if (teacherIds.includes(currentUserId)) {
+		// user is course or substitution teacher
+		if (teacherIds.includes(currentUserId) || substitutionIds.includes(currentUserId)) {
 			return Promise.resolve(hook);
 		}
 
-		// submissions are public
-		if (homework.publicSubmissions) {
+		// user is course student and submissions are public
+		const courseStudentIds = course.userIds.map((u) => u.toString());
+		if (courseStudentIds.includes(currentUserId) && homework.publicSubmissions) {
 			return Promise.resolve(hook);
 		}
 	} catch (err) {
