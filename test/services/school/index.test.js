@@ -35,7 +35,7 @@ describe('school service', () => {
 		const schoolService = app.service('/schools');
 
 		before('load data and set samples', async () => {
-			defaultYears = await YearModel.find().lean().exec();
+			defaultYears = await YearModel.find().sort('name').lean().exec();
 			sampleYear = defaultYears[0];
 			const school = await createSchool();
 			sampleSchoolData = await School.findById(school._id).lean().exec();
