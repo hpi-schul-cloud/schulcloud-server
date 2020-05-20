@@ -140,7 +140,6 @@ describe('user service', () => {
 				expect(err.message).to.equal('You don\'t have one of the permissions: STUDENT_LIST.');
 			}
 		});
-
 	});
 
 	describe('FIND', () => {

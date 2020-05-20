@@ -89,17 +89,13 @@ const userHooks = {
 			resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),
 			authenticate('jwt'),
 			iff(isProvider('external'), restrictToCurrentSchool),
-			iff(isProvider('external'),
-				denyIfStudentTeamCreationNotAllowed({
-					errorMessage: 'The current user is not allowed to list other users!',
-				})),
 			mapRoleFilterQuery,
 			addCollation,
 			iff(isProvider('external'), includeOnlySchoolRoles),
 		],
 		get: [
 			authenticate('jwt'),
-			iff(isProvider('external'), hasReadPermissionForUser)],
+		],
 		create: [
 			checkJwt(),
 			pinIsVerified,
@@ -137,16 +133,18 @@ const userHooks = {
 		find: [
 			decorateAvatar,
 			decorateUsers,
-			iff(isProvider('external'), filterResult),
+			iff(isProvider('external'), [filterResult, denyIfStudentTeamCreationNotAllowed({
+				errorMessage: 'The current user is not allowed to list other users!',
+			})]),
 		],
 		get: [
 			decorateAvatar,
 			decorateUser,
 			computeProperty(userModel, 'getPermissions', 'permissions'),
-			iff(isProvider('external'),
+			iff(isProvider('external'), [hasReadPermissionForUser,
 				denyIfNotCurrentSchool({
 					errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
-				})),
+				})]),
 			iff(isProvider('external'), filterResult),
 		],
 		create: [

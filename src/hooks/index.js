@@ -554,13 +554,13 @@ exports.denyIfNotCurrentSchool = (
 exports.denyIfStudentTeamCreationNotAllowed = (
 	{ errorMessage = 'The current user is not allowed to list other users!' },
 ) => async (context) => {
-	const user = await getUser(context);
-	if (!testIfRoleNameExist(user, 'student')) {
+	const currentUser = await getUser(context);
+	if (!testIfRoleNameExist(currentUser, 'student')) {
 		return context;
 	}
-	const requesterSchoolId = user.schoolId;
-	const school = await context.app.service('schools').get(requesterSchoolId);
-	if (!school.isTeamCreationByStudentsEnabled) {
+	const currentUserSchoolId = currentUser.schoolId;
+	const currentUserSchool = await context.app.service('schools').get(currentUserSchoolId);
+	if (!currentUserSchool.isTeamCreationByStudentsEnabled) {
 		throw new Forbidden(errorMessage);
 	}
 	return context;
