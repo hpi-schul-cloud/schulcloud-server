@@ -91,7 +91,7 @@ const userHooks = {
 			iff(isProvider('external'), restrictToCurrentSchool),
 			iff(isProvider('external'),
 				denyIfStudentTeamCreationNotAllowed({
-					errorMessage: 'Der angefragte Nutzer darf die Benutzer nicht sehen!',
+					errorMessage: 'Der angefragte Nutzer darf andere Nutzer nicht sehen!',
 				})),
 			mapRoleFilterQuery,
 			addCollation,

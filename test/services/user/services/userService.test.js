@@ -138,20 +138,47 @@ describe('user service', () => {
 		expect(result).not.to.haveOwnProperty('ldapId');
 	});
 
-	it('does not allow students and teachers to find parents', async () => {
+	it('does not allow teachers to find parents', async () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-		const student = await testObjects.createTestUser({ roles: ['student'] });
 		const parent = await testObjects.createTestUser({ role: ['parent'] });
 
 		const teacherParams = await testObjects.generateRequestParamsFromUser(teacher);
 		teacherParams.query = {};
 		const result = await app.service('users').find(teacherParams);
 		expect(result.data.some((r) => equalIds(r._id, parent._id))).to.be.false;
+	});
 
+	it('does not allow students who may not create teams list other users', async () => {
+		const student = await testObjects.createTestUser({ roles: ['student'] });
 		const studentParams = await testObjects.generateRequestParamsFromUser(student);
 		studentParams.query = {};
+
+		await app.service('schools').patch(
+			student.schoolId,
+			{ enableStudentTeamCreation: false },
+		);
+
+		try {
+			await app.service('users').find(studentParams);
+			assert.fail('students who maynot create a team are not allowed to list other users');
+		} catch (error) {
+			expect(error.code).to.equal(403);
+			expect(error.message).to.equal('Der angefragte Nutzer darf andere Nutzer nicht sehen!');
+		}
+	});
+
+	it('allows students who may create teams list other users', async () => {
+		const student = await testObjects.createTestUser({ roles: ['student'] });
+		const studentParams = await testObjects.generateRequestParamsFromUser(student);
+		studentParams.query = {};
+
+		await app.service('schools').patch(
+			student.schoolId,
+			{ enableStudentTeamCreation: true },
+		);
+
 		const studentResults = await app.service('users').find(studentParams);
-		expect(studentResults.data.some((r) => equalIds(r._id, parent._id))).to.be.false;
+		expect(studentResults.data).to.be.not.empty;
 	});
 
 	it('allows access to parents by superheroes', async () => {

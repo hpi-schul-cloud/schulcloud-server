@@ -550,7 +550,7 @@ exports.denyIfNotCurrentSchool = (
 });
 
 exports.denyIfStudentTeamCreationNotAllowed = (
-	{ errorMessage = 'Der angefragte Nutzer darf die Benutzer nicht sehen!' },
+	{ errorMessage = 'Der angefragte Nutzer darf andere Nutzer nicht sehen!' },
 ) => async (context) => {
 	const user = await getUser(context);
 	if (!testIfRoleNameExist(user, 'student')) {
