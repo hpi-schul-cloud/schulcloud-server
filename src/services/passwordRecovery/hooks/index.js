@@ -1,29 +1,12 @@
 const local = require('@feathersjs/authentication-local');
-const { Configuration } = require('@schul-cloud/commons');
-const { NotFound, Forbidden } = require('@feathersjs/errors');
+const { NotFound } = require('@feathersjs/errors');
 const {
 	iff, isProvider, disallow, keep,
 } = require('feathers-hooks-common');
 const logger = require('../../../logger/index');
-const { isDisposableEmail } = require('../../../utils/disposableEmail');
 const { HOST, SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const globalHooks = require('../../../hooks');
-
-/**
- * Stop password reset flow if the email domain is blacklisted.
- *
- * @param context
- * @returns {*} context
- */
-const blockDisposableEmailDomains = (context) => {
-	if (Configuration.get('FEATURE_BLOCK_DISPOSABLE_EMAIL_DOMAINS')) {
-		if (isDisposableEmail(context.data.username)) {
-			throw new Forbidden('Email Domain Forbidden');
-		}
-	}
-	return context;
-};
 
 /**
  *	if only hook.username is given, this tries to resolve the users id
@@ -110,7 +93,7 @@ exports.before = {
 	find: [iff(isProvider('external'), disallow())],
 	get: [],
 	create: [
-		blockDisposableEmailDomains,
+		globalHooks.validateEmail('username'),
 		resolveUserIdByUsername,
 		local.hooks.hashPassword('password'),
 	],

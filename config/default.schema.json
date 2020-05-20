@@ -110,6 +110,10 @@
 			"default": true,
 			"description": "Prevent use of disposable email addresses."
 		},
+		"ADDITIONAL_BLACKLISTED_EMAIL_TOP_LEVEL_DOMAINS": {
+			"type": "string",
+			"description": "Add custom domain to the list of blocked domains (comma separated list)."
+		},
 		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -255,6 +259,7 @@
 	"required": [
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
 		"STUDENT_TEAM_CREATION",
+		"FEATURE_BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST"
 	]
 }
