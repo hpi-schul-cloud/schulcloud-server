@@ -191,7 +191,7 @@ const hooks = {
 			trimUsername,
 			trimPassword,
 			bruteForceCheck,
-			globalHooks.validateEmail('username'),
+			globalHooks.blockDisposableEmail('username'),
 			injectUserId,
 			increaseJwtTimeoutForPrivateDevices,
 			removeProvider,

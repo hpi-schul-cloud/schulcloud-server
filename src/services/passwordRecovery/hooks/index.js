@@ -93,7 +93,7 @@ exports.before = {
 	find: [iff(isProvider('external'), disallow())],
 	get: [],
 	create: [
-		globalHooks.validateEmail('username'),
+		globalHooks.blockDisposableEmail('username'),
 		resolveUserIdByUsername,
 		local.hooks.hashPassword('password'),
 	],

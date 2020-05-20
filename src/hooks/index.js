@@ -12,7 +12,7 @@ const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
 const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
-const { hasValidEmailFormat, isDisposableEmail } = require('../utils/disposableEmail');
+const { isDisposableEmail } = require('../utils/disposableEmail');
 // Add any common hooks you want to share across services in here.
 
 // don't require authentication for internal requests
@@ -791,7 +791,7 @@ exports.addCollation = (context) => {
  * @param optional the email has not to be present
  * @returns {*} context
  */
-exports.validateEmail = (property, optional = true) => async (context) => {
+exports.blockDisposableEmail = (property, optional = true) => async (context) => {
 	// available
 	if (!Object.prototype.hasOwnProperty.call(context.data, property)) {
 		if (!optional) {
@@ -799,11 +799,6 @@ exports.validateEmail = (property, optional = true) => async (context) => {
 		}
 
 		return context;
-	}
-
-	// format
-	if (!hasValidEmailFormat(context.data[property])) {
-		throw new BadRequest('Invalid Email Format');
 	}
 
 	// blacklisted
