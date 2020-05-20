@@ -163,7 +163,7 @@ describe('user service', () => {
 			const data = {
 				firstName: 'Luke',
 				lastName: 'Skywalker',
-				schoolId: schoolId.toString(),
+				schoolId,
 				roles: ['student'],
 				email: `${Date.now()}@test.org`,
 			};
@@ -183,7 +183,7 @@ describe('user service', () => {
 			const data = {
 				firstName: 'Leia',
 				lastName: 'Skywalker',
-				schoolId: otherSchoolId.toString(),
+				schoolId: otherSchoolId,
 				roles: ['student'],
 				email: `${Date.now()}@test.org`,
 			};
