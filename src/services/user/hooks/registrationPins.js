@@ -43,7 +43,7 @@ Ihr ${SC_SHORT_TITLE}-Team`;
 	}
 	if (role === 'student' || role === 'employee' || role === 'expert') {
 		return `Vielen Dank, dass du die ${SC_TITLE} nutzen möchtest.
-Bitte gib den folgenden Bestätigungscode im Registrierungsprozess ein, 
+Bitte gib den folgenden Bestätigungscode im Registrierungsprozess ein,
 um deine Registrierung bei der ${SC_TITLE} abzuschließen:
 
 PIN: ${pin}
@@ -136,6 +136,7 @@ exports.before = {
 	find: [hooks.disallow('external'), validateEmailAndPin],
 	get: hooks.disallow('external'),
 	create: [
+		globalHooks.blockDisposableEmail('email'),
 		removeOldPins,
 		generatePin,
 		mailPin,
