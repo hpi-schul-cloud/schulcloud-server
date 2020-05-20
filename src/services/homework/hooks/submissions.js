@@ -16,54 +16,6 @@ const filterRequestedSubmissions = async (context) => {
 	return context;
 };
 
-const filterApplicableSubmissions = (context) => {
-	const data = context.result.data || context.result;
-	if (context.params.account) {
-		Promise.all(data.filter((e) => {
-			const c = JSON.parse(JSON.stringify(e));
-			if (!c.teamMembers) {
-				c.teamMembers = [];
-			}
-			if (typeof c.teamMembers[0] === 'object') {
-				c.teamMembers = c.teamMembers.map((e) => e._id); // map teamMembers list to _id list (if $populate(d) is used)
-			}
-
-			let promise;
-			if (typeof c.courseGroupId === 'object') {
-				promise = Promise.resolve(c.courseGroupId);
-			} else if (c.courseGroupId) {
-				promise = context.app.service('courseGroups').get(c.courseGroupId);
-			} else {
-				promise = Promise.resolve({ userIds: [] });
-			}
-			return promise.then((courseGroup) => {
-				if (c.homeworkId.publicSubmissions // publicSubmissions allowes (everyone can see)
-						|| equalIds(c.homeworkId.teacherId, context.params.account.userId) // or user is teacher
-						|| (c.studentId._id
-							? equalIds(c.studentId._id, context.params.account.userId)
-							: equalIds(c.studentId, context.params.account.userId))
-						// or is student (only needed for old tasks, in new tasks all users shoudl be in teamMembers)
-						|| c.teamMembers && c.teamMembers.includes(context.params.account.userId.toString()) // or is a teamMember
-						|| courseGroup && courseGroup.userIds && courseGroup.userIds.includes(context.params.account.userId.toString())) { // or in the courseGroup
-					return true;
-				} if (c.homeworkId.courseId) {
-					const courseService = context.app.service('/courses');
-					return courseService.get(c.homeworkId.courseId)
-						.then((course) => ((course || {}).teacherIds || []).includes(context.params.account.userId.toString()) // or user is teacher
-												|| ((course || {}).substitutionIds || []).includes(context.params.account.userId.toString()), // or user is substitution teacher
-						)
-						.catch(() => Promise.reject(new GeneralError({ message: "can't reach course service" })));
-				}
-				return false;
-			});
-		})).then((result) => {
-			(context.result.data) ? (context.result.total = data.length) : (context.total = data.length);
-			(context.result.data) ? (context.result.data = data) : (context.result = data);
-		});
-	}
-	return Promise.resolve(context);
-};
-
 const stringifyUserId = (context) => {
 	if ((context.params.account || {}).userId) {
 		context.params.account.userId = context.params.account.userId.toString();
@@ -287,45 +239,82 @@ const hasDeletePermission = (context) => {
 	return Promise.reject(new Forbidden());
 };
 
-const hasViewPermission = async (context) => {
-	const currentUserId = context.params.account.userId;
-
+const hasViewPermission = async (context, submission, currentUserId) => {
 	// user is submitter
-	const submissionUserId = context.result.studentId.toString();
+	const submissionUserId = submission.studentId.toString();
 	if (submissionUserId === currentUserId) {
-		return Promise.resolve(context);
+		return submission;
 	}
 
 	// user is team member (should only be available if team work for this homework is enabled)
-	const teamMemberIds = context.result.teamMembers.map((m) => m.toString());
+	const teamMemberIds = submission.teamMembers ? submission.teamMembers.map((m) => m.toString()) : [];
 	if (teamMemberIds.includes(currentUserId)) {
-		return Promise.resolve(context);
+		return submission;
 	}
 
 	try {
 		const homeworkService = context.app.service('/homework');
+		const homework = await homeworkService.get(submission.homeworkId);
+		// is private teacher homework
+		const homeworkTeacherId = homework.teacherId.toString();
+		if (homeworkTeacherId === currentUserId) {
+			return submission;
+		}
+
 		const courseService = context.app.service('/courses');
-		const homework = await homeworkService.get(context.result.homeworkId);
 		const course = await courseService.get(homework.courseId);
 		const teacherIds = course.teacherIds.map((t) => t.toString());
-		const substitutionIds = course.substitutionIds.map((s) => s.toString())
+		const substitutionIds = (course.substitutionIds || []).map((s) => s.toString())
 
 		// user is course or substitution teacher
 		if (teacherIds.includes(currentUserId) || substitutionIds.includes(currentUserId)) {
-			return Promise.resolve(context);
+			return submission;
 		}
 
 		// user is course student and submissions are public
 		const courseStudentIds = course.userIds.map((u) => u.toString());
 		if (courseStudentIds.includes(currentUserId) && homework.publicSubmissions) {
-			return Promise.resolve(context);
+			return submission;
+		}
+
+		// user is part of a courseGroup
+		if (submission.courseGroupId) {
+			const courseGroupService = context.app.service('/courseGroups');
+			const courseGroup = await courseGroupService.get(submission.courseGroupId);
+			const courseGroupStudents = courseGroup.userIds.map((u) => u.toString());
+			if (courseGroupStudents.includes(currentUserId)) {
+				return submission;
+			}
 		}
 	} catch (err) {
-		Promise.reject(new GeneralError({ message: "can't reach homework service" }));
+		return Promise.reject(new GeneralError({ message: "can't reach homework service" }));
 	}
 
 	// user is someone else and not authorized
+	return Promise.resolve();
+};
+
+const checkGetSubmissionViewPermission = async (context) => {
+	const currentUserId = context.params.account.userId;
+
+	const hasViewPermissionResult = await hasViewPermission(context, context.result, currentUserId);
+	if (hasViewPermissionResult) {
+		return Promise.resolve(context);
+	}
+	// user is someone else and not authorized
 	return Promise.reject(new Forbidden());
+};
+
+const filterApplicableSubmissions = async (context) => {
+	const currentUserId = context.params.account.userId;
+	const submissions = context.result.data;
+
+	const filterSubmission = await Promise.all(submissions.map((submission)=> hasViewPermission(context, submission, currentUserId)));
+	const result = submissions.filter((_v, index) => filterSubmission[index]);
+
+	context.result.total = result.length;
+	context.result.data = result;
+	return Promise.resolve(context);
 };
 
 exports.before = () => ({
@@ -385,8 +374,8 @@ exports.before = () => ({
 
 exports.after = {
 	all: [],
-	find: [filterApplicableSubmissions],
-	get: [hasViewPermission],
+	find: [iff(isProvider('external'), filterApplicableSubmissions)],
+	get: [checkGetSubmissionViewPermission],
 	create: [],
 	update: [],
 	patch: [],

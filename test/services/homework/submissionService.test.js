@@ -5,17 +5,20 @@ const testObjects = require('../helpers/testObjects')(app);
 const { expect } = chai;
 
 
-async function createSubmission(teachers, students, publicSubmission = false, substitutionTeachers = [], courseStudents = []) {
+async function createSubmission(teachers, students, publicSubmission = false, substitutionTeachers = [], courseStudents = [], createTeacherPrivateSubmission = false) {
 	const originalTeacher = teachers[0];
-	const submitter = students[0];
+	const submitterId = students[0];
 	const studentIds = students.map((s) => s._id);
 	const courseStudentIds = courseStudents.map((s) => s._id);
-	const course = await testObjects.createTestCourse({
+
+	const course = !createTeacherPrivateSubmission ? await testObjects.createTestCourse({
 		teacherIds: teachers.map((t) => t._id),
 		substitutionIds: substitutionTeachers.map((s) => s._id),
 		userIds: [...new Set([...studentIds, ...courseStudentIds])],
 		schoolId: originalTeacher.schoolId,
-	});
+	}) : undefined;
+
+	const courseId = course ? course._id : undefined;
 	const homework = await testObjects.createTestHomework({
 		teacherId: originalTeacher._id,
 		name: 'Testaufgabe',
@@ -25,14 +28,14 @@ async function createSubmission(teachers, students, publicSubmission = false, su
 		private: false,
 		archived: [originalTeacher._id],
 		lessonId: null,
-		courseId: course._id,
+		courseId,
 		publicSubmissions: publicSubmission,
 	});
 	return testObjects.createTestSubmission({
-		schoolId: course.schoolId,
-		courseId: course._id,
+		schoolId: originalTeacher.schoolId,
+		courseId,
 		homeworkId: homework._id,
-		studentId: submitter._id,
+		studentId: submitterId,
 		teamMembers: studentIds,
 		comment: 'egal wie dicht du bist, Goethe war Dichter.',
 	});
@@ -143,9 +146,23 @@ describe('submission service', function test() {
 		expect(result.grade).to.eq(100);
 	});
 
-	it('teacher can FIND all submissions on the school', async () => {
+	it('teacher can FIND private submissions', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
-		const [originalTeacher, teacher , student] = await Promise.all([
+		const [teacher, student] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+		]);
+		await createSubmission([teacher], [student], false, [], [], true);
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		params.query = {};
+		const result = await app.service('submissions').find(params);
+		expect(result).to.not.be.undefined;
+		expect(result.total).to.equal(1);
+	});
+
+	it('teacher can NOT FIND all submissions on the school', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool();
+		const [originalTeacher, teacher, student] = await Promise.all([
 			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
 			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
 			testObjects.createTestUser({ roles: ['student'], schoolId }),
@@ -155,10 +172,10 @@ describe('submission service', function test() {
 		params.query = {};
 		const result = await app.service('submissions').find(params);
 		expect(result).to.not.be.undefined;
-		expect(result.total).to.equal(1);
+		expect(result.total).to.equal(0);
 	});
 
-	it('student can not FIND other students submissions', async () => {
+	it('student can NOT FIND other students submissions', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
 		const [teacher, student, otherStudent] = await Promise.all([
 			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
