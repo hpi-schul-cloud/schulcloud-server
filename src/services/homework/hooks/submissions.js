@@ -5,17 +5,6 @@ const {	iff, isProvider } = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
-const filterRequestedSubmissions = async (context) => {
-	const hasSchoolView = await globalHooks.hasPermissionNoHook(
-		context, context.params.account.userId, 'SUBMISSIONS_SCHOOL_VIEW',
-	);
-	if (!hasSchoolView) {
-		// todo: see team submissions
-		context.params.query.studentId = context.params.account.userId;
-	}
-	return context;
-};
-
 const stringifyUserId = (context) => {
 	if ((context.params.account || {}).userId) {
 		context.params.account.userId = context.params.account.userId.toString();
@@ -328,7 +317,6 @@ exports.before = () => ({
 	find: [
 		iff(isProvider('external'), globalHooks.restrictToCurrentSchool),
 		globalHooks.hasPermission('SUBMISSIONS_VIEW'),
-		iff(isProvider('external'), filterRequestedSubmissions),
 		globalHooks.mapPaginationQuery.bind(this),
 	],
 	get: [globalHooks.hasPermission('SUBMISSIONS_VIEW')],
