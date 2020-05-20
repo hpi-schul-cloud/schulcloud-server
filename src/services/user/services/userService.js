@@ -4,7 +4,7 @@ const { iff, isProvider, disallow } = require('feathers-hooks-common');
 // const logger = require('../../../logger');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
 const { userModel } = require('../model');
-const { hasEditPermissionForUser } = require('../hooks/index.hooks');
+const { hasEditPermissionForUser, hasReadPermissionForUser } = require('../hooks/index.hooks');
 
 const {
 	mapPaginationQuery,
@@ -91,7 +91,7 @@ const userHooks = {
 			iff(isProvider('external'), restrictToCurrentSchool),
 			iff(isProvider('external'),
 				denyIfStudentTeamCreationNotAllowed({
-					errorMessage: 'Der angefragte Nutzer darf andere Nutzer nicht sehen!',
+					errorMessage: 'The current user is not allowed to list other users!',
 				})),
 			mapRoleFilterQuery,
 			addCollation,
@@ -99,7 +99,7 @@ const userHooks = {
 		],
 		get: [
 			authenticate('jwt'),
-			iff(isProvider('external'), hasEditPermissionForUser)],
+			iff(isProvider('external'), hasReadPermissionForUser)],
 		create: [
 			checkJwt(),
 			pinIsVerified,

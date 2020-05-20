@@ -25,3 +25,20 @@ exports.hasEditPermissionForUser = async (context) => {
 	}
 	return context;
 };
+
+exports.hasReadPermissionForUser = async (context) => {
+	const { id, service: userService } = context;
+	// check if user is viewing his own profile
+	if (ObjectId.equal(((context.params || {}).account || {}).userId, id)) {
+		return context;
+	}
+	const requestedUser = await userService.get(id, { query: { $populate: 'roles' } });
+	const requestedUserRoles = requestedUser.roles.map((r) => r.name);
+	if (requestedUserRoles.includes('teacher')) {
+		await globalHooks.hasPermission(['TEACHER_LIST'])(context);
+	}
+	if (requestedUserRoles.includes('student')) {
+		await globalHooks.hasPermission(['STUDENT_LIST'])(context);
+	}
+	return context;
+};
