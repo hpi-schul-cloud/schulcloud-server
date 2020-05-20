@@ -774,6 +774,7 @@ exports.beforeExtern = {
 		globalHooks.hasPermission('TEAM_INVITE_EXTERNAL'),
 		hasTeamPermission(['INVITE_EXPERTS', 'INVITE_ADMINISTRATORS']),
 		filterToRelated(['userId', 'email', 'role'], 'data'),
+		globalHooks.blockDisposableEmail('email'),
 		isTeacherDirectlyImport,
 	], // later with switch ..see role names
 	remove: [blockedMethod],
