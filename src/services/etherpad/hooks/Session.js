@@ -8,7 +8,7 @@ const logger = require('../../../logger');
 const getAuthorData = async (context) => {
 	const authorService = context.app.service('etherpad/authors').create({ userId: context.params.account.userId });
 	try {
-		const response = JSON.parse(await authorService);
+		const response = await authorService;
 		context.data = {
 			...context.data,
 			authorID: response.data.authorID,
@@ -27,7 +27,7 @@ const getGroupData = async (context) => {
 	};
 	const groupService = context.app.service('etherpad/groups').create(context.data);
 	try {
-		const response = JSON.parse(await groupService);
+		const response = await groupService;
 		context.data = {
 			...context.data,
 			groupID: response.data.groupID,
@@ -42,7 +42,7 @@ const getGroupData = async (context) => {
 const getSessionInformation = async (context) => {
 	const sessionListPromise = EtherpadClient.getActiveSessions({ authorID: context.data.authorID });
 	try {
-		const response = JSON.parse(await sessionListPromise);
+		const response = await sessionListPromise;
 		// Return existing session from hooks
 		if (typeof (response.data) !== 'undefined' && response.data !== null) {
 			const responseData = response.data;
@@ -72,7 +72,7 @@ const getSessionInformation = async (context) => {
 			context.data.validUntil = parseInt((new Date(Date.now()).getTime()) / 1000, 10) + cookieExpiresSeconds;
 
 			const sessionCreatePromise = EtherpadClient.createSession(context.data);
-			const createResponse = JSON.parse(await sessionCreatePromise);
+			const createResponse = await sessionCreatePromise;
 
 			if (typeof (createResponse.data) !== 'undefined' && createResponse.data !== null) {
 				context.data = {

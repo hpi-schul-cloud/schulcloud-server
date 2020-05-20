@@ -7,7 +7,7 @@ class Pad {
 	}
 
 	create(params) {
-		return EtherpadClient.createGroupPad(params);
+		return EtherpadClient.createOrGetGroupPad(params);
 	}
 
 	setup(app) {

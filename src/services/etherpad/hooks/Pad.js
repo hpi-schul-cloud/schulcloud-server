@@ -12,7 +12,7 @@ const getGroupData = async (context) => {
 	};
 	const groupService = context.app.service('etherpad/groups').create(context.data);
 	try {
-		const response = JSON.parse(await groupService);
+		const response = await groupService;
 		context.data = {
 			...context.data,
 			groupID: response.data.groupID,
