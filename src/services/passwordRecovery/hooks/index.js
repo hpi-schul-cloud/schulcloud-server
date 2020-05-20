@@ -71,9 +71,9 @@ Ihr ${SC_SHORT_TITLE} Team`;
  * this hides errors from api for invalid input
  * @param {*} context
  */
-const clearResultAndForceSuccessIfNotForbidden = (context) => {
-	// Only pass error: Forbidden
-	if (context.error && context.error.code === 403) {
+const clearResultAndForceSuccessIfNotBlockedEmailDomain = (context) => {
+	// Only pass error: Email Domain Blocked
+	if (context.error && context.error.code === 400 && context.error.message === 'Email Domain Blocked') {
 		return context;
 	}
 
@@ -106,12 +106,12 @@ exports.after = {
 	all: [],
 	find: [],
 	get: [keep('_id, createdAt', 'changed')],
-	create: [sendInfo, clearResultAndForceSuccessIfNotForbidden],
+	create: [sendInfo, clearResultAndForceSuccessIfNotBlockedEmailDomain],
 	update: [],
 	patch: [],
 	remove: [],
 };
 
 exports.error = {
-	create: [clearResultAndForceSuccessIfNotForbidden],
+	create: [clearResultAndForceSuccessIfNotBlockedEmailDomain],
 };
