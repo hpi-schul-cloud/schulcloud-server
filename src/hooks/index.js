@@ -362,7 +362,7 @@ exports.restrictToCurrentSchool = (context) => getUser(context).then((user) => {
 		}
 	} else if (context.data.schoolId === undefined) {
 		context.data.schoolId = currentSchoolId;
-	} else if (context.data.schoolId !== currentSchoolId) {
+	} else if (!equalIds(context.data.schoolId, currentSchoolId)) {
 		throw new Forbidden('You do not have valid permissions to access this.');
 	}
 
