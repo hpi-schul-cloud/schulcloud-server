@@ -6,6 +6,7 @@ const {
 } = require('../../../utils/redis');
 const { LOGIN_BLOCK_TIME: allowedTimeDifference } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
+const disabledBruteForceCheck = Configuration.get('DISABLED_BRUTE_FORCE_CHECK');
 
 const updateUsernameForLDAP = async (context) => {
 	const { schoolId, strategy } = context.data;
@@ -19,6 +20,9 @@ const updateUsernameForLDAP = async (context) => {
 };
 
 const bruteForceCheck = async (context) => {
+	if (disabledBruteForceCheck) {
+		return context;
+	}
 	const { systemId, strategy } = context.data;
 
 	if (strategy !== 'jwt') {
@@ -51,6 +55,9 @@ const bruteForceCheck = async (context) => {
 
 // Invalid Login will not call this function
 const bruteForceReset = async (context) => {
+	if (disabledBruteForceCheck) {
+		return context;
+	}
 	// if successful login enable next login try directly
 	await context.app.service('/accounts').patch(context.result.account._id, { lasttriedFailedLogin: 0 });
 	return context;
