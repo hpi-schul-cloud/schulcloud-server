@@ -373,7 +373,7 @@ exports.before = () => ({
 
 exports.after = {
 	all: [],
-	find: [filterApplicableSubmissions],
+	find: [iff(isProvider('external'), filterApplicableSubmissions)],
 	get: [checkGetSubmissionViewPermission],
 	create: [],
 	update: [],
