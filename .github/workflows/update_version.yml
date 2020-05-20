@@ -1,6 +1,6 @@
 name: Update package version
 on:
-  push:
+  create:
     branches:
       - 'release/**'
 jobs:
