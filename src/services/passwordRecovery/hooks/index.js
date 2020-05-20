@@ -71,11 +71,17 @@ Ihr ${SC_SHORT_TITLE} Team`;
  * this hides errors from api for invalid input
  * @param {*} context
  */
-const clearResultAndForceSuccess = (context) => {
+const clearResultAndForceSuccessIfNotBlockedEmailDomain = (context) => {
+	// Only pass error: Email Domain Blocked
+	if (context.error && context.error.code === 400 && context.error.message === 'EMAIL_DOMAIN_BLOCKED') {
+		return context;
+	}
+
+	// Mute other errors
 	if (context.error) {
 		delete context.error.hook;
 		// context.error.code = 200;
-		logger.error('passwordRecovery is requested and return an error', context.error);
+		logger.error('passwordRecovery is requested and return an error: ', context.error);
 	}
 
 	context.result = { success: 'success' };
@@ -87,6 +93,7 @@ exports.before = {
 	find: [iff(isProvider('external'), disallow())],
 	get: [],
 	create: [
+		globalHooks.blockDisposableEmail('username'),
 		resolveUserIdByUsername,
 		local.hooks.hashPassword('password'),
 	],
@@ -99,12 +106,12 @@ exports.after = {
 	all: [],
 	find: [],
 	get: [keep('_id, createdAt', 'changed')],
-	create: [sendInfo, clearResultAndForceSuccess],
+	create: [sendInfo, clearResultAndForceSuccessIfNotBlockedEmailDomain],
 	update: [],
 	patch: [],
 	remove: [],
 };
 
 exports.error = {
-	create: [clearResultAndForceSuccess],
+	create: [clearResultAndForceSuccessIfNotBlockedEmailDomain],
 };
