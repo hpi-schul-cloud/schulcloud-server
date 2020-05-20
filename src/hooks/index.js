@@ -5,9 +5,9 @@ const {
 	BadRequest,
 	TypeError,
 } = require('@feathersjs/errors');
+const { Configuration } = require('@schul-cloud/commons');
 const _ = require('lodash');
 const mongoose = require('mongoose');
-const { Configuration } = require('@schul-cloud/commons');
 const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
