@@ -242,7 +242,7 @@ const hasDeletePermission = (context) => {
 const hasViewPermission = async (context, submission, currentUserId) => {
 	// user is submitter
 	const submissionUserId = submission.studentId.toString();
-	if (submissionUserId === currentUserId) {
+	if (equalIds(submission.studentId, currentUserId) {
 		return submission;
 	}
 
@@ -256,8 +256,7 @@ const hasViewPermission = async (context, submission, currentUserId) => {
 		const homeworkService = context.app.service('/homework');
 		const homework = await homeworkService.get(submission.homeworkId);
 		// is private teacher homework
-		const homeworkTeacherId = homework.teacherId.toString();
-		if (homeworkTeacherId === currentUserId) {
+		if (equalIds(homework.teacherId, currentUserId)) {
 			return submission;
 		}
 
@@ -299,10 +298,10 @@ const checkGetSubmissionViewPermission = async (context) => {
 
 	const hasViewPermissionResult = await hasViewPermission(context, context.result, currentUserId);
 	if (hasViewPermissionResult) {
-		return Promise.resolve(context);
+		return context;
 	}
 	// user is someone else and not authorized
-	return Promise.reject(new Forbidden());
+	throw new Forbidden();
 };
 
 const filterApplicableSubmissions = async (context) => {
