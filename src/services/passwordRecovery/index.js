@@ -12,7 +12,7 @@ class ChangePasswordService {
 			delete data.password_control;
 			delete data.accountId;
 			const pwrecover = await passwordRecovery.findOne({ _id: data.resetId, changed: false });
-			if (!pwrecover || Object.keys(data).length !== 2) {
+			if (!pwrecover || Object.keys(data).length !== 3) {
 				delete data.password;
 				throw new Error(`Wrong data. ${JSON.stringify({ data, pwrecover })}`);
 			}
