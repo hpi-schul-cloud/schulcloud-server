@@ -4,9 +4,8 @@ const { Configuration } = require('@schul-cloud/commons');
 const {
 	getRedisClient, redisSetAsync, redisDelAsync, extractDataFromJwt, getRedisData,
 } = require('../../../utils/redis');
-
 const { LOGIN_BLOCK_TIME: allowedTimeDifference } = require('../../../../config/globals');
-
+const globalHooks = require('../../../hooks');
 const disabledBruteForceCheck = Configuration.get('DISABLED_BRUTE_FORCE_CHECK');
 
 const updateUsernameForLDAP = async (context) => {
@@ -192,6 +191,7 @@ const hooks = {
 			trimUsername,
 			trimPassword,
 			bruteForceCheck,
+			globalHooks.blockDisposableEmail('username'),
 			injectUserId,
 			increaseJwtTimeoutForPrivateDevices,
 			removeProvider,
