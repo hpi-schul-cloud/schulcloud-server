@@ -32,7 +32,7 @@ class TogglePermission {
 					if (toggle === 'true' && !permissions.includes('STUDENT_LIST')) {
 						permissions.push('STUDENT_LIST');
 						await role.updateOne({ permissions });
-					} if (toggle === 'false') {
+					} else if (toggle === 'false') {
 						await role.updateOne({ permissions: filterPermissions(permissions, 'STUDENT_LIST') });
 					}
 					break;
