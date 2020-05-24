@@ -1,6 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { keep } = require('feathers-hooks-common');
-const { BadRequest, Forbidden, GeneralError, NotFound } = require('@feathersjs/errors');
+const {
+	BadRequest, Forbidden, GeneralError, NotFound,
+} = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
 const {
@@ -478,7 +480,7 @@ const enforceRoleHierarchyOnCreate = async (context) => {
 	}));
 
 	return Promise.resolve(context);
-}
+};
 
 const generateRegistrationLink = async (context) => {
 	const { data, app } = context;
