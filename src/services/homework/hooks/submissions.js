@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { Forbidden, GeneralError, BadRequest, Conflict } = require('@feathersjs/errors');
+const {
+	Forbidden, GeneralError, BadRequest, Conflict,
+} = require('@feathersjs/errors');
 const {	iff, isProvider } = require('feathers-hooks-common');
 
 const globalHooks = require('../../../hooks');
@@ -269,7 +271,7 @@ const hasViewPermission = async (context, submission, currentUserId) => {
 			const courseService = context.app.service('/courses');
 			const course = await courseService.get(homework.courseId);
 			const teacherIds = course.teacherIds.map((t) => t.toString());
-			const substitutionIds = (course.substitutionIds || []).map((s) => s.toString())
+			const substitutionIds = (course.substitutionIds || []).map((s) => s.toString());
 
 			// user is course or substitution teacher
 			if (teacherIds.includes(currentUserId) || substitutionIds.includes(currentUserId)) {
@@ -315,7 +317,7 @@ const filterApplicableSubmissions = async (context) => {
 	const currentUserId = context.params.account.userId;
 	const submissions = context.result.data;
 
-	const filterSubmission = await Promise.all(submissions.map((submission)=> hasViewPermission(context, submission, currentUserId)));
+	const filterSubmission = await Promise.all(submissions.map((submission) => hasViewPermission(context, submission, currentUserId)));
 	const result = submissions.filter((_v, index) => filterSubmission[index]);
 
 	context.result.total = result.length;
