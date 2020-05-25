@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { hasPermission, injectUserId, mapPayload } = require('../../../hooks');
 const resolveStorageType = require('./resolveStorageType');
+const { excludeAttributesFromSanitization } = require('../../../hooks/sanitizationExceptions');
 
 const resolveUserId = (hook) => {
 	// local workaround if authentication is disabled
@@ -27,9 +28,13 @@ exports.before = {
 	remove: [hasPermission('FILESTORAGE_REMOVE')],
 };
 
+const signedUrlPath = 'fileStorage/signedUrl';
+
 exports.after = {
 	all: [],
-	find: [],
+	find: [
+		excludeAttributesFromSanitization(signedUrlPath, ['url']),
+	],
 	get: [],
 	create: [],
 	update: [],

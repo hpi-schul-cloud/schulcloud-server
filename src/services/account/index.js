@@ -11,7 +11,6 @@ const { accountService, accountServiceHooks } = require('./services/accountApiSe
 const chance = new Chance();
 
 function randomGen(arr) {
-
 	const tempEle = arr[getRandomInt(arr.length - 1)];
 
 	if (arr.length === 0) return tempEle;

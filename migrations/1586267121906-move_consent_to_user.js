@@ -80,12 +80,13 @@ module.exports = {
 		// Hint: Access models via this('modelName'), not an imported model to have
 		// access to the correct database connection. Otherwise Mongoose calls never return.
 		info('load current consents');
-		const consents = await Consent.find({
-			$sort: {
+		const consents = await Consent
+			.find()
+			.sort({
 				updatedAt: 1,
 				createdAt: 1,
-			},
-		}).lean().exec();
+			})
+			.lean().exec();
 		info('move each consent to the coresponding user');
 		try {
 			await Promise.all(consents.map(async (consent) => {
