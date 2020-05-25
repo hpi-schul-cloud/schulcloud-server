@@ -115,8 +115,8 @@ describe('\'/teams/manage/admin\' service', () => {
 
 		it('team without owner', async () => {
 			teams.data[0].userIds[0].role.name = 'teammember';
-			expectedResult[0].schoolMembers[0].role = 'teammember';
-			expectedResult[0].ownerExist = false;
+			expectedResult.data[0].schoolMembers[0].role = 'teammember';
+			expectedResult.data[0].ownerExist = false;
 
 			const result = AdminOverview.mapped(teams, sessionSchoolId);
 
@@ -132,10 +132,10 @@ describe('\'/teams/manage/admin\' service', () => {
 			teams.data[0].schoolIds[1]._id = schoolId;
 
 
-			expectedResult[0].createdAtMySchool = false;
-			expectedResult[0].hasMembersOfOtherSchools = true;
-			expectedResult[0].schoolMembers = [];
-			expectedResult[0].schools.push({
+			expectedResult.data[0].createdAtMySchool = false;
+			expectedResult.data[0].hasMembersOfOtherSchools = true;
+			expectedResult.data[0].schoolMembers = [];
+			expectedResult.data[0].schools.push({
 				_id: schoolId,
 				name: teams.data[0].schoolIds[1].name,
 			});
@@ -147,7 +147,7 @@ describe('\'/teams/manage/admin\' service', () => {
 
 		it('rocket chat is activeted', async () => {
 			teams.data[0].features.push('rocketChat');
-			expectedResult[0].hasRocketChat = true;
+			expectedResult.data[0].hasRocketChat = true;
 			const result = AdminOverview.mapped(teams, sessionSchoolId);
 			assert.deepStrictEqual(result, expectedResult);
 		});
