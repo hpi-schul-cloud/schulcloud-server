@@ -1,4 +1,5 @@
 const chai = require('chai');
+
 const { expect } = chai;
 const { excludeAttributesFromSanitization } = require('../../src/hooks/sanitizationExceptions');
 
@@ -10,7 +11,7 @@ describe('excludeAttributesFromSanitization tests', () => {
 		};
 		const result = excludeAttributesFromSanitization('test', ['url'])(contextWithoutSafeAttribute);
 		return result
-			.then(contextWithSafeAttribute => {
+			.then((contextWithSafeAttribute) => {
 				expect(contextWithSafeAttribute.safeAttributes).to.be.not.undefined;
 				expect(contextWithSafeAttribute.safeAttributes).to.eql(['url']);
 			});
@@ -21,7 +22,7 @@ describe('excludeAttributesFromSanitization tests', () => {
 		};
 		const result = excludeAttributesFromSanitization('test', 'url')(context);
 		return result
-			.then(context => {
+			.then((context) => {
 				expect(context.safeAttributes).to.be.undefined;
 			});
 	});
