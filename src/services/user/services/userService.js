@@ -13,6 +13,7 @@ const {
 	denyIfNotCurrentSchool,
 	computeProperty,
 	addCollation,
+	blockDisposableEmail,
 } = require('../../../hooks');
 const {
 	mapRoleFilterQuery,
@@ -100,6 +101,7 @@ const userHooks = {
 			sanitizeData,
 			checkUnique,
 			checkUniqueAccount,
+			blockDisposableEmail('email'),
 			generateRegistrationLink,
 			resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 		],
