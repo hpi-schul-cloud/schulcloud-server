@@ -19,11 +19,10 @@ const filterRequestedSubmissions = async (context) => {
 		return Promise.reject(new GeneralError({ message: "can't reach homework service" }));
 	}
 
-	let permissionQuery = {};
 	const userRoles = currentUser.roles.map((r) => r.name);
 
 	// user is submitter
-	permissionQuery = { $or: [permissionQuery, { studentId: currentUserId }] };
+	let permissionQuery = { studentId: currentUserId };
 
 	// user is team member
 	permissionQuery = { $or: [permissionQuery, { teamMembers: { $in: currentUserId } }] };
@@ -394,7 +393,10 @@ exports.before = () => ({
 		iff(isProvider('external'), filterRequestedSubmissions),
 		globalHooks.mapPaginationQuery.bind(this),
 	],
-	get: [globalHooks.hasPermission('SUBMISSIONS_VIEW')],
+	get: [
+		globalHooks.hasPermission('SUBMISSIONS_VIEW'),
+		iff(isProvider('external'), filterRequestedSubmissions),
+	],
 	create: [
 		globalHooks.hasPermission('SUBMISSIONS_CREATE'),
 		insertHomeworkData, insertSubmissionsData,
