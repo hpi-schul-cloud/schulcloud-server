@@ -209,6 +209,7 @@ const exportCollection = async ({
 		'--collection', collection,
 		'--out', filePath,
 		'--jsonArray',
+		'--sort={"_id":1}',
 		args['--pretty'] ? '--pretty' : undefined,
 	];
 	const res = await asyncExec(cleanJoin(cmdArgs));
