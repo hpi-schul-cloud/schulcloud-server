@@ -44,7 +44,6 @@ module.exports = function setup(app) {
 				headers,
 				email,
 				replyEmail,
-				from,
 				subject,
 				content,
 				// TODO: must be implemented by the mailservice
@@ -59,7 +58,7 @@ module.exports = function setup(app) {
 				subject,
 				text: content.text,
 				html: content.html,
-				from: from || SMTP_SENDER,
+				from: SMTP_SENDER,
 				replyTo: replyEmail,
 				attachments: base64Attachments,
 			};

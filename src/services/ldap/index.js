@@ -109,18 +109,12 @@ module.exports = function LDAPService() {
          * @return {Promise} resolves if successfully disconnected, otherwise
          * rejects with error
          */
-		_disconnect(config) {
-			return new Promise((resolve, reject) => {
-				if (!(config && config._id)) {
-					reject(new errors.BadRequest('Invalid config object'));
-				}
-				this._getClient(config).unbind((err) => {
-					if (err) {
-						reject(err);
-					}
-					resolve();
-				});
-			});
+		disconnect(config) {
+			return this._getClient(config)
+				.then((client) => client.unbind((err) => {
+					if (err) return Promise.reject(err);
+					return Promise.resolve();
+				}));
 		}
 
 		/**
@@ -138,6 +132,7 @@ module.exports = function LDAPService() {
 			return this._connect(config, qualifiedUsername, password)
 				.then((connection) => {
 					if (connection.connected) {
+						connection.unbind();
 						return Promise.resolve(true);
 					}
 					return Promise.reject(new errors.NotAuthenticated('User could not authenticate'));

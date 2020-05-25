@@ -1,5 +1,6 @@
 const { BadRequest, Forbidden, NotFound } = require('@feathersjs/errors');
 const hooks = require('../hooks');
+const { TEAM_FEATURES } = require('../model');
 const { warning } = require('../../../logger/index');
 const { SC_SHORT_TITLE } = require('../../../../config/globals');
 
@@ -63,7 +64,7 @@ class AdminOverview {
 			const ownerExist = team.userIds.some(
 				(user) => user.role.name === 'teamowner',
 			); // role is populated
-			const hasRocketChat = team.features.includes('rocketChat');
+			const hasRocketChat = team.features.includes(TEAM_FEATURES.ROCKET_CHAT);
 
 
 			const reducedSchoolMembers = [];
@@ -206,7 +207,7 @@ class AdminOverview {
 	static formatText(text) {
 		return `Hallo,
 		\nes besteht Klärungsbedarf zu deinem Team.
-		\nDu wurdest über die Administratoren-Kontaktfunktion benachrichtigt. 
+		\nDu wurdest über die Administratoren-Kontaktfunktion benachrichtigt.
 		\n\nText der Nachricht: \n${text}
 		\n\nVielen Dank
 		\nDein ${SC_SHORT_TITLE}-Team`;
