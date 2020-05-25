@@ -5,12 +5,14 @@ const {
 	BadRequest,
 	TypeError,
 } = require('@feathersjs/errors');
+const { Configuration } = require('@schul-cloud/commons');
 const _ = require('lodash');
 const mongoose = require('mongoose');
 const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
 const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
+const { isDisposableEmail } = require('../utils/disposableEmail');
 // Add any common hooks you want to share across services in here.
 
 // don't require authentication for internal requests
@@ -360,7 +362,7 @@ exports.restrictToCurrentSchool = (context) => getUser(context).then((user) => {
 		}
 	} else if (context.data.schoolId === undefined) {
 		context.data.schoolId = currentSchoolId;
-	} else if (context.data.schoolId !== currentSchoolId) {
+	} else if (!equalIds(context.data.schoolId, currentSchoolId)) {
 		throw new Forbidden('You do not have valid permissions to access this.');
 	}
 
@@ -779,5 +781,32 @@ exports.populateCurrentSchool = async (context) => {
 
 exports.addCollation = (context) => {
 	context.params.collation = { locale: 'de', caseLevel: true };
+	return context;
+};
+
+/**
+ * Stop flow if the email domain is blacklisted.
+ *
+ * @param property data property to check
+ * @param optional the email has not to be present
+ * @returns {*} context
+ */
+exports.blockDisposableEmail = (property, optional = true) => async (context) => {
+	// available
+	if (!Object.prototype.hasOwnProperty.call(context.data, property)) {
+		if (!optional) {
+			throw new BadRequest(`Property ${property} is required`);
+		}
+
+		return context;
+	}
+
+	// blacklisted
+	if (Configuration.get('BLOCK_DISPOSABLE_EMAIL_DOMAINS') === true) {
+		if (isDisposableEmail(context.data[property])) {
+			throw new BadRequest('EMAIL_DOMAIN_BLOCKED');
+		}
+	}
+
 	return context;
 };
