@@ -508,5 +508,71 @@
 		"$date": "2020-05-14T14:56:41.229Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ecb8069b33c50009236b561"
+	},
+	"state": "up",
+	"name": "granular_user_permissions",
+	"createdAt": {
+		"$date": "2019-10-09T10:04:25.556Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ecb8069b33c50009236b562"
+	},
+	"state": "up",
+	"name": "add-messenger-sync-permissions",
+	"createdAt": {
+		"$date": "2020-03-19T10:46:32.049Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ecb8069b33c50009236b563"
+	},
+	"state": "down",
+	"name": "update schema indexes",
+	"createdAt": {
+		"$date": "2020-03-24T13:29:18.218Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ecb8069b33c50009236b564"
+	},
+	"state": "down",
+	"name": "remove clipboard",
+	"createdAt": {
+		"$date": "2020-03-25T10:18:50.713Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ecb8069b33c50009236b565"
+	},
+	"state": "down",
+	"name": "add-sync-start-permission",
+	"createdAt": {
+		"$date": "2020-04-16T10:21:00.933Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ecb8069b33c50009236b566"
+	},
+	"state": "down",
+	"name": "remove-student_edit-from-students",
+	"createdAt": {
+		"$date": "2020-04-27T13:08:26.485Z"
+	},
+	"__v": 0
 }]
 
