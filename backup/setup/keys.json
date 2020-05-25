@@ -1,4 +1,7 @@
 [{
+	"_id": {
+		"$oid": "5ecb7f6ce69a20a436ea4876"
+	},
 	"name": "example",
 	"key": "example"
 }]
