@@ -6,13 +6,76 @@ const globalHooks = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const filterRequestedSubmissions = async (context) => {
-	const hasSchoolView = await globalHooks.hasPermissionNoHook(
-		context, context.params.account.userId, 'SUBMISSIONS_SCHOOL_VIEW',
-	);
-	if (!hasSchoolView) {
-		// todo: see team submissions
-		context.params.query.studentId = context.params.account.userId;
+	let currentUser;
+	const currentUserId = context.params.account.userId;
+	try {
+		const userService = context.app.service('/users');
+		currentUser = await userService.get(currentUserId, {
+			query: {
+				$populate: 'roles',
+			},
+		});
+	} catch (err) {
+		return Promise.reject(new GeneralError({ message: "can't reach homework service" }));
 	}
+
+	let permissionQuery = {};
+	const userRoles = currentUser.roles.map((r) => r.name);
+
+	// user is submitter
+	permissionQuery = { $or: [permissionQuery, { studentId: currentUserId }] };
+
+	// user is team member
+	permissionQuery = { $or: [permissionQuery, { teamMembers: { $in: currentUserId } }] };
+
+
+	// user is in course group of the submission
+	try {
+		const courseGroupService = context.app.service('/courseGroups');
+		const courseGroup = await courseGroupService.find({
+			query: {
+				userIds: { $in: [currentUserId] },
+			},
+		});
+		const courseGroupIds = courseGroup.data.map((c) => c._id);
+		permissionQuery = { $or: [permissionQuery, { courseGroupId: { $in: courseGroupIds } }] };
+	} catch (err) {
+		return Promise.reject(new GeneralError({ message: "can't reach course group service" }));
+	}
+
+	if (userRoles.includes('teacher')) {
+		permissionQuery = { $or: [permissionQuery, { teacherId: currentUserId }] };
+		try {
+			const courseService = context.app.service('/courses');
+			const accessilbeCourses = await courseService.find({
+				query: {
+					$or: [
+						{ teacherIds: {$in: [currentUserId]}},
+						{ substitutionIds: {$in: [currentUserId]}},
+					],
+				},
+			});
+			const accessilbeCourseIds = accessilbeCourses.data.map((c) => c._id);
+			const homeworkService = context.app.service('/homework');
+			const accessibleHomework = await homeworkService.find({
+				query: {
+					$or: [
+						{ teacherId: currentUserId },
+						{ courseId: { $in: accessilbeCourseIds } },
+					],
+				},
+			});
+			const accessibleHomeworkIds = accessibleHomework.data.map((h) => h._id);
+			permissionQuery = { $or: [permissionQuery, { homeworkId: { $in: accessibleHomeworkIds } }] };
+		} catch (err) {
+			return Promise.reject(new GeneralError({ message: "can't reach course service" }));
+		}
+	}
+
+	const originalQuery = context.params.query || {};
+	const query = { $and: [originalQuery, permissionQuery] };
+	context.params.query = query;
+
 	return context;
 };
 
@@ -380,7 +443,7 @@ exports.before = () => ({
 
 exports.after = {
 	all: [],
-	find: [iff(isProvider('external'), filterApplicableSubmissions)],
+	find: [],
 	get: [checkGetSubmissionViewPermission],
 	create: [],
 	update: [],
