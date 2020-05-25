@@ -535,7 +535,7 @@
 	"_id": {
 		"$oid": "5ecb8069b33c50009236b563"
 	},
-	"state": "down",
+	"state": "up",
 	"name": "update schema indexes",
 	"createdAt": {
 		"$date": "2020-03-24T13:29:18.218Z"
@@ -546,7 +546,7 @@
 	"_id": {
 		"$oid": "5ecb8069b33c50009236b564"
 	},
-	"state": "down",
+	"state": "up",
 	"name": "remove clipboard",
 	"createdAt": {
 		"$date": "2020-03-25T10:18:50.713Z"
@@ -557,7 +557,7 @@
 	"_id": {
 		"$oid": "5ecb8069b33c50009236b565"
 	},
-	"state": "down",
+	"state": "up",
 	"name": "add-sync-start-permission",
 	"createdAt": {
 		"$date": "2020-04-16T10:21:00.933Z"
@@ -568,7 +568,7 @@
 	"_id": {
 		"$oid": "5ecb8069b33c50009236b566"
 	},
-	"state": "down",
+	"state": "up",
 	"name": "remove-student_edit-from-students",
 	"createdAt": {
 		"$date": "2020-04-27T13:08:26.485Z"

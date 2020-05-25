@@ -5,7 +5,7 @@
 	"name": "user",
 	"roles": [],
 	"updatedAt": {
-		"$date": "2020-05-25T08:23:05.868Z"
+		"$date": "2020-05-25T08:26:04.687Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -59,8 +59,7 @@
 		"TEAM_EDIT",
 		"TEAM_VIEW",
 		"TOOL_VIEW",
-		"TOPIC_VIEW",
-		"STUDENT_EDIT"
+		"TOPIC_VIEW"
 	],
 	"__v": 0
 },
@@ -70,7 +69,7 @@
 	},
 	"name": "administrator",
 	"updatedAt": {
-		"$date": "2020-05-25T08:23:05.905Z"
+		"$date": "2020-05-25T08:26:04.67Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -133,7 +132,7 @@
 	},
 	"name": "superhero",
 	"updatedAt": {
-		"$date": "2020-05-25T08:23:05.899Z"
+		"$date": "2020-05-25T08:26:04.685Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -183,7 +182,7 @@
 	},
 	"name": "teacher",
 	"updatedAt": {
-		"$date": "2020-05-25T08:23:05.873Z"
+		"$date": "2020-05-25T08:26:04.682Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
