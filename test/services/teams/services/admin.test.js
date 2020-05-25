@@ -72,33 +72,39 @@ describe('\'/teams/manage/admin\' service', () => {
 				total: 1,
 			};
 
-			expectedResult = [{
-				membersTotal: 1,
-				name: 'spinatenpower',
-				_id: teamId,
-				color: '#d32f2f',
-				desciption: 'Spintatenpower makes teams greate again',
-				createdAtMySchool: true,
-				hasMembersOfOtherSchools: false,
-				hasRocketChat: false,
-				createdAt,
-				ownerExist: true,
-				schools: [{
-					_id: sessionSchoolId,
-					name: 'Schiller-Oberschule',
-				}],
-				schoolMembers: [
-					{
-						role: 'teamowner',
-						user: {
-							_id: userId,
-							firstName: 'Hans',
-							lastName: 'Peter',
-							roles: ['lehrer'],
+			expectedResult = {
+				limit: 50,
+				skip: 0,
+				total: 1,
+				data:[{
+					membersTotal: 1,
+					name: 'spinatenpower',
+					_id: teamId,
+					color: '#d32f2f',
+					desciption: 'Spintatenpower makes teams greate again',
+					createdAtMySchool: true,
+					hasMembersOfOtherSchools: false,
+					hasRocketChat: false,
+					createdAt,
+					ownerExist: true,
+					schools: [{
+						_id: sessionSchoolId,
+						name: 'Schiller-Oberschule',
+					}],
+					schoolMembers: [
+						{
+							role: 'teamowner',
+							user: {
+								_id: userId,
+								firstName: 'Hans',
+								lastName: 'Peter',
+								roles: ['lehrer'],
+							},
 						},
-					},
-				],
-			}];
+					],
+				}],
+			}
+			
 		});
 
 
