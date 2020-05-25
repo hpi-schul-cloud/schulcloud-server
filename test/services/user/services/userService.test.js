@@ -196,6 +196,23 @@ describe('user service', () => {
 				expect(err.message).to.equal('You do not have valid permissions to access this.');
 			}
 		});
+
+		it('superhero can create admin', async () => {
+			const hero = await testObjects.createTestUser({ roles: ['superhero'] });
+			const { _id: schoolId } = await testObjects.createTestSchool();
+			const params = await testObjects.generateRequestParamsFromUser(hero);
+			const user = await app.service('users').create({
+				schoolId,
+				email: `${Date.now()}@testadmin.org`,
+				firstName: 'Max',
+				lastName: 'Tester',
+				roles: [
+					'administrator',
+				],
+			}, params);
+			expect(user).to.not.equal(undefined);
+			expect(user._id).to.not.equal(undefined);
+		});
 	});
 
 	describe('PATCH', () => {
