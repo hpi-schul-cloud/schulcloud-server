@@ -5,6 +5,7 @@ const {
 } = require('feathers-hooks-common');
 const { userModel } = require('../model');
 const { addDates: addConsentDate } = require('../hooks/consent');
+const { enableQuery, enableQueryAfter } = require('../../../hooks');
 
 const userModelHooks = {
 	before: {
@@ -14,6 +15,10 @@ const userModelHooks = {
 		create: [addConsentDate],
 		update: [addConsentDate],
 		patch: [addConsentDate],
+		remove: [enableQuery],
+	},
+	after: {
+		remove: [enableQueryAfter],
 	},
 };
 

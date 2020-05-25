@@ -12,6 +12,11 @@
 			"default": "example",
 			"description": "The API Key that the Calendar uses to resolve scopes. This should be removed with SC-3387"
 		},
+		"DISABLED_BRUTE_FORCE_CHECK": {
+			"type": "boolean",
+			"default": false,
+			"description": "To disabled the brute force prevention hooks for by authentication."
+		},
 		"SYNC_API_KEY": {
 			"type": "string",
 			"default": "example",
@@ -104,6 +109,15 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Feature toggle for TSP features."
+		},
+		"BLOCK_DISPOSABLE_EMAIL_DOMAINS": {
+			"type": "boolean",
+			"default": true,
+			"description": "Prevent use of disposable email addresses."
+		},
+		"ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS": {
+			"type": "string",
+			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
 		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
 			"type": "boolean",
@@ -250,6 +264,7 @@
 	"required": [
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
 		"STUDENT_TEAM_CREATION",
+		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST"
 	]
 }
