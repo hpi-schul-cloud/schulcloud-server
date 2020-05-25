@@ -6,6 +6,7 @@ const {
 } = require('../../../utils/redis');
 const { LOGIN_BLOCK_TIME: allowedTimeDifference } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
+
 const disabledBruteForceCheck = Configuration.get('DISABLED_BRUTE_FORCE_CHECK');
 
 const updateUsernameForLDAP = async (context) => {
