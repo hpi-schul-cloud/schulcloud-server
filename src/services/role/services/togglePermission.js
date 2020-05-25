@@ -14,9 +14,9 @@ const hooks = {
 
 
 class TogglePermission {
-	async patch(id, data, params) {
+	async create(data, params) {
 		const { roleName } = params.route;
-		const { toggle, permission } = params.query;
+		const { toggle, permission } = data;
 
 		const role = await Role.findOne({
 			name: roleName,
@@ -29,10 +29,10 @@ class TogglePermission {
 
 			switch (permission) {
 				case 'studentVisibility':
-					if (toggle === 'true' && !permissions.includes('STUDENT_LIST')) {
+					if (toggle && !permissions.includes('STUDENT_LIST')) {
 						permissions.push('STUDENT_LIST');
 						await role.updateOne({ permissions });
-					} else if (toggle === 'false') {
+					} else if (!toggle) {
 						await role.updateOne({ permissions: filterPermissions(permissions, 'STUDENT_LIST') });
 					}
 					break;
