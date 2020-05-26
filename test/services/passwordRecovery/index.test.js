@@ -8,20 +8,21 @@ const PORT = 0;
 
 describe('passwordRecovery service', () => {
 	let server;
+	let savedUser;
 	let savedAccount;
 	const recoveryUsername = 'recoveryuser@schul-cloud.org';
 
 	const newAccount = {
 		username: recoveryUsername,
 		password: '$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJACla',
-		userId: '59ad4c412b443a3a92910285',
 		activated: true,
 		createdAt: '2017-09-04T12:51:58.49Z',
 	};
 
 	before((done) => {
 		server = app.listen(PORT, async () => {
-			savedAccount = await testObjects.createTestAccount(newAccount);
+			savedUser = await testObjects.createTestUser();
+			savedAccount = await testObjects.createTestAccount(newAccount, null, savedUser);
 			await passwordRecoveryService.create({ username: recoveryUsername });
 			done();
 		});
