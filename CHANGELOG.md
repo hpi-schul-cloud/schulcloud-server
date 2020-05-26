@@ -15,6 +15,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+### Security
+- SC-4506 Secure Find User Route. Access user list by students is allowed only if they are eligible to create teams.   
+- SC-4506 Secure Get User Route. Read user details may only users with STUDENT_LIST or TEACHER_LIST permissions
 ### Removed
 
 
