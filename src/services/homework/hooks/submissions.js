@@ -8,27 +8,13 @@ const globalHooks = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const filterRequestedSubmissions = async (context) => {
-	let currentUser;
 	const currentUserId = context.params.account.userId;
-	try {
-		const userService = context.app.service('/users');
-		currentUser = await userService.get(currentUserId, {
-			query: {
-				$populate: 'roles',
-			},
-		});
-	} catch (err) {
-		return Promise.reject(new GeneralError({ message: "can't reach homework service" }));
-	}
-
-	const userRoles = currentUser.roles.map((r) => r.name);
 
 	// user is submitter
 	let permissionQuery = { studentId: currentUserId };
 
 	// user is team member
 	permissionQuery = { $or: [permissionQuery, { teamMembers: { $in: currentUserId } }] };
-
 
 	// user is in course group of the submission
 	try {
@@ -406,7 +392,6 @@ exports.before = () => ({
 	],
 	get: [
 		globalHooks.hasPermission('SUBMISSIONS_VIEW'),
-		iff(isProvider('external'), filterRequestedSubmissions),
 	],
 	create: [
 		globalHooks.hasPermission('SUBMISSIONS_CREATE'),
@@ -457,7 +442,7 @@ exports.before = () => ({
 exports.after = {
 	all: [],
 	find: [],
-	get: [], // [checkGetSubmissionViewPermission],
+	get: [checkGetSubmissionViewPermission],
 	create: [],
 	update: [],
 	patch: [],
