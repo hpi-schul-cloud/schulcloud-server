@@ -44,33 +44,54 @@ const filterRequestedSubmissions = async (context) => {
 		return Promise.reject(new GeneralError({ message: "can't reach course group service" }));
 	}
 
-	if (userRoles.includes('teacher')) {
-		permissionQuery = { $or: [permissionQuery, { teacherId: currentUserId }] };
-		try {
-			const courseService = context.app.service('/courses');
-			const accessilbeCourses = await courseService.find({
-				query: {
-					$or: [
-						{ teacherIds: {$in: [currentUserId]}},
-						{ substitutionIds: {$in: [currentUserId]}},
-					],
-				},
-			});
-			const accessilbeCourseIds = accessilbeCourses.data.map((c) => c._id);
-			const homeworkService = context.app.service('/homework');
-			const accessibleHomework = await homeworkService.find({
-				query: {
-					$or: [
-						{ teacherId: currentUserId },
-						{ courseId: { $in: accessilbeCourseIds } },
-					],
-				},
-			});
-			const accessibleHomeworkIds = accessibleHomework.data.map((h) => h._id);
-			permissionQuery = { $or: [permissionQuery, { homeworkId: { $in: accessibleHomeworkIds } }] };
-		} catch (err) {
-			return Promise.reject(new GeneralError({ message: "can't reach course service" }));
-		}
+	const courseService = context.app.service('/courses');
+	const homeworkService = context.app.service('/homework');
+
+	// user is enrolled in a course with public submissions
+	try {
+		const enrolledCourses = await courseService.find({
+			query: {
+				userIds: { $in: [currentUserId] },
+			},
+		});
+		const enrolledCourseIds = enrolledCourses.data.map((c) => c._id);
+		const accessibleHomework = await homeworkService.find({
+			query: {
+				$and: [
+					{ courseId: { $in: enrolledCourseIds } },
+					{ publicSubmissions: true },
+				],
+			},
+		});
+		const accessibleHomeworkIds = accessibleHomework.data.map((h) => h._id);
+		permissionQuery = { $or: [permissionQuery, { homeworkId: { $in: accessibleHomeworkIds } }] };
+	} catch (err) {
+		return Promise.reject(new GeneralError({ message: "can't reach course service" }));
+	}
+
+	// user is responsible for this homework
+	try {
+		const responsibleCourses = await courseService.find({
+			query: {
+				$or: [
+					{ teacherIds: { $in: [currentUserId] } },
+					{ substitutionIds: { $in: [currentUserId] } },
+				],
+			},
+		});
+		const accessilbeCourseIds = responsibleCourses.data.map((c) => c._id);
+		const accessibleHomework = await homeworkService.find({
+			query: {
+				$or: [
+					{ teacherId: currentUserId },
+					{ courseId: { $in: accessilbeCourseIds } },
+				],
+			},
+		});
+		const accessibleHomeworkIds = accessibleHomework.data.map((h) => h._id);
+		permissionQuery = { $or: [permissionQuery, { homeworkId: { $in: accessibleHomeworkIds } }] };
+	} catch (err) {
+		return Promise.reject(new GeneralError({ message: "can't reach course service" }));
 	}
 
 	const originalQuery = context.params.query || {};
