@@ -78,8 +78,16 @@ const filterRequestedSubmissions = async (context) => {
 		return Promise.reject(new GeneralError({ message: "can't reach course service" }));
 	}
 
+	// move populates and limit from original query to new query root
 	const originalQuery = context.params.query || {};
+	const queryPopulates = originalQuery.$populate;
+	const queryLimit = originalQuery.$limit;
+	delete originalQuery.$populate;
+	delete originalQuery.$limit;
 	const query = { $and: [originalQuery, permissionQuery] };
+	query.$populate = queryPopulates;
+	query.$limit = queryLimit;
+
 	context.params.query = query;
 
 	return context;
