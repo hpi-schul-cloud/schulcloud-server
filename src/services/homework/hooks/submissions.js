@@ -394,18 +394,6 @@ const checkGetSubmissionViewPermission = async (context) => {
 	throw new Forbidden();
 };
 
-const filterApplicableSubmissions = async (context) => {
-	const currentUserId = context.params.account.userId;
-	const submissions = context.result.data;
-
-	const filterSubmission = await Promise.all(submissions.map((submission)=> hasViewPermission(context, submission, currentUserId)));
-	const result = submissions.filter((_v, index) => filterSubmission[index]);
-
-	context.result.total = result.length;
-	context.result.data = result;
-	return Promise.resolve(context);
-};
-
 exports.before = () => ({
 	all: [authenticate('jwt'), stringifyUserId],
 	find: [
@@ -467,7 +455,7 @@ exports.before = () => ({
 exports.after = {
 	all: [],
 	find: [],
-	get: [checkGetSubmissionViewPermission],
+	get: [], // [checkGetSubmissionViewPermission],
 	create: [],
 	update: [],
 	patch: [],
