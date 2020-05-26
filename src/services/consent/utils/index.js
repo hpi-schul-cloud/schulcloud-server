@@ -9,14 +9,6 @@ const createConsentFilterQuery = (...status) => {
 	const firstConsentSwitchDate = new Date();
 	firstConsentSwitchDate.setFullYear(currentDate.getFullYear() - 14);
 
-	modifyDataForUserSchema(data) {
-		return {
-			consent: {
-				...data,
-			},
-		};
-	};
-
 	const createRequiredConsents = (...persons) => persons.reduce((person, current) => {
 		current[`consent.${person}.privacyConsent`] = true;
 		current[`consent.${person}.termsOfUseConsent`] = true;
