@@ -348,6 +348,7 @@ const createMultiDocumentAggregation = ({
 	limit = Number(limit);
 	// eslint-disable-next-line no-param-reassign
 	skip = Number(skip);
+	if (typeof match._id === 'string') match._id = ObjectId(match._id);
 
 	const selectSortDiff = Object.getOwnPropertyNames(sort || {}).filter((s) => !select.includes(s));
 	const aggregation = [];
