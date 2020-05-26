@@ -521,12 +521,12 @@ const filterResult = async (context) => {
 	const allowedAttributes = [
 		'_id', 'roles', 'schoolId', 'firstName', 'middleName', 'lastName',
 		'namePrefix', 'nameSuffix', 'discoverable', 'fullName',
-		'displayName', 'avatarInitials', 'avatarBackgroundColor', 'consentStatus', 'consent',
+		'displayName', 'avatarInitials', 'avatarBackgroundColor',
 	];
 	if (elevatedUser) {
 		const elevatedAttributes = [
 			'email', 'birthday', 'children', 'parents', 'updatedAt',
-			'createdAt', 'age', 'ldapDn',
+			'createdAt', 'age', 'ldapDn', 'consentStatus', 'consent',
 		];
 		allowedAttributes.push(...elevatedAttributes);
 	}
