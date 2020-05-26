@@ -28,7 +28,7 @@ module.exports = function () {
 	app.use('/consents', consentModelService);
 	app.service('/consents').hooks(consentHooks);
 
-	app.use('/consents/:type/users', new ConsentService());
+	// app.use('/consents/:type/users', new ConsentService());
 
 	/* ConsentVersion Model */
 	app.use('/consentVersions', service({
