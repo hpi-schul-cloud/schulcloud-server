@@ -160,7 +160,7 @@ const firstLogin = async (data, params, app) => {
 			}
 			updatedConsent = { ...updatedConsent, ...consent.parentConsents[0] };
 			updatedConsent = updateConsentDates(updatedConsent);
-			return app.service('consents').patch(user._id, { parentConsents: [updatedConsent] });
+			return app.service('consents').patch(consent._id, { parentConsents: [updatedConsent] });
 		});
 	}
 

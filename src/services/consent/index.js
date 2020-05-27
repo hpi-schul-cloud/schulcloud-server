@@ -22,7 +22,7 @@ module.exports = function () {
 	/* Consent Model */
 
 	// REPLACEMENT FOR CURRENT consent ROUTE
-	// app.use('/consents', new depricated.ConsentService());
+	// app.use('/consents', new deprecated.ConsentService());
 	// app.service('consents').hooks(depircated.consentHooks);
 
 	app.use('/consents', consentModelService);
