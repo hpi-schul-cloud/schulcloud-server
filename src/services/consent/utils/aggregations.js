@@ -31,7 +31,7 @@ const stageBaseFilter = (aggregation, attr, value) => {
 };
 
 /**
- * Convert a select array to an object for aggregaitons
+ * Convert a "select"-array to an object to handle it with aggregaitons
  * @param {Array} select
  */
 const convertSelect = (select) => select.reduce((acc, curr) => ({ ...acc, [curr]: 1 }), {});
