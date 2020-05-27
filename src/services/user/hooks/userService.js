@@ -516,8 +516,9 @@ const filterResult = async (context) => {
 	if (userCallingHimself || userIsSuperhero) {
 		return context;
 	}
+
+	// TODO: check if elevatedUser can remove and handled by the amdin route
 	const elevatedUser = await hasPermissionNoHook(context, context.params.account.userId, 'STUDENT_EDIT');
-	// TODO: allow consent only to the user owns it
 	const allowedAttributes = [
 		'_id', 'roles', 'schoolId', 'firstName', 'middleName', 'lastName',
 		'namePrefix', 'nameSuffix', 'discoverable', 'fullName',
