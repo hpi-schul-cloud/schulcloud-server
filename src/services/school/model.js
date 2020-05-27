@@ -45,8 +45,18 @@ const customYearSchema = new Schema({
 	endDate: { type: Date, required: true },
 });
 
-const schoolSchema = new Schema({
+const schoolSchemaNotAuthenticated = new Schema({
 	name: { type: String, required: true },
+	createdAt: { type: Date, default: Date.now },
+	updatedAt: { type: Date, default: Date.now },
+	federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },
+	purpose: { type: String },
+}, {
+	timestamps: true,
+})
+
+const schoolSchema = new Schema({
+	// name: { type: String, required: true },
 	address: { type: Object },
 	fileStorageType: { type: String, enum: fileStorageTypes },
 	schoolGroupId: { type: Schema.Types.ObjectId, ref: 'schoolGroup' },
@@ -57,16 +67,16 @@ const schoolSchema = new Schema({
 		enum: ['', 'school', 'schoolGroup'],
 	},
 	systems: [{ type: Schema.Types.ObjectId, ref: 'system' }],
-	federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },
-	createdAt: { type: Date, default: Date.now },
+	// federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },
+	// createdAt: { type: Date, default: Date.now },
 	ldapSchoolIdentifier: { type: String },
-	updatedAt: { type: Date, default: Date.now },
+	// updatedAt: { type: Date, default: Date.now },
 	experimental: { type: Boolean, default: false },
 	pilot: { type: Boolean, default: false },
 	currentYear: { type: Schema.Types.ObjectId, ref: 'year' },
 	customYears: [{ type: customYearSchema }],
 	logo_dataUrl: { type: String },
-	purpose: { type: String },
+	// purpose: { type: String },
 	rssFeeds: [{ type: rssFeedSchema }],
 	features: {
 		type: [String],
@@ -83,14 +93,12 @@ const schoolSchema = new Schema({
 	storageProvider: { type: mongoose.Schema.Types.ObjectId, ref: 'storageprovider' },
 	...externalSourceSchema,
 }, {
-	timestamps: true,
+	discriminatorKey: '_isAuthenticated',
 });
-
 
 const schoolGroupSchema = new Schema({
 	name: { type: String, required: true },
 }, { timestamps: true });
-
 
 /**
  * Determine if school is in maintenance mode ("Schuljahreswechsel"):
@@ -123,18 +131,21 @@ const gradeLevelSchema = new Schema({
 });
 
 enableAuditLog(schoolSchema);
+enableAuditLog(schoolSchemaNotAuthenticated);
 enableAuditLog(schoolGroupSchema);
 enableAuditLog(yearSchema);
 enableAuditLog(gradeLevelSchema);
 
-const schoolModel = mongoose.model('school', schoolSchema);
+const schoolNotAuthenticatedModel = mongoose.model('school', schoolSchemaNotAuthenticated);
+const schoolAuthenticatedModel = schoolNotAuthenticatedModel.discriminator('schoolAuthenticated', schoolSchema);
 const schoolGroupModel = mongoose.model('schoolGroup', schoolGroupSchema);
 const yearModel = mongoose.model('year', yearSchema);
 const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 
 module.exports = {
 	SCHOOL_FEATURES,
-	schoolModel,
+	schoolAuthenticatedModel,
+	schoolNotAuthenticatedModel,
 	schoolGroupModel,
 	yearModel,
 	customYearSchema,
