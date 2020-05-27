@@ -3,10 +3,11 @@ const request = require('request-promise-native');
 const app = require('../../src/app');
 const getAllRoutes = require('../services/helpers/getAllRoutes');
 const { whitelist, ignoreList } = require('./whitelist');
-const { API_HOST } = require('../../config/globals');
 
 const { expect } = chai;
 const PORT = 5254;
+
+const sleep = (time) => new Promise((res) => setTimeout(res, time));
 
 const isOnWhitelist = (endpoint, method, status) => {
 	if (endpoint in whitelist) {
@@ -60,7 +61,12 @@ const createTests = (token) => {
 		describe(`${route}`, () => {
 			for (let method of detail.methods) {
 				// test every endpoint of route
-				it(`${method}`, async () => {
+				it(`${method}`, async function run() {
+					// needed for post authentication otherwise too many requests error
+					if (route === 'authentication' && method === 'post') {
+						this.timeout(20000);
+						await sleep(15000);
+					}
 					if (method === 'find') { method = 'get'; }
 
 					const options = {
@@ -85,11 +91,5 @@ const createTests = (token) => {
 };
 
 describe('Call routes without jwt', () => createTests());
-
-// describe('Call routes with empty jwt', () => {
-// 	createTests('');
-// });
-
-// describe('Call routes with invalid jwt', () => {
-// 	createTests('eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJhY2Nv');
-// });
+describe('Call routes with empty jwt', () => createTests(''));
+describe('Call routes with invalid jwt', () => createTests('eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJhY2Nv'));
