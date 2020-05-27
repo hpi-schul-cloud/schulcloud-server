@@ -4,7 +4,7 @@ const { Forbidden } = require('@feathersjs/errors');
 const { permitGroupOperation } = require('../../../hooks');
 const { ObjectId } = require('../../../helper/compare');
 const globalHooks = require('../../../hooks');
-const { encryptSecret, decryptSecret }  = require('./searchUserPasswordEncryption');
+const { encryptSecret, decryptSecret } = require('./searchUserPasswordEncryption');
 
 const restrictToCurrentSchool = (context) => {
 	const systemids = context.params.school.systems || [];
