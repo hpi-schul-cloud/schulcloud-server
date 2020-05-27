@@ -1,12 +1,26 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
-const { hasPermission } = require('../../../hooks');
+const { iff, isProvider } = require('feathers-hooks-common');
+const { BadRequest, Forbidden, NotFound } = require('@feathersjs/errors');
 const { SC_SHORT_TITLE, HOST } = require('../../../../config/globals');
+
+const {
+	validPassword,
+	blockThirdParty,
+	sanitizeData,
+	blockDisposableEmail,
+	trimPassword,
+	hasPermission,
+} = require('../hooks/utils');
+
 const {
 	KEYWORDS,
-	lookup,
+	lookupByEntryId,
+	lookupByUserId,
 	sendMail,
 	getUser,
+	deleteEntry,
+	createQuarantinedObject,
+	getQuarantinedObject,
 } = require('../utils');
 
 const buildMail = (user, activationLink) => {
@@ -20,7 +34,6 @@ Hallo ${user.firstName},
 		html: '',
 	};
 
-
 	return {
 		email: user.email,
 		subject,
@@ -28,31 +41,52 @@ Hallo ${user.firstName},
 	};
 };
 
-class EMailAdresseActivationService {
-	async create(data, params) {
-		let entry;
+const keyword = KEYWORDS.E_MAIL_ADDRESS;
 
+class EMailAdresseActivationService {
+	async find(params) {
+		const { userId } = params.authentication.payload;
+		const entry = await lookupByUserId(this, userId, userId, keyword);
+		if (entry) {
+			const email = getQuarantinedObject(keyword, entry.quarantinedObject);
+			return {
+				keyword: entry.keyword,
+				email,
+			};
+		}
+		return {};
+	}
+
+	async create(data, params) {
+		if (!data || !data.email || !data.password) throw new BadRequest('Missing information');
 		const user = await getUser(this, params.account.userId);
 
-		// check password
-
 		// check if entry already exists
-		entry = await lookup(this, params.account.userId, undefined, KEYWORDS.E_MAIL_ADDRESS);
+		let entry;
+		entry = await lookupByUserId(this, user._id, params.account.userId, keyword);
 		if (entry) {
-			// resend email
-			const link = `${HOST}/activation/email/${entry._id}`;
-			const mail = buildMail(user, link);
-			await sendMail(this, mail, entry._id);
-			return;
+			// create new entry when email changed
+			const email = getQuarantinedObject(keyword, entry.quarantinedObject);
+			if (email !== data.email) {
+				await deleteEntry(this, entry._id);
+				entry = undefined;
+			} else {
+				// resend email
+				const link = `${HOST}/activation/email/${entry._id}`;
+				const mail = buildMail(user, link);
+				await sendMail(this, mail, entry);
+				return;
+			}
 		}
 
 		// create new entry
+		const quarantinedObject = createQuarantinedObject(keyword, data.email);
 		try {
 			entry = await this.app.service('activationModel')
 				.create({
 					account: params.account.userId,
-					keyword: KEYWORDS.E_MAIL_ADDRESS,
-					quarantinedObject: { email: 'lehrer@schul-cloud.com' },
+					keyword,
+					quarantinedObject,
 				});
 		} catch (error) {
 			throw new Error('Could not create a quarantined object.');
@@ -61,20 +95,23 @@ class EMailAdresseActivationService {
 		// send email
 		const link = `${HOST}/activation/email/${entry._id}`;
 		const mail = buildMail(user, link);
-		await sendMail(this, mail, entry._id);
+		await sendMail(this, mail, entry);
 	}
 
 	async update(id, data, params) {
-		if (!id) throw new BadRequest('activation link invalid');
-		const entry = await lookup(this, undefined, id, KEYWORDS.E_MAIL_ADDRESS);
+		if (!id) throw new NotFound('activation link invalid');
 		const user = await getUser(this, params.account.userId);
+		const entry = await lookupByEntryId(this, user._id, id, keyword);
 
-		if (!user) throw new BadRequest('activation link invalid');
-		if (!entry) throw new BadRequest('activation link invalid');
-		if (entry.account.toString() !== user._id.toString()) throw new Forbidden('Not allowed');
+		if (!user) throw new NotFound('activation link invalid');
+		if (!entry) throw new NotFound('activation link invalid');
 		if (Date.parse(entry.updatedAt) + 1000 * 60 * 60 * 2 < Date.now()) {
-			await this.app.service('activationModel').remove({ _id: entry._id });
+			await deleteEntry(this, entry._id);
 			throw new BadRequest('activation link expired');
+		}
+		if (!entry.valid) {
+			await deleteEntry(this, entry._id);
+			throw new BadRequest('activation link invalid');
 		}
 
 		const account = await this.app.service('/accounts').find({
@@ -82,18 +119,27 @@ class EMailAdresseActivationService {
 				userId: params.account.userId,
 			},
 		});
-		if ((account || []).length !== 1) throw new Forbidden('Not allowed');
-		if (!entry.quarantinedObject.email || entry.quarantinedObject.email instanceof String) {
-			await this.app.service('activationModel').remove({ _id: entry._id });
+		if ((account || []).length !== 1) throw new Forbidden('Not authorized');
+
+		const email = getQuarantinedObject(keyword, entry.quarantinedObject);
+		if (!email || !(email instanceof String)) {
+			await deleteEntry(this, entry._id);
 			throw new Error('Link incorrectly constructed and will be removed');
 		}
 
 		// update user and account
-		await this.app.service('users').patch(account[0].userId, { email: entry.quarantinedObject.email });
-		await this.app.service('/accounts').patch(account[0]._id, { username: entry.quarantinedObject.email });
+		await this.app.service('users').patch(account[0].userId, { email });
+		await this.app.service('/accounts').patch(account[0]._id, { username: email });
+
+		// set activation link as consumed
+		await this.app.service('activationModel').update({ _id: entry._id }, {
+			$set: {
+				valid: false,
+			},
+		});
 
 		// delete entry
-		await this.app.service('activationModel').remove({ _id: entry._id });
+		await deleteEntry(this, entry._id);
 	}
 
 	setup(app) {
@@ -107,6 +153,18 @@ const EMailAdresseActivationHooks = {
 			authenticate('jwt'),
 			hasPermission(['ACCOUNT_EDIT']),
 		],
+		find: [],
+		get: [],
+		create: [
+			blockThirdParty,
+			sanitizeData,
+			blockDisposableEmail('email'),
+			trimPassword,
+			iff(isProvider('external'), validPassword),
+		],
+		update: [],
+		patch: [],
+		remove: [],
 	},
 };
 

@@ -1,28 +1,79 @@
+const { Forbidden } = require('@feathersjs/errors');
+const { equal: equalIds } = require('../../helper/compare').ObjectId;
+
 const KEYWORDS = {
 	E_MAIL_ADDRESS: 'eMailAddress',
 };
 
-/**
- * Will lookup entry in a activation by userId or entryId
- * @param {*} ref 				this
- * @param {ObjectId} userId		ObjectId of User (userId)
- * @param {ObjectId} entryId	ObjectId of entry
- * @param {String} keyword		Keyword
- */
-const lookup = async (ref, userId, entryId, keyword) => {
-	let entry;
-	if (userId) {
-		entry = await ref.app.service('activationModel').find({ query: { account: userId } });
-	} else if (entryId) {
-		entry = await ref.app.service('activationModel').find({ query: { _id: entryId } });
-	} else {
-		throw SyntaxError('userId or entryId required!');
-	}
+const createQuarantinedObject = (keyword, payload) => {
+	switch (keyword) {
+		case KEYWORDS.E_MAIL_ADDRESS:
+			return {
+				email: payload,
+			};
 
+		default:
+			throw new Error(`No pattern defined for ${keyword}`);
+	}
+};
+
+const getQuarantinedObject = (keyword, quarantinedObject) => {
+	switch (keyword) {
+		case KEYWORDS.E_MAIL_ADDRESS:
+			return quarantinedObject.email;
+
+		default:
+			throw new Error(`No dissolution defined for ${keyword}`);
+	}
+};
+
+const deleteEntry = async (ref, entryId) => {
+	try {
+		await ref.app.service('activationModel').remove({ _id: entryId });
+	} catch (error) {
+		/* eslint-disable-next-line */
+		console.error(`Entry (${entryId}) could not be removed from the database!`);
+	}
+};
+
+const lookupEntry = (requestingId, entry, keyword) => {
 	if ((entry || []).length === 1 && entry[0].keyword === keyword) {
+		if (!equalIds(entry[0].account, requestingId)) throw new Forbidden('Not authorized');
 		return entry[0];
 	}
 	return null;
+};
+
+/**
+ * Will lookup entry in a activation by userId
+ * @param {*} ref 					this
+ * @param {ObjectId} requestingId	ObjectId of User requesting data
+ * @param {ObjectId} userId			ObjectId of User (userId)
+ * @param {String} keyword			Keyword
+ */
+const lookupByUserId = async (ref, requestingId, userId, keyword) => {
+	if (!requestingId) throw new Forbidden('Not authorized');
+	if (!userId) throw SyntaxError('userId required!');
+	if (!keyword) throw SyntaxError('keyword required!');
+
+	const entry = await ref.app.service('activationModel').find({ query: { account: userId } });
+	return lookupEntry(requestingId, entry, keyword);
+};
+
+/**
+ * Will lookup entry in a activation by entryId
+ * @param {*} ref 					this
+ * @param {ObjectId} requestingId	ObjectId of User requesting data
+ * @param {ObjectId} entryId		ObjectId of entry
+ * @param {String} keyword			Keyword
+ */
+const lookupByEntryId = async (ref, requestingId, entryId, keyword) => {
+	if (!requestingId) throw new Forbidden('Not authorized');
+	if (!entryId) throw SyntaxError('entryId required!');
+	if (!keyword) throw SyntaxError('keyword required!');
+
+	const entry = await ref.app.service('activationModel').find({ query: { _id: entryId } });
+	return lookupEntry(requestingId, entry, keyword);
 };
 
 /**
@@ -32,21 +83,27 @@ const lookup = async (ref, userId, entryId, keyword) => {
  * @param {Object} mail			{email, subject, content}
  * @param {ObjectId} entryId	ObjectId of entry
  */
-const sendMail = async (ref, mail, entryId) => {
-	if (!mail || !mail.email || !mail.subject || !mail.content || !entryId) throw SyntaxError('missing parameters');
-	await ref.app.service('/mails')
-		.create({
-			email: mail.email,
-			subject: mail.subject,
-			content: mail.content,
-		});
+const sendMail = async (ref, mail, entry) => {
+	if (!mail || !mail.email || !mail.subject || !mail.content || !entry) throw SyntaxError('missing parameters');
 
-	await ref.app.service('activationModel').update({ _id: entryId }, {
-		$set: {
-			updatedAt: Date.now(),
-			mailSend: true,
-		},
-	});
+	try {
+		await ref.app.service('/mails')
+			.create({
+				email: mail.email,
+				subject: mail.subject,
+				content: mail.content,
+			});
+
+		await ref.app.service('activationModel').update({ _id: entry._id }, {
+			$set: {
+				updatedAt: Date.now(),
+				mailSend: true,
+			},
+		});
+	} catch (error) {
+		if (!entry.mailSend) deleteEntry(ref, entry._id);
+		throw new Error('Can not send mail with activation link');
+	}
 };
 
 const getUser = async (ref, userId) => {
@@ -54,13 +111,13 @@ const getUser = async (ref, userId) => {
 	return user;
 };
 
-const deleteEntry = async (ref, entryId) => {
-
-};
-
 module.exports = {
 	KEYWORDS,
-	lookup,
+	lookupByUserId,
+	lookupByEntryId,
 	sendMail,
 	getUser,
+	deleteEntry,
+	createQuarantinedObject,
+	getQuarantinedObject,
 };

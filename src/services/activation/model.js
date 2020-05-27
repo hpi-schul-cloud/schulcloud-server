@@ -8,7 +8,7 @@ const { KEYWORDS } = require('./utils');
 const activationSchema = new Schema({
 	_id: {
 		type: ShortId,
-		len: 24,
+		len: 64,
 		base: 64,
 		alphabet: undefined,
 		retries: 20,
@@ -17,6 +17,7 @@ const activationSchema = new Schema({
 	keyword: { type: String, required: true, enum: Object.values(KEYWORDS) },
 	quarantinedObject: { type: Object, required: true },
 	mailSend: { type: Boolean, default: false },
+	valid: { type: Boolean, default: true },
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, expires: '2h', default: Date.now },
 });
