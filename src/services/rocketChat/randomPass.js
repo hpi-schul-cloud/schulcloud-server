@@ -1,14 +1,14 @@
-const rnd = (m) => Math.floor(Math.random() * Math.floor(m));
+const { getRandomInt } = require('../../utils/randomNumberGenerator');
 
-const rnd36 = () => (rnd(36)).toString(36);
+const rnd36 = () => (getRandomInt(35)).toString(36);
 
 const rndSpecial = () => {
 	const c = ['!', '$', '.'];
-	return c[rnd(c.length)];
+	return c[getRandomInt(c.length - 1)];
 };
 
 const rndChar = () => {
-	const x = rnd(10);
+	const x = getRandomInt(9);
 	if (x < 3) return rnd36();
 	if (x < 6) return rnd36().toLocaleLowerCase();
 	if (x < 9) return rnd36().toLocaleUpperCase();
@@ -17,7 +17,7 @@ const rndChar = () => {
 
 const generatePass = (m) => {
 	let pass = '';
-	for (let i = 0; i < m; i++) {
+	for (let i = 0; i < m; i += 1) {
 		pass += rndChar();
 	}
 	return pass;
@@ -25,7 +25,7 @@ const generatePass = (m) => {
 
 const generateSuffix = (m) => {
 	let suffix = '';
-	for (let i = 0; i < m; i++) {
+	for (let i = 0; i < m; i += 1) {
 		suffix += rnd36();
 	}
 	return suffix;

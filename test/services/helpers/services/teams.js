@@ -10,11 +10,11 @@ const createTeamUser = async (userId, schoolId, roleName = 'teammember') => {
 	return (new teamUserModel({ role: roleId, schoolId, userId }))._doc;
 };
 
-const createTeam = (opt) => async (owner) => teamsModel.create({
+const createTeam = () => async (owner) => teamsModel.create({
 	name: `${Date.now()}_test`,
-	schoolId: opt.schoolId,
-	schoolIds: [opt.schoolId],
-	userIds: [await createTeamUser(owner._id, opt.schoolId, 'teamowner')],
+	schoolId: owner.schoolId,
+	schoolIds: [owner.schoolId],
+	userIds: [await createTeamUser(owner._id, owner.schoolId, 'teamowner')],
 }).then((team) => {
 	createdTeamIds.push(team._id.toString());
 	return team._doc;

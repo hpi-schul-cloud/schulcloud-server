@@ -30,7 +30,12 @@ exports.before = {
 	all: [],
 	find: [],
 	get: [hooks.disallow('external')], // handled by redirection middleware
-	create: [authenticate('jwt'), globalHooks.hasPermission('LINK_CREATE'), preventDuplicates],
+	create: [
+		authenticate('jwt'),
+		globalHooks.hasPermission('LINK_CREATE'),
+    preventDuplicates,
+		globalHooks.blockDisposableEmail('toHash'),
+	],
 	update: [hooks.disallow()],
 	patch: [hooks.disallow('external')],
 	remove: [globalHooks.ifNotLocal(hooks.disallow())],

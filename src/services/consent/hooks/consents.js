@@ -1,7 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
+const { modifyDataForUserSchema } = require('../utils');
 
-const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../config');
+const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../../../config/globals');
 
 // TODO: after hook for get that checks access.
 // TODO: rethink security, due to no schoolId we can't restrict anything.
@@ -50,11 +51,22 @@ const addDates = (hook) => {
 	}
 };
 
-const mapInObjectToArray = (hook) => {
-	if (((hook.params.query || {}).userId || {}).$in && !Array.isArray(((hook.params.query || {}).userId || {}).$in)) {
-		hook.params.query.userId.$in = Object.values(hook.params.query.userId.$in);
+/**
+ * check if userId is set and set it to an empty $in clause if not
+ * if userId.$in is an object convert it to an array
+ * @param {*} context
+ */
+const setUserIdToCorrectForm = (context) => {
+	if (!context.params.query) {
+		context.params.query = {};
 	}
-	return hook;
+	if (!context.params.query.userId) {
+		context.params.query.userId = {};
+		context.params.query.userId.$in = [];
+	} else if (context.params.query.userId.$in && !Array.isArray(context.params.query.userId.$in)) {
+		context.params.query.userId.$in = Object.values(context.params.query.userId.$in);
+	}
+	return context;
 };
 
 const checkExisting = (hook) => hook.app.service('consents').find({ query: { userId: hook.data.userId } })
@@ -215,17 +227,29 @@ const addConsentsStatus = (hook) => {
 	}
 };
 
+// TODO: remove at next version
+const writeConsentToUser = (context) => {
+	const { data, app } = context;
+	app.service('usersModel').patch(data.userId, modifyDataForUserSchema(data));
+};
+
+const patchConsentToUser = async (context) => {
+	const { data, app, id } = context;
+	const consent = await app.service('consents').get(id);
+	app.service('usersModel').patch(consent.userId, modifyDataForUserSchema(data));
+};
+
 exports.before = {
 	all: [],
 	find: [
 		authenticate('jwt'),
 		globalHooks.ifNotLocal(restrictToUserOrRole),
-		mapInObjectToArray,
+		setUserIdToCorrectForm,
 	],
 	get: [authenticate('jwt')],
-	create: [addDates, checkExisting],
-	update: [authenticate('jwt'), addDates],
-	patch: [authenticate('jwt'), addDates],
+	create: [addDates, checkExisting, writeConsentToUser],
+	update: [authenticate('jwt'), addDates, writeConsentToUser],
+	patch: [authenticate('jwt'), addDates, patchConsentToUser],
 	remove: [authenticate('jwt')],
 };
 

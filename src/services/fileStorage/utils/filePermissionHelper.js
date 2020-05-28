@@ -39,8 +39,9 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 			rolesToTest = rolesToTest.concat(roleIndex[roleId].roles || []);
 		}
 
+		// deprecated: author check via file.permissions[0].refId is deprecated and will be removed in the next release
 		const { role: creatorRole } = file.owner.userIds
-			.find((_) => equalIds(_.userId, file.permissions[0].refId));
+			.find((_) => equalIds(_.userId, file.creator || file.permissions[0].refId));
 
 		const findRole = (roleId) => (roles) => roles
 			.findIndex((r) => equalIds(r._id, roleId)) > -1;
@@ -86,7 +87,12 @@ const checkPermissions = (permission) => async (user, file) => {
 		return Promise.resolve(true);
 	}
 
-	const submissionPromise = Submission.findOne({ fileIds: fileObject._id }).lean().exec();
+	const submissionPromise = Submission.findOne({
+		$or: [
+			{ fileIds: fileObject._id },
+			{ gradeFileIds: fileObject._id },
+		],
+	}).lean().exec();
 	const homeworkPromise = Homework.findOne({ fileIds: fileObject._id }).populate('courseId').lean().exec();
 
 	const [submission, homework] = await Promise.all([submissionPromise, homeworkPromise]);

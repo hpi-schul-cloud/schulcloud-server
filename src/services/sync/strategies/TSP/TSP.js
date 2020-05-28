@@ -14,8 +14,10 @@ const SIGNATURE_KEY = Configuration.get('TSP_API_SIGNATURE_KEY');
 const BASE_URL = Configuration.get('TSP_API_BASE_URL');
 const CLIENT_ID = Configuration.get('TSP_API_CLIENT_ID');
 const CLIENT_SECRET = Configuration.get('TSP_API_CLIENT_SECRET');
-const TOKEN_ISS = process.env.SC_DOMAIN || 'schulcloud-thueringen.de';
-const TOKEN_SUB = process.env.HOST || 'https://schulcloud-thueringen.de';
+const {
+	HOST,
+	SC_DOMAIN,
+} = require('../../../../../config/globals');
 
 const ENCRYPTION_OPTIONS = { alg: 'dir', enc: 'A128CBC-HS256' };
 const SIGNATURE_OPTIONS = { alg: 'HS512' };
@@ -156,9 +158,9 @@ class TspApi {
 		this.lastTokenExpires = issueDate + lifetime;
 		const payload = JSON.stringify({
 			apiClientSecret: CLIENT_SECRET,
-			iss: TOKEN_ISS,
+			iss: SC_DOMAIN,
 			aud: BASE_URL,
-			sub: TOKEN_SUB,
+			sub: HOST,
 			exp: issueDate + lifetime,
 			iat: issueDate,
 			jti: uuid(),
@@ -205,6 +207,7 @@ module.exports = {
 	TspApi,
 	config: {
 		FEATURE_ENABLED: Configuration.get('FEATURE_TSP_ENABLED'),
+		FEATURE_AUTO_CONSENT: Configuration.get('FEATURE_TSP_AUTO_CONSENT_ENABLED'),
 		BASE_URL,
 	},
 	getUsername,

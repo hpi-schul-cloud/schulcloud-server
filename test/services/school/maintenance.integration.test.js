@@ -3,13 +3,13 @@ const chaiAsPromised = require('chai-as-promised');
 const { ObjectId } = require('mongoose').Types;
 const { Forbidden } = require('@feathersjs/errors');
 
-const app = require('./../../../src/app');
+const app = require('../../../src/app');
 const { cleanup } = require('../helpers/testObjects')(app);
-const { create: createSchool } = require('./../helpers/services/schools')(app);
-const { generateRequestParamsFromUser } = require('./../helpers/services/login')(app);
-const { create: createUser } = require('./../helpers/services/users')(app);
-const { create: createSystem } = require('./../helpers/services/testSystem')(app);
-const { create: createYear } = require('./../helpers/services/years');
+const { create: createSchool } = require('../helpers/services/schools')(app);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const { create: createUser } = require('../helpers/services/users')(app);
+const { create: createSystem } = require('../helpers/services/testSystem')(app);
+const { create: createYear } = require('../helpers/services/years');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;

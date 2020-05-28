@@ -21,9 +21,9 @@ describe('help documents service', () => {
 		server = app.listen(0, done);
 	});
 
-	after((done) => {
-		server.close(done);
-		cleanup;
+	after(async () => {
+		await cleanup();
+		await server.close();
 	});
 
 	it('registered the help documents service', () => {
@@ -87,10 +87,8 @@ describe('help documents service', () => {
 		expect(Array.isArray(response)).to.equal(true);
 		expect(response.length).to.equal(2);
 		response.forEach((element) => {
-			/* eslint-disable no-underscore-dangle */
-			expect(element.title).to.equal(data[element.__index].title);
-			expect(element.content).to.equal(data[element.__index].content);
-			/* eslint-enable no-underscore-dangle */
+			expect(element.title).to.equal(element.title);
+			expect(element.content).to.equal(element.content);
 		});
 		await helpDocumentsModel.remove({ _id: helpDocument._id });
 	});
@@ -122,10 +120,8 @@ describe('help documents service', () => {
 		expect(Array.isArray(response)).to.equal(true);
 		expect(response.length).to.equal(3);
 		response.forEach((element) => {
-			/* eslint-disable no-underscore-dangle */
-			expect(element.title).to.equal(data[element.__index].title);
-			expect(element.content).to.equal(data[element.__index].content);
-			/* eslint-enable no-underscore-dangle */
+			expect(element.title).to.equal(element.title);
+			expect(element.content).to.equal(element.content);
 		});
 		await helpDocumentsModel.remove({ _id: helpDocument._id });
 	});

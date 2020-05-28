@@ -12,12 +12,13 @@ describe('handleAutoLogout hook', function test() {
 	let redisHelper;
 	let configBefore;
 	let app;
+	let server;
 	let testObjects;
 
 
 	before(async () => {
 		configBefore = Configuration.toObject(); // deep copy current config
-		Configuration.set('REDIS_URI', '//validHost:6379');
+		Configuration.set('REDIS_URI', '//validHost:3333');
 		Configuration.set('JWT_TIMEOUT_SECONDS', 7200);
 
 		mockery.enable({
@@ -39,10 +40,10 @@ describe('handleAutoLogout hook', function test() {
 		fut = require('../src/app.hooks').handleAutoLogout;
 		/* eslint-enable global-require */
 		redisHelper.initializeRedisClient();
+		server = await app.listen(0);
 	});
 
 	after(async () => {
-		Configuration.parse(configBefore); // reset config to before state
 		mockery.deregisterAll();
 		mockery.disable();
 		await testObjects.cleanup();
@@ -50,12 +51,14 @@ describe('handleAutoLogout hook', function test() {
 		delete require.cache[require.resolve('../src/app')];
 		delete require.cache[require.resolve('./services/helpers/testObjects')];
 		delete require.cache[require.resolve('../src/app.hooks')];
+		Configuration.reset(configBefore);
+		await server.close();
 	});
 
 	it('whitelisted JWT is accepted and extended', async () => {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const redisIdentifier = redisHelper.getRedisIdentifier(params.authentication.accessToken);
+		const { redisIdentifier } = redisHelper.extractDataFromJwt(params.authentication.accessToken);
 		await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', 1000);
 		const result = await fut({ params });
 		expect(result).to.not.equal(undefined);
@@ -66,7 +69,7 @@ describe('handleAutoLogout hook', function test() {
 	it('not whitelisted JWT is rejected', async () => {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const redisIdentifier = redisHelper.getRedisIdentifier(params.authentication.accessToken);
+		const { redisIdentifier } = redisHelper.extractDataFromJwt(params.authentication.accessToken);
 		await redisHelper.redisDelAsync(redisIdentifier);
 		try {
 			await fut({ params });
@@ -83,7 +86,7 @@ describe('handleAutoLogout hook', function test() {
 		Configuration.set('JWT_WHITELIST_ACCEPT_ALL', true);
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const redisIdentifier = redisHelper.getRedisIdentifier(params.authentication.accessToken);
+		const { redisIdentifier } = redisHelper.extractDataFromJwt(params.authentication.accessToken);
 		await redisHelper.redisDelAsync(redisIdentifier);
 		const result = await fut({ params });
 		expect(result).to.have.property('params');

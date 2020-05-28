@@ -43,9 +43,7 @@ backup/*
 
 # local dev secrets
 config/secrets.json
-
-#clipboard uploads
-uploads/*
+.env
 
 # version info
 version

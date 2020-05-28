@@ -9,11 +9,61 @@
 			"$oid": "0000d186816abba584714c90"
 		}
 	],
-	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"updatedAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
+	},
+	"createdAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
+	},
 	"__v": 0,
-	"currentYear": { "$oid": "5d2ee323d14ce9844e33f51e"},
+	"currentYear": {
+		"$oid": "5d2ee323d14ce9844e33f51e"
+	},
 	"purpose": "demo"
+},
+{
+	"_id": {
+		"$oid": "599ec0bb8e4e364ec18ff46c"
+	},
+	"updatedAt": {
+		"$date": "2017-08-28T08:56:19.717Z"
+	},
+	"name": "Demo Schule",
+	"federalState": {
+		"$oid": "0000b186816abba584714c53"
+	},
+	"createdAt": {
+		"$date": "2017-08-24T12:04:11.721Z"
+	},
+	"systems": [],
+	"__v": 0,
+	"fileStorageType": "awsS3",
+	"currentYear": {
+		"$oid": "5d2ee323d14ce9844e33f51e"
+	},
+	"purpose": "demo"
+},
+{
+	"_id": {
+		"$oid": "598ec0bc8e4e364ec18ff46d"
+	},
+	"updatedAt": {
+		"$date": "2018-11-09T11:09:19.717Z"
+	},
+	"name": "Expertenschule",
+	"federalState": {
+		"$oid": "0000b186816abba584714c53"
+	},
+	"createdAt": {
+		"$date": "2018-11-09T10:04:11.721Z"
+	},
+	"systems": [],
+	"__v": 0,
+	"fileStorageType": "awsS3",
+	"currentYear": {
+		"$oid": "5d2ee323d14ce9844e33f51e"
+	},
+	"purpose": "expert"
 },
 {
 	"_id": {
@@ -35,36 +85,20 @@
 			"$oid": "0000d186816abba584714c90"
 		}
 	],
-	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
+	"updatedAt": {
+		"$date": "2020-05-11T15:20:10.766Z"
+	},
+	"createdAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
+	},
 	"__v": 0,
-	"currentYear": { "$oid": "5d2ee323d14ce9844e33f51e"},
+	"currentYear": {
+		"$oid": "5d2ee323d14ce9844e33f51e"
+	},
 	"purpose": "demo",
-	"features" : [
-        "rocketChat"
-    ]
-},
-{
-	"_id" : { "$oid": "599ec0bb8e4e364ec18ff46c" },
-	"updatedAt" : { "$date": "2017-08-28T08:56:19.717Z" },
-	"name" : "Demo Schule",
-	"federalState" : { "$oid": "0000b186816abba584714c53" },
-	"createdAt" : { "$date": "2017-08-24T12:04:11.721Z"},
-	"systems" : [],
-	"__v" : 0,
-	"fileStorageType" : "awsS3",
-	"currentYear": { "$oid": "5d2ee323d14ce9844e33f51e"},
-	"purpose": "demo"
-},
-{
-	"_id" : { "$oid": "598ec0bc8e4e364ec18ff46d" },
-	"updatedAt" : { "$date": "2018-11-09T11:09:19.717Z" },
-	"name" : "Expertenschule",
-	"federalState" : { "$oid": "0000b186816abba584714c53" },
-	"createdAt" : { "$date": "2018-11-09T10:04:11.721Z"},
-	"systems" : [],
-	"__v" : 0,
-	"fileStorageType" : "awsS3",
-	"currentYear": { "$oid": "5d2ee323d14ce9844e33f51e"},
-	"purpose": "expert"
+	"features": [
+		"rocketChat"
+	],
+	"enableStudentTeamCreation": false
 }]
+

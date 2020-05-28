@@ -11,27 +11,30 @@ const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
-const app = express(feathers());
-
-const config = configuration();
-app.configure(config);
+const {
+	KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH,
+} = require('../config/globals');
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
-const services = require('./services/');
+const services = require('./services');
 
 const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
 const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
-
-const { BODYPARSER_JSON_LIMIT, METRICS_PATH } = require('../config/globals');
+const rabbitMq = require('./utils/rabbitmq');
 
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
+
+const app = express(feathers());
+
+const config = configuration();
+app.configure(config);
 
 const metricsOptions = {};
 if (METRICS_PATH) {
@@ -41,9 +44,10 @@ app.use(apiMetrics(metricsOptions));
 
 setupSwagger(app);
 initializeRedisClient();
+rabbitMq.setup(app);
 
 // set custom response header for ha proxy
-if (process.env.KEEP_ALIVE) {
+if (KEEP_ALIVE) {
 	app.use((req, res, next) => {
 		res.setHeader('Connection', 'Keep-Alive');
 		next();

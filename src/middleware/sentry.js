@@ -1,8 +1,13 @@
 const Sentry = require('@sentry/node');
+const { Configuration } = require('@schul-cloud/commons');
 const { sha } = require('../helper/version');
 const { version } = require('../../package.json');
-const { deepObject } = require('../utils/');
 
+const {
+	SC_DOMAIN,
+	NODE_ENV,
+	ENVIRONMENTS,
+} = require('../../config/globals');
 /**
  * helpers
  */
@@ -49,7 +54,7 @@ const removeJwtToken = (event) => {
 
 const logItMiddleware = (sendToSentry = false) => (event, hint, app) => {
 	app.logger.info(
-		'If you are not in development mode, the error is sent to sentry at this point! '
+		'If you are not in default mode, the error is sent to sentry at this point! '
 		+ 'If you actually want to send a real request to sentry, please modify sendToSentry.',
 	);
 	return sendToSentry ? event : null;
@@ -73,11 +78,9 @@ const filterByErrorMessageMiddleware = (...errorMessage) => (event, hint, app) =
 const skipItMiddleware = () => null;
 
 module.exports = (app) => {
-	const dsn = process.env.SENTRY_DSN;
-	const environment = app.get('env');
 	const release = version;
 
-	if (dsn) {
+	if (Configuration.has('SENTRY_DSN')) {
 		// middleware to modified events that, are post to sentry
 		let middlewares = [
 			filterByErrorCodesMiddleware(404),
@@ -86,11 +89,11 @@ module.exports = (app) => {
 			removeJwtToken,
 		];
 		// for local test runs, post feedback but skip it
-		if (environment === 'development') {
+		if (NODE_ENV === ENVIRONMENTS.DEVELOPMENT) {
 			middlewares.push(logItMiddleware(false));
 		}
 		// do not execute for test runs
-		if (environment === 'test') {
+		if (NODE_ENV === ENVIRONMENTS.TEST) {
 			middlewares = [skipItMiddleware];
 		}
 
@@ -107,11 +110,11 @@ module.exports = (app) => {
 		};
 
 		Sentry.init({
-			dsn,
-			environment,
+			dsn: Configuration.get('SENTRY_DSN'),
+			environment: NODE_ENV,
 			release,
 			//	debug: true,
-			sampleRate: 1.0,
+			sampleRate: Configuration.get('SENTRY_SAMPLE_RATE'),
 			//	captureUnhandledRejections: true,
 			beforeSend(event, hint) {
 				const modifiedEvent = runMiddlewares(event, hint);
@@ -122,7 +125,7 @@ module.exports = (app) => {
 		Sentry.configureScope((scope) => {
 			scope.setTag('frontend', false);
 			scope.setLevel('warning');
-			scope.setTag('domain', process.env.SC_DOMAIN || 'localhost');
+			scope.setTag('domain', SC_DOMAIN);
 			scope.setTag('sha', sha);
 		});
 

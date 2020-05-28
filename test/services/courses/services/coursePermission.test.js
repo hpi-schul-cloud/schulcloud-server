@@ -6,7 +6,17 @@ const testObjects = require('../../helpers/testObjects')(app);
 
 const coursePermissionService = app.service('/courses/:scopeId/userPermissions');
 
-describe('PermissionService', async () => {
+describe('CoursePermissionService', async () => {
+	let server;
+
+	before((done) => {
+		server = app.listen(0, done);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
 	const studentPermissions = [
 		...new Set([
 			'COMMENTS_CREATE',
@@ -88,13 +98,13 @@ describe('PermissionService', async () => {
 	const userIds = [];
 	const teacherIds = [];
 	const substitutionIds = [];
-	const schoolId = '0000d186816abba584714c5f';
+	const schoolId = '599ec14d8e4e364ec18ff46c';
 
 	before(async () => {
 		const studentOne = await testObjects.createTestUser({
 			firstName: 'Hans',
 			lastName: 'Wurst',
-			email: 'H.Wurst@spass.toll',
+			email: `${Date.now()}H.Wurst@spass.toll`,
 			roles: ['student'],
 			schoolId,
 		});
@@ -103,7 +113,7 @@ describe('PermissionService', async () => {
 		const studentTwo = await testObjects.createTestUser({
 			firstName: 'Karla',
 			lastName: 'Hansen',
-			email: 'karla-hansen@spass.toll',
+			email: `${Date.now()}karla-hansen@spass.toll`,
 			roles: ['student'],
 			schoolId,
 		});
@@ -112,7 +122,7 @@ describe('PermissionService', async () => {
 		const teacher = await testObjects.createTestUser({
 			firstName: 'Dorote',
 			lastName: 'Musterfrau',
-			email: 'Dorote@spass.toll',
+			email: `${Date.now()}Dorote@spass.toll`,
 			roles: ['teacher'],
 			schoolId,
 		});
@@ -121,7 +131,7 @@ describe('PermissionService', async () => {
 		const substitution = await testObjects.createTestUser({
 			firstName: 'Karl',
 			lastName: 'Musterfrau',
-			email: 'k.Musterfrau@spass.toll',
+			email: `${Date.now()}k.Musterfrau@spass.toll`,
 			roles: ['teacher'],
 			schoolId,
 		});
@@ -137,9 +147,7 @@ describe('PermissionService', async () => {
 		});
 	});
 
-	after(() => {
-		testObjects.cleanup();
-	});
+	after(testObjects.cleanup);
 
 	it('registered the service', () => {
 		expect(coursePermissionService).to.not.equal(undefined);
@@ -199,6 +207,24 @@ describe('PermissionService', async () => {
 
 				query: {
 					userId: '599ec14d8e4e364ec18ff46d',
+				},
+			});
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err).to.be.instanceOf(Forbidden);
+		}
+	});
+
+	it('rejects actions by users from other schools', async () => {
+		const otherAdmin = await testObjects.createTestUser({ schoolId: '599ec14d8e4e364ec18ff46e' });
+		try {
+			await coursePermissionService.find({
+				route: {
+					scopeId: course._id,
+				},
+
+				query: {
+					userId: otherAdmin._id.toString(),
 				},
 			});
 			expect.fail('The previous call should have failed');

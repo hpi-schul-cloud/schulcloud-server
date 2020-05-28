@@ -1,9 +1,11 @@
+/* eslint-disable max-classes-per-file */
+
 const queryString = require('querystring');
 const service = require('feathers-mongoose');
 const logger = require('../../logger');
 const link = require('./link-model');
 const hooks = require('./hooks');
-const { REGISTRATIONLINK_EXPIRATION_DAYS } = require('../../../config/globals');
+const { HOST, REGISTRATIONLINK_EXPIRATION_DAYS } = require('../../../config/globals');
 
 module.exports = function setup(app) {
 	const options = {
@@ -43,6 +45,17 @@ module.exports = function setup(app) {
 					if (isLocalRegistrationLink(data.target) && isExpired(data.createdAt)) {
 						// link is both local and has expired
 						return res.status(403).json({ error: 'Expired' });
+          }
+					if (data.data || req.query.includeShortId) {
+						const [url, query] = data.target.split('?');
+						const queryObject = queryString.parse(query || '');
+						queryObject.link = data._id;
+						if (req.query && req.query.redirect === 'false' && data.target) {
+							return res.send({ target: data.target });
+						}
+						res.redirect(`${url}?${queryString.stringify(queryObject)}`);
+					} else {
+						res.redirect(data.target);
 					}
 					// link is valid
 					const [url, query] = data.target.split('?');
@@ -87,9 +100,9 @@ module.exports = function setup(app) {
 
 			// base link
 			if (data.role === 'student') {
-				linkData.link = `${(data.host || process.env.HOST)}/registration/${data.schoolId}`;
+				linkData.link = `${(data.host || HOST)}/registration/${data.schoolId}`;
 			} else {
-				linkData.link = `${(data.host || process.env.HOST)}/registration/${data.schoolId}/byemployee`;
+				linkData.link = `${(data.host || HOST)}/registration/${data.schoolId}/byemployee`;
 			}
 			if (linkData.hash) linkData.link += `?importHash=${linkData.hash}`;
 
@@ -98,7 +111,7 @@ module.exports = function setup(app) {
 
 			// generate short url
 			await app.service('link').create({ target: linkData.link }).then((generatedShortLink) => {
-				linkData.shortLink = `${(data.host || process.env.HOST)}/link/${generatedShortLink._id}`;
+				linkData.shortLink = `${(data.host || HOST)}/link/${generatedShortLink._id}`;
 			}).catch((err) => {
 				logger.warning(err);
 				return Promise.reject(new Error('Fehler beim Erstellen des Kurzlinks.'));
@@ -157,12 +170,13 @@ module.exports = function setup(app) {
 				// build final link and remove possible double-slashes in url except the protocol ones
 				if (expertSchoolId && linkInfo.hash) {
 					// expert registration link for new users
-					linkInfo.link = `${(data.host || process.env.HOST)}${
-						`/registration/${expertSchoolId}/byexpert/?importHash=${linkInfo.hash}`
-							.replace(/(https?:\/\/)|(\/)+/g, '$1$2')}`;
+					linkInfo.link = data.host || HOST;
+					linkInfo.link += `/registration/${expertSchoolId}/byexpert/?importHash=${linkInfo.hash}`
+						.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
 				} else if (teamId) { /** @replaced logic is inside team services now * */
 					// team accept link for existing users
-					linkInfo.link = `${(data.host || process.env.HOST)}/teams/invitation/accept/${teamId}`
+					linkInfo.link = data.host || HOST;
+					linkInfo.link += `/teams/invitation/accept/${teamId}`
 						.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
 				} else {
 					logger.warning('Nicht alle Daten für den Experten-Link vorhanden.');
@@ -173,10 +187,10 @@ module.exports = function setup(app) {
 				await app.service('link').create({ target: linkInfo.link }).then((generatedShortLink) => {
 					linkInfo.shortLinkId = generatedShortLink._id;
 					// build final short link and remove possible double-slashes in url except the protocol ones
-					linkInfo.shortLink = `${(data.host || process.env.HOST)}/link/${generatedShortLink._id}`
-						.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
-				}).catch((err) => {
-					logger.error('Fehler beim Erstellen des Kurzlinks.', err);
+					linkInfo.shortLink = data.host || HOST;
+					linkInfo.shortLink += `/link/${generatedShortLink._id}`.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
+				}).catch(() => {
+					logger.warning('Fehler beim Erstellen des Kurzlinks.');
 					return Promise.resolve('Success!');
 				});
 

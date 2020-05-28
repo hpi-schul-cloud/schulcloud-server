@@ -1,5 +1,6 @@
 const { AuthenticationService, JWTStrategy } = require('@feathersjs/authentication');
 const { LocalStrategy } = require('@feathersjs/authentication-local');
+const { Configuration } = require('@schul-cloud/commons');
 
 const {
 	LdapStrategy, MoodleStrategy, IservStrategy, TSPStrategy, ApiKeyStrategy,
@@ -9,7 +10,7 @@ const { authenticationSecret, audience } = require('./logic');
 
 const authConfig = {
 	entity: 'account',
-	service: 'accounts',
+	service: 'accountModel',
 	secret: authenticationSecret,
 	authStrategies: ['jwt', 'local', 'ldap', 'moodle', 'iserv', 'tsp', 'api-key'],
 	jwtOptions: {
@@ -17,7 +18,7 @@ const authConfig = {
 		audience,
 		issuer: 'feathers',
 		algorithm: 'HS256',
-		expiresIn: '30d',
+		expiresIn: Configuration.get('JWT_LIFETIME'),
 	},
 	local: {
 		usernameField: 'username',

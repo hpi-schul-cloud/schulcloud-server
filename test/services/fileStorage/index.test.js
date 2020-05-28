@@ -2,6 +2,7 @@ const mockery = require('mockery');
 const { expect } = require('chai');
 const assert = require('assert');
 const mongoose = require('mongoose');
+const sinon = require('sinon');
 
 const fixtures = require('./fixtures');
 
@@ -36,12 +37,13 @@ class AWSStrategy {
 
 describe('fileStorage services', () => {
 	let app;
+	let server;
 	let fileStorageService;
 	let signedUrlService;
 	let directoryService;
 
-	before(function before() {
-		this.timeout(4000);
+	before(async function before() {
+		this.timeout(10000);
 
 		mockery.enable({
 			warnOnUnregistered: false,
@@ -53,6 +55,7 @@ describe('fileStorage services', () => {
 
 		// eslint-disable-next-line global-require
 		app = require('../../../src/app');
+		server = await app.listen(0);
 
 		fileStorageService = app.service('/fileStorage/');
 		signedUrlService = app.service('/fileStorage/signedUrl');
@@ -70,7 +73,7 @@ describe('fileStorage services', () => {
 		return Promise.all(promises);
 	});
 
-	after(() => {
+	after(async () => {
 		mockery.deregisterAll();
 		mockery.disable();
 
@@ -83,7 +86,8 @@ describe('fileStorage services', () => {
 			...fixtures.courses.map((_) => courseModel.findByIdAndRemove(_._id).exec()),
 		];
 
-		return Promise.all(promises);
+		await Promise.all(promises);
+		await server.close();
 	});
 
 	describe('file service', () => {
@@ -112,9 +116,7 @@ describe('fileStorage services', () => {
 		it('should create a course file object', (done) => {
 			const context = setContext('0000d224816abba584714c8e');
 
-			fileStorageService.create(Object.assign({
-				owner: '0000dcfbfb5c7a3f00bf21ac',
-			}, params), context).then((res) => {
+			fileStorageService.create({ owner: '0000dcfbfb5c7a3f00bf21ac', ...params }, context).then((res) => {
 				// eslint-disable-next-line eqeqeq
 				const isEqual = Object.keys(params).every((key) => params[key].toString() == res[key].toString());
 				const {
@@ -138,9 +140,7 @@ describe('fileStorage services', () => {
 		it('should create a team file object', (done) => {
 			const context = setContext('0000d224816abba584714c8e');
 
-			fileStorageService.create(Object.assign({
-				owner: '5cf9303bec9d6ac639fefd42',
-			}, params), context).then((res) => {
+			fileStorageService.create({ owner: '5cf9303bec9d6ac639fefd42', ...params }, context).then((res) => {
 				// eslint-disable-next-line eqeqeq
 				const isEqual = Object.keys(params).every((key) => params[key].toString() == res[key].toString());
 				const {
@@ -164,7 +164,7 @@ describe('fileStorage services', () => {
 		it('should create a user file object', (done) => {
 			const context = setContext('0000d224816abba584714c8e');
 
-			fileStorageService.create(Object.assign({}, params), context).then((res) => {
+			fileStorageService.create({ ...params }, context).then((res) => {
 				// eslint-disable-next-line eqeqeq
 				const isEqual = Object.keys(params).every((key) => params[key].toString() == res[key].toString());
 				const {
@@ -323,18 +323,20 @@ describe('fileStorage services', () => {
 				});
 		});
 
-		it('should reject returning a signed url for not allowed folders', (done) => {
+		it('should reject returning a signed url for not allowed folders', async () => {
 			const context = setContext('0000d224816abba584714c8d');
-
-			signedUrlService.create({
-				parent: '5ca613c4c7f5120b8c5bef36',
-				filename: 'test.txt',
-				fileType: 'text/plain',
-			}, context)
-				.then(({ code }) => {
-					expect(code).to.be.equal(403);
-					return done();
-				});
+			try {
+				// this call should fail, because the user does not have write access
+				// to the parent directory
+				await signedUrlService.create({
+					parent: '5ca613c4c7f5120b8c5bef36',
+					filename: 'test.txt',
+					fileType: 'text/plain',
+				}, context);
+				throw new Error('This should not happen.');
+			} catch (err) {
+				expect(err.code).to.be.equal(403);
+			}
 		});
 
 		it('return a signed url for downloading a file', (done) => {
@@ -393,6 +395,8 @@ describe('fileStorage services', () => {
 			const promises = fileNames.map((filename) => signedUrlService.create({ filename, fileType: 'text/html' }, {
 				payload: { userId: '0000d213816abba584714c0a' },
 				account: { userId: '0000d213816abba584714c0a' },
+			}).then(() => {
+				throw new Error('This should not have happened!');
 			}).catch((err) => {
 				expect(err.name).to.equal('BadRequest');
 				expect(err.code).to.equal(400);
@@ -400,6 +404,25 @@ describe('fileStorage services', () => {
 			}));
 
 			return Promise.all(promises);
+		});
+
+		it('allows to override the internal file name with a request specific one', async () => {
+			const context = setContext('0000d224816abba584714c8e');
+			const requestedName = encodeURIComponent('some name-12345678id.png');
+			const spy = sinon.spy(AWSStrategy.prototype, 'getSignedUrl');
+
+			try {
+				await signedUrlService.find({
+					query: {
+						file: '5ca613c4c7f5120b8c5bef33',
+						name: requestedName,
+					},
+					...context,
+				});
+				expect(spy.calledWithMatch({ localFileName: requestedName })).to.equal(true);
+			} finally {
+				spy.restore();
+			}
 		});
 	});
 

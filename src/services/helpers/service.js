@@ -5,6 +5,8 @@ const logger = require('../../logger');
 const {
 	REQUEST_TIMEOUT,
 	SMTP_SENDER,
+	NODE_ENV,
+	ENVIRONMENTS,
 } = require('../../../config/globals');
 
 const checkForToken = (params, app) => {
@@ -42,7 +44,6 @@ module.exports = function setup(app) {
 				headers,
 				email,
 				replyEmail,
-				from,
 				subject,
 				content,
 				// TODO: must be implemented by the mailservice
@@ -57,7 +58,7 @@ module.exports = function setup(app) {
 				subject,
 				text: content.text,
 				html: content.html,
-				from: from || SMTP_SENDER,
+				from: SMTP_SENDER,
 				replyTo: replyEmail,
 				attachments: base64Attachments,
 			};
@@ -78,7 +79,7 @@ module.exports = function setup(app) {
 			};
 
 			// send mail with defined transport object in production mode
-			if (app.get('env') === 'production' || FORCE_SEND_EMAIL) {
+			if (NODE_ENV === ENVIRONMENTS.PRODUCTION || FORCE_SEND_EMAIL) {
 				return request(requestOptions).catch((error) => {
 					throw new GeneralError(error.message);
 				});

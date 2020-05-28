@@ -1,7 +1,10 @@
-const { authenticate } = require('@feathersjs/authentication');
 const local = require('@feathersjs/authentication-local');
 const { NotFound } = require('@feathersjs/errors');
+const {
+	iff, isProvider, disallow, keep,
+} = require('feathers-hooks-common');
 const logger = require('../../../logger/index');
+const { HOST, SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const globalHooks = require('../../../hooks');
 
@@ -39,15 +42,16 @@ const sendInfo = (context) => {
 				$populate: ['userId'],
 			},
 		}).then((account) => {
-			const recoveryLink = `${process.env.HOST}/pwrecovery/${context.result._id}`;
+			const recoveryLink = `${HOST}/pwrecovery/${context.result._id}`;
 			const mailContent = `Sehr geehrte/r ${account.userId.firstName} ${account.userId.lastName}, \n
 Bitte setzen Sie Ihr Passwort unter folgendem Link zurück:
 ${recoveryLink}\n
+Bitte beachten Sie das der Link nur für 6 Stunden gültig ist. Danach müssen sie ein neuen Link anfordern.\n
 Mit Freundlichen Grüßen
-Ihr ${process.env.SC_SHORT_TITLE || 'Schul-Cloud'} Team`;
+Ihr ${SC_SHORT_TITLE} Team`;
 
 			globalHooks.sendEmail(context, {
-				subject: `Passwort zurücksetzen für die ${process.env.SC_SHORT_TITLE || 'Schul-Cloud'}`,
+				subject: `Passwort zurücksetzen für die ${SC_SHORT_TITLE}`,
 				emails: [account.userId.email],
 				content: {
 					text: mailContent,
@@ -67,52 +71,47 @@ Ihr ${process.env.SC_SHORT_TITLE || 'Schul-Cloud'} Team`;
  * this hides errors from api for invalid input
  * @param {*} context
  */
-const return200 = (context) => {
-	if (context.error) {
-		logger.warning('return 200');
-		context.error.code = 200;
-		context.result = { success: 'success' };
+const clearResultAndForceSuccessIfNotBlockedEmailDomain = (context) => {
+	// Only pass error: Email Domain Blocked
+	if (context.error && context.error.code === 400 && context.error.message === 'EMAIL_DOMAIN_BLOCKED') {
+		return context;
 	}
+
+	// Mute other errors
+	if (context.error) {
+		delete context.error.hook;
+		// context.error.code = 200;
+		logger.error('passwordRecovery is requested and return an error: ', context.error);
+	}
+
+	context.result = { success: 'success' };
 	return context;
 };
 
 exports.before = {
 	all: [],
-	find: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('PWRECOVERY_VIEW'),
-	],
+	find: [iff(isProvider('external'), disallow())],
 	get: [],
 	create: [
+		globalHooks.blockDisposableEmail('username'),
 		resolveUserIdByUsername,
 		local.hooks.hashPassword('password'),
 	],
-	update: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('PWRECOVERY_EDIT'),
-	],
-	patch: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('PWRECOVERY_EDIT'),
-		globalHooks.permitGroupOperation,
-	],
-	remove: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('PWRECOVERY_CREATE'),
-		globalHooks.permitGroupOperation,
-	],
+	update: [iff(isProvider('external'), disallow())],
+	patch: [iff(isProvider('external'), disallow())],
+	remove: [iff(isProvider('external'), disallow())],
 };
 
 exports.after = {
 	all: [],
 	find: [],
-	get: [],
-	create: [sendInfo],
+	get: [keep('_id, createdAt', 'changed')],
+	create: [sendInfo, clearResultAndForceSuccessIfNotBlockedEmailDomain],
 	update: [],
 	patch: [],
 	remove: [],
 };
 
 exports.error = {
-	create: [return200],
+	create: [clearResultAndForceSuccessIfNotBlockedEmailDomain],
 };
