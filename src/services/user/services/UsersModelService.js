@@ -3,12 +3,13 @@ const auth = require('@feathersjs/authentication');
 const {
 	iff, isProvider, disallow,
 } = require('feathers-hooks-common');
-const { userModel } = require('../model');
-const { enableQuery, enableQueryAfter } = require('../../../hooks');
+const { userModel } = require('../model');;
+const { enableQuery, enableQueryAfter, resolveToIds } = require('../../../hooks');
 
 const userModelHooks = {
 	before: {
 		all: [auth.hooks.authenticate('jwt'), iff(isProvider('external'), disallow())],
+		create: [resolveToIds.bind(this, '/roles', 'data.roles', 'name')],
 		remove: [enableQuery],
 	},
 	after: {
