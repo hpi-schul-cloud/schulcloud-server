@@ -3,7 +3,9 @@ const { ObjectId } = require('mongoose').Types;
 const app = require('../src/app');
 const { sanitizeDataHook } = require('../src/app.hooks');
 const { sanitizeHtml: { sanitizeDeep } } = require('../src/utils');
-const { cleanup, createTestUser, generateRequestParamsFromUser, createTestSchool } = require('./services/helpers/testObjects')(app);
+const {
+	cleanup, createTestUser, generateRequestParamsFromUser, createTestSchool,
+} = require('./services/helpers/testObjects')(app);
 
 describe('Sanitization Hook', () => {
 	// TODO: Test if it work for create, post and update
@@ -62,10 +64,10 @@ describe('Sanitization Hook', () => {
 		const safeAttributes = ['url'];
 		const context = {
 			path: 'not_authentication',
-			safeAttributes: safeAttributes,
+			safeAttributes,
 			result: {
 				url: testString,
-				dangerousUrl: testString
+				dangerousUrl: testString,
 			},
 		};
 		const result = sanitizeDataHook(context);

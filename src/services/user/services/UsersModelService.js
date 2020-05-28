@@ -13,7 +13,7 @@ const userModelHooks = {
 	},
 	after: {
 		remove: [enableQueryAfter],
-	}
+	},
 };
 
 const userModelService = feathersMongooseService({
