@@ -76,7 +76,7 @@ module.exports = {
 
 		const amount = await Consent.find().countDocuments();
 		info(`${amount} consent will be moved`);
-		const limit = 1000;
+		const limit = 500;
 		let skip = 0;
 		let looped = 0;
 
