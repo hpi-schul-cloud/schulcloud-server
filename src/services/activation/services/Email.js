@@ -122,7 +122,7 @@ class EMailAdresseActivationService {
 		if ((account || []).length !== 1) throw new Forbidden('Not authorized');
 
 		const email = getQuarantinedObject(keyword, entry.quarantinedObject);
-		if (!email || !(email instanceof String)) {
+		if (!email) {
 			await deleteEntry(this, entry._id);
 			throw new Error('Link incorrectly constructed and will be removed');
 		}
