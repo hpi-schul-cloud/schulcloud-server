@@ -63,6 +63,7 @@ In case of `opt-in` and `opt-out` the feature should be enabled/disabled by the 
 -   SC-3395 if fetching the release fails, a error will be thrown
 -   backup.js now outputs valid json exports
 -   SC-4105 fixed a problem with new users tests not working with recent hotfix.
+-   Checks of user consent calculated correct now
 
 ### Changed in 22.10.0
 
