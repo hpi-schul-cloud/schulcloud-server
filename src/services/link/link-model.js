@@ -8,7 +8,7 @@ const ShortId = require('mongoose-shortid-nodeps');
 const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
-const LINK_LENGTH = 5;
+const LINK_LENGTH = 10;
 
 const linkSchema = new Schema({
 	_id: {
