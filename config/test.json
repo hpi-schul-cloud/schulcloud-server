@@ -9,5 +9,6 @@
 		"notification": "https://schul-cloud.org:3030"
 	},
 	"FORCE_SEND_EMAIL": true,
-	"NOTIFICATION_PLATFORM": "testplatform"
+	"NOTIFICATION_PLATFORM": "testplatform",
+	"LDAP_PASSWORD_ENCRYPTION_KEY": "1234567890123456"
 }
