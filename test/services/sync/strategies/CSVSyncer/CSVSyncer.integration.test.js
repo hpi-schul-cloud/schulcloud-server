@@ -2,7 +2,7 @@ const { expect } = require('chai');
 
 const app = require('../../../../../src/app');
 const roleModel = require('../../../../../src/services/role/model.js');
-const { userModel } = require('../../../../../src/services/user/model.js');
+const { userModel } = require('../../../../../src/services/user/model');
 const MailService = require('../../../../../src/services/helpers/service.js');
 
 const testObjects = require('../../../helpers/testObjects')(app);
