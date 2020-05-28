@@ -203,7 +203,7 @@ const registerUser = function register(data, params, app) {
 				.then((newAccount) => { account = newAccount; })
 				.catch((err) => Promise.reject(new Error('Fehler beim Erstellen des Accounts.', err)));
 		})
-		.then((res) => {
+		.then(async (res) => {
 			// add parent if necessary
 			if (data.parent_email) {
 				parent = {
@@ -214,21 +214,15 @@ const registerUser = function register(data, params, app) {
 					schoolId: data.schoolId,
 					roles: ['parent'],
 				};
-				return app.service('users').create(parent, { _additional: { asTask: 'parent' } })
-					.catch((err) => {
-						if (err.message.startsWith('parentCreatePatch')) {
-							return Promise.resolve(err.data);
-						}
-						return Promise.reject(new Error(`Fehler beim Erstellen des Elternaccounts. ${err}`));
-					}).then((newParent) => {
-						parent = newParent;
-						return userModel.userModel.findByIdAndUpdate(user._id, { parents: [parent._id] }, { new: true }).exec()
-							.then((updatedUser) => user = updatedUser);
-					})
-					.catch((err) => {
-						logger.log('warn', `Fehler beim Verknüpfen der Eltern. ${err}`);
-						return Promise.reject(new Error('Fehler beim Verknüpfen der Eltern.', err));
-					});
+				try {
+					parent = await app.service('usersModel').create(parent);
+					user = await userModel.userModel.findByIdAndUpdate(
+						user._id, { $push: { parents: [parent._id] } }, { new: true },
+					).exec();
+				} catch (err) {
+					logger.log('warn', `Fehler beim Verknüpfen der Eltern. ${err}`);
+					return Promise.reject(new Error('Fehler beim Verknüpfen der Eltern.', err));
+				}
 			}
 			return Promise.resolve();
 		})
