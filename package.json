@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "22.10.4",
+	"version": "23.1.1",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -32,8 +32,8 @@
 		"mocha": "cross-env NODE_ENV=test mocha --exit './test/**/*.test.js'",
 		"mocha-single": "cross-env NODE_ENV=test mocha --exit",
 		"mocha-inspect": "cross-env NODE_ENV=test mocha --inspect-brk --inspect --timeout 60000 --exit './test/**/*.test.js'",
-		"migration": "migrate",
-		"migration-sync": "migrate list --autosync",
+		"migration": "migrate --config ./config/migrate.js",
+		"migration-sync": "migrate list --autosync --config ./config/migrate.js",
 		"migration-persist": "node ./backup.js -b export -p setup/ -c migrations"
 	},
 	"dependencies": {
@@ -60,10 +60,11 @@
 		"cors": "^2.8.1",
 		"cross-env": "^7.0.0",
 		"crypto-js": "^4.0.0",
+		"disposable-email-domains": "^1.0.56",
 		"email-templates": "^6.0.0",
 		"es6-promisify": "^6.0.1",
 		"express": "^4.14.0",
-		"feathers-hooks-common": "^4.20.7",
+		"feathers-hooks-common": "^5.0.3",
 		"feathers-mongoose": "^6.3.0",
 		"feathers-swagger": "^1.1.0",
 		"file-type": "^14.2.0",
@@ -111,7 +112,7 @@
 		"codecov": "^3.6.5",
 		"eslint-config-airbnb-base": "^14.1.0",
 		"eslint-plugin-import": "^2.18.2",
-		"eslint": "^5.16.0",
+		"eslint": "^6.8.0",
 		"mocha": "^7.0.1",
 		"mockery": "^2.0.0",
 		"nock": "^12.0.0",
