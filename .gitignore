@@ -47,3 +47,6 @@ config/secrets.json
 
 # version info
 version
+
+# patch files
+*.patch
