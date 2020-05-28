@@ -76,7 +76,7 @@ module.exports = {
 
 		const amount = await Consent.find().countDocuments();
 		info(`${amount} consent will be moved`);
-		const limit = 2000;
+		const limit = 1000;
 		let skip = 0;
 		let looped = 0;
 
@@ -109,7 +109,7 @@ module.exports = {
 				}));
 				info(`${looped} Consents are moved from consent to user`);
 			} catch (err) {
-				error(`Moving one or more Consents failed but will go on with next loop: ${err.message}`);
+				error(`Moving Consents between ${skip * limit} and ${skip * limit + limit} failed but will go on with next loop: ${err.message}`);
 			}
 		}
 
