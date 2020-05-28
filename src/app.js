@@ -10,9 +10,10 @@ const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
+const { Configuration } = require('@schul-cloud/commons');
 
 const {
-	KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH,
+	KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH, ENVIRONMENTS,
 } = require('../config/globals');
 
 const middleware = require('./middleware');
@@ -42,7 +43,10 @@ if (METRICS_PATH) {
 }
 app.use(apiMetrics(metricsOptions));
 
-setupSwagger(app);
+if (Configuration.get('NODE_ENV') !== ENVIRONMENTS.PRODUCTION) {
+	setupSwagger(app);
+}
+
 initializeRedisClient();
 rabbitMq.setup(app);
 
