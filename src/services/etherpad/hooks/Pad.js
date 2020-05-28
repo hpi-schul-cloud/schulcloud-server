@@ -5,6 +5,27 @@ const { Forbidden } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
 
+const restrictOldPadsToCourse = async (context) => {
+	if(typeof(context.data.oldPadId) === 'undefined') {
+		return context;
+	}
+	try {
+		const lessonsService = context.app.service('/lessons');
+		const foundLessons = await lessonsService.find({
+			query: {
+				courseId: context.id,
+				contents: { $elemMatch: { "content.url": `https://etherpad.schul-cloud.org/p/${context.data.oldPadId}` } }
+			},
+		});
+		if(foundLessons.total < 1) {
+			throw new Error('Forbidden');
+		}
+	} catch (err) {
+		logger.error('Forbidden to access pad: ', err);
+		throw new Forbidden('Forbidden to access pad');
+	}
+};
+
 const getGroupData = async (context) => {
 	context.data = {
 		...context.data,
@@ -38,6 +59,7 @@ const before = {
 		injectCourseId,
 		globalHooks.restrictToUsersOwnCourses,
 		getGroupData,
+		restrictOldPadsToCourse,
 	],
 	update: [disallow()],
 	patch: [disallow()],

@@ -31,6 +31,7 @@ class EtherpadClient {
 
 		this.err = {
 			createOrGetGroupPad: 'Could not create/get given pad for group.',
+			copyOldPadToGroupPad: 'Could not copy given public pad to new group pad.',
 			createSession: 'Could not create a session for the given user.',
 			createOrGetGroup: 'Could not create/get this group.',
 			createOrGetAuthor: 'Could not create/get this author.',
@@ -106,6 +107,24 @@ class EtherpadClient {
 	}
 
 	createOrGetGroupPad(params) {
+		if(params.oldPadId) {
+			let newPadId = `${params.groupID}$${params.padName}`;
+			let copyParams = {
+				sourceID: params.oldPadId,
+				destinationID: newPadId,
+			};
+			return rp(this.createSettings({
+				endpoint: 'copyPad',
+			}, copyParams))
+			.then((res) => {
+				let response = this.handleEtherpadResponse(res);
+				response.data = {
+					padID: newPadId
+				};
+				return response;
+			})
+			.catch((err) => { this.handleEtherpadError(err, this.err.copyOldPadToGroupPad) } );
+		}
 		return rp(this.createSettings({
 			endpoint: 'createGroupPad',
 		}, params))
