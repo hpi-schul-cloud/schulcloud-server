@@ -75,7 +75,6 @@ describe('user service', () => {
 				expect(array).to.include('TEST_BASE', 'TEST_BASE_2', 'TEST_SUB');
 			});
 	});
-
 	describe('GET', () => {
 		it('student can read himself', async () => {
 			const student = await testObjects.createTestUser({
@@ -93,9 +92,12 @@ describe('user service', () => {
 			expect(result).to.haveOwnProperty('ldapId');
 		});
 
-		it('student can read other student', async () => {
-			const student = await testObjects.createTestUser({ roles: ['student'] });
-			const otherStudent = await testObjects.createTestUser({ role: ['student'], birthday: Date.now() });
+		it('student can read other student with STUDENT_LIST permission', async () => {
+			await testObjects.createTestRole({
+				name: 'studentList', permissions: ['STUDENT_LIST'],
+			});
+			const student = await testObjects.createTestUser({ roles: ['studentList'] });
+			const otherStudent = await testObjects.createTestUser({ roles: ['student'], birthday: Date.now() });
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {};
 			const result = await app.service('users').get(otherStudent._id, params);
@@ -110,7 +112,7 @@ describe('user service', () => {
 
 		it('teacher can read student', async () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-			const student = await testObjects.createTestUser({ role: ['student'], birthday: Date.now() });
+			const student = await testObjects.createTestUser({ roles: ['student'], birthday: Date.now() });
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			params.query = {};
 			const result = await app.service('users').get(student._id, params);
@@ -122,28 +124,71 @@ describe('user service', () => {
 			expect(result).to.haveOwnProperty('birthday');
 			expect(result).not.to.haveOwnProperty('ldapId');
 		});
+
+		it('does not allow students to read other students without STUDENT_LIST permission', async () => {
+			await testObjects.createTestRole({ name: 'notAuthorized', permissions: [] });
+			const studentToRead = await testObjects.createTestUser({ roles: ['student'] });
+			const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
+			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			params.query = {};
+			try {
+				await app.service('users').get(studentToRead._id, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(403);
+				expect(err.message).to.equal('You don\'t have one of the permissions: STUDENT_LIST.');
+			}
+		});
 	});
 
 	describe('FIND', () => {
-		it('does not allow students and teachers to find parents', async () => {
+		it('does not allow teachers to find parents', async () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-			const student = await testObjects.createTestUser({ roles: ['student'] });
-			const parent = await testObjects.createTestUser({ role: ['parent'] });
+			const parent = await testObjects.createTestUser({ roles: ['parent'] });
 
 			const teacherParams = await testObjects.generateRequestParamsFromUser(teacher);
 			teacherParams.query = {};
 			const result = await app.service('users').find(teacherParams);
 			expect(result.data.some((r) => equalIds(r._id, parent._id))).to.be.false;
+		});
 
+		it('does not allow students who may not create teams list other users', async () => {
+			const student = await testObjects.createTestUser({ roles: ['student'] });
 			const studentParams = await testObjects.generateRequestParamsFromUser(student);
 			studentParams.query = {};
+
+			await app.service('schools').patch(
+				student.schoolId,
+				{ enableStudentTeamCreation: false },
+			);
+
+			try {
+				await app.service('users').find(studentParams);
+				assert.fail('students who maynot create a team are not allowed to list other users');
+			} catch (error) {
+				expect(error.code).to.equal(403);
+				expect(error.message).to.equal('The current user is not allowed to list other users!');
+			}
+		});
+
+		it('allows students who may create teams list other users', async () => {
+			const student = await testObjects.createTestUser({ roles: ['student'] });
+			const studentParams = await testObjects.generateRequestParamsFromUser(student);
+			studentParams.query = {};
+
+			await app.service('schools').patch(
+				student.schoolId,
+				{ enableStudentTeamCreation: true },
+			);
+
 			const studentResults = await app.service('users').find(studentParams);
-			expect(studentResults.data.some((r) => equalIds(r._id, parent._id))).to.be.false;
+			expect(studentResults.data).to.be.not.empty;
 		});
 
 		it('allows access to parents by superheroes', async () => {
 			const hero = await testObjects.createTestUser({ roles: ['superhero'] });
-			const parent = await testObjects.createTestUser({ role: ['parent'] });
+			const parent = await testObjects.createTestUser({ roles: ['parent'] });
 
 			const params = await testObjects.generateRequestParamsFromUser(hero);
 			params.query = {};
