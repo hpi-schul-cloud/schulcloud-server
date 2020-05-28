@@ -243,6 +243,11 @@
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
 		},
+		"LDAP_PASSWORD_ENCRYPTION_KEY": {
+			"type": "string",
+			"description": "Synchronous encryption key used to secure search user passwords",
+			"pattern": ".{16}.*"
+		},
 		"SENTRY_DSN": {
 			"type": "string",
 			"format": "uri",
