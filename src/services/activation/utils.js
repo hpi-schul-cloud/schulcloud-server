@@ -1,4 +1,5 @@
 const { Forbidden } = require('@feathersjs/errors');
+const crypto = require('crypto');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
 
 const KEYWORDS = {
@@ -27,12 +28,28 @@ const getQuarantinedObject = (keyword, quarantinedObject) => {
 	}
 };
 
+const createEntry = async (ref, account, keyword, quarantinedObject) => {
+	try {
+		const activationCode = crypto.randomBytes(64).toString('hex');
+		const entry = await ref.app.service('activationModel')
+			.create({
+				activationCode,
+				account,
+				keyword,
+				quarantinedObject,
+			});
+		return entry;
+	} catch (error) {
+		throw new Error('Could not create a quarantined object.');
+	}
+};
+
 const deleteEntry = async (ref, entryId) => {
 	try {
 		await ref.app.service('activationModel').remove({ _id: entryId });
 	} catch (error) {
 		/* eslint-disable-next-line */
-		console.error(`Entry (${entryId}) could not be removed from the database!`);
+		console.error(`Entry could not be removed from the database!`);
 	}
 };
 
@@ -64,15 +81,15 @@ const lookupByUserId = async (ref, requestingId, userId, keyword) => {
  * Will lookup entry in a activation by entryId
  * @param {*} ref 					this
  * @param {ObjectId} requestingId	ObjectId of User requesting data
- * @param {ObjectId} entryId		ObjectId of entry
+ * @param {String} activationCode	activationCode
  * @param {String} keyword			Keyword
  */
-const lookupByEntryId = async (ref, requestingId, entryId, keyword) => {
+const lookupByActivationCode = async (ref, requestingId, activationCode, keyword) => {
 	if (!requestingId) throw new Forbidden('Not authorized');
-	if (!entryId) throw SyntaxError('entryId required!');
+	if (!activationCode) throw SyntaxError('entryId required!');
 	if (!keyword) throw SyntaxError('keyword required!');
 
-	const entry = await ref.app.service('activationModel').find({ query: { _id: entryId } });
+	const entry = await ref.app.service('activationModel').find({ query: { activationCode } });
 	return lookupEntry(requestingId, entry, keyword);
 };
 
@@ -87,16 +104,15 @@ const sendMail = async (ref, mail, entry) => {
 	if (!mail || !mail.email || !mail.subject || !mail.content || !entry) throw SyntaxError('missing parameters');
 
 	try {
-		await ref.app.service('/mails')
-			.create({
-				email: mail.email,
-				subject: mail.subject,
-				content: mail.content,
-			});
+		// await ref.app.service('/mails')
+		// 	.create({
+		// 		email: mail.email,
+		// 		subject: mail.subject,
+		// 		content: mail.content,
+		// 	});
 
 		await ref.app.service('activationModel').update({ _id: entry._id }, {
 			$set: {
-				updatedAt: Date.now(),
 				mailSend: true,
 			},
 		});
@@ -114,10 +130,11 @@ const getUser = async (ref, userId) => {
 module.exports = {
 	KEYWORDS,
 	lookupByUserId,
-	lookupByEntryId,
+	lookupByActivationCode,
 	sendMail,
 	getUser,
 	deleteEntry,
 	createQuarantinedObject,
 	getQuarantinedObject,
+	createEntry,
 };

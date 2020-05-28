@@ -1,7 +1,10 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { iff, isProvider } = require('feathers-hooks-common');
 const { BadRequest, Forbidden, NotFound } = require('@feathersjs/errors');
+const { Configuration } = require('@schul-cloud/commons');
 const { SC_SHORT_TITLE, HOST } = require('../../../../config/globals');
+
+const ttl = Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY');
 
 const {
 	validPassword,
@@ -14,23 +17,45 @@ const {
 
 const {
 	KEYWORDS,
-	lookupByEntryId,
+	lookupByActivationCode,
 	lookupByUserId,
 	sendMail,
 	getUser,
 	deleteEntry,
+	createEntry,
 	createQuarantinedObject,
 	getQuarantinedObject,
 } = require('../utils');
 
-const buildMail = (user, activationLink) => {
+const buildActivationLinkMail = (user, entry) => {
+	const activationLink = `${HOST}/activation/email/${entry.activationCode}`;
+	const email = getQuarantinedObject(entry.keyword, entry.quarantinedObject);
 	const subject = 'Bestätige deine E-Mail-Adresse';
 	const content = {
-		text: `Einladung in die ${SC_SHORT_TITLE}
-Hallo ${user.firstName},
-\\nDu wurdest eingeladen, der ${SC_SHORT_TITLE} beizutreten,
-\\nbitte vervollständige deine Registrierung unter folgendem Link: ${activationLink}
-\\nViel Spaß und einen guten Start wünscht dir dein ${SC_SHORT_TITLE}-Team`,
+		text: `Bestätige deine E-Mail-Adresse
+\\nHallo ${user.firstName},
+\\nbitte bestätige deine neue E-Mail-Adresse über folgenden Link: ${activationLink}
+\\nDein ${SC_SHORT_TITLE} Team`,
+		html: '',
+	};
+
+	return {
+		email,
+		subject,
+		content,
+	};
+};
+
+const buildFYIMail = (user) => {
+	/* eslint-disable max-len */
+	const subject = 'E-Mail-Adresse geändert';
+	const content = {
+		text: `E-Mail-Adresse geändert
+\\nHallo ${user.firstName},
+\\nwir wollten dich nur informieren, dass sich die E-Mail-Adresse für dein ${SC_SHORT_TITLE} Konto geändert hat.
+\\nWenn du die Änderung veranlasst hast, ist alles in Ordnung.
+\\nFalls du nicht darum gebeten hast, deine E-Mail-Adresse zu änderen, kontaktiere deinen Schuladministrator oder unseren User-Support.
+\\nDein ${SC_SHORT_TITLE} Team`,
 		html: '',
 	};
 
@@ -39,6 +64,19 @@ Hallo ${user.firstName},
 		subject,
 		content,
 	};
+};
+
+const mail = async (ref, type, user, entry) => {
+	let content;
+	if (type === 'activationLinkMail') {
+		content = buildActivationLinkMail(user, entry);
+	} else if (type === 'fyiMail') {
+		content = buildFYIMail(user);
+	} else {
+		throw new Error('Mail type not defined');
+	}
+
+	await sendMail(ref, content, entry);
 };
 
 const keyword = KEYWORDS.E_MAIL_ADDRESS;
@@ -50,11 +88,12 @@ class EMailAdresseActivationService {
 		if (entry) {
 			const email = getQuarantinedObject(keyword, entry.quarantinedObject);
 			return {
+				success: true,
 				keyword: entry.keyword,
 				email,
 			};
 		}
-		return {};
+		return { success: true };
 	}
 
 	async create(data, params) {
@@ -65,51 +104,39 @@ class EMailAdresseActivationService {
 		let entry;
 		entry = await lookupByUserId(this, user._id, params.account.userId, keyword);
 		if (entry) {
-			// create new entry when email changed
 			const email = getQuarantinedObject(keyword, entry.quarantinedObject);
 			if (email !== data.email) {
+				// create new entry when email changed
 				await deleteEntry(this, entry._id);
 				entry = undefined;
 			} else {
 				// resend email
-				const link = `${HOST}/activation/email/${entry._id}`;
-				const mail = buildMail(user, link);
-				await sendMail(this, mail, entry);
-				return;
+				await mail(this, 'activationLinkMail', user, entry);
+				return { success: true };
 			}
 		}
 
 		// create new entry
 		const quarantinedObject = createQuarantinedObject(keyword, data.email);
-		try {
-			entry = await this.app.service('activationModel')
-				.create({
-					account: params.account.userId,
-					keyword,
-					quarantinedObject,
-				});
-		} catch (error) {
-			throw new Error('Could not create a quarantined object.');
-		}
+		entry = await createEntry(this, params.account.userId, keyword, quarantinedObject);
 
 		// send email
-		const link = `${HOST}/activation/email/${entry._id}`;
-		const mail = buildMail(user, link);
-		await sendMail(this, mail, entry);
+		await mail(this, 'activationLinkMail', user, entry);
+		return { success: true };
 	}
 
 	async update(id, data, params) {
 		if (!id) throw new NotFound('activation link invalid');
 		const user = await getUser(this, params.account.userId);
-		const entry = await lookupByEntryId(this, user._id, id, keyword);
+		const entry = await lookupByActivationCode(this, user._id, id, keyword);
 
 		if (!user) throw new NotFound('activation link invalid');
 		if (!entry) throw new NotFound('activation link invalid');
-		if (Date.parse(entry.updatedAt) + 1000 * 60 * 60 * 2 < Date.now()) {
+		if (Date.parse(entry.updatedAt) + 1000 * ttl < Date.now()) {
 			await deleteEntry(this, entry._id);
 			throw new BadRequest('activation link expired');
 		}
-		if (!entry.valid) {
+		if (entry.activated) {
 			await deleteEntry(this, entry._id);
 			throw new BadRequest('activation link invalid');
 		}
@@ -134,12 +161,16 @@ class EMailAdresseActivationService {
 		// set activation link as consumed
 		await this.app.service('activationModel').update({ _id: entry._id }, {
 			$set: {
-				valid: false,
+				activated: true,
 			},
 		});
 
+		// send fyi mail to old email
+		await mail(this, 'fyiMail', user, entry);
+
 		// delete entry
 		await deleteEntry(this, entry._id);
+		return { success: true };
 	}
 
 	setup(app) {
