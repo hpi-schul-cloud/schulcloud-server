@@ -9,8 +9,8 @@ const {	courseModel } = require('../model');
 const courseModelService = service({
 	Model: courseModel,
 	paginate: {
-		default: 25,
-		max: 100,
+		default: 10000,
+		max: 10000,
 	},
 	lean: { virtuals: true },
 });

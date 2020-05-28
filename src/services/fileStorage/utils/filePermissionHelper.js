@@ -87,7 +87,12 @@ const checkPermissions = (permission) => async (user, file) => {
 		return Promise.resolve(true);
 	}
 
-	const submissionPromise = Submission.findOne({ fileIds: fileObject._id }).lean().exec();
+	const submissionPromise = Submission.findOne({
+		$or: [
+			{ fileIds: fileObject._id },
+			{ gradeFileIds: fileObject._id },
+		],
+	}).lean().exec();
 	const homeworkPromise = Homework.findOne({ fileIds: fileObject._id }).populate('courseId').lean().exec();
 
 	const [submission, homework] = await Promise.all([submissionPromise, homeworkPromise]);

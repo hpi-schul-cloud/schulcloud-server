@@ -3,7 +3,7 @@ const { ObjectId } = require('mongoose').Types;
 const app = require('../src/app');
 const { sanitizeDataHook } = require('../src/app.hooks');
 const { sanitizeHtml: { sanitizeDeep } } = require('../src/utils');
-const { cleanup, createTestUser, generateRequestParamsFromUser } = require('./services/helpers/testObjects')(app);
+const { cleanup, createTestUser, generateRequestParamsFromUser, createTestSchool } = require('./services/helpers/testObjects')(app);
 
 describe('Sanitization Hook', () => {
 	// TODO: Test if it work for create, post and update
@@ -17,6 +17,62 @@ describe('Sanitization Hook', () => {
 		expect(result.data).to.not.be.an('undefined');
 		expect(result.data.testString).to.equal(testString);
 	});
+
+	it('hook sanitizes when "before" type is triggered by checking the existence of "data" property', () => {
+		const testString = '<script>alert("test");</script><h1>test</h1>';
+		const sanitizedTestString = 'test';
+		const context = {
+			path: 'not_authentication',
+			data: { testString },
+			type: 'before',
+		};
+		const result = sanitizeDataHook(context);
+		expect(result.data).to.not.be.an('undefined');
+		expect(result.data.testString).to.equal(sanitizedTestString);
+		expect(result.result).to.be.an('undefined');
+	});
+
+	it('hook sanitizes when it is triggered in "after" type by checking the existence of "result" property', () => {
+		const testString = '<script>alert("test");</script><h1>test</h1>';
+		const sanitizedTestString = 'test';
+		const context = {
+			path: 'not_authentication',
+			result: { testString },
+			type: 'after',
+		};
+		const result = sanitizeDataHook(context);
+		expect(result.result).to.not.be.an('undefined');
+		expect(result.result.testString).to.equal(sanitizedTestString);
+		expect(result.data).to.be.an('undefined');
+	});
+
+	it('hook does not sanitizes when both properties `data` and `results` are empty', () => {
+		const testString = '<script>alert("test");</script><h1>test</h1>';
+		const context = {
+			path: 'not_authentication',
+			data: { testString },
+		};
+		const result = sanitizeDataHook(context);
+		expect(result.data.testString).to.equal(testString);
+	});
+
+	it('hook does not sanitizes specified safe attributes', () => {
+		const testString = '<script>alert("test");</script><h1>test</h1>';
+		const sanitizedTestString = 'test';
+		const safeAttributes = ['url'];
+		const context = {
+			path: 'not_authentication',
+			safeAttributes: safeAttributes,
+			result: {
+				url: testString,
+				dangerousUrl: testString
+			},
+		};
+		const result = sanitizeDataHook(context);
+		expect(result.result.url).to.equal(testString);
+		expect(result.result.dangerousUrl).to.equal(sanitizedTestString);
+	});
+
 	// TODO: Map test to generic output for sanitizeConst keys, paths, saveKeys
 	it('sanitize in news, example', () => {
 		const data = {
@@ -172,7 +228,8 @@ describe('removeObjectIdInData hook', () => {
 	});
 
 	it('Should work for create', async () => {
-		const admin = await createTestUser({ roles: ['administrator'] });
+		const { _id: schoolId } = await createTestSchool();
+		const admin = await createTestUser({ roles: ['administrator'], schoolId });
 		const params = await generateRequestParamsFromUser(admin);
 		const _id = new ObjectId();
 		const newUser = await app.service('users').create({
@@ -180,7 +237,7 @@ describe('removeObjectIdInData hook', () => {
 			firstName: 'Max',
 			lastName: 'Mustermann',
 			email: `max${Date.now()}@mustermann.de`,
-			schoolId: '584ad186816abba584714c94',
+			schoolId,
 			roles: [],
 		}, params);
 		expect(_id.toString()).to.not.equal(newUser._id.toString());

@@ -34,7 +34,9 @@ class LDAPSystemSyncer extends Syncer {
 		const jobs = systems.map((system) => async () => {
 			this.stats.systems[system.alias] = {};
 			await new LDAPSyncer(this.app, this.stats.systems[system.alias], this.logger, system).sync();
-			await this.app.service('ldap').disconnect(system.ldapConfig);
+			// don't let unbind errors stop the sync
+			this.app.service('ldap').disconnect(system.ldapConfig)
+				.catch((error) => this.logger.error('Could not unbind from LDAP server', { error }));
 		});
 		for (const job of jobs) {
 			await job();
