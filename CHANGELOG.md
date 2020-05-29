@@ -20,6 +20,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-4506 Secure Get User Route. Read user details may only users with STUDENT_LIST or TEACHER_LIST permissions
 ### Removed
 
+## [23.1.4] - 2020-05-29
+
+### Fixed in 23.1.4
+
+- SC-4749 avoid xss in image onerror event attribute for submissions
 
 ## [23.0.0] - 2020-05-19
 
