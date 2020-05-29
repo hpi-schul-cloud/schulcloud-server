@@ -160,6 +160,53 @@ describe('submission service', function test() {
 		expect(result.total).to.equal(1);
 	});
 
+	it('course teacher can FIND course submissions', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool();
+		const [teacher, student] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+		]);
+		await createSubmission([teacher], [student]);
+		const submissionService = app.service('submissions');
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		params.query = {};
+		const result = await submissionService.find(params);
+		expect(result).to.not.be.undefined;
+		expect(result.total).to.equal(1);
+	});
+
+	it('substitution teacher can FIND course submissions', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool();
+		const [courseTeacher, substitutionTeacher, student] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
+			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+		]);
+		await createSubmission([courseTeacher], [student], false, [substitutionTeacher]);
+		const submissionService = app.service('submissions');
+		const params = await testObjects.generateRequestParamsFromUser(substitutionTeacher);
+		params.query = {};
+		const result = await submissionService.find(params);
+		expect(result).to.not.be.undefined;
+		expect(result.total).to.equal(1);
+	});
+	
+	it('team member can FIND team submissions', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool();
+		const [teacher, submitter, teamMember] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+		]);
+		await createSubmission([teacher], [submitter, teamMember]);
+		const submissionService = app.service('submissions');
+		const params = await testObjects.generateRequestParamsFromUser(teamMember);
+		params.query = {};
+		const result = await submissionService.find(params);
+		expect(result).to.not.be.undefined;
+		expect(result.total).to.equal(1);
+	});
+
 	it('teacher can NOT FIND all submissions on the school', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
 		const [originalTeacher, teacher, student] = await Promise.all([
@@ -190,7 +237,39 @@ describe('submission service', function test() {
 		expect(result.total).to.equal(0);
 	});
 
-	it('student can not GET other students submissions', async () => {
+	it('course student can FIND other students public course submissions', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool();
+		const [teacher, student, otherStudent] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+		]);
+		await createSubmission([teacher], [student], true, [], [otherStudent]);
+		const submissionService = app.service('submissions');
+		const params = await testObjects.generateRequestParamsFromUser(otherStudent);
+		params.query = {};
+		const result = await submissionService.find(params);
+		expect(result).to.not.be.undefined;
+		expect(result.total).to.equal(1);
+	});
+
+	it('outside student can NOT FIND other students public course submissions', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool();
+		const [teacher, student, otherStudent] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+		]);
+		await createSubmission([teacher], [student], true);
+		const submissionService = app.service('submissions');
+		const params = await testObjects.generateRequestParamsFromUser(otherStudent);
+		params.query = {};
+		const result = await submissionService.find(params);
+		expect(result).to.not.be.undefined;
+		expect(result.total).to.equal(0);
+	});
+
+	it('student can NOT GET other students submissions', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
 		const [teacher, student, otherStudent] = await Promise.all([
 			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
@@ -272,7 +351,7 @@ describe('submission service', function test() {
 		expect(result.comment).to.eq('egal wie dicht du bist, Goethe war Dichter.');
 	});
 
-	it('outside student can not GET other students public course submissions', async () => {
+	it('outside student can NOT GET other students public course submissions', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
 		const [teacher, student, otherStudent] = await Promise.all([
 			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
