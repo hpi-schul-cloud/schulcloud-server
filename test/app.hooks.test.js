@@ -140,7 +140,7 @@ describe('Sanitization Hook', () => {
 		expect(result.subject).to.equal(''); // filter all
 	});
 
-	it('sanitize in submissions, example 1', () => {
+	it('sanitize in submissions, avoid img onerror attribute', () => {
 		const data = {
 			comment: '<img onerror="window.location = \'google.com\'" src="x" />',
 		};
@@ -148,10 +148,10 @@ describe('Sanitization Hook', () => {
 		const path = 'submissions';
 		const result = sanitizeDeep(data, path);
 
-		expect(result.comment).to.equal('<img src="x" />'); // filter all
+		expect(result.comment, 'onerror attribute removed from img tag').to.equal('<img src="x" />');
 	});
 
-	it('sanitize in submissions, example 1', () => {
+	it('sanitize in submissions, avoid js in href', () => {
 		const data = {
 			comment: '<a href="javascript:alert(1);">Link</a>',
 		};
@@ -159,7 +159,7 @@ describe('Sanitization Hook', () => {
 		const path = 'submissions';
 		const result = sanitizeDeep(data, path);
 
-		expect(result.comment).to.equal('<a>Link</a>'); // filter all
+		expect(result.comment, 'js removed from a href').to.equal('<a>Link</a>');
 	});
 
 	it('sanitize in course, example 1', () => {
