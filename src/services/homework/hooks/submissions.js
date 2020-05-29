@@ -177,7 +177,8 @@ const insertSubmissionsData = (context) => {
 	return submissionService.find({
 		query: {
 			homeworkId: context.data.homeworkId,
-			$populate: ['studentId'],
+			$select: ['teamMembers'],
+			$populate: [{ path: 'studentId', select: ['firstName', 'lastName'] }],
 		},
 	}).then((submissions) => {
 		context.data.submissions = submissions.data;
