@@ -56,7 +56,7 @@ module.exports = function news() {
 	const app = this;
 	const path = 'help/documents';
 	app.use(path, new HelpDocumentsService());
-	const service = app.service(`/${path}`);
+	const service = app.service(path);
 
 	service.hooks({
 		before: {
