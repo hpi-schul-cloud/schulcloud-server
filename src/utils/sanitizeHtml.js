@@ -56,17 +56,19 @@ const htmlFalseOptions = {
  * @param {*} param
  */
 const sanitize = (data, { html = false }) => {
+	let retValue = null;
 	// https://www.npmjs.com/package/sanitize-html
 	if (html === true) {
 		// editor-content data
-		data = sanitizeHtml(data, htmlTrueOptions);
-		data = data.replace(/(&lt;script&gt;).*?(&lt;\/script&gt;)/gim, ''); // force remove script tags
-		data = data.replace(/(<script>).*?(<\/script>)/gim, ''); // force remove script tags
+		retValue = sanitizeHtml(data, htmlTrueOptions);
+		// TODO handle following lines in sanitizeHtml
+		retValue = retValue.replace(/(&lt;script&gt;).*?(&lt;\/script&gt;)/gim, ''); // force remove script tags
+		retValue = retValue.replace(/(<script>).*?(<\/script>)/gim, ''); // force remove script tags
 	} else {
 		// non editor-content data
-		data = sanitizeHtml(data, htmlFalseOptions);
+		retValue = sanitizeHtml(data, htmlFalseOptions);
 	}
-	return data;
+	return retValue;
 };
 
 /**
