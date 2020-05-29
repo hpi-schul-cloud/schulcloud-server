@@ -18,7 +18,7 @@ const allowedSchemes = ['http', 'https', 'ftp', 'mailto'];
 
 const allowedAttributes = {
 	a: ['href', 'name', 'target'],
-	img: ['src', 'width', 'height'],
+	img: ['src', 'width', 'height', 'alt'],
 };
 
 const htmlTrueOptions = {
