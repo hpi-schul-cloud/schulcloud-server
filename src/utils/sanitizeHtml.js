@@ -67,7 +67,7 @@ const sanitizeDeep = (data, path, depth = 0, safeAttributes = []) => {
 				}
 				data[key] = sanitize(value, { html: allowedHtmlByPathAndKeys(path, key) });
 			} else {
-				sanitizeDeep(value, path, depth + 1);
+				sanitizeDeep(value, path, depth + 1, safeAttributes);
 			}
 		});
 	} else if (typeof data === 'string') {
