@@ -29,9 +29,14 @@ const htmlFalseOptions = {
 	},
 };
 
-const sanitize = (data, options) => {
+/**
+ * sanitizes data
+ * @param {*} data
+ * @param {*} param
+ */
+const sanitize = (data, { html = false }) => {
 	// https://www.npmjs.com/package/sanitize-html
-	if ((options || {}).html === true) {
+	if (html === true) {
 		// editor-content data
 		data = sanitizeHtml(data, htmlTrueOptions);
 		data = data.replace(/(&lt;script&gt;).*?(&lt;\/script&gt;)/gim, ''); // force remove script tags
@@ -43,6 +48,11 @@ const sanitize = (data, options) => {
 	return data;
 };
 
+/**
+ * disables sanitization for defined keys if a path is matching
+ * @param {*} path
+ * @param {*} key
+ */
 const allowedHtmlByPathAndKeys = (path, key) => paths.includes(path) && keys.includes(key);
 
 /**
