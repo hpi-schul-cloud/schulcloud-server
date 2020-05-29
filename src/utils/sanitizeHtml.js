@@ -58,6 +58,7 @@ const sanitizeDeep = (data, path, depth = 0, safeAttributes = []) => {
 		throw new Error('Data level is to deep. (sanitizeDeep)', { path, data });
 	}
 	if (typeof data === 'object' && data !== null) {
+		// we have an object, can match strings or recurse child objects
 		// eslint-disable-next-line consistent-return
 		Object.entries(data).forEach(([key, value]) => {
 			if (typeof value === 'string') {
@@ -67,17 +68,19 @@ const sanitizeDeep = (data, path, depth = 0, safeAttributes = []) => {
 				}
 				data[key] = sanitize(value, { html: allowedHtmlByPathAndKeys(path, key) });
 			} else {
-				sanitizeDeep(value, path, depth + 1);
+				sanitizeDeep(value, path, depth + 1, safeAttributes);
 			}
 		});
 	} else if (typeof data === 'string') {
+		// here we can sanitize the input
 		data = sanitize(data, { html: false });
 	} else if (Array.isArray(data)) {
+		// here we have to check all array elements and sanitize strings or do recursion
 		for (let i = 0; i < data.length; i += 1) {
 			if (typeof data[i] === 'string') {
 				data[i] = sanitize(data[i], { html: false });
 			} else {
-				sanitizeDeep(data[i], path, depth + 1);
+				sanitizeDeep(data[i], path, depth + 1, safeAttributes);
 			}
 		}
 	}
