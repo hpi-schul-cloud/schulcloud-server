@@ -8,15 +8,36 @@ const paths = ['lessons', 'news', 'newsModel', 'homework', 'submissions'];
 const saveKeys = ['password', 'secret'];
 const allowedTags = ['h1', 'h2', 'h3', 'blockquote', 'p', 'a', 'ul', 'ol', 's', 'u', 'span', 'del',
 	'li', 'b', 'i', 'img', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
-	'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'audio', 'video', 'iframe', 'sub', 'sup'];
+	'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'audio', 'video', 'sub', 'sup'];
 const allowedSchemes = ['http', 'https', 'ftp', 'mailto'];
+
+// const allowedSchemesByTag = {
+// 	// allow base64 image data
+// 	img: ['data'],
+// };
+
+const allowedAttributes = {
+	a: ['href', 'name', 'target'],
+	img: ['src', 'width', 'height'],
+};
 
 const htmlTrueOptions = {
 	allowedTags,
-	allowedAttributes: false, // allow all attributes of allowed tags
+	allowedAttributes, // allow all attributes of allowed tags
 	allowedSchemes,
+	// allowedSchemesByTag, // TODO enable this?
 	parser: {
 		decodeEntities: true,
+	},
+	allowedStyles: {
+		'*': {
+			// Match HEX and RGB
+			color: [/^#(0x)?[0-9a-f]+$/i, /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/],
+			'text-align': [/^left$/, /^right$/, /^center$/],
+			// Match any number with px, em, or %
+			'font-size': [/^\d+(?:px|em|%)$/],
+			'font-style': [/^\w+$/],
+		},
 	},
 };
 
