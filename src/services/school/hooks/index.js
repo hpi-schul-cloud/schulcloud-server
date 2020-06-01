@@ -199,7 +199,13 @@ const restrictToUserSchool = async (context) => {
 
 const populateInQuery = (context) => (context.params.query || {}).$populate;
 
-const isNotAuthenticated = async (context) => !((context.params.headers || {}).authorization || context.params.account && context.params.account.userId);
+const isNotAuthenticated = async (context) => {
+	if (typeof (context.params.provider) === 'undefined') {
+		return false;
+	} else {
+		return !((context.params.headers || {}).authorization || context.params.account && context.params.account.userId);
+	}
+}
 
 exports.before = {
 	all: [
@@ -233,7 +239,7 @@ exports.before = {
 
 exports.after = {
 	all: [
-		iff(isProvider('external') && isNotAuthenticated, keep('name', 'purpose', 'id')),
+		iff(isNotAuthenticated, keep('name', 'purpose', 'id')),
 		iff(populateInQuery, keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active'])),
 		iff(isProvider('external') && !globalHooks.isSuperHero(), discard('storageProvider')),
 	],
