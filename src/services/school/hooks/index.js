@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
 const {
-	iff, isProvider, discard, disallow, keepInArray,
+	iff, isProvider, discard, disallow, keepInArray, keep,
 } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 
@@ -199,8 +199,18 @@ const restrictToUserSchool = async (context) => {
 
 const populateInQuery = (context) => (context.params.query || {}).$populate;
 
+const isNotAuthenticated = async (context) => {
+	if (typeof (context.params.provider) === 'undefined') {
+		return false;
+	} else {
+		return !((context.params.headers || {}).authorization || context.params.account && context.params.account.userId);
+	}
+}
+
 exports.before = {
-	all: [],
+	all: [
+		globalHooks.authenticateWhenJWTExist,
+	],
 	find: [],
 	get: [],
 	create: [
@@ -229,6 +239,7 @@ exports.before = {
 
 exports.after = {
 	all: [
+		iff(isNotAuthenticated, keep('name', 'purpose', 'id')),
 		iff(populateInQuery, keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active'])),
 		iff(isProvider('external') && !globalHooks.isSuperHero(), discard('storageProvider')),
 	],

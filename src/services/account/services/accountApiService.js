@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const local = require('@feathersjs/authentication-local');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const {
-	hasPermission, permitGroupOperation,
+	hasPermission, permitGroupOperation, authenticateWhenJWTExist
 } = require('../../../hooks');
 const {
 	sanitizeUsername,
@@ -16,7 +16,6 @@ const {
 	protectUserId,
 	securePatching,
 	filterToRelated,
-	testIfJWTExist,
 	restrictToUsersSchool,
 } = require('../hooks');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
@@ -64,7 +63,7 @@ const accountServiceHooks = {
 		// find, get and create cannot be protected by authenticate('jwt')
 		// otherwise we cannot get the accounts required for login
 		find: [
-			testIfJWTExist,
+			authenticateWhenJWTExist,
 			iff(isProvider('external'), restrictAccess),
 		],
 		get: [disallow('external')],
