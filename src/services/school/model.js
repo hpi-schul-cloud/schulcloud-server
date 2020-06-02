@@ -80,6 +80,7 @@ const schoolSchema = new Schema({
 	},
 	inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below),
 	storageProvider: { type: mongoose.Schema.Types.ObjectId, ref: 'storageprovider' },
+	permissions: { type: Object },
 	...externalSourceSchema,
 }, {
 	timestamps: true,

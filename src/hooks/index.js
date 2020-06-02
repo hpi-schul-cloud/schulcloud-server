@@ -95,6 +95,27 @@ const hasPermission = (inputPermissions) => {
 	};
 };
 
+exports.hasSchoolPermission = (role, inputPermission) => async (context) => {
+	const { params: { account }, app } = context;
+	if (!account && !account.userId) {
+		throw new Forbidden('Cannot read account data');
+	}
+	const user = await app.service('users').get(account.userId);
+	app.service('schools').get(user.schoolId)
+		.then((school) => {
+			const { permissions } = school;
+			// If there are no special school permissions, continue with normal permission check
+			if (!Object.prototype.hasOwnProperty.call(permissions.role, inputPermission)) {
+				return Promise.resolve(hasPermission(inputPermission));
+			}
+			// Otherwise check for user's special school permission
+			if (!permissions.role.inputPermission) {
+				throw new Forbidden('You do not have the required permission');
+			}
+			return Promise.resolve(context);
+		});
+};
+
 /**
  * @param  {string, array[string]} permissions
  * @returns resolves if the current user has ALL of the given permissions

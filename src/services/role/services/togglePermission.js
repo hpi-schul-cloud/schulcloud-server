@@ -1,6 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 const Role = require('../model');
+const { schoolModel: School } = require('../../school/model');
+const { lookupSchool } = require('../../../hooks');
 
 
 const hooks = {
@@ -8,39 +10,51 @@ const hooks = {
 		all: [
 			authenticate('jwt'),
 			globalHooks.hasPermission('ROLE_VIEW'),
+			lookupSchool,
+			// globalHooks.hasSchoolPermission('TEACHER_STUDENT_LIST'),
 		],
 	},
 };
 
 
 class TogglePermission {
-	async create(data, params) {
+	async patch(id, data, params) {
 		const { roleName } = params.route;
-		const { toggle, permission } = data;
+		const { permissions } = data;
 
-		const role = await Role.findOne({
-			name: roleName,
-		}).exec();
+		const role = await Role
+			.findOne({
+				name: roleName,
+			})
+			.exec();
+
+		const school = await School
+			.findById(params.account.schoolId)
+			.select(['permissions'])
+			.exec();
 
 		const filterPermissions = (list, element) => list.filter((p) => p !== element);
 
-		if (role) {
-			const permissions = [...await role.getPermissions()];
+		if (role && school) {
+			const rolePermissions = [...await role.getPermissions()];
+			const schoolPermissions = school.permissions;
 
-			switch (permission) {
-				case 'studentVisibility':
-					if (toggle && !permissions.includes('STUDENT_LIST')) {
-						permissions.push('STUDENT_LIST');
-						await role.updateOne({ permissions });
-					} else if (!toggle) {
-						await role.updateOne({ permissions: filterPermissions(permissions, 'STUDENT_LIST') });
-					}
-					break;
-				default:
-					break;
+			if (Object.prototype.hasOwnProperty.call(permissions, 'studentVisibility')) {
+				// if there are special school permissions, toggle school permission
+				if (Object.prototype.hasOwnProperty.call(schoolPermissions[role.name], 'STUDENT_LIST')) {
+					schoolPermissions[role.name].STUDENT_LIST = permissions.studentVisibility;
+					await school.updateOne({ permissions: schoolPermissions });
+					return;
+				}
+				// else toggle role permissions
+				if (permissions.studentVisibility && !rolePermissions.includes('STUDENT_LIST')) {
+					rolePermissions.push('STUDENT_LIST');
+					await role.updateOne({ permissions: rolePermissions });
+					return;
+				}
+				await role.updateOne({ permissions: filterPermissions(rolePermissions, 'STUDENT_LIST') });
 			}
 		}
-		return [];
 	}
 }
 
