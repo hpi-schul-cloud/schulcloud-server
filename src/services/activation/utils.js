@@ -28,10 +28,11 @@ const getQuarantinedObject = (keyword, quarantinedObject) => {
 	}
 };
 
-const createEntry = async (ref, account, keyword, quarantinedObject) => {
+const createEntry = async (ref, account, keyword, data) => {
 	try {
+		const quarantinedObject = createQuarantinedObject(keyword, data);
 		const activationCode = crypto.randomBytes(64).toString('hex');
-		const entry = await ref.app.service('activationModel')
+		const entry = await (ref.app ? ref.app : ref).service('activationModel')
 			.create({
 				activationCode,
 				account,
@@ -68,12 +69,11 @@ const lookupEntry = (requestingId, entry, keyword) => {
  * @param {ObjectId} userId			ObjectId of User (userId)
  * @param {String} keyword			Keyword
  */
-const lookupByUserId = async (ref, requestingId, userId, keyword) => {
+const lookupByUserId = async (ref, requestingId, keyword) => {
 	if (!requestingId) throw new Forbidden('Not authorized');
-	if (!userId) throw SyntaxError('userId required!');
 	if (!keyword) throw SyntaxError('keyword required!');
 
-	const entry = await ref.app.service('activationModel').find({ query: { account: userId } });
+	const entry = await (ref.app ? ref.app : ref).service('activationModel').find({ query: { account: requestingId } });
 	return lookupEntry(requestingId, entry, keyword);
 };
 
@@ -89,7 +89,7 @@ const lookupByActivationCode = async (ref, requestingId, activationCode, keyword
 	if (!activationCode) throw SyntaxError('entryId required!');
 	if (!keyword) throw SyntaxError('keyword required!');
 
-	const entry = await ref.app.service('activationModel').find({ query: { activationCode } });
+	const entry = await (ref.app ? ref.app : ref).service('activationModel').find({ query: { activationCode } });
 	return lookupEntry(requestingId, entry, keyword);
 };
 
@@ -104,14 +104,14 @@ const sendMail = async (ref, mail, entry) => {
 	if (!mail || !mail.email || !mail.subject || !mail.content || !entry) throw SyntaxError('missing parameters');
 
 	try {
-		// await ref.app.service('/mails')
-		// 	.create({
-		// 		email: mail.email,
-		// 		subject: mail.subject,
-		// 		content: mail.content,
-		// 	});
+		await ref.app.service('/mails')
+			.create({
+				email: mail.email,
+				subject: mail.subject,
+				content: mail.content,
+			});
 
-		await ref.app.service('activationModel').update({ _id: entry._id }, {
+		await ref.app.service('activationModel').patch({ _id: entry._id }, {
 			$set: {
 				mailSend: true,
 			},
@@ -134,7 +134,6 @@ module.exports = {
 	sendMail,
 	getUser,
 	deleteEntry,
-	createQuarantinedObject,
 	getQuarantinedObject,
 	createEntry,
 };

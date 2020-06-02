@@ -23,7 +23,6 @@ const {
 	getUser,
 	deleteEntry,
 	createEntry,
-	createQuarantinedObject,
 	getQuarantinedObject,
 } = require('../utils');
 
@@ -84,7 +83,7 @@ const keyword = KEYWORDS.E_MAIL_ADDRESS;
 class EMailAdresseActivationService {
 	async find(params) {
 		const { userId } = params.authentication.payload;
-		const entry = await lookupByUserId(this, userId, userId, keyword);
+		const entry = await lookupByUserId(this, userId, keyword);
 		if (entry) {
 			const email = getQuarantinedObject(keyword, entry.quarantinedObject);
 			return {
@@ -102,7 +101,7 @@ class EMailAdresseActivationService {
 
 		// check if entry already exists
 		let entry;
-		entry = await lookupByUserId(this, user._id, params.account.userId, keyword);
+		entry = await lookupByUserId(this, params.account.userId, keyword);
 		if (entry) {
 			const email = getQuarantinedObject(keyword, entry.quarantinedObject);
 			if (email !== data.email) {
@@ -117,8 +116,7 @@ class EMailAdresseActivationService {
 		}
 
 		// create new entry
-		const quarantinedObject = createQuarantinedObject(keyword, data.email);
-		entry = await createEntry(this, params.account.userId, keyword, quarantinedObject);
+		entry = await createEntry(this, params.account.userId, keyword, data.email);
 
 		// send email
 		await mail(this, 'activationLinkMail', user, entry);
@@ -159,7 +157,7 @@ class EMailAdresseActivationService {
 		await this.app.service('/accounts').patch(account[0]._id, { username: email });
 
 		// set activation link as consumed
-		await this.app.service('activationModel').update({ _id: entry._id }, {
+		await this.app.service('activationModel').patch({ _id: entry._id }, {
 			$set: {
 				activated: true,
 			},
