@@ -828,7 +828,7 @@ exports.blockDisposableEmail = (property, optional = true) => async (context) =>
 	return context;
 };
 
-exports.authenticateWhenJWTExist = async (context) => {
+exports.authenticateWhenJWTExist = (context) => {
 	if ((context.params.headers || {}).authorization) {
 		return authenticate('jwt')(context);
 	}
