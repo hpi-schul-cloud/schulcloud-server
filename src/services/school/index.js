@@ -3,6 +3,7 @@ const schoolModels = require('./model');
 const hooks = require('./hooks');
 const schoolGroupHooks = require('./hooks/schoolGroup.hooks');
 const { SchoolMaintenanceService } = require('./maintenance');
+const { HandlePermissions, handlePermissionsHooks } = require('./services/permissions');
 
 module.exports = function schoolServices() {
 	const app = this;
@@ -58,4 +59,8 @@ module.exports = function schoolServices() {
 	}));
 	const gradeLevelService = app.service('/gradeLevels');
 	gradeLevelService.hooks(hooks);
+
+	app.use('/schoolPermissions', new HandlePermissions());
+	const handlePermissionsService = app.service('/schoolPermissions');
+	handlePermissionsService.hooks(handlePermissionsHooks);
 };

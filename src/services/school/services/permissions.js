@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
-const Role = require('../model');
-const { schoolModel: School } = require('../../school/model');
+const Role = require('../../role/model');
+const { schoolModel: School } = require('../model');
 const { lookupSchool } = require('../../../hooks');
 
 
@@ -11,20 +11,21 @@ const hooks = {
 			authenticate('jwt'),
 			globalHooks.hasPermission('ROLE_VIEW'),
 			lookupSchool,
-			// globalHooks.hasSchoolPermission('TEACHER_STUDENT_LIST'),
+		],
+		patch: [
+			globalHooks.hasPermission('SCHOOL_PERMISSION_CHANGE'),
 		],
 	},
 };
 
 
-class TogglePermission {
+class HandlePermissions {
 	async patch(id, data, params) {
-		const { roleName } = params.route;
 		const { permissions } = data;
 
 		const role = await Role
 			.findOne({
-				name: roleName,
+				name: 'teacher',
 			})
 			.exec();
 
@@ -50,15 +51,15 @@ class TogglePermission {
 				if (permissions.studentVisibility && !rolePermissions.includes('STUDENT_LIST')) {
 					rolePermissions.push('STUDENT_LIST');
 					await role.updateOne({ permissions: rolePermissions });
-					return;
+				} else if (!permissions.studentVisibility) {
+					await role.updateOne({ permissions: filterPermissions(rolePermissions, 'STUDENT_LIST') });
 				}
-				await role.updateOne({ permissions: filterPermissions(rolePermissions, 'STUDENT_LIST') });
 			}
 		}
 	}
 }
 
 module.exports = {
-	TogglePermission,
-	togglePermissionHooks: hooks,
+	HandlePermissions,
+	handlePermissionsHooks: hooks,
 };
