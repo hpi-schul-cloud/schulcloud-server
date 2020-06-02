@@ -20,6 +20,14 @@ const hooks = {
 
 
 class HandlePermissions {
+	async find(params) {
+		const school = await School
+			.findById(params.account.schoolId)
+			.select(['permissions'])
+			.exec();
+		return school.permissions;
+	}
+
 	async patch(id, data, params) {
 		const { permissions } = data;
 
