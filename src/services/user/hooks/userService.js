@@ -1,6 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { keep } = require('feathers-hooks-common');
-const { BadRequest, Forbidden, GeneralError, NotFound } = require('@feathersjs/errors');
+const {
+	BadRequest, Forbidden, GeneralError, NotFound,
+} = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
 const {
@@ -481,7 +483,7 @@ const enforceRoleHierarchyOnCreate = async (context) => {
 	}));
 
 	return Promise.resolve(context);
-}
+};
 
 const generateRegistrationLink = async (context) => {
 	const { data, app } = context;
@@ -514,6 +516,8 @@ const filterResult = async (context) => {
 	if (userCallingHimself || userIsSuperhero) {
 		return context;
 	}
+
+	// TODO: check if elevatedUser can remove and handled by the amdin route
 	const elevatedUser = await hasPermissionNoHook(context, context.params.account.userId, 'STUDENT_EDIT');
 	const allowedAttributes = [
 		'_id', 'roles', 'schoolId', 'firstName', 'middleName', 'lastName',
@@ -523,7 +527,7 @@ const filterResult = async (context) => {
 	if (elevatedUser) {
 		const elevatedAttributes = [
 			'email', 'birthday', 'children', 'parents', 'updatedAt',
-			'createdAt', 'age', 'ldapDn',
+			'createdAt', 'age', 'ldapDn', 'consentStatus', 'consent',
 		];
 		allowedAttributes.push(...elevatedAttributes);
 	}

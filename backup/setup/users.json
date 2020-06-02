@@ -65,7 +65,7 @@
 	"lastName": "Mathe",
 	"email": "schueler@schul-cloud.org",
 	"updatedAt": {
-		"$date": "2020-02-05T15:43:39.512Z"
+		"$date": "2020-05-27T14:49:08.845Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -83,7 +83,39 @@
 		{
 			"$oid": "0000d186816abba584714c99"
 		}
-	]
+	],
+	"consent": {
+		"userConsent": {
+			"form": "digital",
+			"privacyConsent": true,
+			"termsOfUseConsent": true,
+			"dateOfPrivacyConsent": {
+				"$date": "2017-01-01T00:06:37.148Z"
+			},
+			"dateOfTermsOfUseConsent": {
+				"$date": "2017-01-01T00:06:37.148Z"
+			}
+		},
+		"parentConsents": [
+			{
+				"_id": {
+					"$oid": "5ece7de4a194604c6e31f434"
+				},
+				"parentId": {
+					"$oid": "0000d213816abba584714c0b"
+				},
+				"form": "digital",
+				"privacyConsent": true,
+				"termsOfUseConsent": true,
+				"dateOfPrivacyConsent": {
+					"$date": "2017-01-01T00:06:37.148Z"
+				},
+				"dateOfTermsOfUseConsent": {
+					"$date": "2017-01-01T00:06:37.148Z"
+				}
+			}
+		]
+	}
 },
 {
 	"_id": {
@@ -153,7 +185,7 @@
 	"firstName": "Waldemar",
 	"lastName": "Wunderlich",
 	"updatedAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
+		"$date": "2020-05-27T14:49:08.844Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -170,7 +202,25 @@
 			"$oid": "0000d186816abba584714c99"
 		}
 	],
-	"__v": 0
+	"__v": 0,
+	"consent": {
+		"parentConsents": [
+			{
+				"_id": {
+					"$oid": "5ece7de4a194604c6e31f433"
+				},
+				"form": "analog",
+				"privacyConsent": true,
+				"termsOfUseConsent": true,
+				"dateOfPrivacyConsent": {
+					"$date": "2017-01-01T00:06:37.148Z"
+				},
+				"dateOfTermsOfUseConsent": {
+					"$date": "2017-01-01T00:06:37.148Z"
+				}
+			}
+		]
+	}
 },
 {
 	"_id": {
@@ -206,7 +256,7 @@
 		"$oid": "599ec1688e4e364ec18ff46e"
 	},
 	"updatedAt": {
-		"$date": "2017-10-26T15:20:37.31Z"
+		"$date": "2017-10-26T15:20:37.310Z"
 	},
 	"createdAt": {
 		"$date": "2017-08-24T12:07:04.416Z"
@@ -252,7 +302,9 @@
 	},
 	"firstName": "Klara",
 	"lastName": "Fall",
-	"features": ["edtr"],
+	"features": [
+		"edtr"
+	],
 	"roles": [
 		{
 			"$oid": "0000d186816abba584714c98"

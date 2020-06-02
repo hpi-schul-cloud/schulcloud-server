@@ -1,5 +1,5 @@
-const { userModel } = require('../../../../../src/services/user/model.js');
-const accountModel = require('../../../../../src/services/account/model.js');
+const { userModel } = require('../../../../../src/services/user/model');
+const accountModel = require('../../../../../src/services/account/model');
 
 const deleteUser = async (email = 'foo@bar.baz') => {
 	await userModel.deleteOne({ email });

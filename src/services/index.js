@@ -43,6 +43,7 @@ const alert = require('./alert');
 const videoconference = require('./videoconference');
 const messengerSync = require('./messengerSync');
 const nexboard = require('./nexboard');
+const etherpad = require('./etherpad');
 const storageProvider = require('./storageProvider');
 
 module.exports = function initializeServices() {
@@ -93,6 +94,7 @@ module.exports = function initializeServices() {
 	app.configure(videoconference);
 	app.configure(messengerSync);
 	app.configure(nexboard);
+	app.configure(etherpad);
 	app.configure(storageProvider);
 
 	// initialize events

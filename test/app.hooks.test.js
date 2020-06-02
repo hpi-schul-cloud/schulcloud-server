@@ -3,7 +3,9 @@ const { ObjectId } = require('mongoose').Types;
 const app = require('../src/app');
 const { sanitizeDataHook } = require('../src/app.hooks');
 const { sanitizeHtml: { sanitizeDeep } } = require('../src/utils');
-const { cleanup, createTestUser, generateRequestParamsFromUser, createTestSchool } = require('./services/helpers/testObjects')(app);
+const {
+	cleanup, createTestUser, generateRequestParamsFromUser, createTestSchool,
+} = require('./services/helpers/testObjects')(app);
 
 describe('Sanitization Hook', () => {
 	// TODO: Test if it work for create, post and update
@@ -62,10 +64,10 @@ describe('Sanitization Hook', () => {
 		const safeAttributes = ['url'];
 		const context = {
 			path: 'not_authentication',
-			safeAttributes: safeAttributes,
+			safeAttributes,
 			result: {
 				url: testString,
-				dangerousUrl: testString
+				dangerousUrl: testString,
 			},
 		};
 		const result = sanitizeDataHook(context);
@@ -136,6 +138,28 @@ describe('Sanitization Hook', () => {
 		const result = sanitizeDeep(data, path);
 
 		expect(result.subject).to.equal(''); // filter all
+	});
+
+	it('sanitize in submissions, avoid img onerror attribute', () => {
+		const data = {
+			comment: '<img onerror="window.location = \'google.com\'" src="x" />',
+		};
+
+		const path = 'submissions';
+		const result = sanitizeDeep(data, path);
+
+		expect(result.comment, 'onerror attribute removed from img tag').to.equal('<img src="x" />');
+	});
+
+	it('sanitize in submissions, avoid js in href', () => {
+		const data = {
+			comment: '<a href="javascript:alert(1);">Link</a>',
+		};
+
+		const path = 'submissions';
+		const result = sanitizeDeep(data, path);
+
+		expect(result.comment, 'js removed from a href').to.equal('<a>Link</a>');
 	});
 
 	it('sanitize in course, example 1', () => {

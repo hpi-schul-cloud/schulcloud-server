@@ -5,6 +5,8 @@ const {
 	BadRequest,
 	TypeError,
 } = require('@feathersjs/errors');
+const { authenticate } = require('@feathersjs/authentication');
+
 const { Configuration } = require('@schul-cloud/commons');
 const _ = require('lodash');
 const mongoose = require('mongoose');
@@ -551,6 +553,21 @@ exports.denyIfNotCurrentSchool = (
 	return context;
 });
 
+exports.denyIfStudentTeamCreationNotAllowed = (
+	{ errorMessage = 'The current user is not allowed to list other users!' },
+) => async (context) => {
+	const currentUser = await getUser(context);
+	if (!testIfRoleNameExist(currentUser, 'student')) {
+		return context;
+	}
+	const currentUserSchoolId = currentUser.schoolId;
+	const currentUserSchool = await context.app.service('schools').get(currentUserSchoolId);
+	if (!currentUserSchool.isTeamCreationByStudentsEnabled) {
+		throw new Forbidden(errorMessage);
+	}
+	return context;
+};
+
 exports.checkSchoolOwnership = (context) => {
 	const { userId } = context.params.account;
 	const objectId = context.id;
@@ -808,5 +825,12 @@ exports.blockDisposableEmail = (property, optional = true) => async (context) =>
 		}
 	}
 
+	return context;
+};
+
+exports.authenticateWhenJWTExist = (context) => {
+	if ((context.params.headers || {}).authorization) {
+		return authenticate('jwt')(context);
+	}
 	return context;
 };
