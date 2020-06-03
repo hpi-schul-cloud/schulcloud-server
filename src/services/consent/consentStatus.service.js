@@ -1,16 +1,8 @@
-const { modelServices: { prepareInternalParams } } = require('../../utils');
+const { modelServices: { prepareInternalParams }, modifyDataForUserSchema } = require('../../utils');
 
-const MODEL_SERVICE = 'users';
+const MODEL_SERVICE = 'usersModel';
 
 class ConsentService {
-	modifyDataForUserSchema(data) {
-		return {
-			consent: {
-				...data,
-			},
-		};
-	}
-
 	async find(params) {
 		const mQuery = {
 			$limit: params.query.$limit || 25,
@@ -61,24 +53,24 @@ class ConsentService {
 	}
 
 	async get(_id, params) {
-		return this.modelServices.get(_id, prepareInternalParams(params));
+		return this.app
+			.service(MODEL_SERVICE).get(_id, prepareInternalParams(params));
 	}
 
 	async patch(_id, data, params) {
 		return this.app
 			.service(MODEL_SERVICE)
-			.patch(_id, this.modifyDataForUserSchema(data), prepareInternalParams(params));
+			.patch(_id, modifyDataForUserSchema(data), prepareInternalParams(params));
 	}
 
 	async update(_id, data, params) {
 		return this.app
 			.service(MODEL_SERVICE)
-			.update(_id, this.modifyDataForUserSchema(data), prepareInternalParams(params));
+			.update(_id, modifyDataForUserSchema(data), prepareInternalParams(params));
 	}
 
 	setup(app) {
 		this.app = app;
-		this.modelService = this.app.service(MODEL_SERVICE);
 	}
 }
 

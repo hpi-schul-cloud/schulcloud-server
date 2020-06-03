@@ -434,11 +434,14 @@ const enforceRoleHierarchyOnDelete = async (context) => {
 };
 
 /**
- * Check that the authenticated user posseses the rights to create a user with the given roles. This is only checked for external requests.
+ * Check that the authenticated user posseses the rights to create a user with the given roles.
+ * This is only checked for external requests.
  * @param {*} context
  */
 const enforceRoleHierarchyOnCreate = async (context) => {
-	const user = await context.app.service('users').get(context.params.account.userId, { $populate: 'roles' });
+	const user = await context.app.service('users').get(
+		context.params.account.userId, { query: { $populate: 'roles' } },
+	);
 
 	// superhero may create users with every role
 	if (user.roles.filter((u) => (u.name === 'superhero')).length > 0) {
@@ -513,16 +516,18 @@ const filterResult = async (context) => {
 	if (userCallingHimself || userIsSuperhero) {
 		return context;
 	}
+
+	// TODO: check if elevatedUser can remove and handled by the amdin route
 	const elevatedUser = await hasPermissionNoHook(context, context.params.account.userId, 'STUDENT_EDIT');
 	const allowedAttributes = [
 		'_id', 'roles', 'schoolId', 'firstName', 'middleName', 'lastName',
 		'namePrefix', 'nameSuffix', 'discoverable', 'fullName',
-		'displayName', 'avatarInitials', 'avatarBackgroundColor', 'consentStatus', 'consent',
+		'displayName', 'avatarInitials', 'avatarBackgroundColor',
 	];
 	if (elevatedUser) {
 		const elevatedAttributes = [
 			'email', 'birthday', 'children', 'parents', 'updatedAt',
-			'createdAt', 'age', 'ldapDn',
+			'createdAt', 'age', 'ldapDn', 'consentStatus', 'consent',
 		];
 		allowedAttributes.push(...elevatedAttributes);
 	}

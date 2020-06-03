@@ -31,18 +31,10 @@ const stageBaseFilter = (aggregation, attr, value) => {
 };
 
 /**
- * Convert a select array to an object for aggregaitons
+ * Convert a "select"-array to an object to handle it with aggregaitons
  * @param {Array} select
  */
-const convertSelect = (select) => {
-	const project = {};
-
-	select.forEach((e) => {
-		project[e] = 1;
-	});
-
-	return project;
-};
+const convertSelect = (select) => select.reduce((acc, curr) => ({ ...acc, [curr]: 1 }), {});
 
 /**
  * Creates an reducer to filter parent consent

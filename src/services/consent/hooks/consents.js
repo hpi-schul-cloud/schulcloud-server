@@ -227,6 +227,7 @@ const addConsentsStatus = (hook) => {
 	}
 };
 
+// TODO: remove at next version
 const writeConsentToUser = (context) => {
 	const { data, app } = context;
 	app.service('usersModel').patch(data.userId, modifyDataForUserSchema(data));

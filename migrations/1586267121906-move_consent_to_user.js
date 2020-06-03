@@ -67,39 +67,50 @@ const User = mongoose.model('newUserConsent_20200422', new mongoose.Schema({
 /** ***
  *
  *
- * 	TODO: handle multiple records for a user in consents collection
- *
  */
 
 
 module.exports = {
 	up: async function up() {
 		await connect();
+
+		const amount = await Consent.find().countDocuments();
+		info(`${amount} consent will be moved`);
+		const limit = 500;
+		let skip = 0;
+		let looped = 0;
+
+		while (looped < amount) {
 		// ////////////////////////////////////////////////////
 		// Make changes to the database here.
 		// Hint: Access models via this('modelName'), not an imported model to have
 		// access to the correct database connection. Otherwise Mongoose calls never return.
-		info('load current consents');
-		const consents = await Consent
-			.find()
-			.sort({
-				updatedAt: 1,
-				createdAt: 1,
-			})
-			.lean().exec();
-		info('move each consent to the coresponding user');
-		try {
-			await Promise.all(consents.map(async (consent) => {
-				const { userId, ...consentWithoutUser } = consent;
-				return User.findOneAndUpdate({
-					_id: userId,
-				}, {
-					consent: consentWithoutUser,
-				}).exec();
-			}));
-			info('Consents are moved from consent to user');
-		} catch (err) {
-			error(`Moving one or more Consents failed: ${err.message}`);
+			info('load current amount consents');
+			const consents = await Consent
+				.find()
+				.sort({
+					updatedAt: 1,
+					createdAt: 1,
+				}).skip(skip)
+				.limit(limit)
+				.lean()
+				.exec();
+			skip += 1;
+			looped += consents.length;
+			info('move consents to the coresponding user');
+			try {
+				await Promise.all(consents.map(async (consent) => {
+					const { userId, ...consentWithoutUser } = consent;
+					return User.findOneAndUpdate({
+						_id: userId,
+					}, {
+						consent: consentWithoutUser,
+					}).exec();
+				}));
+				info(`${looped} Consents are moved from consent to user`);
+			} catch (err) {
+				error(`Moving Consents between ${skip * limit} and ${skip * limit + limit} failed but will go on with next loop: ${err.message}`);
+			}
 		}
 
 		// ////////////////////////////////////////////////////
