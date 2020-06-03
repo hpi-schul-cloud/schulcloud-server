@@ -19,7 +19,7 @@ const services = {
 	},
 };
 
-describe.only('activationd utils', () => {
+describe('activationd utils', () => {
 	let server;
 
 	before((done) => {
