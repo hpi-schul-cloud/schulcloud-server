@@ -7,18 +7,14 @@ const hooks = {
 	before: {
 		all: [
 			authenticate('jwt'),
-			globalHooks.hasPermission('ROLE_VIEW'),
 			lookupSchool,
 		],
 		get: [
-			globalHooks.hasPermission('ROLE_VIEW'),
-			// globalHooks.hasPermission('SCHOOL_PERMISSION_VIEW'),
+			globalHooks.hasPermission('SCHOOL_PERMISSION_VIEW'),
 
 		],
 		patch: [
-			globalHooks.hasPermission('ROLE_VIEW'),
-			// globalHooks.hasPermission('ROLE_EDIT'),
-			// globalHooks.hasPermission('SCHOOL_PERMISSION_VIEW'),
+			globalHooks.hasPermission('SCHOOL_PERMISSION_VIEW'),
 			globalHooks.hasPermission('SCHOOL_PERMISSION_CHANGE'),
 		],
 	},
@@ -45,24 +41,18 @@ class HandlePermissions {
 	}
 
 	async patch(id, data, params) {
-		const { permissions } = data;
+		const { permission } = data;
 		const { schoolId } = params.account;
 		const school = await getSchool(this.app, schoolId);
 
 		if (school) {
 			const schoolPermissions = school.permissions || {};
 
-			switch (this.permission) {
-				case 'studentVisibility':
-					if (!Object.prototype.hasOwnProperty.call(schoolPermissions, this.role)) {
-						schoolPermissions[this.role] = {};
-					}
-					schoolPermissions[this.role].STUDENT_LIST = permissions.studentVisibility;
-					await updateSchoolPermissions(this.app, schoolId, schoolPermissions);
-					break;
-				default:
-					break;
+			if (!Object.prototype.hasOwnProperty.call(schoolPermissions, this.role)) {
+				schoolPermissions[this.role] = {};
 			}
+			schoolPermissions[this.role][this.permission] = permission.isEnabled;
+			await updateSchoolPermissions(this.app, schoolId, schoolPermissions);
 		}
 	}
 
