@@ -37,7 +37,7 @@ class HandlePermissions {
 
 	async find(params) {
 		const school = await getSchool(this.app, params.account.schoolId);
-		return school.permissions[this.role] || {};
+		return { isEnabled: school.permissions[this.role][this.permission] } || {};
 	}
 
 	async patch(id, data, params) {
