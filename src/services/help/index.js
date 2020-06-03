@@ -3,6 +3,7 @@ const hooks = require('feathers-hooks-common');
 const errors = require('@feathersjs/errors');
 const { helpDocumentsModel } = require('./model');
 const logger = require('../../logger');
+const { excludeAttributesFromSanitization } = require('../../hooks/sanitizationExceptions');
 
 /**
  * retrieve documents from database according to theme and userId
@@ -16,7 +17,7 @@ const findDocuments = async (app, userId, theme) => {
 		if (school.documentBaseDirType === 'school') query = { schoolId: school._id };
 		if (school.documentBaseDirType === 'schoolGroup') query = { schoolGroupId: school.schoolGroupId };
 	}
-	const result = await helpDocumentsModel.find(query);
+	const result = await helpDocumentsModel.find(query).lean().exec();
 
 	if (result.length < 1) throw new errors.NotFound('could not find help documents for this user or theme.');
 	return result[0].data;
@@ -53,14 +54,14 @@ class HelpDocumentsService {
 
 module.exports = function news() {
 	const app = this;
-
-	app.use('/help/documents', new HelpDocumentsService());
-	const service = app.service('/help/documents');
+	const path = 'help/documents';
+	app.use(path, new HelpDocumentsService());
+	const service = app.service(path);
 
 	service.hooks({
 		before: {
 			all: [authenticate('jwt')],
-			find: [],
+			find: [excludeAttributesFromSanitization(path, ['title', 'content'])],
 			get: [hooks.disallow()],
 			create: [hooks.disallow()],
 			update: [hooks.disallow()],

@@ -1,6 +1,7 @@
 const { Configuration } = require('@schul-cloud/commons');
 const { createChannel } = require('../../utils/rabbitmq');
 const { getAllCourseUserIds } = require('../user-group/logic/courses');
+const { teamsModel } = require('../teams/model');
 
 const ACTIONS = {
 	SYNC_USER: 'syncUser',
@@ -37,13 +38,26 @@ const requestSyncForEachCourseUser = async (course) => {
 };
 
 const requestSyncForEachTeamUser = async (team) => {
-	const users = team.userIds.map((teamUser) => teamUser.userId);
+	let fullTeam;
+	if (team.userIds) {
+		fullTeam = team;
+	} else {
+		// team creation event does only contain team._id
+		fullTeam = await teamsModel.findOne(
+			{ _id: team._id },
+			{
+				_id: 1, name: 1, userIds: 1, features: 1,
+			},
+		);
+	}
+
+	const users = fullTeam.userIds.map((teamUser) => teamUser.userId);
 
 	users.forEach((userId) => {
 		const message = {
 			action: ACTIONS.SYNC_USER,
 			userId,
-			teams: [team],
+			teams: [fullTeam],
 		};
 		sendToQueue(message);
 	});
