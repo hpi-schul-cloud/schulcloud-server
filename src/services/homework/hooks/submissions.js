@@ -217,7 +217,7 @@ const noSubmissionBefore = (context) => {
 		|| ((submission.studentId || {})._id == context.params.account.userId));
 	if (submissionsForMe.length > 0) {
 		return Promise.reject(new Conflict({
-			message: 'Benutzer hat bereits für sich abgegeben!',
+			message: 'Die Aufgabe wurde bereits abgegeben!',
 		}));
 	}
 	return Promise.resolve(context);
@@ -244,7 +244,7 @@ const noDuplicateSubmissionForTeamMembers = (context) => {
 		});
 		if (submissionsForTeamMembers.length > 0) {
 			return Promise.reject(new Conflict({
-				message: `${submissionsForTeamMembers.length + ((submissionsForTeamMembers.length === 1) ? ' Mitglied hat' : ' Mitglieder haben')} bereits eine Lösung abgegeben!`,
+				message: `${submissionsForTeamMembers.length + ((submissionsForTeamMembers.length === 1) ? ' Mitglied hat' : ' Mitglieder haben')} bereits eine Lösung abgegeben! Entferne diese${(submissionsForTeamMembers.length === 1) ? 's Mitglied!' : ' Mitglieder!'}`,
 			}));
 		}
 		return Promise.resolve(context);
