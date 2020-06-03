@@ -9,7 +9,7 @@ const ttl = Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY');
 const {
 	validPassword,
 	blockThirdParty,
-	sanitizeData,
+	validateEmail,
 	blockDisposableEmail,
 	trimPassword,
 	hasPermission,
@@ -186,7 +186,7 @@ const EMailAdresseActivationHooks = {
 		get: [],
 		create: [
 			blockThirdParty,
-			sanitizeData,
+			validateEmail,
 			blockDisposableEmail('email'),
 			trimPassword,
 			iff(isProvider('external'), validPassword),

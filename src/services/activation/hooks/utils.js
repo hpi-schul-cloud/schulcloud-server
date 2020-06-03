@@ -28,20 +28,27 @@ const validPassword = (hook) => {
 };
 
 const blockThirdParty = (hook) => {
-	if (hook.params.account.system) {
+	if (hook.params.account.systemId) {
 		throw new Forbidden('Your user data is managed by a IDM. Changes to it can only be made in the source system');
 	}
 	return hook;
 };
 
-const sanitizeData = (hook) => {
-	if ('email' in hook.data) {
-		if (hook.data.email === hook.params.account.username) {
-			throw new BadRequest('Your new email is the same as your current one');
-		}
-		if (!constants.expressions.email.test(hook.data.email)) {
-			throw new BadRequest('Please enter a valid e-mail address!');
-		}
+const validateEmail = (hook) => {
+	if (!hook.data.email) {
+		throw new BadRequest('email missing');
+	}
+	if (!hook.data.repeatEmail) {
+		throw new BadRequest('email repeat missing');
+	}
+	if (hook.data.email === hook.params.account.username) {
+		throw new BadRequest('Your new email is the same as your current one');
+	}
+	if (!constants.expressions.email.test(hook.data.email)) {
+		throw new BadRequest('Please enter a valid e-mail address');
+	}
+	if (hook.data.email !== hook.data.repeatEmail) {
+		throw new BadRequest('email and email repeat do not match');
 	}
 	return hook;
 };
@@ -49,7 +56,7 @@ const sanitizeData = (hook) => {
 module.exports = {
 	validPassword,
 	blockThirdParty,
-	sanitizeData,
+	validateEmail,
 	blockDisposableEmail,
 	trimPassword,
 	hasPermission,
