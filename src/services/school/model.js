@@ -23,6 +23,7 @@ const SCHOOL_FEATURES = {
 	DISABLE_STUDENT_TEAM_CREATION: 'disableStudentTeamCreation',
 	VIDEOCONFERENCE: 'videoconference',
 	MESSENGER: 'messenger',
+	STUDENTVISIBILITY: 'studentVisibility',
 };
 
 const rssFeedSchema = new Schema({
