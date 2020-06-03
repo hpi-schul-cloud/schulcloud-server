@@ -1,4 +1,5 @@
 const service = require('feathers-mongoose');
+const { Configuration } = require('@schul-cloud/commons');
 const schoolModels = require('./model');
 const hooks = require('./hooks');
 const schoolGroupHooks = require('./hooks/schoolGroup.hooks');
@@ -60,7 +61,12 @@ module.exports = function schoolServices() {
 	const gradeLevelService = app.service('/gradeLevels');
 	gradeLevelService.hooks(hooks);
 
-	app.use('/schoolPermissions', new HandlePermissions());
-	const handlePermissionsService = app.service('/schoolPermissions');
-	handlePermissionsService.hooks(handlePermissionsHooks);
+	const FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY = Configuration
+		.get('FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY');
+
+	if (FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY !== 'disabled') {
+		app.use('/school/teacher/studentVisibility', new HandlePermissions('teacher', 'studentVisibility'));
+		const handlePermissionsService = app.service('/school/teacher/studentVisibility');
+		handlePermissionsService.hooks(handlePermissionsHooks);
+	}
 };
