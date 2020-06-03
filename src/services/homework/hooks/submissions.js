@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { Forbidden, GeneralError, BadRequest, Conflict } = require('@feathersjs/errors');
+const {
+	Forbidden, GeneralError, BadRequest, Conflict,
+} = require('@feathersjs/errors');
 const {	iff, isProvider } = require('feathers-hooks-common');
 
 const globalHooks = require('../../../hooks');
@@ -175,7 +177,8 @@ const insertSubmissionsData = (context) => {
 	return submissionService.find({
 		query: {
 			homeworkId: context.data.homeworkId,
-			$populate: ['studentId'],
+			$select: ['teamMembers'],
+			$populate: [{ path: 'studentId', select: ['firstName', 'lastName'] }],
 		},
 	}).then((submissions) => {
 		context.data.submissions = submissions.data;
@@ -346,7 +349,7 @@ const hasViewPermission = async (context, submission, currentUserId) => {
 			const courseService = context.app.service('/courses');
 			const course = await courseService.get(homework.courseId);
 			const teacherIds = course.teacherIds.map((t) => t.toString());
-			const substitutionIds = (course.substitutionIds || []).map((s) => s.toString())
+			const substitutionIds = (course.substitutionIds || []).map((s) => s.toString());
 
 			// user is course or substitution teacher
 			if (teacherIds.includes(currentUserId) || substitutionIds.includes(currentUserId)) {
