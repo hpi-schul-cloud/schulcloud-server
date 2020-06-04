@@ -426,7 +426,7 @@ const signedUrlService = {
 
 		// deprecated: author check via file.permissions[0].refId is deprecated and will be removed in the next release
 		const creatorId = fileObject.creator
-			|| fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId;
+			|| (fileObject.permissions[0].refPermModel !== 'user' ? userId : fileObject.permissions[0].refId);
 
 		if (download
 			&& fileObject.securityCheck

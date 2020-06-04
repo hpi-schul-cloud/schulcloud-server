@@ -8,13 +8,90 @@ const globalHooks = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const filterRequestedSubmissions = async (context) => {
-	const hasSchoolView = await globalHooks.hasPermissionNoHook(
-		context, context.params.account.userId, 'SUBMISSIONS_SCHOOL_VIEW',
-	);
-	if (!hasSchoolView) {
-		// todo: see team submissions
-		context.params.query.studentId = context.params.account.userId;
+	const currentUserId = context.params.account.userId;
+
+	// user is submitter
+	let permissionQuery = { studentId: currentUserId };
+
+	// user is team member
+	permissionQuery = { $or: [permissionQuery, { teamMembers: { $in: currentUserId } }] };
+
+	// user is in course group of the submission
+	try {
+		const courseGroupService = context.app.service('/courseGroups');
+		const courseGroup = await courseGroupService.find({
+			query: {
+				userIds: { $in: [currentUserId] },
+			},
+		});
+		const courseGroupIds = courseGroup.data.map((c) => c._id);
+		permissionQuery = { $or: [permissionQuery, { courseGroupId: { $in: courseGroupIds } }] };
+	} catch (err) {
+		return Promise.reject(new GeneralError({ message: "can't reach course group service" }));
 	}
+
+	const courseService = context.app.service('/courses');
+	const homeworkService = context.app.service('/homework');
+
+	// user is enrolled in a course with public submissions
+	try {
+		const enrolledCourses = await courseService.find({
+			query: {
+				userIds: { $in: [currentUserId] },
+			},
+		});
+		const enrolledCourseIds = enrolledCourses.data.map((c) => c._id);
+		const accessibleHomework = await homeworkService.find({
+			query: {
+				$and: [
+					{ courseId: { $in: enrolledCourseIds } },
+					{ publicSubmissions: true },
+				],
+			},
+		});
+		const accessibleHomeworkIds = accessibleHomework.data.map((h) => h._id);
+		permissionQuery = { $or: [permissionQuery, { homeworkId: { $in: accessibleHomeworkIds } }] };
+	} catch (err) {
+		return Promise.reject(new GeneralError({ message: "can't reach course service" }));
+	}
+
+	// user is responsible for this homework
+	try {
+		const responsibleCourses = await courseService.find({
+			query: {
+				$or: [
+					{ teacherIds: { $in: [currentUserId] } },
+					{ substitutionIds: { $in: [currentUserId] } },
+				],
+			},
+		});
+		const accessilbeCourseIds = responsibleCourses.data.map((c) => c._id);
+		const accessibleHomework = await homeworkService.find({
+			query: {
+				$or: [
+					{ teacherId: currentUserId },
+					{ courseId: { $in: accessilbeCourseIds } },
+				],
+			},
+		});
+		const accessibleHomeworkIds = accessibleHomework.data.map((h) => h._id);
+		permissionQuery = { $or: [permissionQuery, { homeworkId: { $in: accessibleHomeworkIds } }] };
+	} catch (err) {
+		return Promise.reject(new GeneralError({ message: "can't reach course service" }));
+	}
+
+	// move populates and limit from original query to new query root
+	const originalQuery = context.params.query || {};
+	const queryPopulates = originalQuery.$populate;
+	const queryLimit = originalQuery.$limit;
+	delete originalQuery.$populate;
+	delete originalQuery.$limit;
+	const query = { $and: [originalQuery, permissionQuery] };
+	query.$populate = queryPopulates;
+	query.$limit = queryLimit;
+
+	context.params.query = query;
+
 	return context;
 };
 
@@ -100,7 +177,8 @@ const insertSubmissionsData = (context) => {
 	return submissionService.find({
 		query: {
 			homeworkId: context.data.homeworkId,
-			$populate: ['studentId'],
+			$select: ['teamMembers'],
+			$populate: [{ path: 'studentId', select: ['firstName', 'lastName'] }],
 		},
 	}).then((submissions) => {
 		context.data.submissions = submissions.data;
@@ -313,18 +391,6 @@ const checkGetSubmissionViewPermission = async (context) => {
 	throw new Forbidden();
 };
 
-const filterApplicableSubmissions = async (context) => {
-	const currentUserId = context.params.account.userId;
-	const submissions = context.result.data;
-
-	const filterSubmission = await Promise.all(submissions.map((submission) => hasViewPermission(context, submission, currentUserId)));
-	const result = submissions.filter((_v, index) => filterSubmission[index]);
-
-	context.result.total = result.length;
-	context.result.data = result;
-	return Promise.resolve(context);
-};
-
 exports.before = () => ({
 	all: [authenticate('jwt'), stringifyUserId],
 	find: [
@@ -333,7 +399,9 @@ exports.before = () => ({
 		iff(isProvider('external'), filterRequestedSubmissions),
 		globalHooks.mapPaginationQuery.bind(this),
 	],
-	get: [globalHooks.hasPermission('SUBMISSIONS_VIEW')],
+	get: [
+		globalHooks.hasPermission('SUBMISSIONS_VIEW'),
+	],
 	create: [
 		globalHooks.hasPermission('SUBMISSIONS_CREATE'),
 		insertHomeworkData, insertSubmissionsData,
@@ -382,7 +450,7 @@ exports.before = () => ({
 
 exports.after = {
 	all: [],
-	find: [iff(isProvider('external'), filterApplicableSubmissions)],
+	find: [],
 	get: [checkGetSubmissionViewPermission],
 	create: [],
 	update: [],

@@ -54,7 +54,7 @@ class AdminOverview {
 	}
 
 	static mapped(teams, sessionSchoolId) {
-		return teams.data.map((team) => {
+		const mappedData =  teams.data.map((team) => {
 			const createdAtMySchool = isSameId(team.schoolId, sessionSchoolId);
 			const hasMembersOfOtherSchools = team.schoolIds.length > 1;
 			let schoolMembers = AdminOverview.getMembersBySchool(
@@ -112,10 +112,20 @@ class AdminOverview {
 				schoolMembers,
 			};
 		});
+
+		const mapResult = {
+			limit: teams.limit,
+			skip: teams.skip,
+			total: teams.total,
+			data: mappedData,
+		}
+
+		return mapResult;
 	}
 
 	find(params) {
 		return getSessionUser(this, params).then((sessionUser) => {
+			const { limit, skip } = params.query;
 			const { schoolId } = sessionUser;
 			return this.app
 				.service('teams')
@@ -131,6 +141,8 @@ class AdminOverview {
 							},
 							'schoolIds',
 						], // schoolId
+						$limit: limit,
+						$skip: skip,
 					},
 				})
 				.then((teams) => AdminOverview.mapped(teams, schoolId))

@@ -5,6 +5,8 @@ const {
 	BadRequest,
 	TypeError,
 } = require('@feathersjs/errors');
+const { authenticate } = require('@feathersjs/authentication');
+
 const { Configuration } = require('@schul-cloud/commons');
 const _ = require('lodash');
 const mongoose = require('mongoose');
@@ -823,5 +825,12 @@ exports.blockDisposableEmail = (property, optional = true) => async (context) =>
 		}
 	}
 
+	return context;
+};
+
+exports.authenticateWhenJWTExist = (context) => {
+	if ((context.params.headers || {}).authorization) {
+		return authenticate('jwt')(context);
+	}
 	return context;
 };

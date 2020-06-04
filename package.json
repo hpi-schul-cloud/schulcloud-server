@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "23.1.1",
+	"version": "23.2.2",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -113,6 +113,7 @@
 		"eslint-config-airbnb-base": "^14.1.0",
 		"eslint-plugin-import": "^2.18.2",
 		"eslint": "^6.8.0",
+		"jwt-decode": "^2.2.0",
 		"mocha": "^7.0.1",
 		"mockery": "^2.0.0",
 		"nock": "^12.0.0",
