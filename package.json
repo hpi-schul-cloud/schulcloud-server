@@ -119,7 +119,7 @@
 		"nock": "^12.0.0",
 		"nodemon": "^2.0.2",
 		"nyc": "^15.0.1",
-		"simple-oauth2": "^3.0.0",
+		"simple-oauth2": "^4.0.0",
 		"sinon": "^9.0.0"
 	},
 	"greenkeeper": {
