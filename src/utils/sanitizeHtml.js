@@ -16,12 +16,13 @@ const allowedSchemes = ['http', 'https', 'ftp', 'mailto'];
 // 	img: ['data'],
 // };
 
+const MEDIA_ATTRIBUTES = ['src', 'width', 'height', 'alt', 'style'];
 const allowedAttributes = {
 	'*': ['class'],
 	a: ['href', 'name', 'target'],
-	img: ['src', 'width', 'height', 'alt', 'style'],
-	video: ['src', 'width', 'height', 'alt', 'style'],
-	audio: ['src', 'width', 'height', 'alt', 'style'],
+	img: MEDIA_ATTRIBUTES,
+	video: MEDIA_ATTRIBUTES,
+	audio: MEDIA_ATTRIBUTES,
 	span: ['style'],
 };
 
