@@ -98,4 +98,20 @@ class AdminUsers {
 	}
 }
 
-module.exports = AdminUsers;
+const adminHookGenerator = (kind) => ({
+	before: {
+		all: [authenticate('jwt')],
+		find: [hasPermission(`${kind}_LIST`)],
+		get: [hasPermission(`${kind}_LIST`)],
+		create: [hasPermission(`${kind}_CREATE`)],
+		update: [hasPermission(`${kind}_EDIT`)],
+		patch: [hasPermission(`${kind}_EDIT`)],
+		remove: [hasPermission(`${kind}_DELETE`)],
+	},
+});
+
+
+module.exports = {
+	AdminUsers,
+	adminHookGenerator,
+};
