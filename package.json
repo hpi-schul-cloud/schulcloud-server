@@ -101,7 +101,7 @@
 		"socketio-file-upload": "^0.7.0",
 		"strip-bom": "^4.0.0",
 		"universal-analytics": "^0.4.17",
-		"uuid": "^7.0.3",
+		"uuid": "^8.1.0",
 		"winston": "^3.2.0",
 		"xml2js-es6-promise": "^1.1.1"
 	},
