@@ -4,6 +4,11 @@ const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../../consent/utils/aggregations');
 
+const { authenticate } = require('@feathersjs/authentication').hooks;
+const {
+	hasPermission,
+} = require('../../../hooks');
+
 const { userModel } = require('../model');
 const roleModel = require('../../role/model');
 
