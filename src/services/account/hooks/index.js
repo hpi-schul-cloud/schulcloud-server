@@ -1,4 +1,3 @@
-const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 const bcrypt = require('bcryptjs');
 const { ObjectId } = require('mongoose').Types;
@@ -248,13 +247,6 @@ const filterToRelated = (keys) => globalHooks.ifNotLocal((hook) => {
 	return hook;
 });
 
-const testIfJWTExist = (context) => {
-	if ((context.params.headers || {}).authorization) {
-		return authenticate('jwt')(context);
-	}
-	return context;
-};
-
 const restrictToUsersSchool = async (context) => {
 	const userIsSuperhero = await globalHooks.hasRoleNoHook(context, context.params.account.userId, 'superhero');
 	if (userIsSuperhero) return context;
@@ -281,6 +273,5 @@ module.exports = {
 	protectUserId,
 	securePatching,
 	filterToRelated,
-	testIfJWTExist,
 	restrictToUsersSchool,
 };
