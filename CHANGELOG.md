@@ -19,6 +19,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Removed
 
+## [23.2.3] - 2020-06-04
+
+### Fixed
+
+- SC-4876 soften sanitization to allow editor actions to be persisted correctly
 
 ## [23.2.1] - 2020-06-04
 
