@@ -20,6 +20,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Removed
 
 
+## [23.2.1] - 2020-06-04
+
+### Security
+
+- SC-4720 improve importhashes for registrationlinks
+
 ## [23.2.0] - 2020-06-03
 
 ### Security
