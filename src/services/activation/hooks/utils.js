@@ -6,25 +6,29 @@ const {
 } = require('../../account/hooks');
 const { hasPermission } = require('../../../hooks');
 
-const validPassword = (hook) => {
+const nullOrEmpty = (string) => !string;
+
+const login = async (app, username, password, strategy) => app.service('authentication')
+	.create({
+		strategy: strategy || 'local',
+		username,
+		password,
+	})
+	.then((result) => result.accessToken)
+	.catch(() => null);
+
+const isValidLogin = (jwt) => !!jwt;
+
+const validPassword = async (hook) => {
 	if (!hook.data || !hook.data.password) throw new BadRequest('Missing information');
 	const { password } = hook.data;
 	const { username } = hook.params.account;
 
-	return new Promise((resolve, reject) => {
-		hook.app.service('authentication')
-			.create({
-				strategy: 'local',
-				username,
-				password,
-			})
-			.then((result) => {
-				resolve(hook);
-			})
-			.catch(() => {
-				reject(new Forbidden('Not authorized'));
-			});
-	});
+	const jwt = await login(hook.app, username, password);
+	if (!isValidLogin(jwt)) {
+		throw new Forbidden('Not authorized');
+	}
+	return hook;
 };
 
 const blockThirdParty = (hook) => {
@@ -35,11 +39,11 @@ const blockThirdParty = (hook) => {
 };
 
 const validateEmail = (hook) => {
-	if (!hook.data.email) {
+	if (nullOrEmpty(hook.data.email)) {
 		throw new BadRequest('email missing');
 	}
-	if (!hook.data.repeatEmail) {
-		throw new BadRequest('email repeat missing');
+	if (nullOrEmpty(hook.data.repeatEmail)) {
+		// throw new BadRequest('email repeat missing');
 	}
 	if (hook.data.email === hook.params.account.username) {
 		throw new BadRequest('Your new email is the same as your current one');
@@ -48,7 +52,7 @@ const validateEmail = (hook) => {
 		throw new BadRequest('Please enter a valid e-mail address');
 	}
 	if (hook.data.email !== hook.data.repeatEmail) {
-		throw new BadRequest('email and email repeat do not match');
+		// throw new BadRequest('email and email repeat do not match');
 	}
 	return hook;
 };

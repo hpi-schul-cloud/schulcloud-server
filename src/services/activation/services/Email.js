@@ -1,10 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { iff, isProvider } = require('feathers-hooks-common');
 const { BadRequest, Forbidden, NotFound } = require('@feathersjs/errors');
-const { Configuration } = require('@schul-cloud/commons');
 const { SC_SHORT_TITLE, HOST } = require('../../../../config/globals');
-
-const ttl = Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY');
 
 const {
 	validPassword,
@@ -16,7 +13,6 @@ const {
 } = require('../hooks/utils');
 
 const {
-	STATE,
 	KEYWORDS,
 	lookupByActivationCode,
 	lookupByUserId,
@@ -24,6 +20,7 @@ const {
 	getUser,
 	deleteEntry,
 	createEntry,
+	validEntry,
 	getQuarantinedObject,
 	Mail,
 } = require('../utils');
@@ -128,14 +125,7 @@ class EMailAdresseActivationService {
 		const entry = await lookupByActivationCode(this, user._id, id, keyword);
 
 		if (!user) throw new NotFound('activation link invalid');
-		if (!entry) throw new NotFound('activation link invalid');
-		if (Date.parse(entry.updatedAt) + 1000 * ttl < Date.now()) {
-			await deleteEntry(this, entry._id);
-			throw new BadRequest('activation link expired');
-		}
-		if (entry.state !== STATE.notStarted) {
-			throw new BadRequest('activation link invalid');
-		}
+		validEntry(entry);
 
 		const account = await this.app.service('/accounts').find({
 			query: {

@@ -5,8 +5,6 @@ const { enableAuditLog } = require('../../utils/database');
 const { Schema } = mongoose;
 const { KEYWORDS, STATE } = require('./utils');
 
-const ttl = Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY');
-
 const activationSchema = new Schema({
 	activationCode: { type: String, required: true },
 	account: { type: Schema.Types.ObjectId, required: true, ref: 'account' },
@@ -17,7 +15,10 @@ const activationSchema = new Schema({
 }, { timestamps: true });
 activationSchema.index({ activationCode: 1 }, { unique: true });
 activationSchema.index({ account: 1, keyword: -1 }, { unique: true });
-activationSchema.index({ createdAt: 1 }, { expireAfterSeconds: ttl });
+activationSchema.index(
+	{ createdAt: 1 },
+	{ expireAfterSeconds: Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS') },
+);
 
 enableAuditLog(activationSchema);
 

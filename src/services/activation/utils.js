@@ -1,4 +1,5 @@
-const { Forbidden } = require('@feathersjs/errors');
+const { Forbidden, NotFound, BadRequest } = require('@feathersjs/errors');
+const { Configuration } = require('@schul-cloud/commons');
 const crypto = require('crypto');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const Mail = require('./mail');
@@ -70,6 +71,20 @@ const lookupEntry = (requestingId, entry, keyword) => {
 	return null;
 };
 
+const validEntry = async (entry) => {
+	if (!entry) throw new NotFound('activation link invalid');
+	if (
+		Date.parse(entry.updatedAt) + 1000 * Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS')
+		< Date.now()
+	) {
+		await deleteEntry(this, entry._id);
+		throw new BadRequest('activation link expired');
+	}
+	if (entry.state !== STATE.notStarted) {
+		throw new BadRequest('activation link invalid');
+	}
+};
+
 /**
  * Will lookup entry in a activation by userId
  * @param {*} ref 					this
@@ -81,7 +96,7 @@ const lookupByUserId = async (ref, requestingId, keyword) => {
 	if (!requestingId) throw new Forbidden('Not authorized');
 	if (!keyword) throw SyntaxError('keyword required!');
 
-	const entry = await (ref.app ? ref.app : ref).service('activationModel').find({ query: { account: requestingId } });
+	const entry = await (ref.app || ref).service('activationModel').find({ query: { account: requestingId } });
 	return lookupEntry(requestingId, entry, keyword);
 };
 
@@ -97,7 +112,7 @@ const lookupByActivationCode = async (ref, requestingId, activationCode, keyword
 	if (!activationCode) throw SyntaxError('entryId required!');
 	if (!keyword) throw SyntaxError('keyword required!');
 
-	const entry = await (ref.app ? ref.app : ref).service('activationModel').find({ query: { activationCode } });
+	const entry = await (ref.app || ref).service('activationModel').find({ query: { activationCode } });
 	return lookupEntry(requestingId, entry, keyword);
 };
 
@@ -142,8 +157,9 @@ module.exports = {
 	lookupByActivationCode,
 	sendMail,
 	getUser,
-	deleteEntry,
 	getQuarantinedObject,
 	createEntry,
+	deleteEntry,
+	validEntry,
 	Mail,
 };
