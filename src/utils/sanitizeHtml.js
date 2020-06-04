@@ -17,10 +17,17 @@ const allowedSchemes = ['http', 'https', 'ftp', 'mailto'];
 // };
 
 const allowedAttributes = {
+	'*': ['class'],
 	a: ['href', 'name', 'target'],
-	img: ['src', 'width', 'height', 'alt'],
-	span: ['class']
+	img: ['src', 'width', 'height', 'alt', 'style'],
+	video: ['src', 'width', 'height', 'alt', 'style'],
+	audio: ['src', 'width', 'height', 'alt', 'style'],
+	span: ['style'],
 };
+
+const COLOR_REGEX = [/^#(0x)?[0-9a-f]+$/i, /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/];
+// Match any number with px, em, or %
+const SIZE_REGEX = [/^\d+(?:px|em|%)$/];
 
 const htmlTrueOptions = {
 	allowedTags,
@@ -33,10 +40,12 @@ const htmlTrueOptions = {
 	allowedStyles: {
 		'*': {
 			// Match HEX and RGB
-			color: [/^#(0x)?[0-9a-f]+$/i, /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/],
+			color: COLOR_REGEX,
+			'background-color': COLOR_REGEX,
 			'text-align': [/^left$/, /^right$/, /^center$/],
-			// Match any number with px, em, or %
-			'font-size': [/^\d+(?:px|em|%)$/],
+			'font-size': SIZE_REGEX,
+			height: SIZE_REGEX,
+			width: SIZE_REGEX,
 			'font-style': [/^\w+$/],
 		},
 	},
