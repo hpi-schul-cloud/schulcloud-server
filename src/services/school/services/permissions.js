@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { iff, isProvider } = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
-const { lookupSchool } = require('../../../hooks');
+const { lookupSchool, restrictToUsersSchool } = require('../../../hooks');
 
 
 const hooks = {
@@ -8,6 +9,7 @@ const hooks = {
 		all: [
 			authenticate('jwt'),
 			lookupSchool,
+			iff(isProvider('external'), restrictToUsersSchool),
 		],
 		get: [
 			globalHooks.hasPermission('SCHOOL_PERMISSION_VIEW'),

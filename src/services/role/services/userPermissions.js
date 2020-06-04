@@ -1,19 +1,4 @@
-const { authenticate } = require('@feathersjs/authentication');
-const globalHooks = require('../../../hooks');
-const { lookupSchool } = require('../../../hooks');
-
-const hooks = {
-	before: {
-		all: [
-			authenticate('jwt'),
-			lookupSchool,
-		],
-		find: [
-			globalHooks.hasPermission('ROLE_VIEW'),
-			globalHooks.hasPermission('SCHOOL_PERMISSION_VIEW'),
-		],
-	},
-};
+const { userRoleHooks } = require('./userRoles');
 
 const filterPermissions = (userRoles, schoolPermissions) => {
 	const permissions = [];
@@ -29,10 +14,8 @@ const filterPermissions = (userRoles, schoolPermissions) => {
 
 
 class UserPermissions {
-	async find(params) {
-		const { account } = params;
-
-		const user = await this.app.service('users').get(account.userId);
+	async get(id, params) {
+		const user = await this.app.service('users').get(id);
 		const [roles, school] = await Promise.all([
 			this.app.service('roles').find({ query: { _id: user.roles } }),
 			this.app.service('schools').get(user.schoolId),
@@ -51,5 +34,5 @@ class UserPermissions {
 
 module.exports = {
 	UserPermissions,
-	userPermissionsHooks: hooks,
+	userPermissionsHooks: userRoleHooks,
 };

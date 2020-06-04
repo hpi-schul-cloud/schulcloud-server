@@ -1,6 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
-const globalHooks = require('../../../hooks');
 const { lookupSchool } = require('../../../hooks');
+const { restrictGetToCurrentUser } = require('../hooks/userRoles');
 
 const hooks = {
 	before: {
@@ -8,7 +8,8 @@ const hooks = {
 			authenticate('jwt'),
 			lookupSchool,
 		],
-		find: [
+		get: [
+			restrictGetToCurrentUser,
 			// TODO: check it is restircted to current user and maybe some other have privileges
 			// globalHooks.hasPermission('ROLE_VIEW'),
 			// globalHooks.hasPermission('SCHOOL_PERMISSION_VIEW'),
