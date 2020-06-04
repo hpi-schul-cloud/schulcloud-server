@@ -37,7 +37,7 @@ class UserRoles {
 
 		const user = await this.app.service('users').get(account.userId);
 		const [roles, school] = await Promise.all([
-			this.app.service('roles').find({ query: { _id: user.roles } }), // TODO: do $in here otherwise it could not handle arrays
+			this.app.service('roles').find({ query: { _id: { $in: user.roles } } }),
 			this.app.service('schools').get(user.schoolId),
 		]);
 
