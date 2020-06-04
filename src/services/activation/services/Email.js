@@ -16,6 +16,7 @@ const {
 } = require('../hooks/utils');
 
 const {
+	STATE,
 	KEYWORDS,
 	lookupByActivationCode,
 	lookupByUserId,
@@ -24,6 +25,7 @@ const {
 	deleteEntry,
 	createEntry,
 	getQuarantinedObject,
+	Mail,
 } = require('../utils');
 
 const buildActivationLinkMail = (user, entry) => {
@@ -38,11 +40,7 @@ const buildActivationLinkMail = (user, entry) => {
 		html: '',
 	};
 
-	return {
-		email,
-		subject,
-		content,
-	};
+	return new Mail(subject, content, email).getMail;
 };
 
 const buildFYIMail = (user) => {
@@ -58,21 +56,22 @@ const buildFYIMail = (user) => {
 		html: '',
 	};
 
-	return {
-		email: user.email,
-		subject,
-		content,
-	};
+	return new Mail(subject, content, user.email).getMail;
 };
 
 const mail = async (ref, type, user, entry) => {
 	let content;
-	if (type === 'activationLinkMail') {
-		content = buildActivationLinkMail(user, entry);
-	} else if (type === 'fyiMail') {
-		content = buildFYIMail(user);
-	} else {
-		throw new Error('Mail type not defined');
+	switch (type) {
+		case 'activationLinkMail':
+			content = buildActivationLinkMail(user, entry);
+			break;
+
+		case 'fyiMail':
+			content = buildFYIMail(user);
+			break;
+
+		default:
+			throw new Error('Mail type not defined');
 	}
 
 	await sendMail(ref, content, entry);
@@ -134,8 +133,7 @@ class EMailAdresseActivationService {
 			await deleteEntry(this, entry._id);
 			throw new BadRequest('activation link expired');
 		}
-		if (entry.activated) {
-			await deleteEntry(this, entry._id);
+		if (entry.state !== STATE.notStarted) {
 			throw new BadRequest('activation link invalid');
 		}
 

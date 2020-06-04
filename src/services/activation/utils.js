@@ -1,6 +1,14 @@
 const { Forbidden } = require('@feathersjs/errors');
 const crypto = require('crypto');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
+const Mail = require('./mail');
+
+const STATE = {
+	notStarted: 'uninitiated',
+	pending: 'pending',
+	success: 'success',
+	error: 'error',
+};
 
 const KEYWORDS = {
 	E_MAIL_ADDRESS: 'eMailAddress',
@@ -128,6 +136,7 @@ const getUser = async (ref, userId) => {
 };
 
 module.exports = {
+	STATE,
 	KEYWORDS,
 	lookupByUserId,
 	lookupByActivationCode,
@@ -136,4 +145,5 @@ module.exports = {
 	deleteEntry,
 	getQuarantinedObject,
 	createEntry,
+	Mail,
 };
