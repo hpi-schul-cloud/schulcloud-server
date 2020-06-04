@@ -302,8 +302,14 @@ const canRemoveOwner = (context) => {
 };
 
 const canGrade = (context) => {
-	if (!context.data.isTeacher
-&& (Number.isInteger(context.data.grade) || typeof context.data.gradeComment === 'string')) { // students try to grade? BLOCK!
+	const { data } = context;
+	const { submission: existingSubmission } = data;
+
+	// students try to grade? BLOCK!
+	if (!data.isTeacher
+		&& (Number.isInteger(data.grade) || typeof data.gradeComment === 'string') && (
+		existingSubmission && (
+			existingSubmission.grade !== data.grade || existingSubmission.gradeComment !== data.gradeComment))) {
 		return Promise.reject(new Forbidden());
 	}
 	return Promise.resolve(context);
