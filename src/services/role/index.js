@@ -3,6 +3,7 @@ const Role = require('./model');
 const hooks = require('./hooks');
 const { PermissionService, permissionHooks } = require('./services/permissions');
 const { UserPermissions, userPermissionsHooks } = require('./services/userPermissions');
+const { definePermissions, PERMISSIONS, ROLES } = require('./utils/permissions');
 
 module.exports = function setup() {
 	const app = this;
@@ -30,4 +31,14 @@ module.exports = function setup() {
 	app.use('/roles/:roleName/permissions', new PermissionService());
 	const permissionService = app.service('/roles/:roleName/permissions');
 	permissionService.hooks(permissionHooks);
+
+
+	definePermissions(
+		'FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY',
+		ROLES.TEACHER,
+		PERMISSIONS.STUDENT_LIST,
+		PERMISSIONS.STUDENT_EDIT,
+		PERMISSIONS.STUDENT_CREATE,
+		PERMISSIONS.STUDENT_DELETE,
+	);
 };

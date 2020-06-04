@@ -245,7 +245,7 @@
 		},
 		"FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY": {
 			"type": "string",
-			"default": "enabled",
+			"default": "opt-in",
 			"enum": [
 				"disabled",
 				"opt-in",
