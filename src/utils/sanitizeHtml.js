@@ -21,8 +21,8 @@ const allowedAttributes = {
 	'*': ['class'],
 	a: ['href', 'name', 'target'],
 	img: MEDIA_ATTRIBUTES,
-	video: MEDIA_ATTRIBUTES,
-	audio: MEDIA_ATTRIBUTES,
+	video: [...MEDIA_ATTRIBUTES, 'autoplay', 'name', 'controls', 'controlslist'],
+	audio: [...MEDIA_ATTRIBUTES, 'controls', 'controlslist'],
 	span: ['style'],
 };
 
