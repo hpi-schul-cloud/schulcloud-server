@@ -43,7 +43,7 @@ const validateEmail = (hook) => {
 		throw new BadRequest('email missing');
 	}
 	if (nullOrEmpty(hook.data.repeatEmail)) {
-		// throw new BadRequest('email repeat missing');
+		throw new BadRequest('email repeat missing');
 	}
 	if (hook.data.email === hook.params.account.username) {
 		throw new BadRequest('Your new email is the same as your current one');
@@ -52,7 +52,7 @@ const validateEmail = (hook) => {
 		throw new BadRequest('Please enter a valid e-mail address');
 	}
 	if (hook.data.email !== hook.data.repeatEmail) {
-		// throw new BadRequest('email and email repeat do not match');
+		throw new BadRequest('email and email repeat do not match');
 	}
 	return hook;
 };
