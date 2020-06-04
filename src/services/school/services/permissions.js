@@ -14,7 +14,6 @@ const hooks = {
 
 		],
 		patch: [
-			globalHooks.hasPermission('SCHOOL_PERMISSION_VIEW'),
 			globalHooks.hasPermission('SCHOOL_PERMISSION_CHANGE'),
 		],
 	},
@@ -37,7 +36,7 @@ class HandlePermissions {
 
 	async find(params) {
 		const school = await getSchool(this.app, params.account.schoolId);
-		return { isEnabled: school.permissions[this.role][this.permission] } || {};
+		return { isEnabled: ((school.permissions || [])[this.role] || [])[this.permission] || false };
 	}
 
 	async patch(id, data, params) {

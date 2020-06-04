@@ -25,12 +25,12 @@ module.exports = function setup() {
 		after: hooks.after,
 	});
 
-	app.use('/roles/user/roles', new UserRoles());
-	const userRoles = app.service('/roles/user/roles');
+	app.use('/roles/user', new UserRoles());
+	const userRoles = app.service('/roles/user');
 	userRoles.hooks(userRolesHooks);
 
-	app.use('/roles/user/permissions', new UserPermissions());
-	const userPermissions = app.service('/roles/user/permissions');
+	app.use('/permissions/user', new UserPermissions());
+	const userPermissions = app.service('/permissions/user');
 	userPermissions.hooks(userPermissionsHooks);
 
 	app.use('/roles/:roleName/permissions', new PermissionService());
