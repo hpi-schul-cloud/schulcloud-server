@@ -15,20 +15,26 @@ const hooks = {
 	},
 };
 
-const filterPermissions = (userRoles, schoolPermissions) => {
-	const permissions = [];
+const updateRoles = (userRoles, schoolPermissions) => {
+	const updatedRoles = [];
 	userRoles.forEach((role) => {
-		if (Object.keys(schoolPermissions).includes(role)) {
-			Object.keys(schoolPermissions[role]).forEach((r) => {
-				if (schoolPermissions[role][r]) permissions.push(r);
+		const roleCopy = role;
+		if (Object.keys(schoolPermissions).includes(role.name)) {
+			Object.keys(schoolPermissions[role.name]).forEach((r) => {
+				if (schoolPermissions[role.name][r] && !roleCopy.permissions.includes(r)) {
+					roleCopy.permissions.push(r);
+				} else if (!schoolPermissions[role.name][r]) {
+					roleCopy.permissions = roleCopy.permissions.filter((permission) => permission !== r);
+				}
 			});
 		}
+		updatedRoles.push(roleCopy);
 	});
-	return permissions;
+	return updatedRoles;
 };
 
 
-class UserPermissions {
+class UserRoles {
 	async find(params) {
 		const { account } = params;
 
@@ -38,10 +44,10 @@ class UserPermissions {
 			this.app.service('schools').get(user.schoolId),
 		]);
 
-		const roleNames = roles.data.map((role) => role.name) || [];
-		const enabledSchoolPermissions = filterPermissions(roleNames, school.permissions || []);
-
-		return [...new Set([...user.permissions, ...enabledSchoolPermissions])];
+		return {
+			...roles,
+			data: updateRoles(roles.data, school.permissions),
+		};
 	}
 
 	setup(app) {
@@ -50,6 +56,6 @@ class UserPermissions {
 }
 
 module.exports = {
-	UserPermissions,
-	userPermissionsHooks: hooks,
+	UserRoles,
+	userRolesHooks: hooks,
 };

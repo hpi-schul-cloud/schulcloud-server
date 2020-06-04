@@ -3,6 +3,7 @@ const Role = require('./model');
 const hooks = require('./hooks');
 const { PermissionService, permissionHooks } = require('./services/permissions');
 const { UserPermissions, userPermissionsHooks } = require('./services/userPermissions');
+const { UserRoles, userRolesHooks } = require('./services/userRoles');
 const { definePermissions, PERMISSIONS, ROLES } = require('./utils/permissions');
 
 module.exports = function setup() {
@@ -23,6 +24,10 @@ module.exports = function setup() {
 		before: hooks.before(),
 		after: hooks.after,
 	});
+
+	app.use('/roles/user/roles', new UserRoles());
+	const userRoles = app.service('/roles/user/roles');
+	userRoles.hooks(userRolesHooks);
 
 	app.use('/roles/user/permissions', new UserPermissions());
 	const userPermissions = app.service('/roles/user/permissions');
