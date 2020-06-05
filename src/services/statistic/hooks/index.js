@@ -4,7 +4,7 @@ const globalHooks = require('../../../hooks');
 
 exports.before = {
 	all: [
-		globalHooks.ifNotLocal(authenticate('jwt')),
+		authenticate('jwt'),
 		globalHooks.ifNotLocal(globalHooks.isSuperHero()),
 	],
 	find: [],
