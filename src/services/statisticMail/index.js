@@ -10,7 +10,6 @@ class StatisticMailService {
 
 	create() {
 		return this.app.service('statistics').find().then((statData) => {
-			console.log(statData);
 			let htmlMailContent = `<h1>Statistik für ${SC_SHORT_TITLE}</h1>`;
 			htmlMailContent += `<table><tr><td>Schulen</td><td>${statData.schools}</td></tr>`;
 			htmlMailContent += `<tr><td>SchülerInnen</td><td>${statData.students}</td></tr>`;
