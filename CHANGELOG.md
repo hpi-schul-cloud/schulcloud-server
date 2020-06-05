@@ -19,7 +19,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Removed
 
-## [23.2.3] - 2020-06-04
+## [23.2.4] - 2020-06-05
 
 ### Fixed
 
