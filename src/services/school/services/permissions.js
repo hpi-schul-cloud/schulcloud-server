@@ -41,14 +41,14 @@ class HandlePermissions {
 		const schoolPermision = ((school.permissions || [])[this.role] || [])[this.permission];
 		let isEnabled = false;
 		if (schoolPermision === undefined) {
-			const role = this.app.service('roles').find({
+			const role = await this.app.service('roles').find({
 				query: {
 					name: this.role,
 				},
 			});
-			isEnabled = role.data.permission.includes(this.permission);
+			isEnabled = role.data[0].permissions.includes(this.permission);
 		} else {
-			isEnabled = true;
+			isEnabled = schoolPermision;
 		}
 		return { isEnabled };
 	}
