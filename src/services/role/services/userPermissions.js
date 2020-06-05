@@ -22,7 +22,7 @@ class UserPermissions {
 		]);
 
 		const roleNames = roles.data.map((role) => role.name) || [];
-		const enabledSchoolPermissions = filterPermissions(roleNames, school.permissions || []);
+		const enabledSchoolPermissions = filterPermissions(roleNames, school.permissions || {});
 
 		return [...new Set([...user.permissions, ...enabledSchoolPermissions])];
 	}

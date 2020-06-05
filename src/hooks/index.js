@@ -118,7 +118,7 @@ exports.hasSchoolPermission = (inputPermission) => async (context) => {
 			const { permissions = {} } = school;
 			// If there are no special school permissions, continue with normal permission check
 			if (!Object.prototype.hasOwnProperty.call(permissions[role], inputPermission)) {
-				return Promise.resolve(hasPermission(inputPermission));
+				return hasPermission(inputPermission);
 			}
 			// Otherwise check for user's special school permission
 			if (!permissions.role.inputPermission) {
