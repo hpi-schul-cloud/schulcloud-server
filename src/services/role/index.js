@@ -42,8 +42,9 @@ module.exports = function setup() {
 		'FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY',
 		ROLES.TEACHER,
 		PERMISSIONS.STUDENT_LIST,
-		PERMISSIONS.STUDENT_EDIT,
-		PERMISSIONS.STUDENT_CREATE,
-		PERMISSIONS.STUDENT_DELETE,
+		// TODO: importent add this again, after school permission service can handle multiple permissions
+		// PERMISSIONS.STUDENT_EDIT,
+		// PERMISSIONS.STUDENT_CREATE,
+		// PERMISSIONS.STUDENT_DELETE,
 	);
 };

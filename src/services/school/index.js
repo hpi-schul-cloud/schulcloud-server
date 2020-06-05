@@ -66,7 +66,7 @@ module.exports = function schoolServices() {
 
 	if (FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY !== 'disabled') {
 		app.use('/school/teacher/permissions', new HandlePermissions('teacher', 'STUDENT_LIST'));
-		const handlePermissionsService = app.service('/school/teacher/permissions');
+		const handlePermissionsService = app.service('/school/teacher/studentvisibility');
 		handlePermissionsService.hooks(handlePermissionsHooks);
 	}
 };
