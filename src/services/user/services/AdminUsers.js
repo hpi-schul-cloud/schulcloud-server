@@ -1,12 +1,10 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const { authenticate } = require('@feathersjs/authentication').hooks;
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../../consent/utils/aggregations');
-
-const { authenticate } = require('@feathersjs/authentication').hooks;
 const {
-	hasPermission,
 	hasSchoolPermission,
 } = require('../../../hooks');
 

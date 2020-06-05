@@ -95,6 +95,14 @@ const hasPermission = (inputPermissions) => {
 	};
 };
 
+/**
+ * Test a permission again a user request.
+ * When the hook funtkion is called, it requires an account object in params
+ *
+ * @param {string} inputPermission
+ * @return {funktion} - feathers hook function requires context as an attribute
+ */
+// TODO: should accept and check multiple permissions
 exports.hasSchoolPermission = (inputPermission) => async (context) => {
 	const { params: { account }, app } = context;
 	if (!account && !account.userId) {
