@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { lookupSchool } = require('../../../hooks');
 const { restrictGetToCurrentUser } = require('../hooks/userRoles');
+const rolesModel = require('../model');
 
 const hooks = {
 	before: {
@@ -33,13 +34,15 @@ const updateRoles = (userRoles = [], schoolPermissions = {}) => userRoles.map((r
 
 class UserRoles {
 	async get(id, params) {
-		const { account } = params;
-
-		const user = await this.app.service('users').get(account.userId);
+		const user = await this.app.service('users').get(id);
 		const [roles, school] = await Promise.all([
 			this.app.service('roles').find({ query: { _id: { $in: user.roles } } }),
 			this.app.service('schools').get(user.schoolId),
 		]);
+		const permissions = await Promise.all(roles.data.map((role) => rolesModel.resolvePermissions(role.roles)));
+		roles.data.forEach((role, i) => {
+			role.permissions = [...new Set([...role.permissions, ...permissions[i]])];
+		});
 
 		return updateRoles(roles.data, school.permissions);
 	}

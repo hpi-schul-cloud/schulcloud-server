@@ -43,9 +43,10 @@ class HandlePermissions {
 		if (schoolPermision === undefined) {
 			const role = this.app.service('roles').find({
 				query: {
-					name: role,
+					name: this.role,
 				},
 			});
+			isEnabled = role.data.permission.includes(this.permission);
 		} else {
 			isEnabled = true;
 		}
