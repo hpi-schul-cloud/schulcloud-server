@@ -32,6 +32,7 @@ const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
 
 const app = express(feathers());
+app.disable('x-powered-by');
 
 const config = configuration();
 app.configure(config);
