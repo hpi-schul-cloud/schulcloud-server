@@ -7,6 +7,7 @@ const { createMultiDocumentAggregation } = require('../../consent/utils/aggregat
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const {
 	hasPermission,
+	hasSchoolPermission,
 } = require('../../../hooks');
 
 const { userModel } = require('../model');
@@ -106,12 +107,12 @@ class AdminUsers {
 const adminHookGenerator = (kind) => ({
 	before: {
 		all: [authenticate('jwt')],
-		find: [hasPermission(`${kind}_LIST`)],
-		get: [hasPermission(`${kind}_LIST`)],
-		create: [hasPermission(`${kind}_CREATE`)],
-		update: [hasPermission(`${kind}_EDIT`)],
-		patch: [hasPermission(`${kind}_EDIT`)],
-		remove: [hasPermission(`${kind}_DELETE`)],
+		find: [hasSchoolPermission(`${kind}_LIST`)],
+		get: [hasSchoolPermission(`${kind}_LIST`)],
+		create: [hasSchoolPermission(`${kind}_CREATE`)],
+		update: [hasSchoolPermission(`${kind}_EDIT`)],
+		patch: [hasSchoolPermission(`${kind}_EDIT`)],
+		remove: [hasSchoolPermission(`${kind}_DELETE`)],
 	},
 });
 

@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider } = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
-const { lookupSchool, restrictToUsersSchool } = require('../../../hooks');
+const { lookupSchool, restrictToCurrentSchool } = require('../../../hooks');
 
 
 const hooks = {
@@ -9,7 +9,7 @@ const hooks = {
 		all: [
 			authenticate('jwt'),
 			lookupSchool,
-			iff(isProvider('external'), restrictToUsersSchool),
+			iff(isProvider('external'), restrictToCurrentSchool),
 		],
 		get: [
 			globalHooks.hasPermission('SCHOOL_PERMISSION_VIEW'),
@@ -38,7 +38,18 @@ class HandlePermissions {
 
 	async find(params) {
 		const school = await getSchool(this.app, params.account.schoolId);
-		return { isEnabled: ((school.permissions || [])[this.role] || [])[this.permission] || false };
+		const schoolPermision = ((school.permissions || [])[this.role] || [])[this.permission];
+		let isEnabled = false;
+		if (schoolPermision === undefined) {
+			const role = this.app.service('roles').find({
+				query: {
+					name: role,
+				},
+			});
+		} else {
+			isEnabled = true;
+		}
+		return { isEnabled };
 	}
 
 	async patch(id, data, params) {

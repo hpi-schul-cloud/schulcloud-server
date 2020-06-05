@@ -95,15 +95,19 @@ const hasPermission = (inputPermissions) => {
 	};
 };
 
-exports.hasSchoolPermission = (role, inputPermission) => async (context) => {
+exports.hasSchoolPermission = (inputPermission) => async (context) => {
 	const { params: { account }, app } = context;
 	if (!account && !account.userId) {
 		throw new Forbidden('Cannot read account data');
 	}
-	const user = await app.service('users').get(account.userId);
+	const user = await app.service('usersModel').get(account.userId, {
+		query: {
+			populate: 'roles',
+		},
+	});
 	app.service('schools').get(user.schoolId)
-		.then((school) => {
-			const { permissions } = school;
+		.then((school) => Promise.any(user.roles.map((role) => {
+			const { permissions = {} } = school;
 			// If there are no special school permissions, continue with normal permission check
 			if (!Object.prototype.hasOwnProperty.call(permissions[role], inputPermission)) {
 				return Promise.resolve(hasPermission(inputPermission));
@@ -113,7 +117,7 @@ exports.hasSchoolPermission = (role, inputPermission) => async (context) => {
 				throw new Forbidden('You do not have the required permission');
 			}
 			return Promise.resolve(context);
-		});
+		})));
 };
 
 /**
