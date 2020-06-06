@@ -69,7 +69,7 @@
 	},
 	"name": "administrator",
 	"updatedAt": {
-		"$date": "2019-12-03T16:35:35.224Z"
+		"$date": "2020-06-05T10:58:29.308Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -122,7 +122,9 @@
 		"TEACHER_EDIT",
 		"TEACHER_LIST",
 		"TEACHER_SKIP_REGISTRATION",
-		"TEAM_INVITE_EXTERNAL"
+		"TEAM_INVITE_EXTERNAL",
+		"SCHOOL_PERMISSION_VIEW",
+		"SCHOOL_PERMISSION_CHANGE"
 	],
 	"__v": 2
 },
@@ -627,3 +629,4 @@
 	"permissions": [],
 	"__v": 0
 }]
+

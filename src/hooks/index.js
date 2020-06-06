@@ -94,6 +94,39 @@ const hasPermission = (inputPermissions) => {
 };
 
 /**
+ * Test a permission again a user request.
+ * When the hook funtkion is called, it requires an account object in params
+ *
+ * @param {string} inputPermission
+ * @return {funktion} - feathers hook function requires context as an attribute
+ */
+// TODO: should accept and check multiple permissions
+exports.hasSchoolPermission = (inputPermission) => async (context) => {
+	const { params: { account }, app } = context;
+	if (!account && !account.userId) {
+		throw new Forbidden('Cannot read account data');
+	}
+	const user = await app.service('usersModel').get(account.userId, {
+		query: {
+			populate: 'roles',
+		},
+	});
+	app.service('schools').get(user.schoolId)
+		.then((school) => Promise.any(user.roles.map((role) => {
+			const { permissions = {} } = school;
+			// If there are no special school permissions, continue with normal permission check
+			if (!Object.prototype.hasOwnProperty.call(permissions[role], inputPermission)) {
+				return hasPermission(inputPermission);
+			}
+			// Otherwise check for user's special school permission
+			if (!permissions.role.inputPermission) {
+				throw new Forbidden('You do not have the required permission');
+			}
+			return Promise.resolve(context);
+		})));
+};
+
+/**
  * @param  {string, array[string]} permissions
  * @returns resolves if the current user has ALL of the given permissions
  */
