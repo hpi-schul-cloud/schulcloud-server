@@ -6,8 +6,8 @@ const { classModel } = require('../../../../src/services/user-group/model');
 describe('classes service', () => {
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		server = await app.listen(0);
 	});
 
 	after(async () => {
@@ -138,7 +138,7 @@ describe('classes service', () => {
 			}
 		});
 
-		it.skip('fails to update class on other school', async () => {
+		it('fails to update class on other school', async () => {
 			const { _id: usersSchoolId } = await testObjects.createTestSchool({});
 			const { _id: classSchoolId } = await testObjects.createTestSchool({});
 			const klass = await testObjects.createTestClass({ schoolId: classSchoolId });
@@ -154,11 +154,11 @@ describe('classes service', () => {
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
-				expect(err.code).to.equal(403);
+				expect(err.code).to.equal(404);
 			}
 		});
 
-		it.skip('fails to patch class on other school', async () => {
+		it('fails to patch class on other school', async () => {
 			const { _id: usersSchoolId } = await testObjects.createTestSchool({});
 			const { _id: classSchoolId } = await testObjects.createTestSchool({});
 			const klass = await testObjects.createTestClass({ schoolId: classSchoolId });
@@ -169,10 +169,23 @@ describe('classes service', () => {
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
-				expect(err.code).to.equal(403);
+				expect(err.code).to.equal(404);
 			}
 		});
 
-		it('fails to remove class on other school');
+		it('fails to remove class on other school', async () => {
+			const { _id: usersSchoolId } = await testObjects.createTestSchool({});
+			const { _id: classSchoolId } = await testObjects.createTestSchool({});
+			const klass = await testObjects.createTestClass({ schoolId: classSchoolId });
+			const user = await testObjects.createTestUser({ roles: 'administrator', schoolId: usersSchoolId });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+			try {
+				await app.service('classes').remove(klass._id, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(404);
+			}
+		}) ;
 	});
 });
