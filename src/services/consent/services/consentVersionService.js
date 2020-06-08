@@ -62,13 +62,13 @@ class ConsentVersionService {
 
 	find(params) {
 		const { query } = params;
-		if (query.schoolId) {
+		if (query && query.schoolId) {
 			if (!query.$or) {
 				query.$or = [];
 			}
 			query.$or.push({ schoolId: query.schoolId });
+			delete query.schoolId;
 		}
-		delete query.schoolId;
 
 		return this.app.service('consentVersionsModel').find(prepareInternalParams(params));
 	}
