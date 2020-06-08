@@ -2,22 +2,23 @@ const { authenticate } = require('@feathersjs/authentication');
 const hooks = require('feathers-hooks-common');
 
 const { iff, isProvider } = require('feathers-hooks-common');
-const globalHooks = require('../../../hooks');
 
 const {
+	populateCurrentSchool,
 	restrictToCurrentSchool,
+	hasPermission,
 } = require('../../../hooks');
 
 // todo check userId
 exports.before = {
 	all: [iff(isProvider('external'), [
 		authenticate('jwt'),
-		globalHooks.populateCurrentSchool,
+		populateCurrentSchool, // TODO: test if it is needed
 		restrictToCurrentSchool,
 	])],
 	find: [],
 	get: [],
-	create: [iff(isProvider('external'), globalHooks.hasPermission('SCHOOL_EDIT'))],
+	create: [iff(isProvider('external'), hasPermission('SCHOOL_EDIT'))],
 	update: [hooks.disallow()],
 	patch: [hooks.disallow()],
 	remove: [hooks.disallow()],
