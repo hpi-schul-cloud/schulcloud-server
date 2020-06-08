@@ -4,6 +4,7 @@ const consentHooks = require('./hooks/consents');
 const consentVersionModelHooks = require('./hooks/consentversionsModelHooks');
 const consentDocs = require('./docs');
 const { ConsentStatusService } = require('./consentStatus.service');
+const { ConsentVersionService, ConsentVersionServiceHooks } = require('./services/consentVersionService');
 // const depricated = require('./consent.depricated');
 
 // eslint-disable-next-line func-names
@@ -40,4 +41,7 @@ module.exports = function () {
 		lean: true,
 	}));
 	app.service('consentVersionsModel').hooks(consentVersionModelHooks);
+
+	app.use('/consentVersion', new ConsentVersionService());
+	app.service('/consentVersion').hooks(ConsentVersionServiceHooks);
 };
