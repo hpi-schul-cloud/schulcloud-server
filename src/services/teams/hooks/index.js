@@ -795,7 +795,6 @@ exports.beforeAdmin = {
 		authenticate('jwt'),
 		isAdmin,
 		existId,
-		filterToRelated([], 'params.query'),
 	],
 	find: [],
 	get: [blockedMethod],
