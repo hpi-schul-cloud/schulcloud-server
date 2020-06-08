@@ -2,6 +2,7 @@
 /* eslint-disable class-methods-use-this */
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const logger = require('../../../logger');
+const { createMultiDocumentAggregation } = require('../../consent/utils/aggregations');
 
 const { userModel } = require('../model');
 const roleModel = require('../../role/model');
@@ -18,53 +19,39 @@ const getRoles = () => roleModel.find()
 	.exec();
 
 
-const getAllUsers = (ref, schoolId, role, clientQuery) => {
+const getAllUsers = async (schoolId, schoolYearId, role, clientQuery = {}) => {
 	const query = {
 		schoolId,
-		roles: role.toString(),
-		$sort: clientQuery.$sort,
-		$select: ['firstName', 'lastName', 'email', 'createdAt', 'importHash', 'birthday'],
+		roles: role,
+		schoolYearId,
+		consentStatus: clientQuery.consentStatus,
+		sort: clientQuery.$sort || clientQuery.sort,
+		select: [
+			'consentStatus',
+			'consent',
+			'classes',
+			'firstName',
+			'lastName',
+			'email',
+			'createdAt',
+			'importHash',
+			'birthday',
+		],
+		skip: clientQuery.$skip || clientQuery.skip,
+		limit: clientQuery.$limit || clientQuery.limit,
 	};
+	if (clientQuery.classes) query.classes = clientQuery.classes;
 	if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
 	if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 	if (clientQuery.lastName) query.lastName = clientQuery.lastName;
-	return ref.app.service('usersModel').find({ collation: { locale: 'de', caseLevel: true }, query });
+
+	return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
+		collation: { locale: 'de', caseLevel: true },
+	}).exec((err, res) => {
+		if (err) reject(err);
+		else resolve(res[0]);
+	}));
 };
-
-const getClasses = (app, schoolId, schoolYearId) => app.service('classes')
-	.find({
-		query: {
-			schoolId,
-			$or: [
-				{ year: schoolYearId },
-				{ year: { $exists: false } },
-			],
-			$limit: 1000,
-		},
-	})
-	.then((classes) => classes.data)
-	.catch((err) => {
-		logger.warning(`Can not execute app.service("classes").find for ${schoolId}`, err);
-		return err;
-	});
-
-const findConsents = (ref, userIds, $limit) => ref.app.service('/consents')
-	.find({
-		query: {
-			userId: { $in: userIds },
-			$limit,
-			$select: [
-				'userId',
-				'userConsent.form',
-				'userConsent.privacyConsent',
-				'userConsent.termsOfUseConsent',
-				'parentConsents.parentId',
-				'parentConsents.form',
-				'parentConsents.privacyConsent',
-				'parentConsents.termsOfUseConsent'],
-		},
-	})
-	.then((consents) => consents.data);
 
 const getCurrentYear = (ref, schoolId) => ref.app.service('schools')
 	.get(schoolId, {
@@ -83,12 +70,6 @@ class AdminUsers {
 		try {
 			const { query, account } = params;
 			const currentUserId = account.userId.toString();
-			const {
-				$limit,
-				$skip,
-				$sort,
-				consentStatus,
-			} = query;
 
 			// fetch base data
 			const [currentUser, roles] = await Promise.all([getCurrentUserInfo(currentUserId), getRoles()]);
@@ -102,86 +83,9 @@ class AdminUsers {
 
 			// fetch data that are scoped to schoolId
 			const searchedRole = roles.find((role) => role.name === this.role);
-			const [usersData, classes] = await Promise.all([
-				getAllUsers(this, schoolId, searchedRole._id, query),
-				getClasses(this.app, schoolId, currentYear),
-			]);
-			const { total } = usersData;
-			const users = usersData.data;
-			const userIds = users.map((user) => user._id.toString());
-			const consents = await findConsents(this, userIds, $limit).then((data) => {
-				// rebuild consent to object for faster sorting
-				const out = {};
-				data.forEach((e) => {
-					out[e.userId.toString()] = e;
-				});
-				return out;
-			});
-			// bsonId to stringId that it can use .includes for is in test
-			classes.forEach((c) => {
-				if (Array.isArray(c.userIds)) {
-					c.userIds = c.userIds.map((id) => id.toString());
-				} else {
-					c.userIds = [];
-				}
-				if (Array.isArray(c.teacherIds)) {
-					c.teacherIds = c.teacherIds.map((id) => id.toString());
-				} else {
-					c.teacherIds = [];
-				}
-			});
-
-			// patch classes and consent into user
-			users.forEach((user) => {
-				user.classes = [];
-				const userId = user._id.toString();
-				user.consent = consents[userId] || {};
-				classes.forEach((c) => {
-					if (c.userIds.includes(userId) || c.teacherIds.includes(userId)) {
-						user.classes.push(c.displayName);
-					}
-				});
-				return user;
-			});
-
-			// sorting by class and by consent is implemented manually,
-			// as classes and consents are fetched from seperate db collection
-			const classSortParam = (($sort || {}).class || {}).toString();
-			if (classSortParam === '1') {
-				users.sort((a, b) => (a.classes[0] || '').toLowerCase() > (b.classes[0] || '').toLowerCase());
-			} else if (classSortParam === '-1') {
-				users.sort((a, b) => (a.classes[0] || '').toLowerCase() < (b.classes[0] || '').toLowerCase());
-			}
-
-			const sortOrder = {
-				ok: 1,
-				parentsAgreed: 2,
-				missing: 3,
-			};
-			const consentSortParam = (($sort || {}).consent || {}).toString();
-			if (consentSortParam === '1') {
-				users.sort((a, b) => (sortOrder[a.consent.consentStatus || 'missing']
-					- sortOrder[b.consent.consentStatus || 'missing']));
-			} else if (consentSortParam === '-1') {
-				users.sort((a, b) => (sortOrder[b.consent.consentStatus || 'missing']
-					- sortOrder[a.consent.consentStatus || 'missing']));
-			}
-
-			const filteredUsers = users.filter((user) => {
-				if ((consentStatus || {}).$in) {
-					const userStatus = user.consent.consentStatus || 'missing';
-					return consentStatus.$in.includes(userStatus);
-				}
-				return true;
-			}).splice($skip || 0, $limit || 25);
-
-			return {
-				total,
-				limit: $limit || 25,
-				skip: $skip || 0,
-				data: filteredUsers,
-			};
+			return getAllUsers(schoolId, currentYear, searchedRole._id, query);
 		} catch (err) {
+			logger.error(err);
 			if ((err || {}).code === 403) {
 				throw new Forbidden('You have not the permission to execute this.', err);
 			}

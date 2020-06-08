@@ -40,6 +40,7 @@ const {
 	includeOnlySchoolRoles,
 } = require('../hooks/userService');
 
+// const USER_RABBIT_EXCHANGE = 'user';
 class UserService {
 	constructor(options) {
 		this.options = options || {};
@@ -69,7 +70,7 @@ class UserService {
 		return this.app.service('usersModel').remove(id, prepareInternalParams(params));
 	}
 
-	setup(app) {
+	async setup(app) {
 		this.app = app;
 	}
 }
