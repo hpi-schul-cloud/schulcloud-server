@@ -1,7 +1,7 @@
 const service = require('feathers-mongoose');
 const { consentModel, ConsentVersionModel } = require('./model');
 const consentHooks = require('./hooks/consents');
-const consentVersionHooks = require('./hooks/consentversions');
+const consentVersionModelHooks = require('./hooks/consentversionsModelHooks');
 const consentDocs = require('./docs');
 const { ConsentStatusService } = require('./consentStatus.service');
 // const depricated = require('./consent.depricated');
@@ -31,14 +31,13 @@ module.exports = function () {
 	// app.use('/consents/:type/users', new ConsentStatusService());
 
 	/* ConsentVersion Model */
-	app.use('/consentVersions', service({
+	app.use('consentVersionsModel', service({
 		Model: ConsentVersionModel,
 		paginate: {
-			default: 25,
-			max: 100,
+			default: 100,
+			max: 200,
 		},
 		lean: true,
 	}));
-	const consentVersionService = app.service('/consentVersions');
-	consentVersionService.hooks(consentVersionHooks);
+	app.service('consentVersionsModel').hooks(consentVersionModelHooks);
 };
