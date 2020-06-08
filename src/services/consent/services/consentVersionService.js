@@ -45,27 +45,13 @@ class ConsentVersionService {
 		this.docs = {};
 	}
 
-	// WIP
-	/*
-	async populateBase64Data(query, consentVersionsResults) {
-		if (!query.files === 'true') {
-			return consentVersionsResults;
-		}
-		const $or = consentVersionsResults.map((c) => ({ _id: c.consentDataId }));
-		const base64data = await this.app.service('base64Files').find({
-			query: { $or },
-		});
-		consentVersionsResults.forEach()
-	}
-	*/
-
 	createBase64File(data = {}) {
 		const { schoolId, consentData } = data;
 		if (consentData) {
 			if (!schoolId) {
 				return Promise.reject(new BadRequest('SchoolId is required for school consents.'));
 			}
-			return this.app.service('base64Files').create({ schoolId, data: consentData });
+			return this.app.service('base64Files').create({ schoolId, data: consentData, fileType: 'pdf' });
 		}
 		return Promise.resolve({});
 	}
