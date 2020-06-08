@@ -14,7 +14,6 @@ const {
 
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
 
-// todo check userId // <-- TODO: was bedeutet der todo *-*
 const ConsentVersionServiceHooks = {
 	before: {
 		all: [iff(isProvider('external'), [
