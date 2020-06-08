@@ -274,6 +274,11 @@
 			"default":"https://schul-cloud.org/etherpad/api/1",
 			"description": "The etherpad api version uri."
 		},
+		"ETHERPAD_OLD_PAD_URI": {
+			"type": "string",
+			"default":"https://etherpad.schul-cloud.org/p",
+			"description": "The etherpad api version uri."
+		},
 		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
 			"type": "integer",
 			"default": 28800,
@@ -288,6 +293,11 @@
 			"type": "string",
 			"default": "",
 			"description": "A string with concatenated user types (student, employee) that don't need to explicitly state their consent with the terms and conditions. \"employee\" means teachers and admins."
+		},
+		"ADMIN_MAIL_RECEIVERS": {
+			"type": "string",
+			"default": null,
+			"description": "A string that contains recievers of the daily stat and other mails. Can contain mutliple mails, seperated by comma"
 		}
 	},
 	"required": [
