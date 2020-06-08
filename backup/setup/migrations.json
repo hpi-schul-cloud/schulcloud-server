@@ -553,15 +553,37 @@
 	},
 	"__v": 0
 },
-	{
+{
+	"_id": {
+		"$oid": "5ebd68fe107fa3720c2251e4"
+	},
+	"state": "up",
+	"name": "add_more_school_years",
+	"createdAt": {
+		"$date": "2020-05-14T14:56:41.229Z"
+	},
+	"__v": 0
+},
+{
 		"_id": {
-			"$oid": "5ebd68fe107fa3720c2251e4"
+			"$oid": "5ece7de4a194604c6e31f432"
 		},
 		"state": "up",
-		"name": "add_more_school_years",
+		"name": "move_consent_to_user",
 		"createdAt": {
-			"$date": "2020-05-14T14:56:41.229Z"
+			"$date": "2020-04-07T13:45:21.906Z"
 		},
 		"__v": 0
-	}]
+},
+{
+	"_id": {
+		"$oid": "5ecd33ee93e6125170a84d4b"
+	},
+	"state": "up",
+	"name": "encrypt-ldap-search-user-password",
+	"createdAt": {
+		"$date": "2020-05-26T14:00:06.91Z"
+	},
+	"__v": 0
+}]
 

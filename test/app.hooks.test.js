@@ -75,6 +75,26 @@ describe('Sanitization Hook', () => {
 		expect(result.result.dangerousUrl).to.equal(sanitizedTestString);
 	});
 
+	it('hook does not sanitizes specified attributes', () => {
+		const content = '<blockquote class="test-class">Cite Block</blockquote>' +
+			'<span class="test-class" style="color:#9c27b0">Text color</span>' +
+			'<span class="test-class" style="background-color:#cddc39">Text Background</span>' +
+			'Tables: <table class="test-class"><th>1</th><th>2</th><tr><td>A</td><td>B</td></tr></table>' +
+			'Video: <video class="test-class" controlslist="nodownload" src="https://www.youtube.com/watch?v=zYo7gLzH8Uk"></video>' +
+			'Audio: <audio class="test-class" controlslist="nodownload" controls="controls" src="https://www.youtube.com/watch?v=zYo7gLzH8Uk"></audio>';
+		const data = {
+			schoolId: '0000d186816abba584714c5f',
+			title: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
+			content: content
+		};
+
+		const path = 'news';
+		const result = sanitizeDeep(data, path);
+		expect(result.schoolId).to.equal('0000d186816abba584714c5f');
+		expect(result.title).to.equal('SanitizationTest äöüß§$%/()=');
+		expect(result.content).to.equal(content);
+	});
+
 	// TODO: Map test to generic output for sanitizeConst keys, paths, saveKeys
 	it('sanitize in news, example', () => {
 		const data = {
@@ -138,6 +158,28 @@ describe('Sanitization Hook', () => {
 		const result = sanitizeDeep(data, path);
 
 		expect(result.subject).to.equal(''); // filter all
+	});
+
+	it('sanitize in submissions, avoid img onerror attribute', () => {
+		const data = {
+			comment: '<img onerror="window.location = \'google.com\'" src="x" />',
+		};
+
+		const path = 'submissions';
+		const result = sanitizeDeep(data, path);
+
+		expect(result.comment, 'onerror attribute removed from img tag').to.equal('<img src="x" />');
+	});
+
+	it('sanitize in submissions, avoid js in href', () => {
+		const data = {
+			comment: '<a href="javascript:alert(1);">Link</a>',
+		};
+
+		const path = 'submissions';
+		const result = sanitizeDeep(data, path);
+
+		expect(result.comment, 'js removed from a href').to.equal('<a>Link</a>');
 	});
 
 	it('sanitize in course, example 1', () => {
