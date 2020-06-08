@@ -67,8 +67,6 @@ class ConsentVersionService {
 				query.$or = [];
 			}
 			query.$or.push({ schoolId: query.schoolId });
-			query.$or.push({ schoolId: undefined }); // TODO test if undefined work
-			query.$or.push({ schoolId: null });
 		}
 		delete query.schoolId;
 
