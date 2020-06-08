@@ -274,6 +274,11 @@
 			"default":"https://schul-cloud.org/etherpad/api/1",
 			"description": "The etherpad api version uri."
 		},
+		"ETHERPAD_OLD_PAD_URI": {
+			"type": "string",
+			"default":"https://etherpad.schul-cloud.org/p",
+			"description": "The etherpad api version uri."
+		},
 		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
 			"type": "integer",
 			"default": 28800,
