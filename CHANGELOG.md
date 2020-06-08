@@ -16,9 +16,26 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 
 ### Security
+
+### Removed
+
+## [23.2.4] - 2020-06-05
+
+### Fixed
+
+- SC-4876 soften sanitization to allow editor actions to be persisted correctly
+
+## [23.2.1] - 2020-06-04
+
+### Security
+
+- SC-4720 improve importhashes for registrationlinks
+
+## [23.2.0] - 2020-06-03
+
+### Security
 - SC-4506 Secure Find User Route. Access user list by students is allowed only if they are eligible to create teams.   
 - SC-4506 Secure Get User Route. Read user details may only users with STUDENT_LIST or TEACHER_LIST permissions
-### Removed
 
 ## [23.1.4] - 2020-05-29
 
