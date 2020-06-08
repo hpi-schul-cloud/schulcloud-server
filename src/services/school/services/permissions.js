@@ -1,4 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { BadRequest } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 const { lookupSchool, restrictToCurrentSchool } = require('../../../hooks');
@@ -58,15 +59,16 @@ class HandlePermissions {
 		const { schoolId } = params.account;
 		const school = await getSchool(this.app, schoolId);
 
-		if (school) {
-			const schoolPermissions = school.permissions || {};
-
-			if (!Object.prototype.hasOwnProperty.call(schoolPermissions, this.role)) {
-				schoolPermissions[this.role] = {};
-			}
-			schoolPermissions[this.role][this.permission] = permission.isEnabled;
-			await updateSchoolPermissions(this.app, schoolId, schoolPermissions);
+		if (!school) {
+			throw new BadRequest('Data are wrong');
 		}
+		const schoolPermissions = school.permissions || {};
+
+		if (!Object.prototype.hasOwnProperty.call(schoolPermissions, this.role)) {
+			schoolPermissions[this.role] = {};
+		}
+		schoolPermissions[this.role][this.permission] = permission.isEnabled;
+		return updateSchoolPermissions(this.app, schoolId, schoolPermissions);
 	}
 
 	setup(app) {
