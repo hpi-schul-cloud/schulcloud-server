@@ -53,6 +53,9 @@ const consentVersionSchema = new Schema({
 		enum: Object.values(consentTypes),
 	}],
 	consentText: { type: String, required: true },
+	consentDataId: { type: Schema.Types.ObjectId, ref: 'base64Files' },
+	// consentData einkommende request und zum populate
+	schoolId: { type: Schema.Types.ObjectId },
 	publishedAt: { type: Date, required: true },
 	title: { type: String, required: true },
 }, { timestamps: true });

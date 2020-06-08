@@ -1,3 +1,4 @@
+const base64Files = require('./base64Files');
 const fileStorage = require('./fileStorage');
 const link = require('./link');
 const news = require('./news');
@@ -53,6 +54,7 @@ module.exports = function initializeServices() {
 	// register services
 	app.configure(authentication);
 	app.configure(analytics);
+	app.configure(base64Files);
 	app.configure(user);
 	app.configure(role);
 	app.configure(account);
