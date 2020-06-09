@@ -10,6 +10,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 ### Added
+-   SC-4192 add tests that ensure classes on other schools cant be manipulated
 
 ### Fixed
 
