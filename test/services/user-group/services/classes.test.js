@@ -6,8 +6,8 @@ const { classModel } = require('../../../../src/services/user-group/model');
 describe('classes service', () => {
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		server = await app.listen(0);
 	});
 
 	after(async () => {
@@ -78,16 +78,114 @@ describe('classes service', () => {
 		expect(classUserIds).to.include(student._id.toString());
 	});
 
-	it('fails unauthorized request', async () => {
-		const { _id: schoolId } = await testObjects.createTestSchool({});
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-		const klass = await testObjects.createTestClass({ schoolId, teacherIds: [teacher._id] });
-		try {
-			await app.service('classes').find({ query: { _id: klass._id }, provider: 'rest' });
-			throw new Error('should have failed');
-		} catch (err) {
-			expect(err.message).to.not.equal('should have failed');
-			expect(err.code).to.equal(401);
-		}
+	describe('security features', () => {
+		it('fails unauthorized request', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const klass = await testObjects.createTestClass({ schoolId, teacherIds: [teacher._id] });
+			try {
+				await app.service('classes').find({ query: { _id: klass._id }, provider: 'rest' });
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(401);
+			}
+		});
+
+		it('fails to get class of other school', async () => {
+			const { _id: usersSchoolId } = await testObjects.createTestSchool({});
+			const { _id: classSchoolId } = await testObjects.createTestSchool({});
+			const user = await testObjects.createTestUser({ roles: 'administrator', schoolId: usersSchoolId });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+			params.query = {};
+			const klass = await testObjects.createTestClass({ schoolId: classSchoolId });
+			try {
+				await app.service('classes').get(klass._id, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(403);
+			}
+		});
+
+		it('does not find class of other school', async () => {
+			const { _id: usersSchoolId } = await testObjects.createTestSchool({});
+			const { _id: classSchoolId } = await testObjects.createTestSchool({});
+			const user = await testObjects.createTestUser({ roles: 'administrator', schoolId: usersSchoolId });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+			params.query = {};
+			await testObjects.createTestClass({ schoolId: classSchoolId });
+			const result = await app.service('classes').find(params);
+			expect(result.total).to.equal(0);
+		});
+
+		it('fails to create class on other school', async () => {
+			const { _id: usersSchoolId } = await testObjects.createTestSchool({});
+			const { _id: classSchoolId } = await testObjects.createTestSchool({});
+			const user = await testObjects.createTestUser({ roles: 'administrator', schoolId: usersSchoolId });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+			const data = {
+				name: 'sabotageKlasse',
+				teacherIds: [],
+				schoolId: classSchoolId,
+			};
+			try {
+				await app.service('classes').create(data, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(403);
+			}
+		});
+
+		it('fails to update class on other school', async () => {
+			const { _id: usersSchoolId } = await testObjects.createTestSchool({});
+			const { _id: classSchoolId } = await testObjects.createTestSchool({});
+			const klass = await testObjects.createTestClass({ schoolId: classSchoolId });
+			const user = await testObjects.createTestUser({ roles: 'administrator', schoolId: usersSchoolId });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+			const data = {
+				name: 'overtaken',
+				teacherIds: [],
+				schoolId: usersSchoolId,
+			};
+			try {
+				await app.service('classes').update(klass._id, data, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(404);
+			}
+		});
+
+		it('fails to patch class on other school', async () => {
+			const { _id: usersSchoolId } = await testObjects.createTestSchool({});
+			const { _id: classSchoolId } = await testObjects.createTestSchool({});
+			const klass = await testObjects.createTestClass({ schoolId: classSchoolId });
+			const user = await testObjects.createTestUser({ roles: 'administrator', schoolId: usersSchoolId });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+			try {
+				await app.service('classes').patch(klass._id, { name: 'hacked' }, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(404);
+			}
+		});
+
+		it('fails to remove class on other school', async () => {
+			const { _id: usersSchoolId } = await testObjects.createTestSchool({});
+			const { _id: classSchoolId } = await testObjects.createTestSchool({});
+			const klass = await testObjects.createTestClass({ schoolId: classSchoolId });
+			const user = await testObjects.createTestUser({ roles: 'administrator', schoolId: usersSchoolId });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+			try {
+				await app.service('classes').remove(klass._id, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(404);
+			}
+		});
 	});
 });

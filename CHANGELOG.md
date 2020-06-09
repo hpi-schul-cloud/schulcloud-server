@@ -11,6 +11,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 - SC-4577 extend consentversions with school specific privacy policy, which can be added by the school admin
+- SC-4192 add tests that ensure classes on other schools cant be manipulated
+
 
 ### Fixed
 
