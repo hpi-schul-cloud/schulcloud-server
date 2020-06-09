@@ -15,6 +15,7 @@ const SCHOOL_FEATURES = {
 	ROCKET_CHAT: 'rocketChat',
 	VIDEOCONFERENCE: 'videoconference',
 	MESSENGER: 'messenger',
+	STUDENTVISIBILITY: 'studentVisibility',
 	MESSENGER_SCHOOL_ROOM: 'messengerSchoolRoom',
 };
 
@@ -81,6 +82,7 @@ const schoolSchema = new Schema({
 	enableStudentTeamCreation: { type: Boolean, required: false },
 	inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below),
 	storageProvider: { type: mongoose.Schema.Types.ObjectId, ref: 'storageprovider' },
+	permissions: { type: Object },
 	...externalSourceSchema,
 }, {
 	timestamps: true,
