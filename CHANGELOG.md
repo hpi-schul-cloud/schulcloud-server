@@ -10,6 +10,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 ### Added
+- SC-4577 extend consentversions with school specific privacy policy, which can be added by the school admin
 
 ### Fixed
 
