@@ -14,7 +14,6 @@ const {
 
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
 
-// todo check userId // <-- TODO: was bedeutet der todo *-*
 const ConsentVersionServiceHooks = {
 	before: {
 		all: [iff(isProvider('external'), [
@@ -63,15 +62,13 @@ class ConsentVersionService {
 
 	find(params) {
 		const { query } = params;
-		if (query.schoolId) {
+		if (query && query.schoolId) {
 			if (!query.$or) {
 				query.$or = [];
 			}
 			query.$or.push({ schoolId: query.schoolId });
-			query.$or.push({ schoolId: undefined }); // TODO test if undefined work
-			query.$or.push({ schoolId: null });
+			delete query.schoolId;
 		}
-		delete query.schoolId;
 
 		return this.app.service('consentVersionsModel').find(prepareInternalParams(params));
 	}

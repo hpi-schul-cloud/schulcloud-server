@@ -42,6 +42,6 @@ module.exports = function () {
 	}));
 	app.service('consentVersionsModel').hooks(consentVersionModelHooks);
 
-	app.use('/consentVersion', new ConsentVersionService());
-	app.service('/consentVersion').hooks(ConsentVersionServiceHooks);
+	app.use('/consentVersions', new ConsentVersionService());
+	app.service('/consentVersions').hooks(ConsentVersionServiceHooks);
 };
