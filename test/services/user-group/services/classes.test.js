@@ -186,6 +186,6 @@ describe('classes service', () => {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(404);
 			}
-		}) ;
+		});
 	});
 });
