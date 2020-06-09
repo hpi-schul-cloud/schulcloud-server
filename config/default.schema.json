@@ -243,6 +243,17 @@
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
 		},
+		"FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY": {
+			"type": "string",
+			"default": "opt-in",
+			"enum": [
+				"disabled",
+				"opt-in",
+				"opt-out",
+				"enabled"
+			],
+			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
+		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
 			"description": "Synchronous encryption key used to secure search user passwords",
@@ -293,6 +304,11 @@
 			"type": "string",
 			"default": "",
 			"description": "A string with concatenated user types (student, employee) that don't need to explicitly state their consent with the terms and conditions. \"employee\" means teachers and admins."
+		},
+		"ADMIN_MAIL_RECEIVERS": {
+			"type": "string",
+			"default": null,
+			"description": "A string that contains recievers of the daily stat and other mails. Can contain mutliple mails, seperated by comma"
 		}
 	},
 	"required": [
