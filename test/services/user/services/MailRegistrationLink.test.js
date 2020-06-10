@@ -5,7 +5,7 @@ const testObjects = require('../../helpers/testObjects')(app);
 
 const mailRegistrationLinkService = app.service('/users/mail/registrationLink');
 
-let testGenericErrorMessage = 'Can not send mail(s) with registration link';
+const testGenericErrorMessage = 'Can not send mail(s) with registration link';
 
 describe('MailRegistrationLinkService', () => {
 	let server;

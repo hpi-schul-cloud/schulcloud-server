@@ -1,11 +1,10 @@
 const { expect } = require('chai');
-const logger = require('../../../../src/logger/index');
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 
 const usersLinkImportService = app.service('/users/linkImport');
 
-let testGenericErrorMessage = 'Can not send mail(s) with registration link';
+const testGenericErrorMessage = 'Can not send mail(s) with registration link';
 
 describe('UserLinkImportService', () => {
 	let server;

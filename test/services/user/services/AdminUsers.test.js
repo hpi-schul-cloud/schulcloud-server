@@ -9,7 +9,7 @@ const consentService = app.service('consents');
 
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
-let testGenericErrorMessage = 'You have not the permission to execute this.';
+const testGenericErrorMessage = 'You have not the permission to execute this.';
 
 describe('AdminUsersService', () => {
 	let server;

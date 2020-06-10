@@ -10,7 +10,7 @@ const testObjects = require('../../helpers/testObjects')(app);
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 let testUserId;
-let testGenericErrorMessage = 'Der angefragte Nutzer ist unbekannt!';
+const testGenericErrorMessage = 'Der angefragte Nutzer ist unbekannt!';
 
 describe('user service', () => {
 	let server;
@@ -114,13 +114,13 @@ describe('user service', () => {
 				name: 'studentList', permissions: ['STUDENT_LIST'],
 			});
 			const school = await testObjects.createTestSchool({
-				name: 'testSchool1'
+				name: 'testSchool1',
 			});
 			const otherSchool = await testObjects.createTestSchool({
-				name: 'testSchool2'
+				name: 'testSchool2',
 			});
 			const student = await testObjects.createTestUser({ roles: ['studentList'], schoolId: school._id });
-			const otherStudent = await testObjects.createTestUser({ roles: ['student'], schoolId: otherSchool._id});
+			const otherStudent = await testObjects.createTestUser({ roles: ['student'], schoolId: otherSchool._id });
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {};
 			try {
@@ -237,8 +237,8 @@ describe('user service', () => {
 			params.query = {
 				'$populate': [
 					'0000d186816abba584714c5f',
-					'roles'
-				]
+					'roles',
+				],
 			};
 			try {
 				await app.service('users').find(params);
