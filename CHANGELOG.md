@@ -18,6 +18,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-4957 user.ldapId and user.ldapDn are now indexed to improve performance
+
 ### Security
 
 ### Removed
