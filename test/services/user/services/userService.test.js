@@ -230,7 +230,6 @@ describe('user service', () => {
 	});
 
 	describe('FIND', () => {
-
 		it('does not allow population', async () => {
 			const student = await testObjects.createTestUser({ roles: ['student'] });
 			const params = await testObjects.generateRequestParamsFromUser(student);
