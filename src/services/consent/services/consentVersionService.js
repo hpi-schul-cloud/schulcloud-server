@@ -51,7 +51,12 @@ class ConsentVersionService {
 			if (!schoolId) {
 				return Promise.reject(new BadRequest('SchoolId is required for school consents.'));
 			}
-			return this.app.service('base64Files').create({ schoolId, data: consentData, fileType: 'pdf' });
+			return this.app.service('base64Files').create({ 
+				schoolId,
+				data: consentData,
+				filetype: 'pdf',
+				filename: 'Datenschutzerklärung',
+			});
 		}
 		return Promise.resolve({});
 	}
