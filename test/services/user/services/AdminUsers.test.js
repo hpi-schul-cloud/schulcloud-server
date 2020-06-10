@@ -9,6 +9,7 @@ const consentService = app.service('consents');
 
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
+let testGenericErrorMessage = 'You have not the permission to execute this.';
 
 describe('AdminUsersService', () => {
 	let server;
@@ -72,6 +73,20 @@ describe('AdminUsersService', () => {
 		expect(result.data).to.not.be.undefined;
 		expect(searchClass(result.data, 'staticName')).to.be.true;
 		expect(searchClass(result.data, '2A')).to.be.true;
+	});
+
+	it('student can not find other students', async () => {
+		const student = await testObjects.createTestUser({ roles: ['student'] });
+		const params = await testObjects.generateRequestParamsFromUser(student);
+		params.query = {};
+		try {
+			await adminStudentsService.find(params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.message).to.equal(testGenericErrorMessage);
+			expect(err.code).to.equal(403);
+		}
 	});
 
 	it('only shows current classes', async () => {
@@ -331,6 +346,20 @@ describe('AdminTeachersService', () => {
 
 	it('is properly registered', () => {
 		expect(adminTeachersService).to.not.equal(undefined);
+	});
+
+	it('student can not find teachers', async () => {
+		const student = await testObjects.createTestUser({ roles: ['student'] });
+		const params = await testObjects.generateRequestParamsFromUser(student);
+		params.query = {};
+		try {
+			await adminTeachersService.find(params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.message).to.equal(testGenericErrorMessage);
+			expect(err.code).to.equal(403);
+		}
 	});
 
 	it('filters teachers correctly', async () => {

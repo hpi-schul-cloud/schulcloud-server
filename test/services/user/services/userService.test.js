@@ -10,6 +10,7 @@ const testObjects = require('../../helpers/testObjects')(app);
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 let testUserId;
+let testGenericErrorMessage = 'Der angefragte Nutzer ist unbekannt!';
 
 describe('user service', () => {
 	let server;
@@ -92,6 +93,63 @@ describe('user service', () => {
 			expect(result).to.haveOwnProperty('ldapId');
 		});
 
+		it('student can not read admin', async () => {
+			const student = await testObjects.createTestUser({
+				roles: ['student'], birthday: Date.now(), ldapId: 'thisisauniqueid',
+			});
+			const params = await testObjects.generateRequestParamsFromUser(student);
+			params.query = {};
+			try {
+				await app.service('users').get('0000d213816abba584714c0a', params); // admin user id
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.message).to.equal(testGenericErrorMessage);
+				expect(err.code).to.equal(403);
+			}
+		});
+
+		it('student can not read student from foreign school', async () => {
+			await testObjects.createTestRole({
+				name: 'studentList', permissions: ['STUDENT_LIST'],
+			});
+			const school = await testObjects.createTestSchool({
+				name: 'testSchool1'
+			});
+			const otherSchool = await testObjects.createTestSchool({
+				name: 'testSchool2'
+			});
+			const student = await testObjects.createTestUser({ roles: ['studentList'], schoolId: school._id });
+			const otherStudent = await testObjects.createTestUser({ roles: ['student'], schoolId: otherSchool._id});
+			const params = await testObjects.generateRequestParamsFromUser(student);
+			params.query = {};
+			try {
+				await app.service('users').get(otherStudent._id, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.message).to.equal(testGenericErrorMessage);
+				expect(err.code).to.equal(403);
+			}
+		});
+
+		it('student can not read unknown student', async () => {
+			await testObjects.createTestRole({
+				name: 'studentList', permissions: ['STUDENT_LIST'],
+			});
+			const student = await testObjects.createTestUser({ roles: ['studentList'] });
+			const params = await testObjects.generateRequestParamsFromUser(student);
+			params.query = {};
+			try {
+				await app.service('users').get('AAAAAAAAAAAAAAAAAAAAAAAAAAA', params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.message).to.equal(testGenericErrorMessage);
+				expect(err.code).to.equal(403);
+			}
+		});
+
 		it('student can read other student with STUDENT_LIST permission', async () => {
 			await testObjects.createTestRole({
 				name: 'studentList', permissions: ['STUDENT_LIST'],
@@ -110,6 +168,22 @@ describe('user service', () => {
 			expect(result).not.to.haveOwnProperty('ldapId');
 		});
 
+		it('does not allow students to read other students without STUDENT_LIST permission', async () => {
+			await testObjects.createTestRole({ name: 'notAuthorized', permissions: [] });
+			const studentToRead = await testObjects.createTestUser({ roles: ['student'] });
+			const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
+			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			params.query = {};
+			try {
+				await app.service('users').get(studentToRead._id, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.message).to.equal(testGenericErrorMessage);
+				expect(err.code).to.equal(403);
+			}
+		});
+
 		it('teacher can read student', async () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 			const student = await testObjects.createTestUser({ roles: ['student'], birthday: Date.now() });
@@ -125,24 +199,57 @@ describe('user service', () => {
 			expect(result).not.to.haveOwnProperty('ldapId');
 		});
 
-		it('does not allow students to read other students without STUDENT_LIST permission', async () => {
-			await testObjects.createTestRole({ name: 'notAuthorized', permissions: [] });
-			const studentToRead = await testObjects.createTestUser({ roles: ['student'] });
-			const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
-			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+		it('teacher can not read other teacher', async () => {
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+			const otherTeacher = await testObjects.createTestUser({ roles: ['teacher'] });
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			params.query = {};
 			try {
-				await app.service('users').get(studentToRead._id, params);
+				await app.service('users').get(otherTeacher._id, params);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
+				expect(err.message).to.equal(testGenericErrorMessage);
 				expect(err.code).to.equal(403);
-				expect(err.message).to.equal('You don\'t have one of the permissions: STUDENT_LIST.');
+			}
+		});
+
+		it('teacher can not read admin', async () => {
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = {};
+			try {
+				await app.service('users').get('0000d213816abba584714c0a', params); // admin user id
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.message).to.equal(testGenericErrorMessage);
+				expect(err.code).to.equal(403);
 			}
 		});
 	});
 
 	describe('FIND', () => {
+
+		it('does not allow population', async () => {
+			const student = await testObjects.createTestUser({ roles: ['student'] });
+			const params = await testObjects.generateRequestParamsFromUser(student);
+			params.query = {
+				'$populate': [
+					'0000d186816abba584714c5f',
+					'roles'
+				]
+			};
+			try {
+				await app.service('users').find(params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.message).to.equal(testGenericErrorMessage);
+				expect(err.code).to.equal(403);
+			}
+		});
+
 		it('does not allow teachers to find parents', async () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 			const parent = await testObjects.createTestUser({ roles: ['parent'] });
