@@ -1,9 +1,4 @@
 const whitelist = {
-	'accounts/pwgen': {
-		methods: {
-			get: 200,
-		},
-	},
 	'accounts/confirm': {
 		methods: {
 			post: 201,
@@ -63,18 +58,6 @@ const whitelist = {
 			post: 201,
 		},
 	},
-	'wopi/files/{fileId}/contents': {
-		methods: {
-			get: 500,
-			post: 500,
-		},
-	},
-	'wopi/files/{fileId}': {
-		methods: {
-			get: 500,
-			post: 500,
-		},
-	},
 	'oauth2/baseUrl': {
 		methods: {
 			get: 200,
@@ -85,24 +68,9 @@ const whitelist = {
 			get: 200,
 		},
 	},
-	'roster/users/{user}/metadata': {
-		methods: {
-			get: 500,
-		},
-	},
-	'roster/users/{user}/groups': {
-		methods: {
-			get: 500,
-		},
-	},
 	alert: {
 		methods: {
 			get: 200,
-		},
-	},
-	users: {
-		methods: {
-			post: 400,
 		},
 	},
 	registrationPins: {
@@ -115,12 +83,6 @@ const whitelist = {
 			post: 400,
 		},
 	},
-	accounts: {
-		methods: {
-			get: 400,
-			post: 400,
-		},
-	},
 	hash: {
 		methods: {
 			post: 400,
@@ -129,16 +91,6 @@ const whitelist = {
 	consents: {
 		methods: {
 			post: 400,
-		},
-	},
-	sync: {
-		methods: {
-			get: 400,
-		},
-	},
-	mails: {
-		methods: {
-			post: 500,
 		},
 	},
 };
