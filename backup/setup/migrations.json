@@ -1,21 +1,12 @@
 [{
 	"_id": {
-		"$oid": "5d234fff63e4a27b68aceff0"
+		"$oid": "5d651f8f5e33068c88d5bccd"
 	},
-	"name": "AddPositionToLessons",
+	"state": "up",
+	"name": "add_help_documents",
 	"createdAt": {
-		"$date": "2019-07-08T14:15:27.05Z"
+		"$date": "2019-08-20T09:39:23.302Z"
 	},
-	"state": "up",
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5d3ef5f4bd2cdb2075fc7e54"
-	},
-	"state": "up",
-	"name": "replace_grandlevel_id_with_number",
-	"createdAt": "2019-07-29T09:57:38.131Z",
 	"__v": 0
 },
 {
@@ -31,56 +22,23 @@
 },
 {
 	"_id": {
-		"$oid": "5d4858fc8f66f50964686467"
+		"$oid": "5d234fff63e4a27b68aceff0"
+	},
+	"name": "AddPositionToLessons",
+	"createdAt": {
+		"$date": "2019-07-08T14:15:27.05Z"
 	},
 	"state": "up",
-	"name": "addToolPermissionsToSuperheroRole",
-	"createdAt": {
-		"$date": "2019-08-05T16:15:12.225Z"
-	},
 	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "5d25cf6ddf5c9947bc014236"
+		"$oid": "5d651f8f5e33068c88d5bcce"
 	},
 	"state": "up",
-	"name": "skipRegistrationPermissions",
+	"name": "removeRcPws",
 	"createdAt": {
-		"$date": "2019-07-10T11:43:41.464Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5d552b8bc1658a0682fc834a"
-	},
-	"state": "up",
-	"name": "set schoolspecific documentbasedir for instance open",
-	"createdAt": {
-		"$date": "2019-08-15T09:34:59.243Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5d2ee2a8526cce83a8834d4a"
-	},
-	"state": "up",
-	"name": "addStartAndEndDateToYearCollection",
-	"createdAt": {
-		"$date": "2019-07-17T08:12:18.48Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5d651f8f5e33068c88d5bccd"
-	},
-	"state": "up",
-	"name": "add_help_documents",
-	"createdAt": {
-		"$date": "2019-08-20T09:39:23.302Z"
+		"$date": "2019-08-27T12:06:32.917Z"
 	},
 	"__v": 0
 },
@@ -92,17 +50,6 @@
 	"name": "AddClassAdministrationPermissionToAdminRole",
 	"createdAt": {
 		"$date": "2019-08-13T11:35:02.253Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5d651f8f5e33068c88d5bcce"
-	},
-	"state": "up",
-	"name": "removeRcPws",
-	"createdAt": {
-		"$date": "2019-08-27T12:06:32.917Z"
 	},
 	"__v": 0
 },
@@ -161,12 +108,12 @@
 },
 {
 	"_id": {
-		"$oid": "5d8b80ca723a1b53dc43172e"
+		"$oid": "5d25cf6ddf5c9947bc014236"
 	},
 	"state": "up",
-	"name": "AddScopePermissionsViewPermissionToCourseTeachers",
+	"name": "skipRegistrationPermissions",
 	"createdAt": {
-		"$date": "2019-09-25T14:59:22.19Z"
+		"$date": "2019-07-10T11:43:41.464Z"
 	},
 	"__v": 0
 },
@@ -183,45 +130,43 @@
 },
 {
 	"_id": {
+		"$oid": "5d8b80ca723a1b53dc43172e"
+	},
+	"state": "up",
+	"name": "AddScopePermissionsViewPermissionToCourseTeachers",
+	"createdAt": {
+		"$date": "2019-09-25T14:59:22.19Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d3ef5f4bd2cdb2075fc7e54"
+	},
+	"state": "up",
+	"name": "replace_grandlevel_id_with_number",
+	"createdAt": "2019-07-29T09:57:38.131Z",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d4858fc8f66f50964686467"
+	},
+	"state": "up",
+	"name": "addToolPermissionsToSuperheroRole",
+	"createdAt": {
+		"$date": "2019-08-05T16:15:12.225Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5d9db0a97bd9ad01a1734817"
 	},
 	"state": "up",
 	"name": "granular_user_permissions",
 	"createdAt": {
 		"$date": "2019-10-09T12:46:22.613Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5db84906407b4a46ecf03a8b"
-	},
-	"state": "up",
-	"name": "addCreateSupportJwtPermission",
-	"createdAt": {
-		"$date": "2019-10-29T14:13:26.935Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5d26e8c1d0c346ac5bf59bb5"
-	},
-	"state": "up",
-	"name": "schoolyear_19_20_added",
-	"createdAt": {
-		"$date": "2019-07-11T07:44:01.252Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5d91b525fee68c5c70d99de1"
-	},
-	"state": "up",
-	"name": "removeUnusedTeamAttributes",
-	"createdAt": {
-		"$date": "2019-09-30T07:46:22.613Z"
 	},
 	"__v": 0
 },
@@ -238,12 +183,23 @@
 },
 {
 	"_id": {
-		"$oid": "5dc173583c9c9844881b6aca"
+		"$oid": "5d2ee2a8526cce83a8834d4a"
 	},
 	"state": "up",
-	"name": "persist_files_by_copied_courses",
+	"name": "addStartAndEndDateToYearCollection",
 	"createdAt": {
-		"$date": "2019-07-30T13:24:23.114Z"
+		"$date": "2019-07-17T08:12:18.48Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5de6838fc7c4a02707c337de"
+	},
+	"state": "up",
+	"name": "add permission for requesting consents",
+	"createdAt": {
+		"$date": "2019-12-03T14:52:41.127Z"
 	},
 	"__v": 0
 },
@@ -259,12 +215,34 @@
 },
 {
 	"_id": {
-		"$oid": "5de6838fc7c4a02707c337de"
+		"$oid": "5d91b525fee68c5c70d99de1"
 	},
 	"state": "up",
-	"name": "add permission for requesting consents",
+	"name": "removeUnusedTeamAttributes",
 	"createdAt": {
-		"$date": "2019-12-03T14:52:41.127Z"
+		"$date": "2019-09-30T07:46:22.613Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d26e8c1d0c346ac5bf59bb5"
+	},
+	"state": "up",
+	"name": "schoolyear_19_20_added",
+	"createdAt": {
+		"$date": "2019-07-11T07:44:01.252Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5dc173583c9c9844881b6aca"
+	},
+	"state": "up",
+	"name": "persist_files_by_copied_courses",
+	"createdAt": {
+		"$date": "2019-07-30T13:24:23.114Z"
 	},
 	"__v": 0
 },
@@ -309,6 +287,17 @@
 	"name": "videoconference permissions added in coursesroles",
 	"createdAt": {
 		"$date": "2020-01-13T08:55:24.955Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5db84906407b4a46ecf03a8b"
+	},
+	"state": "up",
+	"name": "addCreateSupportJwtPermission",
+	"createdAt": {
+		"$date": "2019-10-29T14:13:26.935Z"
 	},
 	"__v": 0
 },
@@ -391,28 +380,6 @@
 },
 {
 	"_id": {
-		"$oid": "5dc18974ba666b70ac1199e5"
-	},
-	"state": "up",
-	"name": "add-enterthecloud-start-permission",
-	"createdAt": {
-		"$date": "2019-11-05T14:38:44.172Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5dc19483d15115187413f3c0"
-	},
-	"state": "up",
-	"name": "remove-broken-class-successor-links",
-	"createdAt": {
-		"$date": "2019-11-05T14:19:26.569Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5e4d449dc8fe4e2ff4993849"
 	},
 	"state": "up",
@@ -424,13 +391,14 @@
 },
 {
 	"_id": {
-		"$oid": "5de50ab801498f0f504d349e"
+		"$oid": "5d552b8bc1658a0682fc834a"
 	},
 	"state": "up",
-	"name": "fix-demo-permissions",
+	"name": "set schoolspecific documentbasedir for instance open",
 	"createdAt": {
-		"$date": "2019-12-02T12:59:36.284Z"
-	}
+		"$date": "2019-08-15T09:34:59.243Z"
+	},
+	"__v": 0
 },
 {
 	"_id": {
@@ -445,28 +413,6 @@
 },
 {
 	"_id": {
-		"$oid": "5e78b794a1e42c5728901f99"
-	},
-	"state": "up",
-	"name": "runIndexSync",
-	"createdAt": {
-		"$date": "2020-03-21T19:35:25.407Z"
-	},
-	"__v": 0
-},
-{
-    "_id": {
-        "$oid": "5e735028d4b12d5c4c77945a"
-    },
-    "state": "up",
-    "name": "add-messenger-sync-permissions",
-    "createdAt": {
-        "$date": "2020-03-19T11:55:25.139Z"
-    },
-    "__v": 0
-},
-{
-	"_id": {
 		"$oid": "5e81e74b65f87a5a600f591b"
 	},
 	"state": "up",
@@ -478,23 +424,23 @@
 },
 {
 	"_id": {
-		"$oid": "5e7f1d63e2c96215c85330f9"
-	},
-	"state": "up",
-	"name": "add_default_file_storage_provider",
-	"createdAt": {
-		"$date": "2020-03-28T09:48:19.167Z"
-  },
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5e8355da77736b6304a3e77e"
 	},
 	"state": "up",
 	"name": "add_edtr_feature_to_klara_fall",
 	"createdAt": {
 		"$date": "2020-03-31T14:38:18.001Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e7f1d63e2c96215c85330f9"
+	},
+	"state": "up",
+	"name": "add_default_file_storage_provider",
+	"createdAt": {
+		"$date": "2020-03-28T09:48:19.167Z"
 	},
 	"__v": 0
 },
@@ -533,6 +479,27 @@
 },
 {
 	"_id": {
+		"$oid": "5dc18974ba666b70ac1199e5"
+	},
+	"state": "up",
+	"name": "add-enterthecloud-start-permission",
+	"createdAt": {
+		"$date": "2019-11-05T14:38:44.172Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5de50ab801498f0f504d349e"
+	},
+	"state": "up",
+	"name": "fix-demo-permissions",
+	"createdAt": {
+		"$date": "2019-12-02T12:59:36.284Z"
+	}
+},
+{
+	"_id": {
 		"$oid": "5ea0049a18cc9c230f4fc936"
 	},
 	"state": "up",
@@ -541,4 +508,104 @@
 		"$date": "2020-04-22T08:47:22.723Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e78b794a1e42c5728901f99"
+	},
+	"state": "up",
+	"name": "runIndexSync",
+	"createdAt": {
+		"$date": "2020-03-21T19:35:25.407Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e735028d4b12d5c4c77945a"
+	},
+	"state": "up",
+	"name": "add-messenger-sync-permissions",
+	"createdAt": {
+		"$date": "2020-03-19T11:55:25.139Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5dc19483d15115187413f3c0"
+	},
+	"state": "up",
+	"name": "remove-broken-class-successor-links",
+	"createdAt": {
+		"$date": "2019-11-05T14:19:26.569Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5eb961c94e1b4a5238eb1b82"
+	},
+	"state": "up",
+	"name": "addEnableStudentTeamCreation",
+	"createdAt": {
+		"$date": "2020-05-07T15:26:54.157Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ebd68fe107fa3720c2251e4"
+	},
+	"state": "up",
+	"name": "add_more_school_years",
+	"createdAt": {
+		"$date": "2020-05-14T14:56:41.229Z"
+	},
+	"__v": 0
+},
+{
+		"_id": {
+			"$oid": "5ece7de4a194604c6e31f432"
+		},
+		"state": "up",
+		"name": "move_consent_to_user",
+		"createdAt": {
+			"$date": "2020-04-07T13:45:21.906Z"
+		},
+		"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ecd33ee93e6125170a84d4b"
+	},
+	"state": "up",
+	"name": "encrypt-ldap-search-user-password",
+	"createdAt": {
+		"$date": "2020-05-26T14:00:06.91Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5eda255592ee4109ca3d423d"
+	},
+	"state": "up",
+	"name": "fix_move_consent",
+	"createdAt": {
+		"$date": "2020-06-04T09:14:00.473Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5eda255592ee4109ca3d423e"
+	},
+	"state": "up",
+	"name": "add-SCHOOL_PERMISSION_VIEW-permission",
+	"createdAt": {
+		"$date": "2020-06-04T13:10:39.414Z"
+	},
+	"__v": 0
 }]
+

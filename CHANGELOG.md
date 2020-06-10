@@ -10,6 +10,66 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 ### Added
+- SC-4577 extend consentversions with school specific privacy policy, which can be added by the school admin
+- SC-4192 add tests that ensure classes on other schools cant be manipulated
+
+
+### Fixed
+
+### Changed
+
+### Security
+
+### Removed
+
+## [23.2.4] - 2020-06-05
+
+### Fixed
+
+- SC-4876 soften sanitization to allow editor actions to be persisted correctly
+
+## [23.2.1] - 2020-06-04
+
+### Security
+
+- SC-4720 improve importhashes for registrationlinks
+
+## [23.2.0] - 2020-06-03
+
+### Security
+- SC-4506 Secure Find User Route. Access user list by students is allowed only if they are eligible to create teams.   
+- SC-4506 Secure Get User Route. Read user details may only users with STUDENT_LIST or TEACHER_LIST permissions
+
+## [23.1.4] - 2020-05-29
+
+### Fixed in 23.1.4
+
+- SC-4749 avoid xss in image onerror event attribute for submissions
+
+## [23.0.0] - 2020-05-19
+
+### Changed in 23.0.0
+
+- SC-4075 Teams creation by students logic was changed. New environment enumeration variable `STUDENT_TEAM_CREATION` 
+with possible values `disabled`, `enabled`, `opt-in`, `opt-out` was introduced. The feature value is set by instance deployment. 
+In case of `disabled`, `enabled` it is valid for all schools of the instance and cannot be changed by the admin. 
+In case of `opt-in` and `opt-out` the feature should be enabled/disabled by the school admin.
+
+## [22.10.3] - 2020-05-13
+
+### Fixed in 22.10.3
+
+-   Unbind errors no longer stop the LDAP sync if more systems follow
+
+## [22.10.2] - 2020-05-12
+
+### Fixed in 22.10.2
+
+-   fixed pagination for students/teacher table
+
+## [22.10.0] - 2020-05-11
+
+### Added in 22.10.0
 
 -   SC-3719 Files now have a `creator` attribute that references the ID of the user that created the file.
     For old files, it is set to the first user permission inside the permissions array (legacy creator check).
@@ -20,22 +80,24 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -   SC-4018 Add additional nexboard permissions
 -   SC-4008 Migrated generateRegistrationLink Hook from SC-Client into Server
 -   SC-3686 Added new Registration Link Service for sending mails
+-   SC-4094 Teachers can now provide feedback in the form of uploaded files
 
-### Fixed
+### Fixed in 22.10.0
 
 -   SC-3892 Update Filter of submission in order to work with older submissions
 -   SC-3395 if fetching the release fails, a error will be thrown
 -   backup.js now outputs valid json exports
 -   SC-4105 fixed a problem with new users tests not working with recent hotfix.
+-   Checks of user consent calculated correct now
 
-### Changed
+### Changed in 22.10.0
 
 -   User delete now accepts bulk delete requests
 -   SC-3958: the "general" LDAP strategy now returns an empty array if classes are not configured properly
 -   Increase performance - error logging in sentry
 -   Mergify: add and modified some configs
 
-### Removed
+### Removed in 22.10.0
 
 -   SC-3958: the LDAP strategy interface no longer supports synchronizing team members to the never-used original N21-IDM
 -   SC-3958: the environment variables NBC_IMPORTURL, NBC_IMPORTUSER, and NBC_IMPORTPASSWORD are no longer used and have been removed

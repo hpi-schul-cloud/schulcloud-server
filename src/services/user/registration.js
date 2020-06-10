@@ -1,3 +1,4 @@
+const { Configuration } = require('@schul-cloud/commons');
 const errors = require('@feathersjs/errors');
 const userModel = require('./model');
 const accountModel = require('../account/model');
@@ -117,7 +118,9 @@ const registerUser = function register(data, params, app) {
 		.then((response) => {
 			user = response.user;
 			oldUser = response.oldUser;
+			if (!oldUser && data.sso !== 'true') return Promise.reject('Ungültiger Link');
 		})).then(() => {
+		const consentSkipCondition = Configuration.get('SKIP_CONDITIONS_CONSENT');
 		if ((user.roles || []).includes('student')) {
 			// wrong birthday object?
 			if (user.birthday instanceof Date && Number.isNaN(user.birthday)) {
@@ -133,7 +136,8 @@ const registerUser = function register(data, params, app) {
 					`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler`
 						+ `nicht ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre oder älter sein.`,
 				));
-			} if (!data.parent_email && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
+			} if (!data.parent_email && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS
+				&& !consentSkipCondition.includes('student')) {
 				return Promise.reject(new errors.BadRequest(
 					`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler`
 						+ ` nicht jünger als ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre sein.`,
@@ -199,7 +203,7 @@ const registerUser = function register(data, params, app) {
 				.then((newAccount) => { account = newAccount; })
 				.catch((err) => Promise.reject(new Error('Fehler beim Erstellen des Accounts.', err)));
 		})
-		.then((res) => {
+		.then(async (res) => {
 			// add parent if necessary
 			if (data.parent_email) {
 				parent = {
@@ -210,21 +214,15 @@ const registerUser = function register(data, params, app) {
 					schoolId: data.schoolId,
 					roles: ['parent'],
 				};
-				return app.service('users').create(parent, { _additional: { asTask: 'parent' } })
-					.catch((err) => {
-						if (err.message.startsWith('parentCreatePatch')) {
-							return Promise.resolve(err.data);
-						}
-						return Promise.reject(new Error(`Fehler beim Erstellen des Elternaccounts. ${err}`));
-					}).then((newParent) => {
-						parent = newParent;
-						return userModel.userModel.findByIdAndUpdate(user._id, { parents: [parent._id] }, { new: true }).exec()
-							.then((updatedUser) => user = updatedUser);
-					})
-					.catch((err) => {
-						logger.log('warn', `Fehler beim Verknüpfen der Eltern. ${err}`);
-						return Promise.reject(new Error('Fehler beim Verknüpfen der Eltern.', err));
-					});
+				try {
+					parent = await app.service('usersModel').create(parent);
+					user = await userModel.userModel.findByIdAndUpdate(
+						user._id, { $push: { parents: [parent._id] } }, { new: true },
+					).exec();
+				} catch (err) {
+					logger.log('warn', `Fehler beim Verknüpfen der Eltern. ${err}`);
+					return Promise.reject(new Error('Fehler beim Verknüpfen der Eltern.', err));
+				}
 			}
 			return Promise.resolve();
 		})

@@ -14,7 +14,7 @@ module.exports = {
 
 		// Remove references
 		// https://team.goodeggs.com/how-to-remove-a-property-from-a-mongoose-js-schema-1947330c6974?gi=a88317281a73
-		Submission.collection.updateMany({}, { $unset: { comments: true } });
+		await Submission.collection.updateMany({}, { $unset: { comments: true } });
 
 		// Remove obsolete collection
 		await Comment.collection.drop();

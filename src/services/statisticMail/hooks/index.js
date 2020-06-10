@@ -1,12 +1,16 @@
-const { authenticate } = require('@feathersjs/authentication');
 const hooks = require('feathers-hooks-common');
+const { authenticate } = require('@feathersjs/authentication');
+const { isSuperHero } = require('../../../hooks');
 
-// todo check userId
+
 exports.before = {
-	all: [authenticate('jwt')],
-	find: [],
-	get: [],
-	create: [hooks.disallow()],
+	all: [
+		authenticate('jwt'),
+		isSuperHero(),
+	],
+	find: [hooks.disallow()],
+	get: [hooks.disallow()],
+	create: [],
 	update: [hooks.disallow()],
 	patch: [hooks.disallow()],
 	remove: [hooks.disallow()],

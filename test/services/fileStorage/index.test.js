@@ -2,6 +2,7 @@ const mockery = require('mockery');
 const { expect } = require('chai');
 const assert = require('assert');
 const mongoose = require('mongoose');
+const sinon = require('sinon');
 
 const fixtures = require('./fixtures');
 
@@ -42,7 +43,7 @@ describe('fileStorage services', () => {
 	let directoryService;
 
 	before(async function before() {
-		this.timeout(4000);
+		this.timeout(10000);
 
 		mockery.enable({
 			warnOnUnregistered: false,
@@ -403,6 +404,25 @@ describe('fileStorage services', () => {
 			}));
 
 			return Promise.all(promises);
+		});
+
+		it('allows to override the internal file name with a request specific one', async () => {
+			const context = setContext('0000d224816abba584714c8e');
+			const requestedName = encodeURIComponent('some name-12345678id.png');
+			const spy = sinon.spy(AWSStrategy.prototype, 'getSignedUrl');
+
+			try {
+				await signedUrlService.find({
+					query: {
+						file: '5ca613c4c7f5120b8c5bef33',
+						name: requestedName,
+					},
+					...context,
+				});
+				expect(spy.calledWithMatch({ localFileName: requestedName })).to.equal(true);
+			} finally {
+				spy.restore();
+			}
 		});
 	});
 
