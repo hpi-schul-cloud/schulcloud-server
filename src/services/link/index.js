@@ -1,3 +1,5 @@
+/* eslint-disable max-classes-per-file */
+
 const queryString = require('querystring');
 const service = require('feathers-mongoose');
 const logger = require('../../logger');
@@ -80,16 +82,9 @@ module.exports = function setup() {
 			// remove possible double-slashes in url except the protocol ones
 			linkData.link = linkData.link.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
 
-			// generate short url
-			await app.service('link').create({ target: linkData.link }).then((generatedShortLink) => {
-				linkData.shortLink = `${(data.host || HOST)}/link/${generatedShortLink._id}`;
-			}).catch((err) => {
-				logger.warning(err);
-				return Promise.reject(new Error('Fehler beim Erstellen des Kurzlinks.'));
-			});
-
-			// remove possible double-slashes in url except the protocol ones
-			linkData.shortLink = linkData.shortLink.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
+			// removed shortLinking for registration links
+			// TODO remove shortLink property for now
+			linkData.shortLink = linkData.link;
 
 			return linkData;
 		}

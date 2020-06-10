@@ -1,5 +1,6 @@
 const assert = require('assert');
 const chai = require('chai');
+const { Configuration } = require('@schul-cloud/commons');
 
 const { expect } = chai;
 
@@ -20,6 +21,14 @@ describe('school service', () => {
 		assert.ok(app.service('schools'));
 	});
 
+	const compareSchoolYears = (schoolYears, defaultYears) => {
+		schoolYears.forEach((resultYear, idx) => {
+			const defaultYear = defaultYears[idx];
+			expect(resultYear.name).to.be.equal(defaultYear.name);
+		});
+	};
+
+
 	describe('create school with or without year', () => {
 		let defaultYears = null;
 		let sampleYear;
@@ -27,11 +36,73 @@ describe('school service', () => {
 		const schoolService = app.service('/schools');
 
 		before('load data and set samples', async () => {
-			defaultYears = await YearModel.find().lean().exec();
+			defaultYears = await YearModel.find().sort('name').lean().exec();
 			sampleYear = defaultYears[0];
 			const school = await createSchool();
 			sampleSchoolData = await School.findById(school._id).lean().exec();
 			delete sampleSchoolData._id;
+		});
+		it('should be possible to see only limited amount of fields if the user is not logged in', async () => {
+			const params = {
+				provider: 'rest',
+				headers: {
+					authorization: undefined
+				},
+				account: undefined,
+			}
+			const result = await schoolService.find(params);
+			const expectedFields = ['purpose', 'name', 'id', 'years', 'isTeamCreationByStudentsEnabled'];
+			const notExpectedFields = ['fileStorageType', 'documentBaseDir', 'inMaintenance', 'currentYear', 'systems', 'federalState'];
+			result.data.forEach((school) => {
+				expectedFields.forEach(field => {
+					expect(school).to.haveOwnProperty(field);
+				});
+				notExpectedFields.forEach(field => {
+					expect(school).to.not.haveOwnProperty(field);
+				})
+			})
+		});
+		it('should be possible to see all fields if the call is done from the server', async () => {
+			const params = { provider: undefined }
+
+			const result = await schoolService.find(params);
+			const expectedFields = [
+				'purpose',
+				'name',
+				'id',
+				'years',
+				'isTeamCreationByStudentsEnabled',
+				'fileStorageType',
+				'documentBaseDir',
+				'inMaintenance',
+				'currentYear',
+				'systems',
+				// 'federalState', // there is a school in the test database that doesn't have this field
+			];
+
+			result.data.forEach((school) => {
+				expectedFields.forEach(field => {
+					expect(school).to.haveOwnProperty(field)
+				}
+			)
+			});
+		});
+		it('load the school results with pagination', async () => {
+			const result = await schoolService.find();
+			result.data.forEach((school) => {
+				compareSchoolYears(school.years.schoolYears, defaultYears);
+				expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
+			});
+		});
+
+		it('load the school results without pagination', async () => {
+			const result = await schoolService.find({
+				paginate: false,
+			});
+			result.forEach((school) => {
+				compareSchoolYears(school.years.schoolYears, defaultYears);
+				expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
+			});
 		});
 
 		it('create school with currentYear defined explictly', async () => {
@@ -63,6 +134,17 @@ describe('school service', () => {
 	});
 
 	describe('patch schools', () => {
+		let server;
+
+		before((done) => {
+			server = app.listen(0, done); // required to initialize all services used for testObjects
+		});
+
+		after((done) => {
+			server.close(done);
+			testObjects.cleanup();
+		});
+
 		it('administrator can patch his own school', async () => {
 			const school = await testObjects.createTestSchool({});
 			const admin = await testObjects.createTestUser({
@@ -111,9 +193,121 @@ describe('school service', () => {
 			expect(result).to.not.be.undefined;
 			expect(result.name).to.equal('all strings are better with "BATMAN!" in it!');
 		});
-	});
 
-	after(testObjects.cleanup);
+		it('push as admin', async () => {
+			const school = await testObjects.createTestSchool({});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['administrator'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const body = { $push: { features: 'rocketChat' } };
+			const result = await app.service('/schools').patch(school._id, body, params);
+			expect(result).to.not.be.undefined;
+			expect(result.features).to.include('rocketChat');
+		});
+
+		it('unable without permissions', async () => {
+			const school = await testObjects.createTestSchool({});
+			const role = await testObjects.createTestRole({ name: 'noPermissions', permissions: [] });
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: [role.name],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const body = { $push: { features: 'rocketChat' } };
+			const result = await app.service('/schools').patch(school._id, body, params);
+			expect(result).to.not.be.undefined;
+			expect(result.features).to.not.include('rocketChat');
+		});
+
+		it('possible with SCHOOL_CHAT_MANAGE permissions', async () => {
+			const school = await testObjects.createTestSchool({});
+			const role = await testObjects.createTestRole({
+				name: 'chatPermissions',
+				permissions: ['SCHOOL_CHAT_MANAGE'],
+			});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: [role.name],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const body = { $push: { features: 'rocketChat' } };
+			const result = await app.service('/schools').patch(school._id, body, params);
+			expect(result).to.not.be.undefined;
+			expect(result.features).to.include('rocketChat');
+		});
+
+		it('team creation by students should be updated according to environment setting'
+			+ ' without admin setting', async () => {
+			const school = await testObjects.createTestSchool({});
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
+			let result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+		});
+
+		it('team creation by students should be updated according to '
+			+ 'environment setting and enabled by admin', async () => {
+			// school with enabled student team creation by admin
+			const school = await testObjects.createTestSchool({ enableStudentTeamCreation: true });
+			expect(school.enableStudentTeamCreation).to.be.true;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
+			let result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+		});
+
+		it('team creation by students should be updated according to '
+			+ 'environment setting and disabled by admin', async () => {
+			// school with enabled student team creation by admin
+			const school = await testObjects.createTestSchool({ enableStudentTeamCreation: false });
+			expect(school.enableStudentTeamCreation).to.be.false;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
+			let result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+
+			Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
+			result = await app.service('/schools').get(school._id);
+			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+		});
+	});
 });
 
 describe('years service', () => {

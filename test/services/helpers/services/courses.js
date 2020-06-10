@@ -14,10 +14,11 @@ const createTestCourse = (app, opt) => ({
 	teacherIds = [],
 	ltiToolIds = [],
 	substitutionIds = [],
+	features = [],
 	startDate,
 	untilDate,
 } = {}) => app.service('courses').create({
-	// required fields for user
+	// required fields for course
 	name,
 	schoolId,
 	userIds,
@@ -25,6 +26,7 @@ const createTestCourse = (app, opt) => ({
 	teacherIds,
 	ltiToolIds,
 	substitutionIds,
+	features,
 	startDate,
 	untilDate,
 }).then((course) => {

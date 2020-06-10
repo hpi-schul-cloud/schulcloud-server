@@ -7,12 +7,13 @@ const {
 } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../model').registrationPinModel;
+const { getRandomInt } = require('../../../utils/randomNumberGenerator');
 
 const removeOldPins = (hook) => pinModel.deleteMany({ email: hook.data.email })
 	.then(() => Promise.resolve(hook));
 
 const generatePin = (hook) => {
-	const pin = Math.floor((Math.random() * 8999) + 1000);
+	const pin = getRandomInt(9999, 1000);
 	hook.data.pin = pin.toString();
 	return Promise.resolve(hook);
 };
@@ -23,8 +24,16 @@ function createinfoText(hook) {
 	if (!pin) {
 		throw new BadRequest('Fehler beim Erstellen der Pin.');
 	}
+
 	if (role === 'parent') {
-		return `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der ${SC_TITLE} ermöglichen.
+		let consentWords = 'durch Ihr Einverständnis ';
+
+		const skipConsentRoles = Configuration.get('SKIP_CONDITIONS_CONSENT');
+		if (skipConsentRoles !== '' && skipConsentRoles.length > 1) {
+			consentWords = '';
+		}
+
+		return `Vielen Dank, dass Sie Ihrem Kind ${consentWords}die Nutzung der ${SC_TITLE} ermöglichen.
 Bitte geben Sie den folgenden Bestätigungscode im Registrierungsprozess ein, um die Registrierung abzuschließen:
 
 PIN: ${pin}
@@ -34,7 +43,7 @@ Ihr ${SC_SHORT_TITLE}-Team`;
 	}
 	if (role === 'student' || role === 'employee' || role === 'expert') {
 		return `Vielen Dank, dass du die ${SC_TITLE} nutzen möchtest.
-Bitte gib den folgenden Bestätigungscode im Registrierungsprozess ein, 
+Bitte gib den folgenden Bestätigungscode im Registrierungsprozess ein,
 um deine Registrierung bei der ${SC_TITLE} abzuschließen:
 
 PIN: ${pin}
@@ -127,6 +136,7 @@ exports.before = {
 	find: [hooks.disallow('external'), validateEmailAndPin],
 	get: hooks.disallow('external'),
 	create: [
+		globalHooks.blockDisposableEmail('email'),
 		removeOldPins,
 		generatePin,
 		mailPin,

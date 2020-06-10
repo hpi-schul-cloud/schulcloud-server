@@ -2,6 +2,7 @@ const {
 	NotFound, NotImplemented, NotAcceptable, BadRequest,
 } = require('@feathersjs/errors');
 const logger = require('../../../logger');
+const { TEAM_FEATURES } = require('../model');
 const { set, get } = require('./scope');
 const {
 	isArray,
@@ -147,9 +148,9 @@ exports.updateMissingDataInHookForCreate = (hook, sessionUser) => {
 
 	// add team flag
 	if (hook.data.features) {
-		hook.data.features.push('isTeam');
+		hook.data.features.push(TEAM_FEATURES.IS_TEAM);
 	} else {
-		hook.data.features = ['isTeam'];
+		hook.data.features = [TEAM_FEATURES.IS_TEAM];
 	}
 
 	addDefaultFilePermissions(hook);

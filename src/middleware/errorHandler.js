@@ -6,6 +6,8 @@ const { requestError } = require('../logger/systemLogger');
 const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 const logger = require('../logger');
 
+const MAX_LEVEL_FILTER = 12;
+
 const logRequestInfosInErrorCase = (error, req, res, next) => {
 	if (error) {
 		let decodedJWT;
@@ -67,18 +69,42 @@ const secretDataKeys = (() => [
 	'PASSWORD_HASH',
 	'password_new',
 	'accessToken',
+	'ticket',
+	'firstName',
+	'lastName',
+	'email',
+	'birthday',
+	'description',
+	'gradeComment',
 ].map((k) => k.toLocaleLowerCase())
 )();
-const filter = (data) => {
-	const newData = { ...data };
-	Object.keys(newData).forEach((key) => {
-		// secretDataKeys are lower keys
-		if (secretDataKeys.includes(key.toLocaleLowerCase())) {
-			newData[key] = '<secret>';
-		}
-	});
+
+const filterSecretValue = (key, value) => {
+	if (secretDataKeys.includes(key.toLocaleLowerCase())) {
+		return '<secret>';
+	}
+	return value;
+};
+
+const filterDeep = (newData, level = 0) => {
+	if (level > MAX_LEVEL_FILTER) {
+		return '<max level exceeded>';
+	}
+
+	if (typeof newData === 'object' && newData !== null) {
+		Object.entries(newData).forEach(([key, value]) => {
+			const newValue = filterSecretValue(key, value);
+			if (typeof newValue === 'string') {
+				newData[key] = newValue;
+			} else {
+				filterDeep(value, level + 1);
+			}
+		});
+	}
 	return newData;
 };
+
+const filter = (data) => filterDeep({ ...data });
 
 const secretQueryKeys = (() => [
 	'accessToken',
@@ -107,6 +133,9 @@ const filterSecrets = (error, req, res, next) => {
 		req.originalUrl = filterQuery(req.originalUrl);
 		req.body = filter(req.body);
 		error.data = filter(error.data);
+		if (error.catchedError && error.catchedError.options && error.catchedError.options.form) {
+			error.catchedError.options.form = filter(error.catchedError.options.form);
+		}
 	}
 	next(error);
 };

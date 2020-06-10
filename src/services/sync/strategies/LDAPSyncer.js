@@ -20,17 +20,21 @@ class LDAPSyncer extends SystemSyncer {
 	/**
      * @see {Syncer#steps}
      */
-	steps() {
-		return super.steps()
-			.then(() => this.getSchools())
-			.then((schools) => {
-				const activeSchools = schools.filter((s) => !s.inMaintenance);
-				const jobs = activeSchools.map((school) => {
-					const syncer = new LDAPSchoolSyncer(this.app, this.getSchoolStats(school), this.logger, this.system, school);
-					return syncer.sync();
-				});
-				return Promise.all(jobs);
-			});
+	async steps() {
+		await super.steps();
+		const schools = await this.getSchools();
+		const activeSchools = schools.filter((s) => !s.inMaintenance);
+		const jobs = activeSchools.map((school) => async () => (
+			new LDAPSchoolSyncer(
+				this.app,
+				this.getSchoolStats(school),
+				this.logger,
+				this.system,
+				school,
+			)).sync());
+		for (const job of jobs) {
+			await job();
+		}
 	}
 
 	getSchools() {

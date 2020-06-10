@@ -1,5 +1,4 @@
 /* eslint-disable no-process-env */
-const { debug } = console;
 
 const ENVIRONMENTS = {
 	DEVELOPMENT: 'development',
@@ -45,7 +44,6 @@ const globals = {
 	REQUEST_TIMEOUT: process.env.REQUEST_TIMEOUT || 8000,
 	METRICS_PATH: process.env.METRICS_PATH || '/metrics',
 	MONGOOSE_CONNECTION_POOL_SIZE: parseInt(process.env.MONGOOSE_CONNECTION_POOL_SIZE || '10', 10),
-	STUDENT_TEAM_CREATE_DISABLED: process.env.STUDENT_TEAM_CREATE_DISABLED,
 
 	SC_DOMAIN: process.env.SC_DOMAIN || 'localhost',
 	SC_THEME: process.env.SC_THEME || 'default',
@@ -61,7 +59,7 @@ const globals = {
 	ENVIRONMENTS,
 	LOG_LEVEL: process.env.LOG_LEVEL || defaultLogLevel,
 	/** HOST=https://schul-cloud.org in bosscloud, see misuse in todo */
-	HOST: process.env.HOST || 'localhost:3030', // todo this is client url in config
+	HOST: process.env.HOST || 'localhost:3100', // todo this is client url in config
 	SYSTEM_LOG_LEVEL: process.env.SYSTEM_LOG_LEVEL || 'sendRequests',
 	// secrets smtp
 	SMTP: process.env.SMTP,
@@ -107,6 +105,13 @@ const globals = {
 	ROCKET_CHAT_URI: process.env.ROCKET_CHAT_URI,
 	ROCKET_CHAT_ADMIN_TOKEN: process.env.ROCKET_CHAT_ADMIN_TOKEN,
 	ROCKET_CHAT_ADMIN_ID: process.env.ROCKET_CHAT_ADMIN_ID,
+
+	// etherpad
+	ETHERPAD_API_KEY: process.env.ETHERPAD_API_KEY,
+	ETHERPAD_API_PATH: process.env.ETHERPAD_API_PATH,
+	ETHERPAD_URI: process.env.ETHERPAD_URI,
+	ETHERPAD_COOKIE__EXPIRES_SECONDS: process.env.ETHERPAD_COOKIE__EXPIRES_SECONDS,
+	ETHERPAD_ETHERPAD_COOKIE_RELEASE_THRESHOLD: process.env.ETHERPAD_COOKIE_RELEASE_THRESHOLD,
 };
 
 
@@ -114,11 +119,6 @@ const globals = {
 const ENVIRONMENT_VALUES = Object.values(ENVIRONMENTS);
 if (!(ENVIRONMENT_VALUES.includes(globals.NODE_ENV))) {
 	throw new Error('NODE_ENV must match one of valid environments', { ENVIRONMENT_VALUES, NODE_ENV });
-} else {
-	debug(`NODE_ENV is set to '${globals.NODE_ENV}'`);
 }
-
-// print
-debug('Current configuration is', JSON.stringify(globals, null, 2));
 
 module.exports = globals;

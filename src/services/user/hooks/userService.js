@@ -1,5 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { BadRequest, Forbidden, GeneralError } = require('@feathersjs/errors');
+const { keep } = require('feathers-hooks-common');
+const {
+	BadRequest, Forbidden, GeneralError, NotFound,
+} = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
 const {
@@ -220,33 +223,50 @@ const pinIsVerified = (hook) => {
 		});
 };
 
-const securePatching = (hook) => Promise.all([
-	hasRole(hook, hook.params.account.userId, 'superhero'),
-	hasRole(hook, hook.params.account.userId, 'administrator'),
-	hasRole(hook, hook.params.account.userId, 'teacher'),
-	hasRole(hook, hook.params.account.userId, 'demoStudent'),
-	hasRole(hook, hook.params.account.userId, 'demoTeacher'),
-	hasRole(hook, hook.id, 'student'),
-])
-	.then(([isSuperHero, isAdmin, isTeacher, isDemoStudent, isDemoTeacher, targetIsStudent]) => {
-		if (isDemoStudent || isDemoTeacher) {
-			return Promise.reject(new Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
+const securePatching = async (context) => {
+	const targetUser = await context.app.service('users').get(context.id, { query: { $populate: 'roles' } });
+	const actingUser = await context.app.service('users').get(
+		context.params.account.userId,
+		{ query: { $populate: 'roles' } },
+	);
+	const isSuperHero = actingUser.roles.find((r) => r.name === 'superhero');
+	const isAdmin = actingUser.roles.find((r) => r.name === 'administrator');
+	const isTeacher = actingUser.roles.find((r) => r.name === 'teacher');
+	const isDemoStudent = actingUser.roles.find((r) => r.name === 'demoStudent');
+	const isDemoTeacher = actingUser.roles.find((r) => r.name === 'demoTeacher');
+	const targetIsStudent = targetUser.roles.find((r) => r.name === 'student');
+
+	if (isSuperHero) {
+		return context;
+	}
+
+	if (isDemoStudent || isDemoTeacher) {
+		return Promise.reject(new Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
+	}
+
+	if (!ObjectId.equal(targetUser.schoolId, actingUser.schoolId)) {
+		return Promise.reject(new NotFound(`no record found for id '${context.id.toString()}'`));
+	}
+
+	delete context.data.schoolId;
+	delete (context.data.$set || {}).schoolId;
+
+	if (!isAdmin) {
+		delete context.data.roles;
+		delete (context.data.$push || {}).roles;
+		delete (context.data.$pull || {}).roles;
+		delete (context.data.$pop || {}).roles;
+		delete (context.data.$addToSet || {}).roles;
+		delete (context.data.$pullAll || {}).roles;
+		delete (context.data.$set || {}).roles;
+	}
+	if (!ObjectId.equal(context.id, context.params.account.userId)) {
+		if (!(isAdmin || (isTeacher && targetIsStudent))) {
+			return Promise.reject(new BadRequest('You have not the permissions to change other users'));
 		}
-		if (!isSuperHero) {
-			delete hook.data.schoolId;
-			delete (hook.data.$push || {}).schoolId;
-		}
-		if (!(isSuperHero || isAdmin)) {
-			delete hook.data.roles;
-			delete (hook.data.$push || {}).roles;
-		}
-		if (hook.params.account.userId.toString() !== hook.id) {
-			if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent))) {
-				return Promise.reject(new BadRequest('You have not the permissions to change other users'));
-			}
-		}
-		return Promise.resolve(hook);
-	});
+	}
+	return Promise.resolve(context);
+};
 
 /**
  *
@@ -413,6 +433,58 @@ const enforceRoleHierarchyOnDelete = async (context) => {
 	return enforceRoleHierarchyOnDeleteBulk(context);
 };
 
+/**
+ * Check that the authenticated user posseses the rights to create a user with the given roles.
+ * This is only checked for external requests.
+ * @param {*} context
+ */
+const enforceRoleHierarchyOnCreate = async (context) => {
+	const user = await context.app.service('users').get(
+		context.params.account.userId, { query: { $populate: 'roles' } },
+	);
+
+	// superhero may create users with every role
+	if (user.roles.filter((u) => (u.name === 'superhero')).length > 0) {
+		return Promise.resolve(context);
+	}
+
+	await Promise.all(context.data.roles.map(async (roleId) => {
+		// Roles are given by ID or by name.
+		// For IDs we load the name from the DB.
+		// If it is not an ID we assume, it is a name. Invalid names are rejected in the switch anyways.
+		let roleName = '';
+		if (!ObjectId.isValid(roleId)) {
+			roleName = roleId;
+		} else {
+			try {
+				const role = await context.app.service('roles').get(roleId);
+				roleName = role.name;
+			} catch (exception) {
+				return Promise.reject(new BadRequest('No such role exists'));
+			}
+		}
+		switch (roleName) {
+			case 'teacher':
+				if (!user.permissions.find((permission) => permission === 'TEACHER_CREATE')) {
+					return Promise.reject(new BadRequest('Your are not allowed to create a user with the given role'));
+				}
+				break;
+			case 'student':
+				if (!user.permissions.find((permission) => permission === 'STUDENT_CREATE')) {
+					return Promise.reject(new BadRequest('Your are not allowed to create a user with the given role'));
+				}
+				break;
+			case 'parent':
+				break;
+			default:
+				return Promise.reject(new BadRequest('Your are not allowed to create a user with the given role'));
+		}
+		return Promise.resolve(context);
+	}));
+
+	return Promise.resolve(context);
+};
+
 const generateRegistrationLink = async (context) => {
 	const { data, app } = context;
 	if (data.generateRegistrationLink === true) {
@@ -437,6 +509,64 @@ const generateRegistrationLink = async (context) => {
 	}
 };
 
+
+const filterResult = async (context) => {
+	const userCallingHimself = ObjectId.equal(context.id, context.params.account.userId);
+	const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
+	if (userCallingHimself || userIsSuperhero) {
+		return context;
+	}
+
+	// TODO: check if elevatedUser can remove and handled by the amdin route
+	const elevatedUser = await hasPermissionNoHook(context, context.params.account.userId, 'STUDENT_EDIT');
+	const allowedAttributes = [
+		'_id', 'roles', 'schoolId', 'firstName', 'middleName', 'lastName',
+		'namePrefix', 'nameSuffix', 'discoverable', 'fullName',
+		'displayName', 'avatarInitials', 'avatarBackgroundColor',
+	];
+	if (elevatedUser) {
+		const elevatedAttributes = [
+			'email', 'birthday', 'children', 'parents', 'updatedAt',
+			'createdAt', 'age', 'ldapDn', 'consentStatus', 'consent',
+		];
+		allowedAttributes.push(...elevatedAttributes);
+	}
+	return keep(...allowedAttributes)(context);
+};
+
+let roleCache = null;
+const includeOnlySchoolRoles = async (context) => {
+	if (context.params && context.params.query) {
+		const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
+		if (userIsSuperhero) {
+			return context;
+		}
+
+		// todo: remove with static role service (SC-3731)
+		if (!Array.isArray(roleCache)) {
+			roleCache = (await context.app.service('roles').find({
+				query: {
+					name: { $in: ['administrator', 'teacher', 'student'] },
+				},
+				paginate: false,
+			})).map((r) => r._id);
+		}
+		const allowedRoles = roleCache;
+
+		if (context.params.query.roles && context.params.query.roles.$in) {
+			// when querying for specific roles, filter them
+			context.params.query.roles.$in = context.params.query.roles.$in
+				.filter((r) => allowedRoles.some((a) => ObjectId.equal(r, a)));
+		} else {
+			// otherwise, overwrite them with whitelist
+			context.params.query.roles = {
+				$in: allowedRoles,
+			};
+		}
+	}
+	return context;
+};
+
 module.exports = {
 	mapRoleFilterQuery,
 	checkUnique,
@@ -454,5 +584,8 @@ module.exports = {
 	handleClassId,
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
+	enforceRoleHierarchyOnCreate,
+	filterResult,
 	generateRegistrationLink,
+	includeOnlySchoolRoles,
 };

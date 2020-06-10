@@ -1,4 +1,10 @@
-const { getConnectionOptions } = require('./src/utils/database');
+/**
+ * this file is used to customize 'npm run migration'
+ * see https://www.npmjs.com/package/migrate-mongoosesetting-options-automatically
+ * for further details
+ */
+
+const { getConnectionOptions } = require('../src/utils/database');
 
 const options = getConnectionOptions();
 let { url } = options;
