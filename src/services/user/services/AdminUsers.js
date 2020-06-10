@@ -1,8 +1,12 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const { authenticate } = require('@feathersjs/authentication').hooks;
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../../consent/utils/aggregations');
+const {
+	hasSchoolPermission,
+} = require('../../../hooks');
 
 const { userModel } = require('../model');
 const roleModel = require('../../role/model');
@@ -98,4 +102,20 @@ class AdminUsers {
 	}
 }
 
-module.exports = AdminUsers;
+const adminHookGenerator = (kind) => ({
+	before: {
+		all: [authenticate('jwt')],
+		find: [hasSchoolPermission(`${kind}_LIST`)],
+		get: [hasSchoolPermission(`${kind}_LIST`)],
+		create: [hasSchoolPermission(`${kind}_CREATE`)],
+		update: [hasSchoolPermission(`${kind}_EDIT`)],
+		patch: [hasSchoolPermission(`${kind}_EDIT`)],
+		remove: [hasSchoolPermission(`${kind}_DELETE`)],
+	},
+});
+
+
+module.exports = {
+	AdminUsers,
+	adminHookGenerator,
+};
