@@ -43,14 +43,13 @@ const hasMaterialAccess = async (context, id, permissions) => {
  * will be required in all of them.
  * @requires authenticate('jwt')
  * @param  {...String} permissions list of permissions necessary for this hook to resolve
+ * @throws {Forbidden} Forbidden if not all permissions are granted on the course(s)
  * @returns {Context} hook context
  */
 const checkAssociatedCoursePermission = (...permissions) => async (context) => {
-	if (permissions) {
-		const access = await hasMaterialAccess(context, context.id, permissions);
-		if (!access) {
-			throw new Forbidden('No permision to access this material');
-		}
+	const access = await hasMaterialAccess(context, context.id, permissions);
+	if (!access) {
+		throw new Forbidden('No permision to access this material');
 	}
 	return context;
 };
@@ -64,20 +63,18 @@ const checkAssociatedCoursePermission = (...permissions) => async (context) => {
  * @returns {Context} hook context
  */
 const checkAssociatedCoursePermissionForSearchResult = (...permissions) => async (context) => {
-	if (permissions) {
-		const results = context.result.data ? context.result.data : context.result;
-		const filteredResults = [];
-		for (const result of results) {
-			if (await hasMaterialAccess(context, result._id, permissions)) {
-				filteredResults.push(result);
-			}
+	const results = context.result.data ? context.result.data : context.result;
+	const filteredResults = [];
+	for (const result of results) {
+		if (await hasMaterialAccess(context, result._id, permissions)) {
+			filteredResults.push(result);
 		}
-		if (context.result.data) {
-			context.result.data = filteredResults;
-			context.result.total = filteredResults.length;
-		} else {
-			context.result = filteredResults;
-		}
+	}
+	if (context.result.data) {
+		context.result.data = filteredResults;
+		context.result.total = filteredResults.length;
+	} else {
+		context.result = filteredResults;
 	}
 	return context;
 };
