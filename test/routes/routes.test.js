@@ -10,19 +10,11 @@ const PORT = 5254;
 
 const sleep = (time) => new Promise((res) => setTimeout(res, time));
 
-const isOnWhitelist = (endpoint) => {
-	if (endpoint in whitelist) {
-		return true;
-	}
-	return false;
-};
-
-const checkWhitelist = (endpoint, method, status) => {
+const isOnWhitelist = (endpoint, method) => {
 	if (endpoint in whitelist) {
 		if (method in whitelist[endpoint].methods) {
-			return (whitelist[endpoint].methods[method] === status);
+			return true;
 		}
-		return undefined;
 	}
 	return false;
 };
@@ -34,19 +26,6 @@ const isOnIgnoreList = (endpoint, method) => {
 			console.warn('fix me please');
 			return true;
 		}
-	}
-	return false;
-};
-
-const acceptedResults = (status, endpoint, method) => {
-	if (isOnWhitelist(endpoint)) {
-		let whitelistResult = checkWhitelist(endpoint, method, status);
-		if( typeof(whitelistResult) !== 'undefined' ) {
-			return whitelistResult;
-		}
-	}
-	if ((status === 401) || (status === 405)) {
-		return true;
 	}
 	return false;
 };
@@ -97,7 +76,11 @@ const createTests = (token) => {
 							.then((res) => res.statusCode)
 							.catch((error) => error.statusCode);
 
-						expect(status).to.satisfies((s) => acceptedResults(s, route, method));
+						if (isOnWhitelist(route, method)) {
+							expect(status).to.equal(whitelist[route].methods[method]);
+						} else {
+							expect(status).to.be.oneOf([401, 405]);
+						}
 					}
 				});
 			}
