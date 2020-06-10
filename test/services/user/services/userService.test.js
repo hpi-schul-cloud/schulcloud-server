@@ -235,7 +235,7 @@ describe('user service', () => {
 			const student = await testObjects.createTestUser({ roles: ['student'] });
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {
-				'$populate': [
+				$populate: [
 					'0000d186816abba584714c5f',
 					'roles',
 				],
