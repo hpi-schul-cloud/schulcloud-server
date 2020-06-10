@@ -53,6 +53,9 @@ const consentVersionSchema = new Schema({
 		enum: Object.values(consentTypes),
 	}],
 	consentText: { type: String, required: true },
+	// create request that include consentData, create a new base64Files entries and pass the id to consentDataId
+	consentDataId: { type: Schema.Types.ObjectId, ref: 'base64Files' },
+	schoolId: { type: Schema.Types.ObjectId },
 	publishedAt: { type: Date, required: true },
 	title: { type: String, required: true },
 }, { timestamps: true });
