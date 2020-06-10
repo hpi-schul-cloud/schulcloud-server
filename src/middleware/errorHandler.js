@@ -132,9 +132,7 @@ const filterSecrets = (error, req, res, next) => {
 		// originalUrl is used by sentry
 		req.originalUrl = filterQuery(req.originalUrl);
 		req.body = filter(req.body);
-		error.data = filter(error.data);
-		error.catchedError = filter(error.catchedError);
-		error.options = filter(error.options);
+		error = filter(error);
 	}
 	next(error);
 };
