@@ -1,9 +1,4 @@
 const whitelist = {
-	'accounts/pwgen': {
-		methods: {
-			get: 200,
-		},
-	},
 	'accounts/confirm': {
 		methods: {
 			post: 201,
