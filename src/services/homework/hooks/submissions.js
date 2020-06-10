@@ -6,6 +6,7 @@ const {	iff, isProvider } = require('feathers-hooks-common');
 
 const globalHooks = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { submissionModel } = require('../model');
 
 const filterRequestedSubmissions = async (context) => {
 	const currentUserId = context.params.account.userId;
@@ -13,10 +14,37 @@ const filterRequestedSubmissions = async (context) => {
 	// user is submitter
 	let permissionQuery = { studentId: currentUserId };
 
-	// user is team member
-	permissionQuery = { $or: [permissionQuery, { teamMembers: { $in: currentUserId } }] };
+	// user is team member and the homework is not private
+	const homeworkService = context.app.service('/homework');
+	const subquery = {
+		$and: [
+			{ teamMembers: { $in: currentUserId } },
+			{ studentId: { $ne: currentUserId } },
+		],
+	};
+	const subqueryResult = await submissionModel.find(subquery).exec();
+	const teamMeberSubmissions = subqueryResult.map((s) => s._id);
+	const subqueryHomeworkIds = subqueryResult.map((s) => s.homeworkId);
+	const validHomeworks = await homeworkService.find({
+		query: {
+			$and: [
+				{ _id: { $in: subqueryHomeworkIds } },
+				{ private: { $ne: true } },
+			],
+		},
+	});
+	const validHomeworksIds = validHomeworks.data.map((h) => h._id);
+	const andTeamMebersQuery = {
+		$and: [
+			{ _id: { $in: teamMeberSubmissions } },
+			{ homeworkId: { $in: validHomeworksIds } },
+		],
+	};
 
-	// user is in course group of the submission
+	permissionQuery = { $or: [permissionQuery, andTeamMebersQuery] };
+
+
+	// user is in course group of the submission and the homework is not private
 	try {
 		const courseGroupService = context.app.service('/courseGroups');
 		const courseGroup = await courseGroupService.find({
@@ -25,15 +53,32 @@ const filterRequestedSubmissions = async (context) => {
 			},
 		});
 		const courseGroupIds = courseGroup.data.map((c) => c._id);
-		permissionQuery = { $or: [permissionQuery, { courseGroupId: { $in: courseGroupIds } }] };
+		const courseIds = courseGroup.data.map((c) => c.courseId);
+
+		const nonPrivateHomeworks = await homeworkService.find({
+			query: {
+				$and: [
+					{ courseId: { $in: courseIds } },
+					{ private: { $ne: true } },
+				],
+			},
+		});
+		const nonPrivateHomeworkIds = nonPrivateHomeworks.data.map((h) => h._id);
+
+		const andQueryCondition = {
+			$and: [
+				{ courseGroupId: { $in: courseGroupIds } },
+				{ homeworkId: { $in: nonPrivateHomeworkIds } },
+			],
+		};
+
+		permissionQuery = { $or: [permissionQuery, andQueryCondition] };
 	} catch (err) {
 		return Promise.reject(new GeneralError({ message: "can't reach course group service" }));
 	}
 
 	const courseService = context.app.service('/courses');
-	const homeworkService = context.app.service('/homework');
-
-	// user is enrolled in a course with public submissions
+	// user is enrolled in a course with public submissions and the homework is not private
 	try {
 		const enrolledCourses = await courseService.find({
 			query: {
@@ -46,6 +91,7 @@ const filterRequestedSubmissions = async (context) => {
 				$and: [
 					{ courseId: { $in: enrolledCourseIds } },
 					{ publicSubmissions: true },
+					{ private: { $ne: true } },
 				],
 			},
 		});
