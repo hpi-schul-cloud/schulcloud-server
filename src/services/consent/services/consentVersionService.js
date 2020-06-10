@@ -54,7 +54,7 @@ class ConsentVersionService {
 			return this.app.service('base64Files').create({ 
 				schoolId,
 				data: consentData,
-				fileType: 'pdf',
+				filetype: 'pdf',
 				filename: 'Datenschutzerklärung',
 			});
 		}
