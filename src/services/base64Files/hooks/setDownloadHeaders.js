@@ -1,8 +1,9 @@
 module.exports = (req, res, next) => {
-	if (res.statusCode === 200 && req.query.download === 'true' && res.data.data) { // und get
-		res.setHeader('Content-Type', 'application/pdf');
-		res.setHeader('Content-Disposition', 'attachment; filename="Nutzungsbedingungen.pdf"');
-		res.send(res.data.data);
+	const { data, filename, filetype } = res.data;
+	if (res.statusCode === 200 && req.query.download === 'true' && data && filename && filetype) {
+		res.setHeader('Content-Type', `application/${filetype}`);
+		res.setHeader('Content-Disposition', `attachment; filename="${filename}.${filetype}"`);
+		res.send(data);
 	} else {
 		next();
 	}
