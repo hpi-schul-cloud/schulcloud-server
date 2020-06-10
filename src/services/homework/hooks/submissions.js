@@ -244,7 +244,9 @@ const noDuplicateSubmissionForTeamMembers = (context) => {
 		});
 		if (submissionsForTeamMembers.length > 0) {
 			return Promise.reject(new Conflict({
-				message: `${submissionsForTeamMembers.length + ((submissionsForTeamMembers.length === 1) ? ' Mitglied hat' : ' Mitglieder haben')} bereits eine Lösung abgegeben! Entferne diese${(submissionsForTeamMembers.length === 1) ? 's Mitglied!' : ' Mitglieder!'}`,
+				message: `${submissionsForTeamMembers.length + ((submissionsForTeamMembers.length === 1)
+					? ' Mitglied hat' : ' Mitglieder haben')} bereits eine Lösung abgegeben!`
+					+ ` Entferne diese ${(submissionsForTeamMembers.length === 1) ? 's Mitglied!' : ' Mitglieder!'}`,
 			}));
 		}
 		return Promise.resolve(context);
