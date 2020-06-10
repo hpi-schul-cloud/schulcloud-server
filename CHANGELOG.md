@@ -10,15 +10,31 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 ### Added
+- SC-4577 extend consentversions with school specific privacy policy, which can be added by the school admin
+- SC-4192 add tests that ensure classes on other schools cant be manipulated
+
 
 ### Fixed
 
 ### Changed
 
+- SC-4957 user.ldapId and user.ldapDn are now indexed to improve performance
+
 ### Security
 
 ### Removed
 
+## [23.2.4] - 2020-06-05
+
+### Fixed
+
+- SC-4876 soften sanitization to allow editor actions to be persisted correctly
+
+## [23.2.1] - 2020-06-04
+
+### Security
+
+- SC-4720 improve importhashes for registrationlinks
 
 ## [23.2.0] - 2020-06-03
 
