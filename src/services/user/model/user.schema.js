@@ -51,8 +51,9 @@ const userSchema = new Schema({
 	*/
 	discoverable: { type: Boolean, required: false },
 
-	ldapDn: { type: String },
-	ldapId: { type: String },
+	// optional attributes if user was created during LDAP sync:
+	ldapDn: { type: String, index: true }, // LDAP login username
+	ldapId: { type: String, index: true }, // UUID to identify during the sync
 
 	...externalSourceSchema,
 
