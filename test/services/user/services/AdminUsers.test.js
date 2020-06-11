@@ -374,7 +374,6 @@ describe('AdminTeachersService', () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = {};
-		const result = await adminTeachersService.find(params);
 		try {
 			await adminTeachersService.find(params);
 			throw new Error('should have failed');
