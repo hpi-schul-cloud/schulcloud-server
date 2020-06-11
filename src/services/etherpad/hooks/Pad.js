@@ -5,16 +5,19 @@ const { Forbidden } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
 
+const { Configuration } = require('@schul-cloud/commons');
+
 const restrictOldPadsToCourse = async (context) => {
 	if(typeof(context.data.oldPadId) === 'undefined') {
 		return context;
 	}
+	const oldPadURI = Configuration.get('ETHERPAD_OLD_PAD_URI') || 'https://etherpad.schul-cloud.org/p';
 	try {
 		const lessonsService = context.app.service('/lessons');
 		const foundLessons = await lessonsService.find({
 			query: {
 				courseId: context.id,
-				contents: { $elemMatch: { "content.url": `https://etherpad.schul-cloud.org/p/${context.data.oldPadId}` } }
+				contents: { $elemMatch: { "content.url": `${oldPadURI}/${context.data.oldPadId}` } }
 			},
 		});
 		if(foundLessons.total < 1) {
