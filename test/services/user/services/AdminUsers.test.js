@@ -370,18 +370,24 @@ describe('AdminTeachersService', () => {
 		}
 	});
 
-	it('teacher can not administrate teachers', async () => {
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+	it('teacher can not find teachers from other schools', async () => {
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool1',
+		});
+		const otherSchool = await testObjects.createTestSchool({
+			name: 'testSchool2',
+		});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
+		const otherTeacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: otherSchool._id });
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = {};
-		try {
-			await adminTeachersService.find(params);
-			throw new Error('should have failed');
-		} catch (err) {
-			expect(err.message).to.not.equal('should have failed');
-			expect(err.message).to.equal(testGenericErrorMessage);
-			expect(err.code).to.equal(403);
-		}
+		const resultOk = (await adminTeachersService.find({
+			account: {
+				userId: otherTeacher._id,
+			},
+		})).data;
+		const idsOk = resultOk.map((e) => e._id.toString());
+		expect(idsOk).not.to.include(otherTeacher._id.toString());
 	});
 
 	it('filters teachers correctly', async () => {
