@@ -75,7 +75,7 @@ describe('AdminUsersService', () => {
 		expect(searchClass(result.data, '2A')).to.be.true;
 	});
 
-	it('student can not find other students', async () => {
+	it('student can not administrate students', async () => {
 		const student = await testObjects.createTestUser({ roles: ['student'] });
 		const params = await testObjects.generateRequestParamsFromUser(student);
 		params.query = {};
@@ -87,6 +87,14 @@ describe('AdminUsersService', () => {
 			expect(err.message).to.equal(testGenericErrorMessage);
 			expect(err.code).to.equal(403);
 		}
+	});
+
+	it('teacher can administrate students', async () => {
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		params.query = {};
+		const result = await adminStudentsService.find(params);
+		expect(result).to.not.be.undefined;
 	});
 
 	it('only shows current classes', async () => {
@@ -348,10 +356,25 @@ describe('AdminTeachersService', () => {
 		expect(adminTeachersService).to.not.equal(undefined);
 	});
 
-	it('student can not find teachers', async () => {
+	it('student can not administrate teachers', async () => {
 		const student = await testObjects.createTestUser({ roles: ['student'] });
 		const params = await testObjects.generateRequestParamsFromUser(student);
 		params.query = {};
+		try {
+			await adminTeachersService.find(params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.message).to.equal(testGenericErrorMessage);
+			expect(err.code).to.equal(403);
+		}
+	});
+
+	it('teacher can not administrate teachers', async () => {
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		params.query = {};
+		const result = await adminTeachersService.find(params);
 		try {
 			await adminTeachersService.find(params);
 			throw new Error('should have failed');

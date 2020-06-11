@@ -227,6 +227,44 @@ describe('user service', () => {
 				expect(err.code).to.equal(403);
 			}
 		});
+
+		it('teacher can not read superhero', async () => {
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = {};
+			try {
+				await app.service('users').get('0000d231816abba584714c9c', params); // superhero user id
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.message).to.equal(testGenericErrorMessage);
+				expect(err.code).to.equal(403);
+			}
+		});
+
+		it('teacher can not read student from foreign school', async () => {
+			await testObjects.createTestRole({
+				name: 'studentList', permissions: ['STUDENT_LIST'],
+			});
+			const school = await testObjects.createTestSchool({
+				name: 'testSchool1',
+			});
+			const otherSchool = await testObjects.createTestSchool({
+				name: 'testSchool2',
+			});
+			const student = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
+			const otherStudent = await testObjects.createTestUser({ roles: ['student'], schoolId: otherSchool._id });
+			const params = await testObjects.generateRequestParamsFromUser(student);
+			params.query = {};
+			try {
+				await app.service('users').get(otherStudent._id, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.message).to.equal(testGenericErrorMessage);
+				expect(err.code).to.equal(403);
+			}
+		});
 	});
 
 	describe('FIND', () => {
