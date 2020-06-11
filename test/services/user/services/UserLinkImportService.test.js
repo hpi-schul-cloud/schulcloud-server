@@ -35,6 +35,20 @@ describe('UserLinkImportService', () => {
 		}
 	});
 
+	it('teacher can not use link import service', async () => {
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		params.query = {};
+		try {
+			await usersLinkImportService.get('g28vM'); // TODO hash
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.message).to.equal(testGenericErrorMessage);
+			expect(err.code).to.equal(403);
+		}
+	});
+
 	after(async () => {
 		await testObjects.cleanup();
 	});

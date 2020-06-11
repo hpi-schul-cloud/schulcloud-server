@@ -35,6 +35,20 @@ describe('MailRegistrationLinkService', () => {
 		}
 	});
 
+	it('teacher can not create', async () => {
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		params.query = {};
+		try {
+			await mailRegistrationLinkService.create(params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.message).to.equal(testGenericErrorMessage);
+			expect(err.code).to.equal(403);
+		}
+	});
+
 	after(async () => {
 		await testObjects.cleanup();
 	});
