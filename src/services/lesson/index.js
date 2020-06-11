@@ -3,7 +3,7 @@ const service = require('feathers-mongoose');
 const lessonModel = require('./model');
 const hooks = require('./hooks/index');
 const copyHooks = require('./hooks/copy');
-const { LessonCopyService, LessonFilesService } = require('./services/');
+const { LessonCopyService, LessonFilesService } = require('./services');
 
 module.exports = function setup() {
 	const app = this;

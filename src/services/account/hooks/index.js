@@ -1,8 +1,5 @@
-const { authenticate } = require('@feathersjs/authentication');
-const local = require('@feathersjs/authentication-local');
-const { Forbidden, BadRequest } = require('@feathersjs/errors');
+const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 const bcrypt = require('bcryptjs');
-const hooks = require('feathers-hooks-common');
 const { ObjectId } = require('mongoose').Types;
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
@@ -26,7 +23,7 @@ const sanitizeUsername = (hook) => {
 // This is only for SSO
 const validateCredentials = async (hook) => {
 	const {
-		username, password, systemId, schoolId,
+		username, password, systemId,
 	} = hook.data;
 
 	if (!username) throw new BadRequest('no username specified');
@@ -217,10 +214,15 @@ const securePatching = (hook) => Promise.all([
 	globalHooks.hasRole(hook, hook.params.account.userId, 'superhero'),
 	globalHooks.hasRole(hook, hook.params.account.userId, 'administrator'),
 	globalHooks.hasRole(hook, hook.params.account.userId, 'teacher'),
+	globalHooks.hasRole(hook, hook.params.account.userId, 'demoStudent'),
+	globalHooks.hasRole(hook, hook.params.account.userId, 'demoTeacher'),
 	globalHooks.hasRoleNoHook(hook, hook.id, 'student', true),
-]).then(([isSuperHero, isAdmin, isTeacher, targetIsStudent]) => {
+]).then(([isSuperHero, isAdmin, isTeacher, isDemoStudent, isDemoTeacher, targetIsStudent]) => {
 	const editsOwnAccount = equalIds(hook.id, hook.params.account._id);
 	if (hook.params.account._id !== hook.id) {
+		if (isDemoStudent || isDemoTeacher) {
+			return Promise.reject(new Forbidden('Diese Funktion ist im Demomodus nicht verfügbar!'));
+		}
 		if (!(isSuperHero || isAdmin || (isTeacher && targetIsStudent) || editsOwnAccount)) {
 			return Promise.reject(new BadRequest('You have not the permissions to change other users'));
 		}
@@ -245,55 +247,31 @@ const filterToRelated = (keys) => globalHooks.ifNotLocal((hook) => {
 	return hook;
 });
 
-const testIfJWTExist = (context) => {
-	if ((context.params.headers || {}).authorization) {
-		return authenticate('jwt')(context);
+const restrictToUsersSchool = async (context) => {
+	const userIsSuperhero = await globalHooks.hasRoleNoHook(context, context.params.account.userId, 'superhero');
+	if (userIsSuperhero) return context;
+	const userService = context.app.service('users');
+	const { schoolId: usersSchoolId } = await userService.get(context.params.account.userId);
+
+	const targetAccount = await context.app.service('accountModel').get(context.id);
+	const { schoolId: targetSchoolId } = await userService.get(targetAccount.userId);
+	if (!equalIds(usersSchoolId, targetSchoolId)) {
+		throw new NotFound('this account doesnt exist');
 	}
 	return context;
 };
 
-exports.before = {
-	// find, get and create cannot be protected by authenticate('jwt')
-	// otherwise we cannot get the accounts required for login
-	find: [testIfJWTExist, globalHooks.ifNotLocal(restrictAccess)],
-	get: [hooks.disallow('external')],
-	create: [
-		sanitizeUsername,
-		checkExistence,
-		validateCredentials,
-		trimPassword,
-		local.hooks.hashPassword('password'),
-		checkUnique,
-		removePassword,
-	],
-	update: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('ACCOUNT_EDIT'),
-		sanitizeUsername,
-	],
-	patch: [
-		authenticate('jwt'),
-		sanitizeUsername,
-		globalHooks.ifNotLocal(securePatching),
-		protectUserId,
-		globalHooks.permitGroupOperation,
-		trimPassword,
-		globalHooks.ifNotLocal(validatePassword),
-		local.hooks.hashPassword('password'),
-	],
-	remove: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('ACCOUNT_CREATE'),
-		globalHooks.permitGroupOperation,
-	],
-};
-
-exports.after = {
-	all: [local.hooks.protect('password')],
-	find: [],
-	get: [filterToRelated(['_id', 'username', 'userId', 'systemId'])],
-	create: [],
-	update: [],
-	patch: [],
-	remove: [],
+module.exports = {
+	sanitizeUsername,
+	validateCredentials,
+	trimPassword,
+	validatePassword,
+	checkUnique,
+	removePassword,
+	restrictAccess,
+	checkExistence,
+	protectUserId,
+	securePatching,
+	filterToRelated,
+	restrictToUsersSchool,
 };

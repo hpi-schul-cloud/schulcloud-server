@@ -36,7 +36,7 @@ groups:
     reviewers:
       teams:
       - integrathors
-      
+
   loki:
     conditions:
     - "'Loki' in labels"
@@ -47,7 +47,7 @@ groups:
     reviewers:
       teams:
       - loki
-      
+
   server-core:
     conditions:
     - "'Loki' not in labels and 'IntegraTHORs' not in labels"
@@ -58,7 +58,7 @@ groups:
     reviewers:
       teams:
       - server-core
-      
+
   privacy:
     conditions:
     - "'*model.js' in files or 'backup/setup/*.json' in files or '.pullapprove.yml' in files"

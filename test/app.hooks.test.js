@@ -1,14 +1,11 @@
-const chai = require('chai');
+const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const mockery = require('mockery');
-
-const { expect } = chai;
-
 const app = require('../src/app');
 const { sanitizeDataHook } = require('../src/app.hooks');
 const { sanitizeHtml: { sanitizeDeep } } = require('../src/utils');
-const { cleanup, createTestUser, generateRequestParamsFromUser } = require('./services/helpers/testObjects')(app);
-const redisMock = require('./utils/redis/redisMock');
+const {
+	cleanup, createTestUser, generateRequestParamsFromUser, createTestSchool,
+} = require('./services/helpers/testObjects')(app);
 
 describe('Sanitization Hook', () => {
 	// TODO: Test if it work for create, post and update
@@ -22,13 +19,89 @@ describe('Sanitization Hook', () => {
 		expect(result.data).to.not.be.an('undefined');
 		expect(result.data.testString).to.equal(testString);
 	});
+
+	it('hook sanitizes when "before" type is triggered by checking the existence of "data" property', () => {
+		const testString = '<script>alert("test");</script><h1>test</h1>';
+		const sanitizedTestString = 'test';
+		const context = {
+			path: 'not_authentication',
+			data: { testString },
+			type: 'before',
+		};
+		const result = sanitizeDataHook(context);
+		expect(result.data).to.not.be.an('undefined');
+		expect(result.data.testString).to.equal(sanitizedTestString);
+		expect(result.result).to.be.an('undefined');
+	});
+
+	it('hook sanitizes when it is triggered in "after" type by checking the existence of "result" property', () => {
+		const testString = '<script>alert("test");</script><h1>test</h1>';
+		const sanitizedTestString = 'test';
+		const context = {
+			path: 'not_authentication',
+			result: { testString },
+			type: 'after',
+		};
+		const result = sanitizeDataHook(context);
+		expect(result.result).to.not.be.an('undefined');
+		expect(result.result.testString).to.equal(sanitizedTestString);
+		expect(result.data).to.be.an('undefined');
+	});
+
+	it('hook does not sanitizes when both properties `data` and `results` are empty', () => {
+		const testString = '<script>alert("test");</script><h1>test</h1>';
+		const context = {
+			path: 'not_authentication',
+			data: { testString },
+		};
+		const result = sanitizeDataHook(context);
+		expect(result.data.testString).to.equal(testString);
+	});
+
+	it('hook does not sanitizes specified safe attributes', () => {
+		const testString = '<script>alert("test");</script><h1>test</h1>';
+		const sanitizedTestString = 'test';
+		const safeAttributes = ['url'];
+		const context = {
+			path: 'not_authentication',
+			safeAttributes,
+			result: {
+				url: testString,
+				dangerousUrl: testString,
+			},
+		};
+		const result = sanitizeDataHook(context);
+		expect(result.result.url).to.equal(testString);
+		expect(result.result.dangerousUrl).to.equal(sanitizedTestString);
+	});
+
+	it('hook does not sanitizes specified attributes', () => {
+		const content = '<blockquote class="test-class">Cite Block</blockquote>' +
+			'<span class="test-class" style="color:#9c27b0">Text color</span>' +
+			'<span class="test-class" style="background-color:#cddc39">Text Background</span>' +
+			'Tables: <table class="test-class"><th>1</th><th>2</th><tr><td>A</td><td>B</td></tr></table>' +
+			'Video: <video class="test-class" controlslist="nodownload" src="https://www.youtube.com/watch?v=zYo7gLzH8Uk"></video>' +
+			'Audio: <audio class="test-class" controlslist="nodownload" controls="controls" src="https://www.youtube.com/watch?v=zYo7gLzH8Uk"></audio>';
+		const data = {
+			schoolId: '0000d186816abba584714c5f',
+			title: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
+			content: content
+		};
+
+		const path = 'news';
+		const result = sanitizeDeep(data, path);
+		expect(result.schoolId).to.equal('0000d186816abba584714c5f');
+		expect(result.title).to.equal('SanitizationTest äöüß§$%/()=');
+		expect(result.content).to.equal(content);
+	});
+
 	// TODO: Map test to generic output for sanitizeConst keys, paths, saveKeys
 	it('sanitize in news, example', () => {
 		const data = {
 			schoolId: '0000d186816abba584714c5f',
 			title: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
 			content: '<p>SanitizationTest<script>alert("test);</script>'
-					+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+				+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 		};
 
 		const path = 'news';
@@ -58,9 +131,9 @@ describe('Sanitization Hook', () => {
 			subject: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
 			type: 'problem',
 			currentState: '<p>SanitizationTest<script>alert("test);</script>'
-						+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+				+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			targetState: '<p>SanitizationTest<script>alert("test);</script>'
-						+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+				+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			category: 'dashboard',
 			schoolId: '0000d186816abba584714c5f',
 		};
@@ -87,11 +160,33 @@ describe('Sanitization Hook', () => {
 		expect(result.subject).to.equal(''); // filter all
 	});
 
+	it('sanitize in submissions, avoid img onerror attribute', () => {
+		const data = {
+			comment: '<img onerror="window.location = \'google.com\'" src="x" />',
+		};
+
+		const path = 'submissions';
+		const result = sanitizeDeep(data, path);
+
+		expect(result.comment, 'onerror attribute removed from img tag').to.equal('<img src="x" />');
+	});
+
+	it('sanitize in submissions, avoid js in href', () => {
+		const data = {
+			comment: '<a href="javascript:alert(1);">Link</a>',
+		};
+
+		const path = 'submissions';
+		const result = sanitizeDeep(data, path);
+
+		expect(result.comment, 'js removed from a href').to.equal('<a>Link</a>');
+	});
+
 	it('sanitize in course, example 1', () => {
 		const data = {
 			name: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
 			description: '<p>SanitizationTest<script>alert("test);</script>'
-						+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+				+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			color: '#d32f22',
 			teacherIds: ['0000d213816abba584714c0a'],
 			schoolId: '0000d186816abba584714c5f',
@@ -163,19 +258,32 @@ describe('Sanitization Hook', () => {
 });
 
 describe('removeObjectIdInData hook', () => {
+	let server;
 	let user;
 
 	before(async () => {
+		server = await app.listen(0);
 		user = await createTestUser();
 	});
 
 	after(async () => {
 		await cleanup();
+		await server.close();
 	});
 
 	it('Should work for create', async () => {
+		const { _id: schoolId } = await createTestSchool();
+		const admin = await createTestUser({ roles: ['administrator'], schoolId });
+		const params = await generateRequestParamsFromUser(admin);
 		const _id = new ObjectId();
-		const newUser = await createTestUser({ _id });
+		const newUser = await app.service('users').create({
+			_id,
+			firstName: 'Max',
+			lastName: 'Mustermann',
+			email: `max${Date.now()}@mustermann.de`,
+			schoolId,
+			roles: [],
+		}, params);
 		expect(_id.toString()).to.not.equal(newUser._id.toString());
 	});
 
@@ -196,89 +304,5 @@ describe('removeObjectIdInData hook', () => {
 			roles: [],
 		});
 		expect(_id.toString()).to.not.equal(response._id.toString());
-	});
-});
-
-describe('handleAutoLogout hook', () => {
-	let fut;
-	let redisHelper;
-
-	before(async () => {
-		mockery.enable({
-			warnOnReplace: false,
-			warnOnUnregistered: false,
-			useCleanCache: true,
-		});
-		mockery.registerMock('redis', redisMock);
-
-		delete require.cache[require.resolve('../src/utils/redis')];
-		/* eslint-disable global-require */
-		redisHelper = require('../src/utils/redis');
-		fut = require('../src/app.hooks').handleAutoLogout;
-		/* eslint-enable global-require */
-
-		redisHelper.initializeRedisClient({
-			Config: { data: { REDIS_URI: '//validHost:6379' } },
-		});
-	});
-
-	after(async () => {
-		mockery.deregisterAll();
-		mockery.disable();
-		await cleanup();
-	});
-
-	it('whitelisted JWT is accepted and extended', async () => {
-		const user = await createTestUser();
-		const params = await generateRequestParamsFromUser(user);
-		const redisIdentifier = redisHelper.getRedisIdentifier(params.authentication.accessToken);
-		await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', 1000);
-		const result = await fut({
-			params, app: { Config: { data: { REDIS_URI: '//validHost:6379', JWT_TIMEOUT_SECONDS: 7200 } } },
-		});
-		expect(result).to.not.equal(undefined);
-		const ttl = await redisHelper.redisTtlAsync(redisIdentifier);
-		expect(ttl).to.be.greaterThan(7000);
-	});
-
-	it('not whitelisted JWT is rejected', async () => {
-		const user = await createTestUser();
-		const params = await generateRequestParamsFromUser(user);
-		const redisIdentifier = redisHelper.getRedisIdentifier(params.authentication.accessToken);
-		await redisHelper.redisDelAsync(redisIdentifier);
-		try {
-			await fut({
-				params, app: { Config: { data: { REDIS_URI: '//validHost:6379', JWT_TIMEOUT_SECONDS: 7200 } } },
-			});
-			throw new Error('should have failed');
-		} catch (err) {
-			expect(err.message).to.not.equal('should have failed');
-			expect(err.code).to.equal(401);
-			expect(err.message).to.equal('Session was expired due to inactivity - autologout.');
-		}
-	});
-
-	it('JWT_WHITELIST_ACCEPT_ALL can be set to not auto-logout users', async () => {
-		const user = await createTestUser();
-		const params = await generateRequestParamsFromUser(user);
-		const redisIdentifier = redisHelper.getRedisIdentifier(params.authentication.accessToken);
-		await redisHelper.redisDelAsync(redisIdentifier);
-		const result = await fut({
-			params,
-			app: {
-				Config: {
-					data: {
-						REDIS_URI: '//validHost:6379', JWT_TIMEOUT_SECONDS: 7200, JWT_WHITELIST_ACCEPT_ALL: true,
-					},
-				},
-			},
-		});
-		expect(result).to.have.property('params');
-		expect(result).to.have.property('app');
-	});
-
-	it('passes through requests without authorisation', async () => {
-		const response = await fut({ params: {} });
-		expect(response).to.not.eq(undefined);
 	});
 });

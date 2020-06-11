@@ -9,7 +9,7 @@ const accountModel = require('../model');
 const logger = require('../../../logger');
 
 const {
-	getRedisClient, redisSetAsync, redisDelAsync, getRedisIdentifier, getRedisValue,
+	getRedisClient, redisSetAsync, extractDataFromJwt, getRedisData,
 } = require('../../../utils/redis');
 
 const DEFAULT_EXPIRED = 60 * 60 * 1000; // in ms => 1h
@@ -130,9 +130,10 @@ class SupportJWTService {
 
 	async addToWhitelist(jwt) {
 		if (getRedisClient()) {
-			const redisIdentifier = getRedisIdentifier(jwt);
+			const { redisIdentifier, privateDevice } = extractDataFromJwt(jwt);
+			const redisData = getRedisData({ privateDevice });
 			await redisSetAsync(
-				redisIdentifier, getRedisValue(), 'EX', this.expiredOffset,
+				redisIdentifier, JSON.stringify(redisData), 'EX', this.expiredOffset,
 			);
 		}
 	}

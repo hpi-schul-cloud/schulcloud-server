@@ -1,38 +1,29 @@
 const service = require('feathers-mongoose');
 const { userModel, registrationPinModel } = require('./model');
-const hooks = require('./hooks');
 const registrationPinsHooks = require('./hooks/registrationPins');
 const publicTeachersHooks = require('./hooks/publicTeachers');
 const firstLoginHooks = require('./hooks/firstLogin');
-const skipRegistrationHooks = require('./hooks/skipRegistration');
+const { skipRegistrationSingleHooks, skipRegistrationBulkHooks } = require('./hooks/skipRegistration');
 const {
-	AdminUsers, UserLinkImportService,
+	AdminUsers,
+	UserLinkImportService,
 	SkipRegistrationService,
 	RegistrationSchoolService,
+	UsersModelService,
+	UserService,
+	MailRegistrationLink,
 } = require('./services');
-const adminHook = require('./hooks/admin');
 
 
-module.exports = function setup() {
-	const app = this;
+module.exports = (app) => {
+	app.use('usersModel', UsersModelService.userModelService);
+	app.service('usersModel').hooks(UsersModelService.userModelHooks);
 
-	const options = {
-		Model: userModel,
-		paginate: {
-			default: 1000,
-			max: 1000,
-		},
-		lean: {
-			virtuals: true,
-		},
-	};
-
-	app.use('/users', service(options));
-
+	app.use('/users', UserService.userService);
 	const userService = app.service('/users');
-	app.use('users/linkImport', new UserLinkImportService(userService)); // do not use hooks
+	userService.hooks(UserService.userHooks);
 
-	userService.hooks(hooks); // TODO: refactor
+	app.use('users/linkImport', new UserLinkImportService(userService)); // do not use hooks
 
 	/* publicTeachers Service */
 	app.use('/publicTeachers', service({
@@ -69,20 +60,24 @@ module.exports = function setup() {
 	firstLoginService.hooks(firstLoginHooks);
 
 	const adminStudentsRoute = '/users/admin/students';
-	app.use(adminStudentsRoute, new AdminUsers('student'));
+	app.use(adminStudentsRoute, new AdminUsers.AdminUsers('student'));
 	const adminStudentsService = app.service(adminStudentsRoute);
-	adminStudentsService.hooks(adminHook);
+	adminStudentsService.hooks(AdminUsers.adminHookGenerator('STUDENT'));
 
 	const adminTeachersRoute = '/users/admin/teachers';
-	app.use(adminTeachersRoute, new AdminUsers('teacher'));
+	app.use(adminTeachersRoute, new AdminUsers.AdminUsers('teacher'));
 	const adminTeachersService = app.service(adminTeachersRoute);
-	adminTeachersService.hooks(adminHook);
+	adminTeachersService.hooks(AdminUsers.adminHookGenerator('TEACHER'));
 
-	app.use('/users/:userid/skipregistration', new SkipRegistrationService());
-	const skipRegistrationService = app.service('/users/:userid/skipregistration');
-	skipRegistrationService.hooks(skipRegistrationHooks);
+	const RegistrationLinkRoute = '/users/mail/registrationLink';
+	app.use(RegistrationLinkRoute, new MailRegistrationLink.Service());
+	const RegistrationLinkService = app.service(RegistrationLinkRoute);
+	RegistrationLinkService.hooks(MailRegistrationLink.Hooks);
+
+	app.use('/users/:userId/skipregistration', new SkipRegistrationService());
+	app.service('/users/:userId/skipregistration').hooks(skipRegistrationSingleHooks);
+	app.use('/users/skipregistration', new SkipRegistrationService());
+	app.service('/users/skipregistration').hooks(skipRegistrationBulkHooks);
 
 	app.use('/registrationSchool', new RegistrationSchoolService());
-	// const registrationSchoolService = app.service('registrationSchool');
-	// skipRegistrationService.hooks(registrationSchoolHooks);
 };

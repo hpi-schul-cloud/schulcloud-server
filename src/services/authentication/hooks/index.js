@@ -1,8 +1,13 @@
 const { TooManyRequests } = require('@feathersjs/errors');
 const { discard } = require('feathers-hooks-common');
+const { Configuration } = require('@schul-cloud/commons');
 const {
-	getRedisClient, redisSetAsync, redisDelAsync, getRedisIdentifier, getRedisValue,
+	getRedisClient, redisSetAsync, redisDelAsync, extractDataFromJwt, getRedisData,
 } = require('../../../utils/redis');
+const { LOGIN_BLOCK_TIME: allowedTimeDifference } = require('../../../../config/globals');
+const globalHooks = require('../../../hooks');
+
+const disabledBruteForceCheck = Configuration.get('DISABLED_BRUTE_FORCE_CHECK');
 
 const updateUsernameForLDAP = async (context) => {
 	const { schoolId, strategy } = context.data;
@@ -16,6 +21,9 @@ const updateUsernameForLDAP = async (context) => {
 };
 
 const bruteForceCheck = async (context) => {
+	if (disabledBruteForceCheck) {
+		return context;
+	}
 	const { systemId, strategy } = context.data;
 
 	if (strategy !== 'jwt') {
@@ -30,7 +38,6 @@ const bruteForceCheck = async (context) => {
 		// if account doesn't exist we can not update (e.g. iserv, moodle)
 		if (account) {
 			if (account.lasttriedFailedLogin) {
-				const allowedTimeDifference = process.env.LOGIN_BLOCK_TIME || 15;
 				const timeDifference = (Date.now() - account.lasttriedFailedLogin) / 1000;
 				if (timeDifference < allowedTimeDifference) {
 					throw new TooManyRequests(
@@ -49,6 +56,9 @@ const bruteForceCheck = async (context) => {
 
 // Invalid Login will not call this function
 const bruteForceReset = async (context) => {
+	if (disabledBruteForceCheck) {
+		return context;
+	}
 	// if successful login enable next login try directly
 	await context.app.service('/accounts').patch(context.result.account._id, { lasttriedFailedLogin: 0 });
 	return context;
@@ -134,9 +144,12 @@ const removeProvider = (context) => {
  */
 const addJwtToWhitelist = async (context) => {
 	if (getRedisClient()) {
-		const redisIdentifier = getRedisIdentifier(context.result.accessToken);
+		const { redisIdentifier, privateDevice } = extractDataFromJwt(context.result.accessToken);
+		const redisData = getRedisData({ privateDevice });
+		const { expirationInSeconds } = redisData;
+		// todo, do this async without await
 		await redisSetAsync(
-			redisIdentifier, getRedisValue(), 'EX', context.app.Config.data.JWT_TIMEOUT_SECONDS,
+			redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds,
 		);
 	}
 
@@ -149,10 +162,26 @@ const addJwtToWhitelist = async (context) => {
  */
 const removeJwtFromWhitelist = async (context) => {
 	if (getRedisClient()) {
-		const redisIdentifier = getRedisIdentifier(context.params.authentication.accessToken);
+		const { redisIdentifier } = extractDataFromJwt(context.params.authentication.accessToken);
 		await redisDelAsync(redisIdentifier);
 	}
 
+	return context;
+};
+
+/**
+ * increase jwt timeout for private devices on request
+  @param {} context
+ */
+const increaseJwtTimeoutForPrivateDevices = (context) => {
+	if (Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') === true) {
+		if (context.data && context.data.privateDevice === true) {
+			context.params.jwt = {
+				...context.params.jwt,
+				privateDevice: true,
+			};
+		}
+	}
 	return context;
 };
 
@@ -164,7 +193,9 @@ const hooks = {
 			trimUsername,
 			trimPassword,
 			bruteForceCheck,
+			globalHooks.blockDisposableEmail('username'),
 			injectUserId,
+			increaseJwtTimeoutForPrivateDevices,
 			removeProvider,
 		],
 		remove: [removeProvider],

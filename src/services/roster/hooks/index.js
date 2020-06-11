@@ -36,6 +36,7 @@ module.exports = {
 		return toolService.find({
 			query: {
 				oAuthClientId: context.params.tokenInfo.client_id,
+				isLocal: true,
 			},
 		}).then((originTools) => toolService.find({
 			query: {

@@ -1,15 +1,21 @@
 // Global hooks that run for every service
 const { GeneralError, NotAuthenticated } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
+const { Configuration } = require('@schul-cloud/commons');
 const { sanitizeHtml: { sanitizeDeep } } = require('./utils');
 const {
-	getRedisClient, redisGetAsync, redisSetAsync, getRedisIdentifier, getRedisValue,
+	getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData,
 } = require('./utils/redis');
 
 
 const sanitizeDataHook = (context) => {
-	if (context.data && context.path && context.path !== 'authentication') {
-		sanitizeDeep(context.data, context.path);
+	if ((context.data || context.result) && context.path && context.path !== 'authentication') {
+		sanitizeDeep(
+			context.type === 'before' ? context.data : context.result,
+			context.path,
+			0,
+			context.safeAttributes,
+		);
 	}
 	return context;
 };
@@ -59,6 +65,7 @@ const AUTO_LOGOUT_BLACKLIST = [
 	/^accounts\/jwtTimer$/,
 	/^authentication$/,
 	/wopi\//,
+	/roster\//,
 ];
 
 /**
@@ -72,19 +79,20 @@ const handleAutoLogout = async (context) => {
 	const redisClientExists = !!getRedisClient();
 	const authorizedRequest = ((context.params || {}).authentication || {}).accessToken;
 	if (!ignoreRoute && redisClientExists && authorizedRequest) {
-		const redisIdentifier = getRedisIdentifier(context.params.authentication.accessToken);
+		const { redisIdentifier, privateDevice } = extractDataFromJwt(context.params.authentication.accessToken);
 		const redisResponse = await redisGetAsync(redisIdentifier);
+		const redisData = getRedisData({ privateDevice });
+		const { expirationInSeconds } = redisData;
 		if (redisResponse) {
 			await redisSetAsync(
-				redisIdentifier, getRedisValue(), 'EX', context.app.Config.data.JWT_TIMEOUT_SECONDS,
+				redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds,
 			);
 		} else {
 			// ------------------------------------------------------------------------
 			// this is so we can ensure a fluid release without booting out all users.
-			if (context.app.Config.data.JWT_WHITELIST_ACCEPT_ALL) {
+			if (Configuration.get('JWT_WHITELIST_ACCEPT_ALL')) {
 				await redisSetAsync(
-					redisIdentifier, getRedisValue(),
-					'EX', context.app.Config.data.JWT_TIMEOUT_SECONDS,
+					redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds,
 				);
 				return context;
 			}
@@ -149,8 +157,16 @@ function setupAppHooks(app) {
 
 	const after = {
 		all: [],
-		find: [],
-		get: [],
+		find: [
+			iff(isProvider('external'), [
+				sanitizeDataHook,
+			]),
+		],
+		get: [
+			iff(isProvider('external'), [
+				sanitizeDataHook,
+			]),
+		],
 		create: [],
 		update: [],
 		patch: [],

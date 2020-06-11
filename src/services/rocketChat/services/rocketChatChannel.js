@@ -2,6 +2,7 @@ const { BadRequest } = require('@feathersjs/errors');
 const request = require('request-promise-native');
 
 const { getRequestOptions, makeStringRCConform } = require('../helpers');
+const { TEAM_FEATURES } = require('../../teams/model');
 const { randomSuffix } = require('../randomPass');
 const { channelModel } = require('../model');
 const docs = require('../docs');
@@ -294,7 +295,7 @@ class RocketChatChannel {
 	}
 
 	async onTeamPatched(result) {
-		if (result.features.includes('rocketChat')) {
+		if (result.features.includes(TEAM_FEATURES.ROCKET_CHAT)) {
 			await RocketChatChannel.unarchiveChannel(result._id);
 			await this.synchronizeModerators(result._id);
 		} else {

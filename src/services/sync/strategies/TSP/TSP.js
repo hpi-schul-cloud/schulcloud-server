@@ -3,22 +3,21 @@ const url = require('url');
 const moment = require('moment');
 const { JWE, JWK, JWS } = require('jose');
 const uuid = require('uuid/v4');
-const commons = require('@schul-cloud/commons');
+const { Configuration } = require('@schul-cloud/commons');
 const accountModel = require('../../../account/model');
-
-const Config = new commons.Configuration();
-Config.init();
 
 const ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes
 const SOURCE_ID_ATTRIBUTE = 'tspUid'; // name of the uid attribute within sourceOptions
 
-const ENCRYPTION_KEY = Config.get('TSP_API_ENCRYPTION_KEY');
-const SIGNATURE_KEY = Config.get('TSP_API_SIGNATURE_KEY');
-const BASE_URL = Config.get('TSP_API_BASE_URL');
-const CLIENT_ID = Config.get('TSP_API_CLIENT_ID');
-const CLIENT_SECRET = Config.get('TSP_API_CLIENT_SECRET');
-const TOKEN_ISS = process.env.SC_DOMAIN || 'schulcloud-thueringen.de';
-const TOKEN_SUB = process.env.HOST || 'https://schulcloud-thueringen.de';
+const ENCRYPTION_KEY = Configuration.get('TSP_API_ENCRYPTION_KEY');
+const SIGNATURE_KEY = Configuration.get('TSP_API_SIGNATURE_KEY');
+const BASE_URL = Configuration.get('TSP_API_BASE_URL');
+const CLIENT_ID = Configuration.get('TSP_API_CLIENT_ID');
+const CLIENT_SECRET = Configuration.get('TSP_API_CLIENT_SECRET');
+const {
+	HOST,
+	SC_DOMAIN,
+} = require('../../../../../config/globals');
 
 const ENCRYPTION_OPTIONS = { alg: 'dir', enc: 'A128CBC-HS256' };
 const SIGNATURE_OPTIONS = { alg: 'HS512' };
@@ -159,9 +158,9 @@ class TspApi {
 		this.lastTokenExpires = issueDate + lifetime;
 		const payload = JSON.stringify({
 			apiClientSecret: CLIENT_SECRET,
-			iss: TOKEN_ISS,
+			iss: SC_DOMAIN,
 			aud: BASE_URL,
-			sub: TOKEN_SUB,
+			sub: HOST,
 			exp: issueDate + lifetime,
 			iat: issueDate,
 			jti: uuid(),
@@ -207,7 +206,8 @@ module.exports = {
 	SOURCE_ID_ATTRIBUTE,
 	TspApi,
 	config: {
-		FEATURE_ENABLED: Config.get('FEATURE_TSP_ENABLED'),
+		FEATURE_ENABLED: Configuration.get('FEATURE_TSP_ENABLED'),
+		FEATURE_AUTO_CONSENT: Configuration.get('FEATURE_TSP_AUTO_CONSENT_ENABLED'),
 		BASE_URL,
 	},
 	getUsername,

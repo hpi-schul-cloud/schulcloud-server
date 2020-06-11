@@ -1,6 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
-const globalHooks = require('../../../hooks');
-
+const { disallow } = require('feathers-hooks-common');
 
 exports.before = {
 	all: [
@@ -8,10 +7,10 @@ exports.before = {
 	],
 	find: [],
 	get: [],
-	create: [],
-	update: [],
-	patch: [globalHooks.permitGroupOperation],
-	remove: [globalHooks.permitGroupOperation],
+	create: [disallow()],
+	update: [disallow()],
+	patch: [disallow()],
+	remove: [disallow()],
 };
 
 exports.after = {

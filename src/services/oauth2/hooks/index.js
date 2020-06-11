@@ -13,6 +13,7 @@ const setSubject = (hook) => {
 	return hook.app.service('ltiTools').find({
 		query: {
 			oAuthClientId: hook.params.loginRequest.client.client_id,
+			isLocal: true,
 		},
 	}).then((tools) => hook.app.service('pseudonym').find({
 		query: {
@@ -29,20 +30,30 @@ const setSubject = (hook) => {
 
 const setIdToken = (hook) => {
 	if (!hook.params.query.accept) return hook;
-	return hook.app.service('ltiTools').find({
-		query: {
-			oAuthClientId: hook.params.consentRequest.client.client_id,
-		},
-	}).then((tools) => hook.app.service('pseudonym').find({
+	return Promise.all([
+		hook.app.service('users').get(hook.params.account.userId),
+		hook.app.service('ltiTools').find({
+			query: {
+				oAuthClientId: hook.params.consentRequest.client.client_id,
+				isLocal: true,
+			},
+		}),
+	]).then(([user, tools]) => hook.app.service('pseudonym').find({
 		query: {
 			toolId: tools.data[0]._id,
 			userId: hook.params.account.userId,
 		},
 	}).then((pseudonyms) => {
 		const { pseudonym } = pseudonyms.data[0];
+		const name = (user.displayName ? user.displayName : `${user.firstName} ${user.lastName}`);
+		const scope = hook.params.consentRequest.requested_scope;
 		hook.data.session = {
 			id_token: {
 				iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
+				email: (scope.includes('email') ? user.email : undefined),
+				name: (scope.includes('profile') ? name : undefined),
+				userId: (scope.includes('profile') ? user._id : undefined),
+				schoolId: user.schoolId,
 			},
 		};
 		return hook;

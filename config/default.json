@@ -1,15 +1,17 @@
 {
 	"host": "localhost",
 	"port": 3030,
-	"mongodb": "mongodb://127.0.0.1:27017/schulcloud",
 	"public": "../public/",
 	"services": {
 		"calendar": "http://localhost:3000",
-		"content": "https://schul-cloud.org:4040",
+		"content": "https://content.schul-cloud.org",
 		"notification": "http://localhost:3031",
 		"hydra": "http://localhost:9001",
 		"web": "http://localhost:3100"
 	},
 	"FORCE_SEND_EMAIL": false,
-	"NOTIFICATION_PLATFORM": false
+	"NOTIFICATION_PLATFORM": false,
+	"BLOCK_DISPOSABLE_EMAIL_DOMAINS": true,
+	"STUDENT_TEAM_CREATION" : "opt-out",
+	"FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY": "enabled"
 }

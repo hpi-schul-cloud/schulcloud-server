@@ -1,4 +1,4 @@
-const logger = require('../../src/logger/');
+const logger = require('../../src/logger');
 
 
 class OutputLogTempalte {
@@ -30,7 +30,7 @@ class OutputLogTempalte {
 		const id = _id.toString();
 
 		if (typeof error === 'object') {
-			return Object.assign({}, { id }, error);
+			return { id, ...error };
 		}
 
 		if (typeof error === 'string') {

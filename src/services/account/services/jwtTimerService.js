@@ -4,7 +4,7 @@ const { MethodNotAllowed, NotAuthenticated } = require('@feathersjs/errors');
 const docs = require('./jwtTimerDocs');
 
 const {
-	getRedisClient, redisSetAsync, redisTtlAsync, getRedisIdentifier, getRedisValue,
+	getRedisClient, redisSetAsync, redisTtlAsync, extractDataFromJwt, getRedisData,
 } = require('../../../utils/redis');
 
 
@@ -20,7 +20,7 @@ class JwtTimerService {
 	 */
 	async find(params) {
 		if (getRedisClient()) {
-			const redisIdentifier = getRedisIdentifier(params.authentication.accessToken);
+			const { redisIdentifier } = extractDataFromJwt(params.authentication.accessToken);
 			const redisResponse = await redisTtlAsync(redisIdentifier);
 			return Promise.resolve({ ttl: redisResponse });
 		}
@@ -34,13 +34,15 @@ class JwtTimerService {
 	 */
 	async create(data, params) {
 		if (getRedisClient()) {
-			const redisIdentifier = getRedisIdentifier(params.authentication.accessToken);
+			const { redisIdentifier, privateDevice } = extractDataFromJwt(params.authentication.accessToken);
 			const redisResponse = await redisTtlAsync(redisIdentifier);
 			if (redisResponse < 0) throw new NotAuthenticated('Session was expired due to inactivity - autologout.');
+			const redisData = getRedisData({ privateDevice });
+			const { expirationInSeconds } = redisData;
 			await redisSetAsync(
-				redisIdentifier, getRedisValue(), 'EX', this.app.Config.data.JWT_TIMEOUT_SECONDS,
+				redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds,
 			);
-			return Promise.resolve({ ttl: this.app.Config.data.JWT_TIMEOUT_SECONDS });
+			return Promise.resolve({ ttl: expirationInSeconds });
 		}
 		throw new MethodNotAllowed('This feature is disabled on this instance!');
 	}

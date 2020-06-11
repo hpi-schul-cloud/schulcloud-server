@@ -1,13 +1,15 @@
 {
 	"host": "localhost",
 	"port": 3031,
-	"mongodb": "mongodb://127.0.0.1:27017/schulcloud-test",
+	"DB_URL": "mongodb://127.0.0.1:27017/schulcloud-test",
 	"public": "../public/",
 	"services": {
 		"calendar": "https://schul.tech:3000",
-		"content": "https://schul-cloud.org:4040",
+		"content": "https://content.schul-cloud.org",
 		"notification": "https://schul-cloud.org:3030"
 	},
 	"FORCE_SEND_EMAIL": true,
-	"NOTIFICATION_PLATFORM": "testplatform"
+	"NOTIFICATION_PLATFORM": "testplatform",
+	"LDAP_PASSWORD_ENCRYPTION_KEY": "1234567890123456",
+	"FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY": "opt-out"
 }

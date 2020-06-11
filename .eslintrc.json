@@ -1,6 +1,7 @@
 {
 	"extends": "airbnb-base",
 	"rules": {
+		"no-process-env": "error",
 		"no-multiple-empty-lines": [
 			"error",
 			{
@@ -55,7 +56,7 @@
 			"warn",
 			{
 				"args": "after-used",
-				"argsIgnorePattern": "app|req|res|next|options|params"
+				"argsIgnorePattern": "app|req|res|next|options|params|^_"
 			}
 		],
 		"indent": [

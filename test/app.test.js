@@ -19,7 +19,7 @@ describe('Feathers application tests', () => {
 		this.server.close(done);
 	});
 
-	it('starts and shows the index page', () => new Promise((resolve, reject) => {
+	it('starts and shows the index page', () => new Promise((resolve) => {
 		chai.request(app)
 			.get('/')
 			.end((err, res) => {
@@ -29,7 +29,7 @@ describe('Feathers application tests', () => {
 	}));
 
 	describe('404', () => {
-		it('shows a 404 page', () => new Promise((resolve, reject) => {
+		it('shows a 404 page', () => new Promise((resolve) => {
 			chai.request(app)
 				.get('/path/to/nowhere')
 				.set('content-type', 'text/html')
@@ -39,7 +39,7 @@ describe('Feathers application tests', () => {
 				});
 		}));
 
-		it('shows a 404 JSON error without stack trace', () => new Promise((resolve, reject) => {
+		it('shows a 404 JSON error without stack trace', () => new Promise((resolve) => {
 			chai.request(app)
 				.get('/path/to/nowhere')
 				.set('content-type', 'application/json')
@@ -52,7 +52,7 @@ describe('Feathers application tests', () => {
 				});
 		}));
 
-		it('serves swagger api docs', () => new Promise((resolve, reject) => {
+		it('serves swagger api docs', () => new Promise((resolve) => {
 			chai.request(app)
 				.get('/docs')
 				.end((err, res) => {

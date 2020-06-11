@@ -1,5 +1,7 @@
 const logger = require('../../logger');
-const { ROCKET_CHAT_URI, ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID } = require('./rocketChatConfig');
+const {
+	ROCKET_CHAT_URI, ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID,
+} = require('../../../config/globals');
 const {
 	rocketChatUserHooks, rocketChatLoginHooks, rocketChatLogoutHooks, rocketChatChannelHooks,
 } = require('./hooks');

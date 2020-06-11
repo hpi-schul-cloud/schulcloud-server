@@ -11,7 +11,7 @@ const { Schema } = mongoose;
 const ltiToolSchema = new Schema({
 	name: { type: String },
 	url: { type: String, required: true },
-	key: { type: String, required: true },
+	key: { type: String },
 	secret: { type: String, required: true },
 	logo_url: { type: String },
 	lti_message_type: { type: String },
@@ -36,7 +36,15 @@ const ltiToolSchema = new Schema({
 	originTool: { type: Schema.Types.ObjectId, ref: 'ltiTool' },
 	oAuthClientId: { type: String },
 	friendlyUrl: { type: String, unique: true, sparse: true },
+	skipConsent: { type: Boolean },
 });
+
+function validateKey(value) {
+	if (this.lti_version === 'LTI-1p0') return !!value;
+	return true;
+}
+
+ltiToolSchema.path('key').validate(validateKey);
 
 enableAuditLog(ltiToolSchema);
 

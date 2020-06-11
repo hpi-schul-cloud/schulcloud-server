@@ -76,4 +76,37 @@ describe('CSVSyncer', () => {
 			expect(result[2].class).to.equal('2b');
 		});
 	});
+
+	describe('isValidBirthday', () => {
+		it('should not accept falsy valus as dates for user birthday', () => {
+			[false, null, undefined, '', 0]
+				.map((f) => CSVSyncer.isValidBirthday(f))
+				.forEach((r) => expect(r).to.equal(false));
+		});
+		it('should not accept strange values as dates for user birthday', () => {
+			[[], {}, true]
+				.map((f) => CSVSyncer.isValidBirthday(f))
+				.forEach((r) => expect(r).to.equal(false));
+		});
+		it('should not accept invalid date format as user birthday', () => {
+			[
+				'32.12.2000', '01.13.2000', // invalid day/month
+				'01.01-2000', '01/01.2000', '01-01/2000', // wrong format
+				'42', 'void', // not a date
+				'29.02.2001', // does not exist outside of leap years
+				'01.01.1000', // too long ago
+			]
+				.map((f) => CSVSyncer.isValidBirthday(f))
+				.forEach((r) => expect(r).to.equal(false));
+		});
+		it('should return true when given a correct value', () => {
+			[
+				'01.01.2000', '01-01-2000', '01/01/2000', // different formats
+				'29.02.2004', // exists in a leap year
+				'20.10.1920', // (sufficiently) long ago
+			]
+				.map((f) => CSVSyncer.isValidBirthday(f))
+				.forEach((r) => expect(r).to.equal(true));
+		});
+	});
 });

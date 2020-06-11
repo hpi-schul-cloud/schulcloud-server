@@ -1,3 +1,4 @@
+const base64Files = require('./base64Files');
 const fileStorage = require('./fileStorage');
 const link = require('./link');
 const news = require('./news');
@@ -25,6 +26,7 @@ const notification = require('./notification');
 const releases = require('./releases');
 const helpdesk = require('./helpdesk');
 const statistic = require('./statistic');
+const statisticMails = require('./statisticMail');
 const wopi = require('./wopi');
 const pseudonym = require('./pseudonym');
 const consent = require('./consent');
@@ -34,23 +36,26 @@ const ldap = require('./ldap');
 const sync = require('./sync');
 const datasources = require('./datasources');
 const rocketChat = require('./rocketChat');
-const clipboard = require('./clipboard');
 const webuntis = require('./webuntis');
 const me = require('./me');
 const help = require('./help');
 const database = require('../utils/database');
+const alert = require('./alert');
 const videoconference = require('./videoconference');
-
+const messengerSync = require('./messengerSync');
+const nexboard = require('./nexboard');
+const etherpad = require('./etherpad');
+const storageProvider = require('./storageProvider');
 
 module.exports = function initializeServices() {
 	const app = this;
-
 	// connect mongoose to the database
 	database.connect();
 
 	// register services
 	app.configure(authentication);
 	app.configure(analytics);
+	app.configure(base64Files);
 	app.configure(user);
 	app.configure(role);
 	app.configure(account);
@@ -74,10 +79,10 @@ module.exports = function initializeServices() {
 	app.configure(releases);
 	app.configure(helpdesk);
 	app.configure(statistic);
+	app.configure(statisticMails);
 	app.configure(wopi);
 	app.configure(pseudonym);
 	app.configure(consent);
-	app.configure(clipboard);
 	app.configure(ldap);
 	app.configure(sync);
 	app.configure(me);
@@ -86,9 +91,13 @@ module.exports = function initializeServices() {
 	app.configure(oauth2);
 	app.configure(roster);
 	app.configure(datasources);
+	app.configure(alert);
 	app.configure(webuntis);
 	app.configure(videoconference);
-
+	app.configure(messengerSync);
+	app.configure(nexboard);
+	app.configure(etherpad);
+	app.configure(storageProvider);
 
 	// initialize events
 	newsEvents.configure(app);

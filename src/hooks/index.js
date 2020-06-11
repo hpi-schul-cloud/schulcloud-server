@@ -4,18 +4,18 @@ const {
 	NotFound,
 	BadRequest,
 	TypeError,
-	NotAuthenticated,
 } = require('@feathersjs/errors');
+const { authenticate } = require('@feathersjs/authentication');
+
+const { Configuration } = require('@schul-cloud/commons');
 const _ = require('lodash');
 const mongoose = require('mongoose');
 const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
-const KeysModel = require('../services/keys/model');
-const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE } = require('../../config/globals');
+const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
+const { isDisposableEmail } = require('../utils/disposableEmail');
 // Add any common hooks you want to share across services in here.
-
-const { extractTokenFromBearerHeader } = require('../services/authentication/logic');
 
 // don't require authentication for internal requests
 exports.ifNotLocal = function ifNotLocal(hookForRemoteRequests) {
@@ -93,6 +93,39 @@ const hasPermission = (inputPermissions) => {
 				return Promise.resolve(context);
 			});
 	};
+};
+
+/**
+ * Test a permission again a user request.
+ * When the hook funtkion is called, it requires an account object in params
+ *
+ * @param {string} inputPermission
+ * @return {funktion} - feathers hook function requires context as an attribute
+ */
+// TODO: should accept and check multiple permissions
+exports.hasSchoolPermission = (inputPermission) => async (context) => {
+	const { params: { account }, app } = context;
+	if (!account && !account.userId) {
+		throw new Forbidden('Cannot read account data');
+	}
+	const user = await app.service('usersModel').get(account.userId, {
+		query: {
+			populate: 'roles',
+		},
+	});
+	app.service('schools').get(user.schoolId)
+		.then((school) => Promise.any(user.roles.map((role) => {
+			const { permissions = {} } = school;
+			// If there are no special school permissions, continue with normal permission check
+			if (!Object.prototype.hasOwnProperty.call(permissions[role], inputPermission)) {
+				return hasPermission(inputPermission);
+			}
+			// Otherwise check for user's special school permission
+			if (!permissions.role.inputPermission) {
+				throw new Forbidden('You do not have the required permission');
+			}
+			return Promise.resolve(context);
+		})));
 };
 
 /**
@@ -327,29 +360,65 @@ const testIfRoleNameExist = (user, roleNames) => {
 	return user.roles.some(({ name }) => roleNames.includes(name));
 };
 
-exports.restrictToCurrentSchool = (context) => getUser(context).then((user) => {
+exports.enableQuery = (context) => {
+	if (context.id) {
+		context.params.query = context.params.query || {};
+		context.params.query._id = context.id;
+		context.id = null;
+	}
+};
+
+exports.enableQueryAfter = (context) => {
+	if (!context.params.query._id) {
+		return context;
+	}
+	context.id = context.params.query._id;
+	if (context.result.length === 0) {
+		throw new NotFound(`no record found for id '${context.params.query._id}'`);
+	}
+	context.result = context.result[0];
+	return context;
+};
+
+exports.restrictToCurrentSchool = async (context) => {
+	const user = await getUser(context);
 	if (testIfRoleNameExist(user, 'superhero')) {
 		return context;
 	}
 	const currentSchoolId = user.schoolId.toString();
 	const { params } = context;
+	// route
 	if (params.route && params.route.schoolId && params.route.schoolId !== currentSchoolId) {
 		throw new Forbidden('You do not have valid permissions to access this.');
 	}
-	if (['get', 'find', 'remove'].includes(context.method)) {
+	// id
+	if (['update', 'patch', 'remove'].includes(context.method) && context.id) {
+		const target = await context.service.get(context.id);
+		if (!equalIds(target.schoolId, user.schoolId)) {
+			throw new NotFound(`no record found for id '${context.id.toString()}'`);
+		}
+	}
+	// query
+	const methodWithQuery = ['get', 'find'].includes(context.method)
+		|| (['update', 'patch', 'remove'].includes(context.method) && context.id == null);
+	if (methodWithQuery) {
 		if (params.query.schoolId === undefined) {
 			params.query.schoolId = user.schoolId;
 		} else if (!equalIds(params.query.schoolId, currentSchoolId)) {
 			throw new Forbidden('You do not have valid permissions to access this.');
 		}
-	} else if (context.data.schoolId === undefined) {
-		context.data.schoolId = currentSchoolId;
-	} else if (context.data.schoolId !== currentSchoolId) {
-		throw new Forbidden('You do not have valid permissions to access this.');
+	}
+	// data
+	if (['create', 'update', 'patch'].includes(context.method)) {
+		if (context.data.schoolId === undefined) {
+			context.data.schoolId = currentSchoolId;
+		} else if (!equalIds(context.data.schoolId, currentSchoolId)) {
+			throw new Forbidden('You do not have valid permissions to access this.');
+		}
 	}
 
 	return context;
-});
+};
 
 /* todo: Many request pass id as second parameter, but it is confused with the logic that should pass.
 	It should evaluate and make clearly.
@@ -391,7 +460,7 @@ exports.restrictToUsersOwnCourses = (context) => getUser(context).then((user) =>
 	return context;
 });
 
-const isProductionMode = process.env.NODE_ENV === 'production';
+const isProductionMode = NODE_ENV === ENVIRONMENTS.PRODUCTION;
 exports.mapPayload = (context) => {
 	if (!isProductionMode) {
 		logger.info(
@@ -400,6 +469,7 @@ exports.mapPayload = (context) => {
 		);
 	}
 	if (context.params.payload) {
+		// eslint-disable-next-line prefer-object-spread
 		context.params.authentication = Object.assign(
 			{},
 			context.params.authentication,
@@ -531,6 +601,21 @@ exports.denyIfNotCurrentSchool = (
 	}
 	return context;
 });
+
+exports.denyIfStudentTeamCreationNotAllowed = (
+	{ errorMessage = 'The current user is not allowed to list other users!' },
+) => async (context) => {
+	const currentUser = await getUser(context);
+	if (!testIfRoleNameExist(currentUser, 'student')) {
+		return context;
+	}
+	const currentUserSchoolId = currentUser.schoolId;
+	const currentUserSchool = await context.app.service('schools').get(currentUserSchoolId);
+	if (!currentUserSchool.isTeamCreationByStudentsEnabled) {
+		throw new Forbidden(errorMessage);
+	}
+	return context;
+};
 
 exports.checkSchoolOwnership = (context) => {
 	const { userId } = context.params.account;
@@ -677,7 +762,6 @@ exports.sendEmail = (context, maildata) => {
 				mailService.create({
 					email,
 					replyEmail,
-					from: maildata.from,
 					subject: maildata.subject || 'E-Mail von der Schul-Cloud',
 					headers: maildata.headers || {},
 					content: {
@@ -695,20 +779,6 @@ exports.sendEmail = (context, maildata) => {
 	}
 
 	return context;
-};
-
-exports.getAge = (dateString) => {
-	if (dateString === undefined) {
-		return undefined;
-	}
-	const today = new Date();
-	const birthDate = new Date(dateString);
-	let age = today.getFullYear() - birthDate.getFullYear();
-	const m = today.getMonth() - birthDate.getMonth();
-	if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-		age -= 1;
-	}
-	return age;
 };
 
 exports.arrayIncludes = (array, includesList, excludesList) => {
@@ -773,4 +843,43 @@ exports.populateCurrentSchool = async (context) => {
 		return context;
 	}
 	throw new BadRequest('Authentication is required.');
+};
+
+exports.addCollation = (context) => {
+	context.params.collation = { locale: 'de', caseLevel: true };
+	return context;
+};
+
+/**
+ * Stop flow if the email domain is blacklisted.
+ *
+ * @param property data property to check
+ * @param optional the email has not to be present
+ * @returns {*} context
+ */
+exports.blockDisposableEmail = (property, optional = true) => async (context) => {
+	// available
+	if (!Object.prototype.hasOwnProperty.call(context.data, property)) {
+		if (!optional) {
+			throw new BadRequest(`Property ${property} is required`);
+		}
+
+		return context;
+	}
+
+	// blacklisted
+	if (Configuration.get('BLOCK_DISPOSABLE_EMAIL_DOMAINS') === true) {
+		if (isDisposableEmail(context.data[property])) {
+			throw new BadRequest('EMAIL_DOMAIN_BLOCKED');
+		}
+	}
+
+	return context;
+};
+
+exports.authenticateWhenJWTExist = (context) => {
+	if ((context.params.headers || {}).authorization) {
+		return authenticate('jwt')(context);
+	}
+	return context;
 };

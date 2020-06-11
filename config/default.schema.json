@@ -2,10 +2,25 @@
 	"title": "HPI Schul-Cloud Configuration",
 	"type": "object",
 	"properties": {
+		"CLIENT_API_KEY": {
+			"type": "string",
+			"default": "example",
+			"description": "The API Key that the Client uses to send emails. This should be removed with SC-3387"
+		},
 		"CALENDAR_API_KEY": {
 			"type": "string",
 			"default": "example",
 			"description": "The API Key that the Calendar uses to resolve scopes. This should be removed with SC-3387"
+		},
+		"DISABLED_BRUTE_FORCE_CHECK": {
+			"type": "boolean",
+			"default": false,
+			"description": "To disabled the brute force prevention hooks for by authentication."
+		},
+		"SYNC_API_KEY": {
+			"type": "string",
+			"default": "example",
+			"description": "The API Key that the Sync Cron-Job uses to authenticate itself.This should be removed with SC-3387"
 		},
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": {
 			"type": "string",
@@ -18,15 +33,47 @@
 			],
 			"description": "defines wheter external team invitation shows teachers from different schools or not. if enabled system wide there are options general enabled or opt-in/-out by user required."
 		},
+		"STUDENT_TEAM_CREATION": {
+			"type": "string",
+			"default": "opt-out",
+			"enum": [
+				"disabled",
+				"opt-in",
+				"opt-out",
+				"enabled"
+			],
+			"description": "defines wheter students may create teams or not. if enabled system wide there are options general enabled or opt-in/-out by school admin required."
+		},
 		"REDIS_URI": {
 			"type": "string",
 			"pattern": "(rediss?:)?\/\/((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(\/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
 			"description": "URL of a Redis server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
 		},
+		"PIN_MAX_AGE_SECONDS": {
+			"type": "integer",
+			"default": 86400,
+			"description": "Maximum time in seconds a generated pin is handled as valid."
+		},
+		"JWT_LIFETIME": {
+			"type": "string",
+			"default": "30d",
+			"pattern": "^[0-9]+d$",
+			"description": "Lifetime of generated JWTs in days."
+		},
 		"JWT_TIMEOUT_SECONDS": {
 			"type": "integer",
 			"default": 7200,
 			"description": "After this many seconds of inactivity, a user gets logged out automatically. If no REDIS_URI is set, this value is ignored."
+		},
+		"FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Using privateDevice parameter in login, the logout/jwt timeout can be extended to JWT_EXTENDED_TIMEOUT_SECONDS instead of JWT_TIMEOUT_SECONDS."
+		},
+		"JWT_EXTENDED_TIMEOUT_SECONDS": {
+			"type": "integer",
+			"default": 2629746,
+			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration. If no REDIS_URI is set, this value is ignored."
 		},
 		"JWT_WHITELIST_ACCEPT_ALL": {
 			"type": "boolean",
@@ -63,6 +110,20 @@
 			"default": false,
 			"description": "Feature toggle for TSP features."
 		},
+		"BLOCK_DISPOSABLE_EMAIL_DOMAINS": {
+			"type": "boolean",
+			"default": true,
+			"description": "Prevent use of disposable email addresses."
+		},
+		"ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS": {
+			"type": "string",
+			"description": "Add custom domain to the list of blocked domains (comma separated list)."
+		},
+		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Feature toggle for automatic consent during TSP sync."
+		},
 		"FEATURE_VIDEOCONFERENCE_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -71,7 +132,7 @@
 		"VIDEOCONFERENCE_HOST": {
 			"type": "string",
 			"format": "uri",
-			"pattern":".*(?<!/)$",
+			"pattern": ".*(?<!/)$",
 			"default": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
 			"description": "The BBB base url (should end without a slash)."
 		},
@@ -80,15 +141,180 @@
 			"default": "",
 			"description": "The BBB Salt for api call checksum creation."
 		},
+		"FEATURE_MATRIX_MESSENGER_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, adds support for Matrix Messenger."
+		},
+		"MATRIX_URI": {
+			"type": "string",
+			"format": "uri",
+			"default": "https://matrix.messenger.schule",
+			"description": "The URI of the Matrix Messenger server."
+		},
+		"MATRIX_SERVERNAME": {
+			"type": "string",
+			"default": "messenger.schule",
+			"description": "Servername of the Matrix Messenger server."
+		},
+		"MATRIX_SECRET": {
+			"type": "string",
+			"description": "Shared secret for the Matrix server."
+		},
+		"FEATURE_RABBITMQ_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, adds support to send RabbitMQ messages"
+		},
+		"RABBITMQ_URI": {
+			"type": "string",
+			"format": "uri",
+			"default": "amqp://192.168.99.100",
+			"description": "The URI of the RabbitMQ server."
+		},
+		"RABBITMQ_MATRIX_CONSUME_CONCURRENCY": {
+			"type": "integer",
+			"default": 10,
+			"description": "How many messages should be handled at the same time."
+		},
+		"RABBITMQ_MATRIX_QUEUE_INTERNAL": {
+			"type": "string",
+			"default": "matrix_sync_unpopulated",
+			"description": "Name of queue used to buffer building synchronization request internally."
+		},
+		"RABBITMQ_MATRIX_QUEUE_EXTERNAL": {
+			"type": "string",
+			"default": "matrix_sync_populated",
+			"description": "Name of queue used to publish synchronization request."
+		},
 		"HOST": {
 			"type": "string",
 			"format": "uri",
-			"default":"http://localhost:3100",
-			"pattern":".*(?<!/)$",
+			"default": "http://localhost:3100",
+			"pattern": ".*(?<!/)$",
 			"description": "The client url (should end without a slash)."
+		},
+		"FEATURE_ALERTS_STATUS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, user will see messages/incidents from e.g status.schul-cloud."
+		},
+		"ALERT_STATUS_URL": {
+			"type": "string",
+			"format": "uri",
+			"pattern": ".*(?<!/)$",
+			"default": "https://status.schul-cloud.org",
+			"description": "The url of status message provider (should end without a slash)."
+		},
+		"ALERT_STATUS_API_URL": {
+			"type": "string",
+			"format": "uri",
+			"pattern": ".*(?<!/)$",
+			"default": "https://status.schul-cloud.org/api/v1",
+			"description": "The api of status message provider (should end without a slash)."
+		},
+		"NEXBOARD_URL": {
+			"type": "string",
+			"format": "uri",
+			"default": "https://nexboard.nexenio.com",
+			"pattern": ".*(?<!/)$",
+			"description": "The nexboard url."
+		},
+		"NEXBOARD_URI": {
+			"type": "string",
+			"default": "/portal/api/v1/public/",
+			"description": "The nexboard api version uri."
+		},
+		"NEXBOARD_API_KEY": {
+			"type": "string",
+			"description": "The nexboard api key for sending requests."
+		},
+		"NEXBOARD_USER_ID": {
+			"type": "string",
+			"description": "The nexboard 'schul-cloud' userId."
+		},
+		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables using the storage provider collection to determine a provider with free buckets upon school creation. If disabled, the only storage provider is configured via the environment variables in config/secrets.js"
+		},
+		"S3_KEY": {
+			"type": "string",
+			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
+			"pattern": ".{16}.*"
+		},
+		"FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY": {
+			"type": "string",
+			"default": "enabled",
+			"enum": [
+				"disabled",
+				"opt-in",
+				"opt-out",
+				"enabled"
+			],
+			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
+		},
+		"LDAP_PASSWORD_ENCRYPTION_KEY": {
+			"type": "string",
+			"description": "Synchronous encryption key used to secure search user passwords",
+			"pattern": ".{16}.*"
+		},
+		"SENTRY_DSN": {
+			"type": "string",
+			"format": "uri",
+			"description": "Sentry DSN (uri), if defined, increase SENTRY_SAMPLE_RATE to desired value to get errors reported."
+		},
+		"SENTRY_SAMPLE_RATE": {
+			"type": "number",
+			"default": 1.0,
+			"minimum": 0.0,
+			"maximum": 1.0,
+			"description": "This is the % count (0.00 to 1.00) of how many of the errors send to the backend. This filter go over all errors, maybe some lost by low user counts."
+		},
+		"ETHERPAD_API_KEY": {
+			"type": "string",
+			"description": "The etherpad api key for sending requests."
+		},
+		"ETHERPAD_API_PATH": {
+			"type": "string",
+			"default":"/api/1",
+			"description": "The etherpad api path."
+		},
+		"ETHERPAD_URI": {
+			"type": "string",
+			"default":"https://schul-cloud.org/etherpad/api/1",
+			"description": "The etherpad api version uri."
+		},
+		"ETHERPAD_OLD_PAD_URI": {
+			"type": "string",
+			"default":"https://etherpad.schul-cloud.org/p",
+			"description": "The etherpad api version uri."
+		},
+		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
+			"type": "integer",
+			"default": 28800,
+			"description": "Number of seconds after an etherpad cookie expires."
+		},
+		"ETHERPAD_ETHERPAD_COOKIE_RELEASE_THRESHOLD": {
+			"type": "integer",
+			"default": 7200,
+			"description": "If Session Valid time is smaller than this, a new session is created on request."
+    },
+		"SKIP_CONDITIONS_CONSENT": {
+			"type": "string",
+			"default": "",
+			"description": "A string with concatenated user types (student, employee) that don't need to explicitly state their consent with the terms and conditions. \"employee\" means teachers and admins."
+		},
+		"ADMIN_MAIL_RECEIVERS": {
+			"type": "string",
+			"default": null,
+			"description": "A string that contains recievers of the daily stat and other mails. Can contain mutliple mails, seperated by comma"
 		}
 	},
 	"required": [
-		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION", "HOST"
+		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
+		"STUDENT_TEAM_CREATION",
+		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
+		"HOST"
 	]
 }

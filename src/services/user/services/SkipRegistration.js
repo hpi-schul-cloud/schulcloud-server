@@ -80,6 +80,20 @@ class SkipRegistrationService {
 		this.docs = {};
 	}
 
+	async skipUserRegistration(data) {
+		const targetUser = await this.app.service('users').get(data.userId,
+			{ query: { $populate: 'roles' } });
+		await validateRequest(data, targetUser);
+
+		await Promise.all([
+			createAccount(data, targetUser, this.app),
+			updateConsent(data, targetUser._id, this.app),
+			updateUser(data, targetUser._id, this.app),
+		]);
+
+		return Promise.resolve('success');
+	}
+
 	/**
 	 * POST /users/{id}/skipregistration
 	 * skips the registration of another user, making the necessary changes as if the user went through registration.
@@ -92,21 +106,21 @@ class SkipRegistrationService {
 	 * @memberof SkipRegistrationService
 	 */
 	async create(data, params) {
-		try {
-			const targetUser = await this.app.service('users').get(params.route.userid,
-				{ query: { $populate: 'roles' } });
-			await validateRequest(data, targetUser);
-
-			await Promise.all([
-				createAccount(data, targetUser, this.app),
-				updateConsent(data, targetUser._id, this.app),
-				updateUser(data, targetUser._id, this.app),
-			]);
-
-			return Promise.resolve('success');
-		} catch (err) {
-			throw err;
+		if ((params.route || {}).userId) {
+			data.userId = params.route.userId;
+			return this.skipUserRegistration(data);
 		}
+		if (Array.isArray(data.dataObjects)) {
+			const promiseResults = await Promise.allSettled(
+				data.dataObjects.map((d) => this.skipUserRegistration(d)),
+			);
+			const result = promiseResults.map((r) => ({
+				success: r.status === 'fulfilled',
+				error: r.reason,
+			}));
+			return result;
+		}
+		throw new BadRequest('invalid data!');
 	}
 
 	setup(app) {

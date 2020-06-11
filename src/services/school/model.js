@@ -7,22 +7,19 @@ const mongoose = require('mongoose');
 const { getDocumentBaseDir } = require('./logic/school');
 const { enableAuditLog } = require('../../utils/database');
 const externalSourceSchema = require('../../helper/externalSourceSchema');
-const { STUDENT_TEAM_CREATE_DISABLED } = require('../../../config/globals');
 
 const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
 
-const defaultFeatures = [];
-if (STUDENT_TEAM_CREATE_DISABLED === 'true'
-	|| STUDENT_TEAM_CREATE_DISABLED === '1') {
-	defaultFeatures.push('disableStudentTeamCreation');
-}
-
 const SCHOOL_FEATURES = {
 	ROCKET_CHAT: 'rocketChat',
-	DISABLE_STUDENT_TEAM_CREATION: 'disableStudentTeamCreation',
 	VIDEOCONFERENCE: 'videoconference',
+	MESSENGER: 'messenger',
+	STUDENTVISIBILITY: 'studentVisibility',
+	MESSENGER_SCHOOL_ROOM: 'messengerSchoolRoom',
 };
+
+const defaultFeatures = [];
 
 const rssFeedSchema = new Schema({
 	url: {
@@ -77,7 +74,15 @@ const schoolSchema = new Schema({
 		default: defaultFeatures,
 		enum: Object.values(SCHOOL_FEATURES),
 	},
-	inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below)
+	/**
+	 * depending on system settings,
+	 * an admin may opt-in or -out,
+	 * default=null dependent on STUDENT_TEAM_CREATION
+	 */
+	enableStudentTeamCreation: { type: Boolean, required: false },
+	inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below),
+	storageProvider: { type: mongoose.Schema.Types.ObjectId, ref: 'storageprovider' },
+	permissions: { type: Object },
 	...externalSourceSchema,
 }, {
 	timestamps: true,

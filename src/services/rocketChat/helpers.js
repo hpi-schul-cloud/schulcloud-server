@@ -1,6 +1,9 @@
-const { ROCKET_CHAT_URI, ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID } = require('./rocketChatConfig');
-
-const { REQUEST_TIMEOUT } = require('../../../config/globals');
+const {
+	REQUEST_TIMEOUT,
+	ROCKET_CHAT_URI,
+	ROCKET_CHAT_ADMIN_TOKEN,
+	ROCKET_CHAT_ADMIN_ID,
+} = require('../../../config/globals');
 
 /**
  * create a valid options object to call a rocketChat request.

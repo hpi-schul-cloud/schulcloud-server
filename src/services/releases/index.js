@@ -1,10 +1,10 @@
 const service = require('feathers-mongoose');
-const rp = require('request-promise-native');
+const request = require('request-promise-native');
 const release = require('./release-model');
 const hooks = require('./hooks/index');
 
 class ReleaseFetchService {
-	find({ query, payload }) {
+	async find() {
 		const options = {
 			uri: 'https://api.github.com/repos/schul-cloud/schulcloud-client/releases',
 			headers: {
@@ -12,12 +12,13 @@ class ReleaseFetchService {
 			},
 			json: true,
 		};
-		return rp(options)
-			.then((releases) => release.remove({}, (err, result) => {
-				if (err) {
-					return Promise.error(err);
-				}
-				return releases.map((r) => release.create({
+
+		let releases = null;
+		try {
+			releases = await request(options);
+			await release.deleteMany({});
+			for (const r of releases) {
+				await release.create({
 					_id: r.id,
 					name: r.name,
 					body: r.body,
@@ -27,12 +28,16 @@ class ReleaseFetchService {
 					createdAt: r.created_at,
 					publishedAt: r.published_at,
 					zipUrl: r.zipball_url,
-				}));
-			}));
+				});
+			}
+		} catch (error) {
+			throw new Error(error);
+		}
+		return releases;
 	}
 }
 
-module.exports = function () {
+module.exports = function relases() {
 	const app = this;
 
 	const options = {

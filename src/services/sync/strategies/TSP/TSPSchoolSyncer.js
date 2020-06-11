@@ -133,18 +133,26 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 
 			this.logInfo('Syncing teachers...');
 			// create teachers and add them to the mapping (teacherUID => User)
-			await Promise.all(schoolTeachers.map(async (tspTeacher) => {
+			const teacherActions = schoolTeachers.map((tspTeacher) => async () => {
 				const teacher = await this.createOrUpdateTeacher(tspTeacher, school);
 				teacherMapping[tspTeacher.lehrerUid] = teacher;
-			}));
+			});
+			// serialize create actions to be duplicate-proof
+			for (const action of teacherActions) {
+				await action();
+			}
 
 			this.logInfo('Syncing students...');
 			// create students and add them to the mapping (classUid => [User])
-			await Promise.all(schoolStudents.map(async (tspStudent) => {
+			const studentActions = schoolStudents.map((tspStudent) => async () => {
 				const student = await this.createOrUpdateStudent(tspStudent, school);
 				classMapping[tspStudent.klasseId] = classMapping[tspStudent.klasseId] || [];
 				classMapping[tspStudent.klasseId].push(student._id);
-			}));
+			});
+			// serialize create actions to be duplicate-proof
+			for (const action of studentActions) {
+				await action();
+			}
 
 			this.logInfo('Syncing classes...');
 			// create classes based on API response and user mappings
@@ -379,6 +387,9 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				systemId,
 			);
 			this.stats.users.students.created += 1;
+			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
+				await this.createTSPConsent(student);
+			}
 			return student;
 		} catch (err) {
 			this.stats.users.students.errors += 1;
@@ -391,6 +402,34 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			});
 			return null;
 		}
+	}
+
+	/**
+	 * Create a consent if the user is created via TSP sync.
+	 * In this case, the consent process was already handled from the TSP side.
+	 * @param {User} student the student created via TSP sync
+	 * @async
+	 */
+	async createTSPConsent(student) {
+		const currentDate = Date.now();
+		const tspConsent = {
+			form: 'digital',
+			source: 'tsp-sync',
+			privacyConsent: true,
+			termsOfUseConsent: true,
+			dateOfPrivacyConsent: currentDate,
+			dateOfTermsOfUseConsent: currentDate,
+		};
+
+		/**
+		 * During the user creation process, the age of the users is unknown.
+		 * Therfore, we create a user and a parent consent in any case.
+		 */
+		await this.app.service('consents').create({
+			userId: student._id,
+			userConsent: tspConsent,
+			parentConsents: [tspConsent],
+		});
 	}
 
 	/**

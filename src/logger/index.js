@@ -1,23 +1,7 @@
 const winston = require('winston');
 
 const { format, transports, createLogger } = winston;
-
-let logLevel = process.env.LOG_LEVEL;
-
-if (!logLevel) {
-	switch (process.env.NODE_ENV) {
-		case 'default':
-		case 'development':
-			logLevel = 'debug';
-			break;
-		case 'test':
-			logLevel = 'emerg';
-			break;
-		case 'production':
-		default:
-			logLevel = 'info';
-	}
-}
+const { LOG_LEVEL, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 
 const addType = format.printf((log) => {
 	if (log.stack || log.level === 'error') {
@@ -28,9 +12,9 @@ const addType = format.printf((log) => {
 	return log;
 });
 
-const colorize = process.env.NODE_ENV !== 'production';
+const colorize = NODE_ENV !== ENVIRONMENTS.PRODUCTION;
 let formater;
-if (process.env.NODE_ENV === 'test') {
+if (NODE_ENV === ENVIRONMENTS.TEST) {
 	formater = format.combine(
 		format.prettyPrint({ depth: 1, colorize }),
 	);
@@ -45,11 +29,11 @@ if (process.env.NODE_ENV === 'test') {
 
 const logger = createLogger({
 	levels: winston.config.syslog.levels,
-	level: logLevel,
+	level: LOG_LEVEL,
 	format: formater,
 	transports: [
 		new transports.Console({
-			level: logLevel,
+			level: LOG_LEVEL,
 			handleExceptions: true,
 		}),
 	],

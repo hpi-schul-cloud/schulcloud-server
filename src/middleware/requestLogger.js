@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 const queryString = require('querystring');
+const { DISPLAY_REQUEST_LEVEL } = require('../../config/globals');
 /*
 	log request information
 	default or production is logging disabled
@@ -10,7 +11,7 @@ const queryString = require('querystring');
 */
 module.exports = function requstLogger(_app) {
 	const app = _app || this;
-	const level = Number(process.env.DISPLAY_REQUEST_LEVEL || 0);
+	const level = DISPLAY_REQUEST_LEVEL;
 	app.set('DISPLAY_REQUEST_LEVEL', level);
 
 	if (level > 0) {

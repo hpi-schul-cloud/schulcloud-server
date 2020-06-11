@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
+const { modelServices: { prepareInternalParams } } = require('../../../utils');
+
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
@@ -21,27 +23,27 @@ class Courses {
 	}
 
 	find(params) {
-		return this.app.service('courseModel').find(params);
+		return this.app.service('courseModel').find(prepareInternalParams(params));
 	}
 
 	get(id, params) {
-		return this.app.service('courseModel').get(id, params);
+		return this.app.service('courseModel').get(id, prepareInternalParams(params));
 	}
 
 	create(data, params) {
-		return this.app.service('courseModel').create(data, params);
+		return this.app.service('courseModel').create(data, prepareInternalParams(params));
 	}
 
 	update(id, data, params) {
-		return this.app.service('courseModel').update(id, data, params);
+		return this.app.service('courseModel').update(id, data, prepareInternalParams(params));
 	}
 
 	patch(id, data, params) {
-		return this.app.service('courseModel').patch(id, data, params);
+		return this.app.service('courseModel').patch(id, data, prepareInternalParams(params));
 	}
 
 	remove(id, params) {
-		return this.app.service('courseModel').remove(id, params);
+		return this.app.service('courseModel').remove(id, prepareInternalParams(params));
 	}
 
 	setup(app) {
@@ -66,6 +68,7 @@ const courseHooks = {
 			restrictToCurrentSchool,
 			restrictToUsersOwnCourses,
 			globalHooks.mapPaginationQuery,
+			globalHooks.addCollation,
 		],
 		get: [courseInviteHook],
 		create: [

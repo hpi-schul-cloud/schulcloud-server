@@ -13,8 +13,8 @@ describe('webuntis Syncer', () => {
 	});
 
 	after(async () => {
-		await server.close();
 		await testObjects.cleanup();
+		await server.close();
 	});
 
 	it('works', () => new WebUntisSyncer());

@@ -1,17 +1,22 @@
 const { BadRequest } = require('@feathersjs/errors');
+const { ObjectId } = require('mongoose').Types;
 const rolesModel = require('../../../../src/services/role/model.js');
-const { userModel } = require('../../../../src/services/user/model.js');
+const { userModel } = require('../../../../src/services/user/model');
 const accountModel = require('../../../../src/services/account/model.js');
 // const app = require(SRC + 'app');
-const { ObjectId } = require('mongoose').Types;
 const app = require('../../../../src/app');
-const { warning } = require('../../../../src/logger');
 
-const PASSWORD = (process.env.TEST_PW || '').trim();
-if (PASSWORD === '') warning('process.env.TEST_PW is not defined');
-const PASSWORD_HASH = (process.env.TEST_HASH || '').trim();
-if (PASSWORD_HASH === '') warning('process.env.TEST_HASH is not defined');
+const {
+	TEST_PW,
+	TEST_HASH,
+} = require('../../../../config/globals');
+
 const AT = '@schul-cloud.org';
+
+const { warning } = require('../../../../src/logger/index');
+
+if (TEST_PW === '') warning('TEST_PW is not defined');
+if (TEST_HASH === '') warning('TEST_HASH is not defined');
 
 const REQUEST_PARAMS = {
 	headers: { 'content-type': 'application/json' },
@@ -22,7 +27,7 @@ const getToken = async ({ userId }) => {
 	const result = app.service('authentication').create({
 		strategy: 'local',
 		username: userId + AT,
-		password: PASSWORD,
+		password: TEST_PW,
 	}, REQUEST_PARAMS);
 	return result.accessToken;
 };
@@ -33,7 +38,16 @@ const getRoleByKey = (key, value) => rolesModel.find({
 	.then(([role]) => role);
 
 const createUser = async (userId, roleName = 'student', schoolId = '0000d186816abba584714c5f') => {
-	if (!['expert', 'student', 'teacher', 'parent', 'administrator', 'superhero'].includes(roleName)) throw BadRequest(`You want to test a not related role .${roleName}`);
+	if (![
+		'expert',
+		'student',
+		'teacher',
+		'parent',
+		'administrator',
+		'superhero',
+	].includes(roleName)) {
+		throw BadRequest(`You want to test a not related role .${roleName}`);
+	}
 
 	const role = await getRoleByKey('name', roleName);
 
@@ -51,7 +65,7 @@ const createUser = async (userId, roleName = 'student', schoolId = '0000d186816a
 
 const createAccount = (userId) => accountModel.create({
 	username: userId + AT,
-	password: PASSWORD_HASH,
+	password: TEST_HASH,
 	userId,
 	activated: true,
 });

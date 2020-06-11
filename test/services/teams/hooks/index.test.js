@@ -53,11 +53,11 @@ describe('Team service hook tests.', () => {
 			});
 
 			getDeepCopy = () => {
-				const copy = Object.assign({}, baseHook);
+				const copy = { ...baseHook };
 				baseHook.result = { // create 4 new Objects and override
-					key1: Object.assign({}, key1),
-					key2: Object.assign({}, key2),
-					key3: Object.assign({}, key3),
+					key1: { ...key1 },
+					key2: { ...key2 },
+					key3: { ...key3 },
 				};
 				return copy;
 			};

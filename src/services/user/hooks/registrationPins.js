@@ -1,62 +1,96 @@
 const hooks = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
-const logger = require('../../../logger');
+const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const { Configuration } = require('@schul-cloud/commons');
+const {
+	NODE_ENV, ENVIRONMENTS, SC_TITLE, SC_SHORT_TITLE,
+} = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
-const pinModel = require('../../user/model').registrationPinModel;
+const pinModel = require('../model').registrationPinModel;
+const { getRandomInt } = require('../../../utils/randomNumberGenerator');
 
 const removeOldPins = (hook) => pinModel.deleteMany({ email: hook.data.email })
-	.then((pins) => Promise.resolve(hook));
+	.then(() => Promise.resolve(hook));
 
 const generatePin = (hook) => {
-	const pin = Math.floor((Math.random() * 8999) + 1000);
+	const pin = getRandomInt(9999, 1000);
 	hook.data.pin = pin.toString();
 	return Promise.resolve(hook);
 };
 
 function createinfoText(hook) {
-	let text;
 	const role = hook.data.mailTextForRole;
 	const { pin } = hook.data;
-	const shortTitle = process.env.SC_SHORT_TITLE || 'Schul-Cloud*';
-	const longTitle = process.env.SC_TITLE || 'HPI Schul-Cloud*';
-	if (!role || !pin) {
-		logger.warning('Role or PIN missing to define mail text.');
-		return '';
+	if (!pin) {
+		throw new BadRequest('Fehler beim Erstellen der Pin.');
 	}
+
 	if (role === 'parent') {
-		text = `Vielen Dank, dass Sie Ihrem Kind durch Ihr Einverständnis die Nutzung der ${longTitle} ermöglichen.
-Bitte geben Sie folgenden Code ein, wenn Sie danach gefragt werden, um die Registrierung abzuschließen:
+		let consentWords = 'durch Ihr Einverständnis ';
+
+		const skipConsentRoles = Configuration.get('SKIP_CONDITIONS_CONSENT');
+		if (skipConsentRoles !== '' && skipConsentRoles.length > 1) {
+			consentWords = '';
+		}
+
+		return `Vielen Dank, dass Sie Ihrem Kind ${consentWords}die Nutzung der ${SC_TITLE} ermöglichen.
+Bitte geben Sie den folgenden Bestätigungscode im Registrierungsprozess ein, um die Registrierung abzuschließen:
 
 PIN: ${pin}
 
 Mit Freundlichen Grüßen
-Ihr ${shortTitle} Team`;
-	} else if (role === 'student' || role === 'employee' || role === 'expert') {
-		text = `Vielen Dank, dass du die ${longTitle} nutzen möchtest.
-Bitte gib folgenden Code ein, wenn du danach gefragt wirst, um die Registrierung abzuschließen:
+Ihr ${SC_SHORT_TITLE}-Team`;
+	}
+	if (role === 'student' || role === 'employee' || role === 'expert') {
+		return `Vielen Dank, dass du die ${SC_TITLE} nutzen möchtest.
+Bitte gib den folgenden Bestätigungscode im Registrierungsprozess ein,
+um deine Registrierung bei der ${SC_TITLE} abzuschließen:
 
 PIN: ${pin}
 
 Mit freundlichen Grüßen
-Dein ${shortTitle} Team`;
-	} else {
-		logger.warning('No valid role submitted to define mail text.');
-		return '';
+Dein ${SC_SHORT_TITLE}-Team`;
 	}
-	return text;
+	throw new BadRequest('Die angegebene Rolle ist ungültig.', { role });
 }
 
 const checkAndVerifyPin = (hook) => {
-	if (hook.result.data.length === 1 && hook.result.data[0].verified === false) {
-		return hook.app.service('registrationPins').patch(hook.result.data[0]._id, { verified: true }).then(() => Promise.resolve(hook));
+	if (hook.result.data.length === 0) {
+		return hook;
 	}
-	return Promise.resolve(hook);
+	if (hook.result.data.length === 1) {
+		const firstDataItem = hook.result.data[0];
+		// check generation age
+		const now = Date.now();
+		if (firstDataItem.updatedAt.getTime() + (Configuration.get('PIN_MAX_AGE_SECONDS') * 1000) < now) {
+			throw new Forbidden('Der eingegebene Code ist nicht mehr gültig. Bitte fordere einen neuen Code an.');
+		}
+		if (firstDataItem.verified === true) {
+			// already verified
+			return hook;
+		}
+		if (firstDataItem.pin) {
+			if (firstDataItem.pin === hook.params.query.pin) {
+				return hook.app.service('registrationPins')
+					.patch(firstDataItem._id, { verified: true })
+					.then((result) => {
+						hook.result.data = [result];
+						return hook;
+					});
+			}
+			throw new BadRequest(
+				'Der eingegebene Code ist ungültig oder konnte nicht bestätigt werden. Bitte versuche es erneut.',
+			);
+		}
+		return hook;
+	}
+	throw new BadRequest('Only one result allowed here');
 };
 
 const mailPin = (hook) => {
 	if (!(hook.data || {}).silent) {
 		globalHooks.sendEmail(hook, {
-			subject: `${process.env.SC_SHORT_TITLE || 'Schul-Cloud*'}: Registrierung mit PIN verifizieren`,
+			subject: `${SC_SHORT_TITLE}: Registrierung mit PIN verifizieren`,
 			emails: (hook.data || {}).email,
 			content: {
 				text: createinfoText(hook),
@@ -68,7 +102,7 @@ const mailPin = (hook) => {
 };
 
 const returnPinOnlyToSuperHero = async (hook) => {
-	if (process.env.NODE_ENV === 'test') {
+	if (NODE_ENV === ENVIRONMENTS.TEST) {
 		return Promise.resolve(hook);
 	}
 
@@ -85,11 +119,24 @@ const returnPinOnlyToSuperHero = async (hook) => {
 	return Promise.resolve(hook);
 };
 
+const validateEmailAndPin = (hook) => {
+	const { email, pin } = hook.params.query;
+	if (!hook.params.query || !email) {
+		throw new BadRequest('email required');
+	}
+	if (email && typeof email === 'string' && email.length
+		&& (!pin || (pin && typeof pin === 'string' && pin.length === 4))) {
+		return hook;
+	}
+	throw new BadRequest('pin or email invalid', { email, pin });
+};
+
 exports.before = {
 	all: [globalHooks.forceHookResolve(authenticate('jwt'))],
-	find: hooks.disallow('external'),
+	find: [hooks.disallow('external'), validateEmailAndPin],
 	get: hooks.disallow('external'),
 	create: [
+		globalHooks.blockDisposableEmail('email'),
 		removeOldPins,
 		generatePin,
 		mailPin,

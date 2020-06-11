@@ -1,8 +1,9 @@
-const hooks = require('feathers-hooks-common');
+const { disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
+const { iff, isProvider } = require('feathers-hooks-common');
 
-const globalHooks = require('../../../hooks');
+const { hasPermission } = require('../../../hooks');
 
 /**
  * checks if the user has valid permissions to skip registration of the target user.
@@ -10,42 +11,48 @@ const globalHooks = require('../../../hooks');
  * @throws {Forbidden} if user does not have correct permissions.
  */
 const checkPermissions = async (hook) => {
-	const targetUser = await hook.app.service('users').get(hook.params.route.userid,
+	const targetUser = await hook.app.service('users').get(hook.params.route.userId,
 		{ query: { $populate: 'roles' } });
 	const actingUser = await hook.app.service('users').get(hook.params.account.userId);
 
 	const targetIsStudent = targetUser.roles[0].name === 'student';
 	const targetIsTeacher = targetUser.roles[0].name === 'teacher';
-	let hasPermission = false;
+	let userHasPermission = false;
 
 	if (targetIsStudent && actingUser.permissions.includes('STUDENT_SKIP_REGISTRATION')) {
-		hasPermission = true;
+		userHasPermission = true;
 	}
 	if (targetIsTeacher && actingUser.permissions.includes('TEACHER_SKIP_REGISTRATION')) {
-		hasPermission = true;
+		userHasPermission = true;
 	}
-	if (targetUser.schoolId.toString() !== actingUser.schoolId.toString()) hasPermission = false;
-	if (!hasPermission) return Promise.reject(new Forbidden('you do not have permission to do this!'));
+	if (targetUser.schoolId.toString() !== actingUser.schoolId.toString()) userHasPermission = false;
+	if (!userHasPermission) return Promise.reject(new Forbidden('you do not have permission to do this!'));
 
 	return Promise.resolve(hook);
 };
 
-exports.before = {
-	all: [authenticate('jwt')],
-	find: [hooks.disallow()],
-	get: [hooks.disallow()],
-	create: [globalHooks.ifNotLocal(checkPermissions)],
-	update: [hooks.disallow()],
-	patch: [hooks.disallow()],
-	remove: [hooks.disallow()],
+const skipRegistrationSingleHooks = {
+	before: {
+		all: [authenticate('jwt')],
+		find: [disallow()],
+		get: [disallow()],
+		create: [iff(isProvider('external'), [checkPermissions])],
+		update: [disallow()],
+		patch: [disallow()],
+		remove: [disallow()],
+	},
 };
 
-exports.after = {
-	all: [],
-	find: [],
-	get: [],
-	create: [],
-	update: [],
-	patch: [],
-	remove: [],
+const skipRegistrationBulkHooks = {
+	before: {
+		all: [authenticate('jwt')],
+		find: [disallow()],
+		get: [disallow()],
+		create: [iff(isProvider('external'), [hasPermission('ADMIN_VIEW')])],
+		update: [disallow()],
+		patch: [disallow()],
+		remove: [disallow()],
+	},
 };
+
+module.exports = { skipRegistrationSingleHooks, skipRegistrationBulkHooks };

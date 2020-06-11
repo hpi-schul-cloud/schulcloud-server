@@ -1,17 +1,81 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
-const hooks = require('feathers-hooks-common');
+const {
+	iff, isProvider, discard, disallow, keepInArray, keep,
+} = require('feathers-hooks-common');
+const { Configuration } = require('@schul-cloud/commons');
+
+const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
 
 const globalHooks = require('../../../hooks');
-const { fileStorageTypes } = require('../model');
+const { fileStorageTypes, SCHOOL_FEATURES } = require('../model');
 const getFileStorageStrategy = require('../../fileStorage/strategies').createStrategy;
 
 const { yearModel: Year } = require('../model');
 const SchoolYearFacade = require('../logic/year');
 
 let years = null;
+
+/**
+ * Safe function to retrieve result data from context
+ * The function returns context.result.data if the result is paginated or context.result if not.
+ * If context doesn't contain result than empty list is returned
+ * @param context
+ * @returns {*}
+ */
+const getResultDataFromContext = (context) => ((context.result) ? (context.result.data || context.result) : []);
+
+const isTeamCreationByStudentsEnabled = (currentSchool) => {
+	const { enableStudentTeamCreation } = currentSchool;
+	const STUDENT_TEAM_CREATION_SETTING = Configuration.get('STUDENT_TEAM_CREATION');
+	let isTeamCreationEnabled = false;
+	switch (STUDENT_TEAM_CREATION_SETTING) {
+		case 'enabled':
+			// if enabled student team creation feature should be enabled
+			isTeamCreationEnabled = true;
+			break;
+		case 'disabled':
+			// if disabled student team creation feature should be disabled
+			isTeamCreationEnabled = false;
+			return false;
+		case 'opt-in':
+			// if opt-in student team creation should be enabled by admin
+			// if undefined/null then false
+			isTeamCreationEnabled = enableStudentTeamCreation === true;
+			break;
+		case 'opt-out':
+			// if opt-out student team creation should be disabled by admin
+			// if undefined/null then true
+			isTeamCreationEnabled = enableStudentTeamCreation !== false;
+			break;
+		default:
+			break;
+	}
+	return isTeamCreationEnabled;
+};
+
+const setStudentsCanCreateTeams = async (context) => {
+	try {
+		switch (context.method) {
+			case 'find':
+				// if the result was paginated it contains context.result.data, otherwise context.result
+				getResultDataFromContext(context).forEach((school) => {
+					school.isTeamCreationByStudentsEnabled = isTeamCreationByStudentsEnabled(school);
+				});
+				break;
+			case 'get':
+				context.result.isTeamCreationByStudentsEnabled = isTeamCreationByStudentsEnabled(context.result);
+				break;
+			default:
+				throw new Error('method not supported');
+		}
+	} catch (error) {
+		logger.error(error);
+	}
+	return context;
+};
 
 const expectYearsDefined = async () => {
 	if (!years) {
@@ -44,8 +108,8 @@ const setCurrentYearIfMissing = async (hook) => {
 };
 
 const createDefaultStorageOptions = (hook) => {
-	if (process.env.NODE_ENV !== 'production') {
-		// don't create buckets in development or test
+	// create buckets only in production mode
+	if (NODE_ENV !== ENVIRONMENTS.PRODUCTION) {
 		return Promise.resolve(hook);
 	}
 	const storageType = getDefaultFileStorageType();
@@ -62,7 +126,6 @@ const createDefaultStorageOptions = (hook) => {
 		});
 };
 
-
 const decorateYears = async (context) => {
 	await expectYearsDefined();
 	const addYearsToSchool = (school) => {
@@ -72,9 +135,7 @@ const decorateYears = async (context) => {
 	try {
 		switch (context.method) {
 			case 'find':
-				context.result.data.forEach((school) => {
-					addYearsToSchool(school);
-				});
+				getResultDataFromContext(context).forEach((school) => addYearsToSchool(school));
 				break;
 			case 'get':
 				addYearsToSchool(context.result);
@@ -88,7 +149,18 @@ const decorateYears = async (context) => {
 	return context;
 };
 
-const updatesRocketChat = (key, data) => (key === '$push' || key === '$pull') && data[key].features === 'rocketChat';
+const updatesArray = (key) => (key === '$push' || key === '$pull');
+const updatesChat = (key, data) => {
+	const chatFeatures = [
+		SCHOOL_FEATURES.ROCKET_CHAT,
+		SCHOOL_FEATURES.MESSENGER,
+		SCHOOL_FEATURES.MESSENGER_SCHOOL_ROOM,
+		SCHOOL_FEATURES.VIDEOCONFERENCE,
+	];
+	return updatesArray(key) && chatFeatures.indexOf(data[key].features) !== -1;
+};
+const updatesTeamCreation = (key, data) => updatesArray(key)
+	&& !isTeamCreationByStudentsEnabled(data[key]);
 
 const hasEditPermissions = async (context) => {
 	try {
@@ -101,10 +173,11 @@ const hasEditPermissions = async (context) => {
 		// the user is allowed to edit
 		const patch = {};
 		for (const key of Object.keys(context.data)) {
-			if (user.permissions.includes('SCHOOL_CHAT_MANAGE') && updatesRocketChat(key, context.data)) {
-				patch[key] = context.data[key];
-			}
-			if (user.permissions.includes('SCHOOL_LOGO_MANAGE') && key === 'logo_dataUrl') {
+			if (
+				(user.permissions.includes('SCHOOL_CHAT_MANAGE') && updatesChat(key, context.data))
+				|| (user.permissions.includes('SCHOOL_STUDENT_TEAM_MANAGE') && updatesTeamCreation(key, context.data))
+				|| (user.permissions.includes('SCHOOL_LOGO_MANAGE') && key === 'logo_dataUrl')
+			) {
 				patch[key] = context.data[key];
 			}
 		}
@@ -124,8 +197,20 @@ const restrictToUserSchool = async (context) => {
 	throw new Forbidden('You can only edit your own school.');
 };
 
+const populateInQuery = (context) => (context.params.query || {}).$populate;
+
+const isNotAuthenticated = async (context) => {
+	if (typeof (context.params.provider) === 'undefined') {
+		return false;
+	} else {
+		return !((context.params.headers || {}).authorization || context.params.account && context.params.account.userId);
+	}
+}
+
 exports.before = {
-	all: [],
+	all: [
+		globalHooks.authenticateWhenJWTExist,
+	],
 	find: [],
 	get: [],
 	create: [
@@ -149,15 +234,19 @@ exports.before = {
 	/* It is disabled for the moment, is added with new "Löschkonzept"
     remove: [authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
     */
-	remove: [hooks.disallow()],
+	remove: [disallow()],
 };
 
 exports.after = {
-	all: [],
-	find: [decorateYears],
-	get: [decorateYears],
+	all: [
+		iff(isNotAuthenticated, keep('name', 'purpose', 'id')),
+		iff(populateInQuery, keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active'])),
+		iff(isProvider('external') && !globalHooks.isSuperHero(), discard('storageProvider')),
+	],
+	find: [decorateYears, setStudentsCanCreateTeams],
+	get: [decorateYears, setStudentsCanCreateTeams],
 	create: [createDefaultStorageOptions],
-	update: [createDefaultStorageOptions],
-	patch: [createDefaultStorageOptions],
+	update: [],
+	patch: [],
 	remove: [],
 };

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const { connect, close } = require('../src/utils/database');
-const { OutputLogTemplate, DatabaseTaskTemplate } = require('./helpers/');
+const { OutputLogTemplate, DatabaseTaskTemplate } = require('./helpers');
 
 const LessonModel = mongoose.model('lessonNew', new mongoose.Schema({
 	isCopyFrom: { type: Schema.Types.ObjectId, default: null },

@@ -175,4 +175,84 @@ describe('homework service', function test() {
 		// no stats as a student
 		expect(result.data[0].stats).to.not.equal(undefined);
 	});
+
+	it('teacher can PATCH his own homework', async () => {
+		const [teacher] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'] }),
+		]);
+		const course = await testObjects.createTestCourse({
+			teacherIds: [teacher._id], userIds: [],
+		});
+		const homework = await testObjects.createTestHomework({
+			teacherId: teacher._id,
+			name: 'Testaufgabe',
+			description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
+			availableDate: Date.now(),
+			dueDate: '2030-11-16T12:47:00.000Z',
+			private: false,
+			archived: [teacher._id],
+			lessonId: null,
+			courseId: course._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		const result = await app.service('homework').patch(
+			homework._id, { description: 'bringe mir 12 Wolfspelze!' }, params,
+		);
+		expect(result).to.not.be.undefined;
+		expect(result.description).to.equal('bringe mir 12 Wolfspelze!');
+	});
+
+	it('teacher can PATCH another teachers homework in the same course', async () => {
+		const [teacher, actingTeacher] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'] }),
+			testObjects.createTestUser({ roles: ['teacher'] }),
+		]);
+		const course = await testObjects.createTestCourse({
+			teacherIds: [teacher._id, actingTeacher._id], userIds: [],
+		});
+		const homework = await testObjects.createTestHomework({
+			teacherId: teacher._id,
+			name: 'Testaufgabe',
+			description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
+			availableDate: Date.now(),
+			dueDate: '2030-11-16T12:47:00.000Z',
+			private: false,
+			archived: [teacher._id],
+			lessonId: null,
+			courseId: course._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(actingTeacher);
+		const result = await app.service('homework').patch(
+			homework._id, { description: 'wirf den Ring ins Feuer!' }, params,
+		);
+		expect(result).to.not.be.undefined;
+		expect(result.description).to.equal('wirf den Ring ins Feuer!');
+	});
+
+	it('substitution teacher can PATCH another teachers homework in the same course', async () => {
+		const [teacher, actingTeacher] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'] }),
+			testObjects.createTestUser({ roles: ['teacher'] }),
+		]);
+		const course = await testObjects.createTestCourse({
+			teacherIds: [teacher._id], substitutionIds: [actingTeacher._id],
+		});
+		const homework = await testObjects.createTestHomework({
+			teacherId: teacher._id,
+			name: 'Testaufgabe',
+			description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
+			availableDate: Date.now(),
+			dueDate: '2030-11-16T12:47:00.000Z',
+			private: false,
+			archived: [teacher._id],
+			lessonId: null,
+			courseId: course._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(actingTeacher);
+		const result = await app.service('homework').patch(
+			homework._id, { description: 'zeichne mir ein Schaf!' }, params,
+		);
+		expect(result).to.not.be.undefined;
+		expect(result.description).to.equal('zeichne mir ein Schaf!');
+	});
 });

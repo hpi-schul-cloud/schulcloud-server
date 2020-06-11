@@ -1,4 +1,3 @@
-const hooks = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 

@@ -4,13 +4,15 @@ const { enableAuditLog } = require('../../utils/database');
 const { Schema } = mongoose;
 
 const accountSchema = new Schema({
-	username: { type: String, required: true, lowercase: true },
+	username: {
+		type: String, required: true, lowercase: true, index: true,
+	},
 	password: { type: String },
 
 	token: { type: String },
 	credentialHash: { type: String },
 
-	userId: { type: Schema.Types.ObjectId, ref: 'user' },
+	userId: { type: Schema.Types.ObjectId, ref: 'user', index: true },
 	systemId: { type: Schema.Types.ObjectId, ref: 'system' }, // if systemId => SSO
 
 	lasttriedFailedLogin: { type: Date, default: 0 },
