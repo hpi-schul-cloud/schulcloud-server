@@ -68,13 +68,14 @@ const htmlFalseOptions = {
  */
 const sanitize = (data, { html = false }) => {
 	let retValue = null;
+
+	// encode fake html chars
 	data = data.replace('&lt;', '<').replace('&#60;', '<');
 	data = data.replace('&gt;', '>').replace('&#62;', '>');
-	data = data.replace('onerror="', 'on error="');
+
 	// https://www.npmjs.com/package/sanitize-html
 	if (html === true) {
 		// editor-content data
-
 		retValue = sanitizeHtml(data, htmlTrueOptions);
 
 		// TODO handle following lines in sanitizeHtml

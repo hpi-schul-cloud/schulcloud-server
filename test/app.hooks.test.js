@@ -171,7 +171,7 @@ describe('Sanitization Hook', () => {
 		expect(result.comment, 'onerror attribute removed from img tag').to.equal('<img src="x" />');
 	});
 
-	it('sanitize in submissions with encoded entities', () => {
+	it('sanitize with encoded entities - html true route', () => {
 		const data = {
 			comment: '&lt;img onerror="window.location = \'google.com\'" src="x" /&gt;',
 		};
@@ -182,8 +182,18 @@ describe('Sanitization Hook', () => {
 		expect(result.comment, 'onerror attribute removed from img tag').to.equal('<img src="x" />');
 	});
 
+	it('sanitize with encoded entities - html false route', () => {
+		const data = {
+			comment: '&lt;img onerror="window.location = \'google.com\'" src="x" /&gt;',
+		};
 
-	it('sanitize in submissions with encoded entities', () => {
+		const result = sanitizeDeep(data, '');
+
+		expect(result.comment, 'should removed html').to.equal('');
+	});
+
+
+	it('sanitize in submissions with encoded entities  - html true route', () => {
 		const data = {
 			comment: '&#60;img onerror="window.location = \'google.com\'" src="x" /&#62;',
 		};
@@ -192,6 +202,16 @@ describe('Sanitization Hook', () => {
 		const result = sanitizeDeep(data, path);
 
 		expect(result.comment, 'onerror attribute removed from img tag').to.equal('<img src="x" />');
+	});
+
+	it('sanitize in submissions with encoded entities  - html false route', () => {
+		const data = {
+			comment: '&#60;img onerror="window.location = \'google.com\'" src="x" /&#62;',
+		};
+
+		const result = sanitizeDeep(data, '');
+
+		expect(result.comment, 'should removed html').to.equal('');
 	});
 
 	it('sanitize in submissions, avoid js in href', () => {
