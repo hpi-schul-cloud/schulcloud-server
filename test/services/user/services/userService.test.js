@@ -125,14 +125,14 @@ describe('user service', () => {
 			expect(result).not.to.haveOwnProperty('ldapId');
 		});
 
-		it('does not allow students to read other students without STUDENT_LIST permission', async () => {
+		it.only('does not allow students to read other students without STUDENT_LIST permission', async () => {
 			await testObjects.createTestRole({ name: 'notAuthorized', permissions: [] });
 			const studentToRead = await testObjects.createTestUser({ roles: ['student'] });
 			const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
 			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = {};
 			try {
-				await app.service('users').get(studentToRead._id, params);
+				console.log(await app.service('users').get(studentToRead._id, params));
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
