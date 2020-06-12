@@ -21,6 +21,7 @@ class Service {
 			},
 		};
 		let user = {};
+		user.accountId = params.account._id;
 		try {
 			user = await this.app.service('/users').get(userId, userServiceParams);
 		} catch (err) {
@@ -32,6 +33,17 @@ class Service {
 		} catch (err) {
 			logger.warning(err);
 			throw new GeneralError('Can\'t find connected school.');
+		}
+		try {
+			const accounts = await this.app.service('/accounts').find({
+				query: {
+					userId,
+				},
+			});
+			user.externallyManaged = accounts.some((account) => !!account.systemId);
+		} catch (err) {
+			logger.warning(err);
+			throw new GeneralError('Can\'t check externallyManaged');
 		}
 		return user;
 	}
