@@ -171,6 +171,29 @@ describe('Sanitization Hook', () => {
 		expect(result.comment, 'onerror attribute removed from img tag').to.equal('<img src="x" />');
 	});
 
+	it('sanitize in submissions with encoded entities', () => {
+		const data = {
+			comment: '&lt;img onerror="window.location = \'google.com\'" src="x" /&gt;',
+		};
+
+		const path = 'submissions';
+		const result = sanitizeDeep(data, path);
+
+		expect(result.comment, 'onerror attribute removed from img tag').to.equal('<img src="x" />');
+	});
+
+
+	it('sanitize in submissions with encoded entities', () => {
+		const data = {
+			comment: '&#60;img onerror="window.location = \'google.com\'" src="x" /&#62;',
+		};
+
+		const path = 'submissions';
+		const result = sanitizeDeep(data, path);
+
+		expect(result.comment, 'onerror attribute removed from img tag').to.equal('<img src="x" />');
+	});
+
 	it('sanitize in submissions, avoid js in href', () => {
 		const data = {
 			comment: '<a href="javascript:alert(1);">Link</a>',
@@ -255,6 +278,8 @@ describe('Sanitization Hook', () => {
 
 		expect(result.name).to.equal('');
 	});
+
+	
 });
 
 describe('removeObjectIdInData hook', () => {
