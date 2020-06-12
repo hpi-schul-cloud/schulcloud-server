@@ -120,7 +120,7 @@ exports.hasSchoolPermission = (inputPermission) => async (context) => {
 			}
 			// Otherwise check for user's special school permission
 			if (!permissions.role.inputPermission) {
-				throw new Forbidden('You do not have the required permission');
+				throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
 			}
 			return Promise.resolve(context);
 		})));
