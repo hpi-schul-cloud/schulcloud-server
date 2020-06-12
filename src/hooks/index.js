@@ -108,22 +108,32 @@ exports.hasSchoolPermission = (inputPermission) => async (context) => {
 	}
 	const user = await app.service('usersModel').get(account.userId, {
 		query: {
-			populate: 'roles',
+			$populate: 'roles',
 		},
 	});
-	app.service('schools').get(user.schoolId)
-		.then((school) => Promise.any(user.roles.map((role) => {
-			const { permissions = {} } = school;
-			// If there are no special school permissions, continue with normal permission check
-			if (!Object.prototype.hasOwnProperty.call(permissions[role], inputPermission)) {
-				return hasPermission(inputPermission);
-			}
-			// Otherwise check for user's special school permission
-			if (!permissions.role.inputPermission) {
-				throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
-			}
-			return Promise.resolve(context);
-		})));
+
+	const school = await app.service('schools').get(user.schoolId);
+
+	const results = await Promise.allSettled(user.roles.map(async (role) => {
+		const { permissions = {} } = school;
+		// const { name: roleName } = await app.service('roles').get(role);
+		// If there are no special school permissions, continue with normal permission check
+		if (!permissions[role.name]
+				|| !Object.prototype.hasOwnProperty.call(permissions[role.name], inputPermission)) {
+			return hasPermission(inputPermission)(context);
+		}
+		// Otherwise check for user's special school permission
+		if (!permissions[role.name][inputPermission]) {
+			throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
+		}
+		return Promise.resolve(context);
+	}));
+
+	if (results.some((r) => r.status === 'fulfilled')) {
+		return context;
+	}
+
+	throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
 };
 
 /**
