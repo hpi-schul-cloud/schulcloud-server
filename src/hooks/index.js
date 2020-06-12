@@ -108,11 +108,11 @@ exports.hasSchoolPermission = (inputPermission) => async (context) => {
 	}
 	const user = await app.service('usersModel').get(account.userId, {
 		query: {
-			$populate: 'roles',
+			$populate: ['roles', 'school'],
 		},
 	});
 
-	const school = await app.service('schools').get(user.schoolId);
+	const { school } = user;
 
 	const results = await Promise.allSettled(user.roles.map(async (role) => {
 		const { permissions = {} } = school;
@@ -122,10 +122,10 @@ exports.hasSchoolPermission = (inputPermission) => async (context) => {
 			return hasPermission(inputPermission)(context);
 		}
 		// Otherwise check for user's special school permission
-		if (!permissions[role.name][inputPermission]) {
-			throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
+		if (permissions[role.name][inputPermission]) {
+			return context;
 		}
-		return Promise.resolve(context);
+		throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
 	}));
 
 	if (results.some((r) => r.status === 'fulfilled')) {
