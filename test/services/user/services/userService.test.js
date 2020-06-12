@@ -132,6 +132,7 @@ describe('user service', () => {
 			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = {};
 			try {
+				await app.service('users').get(studentToRead._id, params);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
