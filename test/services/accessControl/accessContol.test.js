@@ -1,6 +1,6 @@
+const chai = require('chai');
 const app = require('../../../src/app');
 
-const chai = require('chai');
 const testObjects = require('../helpers/testObjects')(app);
 
 const { expect } = chai;

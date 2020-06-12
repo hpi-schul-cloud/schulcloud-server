@@ -243,6 +243,22 @@
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
 		},
+		"FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY": {
+			"type": "string",
+			"default": "enabled",
+			"enum": [
+				"disabled",
+				"opt-in",
+				"opt-out",
+				"enabled"
+			],
+			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
+		},
+		"LDAP_PASSWORD_ENCRYPTION_KEY": {
+			"type": "string",
+			"description": "Synchronous encryption key used to secure search user passwords",
+			"pattern": ".{16}.*"
+		},
 		"SENTRY_DSN": {
 			"type": "string",
 			"format": "uri",
@@ -255,6 +271,35 @@
 			"maximum": 1.0,
 			"description": "This is the % count (0.00 to 1.00) of how many of the errors send to the backend. This filter go over all errors, maybe some lost by low user counts."
 		},
+		"ETHERPAD_API_KEY": {
+			"type": "string",
+			"description": "The etherpad api key for sending requests."
+		},
+		"ETHERPAD_API_PATH": {
+			"type": "string",
+			"default":"/api/1",
+			"description": "The etherpad api path."
+		},
+		"ETHERPAD_URI": {
+			"type": "string",
+			"default":"https://schul-cloud.org/etherpad/api/1",
+			"description": "The etherpad api version uri."
+		},
+		"ETHERPAD_OLD_PAD_URI": {
+			"type": "string",
+			"default":"https://etherpad.schul-cloud.org/p",
+			"description": "The etherpad api version uri."
+		},
+		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
+			"type": "integer",
+			"default": 28800,
+			"description": "Number of seconds after an etherpad cookie expires."
+		},
+		"ETHERPAD_ETHERPAD_COOKIE_RELEASE_THRESHOLD": {
+			"type": "integer",
+			"default": 7200,
+			"description": "If Session Valid time is smaller than this, a new session is created on request."
+    },
 		"SKIP_CONDITIONS_CONSENT": {
 			"type": "string",
 			"default": "",

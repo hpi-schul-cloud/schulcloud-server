@@ -199,9 +199,13 @@ describe('AdminUsersService', () => {
 	it('filters students correctly', async () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 		const studentWithoutConsents = await testObjects.createTestUser({ roles: ['student'] });
+
+		const currentDate = new Date();
+		const birthday = new Date();
+		birthday.setFullYear(currentDate.getFullYear() - 15);
 		const studentWithParentConsent = await testObjects.createTestUser({
 			roles: ['student'],
-			birthday: '2010-01-01',
+			birthday,
 		});
 
 		await testObjects.createTestConsent({
@@ -260,10 +264,10 @@ describe('AdminUsersService', () => {
 	});
 
 	it('can filter by creation date', async () => {
-		const dateBefore = Date.now();
+		const dateBefore = new Date();
 		const findUser = await testObjects.createTestUser({ roles: ['student'] });
 		const actingUser = await testObjects.createTestUser({ roles: ['administrator'] });
-		const dateAfter = Date.now();
+		const dateAfter = new Date();
 		await testObjects.createTestUser({ roles: ['student'] });
 		const params = await testObjects.generateRequestParamsFromUser(actingUser);
 		params.query = { createdAt: { $gte: dateBefore, $lte: dateAfter } };
@@ -297,7 +301,7 @@ describe('AdminUsersService', () => {
 		expect(result1.data.length).to.be.equal(1);
 		expect(result1.limit).to.be.equal(limit);
 		expect(result1.skip).to.be.equal(skip);
-		const studentId1 = result1.data[0].id;
+		const studentId1 = result1.data[0]._id.toString();
 		expect(studentId1).to.not.be.undefined;
 		skip = 1;
 
@@ -305,7 +309,7 @@ describe('AdminUsersService', () => {
 		expect(result2.data.length).to.be.equal(1);
 		expect(result2.limit).to.be.equal(limit);
 		expect(result2.skip).to.be.equal(skip);
-		const studentId2 = result2.data[0].id;
+		const studentId2 = result2.data[0]._id.toString();
 		expect(studentId2).to.not.be.equal(studentId1);
 	});
 
@@ -330,8 +334,14 @@ describe('AdminTeachersService', () => {
 	});
 
 	it('filters teachers correctly', async () => {
-		const teacherWithoutConsent = await testObjects.createTestUser({ roles: ['teacher'] });
-		const teacherWithConsent = await testObjects.createTestUser({ roles: ['teacher'] });
+		const teacherWithoutConsent = await testObjects.createTestUser({
+			birthday: '1992-03-04',
+			roles: ['teacher'],
+		});
+		const teacherWithConsent = await testObjects.createTestUser({
+			birthday: '1991-03-04',
+			roles: ['teacher'],
+		});
 
 		await consentService.create({
 			userId: teacherWithConsent._id,
@@ -352,7 +362,6 @@ describe('AdminTeachersService', () => {
 				},
 			},
 		});
-
 		const resultMissing = (await adminTeachersService.find(createParams('missing'))).data;
 		const idsMissing = resultMissing.map((e) => e._id.toString());
 		expect(idsMissing).to.include(teacherWithoutConsent._id.toString());
