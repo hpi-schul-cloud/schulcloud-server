@@ -108,11 +108,11 @@ exports.hasSchoolPermission = (inputPermission) => async (context) => {
 	}
 	const user = await app.service('usersModel').get(account.userId, {
 		query: {
-			$populate: ['roles', 'school'],
+			$populate: ['roles', 'schoolId'],
 		},
 	});
 
-	const { school } = user;
+	const { schoolId: school } = user;
 
 	const results = await Promise.allSettled(user.roles.map(async (role) => {
 		const { permissions = {} } = school;
