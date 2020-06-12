@@ -2,6 +2,7 @@ const assert = require('assert');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const app = require('../../../src/app');
+const { API_HOST } = require('../../../config/globals');
 
 chai.use(chaiHttp);
 
@@ -14,7 +15,7 @@ describe('link service', () => {
 	it(`generates a link of length ${service.Model.linkLength} that has the correct target set`, function test() {
 		this.timeout(10000);
 
-		const url = 'https://schul-cloud.org/';
+		const url = `${API_HOST}/`;
 		return service.create({ target: url })
 			.then((data) => {
 				chai.expect(data._id).to.have.lengthOf(service.Model.linkLength);
