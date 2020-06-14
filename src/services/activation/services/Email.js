@@ -10,6 +10,7 @@ const {
 	blockDisposableEmail,
 	trimPassword,
 	hasPermission,
+	checkUniqueAccount,
 } = require('../hooks/utils');
 
 const {
@@ -77,20 +78,6 @@ const mail = async (ref, type, user, entry) => {
 const keyword = KEYWORDS.E_MAIL_ADDRESS;
 
 class EMailAdresseActivationService {
-	async find(params) {
-		const { userId } = params.authentication.payload;
-		const entry = await lookupByUserId(this, userId, keyword);
-		if (entry) {
-			const email = getQuarantinedObject(keyword, entry.quarantinedObject);
-			return {
-				success: true,
-				keyword: entry.keyword,
-				email,
-			};
-		}
-		return { success: true };
-	}
-
 	async create(data, params) {
 		if (!data || !data.email || !data.password) throw new BadRequest('Missing information');
 		const user = await getUser(this, params.account.userId);
@@ -175,6 +162,7 @@ const EMailAdresseActivationHooks = {
 		create: [
 			blockThirdParty,
 			validateEmail,
+			checkUniqueAccount,
 			blockDisposableEmail('email'),
 			trimPassword,
 			iff(isProvider('external'), validPassword),

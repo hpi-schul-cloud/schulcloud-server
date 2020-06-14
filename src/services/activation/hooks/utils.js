@@ -1,9 +1,8 @@
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const constants = require('../../../utils/constants');
 const { blockDisposableEmail } = require('../../../hooks');
-const {
-	trimPassword,
-} = require('../../account/hooks');
+const { trimPassword } = require('../../account/hooks');
+const { checkUniqueAccount } = require('../../user/hooks/userService');
 const { hasPermission } = require('../../../hooks');
 
 const nullOrEmpty = (string) => !string;
@@ -61,6 +60,7 @@ module.exports = {
 	validPassword,
 	blockThirdParty,
 	validateEmail,
+	checkUniqueAccount,
 	blockDisposableEmail,
 	trimPassword,
 	hasPermission,

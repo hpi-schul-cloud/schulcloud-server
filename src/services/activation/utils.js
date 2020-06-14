@@ -63,12 +63,13 @@ const deleteEntry = async (ref, entryId) => {
 	}
 };
 
-const lookupEntry = (requestingId, entry, keyword) => {
-	if ((entry || []).length === 1 && entry[0].keyword === keyword) {
-		if (!equalIds(entry[0].account, requestingId)) throw new Forbidden('Not authorized');
-		return entry[0];
+const lookupEntry = (requestingId, entries, keyword) => {
+	let filteredEntries = [];
+	filteredEntries = entries.filter((entry) => equalIds(entry.account, requestingId)) || [];
+	if (keyword) {
+		filteredEntries = filteredEntries.find((entry) => entry.keyword === keyword) || null;
 	}
-	return null;
+	return filteredEntries;
 };
 
 const validEntry = async (entry) => {
@@ -92,9 +93,8 @@ const validEntry = async (entry) => {
  * @param {ObjectId} userId			ObjectId of User (userId)
  * @param {String} keyword			Keyword
  */
-const lookupByUserId = async (ref, requestingId, keyword) => {
+const lookupByUserId = async (ref, requestingId, keyword = null) => {
 	if (!requestingId) throw new Forbidden('Not authorized');
-	if (!keyword) throw SyntaxError('keyword required!');
 
 	const entry = await (ref.app || ref).service('activationModel').find({ query: { account: requestingId } });
 	return lookupEntry(requestingId, entry, keyword);
@@ -107,10 +107,9 @@ const lookupByUserId = async (ref, requestingId, keyword) => {
  * @param {String} activationCode	activationCode
  * @param {String} keyword			Keyword
  */
-const lookupByActivationCode = async (ref, requestingId, activationCode, keyword) => {
+const lookupByActivationCode = async (ref, requestingId, activationCode, keyword = null) => {
 	if (!requestingId) throw new Forbidden('Not authorized');
 	if (!activationCode) throw SyntaxError('entryId required!');
-	if (!keyword) throw SyntaxError('keyword required!');
 
 	const entry = await (ref.app || ref).service('activationModel').find({ query: { activationCode } });
 	return lookupEntry(requestingId, entry, keyword);
@@ -145,6 +144,19 @@ const sendMail = async (ref, mail, entry) => {
 	}
 };
 
+const sanitizeEntries = (enties, validKeys) => {
+	(enties || []).forEach((entry) => {
+		let data = {};
+		if ('quarantinedObject' in entry) {
+			data = getQuarantinedObject(entry.keyword, entry.quarantinedObject);
+			delete entry.quarantinedObject;
+		}
+		Object.keys(entry).forEach((key) => validKeys.includes(key) || delete entry[key]);
+		entry.data = data;
+	});
+	return enties;
+};
+
 const getUser = async (ref, userId) => {
 	const user = await ref.app.service('users').get(userId);
 	return user;
@@ -162,4 +174,5 @@ module.exports = {
 	deleteEntry,
 	validEntry,
 	Mail,
+	sanitizeEntries,
 };
