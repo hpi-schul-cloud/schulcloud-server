@@ -6,6 +6,16 @@ const app = require('../../../src/app');
 chai.use(chaiHttp);
 
 describe('link service', () => {
+	let server;
+
+	before((done) => {
+		server = app.listen(3031, done);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
 	const service = app.service('link');
 	it('registered the links service', () => {
 		assert.ok(service);
@@ -14,7 +24,7 @@ describe('link service', () => {
 	it(`generates a link of length ${service.Model.linkLength} that has the correct target set`, function test() {
 		this.timeout(10000);
 
-		const url = 'https://schul-cloud.org/';
+		const url = 'localhost:3031/';
 		return service.create({ target: url })
 			.then((data) => {
 				chai.expect(data._id).to.have.lengthOf(service.Model.linkLength);

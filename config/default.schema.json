@@ -243,6 +243,17 @@
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
 		},
+		"FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY": {
+			"type": "string",
+			"default": "enabled",
+			"enum": [
+				"disabled",
+				"opt-in",
+				"opt-out",
+				"enabled"
+			],
+			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
+		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
 			"description": "Synchronous encryption key used to secure search user passwords",
@@ -274,6 +285,11 @@
 			"default":"https://schul-cloud.org/etherpad/api/1",
 			"description": "The etherpad api version uri."
 		},
+		"ETHERPAD_OLD_PAD_URI": {
+			"type": "string",
+			"default":"https://etherpad.schul-cloud.org/p",
+			"description": "The etherpad api version uri."
+		},
 		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
 			"type": "integer",
 			"default": 28800,
@@ -293,6 +309,11 @@
 			"type": "integer",
 			"default": 7200,
 			"description": "The time in seconds during which the activation link is valid. After expiration the entry is removed from the database"
+    },
+		"ADMIN_MAIL_RECEIVERS": {
+			"type": "string",
+			"default": null,
+			"description": "A string that contains recievers of the daily stat and other mails. Can contain mutliple mails, seperated by comma"
 		}
 	},
 	"required": [

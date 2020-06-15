@@ -60,7 +60,7 @@ class RocketChatUser {
 			const name = [user.firstName, user.lastName].join(' ');
 
 			const body = {
-				email, password, username, name, verified: true,
+				email, password, username, name, verified: true, joinDefaultChannels: false,
 			};
 
 			const createdUser = await request(getRequestOptions('/api/v1/users.create', body, true))
