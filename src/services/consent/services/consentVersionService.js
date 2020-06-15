@@ -7,7 +7,6 @@ const {
 } = require('feathers-hooks-common');
 
 const {
-	populateCurrentSchool,
 	restrictToCurrentSchool,
 	hasPermission,
 } = require('../../../hooks');
@@ -16,14 +15,14 @@ const { modelServices: { prepareInternalParams } } = require('../../../utils');
 
 const ConsentVersionServiceHooks = {
 	before: {
-		all: [iff(isProvider('external'), [
-			authenticate('jwt'),
-			populateCurrentSchool, // TODO: test if it is needed
-			restrictToCurrentSchool, // TODO restricted erscheint mir hier nicht hilfreich
-		])],
+		all: [],
 		find: [],
 		get: [],
-		create: [iff(isProvider('external'), hasPermission('SCHOOL_EDIT'))],
+		create: [iff(isProvider('external'), [
+			authenticate('jwt'),
+			restrictToCurrentSchool, // TODO restricted erscheint mir hier nicht hilfreich
+			hasPermission('SCHOOL_EDIT'),
+		])],
 		update: [disallow()],
 		patch: [disallow()],
 		remove: [disallow()],
@@ -51,7 +50,7 @@ class ConsentVersionService {
 			if (!schoolId) {
 				return Promise.reject(new BadRequest('SchoolId is required for school consents.'));
 			}
-			return this.app.service('base64Files').create({ 
+			return this.app.service('base64Files').create({
 				schoolId,
 				data: consentData,
 				filetype: 'pdf',
