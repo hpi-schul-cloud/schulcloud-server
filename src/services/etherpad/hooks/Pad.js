@@ -6,6 +6,8 @@ const { Configuration } = require('@schul-cloud/commons');
 const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
 
+const { Configuration } = require('@schul-cloud/commons');
+
 const restrictOldPadsToCourse = async (context) => {
 	if(typeof(context.data.oldPadId) === 'undefined') {
 		return context;

@@ -10,15 +10,32 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 ### Added
+- SC-4577 extend consentversions with school specific privacy policy, which can be added by the school admin
+- SC-4192 add tests that ensure classes on other schools cant be manipulated
+
 
 ### Fixed
 
 ### Changed
 
+- SC-4957 user.ldapId and user.ldapDn are now indexed to improve performance
+
 ### Security
 
 ### Removed
 
+## [23.4.3-nbc] - 2020-06-15
+
+### Fixed in 23.4.3-nbc
+
+- SC-5054 Revert hook restrictions that prevented registration with custom deata privacy documents enabled
+
+
+## [23.2.4] - 2020-06-05
+
+### Fixed
+
+- SC-4876 soften sanitization to allow editor actions to be persisted correctly
 
 ## [23.2.1] - 2020-06-04
 
