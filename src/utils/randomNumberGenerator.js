@@ -10,4 +10,7 @@ module.exports = {
 			.toString('hex'), 16);
 		return (randomInt % (max + 1 - min)) + min;
 	},
+	randomStringAsBase64Url: (size) => {
+		return crypto.randomBytes(size).toString('base64').replace(/\//g,'_').replace(/\+/g,'-');
+	},
 };

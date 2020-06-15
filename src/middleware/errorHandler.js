@@ -125,6 +125,11 @@ const filterQuery = (url) => {
 	return newUrl;
 };
 
+const handleSilentError = (error, req, res, next) => {
+	logger.info(res);
+	next(error);
+};
+
 // important that it is not send to sentry, or add it to logs
 const filterSecrets = (error, req, res, next) => {
 	if (error) {
@@ -148,6 +153,7 @@ const errorHandler = (app) => {
 
 	app.use(Sentry.Handlers.errorHandler());
 	app.use(formatAndLogErrors(NODE_ENV !== ENVIRONMENTS.TEST));
+	app.use(handleSilentError);
 	app.use(returnAsJson);
 };
 
