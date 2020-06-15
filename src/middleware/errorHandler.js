@@ -132,7 +132,7 @@ const filterSecrets = (error, req, res, next) => {
 		// originalUrl is used by sentry
 		req.originalUrl = filterQuery(req.originalUrl);
 		req.body = filter(req.body);
-		error.data = filter(error.data);
+		// eslint-disable-next-line no-param-reassign
 		error = filter(error);
 	}
 	next(error);
