@@ -38,7 +38,7 @@ exports.hasReadPermissionForUser = async (context) => {
 		await globalHooks.hasPermission(['TEACHER_LIST'])(context);
 	}
 	if (requestedUserRoles.includes('student')) {
-		await globalHooks.hasPermission(['STUDENT_LIST'])(context);
+		await globalHooks.hasSchoolPermission(['STUDENT_LIST'])(context);
 	}
 	return context;
 };
