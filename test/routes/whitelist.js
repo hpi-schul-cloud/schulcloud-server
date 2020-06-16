@@ -136,6 +136,11 @@ const whitelist = {
 			post: 500,
 		},
 	},
+	consentVersions: {
+		methods: {
+			get: 200,
+		},
+	},
 };
 
 // TODO remove this
