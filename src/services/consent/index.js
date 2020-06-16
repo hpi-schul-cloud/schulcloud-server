@@ -11,7 +11,7 @@ const { ConsentVersionService, ConsentVersionServiceHooks } = require('./service
 module.exports = function () {
 	const app = this;
 
-	const consentModelService = service({
+	/* const consentModelService = service({
 		Model: consentModel,
 		paginate: {
 			default: 25,
@@ -20,7 +20,7 @@ module.exports = function () {
 		lean: true,
 	});
 	consentModelService.docs = consentDocs;
-	/* Consent Model */
+	// Consent Model
 
 	// REPLACEMENT FOR CURRENT consent ROUTE
 	// app.use('/consents', new deprecated.ConsentService());
@@ -28,6 +28,7 @@ module.exports = function () {
 
 	app.use('/consents', consentModelService);
 	app.service('/consents').hooks(consentHooks);
+	*/
 
 	// app.use('/consents/:type/users', new ConsentStatusService());
 

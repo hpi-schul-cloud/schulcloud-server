@@ -4,6 +4,7 @@ const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../../consent/utils/aggregations');
+const { modelServices: { prepareInternalParams } } = require('../../../utils');
 const {
 	hasSchoolPermission,
 } = require('../../../hooks');
@@ -76,7 +77,7 @@ class AdminUsers {
 				collation: { locale: 'de', caseLevel: true },
 			}).exec((err, res) => {
 				if (err) reject(err);
-				else if (_id) resolve(res[0][0]);
+				else if (_id) resolve(res[0].data[0]);
 				else resolve(res[0]);
 			}));
 		} catch (err) {
@@ -88,25 +89,24 @@ class AdminUsers {
 	}
 
 	async create(data, params) {
-		return this.app.servive('users').create(data, params);
+		return this.app.service('usersModel').create(data);
 	}
 
 	async update(id, data, params) {
-		return this.app.servive('users').update(id, data, params);
+		return this.app.service('usersModel').update(id, data);
 	}
 
 	async patch(id, data, params) {
-		return this.app.servive('users').patch(id, data, params);
+		return this.app.service('usersModel').patch(id, data);
 	}
 
 	async remove(id, params) {
-		return this.app.servive('users').remove(id, params);
+		return this.app.service('usersModel').remove(id);
 	}
 
 	async setup(app) {
 		this.app = app;
 		this.role = (await app.service('roles').find({ query: this.role })).data[0];
-		// this.role._id = this.role._id.toString();
 	}
 }
 
