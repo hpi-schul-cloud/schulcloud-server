@@ -370,7 +370,8 @@ describe('AdminTeachersService', () => {
 		}
 	});
 
-	it('teacher can not find teachers from other schools', async () => {
+	// https://ticketsystem.schul-cloud.org/browse/SC-5061
+	xit('teacher can not find teachers from other schools', async () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool1',
 		});
