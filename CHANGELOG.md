@@ -18,9 +18,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-4957 user.ldapId and user.ldapDn are now indexed to improve performance
+
 ### Security
 
 ### Removed
+
+## [23.4.3-nbc] - 2020-06-15
+
+### Fixed in 23.4.3-nbc
+
+- SC-5054 Revert hook restrictions that prevented registration with custom deata privacy documents enabled
+
 
 ## [23.2.4] - 2020-06-05
 
