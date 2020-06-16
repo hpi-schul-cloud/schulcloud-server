@@ -61,26 +61,19 @@ const htmlFalseOptions = {
 	},
 };
 
+const normalize = (data) => {
+	data = data.replace(/(&lt;)|(&#60;)/gi, '<');
+	data = data.replace(/(&gt;)|(&#62;)/gi, '>');
+	return data;
+};
+
 /**
  * sanitizes data
+ * https://www.npmjs.com/package/sanitize-html
  * @param {*} data
  * @param {*} param
  */
-const sanitize = (data, { html = false }) => {
-	let retValue = null;
-	// https://www.npmjs.com/package/sanitize-html
-	if (html === true) {
-		// editor-content data
-		retValue = sanitizeHtml(data, htmlTrueOptions);
-		// TODO handle following lines in sanitizeHtml
-		retValue = retValue.replace(/(&lt;script&gt;).*?(&lt;\/script&gt;)/gim, ''); // force remove script tags
-		retValue = retValue.replace(/(<script>).*?(<\/script>)/gim, ''); // force remove script tags
-	} else {
-		// non editor-content data
-		retValue = sanitizeHtml(data, htmlFalseOptions);
-	}
-	return retValue;
-};
+const sanitize = (data, isHTML = false) => sanitizeHtml(normalize(data), isHTML ? htmlTrueOptions : htmlFalseOptions);
 
 /**
  * disables sanitization for defined keys if a path is matching
@@ -110,19 +103,19 @@ const sanitizeDeep = (data, path, depth = 0, safeAttributes = []) => {
 				if (saveKeys.includes(key) || safeAttributes.includes(key)) {
 					return data; // TODO:  why not over keys in allowedHtmlByPathAndKeys
 				}
-				data[key] = sanitize(value, { html: allowedHtmlByPathAndKeys(path, key) });
+				data[key] = sanitize(value, allowedHtmlByPathAndKeys(path, key));
 			} else {
 				sanitizeDeep(value, path, depth + 1, safeAttributes);
 			}
 		});
 	} else if (typeof data === 'string') {
 		// here we can sanitize the input
-		data = sanitize(data, { html: false });
+		data = sanitize(data);
 	} else if (Array.isArray(data)) {
 		// here we have to check all array elements and sanitize strings or do recursion
 		for (let i = 0; i < data.length; i += 1) {
 			if (typeof data[i] === 'string') {
-				data[i] = sanitize(data[i], { html: false });
+				data[i] = sanitize(data[i]);
 			} else {
 				sanitizeDeep(data[i], path, depth + 1, safeAttributes);
 			}
