@@ -1,6 +1,5 @@
 const local = require('@feathersjs/authentication-local');
 const { NotFound } = require('@feathersjs/errors');
-const { Configuration } = require('@schul-cloud/commons');
 const {
 	iff, isProvider, disallow, keep,
 } = require('feathers-hooks-common');
@@ -8,35 +7,11 @@ const logger = require('../../../logger/index');
 const { HOST, SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const globalHooks = require('../../../hooks');
-const { randomStringAsBase64Url } = require('../../../utils/randomNumberGenerator');
-
 
 /**
  *	if only hook.username is given, this tries to resolve the users id
  * @param {*} hook
  */
-const resolveUserIdByUsername = (hook) => {
-	if (hook.data
-		&& !hook.data.password
-		&& hook.data.username
-	) {
-		const accountService = hook.app.service('/accounts');
-
-		const { username } = hook.data;
-		return accountService.find({
-			query: {
-				username,
-			},
-		}).then((accounts) => {
-			if (Array.isArray(accounts) && accounts.length !== 0 && accounts[0]._id) {
-				hook.data.account = accounts[0]._id;
-				return hook;
-			}
-			throw new NotFound('username not found');
-		});
-	}
-	return hook;
-};
 
 const sendInfo = (context) => {
 	if (context.path === 'passwordRecovery') {
@@ -69,13 +44,6 @@ Ihr ${SC_SHORT_TITLE} Team`;
 	}
 	return context;
 };
-
-const generateToken = (context) => {
-	const bitSize = 24;
-	context.data.token = randomStringAsBase64Url(bitSize);
-	return context;
-};
-
 
 const clearResult = (context) => {
 	context.result = { success: 'success' };
@@ -110,8 +78,6 @@ const passwordRecoveryHooks = {
 		get: [],
 		create: [
 			globalHooks.blockDisposableEmail('username'),
-			resolveUserIdByUsername,
-			generateToken,
 			local.hooks.hashPassword('password'),
 		],
 		update: [iff(isProvider('external'), disallow())],
@@ -141,7 +107,6 @@ const resetPassworkHooks = {
 		get: [],
 		create: [
 			globalHooks.blockDisposableEmail('username'),
-			generateToken,
 			local.hooks.hashPassword('password'),
 		],
 		update: [iff(isProvider('external'), disallow())],
@@ -153,7 +118,7 @@ const resetPassworkHooks = {
 		all: [],
 		find: [],
 		get: [keep('_id, createdAt', 'changed')],
-		create: [sendInfo, clearResult],
+		create: [clearResult],
 		update: [],
 		patch: [],
 		remove: [],

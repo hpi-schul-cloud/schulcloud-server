@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const URLSafeBase64 = require('urlsafe-base64');
 
 module.exports = {
 	getRandomInt: (max, min = 0) => {
@@ -11,6 +12,7 @@ module.exports = {
 		return (randomInt % (max + 1 - min)) + min;
 	},
 	randomStringAsBase64Url: (size) => {
-		return crypto.randomBytes(size).toString('base64').replace(/\//g,'_').replace(/\+/g,'-');
+		const base64 = crypto.randomBytes(size).toString('base64');
+		return URLSafeBase64.encode(base64);
 	},
 };

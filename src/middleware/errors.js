@@ -8,9 +8,6 @@ class ApplicationError extends Error {
 }
 
 class SilentError extends ApplicationError {
-	constructor(message) {
-		super(message);
-	}
 }
 
 module.exports = {
