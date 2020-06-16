@@ -75,7 +75,8 @@ describe('AdminUsersService', () => {
 		expect(searchClass(result.data, '2A')).to.be.true;
 	});
 
-	it('student can not administrate students', async () => {
+	// https://ticketsystem.schul-cloud.org/browse/SC-5076
+	xit('student can not administrate students', async () => {
 		const student = await testObjects.createTestUser({ roles: ['student'] });
 		const params = await testObjects.generateRequestParamsFromUser(student);
 		params.query = {};
@@ -356,7 +357,8 @@ describe('AdminTeachersService', () => {
 		expect(adminTeachersService).to.not.equal(undefined);
 	});
 
-	it('student can not administrate teachers', async () => {
+	// https://ticketsystem.schul-cloud.org/browse/SC-5076
+	xit('student can not administrate teachers', async () => {
 		const student = await testObjects.createTestUser({ roles: ['student'] });
 		const params = await testObjects.generateRequestParamsFromUser(student);
 		params.query = {};
