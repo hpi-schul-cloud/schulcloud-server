@@ -50,12 +50,12 @@ const whitelist = {
 	},
 	passwordRecovery: {
 		methods: {
-			post: 201,
+			post: 400,
 		},
 	},
 	'passwordRecovery/reset': {
 		methods: {
-			post: 201,
+			post: 400,
 		},
 	},
 	'wopi/files/{fileId}/contents': {

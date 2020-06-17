@@ -2,10 +2,13 @@ const { NotFound, BadRequest } = require('@feathersjs/errors');
 const PasswordRecoveryModel = require('../model');
 const { randomStringAsBase64Url } = require('../../../utils/randomNumberGenerator');
 
-class GenerateTokenService {
-	constructor(accountsService, passwordRecovery) {
-		this.accountsService = accountsService;
+class GenerateRecoveryPasswordTokenService {
+	constructor(passwordRecovery) {
 		this.passwordRecovery = passwordRecovery;
+	}
+
+	setup(app) {
+		this.accountsService = app.service('/accounts');
 	}
 
 	async get(id) {
@@ -37,4 +40,4 @@ class GenerateTokenService {
 	}
 }
 
-module.exports = GenerateTokenService;
+module.exports = GenerateRecoveryPasswordTokenService;

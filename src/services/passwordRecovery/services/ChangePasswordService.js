@@ -12,7 +12,7 @@ class ChangePasswordService {
 
 	async create(data) {
 		delete data.password_control;
-		delete data.accountId;
+		// delete data.accountId;
 
 		if (Object.keys(data).length !== 3) {
 			throw new BadRequest('Malformed request body.');
