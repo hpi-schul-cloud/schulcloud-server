@@ -126,6 +126,11 @@ const whitelist = {
 			post: 400,
 		},
 	},
+	consentVersions: {
+		methods: {
+			get: 200,	// Should remove after the api is changed
+		},
+	},
 	sync: {
 		methods: {
 			get: 400,
