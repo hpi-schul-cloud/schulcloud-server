@@ -25,7 +25,7 @@ async function createSubmission(teachers, students, publicSubmission = false, su
 		description: 'Schreibe ein Essay über Goethes Werk',
 		availableDate: Date.now(),
 		dueDate: '2030-11-16T12:47:00.000Z',
-		private: false,
+		private: createTeacherPrivateSubmission,
 		archived: [originalTeacher._id],
 		lessonId: null,
 		courseId,
@@ -190,7 +190,7 @@ describe('submission service', function test() {
 		expect(result).to.not.be.undefined;
 		expect(result.total).to.equal(1);
 	});
-	
+
 	it('team member can FIND team submissions', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
 		const [teacher, submitter, teamMember] = await Promise.all([
@@ -205,6 +205,38 @@ describe('submission service', function test() {
 		const result = await submissionService.find(params);
 		expect(result).to.not.be.undefined;
 		expect(result.total).to.equal(1);
+	});
+
+	it('team member CAN NOT FIND team submissions of private homework', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool();
+		const [teacher, submitter, teamMember] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+		]);
+		await createSubmission([teacher], [submitter, teamMember], false, [], [], true);
+		const submissionService = app.service('submissions');
+		const params = await testObjects.generateRequestParamsFromUser(teamMember);
+		params.query = {};
+		const result = await submissionService.find(params);
+		expect(result).to.not.be.undefined;
+		expect(result.total).to.equal(0);
+	});
+
+	it('course member CAN NOT FIND team submissions of private homework', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool();
+		const [teacher, submitter, courseMember] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+			testObjects.createTestUser({ roles: ['student'], schoolId }),
+		]);
+		await createSubmission([teacher], [submitter], true, [], [courseMember], true);
+		const submissionService = app.service('submissions');
+		const params = await testObjects.generateRequestParamsFromUser(courseMember);
+		params.query = {};
+		const result = await submissionService.find(params);
+		expect(result).to.not.be.undefined;
+		expect(result.total).to.equal(0);
 	});
 
 	it('teacher can NOT FIND all submissions on the school', async () => {

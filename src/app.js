@@ -32,6 +32,7 @@ const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
 
 const app = express(feathers());
+app.disable('x-powered-by');
 
 const config = configuration();
 app.configure(config);
@@ -61,7 +62,7 @@ app.use(compress())
 	.use('/', express.static('public'))
 	.configure(sentry)
 	.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
-	.use('/', bodyParser.json())
+	.use('/', bodyParser.json({ limit: '10mb' }))
 	.use(bodyParser.urlencoded({ extended: true }))
 	.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 	.use(versionService)
