@@ -18,7 +18,7 @@ exports.before = {
 	],
 	create: [disallow()],
 	update: [disallow()],
-	patch: [disallow()],
+	patch: [authenticate('jwt'), hasPermission('SCHOOL_EDIT')],
 	remove: [disallow()],
 };
 
