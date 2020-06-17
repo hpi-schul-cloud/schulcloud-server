@@ -266,17 +266,20 @@
 		},
 		"ETHERPAD_API_PATH": {
 			"type": "string",
-			"default":"/api/1",
+			"default": "/api/1",
+			"pattern": ".*(?<!/)$",
 			"description": "The etherpad api path."
 		},
 		"ETHERPAD_URI": {
 			"type": "string",
 			"default":"https://schul-cloud.org/etherpad/api/1",
+			"pattern": ".*(?<!/)$",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_URI": {
 			"type": "string",
 			"default":"https://etherpad.schul-cloud.org/p",
+			"pattern": ".*(?<!/)$",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
