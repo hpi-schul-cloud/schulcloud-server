@@ -196,7 +196,8 @@ describe('user service', () => {
 			expect(result).not.to.haveOwnProperty('ldapId');
 		});
 
-		// TODO ?
+		// https://ticketsystem.schul-cloud.org/browse/SC-5163
+		// See linked implementation issue if needed!
 		xit('teacher can not read other teacher', async () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 			const otherTeacher = await testObjects.createTestUser({ roles: ['teacher'] });
@@ -212,7 +213,8 @@ describe('user service', () => {
 			}
 		});
 
-		// TODO ?
+		// https://ticketsystem.schul-cloud.org/browse/SC-5163
+		// See linked implementation issue if needed!
 		xit('teacher can not read admin', async () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
@@ -227,7 +229,8 @@ describe('user service', () => {
 			}
 		});
 
-		// TODO ?
+		// https://ticketsystem.schul-cloud.org/browse/SC-5163
+		// See linked implementation issue if needed!
 		xit('teacher can not read superhero', async () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
