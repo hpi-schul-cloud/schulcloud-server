@@ -22,6 +22,20 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Removed
 
+## [23.4.5] - 2020-06-17
+
+### Fixed in 23.4.5
+
+- SC-5007 re-introduces ldap system root path to API result to fix issue with duplicating schools
+
+
+## [23.4.3-nbc] - 2020-06-15
+
+### Fixed in 23.4.3-nbc
+
+- SC-5054 Revert hook restrictions that prevented registration with custom deata privacy documents enabled
+
+
 ## [23.2.4] - 2020-06-05
 
 ### Fixed
