@@ -24,6 +24,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Removed
 
+## [23.5.0] - 2020-06-18
+
+### Fixed in 23.5.0
+
+- SC-3690 added auth/proxy to prevent public access to the etherpad
+
 ## [23.4.5] - 2020-06-17
 
 ### Fixed in 23.4.5
