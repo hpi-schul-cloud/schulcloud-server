@@ -224,7 +224,7 @@ const insertSubmissionsData = (context) => {
 		query: {
 			homeworkId: context.data.homeworkId,
 			$select: ['teamMembers'],
-			$populate: [{ path: 'studentId', select: ['firstName', 'lastName'] }],
+			$populate: [{ path: 'studentId', select: ['_id'] }],
 		},
 	}).then((submissions) => {
 		context.data.submissions = submissions.data;
@@ -263,7 +263,7 @@ const noSubmissionBefore = (context) => {
 		|| ((submission.studentId || {})._id == context.params.account.userId));
 	if (submissionsForMe.length > 0) {
 		return Promise.reject(new Conflict({
-			message: `${submissionsForMe[0].studentId.firstName} ${submissionsForMe[0].studentId.lastName} hat bereits für dich abgegeben!`,
+			message: 'Die Aufgabe wurde bereits abgegeben!',
 		}));
 	}
 	return Promise.resolve(context);
@@ -277,15 +277,12 @@ const noDuplicateSubmissionForTeamMembers = (context) => {
 			newTeamMembers = newTeamMembers.filter((teamMember) => !context.data.submission.teamMembers.includes(teamMember.toString()));
 		}
 
-		let toRemove = '';
 		const submissionsForTeamMembers = context.data.submissions.filter((submission) => {
 			for (let i = 0; i < newTeamMembers.length; i += 1) {
 				const teamMember = newTeamMembers[i].toString();
 				if (submission.teamMembers.includes(teamMember)
 						|| (((submission.studentId || {})._id || {}).toString() == teamMember)
 				) {
-					toRemove += (toRemove == '') ? '' : ', ';
-					toRemove += `${submission.studentId.firstName} ${submission.studentId.lastName}`;
 					return true;
 				}
 			}
@@ -293,7 +290,9 @@ const noDuplicateSubmissionForTeamMembers = (context) => {
 		});
 		if (submissionsForTeamMembers.length > 0) {
 			return Promise.reject(new Conflict({
-				message: `${toRemove + ((submissionsForTeamMembers.length == 1) ? ' hat' : ' haben')} bereits eine Lösung abgegeben! Entferne diese${(submissionsForTeamMembers.length == 1) ? 's Mitglied!' : ' Mitglieder!'}`,
+				message: `${submissionsForTeamMembers.length + ((submissionsForTeamMembers.length === 1)
+					? ' Mitglied hat' : ' Mitglieder haben')} bereits eine Lösung abgegeben!`
+					+ ` Entferne diese ${(submissionsForTeamMembers.length === 1) ? 's Mitglied!' : ' Mitglieder!'}`,
 			}));
 		}
 		return Promise.resolve(context);
