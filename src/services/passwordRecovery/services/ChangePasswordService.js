@@ -2,7 +2,7 @@ const { BadRequest, GeneralError } = require('@feathersjs/errors');
 const { SilentError } = require('../../../middleware/errors');
 const logger = require('../../../logger/index');
 
-const MAX_LIVE_TIME = 6 * 60 * 60 * 1000;
+const MAX_LIVE_TIME = 6 * 60 * 60 * 1000; // 6 hours
 
 class ChangePasswordService {
 	constructor(passwordRecoveryModel, accountModel) {
@@ -12,7 +12,6 @@ class ChangePasswordService {
 
 	async create(data) {
 		delete data.password_control;
-		// delete data.accountId;
 
 		if (Object.keys(data).length !== 3) {
 			throw new BadRequest('Malformed request body.');
