@@ -48,7 +48,6 @@ module.exports = function LDAPService() {
 
 		/** Used for activation only */
 		async patch(systemId, payload, context) {
-			// TODO allow activation only
 			const systemService = await app.service('systems');
 			const userService = await app.service('users');
 			const schoolsService = await app.service('schools');
