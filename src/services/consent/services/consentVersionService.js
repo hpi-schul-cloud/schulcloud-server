@@ -15,11 +15,10 @@ const { modelServices: { prepareInternalParams } } = require('../../../utils');
 
 const ConsentVersionServiceHooks = {
 	before: {
-		all: [],
-		find: [],
+		all: [authenticate('jwt')],
+		find: [iff(isProvider('external'), restrictToCurrentSchool)],
 		get: [],
 		create: [iff(isProvider('external'), [
-			authenticate('jwt'),
 			restrictToCurrentSchool, // TODO restricted erscheint mir hier nicht hilfreich
 			hasPermission('SCHOOL_EDIT'),
 		])],
@@ -64,17 +63,26 @@ class ConsentVersionService {
 		return this.app.service('consentVersionsModel').get(id, prepareInternalParams(params));
 	}
 
-	find(params) {
+	async find(params) {
 		const { query } = params;
-		if (query && query.schoolId) {
-			if (!query.$or) {
-				query.$or = [];
-			}
-			query.$or.push({ schoolId: query.schoolId });
-			delete query.schoolId;
+		const {
+			$limit, $sort, $skip, consentTypes,
+		} = query;
+
+		const baseQuery = {
+			$limit, $sort, $skip, consentTypes,
+		};
+		let searchResult;
+		if (query.schoolId) {
+			const queryWithSchool = { query: {...baseQuery, schoolId: query.schoolId }};
+			searchResult = await this.app.service('consentVersionsModel').find(prepareInternalParams(queryWithSchool));
 		}
 
-		return this.app.service('consentVersionsModel').find(prepareInternalParams(params));
+		if (searchResult.total > 0) {
+			return searchResult;
+		}
+		const querySchoolIdEmpty = { query: { ...baseQuery, schoolId: { $exists: false } }};
+		return this.app.service('consentVersionsModel').find(prepareInternalParams(querySchoolIdEmpty));
 	}
 
 	async create(data, params) {
