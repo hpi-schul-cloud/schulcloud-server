@@ -133,9 +133,8 @@ const filterSecrets = (error, req, res, next) => {
 		req.originalUrl = filterQuery(req.originalUrl);
 		req.body = filter(req.body);
 		error.data = filter(error.data);
-		if (error.catchedError && error.catchedError.options && error.catchedError.options.form) {
-			error.catchedError.options.form = filter(error.catchedError.options.form);
-		}
+		error.catchedError = filter(error.catchedError);
+		error.options = filter(error.options);
 	}
 	next(error);
 };
