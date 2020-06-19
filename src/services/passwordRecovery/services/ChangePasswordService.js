@@ -11,9 +11,7 @@ class ChangePasswordService {
 	}
 
 	async create(data) {
-		delete data.password_control;
-
-		if (Object.keys(data).length !== 3) {
+		if (Object.keys(data).length < 3) {
 			throw new BadRequest('Malformed request body.');
 		}
 
