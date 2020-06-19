@@ -64,24 +64,16 @@ class ConsentVersionService {
 	}
 
 	async find(params) {
-		const { query } = params;
-		const {
-			$limit, $sort, $skip, consentTypes,
-		} = query;
-
-		const baseQuery = {
-			$limit, $sort, $skip, consentTypes,
-		};
+		const { query = {}, ...restParams } = params;
 		let searchResult;
 		if (query.schoolId) {
-			const queryWithSchool = { query: {...baseQuery, schoolId: query.schoolId }};
-			searchResult = await this.app.service('consentVersionsModel').find(prepareInternalParams(queryWithSchool));
+			searchResult = await this.app.service('consentVersionsModel').find(prepareInternalParams(params));
 		}
 
-		if (searchResult.total > 0) {
+		if (searchResult && searchResult.total > 0) {
 			return searchResult;
 		}
-		const querySchoolIdEmpty = { query: { ...baseQuery, schoolId: { $exists: false } }};
+		const querySchoolIdEmpty = { ...restParams, query: { ...query, schoolId: { $exists: false } } };
 		return this.app.service('consentVersionsModel').find(prepareInternalParams(querySchoolIdEmpty));
 	}
 
