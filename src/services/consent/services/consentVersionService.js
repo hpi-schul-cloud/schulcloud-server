@@ -8,6 +8,7 @@ const {
 
 const {
 	restrictToCurrentSchool,
+	denyIfNotCurrentSchoolOrEmpty,
 	hasPermission,
 } = require('../../../hooks');
 
@@ -15,11 +16,10 @@ const { modelServices: { prepareInternalParams } } = require('../../../utils');
 
 const ConsentVersionServiceHooks = {
 	before: {
-		all: [authenticate('jwt')],
-		find: [iff(isProvider('external'), restrictToCurrentSchool)],
+		all: [authenticate('jwt'), iff(isProvider('external'), restrictToCurrentSchool)],
+		find: [],
 		get: [],
 		create: [iff(isProvider('external'), [
-			restrictToCurrentSchool, // TODO restricted erscheint mir hier nicht hilfreich
 			hasPermission('SCHOOL_EDIT'),
 		])],
 		update: [disallow()],
@@ -29,7 +29,12 @@ const ConsentVersionServiceHooks = {
 	after: {
 		all: [],
 		find: [],
-		get: [],
+		get: [
+			iff(isProvider('external'),
+				denyIfNotCurrentSchoolOrEmpty({
+					errorMessage: 'The current user is not allowed to list other users!',
+				})),
+		],
 		create: [],
 		update: [],
 		patch: [],
