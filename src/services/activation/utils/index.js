@@ -1,40 +1,16 @@
 const { Forbidden, NotFound, BadRequest } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
 const crypto = require('crypto');
-const { equal: equalIds } = require('../../helper/compare').ObjectId;
-const Mail = require('./mail');
+const { HOST } = require('../../../../config/globals');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { getQuarantinedObject, createQuarantinedObject, KEYWORDS } = require('./customUtils');
+const Mail = require('../services/interface/mailFormat');
 
 const STATE = {
 	notStarted: 'uninitiated',
 	pending: 'pending',
 	success: 'success',
 	error: 'error',
-};
-
-const KEYWORDS = {
-	E_MAIL_ADDRESS: 'eMailAddress',
-};
-
-const createQuarantinedObject = (keyword, payload) => {
-	switch (keyword) {
-		case KEYWORDS.E_MAIL_ADDRESS:
-			return {
-				email: payload,
-			};
-
-		default:
-			throw new Error(`No pattern defined for ${keyword}`);
-	}
-};
-
-const getQuarantinedObject = (keyword, quarantinedObject) => {
-	switch (keyword) {
-		case KEYWORDS.E_MAIL_ADDRESS:
-			return quarantinedObject.email;
-
-		default:
-			throw new Error(`No dissolution defined for ${keyword}`);
-	}
 };
 
 const createEntry = async (ref, account, keyword, data) => {
@@ -63,6 +39,14 @@ const deleteEntry = async (ref, entryId) => {
 	}
 };
 
+const setEntryState = async (ref, entryId, state) => {
+	await ref.app.service('activationModel').patch({ _id: entryId }, {
+		$set: {
+			state,
+		},
+	});
+};
+
 const lookupEntry = (requestingId, entries, keyword) => {
 	let filteredEntries = [];
 	filteredEntries = entries.filter((entry) => equalIds(entry.account, requestingId)) || [];
@@ -73,16 +57,16 @@ const lookupEntry = (requestingId, entries, keyword) => {
 };
 
 const validEntry = async (entry) => {
-	if (!entry) throw new NotFound('activation link invalid');
+	if (!entry) throw new NotFound('ACTIVATION_LINK_INVALID');
 	if (
 		Date.parse(entry.updatedAt) + 1000 * Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS')
 		< Date.now()
 	) {
 		await deleteEntry(this, entry._id);
-		throw new BadRequest('activation link expired');
+		throw new BadRequest('ACTIVATION_LINK_EXPIRED');
 	}
-	if (entry.state !== STATE.notStarted) {
-		throw new BadRequest('activation link invalid');
+	if (entry.state !== STATE.notStarted || entry.state !== STATE.error) {
+		throw new BadRequest('ACTIVATION_LINK_INVALID');
 	}
 };
 
@@ -126,12 +110,12 @@ const sendMail = async (ref, mail, entry) => {
 	if (!mail || !mail.email || !mail.subject || !mail.content || !entry) throw SyntaxError('missing parameters');
 
 	try {
-		await ref.app.service('/mails')
-			.create({
-				email: mail.email,
-				subject: mail.subject,
-				content: mail.content,
-			});
+		// await ref.app.service('/mails')
+		// 	.create({
+		// 		email: mail.email,
+		// 		subject: mail.subject,
+		// 		content: mail.content,
+		// 	});
 
 		await ref.app.service('activationModel').patch({ _id: entry._id }, {
 			$set: {
@@ -162,17 +146,24 @@ const getUser = async (ref, userId) => {
 	return user;
 };
 
+const createActivationLink = (activationCode) => `${HOST}/activation/email/${activationCode}`;
+
 module.exports = {
 	STATE,
 	KEYWORDS,
 	lookupByUserId,
 	lookupByActivationCode,
+	setEntryState,
 	sendMail,
 	getUser,
 	getQuarantinedObject,
 	createEntry,
 	deleteEntry,
 	validEntry,
+	createActivationLink,
 	Mail,
 	sanitizeEntries,
+	Forbidden,
+	NotFound,
+	BadRequest,
 };

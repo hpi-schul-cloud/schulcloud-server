@@ -1,9 +1,4 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { NotFound } = require('@feathersjs/errors');
-
-const {
-	hasPermission,
-} = require('../hooks/utils');
 
 const {
 	lookupByUserId,
@@ -12,6 +7,7 @@ const {
 	validEntry,
 	getUser,
 	lookupByActivationCode,
+	NotFound,
 } = require('../utils');
 
 
@@ -24,14 +20,26 @@ class activationService {
 	}
 
 	async update(id, data, params) {
-		if (!id) throw new NotFound('activation link invalid');
+		// valid entry and valid activtionCode
+		if (!id) throw new NotFound('ACTIVATION_LINK_INVALID');
 		const user = await getUser(this, params.account.userId);
 		const entries = await lookupByActivationCode(this, user._id, id);
 
-		if (!user) throw new NotFound('activation link invalid');
-		if ((entries || []).length !== 1) throw new NotFound('activation link invalid');
+		if (!user) throw new NotFound('ACTIVATION_LINK_INVALID');
+		if ((entries || []).length !== 1) throw new NotFound('ACTIVATION_LINK_INVALID');
 		const entry = entries[0];
 		validEntry(entry);
+
+		try {
+			// custom job part
+			await this.app.service(`/activation/${entry.keyword}`).update(id, { user, entry }, params);
+
+			// delete entry
+			await deleteEntry(this, entry._id);
+			return { success: true, keyword: entry.keyword };
+		} catch (error) {
+			return { success: false, keyword: entry.keyword };
+		}
 	}
 
 	async remove(keyword, params) {
@@ -55,7 +63,6 @@ const activationHooks = {
 	before: {
 		all: [
 			authenticate('jwt'),
-			hasPermission(['ACCOUNT_EDIT']),
 		],
 		find: [],
 		get: [],

@@ -1,7 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { iff, isProvider } = require('feathers-hooks-common');
-const { BadRequest, Forbidden, NotFound } = require('@feathersjs/errors');
-const { SC_SHORT_TITLE, HOST } = require('../../../../config/globals');
+const { SC_SHORT_TITLE, HOST } = require('../../../../../config/globals');
 
 const {
 	validPassword,
@@ -11,20 +10,22 @@ const {
 	trimPassword,
 	hasPermission,
 	checkUniqueAccount,
-} = require('../hooks/utils');
+} = require('../../hooks/utils');
 
 const {
 	KEYWORDS,
-	lookupByActivationCode,
+	STATE,
 	lookupByUserId,
 	sendMail,
 	getUser,
 	deleteEntry,
 	createEntry,
-	validEntry,
+	setEntryState,
 	getQuarantinedObject,
 	Mail,
-} = require('../utils');
+	BadRequest,
+	Forbidden,
+} = require('../../utils');
 
 const buildActivationLinkMail = (user, entry) => {
 	const activationLink = `${HOST}/activation/email/${entry.activationCode}`;
@@ -78,6 +79,16 @@ const mail = async (ref, type, user, entry) => {
 const keyword = KEYWORDS.E_MAIL_ADDRESS;
 
 class EMailAdresseActivationService {
+	async find(params) {
+		const { userId } = params.authentication.payload;
+		const entry = await lookupByUserId(this, userId, keyword);
+		if (entry) {
+			const user = await getUser(this, userId);
+			await mail(this, 'activationLinkMail', user, entry);
+		}
+		return { success: true };
+	}
+
 	async create(data, params) {
 		if (!data || !data.email || !data.password) throw new BadRequest('Missing information');
 		const user = await getUser(this, params.account.userId);
@@ -107,13 +118,7 @@ class EMailAdresseActivationService {
 	}
 
 	async update(id, data, params) {
-		if (!id) throw new NotFound('activation link invalid');
-		const user = await getUser(this, params.account.userId);
-		const entry = await lookupByActivationCode(this, user._id, id, keyword);
-
-		if (!user) throw new NotFound('activation link invalid');
-		validEntry(entry);
-
+		const { entry, user } = data;
 		const account = await this.app.service('/accounts').find({
 			query: {
 				userId: params.account.userId,
@@ -127,23 +132,21 @@ class EMailAdresseActivationService {
 			throw new Error('Link incorrectly constructed and will be removed');
 		}
 
-		// update user and account
-		await this.app.service('users').patch(account[0].userId, { email });
-		await this.app.service('/accounts').patch(account[0]._id, { username: email });
+		try {
+			await setEntryState(this, entry._id, STATE.pending);
 
-		// set activation link as consumed
-		await this.app.service('activationModel').patch({ _id: entry._id }, {
-			$set: {
-				activated: true,
-			},
-		});
+			// update user and account
+			await this.app.service('users').patch(account[0].userId, { email });
+			await this.app.service('/accounts').patch(account[0]._id, { username: email });
+
+			// set activation link as consumed
+			await setEntryState(this, entry._id, STATE.success);
+		} catch (error) {
+			await setEntryState(this, entry._id, STATE.error);
+		}
 
 		// send fyi mail to old email
 		await mail(this, 'fyiMail', user, entry);
-
-		// delete entry
-		await deleteEntry(this, entry._id);
-		return { success: true };
 	}
 
 	setup(app) {
@@ -176,4 +179,5 @@ const EMailAdresseActivationHooks = {
 module.exports = {
 	Hooks: EMailAdresseActivationHooks,
 	Service: EMailAdresseActivationService,
+	Mail: mail,
 };
