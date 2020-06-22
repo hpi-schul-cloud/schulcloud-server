@@ -50,27 +50,6 @@ const clearResult = (context) => {
 	return context;
 };
 
-/**
- * this hides errors from api for invalid input
- * @param {*} context
- */
-const clearResultAndForceSuccessIfNotBlockedEmailDomain = (context) => {
-	// Only pass error: Email Domain Blocked
-	if (context.error && context.error.code === 400 && context.error.message === 'EMAIL_DOMAIN_BLOCKED') {
-		return context;
-	}
-
-	// Mute other errors
-	if (context.error) {
-		delete context.error.hook;
-		// context.error.code = 200;
-		logger.error('passwordRecovery is requested and return an error: ', context.error);
-	}
-
-	return clearResult(context);
-};
-
-
 const passwordRecoveryHooks = {
 	before: {
 		all: [],
