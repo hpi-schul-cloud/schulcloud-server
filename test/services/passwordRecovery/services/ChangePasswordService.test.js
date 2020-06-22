@@ -9,7 +9,6 @@ const ChangePasswordService = require('../../../../src/services/passwordRecovery
 chai.use(chaiAsPromised);
 
 describe('ChangePasswordService should', () => {
-
 	let changePasswordService;
 
 	afterEach(() => {
