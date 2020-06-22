@@ -10,25 +10,25 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 ### Added
-- SC-4577 extend consentversions with school specific privacy policy, which can be added by the school admin
-- SC-4192 add tests that ensure classes on other schools cant be manipulated
-
 
 ### Fixed
 
 ### Changed
 
-- SC-4957 user.ldapId and user.ldapDn are now indexed to improve performance
-
 ### Security
 
 ### Removed
 
-## [23.5.0] - 2020-06-18
+## [23.5.0] - 2020-06-15
+
+### Added in 23.5.0
+- SC-4192 add tests that ensure classes on other schools cant be manipulated
 
 ### Fixed in 23.5.0
-
 - SC-3690 added auth/proxy to prevent public access to the etherpad
+
+### Changed in 23.5.0
+- SC-4957 user.ldapId and user.ldapDn are now indexed to improve performance
 
 ## [23.4.5] - 2020-06-17
 
@@ -43,6 +43,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-5054 Revert hook restrictions that prevented registration with custom deata privacy documents enabled
 
+## [23.4.0-nbc] - 2020-06-11
+
+### Added
+- SC-4577 extend consentversions with school specific privacy policy, which can be added by the school admin
 
 ## [23.2.4] - 2020-06-05
 
