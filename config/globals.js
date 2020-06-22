@@ -114,7 +114,7 @@ const globals = {
 	ETHERPAD_ETHERPAD_COOKIE_RELEASE_THRESHOLD: process.env.ETHERPAD_COOKIE_RELEASE_THRESHOLD,
 
 	// silent error
-	SILENT_ERROR_ENABLED: process.env.SILENT_ERROR || true,
+	SILENT_ERROR_ENABLED: process.env.SILENT_ERROR_ENABLED || true,
 };
 
 
