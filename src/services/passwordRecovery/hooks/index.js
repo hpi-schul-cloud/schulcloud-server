@@ -8,11 +8,6 @@ const { HOST, SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const globalHooks = require('../../../hooks');
 
-/**
- *	if only hook.username is given, this tries to resolve the users id
- * @param {*} hook
- */
-
 const sendInfo = (context) => {
 	if (context.path === 'passwordRecovery') {
 		return context.app.service('/accounts').get(context.data.account, {
