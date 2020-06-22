@@ -4,7 +4,7 @@ const { connect, close } = require('../src/utils/database');
 
 const { userSchema } = require('../src/services/user/model/user.schema');
 
-const User = mongoose.model('user87324782376247457621', userSchema, 'user');
+const User = mongoose.model('user87324782376247457621', userSchema, 'users');
 
 module.exports = {
 	up: async function up() {
