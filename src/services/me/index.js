@@ -36,7 +36,7 @@ class Service {
 			throw new GeneralError('Can\'t find connected school.');
 		}
 		try {
-			user.externallyManaged = await externallyManaged(this, userId);
+			user.externallyManaged = await externallyManaged(this.app, user);
 		} catch (err) {
 			logger.warning(err);
 			throw new GeneralError('Can\'t check externallyManaged');
