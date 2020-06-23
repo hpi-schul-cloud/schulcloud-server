@@ -2,6 +2,19 @@
 // Please note that if you add a new keyword,
 // please create the necessary service and make
 // adjustments in this file
+//
+//	1.	add new Keyword
+//	2.	define construction and deconstruction
+//		pattern for QuarantinedObject
+//	3. 	create new service with the name of your
+//		new Keyword. There must be at least one
+// 		method (update) which takes over the
+//		execution of the entry (jobs). You should
+//		also create a create method, which can
+//		create a new entry.
+//	4.	register the route for your new service,
+//		it must follow this scheme:
+//		/activation/${KEYWORDS.YOUR_NEW_KEYWORD}
 // ***************** IMPORTANT *****************
 
 /**
