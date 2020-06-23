@@ -1,6 +1,7 @@
 const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 const bcrypt = require('bcryptjs');
 const { ObjectId } = require('mongoose').Types;
+const { checkPasswordStrength } = require('../../../helper/passwordHelpers');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const globalHooks = require('../../../hooks');
@@ -60,8 +61,7 @@ const validatePassword = (hook) => {
 	const { password } = hook.data;
 
 	// Check against Pattern which is also used in Frontend
-	const pattern = new RegExp('^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\\-_!<>§$%&\\/()=?\\\\;:,.#+*~\']).{8,255}$');
-	const patternResult = pattern.test(password);
+	const patternResult = checkPasswordStrength(password);
 
 	// only check result if also a password was really given
 	if (!patternResult && password) {

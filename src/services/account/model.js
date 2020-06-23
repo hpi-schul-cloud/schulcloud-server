@@ -14,6 +14,7 @@ const accountSchema = new Schema({
 
 	userId: { type: Schema.Types.ObjectId, ref: 'user', index: true },
 	systemId: { type: Schema.Types.ObjectId, ref: 'system' }, // if systemId => SSO
+	forceChangePassword: { type: Boolean, default: false },
 
 	lasttriedFailedLogin: { type: Date, default: 0 },
 	expiresAt: { type: Date },

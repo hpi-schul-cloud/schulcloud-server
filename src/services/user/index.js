@@ -59,6 +59,11 @@ module.exports = (app) => {
 	const firstLoginService = app.service('firstLogin');
 	firstLoginService.hooks(firstLoginHooks);
 
+	const ForceChangePasswordService = require('./forcePasswordChange')(app);
+	app.use('/forcePasswordChange', new ForceChangePasswordService());
+	const forceChangePasswordService = app.service('forcePasswordChange');
+	forceChangePasswordService.hooks(firstLoginHooks);
+
 	const adminStudentsRoute = '/users/admin/students';
 	app.use(adminStudentsRoute, new AdminUsers.AdminUsers('student'));
 	const adminStudentsService = app.service(adminStudentsRoute);

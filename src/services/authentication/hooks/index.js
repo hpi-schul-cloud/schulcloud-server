@@ -78,6 +78,7 @@ const injectUserId = async (context) => {
 			if (account) {
 				context.params.payload = {};
 				context.params.payload.accountId = account._id;
+				context.params.payload.forceChangePassword = account.forceChangePassword;
 				if (account.userId) {
 					context.params.payload.userId = account.userId;
 				}
