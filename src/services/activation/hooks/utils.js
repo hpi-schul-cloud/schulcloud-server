@@ -4,6 +4,7 @@ const { blockDisposableEmail } = require('../../../hooks');
 const { trimPassword } = require('../../account/hooks');
 const { checkUniqueAccount } = require('../../user/hooks/userService');
 const { hasPermission } = require('../../../hooks');
+const { externallyManaged } = require('../../helpers/utils');
 
 const nullOrEmpty = (string) => !string;
 
@@ -30,8 +31,9 @@ const validPassword = async (hook) => {
 	return hook;
 };
 
-const blockThirdParty = (hook) => {
-	if (hook.params.account.systemId) {
+const blockThirdParty = async (hook) => {
+	const exm = await externallyManaged(hook.app, hook.params.account.userId);
+	if (exm) {
 		throw new Forbidden('Your user data is managed by a IDM. Changes to it can only be made in the source system');
 	}
 	return hook;
