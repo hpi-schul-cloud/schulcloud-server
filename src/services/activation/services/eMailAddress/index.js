@@ -89,24 +89,8 @@ class EMailAdresseActivationService {
 		if (!data || !data.email || !data.password) throw new BadRequest('Missing information');
 		const user = await getUser(this, params.account.userId);
 
-		// check if entry already exists
-		let entry;
-		entry = await lookupByUserId(this, params.account.userId, E_MAIL_ADDRESS);
-		if (entry) {
-			const email = entry.quarantinedObject;
-			if (email !== data.email) {
-				// create new entry when email changed
-				await deleteEntry(this, entry._id);
-				entry = undefined;
-			} else {
-				// resend email
-				await mail(this, 'activationLinkMail', user, entry);
-				return { success: true };
-			}
-		}
-
 		// create new entry
-		entry = await createEntry(this, params.account.userId, E_MAIL_ADDRESS, data.email);
+		const entry = await createEntry(this, params.account.userId, E_MAIL_ADDRESS, data.email);
 
 		// send email
 		await mail(this, 'activationLinkMail', user, entry);

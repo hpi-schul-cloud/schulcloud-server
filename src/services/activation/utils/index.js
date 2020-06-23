@@ -19,35 +19,15 @@ const STATE = {
 };
 
 /**
- * Create new Entry (job)
- * @param {*} ref 					this
- * @param {ObjectId} userId 		UserId
- * @param {String} keyword 			keyword
- * @param {*} quarantinedObject 	quarantinedObject (e.g: email)
- * @returns {Object}				returns newly created Entry
- */
-const createEntry = async (ref, userId, keyword, quarantinedObject) => {
-	try {
-		const entry = await (ref.app ? ref.app : ref).service('activationModel')
-			.create({
-				userId,
-				keyword,
-				quarantinedObject,
-			});
-		return entry;
-	} catch (error) {
-		throw new Error('Could not create a quarantined object.');
-	}
-};
-
-/**
  * Deletes an Entry from db
  * @param {*} ref				this
  * @param {ObjectId} entryId	EntryId of Entry to delete
+ * @returns	{Object}			deleted entry
  */
 const deleteEntry = async (ref, entryId) => {
 	try {
-		await ref.app.service('activationModel').remove({ _id: entryId });
+		const res = await (ref.app || ref).service('activationModel').remove({ _id: entryId });
+		return res;
 	} catch (error) {
 		/* eslint-disable-next-line */
 		console.error(`Entry could not be removed from the database!`);
@@ -59,13 +39,15 @@ const deleteEntry = async (ref, entryId) => {
  * @param {*} ref 				this
  * @param {ObjectId} entryId	EntryId
  * @param {String} state 		state to set to
+ * @returns	{Object}			changed entry
  */
 const setEntryState = async (ref, entryId, state) => {
-	await ref.app.service('activationModel').patch({ _id: entryId }, {
+	const entry = await (ref.app || ref).service('activationModel').patch({ _id: entryId }, {
 		$set: {
 			state,
 		},
 	});
+	return entry;
 };
 
 const lookupEntry = (requestingId, entries, keyword) => {
@@ -78,29 +60,10 @@ const lookupEntry = (requestingId, entries, keyword) => {
 };
 
 /**
- * Checks whether an entry/job is valid, i.e. whether it exists,
- * has not expired or has already been started
- * @param {Object} entry entry/job from db
- */
-const validEntry = async (entry) => {
-	if (!entry) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
-	if (
-		Date.parse(entry.updatedAt) + 1000 * Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS')
-		< Date.now()
-	) {
-		await deleteEntry(this, entry._id);
-		throw new BadRequest(customErrorMessages.ACTIVATION_LINK_EXPIRED);
-	}
-	if (entry.state !== STATE.NOT_STARTED || entry.state !== STATE.ERROR) {
-		throw new BadRequest(customErrorMessages.ACTIVATION_LINK_INVALID);
-	}
-};
-
-/**
  * Will lookup entry by userId
  * @param {*} ref 					this
  * @param {ObjectId} requestingId	ObjectId of User requesting data
- * @param {String} keyword			Keyword
+ * @param {String} keyword			Keyword (optional)
  * @returns {Array | Object} 		if a keyword is provided, an object is returned, otherwise an array
  */
 const lookupByUserId = async (ref, requestingId, keyword = null) => {
@@ -127,6 +90,61 @@ const lookupByActivationCode = async (ref, requestingId, activationCode, keyword
 };
 
 /**
+ * Checks whether an entry/job is valid, i.e. whether it exists,
+ * has not expired or has already been started
+ * @param {Object} entry entry/job from db
+ */
+const validEntry = async (entry) => {
+	if (!entry) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
+	if (
+		Date.parse(entry.updatedAt) + 1000 * Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS')
+		< Date.now()
+	) {
+		await deleteEntry(this, entry._id);
+		throw new BadRequest(customErrorMessages.ACTIVATION_LINK_EXPIRED);
+	}
+	if (entry.state !== STATE.NOT_STARTED || entry.state !== STATE.ERROR) {
+		throw new BadRequest(customErrorMessages.ACTIVATION_LINK_INVALID);
+	}
+};
+
+
+const createNewEntry = async (ref, userId, keyword, quarantinedObject) => {
+	try {
+		const entry = await (ref.app || ref).service('activationModel')
+			.create({
+				userId,
+				keyword,
+				quarantinedObject,
+			});
+		return entry;
+	} catch (error) {
+		throw new Error('Could not create a quarantined object.');
+	}
+};
+
+/**
+ * Create new Entry (job) or returns already existing entry if the quarantinedObject is equal
+ * @param {*} ref 					this
+ * @param {ObjectId} userId 		UserId
+ * @param {String} keyword 			keyword
+ * @param {*} quarantinedObject 	quarantinedObject (e.g: email)
+ * @returns {Object}				returns newly created Entry
+ */
+const createEntry = async (ref, userId, keyword, quarantinedObject) => {
+	const entry = await lookupByUserId(ref, userId, keyword);
+	if (entry) {
+		if (entry.quarantinedObject === quarantinedObject) {
+			return entry;
+		}
+		await deleteEntry(ref, entry._id);
+	}
+	const newEntry = await createNewEntry(ref, userId, keyword, quarantinedObject);
+	return newEntry;
+};
+
+
+/**
  * Will send email with informatrion from mail {receiver, subject, content}
  * also sets mailSend and updatedAt for entry by entryId
  * @param {*} ref				this
@@ -137,12 +155,12 @@ const sendMail = async (ref, mail, entry) => {
 	if (!mail || !mail.receiver || !mail.subject || !mail.content || !entry) throw SyntaxError('missing parameters');
 
 	try {
-		await ref.app.service('/mails')
-			.create({
-				email: mail.receiver,
-				subject: mail.subject,
-				content: mail.content,
-			});
+		// await ref.app.service('/mails')
+		// 	.create({
+		// 		email: mail.receiver,
+		// 		subject: mail.subject,
+		// 		content: mail.content,
+		// 	});
 
 		await ref.app.service('activationModel').patch({ _id: entry._id }, {
 			$push: {
@@ -185,7 +203,7 @@ const getUser = async (ref, userId, req = null) => {
 	if (req && req.params.user) {
 		return req.params.user;
 	}
-	const user = await ref.app.service('users').get(userId);
+	const user = await (ref.app || ref).service('users').get(userId);
 	return user;
 };
 

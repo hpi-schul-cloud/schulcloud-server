@@ -24,7 +24,7 @@ const activationSchema = new Schema({
 	state: { type: String, default: STATE.NOT_STARTED, enum: Object.values(STATE) },
 }, { timestamps: true });
 activationSchema.index({ activationCode: 1 }, { unique: true });
-activationSchema.index({ account: 1, keyword: -1 }, { unique: true });
+activationSchema.index({ userId: 1, keyword: 1 }, { unique: true });
 activationSchema.index(
 	{ createdAt: 1 },
 	{ expireAfterSeconds: Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS') },
@@ -35,6 +35,11 @@ activationSchema.pre('validate', function handleSave(next) {
 	this.activationCode = crypto.randomBytes(64).toString('hex');
 	this.quarantinedObject = createQuarantinedObject(this.keyword, this.quarantinedObject);
 	next();
+});
+
+activationSchema.post('save', (result) => {
+	result.quarantinedObject = getQuarantinedObject(result);
+	return result;
 });
 
 // deconstruct quarantinedObject
