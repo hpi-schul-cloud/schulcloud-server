@@ -23,7 +23,7 @@ const createEntry = async () => {
 	return { entry, user };
 };
 
-describe.only('activationd utils', () => {
+describe('activationd utils', () => {
 	let server;
 
 	before((done) => {
