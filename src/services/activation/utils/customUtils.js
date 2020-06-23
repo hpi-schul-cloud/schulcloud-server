@@ -14,13 +14,13 @@ const createQuarantinedObject = (keyword, payload) => {
 	}
 };
 
-const getQuarantinedObject = (keyword, quarantinedObject) => {
-	switch (keyword) {
+const getQuarantinedObject = (entry) => {
+	switch (entry.keyword) {
 		case KEYWORDS.E_MAIL_ADDRESS:
-			return quarantinedObject.email;
+			return entry.quarantinedObject.email;
 
 		default:
-			throw new Error(`No dissolution defined for ${keyword}`);
+			throw new Error(`No dissolution defined for ${entry.keyword}`);
 	}
 };
 

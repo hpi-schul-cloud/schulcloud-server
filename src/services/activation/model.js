@@ -1,20 +1,27 @@
 const mongoose = require('mongoose');
-const { Configuration } = require('@schul-cloud/commons');
-const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
-const { KEYWORDS, STATE } = require('./utils');
+const { Configuration } = require('@schul-cloud/commons');
+const crypto = require('crypto');
+const { enableAuditLog } = require('../../utils/database');
+
+const {
+	KEYWORDS,
+	STATE,
+	createQuarantinedObject,
+	getQuarantinedObject,
+} = require('./utils');
 
 /**
  * WARNING: Document will be removed after X (ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS) seconds
  */
 const activationSchema = new Schema({
 	activationCode: { type: String, required: true },
-	account: { type: Schema.Types.ObjectId, required: true, ref: 'account' },
+	userId: { type: Schema.Types.ObjectId, required: true, ref: 'user' },
 	keyword: { type: String, required: true, enum: Object.values(KEYWORDS) },
 	quarantinedObject: { type: Object, required: true },
 	mailSend: { type: [Date] },
-	state: { type: String, default: STATE.notStarted, enum: Object.values(STATE) },
+	state: { type: String, default: STATE.NOT_STARTED, enum: Object.values(STATE) },
 }, { timestamps: true });
 activationSchema.index({ activationCode: 1 }, { unique: true });
 activationSchema.index({ account: 1, keyword: -1 }, { unique: true });
@@ -22,6 +29,23 @@ activationSchema.index(
 	{ createdAt: 1 },
 	{ expireAfterSeconds: Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS') },
 );
+
+// add activationCode and construct quarantinedObject
+activationSchema.pre('validate', function handleSave(next) {
+	this.activationCode = crypto.randomBytes(64).toString('hex');
+	this.quarantinedObject = createQuarantinedObject(this.keyword, this.quarantinedObject);
+	next();
+});
+
+// deconstruct quarantinedObject
+activationSchema.post('find', (result) => {
+	(result || []).forEach((element) => {
+		if (element.quarantinedObject) {
+			element.quarantinedObject = getQuarantinedObject(element);
+		}
+	});
+	return result;
+});
 
 enableAuditLog(activationSchema);
 

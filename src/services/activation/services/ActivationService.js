@@ -9,6 +9,7 @@ const {
 	getUser,
 	lookupByActivationCode,
 	NotFound,
+	customErrorMessages,
 } = require('../utils');
 
 
@@ -22,12 +23,12 @@ class ActivationService {
 
 	async update(id, data, params) {
 		// valid entry and valid activtionCode
-		if (!id) throw new NotFound('ACTIVATION_LINK_INVALID');
+		if (!id) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
 		const user = await getUser(this, params.account.userId);
 		const entries = await lookupByActivationCode(this, user._id, id);
 
-		if (!user) throw new NotFound('ACTIVATION_LINK_INVALID');
-		if ((entries || []).length !== 1) throw new NotFound('ACTIVATION_LINK_INVALID');
+		if (!user) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
+		if ((entries || []).length !== 1) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
 		const entry = entries[0];
 		validEntry(entry);
 

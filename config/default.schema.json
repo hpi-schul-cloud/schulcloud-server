@@ -299,7 +299,7 @@
 			"type": "integer",
 			"default": 7200,
 			"description": "If Session Valid time is smaller than this, a new session is created on request."
-    },
+    	},
 		"SKIP_CONDITIONS_CONSENT": {
 			"type": "string",
 			"default": "",
@@ -309,7 +309,7 @@
 			"type": "integer",
 			"default": 7200,
 			"description": "The time in seconds during which the activation link is valid. After expiration the entry is removed from the database"
-    },
+    	},
 		"ADMIN_MAIL_RECEIVERS": {
 			"type": "string",
 			"default": null,
@@ -320,6 +320,7 @@
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
 		"STUDENT_TEAM_CREATION",
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
-		"HOST"
+		"HOST",
+		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS"
 	]
 }

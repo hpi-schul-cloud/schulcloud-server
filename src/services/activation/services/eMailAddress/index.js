@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { SC_SHORT_TITLE } = require('../../../../../config/globals');
+const logger = require('../../../../logger');
 
 const {
 	validPassword,
@@ -21,17 +22,17 @@ const {
 	deleteEntry,
 	createEntry,
 	setEntryState,
-	getQuarantinedObject,
 	createActivationLink,
 	Mail,
 	BadRequest,
 	Forbidden,
 	GeneralError,
+	customErrorMessages,
 } = require('../../utils');
 
 const buildActivationLinkMail = (user, entry) => {
 	const activationLink = createActivationLink(entry.activationCode);
-	const email = getQuarantinedObject(entry.keyword, entry.quarantinedObject);
+	const email = entry.quarantinedObject;
 	const subject = 'Bestätige deine E-Mail-Adresse';
 	const content = {
 		text: `Bestätige deine E-Mail-Adresse
@@ -42,7 +43,7 @@ const buildActivationLinkMail = (user, entry) => {
 		html: '',
 	};
 
-	return new Mail(subject, content, email).getMail;
+	return new Mail(subject, content, email);
 };
 
 const buildFYIMail = (user) => {
@@ -58,7 +59,7 @@ const buildFYIMail = (user) => {
 		html: '',
 	};
 
-	return new Mail(subject, content, user.email).getMail;
+	return new Mail(subject, content, user.email);
 };
 
 const mail = async (ref, type, user, entry) => {
@@ -80,16 +81,6 @@ const mail = async (ref, type, user, entry) => {
 };
 
 class EMailAdresseActivationService {
-	// async find(params) {
-	// 	const { userId } = params.authentication.payload;
-	// 	const entry = await lookupByUserId(this, userId, E_MAIL_ADDRESS);
-	// 	if (entry) {
-	// 		const user = await getUser(this, userId);
-	// 		await mail(this, 'activationLinkMail', user, entry);
-	// 	}
-	// 	return { success: true };
-	// }
-
 	async create(data, params) {
 		if (!data || !data.email || !data.password) throw new BadRequest('Missing information');
 		const user = await getUser(this, params.account.userId);
@@ -98,7 +89,7 @@ class EMailAdresseActivationService {
 		let entry;
 		entry = await lookupByUserId(this, params.account.userId, E_MAIL_ADDRESS);
 		if (entry) {
-			const email = getQuarantinedObject(E_MAIL_ADDRESS, entry.quarantinedObject);
+			const email = entry.quarantinedObject;
 			if (email !== data.email) {
 				// create new entry when email changed
 				await deleteEntry(this, entry._id);
@@ -125,25 +116,26 @@ class EMailAdresseActivationService {
 				userId: params.account.userId,
 			},
 		});
-		if ((account || []).length !== 1) throw new Forbidden('Not authorized');
+		if ((account || []).length !== 1) throw new Forbidden(customErrorMessages.NOT_AUTHORIZED);
 
-		const email = getQuarantinedObject(E_MAIL_ADDRESS, entry.quarantinedObject);
+		const email = entry.quarantinedObject;
 		if (!email) {
 			await deleteEntry(this, entry._id);
 			throw new GeneralError('Link incorrectly constructed and will be removed');
 		}
 
 		try {
-			await setEntryState(this, entry._id, STATE.pending);
+			await setEntryState(this, entry._id, STATE.PENDING);
 
 			// update user and account
 			await this.app.service('users').patch(account[0].userId, { email });
 			await this.app.service('/accounts').patch(account[0]._id, { username: email });
 
 			// set activation link as consumed
-			await setEntryState(this, entry._id, STATE.success);
+			await setEntryState(this, entry._id, STATE.SUCCESS);
 		} catch (error) {
-			await setEntryState(this, entry._id, STATE.error);
+			logger.error(error);
+			await setEntryState(this, entry._id, STATE.ERROR);
 		}
 
 		// send fyi mail to old email

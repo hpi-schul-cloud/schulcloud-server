@@ -2,27 +2,24 @@ const {
 	Forbidden, NotFound, BadRequest, GeneralError,
 } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
-const crypto = require('crypto');
 const { HOST } = require('../../../../config/globals');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { getQuarantinedObject, createQuarantinedObject, KEYWORDS } = require('./customUtils');
+const { customErrorMessages } = require('../../helpers/utils');
 const Mail = require('../services/interface/mailFormat');
 
 const STATE = {
-	notStarted: 'uninitiated',
-	pending: 'pending',
-	success: 'success',
-	error: 'error',
+	NOT_STARTED: 'uninitiated',
+	PENDING: 'pending',
+	SUCCESS: 'success',
+	ERROR: 'error',
 };
 
-const createEntry = async (ref, account, keyword, data) => {
+const createEntry = async (ref, userId, keyword, quarantinedObject) => {
 	try {
-		const quarantinedObject = createQuarantinedObject(keyword, data);
-		const activationCode = crypto.randomBytes(64).toString('hex');
 		const entry = await (ref.app ? ref.app : ref).service('activationModel')
 			.create({
-				activationCode,
-				account,
+				userId,
 				keyword,
 				quarantinedObject,
 			});
@@ -51,7 +48,7 @@ const setEntryState = async (ref, entryId, state) => {
 
 const lookupEntry = (requestingId, entries, keyword) => {
 	let filteredEntries = [];
-	filteredEntries = entries.filter((entry) => equalIds(entry.account, requestingId)) || [];
+	filteredEntries = entries.filter((entry) => equalIds(entry.userId, requestingId)) || [];
 	if (keyword) {
 		filteredEntries = filteredEntries.find((entry) => entry.keyword === keyword) || null;
 	}
@@ -59,16 +56,16 @@ const lookupEntry = (requestingId, entries, keyword) => {
 };
 
 const validEntry = async (entry) => {
-	if (!entry) throw new NotFound('ACTIVATION_LINK_INVALID');
+	if (!entry) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
 	if (
 		Date.parse(entry.updatedAt) + 1000 * Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS')
 		< Date.now()
 	) {
 		await deleteEntry(this, entry._id);
-		throw new BadRequest('ACTIVATION_LINK_EXPIRED');
+		throw new BadRequest(customErrorMessages.ACTIVATION_LINK_EXPIRED);
 	}
-	if (entry.state !== STATE.notStarted || entry.state !== STATE.error) {
-		throw new BadRequest('ACTIVATION_LINK_INVALID');
+	if (entry.state !== STATE.NOT_STARTED || entry.state !== STATE.ERROR) {
+		throw new BadRequest(customErrorMessages.ACTIVATION_LINK_INVALID);
 	}
 };
 
@@ -79,9 +76,9 @@ const validEntry = async (entry) => {
  * @param {String} keyword			Keyword
  */
 const lookupByUserId = async (ref, requestingId, keyword = null) => {
-	if (!requestingId) throw new Forbidden('Not authorized');
+	if (!requestingId) throw new Forbidden(customErrorMessages.NOT_AUTHORIZED);
 
-	const entry = await (ref.app || ref).service('activationModel').find({ query: { account: requestingId } });
+	const entry = await (ref.app || ref).service('activationModel').find({ query: { userId: requestingId } });
 	return lookupEntry(requestingId, entry, keyword);
 };
 
@@ -93,8 +90,8 @@ const lookupByUserId = async (ref, requestingId, keyword = null) => {
  * @param {String} keyword			Keyword
  */
 const lookupByActivationCode = async (ref, requestingId, activationCode, keyword = null) => {
-	if (!requestingId) throw new Forbidden('Not authorized');
-	if (!activationCode) throw SyntaxError('entryId required!');
+	if (!requestingId) throw new Forbidden(customErrorMessages.NOT_AUTHORIZED);
+	if (!activationCode) throw SyntaxError('activationCode required!');
 
 	const entry = await (ref.app || ref).service('activationModel').find({ query: { activationCode } });
 	return lookupEntry(requestingId, entry, keyword);
@@ -133,7 +130,7 @@ const filterEntryParamNames = (enties, validKeys) => {
 	(enties || []).forEach((entry) => {
 		let data = {};
 		if ('quarantinedObject' in entry) {
-			data = getQuarantinedObject(entry.keyword, entry.quarantinedObject);
+			data = entry.quarantinedObject;
 			delete entry.quarantinedObject;
 		}
 		Object.keys(entry).forEach((key) => validKeys.includes(key) || delete entry[key]);
@@ -161,6 +158,7 @@ module.exports = {
 	sendMail,
 	getUser,
 	getQuarantinedObject,
+	createQuarantinedObject,
 	createEntry,
 	deleteEntry,
 	validEntry,
@@ -171,4 +169,5 @@ module.exports = {
 	NotFound,
 	BadRequest,
 	GeneralError,
+	customErrorMessages,
 };
