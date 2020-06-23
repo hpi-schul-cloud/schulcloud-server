@@ -1,6 +1,8 @@
 const { BadRequest, GeneralError } = require('@feathersjs/errors');
+const local = require('@feathersjs/authentication-local');
 const { SilentError } = require('../../../middleware/errors');
 const logger = require('../../../logger/index');
+const globalHooks = require('../../../hooks');
 
 const MAX_LIVE_TIME = 6 * 60 * 60 * 1000; // 6 hours
 
@@ -41,4 +43,13 @@ class ChangePasswordService {
 	}
 }
 
-module.exports = ChangePasswordService;
+const hooks = {
+	before: {
+		create: [
+			globalHooks.blockDisposableEmail('username'),
+			local.hooks.hashPassword('password'),
+		],
+	},
+};
+
+module.exports = { ChangePasswordService, hooks };

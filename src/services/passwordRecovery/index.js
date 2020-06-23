@@ -1,8 +1,13 @@
 const passwordRecovery = require('./model');
-const { passwordRecoveryHooks, resetPassworkHooks } = require('./hooks');
 const AccountModel = require('../account/model');
-const ChangePasswordService = require('./services/ChangePasswordService');
-const GenerateRecoveryPasswordTokenService = require('./services/GenerateRecoveryPasswordTokenService');
+const {
+	ChangePasswordService,
+	hooks: changePasswordServiceHooks,
+} = require('./services/ChangePasswordService');
+const {
+	GenerateRecoveryPasswordTokenService,
+	hooks: generateRecoveryPasswordHooks,
+} = require('./services/GenerateRecoveryPasswordTokenService');
 
 module.exports = function setup() {
 	const app = this;
@@ -12,6 +17,6 @@ module.exports = function setup() {
 	const passwordRecoveryService = app.service('/passwordRecovery');
 	const changePasswordService = app.service('/passwordRecovery/reset');
 
-	passwordRecoveryService.hooks(passwordRecoveryHooks);
-	changePasswordService.hooks(resetPassworkHooks);
+	passwordRecoveryService.hooks(generateRecoveryPasswordHooks);
+	changePasswordService.hooks(changePasswordServiceHooks);
 };

@@ -128,8 +128,10 @@ const filterQuery = (url) => {
 };
 
 const handleSilentError = (error, req, res, next) => {
-	if (error.catchedError instanceof SilentError && SILENT_ERROR_ENABLED) {
-		res.append('x-silent-error', true);
+	if (error.catchedError instanceof SilentError) {
+		if (SILENT_ERROR_ENABLED) {
+			res.append('x-silent-error', true);
+		}
 		res.status(200).json({ success: 'success' });
 	} else {
 		next(error);

@@ -4,7 +4,7 @@ const sinon = require('sinon');
 
 const { SilentError } = require('../../../../src/middleware/errors');
 const passwordRecovery = require('../../../../src/services/passwordRecovery/model');
-const ChangePasswordService = require('../../../../src/services/passwordRecovery/services/ChangePasswordService');
+const { ChangePasswordService } = require('../../../../src/services/passwordRecovery/services/ChangePasswordService');
 
 chai.use(chaiAsPromised);
 
