@@ -12,8 +12,13 @@ const {
 	customErrorMessages,
 } = require('../utils');
 
-
+// This service does all general things like finding open jobs,
+// redeeming activation codes, deleting jobs. But this service
+// does not deal with what should happen when the activation
+// code is redeemed, e.g. changing the email/user name.
 class ActivationService {
+	// find open jobs
+	// will return filterd array of open jobs
 	async find(params) {
 		const { userId } = params.authentication.payload;
 		const entry = await lookupByUserId(this, userId);
@@ -21,6 +26,7 @@ class ActivationService {
 		return { success: true, entry };
 	}
 
+	// redeem activationCode
 	async update(id, data, params) {
 		// valid entry and valid activtionCode
 		if (!id) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
@@ -33,7 +39,7 @@ class ActivationService {
 		validEntry(entry);
 
 		try {
-			// custom job part
+			// custom job part here (done by specific service)
 			await this.app.service(`/activation/${entry.keyword}`).update(id, { user, entry }, params);
 
 			// delete entry
@@ -45,6 +51,7 @@ class ActivationService {
 		}
 	}
 
+	// remove open job
 	async remove(keyword, params) {
 		let removed = 0;
 		const { userId } = params.authentication.payload;

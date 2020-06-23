@@ -8,6 +8,9 @@ const { getQuarantinedObject, createQuarantinedObject, KEYWORDS } = require('./c
 const { customErrorMessages } = require('../../helpers/utils');
 const Mail = require('../services/interface/mailFormat');
 
+/**
+ * Object of valid states of entry
+ */
 const STATE = {
 	NOT_STARTED: 'uninitiated',
 	PENDING: 'pending',
@@ -15,6 +18,14 @@ const STATE = {
 	ERROR: 'error',
 };
 
+/**
+ * Create new Entry (job)
+ * @param {*} ref 					this
+ * @param {ObjectId} userId 		UserId
+ * @param {String} keyword 			keyword
+ * @param {*} quarantinedObject 	quarantinedObject (e.g: email)
+ * @returns {Object}				returns newly created Entry
+ */
 const createEntry = async (ref, userId, keyword, quarantinedObject) => {
 	try {
 		const entry = await (ref.app ? ref.app : ref).service('activationModel')
@@ -29,6 +40,11 @@ const createEntry = async (ref, userId, keyword, quarantinedObject) => {
 	}
 };
 
+/**
+ * Deletes an Entry from db
+ * @param {*} ref				this
+ * @param {ObjectId} entryId	EntryId of Entry to delete
+ */
 const deleteEntry = async (ref, entryId) => {
 	try {
 		await ref.app.service('activationModel').remove({ _id: entryId });
@@ -38,6 +54,12 @@ const deleteEntry = async (ref, entryId) => {
 	}
 };
 
+/**
+ * Set the state of an entry (job)
+ * @param {*} ref 				this
+ * @param {ObjectId} entryId	EntryId
+ * @param {String} state 		state to set to
+ */
 const setEntryState = async (ref, entryId, state) => {
 	await ref.app.service('activationModel').patch({ _id: entryId }, {
 		$set: {
@@ -55,6 +77,11 @@ const lookupEntry = (requestingId, entries, keyword) => {
 	return filteredEntries;
 };
 
+/**
+ * Checks whether an entry/job is valid, i.e. whether it exists,
+ * has not expired or has already been started
+ * @param {Object} entry entry/job from db
+ */
 const validEntry = async (entry) => {
 	if (!entry) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
 	if (
@@ -70,10 +97,11 @@ const validEntry = async (entry) => {
 };
 
 /**
- * Will lookup entry in a activation by userId
+ * Will lookup entry by userId
  * @param {*} ref 					this
  * @param {ObjectId} requestingId	ObjectId of User requesting data
  * @param {String} keyword			Keyword
+ * @returns {Array | Object} 		if a keyword is provided, an object is returned, otherwise an array
  */
 const lookupByUserId = async (ref, requestingId, keyword = null) => {
 	if (!requestingId) throw new Forbidden(customErrorMessages.NOT_AUTHORIZED);
@@ -83,11 +111,12 @@ const lookupByUserId = async (ref, requestingId, keyword = null) => {
 };
 
 /**
- * Will lookup entry in a activation by entryId
+ * Will lookup entry by Activation code
  * @param {*} ref 					this
  * @param {ObjectId} requestingId	ObjectId of User requesting data
  * @param {String} activationCode	activationCode
  * @param {String} keyword			Keyword
+ * @returns {Object} 				an object is returned
  */
 const lookupByActivationCode = async (ref, requestingId, activationCode, keyword = null) => {
 	if (!requestingId) throw new Forbidden(customErrorMessages.NOT_AUTHORIZED);
@@ -98,22 +127,22 @@ const lookupByActivationCode = async (ref, requestingId, activationCode, keyword
 };
 
 /**
- * Will send email with informatrion from mail {email, subject, content}
+ * Will send email with informatrion from mail {receiver, subject, content}
  * also sets mailSend and updatedAt for entry by entryId
  * @param {*} ref				this
- * @param {Object} mail			{email, subject, content}
+ * @param {Object} mail			{receiver, subject, content}
  * @param {ObjectId} entryId	ObjectId of entry
  */
 const sendMail = async (ref, mail, entry) => {
 	if (!mail || !mail.receiver || !mail.subject || !mail.content || !entry) throw SyntaxError('missing parameters');
 
 	try {
-		// await ref.app.service('/mails')
-		// 	.create({
-		// 		email: mail.receiver,
-		// 		subject: mail.subject,
-		// 		content: mail.content,
-		// 	});
+		await ref.app.service('/mails')
+			.create({
+				email: mail.receiver,
+				subject: mail.subject,
+				content: mail.content,
+			});
 
 		await ref.app.service('activationModel').patch({ _id: entry._id }, {
 			$push: {
@@ -126,6 +155,12 @@ const sendMail = async (ref, mail, entry) => {
 	}
 };
 
+/**
+ * Filters a given array of entries. All non validKeys are removed from each object
+ * @param {Array} enties	 array of entries
+ * @param {*} validKeys 	 array of valid Objectkeys
+ * @returns {Array}			 filtered array
+ */
 const filterEntryParamNames = (enties, validKeys) => {
 	(enties || []).forEach((entry) => {
 		let data = {};
@@ -139,6 +174,13 @@ const filterEntryParamNames = (enties, validKeys) => {
 	return enties;
 };
 
+/**
+ * Returns a User with given userId
+ * @param {*} ref 				this
+ * @param {ObjectId} userId 	UserId
+ * @param {*} req				requestParams (optional)
+ * @returns {Object}			user object
+ */
 const getUser = async (ref, userId, req = null) => {
 	if (req && req.params.user) {
 		return req.params.user;
@@ -147,6 +189,11 @@ const getUser = async (ref, userId, req = null) => {
 	return user;
 };
 
+/**
+ * Creates an activationLink
+ * @param {String} activationCode	activationCode from entry
+ * @returns {String}				activationLink
+ */
 const createActivationLink = (activationCode) => `${HOST}/activation/email/${activationCode}`;
 
 module.exports = {
