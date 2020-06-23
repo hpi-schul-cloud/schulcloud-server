@@ -1,6 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { iff, isProvider } = require('feathers-hooks-common');
-const { SC_SHORT_TITLE, HOST } = require('../../../../../config/globals');
+const { iff, isProvider, disallow } = require('feathers-hooks-common');
+const { SC_SHORT_TITLE } = require('../../../../../config/globals');
 
 const {
 	validPassword,
@@ -13,8 +13,8 @@ const {
 } = require('../../hooks/utils');
 
 const {
-	KEYWORDS,
 	STATE,
+	KEYWORDS: { E_MAIL_ADDRESS },
 	lookupByUserId,
 	sendMail,
 	getUser,
@@ -22,19 +22,22 @@ const {
 	createEntry,
 	setEntryState,
 	getQuarantinedObject,
+	createActivationLink,
 	Mail,
 	BadRequest,
 	Forbidden,
+	GeneralError,
 } = require('../../utils');
 
 const buildActivationLinkMail = (user, entry) => {
-	const activationLink = `${HOST}/activation/email/${entry.activationCode}`;
+	const activationLink = createActivationLink(entry.activationCode);
 	const email = getQuarantinedObject(entry.keyword, entry.quarantinedObject);
 	const subject = 'Bestätige deine E-Mail-Adresse';
 	const content = {
 		text: `Bestätige deine E-Mail-Adresse
 \\nHallo ${user.firstName},
-\\nbitte bestätige deine neue E-Mail-Adresse über folgenden Link: ${activationLink}
+\\nbitte bestätige deine neue E-Mail-Adresse (${email}) über folgenden Link: ${activationLink}
+\\nBitte beachte, dass der Aktivierungslink nur 2 Stunden gültig ist.
 \\nDein ${SC_SHORT_TITLE} Team`,
 		html: '',
 	};
@@ -76,18 +79,16 @@ const mail = async (ref, type, user, entry) => {
 	await sendMail(ref, content, entry);
 };
 
-const keyword = KEYWORDS.E_MAIL_ADDRESS;
-
 class EMailAdresseActivationService {
-	async find(params) {
-		const { userId } = params.authentication.payload;
-		const entry = await lookupByUserId(this, userId, keyword);
-		if (entry) {
-			const user = await getUser(this, userId);
-			await mail(this, 'activationLinkMail', user, entry);
-		}
-		return { success: true };
-	}
+	// async find(params) {
+	// 	const { userId } = params.authentication.payload;
+	// 	const entry = await lookupByUserId(this, userId, E_MAIL_ADDRESS);
+	// 	if (entry) {
+	// 		const user = await getUser(this, userId);
+	// 		await mail(this, 'activationLinkMail', user, entry);
+	// 	}
+	// 	return { success: true };
+	// }
 
 	async create(data, params) {
 		if (!data || !data.email || !data.password) throw new BadRequest('Missing information');
@@ -95,9 +96,9 @@ class EMailAdresseActivationService {
 
 		// check if entry already exists
 		let entry;
-		entry = await lookupByUserId(this, params.account.userId, keyword);
+		entry = await lookupByUserId(this, params.account.userId, E_MAIL_ADDRESS);
 		if (entry) {
-			const email = getQuarantinedObject(keyword, entry.quarantinedObject);
+			const email = getQuarantinedObject(E_MAIL_ADDRESS, entry.quarantinedObject);
 			if (email !== data.email) {
 				// create new entry when email changed
 				await deleteEntry(this, entry._id);
@@ -110,7 +111,7 @@ class EMailAdresseActivationService {
 		}
 
 		// create new entry
-		entry = await createEntry(this, params.account.userId, keyword, data.email);
+		entry = await createEntry(this, params.account.userId, E_MAIL_ADDRESS, data.email);
 
 		// send email
 		await mail(this, 'activationLinkMail', user, entry);
@@ -126,10 +127,10 @@ class EMailAdresseActivationService {
 		});
 		if ((account || []).length !== 1) throw new Forbidden('Not authorized');
 
-		const email = getQuarantinedObject(keyword, entry.quarantinedObject);
+		const email = getQuarantinedObject(E_MAIL_ADDRESS, entry.quarantinedObject);
 		if (!email) {
 			await deleteEntry(this, entry._id);
-			throw new Error('Link incorrectly constructed and will be removed');
+			throw new GeneralError('Link incorrectly constructed and will be removed');
 		}
 
 		try {
@@ -170,7 +171,7 @@ const EMailAdresseActivationHooks = {
 			trimPassword,
 			iff(isProvider('external'), validPassword),
 		],
-		update: [],
+		update: [disallow('external')],
 		patch: [],
 		remove: [],
 	},
@@ -179,5 +180,4 @@ const EMailAdresseActivationHooks = {
 module.exports = {
 	Hooks: EMailAdresseActivationHooks,
 	Service: EMailAdresseActivationService,
-	Mail: mail,
 };

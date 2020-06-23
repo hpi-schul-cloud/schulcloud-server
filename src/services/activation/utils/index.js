@@ -1,4 +1,6 @@
-const { Forbidden, NotFound, BadRequest } = require('@feathersjs/errors');
+const {
+	Forbidden, NotFound, BadRequest, GeneralError,
+} = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
 const crypto = require('crypto');
 const { HOST } = require('../../../../config/globals');
@@ -74,7 +76,6 @@ const validEntry = async (entry) => {
  * Will lookup entry in a activation by userId
  * @param {*} ref 					this
  * @param {ObjectId} requestingId	ObjectId of User requesting data
- * @param {ObjectId} userId			ObjectId of User (userId)
  * @param {String} keyword			Keyword
  */
 const lookupByUserId = async (ref, requestingId, keyword = null) => {
@@ -118,8 +119,8 @@ const sendMail = async (ref, mail, entry) => {
 		// 	});
 
 		await ref.app.service('activationModel').patch({ _id: entry._id }, {
-			$set: {
-				mailSend: true,
+			$push: {
+				mailSend: Date.now(),
 			},
 		});
 	} catch (error) {
@@ -128,7 +129,7 @@ const sendMail = async (ref, mail, entry) => {
 	}
 };
 
-const sanitizeEntries = (enties, validKeys) => {
+const filterEntryParamNames = (enties, validKeys) => {
 	(enties || []).forEach((entry) => {
 		let data = {};
 		if ('quarantinedObject' in entry) {
@@ -141,7 +142,10 @@ const sanitizeEntries = (enties, validKeys) => {
 	return enties;
 };
 
-const getUser = async (ref, userId) => {
+const getUser = async (ref, userId, req = null) => {
+	if (req && req.params.user) {
+		return req.params.user;
+	}
 	const user = await ref.app.service('users').get(userId);
 	return user;
 };
@@ -162,8 +166,9 @@ module.exports = {
 	validEntry,
 	createActivationLink,
 	Mail,
-	sanitizeEntries,
+	filterEntryParamNames,
 	Forbidden,
 	NotFound,
 	BadRequest,
+	GeneralError,
 };

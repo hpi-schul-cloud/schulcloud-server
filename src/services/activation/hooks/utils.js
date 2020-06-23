@@ -7,9 +7,9 @@ const { hasPermission } = require('../../../hooks');
 
 const nullOrEmpty = (string) => !string;
 
-const login = async (app, username, password, strategy) => app.service('authentication')
+const login = async (app, username, password, strategy = 'local') => app.service('authentication')
 	.create({
-		strategy: strategy || 'local',
+		strategy,
 		username,
 		password,
 	})

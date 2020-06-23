@@ -5,12 +5,15 @@ const { enableAuditLog } = require('../../utils/database');
 const { Schema } = mongoose;
 const { KEYWORDS, STATE } = require('./utils');
 
+/**
+ * WARNING: Document will be removed after X (ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS) seconds
+ */
 const activationSchema = new Schema({
 	activationCode: { type: String, required: true },
 	account: { type: Schema.Types.ObjectId, required: true, ref: 'account' },
 	keyword: { type: String, required: true, enum: Object.values(KEYWORDS) },
 	quarantinedObject: { type: Object, required: true },
-	mailSend: { type: Boolean, default: false },
+	mailSend: { type: [Date] },
 	state: { type: String, default: STATE.notStarted, enum: Object.values(STATE) },
 }, { timestamps: true });
 activationSchema.index({ activationCode: 1 }, { unique: true });

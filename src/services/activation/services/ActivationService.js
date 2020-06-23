@@ -1,9 +1,10 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
+const logger = require('../../../logger');
 
 const {
 	lookupByUserId,
 	deleteEntry,
-	sanitizeEntries,
+	filterEntryParamNames,
 	validEntry,
 	getUser,
 	lookupByActivationCode,
@@ -11,11 +12,11 @@ const {
 } = require('../utils');
 
 
-class activationService {
+class ActivationService {
 	async find(params) {
 		const { userId } = params.authentication.payload;
 		const entry = await lookupByUserId(this, userId);
-		sanitizeEntries(entry, ['keyword', 'quarantinedObject']);
+		filterEntryParamNames(entry, ['keyword', 'quarantinedObject']);
 		return { success: true, entry };
 	}
 
@@ -38,6 +39,7 @@ class activationService {
 			await deleteEntry(this, entry._id);
 			return { success: true, keyword: entry.keyword };
 		} catch (error) {
+			logger.error(error);
 			return { success: false, keyword: entry.keyword };
 		}
 	}
@@ -75,5 +77,5 @@ const activationHooks = {
 
 module.exports = {
 	Hooks: activationHooks,
-	Service: activationService,
+	Service: ActivationService,
 };
