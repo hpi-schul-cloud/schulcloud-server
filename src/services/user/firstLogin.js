@@ -50,7 +50,7 @@ const firstLogin = async (data, params, app) => {
 	const user = await app.service('users').get(params.account.userId);
 
 	if (data['password-1']) {
-		accountUpdate.password_verification = data.password_verification;
+		accountUpdate.password_verification = data.password_verification || data['password-2'];
 		accountUpdate.password = data['password-1'];
 		accountPromise = await app.service('accounts').patch(accountId, accountUpdate, params);
 	}
