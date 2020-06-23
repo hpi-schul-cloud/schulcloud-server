@@ -15,6 +15,8 @@
 //	4.	register the route for your new service,
 //		it must follow this scheme:
 //		/activation/${KEYWORDS.YOUR_NEW_KEYWORD}
+//	5.	please complement the tests
+//	6.	done :)
 // ***************** IMPORTANT *****************
 
 /**
