@@ -105,12 +105,12 @@ const lookupByActivationCode = async (ref, requestingId, activationCode, keyword
  * @param {ObjectId} entryId	ObjectId of entry
  */
 const sendMail = async (ref, mail, entry) => {
-	if (!mail || !mail.email || !mail.subject || !mail.content || !entry) throw SyntaxError('missing parameters');
+	if (!mail || !mail.receiver || !mail.subject || !mail.content || !entry) throw SyntaxError('missing parameters');
 
 	try {
 		// await ref.app.service('/mails')
 		// 	.create({
-		// 		email: mail.email,
+		// 		email: mail.receiver,
 		// 		subject: mail.subject,
 		// 		content: mail.content,
 		// 	});
