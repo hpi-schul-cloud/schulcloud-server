@@ -1,6 +1,7 @@
 const { Forbidden, GeneralError } = require('@feathersjs/errors');
 const logger = require('../../logger');
 const hooks = require('./hooks');
+const { externallyManaged } = require('../helpers/utils');
 
 class Service {
 	constructor(options) {
@@ -35,12 +36,7 @@ class Service {
 			throw new GeneralError('Can\'t find connected school.');
 		}
 		try {
-			const accounts = await this.app.service('/accounts').find({
-				query: {
-					userId,
-				},
-			});
-			user.externallyManaged = accounts.some((account) => !!account.systemId);
+			user.externallyManaged = await externallyManaged(this, userId);
 		} catch (err) {
 			logger.warning(err);
 			throw new GeneralError('Can\'t check externallyManaged');
