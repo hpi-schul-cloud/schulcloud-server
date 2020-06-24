@@ -16,9 +16,6 @@ const {
 
 const util = require('../../../../../src/services/activation/utils');
 const customUtils = require('../../../../../src/services/activation/utils/customUtils');
-const { customErrorMessages } = require('../../../../../src/services/helpers/utils');
-
-// eslint-disable-next-line import/no-dynamic-require
 const config = require('../../../../../config/test.json');
 
 const mockData = {
