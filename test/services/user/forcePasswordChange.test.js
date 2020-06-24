@@ -1,9 +1,10 @@
 const { expect } = require('chai');
 const app = require('../../../src/app');
-const forcePasswordChangeService = app.service('forcePasswordChange');
-const accountService = app.service('accounts');
 const testObjects = require('../helpers/testObjects')(app);
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+
+const accountService = app.service('accounts');
+const forcePasswordChangeService = app.service('forcePasswordChange');
 
 describe('forceChangePassword service tests', () => {
 	let server;
@@ -22,7 +23,7 @@ describe('forceChangePassword service tests', () => {
 
 	const postChangePassword = (requestParams, password, password2) => forcePasswordChangeService.create({
 		'password-1': password,
-		'password-2': password2
+		'password-2': password2,
 	}, requestParams, app);
 
 	describe('CREATE', () => {
@@ -58,6 +59,7 @@ describe('forceChangePassword service tests', () => {
 						.equal('Dein Passwort stimmt mit dem Pattern nicht überein.');
 				});
 		});
+		// eslint-disable-next-line max-len
 		it('when the user has been forced to change his password, the proper flag will be setted after changing the password', async () => {
 			const testUser = await testObjects.createTestUser();
 			const teacherRequestAuthentication = await generateRequestParamsFromUser(testUser);
@@ -73,12 +75,14 @@ describe('forceChangePassword service tests', () => {
 			const account = await testObjects.createTestAccount(newAccount, null, savedUser);
 			const requestParams = teacherRequestAuthentication;
 			requestParams.authentication.payload = {
-				accountId: newAccount.accountId
+				accountId: newAccount.accountId,
 			};
 
 			return postChangePassword(requestParams, newPassword, newPasswordConfirmation)
 				.then((resp) => {
-					expect(resp.forceChangePassword).to.equal(false);
+					expect(resp.forceChangePassword)
+						.to
+						.equal(false);
 					accountService.remove(account._id);
 				});
 		});

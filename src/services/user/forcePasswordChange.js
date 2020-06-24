@@ -1,6 +1,5 @@
-const { checkPasswordStrength, passwordsMatch } = require('../../helper/passwordHelpers');
 const { BadRequest } = require('@feathersjs/errors');
-
+const { checkPasswordStrength, passwordsMatch } = require('../../helper/passwordHelpers');
 
 const setupNewPasswordProvidedByUser = async (data, params, app) => {
 	const newPassword = data['password-1'];
