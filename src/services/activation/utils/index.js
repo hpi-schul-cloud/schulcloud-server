@@ -103,7 +103,7 @@ const validEntry = async (entry) => {
 		await deleteEntry(this, entry._id);
 		throw new BadRequest(customErrorMessages.ACTIVATION_LINK_EXPIRED);
 	}
-	if (entry.state !== STATE.NOT_STARTED || entry.state !== STATE.ERROR) {
+	if (entry.state !== STATE.NOT_STARTED && entry.state !== STATE.ERROR) {
 		throw new BadRequest(customErrorMessages.ACTIVATION_LINK_INVALID);
 	}
 };
@@ -175,21 +175,22 @@ const sendMail = async (ref, mail, entry) => {
 
 /**
  * Filters a given array of entries. All non validKeys are removed from each object
- * @param {Array} enties	 array of entries
+ * @param {Array} entries	 array of entries
  * @param {*} validKeys 	 array of valid Objectkeys
  * @returns {Array}			 filtered array
  */
-const filterEntryParamNames = (enties, validKeys) => {
-	(enties || []).forEach((entry) => {
+const filterEntryParamNames = (entries, validKeys) => {
+	if (!Array.isArray(entries)) throw new SyntaxError('entries must be an array');
+	(entries || []).forEach((entry) => {
 		let data = {};
-		if ('quarantinedObject' in entry) {
+		Object.keys(entry).forEach((key) => validKeys.includes(key) || delete entry[key]);
+		if (validKeys.includes('quarantinedObject')) {
 			data = entry.quarantinedObject;
 			delete entry.quarantinedObject;
+			entry.data = data;
 		}
-		Object.keys(entry).forEach((key) => validKeys.includes(key) || delete entry[key]);
-		entry.data = data;
 	});
-	return enties;
+	return entries;
 };
 
 /**
@@ -212,7 +213,7 @@ const getUser = async (ref, userId, req = null) => {
  * @param {String} activationCode	activationCode from entry
  * @returns {String}				activationLink
  */
-const createActivationLink = (activationCode) => `${HOST}/activation/email/${activationCode}`;
+const createActivationLink = (activationCode) => `${HOST}/activation/${activationCode}`;
 
 module.exports = {
 	STATE,

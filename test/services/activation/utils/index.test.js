@@ -1,7 +1,13 @@
 /* eslint-disable no-unused-expressions */
+/* eslint-disable max-len */
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 
-const { Forbidden } = require('@feathersjs/errors');
-const { expect } = require('chai');
+const { expect } = chai;
+chai.use(chaiAsPromised);
+
+const { Configuration } = require('@schul-cloud/commons');
+const { HOST } = require('../../../../config/globals');
 const app = require('../../../../src/app');
 const {
 	createTestUser,
@@ -10,6 +16,7 @@ const {
 
 const util = require('../../../../src/services/activation/utils');
 const customUtils = require('../../../../src/services/activation/utils/customUtils');
+const { customErrorMessages } = require('../../../../src/services/helpers/utils');
 
 const mockData = {
 	keyword: customUtils.KEYWORDS.E_MAIL_ADDRESS,
@@ -78,6 +85,8 @@ describe.only('activationd utils', () => {
 
 		const changedEntry = await util.setEntryState(app, entry._id, newState);
 		expect(changedEntry.state).to.be.equal(newState);
+
+		await expect(util.setEntryState(app, entry._id, 'something')).to.be.rejected;
 	});
 
 	it('lookup entry by ActivationCode', async () => {
@@ -125,5 +134,60 @@ describe.only('activationd utils', () => {
 		expect(lookupUser2).to.be.null;
 	});
 
-	it('check if entry is valid');
+	it('check if entry is valid', async () => {
+		const { entry } = await createEntry();
+		await expect(util.validEntry(entry)).to.not.rejected;
+
+		entry.state = util.STATE.PENDING;
+		await expect(util.validEntry(entry)).to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_INVALID);
+
+		entry.state = util.STATE.NOT_STARTED;
+		entry.updatedAt = new Date(
+			Date.parse(entry.updatedAt) - 1000 * Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS') - 1000,
+		);
+		await expect(util.validEntry(entry)).to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_EXPIRED);
+	});
+
+	it('filter entries', async () => {
+		const { entry, user } = await createEntry();
+		const entry2 = await util.createEntry(app, user._id, mockData.keyword, mockData.email2);
+
+		let validKeys = ['activationCode'];
+		const res1 = await util.filterEntryParamNames([entry].slice(0), validKeys);
+		expect(Object.keys(res1[0]).length).to.be.equal(validKeys.length);
+		expect(res1[0].activationCode).to.exist;
+		expect(res1[0].data).to.not.exist;
+		expect(res1[0].quarantinedObject).to.not.exist;
+		expect(res1[0]._id).to.not.exist;
+		expect(res1[0].createdAt).to.not.exist;
+		expect(res1[0].userId).to.not.exist;
+		expect(res1[0].keyword).to.not.exist;
+
+		validKeys = ['activationCode', 'quarantinedObject'];
+		const res2 = await util.filterEntryParamNames([entry2], validKeys);
+		expect(Object.keys(res2[0]).length).to.be.equal(validKeys.length);
+		expect(res2[0].activationCode).to.exist;
+		expect(res2[0].data).to.exist;
+		expect(res2[0].quarantinedObject).to.not.exist;
+		expect(res1[0]._id).to.not.exist;
+		expect(res1[0].createdAt).to.not.exist;
+		expect(res1[0].userId).to.not.exist;
+		expect(res1[0].keyword).to.not.exist;
+
+		await expect(util.filterEntryParamNames(entry, validKeys)).to.be.rejected;
+	});
+
+	it('get User', async () => {
+		const user = await createTestUser({ roles: ['student'] });
+		const getUser = await util.getUser(app, user._id);
+		expect(user._id.toString()).to.be.equal(getUser._id.toString());
+		expect(user.email).to.be.equal(getUser.email);
+		expect(new Date(user.createdAt).toISOString).to.be.equal(new Date(getUser.createdAt).toISOString);
+	});
+
+	it('create Activation Link', async () => {
+		const { entry } = await createEntry();
+		const link = util.createActivationLink(entry.activationCode);
+		expect(link).to.be.equal(`${HOST}/activation/${entry.activationCode}`);
+	});
 });
