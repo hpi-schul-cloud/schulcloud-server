@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
-const roleModel = require('../role/model');
-const { enableAuditLog } = require('../../utils/database');
-const externalSourceSchema = require('../../helper/externalSourceSchema');
+const roleModel = require('../../role/model');
+const { enableAuditLog } = require('../../../utils/database');
+const { consentSchema } = require('./consent.schema');
+const externalSourceSchema = require('../../../helper/externalSourceSchema');
+const { defineConsentStatus, isParentConsentRequired } = require('../utils/consent');
 
 const { Schema } = mongoose;
 
@@ -40,6 +42,8 @@ const userSchema = new Schema({
 		enum: Object.values(USER_FEATURES),
 	},
 
+	consent: consentSchema,
+
 	/**
 	 * depending on system settings,
 	 * a user may opt-in or -out,
@@ -71,33 +75,28 @@ userSchema.virtual('fullName').get(function get() {
 		this.nameSuffix,
 	].join(' ').trim().replace(/\s+/g, ' ');
 });
+
+userSchema.virtual('consentStatus').get(function get() {
+	if (!this.consent) return undefined; // TODO: what happen if not defined, is it on query?
+	return defineConsentStatus(this.birthday, this.consent);
+});
+
+
+userSchema.virtual('requiresParentConsent').get(function get() {
+	if (!this.birthday) return undefined;
+	return isParentConsentRequired(this.birthday);
+});
+
+
 userSchema.plugin(leanVirtuals);
 
 userSchema.methods.getPermissions = function getPermissions() {
 	return roleModel.resolvePermissions(this.roles);
 };
 
-const registrationPinSchema = new Schema({
-	email: { type: String, required: true },
-	pin: { type: String },
-	verified: { type: Boolean, default: false },
-}, {
-	timestamps: true,
-});
-
-/* virtual property functions */
-
-const displayName = (user) => `${user.firstName} ${user.lastName}`;
-
-enableAuditLog(registrationPinSchema);
 enableAuditLog(userSchema);
-
-const registrationPinModel = mongoose.model('registrationPin', registrationPinSchema);
-const userModel = mongoose.model('user', userSchema);
 
 module.exports = {
 	USER_FEATURES,
-	userModel,
-	registrationPinModel,
-	displayName,
+	userSchema,
 };

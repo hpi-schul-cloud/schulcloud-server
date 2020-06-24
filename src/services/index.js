@@ -1,3 +1,4 @@
+const base64Files = require('./base64Files');
 const fileStorage = require('./fileStorage');
 const link = require('./link');
 const news = require('./news');
@@ -42,6 +43,7 @@ const alert = require('./alert');
 const videoconference = require('./videoconference');
 const messengerSync = require('./messengerSync');
 const nexboard = require('./nexboard');
+const etherpad = require('./etherpad');
 const storageProvider = require('./storageProvider');
 
 module.exports = function initializeServices() {
@@ -52,6 +54,7 @@ module.exports = function initializeServices() {
 	// register services
 	app.configure(authentication);
 	app.configure(analytics);
+	app.configure(base64Files);
 	app.configure(user);
 	app.configure(role);
 	app.configure(account);
@@ -91,6 +94,7 @@ module.exports = function initializeServices() {
 	app.configure(videoconference);
 	app.configure(messengerSync);
 	app.configure(nexboard);
+	app.configure(etherpad);
 	app.configure(storageProvider);
 
 	// initialize events

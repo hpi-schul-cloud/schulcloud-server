@@ -10,13 +10,55 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 ### Added
+- SC-4577 extend consentversions with school specific privacy policy, which can be added by the school admin
+- SC-4192 add tests that ensure classes on other schools cant be manipulated
+
 
 ### Fixed
 
 ### Changed
 
+### Security
+
 ### Removed
 
+## [23.4.5] - 2020-06-17
+
+### Fixed in 23.4.5
+
+- SC-5007 re-introduces ldap system root path to API result to fix issue with duplicating schools
+
+
+## [23.4.3-nbc] - 2020-06-15
+
+### Fixed in 23.4.3-nbc
+
+- SC-5054 Revert hook restrictions that prevented registration with custom deata privacy documents enabled
+
+
+## [23.2.4] - 2020-06-05
+
+### Fixed
+
+- SC-4876 soften sanitization to allow editor actions to be persisted correctly
+
+## [23.2.1] - 2020-06-04
+
+### Security
+
+- SC-4720 improve importhashes for registrationlinks
+
+## [23.2.0] - 2020-06-03
+
+### Security
+- SC-4506 Secure Find User Route. Access user list by students is allowed only if they are eligible to create teams.   
+- SC-4506 Secure Get User Route. Read user details may only users with STUDENT_LIST or TEACHER_LIST permissions
+
+## [23.1.4] - 2020-05-29
+
+### Fixed in 23.1.4
+
+- SC-4749 avoid xss in image onerror event attribute for submissions
 
 ## [23.0.0] - 2020-05-19
 
@@ -60,6 +102,7 @@ In case of `opt-in` and `opt-out` the feature should be enabled/disabled by the 
 -   SC-3395 if fetching the release fails, a error will be thrown
 -   backup.js now outputs valid json exports
 -   SC-4105 fixed a problem with new users tests not working with recent hotfix.
+-   Checks of user consent calculated correct now
 
 ### Changed in 22.10.0
 

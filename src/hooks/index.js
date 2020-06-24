@@ -94,6 +94,48 @@ const hasPermission = (inputPermissions) => {
 };
 
 /**
+ * Test a permission again a user request.
+ * When the hook funtkion is called, it requires an account object in params
+ *
+ * @param {string} inputPermission
+ * @return {funktion} - feathers hook function requires context as an attribute
+ */
+// TODO: should accept and check multiple permissions
+exports.hasSchoolPermission = (inputPermission) => async (context) => {
+	const { params: { account }, app } = context;
+	if (!account && !account.userId) {
+		throw new Forbidden('Cannot read account data');
+	}
+	const user = await app.service('usersModel').get(account.userId, {
+		query: {
+			$populate: ['roles', 'schoolId'],
+		},
+	});
+
+	const { schoolId: school } = user;
+
+	const results = await Promise.allSettled(user.roles.map(async (role) => {
+		const { permissions = {} } = school;
+		// If there are no special school permissions, continue with normal permission check
+		if (!permissions[role.name]
+				|| !Object.prototype.hasOwnProperty.call(permissions[role.name], inputPermission)) {
+			return hasPermission(inputPermission)(context);
+		}
+		// Otherwise check for user's special school permission
+		if (permissions[role.name][inputPermission]) {
+			return context;
+		}
+		throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
+	}));
+
+	if (results.some((r) => r.status === 'fulfilled')) {
+		return context;
+	}
+
+	throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
+};
+
+/**
  * @param  {string, array[string]} permissions
  * @returns resolves if the current user has ALL of the given permissions
  */
@@ -550,6 +592,21 @@ exports.denyIfNotCurrentSchool = (
 	}
 	return context;
 });
+
+exports.denyIfStudentTeamCreationNotAllowed = (
+	{ errorMessage = 'The current user is not allowed to list other users!' },
+) => async (context) => {
+	const currentUser = await getUser(context);
+	if (!testIfRoleNameExist(currentUser, 'student')) {
+		return context;
+	}
+	const currentUserSchoolId = currentUser.schoolId;
+	const currentUserSchool = await context.app.service('schools').get(currentUserSchoolId);
+	if (!currentUserSchool.isTeamCreationByStudentsEnabled) {
+		throw new Forbidden(errorMessage);
+	}
+	return context;
+};
 
 exports.checkSchoolOwnership = (context) => {
 	const { userId } = context.params.account;
