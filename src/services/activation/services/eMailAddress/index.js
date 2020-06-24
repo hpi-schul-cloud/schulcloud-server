@@ -16,7 +16,6 @@ const {
 const {
 	STATE,
 	KEYWORDS: { E_MAIL_ADDRESS },
-	lookupByUserId,
 	sendMail,
 	getUser,
 	deleteEntry,

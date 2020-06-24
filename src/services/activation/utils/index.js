@@ -31,6 +31,7 @@ const deleteEntry = async (ref, entryId) => {
 	} catch (error) {
 		/* eslint-disable-next-line */
 		console.error(`Entry could not be removed from the database!`);
+		return null;
 	}
 };
 
