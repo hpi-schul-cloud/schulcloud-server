@@ -30,7 +30,7 @@ const createEntry = async () => {
 	return { entry, user };
 };
 
-describe('activationd utils', () => {
+describe('activation/utils utils', () => {
 	let server;
 
 	before((done) => {

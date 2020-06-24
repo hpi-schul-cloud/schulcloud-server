@@ -156,12 +156,12 @@ const sendMail = async (ref, mail, entry) => {
 	if (!mail || !mail.receiver || !mail.subject || !mail.content || !entry) throw SyntaxError('missing parameters');
 
 	try {
-		// await ref.app.service('/mails')
-		// 	.create({
-		// 		email: mail.receiver,
-		// 		subject: mail.subject,
-		// 		content: mail.content,
-		// 	});
+		await ref.app.service('/mails')
+			.create({
+				email: mail.receiver,
+				subject: mail.subject,
+				content: mail.content,
+			});
 
 		await ref.app.service('activationModel').patch({ _id: entry._id }, {
 			$push: {

@@ -20,7 +20,7 @@ class ActivationService {
 	// find open jobs
 	// will return filterd array of open jobs
 	async find(params) {
-		const { userId } = params.authentication.payload;
+		const { userId } = params.account;
 		const entry = await lookupByUserId(this, userId);
 		filterEntryParamNames(entry, ['keyword', 'quarantinedObject']);
 		return { success: true, entry };
@@ -47,14 +47,14 @@ class ActivationService {
 			return { success: true, keyword: entry.keyword };
 		} catch (error) {
 			logger.error(error);
-			return { success: false, keyword: entry.keyword };
+			return { success: false, keyword: entry.keyword, error: error.message };
 		}
 	}
 
 	// remove open job
 	async remove(keyword, params) {
 		let removed = 0;
-		const { userId } = params.authentication.payload;
+		const { userId } = params.account;
 		const entry = await lookupByUserId(this, userId, keyword);
 		if (entry) {
 			deleteEntry(this, entry._id);

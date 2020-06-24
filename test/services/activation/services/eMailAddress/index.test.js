@@ -1,0 +1,87 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable max-len */
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+const nock = require('nock');
+
+const { expect } = chai;
+chai.use(chaiAsPromised);
+
+const app = require('../../../../../src/app');
+const {
+	createTestUser,
+	createTestAccount,
+	cleanup,
+} = require('../../../helpers/testObjects')(app);
+
+const util = require('../../../../../src/services/activation/utils');
+const customUtils = require('../../../../../src/services/activation/utils/customUtils');
+const { customErrorMessages } = require('../../../../../src/services/helpers/utils');
+
+// eslint-disable-next-line import/no-dynamic-require
+const config = require('../../../../../config/test.json');
+
+const mockData = {
+	keyword: customUtils.KEYWORDS.E_MAIL_ADDRESS,
+	email: 'testmail@schul-cloud.org123',
+};
+
+const getNotificationMock = (expectedData = {}) => new Promise((resolve) => {
+	nock(config.services.notification)
+		.post('/mails')
+		.reply(200,
+			(uri, requestBody) => {
+				Object.entries(expectedData).forEach(([key, value]) => {
+					expect(requestBody[key]).to.eql(value);
+				});
+				resolve(true);
+				return 'Message queued';
+			});
+});
+
+describe.only('activation/services/eMailAddress EMailAdresseActivationService', () => {
+	let server;
+	let activationService;
+
+	before((done) => {
+		server = app.listen(0, done);
+		activationService = app.service(`activation/${mockData.keyword}`);
+	});
+
+	afterEach(() => {
+		nock.cleanAll();
+	});
+
+	after(async () => {
+		await cleanup();
+		await server.close();
+	});
+
+	it('registered the activation service', () => {
+		expect(activationService).to.not.be.undefined;
+	});
+
+	it('create entry', async () => {
+		const user = await createTestUser({ roles: ['student'] });
+		const password = 'password123';
+		const credentials = { username: user.email, password };
+		await createTestAccount(credentials, 'local', user);
+
+		const data = {
+			email: mockData.email,
+			repeatEmail: mockData.email,
+			password,
+		};
+
+		const cb = getNotificationMock();
+		const res = await activationService.create(data, { account: { userId: user._id } });
+		expect(await cb).to.be.true;
+		expect(res.success).to.be.true;
+
+		const entries = await util.lookupByUserId(app, user._id);
+		expect(entries).to.have.lengthOf(1);
+		expect(entries[0].quarantinedObject).to.be.equal(data.email);
+		expect(entries[0].keyword).to.be.equal(mockData.keyword);
+		expect(entries[0].userId.toString()).to.be.equal(user._id.toString());
+	});
+});
