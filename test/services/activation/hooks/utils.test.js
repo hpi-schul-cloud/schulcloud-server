@@ -18,14 +18,13 @@ const moodleMockServer = require('../../account/moodle/moodleMockServer');
 
 const newTestAccount = { username: 'testMoodleLoginUser', password: 'testPassword' };
 
-const existingTestAccount = { username: 'testMoodleLoginExisting', password: 'testPasswordExisting' };
+const existingTestAccount = { username: 'testMoodleLoginE', password: 'testPasswordE' };
 const existingTestAccountParameters = {
 	username: existingTestAccount.username,
 	password: existingTestAccount.password,
-	token: 'oldToken',
 };
 
-describe('activation/services/eMailAddress EMailAdresseActivationService', () => {
+describe('activation/hooks utils', () => {
 	let server;
 
 	before((done) => {
@@ -92,14 +91,15 @@ describe('activation/services/eMailAddress EMailAdresseActivationService', () =>
 		const mockMoodle = await createMoodleTestServer();
 		const system = await createTestSystem({ url: mockMoodle.url, type: 'moodle' });
 		const user1 = await createTestUser({ roles: ['student'] });
-		await createTestAccount(existingTestAccountParameters, system, user1);
+		user1.account = await createTestAccount(existingTestAccountParameters, system, user1);
 
 		const user2 = await createTestUser({ roles: ['student'] });
-		await createTestAccount(existingTestAccountParameters, 'local', user2);
+		user2.account = await createTestAccount(existingTestAccountParameters, 'local', user2);
 
 		const params = (user) => ({
 			account: {
-				userId: user._id,
+				userId: user.account,
+				...user.account,
 			},
 		});
 

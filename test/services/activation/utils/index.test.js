@@ -174,7 +174,13 @@ describe('activation/utils utils', () => {
 		expect(res1[0].userId).to.not.exist;
 		expect(res1[0].keyword).to.not.exist;
 
-		await expect(util.filterEntryParamNames(entry, validKeys)).to.be.rejected;
+		try {
+			util.filterEntryParamNames(entry, validKeys);
+			throw new Error('This should never happen');
+		} catch (error) {
+			expect(error).to.be.instanceOf(SyntaxError);
+			expect(error.message).to.be.equal('entries must be an array');
+		}
 	});
 
 	it('get User', async () => {
