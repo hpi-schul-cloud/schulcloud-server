@@ -14,7 +14,8 @@ const setupNewPasswordProvidedByUser = async (data, params, app) => {
 	const accountUpdate = {
 		password_verification: data.password_verification || data['password-2'],
 		password: newPassword,
-		forceChangePassword: false,
+		userForcedToChangePassword: true,
+		forcePasswordChange: false,
 	};
 
 	const accountPromise = app.service('accounts')
@@ -25,10 +26,10 @@ const setupNewPasswordProvidedByUser = async (data, params, app) => {
 };
 
 module.exports = function setup(app) {
-	class ForceChangePasswordService {
+	class ForcePasswordChangeService {
 		create(data, params) {
 			return setupNewPasswordProvidedByUser(data, params, app);
 		}
 	}
-	return ForceChangePasswordService;
+	return ForcePasswordChangeService;
 };

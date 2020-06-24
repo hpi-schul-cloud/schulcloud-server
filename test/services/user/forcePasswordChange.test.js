@@ -6,7 +6,7 @@ const { generateRequestParamsFromUser } = require('../helpers/services/login')(a
 const accountService = app.service('accounts');
 const forcePasswordChangeService = app.service('forcePasswordChange');
 
-describe('forceChangePassword service tests', () => {
+describe('forcePasswordChange service tests', () => {
 	let server;
 	const newPassword = 'SomePassword1!';
 	const newPasswordConfirmation = 'SomePassword1!';
@@ -69,7 +69,7 @@ describe('forceChangePassword service tests', () => {
 				password: '$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJACla',
 				activated: true,
 				createdAt: '2017-09-04T12:51:58.49Z',
-				forceChangePassword: true,
+				forcePasswordChange: true,
 			};
 			const savedUser = await testObjects.createTestUser();
 			const account = await testObjects.createTestAccount(newAccount, null, savedUser);
@@ -80,7 +80,7 @@ describe('forceChangePassword service tests', () => {
 
 			return postChangePassword(requestParams, newPassword, newPasswordConfirmation)
 				.then((resp) => {
-					expect(resp.forceChangePassword)
+					expect(resp.forcePasswordChange)
 						.to
 						.equal(false);
 					accountService.remove(account._id);

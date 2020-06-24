@@ -57,6 +57,9 @@ const trimPassword = (hook) => {
 };
 
 const validatePassword = (hook) => {
+	if (hook.data.userForcedToChangePassword) {
+		return hook;
+	}
 	const passwordVerification = hook.data.password_verification;
 	const { password } = hook.data;
 
