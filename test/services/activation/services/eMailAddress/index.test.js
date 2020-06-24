@@ -36,7 +36,7 @@ const getNotificationMock = (expectedData = {}) => new Promise((resolve) => {
 			});
 });
 
-describe.only('activation/services/eMailAddress EMailAdresseActivationService', () => {
+describe('activation/services/eMailAddress EMailAdresseActivationService', () => {
 	let server;
 	let activationService;
 

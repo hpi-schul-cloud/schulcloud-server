@@ -40,6 +40,9 @@ const blockThirdParty = async (hook) => {
 };
 
 const validateEmail = (hook) => {
+	if (!hook || !hook.data) {
+		throw new BadRequest('data missing');
+	}
 	if (nullOrEmpty(hook.data.email)) {
 		throw new BadRequest('email missing');
 	}
