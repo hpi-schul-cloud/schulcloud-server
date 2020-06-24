@@ -32,11 +32,17 @@ const populateUser = (app, data) => {
 
 	if (data.classId) user.classId = data.classId;
 
-	if (!data.importHash) {
+	if (!data.importHash || !data.userId) {
 		return Promise.reject('Ungültiger Link');
 	}
 
-	return app.service('users').find({ query: { importHash: data.importHash.toString(), _id: data.userId.toString(), $populate: ['roles'] } }).then((users) => {
+	return app.service('users').find({
+		query: {
+			importHash: data.importHash.toString(),
+			_id: data.userId.toString(),
+			$populate: ['roles'],
+		},
+	}).then((users) => {
 		if (users.data.length <= 0 || users.data.length > 1) {
 			throw new errors.BadRequest('Kein Nutzer für die eingegebenen Daten gefunden.');
 		}
@@ -272,7 +278,7 @@ const registerUser = function register(data, params, app) {
 		});
 };
 
-module.exports = function (app) {
+module.exports = (app) => {
 	class RegistrationService {
 		create(data, params) {
 			return registerUser(data, params, app);
