@@ -32,14 +32,18 @@ const populateUser = (app, data) => {
 
 	if (data.classId) user.classId = data.classId;
 
-	if (!data.importHash || !data.userId) {
+	if (!data.importHash) {
 		return Promise.reject('Ungültiger Link');
+	}
+
+	if (data.userId) {
+		data.userId = data.userId.toString();
 	}
 
 	return app.service('users').find({
 		query: {
 			importHash: data.importHash.toString(),
-			_id: data.userId.toString(),
+			_id: data.userId,
 			$populate: ['roles'],
 		},
 	}).then((users) => {
