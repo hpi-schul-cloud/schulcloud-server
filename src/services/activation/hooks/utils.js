@@ -5,6 +5,7 @@ const { trimPassword } = require('../../account/hooks');
 const { checkUniqueAccount } = require('../../user/hooks/userService');
 const { hasPermission } = require('../../../hooks');
 const { externallyManaged } = require('../../helpers/utils');
+const logger = require('../../../logger');
 
 const nullOrEmpty = (string) => !string;
 
@@ -15,7 +16,10 @@ const login = async (app, username, password, strategy = 'local') => app.service
 		password,
 	})
 	.then((result) => result.accessToken)
-	.catch(() => null);
+	.catch((error) => {
+		logger.error(error);
+		return null;
+	});
 
 const isValidLogin = (jwt) => !!jwt;
 

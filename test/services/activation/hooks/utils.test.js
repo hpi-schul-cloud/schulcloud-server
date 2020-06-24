@@ -44,47 +44,24 @@ describe('activation/hooks utils', () => {
 
 	it('validPassword', async () => {
 		const user = await createTestUser({ roles: ['student'] });
-		const account = await createTestAccount(existingTestAccountParameters, 'local', user);
+		const credentials = { username: user.email, password: user.email };
+		const account = await createTestAccount(credentials, 'local', user);
 
 		try {
-			await hookUtils.validPassword({});
-			throw new Error('This should never happen');
-		} catch (error) {
-			expect(error).to.be.instanceOf(BadRequest);
-		}
-
-		try {
-			await hookUtils.validPassword({ data: { password: '' }, app });
-			throw new Error('This should never happen');
-		} catch (error) {
-			expect(error).to.be.instanceOf(BadRequest);
-		}
-
-		try {
-			await hookUtils.validPassword({ data: { password: '' }, params: { account: {} }, app });
-			throw new Error('This should never happen');
-		} catch (error) {
-			expect(error).to.be.instanceOf(BadRequest);
-		}
-
-		try {
-			await hookUtils.validPassword({ data: { password: 'adasd' }, params: { account }, app });
-			throw new Error('This should never happen');
+			await hookUtils.validPassword(
+				{
+					data: {
+						password: credentials.password,
+					},
+					params: {
+						account,
+					},
+					app,
+				},
+			);
 		} catch (error) {
 			expect(error).to.be.instanceOf(Forbidden);
 		}
-
-		await hookUtils.validPassword(
-			{
-				data: {
-					password: existingTestAccountParameters.password,
-				},
-				params: {
-					account,
-				},
-				app,
-			},
-		);
 	});
 
 	it('blockThirdParty', async () => {
@@ -94,7 +71,8 @@ describe('activation/hooks utils', () => {
 		user1.account = await createTestAccount(existingTestAccountParameters, system, user1);
 
 		const user2 = await createTestUser({ roles: ['student'] });
-		user2.account = await createTestAccount(existingTestAccountParameters, 'local', user2);
+		const credentials = { username: user2.email, password: user2.email };
+		user2.account = await createTestAccount(credentials, 'local', user2);
 
 		const params = (user) => ({
 			account: {
