@@ -11,7 +11,7 @@ describe('passwordHelpers tests', () => {
 				'somepassword1',
 				'somepassword1!',
 				'somepassword1!@#',
-				'afsf@#$'
+				'afsf@#$',
 			];
 			someWeekPasswords.forEach((weakPassword) => {
 				expect(checkPasswordStrength(weakPassword))
@@ -25,7 +25,7 @@ describe('passwordHelpers tests', () => {
 				'somepassworD5!',
 				'somepassworD!5!',
 				'somepassworD!5!@#',
-				'somepassworD!AFD#@$#3@DSAF@Q#$ADF@#$SDF@#$'
+				'somepassworD!AFD#@$#3@DSAF@Q#$ADF@#$SDF@#$',
 			];
 			someWeekPasswords.forEach((weakPassword) => {
 				expect(checkPasswordStrength(weakPassword))
