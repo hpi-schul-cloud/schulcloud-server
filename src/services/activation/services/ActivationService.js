@@ -45,7 +45,7 @@ class ActivationService {
 
 		try {
 			// custom job part here (done by specific service)
-			await this.app.service(`/activation/${entry.keyword}`).update(id, { user, entry }, params);
+			await this.app.service(`/activation/${entry.keyword}`).update(id, { user, entry });
 
 			// delete entry
 			await deleteEntry(this, entry._id);

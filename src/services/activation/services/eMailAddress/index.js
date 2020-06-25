@@ -103,7 +103,7 @@ class EMailAdresseActivationService {
 		const { entry, user } = data;
 		const account = await this.app.service('/accounts').find({
 			query: {
-				userId: params.account.userId,
+				userId: user._id,
 			},
 		});
 		if ((account || []).length !== 1) throw new Forbidden(customErrorMessages.NOT_AUTHORIZED);
