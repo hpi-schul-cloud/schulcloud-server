@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 const ldap = require('ldapjs');
 const errors = require('@feathersjs/errors');
+const mongoose = require('mongoose');
 const hooks = require('./hooks');
 
 const getLDAPStrategy = require('./strategies');
@@ -43,6 +44,26 @@ module.exports = function LDAPService() {
 								classes: classData,
 							})));
 				});
+		}
+
+		/** Used for activation only */
+		async patch(systemId, payload, context) {
+			const systemService = await app.service('systems');
+			const userService = await app.service('users');
+			const schoolsService = await app.service('schools');
+			const session = await mongoose.startSession();
+			const user = await userService.get(context.account.userId);
+			await session.withTransaction(async () => {
+				const system = await systemService.get(systemId);
+				const school = await schoolsService.get(user.schoolId);
+				system.ldapConfig.active = payload.ldapConfig.active;
+				school.ldapSchoolIdentifier = system.ldapConfig.rootPath;
+				await schoolsService.patch(school);
+				await systemService.patch(system);
+				return Promise.resolve('success');
+			});
+			session.endSession();
+			return Promise.resolve('success');
 		}
 
 		/**
