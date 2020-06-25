@@ -1,32 +1,9 @@
 const REQUEST_TIMEOUT = 8000; // ms
 const request = require('request-promise-native');
 const { Configuration } = require('@schul-cloud/commons');
-const { Forbidden } = require('@feathersjs/errors');
+const { Forbidden, GeneralError } = require('@feathersjs/errors');
+const logger = require('../../../logger');
 
-const requestRepeater = async (options) => {
-	let eduResponse = null;
-	let retry = 0;
-	let success = false;
-	do {
-		try {
-			eduResponse = await request(options);
-			success = true;
-		} catch (e) {
-			// eslint-disable-next-line no-console
-			console.error('error: ', e);
-			if (e.statusCode === 401) {
-				this.login();
-			}
-			eduResponse = null;
-		}
-		retry += 1;
-	} while (success === false && retry < 3);
-	return JSON.parse(eduResponse);
-};
-
-const configurationIncompleteError = () => new Forbidden(
-	'Not all ES_... vars have been defined, update configuration.',
-);
 
 class EduSharingConnector {
 	constructor() {
@@ -120,6 +97,36 @@ class EduSharingConnector {
 		);
 	}
 
+	async requestRepeater(options) {
+		let retry = 0;
+		const errors = [];
+		do {
+			try {
+				const eduResponse = await request(options);
+				return JSON.parse(eduResponse);
+			} catch (e) {
+				// eslint-disable-next-line no-console
+				if (e.statusCode === 401) {
+					logger.info(`Trying to renew Edu Sharing connection. Attempt ${retry}`);
+					await this.login();
+				} else {
+					logger.error(e);
+					errors.push(e);
+				}
+			}
+			retry += 1;
+		} while (retry < 3);
+
+		throw new GeneralError('Edu Sharing Retry failed', errors);
+	}
+
+	configurationIncompleteError() {
+		return new Forbidden(
+			'Not all ES_... vars have been defined, update configuration.',
+		);
+	}
+
+
 	async login() {
 		this.authorization = await this.getCookie();
 		this.accessToken = await this.getAuth();
@@ -132,7 +139,7 @@ class EduSharingConnector {
 
 	async GET(id, params) {
 		if (!this.allConfigurationValuesHaveBeenDefined()) {
-			throw configurationIncompleteError();
+			throw this.configurationIncompleteError();
 		}
 
 		if (this.isLoggedin() === false) {
@@ -154,7 +161,7 @@ class EduSharingConnector {
 			timeout: REQUEST_TIMEOUT,
 		};
 
-		const eduResponse = await requestRepeater(options);
+		const eduResponse = await this.requestRepeater(options);
 		return eduResponse.node;
 	}
 
@@ -168,7 +175,7 @@ class EduSharingConnector {
 		const searchWord = data.query.searchQuery || '';
 
 		if (!this.allConfigurationValuesHaveBeenDefined()) {
-			throw configurationIncompleteError();
+			throw this.configurationIncompleteError();
 		}
 
 		if (this.isLoggedin() === false) {
@@ -205,7 +212,7 @@ class EduSharingConnector {
 			timeout: REQUEST_TIMEOUT,
 		};
 
-		const parsed = await requestRepeater(options);
+		const parsed = await this.requestRepeater(options);
 
 		// provided by client eg data.query.filterOptions
 		const filterOptions = {
