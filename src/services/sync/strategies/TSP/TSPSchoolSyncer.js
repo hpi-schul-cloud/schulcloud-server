@@ -468,11 +468,12 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				source: ENTITY_SOURCE,
 				sourceOptions,
 			};
+			const teacher = teacherMapping[klass.lehrerUid];
 			const options = {
 				name: klass.klasseName,
 				schoolId: school._id,
 				year: school.currentYear,
-				teacherIds: [teacherMapping[klass.lehrerUid]] || [],
+				teacherIds: teacher ? [teacher] : [],
 				userIds: classMapping[klass.klasseId] || [],
 				source: ENTITY_SOURCE,
 				sourceOptions,
