@@ -6,7 +6,6 @@ const { promisify } = require('es6-promisify');
 const fs = require('fs');
 
 const readFile = promisify(fs.readFile);
-const writeFile = promisify(fs.writeFile);
 const path = require('path');
 
 
@@ -63,12 +62,10 @@ describe('content service', function () {
 		}));
 });
 
-function writeResponseToDisk(requestOptions, response) {
-	return writeFile(requestToFilename(requestOptions), response);
-}
+const nonASCII = /([^ -~]|[."<>|\\/:*?])+/g;
 
 function requestToFilename(requestOptions) {
-	const key = JSON.stringify(requestOptions.qs).replace(/([^ -~]|[\."<>\|\\\/\:\*\?])+/g, ''); // just ASCII characters, NTFS-safe
+	const key = JSON.stringify(requestOptions.qs).replace(nonASCII, ''); // just ASCII characters, NTFS-safe
 	const filename = `response${key}.json`;
 	return path.resolve(__dirname, 'mock', filename);
 }

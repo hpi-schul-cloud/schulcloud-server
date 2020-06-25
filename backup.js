@@ -208,6 +208,7 @@ const exportCollection = async ({
 		...CONFIG.MONGO.CREDENTIALS_ARGS,
 		'--collection', collection,
 		'--out', filePath,
+		'--jsonArray',
 		args['--pretty'] ? '--pretty' : undefined,
 	];
 	const res = await asyncExec(cleanJoin(cmdArgs));

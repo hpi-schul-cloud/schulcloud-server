@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const logger = require('../../../src/logger/');
+const logger = require('../../../src/logger');
 
 module.exports = function MockServer(url = 'http://localhost:58372', uri = '/', resolver) {
 	const app = express();

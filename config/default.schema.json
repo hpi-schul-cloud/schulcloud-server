@@ -2,10 +2,25 @@
 	"title": "HPI Schul-Cloud Configuration",
 	"type": "object",
 	"properties": {
+		"CLIENT_API_KEY": {
+			"type": "string",
+			"default": "example",
+			"description": "The API Key that the Client uses to send emails. This should be removed with SC-3387"
+		},
 		"CALENDAR_API_KEY": {
 			"type": "string",
 			"default": "example",
 			"description": "The API Key that the Calendar uses to resolve scopes. This should be removed with SC-3387"
+		},
+		"DISABLED_BRUTE_FORCE_CHECK": {
+			"type": "boolean",
+			"default": false,
+			"description": "To disabled the brute force prevention hooks for by authentication."
+		},
+		"SYNC_API_KEY": {
+			"type": "string",
+			"default": "example",
+			"description": "The API Key that the Sync Cron-Job uses to authenticate itself.This should be removed with SC-3387"
 		},
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": {
 			"type": "string",
@@ -17,6 +32,17 @@
 				"enabled"
 			],
 			"description": "defines wheter external team invitation shows teachers from different schools or not. if enabled system wide there are options general enabled or opt-in/-out by user required."
+		},
+		"STUDENT_TEAM_CREATION": {
+			"type": "string",
+			"default": "opt-out",
+			"enum": [
+				"disabled",
+				"opt-in",
+				"opt-out",
+				"enabled"
+			],
+			"description": "defines wheter students may create teams or not. if enabled system wide there are options general enabled or opt-in/-out by school admin required."
 		},
 		"REDIS_URI": {
 			"type": "string",
@@ -84,6 +110,20 @@
 			"default": false,
 			"description": "Feature toggle for TSP features."
 		},
+		"BLOCK_DISPOSABLE_EMAIL_DOMAINS": {
+			"type": "boolean",
+			"default": true,
+			"description": "Prevent use of disposable email addresses."
+		},
+		"ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS": {
+			"type": "string",
+			"description": "Add custom domain to the list of blocked domains (comma separated list)."
+		},
+		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Feature toggle for automatic consent during TSP sync."
+		},
 		"FEATURE_VIDEOCONFERENCE_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -130,17 +170,22 @@
 			"type": "string",
 			"format": "uri",
 			"default": "amqp://192.168.99.100",
-			"description": "the URI of the rabbitMQ server"
+			"description": "The URI of the RabbitMQ server."
+		},
+		"RABBITMQ_MATRIX_CONSUME_CONCURRENCY": {
+			"type": "integer",
+			"default": 10,
+			"description": "How many messages should be handled at the same time."
 		},
 		"RABBITMQ_MATRIX_QUEUE_INTERNAL": {
 			"type": "string",
 			"default": "matrix_sync_unpopulated",
-			"description": "the URI of the rabbitMQ server"
+			"description": "Name of queue used to buffer building synchronization request internally."
 		},
 		"RABBITMQ_MATRIX_QUEUE_EXTERNAL": {
 			"type": "string",
 			"default": "matrix_sync_populated",
-			"description": "the URI of the rabbitMQ server"
+			"description": "Name of queue used to publish synchronization request."
 		},
 		"HOST": {
 			"type": "string",
@@ -198,6 +243,73 @@
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
 		},
+		"FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY": {
+			"type": "string",
+			"default": "enabled",
+			"enum": [
+				"disabled",
+				"opt-in",
+				"opt-out",
+				"enabled"
+			],
+			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
+		},
+		"LDAP_PASSWORD_ENCRYPTION_KEY": {
+			"type": "string",
+			"description": "Synchronous encryption key used to secure search user passwords",
+			"pattern": ".{16}.*"
+		},
+		"SENTRY_DSN": {
+			"type": "string",
+			"format": "uri",
+			"description": "Sentry DSN (uri), if defined, increase SENTRY_SAMPLE_RATE to desired value to get errors reported."
+		},
+		"SENTRY_SAMPLE_RATE": {
+			"type": "number",
+			"default": 1.0,
+			"minimum": 0.0,
+			"maximum": 1.0,
+			"description": "This is the % count (0.00 to 1.00) of how many of the errors send to the backend. This filter go over all errors, maybe some lost by low user counts."
+		},
+		"ETHERPAD_API_KEY": {
+			"type": "string",
+			"description": "The etherpad api key for sending requests."
+		},
+		"ETHERPAD_API_PATH": {
+			"type": "string",
+			"default":"/api/1",
+			"description": "The etherpad api path."
+		},
+		"ETHERPAD_URI": {
+			"type": "string",
+			"default":"https://schul-cloud.org/etherpad/api/1",
+			"description": "The etherpad api version uri."
+		},
+		"ETHERPAD_OLD_PAD_URI": {
+			"type": "string",
+			"default":"https://etherpad.schul-cloud.org/p",
+			"description": "The etherpad api version uri."
+		},
+		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
+			"type": "integer",
+			"default": 28800,
+			"description": "Number of seconds after an etherpad cookie expires."
+		},
+		"ETHERPAD_ETHERPAD_COOKIE_RELEASE_THRESHOLD": {
+			"type": "integer",
+			"default": 7200,
+			"description": "If Session Valid time is smaller than this, a new session is created on request."
+    },
+		"SKIP_CONDITIONS_CONSENT": {
+			"type": "string",
+			"default": "",
+			"description": "A string with concatenated user types (student, employee) that don't need to explicitly state their consent with the terms and conditions. \"employee\" means teachers and admins."
+		},
+		"ADMIN_MAIL_RECEIVERS": {
+			"type": "string",
+			"default": null,
+			"description": "A string that contains recievers of the daily stat and other mails. Can contain mutliple mails, seperated by comma"
+		},
 		"LERNSTORE_MODE": {
 			"type": "string",
 			"enum": [
@@ -237,6 +349,8 @@
 	},
 	"required": [
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
+		"STUDENT_TEAM_CREATION",
+		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
 		"LERNSTORE_MODE"
 	]

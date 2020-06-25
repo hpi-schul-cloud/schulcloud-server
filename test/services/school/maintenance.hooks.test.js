@@ -1,15 +1,15 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const { BadRequest, NotFound } = require('@feathersjs/errors');
-const app = require('./../../../src/app');
+const app = require('../../../src/app');
 const { cleanup } = require('../helpers/testObjects')(app);
-const { create: createSchool } = require('./../helpers/services/schools')(app);
-const { create: createYear } = require('./../helpers/services/years');
+const { create: createSchool } = require('../helpers/services/schools')(app);
+const { create: createYear } = require('../helpers/services/years');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-const lookupSchool = require('./../../../src/services/school/hooks/lookupSchool');
+const lookupSchool = require('../../../src/services/school/hooks/lookupSchool');
 
 describe('lookupSchool hook', () => {
 	it('should add the referenced school to the request params', async () => {

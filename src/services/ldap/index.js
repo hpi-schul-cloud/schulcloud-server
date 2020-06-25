@@ -1,11 +1,12 @@
+/* eslint-disable no-underscore-dangle */
 const ldap = require('ldapjs');
 const errors = require('@feathersjs/errors');
-const logger = require('../../logger');
+const mongoose = require('mongoose');
 const hooks = require('./hooks');
 
 const getLDAPStrategy = require('./strategies');
 
-module.exports = function () {
+module.exports = function LDAPService() {
 	const app = this;
 
 	/**
@@ -18,11 +19,13 @@ module.exports = function () {
 	class LdapService {
 		constructor() {
 			this.clients = {};
-			this._registerEventListeners();
 		}
 
+		/**
+		 * @deprecated
+		 */
 		find(params) {
-
+			// only needed to register as a feathers service
 		}
 
 		get(id, params) {
@@ -34,11 +37,33 @@ module.exports = function () {
 							classes: [],
 						}));
 					}
-					return this.getUsers(system[0].ldapConfig, '').then((userData) => this.getClasses(system[0].ldapConfig, '').then((classData) => ({
-						users: userData,
-						classes: classData,
-					})));
+					return this.getUsers(system[0].ldapConfig, '')
+						.then((userData) => this.getClasses(system[0].ldapConfig, '')
+							.then((classData) => ({
+								users: userData,
+								classes: classData,
+							})));
 				});
+		}
+
+		/** Used for activation only */
+		async patch(systemId, payload, context) {
+			const systemService = await app.service('systems');
+			const userService = await app.service('users');
+			const schoolsService = await app.service('schools');
+			const session = await mongoose.startSession();
+			const user = await userService.get(context.account.userId);
+			await session.withTransaction(async () => {
+				const system = await systemService.get(systemId);
+				const school = await schoolsService.get(user.schoolId);
+				system.ldapConfig.active = payload.ldapConfig.active;
+				school.ldapSchoolIdentifier = system.ldapConfig.rootPath;
+				await schoolsService.patch(school);
+				await systemService.patch(system);
+				return Promise.resolve('success');
+			});
+			session.endSession();
+			return Promise.resolve('success');
 		}
 
 		/**
@@ -61,9 +86,9 @@ module.exports = function () {
 			if (client && client.connected) {
 				return Promise.resolve(client);
 			}
-			return this._connect(config).then((client) => {
-				this._addClient(config, client);
-				return Promise.resolve(client);
+			return this._connect(config).then((newClient) => {
+				this._addClient(config, newClient);
+				return Promise.resolve(newClient);
 			});
 		}
 
@@ -82,7 +107,7 @@ module.exports = function () {
 
 			return new Promise((resolve, reject) => {
 				if (!(config && config.url)) {
-					reject('Invalid URL in config object.');
+					reject(new errors.BadRequest('Invalid URL in config object.'));
 				}
 				const client = ldap.createClient({
 					url: config.url,
@@ -105,18 +130,12 @@ module.exports = function () {
          * @return {Promise} resolves if successfully disconnected, otherwise
          * rejects with error
          */
-		_disconnect(config) {
-			return new Promise((resolve, reject) => {
-				if (!(config && config._id)) {
-					reject('Invalid config object');
-				}
-				this._getClient(config).unbind((err) => {
-					if (err) {
-						reject(err);
-					}
-					resolve();
-				});
-			});
+		disconnect(config) {
+			return this._getClient(config)
+				.then((client) => client.unbind((err) => {
+					if (err) return Promise.reject(err);
+					return Promise.resolve();
+				}));
 		}
 
 		/**
@@ -134,9 +153,10 @@ module.exports = function () {
 			return this._connect(config, qualifiedUsername, password)
 				.then((connection) => {
 					if (connection.connected) {
+						connection.unbind();
 						return Promise.resolve(true);
 					}
-					return Promise.reject('User could not authenticate');
+					return Promise.reject(new errors.NotAuthenticated('User could not authenticate'));
 				});
 		}
 
@@ -176,7 +196,7 @@ module.exports = function () {
 						if (result.status === 0) {
 							resolve(objects);
 						}
-						reject('LDAP result code != 0');
+						reject(new Error('LDAP result code != 0'));
 					});
 				});
 			}));
@@ -197,7 +217,7 @@ module.exports = function () {
 					if (objects.length > 0) {
 						return Promise.resolve(objects[0]);
 					}
-					return Promise.reject('Object not found');
+					return Promise.reject(new Error(`Object "${searchString}" not found`));
 				});
 		}
 
@@ -242,127 +262,6 @@ module.exports = function () {
 		getExperts(config) {
 			const { searchString, options } = getLDAPStrategy(app, config).getExpertsQuery();
 			return this.searchCollection(config, searchString, options);
-		}
-
-		/**
-         * Generate an LDAP group object from a team
-         * @param {Team} team the team object
-         * @return {LDAPGroup} LDAP group object
-         */
-		_teamToGroup(team, role) {
-			return {
-				name: `schulcloud-${team._id}`,
-				description: team.name,
-			};
-		}
-
-		/**
-         * Add a user to a given team
-         * @param {LdapConfig} config the ldapConfig
-         * @param {User} user the user object
-         * @param {Role} role the user's role
-         * @param {Team} team the team object
-         * @return {Promise} resolves with undefined value or rejects with error
-         * @see removeUserFromTeam
-         */
-		addUserToTeam(config, user, role, team) {
-			const group = this._teamToGroup(team);
-			return getLDAPStrategy(app, config).addUserToGroup(user, role, group);
-		}
-
-		/**
-         * Remove a user from a given team
-         * @param {LdapConfig} config the ldapConfig
-         * @param {User} user the user object
-         * @param {Role} role the user's role
-         * @param {Team} team the team object
-         * @return {Promise} resolves with undefined value or rejects with error
-         * @see addUserToTeam
-         */
-		removeUserFromTeam(config, user, role, team) {
-			const group = this._teamToGroup(team);
-			return getLDAPStrategy(app, config).removeUserFromGroup(user, role, group);
-		}
-
-		/**
-         * Populate an array of user ids with the corresponding user object and
-         * login systems for each id
-         * @param {users} users an array of user ids and team roles
-         * @returns {Promise} resolves with an array of tuples {user, system,
-         * role} of LDAP users, their corresponding login system (contains
-         * ldapConfig), and the team role
-         */
-		_populateUsers(users) {
-			const userIds = users.map((u) => u.userId);
-			const roleMap = users.reduce((m, u) => {
-				m[u.userId] = u.role;
-				return m;
-			}, {});
-			return app.service('accounts').find({
-				query: {
-					userId: { $in: userIds },
-					$populate: ['systemId', 'userId'],
-				},
-			})
-				.then((accounts) =>
-				// the LDAP service should only attempt to change LDAP users
-					Promise.resolve(accounts.filter((account) => account.systemId
-                    && account.systemId.type === 'ldap'
-                    && account.systemId.ldapConfig)))
-				.then((accounts) => accounts.map((account) => ({
-					user: account.userId,
-					system: account.systemId,
-					role: roleMap[account.userId._id],
-				})));
-		}
-
-		/**
-         * Update a given team: call `method` with `ldapConfig`, `user`, and
-         * `team` populated from arguments.
-         * @param {users} [users=[]] an array of user ids and associated roles
-         * @param {Team} team a team object
-         * @param {function(config, user, team)} method a function taking LDAP
-         * config, user object, and team object as arguments
-         * @see addUserToTeam
-         * @see removeUserFromTeam
-         */
-		_updateTeam(users = [], team, method) {
-			if (users && users.length > 0) {
-				this._populateUsers(users)
-					.then((pairs) => {
-						pairs.forEach(({ user, system, role }) => {
-							method.apply(this, [system.ldapConfig, user, role, team])
-								.catch((error) => {
-									logger.error(error);
-								});
-						});
-					})
-					.catch((error) => {
-						logger.error('LDAP Service: Unable to populate users', error);
-					});
-			}
-		}
-
-		/**
-         * React to event published by the Team service when users are added or
-         * removed to a team.
-         * @param {Object} context event context given by the Team service
-         */
-		_onTeamUsersChanged(context) {
-			const { team } = (context || {}).additionalInfosTeam || {};
-			const { changes } = (context || {}).additionalInfosTeam || {};
-			if (changes) {
-				this._updateTeam(changes.add, team, this.addUserToTeam);
-				this._updateTeam(changes.remove, team, this.removeUserFromTeam);
-			}
-		}
-
-		/**
-         * Register methods of the service to listen to events of other services
-         * @listens teams:after:usersChanged
-         */
-		_registerEventListeners() {
-			app.on('teams:after:usersChanged', this._onTeamUsersChanged.bind(this));
 		}
 	}
 

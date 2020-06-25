@@ -48,7 +48,6 @@ const teamMainHook = globalHooks.ifNotLocal((hook) => Promise.all([
 	getSessionUser(hook), getTeam(hook), populateUsersForEachUserIdinHookData(hook),
 ]).then(([sessionUser, team, users]) => {
 	const userId = bsonIdToString(hook.params.account.userId);
-	const restrictedFindMatch = { userIds: { $elemMatch: { userId } } };
 	const isSuperhero = ifSuperhero(sessionUser.roles);
 	const { method } = hook;
 
@@ -183,7 +182,7 @@ const testInputData = (hook) => {
  * @param {Object::hook} - block this methode for every request
  * @throws {errors} new errors.MethodNotAllowed('Method is not allowed!');
  */
-const blockedMethod = (hook) => {
+const blockedMethod = () => {
 	logger.warning('[teams]', 'Method is not allowed!');
 	throw new MethodNotAllowed('Method is not allowed!');
 };
@@ -196,25 +195,25 @@ const blockedMethod = (hook) => {
  * @param {Boolean} [_ifNotLocal=true] - pass all input to the ifNotLocal hook
  * @param {Object} [objectToFilter] - is optional otherwise the hook is used
  * @return {function::globalHooks.ifNotLocal(hook)}
- * @example filterToRelated(['_id','userIds'], 'result.data') in hook.result.data all keys are removed that are not _id, or userIds
+ * @example filterToRelated(['_id','userIds'], 'result.data') in hook.result.data all keys are removed
+ * 			that are not _id, or userIds
  */
 const filterToRelated = (keys, path, _ifNotLocal = true, objectToFilter) => {
-	if (!Array.isArray(keys)) {
-		keys = [keys];
-	}
+	const keysArr = Array.isArray(keys) ? keys : [keys];
 	const execute = (hook) => {
 		const filter = (data) => {
 			const reducer = (old) => (newObject, key) => {
-				if (old[key] !== undefined) // if related key exist
-				{ newObject[key] = old[key]; }
+				if (old[key] !== undefined) { // if related key exist
+					newObject[key] = old[key];
+				}
 				return newObject;
 			};
 
 			let out;
 			if (Array.isArray(data)) {
-				out = data.map((element) => keys.reduce(reducer(element), {}));
+				out = data.map((element) => keysArr.reduce(reducer(element), {}));
 			} else {
-				out = keys.reduce(reducer(data), {});
+				out = keysArr.reduce(reducer(data), {});
 			}
 			return out;
 		};
@@ -383,7 +382,7 @@ const hasTeamPermission = (permsissions, _teamId) => globalHooks.ifNotLocal((hoo
 	}
 	return Promise.all(
 		[getSessionUser(hook), teamRolesToHook(hook), getTeam(hook)],
-	).then(([sessionUser, ref, team]) => {
+	).then(([, ref, team]) => {
 		if (get(hook, 'isSuperhero') === true) {
 			return Promise.resolve(hook);
 		}
@@ -518,25 +517,25 @@ const testChangesForPermissionRouting = globalHooks.ifNotLocal(async (hook) => {
 			throw new Forbidden('Can not adding users from other schools.');
 		}
 		if (isLeaveTeam) {
-			wait.push(leaveTeam(hook).catch((err) => {
+			wait.push(leaveTeam(hook).catch(() => {
 				throw new Forbidden('Permission LEAVE_TEAM is missing.');
 			}));
 		}
 
 		if (isRemoveOthers) {
-			wait.push(removeMembers(hook).catch((err) => {
+			wait.push(removeMembers(hook).catch(() => {
 				throw new Forbidden('Permission REMOVE_MEMBERS is missing.');
 			}));
 		}
 
 		if (isAddingFromOwnSchool) {
-			wait.push(addSchoolMembers(hook).catch((err) => {
+			wait.push(addSchoolMembers(hook).catch(() => {
 				throw new Forbidden('Permission ADD_SCHOOL_MEMBERS is missing.');
 			}));
 		}
 
 		if (hasChangeRole) {
-			wait.push(changeTeamRoles(hook).catch((err) => {
+			wait.push(changeTeamRoles(hook).catch(() => {
 				throw new Forbidden('Permission CHANGE_TEAM_ROLES is missing.');
 			}));
 
@@ -590,9 +589,11 @@ const addCurrentUser = globalHooks.ifNotLocal((hook) => {
 	if (hasKey(hook.result, 'userIds')) {
 		const userId = bsonIdToString(hook.params.account.userId);
 		const { userIds } = hook.result;
-		const user = Object.assign({}, userIds.find(
-			(u) => isSameId(u.userId._id || u.userId, userId),
-		));
+		const user = {
+			...userIds.find(
+				(u) => isSameId(u.userId._id || u.userId, userId),
+			),
+		};
 		if (isUndefined([user, user.role], 'OR')) {
 			logger.warning(
 				'Can not execute addCurrentUser for unknown user. '
@@ -624,9 +625,7 @@ const isAllowedToCreateTeams = (hook) => getSessionUser(hook).then((sessionUser)
 		|| roleNames.includes('administrator')
 		|| roleNames.includes('teacher')
 		|| roleNames.includes('student')) {
-			if (roleNames.includes('student')
-				&& school.features instanceof Array
-				&& school.features.includes('disableStudentTeamCreation')) {
+			if (roleNames.includes('student') && !school.isTeamCreationByStudentsEnabled) {
 				throw new Forbidden('Your school admin does not allow team creations by students.');
 			}
 		} else {
@@ -775,6 +774,7 @@ exports.beforeExtern = {
 		globalHooks.hasPermission('TEAM_INVITE_EXTERNAL'),
 		hasTeamPermission(['INVITE_EXPERTS', 'INVITE_ADMINISTRATORS']),
 		filterToRelated(['userId', 'email', 'role'], 'data'),
+		globalHooks.blockDisposableEmail('email'),
 		isTeacherDirectlyImport,
 	], // later with switch ..see role names
 	remove: [blockedMethod],
@@ -795,7 +795,6 @@ exports.beforeAdmin = {
 		authenticate('jwt'),
 		isAdmin,
 		existId,
-		filterToRelated([], 'params.query'),
 	],
 	find: [],
 	get: [blockedMethod],

@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const nock = require('nock');
 
 const app = require('../../../src/app');
-const { NODE_ENV } = require('../../../config/globals');
+const { NODE_ENV, SMTP_SENDER } = require('../../../config/globals');
 
 // eslint-disable-next-line import/no-dynamic-require
 const config = require(`../../../config/${NODE_ENV}.json`); // TODO cleanup
@@ -88,6 +88,22 @@ describe('Mail Service', () => {
 			});
 			// assert that notification service was actually called
 			expect(await cb).to.equal(true);
+		});
+
+		it('From address should not be changed by the caller', async () => {
+			const notifcationMock = getNotificationMock({
+				from: SMTP_SENDER,
+			});
+
+			await mailService.create({
+				from: 'customFromAddress@test.com',
+				email: 'test@test.test',
+				subject: 'test',
+				content: { html: '<h1>Testing Purposes</h1>' },
+			});
+
+			// assert that notification service was actually called
+			expect(await notifcationMock).to.equal(true);
 		});
 	});
 

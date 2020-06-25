@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden, NotFound } = require('@feathersjs/errors');
 const { disallow } = require('feathers-hooks-common');
 
-const logger = require('../../../logger/');
+const logger = require('../../../logger');
 const { injectUserId, mapPayload } = require('../../../hooks');
 const lesson = require('../model');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');

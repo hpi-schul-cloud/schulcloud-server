@@ -3,7 +3,6 @@ const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
 const { homeworkModel } = require('../../../src/services/homework/model');
 
-const homeworkService = app.service('homework');
 const homeworkCopyService = app.service('homework/copy');
 const { expect } = chai;
 

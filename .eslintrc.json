@@ -56,7 +56,7 @@
 			"warn",
 			{
 				"args": "after-used",
-				"argsIgnorePattern": "app|req|res|next|options|params"
+				"argsIgnorePattern": "app|req|res|next|options|params|^_"
 			}
 		],
 		"indent": [

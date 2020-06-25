@@ -5,7 +5,7 @@ const oauth2 = require('simple-oauth2');
 const request = require('request-promise-native');
 
 const app = require('../../../src/app');
-const logger = require('../../../src/logger/');
+const logger = require('../../../src/logger');
 
 const baseUrlService = app.service('oauth2/baseUrl');
 const clientsService = app.service('oauth2/clients');
