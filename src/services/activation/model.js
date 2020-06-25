@@ -20,7 +20,7 @@ const activationSchema = new Schema({
 	userId: { type: Schema.Types.ObjectId, required: true, ref: 'user' },
 	keyword: { type: String, required: true, enum: Object.values(KEYWORDS) },
 	quarantinedObject: { type: Object, required: true },
-	mailSend: { type: [Date] },
+	mailSent: { type: [Date] },
 	state: { type: String, default: STATE.NOT_STARTED, enum: Object.values(STATE) },
 }, { timestamps: true });
 activationSchema.index({ activationCode: 1 }, { unique: true });

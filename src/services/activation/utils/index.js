@@ -147,7 +147,7 @@ const createEntry = async (ref, userId, keyword, quarantinedObject) => {
 
 /**
  * Will send email with informatrion from mail {receiver, subject, content}
- * also sets mailSend and updatedAt for entry by entryId
+ * also sets mailSent and updatedAt for entry by entryId
  * @param {*} ref				this
  * @param {Object} mail			{receiver, subject, content}
  * @param {ObjectId} entryId	ObjectId of entry
@@ -165,11 +165,11 @@ const sendMail = async (ref, mail, entry) => {
 
 		await ref.app.service('activationModel').patch({ _id: entry._id }, {
 			$push: {
-				mailSend: Date.now(),
+				mailSent: Date.now(),
 			},
 		});
 	} catch (error) {
-		if (entry.mailSend.length === 0) await deleteEntry(ref, entry._id);
+		if (entry.mailSent.length === 0) await deleteEntry(ref, entry._id);
 		throw new Error('Can not send mail with activation link');
 	}
 };

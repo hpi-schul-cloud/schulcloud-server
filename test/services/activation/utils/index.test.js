@@ -52,8 +52,8 @@ describe('activation/utils utils', () => {
 		expect(entry.state).to.be.equal(util.STATE.NOT_STARTED);
 		expect(entry.activationCode).to.have.lengthOf(128);
 		expect(entry.quarantinedObject).to.be.equal(mockData.email);
-		expect(entry.mailSend).to.be.instanceof(Array);
-		expect(entry.mailSend).to.have.lengthOf(0);
+		expect(entry.mailSent).to.be.instanceof(Array);
+		expect(entry.mailSent).to.have.lengthOf(0);
 		expect(entry.createdAt).to.exist;
 		expect(entry.updatedAt).to.exist;
 	});
