@@ -169,7 +169,7 @@ const sendMail = async (ref, mail, entry) => {
 			},
 		});
 	} catch (error) {
-		if (!entry.mailSend) deleteEntry(ref, entry._id);
+		if (entry.mailSend.length === 0) await deleteEntry(ref, entry._id);
 		throw new Error('Can not send mail with activation link');
 	}
 };

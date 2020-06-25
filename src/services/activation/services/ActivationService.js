@@ -25,7 +25,7 @@ class ActivationService {
 	async find(params) {
 		const { userId } = params.account;
 		const entry = await lookupByUserId(this, userId);
-		filterEntryParamNames(entry, ['keyword', 'quarantinedObject']);
+		filterEntryParamNames(entry, ['keyword', 'quarantinedObject', 'state']);
 		return { success: true, entry };
 	}
 
