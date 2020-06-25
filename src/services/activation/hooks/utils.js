@@ -37,7 +37,7 @@ const validPassword = async (hook) => {
 
 const blockThirdParty = async (hook) => {
 	const exm = await externallyManaged(hook.app, hook.params.account.userId);
-	if (exm) {
+	if (exm === true) {
 		throw new Forbidden('Your user data is managed by a IDM. Changes to it can only be made in the source system');
 	}
 	return hook;

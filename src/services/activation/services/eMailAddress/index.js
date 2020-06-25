@@ -79,11 +79,14 @@ const mail = async (ref, type, user, entry) => {
 	await sendMail(ref, content, entry);
 };
 
-// This service takes care of what should happen when an activation
-// code is redeemed, with the keyword eMailAdress. In addition,
-// this service can be used to create an job to change the email/username.
+/** This service takes care of what should happen when an activation
+ * code is redeemed, with the keyword eMailAdress. In addition,
+ * this service can be used to create an job to change the email/username.
+ */
 class EMailAdresseActivationService {
-	// create job
+	/**
+	 * create job
+	 */
 	async create(data, params) {
 		if (!data || !data.email || !data.password) throw new BadRequest('Missing information');
 		const user = await getUser(this, params.account.userId);
