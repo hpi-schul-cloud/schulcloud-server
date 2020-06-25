@@ -75,7 +75,7 @@ describe('activation/services/eMailAddress EMailAdresseActivationService', () =>
 		expect(await cb).to.be.true;
 		expect(res.success).to.be.true;
 
-		const entries = await util.lookupByUserId(app, user._id);
+		const entries = await util.getEntriesByUserId(app, user._id);
 		expect(entries).to.have.lengthOf(1);
 		expect(entries[0].quarantinedObject).to.be.equal(data.email);
 		expect(entries[0].keyword).to.be.equal(mockData.keyword);

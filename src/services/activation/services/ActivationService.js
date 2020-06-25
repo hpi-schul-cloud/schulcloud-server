@@ -2,12 +2,12 @@ const { authenticate } = require('@feathersjs/authentication').hooks;
 const logger = require('../../../logger');
 
 const {
-	lookupByUserId,
+	getEntriesByUserId,
 	deleteEntry,
 	filterEntryParamNames,
 	validEntry,
 	getUser,
-	lookupByActivationCode,
+	getEntryByActivationCode,
 	NotFound,
 	customErrorMessages,
 } = require('../utils');
@@ -24,7 +24,7 @@ class ActivationService {
 	 */
 	async find(params) {
 		const { userId } = params.account;
-		const entry = await lookupByUserId(this, userId);
+		const entry = await getEntriesByUserId(this, userId);
 		filterEntryParamNames(entry, ['keyword', 'quarantinedObject', 'state']);
 		return { success: true, entry };
 	}
@@ -36,7 +36,7 @@ class ActivationService {
 		// valid entry and valid activtionCode
 		if (!id) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
 		const user = await getUser(this, params.account.userId);
-		const entries = await lookupByActivationCode(this, user._id, id);
+		const entries = await getEntryByActivationCode(this, user._id, id);
 
 		if (!user) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
 		if ((entries || []).length !== 1) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
@@ -62,7 +62,7 @@ class ActivationService {
 	async remove(keyword, params) {
 		let removed = 0;
 		const { userId } = params.account;
-		const entry = await lookupByUserId(this, userId, keyword);
+		const entry = await getEntriesByUserId(this, userId, keyword);
 		if (entry) {
 			deleteEntry(this, entry._id);
 			removed += 1;

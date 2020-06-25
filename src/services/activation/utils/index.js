@@ -61,13 +61,13 @@ const lookupEntry = (requestingId, entries, keyword) => {
 };
 
 /**
- * Will lookup entry by userId
+ * Will lookup entries by userId
  * @param {*} ref 					this
  * @param {ObjectId} requestingId	ObjectId of User requesting data
  * @param {String} keyword			Keyword (optional)
  * @returns {Array | Object} 		if a keyword is provided, an object is returned, otherwise an array
  */
-const lookupByUserId = async (ref, requestingId, keyword = null) => {
+const getEntriesByUserId = async (ref, requestingId, keyword = null) => {
 	if (!requestingId) throw new Forbidden(customErrorMessages.NOT_AUTHORIZED);
 
 	const entry = await (ref.app || ref).service('activationModel').find({ query: { userId: requestingId } });
@@ -82,7 +82,7 @@ const lookupByUserId = async (ref, requestingId, keyword = null) => {
  * @param {String} keyword			Keyword
  * @returns {Object} 				an object is returned
  */
-const lookupByActivationCode = async (ref, requestingId, activationCode, keyword = null) => {
+const getEntryByActivationCode = async (ref, requestingId, activationCode, keyword = null) => {
 	if (!requestingId) throw new Forbidden(customErrorMessages.NOT_AUTHORIZED);
 	if (!activationCode) throw SyntaxError('activationCode required!');
 
@@ -133,7 +133,7 @@ const createNewEntry = async (ref, userId, keyword, quarantinedObject) => {
  * @returns {Object}				returns newly created Entry
  */
 const createEntry = async (ref, userId, keyword, quarantinedObject) => {
-	const entry = await lookupByUserId(ref, userId, keyword);
+	const entry = await getEntriesByUserId(ref, userId, keyword);
 	if (entry) {
 		if (entry.quarantinedObject === quarantinedObject) {
 			return entry;
@@ -219,8 +219,8 @@ const createActivationLink = (activationCode) => `${HOST}/activation/${activatio
 module.exports = {
 	STATE,
 	KEYWORDS,
-	lookupByUserId,
-	lookupByActivationCode,
+	getEntriesByUserId,
+	getEntryByActivationCode,
 	setEntryState,
 	sendMail,
 	getUser,

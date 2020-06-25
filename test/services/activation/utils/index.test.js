@@ -93,7 +93,7 @@ describe('activation/utils utils', () => {
 		const { entry, user } = await createEntry();
 
 		const { activationCode } = entry;
-		const lookup = await util.lookupByActivationCode(app, user._id, activationCode, mockData.keyword);
+		const lookup = await util.getEntryByActivationCode(app, user._id, activationCode, mockData.keyword);
 
 		expect(lookup).to.not.be.undefined;
 		expect(lookup._id.toString()).to.equal(entry._id.toString());
@@ -109,7 +109,7 @@ describe('activation/utils utils', () => {
 		const entry = await util.createEntry(app, testUser1._id, keyword, mockData.email);
 
 		const { activationCode } = entry;
-		const entryUser2 = await util.lookupByActivationCode(app, testUser2._id, activationCode, keyword);
+		const entryUser2 = await util.getEntryByActivationCode(app, testUser2._id, activationCode, keyword);
 		expect(entryUser2, 'this is bad!!').to.be.null;
 	});
 
@@ -120,7 +120,7 @@ describe('activation/utils utils', () => {
 		const entry = await util.createEntry(app, testUser1._id, keyword, mockData.email);
 
 		const userIdOfUser1 = testUser1._id;
-		const lookup = await util.lookupByUserId(app, userIdOfUser1, keyword);
+		const lookup = await util.getEntriesByUserId(app, userIdOfUser1, keyword);
 
 		expect(lookup).to.not.be.undefined;
 		expect(lookup._id.toString()).to.equal(entry._id.toString());
@@ -129,7 +129,7 @@ describe('activation/utils utils', () => {
 		expect(lookup.activationCode).to.be.equal(entry.activationCode);
 
 		const userIdOfUser2 = testUser2._id;
-		const lookupUser2 = await util.lookupByUserId(app, userIdOfUser2, keyword);
+		const lookupUser2 = await util.getEntriesByUserId(app, userIdOfUser2, keyword);
 
 		expect(lookupUser2).to.be.null;
 	});
