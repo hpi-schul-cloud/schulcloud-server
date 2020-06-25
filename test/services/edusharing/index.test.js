@@ -5,7 +5,7 @@ const app = require('../../../src/app');
 
 // const eduSearch = app.service('edusharing/eduSearch');
 
-describe.only('insights service', () => {
+describe('insights service', () => {
 	it('registers correctly', () => {
 		expect(app.service('edusharing/eduSearch')).to.not.equal(undefined);
 	});
