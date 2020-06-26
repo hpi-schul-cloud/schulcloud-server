@@ -60,7 +60,7 @@ module.exports = (app) => {
 	firstLoginService.hooks(firstLoginHooks);
 
 	// eslint-disable-next-line global-require
-	const ForcePasswordChangeService = require('./forcePasswordChange')(app);
+	const ForcePasswordChangeService = require('./services/forcePasswordChange')(app);
 	app.use('/forcePasswordChange', new ForcePasswordChangeService());
 	const forcePasswordChangeService = app.service('forcePasswordChange');
 	forcePasswordChangeService.hooks(firstLoginHooks);

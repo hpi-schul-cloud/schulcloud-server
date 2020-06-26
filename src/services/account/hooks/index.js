@@ -57,9 +57,6 @@ const trimPassword = (hook) => {
 };
 
 const validatePassword = (hook) => {
-	if (hook.data.userForcedToChangePassword) {
-		return hook;
-	}
 	const passwordVerification = hook.data.password_verification;
 	const { password } = hook.data;
 
@@ -88,7 +85,7 @@ const validatePassword = (hook) => {
 			const editsOwnAccount = equalIds(hook.id, hook.params.account._id);
 			// Check if it is firstLogin
 			const userDidFirstLogin = (user.preferences && user.preferences.firstLogin);
-
+			const { userForcedToChangePassword } = hook.data;
 			if (
 				(!userDidFirstLogin && editsOwnAccount)
 				|| (
@@ -100,6 +97,7 @@ const validatePassword = (hook) => {
 						)
 					)
 				)
+				|| userForcedToChangePassword
 			) {
 				return hook;
 			}
