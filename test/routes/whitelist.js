@@ -1,4 +1,4 @@
-/* eslint-disable-line key-spacing quote-props */
+/* eslint-disable key-spacing, quote-props */
 
 const whitelistNoJwt = {
 	'accounts/confirm':        { post: 201 },
