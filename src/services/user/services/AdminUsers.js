@@ -89,17 +89,17 @@ class AdminUsers {
 			const searchedRole = roles.find((role) => role.name === this.role);
 			const users = await getAllUsers(schoolId, currentYear, searchedRole._id, query);
 
-			// filter students' last class and return students filtered by class query
+			// filter students' latest class and return students filtered by class query
 			if (params.headers.referer.includes('students')) {
 				users.data.forEach((student) => {
 					student.classes = student.classes.sort(
-						(a, b) => b.match(/\d+/) - a.match(/\d+/)
+						(a, b) => b.match(/\d+/) - a.match(/\d+/),
 					)[0];
 				});
 				if (query.classes) {
 					return {
 						...users,
-						data: users.data.filter(student => query.classes.includes(student.classes)),
+						data: users.data.filter((student) => query.classes.includes(student.classes)),
 					};
 				}
 			}
