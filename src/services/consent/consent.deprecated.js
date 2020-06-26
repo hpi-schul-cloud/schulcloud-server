@@ -1,6 +1,5 @@
 const { BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
-const { modelServices: { prepareInternalParams } } = require('../../utils');
 const { userToConsent, modifyDataForUserSchema } = require('./utils');
 const globalHooks = require('../../hooks');
 
@@ -57,23 +56,37 @@ const consentHook = {
 
 class ConsentService {
 	async find(params) {
-		const { query: { userId, ...oldQuery } } = params;
+		const {
+			query: {
+				userId,
+				$limit,
+				$skip,
+				...oldQuery
+			},
+		} = params;
 
-		const query = {};
+		const query = {
+			$limit,
+			$skip,
+		};
 
-		if (({}).hasOwnProperty.call(oldQuery, 'userId')) {
-			if (!userId.$in) {
+		if (userId !== undefined) {
+			if (typeof userId === 'string') {
 				const user = await this.modelService.get(userId);
 				return {
 					total: 1,
-					limit: 25,
+					limit: $limit || 25,
 					skip: 0,
-					data: userToConsent(user),
+					data: [userToConsent(user)],
 				};
 			}
-			query._id = {
-				$in: userId.$in,
-			};
+
+			if (({}).hasOwnProperty.call(userId, '$in')
+				&& Array.isArray(userId.$in)) {
+				query._id = {
+					$in: userId.$in,
+				};
+			}
 		}
 
 		if (Object.keys(oldQuery).length !== 0) {
@@ -95,7 +108,7 @@ class ConsentService {
 	}
 
 	async get(_id, params) {
-		return this.modelService.get(_id);
+		return userToConsent(this.modelService.get(_id));
 	}
 
 	async create(data, params) {

@@ -4,7 +4,6 @@ const roleModel = require('../../role/model');
 const { enableAuditLog } = require('../../../utils/database');
 const { consentSchema } = require('./consent.schema');
 const externalSourceSchema = require('../../../helper/externalSourceSchema');
-const { defineConsentStatus, isParentConsentRequired } = require('../utils/consent');
 
 const { Schema } = mongoose;
 
@@ -76,18 +75,6 @@ userSchema.virtual('fullName').get(function get() {
 		this.nameSuffix,
 	].join(' ').trim().replace(/\s+/g, ' ');
 });
-
-userSchema.virtual('consentStatus').get(function get() {
-	if (!this.consent) return undefined; // TODO: what happen if not defined, is it on query?
-	return defineConsentStatus(this.birthday, this.consent);
-});
-
-
-userSchema.virtual('requiresParentConsent').get(function get() {
-	if (!this.birthday) return undefined;
-	return isParentConsentRequired(this.birthday);
-});
-
 
 userSchema.plugin(leanVirtuals);
 
