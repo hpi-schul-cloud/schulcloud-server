@@ -41,4 +41,7 @@ const ignorelistInvalidJwt = {
 	...ignorelistNoJwt,
 };
 
-module.exports = { whitelistNoJwt, whitelistInvalidJwt, ignorelistNoJwt, ignorelistInvalidJwt };
+module.exports = {
+	whitelistNoJwt, whitelistInvalidJwt,
+	ignorelistNoJwt, ignorelistInvalidJwt
+};
