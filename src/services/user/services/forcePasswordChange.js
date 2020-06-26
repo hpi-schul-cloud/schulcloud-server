@@ -1,7 +1,7 @@
 const { BadRequest } = require('@feathersjs/errors');
 const { passwordsMatch } = require('../../../helper/passwordHelpers');
 
-const setupNewPasswordProvidedByUser = app => async (data, params) => {
+const setupNewPasswordProvidedByUser = (app) => async (data, params) => {
 	const newPassword = data['password-1'];
 	if (!passwordsMatch(newPassword, data['password-2'])) {
 		return Promise.reject(new BadRequest('Die neuen Passwörter stimmen nicht überein.'));
