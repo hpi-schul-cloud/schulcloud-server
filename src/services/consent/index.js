@@ -5,7 +5,7 @@ const consentVersionModelHooks = require('./hooks/consentversionsModelHooks');
 const consentDocs = require('./docs');
 const { ConsentStatusService } = require('./consentStatus.service');
 const { ConsentVersionService, ConsentVersionServiceHooks } = require('./services/consentVersionService');
-// const depricated = require('./consent.depricated');
+const deprecated = require('./consent.deprecated');
 
 // eslint-disable-next-line func-names
 module.exports = function () {
@@ -21,11 +21,11 @@ module.exports = function () {
 	});
 	consentModelService.docs = consentDocs;
 	// Consent Model
-
+*/
 	// REPLACEMENT FOR CURRENT consent ROUTE
-	// app.use('/consents', new deprecated.ConsentService());
-	// app.service('consents').hooks(depircated.consentHooks);
-
+	app.use('/consents', new deprecated.ConsentService());
+	app.service('consents').hooks(deprecated.consentHooks);
+	/*
 	app.use('/consents', consentModelService);
 	app.service('/consents').hooks(consentHooks);
 	*/

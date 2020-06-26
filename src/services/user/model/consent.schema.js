@@ -27,7 +27,7 @@ const consentSchema = new Schema({
 		privacyConsent: { type: Boolean },
 		termsOfUseConsent: { type: Boolean },
 	}],
-});
+}, { _id: false });
 
 enableAuditLog(consentSchema);
 consentSchema.plugin(mongooseHistory);
