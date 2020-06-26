@@ -12,6 +12,16 @@
 			"default": "example",
 			"description": "The API Key that the Calendar uses to resolve scopes. This should be removed with SC-3387"
 		},
+		"CONSENT_AGE_FIRST": {
+			"tpye": "integer",
+			"default": 14,
+			"description": "First gate for consent. Starting at this age the user have to give his/her consent"
+		},
+		"CONSENT_AGE_SECOND": {
+			"tpye": "integer",
+			"default": 16,
+			"description": "Second gate for consent. Starting at this age parent consent is not required"
+		},
 		"DISABLED_BRUTE_FORCE_CHECK": {
 			"type": "boolean",
 			"default": false,

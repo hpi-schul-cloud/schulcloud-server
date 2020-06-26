@@ -1,3 +1,5 @@
+const { Configuration } = require('@schul-cloud/commons');
+
 /**
  * Converts consentStatus to a filter condition for consent
  * @param  {...string} status
@@ -5,9 +7,9 @@
 const createConsentFilterQuery = (...status) => {
 	const currentDate = new Date();
 	const secondConsentSwitchDate = new Date();
-	secondConsentSwitchDate.setFullYear(currentDate.getFullYear() - 16); // TODO: get age from default.conf
+	secondConsentSwitchDate.setFullYear(currentDate.getFullYear() - Configuration.get('CONSENT_AGE_SECOND'));
 	const firstConsentSwitchDate = new Date();
-	firstConsentSwitchDate.setFullYear(currentDate.getFullYear() - 14);
+	firstConsentSwitchDate.setFullYear(currentDate.getFullYear() - Configuration.get('CONSENT_AGE_FIRST'));
 
 	const createRequiredConsents = (...persons) => persons.reduce((person, current) => {
 		current[`consent.${person}.privacyConsent`] = true;
@@ -120,9 +122,13 @@ const defineConsentStatus = (birthday, consent) => {
 
 	const currentDate = new Date();
 	const secoundConsentSwitchDate = new Date();
-	secoundConsentSwitchDate.setFullYear(currentDate.getFullYear() - 16); // TODO: get age from default.conf
+	secoundConsentSwitchDate
+		.setFullYear(
+			currentDate.getFullYear()
+			- Configuration.get('CONSENT_AGE_SECOND'),
+		);
 	const firstConsentSwitchDate = new Date();
-	firstConsentSwitchDate.setFullYear(currentDate.getFullYear() - 14);
+	firstConsentSwitchDate.setFullYear(currentDate.getFullYear() - Configuration.get('CONSENT_AGE_FIRST'));
 
 
 	const { parentConsents, userConsent } = consent;
@@ -162,7 +168,7 @@ const defineConsentStatus = (birthday, consent) => {
 const isParentConsentRequired = (birthday) => {
 	const currentDate = new Date();
 	const secoundConsentSwitchDate = new Date();
-	secoundConsentSwitchDate.setFullYear(currentDate.getFullYear() - 16); // TODO: get age from default.conf
+	secoundConsentSwitchDate.setFullYear(currentDate.getFullYear() - Configuration.get('CONSENT_AGE_SECOND'));
 
 	if (birthday.getTime() < secoundConsentSwitchDate.getTime()) {
 		return false;
