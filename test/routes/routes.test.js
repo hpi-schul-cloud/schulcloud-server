@@ -3,7 +3,7 @@ const request = require('request-promise-native');
 const app = require('../../src/app');
 const getAllRoutes = require('../services/helpers/getAllRoutes');
 const {
-	whitelistNoJwt, whitelistInvalidJwt, ignorelistNoJwt, ignorelistInvalidJwt
+	whitelistNoJwt, whitelistInvalidJwt, ignorelistNoJwt, ignorelistInvalidJwt,
 } = require('./whitelist');
 const { API_HOST } = require('../../config/globals');
 
@@ -95,5 +95,5 @@ describe('Call routes with empty jwt', () => createTests('', whitelistNoJwt, ign
 describe('Call routes with invalid jwt', () => createTests(
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJhY2Nv',
 	whitelistInvalidJwt,
-	ignorelistInvalidJwt
+	ignorelistInvalidJwt,
 ));
