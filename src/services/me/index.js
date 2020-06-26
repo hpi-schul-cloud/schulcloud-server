@@ -22,13 +22,13 @@ class Service {
 			},
 		};
 		let user = {};
-		user.accountId = params.account._id;
 		try {
 			user = await this.app.service('/users').get(userId, userServiceParams);
 		} catch (err) {
 			logger.warning(err);
 			throw new Forbidden('Your access token is not valid.');
 		}
+		user.accountId = params.account._id;
 		try {
 			user.schoolName = (await this.app.service('/schools').get(user.schoolId)).name;
 		} catch (err) {
