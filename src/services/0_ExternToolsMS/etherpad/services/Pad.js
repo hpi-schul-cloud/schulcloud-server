@@ -1,4 +1,4 @@
-const EtherpadClient = require('../utils/EtherpadClient');
+const EtherpadClient = require('../../logic/EtherpadClient');
 
 class Pad {
 	constructor(options) {

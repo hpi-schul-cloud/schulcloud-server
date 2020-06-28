@@ -1,7 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { disallow } = require('feathers-hooks-common');
-
-const { hasPermission } = require('../../../hooks');
+const { hasPermission } = require('../../hooks');
 
 const before = {
 	all: [authenticate('jwt')],

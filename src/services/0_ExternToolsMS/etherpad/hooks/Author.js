@@ -1,9 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { disallow } = require('feathers-hooks-common');
 const { Forbidden } = require('@feathersjs/errors');
-const { injectUserId, getUser } = require('../../../hooks');
+const { injectUserId, getUser } = require('../../hooks');
 
-const logger = require('../../../logger');
+const logger = require('../../../../logger');
 
 const getUserData = async (context) => {
 	try {

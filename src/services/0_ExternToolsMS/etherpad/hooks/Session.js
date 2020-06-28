@@ -1,9 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { disallow } = require('feathers-hooks-common');
 const { Forbidden } = require('@feathersjs/errors');
-const EtherpadClient = require('../utils/EtherpadClient');
+const EtherpadClient = require('../../logic/EtherpadClient');
 
-const logger = require('../../../logger');
+const logger = require('../../../../logger');
 
 const getAuthorData = async (context) => {
 	const authorService = context.app.service('etherpad/authors').create({ userId: context.params.account.userId });

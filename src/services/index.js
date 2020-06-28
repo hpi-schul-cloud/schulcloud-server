@@ -43,8 +43,8 @@ const database = require('../utils/database');
 const alert = require('./alert');
 const videoconference = require('./videoconference');
 const messengerSync = require('./messengerSync');
-const nexboard = require('./nexboard');
-const etherpad = require('./etherpad');
+const nexboard = require('./0_ExternToolsMS/nexboard');
+const etherpad = require('./0_ExternToolsMS/etherpad');
 const storageProvider = require('./storageProvider');
 
 module.exports = function initializeServices() {

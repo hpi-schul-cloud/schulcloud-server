@@ -1,4 +1,4 @@
-const nexboardClient = require('../utils/Nexboard');
+const nexboardClient = require('../../logic/NexboardClient');
 
 class Project {
 	constructor(options) {

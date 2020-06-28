@@ -3,11 +3,11 @@ const { disallow } = require('feathers-hooks-common');
 const { Forbidden } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
 
-const logger = require('../../../logger');
-const globalHooks = require('../../../hooks');
+const logger = require('../../../../logger');
+const { hasPermission, restrictToUsersOwnCourses } = require('../../hooks');
 
 const restrictOldPadsToCourse = async (context) => {
-	if(typeof(context.data.oldPadId) === 'undefined') {
+	if (typeof context.data.oldPadId === 'undefined') {
 		return context;
 	}
 	const oldPadURI = Configuration.get('ETHERPAD_OLD_PAD_URI') || 'https://etherpad.schul-cloud.org/p';
@@ -19,7 +19,7 @@ const restrictOldPadsToCourse = async (context) => {
 				contents: { $elemMatch: { 'content.url': `${oldPadURI}/${context.data.oldPadId}` } },
 			},
 		});
-		if(foundLessons.total < 1) {
+		if (foundLessons.total < 1) {
 			throw new Error('Forbidden');
 		}
 	} catch (err) {
@@ -57,9 +57,9 @@ const before = {
 	find: [disallow()],
 	get: [disallow()],
 	create: [
-		globalHooks.hasPermission('TOOL_CREATE'),
+		hasPermission('TOOL_CREATE'),
 		injectCourseId,
-		globalHooks.restrictToUsersOwnCourses,
+		restrictToUsersOwnCourses,
 		getGroupData,
 		restrictOldPadsToCourse,
 	],
