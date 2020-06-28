@@ -1,9 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { disallow } = require('feathers-hooks-common');
 const { Forbidden } = require('@feathersjs/errors');
-const EtherpadClient = require('../../logic/EtherpadClient');
+const EtherpadClient = require('../logic/EtherpadClient');
 
-const logger = require('../../../../logger');
+const logger = require('../../../logger');
 
 const getAuthorData = async (context) => {
 	const authorService = context.app.service('etherpad/authors').create({ userId: context.params.account.userId });
@@ -89,31 +89,57 @@ const getSessionInformation = async (context) => {
 	}
 };
 
-const before = {
-	all: [authenticate('jwt')],
-	find: [disallow()],
-	get: [disallow()],
-	create: [
-		getAuthorData,
-		getGroupData,
-		getSessionInformation,
-	],
-	update: [disallow()],
-	patch: [disallow()],
-	remove: [disallow()],
+const SessionHooks = {
+	before: {
+		all: [authenticate('jwt')],
+		find: [disallow()],
+		get: [disallow()],
+		create: [
+			getAuthorData,
+			getGroupData,
+			getSessionInformation,
+		],
+		update: [disallow()],
+		patch: [disallow()],
+		remove: [disallow()],
+	},
+	after: {
+		all: [],
+		find: [],
+		get: [],
+		create: [],
+		update: [],
+		patch: [],
+		remove: [],
+	},
 };
 
-const after = {
-	all: [],
-	find: [],
-	get: [],
-	create: [],
-	update: [],
-	patch: [],
-	remove: [],
-};
+class Session {
+	constructor(options) {
+		this.options = options || {};
+		this.docs = {};
+	}
+
+	create(params) {
+		return Promise.resolve({
+			code: 0,
+			message: 'ok',
+			data: {
+				sessionID: params.sessionID,
+				validUntil: params.validUntil,
+			},
+		});
+	}
+
+	setup(app) {
+		this.app = app;
+	}
+}
 
 module.exports = {
-	before,
-	after,
+	Session,
+	SessionHooks,
+	getSessionInformation,
+	getGroupData,
+	getAuthorData,
 };

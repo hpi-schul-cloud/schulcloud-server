@@ -3,8 +3,9 @@ const { disallow } = require('feathers-hooks-common');
 const { Forbidden } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
 
-const logger = require('../../../../logger');
-const { hasPermission, restrictToUsersOwnCourses } = require('../../hooks');
+const logger = require('../../../logger');
+const { hasPermission, restrictToUsersOwnCourses } = require('../hooks');
+const EtherpadClient = require('../logic/EtherpadClient');
 
 const restrictOldPadsToCourse = async (context) => {
 	if (typeof context.data.oldPadId === 'undefined') {
@@ -52,33 +53,52 @@ const injectCourseId = async (context) => {
 	return context;
 };
 
-const before = {
-	all: [authenticate('jwt')],
-	find: [disallow()],
-	get: [disallow()],
-	create: [
-		hasPermission('TOOL_CREATE'),
-		injectCourseId,
-		restrictToUsersOwnCourses,
-		getGroupData,
-		restrictOldPadsToCourse,
-	],
-	update: [disallow()],
-	patch: [disallow()],
-	remove: [disallow()],
+const PadHooks = {
+	before: {
+		all: [authenticate('jwt')],
+		find: [disallow()],
+		get: [disallow()],
+		create: [
+			hasPermission('TOOL_CREATE'),
+			injectCourseId,
+			restrictToUsersOwnCourses,
+			getGroupData,
+			restrictOldPadsToCourse,
+		],
+		update: [disallow()],
+		patch: [disallow()],
+		remove: [disallow()],
+	},
+	after: {
+		all: [],
+		find: [],
+		get: [],
+		create: [],
+		update: [],
+		patch: [],
+		remove: [],
+	},
 };
 
-const after = {
-	all: [],
-	find: [],
-	get: [],
-	create: [],
-	update: [],
-	patch: [],
-	remove: [],
-};
+class Pad {
+	constructor(options) {
+		this.options = options || {};
+		this.docs = {};
+	}
+
+	create(params) {
+		return EtherpadClient.createOrGetGroupPad(params);
+	}
+
+	setup(app) {
+		this.app = app;
+	}
+}
 
 module.exports = {
-	before,
-	after,
+	Pad,
+	PadHooks,
+	restrictOldPadsToCourse,
+	getGroupData,
+	injectCourseId,
 };

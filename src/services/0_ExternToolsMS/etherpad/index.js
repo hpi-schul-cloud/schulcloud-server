@@ -1,16 +1,23 @@
 const {
-	Pad,
-	Session,
-	Group,
 	Author,
-} = require('./services');
+	AuthorHooks,
+} = require('./Author');
 
 const {
-	padHooks,
-	sessionHooks,
-	groupHooks,
-	authorHooks,
-} = require('./hooks');
+	Group,
+	GroupHooks,
+} = require('./Group');
+
+const {
+	Pad,
+	PadHooks,
+} = require('./Pad');
+
+const {
+	Session,
+	SessionHooks,
+} = require('./Session');
+
 
 module.exports = (app) => {
 	const padsRoute = '/etherpad/pads';
@@ -28,8 +35,8 @@ module.exports = (app) => {
 	const group = app.service(groupRoute);
 	const author = app.service(authorRoute);
 
-	pads.hooks(padHooks);
-	session.hooks(sessionHooks);
-	group.hooks(groupHooks);
-	author.hooks(authorHooks);
+	pads.hooks(PadHooks);
+	session.hooks(SessionHooks);
+	group.hooks(GroupHooks);
+	author.hooks(AuthorHooks);
 };
