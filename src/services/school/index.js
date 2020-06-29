@@ -61,10 +61,10 @@ module.exports = function schoolServices() {
 	const gradeLevelService = app.service('/gradeLevels');
 	gradeLevelService.hooks(hooks);
 
-	const FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY = Configuration
-		.get('FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY');
+	const ADMIN_TOGGLE_STUDENT_VISIBILITY = Configuration
+		.get('ADMIN_TOGGLE_STUDENT_VISIBILITY');
 
-	if (FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY !== 'disabled') {
+	if (ADMIN_TOGGLE_STUDENT_VISIBILITY !== 'disabled') {
 		app.use('/school/teacher/studentvisibility', new HandlePermissions('teacher', 'STUDENT_LIST'));
 		const handlePermissionsService = app.service('/school/teacher/studentvisibility');
 		handlePermissionsService.hooks(handlePermissionsHooks);
