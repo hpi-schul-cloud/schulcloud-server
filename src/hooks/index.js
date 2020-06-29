@@ -553,8 +553,11 @@ exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) =>
 					|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
 			});
 
-			context.result.total = context.result.data.length;
-
+			if (context.result.data.length === 0) {
+				throw new NotFound('There are no lessons that you have access to.');
+			} else {
+				context.result.total = context.result.data.length;
+			}
 			context.result.data.forEach((lesson) => {
 				if ('courseGroupId' in lesson) {
 					lesson.courseGroupId = lesson.courseGroupId._id;
