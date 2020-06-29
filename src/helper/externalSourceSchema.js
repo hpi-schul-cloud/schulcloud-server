@@ -8,6 +8,6 @@
  * @param {Object} sourceOptions use-case-specific data, e.g. external ids, configs, etc.
  */
 module.exports = {
-	source: { type: String },
+	source: { type: String, index: true },
 	sourceOptions: { type: Object },
 };
