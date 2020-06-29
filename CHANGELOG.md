@@ -10,6 +10,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 ### Added
+- SC-4520 created a new Service called Activation Service; with which jobs can be defined and are 
+only executed when an activation link (activation code) is confirmed (e.g.: change of e-mail address/username)
+Also added a sub-service for changing email/username in Activation Service
 
 ### Fixed
 
