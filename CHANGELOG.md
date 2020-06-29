@@ -11,6 +11,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-4142: Added indexes on TSP sync related attributes in user and school schema.
+- SC-4142: Adds info about unchanged entities to TSP sync statistics
+
 ### Fixed
 
 ### Changed
