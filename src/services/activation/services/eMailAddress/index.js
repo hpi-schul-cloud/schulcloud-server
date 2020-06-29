@@ -35,10 +35,10 @@ const buildActivationLinkMail = (user, entry) => {
 	const subject = 'Bestätige deine E-Mail-Adresse';
 	const content = {
 		text: `Bestätige deine E-Mail-Adresse
-\\nHallo ${user.firstName},
-\\nbitte bestätige deine neue E-Mail-Adresse (${email}) über folgenden Link: ${activationLink}
-\\nBitte beachte, dass der Aktivierungslink nur 2 Stunden gültig ist.
-\\nDein ${SC_SHORT_TITLE} Team`,
+\nHallo ${user.firstName},
+\nbitte bestätige deine neue E-Mail-Adresse (${email}) über folgenden Link: ${activationLink}
+\nBitte beachte, dass der Aktivierungslink nur 2 Stunden gültig ist.
+\nDein ${SC_SHORT_TITLE} Team`,
 		html: '',
 	};
 
@@ -50,11 +50,11 @@ const buildFYIMail = (user) => {
 	const subject = 'E-Mail-Adresse geändert';
 	const content = {
 		text: `E-Mail-Adresse geändert
-\\nHallo ${user.firstName},
-\\nwir wollten dich nur informieren, dass sich die E-Mail-Adresse für dein ${SC_SHORT_TITLE} Konto geändert hat.
-\\nWenn du die Änderung veranlasst hast, ist alles in Ordnung.
-\\nFalls du nicht darum gebeten hast, deine E-Mail-Adresse zu änderen, kontaktiere deinen Schuladministrator oder unseren User-Support.
-\\nDein ${SC_SHORT_TITLE} Team`,
+\nHallo ${user.firstName},
+\nwir wollten dich nur informieren, dass sich die E-Mail-Adresse für dein ${SC_SHORT_TITLE} Konto geändert hat.
+\nWenn du die Änderung veranlasst hast, ist alles in Ordnung.
+\nFalls du nicht darum gebeten hast, deine E-Mail-Adresse zu änderen, kontaktiere deinen Schuladministrator oder unseren User-Support.
+\nDein ${SC_SHORT_TITLE} Team`,
 		html: '',
 	};
 
