@@ -621,6 +621,17 @@
 },
 {
 	"_id": {
+		"$oid": "5ef44b01619afb4144b4286f"
+	},
+	"state": "up",
+	"name": "addTspSyncIndexes",
+	"createdAt": {
+		"$date": "2020-06-25T06:58:09.663Z"
+	},
+	"__v": 0
+},
+{
+  "_id": {
     "$oid": "5df895ad9ac7d23f70ad66fa"
 	},
 	"state": "up",
@@ -628,5 +639,5 @@
 	"createdAt": {
 		"$date": "2019-12-17T08:20:02.025Z"
   },
-	"__v": 0
+  "__v": 0
 }]
