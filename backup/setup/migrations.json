@@ -607,5 +607,26 @@
 		"$date": "2020-06-04T13:10:39.414Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5edf56430383be55fc9a8ee3"
+	},
+	"state": "up",
+	"name": "updateUserIndexesForLDAP",
+	"createdAt": {
+		"$date": "2020-06-09T09:28:35.874Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ef44b01619afb4144b4286f"
+	},
+	"state": "up",
+	"name": "addTspSyncIndexes",
+	"createdAt": {
+		"$date": "2020-06-25T06:58:09.663Z"
+	},
+	"__v": 0
 }]
-
