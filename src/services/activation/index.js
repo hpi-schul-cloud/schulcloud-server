@@ -1,7 +1,7 @@
 const {
 	ActivationModel,
 	Activation,
-	EMailAdresseActivation,
+	EMailAddressActivation,
 } = require('./services');
 
 const { KEYWORDS } = require('./utils/customUtils');
@@ -24,8 +24,8 @@ module.exports = (app) => {
 	 * code is redeemed, with the keyword eMailAdress. In addition,
 	 * this service can be used to create an job to change the email/username.
 	 */
-	const EMailAdresseActivationRoute = `/activation/${KEYWORDS.E_MAIL_ADDRESS}`;
-	app.use(EMailAdresseActivationRoute, new EMailAdresseActivation.Service());
-	const EMailAdresseActivationService = app.service(EMailAdresseActivationRoute);
-	EMailAdresseActivationService.hooks(EMailAdresseActivation.Hooks);
+	const EMailAddressActivationRoute = `/activation/${KEYWORDS.E_MAIL_ADDRESS}`;
+	app.use(EMailAddressActivationRoute, new EMailAddressActivation.Service());
+	const EMailAddressActivationService = app.service(EMailAddressActivationRoute);
+	EMailAddressActivationService.hooks(EMailAddressActivation.Hooks);
 };

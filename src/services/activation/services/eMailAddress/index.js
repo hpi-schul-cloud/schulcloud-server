@@ -83,7 +83,7 @@ const mail = async (ref, type, user, entry) => {
  * code is redeemed, with the keyword eMailAdress. In addition,
  * this service can be used to create an job to change the email/username.
  */
-class EMailAdresseActivationService {
+class EMailAddressActivationService {
 	/**
 	 * create job
 	 */
@@ -137,7 +137,7 @@ class EMailAdresseActivationService {
 	}
 }
 
-const EMailAdresseActivationHooks = {
+const EMailAddressActivationHooks = {
 	before: {
 		all: [
 			authenticate('jwt'),
@@ -160,6 +160,6 @@ const EMailAdresseActivationHooks = {
 };
 
 module.exports = {
-	Hooks: EMailAdresseActivationHooks,
-	Service: EMailAdresseActivationService,
+	Hooks: EMailAddressActivationHooks,
+	Service: EMailAddressActivationService,
 };
