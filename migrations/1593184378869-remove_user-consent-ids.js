@@ -26,23 +26,6 @@ const User = mongoose.model('userNew', new mongoose.Schema({
 			termsOfUseConsent: { type: Boolean },
 		}],
 	},
-	consent2: {
-		userConsent: {
-			form: { type: String, enum: consentForm },
-			dateOfPrivacyConsent: { type: Date },
-			dateOfTermsOfUseConsent: { type: Date },
-			privacyConsent: { type: Boolean },
-			termsOfUseConsent: { type: Boolean },
-		},
-		parentConsents: [{
-			parentId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
-			form: { type: String, enum: consentForm },
-			dateOfPrivacyConsent: { type: Date },
-			dateOfTermsOfUseConsent: { type: Date },
-			privacyConsent: { type: Boolean },
-			termsOfUseConsent: { type: Boolean },
-		}],
-	},
 }, {
 	timestamps: true,
 }), 'users');
