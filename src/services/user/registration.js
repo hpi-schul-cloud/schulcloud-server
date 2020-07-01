@@ -259,6 +259,7 @@ const registerUser = function register(data, params, app) {
 						if (oldUser) {
 							return userModel.userModel.create(oldUser);
 						}
+						return Promise.resolve();
 					}));
 			}
 			if (parent && parent._id) {
