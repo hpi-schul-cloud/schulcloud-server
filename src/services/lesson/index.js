@@ -3,7 +3,7 @@ const service = require('feathers-mongoose');
 const lessonModel = require('./model');
 const hooks = require('./hooks/index');
 const copyHooks = require('./hooks/copy');
-const { LessonCopyService, LessonFilesService /* , AddMaterialService */ } = require('./services');
+const { LessonCopyService, LessonFilesService, AddMaterialService } = require('./services');
 
 module.exports = function setup() {
 	const app = this;
@@ -21,8 +21,7 @@ module.exports = function setup() {
 	app.use('/lessons/:lessonId/files', new LessonFilesService());
 	app.use('/lessons/copy', new LessonCopyService(app));
 
-	// todo enable after adding hooks only or remove
-	// app.use('/lessos/:lessonId/material', new AddMaterialService());
+	app.use('/lessons/:lessonId/material', new AddMaterialService());
 
 	// Return all lesson.contets which have component = query.type And User = query.user or null
 	app.use('/lessons/contents/:type/', {
