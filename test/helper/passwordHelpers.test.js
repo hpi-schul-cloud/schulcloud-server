@@ -1,5 +1,5 @@
 const chai = require('chai');
-const { checkPasswordStrength, passwordsMatch } = require('../../src/helper/passwordHelpers');
+const { checkPasswordStrength, passwordsMatch } = require('../../src/utils/passwordHelpers');
 
 const { expect } = chai;
 

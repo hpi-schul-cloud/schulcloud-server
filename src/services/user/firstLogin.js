@@ -1,6 +1,6 @@
 const { Configuration } = require('@schul-cloud/commons');
 const constants = require('../../utils/constants');
-const { passwordsMatch } = require('../../helper/passwordHelpers');
+const { passwordsMatch } = require('../../utils/passwordHelpers');
 
 /* eslint-disable prefer-promise-reject-errors */ // fixmer this should be removed
 const createParent = (data, params, user, app) => app.service('/registrationPins/')

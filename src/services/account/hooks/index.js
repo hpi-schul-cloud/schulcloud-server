@@ -1,7 +1,7 @@
 const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 const bcrypt = require('bcryptjs');
 const { ObjectId } = require('mongoose').Types;
-const { checkPasswordStrength } = require('../../../helper/passwordHelpers');
+const { checkPasswordStrength } = require('../../../utils/passwordHelpers');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const globalHooks = require('../../../hooks');
