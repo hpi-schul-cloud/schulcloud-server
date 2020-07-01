@@ -43,6 +43,31 @@ describe('userRoles', async () => {
 
 	let otherUser;
 
+	let accountTestUser;
+	let accountTestUser2;
+	let accountTestUserOther;
+
+	const commonAccountData = {
+		password: '$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJACla',
+		activated: true,
+		createdAt: '2017-09-04T12:51:58.49Z',
+	};
+
+	const dataTestUser1 = {
+		username: 'testuser1',
+		...commonAccountData,
+	};
+
+	const dataTestUser2 = {
+		username: 'testuser2',
+		...commonAccountData,
+	};
+
+	const dataTestUserOther = {
+		username: 'testuserother2',
+		...commonAccountData,
+	};
+
 	before((done) => {
 		server = app.listen(0, async () => {
 			testRole = await testObjects.createTestRole({
@@ -80,6 +105,11 @@ describe('userRoles', async () => {
 				schoolId: testSchoolWithoutRole._id,
 				roles: [otherRole._id],
 			});
+
+			accountTestUser = await testObjects.createTestAccount(dataTestUser1, null, testUser);
+			accountTestUser2 = await testObjects.createTestAccount(dataTestUser2, null, testUser2);
+			accountTestUserOther = await testObjects.createTestAccount(dataTestUserOther, null, otherUser);
+
 			done();
 		});
 	});
@@ -94,27 +124,20 @@ describe('userRoles', async () => {
 	});
 
 	it('get updated roles', async () => {
-		const roles = await userRoles.get({
-			id: testUser._id,
-		});
+		const roles = await userRoles.get(testUser._id, { account: accountTestUser });
 		const result = roles.map((role) => role.permissions);
-		expect(result).to.equal(testRole.permissions);
+		expect(result[0]).to.have.members(testRole.permissions);
 	});
 
 	it('should remove unnecessary permissions', async () => {
-		const roles = await userRoles.get({
-			id: testUser2._id,
-		});
+		const roles = await userRoles.get(testUser2._id, { account: accountTestUser2 });
 		const result = roles.map((role) => role.permissions);
-		expect(result).to.not.equal(testRoleWithDiffrentPermissons.permissions);
+		expect(result[0]).to.have.members(testRoleWithDiffrentPermissons.permissions);
 	});
 
 	it('should dont update userRoles', async () => {
-		const roles = await userRoles.get({
-			id: otherUser._id,
-		});
-
+		const roles = await userRoles.get(otherUser._id, { account: accountTestUserOther });
 		const result = roles.map((role) => role.permissions);
-		expect(result).to.equal(otherRole.permissions);
+		expect(result[0]).to.have.members(otherRole.permissions);
 	});
 });
