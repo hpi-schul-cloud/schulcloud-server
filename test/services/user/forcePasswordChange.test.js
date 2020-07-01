@@ -62,10 +62,10 @@ describe('forcePasswordChange service tests', () => {
 		// eslint-disable-next-line max-len
 		it('when the user has been forced to change his password, the proper flag will be setted after changing the password', async () => {
 			const testUser = await testObjects.createTestUser();
-			const teacherRequestAuthentication = await generateRequestParamsFromUser(testUser);
+			const userRequestAuthentication = await generateRequestParamsFromUser(testUser);
 
 			const newAccount = {
-				username: 'someusername',
+				username: 'someutestsername22',
 				password: '$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJACla',
 				activated: true,
 				createdAt: '2017-09-04T12:51:58.49Z',
@@ -73,7 +73,7 @@ describe('forcePasswordChange service tests', () => {
 			};
 			const savedUser = await testObjects.createTestUser();
 			const account = await testObjects.createTestAccount(newAccount, null, savedUser);
-			const requestParams = teacherRequestAuthentication;
+			const requestParams = userRequestAuthentication;
 			requestParams.authentication.payload = {
 				accountId: newAccount.accountId,
 			};

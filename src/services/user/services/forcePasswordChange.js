@@ -11,12 +11,17 @@ const setupNewPasswordProvidedByUser = (app) => async (data, params) => {
 	const accountUpdate = {
 		password: newPassword,
 		userForcedToChangePassword: true,
-		forcePasswordChange: false,
 	};
 
-	const accountPromise = app.service('accounts')
+	const accountPromise = app.service('/accounts')
 		.patch(accountId, accountUpdate, params);
-	return accountPromise
+	await accountPromise
+		.then((result) => Promise.resolve(result))
+		.catch((err) => Promise.reject(err));
+
+	const userPromise = app.service('/users')
+		.patch(params.account.userId, { forcePasswordChange: false });
+	return userPromise
 		.then((result) => Promise.resolve(result))
 		.catch((err) => Promise.reject(err));
 };
