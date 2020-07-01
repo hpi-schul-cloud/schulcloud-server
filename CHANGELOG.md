@@ -15,13 +15,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 
 ### Fixed
-- SC-4965 Converted "consent" subdocument in "users" to a nested document to fix changing consents in administration and removing a bug in registration that resulted in deleted users.
 
 ### Changed
 
 ### Security
 
 ### Removed
+
+## [23.4.7] - 2020-07-01
+
+### Fixed in 23.4.7
+
+- SC-4965 Converted "consent" subdocument in "users" to a nested document to fix changing consents in administration and removing a bug in registration that resulted in deleted users.
 
 ## [23.4.5] - 2020-06-17
 
