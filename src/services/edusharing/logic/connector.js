@@ -214,22 +214,6 @@ class EduSharingConnector {
 
 		const parsed = await this.requestRepeater(options);
 
-		// provided by client eg data.query.filterOptions
-		const filterOptions = {
-			mimetype: ['text/html', 'image/jpeg'],
-			provider: ['BauhausMaterial.de', 'München educationcenter', 'Khan Academy'],
-		};
-
-		// filter away everything buy selected mimetype
-		const filterMime = (obj, mimetypes) => {
-			let result = obj.nodes;
-			mimetypes.forEach((type) => { result = result.filter((n) => n.mimeType === type); });
-			return result;
-		};
-
-		// filter away everything buy selected providers
-		const filterProvider = (obj, providers) => obj === providers;
-
 		// adds accesstoken to image-url to let user see the picture on client-side.
 		if (parsed && parsed.nodes) {
 			parsed.nodes.forEach((node) => {
@@ -238,24 +222,6 @@ class EduSharingConnector {
 				}
 			});
 		}
-
-		const filterResult = (obj, opt) => {
-			let result;
-			// checks if user has set type filter
-			if (opt.mimetype.length) {
-				result = filterMime(obj, opt.mimetype);
-			}
-			// checks if user has set provider filter
-			if (opt.provider.length) {
-				result = filterProvider(obj, opt.provider);
-			}
-			return result;
-		};
-
-		// checks if user has set filter options
-		/* if (Object.values(filterOptions).length) {
-			parsed = filterResult(parsed, filterOptions);
-		} */
 
 		return {
 			total: parsed.pagination.total,
