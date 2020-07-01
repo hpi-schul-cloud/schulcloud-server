@@ -11,7 +11,7 @@ const { Schema } = mongoose;
 
 const consentForm = ['analog', 'digital', 'update'];
 
-const consentSchema = new Schema({
+const consentSchema = {
 	userConsent: {
 		form: { type: String, enum: consentForm },
 		dateOfPrivacyConsent: { type: Date },
@@ -27,10 +27,7 @@ const consentSchema = new Schema({
 		privacyConsent: { type: Boolean },
 		termsOfUseConsent: { type: Boolean },
 	}],
-});
-
-enableAuditLog(consentSchema);
-consentSchema.plugin(mongooseHistory);
+};
 
 const consentTypes = {
 	PRIVACY: 'privacy',
