@@ -110,22 +110,31 @@ exports.hasSchoolPermission = (inputPermission) => async (context) => {
 	}
 	const user = await app.service('usersModel').get(account.userId, {
 		query: {
-			populate: 'roles',
+			$populate: ['roles', 'schoolId'],
 		},
 	});
-	app.service('schools').get(user.schoolId)
-		.then((school) => Promise.any(user.roles.map((role) => {
-			const { permissions = {} } = school;
-			// If there are no special school permissions, continue with normal permission check
-			if (!Object.prototype.hasOwnProperty.call(permissions[role], inputPermission)) {
-				return hasPermission(inputPermission);
-			}
-			// Otherwise check for user's special school permission
-			if (!permissions.role.inputPermission) {
-				throw new Forbidden('You do not have the required permission');
-			}
-			return Promise.resolve(context);
-		})));
+
+	const { schoolId: school } = user;
+
+	const results = await Promise.allSettled(user.roles.map(async (role) => {
+		const { permissions = {} } = school;
+		// If there are no special school permissions, continue with normal permission check
+		if (!permissions[role.name]
+				|| !Object.prototype.hasOwnProperty.call(permissions[role.name], inputPermission)) {
+			return hasPermission(inputPermission)(context);
+		}
+		// Otherwise check for user's special school permission
+		if (permissions[role.name][inputPermission]) {
+			return context;
+		}
+		throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
+	}));
+
+	if (results.some((r) => r.status === 'fulfilled')) {
+		return context;
+	}
+
+	throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
 };
 
 /**
@@ -380,29 +389,45 @@ exports.enableQueryAfter = (context) => {
 	return context;
 };
 
-exports.restrictToCurrentSchool = (context) => getUser(context).then((user) => {
+exports.restrictToCurrentSchool = async (context) => {
+	const user = await getUser(context);
 	if (testIfRoleNameExist(user, 'superhero')) {
 		return context;
 	}
 	const currentSchoolId = user.schoolId.toString();
 	const { params } = context;
+	// route
 	if (params.route && params.route.schoolId && params.route.schoolId !== currentSchoolId) {
 		throw new Forbidden('You do not have valid permissions to access this.');
 	}
-	if (['get', 'find', 'remove'].includes(context.method)) {
+	// id
+	if (['update', 'patch', 'remove'].includes(context.method) && context.id) {
+		const target = await context.service.get(context.id);
+		if (!equalIds(target.schoolId, user.schoolId)) {
+			throw new NotFound(`no record found for id '${context.id.toString()}'`);
+		}
+	}
+	// query
+	const methodWithQuery = ['get', 'find'].includes(context.method)
+		|| (['update', 'patch', 'remove'].includes(context.method) && context.id == null);
+	if (methodWithQuery) {
 		if (params.query.schoolId === undefined) {
 			params.query.schoolId = user.schoolId;
 		} else if (!equalIds(params.query.schoolId, currentSchoolId)) {
 			throw new Forbidden('You do not have valid permissions to access this.');
 		}
-	} else if (context.data.schoolId === undefined) {
-		context.data.schoolId = currentSchoolId;
-	} else if (!equalIds(context.data.schoolId, currentSchoolId)) {
-		throw new Forbidden('You do not have valid permissions to access this.');
+	}
+	// data
+	if (['create', 'update', 'patch'].includes(context.method)) {
+		if (context.data.schoolId === undefined) {
+			context.data.schoolId = currentSchoolId;
+		} else if (!equalIds(context.data.schoolId, currentSchoolId)) {
+			throw new Forbidden('You do not have valid permissions to access this.');
+		}
 	}
 
 	return context;
-});
+};
 
 /* todo: Many request pass id as second parameter, but it is confused with the logic that should pass.
 	It should evaluate and make clearly.

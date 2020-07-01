@@ -6,7 +6,7 @@ const logger = require('../../../src/logger');
 
 // /api/1/
 module.exports = function MockServer(
-	url = 'http://localhost:58372',
+	url = 'http://localhost:58373',
 	path = Configuration.get('ETHERPAD_API_PATH'),
 	resolver,
 ) {
@@ -19,7 +19,7 @@ module.exports = function MockServer(
 		port = Number(url.split('http://localhost:')[1].split('/')[0]);
 	} catch (err) {
 		logger.warning('Can not set port.', err);
-		port = 58372;
+		port = 58373;
 	}
 
 	const uris = {
