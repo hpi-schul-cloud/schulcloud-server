@@ -61,6 +61,7 @@ class ForcePasswordChangeService {
 		return this.newPasswordProvidedByUser(data, params)
 			.catch((err) => {
 				// todo util for prepare more params is not merged at the moment. err is not logged.
+				// todo add method too rollback and use Promise.allSettled instant of .all to deteced which task is failed.
 				throw new BadRequest(this.err.failed, err);
 			});
 	}
