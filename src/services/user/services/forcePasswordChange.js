@@ -34,7 +34,7 @@ class ForcePasswordChangeService {
 		});
 	}
 
-	async setupNewPasswordProvidedByUser(data, params) {
+	async newPasswordProvidedByUser(data, params) {
 		const newPassword = data['password-1'];
 		if (!passwordsMatch(newPassword, data['password-2'])) {
 			throw new BadRequest(this.err.missmatch);
@@ -58,7 +58,7 @@ class ForcePasswordChangeService {
 	}
 
 	create(data, params) {
-		return this.setupNewPasswordProvidedByUser(data, params)
+		return this.newPasswordProvidedByUser(data, params)
 			.catch((err) => {
 				// todo util for prepare more params is not merged at the moment. err is not logged.
 				throw new BadRequest(this.err.failed, err);
