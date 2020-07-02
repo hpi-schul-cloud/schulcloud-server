@@ -239,6 +239,14 @@ const patchConsentToUser = async (context) => {
 	app.service('usersModel').patch(consent.userId, modifyDataForUserSchema(data));
 };
 
+const removeConsentFromUser = async (context) => {
+	const { app, id } = context;
+	const consent = await app.service('consents').get(id);
+	const user = await app.service('usersModel').get(consent.userId);
+	delete user.consent;
+	await app.service('usersModel').update(user.id, user);
+};
+
 exports.before = {
 	all: [],
 	find: [
@@ -250,7 +258,7 @@ exports.before = {
 	create: [addDates, checkExisting, writeConsentToUser],
 	update: [authenticate('jwt'), addDates, writeConsentToUser],
 	patch: [authenticate('jwt'), addDates, patchConsentToUser],
-	remove: [authenticate('jwt')],
+	remove: [authenticate('jwt'), removeConsentFromUser],
 };
 
 exports.after = {
