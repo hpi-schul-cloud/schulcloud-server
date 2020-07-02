@@ -178,9 +178,6 @@ class EduSharingConnector {
 				data: [],
 			};
 		}
-		if (!this.allConfigurationValuesHaveBeenDefined()) {
-			throw this.configurationIncompleteError();
-		}
 
 		if (this.isLoggedin() === false) {
 			await this.login();
