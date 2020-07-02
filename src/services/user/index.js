@@ -3,6 +3,7 @@ const { userModel, registrationPinModel } = require('./model');
 const registrationPinsHooks = require('./hooks/registrationPins');
 const publicTeachersHooks = require('./hooks/publicTeachers');
 const firstLoginHooks = require('./hooks/firstLogin');
+const ForcePasswordChangeService = require('./services/forcePasswordChange');
 const { skipRegistrationSingleHooks, skipRegistrationBulkHooks } = require('./hooks/skipRegistration');
 const {
 	AdminUsers,
@@ -59,8 +60,6 @@ module.exports = (app) => {
 	const firstLoginService = app.service('firstLogin');
 	firstLoginService.hooks(firstLoginHooks);
 
-	// eslint-disable-next-line global-require
-	const ForcePasswordChangeService = require('./services/forcePasswordChange')(app);
 	app.use('/forcePasswordChange', new ForcePasswordChangeService());
 	const forcePasswordChangeService = app.service('forcePasswordChange');
 	forcePasswordChangeService.hooks(firstLoginHooks);
