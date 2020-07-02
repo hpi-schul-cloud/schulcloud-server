@@ -3,7 +3,6 @@ const EduSharingConnector = require('./logic/connector');
 
 class EduSearch {
 	find(data) {
-		// todo filter response properties
 		return EduSharingConnector.FIND(data);
 	}
 

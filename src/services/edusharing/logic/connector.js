@@ -1,7 +1,7 @@
 const REQUEST_TIMEOUT = 8000; // ms
 const request = require('request-promise-native');
 const { Configuration } = require('@schul-cloud/commons');
-const { Forbidden, GeneralError } = require('@feathersjs/errors');
+const { GeneralError } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 
 const ES_PATH = {
@@ -61,8 +61,7 @@ class EduSharingConnector {
 				return result.headers['set-cookie'][0];
 			})
 			.catch((err) => {
-				// eslint-disable-next-line no-console
-				console.error('error: ', err);
+				logger.error('error: ', err);
 			});
 	}
 
@@ -73,7 +72,6 @@ class EduSharingConnector {
 			url: `${Configuration.get('ES_DOMAIN')}${ES_PATH.TOKEN}`,
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 
-			// eslint-disable-next-line max-len
 			body: `grant_type=${Configuration.get('ES_GRANT_TYPE')}&client_id=${
 				Configuration.get('ES_CLIENT_ID')
 			}&client_secret=${Configuration.get('ES_OAUTH_SECRET')}&username=${
@@ -109,7 +107,6 @@ class EduSharingConnector {
 				const eduResponse = await request(options);
 				return JSON.parse(eduResponse);
 			} catch (e) {
-				// eslint-disable-next-line no-console
 				if (e.statusCode === 401) {
 					logger.info(`Trying to renew Edu Sharing connection. Attempt ${retry}`);
 					await this.login();
@@ -124,12 +121,6 @@ class EduSharingConnector {
 		throw new GeneralError('Edu Sharing Retry failed', errors);
 	}
 
-	configurationIncompleteError() {
-		return new Forbidden(
-			'Not all ES_... vars have been defined, update configuration.',
-		);
-	}
-
 
 	async login() {
 		this.authorization = await this.getCookie();
@@ -142,9 +133,6 @@ class EduSharingConnector {
 	}
 
 	async GET(id, params) {
-		if (!this.allConfigurationValuesHaveBeenDefined()) {
-			throw this.configurationIncompleteError();
-		}
 
 		if (this.isLoggedin() === false) {
 			await this.login();
