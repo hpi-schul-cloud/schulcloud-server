@@ -163,14 +163,19 @@ class EduSharingConnector {
 		return eduResponse.node;
 	}
 
-	async FIND(data) {
-		const contentType = data.query.contentType || 'FILES'; // enum:[FILES,FILES_AND_FOLDERS,COLLECTIONS,ALL]
-		const skipCount = parseInt(data.query.$skip, 10) || 0;
-		const maxItems = parseInt(data.query.$limit, 10) || 9;
-		const sortProperties = data.query.sortProperties || 'score';
+	async FIND({
+		query: {
+			searchQuery,
+			contentType = 'FILES',
+			$skip,
+			$limit,
+			sortProperties = 'score',
+		},
+	}) {
+		const skipCount = parseInt($skip, 10) || 0;
+		const maxItems = parseInt($limit, 10) || 9;
 		const sortAscending = false;
 		const propertyFilter = '-all-'; // '-all-' for all properties OR ccm-stuff
-		const searchWord = data.query.searchQuery || '';
 
 		if (!this.allConfigurationValuesHaveBeenDefined()) {
 			throw this.configurationIncompleteError();
@@ -203,7 +208,7 @@ class EduSharingConnector {
 			},
 			body: JSON.stringify({
 				criterias: [
-					{ property: 'ngsearchword', values: [`${searchWord}`] },
+					{ property: 'ngsearchword', values: [`${searchQuery}`] },
 				],
 				facettes: ['cclom:general_keyword'],
 			}),
