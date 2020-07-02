@@ -28,35 +28,41 @@ const ForcePasswordChangeServiceHooks = {
 class ForcePasswordChangeService {
 	constructor(options) {
 		this.options = options || {};
+		this.err = Object.freeze({
+			missmatch: 'Die neuen Passwörter stimmen nicht überein.',
+			failed: 'Can not update password.',
+		});
 	}
 
 	async setupNewPasswordProvidedByUser(data, params) {
 		const newPassword = data['password-1'];
 		if (!passwordsMatch(newPassword, data['password-2'])) {
-			return Promise.reject(new BadRequest('Die neuen Passwörter stimmen nicht überein.'));
+			throw new BadRequest(this.err.missmatch);
 		}
 
-		const { accountId } = params.authentication.payload;
 		const accountUpdate = {
 			password: newPassword,
 			userForcedToChangePassword: true,
 		};
 
 		const accountPromise = this.app.service('/accounts')
-			.patch(accountId, accountUpdate, params);
-		await accountPromise
-			.then((result) => Promise.resolve(result))
-			.catch((err) => Promise.reject(err));
+			.patch(params.account._id, accountUpdate, params);
 
 		const userPromise = this.app.service('/users')
 			.patch(params.account.userId, { forcePasswordChange: false });
-		return userPromise
-			.then((result) => Promise.resolve(result))
-			.catch((err) => Promise.reject(err));
+
+		return Promise.all([
+			accountPromise,
+			userPromise,
+		]);
 	}
 
 	create(data, params) {
-		return this.setupNewPasswordProvidedByUser(data, params);
+		return this.setupNewPasswordProvidedByUser(data, params)
+			.catch((err) => {
+				// todo util for prepare more params is not merged at the moment. err is not logged.
+				throw new BadRequest(this.err.failed, err);
+			});
 	}
 
 	setup(app) {
