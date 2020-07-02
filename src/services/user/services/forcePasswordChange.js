@@ -1,5 +1,29 @@
 const { BadRequest } = require('@feathersjs/errors');
+const hooks = require('feathers-hooks-common');
+const { authenticate } = require('@feathersjs/authentication');
+
 const { passwordsMatch } = require('../../../utils/passwordHelpers');
+
+const ForcePasswordChangeServiceHooks = {
+	before: {
+		all: [],
+		find: hooks.disallow('external'),
+		get: hooks.disallow('external'),
+		create: [authenticate('jwt')],
+		update: hooks.disallow('external'),
+		patch: hooks.disallow('external'),
+		remove: hooks.disallow('external'),
+	},
+	after: {
+		all: [],
+		find: [],
+		get: [],
+		create: [],
+		update: [],
+		patch: [],
+		remove: [],
+	},
+};
 
 class ForcePasswordChangeService {
 	constructor(options) {
@@ -40,4 +64,7 @@ class ForcePasswordChangeService {
 	}
 }
 
-module.exports = ForcePasswordChangeService;
+module.exports = {
+	ForcePasswordChangeServiceHooks,
+	ForcePasswordChangeService,
+};

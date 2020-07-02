@@ -3,7 +3,10 @@ const { userModel, registrationPinModel } = require('./model');
 const registrationPinsHooks = require('./hooks/registrationPins');
 const publicTeachersHooks = require('./hooks/publicTeachers');
 const firstLoginHooks = require('./hooks/firstLogin');
-const ForcePasswordChangeService = require('./services/forcePasswordChange');
+const {
+	ForcePasswordChangeService,
+	ForcePasswordChangeServiceHooks,
+} = require('./services/forcePasswordChange');
 const { skipRegistrationSingleHooks, skipRegistrationBulkHooks } = require('./hooks/skipRegistration');
 const {
 	AdminUsers,
@@ -62,7 +65,7 @@ module.exports = (app) => {
 
 	app.use('/forcePasswordChange', new ForcePasswordChangeService());
 	const forcePasswordChangeService = app.service('forcePasswordChange');
-	forcePasswordChangeService.hooks(firstLoginHooks);
+	forcePasswordChangeService.hooks(ForcePasswordChangeServiceHooks);
 
 	const adminStudentsRoute = '/users/admin/students';
 	app.use(adminStudentsRoute, new AdminUsers.AdminUsers('student'));
