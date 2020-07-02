@@ -132,12 +132,10 @@ class EduSharingConnector {
 		return !!this.authorization && !!this.accessToken;
 	}
 
-	async GET(id, params) {
-
+	async GET(id) {
 		if (this.isLoggedin() === false) {
 			await this.login();
 		}
-
 		const propertyFilter = '-all-';
 
 		const options = {
