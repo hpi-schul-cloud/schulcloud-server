@@ -4,6 +4,12 @@ const { Configuration } = require('@schul-cloud/commons');
 const { Forbidden, GeneralError } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 
+const ES_PATH = {
+	AUTH: '/edu-sharing/rest/authentication/v1/validateSession',
+	NODE: '/edu-sharing/rest/node/v1/nodes/mv-repo.schul-cloud.org/',
+	SEARCH: '/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/',
+	TOKEN: '/edu-sharing/oauth2/token',
+};
 
 class EduSharingConnector {
 	constructor() {
@@ -38,7 +44,7 @@ class EduSharingConnector {
 	// gets cookie (JSESSION) and attach it to header
 	getCookie() {
 		const cookieOptions = {
-			uri: `${Configuration.get('ES_DOMAIN')}/edu-sharing/rest/authentication/v1/validateSession`,
+			uri: `${Configuration.get('ES_DOMAIN')}${ES_PATH.AUTH}`,
 			method: 'GET',
 			headers: EduSharingConnector.authorization,
 			resolveWithFullResponse: true,
@@ -64,7 +70,7 @@ class EduSharingConnector {
 	getAuth() {
 		const oauthoptions = {
 			method: 'POST',
-			url: `${Configuration.get('ES_DOMAIN')}/edu-sharing/oauth2/token`,
+			url: `${Configuration.get('ES_DOMAIN')}${ES_PATH.TOKEN}`,
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 
 			// eslint-disable-next-line max-len
@@ -150,7 +156,7 @@ class EduSharingConnector {
 			method: 'GET',
 			// eslint-disable-next-line max-len
 			url: `${Configuration.get('ES_DOMAIN')
-			}/edu-sharing/rest/node/v1/nodes/mv-repo.schul-cloud.org/${id
+			}${ES_PATH.NODE}${id
 			}/metadata?propertyFilter=${propertyFilter}`,
 			headers: {
 				...EduSharingConnector.headers,
@@ -165,7 +171,7 @@ class EduSharingConnector {
 
 	async FIND({
 		query: {
-			searchQuery,
+			searchQuery = '',
 			contentType = 'FILES',
 			$skip,
 			$limit,
@@ -176,7 +182,14 @@ class EduSharingConnector {
 		const maxItems = parseInt($limit, 10) || 9;
 		const sortAscending = false;
 		const propertyFilter = '-all-'; // '-all-' for all properties OR ccm-stuff
-
+		if (searchQuery.trim().length < 2) {
+			return {
+				total: 0,
+				limit: 0,
+				skip: 0,
+				data: [],
+			};
+		}
 		if (!this.allConfigurationValuesHaveBeenDefined()) {
 			throw this.configurationIncompleteError();
 		}
@@ -185,8 +198,7 @@ class EduSharingConnector {
 			await this.login();
 		}
 
-		const urlBase = `${Configuration.get('ES_DOMAIN')
-		}/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/?`;
+		const urlBase = `${Configuration.get('ES_DOMAIN')}${ES_PATH.SEARCH}?`;
 		const url = urlBase
 			+ [
 				`contentType=${contentType}`,
