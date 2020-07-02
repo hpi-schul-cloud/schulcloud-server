@@ -1,5 +1,5 @@
 const { BadRequest } = require('@feathersjs/errors');
-const hooks = require('feathers-hooks-common');
+const { disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 
 const { passwordsMatch } = require('../../../utils/passwordHelpers');
@@ -7,12 +7,12 @@ const { passwordsMatch } = require('../../../utils/passwordHelpers');
 const ForcePasswordChangeServiceHooks = {
 	before: {
 		all: [],
-		find: hooks.disallow('external'),
-		get: hooks.disallow('external'),
+		find: disallow('external'),
+		get: disallow('external'),
 		create: [authenticate('jwt')],
-		update: hooks.disallow('external'),
-		patch: hooks.disallow('external'),
-		remove: hooks.disallow('external'),
+		update: disallow('external'),
+		patch: disallow('external'),
+		remove: disallow('external'),
 	},
 	after: {
 		all: [],
