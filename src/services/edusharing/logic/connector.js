@@ -10,8 +10,8 @@ class EduSharingConnector {
 		if (EduSharingConnector.instance) {
 			return EduSharingConnector.instance;
 		}
-		this.authorization = null; // JSESSION COOKIE
-		this.accessToken = null; // ACCESSTOKEN
+		this.authorization = null; /* JSESSION COOKIE */
+		this.accessToken = null; /* ACCESSTOKEN */
 		EduSharingConnector.instance = this;
 	}
 
@@ -78,22 +78,20 @@ class EduSharingConnector {
 		return request(oauthoptions).then((result) => {
 			if (result) {
 				const parsedResult = JSON.parse(result);
-				return parsedResult.access_token;
+				return Promise.resolve(parsedResult.access_token);
 			}
-			// eslint-disable-next-line no-console
-			console.error('Oauth failed');
-			return null;
+			return Promise.reject(new GeneralError('Oauth failed'));
 		});
 	}
 
 	allConfigurationValuesHaveBeenDefined() {
 		return (
-			Configuration.get('ES_DOMAIN')
-			&& Configuration.get('ES_USER')
-			&& Configuration.get('ES_PASSWORD')
-			&& Configuration.get('ES_GRANT_TYPE')
-			&& Configuration.get('ES_OAUTH_SECRET')
-			&& Configuration.get('ES_CLIENT_ID')
+			Configuration.has('ES_DOMAIN')
+			&& Configuration.has('ES_USER')
+			&& Configuration.has('ES_PASSWORD')
+			&& Configuration.has('ES_GRANT_TYPE')
+			&& Configuration.has('ES_OAUTH_SECRET')
+			&& Configuration.has('ES_CLIENT_ID')
 		);
 	}
 

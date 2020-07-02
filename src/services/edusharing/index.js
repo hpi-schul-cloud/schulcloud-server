@@ -1,4 +1,3 @@
-const { Configuration } = require('@schul-cloud/commons');
 const hooks = require('./hooks');
 const EduSharingConnector = require('./logic/connector');
 
@@ -14,12 +13,10 @@ class EduSearch {
 }
 
 module.exports = (app) => {
-	if (Configuration.get('LERNSTORE_MODE') === 'EDUSHARING') {
-		const eduRoute = '/edu-sharing';
-		app.use(eduRoute, new EduSearch(), (req, res) => {
-			res.send(res.data);
-		});
-		const eduService = app.service(eduRoute);
-		eduService.hooks(hooks);
-	}
+	const eduRoute = '/edu-sharing';
+	app.use(eduRoute, new EduSearch(), (req, res) => {
+		res.send(res.data);
+	});
+	const eduService = app.service(eduRoute);
+	eduService.hooks(hooks);
 };
