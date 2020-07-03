@@ -14,7 +14,6 @@ const edusharing = require('./edusharing');
 const account = require('./account');
 const authentication = require('./authentication');
 const user = require('./user');
-const forcePasswordChange = require('./user/services/forcePasswordChange');
 const role = require('./role');
 const helpers = require('./helpers');
 const resolve = require('./resolve');
@@ -59,7 +58,6 @@ module.exports = function initializeServices() {
 	app.configure(analytics);
 	app.configure(base64Files);
 	app.configure(user);
-	app.configure(forcePasswordChange);
 	app.configure(role);
 	app.configure(account);
 	app.configure(system);
