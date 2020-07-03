@@ -1,11 +1,10 @@
 name: Update package version
 on:
   create:
-    branches:
-      - 'release/**'
 jobs:
   UPDATE:
     runs-on: ubuntu-latest
+    if: startsWith('ref/heads/release/', github.ref)
     steps:
       - uses: actions/checkout@v2
       - name: Substring branch name
