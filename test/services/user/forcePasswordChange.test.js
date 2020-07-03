@@ -56,7 +56,7 @@ describe('forcePasswordChange service tests', () => {
 						.equal('BadRequest');
 					expect(err.message)
 						.to
-						.equal('Dein Passwort stimmt mit dem Pattern nicht überein.');
+						.equal('Can not update the password. Please contact the administrator');
 				});
 		});
 		// eslint-disable-next-line max-len
