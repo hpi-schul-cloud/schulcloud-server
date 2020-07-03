@@ -63,14 +63,14 @@ class ForcePasswordChangeService {
 					return Promise.reject(new Error(userResponse.reason));
 				}
 				return Promise.resolve(userResponse.value);
-			})
+			});
 	}
 
 	create(data, params) {
 		return this.newPasswordProvidedByUser(data, params)
 			.catch((err) => {
 				// todo util for prepare more params is not merged at the moment. err is not logged.
-				// todo add method too rollback and use Promise.allSettled instant of .all to deteced which task is failed.
+				// todo add method too rollback and use Promise.allSettled instant of .all to deteced which task failed.
 				throw new BadRequest(this.err.failed, err);
 			});
 	}
