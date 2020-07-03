@@ -74,8 +74,7 @@ class ForcePasswordChangeService {
 	}
 }
 
-module.exports = function () {
-	const app = this;
+module.exports = (app) => {
 	app.use('/forcePasswordChange', new ForcePasswordChangeService());
 	const forcePasswordChangeService = app.service('forcePasswordChange');
 	forcePasswordChangeService.hooks(ForcePasswordChangeServiceHooks);
