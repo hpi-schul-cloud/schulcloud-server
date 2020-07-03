@@ -58,7 +58,7 @@ class ForcePasswordChangeService {
 				if (userResponse.status === 'rejected') {
 					throw new Error(userResponse.reason);
 				}
-				return Promise.resolve(userResponse.value);
+				return userResponse.value;
 			})
 			.catch((err) => {
 				throw new BadRequest(this.err.failed, err);
