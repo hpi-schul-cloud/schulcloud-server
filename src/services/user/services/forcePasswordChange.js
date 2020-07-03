@@ -1,8 +1,6 @@
 const { BadRequest } = require('@feathersjs/errors');
 const { disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
-const logger = require('../../../logger/index');
-
 const { passwordsMatch } = require('../../../utils/passwordHelpers');
 
 const ForcePasswordChangeServiceHooks = {
@@ -55,12 +53,10 @@ class ForcePasswordChangeService {
 		return Promise.allSettled([accountPromise, userPromise])
 			.then(([accountResponse, userResponse]) => {
 				if (accountResponse.status === 'rejected') {
-					logger.error(accountResponse.reason);
-					return Promise.reject(new Error(accountResponse.reason));
+					throw new Error(accountResponse.reason);
 				}
 				if (userResponse.status === 'rejected') {
-					logger.error(userResponse.reason);
-					return Promise.reject(new Error(userResponse.reason));
+					throw new Error(userResponse.reason);
 				}
 				return Promise.resolve(userResponse.value);
 			})
@@ -78,7 +74,9 @@ class ForcePasswordChangeService {
 	}
 }
 
-module.exports = {
-	ForcePasswordChangeServiceHooks,
-	ForcePasswordChangeService,
+module.exports = function () {
+	const app = this;
+	app.use('/forcePasswordChange', new ForcePasswordChangeService());
+	const forcePasswordChangeService = app.service('forcePasswordChange');
+	forcePasswordChangeService.hooks(ForcePasswordChangeServiceHooks);
 };
