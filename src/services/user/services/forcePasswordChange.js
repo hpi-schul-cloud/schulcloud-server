@@ -1,6 +1,7 @@
 const { BadRequest } = require('@feathersjs/errors');
 const { disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
+const logger = require('../../../logger/index');
 
 const { passwordsMatch } = require('../../../utils/passwordHelpers');
 
@@ -30,7 +31,7 @@ class ForcePasswordChangeService {
 		this.options = options || {};
 		this.err = Object.freeze({
 			missmatch: 'Die neuen Passwörter stimmen nicht überein.',
-			failed: 'Can not update password.',
+			failed: 'Can not update the password. Please contact the administrator',
 		});
 	}
 
@@ -51,10 +52,18 @@ class ForcePasswordChangeService {
 		const userPromise = this.app.service('/users')
 			.patch(params.account.userId, { forcePasswordChange: false });
 
-		return Promise.all([
-			accountPromise,
-			userPromise,
-		]);
+		return Promise.allSettled([accountPromise, userPromise])
+			.then(([accountResponse, userResponse]) => {
+				if (accountResponse.status === 'rejected') {
+					logger.error(accountResponse.reason);
+					return Promise.reject(new Error(accountResponse.reason));
+				}
+				if (userResponse.status === 'rejected') {
+					logger.error(userResponse.reason);
+					return Promise.reject(new Error(userResponse.reason));
+				}
+				return Promise.resolve(userResponse.value);
+			})
 	}
 
 	create(data, params) {
