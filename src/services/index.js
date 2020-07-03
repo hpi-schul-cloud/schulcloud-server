@@ -10,6 +10,7 @@ const school = require('./school');
 const system = require('./system');
 const lesson = require('./lesson');
 const analytics = require('./analytics');
+const edusharing = require('./edusharing');
 const account = require('./account');
 const authentication = require('./authentication');
 const user = require('./user');
@@ -94,6 +95,7 @@ module.exports = function initializeServices() {
 	app.configure(roster);
 	app.configure(datasources);
 	app.configure(alert);
+	app.configure(edusharing);
 	app.configure(webuntis);
 	app.configure(videoconference);
 	app.configure(messengerSync);
