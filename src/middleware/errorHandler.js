@@ -1,10 +1,12 @@
 const Sentry = require('@sentry/node');
 const express = require('@feathersjs/express');
 const jwt = require('jsonwebtoken');
+const { SILENT_ERROR_ENABLED } = require('../../config/globals');
 
 const { requestError } = require('../logger/systemLogger');
 const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 const logger = require('../logger');
+const { SilentError } = require('./errors');
 
 const MAX_LEVEL_FILTER = 12;
 
@@ -125,6 +127,17 @@ const filterQuery = (url) => {
 	return newUrl;
 };
 
+const handleSilentError = (error, req, res, next) => {
+	if (error.catchedError instanceof SilentError) {
+		if (SILENT_ERROR_ENABLED) {
+			res.append('x-silent-error', true);
+		}
+		res.status(200).json({ success: 'success' });
+	} else {
+		next(error);
+	}
+};
+
 // important that it is not send to sentry, or add it to logs
 const filterSecrets = (error, req, res, next) => {
 	if (error) {
@@ -146,6 +159,7 @@ const errorHandler = (app) => {
 	}
 
 	app.use(Sentry.Handlers.errorHandler());
+	app.use(handleSilentError);
 	app.use(formatAndLogErrors(NODE_ENV !== ENVIRONMENTS.TEST));
 	app.use(returnAsJson);
 };

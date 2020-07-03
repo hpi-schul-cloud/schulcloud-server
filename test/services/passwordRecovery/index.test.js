@@ -1,6 +1,7 @@
 const assert = require('assert');
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
+const passwordRecovery = require('../../../src/services/passwordRecovery/model');
 
 const passwordRecoveryService = app.service('passwordRecovery');
 
@@ -63,30 +64,32 @@ describe('passwordRecovery service', () => {
 			});
 	});
 
-	it('found the correct accountId in hook', async () => {
-		const result = await passwordRecoveryService.find({
-			query: {
-				account: savedAccount._id,
-			},
+	it('found the correct passwordRecovery document for account', async () => {
+		const result = await passwordRecovery.findOne({
+			account: savedAccount._id,
 		});
-		assert.equal(result.data[0].account.toHexString(), savedAccount._id.toHexString());
+		assert.equal(result.account.toHexString(), savedAccount._id.toHexString());
 	});
 
 	it('registered the passwordRecovery service', () => {
 		assert.ok(passwordRecoveryService);
 	});
 
-	it('_id is 24 characters long', async () => {
-		const result = await passwordRecoveryService.find();
-		assert.equal(result.data[0]._id.length, 24);
+	it('token is 32 characters long', async () => {
+		const result = await passwordRecovery.findOne({
+			account: savedAccount._id,
+		});
+		assert.equal(result.token.length, 32);
 	});
 
 	it('successfully changed password for user', async () => {
-		const result = await passwordRecoveryService.find();
+		const result = await passwordRecovery.findOne({
+			account: savedAccount._id,
+		});
 		const success = await app.service('passwordRecovery/reset').create({
-			accountId: result.data[0].account,
+			accountId: result.account,
 			password: 'schulcloud',
-			resetId: result.data[0]._id,
+			resetId: result.token,
 		});
 		assert.ok(success);
 	});
