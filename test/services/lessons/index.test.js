@@ -12,8 +12,6 @@ const testLesson = {
 	userId: '0000d231816abba584714c9e',
 };
 
-let lessonId;
-
 describe('lessons service', () => {
 	it('registered the lessons service', () => {
 		assert.ok(lessonService);
@@ -22,7 +20,6 @@ describe('lessons service', () => {
 
 	it('creates a lesson', () => lessonService.create(testLesson)
 		.then((lesson) => {
-			lessonId = lesson._id;
 			chai.expect(lesson.name).to.equal(testLesson.name);
 			chai.expect(lesson.description).to.equal(testLesson.description);
 			chai.expect(lesson.courseId.toString()).to.equal(testLesson.courseId);

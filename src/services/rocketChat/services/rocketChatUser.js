@@ -2,6 +2,7 @@ const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const request = require('request-promise-native');
 
 const { getRequestOptions, makeStringRCConform } = require('../helpers');
+const { SCHOOL_FEATURES } = require('../../school/model');
 const docs = require('../docs');
 const { userModel } = require('../model');
 const logger = require('../../../logger');
@@ -59,7 +60,7 @@ class RocketChatUser {
 			const name = [user.firstName, user.lastName].join(' ');
 
 			const body = {
-				email, password, username, name, verified: true,
+				email, password, username, name, verified: true, joinDefaultChannels: false,
 			};
 
 			const createdUser = await request(getRequestOptions('/api/v1/users.create', body, true))
@@ -82,7 +83,8 @@ class RocketChatUser {
 	async getOrCreateRocketChatAccount(userId) {
 		try {
 			const scUser = await this.app.service('users').get(userId, { query: { $populate: 'schoolId' } });
-			if (!((scUser.schoolId.features || []).includes('rocketChat') || scUser.schoolId.purpose === 'expert')) {
+			if (!((scUser.schoolId.features || []).includes(SCHOOL_FEATURES.ROCKET_CHAT)
+				|| scUser.schoolId.purpose === 'expert')) {
 				throw new BadRequest('this users school does not support rocket.chat');
 			}
 			let rcUser = await userModel.findOne({ userId });

@@ -5,6 +5,10 @@ const externalSourceSchema = require('../../helper/externalSourceSchema');
 
 const { Schema } = mongoose;
 
+const COURSE_FEATURES = {
+	MESSENGER: 'messenger',
+};
+
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: { type: String, required: true },
@@ -51,7 +55,7 @@ const courseSchema = getUserGroupSchema({
 	times: [timeSchema],
 	// optional information if this course is a copy from other
 	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
-	features: [{ type: String, enum: ['messenger'] }],
+	features: [{ type: String, enum: Object.values(COURSE_FEATURES) }],
 	...externalSourceSchema,
 });
 
@@ -132,6 +136,7 @@ const classModel = mongoose.model('class', classSchema);
 const gradeModel = mongoose.model('grade', gradeSchema);
 
 module.exports = {
+	COURSE_FEATURES,
 	courseModel,
 	courseGroupModel,
 	classModel,

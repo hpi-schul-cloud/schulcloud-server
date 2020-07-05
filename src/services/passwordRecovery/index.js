@@ -1,34 +1,22 @@
-const service = require('feathers-mongoose');
 const passwordRecovery = require('./model');
-const hooks = require('./hooks');
 const AccountModel = require('../account/model');
+const {
+	ChangePasswordService,
+	hooks: changePasswordServiceHooks,
+} = require('./services/ChangePasswordService');
+const {
+	GenerateRecoveryPasswordTokenService,
+	hooks: generateRecoveryPasswordHooks,
+} = require('./services/GenerateRecoveryPasswordTokenService');
 
-class ChangePasswordService {
-	create(data) {
-		return passwordRecovery.findOne({ _id: data.resetId, changed: false })
-			.then((pwrecover) => AccountModel.update({ _id: pwrecover.account }, { password: data.password })
-				.then((account) => passwordRecovery.update({ _id: data.resetId }, { changed: true })
-					.then(((_) => account)))).catch((error) => error);
-	}
-}
-
-module.exports = function () {
+module.exports = function setup() {
 	const app = this;
 
-	const options = {
-		Model: passwordRecovery,
-		paginate: {
-			default: 100,
-			max: 100,
-		},
-		lean: true,
-	};
-
-	app.use('/passwordRecovery', service(options));
-	app.use('/passwordRecovery/reset', new ChangePasswordService());
+	app.use('/passwordRecovery', new GenerateRecoveryPasswordTokenService(passwordRecovery));
+	app.use('/passwordRecovery/reset', new ChangePasswordService(passwordRecovery, AccountModel));
 	const passwordRecoveryService = app.service('/passwordRecovery');
 	const changePasswordService = app.service('/passwordRecovery/reset');
 
-	passwordRecoveryService.hooks(hooks);
-	changePasswordService.hooks(hooks);
+	passwordRecoveryService.hooks(generateRecoveryPasswordHooks);
+	changePasswordService.hooks(changePasswordServiceHooks);
 };

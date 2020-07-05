@@ -1,10 +1,14 @@
 const Sentry = require('@sentry/node');
 const express = require('@feathersjs/express');
 const jwt = require('jsonwebtoken');
+const { SILENT_ERROR_ENABLED } = require('../../config/globals');
 
 const { requestError } = require('../logger/systemLogger');
 const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 const logger = require('../logger');
+const { SilentError } = require('./errors');
+
+const MAX_LEVEL_FILTER = 12;
 
 const logRequestInfosInErrorCase = (error, req, res, next) => {
 	if (error) {
@@ -67,18 +71,42 @@ const secretDataKeys = (() => [
 	'PASSWORD_HASH',
 	'password_new',
 	'accessToken',
+	'ticket',
+	'firstName',
+	'lastName',
+	'email',
+	'birthday',
+	'description',
+	'gradeComment',
 ].map((k) => k.toLocaleLowerCase())
 )();
-const filter = (data) => {
-	const newData = { ...data };
-	Object.keys(newData).forEach((key) => {
-		// secretDataKeys are lower keys
-		if (secretDataKeys.includes(key.toLocaleLowerCase())) {
-			newData[key] = '<secret>';
-		}
-	});
+
+const filterSecretValue = (key, value) => {
+	if (secretDataKeys.includes(key.toLocaleLowerCase())) {
+		return '<secret>';
+	}
+	return value;
+};
+
+const filterDeep = (newData, level = 0) => {
+	if (level > MAX_LEVEL_FILTER) {
+		return '<max level exceeded>';
+	}
+
+	if (typeof newData === 'object' && newData !== null) {
+		Object.entries(newData).forEach(([key, value]) => {
+			const newValue = filterSecretValue(key, value);
+			if (typeof newValue === 'string') {
+				newData[key] = newValue;
+			} else {
+				filterDeep(value, level + 1);
+			}
+		});
+	}
 	return newData;
 };
+
+const filter = (data) => filterDeep({ ...data });
 
 const secretQueryKeys = (() => [
 	'accessToken',
@@ -99,6 +127,17 @@ const filterQuery = (url) => {
 	return newUrl;
 };
 
+const handleSilentError = (error, req, res, next) => {
+	if (error.catchedError instanceof SilentError) {
+		if (SILENT_ERROR_ENABLED) {
+			res.append('x-silent-error', true);
+		}
+		res.status(200).json({ success: 'success' });
+	} else {
+		next(error);
+	}
+};
+
 // important that it is not send to sentry, or add it to logs
 const filterSecrets = (error, req, res, next) => {
 	if (error) {
@@ -107,6 +146,8 @@ const filterSecrets = (error, req, res, next) => {
 		req.originalUrl = filterQuery(req.originalUrl);
 		req.body = filter(req.body);
 		error.data = filter(error.data);
+		error.catchedError = filter(error.catchedError);
+		error.options = filter(error.options);
 	}
 	next(error);
 };
@@ -118,6 +159,7 @@ const errorHandler = (app) => {
 	}
 
 	app.use(Sentry.Handlers.errorHandler());
+	app.use(handleSilentError);
 	app.use(formatAndLogErrors(NODE_ENV !== ENVIRONMENTS.TEST));
 	app.use(returnAsJson);
 };

@@ -1,8 +1,5 @@
 const { expect } = require('chai');
-const { ObjectId } = require('mongoose').Types;
-const { BadRequest } = require('@feathersjs/errors');
-const { setupUser, deleteUser } = require('../helper/helper.user');
-const { createHook, createHookStack } = require('../helper/helper.hook');
+const { createHook } = require('../helper/helper.hook');
 const createEmailText = require('../../../../src/services/teams/hooks/mail-text.js');
 const app = require('../../../../src/app');
 
@@ -19,14 +16,15 @@ describe('Team mail-text helper', () => {
 	});
 
 	describe('createEmailText', () => {
-		let hook; let
-			user;
+		let hook;
+
 		before(() => {
 			hook = createHook(app, {
 				method: 'patch',
 				type: 'after',
 			});
 		});
+
 		it.skip('should work for new expert', () => {
 			const hookCopy = { ...hook };
 			const addClass = app.service('/teams/extern/add');

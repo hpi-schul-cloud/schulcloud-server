@@ -1,23 +1,9 @@
-const assert = require('assert');
-const mongoose = require('mongoose');
+const chai = require('chai');
 const app = require('../../../src/app');
 
-const userService = app.service('users');
-const chai = require('chai');
-const loginHelper = require('../helpers/login');
 const testObjects = require('../helpers/testObjects')(app);
-const _ = require('lodash');
 
 const { expect } = chai;
-
-const testCredentials = {
-	username: 'testuser@school-of-tests.schul-cloud.org',
-	password: 'passwordA',
-};
-
-const ownSchool = {
-	id: '000000000000000000538001',
-};
 
 const otherSchool = {
 	id: '000000000000000000000002',
@@ -41,8 +27,8 @@ const testAccess = (endpoint) => () => {
 };
 
 describe('access control', () => {
-	let requestingAccount;
 	/*
+	let requestingAccount;
     before(() => {
         return Promise.all([
             //testObjects.createTestSystem({type: null}),

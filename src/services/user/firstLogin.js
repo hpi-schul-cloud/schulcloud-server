@@ -1,3 +1,4 @@
+const { Configuration } = require('@schul-cloud/commons');
 const constants = require('../../utils/constants');
 
 /* eslint-disable prefer-promise-reject-errors */ // fixmer this should be removed
@@ -25,6 +26,15 @@ const createParent = (data, params, user, app) => app.service('/registrationPins
 			});
 	});
 
+const getAutomaticConsent = () => ({
+	form: 'digital',
+	source: 'automatic-consent',
+	privacyConsent: true,
+	dateOfPrivacyConsent: Date.now(),
+	termsOfUseConsent: true,
+	dateOfTermsOfUseConsent: Date.now(),
+});
+
 const firstLogin = async (data, params, app) => {
 	if (data['password-1'] !== data['password-2']) {
 		return Promise.reject('Die neuen Passwörter stimmen nicht überein.');
@@ -35,13 +45,12 @@ const firstLogin = async (data, params, app) => {
 	let accountPromise = Promise.resolve();
 	const userUpdate = {};
 	// let userPromise;
-	const consentUpdate = {};
 	let consentPromise = Promise.resolve();
 	let updateConsentUsingVersions = Promise.resolve();
 	const user = await app.service('users').get(params.account.userId);
 
 	if (data['password-1']) {
-		accountUpdate.password_verification = data.password_verification;
+		accountUpdate.password_verification = data.password_verification || data['password-2'];
 		accountUpdate.password = data['password-1'];
 		accountPromise = await app.service('accounts').patch(accountId, accountUpdate, params);
 	}
@@ -77,6 +86,37 @@ const firstLogin = async (data, params, app) => {
 	userUpdate.preferences = preferences;
 
 	const userPromise = app.service('users').patch(user._id, userUpdate, { account: params.account });
+
+	// Update consents
+	let consentUpdate = {};
+
+	const consentSkipCondition = Configuration.get('SKIP_CONDITIONS_CONSENT');
+	if (consentSkipCondition !== '') {
+		// If one of the user's roles is included in one of the groups defined as
+		// skip condition, an automatic digital consent is given
+		const roleMapping = {
+			employee: ['administrator', 'teacher'],
+			student: ['student'],
+		};
+		const userRoles = await app.service('roles').find({
+			query: { _id: { $in: user.roles }, $select: ['name'] },
+			paginate: false,
+		});
+		for (const [condition, allowedRoles] of Object.entries(roleMapping)) {
+			if (consentSkipCondition.includes(condition)) {
+				for (const role of userRoles) {
+					if (allowedRoles.includes(role.name)) {
+						consentUpdate = {
+							userId: user._id,
+							userConsent: getAutomaticConsent(),
+							parentConsents: [getAutomaticConsent()],
+						};
+						break;
+					}
+				}
+			}
+		}
+	}
 
 	if (data.privacyConsent || data.termsOfUseConsent) {
 		consentUpdate.userId = user._id;

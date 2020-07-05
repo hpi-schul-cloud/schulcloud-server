@@ -2,10 +2,20 @@
 	"title": "HPI Schul-Cloud Configuration",
 	"type": "object",
 	"properties": {
+		"CLIENT_API_KEY": {
+			"type": "string",
+			"default": "example",
+			"description": "The API Key that the Client uses to send emails. This should be removed with SC-3387"
+		},
 		"CALENDAR_API_KEY": {
 			"type": "string",
 			"default": "example",
 			"description": "The API Key that the Calendar uses to resolve scopes. This should be removed with SC-3387"
+		},
+		"DISABLED_BRUTE_FORCE_CHECK": {
+			"type": "boolean",
+			"default": false,
+			"description": "To disabled the brute force prevention hooks for by authentication."
 		},
 		"SYNC_API_KEY": {
 			"type": "string",
@@ -22,6 +32,17 @@
 				"enabled"
 			],
 			"description": "defines wheter external team invitation shows teachers from different schools or not. if enabled system wide there are options general enabled or opt-in/-out by user required."
+		},
+		"STUDENT_TEAM_CREATION": {
+			"type": "string",
+			"default": "opt-out",
+			"enum": [
+				"disabled",
+				"opt-in",
+				"opt-out",
+				"enabled"
+			],
+			"description": "defines wheter students may create teams or not. if enabled system wide there are options general enabled or opt-in/-out by school admin required."
 		},
 		"REDIS_URI": {
 			"type": "string",
@@ -88,6 +109,20 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Feature toggle for TSP features."
+		},
+		"BLOCK_DISPOSABLE_EMAIL_DOMAINS": {
+			"type": "boolean",
+			"default": true,
+			"description": "Prevent use of disposable email addresses."
+		},
+		"ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS": {
+			"type": "string",
+			"description": "Add custom domain to the list of blocked domains (comma separated list)."
+		},
+		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Feature toggle for automatic consent during TSP sync."
 		},
 		"FEATURE_VIDEOCONFERENCE_ENABLED": {
 			"type": "boolean",
@@ -181,13 +216,13 @@
 		"NEXBOARD_URL": {
 			"type": "string",
 			"format": "uri",
-			"default":"https://nexboard.nexenio.com",
-			"pattern":".*(?<!/)$",
+			"default": "https://nexboard.nexenio.com",
+			"pattern": ".*(?<!/)$",
 			"description": "The nexboard url."
 		},
 		"NEXBOARD_URI": {
 			"type": "string",
-			"default":"/portal/api/v1/public/",
+			"default": "/portal/api/v1/public/",
 			"description": "The nexboard api version uri."
 		},
 		"NEXBOARD_API_KEY": {
@@ -207,10 +242,116 @@
 			"type": "string",
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
+		},
+		"ADMIN_TOGGLE_STUDENT_VISIBILITY": {
+			"type": "string",
+			"default": "enabled",
+			"enum": [
+				"disabled",
+				"opt-in",
+				"opt-out",
+				"enabled"
+			],
+			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
+		},
+		"LDAP_PASSWORD_ENCRYPTION_KEY": {
+			"type": "string",
+			"description": "Synchronous encryption key used to secure search user passwords",
+			"pattern": ".{16}.*"
+		},
+		"SENTRY_DSN": {
+			"type": "string",
+			"format": "uri",
+			"description": "Sentry DSN (uri), if defined, increase SENTRY_SAMPLE_RATE to desired value to get errors reported."
+		},
+		"SENTRY_SAMPLE_RATE": {
+			"type": "number",
+			"default": 1.0,
+			"minimum": 0.0,
+			"maximum": 1.0,
+			"description": "This is the % count (0.00 to 1.00) of how many of the errors send to the backend. This filter go over all errors, maybe some lost by low user counts."
+		},
+		"ETHERPAD_API_KEY": {
+			"type": "string",
+			"description": "The etherpad api key for sending requests."
+		},
+		"ETHERPAD_API_PATH": {
+			"type": "string",
+			"default":"/api/1",
+			"description": "The etherpad api path."
+		},
+		"ETHERPAD_URI": {
+			"type": "string",
+			"default":"https://schul-cloud.org/etherpad/api/1",
+			"description": "The etherpad api version uri."
+		},
+		"ETHERPAD_OLD_PAD_URI": {
+			"type": "string",
+			"default":"https://etherpad.schul-cloud.org/p",
+			"description": "The etherpad api version uri."
+		},
+		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
+			"type": "integer",
+			"default": 28800,
+			"description": "Number of seconds after an etherpad cookie expires."
+		},
+		"ETHERPAD_ETHERPAD_COOKIE_RELEASE_THRESHOLD": {
+			"type": "integer",
+			"default": 7200,
+			"description": "If Session Valid time is smaller than this, a new session is created on request."
+    },
+		"SKIP_CONDITIONS_CONSENT": {
+			"type": "string",
+			"default": "",
+			"description": "A string with concatenated user types (student, employee) that don't need to explicitly state their consent with the terms and conditions. \"employee\" means teachers and admins."
+		},
+		"ADMIN_MAIL_RECEIVERS": {
+			"type": "string",
+			"default": null,
+			"description": "A string that contains recievers of the daily stat and other mails. Can contain mutliple mails, seperated by comma"
+		},
+		"LERNSTORE_MODE": {
+			"type": "string",
+			"enum": [
+				"DISABLED",
+				"LEGACY",
+				"EDUSHARING"
+			],
+			"default": "DISABLED",
+			"description": "Defines the backend for the lernstore, the client just may be enabled or disabled only, if this is not disabled in the server."
+		},
+		"ES_DOMAIN": {
+			"type": "string",
+			"format": "uri",
+			"pattern": ".*(?<!/)$",
+			"description": "The URL for the edu-sharing repository."
+		},
+		"ES_USER": {
+			"type": "string",
+			"description": "The username for edu-sharing api access"
+		},
+		"ES_PASSWORD": {
+			"type": "string",
+			"description": "The password for edu-sharing api access"
+		},
+		"ES_GRANT_TYPE": {
+			"type": "string",
+			"description": "The grant_type for edu-sharing api access"
+		},
+		"ES_OAUTH_SECRET": {
+			"type": "string",
+			"description": "The oauth for edu-sharing api access"
+		},
+		"ES_CLIENT_ID": {
+			"type": "string",
+			"description": "The client id for edu-sharing api access"
 		}
 	},
 	"required": [
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
-		"HOST"
+		"STUDENT_TEAM_CREATION",
+		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
+		"HOST",
+		"LERNSTORE_MODE"
 	]
 }

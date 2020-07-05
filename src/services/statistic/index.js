@@ -90,11 +90,6 @@ const getPromises = (schoolId) => {
 			model: accountModel.find(),
 		},
 		{
-			name: 'comments',
-			promise: homeworkModel.commentModel.countDocuments(),
-			model: homeworkModel.commentModel.find(),
-		},
-		{
 			name: 'teams',
 			promise: teamsModel.teamsModel.countDocuments(),
 			model: teamsModel.teamsModel.find(),
@@ -180,18 +175,25 @@ class StatisticsService {
 	}
 
 	get(id, params) {
-		return _.find(getPromises(), { name: id }).model.select({ createdAt: 1 }).exec()
+		return _.find(getPromises(), { name: id })
+			.model.select({ createdAt: 1 })
+			.exec()
 			.then((generic) => {
 				const stats = generic.map((gen) => moment(gen.createdAt).toISOString());
 
 				const counts = {};
-				stats.forEach((x) => { counts[x] = (counts[x] || 0) + 1; });
+				stats.forEach((x) => { 
+					counts[x] = (counts[x] || 0) + 1; 
+				});
+
 				let incrementedCount = 0;
 				const ordered = [];
-				Object.keys(counts).sort().forEach((key) => {
-					incrementedCount += counts[key];
-					ordered.push([key, incrementedCount]);
-				});
+				Object.keys(counts)
+					.sort()
+					.forEach((key) => {
+						incrementedCount += counts[key];
+						ordered.push([key, incrementedCount]);
+					});
 
 				const x = [];
 				const y = [];
@@ -205,7 +207,7 @@ class StatisticsService {
 					}
 				}
 
-				return (params.query.returnArray) ? { x, y } : ordered;
+				return params.query.returnArray ? { x, y } : ordered;
 			});
 	}
 }

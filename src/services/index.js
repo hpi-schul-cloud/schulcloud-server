@@ -1,3 +1,4 @@
+const base64Files = require('./base64Files');
 const fileStorage = require('./fileStorage');
 const link = require('./link');
 const news = require('./news');
@@ -9,6 +10,7 @@ const school = require('./school');
 const system = require('./system');
 const lesson = require('./lesson');
 const analytics = require('./analytics');
+const edusharing = require('./edusharing');
 const account = require('./account');
 const authentication = require('./authentication');
 const user = require('./user');
@@ -25,6 +27,7 @@ const notification = require('./notification');
 const releases = require('./releases');
 const helpdesk = require('./helpdesk');
 const statistic = require('./statistic');
+const statisticMails = require('./statisticMail');
 const wopi = require('./wopi');
 const pseudonym = require('./pseudonym');
 const consent = require('./consent');
@@ -42,6 +45,7 @@ const alert = require('./alert');
 const videoconference = require('./videoconference');
 const messengerSync = require('./messengerSync');
 const nexboard = require('./nexboard');
+const etherpad = require('./etherpad');
 const storageProvider = require('./storageProvider');
 
 module.exports = function initializeServices() {
@@ -52,6 +56,7 @@ module.exports = function initializeServices() {
 	// register services
 	app.configure(authentication);
 	app.configure(analytics);
+	app.configure(base64Files);
 	app.configure(user);
 	app.configure(role);
 	app.configure(account);
@@ -75,6 +80,7 @@ module.exports = function initializeServices() {
 	app.configure(releases);
 	app.configure(helpdesk);
 	app.configure(statistic);
+	app.configure(statisticMails);
 	app.configure(wopi);
 	app.configure(pseudonym);
 	app.configure(consent);
@@ -87,10 +93,12 @@ module.exports = function initializeServices() {
 	app.configure(roster);
 	app.configure(datasources);
 	app.configure(alert);
+	app.configure(edusharing);
 	app.configure(webuntis);
 	app.configure(videoconference);
 	app.configure(messengerSync);
 	app.configure(nexboard);
+	app.configure(etherpad);
 	app.configure(storageProvider);
 
 	// initialize events
