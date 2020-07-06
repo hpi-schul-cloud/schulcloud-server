@@ -29,8 +29,6 @@ describe('userPermissions', async () => {
 
 	let testRole;
 
-	let testRoleWithDiffrentPermissons;
-
 	let otherRole;
 
 	let testSchool;
@@ -75,22 +73,17 @@ describe('userPermissions', async () => {
 				permissions: testPermissions,
 			});
 
-			testRoleWithDiffrentPermissons = await testObjects.createTestRole({
-				name: ROLES.TEST,
-				permissions: otherPermissions,
-			});
-
 			otherRole = await testObjects.createTestRole({
 				name: ROLES.OTHER,
 				permissions: otherPermissions,
 			});
 
 			testSchool = await testObjects.createTestSchool({
-				permissions: { test: { SITTING: true }},
+				permissions: { test: { SITTING: true } },
 			});
 
 			testSchool2 = await testObjects.createTestSchool({
-				permissions: { other: { SITTING: true }},
+				permissions: { other: { SITTING: true } },
 			});
 
 			testUser = await testObjects.createTestUser({
@@ -121,9 +114,8 @@ describe('userPermissions', async () => {
 		server.close(done);
 	});
 
-	it('registered the service', async () => {
-		const result = await userPermissions;
-		expect(result).to.not.equal(undefined);
+	it('registered the service', () => {
+		expect(userPermissions).to.not.equal(undefined);
 	});
 	it('get permissions from user role and school by role', async () => {
 		const permissions = await userPermissions.get(testUser._id, { account: accountTestUser });

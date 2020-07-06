@@ -86,7 +86,7 @@ describe('userRoles', async () => {
 			});
 
 			testSchool = await testObjects.createTestSchool({
-				permissions: { test: { SINGING: true }},
+				permissions: { test: { SINGING: true } },
 			});
 
 			testSchool2 = await testObjects.createTestSchool({
@@ -130,10 +130,10 @@ describe('userRoles', async () => {
 		expect(result[0]).to.have.members(testRole.permissions);
 	});
 
-	it('should remove unnecessary permissions', async () => {
+	it('should add permission to role', async () => {
 		const roles = await userRoles.get(testUser2._id, { account: accountTestUser2 });
 		const result = roles.map((role) => role.permissions);
-		expect(result[0]).to.have.members(testRoleWithDiffrentPermissons.permissions);
+		expect(result[0]).to.deep.equal([...testRoleWithDiffrentPermissons.permissions, testPermissions[0]]);
 	});
 
 	it('should dont update userRoles', async () => {
