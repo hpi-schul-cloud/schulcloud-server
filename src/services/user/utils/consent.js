@@ -1,4 +1,4 @@
-const checkParentConsent = (parentConsents) => {
+const checkParentConsent = (parentConsents = []) => {
 	const agrements = parentConsents.filter((consent) => consent.privacyConsent && consent.termsOfUseConsent);
 	if (parentConsents.length !== 0 && agrements.length === parentConsents.length) {
 		return true;
