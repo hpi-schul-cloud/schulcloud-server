@@ -86,7 +86,7 @@ describe('userRoles', async () => {
 			});
 
 			testSchool = await testObjects.createTestSchool({
-				permissions: { test: { SINGING:true }},
+				permissions: { test: { SINGING: true }},
 			});
 
 			testSchool2 = await testObjects.createTestSchool({

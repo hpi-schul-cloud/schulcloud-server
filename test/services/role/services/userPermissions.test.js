@@ -86,11 +86,11 @@ describe('userPermissions', async () => {
 			});
 
 			testSchool = await testObjects.createTestSchool({
-				permissions: { test: { SITTING:true }},
+				permissions: { test: { SITTING: true }},
 			});
 
 			testSchool2 = await testObjects.createTestSchool({
-				permissions: { other: { SITTING:true }},
+				permissions: { other: { SITTING: true }},
 			});
 
 			testUser = await testObjects.createTestUser({
