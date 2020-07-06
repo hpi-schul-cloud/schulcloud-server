@@ -86,11 +86,11 @@ describe('userPermissions', async () => {
 			});
 
 			testSchool = await testObjects.createTestSchool({
-				permissions: {'test': {'SITTING':true}},
+				permissions: { test: { SITTING:true }},
 			});
 
 			testSchool2 = await testObjects.createTestSchool({
-				permissions: {'other': {'SITTING':true}},
+				permissions: { other: { SITTING:true }},
 			});
 
 			testUser = await testObjects.createTestUser({
@@ -125,15 +125,13 @@ describe('userPermissions', async () => {
 		const result = await userPermissions;
 		expect(result).to.not.equal(undefined);
 	});
-	
 	it('get permissions from user role and school by role', async () => {
 		const permissions = await userPermissions.get(testUser._id, { account: accountTestUser });
 		expect(permissions).to.be.an('array');
 		expect(permissions).to.deep.equal([...testPermissions, otherPermissions[0]]);
 	});
-
 	it('get not duplicate permissions', async () => {
-		const permissions = await userPermissions.get(testUser2._id, { account: accountTestUserOther });
+		const permissions = await userPermissions.get(testUser2._id, { account: accountTestUser2 });
 		expect(permissions).to.be.an('array');
 		expect(permissions).to.deep.equal(otherPermissions);
 	});
@@ -143,5 +141,4 @@ describe('userPermissions', async () => {
 		expect(permissions).to.be.an('array');
 		expect(permissions).to.deep.equal(otherPermissions);
 	});
-	
 });
