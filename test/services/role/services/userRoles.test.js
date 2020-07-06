@@ -35,7 +35,7 @@ describe('userRoles', async () => {
 
 	let testSchool;
 
-	let testSchoolWithoutRole;
+	let testSchoolWithoutPermissions;
 
 	let testUser;
 
@@ -89,7 +89,7 @@ describe('userRoles', async () => {
 				permissions: [testPermissions],
 			});
 
-			testSchoolWithoutRole = await testObjects.createTestSchool();
+			testSchoolWithoutPermissions = await testObjects.createTestSchool();
 
 			testUser = await testObjects.createTestUser({
 				schoolId: testSchool._id,
@@ -102,7 +102,7 @@ describe('userRoles', async () => {
 			});
 
 			otherUser = await testObjects.createTestUser({
-				schoolId: testSchoolWithoutRole._id,
+				schoolId: testSchoolWithoutPermissions._id,
 				roles: [otherRole._id],
 			});
 
