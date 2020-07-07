@@ -9,9 +9,6 @@ describe('userPermissions', async () => {
 	const ROLES = {
 		TEST: 'test',
 		OTHER: 'other',
-		EXTENDED: 'extended',
-		MULTIPLE: 'multiple',
-		XX: 'xx',
 		NOTHING: 'nothing spezial',
 	};
 	const testPermissions = [
@@ -28,19 +25,12 @@ describe('userPermissions', async () => {
 	];
 
 	let testRole;
-
 	let otherRole;
-
 	let testSchool;
-
 	let testSchool2;
-
 	let testUser;
-
 	let testUser2;
-
 	let otherUser;
-
 	let accountTestUser;
 	let accountTestUser2;
 	let accountTestUserOther;
