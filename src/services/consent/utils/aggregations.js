@@ -201,9 +201,19 @@ const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 							$and: [
 								{ $eq: ['$schoolId', ObjectId(schoolId.toString())] },
 								{
-									$or: [
-										{ $eq: ['$year', ObjectId(schoolYearId.toString())] },
-										{ $eq: [{ $type: '$year' }, 'missing'] },
+									$and: [
+										{
+											$or: [
+												{ $eq: ['$year', ObjectId(schoolYearId.toString())] },
+												{ $eq: [{ $type: '$year' }, 'missing'] },
+											],
+										},
+										{
+											$or: [
+												{ $max: '$gradeLevel' },
+												{ $eq: [{ $type: '$gradeLevel' }, 'missing'] },
+											],
+										},
 									],
 								},
 								{
@@ -367,7 +377,6 @@ const createMultiDocumentAggregation = ({
 		stageBaseFilter(aggregation, 'classes', classes);
 	}
 
-
 	if (sort) {
 		stageSort(aggregation, sort);
 	}
@@ -377,7 +386,6 @@ const createMultiDocumentAggregation = ({
 	}
 
 	stageFormatWithTotal(aggregation, limit, skip);
-
 	return aggregation;
 };
 
