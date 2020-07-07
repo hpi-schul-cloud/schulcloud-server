@@ -117,18 +117,18 @@ describe('userPermissions', async () => {
 	it('registered the service', () => {
 		expect(userPermissions).to.not.equal(undefined);
 	});
-	it('get permissions from user role and school by role', async () => {
+	it('should get permissions from user role and school by role', async () => {
 		const permissions = await userPermissions.get(testUser._id, { account: accountTestUser });
 		expect(permissions).to.be.an('array');
 		expect(permissions).to.deep.equal([...testPermissions, otherPermissions[0]]);
 	});
-	it('get not duplicate permissions', async () => {
+	it('should get not duplicate permissions', async () => {
 		const permissions = await userPermissions.get(testUser2._id, { account: accountTestUser2 });
 		expect(permissions).to.be.an('array');
 		expect(permissions).to.deep.equal(otherPermissions);
 	});
 
-	it('get not updated permissions', async () => {
+	it('should get not updated permissions', async () => {
 		const permissions = await userPermissions.get(otherUser._id, { account: accountTestUserOther });
 		expect(permissions).to.be.an('array');
 		expect(permissions).to.deep.equal(otherPermissions);

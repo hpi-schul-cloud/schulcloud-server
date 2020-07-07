@@ -124,19 +124,19 @@ describe('userRoles', async () => {
 		expect(userRoles).to.not.equal(undefined);
 	});
 
-	it('get updated roles', async () => {
+	it('should get updated roles', async () => {
 		const roles = await userRoles.get(testUser._id, { account: accountTestUser });
 		const result = roles.map((role) => role.permissions);
 		expect(result[0]).to.have.members(testRole.permissions);
 	});
 
-	it('should add permission to role', async () => {
+	it('should get role with new permisson', async () => {
 		const roles = await userRoles.get(testUser2._id, { account: accountTestUser2 });
 		const result = roles.map((role) => role.permissions);
 		expect(result[0]).to.deep.equal([...testRoleWithDiffrentPermissons.permissions, testPermissions[0]]);
 	});
 
-	it('should dont update userRoles', async () => {
+	it('should get not updated role permissions', async () => {
 		const roles = await userRoles.get(otherUser._id, { account: accountTestUserOther });
 		const result = roles.map((role) => role.permissions);
 		expect(result[0]).to.have.members(otherRole.permissions);
