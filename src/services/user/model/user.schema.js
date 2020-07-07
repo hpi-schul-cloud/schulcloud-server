@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
+const { Configuration } = require('@schul-cloud/commons');
 const roleModel = require('../../role/model');
 const { enableAuditLog } = require('../../../utils/database');
 const { consentSchema } = require('./consent.schema');
@@ -66,6 +67,11 @@ const userSchema = new Schema({
 userSchema.index({ schoolId: 1, roles: -1 });
 // maybe the schoolId index is enough ?
 // https://ticketsystem.schul-cloud.org/browse/SC-3724
+
+if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
+	// to speed up lookups during TSP sync
+	userSchema.index({ 'sourceOptions.$**': 1 });
+}
 
 userSchema.virtual('fullName').get(function get() {
 	return [

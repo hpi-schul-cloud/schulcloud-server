@@ -1,153 +1,51 @@
-const whitelist = {
-	'accounts/confirm': {
-		methods: {
-			post: 201,
-		},
-	},
-	schools: {
-		methods: {
-			get: 200,
-		},
-	},
-	years: {
-		methods: {
-			get: 200,
-		},
-	},
-	gradeLevels: {
-		methods: {
-			get: 200,
-		},
-	},
-	'tools/link': {
-		methods: {
-			post: 404,
-		},
-	},
-	materials: {
-		methods: {
-			get: 200,
-			post: 400,
-			patch: 200,
-			delete: 200,
-			put: 400,
-		},
-	},
-	'lessons/contents/{type}': {
-		methods: {
-			get: 200,
-		},
-	},
-	link: {
-		methods: {
-			get: 500,
-		},
-	},
-	registrationlink: {
-		methods: {
-			post: 201,
-		},
-	},
-	passwordRecovery: {
-		methods: {
-			post: 201,
-		},
-	},
-	'passwordRecovery/reset': {
-		methods: {
-			post: 201,
-		},
-	},
-	'wopi/files/{fileId}/contents': {
-		methods: {
-			get: 500,
-			post: 500,
-		},
-	},
-	'wopi/files/{fileId}': {
-		methods: {
-			get: 500,
-			post: 500,
-		},
-	},
-	'oauth2/baseUrl': {
-		methods: {
-			get: 200,
-		},
-	},
-	roster: {
-		methods: {
-			get: 200,
-		},
-	},
-	'roster/users/{user}/metadata': {
-		methods: {
-			get: 500,
-		},
-	},
-	'roster/users/{user}/groups': {
-		methods: {
-			get: 500,
-		},
-	},
-	alert: {
-		methods: {
-			get: 200,
-		},
-	},
-	users: {
-		methods: {
-			post: 400,
-		},
-	},
-	registrationPins: {
-		methods: {
-			post: 400,
-		},
-	},
-	registration: {
-		methods: {
-			post: 400,
-		},
-	},
-	accounts: {
-		methods: {
-			get: 400,
-			post: 400,
-		},
-	},
-	hash: {
-		methods: {
-			post: 400,
-		},
-	},
-	consents: {
-		methods: {
-			post: 400,
-		},
-	},
-	sync: {
-		methods: {
-			get: 400,
-		},
-	},
-	mails: {
-		methods: {
-			post: 500,
-		},
-	},
-	consentVersions: {
-		methods: {
-			get: 200,
-		},
-	},
+/* eslint-disable key-spacing, quote-props */
+
+const whitelistNoJwt = {
+	'accounts/confirm':        { post: 201 },
+	'alert':                   { get:  200 },
+	'consentVersions':         { get:  200 },
+	'gradeLevels':             { get:  200 },
+	'lessons/contents/{type}': { get:  200 },
+	'passwordRecovery':        { post: 400 },
+	'passwordRecovery/reset':  { post: 400 },
+	'oauth2/baseUrl':          { get:  200 },
+	'registrationlink':        { post: 201 },
+	'roster':                  { get:  200 },
+	'schools':                 { get:  200 },
+	'tools/link':              { post: 404 },
+	'years':                   { get:  200 },
 };
 
-// TODO remove this
-const ignoreList = {
-	expertinvitelink: {
-		methods: ['post'],
-	},
+const whitelistInvalidJwt = {
+	...whitelistNoJwt,
+	'schools':     { get: 401 },
+	'years':       { get: 401 },
+	'gradeLevels': { get: 401 },
 };
 
-module.exports = { whitelist, ignoreList };
+// TODO create issues and list here
+const ignorelistNoJwt = {
+	'expertinvitelink':             ['post'],
+	'users':                        ['post'],
+	'accounts':                     ['get', 'post'],
+	'wopi/files/{fileId}/contents': ['get', 'post'],
+	'wopi/files/{fileId}':          ['get', 'post'],
+	'roster/users/{user}/metadata': ['get'],
+	'roster/users/{user}/groups':   ['get'],
+	'link':                         ['get'],
+	'consents':                     ['post'],
+	'hash':                         ['post'],
+	'registration':                 ['post'],
+	'registrationPins':             ['post'],
+};
+
+const ignorelistInvalidJwt = {
+	...ignorelistNoJwt,
+};
+
+module.exports = {
+	whitelistNoJwt,
+	whitelistInvalidJwt,
+	ignorelistNoJwt,
+	ignorelistInvalidJwt,
+};

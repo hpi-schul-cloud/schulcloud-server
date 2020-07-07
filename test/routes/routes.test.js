@@ -2,7 +2,9 @@ const chai = require('chai');
 const request = require('request-promise-native');
 const app = require('../../src/app');
 const getAllRoutes = require('../services/helpers/getAllRoutes');
-const { whitelist, ignoreList } = require('./whitelist');
+const {
+	whitelistNoJwt, whitelistInvalidJwt, ignorelistNoJwt, ignorelistInvalidJwt,
+} = require('./whitelist');
 const { API_HOST } = require('../../config/globals');
 
 const { expect } = chai;
@@ -10,31 +12,24 @@ const PORT = 5254;
 
 const sleep = (time) => new Promise((res) => setTimeout(res, time));
 
-const isOnWhitelist = (endpoint, method, status) => {
+const isOnWhitelist = (endpoint, method, whitelist) => {
 	if (endpoint in whitelist) {
-		if (method in whitelist[endpoint].methods) {
-			return (whitelist[endpoint].methods[method] === status);
-		}
-	}
-	return false;
-};
-
-const isOnIgnoreList = (endpoint, method) => {
-	if (endpoint in ignoreList) {
-		if (ignoreList[endpoint].methods.includes(method)) {
-			/* eslint-disable-next-line */
-			console.warn('fix me please');
+		if (method in whitelist[endpoint]) {
 			return true;
 		}
 	}
 	return false;
 };
 
-const acceptedResults = (status, endpoint, method) => {
-	if ((status === 401) || (status === 405)) {
-		return true;
+const isOnIgnorelist = (endpoint, method, ignorelist) => {
+	if (endpoint in ignorelist) {
+		if (ignorelist[endpoint].includes(method)) {
+			/* eslint-disable-next-line */
+			console.warn('fix me please');
+			return true;
+		}
 	}
-	return isOnWhitelist(endpoint, method, status);
+	return false;
 };
 
 const serverSetup = () => {
@@ -49,7 +44,7 @@ const serverSetup = () => {
 	});
 };
 
-const createTests = (token) => {
+const createTests = (token, whitelist, ignorelist) => {
 	serverSetup();
 	const routes = getAllRoutes();
 	let headers;
@@ -78,12 +73,16 @@ const createTests = (token) => {
 						headers,
 					};
 
-					if (!isOnIgnoreList(route, method)) {
+					if (!isOnIgnorelist(route, method, ignorelist)) {
 						const status = await request(options)
 							.then((res) => res.statusCode)
 							.catch((error) => error.statusCode);
 
-						expect(status).to.satisfies((s) => acceptedResults(s, route, method));
+						if (isOnWhitelist(route, method, whitelist)) {
+							expect(status).to.equal(whitelist[route][method]);
+						} else {
+							expect(status).to.be.oneOf([401, 405]);
+						}
 					}
 				});
 			}
@@ -91,6 +90,10 @@ const createTests = (token) => {
 	}
 };
 
-describe('Call routes without jwt', () => createTests());
-describe('Call routes with empty jwt', () => createTests(''));
-describe('Call routes with invalid jwt', () => createTests('eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJhY2Nv'));
+describe('Call routes without jwt', () => createTests(undefined, whitelistNoJwt, ignorelistNoJwt));
+describe('Call routes with empty jwt', () => createTests('', whitelistNoJwt, ignorelistNoJwt));
+describe('Call routes with invalid jwt', () => createTests(
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJhY2Nv',
+	whitelistInvalidJwt,
+	ignorelistInvalidJwt,
+));
