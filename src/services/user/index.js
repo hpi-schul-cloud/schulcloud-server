@@ -12,6 +12,8 @@ const {
 	UsersModelService,
 	UserService,
 	MailRegistrationLink,
+	RegistrationConsentService,
+	registrationConsentServiceHooks,
 } = require('./services');
 
 
@@ -53,6 +55,10 @@ module.exports = (app) => {
 
 	const RegistrationService = require('./registration')(app);
 	app.use('/registration', new RegistrationService());
+
+	app.use('/registration/consent', new RegistrationConsentService());
+	const registrationConsentService = app.service('/registration/consent');
+	registrationConsentService.hooks(registrationConsentServiceHooks);
 
 	const FirstLoginService = require('./firstLogin')(app);
 	app.use('/firstLogin', new FirstLoginService());
