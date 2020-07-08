@@ -50,7 +50,7 @@ const getAllUsers = async (schoolId, schoolYearId, role, clientQuery = {}) => {
 	if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 
 	return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
-		collation: { locale: 'de', caseLevel: true },
+		collation: { locale: 'de', caseLevel: true, numericOrdering: true },
 	}).exec((err, res) => {
 		if (err) reject(err);
 		else resolve(res[0]);
