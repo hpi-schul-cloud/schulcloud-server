@@ -88,17 +88,6 @@ class EduSharingConnector {
 		});
 	}
 
-	allConfigurationValuesHaveBeenDefined() {
-		return (
-			Configuration.has('ES_DOMAIN')
-			&& Configuration.has('ES_USER')
-			&& Configuration.has('ES_PASSWORD')
-			&& Configuration.has('ES_GRANT_TYPE')
-			&& Configuration.has('ES_OAUTH_SECRET')
-			&& Configuration.has('ES_CLIENT_ID')
-		);
-	}
-
 	async requestRepeater(options) {
 		let retry = 0;
 		const errors = [];
@@ -169,12 +158,7 @@ class EduSharingConnector {
 		const sortAscending = false;
 		const propertyFilter = '-all-'; // '-all-' for all properties OR ccm-stuff
 		if (searchQuery.trim().length < 2) {
-			return {
-				total: 0,
-				limit: 0,
-				skip: 0,
-				data: [],
-			};
+			return this.EduSearchResponse();
 		}
 
 		if (this.isLoggedin() === false) {
@@ -221,14 +205,31 @@ class EduSharingConnector {
 			});
 		}
 
+		return this.EduSearchResponse(parsed);
+	}
+
+	EduSearchResponse(parsed) {
+		if (!parsed) {
+			return {
+				total: 0,
+				limit: 0,
+				skip: 0,
+				data: [],
+				meta: {
+					authorization: this.authorization,
+				},
+			};
+		}
 		return {
 			total: parsed.pagination.total,
 			limit: parsed.pagination.count,
 			skip: parsed.pagination.from,
 			data: parsed.nodes,
+			meta: {
+				authorization: this.authorization,
+			},
 		};
 	}
-
 
 	static get Instance() {
 		if (!EduSharingConnector.instance) {
