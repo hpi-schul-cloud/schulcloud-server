@@ -2,8 +2,8 @@ const hooks = require('./hooks');
 const EduSharingConnector = require('./logic/connector');
 
 class EduSearch {
-	find(data) {
-		return EduSharingConnector.FIND(data);
+	find(req) {
+		return EduSharingConnector.FIND(req);
 	}
 
 	get(id, params) {
