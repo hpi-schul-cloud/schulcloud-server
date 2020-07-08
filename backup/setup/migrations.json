@@ -629,5 +629,16 @@
 		"$date": "2020-07-08T09:15:12.718Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f05a7c2b657cd65d023a534"
+	},
+	"state": "up",
+	"name": "set-school-maintenance-dates-2020",
+	"createdAt": {
+		"$date": "2020-07-08T11:02:26.121Z"
+	},
+	"__v": 0
 }]
 

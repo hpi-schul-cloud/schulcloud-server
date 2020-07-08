@@ -26,7 +26,7 @@
 		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"updatedAt": {
-		"$date": "2017-08-28T08:56:19.717Z"
+		"$date": "2020-07-08T11:04:49.779Z"
 	},
 	"name": "Demo Schule",
 	"federalState": {
@@ -41,14 +41,17 @@
 	"currentYear": {
 		"$oid": "5d2ee323d14ce9844e33f51e"
 	},
-	"purpose": "demo"
+	"purpose": "demo",
+	"inMaintenanceSince": {
+		"$date": "2020-06-24T22:00:00Z"
+	}
 },
 {
 	"_id": {
 		"$oid": "598ec0bc8e4e364ec18ff46d"
 	},
 	"updatedAt": {
-		"$date": "2018-11-09T11:09:19.717Z"
+		"$date": "2020-07-08T11:04:49.779Z"
 	},
 	"name": "Expertenschule",
 	"federalState": {
@@ -63,7 +66,10 @@
 	"currentYear": {
 		"$oid": "5d2ee323d14ce9844e33f51e"
 	},
-	"purpose": "expert"
+	"purpose": "expert",
+	"inMaintenanceSince": {
+		"$date": "2020-06-24T22:00:00Z"
+	}
 },
 {
 	"_id": {
@@ -86,7 +92,7 @@
 		}
 	],
 	"updatedAt": {
-		"$date": "2020-05-11T15:20:10.766Z"
+		"$date": "2020-07-08T11:04:49.779Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -99,6 +105,9 @@
 	"features": [
 		"rocketChat"
 	],
-	"enableStudentTeamCreation": false
+	"enableStudentTeamCreation": false,
+	"inMaintenanceSince": {
+		"$date": "2020-06-24T22:00:00Z"
+	}
 }]
 
