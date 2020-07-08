@@ -195,16 +195,6 @@ class EduSharingConnector {
 		};
 
 		const parsed = await this.requestRepeater(options);
-
-		if (parsed && parsed.nodes) {
-			parsed.nodes.forEach((node) => {
-				// adds accesstoken to image-url to let user see the picture on client-side.
-				if (node.preview && node.preview.url) {
-					node.preview.url += `&accessToken=${this.accessToken}`;
-				}
-			});
-		}
-
 		return this.EduSearchResponse(parsed);
 	}
 
