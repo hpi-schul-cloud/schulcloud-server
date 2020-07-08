@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
+const userModel = require('../../user/model');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
@@ -14,9 +15,28 @@ Deine ${data.cloud}
 	`;
 }
 
+async function generateSystemInformation(account) {
+	const { userId, username } = account
+
+	const userInformation = await userModel.userModel.findOne(userId)
+		.select({ 'roles': '1', 'email': '1' })
+		.populate('roles', 'name')
+		.lean()
+
+	const roles = userInformation.roles.length ? userInformation.roles.map(info => info.name) : 'NO ROLES'
+	const email = userInformation.email || 'NO EMAIL'
+	const systemInformation =
+		` System Information:
+	User login: ${username}
+	User role(s): ${roles}
+	User registrated email: ${email}\n`
+	return systemInformation
+}
+
 function createFeedbackText(user, data) {
 	const device = data.deviceUserAgent ? `${data.device} [auto-detection: ${data.deviceUserAgent}]` : data.device;
 	let text = `
+SystemInformation: ${data.systemInformation}
 ReplyEmail: ${data.replyEmail}
 User: ${user}
 User-ID: ${data.userId}
@@ -27,7 +47,7 @@ Browser: ${data.browserName}
 Browser Version: ${data.browserVersion}
 Betriebssystem: ${data.os}
 Gerät: ${device}
-    `;
+`;
 
 	if (data.desire && data.desire !== '') {
 		text = `
@@ -37,19 +57,19 @@ Als ${data.role}
 möchte ich ${data.desire},
 um ${data.benefit}.
 Akzeptanzkriterien: ${data.acceptanceCriteria}
-        `;
+`;
 	} else {
 		text = `
 ${text}
 User meldet folgendes:
 Problem Kurzbeschreibung: ${data.subject}
 Problembeschreibung: ${data.problemDescription}
-        `;
+`;
 		if (data.notes) {
 			text = `
 ${text}
 Anmerkungen: ${data.notes}
-            `;
+`;
 		}
 	}
 	return text;
@@ -62,7 +82,7 @@ const denyDbWriteOnType = (hook) => {
 	return hook;
 };
 
-const feedback = () => (hook) => {
+const feedback = () => async (hook) => {
 	const data = hook.data || {};
 	if (data.type === 'contactAdmin') {
 		globalHooks.sendEmail(hook, {
@@ -77,6 +97,7 @@ const feedback = () => (hook) => {
 		});
 		// TODO: NOTIFICATION SERVICE
 	} else {
+		data.systemInformation = await generateSystemInformation(hook.params.account)
 		globalHooks.sendEmail(hook, {
 			subject: data.title || data.subject || 'nosubject',
 			emails: ['ticketsystem@schul-cloud.org'],
