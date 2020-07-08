@@ -16,11 +16,12 @@ const { modelServices: { prepareInternalParams } } = require('../../../utils');
 
 const ConsentVersionServiceHooks = {
 	before: {
-		all: [authenticate('jwt'), iff(isProvider('external'), restrictToCurrentSchool)],
+		all: [authenticate('jwt')],
 		find: [],
 		get: [],
 		create: [iff(isProvider('external'), [
 			hasPermission('SCHOOL_EDIT'),
+			restrictToCurrentSchool,
 		])],
 		update: [disallow()],
 		patch: [disallow()],
