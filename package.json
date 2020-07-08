@@ -73,7 +73,7 @@
 		"jose": "^1.22.2",
 		"jsonwebtoken": "8.5.1",
 		"ldapjs": "git+https://github.com/schul-cloud/node-ldapjs.git",
-		"lodash": "^4.17.17",
+		"lodash": "4.17.15",
 		"migrate-mongoose": "^4.0.0",
 		"mixwith": "^0.1.1",
 		"moment": "^2.19.2",
