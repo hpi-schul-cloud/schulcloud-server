@@ -196,9 +196,9 @@ class EduSharingConnector {
 
 		const parsed = await this.requestRepeater(options);
 
-		// adds accesstoken to image-url to let user see the picture on client-side.
 		if (parsed && parsed.nodes) {
 			parsed.nodes.forEach((node) => {
+				// adds accesstoken to image-url to let user see the picture on client-side.
 				if (node.preview && node.preview.url) {
 					node.preview.url += `&accessToken=${this.accessToken}`;
 				}
@@ -215,19 +215,19 @@ class EduSharingConnector {
 				limit: 0,
 				skip: 0,
 				data: [],
-				meta: {
-					authorization: this.authorization,
-				},
 			};
 		}
+		// filter out the resources without the external url
+		const filteredNodes = parsed.nodes.filter((node) => {
+			const location = node.properties['ccm:wwwurl'];
+			return location && location.length > 0;
+		});
+		const totalDif = parsed.nodes.length - filteredNodes.length;
 		return {
-			total: parsed.pagination.total,
+			total: parsed.pagination.total - totalDif,
 			limit: parsed.pagination.count,
 			skip: parsed.pagination.from,
-			data: parsed.nodes,
-			meta: {
-				authorization: this.authorization,
-			},
+			data: filteredNodes,
 		};
 	}
 
