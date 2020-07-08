@@ -82,7 +82,7 @@ describe('consent service', () => {
 
 
 	it('finds consent versions', () => consentVersionService
-		.find({ versionNumber: 'testversion' })
+		.find({ query: { versionNumber: 'testversion' } })
 		.then((consentVersion) => {
 			chai.expect(consentVersion).to.exist;
 			const specificSampleConsentVersion = consentVersion.data.filter((cv) => cv.versionNumber === 'testversion');
