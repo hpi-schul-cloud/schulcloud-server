@@ -19,9 +19,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Removed
 
-## [23.5.2] - 2020-07-08
+## [23.5.4] - 2020-07-08
 ### Added
-- SC-2714 Added the federal state "Internationale Schul"
+- SC-2714 Added the federal state "Internationale Schule"
 
 
 ## [23.5.0] - 2020-06-15
