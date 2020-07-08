@@ -1,5 +1,25 @@
 const { BadRequest } = require('@feathersjs/errors');
 
+const registrationConsentServiceHooks = {
+	before: {
+		all: [],
+		find: [],
+		get: [],
+		create: [],
+		update: [],
+		patch: [],
+		remove: [],
+	},
+	after: {
+		all: [],
+		find: [],
+		get: [],
+		create: [],
+		update: [],
+		patch: [],
+		remove: [],
+	},
+};
 
 class RegistrationConsentService {
 	async get(importHash) {
@@ -40,4 +60,7 @@ class RegistrationConsentService {
 	}
 }
 
-module.exports = RegistrationConsentService;
+module.exports = {
+	RegistrationConsentService,
+	registrationConsentServiceHooks,
+};

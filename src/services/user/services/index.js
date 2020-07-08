@@ -5,7 +5,7 @@ const RegistrationSchoolService = require('./registrationSchool');
 const UsersModelService = require('./UsersModelService');
 const UserService = require('./userService');
 const MailRegistrationLink = require('./MailRegistrationLink');
-const RegistrationConsentService = require('./registrationConsent');
+const {RegistrationConsentService, registrationConsentServiceHooks } = require('./registrationConsent');
 
 module.exports = {
 	AdminUsers,
@@ -16,4 +16,5 @@ module.exports = {
 	UserService,
 	MailRegistrationLink,
 	RegistrationConsentService,
+	registrationConsentServiceHooks,
 };
