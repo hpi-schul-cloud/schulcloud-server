@@ -448,6 +448,10 @@ const enforceRoleHierarchyOnCreate = async (context) => {
 		return Promise.resolve(context);
 	}
 
+	// created user has no role
+	if (!context.data || !context.data.roles) {
+		return Promise.resolve(context);
+	}
 	await Promise.all(context.data.roles.map(async (roleId) => {
 		// Roles are given by ID or by name.
 		// For IDs we load the name from the DB.
