@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 // eslint-disable-next-line no-unused-vars
 const { info, error } = require('../src/logger');
 

@@ -23,10 +23,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 - SC-5283 set dates to set schools in maintenance mode
 
-## [23.5.2] - 2020-07-08
+## [23.5.4] - 2020-07-08
 ### Added
-- SC-2714 Added the federal state "Internationale Schul3"
-
+- SC-2714 Added the federal state "Internationale Schule"
 
 ## [23.5.0] - 2020-06-15
 
