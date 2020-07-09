@@ -227,6 +227,13 @@ const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 					},
 				},
 				{
+					$sort: {
+						year: -1,
+						gradeLevel: -1,
+						name: 1,
+					},
+				},
+				{
 					$project: {
 						gradeLevel: {
 							$convert: {
@@ -250,6 +257,9 @@ const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 	});
 	aggregation.push({
 		$addFields: {
+			classesSort: {
+				$arrayElemAt: ['$classes', 0],
+			},
 			classes: {
 				$map: {
 					input: '$classes',
@@ -279,6 +289,13 @@ const stageSort = (aggregation, sort) => {
 		delete mSort.consentStatus;
 		stageAddConsentSortParam(aggregation);
 	}
+
+	if (typeof sort === 'object' && ({}).hasOwnProperty.call(sort, 'classes')) {
+		mSort['classesSort.gradelevel'] = mSort.classes;
+		mSort['classesSort.name'] = mSort.classes;
+		delete mSort.classes;
+	}
+
 	aggregation.push({
 		$sort: mSort,
 	});
@@ -381,9 +398,10 @@ const createMultiDocumentAggregation = ({
 		stageSort(aggregation, sort);
 	}
 
-	if (selectSortDiff.length !== 0) {
-		stageSimpleProject(aggregation, select);
-	}
+	// if (selectSortDiff.length !== 0) {
+	// TODO: think about doing it after limit and skip
+	stageSimpleProject(aggregation, select);
+	// }
 
 	stageFormatWithTotal(aggregation, limit, skip);
 	return aggregation;
