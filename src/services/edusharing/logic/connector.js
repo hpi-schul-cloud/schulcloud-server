@@ -2,6 +2,7 @@ const REQUEST_TIMEOUT = 8000; // ms
 const request = require('request-promise-native');
 const { Configuration } = require('@schul-cloud/commons');
 const { GeneralError } = require('@feathersjs/errors');
+const EduSearchResponse = require('./EduSearchResponse');
 const logger = require('../../../logger');
 
 const ES_PATH = {
@@ -158,7 +159,7 @@ class EduSharingConnector {
 		const sortAscending = false;
 		const propertyFilter = '-all-'; // '-all-' for all properties OR ccm-stuff
 		if (searchQuery.trim().length < 2) {
-			return this.EduSearchResponse();
+			return new EduSearchResponse();
 		}
 
 		if (this.isLoggedin() === false) {
@@ -195,30 +196,7 @@ class EduSharingConnector {
 		};
 
 		const parsed = await this.requestRepeater(options);
-		return this.EduSearchResponse(parsed);
-	}
-
-	EduSearchResponse(parsed) {
-		if (!parsed) {
-			return {
-				total: 0,
-				limit: 0,
-				skip: 0,
-				data: [],
-			};
-		}
-		// filter out the resources without the external url
-		const filteredNodes = parsed.nodes.filter((node) => {
-			const location = node.properties['ccm:wwwurl'];
-			return location && location.length > 0;
-		});
-		const totalDif = parsed.nodes.length - filteredNodes.length;
-		return {
-			total: parsed.pagination.total - totalDif,
-			limit: parsed.pagination.count,
-			skip: parsed.pagination.from,
-			data: filteredNodes,
-		};
+		return new EduSearchResponse(parsed);
 	}
 
 	static get Instance() {
