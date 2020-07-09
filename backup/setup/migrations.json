@@ -130,6 +130,15 @@
 },
 {
 	"_id": {
+		"$oid": "5d3ef5f4bd2cdb2075fc7e54"
+	},
+	"state": "up",
+	"name": "replace_grandlevel_id_with_number",
+	"createdAt": "2019-07-29T09:57:38.131Z",
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5d8b80ca723a1b53dc43172e"
 	},
 	"state": "up",
@@ -137,15 +146,6 @@
 	"createdAt": {
 		"$date": "2019-09-25T14:59:22.19Z"
 	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5d3ef5f4bd2cdb2075fc7e54"
-	},
-	"state": "up",
-	"name": "replace_grandlevel_id_with_number",
-	"createdAt": "2019-07-29T09:57:38.131Z",
 	"__v": 0
 },
 {
@@ -215,23 +215,23 @@
 },
 {
 	"_id": {
-		"$oid": "5d91b525fee68c5c70d99de1"
-	},
-	"state": "up",
-	"name": "removeUnusedTeamAttributes",
-	"createdAt": {
-		"$date": "2019-09-30T07:46:22.613Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5d26e8c1d0c346ac5bf59bb5"
 	},
 	"state": "up",
 	"name": "schoolyear_19_20_added",
 	"createdAt": {
 		"$date": "2019-07-11T07:44:01.252Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d91b525fee68c5c70d99de1"
+	},
+	"state": "up",
+	"name": "removeUnusedTeamAttributes",
+	"createdAt": {
+		"$date": "2019-09-30T07:46:22.613Z"
 	},
 	"__v": 0
 },
@@ -259,23 +259,23 @@
 },
 {
 	"_id": {
-		"$oid": "5e1706fd79b3c360204f88bc"
-	},
-	"state": "up",
-	"name": "addGranularSchoolEditPermissions",
-	"createdAt": {
-		"$date": "2020-01-09T10:57:01.515Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5df0d35872a8731352bf769f"
 	},
 	"state": "up",
 	"name": "remove invalid files from collection",
 	"createdAt": {
 		"$date": "2019-12-11T10:20:29.714Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e1706fd79b3c360204f88bc"
+	},
+	"state": "up",
+	"name": "addGranularSchoolEditPermissions",
+	"createdAt": {
+		"$date": "2020-01-09T10:57:01.515Z"
 	},
 	"__v": 0
 },
@@ -331,83 +331,6 @@
 	"name": "granular_user_permissions",
 	"createdAt": {
 		"$date": "2019-10-09T10:04:25.556Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e39721290415d5374a306bb"
-	},
-	"state": "up",
-	"name": "disable-team-created-by-students-all-schools",
-	"createdAt": {
-		"$date": "2020-01-06T16:54:53.694Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e39721290415d5374a306bd"
-	},
-	"state": "up",
-	"name": "coursePermissions",
-	"createdAt": {
-		"$date": "2020-01-29T15:10:12.565Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e39721290415d5374a306bc"
-	},
-	"state": "up",
-	"name": "addSchoolIdsForUsersInTeams",
-	"createdAt": {
-		"$date": "2020-01-14T12:48:46.081Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e4a61ca1db4f62c8cb2b9df"
-	},
-	"state": "up",
-	"name": "remove_invalid_accounts",
-	"createdAt": {
-		"$date": "2020-02-17T09:50:02.639Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e4d449dc8fe4e2ff4993849"
-	},
-	"state": "up",
-	"name": "datasource-permissions-for-superhero",
-	"createdAt": {
-		"$date": "2020-02-19T14:22:21.2Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5d552b8bc1658a0682fc834a"
-	},
-	"state": "up",
-	"name": "set schoolspecific documentbasedir for instance open",
-	"createdAt": {
-		"$date": "2019-08-15T09:34:59.243Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e78b794a1e42c5728901f9a"
-	},
-	"state": "up",
-	"name": "runIndexSync2",
-	"createdAt": {
-		"$date": "2020-03-23T12:30:05.306Z"
 	},
 	"__v": 0
 },
@@ -479,12 +402,34 @@
 },
 {
 	"_id": {
+		"$oid": "5d552b8bc1658a0682fc834a"
+	},
+	"state": "up",
+	"name": "set schoolspecific documentbasedir for instance open",
+	"createdAt": {
+		"$date": "2019-08-15T09:34:59.243Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5dc18974ba666b70ac1199e5"
 	},
 	"state": "up",
 	"name": "add-enterthecloud-start-permission",
 	"createdAt": {
 		"$date": "2019-11-05T14:38:44.172Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ea0049a18cc9c230f4fc936"
+	},
+	"state": "up",
+	"name": "drop-comment-model",
+	"createdAt": {
+		"$date": "2020-04-22T08:47:22.723Z"
 	},
 	"__v": 0
 },
@@ -500,23 +445,155 @@
 },
 {
 	"_id": {
-		"$oid": "5ea0049a18cc9c230f4fc936"
-	},
-	"state": "up",
-	"name": "drop-comment-model",
-	"createdAt": {
-		"$date": "2020-04-22T08:47:22.723Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5e78b794a1e42c5728901f99"
 	},
 	"state": "up",
 	"name": "runIndexSync",
 	"createdAt": {
 		"$date": "2020-03-21T19:35:25.407Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e4a61ca1db4f62c8cb2b9df"
+	},
+	"state": "up",
+	"name": "remove_invalid_accounts",
+	"createdAt": {
+		"$date": "2020-02-17T09:50:02.639Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e4d449dc8fe4e2ff4993849"
+	},
+	"state": "up",
+	"name": "datasource-permissions-for-superhero",
+	"createdAt": {
+		"$date": "2020-02-19T14:22:21.2Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e39721290415d5374a306bb"
+	},
+	"state": "up",
+	"name": "disable-team-created-by-students-all-schools",
+	"createdAt": {
+		"$date": "2020-01-06T16:54:53.694Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ebd68fe107fa3720c2251e4"
+	},
+	"state": "up",
+	"name": "add_more_school_years",
+	"createdAt": {
+		"$date": "2020-05-14T14:56:41.229Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ece7de4a194604c6e31f432"
+	},
+	"state": "up",
+	"name": "move_consent_to_user",
+	"createdAt": {
+		"$date": "2020-04-07T13:45:21.906Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ecd33ee93e6125170a84d4b"
+	},
+	"state": "up",
+	"name": "encrypt-ldap-search-user-password",
+	"createdAt": {
+		"$date": "2020-05-26T14:00:06.91Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5eda255592ee4109ca3d423d"
+	},
+	"state": "up",
+	"name": "fix_move_consent",
+	"createdAt": {
+		"$date": "2020-06-04T09:14:00.473Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e78b794a1e42c5728901f9a"
+	},
+	"state": "up",
+	"name": "runIndexSync2",
+	"createdAt": {
+		"$date": "2020-03-23T12:30:05.306Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5eda255592ee4109ca3d423e"
+	},
+	"state": "up",
+	"name": "add-SCHOOL_PERMISSION_VIEW-permission",
+	"createdAt": {
+		"$date": "2020-06-04T13:10:39.414Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e39721290415d5374a306bd"
+	},
+	"state": "up",
+	"name": "coursePermissions",
+	"createdAt": {
+		"$date": "2020-01-29T15:10:12.565Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e39721290415d5374a306bc"
+	},
+	"state": "up",
+	"name": "addSchoolIdsForUsersInTeams",
+	"createdAt": {
+		"$date": "2020-01-14T12:48:46.081Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5edf56430383be55fc9a8ee3"
+	},
+	"state": "up",
+	"name": "updateUserIndexesForLDAP",
+	"createdAt": {
+		"$date": "2020-06-09T09:28:35.874Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5eb961c94e1b4a5238eb1b82"
+	},
+	"state": "up",
+	"name": "addEnableStudentTeamCreation",
+	"createdAt": {
+		"$date": "2020-05-07T15:26:54.157Z"
 	},
 	"__v": 0
 },
@@ -544,78 +621,13 @@
 },
 {
 	"_id": {
-		"$oid": "5eb961c94e1b4a5238eb1b82"
+		"$oid": "5f058ea00cdad70880bac2bd"
 	},
 	"state": "up",
-	"name": "addEnableStudentTeamCreation",
+	"name": "add-federal-state-internation-school",
 	"createdAt": {
-		"$date": "2020-05-07T15:26:54.157Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5ebd68fe107fa3720c2251e4"
-	},
-	"state": "up",
-	"name": "add_more_school_years",
-	"createdAt": {
-		"$date": "2020-05-14T14:56:41.229Z"
-	},
-	"__v": 0
-},
-{
-		"_id": {
-			"$oid": "5ece7de4a194604c6e31f432"
-		},
-		"state": "up",
-		"name": "move_consent_to_user",
-		"createdAt": {
-			"$date": "2020-04-07T13:45:21.906Z"
-		},
-		"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5ecd33ee93e6125170a84d4b"
-	},
-	"state": "up",
-	"name": "encrypt-ldap-search-user-password",
-	"createdAt": {
-		"$date": "2020-05-26T14:00:06.91Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5eda255592ee4109ca3d423d"
-	},
-	"state": "up",
-	"name": "fix_move_consent",
-	"createdAt": {
-		"$date": "2020-06-04T09:14:00.473Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5eda255592ee4109ca3d423e"
-	},
-	"state": "up",
-	"name": "add-SCHOOL_PERMISSION_VIEW-permission",
-	"createdAt": {
-		"$date": "2020-06-04T13:10:39.414Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5edf56430383be55fc9a8ee3"
-	},
-	"state": "up",
-	"name": "updateUserIndexesForLDAP",
-	"createdAt": {
-		"$date": "2020-06-09T09:28:35.874Z"
+		"$date": "2020-07-08T09:15:12.718Z"
 	},
 	"__v": 0
 }]
+
