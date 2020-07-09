@@ -51,7 +51,8 @@ describe('school service', () => {
 				account: undefined,
 			}
 			const result = await schoolService.find(params);
-			const expectedFields = ['purpose', 'name', '_id', 'id', 'years', 'isTeamCreationByStudentsEnabled'];
+			const expectedFields = ['purpose', 'name', '_id', 'id',
+				'systems', 'years', 'isTeamCreationByStudentsEnabled'];
 			const notExpectedFields = ['fileStorageType', 'documentBaseDir', 'inMaintenance', 'currentYear',
 				'federalState'];
 			result.data.forEach((school) => {
