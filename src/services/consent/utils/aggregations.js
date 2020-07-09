@@ -291,7 +291,7 @@ const stageSort = (aggregation, sort) => {
 	}
 
 	if (typeof sort === 'object' && ({}).hasOwnProperty.call(sort, 'classes')) {
-		mSort['classesSort.gradelevel'] = mSort.classes;
+		mSort['classesSort.gradeLevel'] = mSort.classes;
 		mSort['classesSort.name'] = mSort.classes;
 		delete mSort.classes;
 	}
