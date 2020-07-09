@@ -13,6 +13,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-4142: Added indexes on TSP sync related attributes in user and school schema.
 - SC-4142: Adds info about unchanged entities to TSP sync statistics
+- Quickfix: Updated package.json lodash@4.17.15 to lodash@^4.17.19 to resolve a mismatch with the package-lock
 
 ### Fixed
 
