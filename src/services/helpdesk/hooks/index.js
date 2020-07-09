@@ -16,21 +16,20 @@ Deine ${data.cloud}
 }
 
 async function generateSystemInformation(account) {
-	const { userId, username } = account
+	const { userId, username } = account;
 
 	const userInformation = await userModel.userModel.findOne(userId)
-		.select({ 'roles': '1', 'email': '1' })
+		.select({ roles: '1', email: '1' })
 		.populate('roles', 'name')
-		.lean()
+		.lean();
 
-	const roles = userInformation.roles.length ? userInformation.roles.map(info => info.name) : 'NO ROLES'
-	const email = userInformation.email || 'NO EMAIL'
-	const systemInformation =
-		` System Information:
+	const roles = userInformation.roles.length ? userInformation.roles.map((info) => info.name) : 'NO ROLES';
+	const email = userInformation.email || 'NO EMAIL';
+	const systemInformation = ` System Information:
 	User login: ${username}
 	User role(s): ${roles}
-	User registrated email: ${email}\n`
-	return systemInformation
+	User registrated email: ${email}\n`;
+	return systemInformation;
 }
 
 function createFeedbackText(user, data) {
@@ -97,7 +96,7 @@ const feedback = () => async (hook) => {
 		});
 		// TODO: NOTIFICATION SERVICE
 	} else {
-		data.systemInformation = await generateSystemInformation(hook.params.account)
+		data.systemInformation = await generateSystemInformation(hook.params.account);
 		globalHooks.sendEmail(hook, {
 			subject: data.title || data.subject || 'nosubject',
 			emails: ['ticketsystem@schul-cloud.org'],
