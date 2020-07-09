@@ -345,11 +345,6 @@
 		"ES_CLIENT_ID": {
 			"type": "string",
 			"description": "The client id for edu-sharing api access"
-		},
-		"FEATURE_ES_SHOW_ONLY_EXTERNAL_RESULTS": {
-			"type": "boolean",
-			"default": true,
-			"description": "If the feature toggle is enabled, the edusharing will show only external results "
 		}
 	},
 	"required": [
