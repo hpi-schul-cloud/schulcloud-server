@@ -248,12 +248,12 @@
 },
 {
 	"_id": {
-		"$oid": "5df0d35872a8731352bf769f"
+		"$oid": "5e1706fd79b3c360204f88bc"
 	},
 	"state": "up",
-	"name": "remove invalid files from collection",
+	"name": "addGranularSchoolEditPermissions",
 	"createdAt": {
-		"$date": "2019-12-11T10:20:29.714Z"
+		"$date": "2020-01-09T10:57:01.515Z"
 	},
 	"__v": 0
 },
@@ -303,78 +303,12 @@
 },
 {
 	"_id": {
-		"$oid": "5e39721290415d5374a306bb"
+		"$oid": "5e81e74b65f87a5a600f591b"
 	},
 	"state": "up",
-	"name": "disable-team-created-by-students-all-schools",
+	"name": "addFileCreatorAndPermissionIndexes",
 	"createdAt": {
-		"$date": "2020-01-06T16:54:53.694Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e39721290415d5374a306bd"
-	},
-	"state": "up",
-	"name": "coursePermissions",
-	"createdAt": {
-		"$date": "2020-01-29T15:10:12.565Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e39721290415d5374a306bc"
-	},
-	"state": "up",
-	"name": "addSchoolIdsForUsersInTeams",
-	"createdAt": {
-		"$date": "2020-01-14T12:48:46.081Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e4a61ca1db4f62c8cb2b9df"
-	},
-	"state": "up",
-	"name": "remove_invalid_accounts",
-	"createdAt": {
-		"$date": "2020-02-17T09:50:02.639Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e4d449dc8fe4e2ff4993849"
-	},
-	"state": "up",
-	"name": "datasource-permissions-for-superhero",
-	"createdAt": {
-		"$date": "2020-02-19T14:22:21.2Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5d552b8bc1658a0682fc834a"
-	},
-	"state": "up",
-	"name": "set schoolspecific documentbasedir for instance open",
-	"createdAt": {
-		"$date": "2019-08-15T09:34:59.243Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e78b794a1e42c5728901f9a"
-	},
-	"state": "up",
-	"name": "runIndexSync2",
-	"createdAt": {
-		"$date": "2020-03-23T12:30:05.306Z"
+		"$date": "2020-03-26T11:39:40.409Z"
 	},
 	"__v": 0
 },
@@ -402,6 +336,88 @@
 },
 {
 	"_id": {
+		"$oid": "5e970516325e804198ec63dd"
+	},
+	"state": "up",
+	"name": "addAdminPermissionForManagingStudentTeamCreation",
+	"createdAt": {
+		"$date": "2020-04-15T12:59:02.81Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e98318cfb423a82b448ce99"
+	},
+	"state": "up",
+	"name": "add-sync-start-permission",
+	"createdAt": {
+		"$date": "2020-04-16T12:28:09.933Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ea6d94a5735a85808dbc95a"
+	},
+	"state": "up",
+	"name": "remove-student_edit-from-students",
+	"createdAt": {
+		"$date": "2020-04-27T15:17:39.485Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d552b8bc1658a0682fc834a"
+	},
+	"state": "up",
+	"name": "set schoolspecific documentbasedir for instance open",
+	"createdAt": {
+		"$date": "2019-08-15T09:34:59.243Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5dc18974ba666b70ac1199e5"
+	},
+	"state": "up",
+	"name": "add-enterthecloud-start-permission",
+	"createdAt": {
+		"$date": "2019-11-05T14:38:44.172Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e8355da77736b6304a3e77e"
+	},
+	"state": "up",
+	"name": "add_edtr_feature_to_klara_fall",
+	"createdAt": {
+		"$date": "2020-03-31T14:38:18.001Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e7f1d63e2c96215c85330f9"
+	},
+	"state": "up",
+	"name": "add_default_file_storage_provider",
+	"createdAt": {
+		"$date": "2020-03-28T09:48:19.167Z"
+	},
+	"state": "up",
+	"name": "runIndexSync",
+	"createdAt": {
+		"$date": "2020-03-21T19:35:25.407Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5e81e74b65f87a5a600f591b"
 	},
 	"state": "up",
@@ -413,12 +429,12 @@
 },
 {
 	"_id": {
-		"$oid": "5e970516325e804198ec63dd"
+		"$oid": "5e4d449dc8fe4e2ff4993849"
 	},
 	"state": "up",
-	"name": "addAdminPermissionForManagingStudentTeamCreation",
+	"name": "datasource-permissions-for-superhero",
 	"createdAt": {
-		"$date": "2020-04-15T12:59:02.81Z"
+		"$date": "2020-02-19T14:22:21.2Z"
 	},
 	"__v": 0
 },
@@ -449,20 +465,20 @@
 		"$oid": "5e98318cfb423a82b448ce99"
 	},
 	"state": "up",
-	"name": "add-sync-start-permission",
+	"name": "disable-team-created-by-students-all-schools",
 	"createdAt": {
-		"$date": "2020-04-16T12:28:09.933Z"
+		"$date": "2020-01-06T16:54:53.694Z"
 	},
 	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "5ea6d94a5735a85808dbc95a"
+		"$oid": "5ebd68fe107fa3720c2251e4"
 	},
 	"state": "up",
-	"name": "remove-student_edit-from-students",
+	"name": "add_more_school_years",
 	"createdAt": {
-		"$date": "2020-04-27T15:17:39.485Z"
+		"$date": "2020-05-14T14:56:41.229Z"
 	},
 	"__v": 0
 },
@@ -479,13 +495,14 @@
 },
 {
 	"_id": {
-		"$oid": "5de50ab801498f0f504d349e"
+		"$oid": "5ecd33ee93e6125170a84d4b"
 	},
 	"state": "up",
-	"name": "fix-demo-permissions",
+	"name": "encrypt-ldap-search-user-password",
 	"createdAt": {
-		"$date": "2019-12-02T12:59:36.284Z"
-	}
+		"$date": "2020-05-26T14:00:06.91Z"
+	},
+	"__v": 0
 },
 {
 	"_id": {
@@ -544,12 +561,12 @@
 },
 {
 	"_id": {
-		"$oid": "5ebd68fe107fa3720c2251e4"
+		"$oid": "5edf56430383be55fc9a8ee3"
 	},
 	"state": "up",
-	"name": "add_more_school_years",
+	"name": "updateUserIndexesForLDAP",
 	"createdAt": {
-		"$date": "2020-05-14T14:56:41.229Z"
+		"$date": "2020-06-09T09:28:35.874Z"
 	},
 	"__v": 0
 },
@@ -591,20 +608,20 @@
 		"$oid": "5ecd33ee93e6125170a84d4b"
 	},
 	"state": "up",
-	"name": "encrypt-ldap-search-user-password",
+	"name": "addEnableStudentTeamCreation",
 	"createdAt": {
-		"$date": "2020-05-26T14:00:06.91Z"
+		"$date": "2020-05-07T15:26:54.157Z"
 	},
 	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "5eda255592ee4109ca3d423d"
+		"$oid": "5e735028d4b12d5c4c77945a"
 	},
 	"state": "up",
-	"name": "fix_move_consent",
+	"name": "add-messenger-sync-permissions",
 	"createdAt": {
-		"$date": "2020-06-04T09:14:00.473Z"
+		"$date": "2020-03-19T11:55:25.139Z"
 	},
 	"__v": 0
 },
@@ -638,6 +655,17 @@
 	"name": "addTspSyncIndexes",
 	"createdAt": {
 		"$date": "2020-06-25T06:58:09.663Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f058ea00cdad70880bac2bd"
+	},
+	"state": "up",
+	"name": "add-federal-state-internation-school",
+	"createdAt": {
+		"$date": "2020-07-08T09:15:12.718Z"
 	},
 	"__v": 0
 }]
