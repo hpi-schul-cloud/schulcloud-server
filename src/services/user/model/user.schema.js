@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
 const { Configuration } = require('@schul-cloud/commons');
+const mongooseHistory = require('mongoose-history');
 const roleModel = require('../../role/model');
 const { enableAuditLog } = require('../../../utils/database');
-const { consentSchema } = require('./consent.schema');
 const externalSourceSchema = require('../../../helper/externalSourceSchema');
 
 const { Schema } = mongoose;
@@ -12,6 +12,13 @@ const defaultFeatures = [];
 const USER_FEATURES = {
 	EDTR: 'edtr',
 };
+
+const consentForm = ['analog', 'digital', 'update'];
+const consentTypes = {
+	PRIVACY: 'privacy',
+	TERMS_OF_USE: 'termsOfUse',
+};
+
 
 const userSchema = new Schema({
 	roles: [{ type: Schema.Types.ObjectId, ref: 'role' }],
@@ -42,7 +49,31 @@ const userSchema = new Schema({
 		enum: Object.values(USER_FEATURES),
 	},
 
-	consent: consentSchema,
+	consent: {
+		userConsent: {
+			form: { type: String, enum: consentForm },
+			dateOfPrivacyConsent: { type: Date },
+			dateOfTermsOfUseConsent: { type: Date },
+			privacyConsent: { type: Boolean },
+			termsOfUseConsent: { type: Boolean },
+		},
+		parentConsents: [{
+			parentId: { type: Schema.Types.ObjectId, ref: 'user' },
+			form: { type: String, enum: consentForm },
+			dateOfPrivacyConsent: { type: Date },
+			dateOfTermsOfUseConsent: { type: Date },
+			privacyConsent: { type: Boolean },
+			termsOfUseConsent: { type: Boolean },
+		}],
+		consentVersionUpdated: {
+			type: 'string',
+			enum: [
+				'all',
+				'dateOfPrivacyConsent',
+				'dateOfTermsOfUseConsent',
+			],
+		},
+	},
 
 	/**
 	 * depending on system settings,
@@ -89,8 +120,10 @@ userSchema.methods.getPermissions = function getPermissions() {
 };
 
 enableAuditLog(userSchema);
+userSchema.plugin(mongooseHistory);
 
 module.exports = {
 	USER_FEATURES,
 	userSchema,
+	consentTypes,
 };

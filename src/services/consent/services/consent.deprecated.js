@@ -1,56 +1,21 @@
-const { BadRequest } = require('@feathersjs/errors');
+const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
-const { userToConsent, modifyDataForUserSchema } = require('./utils');
-const globalHooks = require('../../hooks');
-
-const restrictToUserOrRole = (hook) => {
-	const userService = hook.app.service('users');
-	return userService.find({
-		query: {
-			_id: hook.params.account.userId,
-			$populate: 'roles',
-		},
-	}).then((res) => {
-		let access = false;
-		res.data[0].roles.forEach((role) => {
-			if (role.name === 'superhero' || role.name === 'teacher' || role.name === 'administrator') {
-				access = true;
-			}
-		});
-		if (access) {
-			return hook;
-		}
-
-		hook.params.query.userId = hook.params.account.userId;
-		return hook;
-	});
-};
-
-/**
- * check if userId is set and set it to an empty $in clause if not
- * if userId.$in is an object convert it to an array
- * @param {*} context
- */
-const setUserIdToCorrectForm = (context) => {
-	if (!context.params.query) {
-		context.params.query = {};
-	}
-
-	if ((context.params.query.userId || {}).$in && !Array.isArray(context.params.query.userId.$in)) {
-		context.params.query.userId.$in = Object.values(context.params.query.userId.$in);
-	}
-	return context;
-};
+const { iff, isProvider, disallow } = require('feathers-hooks-common');
+const { userToConsent, modifyDataForUserSchema } = require('../utils');
+const { restrictToCurrentUser } = require('../hooks/consents');
 
 
-const consentHook = {
+const consentHooks = {
 	before: {
-		all: [authenticate('jwt')],
-		find: [
+		all: [
 			authenticate('jwt'),
-			globalHooks.ifNotLocal(restrictToUserOrRole),
-			setUserIdToCorrectForm,
-		],
+		], // TODO: restrict to current user
+		get: [iff(isProvider('external'), restrictToCurrentUser)],
+		find: [iff(isProvider('external'), restrictToCurrentUser)],
+		create: [disallow('external')],
+		update: [iff(isProvider('external'), restrictToCurrentUser)],
+		patch: [iff(isProvider('external'), restrictToCurrentUser)],
+		remove: [iff(isProvider('external'), restrictToCurrentUser)],
 	},
 };
 
@@ -108,7 +73,7 @@ class ConsentService {
 	}
 
 	async get(_id, params) {
-		return userToConsent(this.modelService.get(_id));
+		return userToConsent(await this.modelService.get(_id));
 	}
 
 	async create(data, params) {
@@ -151,5 +116,5 @@ class ConsentService {
 
 module.exports = {
 	ConsentService,
-	consentHook,
+	consentHooks,
 };

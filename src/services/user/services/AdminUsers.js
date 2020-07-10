@@ -4,7 +4,6 @@ const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../../consent/utils/aggregations');
-const { modelServices: { prepareInternalParams } } = require('../../../utils');
 const {
 	hasSchoolPermission,
 } = require('../../../hooks');

@@ -4,6 +4,7 @@ const consentHooks = require('./hooks/consents');
 const consentVersionModelHooks = require('./hooks/consentversionsModelHooks');
 const consentDocs = require('./docs');
 const { ConsentStatusService } = require('./consentStatus.service');
+const { ConsentCheckService, consentCheckHooks } = require('./consentCheck.service');
 const { ConsentVersionService, ConsentVersionServiceHooks } = require('./services/consentVersionService');
 const deprecated = require('./consent.deprecated');
 
@@ -31,6 +32,10 @@ module.exports = function () {
 	*/
 
 	// app.use('/consents/:type/users', new ConsentStatusService());
+
+	/* Check for current Version */
+	app.use('consents/check', new ConsentCheckService());
+	app.service('consent/check', consentCheckHooks);
 
 	/* ConsentVersion Model */
 	app.use('consentVersionsModel', service({

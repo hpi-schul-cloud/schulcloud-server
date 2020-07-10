@@ -1,7 +1,9 @@
 const addDates = (context) => {
 	if (context.data.consent) {
 		const { parentConsents, userConsent } = context.data.consent;
-		if (parentConsents && parentConsents.length) {
+		if (parentConsents
+			&& parentConsents.length
+			&& parentConsents.length !== 0) {
 			const parentConsent = parentConsents[0];
 			if ('privacyConsent' in parentConsent && !('dateOfPrivacyConsent' in parentConsent)) {
 				parentConsent.dateOfPrivacyConsent = Date.now();
