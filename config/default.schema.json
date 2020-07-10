@@ -346,9 +346,15 @@
 			"type": "string",
 			"description": "The client id for edu-sharing api access"
 		},
-		"FEATURE_STUDENTS_CAN_BE_TEAM_ADMINISTRATOR_ENABLED": {
+		"FEATURE_STUDENTS_CAN_BE_TEAM_ADMINISTRATOR": {
 			"type": "string",
 			"default": "enabled",
+			"enum": [
+				"disabled",
+				"opt-in",
+				"opt-out",
+				"enabled"
+			],
 			"description": "Allows assigning the role of team administrator and team owner to a student in teams"
 		}
 	},
