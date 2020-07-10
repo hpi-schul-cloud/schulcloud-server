@@ -8,6 +8,7 @@ const {
 
 const {
 	restrictToCurrentSchool,
+	denyIfNotCurrentSchoolOrEmpty,
 	hasPermission,
 } = require('../../../hooks');
 
@@ -15,13 +16,12 @@ const { modelServices: { prepareInternalParams } } = require('../../../utils');
 
 const ConsentVersionServiceHooks = {
 	before: {
-		all: [],
+		all: [authenticate('jwt')],
 		find: [],
 		get: [],
 		create: [iff(isProvider('external'), [
-			authenticate('jwt'),
-			restrictToCurrentSchool, // TODO restricted erscheint mir hier nicht hilfreich
 			hasPermission('SCHOOL_EDIT'),
+			restrictToCurrentSchool,
 		])],
 		update: [disallow()],
 		patch: [disallow()],
@@ -30,7 +30,12 @@ const ConsentVersionServiceHooks = {
 	after: {
 		all: [],
 		find: [],
-		get: [],
+		get: [
+			iff(isProvider('external'),
+				denyIfNotCurrentSchoolOrEmpty({
+					errorMessage: 'The current user is not allowed to list other users!',
+				})),
+		],
 		create: [],
 		update: [],
 		patch: [],
@@ -64,17 +69,18 @@ class ConsentVersionService {
 		return this.app.service('consentVersionsModel').get(id, prepareInternalParams(params));
 	}
 
-	find(params) {
-		const { query } = params;
-		if (query && query.schoolId) {
-			if (!query.$or) {
-				query.$or = [];
-			}
-			query.$or.push({ schoolId: query.schoolId });
-			delete query.schoolId;
+	async find(params) {
+		const { query = {}, ...restParams } = params;
+		let searchResult;
+		if (query.schoolId) {
+			searchResult = await this.app.service('consentVersionsModel').find(prepareInternalParams(params));
 		}
 
-		return this.app.service('consentVersionsModel').find(prepareInternalParams(params));
+		if (searchResult && searchResult.total > 0) {
+			return searchResult;
+		}
+		const querySchoolIdEmpty = { ...restParams, query: { ...query, schoolId: { $exists: false } } };
+		return this.app.service('consentVersionsModel').find(prepareInternalParams(querySchoolIdEmpty));
 	}
 
 	async create(data, params) {

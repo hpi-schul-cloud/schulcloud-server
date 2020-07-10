@@ -253,7 +253,7 @@
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
 		},
-		"FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY": {
+		"ADMIN_TOGGLE_STUDENT_VISIBILITY": {
 			"type": "string",
 			"default": "enabled",
 			"enum": [
@@ -319,12 +319,49 @@
 			"type": "string",
 			"default": null,
 			"description": "A string that contains recievers of the daily stat and other mails. Can contain mutliple mails, seperated by comma"
+		},
+		"LERNSTORE_MODE": {
+			"type": "string",
+			"enum": [
+				"DISABLED",
+				"LEGACY",
+				"EDUSHARING"
+			],
+			"default": "DISABLED",
+			"description": "Defines the backend for the lernstore, the client just may be enabled or disabled only, if this is not disabled in the server."
+		},
+		"ES_DOMAIN": {
+			"type": "string",
+			"format": "uri",
+			"pattern": ".*(?<!/)$",
+			"description": "The URL for the edu-sharing repository."
+		},
+		"ES_USER": {
+			"type": "string",
+			"description": "The username for edu-sharing api access"
+		},
+		"ES_PASSWORD": {
+			"type": "string",
+			"description": "The password for edu-sharing api access"
+		},
+		"ES_GRANT_TYPE": {
+			"type": "string",
+			"description": "The grant_type for edu-sharing api access"
+		},
+		"ES_OAUTH_SECRET": {
+			"type": "string",
+			"description": "The oauth for edu-sharing api access"
+		},
+		"ES_CLIENT_ID": {
+			"type": "string",
+			"description": "The client id for edu-sharing api access"
 		}
 	},
 	"required": [
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
 		"STUDENT_TEAM_CREATION",
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
-		"HOST"
+		"HOST",
+		"LERNSTORE_MODE"
 	]
 }
