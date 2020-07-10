@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "23.5.0",
+	"version": "23.6.0",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -73,7 +73,7 @@
 		"jose": "^1.22.2",
 		"jsonwebtoken": "8.5.1",
 		"ldapjs": "git+https://github.com/schul-cloud/node-ldapjs.git",
-		"lodash": "^4.17.13",
+		"lodash": "4.17.15",
 		"migrate-mongoose": "^4.0.0",
 		"mixwith": "^0.1.1",
 		"moment": "^2.19.2",
@@ -102,6 +102,7 @@
 		"universal-analytics": "^0.4.17",
 		"urlsafe-base64": "^1.0.0",
 		"uuid": "^7.0.3",
+		"wait-on": "^5.0.1",
 		"winston": "^3.2.0",
 		"xml2js-es6-promise": "^1.1.1"
 	},
