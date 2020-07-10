@@ -37,7 +37,6 @@ module.exports = function setup() {
 	const permissionService = app.service('/roles/:roleName/permissions');
 	permissionService.hooks(permissionHooks);
 
-
 	definePermissions(
 		'ADMIN_TOGGLE_STUDENT_VISIBILITY',
 		ROLES.TEACHER,
@@ -46,5 +45,10 @@ module.exports = function setup() {
 		// PERMISSIONS.STUDENT_EDIT,
 		// PERMISSIONS.STUDENT_CREATE,
 		// PERMISSIONS.STUDENT_DELETE,
+	);
+	definePermissions(
+		'FEATURE_STUDENTS_CAN_BE_TEAM_ADMINISTRATOR_ENABLED',
+		ROLES.STUDENT,
+		PERMISSIONS.CAN_BE_TEAM_ADMIN,
 	);
 };

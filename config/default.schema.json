@@ -277,17 +277,17 @@
 		},
 		"ETHERPAD_API_PATH": {
 			"type": "string",
-			"default":"/api/1",
+			"default": "/api/1",
 			"description": "The etherpad api path."
 		},
 		"ETHERPAD_URI": {
 			"type": "string",
-			"default":"https://schul-cloud.org/etherpad/api/1",
+			"default": "https://schul-cloud.org/etherpad/api/1",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_URI": {
 			"type": "string",
-			"default":"https://etherpad.schul-cloud.org/p",
+			"default": "https://etherpad.schul-cloud.org/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
@@ -299,7 +299,7 @@
 			"type": "integer",
 			"default": 7200,
 			"description": "If Session Valid time is smaller than this, a new session is created on request."
-    },
+		},
 		"SKIP_CONDITIONS_CONSENT": {
 			"type": "string",
 			"default": "",
@@ -345,6 +345,11 @@
 		"ES_CLIENT_ID": {
 			"type": "string",
 			"description": "The client id for edu-sharing api access"
+		},
+		"FEATURE_STUDENTS_CAN_BE_TEAM_ADMINISTRATOR_ENABLED": {
+			"type": "string",
+			"default": "enabled",
+			"description": "Allows assigning the role of team administrator and team owner to a student in teams"
 		}
 	},
 	"required": [
