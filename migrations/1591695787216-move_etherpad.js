@@ -192,7 +192,6 @@ const run = async (oldPadDomain) => {
 				await Promise.allSettled(results.map(async (result, i) => {
 					if (result.status === 'rejected') {
 						const contentId = lesson.contents[i]._id;
-						// TODO CIPHRON
 						const error = `lesson ${lesson._id} content ${contentId}: ${result.reason}`;
 						overallResult = {
 							message: msgContentError,
