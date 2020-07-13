@@ -5,6 +5,8 @@ const {
 	BadRequest,
 	TypeError,
 } = require('@feathersjs/errors');
+const { authenticate } = require('@feathersjs/authentication');
+
 const { Configuration } = require('@schul-cloud/commons');
 const _ = require('lodash');
 const mongoose = require('mongoose');
@@ -387,29 +389,45 @@ exports.enableQueryAfter = (context) => {
 	return context;
 };
 
-exports.restrictToCurrentSchool = (context) => getUser(context).then((user) => {
+exports.restrictToCurrentSchool = async (context) => {
+	const user = await getUser(context);
 	if (testIfRoleNameExist(user, 'superhero')) {
 		return context;
 	}
 	const currentSchoolId = user.schoolId.toString();
 	const { params } = context;
+	// route
 	if (params.route && params.route.schoolId && params.route.schoolId !== currentSchoolId) {
 		throw new Forbidden('You do not have valid permissions to access this.');
 	}
-	if (['get', 'find', 'remove'].includes(context.method)) {
+	// id
+	if (['update', 'patch', 'remove'].includes(context.method) && context.id) {
+		const target = await context.service.get(context.id);
+		if (!equalIds(target.schoolId, user.schoolId)) {
+			throw new NotFound(`no record found for id '${context.id.toString()}'`);
+		}
+	}
+	// query
+	const methodWithQuery = ['get', 'find'].includes(context.method)
+		|| (['update', 'patch', 'remove'].includes(context.method) && context.id == null);
+	if (methodWithQuery) {
 		if (params.query.schoolId === undefined) {
 			params.query.schoolId = user.schoolId;
 		} else if (!equalIds(params.query.schoolId, currentSchoolId)) {
 			throw new Forbidden('You do not have valid permissions to access this.');
 		}
-	} else if (context.data.schoolId === undefined) {
-		context.data.schoolId = currentSchoolId;
-	} else if (!equalIds(context.data.schoolId, currentSchoolId)) {
-		throw new Forbidden('You do not have valid permissions to access this.');
+	}
+	// data
+	if (['create', 'update', 'patch'].includes(context.method)) {
+		if (context.data.schoolId === undefined) {
+			context.data.schoolId = currentSchoolId;
+		} else if (!equalIds(context.data.schoolId, currentSchoolId)) {
+			throw new Forbidden('You do not have valid permissions to access this.');
+		}
 	}
 
 	return context;
-});
+};
 
 /* todo: Many request pass id as second parameter, but it is confused with the logic that should pass.
 	It should evaluate and make clearly.
@@ -592,6 +610,16 @@ exports.denyIfNotCurrentSchool = (
 	}
 	return context;
 });
+
+// meant to be used as an after context
+exports.denyIfNotCurrentSchoolOrEmpty = (
+	{ errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!' },
+) => (context) => {
+	if (!(context.result || {}).schoolId) {
+		return context;
+	}
+	return this.denyIfNotCurrentSchool(errorMessage)(context);
+};
 
 exports.denyIfStudentTeamCreationNotAllowed = (
 	{ errorMessage = 'The current user is not allowed to list other users!' },
@@ -865,5 +893,12 @@ exports.blockDisposableEmail = (property, optional = true) => async (context) =>
 		}
 	}
 
+	return context;
+};
+
+exports.authenticateWhenJWTExist = (context) => {
+	if ((context.params.headers || {}).authorization) {
+		return authenticate('jwt')(context);
+	}
 	return context;
 };
