@@ -1,4 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
+const { disallow } = require('feathers-hooks-common');
 const logger = require('../../../logger');
 
 const {
@@ -82,10 +83,10 @@ const activationHooks = {
 			authenticate('jwt'),
 		],
 		find: [],
-		get: [],
-		create: [],
+		get: [disallow()],
+		create: [disallow()],
 		update: [],
-		patch: [],
+		patch: [disallow()],
 		remove: [],
 	},
 };

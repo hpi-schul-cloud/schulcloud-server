@@ -1,5 +1,5 @@
 const {
-	ActivationModel,
+	ActivationModelService,
 	Activation,
 	EMailAddressActivation,
 } = require('./services');
@@ -7,8 +7,8 @@ const {
 const { KEYWORDS } = require('./utils/customUtils');
 
 module.exports = (app) => {
-	app.use('activationModel', ActivationModel.activationModelService);
-	app.service('activationModel').hooks(ActivationModel.activationModelHooks);
+	app.use('activationModel', ActivationModelService.activationModelService);
+	app.service('activationModel').hooks(ActivationModelService.activationModelHooks);
 
 	/** This service does all general things like finding open jobs,
 	 * redeeming activation codes, deleting jobs. But this service

@@ -93,7 +93,7 @@ describe('activation/utils utils', () => {
 		const { entry, user } = await createEntry();
 
 		const { activationCode } = entry;
-		const lookup = await util.getEntryByActivationCode(app, user._id, activationCode, mockData.keyword);
+		const lookup = await util.getEntryByActivationCode(app, user._id, activationCode);
 
 		expect(lookup).to.not.be.undefined;
 		expect(lookup._id.toString()).to.equal(entry._id.toString());
@@ -109,7 +109,7 @@ describe('activation/utils utils', () => {
 		const entry = await util.createEntry(app, testUser1._id, keyword, mockData.email);
 
 		const { activationCode } = entry;
-		const entryUser2 = await util.getEntryByActivationCode(app, testUser2._id, activationCode, keyword);
+		const entryUser2 = await util.getEntryByActivationCode(app, testUser2._id, activationCode);
 		expect(entryUser2, 'this is bad!!').to.be.null;
 	});
 

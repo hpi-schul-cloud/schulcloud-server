@@ -143,8 +143,8 @@ const EMailAddressActivationHooks = {
 			authenticate('jwt'),
 			hasPermission(['ACCOUNT_EDIT']),
 		],
-		find: [],
-		get: [],
+		find: [disallow()],
+		get: [disallow()],
 		create: [
 			blockThirdParty,
 			validateEmail,
@@ -154,8 +154,8 @@ const EMailAddressActivationHooks = {
 			iff(isProvider('external'), validPassword),
 		],
 		update: [disallow('external')],
-		patch: [],
-		remove: [],
+		patch: [disallow()],
+		remove: [disallow()],
 	},
 };
 

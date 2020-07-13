@@ -1,9 +1,9 @@
-const ActivationModel = require('./ActivationModelService');
+const ActivationModelService = require('./ActivationModelService');
 const ActivationService = require('./ActivationService');
 const EMailAddressActivation = require('./eMailAddress');
 
 module.exports = {
-	ActivationModel,
+	ActivationModelService,
 	Activation: ActivationService,
 	EMailAddressActivation,
 };

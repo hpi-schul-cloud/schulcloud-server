@@ -3,9 +3,8 @@ const {
 } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
 const { HOST } = require('../../../../config/globals');
-const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { getQuarantinedObject, createQuarantinedObject, KEYWORDS } = require('./customUtils');
-const { customErrorMessages } = require('../../helpers/utils');
+const customErrorMessages = require('./customErrorMessages');
 const Mail = require('../services/interface/mailFormat');
 
 /**
@@ -51,15 +50,6 @@ const setEntryState = async (ref, entryId, state) => {
 	return entry;
 };
 
-const lookupEntry = (requestingId, entries, keyword) => {
-	let filteredEntries = [];
-	filteredEntries = entries.filter((entry) => equalIds(entry.userId, requestingId)) || [];
-	if (keyword) {
-		filteredEntries = filteredEntries.find((entry) => entry.keyword === keyword) || null;
-	}
-	return filteredEntries;
-};
-
 /**
  * Will lookup entries by userId
  * @param {*} ref 					this
@@ -70,8 +60,13 @@ const lookupEntry = (requestingId, entries, keyword) => {
 const getEntriesByUserId = async (ref, requestingId, keyword = null) => {
 	if (!requestingId) throw new Forbidden(customErrorMessages.NOT_AUTHORIZED);
 
-	const entry = await (ref.app || ref).service('activationModel').find({ query: { userId: requestingId } });
-	return lookupEntry(requestingId, entry, keyword);
+	const query = { userId: requestingId };
+	if (keyword) query.keyword = keyword;
+
+	const entry = await (ref.app || ref).service('activationModel').find(query);
+
+	if (keyword && entry.length === 1) return entry[0];
+	return entry;
 };
 
 /**
@@ -79,15 +74,19 @@ const getEntriesByUserId = async (ref, requestingId, keyword = null) => {
  * @param {*} ref 					this
  * @param {ObjectId} requestingId	ObjectId of User requesting data
  * @param {String} activationCode	activationCode
- * @param {String} keyword			Keyword
  * @returns {Object} 				an object is returned
  */
-const getEntryByActivationCode = async (ref, requestingId, activationCode, keyword = null) => {
+const getEntryByActivationCode = async (ref, requestingId, activationCode) => {
 	if (!requestingId) throw new Forbidden(customErrorMessages.NOT_AUTHORIZED);
 	if (!activationCode) throw SyntaxError('activationCode required!');
 
-	const entry = await (ref.app || ref).service('activationModel').find({ query: { activationCode } });
-	return lookupEntry(requestingId, entry, keyword);
+	const entry = await (ref.app || ref).service('activationModel').find({
+		query: {
+			activationCode,
+			userId: requestingId,
+		},
+	});
+	return entry;
 };
 
 /**
