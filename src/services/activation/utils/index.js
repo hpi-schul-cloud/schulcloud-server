@@ -180,10 +180,7 @@ const sendMail = async (ref, mail, entry) => {
  * @param {*} req				requestParams (optional)
  * @returns {Object}			user object
  */
-const getUser = async (ref, userId, req = null) => {
-	if (req && req.params.user) {
-		return req.params.user;
-	}
+const getUser = async (ref, userId) => {
 	const user = await (ref.app || ref).service('users').get(userId);
 	return user;
 };
