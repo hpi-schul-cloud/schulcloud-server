@@ -174,26 +174,6 @@ const sendMail = async (ref, mail, entry) => {
 };
 
 /**
- * Filters a given array of entries. All non validKeys are removed from each object
- * @param {Array} entries	 array of entries
- * @param {*} validKeys 	 array of valid Objectkeys
- * @returns {Array}			 filtered array
- */
-const filterEntryParamNames = (entries, validKeys) => {
-	if (!Array.isArray(entries)) throw new SyntaxError('entries must be an array');
-	(entries || []).forEach((entry) => {
-		let data = {};
-		Object.keys(entry).forEach((key) => validKeys.includes(key) || delete entry[key]);
-		if (validKeys.includes('quarantinedObject')) {
-			data = entry.quarantinedObject;
-			delete entry.quarantinedObject;
-			entry.data = data;
-		}
-	});
-	return entries;
-};
-
-/**
  * Returns a User with given userId
  * @param {*} ref 				this
  * @param {ObjectId} userId 	UserId
@@ -230,7 +210,6 @@ module.exports = {
 	validEntry,
 	createActivationLink,
 	Mail,
-	filterEntryParamNames,
 	Forbidden,
 	NotFound,
 	BadRequest,

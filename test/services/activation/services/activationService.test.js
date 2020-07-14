@@ -79,6 +79,8 @@ describe('activation/services activationService', () => {
 		expect(entries2.entry).to.have.lengthOf(1);
 		expect(entries2.entry[0].data).to.be.equal(entry.quarantinedObject);
 		expect(entries2.entry[0].keyword).to.be.equal(entry.keyword);
+		expect(entries2.entry[0]._id).to.be.undefined;
+		expect(entries2.entry[0].userId).to.be.undefined;
 
 		entries1 = await activationService.find({ account: { userId: user1._id } });
 		expect(entries1).to.not.be.null;

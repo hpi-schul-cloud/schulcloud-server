@@ -148,41 +148,6 @@ describe('activation/utils utils', () => {
 		await expect(util.validEntry(entry)).to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_EXPIRED);
 	});
 
-	it('filter entries', async () => {
-		const { entry, user } = await createEntry();
-		const entry2 = await util.createEntry(app, user._id, mockData.keyword, mockData.email2);
-
-		let validKeys = ['activationCode'];
-		const res1 = await util.filterEntryParamNames([entry].slice(0), validKeys);
-		expect(Object.keys(res1[0]).length).to.be.equal(validKeys.length);
-		expect(res1[0].activationCode).to.exist;
-		expect(res1[0].data).to.not.exist;
-		expect(res1[0].quarantinedObject).to.not.exist;
-		expect(res1[0]._id).to.not.exist;
-		expect(res1[0].createdAt).to.not.exist;
-		expect(res1[0].userId).to.not.exist;
-		expect(res1[0].keyword).to.not.exist;
-
-		validKeys = ['activationCode', 'quarantinedObject'];
-		const res2 = await util.filterEntryParamNames([entry2], validKeys);
-		expect(Object.keys(res2[0]).length).to.be.equal(validKeys.length);
-		expect(res2[0].activationCode).to.exist;
-		expect(res2[0].data).to.exist;
-		expect(res2[0].quarantinedObject).to.not.exist;
-		expect(res1[0]._id).to.not.exist;
-		expect(res1[0].createdAt).to.not.exist;
-		expect(res1[0].userId).to.not.exist;
-		expect(res1[0].keyword).to.not.exist;
-
-		try {
-			util.filterEntryParamNames(entry, validKeys);
-			throw new Error('This should never happen');
-		} catch (error) {
-			expect(error).to.be.instanceOf(SyntaxError);
-			expect(error.message).to.be.equal('entries must be an array');
-		}
-	});
-
 	it('get User', async () => {
 		const user = await createTestUser({ roles: ['student'] });
 		const getUser = await util.getUser(app, user._id);

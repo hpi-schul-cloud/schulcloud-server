@@ -5,13 +5,14 @@ const logger = require('../../../logger');
 const {
 	getEntriesByUserId,
 	deleteEntry,
-	filterEntryParamNames,
 	validEntry,
 	getUser,
 	getEntryByActivationCode,
 	NotFound,
 	customErrorMessages,
 } = require('../utils');
+
+const { filterEntryParamNames } = require('../hooks/utils');
 
 /** This service does all general things like finding open jobs,
  * redeeming activation codes, deleting jobs. But this service
@@ -26,7 +27,6 @@ class ActivationService {
 	async find(params) {
 		const { userId } = params.account;
 		const entry = await getEntriesByUserId(this, userId);
-		filterEntryParamNames(entry, ['keyword', 'quarantinedObject', 'state']);
 		return { success: true, entry };
 	}
 
@@ -87,6 +87,14 @@ const activationHooks = {
 		create: [disallow()],
 		update: [],
 		patch: [disallow()],
+		remove: [],
+	},
+	after: {
+		find: [filterEntryParamNames],
+		get: [],
+		create: [],
+		update: [],
+		patch: [],
 		remove: [],
 	},
 };

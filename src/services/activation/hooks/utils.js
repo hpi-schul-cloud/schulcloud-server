@@ -1,4 +1,5 @@
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const { keepInArray } = require('feathers-hooks-common');
 const constants = require('../../../utils/constants');
 const { blockDisposableEmail } = require('../../../hooks');
 const { trimPassword } = require('../../account/hooks');
@@ -65,6 +66,13 @@ const validateEmail = (hook) => {
 	return hook;
 };
 
+const filterEntryParamNames = async (context) => {
+	const allowedAttributes = [
+		'keyword', 'quarantinedObject', 'state',
+	];
+	return keepInArray('entry', allowedAttributes)(context);
+};
+
 module.exports = {
 	validPassword,
 	blockThirdParty,
@@ -73,4 +81,5 @@ module.exports = {
 	blockDisposableEmail,
 	trimPassword,
 	hasPermission,
+	filterEntryParamNames,
 };
