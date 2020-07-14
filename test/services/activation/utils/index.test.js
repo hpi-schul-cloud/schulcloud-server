@@ -16,7 +16,8 @@ const {
 
 const util = require('../../../../src/services/activation/utils');
 const customUtils = require('../../../../src/services/activation/utils/customUtils');
-const { customErrorMessages } = require('../../../../src/services/helpers/utils');
+
+const { customErrorMessages } = util;
 
 const mockData = {
 	keyword: customUtils.KEYWORDS.E_MAIL_ADDRESS,
