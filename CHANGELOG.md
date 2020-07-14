@@ -19,6 +19,8 @@ Also added a sub-service for changing email/username in Activation Service
 
 ### Fixed
 
+- SC-5250: Fixes the CSV-Import, if there are whitespaces in the columnnames
+
 ### Changed
 
 ### Security
