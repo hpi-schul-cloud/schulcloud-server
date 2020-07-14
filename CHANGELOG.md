@@ -16,6 +16,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-5250: Fixes the CSV-Import, if there are whitespaces in the columnnames
+
 ### Changed
 
 ### Security
