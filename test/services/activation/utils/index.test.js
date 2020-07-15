@@ -111,7 +111,7 @@ describe('activation/utils utils', () => {
 
 		const { activationCode } = entry;
 		const entryUser2 = await util.getEntryByActivationCode(app, testUser2._id, activationCode);
-		expect(entryUser2, 'this is bad!!').to.be.null;
+		expect(entryUser2, 'this is bad!!').to.have.lengthOf(0);
 	});
 
 	it('lookup entry by userId', async () => {
