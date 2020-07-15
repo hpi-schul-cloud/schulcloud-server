@@ -3,10 +3,10 @@ const { consentModel, ConsentVersionModel } = require('./model');
 const consentHooks = require('./hooks/consents');
 const consentVersionModelHooks = require('./hooks/consentversionsModelHooks');
 const consentDocs = require('./docs');
-const { ConsentStatusService } = require('./consentStatus.service');
-const { ConsentCheckService, consentCheckHooks } = require('./consentCheck.service');
+// const { ConsentStatusService } = require('./services/consentStatus.service');
+const { ConsentCheckService, consentCheckHooks } = require('./services/consentCheck.service');
 const { ConsentVersionService, ConsentVersionServiceHooks } = require('./services/consentVersionService');
-const deprecated = require('./consent.deprecated');
+const deprecated = require('./services/consent.deprecated');
 
 // eslint-disable-next-line func-names
 module.exports = function () {
@@ -25,7 +25,7 @@ module.exports = function () {
 */
 	// REPLACEMENT FOR CURRENT consent ROUTE
 	app.use('/consents', new deprecated.ConsentService());
-	app.service('consents').hooks(deprecated.consentHooks);
+	app.service('/consents').hooks(deprecated.consentHooks);
 	/*
 	app.use('/consents', consentModelService);
 	app.service('/consents').hooks(consentHooks);
@@ -34,8 +34,9 @@ module.exports = function () {
 	// app.use('/consents/:type/users', new ConsentStatusService());
 
 	/* Check for current Version */
-	app.use('consents/check', new ConsentCheckService());
-	app.service('consent/check', consentCheckHooks);
+	const checkUrl = '/consents/:userId/check';
+	app.use(checkUrl, new ConsentCheckService());
+	app.service(checkUrl).hooks(consentCheckHooks);
 
 	/* ConsentVersion Model */
 	app.use('consentVersionsModel', service({

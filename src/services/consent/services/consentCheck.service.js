@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { iff, provider } = require('feathers-hooks-common');
+const { iff, isProvider } = require('feathers-hooks-common');
 const { consentTypes } = require('../model');
-const { restrictToCurrentUser } = require('../hooks/consents');
+const { restrictToCurrentUser } = require('../hooks/consentCheck');
 const { userToConsent } = require('../utils');
 
 const removeQuery = (context) => ({
@@ -13,12 +13,14 @@ const removeQuery = (context) => ({
 });
 
 const consentCheckHooks = {
-	all: [authenticate('jwt')],
-	get: [iff(provider('external'), restrictToCurrentUser, removeQuery)],
+	before: {
+		all: [authenticate('jwt')],
+		find: [iff(isProvider('external'), restrictToCurrentUser, removeQuery)],
+	},
 };
 
-
-const getVersion = (ref, type, schoolId, date) => ref.get('/consentVersions', {
+// TODO: add Indexes if needed
+const getVersion = (ref, type, schoolId, date) => ref.find({
 	query: {
 		publishedAt: {
 			$gt: new Date(date),
@@ -32,9 +34,10 @@ const getVersion = (ref, type, schoolId, date) => ref.get('/consentVersions', {
 
 
 class ConsentCheckService {
-	async get(_id, params) {
+	async find(params) {
+		const _id = params.route.userId;
 		const { query } = params;
-		const user = await this.consentService.get(_id);
+		const user = await this.userService.get(_id);
 		const consent = userToConsent(user);
 
 		if (consent.consentStatus === 'missing') {

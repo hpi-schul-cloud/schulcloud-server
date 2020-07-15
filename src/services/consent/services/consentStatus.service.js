@@ -1,4 +1,4 @@
-const { modelServices: { prepareInternalParams }, modifyDataForUserSchema } = require('../../utils');
+const { modelServices: { prepareInternalParams }, modifyDataForUserSchema } = require('../utils');
 
 const MODEL_SERVICE = 'usersModel';
 
