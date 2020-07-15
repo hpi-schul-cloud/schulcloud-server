@@ -32,7 +32,7 @@ const createEntry = async () => {
 	return { entry, user };
 };
 
-describe.only('activation/utils utils', () => {
+describe('activation/utils utils', () => {
 	let server;
 
 	before((done) => {
