@@ -11,6 +11,7 @@ const { HOST } = require('../../../../config/globals');
 const app = require('../../../../src/app');
 const {
 	createTestUser,
+	createTestActivation,
 	cleanup,
 } = require('../../helpers/testObjects')(app);
 
@@ -27,11 +28,11 @@ const mockData = {
 
 const createEntry = async () => {
 	const user = await createTestUser({ roles: ['student'] });
-	const entry = await util.createEntry(app, user._id, mockData.keyword, mockData.email);
+	const entry = await createTestActivation(user, mockData.keyword, mockData.email);
 	return { entry, user };
 };
 
-describe('activation/utils utils', () => {
+describe.only('activation/utils utils', () => {
 	let server;
 
 	before((done) => {
@@ -61,13 +62,13 @@ describe('activation/utils utils', () => {
 
 	it('create entry with same email twice', async () => {
 		const { entry, user } = await createEntry();
-		const entry2 = await util.createEntry(app, user._id, mockData.keyword, mockData.email);
+		const entry2 = await createTestActivation(user, mockData.keyword, mockData.email);
 		expect(entry).to.be.deep.include(entry2);
 	});
 
 	it('create entry with new email', async () => {
 		const { entry, user } = await createEntry();
-		const entry2 = await util.createEntry(app, user._id, mockData.keyword, mockData.email2);
+		const entry2 = await createTestActivation(user, mockData.keyword, mockData.email2);
 		expect(entry).to.be.not.deep.include(entry2);
 		expect(entry._id.toString()).to.be.not.equal(entry2._id.toString());
 		expect(entry.activationCode).to.be.not.equal(entry2.activationCode);
@@ -107,18 +108,18 @@ describe('activation/utils utils', () => {
 		const { keyword } = mockData;
 		const testUser1 = await createTestUser();
 		const testUser2 = await createTestUser();
-		const entry = await util.createEntry(app, testUser1._id, keyword, mockData.email);
+		const entry = await createTestActivation(testUser1._id, keyword, mockData.email);
 
 		const { activationCode } = entry;
 		const entryUser2 = await util.getEntryByActivationCode(app, testUser2._id, activationCode);
-		expect(entryUser2, 'this is bad!!').to.have.lengthOf(0);
+		expect(entryUser2, 'this is bad!!').to.be.null;
 	});
 
 	it('lookup entry by userId', async () => {
 		const keyword = util.KEYWORDS.E_MAIL_ADDRESS;
 		const testUser1 = await createTestUser();
 		const testUser2 = await createTestUser();
-		const entry = await util.createEntry(app, testUser1._id, keyword, mockData.email);
+		const entry = await createTestActivation(testUser1._id, keyword, mockData.email);
 
 		const userIdOfUser1 = testUser1._id;
 		const lookup = await util.getEntriesByUserId(app, userIdOfUser1, keyword);

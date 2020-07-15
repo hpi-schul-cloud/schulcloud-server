@@ -37,11 +37,10 @@ class ActivationService {
 		// valid entry and valid activtionCode
 		if (!id) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
 		const user = await getUser(this, params.account.userId);
-		const entries = await getEntryByActivationCode(this, user._id, id);
+		const entry = await getEntryByActivationCode(this, user._id, id);
 
 		if (!user) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
-		if ((entries || []).length !== 1) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
-		const entry = entries[0];
+		if (!entry) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
 		validEntry(entry);
 
 		try {
@@ -65,7 +64,7 @@ class ActivationService {
 		const { userId } = params.account;
 		const entry = await getEntriesByUserId(this, userId, keyword);
 		if (entry) {
-			deleteEntry(this, entry._id);
+			await deleteEntry(this, entry._id);
 			removed += 1;
 			return { success: true, removed };
 		}

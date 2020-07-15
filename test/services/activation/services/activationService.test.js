@@ -11,6 +11,7 @@ const app = require('../../../../src/app');
 const {
 	createTestUser,
 	createTestAccount,
+	createTestActivation,
 	cleanup,
 } = require('../../helpers/testObjects')(app);
 
@@ -25,12 +26,11 @@ const config = require('../../../../config/test.json');
 const mockData = {
 	keyword: customUtils.KEYWORDS.E_MAIL_ADDRESS,
 	email: 'testmail@schul-cloud.org',
-	email2: 'testmail2@schul-cloud.org',
 };
 
 const createEntry = async () => {
 	const user = await createTestUser({ roles: ['student'] });
-	const entry = await util.createEntry(app, user._id, mockData.keyword, mockData.email);
+	const entry = await createTestActivation(user, mockData.keyword, mockData.email);
 	return { entry, user };
 };
 
@@ -72,19 +72,19 @@ describe('activation/services activationService', () => {
 	it('find entry', async () => {
 		const user1 = await createTestUser({ roles: ['student'] });
 		let entries1 = await activationService.find({ account: { userId: user1._id } });
-		expect(entries1).to.not.be.null;
+		expect(entries1.entry).to.have.lengthOf(0);
 
 		const { entry, user } = await createEntry();
 		const entries2 = await activationService.find({ account: { userId: user._id } });
 		expect(entries2).to.not.be.null;
 		expect(entries2.entry).to.have.lengthOf(1);
-		expect(entries2.entry[0].data).to.be.equal(entry.quarantinedObject);
+		expect(entries2.entry[0].quarantinedObject).to.be.equal(entry.quarantinedObject);
 		expect(entries2.entry[0].keyword).to.be.equal(entry.keyword);
 		expect(entries2.entry[0]._id).to.be.undefined;
 		expect(entries2.entry[0].userId).to.be.undefined;
 
 		entries1 = await activationService.find({ account: { userId: user1._id } });
-		expect(entries1).to.not.be.null;
+		expect(entries1.entry).to.have.lengthOf(0);
 	});
 
 	it('initiate entry with valid activationCode', async () => {
@@ -118,7 +118,7 @@ describe('activation/services activationService', () => {
 		const account = await createTestAccount(credentials, 'local', user);
 
 		await expect(activationService
-			.update('adawdjjadwadjoanfw', {}, { account: { userId: user._id } }))
+			.update('thisisaninvalidactivationcode', {}, { account: { userId: user._id } }))
 			.to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_INVALID);
 
 		const changedUser = await util.getUser(app, user._id);
@@ -171,6 +171,6 @@ describe('activation/services activationService', () => {
 		expect(res.removed).to.be.equal(1);
 
 		const entries = await activationService.find({ account: { userId: user._id } });
-		expect(entries).to.not.be.null;
+		expect(entries.entry).to.have.lengthOf(0);
 	});
 });

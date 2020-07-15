@@ -63,9 +63,12 @@ const getEntriesByUserId = async (ref, requestingId, keyword = null) => {
 	const query = { userId: requestingId };
 	if (keyword) query.keyword = keyword;
 
-	const entry = await (ref.app || ref).service('activationModel').find(query);
+	const entry = await (ref.app || ref).service('activationModel').find({ query });
 
-	if (keyword && entry.length === 1) return entry[0];
+	if (keyword) {
+		if (entry.length === 1) return entry[0];
+		return null;
+	}
 	return entry;
 };
 
@@ -86,7 +89,9 @@ const getEntryByActivationCode = async (ref, requestingId, activationCode) => {
 			userId: requestingId,
 		},
 	});
-	return entry;
+
+	if (entry.length === 1) return entry[0];
+	return null;
 };
 
 /**
