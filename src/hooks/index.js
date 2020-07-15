@@ -611,6 +611,16 @@ exports.denyIfNotCurrentSchool = (
 	return context;
 });
 
+// meant to be used as an after context
+exports.denyIfNotCurrentSchoolOrEmpty = (
+	{ errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!' },
+) => (context) => {
+	if (!(context.result || {}).schoolId) {
+		return context;
+	}
+	return this.denyIfNotCurrentSchool(errorMessage)(context);
+};
+
 exports.denyIfStudentTeamCreationNotAllowed = (
 	{ errorMessage = 'The current user is not allowed to list other users!' },
 ) => async (context) => {
