@@ -6,6 +6,7 @@ const { HOST } = require('../../../../config/globals');
 const { getQuarantinedObject, createQuarantinedObject, KEYWORDS } = require('./customStrategyUtils');
 const customErrorMessages = require('./customErrorMessages');
 const Mail = require('../services/interface/mailFormat');
+const { getUser } = require('../../helpers/utils');
 
 /**
  * Object of valid states of entry
@@ -176,18 +177,6 @@ const sendMail = async (ref, mail, entry) => {
 		if (entry.mailSent.length === 0) await deleteEntry(ref, entry._id);
 		throw new Error('Can not send mail with activation link');
 	}
-};
-
-/**
- * Returns a User with given userId
- * @param {*} ref 				this
- * @param {ObjectId} userId 	UserId
- * @param {*} req				requestParams (optional)
- * @returns {Object}			user object
- */
-const getUser = async (ref, userId) => {
-	const user = await (ref.app || ref).service('users').get(userId);
-	return user;
 };
 
 /**

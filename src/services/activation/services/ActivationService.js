@@ -36,7 +36,7 @@ class ActivationService {
 	async update(activationCode, data, params) {
 		// valid entry and valid activtionCode
 		if (!activationCode) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
-		const user = await getUser(this, params.account.userId);
+		const user = await getUser(this.app, params.account.userId);
 		const entry = await getEntryByActivationCode(this, user._id, activationCode);
 
 		if (!user) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);

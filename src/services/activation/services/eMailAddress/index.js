@@ -89,7 +89,7 @@ class EMailAddressActivationService {
 	 */
 	async create(data, params) {
 		if (!data || !data.email || !data.password) throw new BadRequest('Missing information');
-		const user = await getUser(this, params.account.userId);
+		const user = await getUser(this.app, params.account.userId);
 
 		// create new entry
 		const entry = await createEntry(this, params.account.userId, E_MAIL_ADDRESS, data.email);
