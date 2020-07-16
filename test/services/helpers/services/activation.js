@@ -1,5 +1,5 @@
 let entryIds = [];
-const util = require('../../../../src/services/activation/utils');
+const util = require('../../../../src/services/activation/utils/generalUtils');
 const { activationModel } = require('../../../../src/services/activation/model');
 
 const createTestEntry = (app) => async (user, keyword, payload) => {

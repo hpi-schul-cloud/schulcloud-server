@@ -10,10 +10,10 @@ const {
 	STATE,
 	createQuarantinedObject,
 	getQuarantinedObject,
-} = require('./utils');
+} = require('./utils/generalUtils');
 
 /**
- * WARNING: Document will be removed after X (ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS) seconds
+ * WARNING: Document will be removed after 7 days
  */
 const activationSchema = new Schema({
 	activationCode: { type: String, required: true },
@@ -27,7 +27,7 @@ activationSchema.index({ activationCode: 1 }, { unique: true });
 activationSchema.index({ userId: 1, keyword: 1 }, { unique: true });
 activationSchema.index(
 	{ createdAt: 1 },
-	{ expireAfterSeconds: Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS') },
+	{ expireAfterSeconds: 604800 }, // 7 Days
 );
 
 // add activationCode and construct quarantinedObject
