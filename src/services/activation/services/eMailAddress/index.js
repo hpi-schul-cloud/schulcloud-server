@@ -27,7 +27,7 @@ const {
 	Forbidden,
 	GeneralError,
 	customErrorMessages,
-} = require('../../utils');
+} = require('../../utils/generalUtils');
 
 const buildActivationLinkMail = (user, entry) => {
 	const activationLink = createActivationLink(entry.activationCode);

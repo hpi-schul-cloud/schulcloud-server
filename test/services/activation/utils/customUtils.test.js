@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const customUtils = require('../../../../src/services/activation/utils/customUtils');
+const customUtils = require('../../../../src/services/activation/utils/customStrategyUtils');
 
 describe('activation/utils customeUtils', () => {
 	describe('construction and deconstruction pattern of quarantinedObject', () => {

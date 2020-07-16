@@ -4,7 +4,7 @@ const {
 	EMailAddressActivation,
 } = require('./services');
 
-const { KEYWORDS } = require('./utils/customUtils');
+const { KEYWORDS } = require('./utils/customStrategyUtils');
 
 module.exports = (app) => {
 	app.use('activationModel', ActivationModelService.activationModelService);

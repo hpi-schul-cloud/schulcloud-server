@@ -15,8 +15,8 @@ const {
 	cleanup,
 } = require('../../helpers/testObjects')(app);
 
-const util = require('../../../../src/services/activation/utils');
-const customUtils = require('../../../../src/services/activation/utils/customUtils');
+const util = require('../../../../src/services/activation/utils/generalUtils');
+const customUtils = require('../../../../src/services/activation/utils/customStrategyUtils');
 
 const { customErrorMessages } = util;
 

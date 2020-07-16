@@ -3,7 +3,7 @@ const {
 } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
 const { HOST } = require('../../../../config/globals');
-const { getQuarantinedObject, createQuarantinedObject, KEYWORDS } = require('./customUtils');
+const { getQuarantinedObject, createQuarantinedObject, KEYWORDS } = require('./customStrategyUtils');
 const customErrorMessages = require('./customErrorMessages');
 const Mail = require('../services/interface/mailFormat');
 
@@ -160,12 +160,12 @@ const sendMail = async (ref, mail, entry) => {
 	if (!mail || !mail.receiver || !mail.subject || !mail.content || !entry) throw SyntaxError('missing parameters');
 
 	try {
-		await ref.app.service('/mails')
-			.create({
-				email: mail.receiver,
-				subject: mail.subject,
-				content: mail.content,
-			});
+		// await ref.app.service('/mails')
+		// 	.create({
+		// 		email: mail.receiver,
+		// 		subject: mail.subject,
+		// 		content: mail.content,
+		// 	});
 
 		await ref.app.service('activationModel').patch({ _id: entry._id }, {
 			$push: {

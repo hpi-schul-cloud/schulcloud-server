@@ -10,7 +10,7 @@ const {
 	getEntryByActivationCode,
 	NotFound,
 	customErrorMessages,
-} = require('../utils');
+} = require('../utils/generalUtils');
 
 const { filterEntryParamNames } = require('../hooks/utils');
 
@@ -33,11 +33,11 @@ class ActivationService {
 	/**
 	 *  redeem activationCode
 	 */
-	async update(id, data, params) {
+	async update(activationCode, data, params) {
 		// valid entry and valid activtionCode
-		if (!id) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
+		if (!activationCode) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
 		const user = await getUser(this, params.account.userId);
-		const entry = await getEntryByActivationCode(this, user._id, id);
+		const entry = await getEntryByActivationCode(this, user._id, activationCode);
 
 		if (!user) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
 		if (!entry) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
@@ -45,7 +45,7 @@ class ActivationService {
 
 		try {
 			// custom job part here (done by specific service)
-			await this.app.service(`/activation/${entry.keyword}`).update(id, { user, entry });
+			await this.app.service(`/activation/${entry.keyword}`).update(activationCode, { user, entry });
 
 			// delete entry
 			await deleteEntry(this, entry._id);
