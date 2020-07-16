@@ -300,6 +300,16 @@
 			"default":"https://etherpad.schul-cloud.org/p",
 			"description": "The etherpad api version uri."
 		},
+		"ETHERPAD_NEW_PAD_URI": {
+			"type": "string",
+			"default":"https://schul-cloud.org/etherpad/p",
+			"description": "The etherpad api version uri."
+		},
+		"ETHERPAD_OLD_PAD_DOMAIN": {
+			"type": "string",
+			"default": "etherpad.schul-cloud.org",
+			"description": "The old etherpad domain."
+		},
 		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
 			"type": "integer",
 			"default": 28800,
