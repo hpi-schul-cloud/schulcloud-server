@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
-const { Configuration } = require('@schul-cloud/commons');
 const crypto = require('crypto');
 const { enableAuditLog } = require('../../utils/database');
 
