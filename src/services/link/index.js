@@ -114,7 +114,6 @@ module.exports = function setup() {
 					{ teamId } = data;
 
 				const hashService = app.service('hash');
-				const linkService = app.service('link');
 
 				if (email) {
 					// generate import hash
