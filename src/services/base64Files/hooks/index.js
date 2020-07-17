@@ -14,7 +14,7 @@ const isBase64 = async (context) => {
 };
 
 exports.before = {
-	all: [authenticate('jwt')],
+	all: [],
 	find: [iff(isProvider('external'), disallow())],
 	get: [], // no scope restiction is needed
 	create: [
