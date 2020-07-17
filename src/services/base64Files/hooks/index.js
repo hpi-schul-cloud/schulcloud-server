@@ -13,8 +13,9 @@ const isBase64 = async (context) => {
 	return context;
 };
 
+//the base64Files service is only used for School Datasecurity documents which need to be publicly available
 exports.before = {
-	all: [],
+	all: [], //keep it public
 	find: [iff(isProvider('external'), disallow())],
 	get: [], // no scope restiction is needed
 	create: [
