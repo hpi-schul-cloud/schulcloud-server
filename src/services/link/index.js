@@ -137,29 +137,19 @@ module.exports = function setup() {
 				// build final link and remove possible double-slashes in url except the protocol ones
 				if (expertSchoolId && linkInfo.hash) {
 					// expert registration link for new users
-					linkInfo.link = data.host || HOST;
-					linkInfo.link += `/registration/${expertSchoolId}/byexpert/?importHash=${linkInfo.hash}`
-						.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
+					linkInfo.link = `/registration/${expertSchoolId}/byexpert/?importHash=${linkInfo.hash}`;
 				} else if (teamId) { /** @replaced logic is inside team services now * */
 					// team accept link for existing users
-					linkInfo.link = data.host || HOST;
-					linkInfo.link += `/teams/invitation/accept/${teamId}`
-						.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
+					linkInfo.link = `/teams/invitation/accept/${teamId}`;
 				} else {
 					logger.warning('Nicht alle Daten für den Experten-Link vorhanden.');
 					return Promise.resolve('Success!');
 				}
 
 				// generate short url
-				await linkService.create({ target: linkInfo.link }).then((generatedShortLink) => {
-					linkInfo.shortLinkId = generatedShortLink._id;
-					// build final short link and remove possible double-slashes in url except the protocol ones
-					linkInfo.shortLink = data.host || HOST;
-					linkInfo.shortLink += `/link/${generatedShortLink._id}`.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
-				}).catch(() => {
-					logger.warning('Fehler beim Erstellen des Kurzlinks.');
-					return Promise.resolve('Success!');
-				});
+				// build final short link and remove possible double-slashes in url except the protocol ones
+				linkInfo.shortLink = data.host || HOST;
+				linkInfo.shortLink += linkInfo.link;
 
 				resolve(linkInfo);
 			});
