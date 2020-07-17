@@ -113,14 +113,12 @@ module.exports = function setup() {
 				const expertSchoolId = data.esid; const { email } = data; const
 					{ teamId } = data;
 
-				const hashService = app.service('hash');
-
 				if (email) {
 					// generate import hash
 					const user = (await app.service('users').find({ query: { email: data.toHash } }) || {}).data[0];
 					if (user && user.importHash) linkInfo.hash = user.importHash;
 					else {
-						await hashService.create({
+						await app.service('hash').create({
 							toHash: email,
 							save: true,
 							patchUser: true,
