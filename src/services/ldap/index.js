@@ -109,8 +109,10 @@ module.exports = function LDAPService() {
 				if (!(config && config.url)) {
 					reject(new errors.BadRequest('Invalid URL in config object.'));
 				}
+				//
 				const client = ldap.createClient({
 					url: config.url,
+					reconnect: true
 				});
 
 				client.bind(username, password, (err) => {
