@@ -2,6 +2,7 @@
 /* eslint-disable class-methods-use-this */
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication').hooks;
+const moment = require('moment');
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../../consent/utils/aggregations');
 const {
@@ -87,7 +88,10 @@ class AdminUsers {
 
 			// fetch data that are scoped to schoolId
 			const searchedRole = roles.find((role) => role.name === this.role);
-			return getAllUsers(schoolId, currentYear, searchedRole._id, query);
+
+			const users = await getAllUsers(schoolId, currentYear, searchedRole._id, query);
+			this.formatBirthdayOfUsers(users.data);
+			return users;
 		} catch (err) {
 			logger.error(err);
 			if ((err || {}).code === 403) {
@@ -95,6 +99,10 @@ class AdminUsers {
 			}
 			throw new BadRequest('Can not fetch data.', err);
 		}
+	}
+
+	formatBirthdayOfUsers(users) {
+		users.forEach((user) => { user.birthday = moment(user.birthday).format('DD.MM.YYYY'); });
 	}
 
 	setup(app) {
