@@ -100,7 +100,8 @@ class AdminUsers {
 	}
 
 	async remove(id, params) {
-		return this.app.service('usersModel').remove(id);
+		const { _ids } = params.query;
+		return this.app.service('usersModel').remove(id || { $in: _ids });
 	}
 
 	async setup(app) {
