@@ -1,5 +1,5 @@
 const { Configuration } = require('@schul-cloud/commons');
-const Role = require('../model');
+const { RoleModel } = require('../model');
 
 const PERMISSIONS = {
 	STUDENT_LIST: 'STUDENT_LIST',
@@ -26,7 +26,7 @@ const ROLES = {
 const definePermissions = (env, role, ...permissions) => {
 	if (['opt-out', 'enabled'].includes(Configuration.get(env))) {
 		// set defaul permission
-		Role.update({
+		RoleModel.update({
 			name: role,
 		},
 		{
@@ -39,7 +39,7 @@ const definePermissions = (env, role, ...permissions) => {
 		}, { multi: true }).exec();
 	} else if (['opt-in', 'disabled', undefined].includes(Configuration.get(env))) {
 		// remove defaul permission
-		Role.update({
+		RoleModel.update({
 			name: role,
 		}, {
 			$pull: {
