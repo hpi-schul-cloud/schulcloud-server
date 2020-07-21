@@ -107,7 +107,6 @@ const formatBirthdayOfUsers = ({ result: { data: users } }) => {
 	users.forEach((user) => { user.birthday = moment(user.birthday).format('DD.MM.YYYY'); });
 };
 
-
 const adminHookGenerator = (kind) => ({
 	before: {
 		all: [authenticate('jwt')],
