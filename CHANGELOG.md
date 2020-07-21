@@ -20,6 +20,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-5542: Added an after hook for AdminUsers find method which formats birthday date to DD.MM.YYYY format.
+
 ### Security
 
 ### Removed
