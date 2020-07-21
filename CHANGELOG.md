@@ -9,15 +9,14 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-### Added
 
-### Fixed
+## [23.6.0] - 2020-07-21
 
-### Changed
+### Added - 23.6.0
 
-### Security
+- SC-4142: Added indexes on TSP sync related attributes in user and school schema.
+- SC-4142: Adds info about unchanged entities to TSP sync statistics
 
-### Removed
 
 ## [23.5.4] - 2020-07-08
 ### Added
