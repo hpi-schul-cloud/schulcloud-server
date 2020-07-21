@@ -1,4 +1,5 @@
 const accounts = require('./accounts');
+const activation = require('./activation');
 const classes = require('./classes');
 const consents = require('./consents');
 const courseGroups = require('./courseGroups');
@@ -20,6 +21,7 @@ const years = require('./years');
 
 module.exports = (app, opt) => ({
 	accounts: accounts(app, opt),
+	activation: activation(app, opt),
 	classes: classes(app, opt),
 	consents: consents(app, opt),
 	courses: courses(app, opt),
