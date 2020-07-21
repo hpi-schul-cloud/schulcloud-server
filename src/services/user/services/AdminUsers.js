@@ -88,10 +88,7 @@ class AdminUsers {
 
 			// fetch data that are scoped to schoolId
 			const searchedRole = roles.find((role) => role.name === this.role);
-
-			const users = await getAllUsers(schoolId, currentYear, searchedRole._id, query);
-			this.formatBirthdayOfUsers(users.data);
-			return users;
+			return getAllUsers(schoolId, currentYear, searchedRole._id, query);
 		} catch (err) {
 			logger.error(err);
 			if ((err || {}).code === 403) {
@@ -101,14 +98,15 @@ class AdminUsers {
 		}
 	}
 
-	formatBirthdayOfUsers(users) {
-		users.forEach((user) => { user.birthday = moment(user.birthday).format('DD.MM.YYYY'); });
-	}
-
 	setup(app) {
 		this.app = app;
 	}
 }
+
+const formatBirthdayOfUsers = ({ result: { data: users } }) => {
+	users.forEach((user) => { user.birthday = moment(user.birthday).format('DD.MM.YYYY'); });
+};
+
 
 const adminHookGenerator = (kind) => ({
 	before: {
@@ -119,6 +117,9 @@ const adminHookGenerator = (kind) => ({
 		update: [hasSchoolPermission(`${kind}_EDIT`)],
 		patch: [hasSchoolPermission(`${kind}_EDIT`)],
 		remove: [hasSchoolPermission(`${kind}_DELETE`)],
+	},
+	after: {
+		find: [formatBirthdayOfUsers],
 	},
 });
 
