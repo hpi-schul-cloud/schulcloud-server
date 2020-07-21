@@ -20,7 +20,7 @@ Also added a sub-service for changing email/username in Activation Service
 ### Fixed
 
 - SC-5250: Fixes the CSV-Import, if there are whitespaces in the columnnames
-- SC-5686: only users with the team permission "RENAME_TEAM" can execute the patch method
+- SC-5686: only users with the team permission "RENAME_TEAM" can execute the patch method in teams route
 
 ### Changed
 
