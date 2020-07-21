@@ -355,6 +355,11 @@
 		"ES_CLIENT_ID": {
 			"type": "string",
 			"description": "The client id for edu-sharing api access"
+		},
+		"SILENT_ERROR_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Brute force flag during recovery password process"
 		}
 	},
 	"required": [
