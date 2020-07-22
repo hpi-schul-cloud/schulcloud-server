@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Changed
+
+- SC-4289 Changed aggregations in admin tables, classes are now taken only from current year or max grade level, and are sorted
+by numeric ordering.
+
 ### Added
 
 - SC-4520 created a new Service called Activation Service; with which jobs can be defined and are 
@@ -21,6 +26,18 @@ Also added a sub-service for changing email/username in Activation Service
 - SC-5686: only users with the team permission "RENAME_TEAM" can execute the patch method in teams route
 
 ### Changed
+
+- SC-5542: Added an after hook for AdminUsers find method which formats birthday date to DD.MM.YYYY format.
+
+### Security
+
+
+## [23.6.1] - 2020-07-22
+
+### Fixed - 23.6.1
+
+- SC-5733: LDAPSchoolSyncer now uses the Users model service to avoid ignoring indexes due to automatic collation
+
 
 ## [23.6.0] - 2020-07-21
 
