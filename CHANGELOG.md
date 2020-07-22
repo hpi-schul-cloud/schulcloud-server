@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Changed
+
+- SC-4289 Changed aggregations in admin tables, classes are now taken only from current year or max grade level, and are sorted
+by numeric ordering.
+
 ### Added
 
 - SC-4520 created a new Service called Activation Service; with which jobs can be defined and are 
