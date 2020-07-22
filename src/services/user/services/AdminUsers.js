@@ -2,6 +2,7 @@
 /* eslint-disable class-methods-use-this */
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication').hooks;
+const moment = require('moment');
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../../consent/utils/aggregations');
 const {
@@ -113,6 +114,10 @@ class AdminUsers {
 	}
 }
 
+const formatBirthdayOfUsers = ({ result: { data: users } }) => {
+	users.forEach((user) => { user.birthday = moment(user.birthday).format('DD.MM.YYYY'); });
+};
+
 const adminHookGenerator = (kind) => ({
 	before: {
 		all: [authenticate('jwt')],
@@ -122,6 +127,9 @@ const adminHookGenerator = (kind) => ({
 		update: [hasSchoolPermission(`${kind}_EDIT`)],
 		patch: [hasSchoolPermission(`${kind}_EDIT`)],
 		remove: [hasSchoolPermission(`${kind}_DELETE`)],
+	},
+	after: {
+		find: [formatBirthdayOfUsers],
 	},
 });
 
