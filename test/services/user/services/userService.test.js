@@ -9,7 +9,6 @@ const coursesService = app.service('courses');
 const testObjects = require('../../helpers/testObjects')(app);
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
-let testUserId;
 const testGenericErrorMessage = 'Der angefragte Nutzer ist unbekannt!';
 
 describe('user service', () => {
@@ -29,8 +28,45 @@ describe('user service', () => {
 		assert.ok(coursesService);
 	});
 
-	it('resolves permissions and attributes correctly', () => { // ToDo: refactor
-		function createTestBase() {
+	it('resolves permissions and attributes correctly', async () => { // ToDo: refactor
+		const baserole = await testObjects.createTestRole({
+			name: `testBase${Date.now}`,
+			roles: [],
+			permissions: [
+				'TEST_BASE',
+				'TEST_BASE_2',
+			],
+		});
+		const rolename = `testrole${Date.now}`;
+		await testObjects.createTestRole({
+			name: rolename,
+			roles: [baserole._id], // todo: use name
+			permissions: [
+				'TEST_SUB',
+			],
+		});
+		await app.service('roles').init();
+
+		const createdUser = await testObjects.createTestUser({
+			id: '0000d231816abba584714d01',
+			accounts: [],
+			schoolId: '0000d186816abba584714c5f',
+			email: 'user@testusers.net',
+			firstName: 'Max',
+			lastName: 'Tester',
+			roles: [
+				rolename,
+			],
+			manualCleanup: true,
+		});
+
+		const user = await userService.get(createdUser._id);
+		expect(user.avatarInitials).to.eq('MT');
+		const permissions = Array.from(user.permissions);
+		expect(permissions).to.have.lengthOf(3);
+		expect(permissions).to.include('TEST_BASE', 'TEST_BASE_2', 'TEST_SUB');
+
+		/* function createTestBase() {
 			return testObjects.createTestRole({
 				name: 'test_base',
 				roles: [],
@@ -72,7 +108,7 @@ describe('user service', () => {
 				const array = Array.from(user.permissions);
 				expect(array).to.have.lengthOf(3);
 				expect(array).to.include('TEST_BASE', 'TEST_BASE_2', 'TEST_SUB');
-			});
+			}); */
 	});
 	describe('GET', () => {
 		it('student can read himself', async () => {
@@ -253,11 +289,6 @@ describe('user service', () => {
 
 		// https://ticketsystem.schul-cloud.org/browse/SC-5076
 		xit('teacher can not read student from foreign school', async () => {
-			const rolename = `studentList${Date.now}`;
-			await testObjects.createTestRole({
-				name: rolename, permissions: ['STUDENT_LIST'],
-			});
-			await app.service('roles').init();
 			const school = await testObjects.createTestSchool({
 				name: 'testSchool1',
 			});
@@ -265,7 +296,6 @@ describe('user service', () => {
 				name: 'testSchool2',
 			});
 			const student = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
-			// todo: use the testrole
 			const otherStudent = await testObjects.createTestUser({ roles: ['student'], schoolId: otherSchool._id });
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {};
@@ -459,19 +489,19 @@ describe('user service', () => {
 
 	describe('REMOVE', () => {
 		it('user gets removed from classes and courses after delete', async () => {
-			const userToDelete = await testObjects.createTestUser({ roles: ['student'] });
-			const { _id: classId } = await testObjects.createTestClass({ userIds: userToDelete._id });
-			const { _id: courseId } = await testObjects.createTestCourse({ userIds: userToDelete._id });
+			const { _id: userId } = await testObjects.createTestUser({ roles: ['student'] });
+			const { _id: classId } = await testObjects.createTestClass({ userIds: [userId] });
+			const { _id: courseId } = await testObjects.createTestCourse({ userIds: [userId] });
 
-			await userService.remove(testUserId);
+			await userService.remove(userId);
 
 			const [course, klass] = await Promise.all([
 				classesService.get(classId),
 				coursesService.get(courseId),
 			]);
 
-			expect(course.userIds.map((id) => id.toString())).to.not.include(testUserId.toString());
-			expect(klass.userIds.map((id) => id.toString())).to.not.include(testUserId.toString());
+			expect(course.userIds.map((id) => id.toString())).to.not.include(userId.toString());
+			expect(klass.userIds.map((id) => id.toString())).to.not.include(userId.toString());
 		});
 
 		it('fail to delete single student without STUDENT_DELETE permission', async () => {
