@@ -29,18 +29,9 @@ const statesWithStartMaintenanceDate = new Map([
 // use your own name for your model, otherwise other migrations may fail.
 // The third parameter is the actually relevent one for what collection to write to.
 
-const getStartMaintenanceDate = (stateId, federalStates) => {
-	const stateName = federalStates.get(stateId);
+const getStartMaintenanceDate = (stateName) => {
 	const startMainentanceDate = statesWithStartMaintenanceDate.get(stateName);
 	return startMainentanceDate || DEFAULT_START_DATE;
-};
-
-const fetchAllFederalStates = async () => {
-	const federalStates = await federalStateModel.find({}).select('_id name').lean().exec();
-	return federalStates.reduce((map, state) => {
-		map.set(state._id.toString(), state.name);
-		return map;
-	}, new Map());
 };
 
 // How to use more than one schema per collection on mongodb
@@ -52,39 +43,27 @@ const fetchAllFederalStates = async () => {
 
 module.exports = {
 	up: async function up() {
-		info('setting up maintenance mode for schools');
+		info('Setting up maintenance mode for schools');
 		await connect();
 
 		info('Fetch all federal states');
-		const federalStateMap = await fetchAllFederalStates();
+		const federalStates = await federalStateModel.find({}).select('_id name').lean().exec();
 
-		const schools = await School.find({federalState: { $exists: true }}).exec();
-		info(`Found ${schools.length} schools.`);
-		const result = [];
-		for (const school of schools) {
-			info(`Migrating ${school.name} (${school._id})...`);
-			info(`Federal state name ${school.federalState}`);
-			const startMainentanceDate = getStartMaintenanceDate(school.federalState.toString(), federalStateMap);
-			school.inMaintenanceSince = startMainentanceDate;
-			result.push(school.save());
+		for (const federalState of federalStates) {
+			info(`Migrating schools in ${federalState.name} (${federalState._id})...`);
+			const startMainentanceDate = getStartMaintenanceDate(federalState.name);
+			const result = await School.updateMany({ federalState: federalState._id }, { inMaintenanceSince: startMainentanceDate }).exec();
+			info(`Migration result in ${federalState.name}: ${result.nModified} schools updated`);
 		}
-		await Promise.all(result);
 
 		await close();
 	},
 
 	down: async function down() {
 		await connect();
-		info('Disable Maintenance mode');
-		const schools = await School.find({inMaintenanceSince: { $exists: true }}).exec();
-		info(`Found ${schools.length} schools.`);
-		const result = [];
-		for (const school of schools) {
-			info(`Migrating ${school.name} (${school._id})...`);
-			school.inMaintenanceSince = undefined;
-			result.push(school.save());
-		}
-		await Promise.all(result);
+		info('Disabling Maintenance mode for all schools');
+		const schools = await School.updateMany({ inMaintenanceSince: { $exists: true } }, { $unset: {inMaintenanceSince: '' }}).exec();
+		info(`Updated ${schools.nModified} schools`);
 
 		await close();
 	},
