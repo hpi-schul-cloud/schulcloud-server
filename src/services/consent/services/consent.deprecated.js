@@ -83,29 +83,31 @@ class ConsentService {
 
 		const { userId, ...consent } = data;
 
-		this.modelService.patch(
+		const user = await this.modelService.patch(
 			userId,
 			modifyDataForUserSchema(consent),
 		);
+
+		return userToConsent(user);
 	}
 
 	async patch(_id, data, params) {
-		return this.modelService
-			.patch(_id, modifyDataForUserSchema(data));
+		return userToConsent(await this.modelService
+			.patch(_id, modifyDataForUserSchema(data)));
 	}
 
 	async update(_id, data, params) {
-		return this.modelService
-			.patch(_id, modifyDataForUserSchema(data));
+		return userToConsent(await this.modelService
+			.patch(_id, modifyDataForUserSchema(data)));
 	}
 
 	async remove(_id, params) {
-		return this.modelService
+		return userToConsent(await this.modelService
 			.patch(_id, {
 				query: {
 					$unset: 'constent',
 				},
-			});
+			}));
 	}
 
 	setup(app) {

@@ -264,4 +264,12 @@ const main = async () => {
 		throw new Error('invalid argument');
 	}
 };
-main();
+
+// exit not well without exit(0)
+// eslint-disable-next-line no-useless-catch
+try {
+	main();
+	process.exit(0);
+} catch (err) {
+	throw err;
+}
