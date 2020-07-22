@@ -30,6 +30,14 @@ Also added a sub-service for changing email/username in Activation Service
 
 ### Security
 
+
+## [23.6.1] - 2020-07-22
+
+### Fixed - 23.6.1
+
+- SC-5733: LDAPSchoolSyncer now uses the Users model service to avoid ignoring indexes due to automatic collation
+
+
 ## [23.6.0] - 2020-07-21
 
 ### Added - 23.6.0
