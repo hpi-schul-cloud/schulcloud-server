@@ -14,6 +14,7 @@ const {
 	MailRegistrationLink,
 	RegistrationConsentService,
 	registrationConsentServiceHooks,
+	QrRegistrationLinks: { QrRegistrationLinks, qrRegistrationLinksHooks },
 } = require('./services');
 
 
@@ -79,6 +80,11 @@ module.exports = (app) => {
 	app.use(RegistrationLinkRoute, new MailRegistrationLink.Service());
 	const RegistrationLinkService = app.service(RegistrationLinkRoute);
 	RegistrationLinkService.hooks(MailRegistrationLink.Hooks);
+
+	const qrRegistrationLinksRoute = '/users/qrRegistrationLink';
+	app.use(qrRegistrationLinksRoute, new QrRegistrationLinks(userModel));
+	const qrRegistrationLinksService = app.service(qrRegistrationLinksRoute);
+	qrRegistrationLinksService.hooks(qrRegistrationLinksHooks);
 
 	app.use('/users/:userId/skipregistration', new SkipRegistrationService());
 	app.service('/users/:userId/skipregistration').hooks(skipRegistrationSingleHooks);
