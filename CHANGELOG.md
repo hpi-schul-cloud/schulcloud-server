@@ -26,6 +26,10 @@ Also added a sub-service for changing email/username in Activation Service
 
 ### Changed
 
+- SC-5542: Added an after hook for AdminUsers find method which formats birthday date to DD.MM.YYYY format.
+
+### Security
+
 ## [23.6.0] - 2020-07-21
 
 ### Added - 23.6.0
