@@ -51,7 +51,7 @@ const getAllUsers = async (schoolId, schoolYearId, role, clientQuery = {}) => {
 	if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 
 	return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
-		collation: { locale: 'de', caseLevel: true },
+		collation: { locale: 'de', caseLevel: true, numericOrdering: true },
 	}).exec((err, res) => {
 		if (err) reject(err);
 		else resolve(res[0]);
@@ -88,7 +88,9 @@ class AdminUsers {
 
 			// fetch data that are scoped to schoolId
 			const searchedRole = roles.find((role) => role.name === this.role);
-			return getAllUsers(schoolId, currentYear, searchedRole._id, query);
+			const users = await getAllUsers(schoolId, currentYear, searchedRole._id, query);
+
+			return users;
 		} catch (err) {
 			logger.error(err);
 			if ((err || {}).code === 403) {
