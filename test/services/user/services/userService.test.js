@@ -29,7 +29,7 @@ describe('user service', () => {
 		assert.ok(coursesService);
 	});
 
-	it('resolves permissions and attributes correctly', () => {
+	it('resolves permissions and attributes correctly', () => { // ToDo: refactor
 		function createTestBase() {
 			return testObjects.createTestRole({
 				name: 'test_base',
@@ -103,18 +103,20 @@ describe('user service', () => {
 
 		// https://ticketsystem.schul-cloud.org/browse/SC-5076
 		xit('student can not read student from foreign school', async () => {
+			const rolename = `studentList${Date.now}`;
 			await testObjects.createTestRole({
-				name: 'studentList', permissions: ['STUDENT_LIST'],
+				name: rolename, permissions: ['STUDENT_LIST'],
 			});
+			await app.service('roles').init();
 			const school = await testObjects.createTestSchool({
 				name: 'testSchool1',
 			});
 			const otherSchool = await testObjects.createTestSchool({
 				name: 'testSchool2',
 			});
-			const student = await testObjects.createTestUser({ roles: ['studentList'], schoolId: school._id });
+			const actingUser = await testObjects.createTestUser({ roles: [rolename], schoolId: school._id });
 			const otherStudent = await testObjects.createTestUser({ roles: ['student'], schoolId: otherSchool._id });
-			const params = await testObjects.generateRequestParamsFromUser(student);
+			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = {};
 			try {
 				await app.service('users').get(otherStudent._id, params);
@@ -128,11 +130,13 @@ describe('user service', () => {
 
 		// https://ticketsystem.schul-cloud.org/browse/SC-5074
 		xit('student can not read unknown student', async () => {
+			const rolename = `studentList${Date.now}`;
 			await testObjects.createTestRole({
-				name: 'studentList', permissions: ['STUDENT_LIST'],
+				name: rolename, permissions: ['STUDENT_LIST'],
 			});
-			const student = await testObjects.createTestUser({ roles: ['studentList'] });
-			const params = await testObjects.generateRequestParamsFromUser(student);
+			await app.service('roles').init();
+			const actingUser = await testObjects.createTestUser({ roles: [rolename] });
+			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = {};
 			try {
 				await app.service('users').get('AAAAAAAAAAAAAAAAAAAAAAAAAAA', params);
@@ -145,12 +149,14 @@ describe('user service', () => {
 		});
 
 		it('student can read other student with STUDENT_LIST permission', async () => {
+			const rolename = `studentList${Date.now}`;
 			await testObjects.createTestRole({
-				name: 'studentList', permissions: ['STUDENT_LIST'],
+				name: rolename, permissions: ['STUDENT_LIST'],
 			});
-			const student = await testObjects.createTestUser({ roles: ['studentList'] });
+			await app.service('roles').init();
+			const actingUser = await testObjects.createTestUser({ roles: [rolename] });
 			const otherStudent = await testObjects.createTestUser({ roles: ['student'], birthday: Date.now() });
-			const params = await testObjects.generateRequestParamsFromUser(student);
+			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = {};
 			const result = await app.service('users').get(otherStudent._id, params);
 			expect(result).to.not.be.undefined;
@@ -164,9 +170,11 @@ describe('user service', () => {
 
 		// https://ticketsystem.schul-cloud.org/browse/SC-5076
 		xit('does not allow students to read other students without STUDENT_LIST permission', async () => {
-			await testObjects.createTestRole({ name: 'notAuthorized', permissions: [] });
+			const rolename = `notAuthorized${Date.now}`;
+			await testObjects.createTestRole({ name: rolename, permissions: [] });
+			await app.service('roles').init();
 			const studentToRead = await testObjects.createTestUser({ roles: ['student'] });
-			const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
+			const actingUser = await testObjects.createTestUser({ roles: [rolename] });
 			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = {};
 			try {
@@ -245,9 +253,11 @@ describe('user service', () => {
 
 		// https://ticketsystem.schul-cloud.org/browse/SC-5076
 		xit('teacher can not read student from foreign school', async () => {
+			const rolename = `studentList${Date.now}`;
 			await testObjects.createTestRole({
-				name: 'studentList', permissions: ['STUDENT_LIST'],
+				name: rolename, permissions: ['STUDENT_LIST'],
 			});
+			await app.service('roles').init();
 			const school = await testObjects.createTestSchool({
 				name: 'testSchool1',
 			});
@@ -255,6 +265,7 @@ describe('user service', () => {
 				name: 'testSchool2',
 			});
 			const student = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
+			// todo: use the testrole
 			const otherStudent = await testObjects.createTestUser({ roles: ['student'], schoolId: otherSchool._id });
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {};
@@ -347,10 +358,12 @@ describe('user service', () => {
 	describe('CREATE', () => {
 		it('can create student with STUDENT_CREATE', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
+			const rolename = `studentCreate${Date.now}`;
 			await testObjects.createTestRole({
-				name: 'studentCreate', permissions: ['STUDENT_CREATE'],
+				name: rolename, permissions: ['STUDENT_CREATE'],
 			});
-			const actingUser = await testObjects.createTestUser({ roles: ['studentCreate'], schoolId });
+			await app.service('roles').init();
+			const actingUser = await testObjects.createTestUser({ roles: [rolename], schoolId });
 			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			const data = {
 				firstName: 'Luke',
@@ -367,10 +380,12 @@ describe('user service', () => {
 		it('can fails to create user on other school', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const { _id: otherSchoolId } = await testObjects.createTestSchool();
+			const rolename = `studentCreate${Date.now}`;
 			await testObjects.createTestRole({
-				name: 'studentCreate', permissions: ['STUDENT_CREATE'],
+				name: rolename, permissions: ['STUDENT_CREATE'],
 			});
-			const actingUser = await testObjects.createTestUser({ roles: ['studentCreate'], schoolId });
+			await app.service('roles').init();
+			const actingUser = await testObjects.createTestUser({ roles: [rolename], schoolId });
 			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			const data = {
 				firstName: 'Leia',
@@ -460,9 +475,11 @@ describe('user service', () => {
 		});
 
 		it('fail to delete single student without STUDENT_DELETE permission', async () => {
-			await testObjects.createTestRole({ name: 'notAuthorized', permissions: [] });
+			const rolename = `notAuthorized${Date.now}`;
+			await testObjects.createTestRole({ name: rolename, permissions: [] });
+			await app.service('roles').init();
 			const studentToDelete = await testObjects.createTestUser({ roles: ['student'] });
-			const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
+			const actingUser = await testObjects.createTestUser({ roles: [rolename] });
 			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = {};
 			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
@@ -477,11 +494,13 @@ describe('user service', () => {
 		});
 
 		it('can delete single student with STUDENT_DELETE permission', async () => {
+			const rolename = `studentDelete${Date.now}`;
 			await testObjects.createTestRole({
-				name: 'studentDelete', permissions: ['STUDENT_DELETE'],
+				name: rolename, permissions: ['STUDENT_DELETE'],
 			});
+			await app.service('roles').init();
 			const studentToDelete = await testObjects.createTestUser({ roles: ['student'], manualCleanup: true });
-			const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });
+			const actingUser = await testObjects.createTestUser({ roles: [rolename] });
 			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = {};
 			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
@@ -497,9 +516,11 @@ describe('user service', () => {
 		});
 
 		it('fail to  single teacher without TEACHER_DELETE permission', async () => {
-			await testObjects.createTestRole({ name: 'notAuthorized', permissions: ['STUDENT_DELETE'] });
+			const rolename = `notAuthorized${Date.now}`;
+			await testObjects.createTestRole({ name: rolename, permissions: ['STUDENT_DELETE'] });
+			await app.service('roles').init();
 			const studentToDelete = await testObjects.createTestUser({ roles: ['teacher'] });
-			const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
+			const actingUser = await testObjects.createTestUser({ roles: [rolename] });
 			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = {};
 			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
@@ -514,11 +535,13 @@ describe('user service', () => {
 		});
 
 		it('can delete single teacher with TEACHER_DELETE permission', async () => {
+			const rolename = `teacherDelete${Date.now}`;
 			await testObjects.createTestRole({
-				name: 'teacherDelete', permissions: ['TEACHER_DELETE'],
+				name: rolename, permissions: ['TEACHER_DELETE'],
 			});
+			await app.service('roles').init();
 			const studentToDelete = await testObjects.createTestUser({ roles: ['teacher'], manualCleanup: true });
-			const actingUser = await testObjects.createTestUser({ roles: ['teacherDelete'] });
+			const actingUser = await testObjects.createTestUser({ roles: [rolename] });
 			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = {};
 			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
@@ -553,14 +576,16 @@ describe('user service', () => {
 
 	describe('bulk delete', () => {
 		it('can delete multiple students when user has STUDENT_DELETE permission', async () => {
+			const rolename = `studentDelete${Date.now}`;
 			await testObjects.createTestRole({
-				name: 'studentDelete', permissions: ['STUDENT_DELETE'],
+				name: rolename, permissions: ['STUDENT_DELETE'],
 			});
+			await app.service('roles').init();
 			const userIds = await Promise.all([
 				testObjects.createTestUser({ roles: ['student'], manualCleanup: true }).then((u) => u._id),
 				testObjects.createTestUser({ roles: ['student'], manualCleanup: true }).then((u) => u._id),
 			]);
-			const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });
+			const actingUser = await testObjects.createTestUser({ roles: [rolename] });
 			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = { _id: { $in: userIds } };
 			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
@@ -578,14 +603,16 @@ describe('user service', () => {
 		});
 
 		it('only deletes students when user has STUDENT_DELETE permission', async () => {
+			const rolename = `studentDelete${Date.now}`;
 			await testObjects.createTestRole({
-				name: 'studentDelete', permissions: ['STUDENT_DELETE'],
+				name: rolename, permissions: ['STUDENT_DELETE'],
 			});
+			await app.service('roles').init();
 			const userIds = await Promise.all([
 				testObjects.createTestUser({ roles: ['student'], manualCleanup: true }).then((u) => u._id),
 				testObjects.createTestUser({ roles: ['teacher'] }).then((u) => u._id),
 			]);
-			const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });
+			const actingUser = await testObjects.createTestUser({ roles: [rolename] });
 			const params = await testObjects.generateRequestParamsFromUser(actingUser);
 			params.query = { _id: { $in: userIds } };
 			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
