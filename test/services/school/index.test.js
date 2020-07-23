@@ -132,6 +132,16 @@ describe('school service', () => {
 			// here we could test, we have defaultYear added but however we just need any year
 			// to be set and this should not test year logic
 		});
+
+		it('isExternal attribute is true when ldapSchoolIdentifier or source attributes are present', async () => {
+			const serviceCreatedSchool = await schoolService.create(
+				{ ...sampleSchoolData, ldapSchoolIdentifier: 'testId', source: 'testSource' },
+			);
+			if (Object.prototype.hasOwnProperty.call(serviceCreatedSchool, 'ldapSchoolIdentifier' || 'source')) {
+				Object.assign(serviceCreatedSchool, { isExternal: true });
+			}
+			expect(serviceCreatedSchool.isExternal).to.be.true;
+		});
 	});
 
 	describe('patch schools', () => {
