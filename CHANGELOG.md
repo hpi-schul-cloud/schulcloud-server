@@ -32,6 +32,13 @@ Also added a sub-service for changing email/username in Activation Service
 ### Security
 
 
+## [23.6.2] - 2020-07-22
+
+### Fixed - 23.6.2
+
+- SC-5773: LDAPSchoolSyncer now correctly populates classes synced from an LDAP server, even if only students or only teachers are assigned to the class.
+
+
 ## [23.6.1] - 2020-07-22
 
 ### Fixed - 23.6.1
