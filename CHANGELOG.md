@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Added
+
+- SC-5754 Added isExternal attribute to school model. If ldapSchoolIdentifier or source is defined, isExternal will be set to true
+otherwise, if none of them are defined it wil be set to false.
+
 ### Changed
 
 - SC-4289 Changed aggregations in admin tables, classes are now taken only from current year or max grade level, and are sorted
