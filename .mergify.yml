@@ -21,7 +21,7 @@ pull_request_rules:
   #######################
   # AUTO UPDATE
   #######################
-  - name: auto merge when label is set
+  - name: auto update when label is set
     conditions:
       - label=auto update
     actions:
