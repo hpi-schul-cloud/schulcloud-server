@@ -67,7 +67,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	}
 
 	createOrUpdateUser(idmUser) {
-		return this.app.service('users').find({
+		return this.app.service('usersModel').find({
 			query: {
 				ldapId: idmUser.ldapUUID,
 			},
@@ -196,7 +196,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 		if (Array.isArray(ldapClass.uniqueMembers) === false) {
 			ldapClass.uniqueMembers = [ldapClass.uniqueMembers];
 		}
-		const userData = await this.app.service('users').find(
+		const userData = await this.app.service('usersModel').find(
 			{
 				query:
 				{
