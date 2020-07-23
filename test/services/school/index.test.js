@@ -153,14 +153,14 @@ describe('school service', () => {
 			expect(school.isExternal).to.be.true;
 		});
 
-		it('isExternal attribute is false when ldapSchoolIdentifier is undefined', async () => {
+		it('isExternal attribute is true when ldapSchoolIdentifier and source are defined', async () => {
 			const serviceCreatedSchool = await schoolService.create(
-				{ ...sampleSchoolData },
+				{ ...sampleSchoolData, ldapSchoolIdentifier: 'testId', source: 'testSource' },
 			);
 			const { _id: schoolId } = serviceCreatedSchool;
 			createdSchoolIds.push(schoolId);
 			const school = await schoolService.get(schoolId);
-			expect(school.isExternal).to.be.false;
+			expect(school.isExternal).to.be.true;
 		});
 
 		it('isExternal attribute is false when source is undefined', async () => {
