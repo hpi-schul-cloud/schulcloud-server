@@ -133,14 +133,44 @@ describe('school service', () => {
 			// to be set and this should not test year logic
 		});
 
-		it('isExternal attribute is true when ldapSchoolIdentifier or source attributes are present', async () => {
+		it('isExternal attribute is true when ldapSchoolIdentifier is not undefined', async () => {
 			const serviceCreatedSchool = await schoolService.create(
-				{ ...sampleSchoolData, ldapSchoolIdentifier: 'testId', source: 'testSource' },
+				{ ...sampleSchoolData, ldapSchoolIdentifier: 'testId' },
 			);
-			if (Object.prototype.hasOwnProperty.call(serviceCreatedSchool, 'ldapSchoolIdentifier' || 'source')) {
-				Object.assign(serviceCreatedSchool, { isExternal: true });
-			}
-			expect(serviceCreatedSchool.isExternal).to.be.true;
+			const { _id: schoolId } = serviceCreatedSchool;
+			createdSchoolIds.push(schoolId);
+			const school = await schoolService.get(schoolId);
+			expect(school.isExternal).to.be.true;
+		});
+
+		it('isExternal attribute is true when source is not undefined', async () => {
+			const serviceCreatedSchool = await schoolService.create(
+				{ ...sampleSchoolData, source: 'testSource' },
+			);
+			const { _id: schoolId } = serviceCreatedSchool;
+			createdSchoolIds.push(schoolId);
+			const school = await schoolService.get(schoolId);
+			expect(school.isExternal).to.be.true;
+		});
+
+		it('isExternal attribute is false when ldapSchoolIdentifier is undefined', async () => {
+			const serviceCreatedSchool = await schoolService.create(
+				{ ...sampleSchoolData },
+			);
+			const { _id: schoolId } = serviceCreatedSchool;
+			createdSchoolIds.push(schoolId);
+			const school = await schoolService.get(schoolId);
+			expect(school.isExternal).to.be.false;
+		});
+
+		it('isExternal attribute is false when source is undefined', async () => {
+			const serviceCreatedSchool = await schoolService.create(
+				{ ...sampleSchoolData },
+			);
+			const { _id: schoolId } = serviceCreatedSchool;
+			createdSchoolIds.push(schoolId);
+			const school = await schoolService.get(schoolId);
+			expect(school.isExternal).to.be.false;
 		});
 	});
 
