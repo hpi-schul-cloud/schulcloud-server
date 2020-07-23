@@ -9,7 +9,14 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-## [23.6.1]
+## [23.6.2] - 2020-07-22
+
+### Fixed - 23.6.2
+
+- SC-5773: LDAPSchoolSyncer now correctly populates classes synced from an LDAP server, even if only students or only teachers are assigned to the class.
+
+
+## [23.6.1] - 2020-07-22
 
 ### Fixed - 23.6.1
 
