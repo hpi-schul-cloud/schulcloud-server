@@ -83,8 +83,11 @@ class RoleService {
 	async find(params = {}) {
 		// please do not add || []; It must fail if the load do not work.
 		const roles = await this.roles;
-		const result = filterByQuery(roles, params.query);
-		return paginate(result, params.query, roles.length);
+		let result = filterByQuery(roles, params.query);
+		if (params.paginate !== false) {
+			result = paginate(result, params.query, roles.length);
+		}
+		return result;
 	}
 }
 
