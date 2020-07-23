@@ -25,7 +25,7 @@ pull_request_rules:
     conditions:
       - label=auto update
     actions:
-      update
+      update: {}
   #######################
   # AUTO MERGED
   #######################
