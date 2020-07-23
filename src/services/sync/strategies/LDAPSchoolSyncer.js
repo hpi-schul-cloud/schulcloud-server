@@ -146,8 +146,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	}
 
 	async createClassesFromLdapData(data, school) {
-		const classes = data.filter((d) => 'uniqueMembers' in d && d.uniqueMembers !== undefined);
-		const jobs = classes.map((ldapClass) => async () => {
+		const jobs = data.map((ldapClass) => async () => {
 			try {
 				const klass = await this.getOrCreateClassFromLdapData(ldapClass, school);
 				await this.populateClassUsers(ldapClass, klass, school);
@@ -193,7 +192,12 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	async populateClassUsers(ldapClass, currentClass) {
 		const students = [];
 		const teachers = [];
-		if (Array.isArray(ldapClass.uniqueMembers) === false) {
+		if (ldapClass.uniqueMembers === undefined) {
+			// no members means nothing to do here
+			return;
+		}
+		if (!Array.isArray(ldapClass.uniqueMembers)) {
+			// if there is only one member, ldapjs doesn't give us an array here
 			ldapClass.uniqueMembers = [ldapClass.uniqueMembers];
 		}
 		const userData = await this.app.service('usersModel').find(
@@ -212,7 +216,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 			});
 		});
 
-		if (students.length > 0 && teachers.length > 0) {
+		if (students.length > 0 || teachers.length > 0) {
 			await this.app.service('classes').patch(
 				currentClass._id,
 				{ userIds: students, teacherIds: teachers },
