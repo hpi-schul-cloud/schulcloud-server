@@ -212,6 +212,7 @@ describe('school service', () => {
 		it('unable without permissions', async () => {
 			const school = await testObjects.createTestSchool({});
 			const role = await testObjects.createTestRole({ name: 'noPermissions', permissions: [] });
+			await app.service('roles').init();
 			const admin = await testObjects.createTestUser({
 				schoolId: school._id,
 				roles: [role.name],
@@ -230,6 +231,7 @@ describe('school service', () => {
 				name: 'chatPermissions',
 				permissions: ['SCHOOL_CHAT_MANAGE'],
 			});
+			await app.service('roles').init();
 			const admin = await testObjects.createTestUser({
 				schoolId: school._id,
 				roles: [role.name],

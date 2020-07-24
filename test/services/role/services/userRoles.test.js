@@ -99,7 +99,7 @@ describe('userRoles', async () => {
 			accountTestUser = await testObjects.createTestAccount(dataTestUser1, null, testUser);
 			accountTestUser2 = await testObjects.createTestAccount(dataTestUser2, null, testUser2);
 			accountTestUserOther = await testObjects.createTestAccount(dataTestUserOther, null, otherUser);
-
+			await app.service('roles').init();
 			done();
 		});
 	});
