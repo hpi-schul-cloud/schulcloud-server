@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Added
+
+- SC-5754 Added isExternal attribute to school model. If ldapSchoolIdentifier or source is defined, isExternal will be set to true
+otherwise, if none of them are defined it wil be set to false.
+
 ### Changed
 
 - SC-4289 Changed aggregations in admin tables, classes are now taken only from current year or max grade level, and are sorted
@@ -41,6 +46,13 @@ Also added a sub-service for changing email/username in Activation Service
 - SC-5542: Added an after hook for AdminUsers find method which formats birthday date to DD.MM.YYYY format.
 
 ### Security
+
+
+## [23.6.2] - 2020-07-22
+
+### Fixed - 23.6.2
+
+- SC-5773: LDAPSchoolSyncer now correctly populates classes synced from an LDAP server, even if only students or only teachers are assigned to the class.
 
 
 ## [23.6.1] - 2020-07-22
