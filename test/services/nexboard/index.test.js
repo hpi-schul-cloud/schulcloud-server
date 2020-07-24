@@ -213,6 +213,7 @@ describe('Nexboard services', () => {
 	it('Find should need TOOL_VIEW permission.', async () => {
 		const name = `${Date.now()}testRole`;
 		await testHelpers.createTestRole({ name, permissions: [] });
+		await app.service('roles').init();
 
 		const {
 			requestParams: { authentication: { accessToken } },
@@ -238,6 +239,7 @@ describe('Nexboard services', () => {
 	it('Get should need TOOL_VIEW permission.', async () => {
 		const name = `${Date.now()}testRole`;
 		await testHelpers.createTestRole({ name, permissions: [] });
+		await app.service('roles').init();
 
 		const {
 			requestParams: { authentication: { accessToken } },
