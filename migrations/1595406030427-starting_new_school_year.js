@@ -1,14 +1,29 @@
 const mongoose = require('mongoose');
+
+const { Schema } = mongoose;
 // eslint-disable-next-line no-unused-vars
-const { info, error } = require('../src/logger');
+const { info } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
-const { schoolSchema, yearModel } = require('../src/services/school/model');
+const { schoolSchema } = require('../src/services/school/model');
 
 const School = mongoose.model('school_20200717', schoolSchema, 'schools');
-const federalStateModel = require('../src/services/federalState/model');
 
+const federalStateSchema = new Schema({
+	name: { type: String, required: true },
+});
+
+const federalStateModel = mongoose.model('federalState_20200717', federalStateSchema, 'federalstates');
+
+const yearSchema = new Schema({
+	name: {
+		type: String, required: true, match: /^[0-9]{4}\/[0-9]{2}$/, unique: true,
+	},
+	startDate: { type: Date, required: true },
+	endDate: { type: Date, required: true },
+});
+const YearModel = mongoose.model('yearModel_20200717', yearSchema, 'years');
 
 const DATE_CLUSTER_1 = new Date('2020-07-13');
 const DATE_CLUSTER_2 = new Date('2020-07-13');
@@ -24,8 +39,6 @@ const statesWithStartMaintenanceDate = new Map([
 	['Bremen', DATE_CLUSTER_3], ['Niedersachsen', DATE_CLUSTER_3], ['Sachsen', DATE_CLUSTER_3],
 	['Sachsen-Anhalt', DATE_CLUSTER_3], ['Thüringen', DATE_CLUSTER_3],
 ]);
-// use your own name for your model, otherwise other migrations may fail.
-// The third parameter is the actually relevent one for what collection to write to.
 
 const getStartMaintenanceDate = (stateName) => {
 	const startMainentanceDate = statesWithStartMaintenanceDate.get(stateName);
@@ -44,7 +57,7 @@ module.exports = {
 		info('Setting up maintenance mode for schools');
 		await connect();
 
-		const nextSchoolYearId = await yearModel.findOne({ name: '2020/21' }).select('_id').lean().exec();
+		const nextSchoolYearId = await YearModel.findOne({ name: '2020/21' }).select('_id').lean().exec();
 		info('Fetch related federal states');
 		const federalStates = await federalStateModel.find(
 			{ name: { $in: [...statesWithStartMaintenanceDate.keys()] } },
@@ -86,7 +99,7 @@ module.exports = {
 		info(`Updated ${schools.nModified} LDAP schools`);
 
 		info('Reverting the current school year change for related non-LDAP schools');
-		const currentSchoolYearId = await yearModel.findOne({ name: '2019/20' }).select('_id').lean().exec();
+		const currentSchoolYearId = await YearModel.findOne({ name: '2019/20' }).select('_id').lean().exec();
 		const nonLdapSchools = await School.updateMany({
 			federalState: { $in: federalStateIds },
 			ldapSchoolIdentifier: { $exists: false },
