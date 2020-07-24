@@ -26,6 +26,7 @@ const create = (app) => async ({
 	source = undefined,
 	sourceOptions = undefined,
 	enableStudentTeamCreation = undefined,
+	permissions = undefined,
 } = {}) => {
 	if (systems && systems.length === 0) {
 		const localSystem = (await app.service('systems').find({ query: { type: 'local' }, paginate: false }))[0];
@@ -55,6 +56,7 @@ const create = (app) => async ({
 		source,
 		sourceOptions,
 		enableStudentTeamCreation,
+		permissions,
 	});
 	createdSchoolIds.push(school._id);
 	return school;

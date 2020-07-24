@@ -1,7 +1,7 @@
 const Sentry = require('@sentry/node');
 const express = require('@feathersjs/express');
+const { Configuration } = require('@schul-cloud/commons');
 const jwt = require('jsonwebtoken');
-const { SILENT_ERROR_ENABLED } = require('../../config/globals');
 
 const { requestError } = require('../logger/systemLogger');
 const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
@@ -129,7 +129,7 @@ const filterQuery = (url) => {
 
 const handleSilentError = (error, req, res, next) => {
 	if (error.catchedError instanceof SilentError) {
-		if (SILENT_ERROR_ENABLED) {
+		if (Configuration.get('SILENT_ERROR_ENABLED')) {
 			res.append('x-silent-error', true);
 		}
 		res.status(200).json({ success: 'success' });
