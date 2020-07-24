@@ -23,12 +23,20 @@ Also added a sub-service for changing email/username in Activation Service
 ### Fixed
 
 - SC-5250: Fixes the CSV-Import, if there are whitespaces in the columnnames
+- SC-5686: only users with the team permission "RENAME_TEAM" can execute the patch method in teams route
 
 ### Changed
 
 - SC-5542: Added an after hook for AdminUsers find method which formats birthday date to DD.MM.YYYY format.
 
 ### Security
+
+
+## [23.6.2] - 2020-07-22
+
+### Fixed - 23.6.2
+
+- SC-5773: LDAPSchoolSyncer now correctly populates classes synced from an LDAP server, even if only students or only teachers are assigned to the class.
 
 
 ## [23.6.1] - 2020-07-22
