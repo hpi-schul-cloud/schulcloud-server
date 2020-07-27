@@ -42,7 +42,7 @@ module.exports = {
 
 		await RoleModel.findOneAndUpdate(
 			{
-				name: 'administrator',
+				name: 'teacher',
 			}, {
 				$addToSet: { permissions: permission },
 			},
