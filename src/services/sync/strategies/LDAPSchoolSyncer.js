@@ -35,11 +35,16 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	/**
      * @see {Syncer#steps}
      */
-	steps() {
-		return super.steps()
-			.then((_) => this.getUserData())
-			.then((_) => this.getClassData())
-			.then((_) => this.stats);
+	async steps() {
+		await super.steps();
+		try {
+			await this.getUserData();
+			await this.getClassData();
+		} catch (err) {
+			this.stats.success = false;
+			this.stats.errors.push(err);
+		}
+		return this.stats;
 	}
 
 	async getUserData() {
