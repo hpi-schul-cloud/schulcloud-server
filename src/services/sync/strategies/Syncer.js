@@ -84,15 +84,16 @@ class Syncer {
 	static aggregateStats(stats) {
 		if (Array.isArray(stats)) {
 			return stats.reduce((agg, cur) => {
-				cur = this.aggregateStats(cur);
-				agg.successful += cur.successful;
-				agg.failed += cur.failed;
-				return agg;
+				const current = this.aggregateStats(cur);
+				return {
+					successful: agg.successful + current.successful,
+					failed: agg.failed + current.failed,
+				};
 			}, { successful: 0, failed: 0 });
 		}
 		return {
-			successful: stats && stats.success === true ? 1 : 0,
-			failed: stats && stats.success === false ? 1 : 0,
+			successful: (stats && stats.success === true) ? 1 : 0,
+			failed: (stats && stats.success !== true) ? 1 : 0,
 		};
 	}
 
