@@ -9,15 +9,27 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-### Added
+## [23.6.2] - 2020-07-22
 
-### Fixed
+### Fixed - 23.6.2
 
-### Changed
+- SC-5773: LDAPSchoolSyncer now correctly populates classes synced from an LDAP server, even if only students or only teachers are assigned to the class.
 
-### Security
 
-### Removed
+## [23.6.1] - 2020-07-22
+
+### Fixed - 23.6.1
+
+- SC-5733: LDAPSchoolSyncer now uses the Users model service to avoid ignoring indexes due to automatic collation
+
+
+## [23.6.0] - 2020-07-21
+
+### Added - 23.6.0
+
+- SC-4142: Added indexes on TSP sync related attributes in user and school schema.
+- SC-4142: Adds info about unchanged entities to TSP sync statistics
+
 
 ## [23.5.5] - 2020-07-08
 ### Changed

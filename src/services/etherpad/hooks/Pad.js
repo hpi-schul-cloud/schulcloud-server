@@ -1,11 +1,10 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { disallow } = require('feathers-hooks-common');
 const { Forbidden } = require('@feathersjs/errors');
+const { Configuration } = require('@schul-cloud/commons');
 
 const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
-
-const { Configuration } = require('@schul-cloud/commons');
 
 const restrictOldPadsToCourse = async (context) => {
 	if(typeof(context.data.oldPadId) === 'undefined') {
@@ -17,7 +16,7 @@ const restrictOldPadsToCourse = async (context) => {
 		const foundLessons = await lessonsService.find({
 			query: {
 				courseId: context.id,
-				contents: { $elemMatch: { "content.url": `${oldPadURI}/${context.data.oldPadId}` } }
+				contents: { $elemMatch: { 'content.url': `${oldPadURI}/${context.data.oldPadId}` } },
 			},
 		});
 		if(foundLessons.total < 1) {

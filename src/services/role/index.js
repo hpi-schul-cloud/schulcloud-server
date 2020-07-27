@@ -39,7 +39,7 @@ module.exports = function setup() {
 
 
 	definePermissions(
-		'FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY',
+		'ADMIN_TOGGLE_STUDENT_VISIBILITY',
 		ROLES.TEACHER,
 		PERMISSIONS.STUDENT_LIST,
 		// TODO: importent add this again, after school permission service can handle multiple permissions
