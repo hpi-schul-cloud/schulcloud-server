@@ -30,7 +30,7 @@ module.exports = {
 			}, {
 				$pull: { permissions: permission },
 			},
-		).lean().exec();
+		);
 		// ////////////////////////////////////////////////////
 		await close();
 	},
@@ -46,7 +46,7 @@ module.exports = {
 			}, {
 				$addToSet: { permissions: permission },
 			},
-		).lean().exec();
+		);
 		// ////////////////////////////////////////////////////
 		await close();
 	},
