@@ -3,7 +3,9 @@ const { ObjectId } = require('mongoose').Types;
 const app = require('../src/app');
 const { sanitizeDataHook } = require('../src/app.hooks');
 const { sanitizeHtml: { sanitizeDeep } } = require('../src/utils');
-const { cleanup, createTestUser, generateRequestParamsFromUser } = require('./services/helpers/testObjects')(app);
+const {
+	cleanup, createTestUser, generateRequestParamsFromUser, createTestSchool,
+} = require('./services/helpers/testObjects')(app);
 
 describe('Sanitization Hook', () => {
 	// TODO: Test if it work for create, post and update
@@ -54,6 +56,45 @@ describe('Sanitization Hook', () => {
 		};
 		const result = sanitizeDataHook(context);
 		expect(result.data.testString).to.equal(testString);
+	});
+
+	it('hook does not sanitizes specified safe attributes', () => {
+		const testString = '<script>alert("test");</script><h1>test</h1>';
+		const sanitizedTestString = 'test';
+		const safeAttributes = ['url'];
+		const context = {
+			path: 'not_authentication',
+			safeAttributes,
+			result: {
+				url: testString,
+				dangerousUrl: testString,
+			},
+		};
+		const result = sanitizeDataHook(context);
+		expect(result.result.url).to.equal(testString);
+		expect(result.result.dangerousUrl).to.equal(sanitizedTestString);
+	});
+
+	it('hook does not sanitizes specified attributes', () => {
+		const content = '<blockquote class="test-class">Cite Block</blockquote>'
+			+ '<span class="test-class" style="color:#9c27b0">Text color</span>'
+			+ '<span class="test-class" style="background-color:#cddc39">Text Background</span>'
+			+ 'Tables: <table class="test-class"><th>1</th><th>2</th><tr><td>A</td><td>B</td></tr></table>'
+			// eslint-disable-next-line max-len
+			+ 'Video: <video class="test-class" controlslist="nodownload" src="https://www.youtube.com/watch?v=zYo7gLzH8Uk"></video>'
+			// eslint-disable-next-line max-len
+			+ 'Audio: <audio class="test-class" controlslist="nodownload" controls="controls" src="https://www.youtube.com/watch?v=zYo7gLzH8Uk"></audio>';
+		const data = {
+			schoolId: '0000d186816abba584714c5f',
+			title: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
+			content,
+		};
+
+		const path = 'news';
+		const result = sanitizeDeep(data, path);
+		expect(result.schoolId).to.equal('0000d186816abba584714c5f');
+		expect(result.title).to.equal('SanitizationTest äöüß§$%/()=');
+		expect(result.content).to.equal(content);
 	});
 
 	// TODO: Map test to generic output for sanitizeConst keys, paths, saveKeys
@@ -119,6 +160,116 @@ describe('Sanitization Hook', () => {
 		const result = sanitizeDeep(data, path);
 
 		expect(result.subject).to.equal(''); // filter all
+	});
+
+	it('sanitize in submissions, avoid img onerror attribute', () => {
+		const data = {
+			comment: '<img onerror="window.location = \'google.com\'" src="x" />',
+		};
+
+		const path = 'submissions';
+		const result = sanitizeDeep(data, path);
+
+		expect(result.comment, 'onerror attribute removed from img tag').to.equal('<img src="x" />');
+	});
+
+	it('sanitize with encoded entities - html true route', () => {
+		const data = {
+			comment: '&lt;img onerror="window.location = \'google.com\'" src="x" /&gt;',
+		};
+
+		const path = 'submissions';
+		const result = sanitizeDeep(data, path);
+
+		expect(result.comment, 'onerror attribute removed from img tag').to.equal('<img src="x" />');
+	});
+
+	it('sanitize with encoded entities - html false route', () => {
+		const data = {
+			comment: '&lt;img onerror="window.location = \'google.com\'" src="x" /&gt;',
+		};
+
+		const result = sanitizeDeep(data, '');
+
+		expect(result.comment, 'should removed html').to.equal('');
+	});
+
+
+	it('sanitize with encoded entities  - html true route', () => {
+		const data = {
+			comment: '&#60;img onerror="window.location = \'google.com\'" src="x" /&#62;',
+		};
+
+		const path = 'submissions';
+		const result = sanitizeDeep(data, path);
+
+		expect(result.comment, 'onerror attribute removed from img tag').to.equal('<img src="x" />');
+	});
+
+	it('sanitize with encoded entities  - html false route', () => {
+		const data = {
+			comment: '&#60;img onerror="window.location = \'google.com\'" src="x" /&#62;',
+		};
+
+		const result = sanitizeDeep(data, '');
+
+		expect(result.comment, 'should removed html').to.equal('');
+	});
+
+	it('sanitize with multi encoded entities  - html true route', () => {
+		const data = {
+			comment: '&#60;<&#60;&lt;img onerror="window.location = \'google.com\'" src="x" /&gt;&#62;>&#62;',
+		};
+
+		const path = 'submissions';
+		const result = sanitizeDeep(data, path);
+
+		expect(result.comment, 'onerror attribute removed from img tag')
+			.to.equal('&lt;&lt;&lt;<img src="x" />&gt;&gt;&gt;');
+	});
+
+	it('sanitize with multi encoded entities  - html false route', () => {
+		const data = {
+			comment: '&#60;<&#60;&#60;img onerror="window.location = \'google.com\'" src="x" /&#62;&#62;>&#62;',
+		};
+
+		const result = sanitizeDeep(data, '');
+
+		expect(result.comment, 'should removed html').to.equal('&lt;&lt;&lt;&gt;&gt;&gt;');
+	});
+
+	it('sanitize with multi encoded entities and mixed html - html true route', () => {
+		const data = {
+			// eslint-disable-next-line max-len
+			comment: '&#60;img onerror="window.location = \'google.com\'" src="x" <&#60;&#60;img onerror="window.location = \'google.com\'" src="x" /&#62;&#62;>/&#62;',
+		};
+
+		const path = 'submissions';
+		const result = sanitizeDeep(data, path);
+
+		expect(result.comment, 'onerror attribute removed from img tag').to.equal('<img src="x" />&gt;&gt;/&gt;');
+	});
+
+	it('sanitize with multi encoded entities and mixed html - html false route', () => {
+		const data = {
+			// eslint-disable-next-line max-len
+			comment: '&#60;img onerror="window.location = \'google.com\'" src="x" <&#60;&#60;img onerror="window.location = \'google.com\'" src="x" /&#62;&#62;>/&#62;',
+		};
+
+		const result = sanitizeDeep(data, '');
+
+		expect(result.comment, 'onerror attribute removed from img tag').to.equal('&gt;&gt;/&gt;');
+	});
+
+	it('sanitize in submissions, avoid js in href', () => {
+		const data = {
+			comment: '<a href="javascript:alert(1);">Link</a>',
+		};
+
+		const path = 'submissions';
+		const result = sanitizeDeep(data, path);
+
+		expect(result.comment, 'js removed from a href').to.equal('<a>Link</a>');
 	});
 
 	it('sanitize in course, example 1', () => {
@@ -211,7 +362,8 @@ describe('removeObjectIdInData hook', () => {
 	});
 
 	it('Should work for create', async () => {
-		const admin = await createTestUser({ roles: ['administrator'] });
+		const { _id: schoolId } = await createTestSchool();
+		const admin = await createTestUser({ roles: ['administrator'], schoolId });
 		const params = await generateRequestParamsFromUser(admin);
 		const _id = new ObjectId();
 		const newUser = await app.service('users').create({
@@ -219,7 +371,7 @@ describe('removeObjectIdInData hook', () => {
 			firstName: 'Max',
 			lastName: 'Mustermann',
 			email: `max${Date.now()}@mustermann.de`,
-			schoolId: '584ad186816abba584714c94',
+			schoolId,
 			roles: [],
 		}, params);
 		expect(_id.toString()).to.not.equal(newUser._id.toString());

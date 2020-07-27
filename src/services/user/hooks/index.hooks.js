@@ -14,7 +14,7 @@ exports.hasEditPermissionForUser = async (context) => {
 	}
 	const requestedUser = await userService.get(id, { query: { $populate: 'roles' } });
 	const requestedUserRoles = requestedUser.roles.map((r) => r.name);
-	if (requestedUserRoles.includes('adminstrator')) {
+	if (requestedUserRoles.includes('administrator')) {
 		await globalHooks.hasPermission(['ADMIN_EDIT'])(context);
 	}
 	if (requestedUserRoles.includes('teacher')) {
@@ -22,6 +22,23 @@ exports.hasEditPermissionForUser = async (context) => {
 	}
 	if (requestedUserRoles.includes('student')) {
 		await globalHooks.hasPermission(['STUDENT_EDIT'])(context);
+	}
+	return context;
+};
+
+exports.hasReadPermissionForUser = async (context) => {
+	const { id, service: userService } = context;
+	// check if user is viewing his own profile
+	if (ObjectId.equal(((context.params || {}).account || {}).userId, id)) {
+		return context;
+	}
+	const requestedUser = await userService.get(id, { query: { $populate: 'roles' } });
+	const requestedUserRoles = requestedUser.roles.map((r) => r.name);
+	if (requestedUserRoles.includes('teacher')) {
+		await globalHooks.hasPermission(['TEACHER_LIST'])(context);
+	}
+	if (requestedUserRoles.includes('student')) {
+		await globalHooks.hasSchoolPermission(['STUDENT_LIST'])(context);
 	}
 	return context;
 };

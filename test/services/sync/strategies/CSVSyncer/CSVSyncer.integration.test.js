@@ -2,7 +2,7 @@ const { expect } = require('chai');
 
 const app = require('../../../../../src/app');
 const roleModel = require('../../../../../src/services/role/model.js');
-const { userModel } = require('../../../../../src/services/user/model.js');
+const { userModel } = require('../../../../../src/services/user/model');
 const MailService = require('../../../../../src/services/helpers/service.js');
 
 const testObjects = require('../../../helpers/testObjects')(app);
@@ -1608,6 +1608,137 @@ describe('CSVSyncer Integration', () => {
 				expect(user).to.be.ok;
 				expect(user.birthday).to.deep.equal(person.parsed);
 			});
+		});
+	});
+
+	describe('Scenario 17 - Importing a student having whitespaces in the columnnames', () => {
+		let scenarioParams;
+		let scenarioData;
+
+		const SCHOOL_ID = testObjects.options.schoolId;
+		const SCENARIO_EMAIL = 'peter@pan.de';
+
+		before(async () => {
+			const user = await createUser({
+				roles: 'administrator',
+				schoolId: SCHOOL_ID,
+			});
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'student',
+			};
+			scenarioData = {
+				data: ` firstName,lastName , email \nPeter,Pan,${SCENARIO_EMAIL}`,
+			};
+		});
+
+		after(testObjects.cleanup);
+
+		it('should be accepted for execution', () => {
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
+		});
+
+		it('should initialize without errors', () => {
+			const params = CSVSyncer.params(scenarioParams, scenarioData);
+			const instance = new CSVSyncer(app, {}, ...params);
+			expect(instance).to.not.equal(undefined);
+		});
+
+		it('should import a single student without a class', async () => {
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
+
+			expect(stats.success).to.equal(true);
+			expect(stats.users.successful).to.equal(1);
+			expect(stats.users.failed).to.equal(0);
+			expect(stats.invitations.successful).to.equal(0);
+			expect(stats.invitations.failed).to.equal(0);
+			expect(stats.classes.successful).to.equal(0);
+			expect(stats.classes.failed).to.equal(0);
+
+			const users = await userModel.find({
+				email: SCENARIO_EMAIL,
+			});
+			expect(users.length).to.equal(1);
+			const [role] = await roleModel.find({
+				_id: users[0].roles[0],
+			});
+			expect(role.name).to.equal('student');
+		});
+	});
+
+	describe('Scenario 18 - Importing teachers having whitespaces in the columnnames', () => {
+		let scenarioParams;
+		let scenarioData;
+
+		const SCHOOL_ID = testObjects.options.schoolId;
+		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de'];
+
+		before(async () => {
+			const user = await createUser({
+				roles: 'administrator',
+				schoolId: SCHOOL_ID,
+			});
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'teacher',
+			};
+			scenarioData = {
+				data:
+					' firstName,lastName , email\n'
+					+ `Peter,Pan,${TEACHER_EMAILS[0]}\n`
+					+ `Peter,Lustig,${TEACHER_EMAILS[1]}\n`
+					+ `Test,Testington,${TEACHER_EMAILS[2]}\n`,
+			};
+		});
+
+		after(async () => {
+			await testObjects.cleanup();
+			await deleteUser(TEACHER_EMAILS[0]);
+			await deleteUser(TEACHER_EMAILS[1]);
+			await deleteUser(TEACHER_EMAILS[2]);
+		});
+
+		it('should be accepted for execution', () => {
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
+		});
+
+		it('should initialize without errors', () => {
+			const params = CSVSyncer.params(scenarioParams, scenarioData);
+			const instance = new CSVSyncer(app, {}, ...params);
+			expect(instance).to.not.equal(undefined);
+		});
+
+		it('should import three teachers without a class', async () => {
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
+
+			expect(stats.success).to.equal(true);
+			expect(stats.users.successful).to.equal(3);
+			expect(stats.users.failed).to.equal(0);
+			expect(stats.invitations.successful).to.equal(0);
+			expect(stats.invitations.failed).to.equal(0);
+			expect(stats.classes.successful).to.equal(0);
+			expect(stats.classes.failed).to.equal(0);
+
+			const users = await userModel.find({
+				email: { $in: TEACHER_EMAILS },
+			});
+			expect(users.length).to.equal(3);
+			const [role] = await roleModel.find({
+				_id: users[0].roles[0],
+			});
+			expect(role.name).to.equal('teacher');
 		});
 	});
 });

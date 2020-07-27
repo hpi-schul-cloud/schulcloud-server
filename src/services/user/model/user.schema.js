@@ -1,8 +1,11 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
-const roleModel = require('../role/model');
-const { enableAuditLog } = require('../../utils/database');
-const externalSourceSchema = require('../../helper/externalSourceSchema');
+const { Configuration } = require('@schul-cloud/commons');
+const roleModel = require('../../role/model');
+const { enableAuditLog } = require('../../../utils/database');
+const { consentSchema } = require('./consent.schema');
+const externalSourceSchema = require('../../../helper/externalSourceSchema');
+const { defineConsentStatus, isParentConsentRequired } = require('../utils/consent');
 
 const { Schema } = mongoose;
 
@@ -40,6 +43,8 @@ const userSchema = new Schema({
 		enum: Object.values(USER_FEATURES),
 	},
 
+	consent: consentSchema,
+
 	/**
 	 * depending on system settings,
 	 * a user may opt-in or -out,
@@ -47,8 +52,9 @@ const userSchema = new Schema({
 	*/
 	discoverable: { type: Boolean, required: false },
 
-	ldapDn: { type: String },
-	ldapId: { type: String },
+	// optional attributes if user was created during LDAP sync:
+	ldapDn: { type: String, index: true }, // LDAP login username
+	ldapId: { type: String, index: true }, // UUID to identify during the sync
 
 	...externalSourceSchema,
 
@@ -62,6 +68,11 @@ userSchema.index({ schoolId: 1, roles: -1 });
 // maybe the schoolId index is enough ?
 // https://ticketsystem.schul-cloud.org/browse/SC-3724
 
+if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
+	// to speed up lookups during TSP sync
+	userSchema.index({ 'sourceOptions.$**': 1 });
+}
+
 userSchema.virtual('fullName').get(function get() {
 	return [
 		this.namePrefix,
@@ -71,33 +82,28 @@ userSchema.virtual('fullName').get(function get() {
 		this.nameSuffix,
 	].join(' ').trim().replace(/\s+/g, ' ');
 });
+
+userSchema.virtual('consentStatus').get(function get() {
+	if (!this.consent) return undefined; // TODO: what happen if not defined, is it on query?
+	return defineConsentStatus(this.birthday, this.consent);
+});
+
+
+userSchema.virtual('requiresParentConsent').get(function get() {
+	if (!this.birthday) return undefined;
+	return isParentConsentRequired(this.birthday);
+});
+
+
 userSchema.plugin(leanVirtuals);
 
 userSchema.methods.getPermissions = function getPermissions() {
 	return roleModel.resolvePermissions(this.roles);
 };
 
-const registrationPinSchema = new Schema({
-	email: { type: String, required: true },
-	pin: { type: String },
-	verified: { type: Boolean, default: false },
-}, {
-	timestamps: true,
-});
-
-/* virtual property functions */
-
-const displayName = (user) => `${user.firstName} ${user.lastName}`;
-
-enableAuditLog(registrationPinSchema);
 enableAuditLog(userSchema);
-
-const registrationPinModel = mongoose.model('registrationPin', registrationPinSchema);
-const userModel = mongoose.model('user', userSchema);
 
 module.exports = {
 	USER_FEATURES,
-	userModel,
-	registrationPinModel,
-	displayName,
+	userSchema,
 };

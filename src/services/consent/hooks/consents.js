@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
+const { modifyDataForUserSchema } = require('../utils');
 
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../../../config/globals');
 
@@ -226,6 +227,26 @@ const addConsentsStatus = (hook) => {
 	}
 };
 
+// TODO: remove at next version
+const writeConsentToUser = (context) => {
+	const { data, app } = context;
+	app.service('usersModel').patch(data.userId, modifyDataForUserSchema(data));
+};
+
+const patchConsentToUser = async (context) => {
+	const { data, app, id } = context;
+	const consent = await app.service('consents').get(id);
+	app.service('usersModel').patch(consent.userId, modifyDataForUserSchema(data));
+};
+
+const removeConsentFromUser = async (context) => {
+	const { app, id } = context;
+	const consent = await app.service('consents').get(id);
+	const user = await app.service('usersModel').get(consent.userId);
+	delete user.consent;
+	await app.service('usersModel').update(user.id, user);
+};
+
 exports.before = {
 	all: [],
 	find: [
@@ -234,10 +255,10 @@ exports.before = {
 		setUserIdToCorrectForm,
 	],
 	get: [authenticate('jwt')],
-	create: [addDates, checkExisting],
-	update: [authenticate('jwt'), addDates],
-	patch: [authenticate('jwt'), addDates],
-	remove: [authenticate('jwt')],
+	create: [addDates, checkExisting, writeConsentToUser],
+	update: [authenticate('jwt'), addDates, writeConsentToUser],
+	patch: [authenticate('jwt'), addDates, patchConsentToUser],
+	remove: [authenticate('jwt'), removeConsentFromUser],
 };
 
 exports.after = {

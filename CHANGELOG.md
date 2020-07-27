@@ -11,16 +11,134 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
-### Fixed
+- SC-5754 Added isExternal attribute to school model. If ldapSchoolIdentifier or source is defined, isExternal will be set to true
+otherwise, if none of them are defined it wil be set to false.
 
 ### Changed
+
+- SC-4289 Changed aggregations in admin tables, classes are now taken only from current year or max grade level, and are sorted
+by numeric ordering.
+
+### Added
+
+- SC-4520 created a new Service called Activation Service; with which jobs can be defined and are 
+only executed when an activation link (activation code) is confirmed (e.g.: change of e-mail address/username)
+Also added a sub-service for changing email/username in Activation Service
+
+### Fixed
+
+- SC-5250: Fixes the CSV-Import, if there are whitespaces in the columnnames
+- SC-5686: only users with the team permission "RENAME_TEAM" can execute the patch method in teams route
+
+### Changed
+
+- SC-5542: Added an after hook for AdminUsers find method which formats birthday date to DD.MM.YYYY format.
+
+### Security
+
+
+## [23.6.2] - 2020-07-22
+
+### Fixed - 23.6.2
+
+- SC-5773: LDAPSchoolSyncer now correctly populates classes synced from an LDAP server, even if only students or only teachers are assigned to the class.
+
+
+## [23.6.1] - 2020-07-22
+
+### Fixed - 23.6.1
+
+- SC-5733: LDAPSchoolSyncer now uses the Users model service to avoid ignoring indexes due to automatic collation
+
+
+## [23.6.0] - 2020-07-21
+
+### Added - 23.6.0
+
+- SC-4142: Added indexes on TSP sync related attributes in user and school schema.
+- SC-4142: Adds info about unchanged entities to TSP sync statistics
+
+## [23.5.4] - 2020-07-08
+
+### Added - 23.5.4
+
+- SC-2714 Added the federal state "Internationale Schule"
+
+
+## [23.5.0] - 2020-06-15
+
+### Added in 23.5.0
+
+- SC-4192 add tests that ensure classes on other schools cant be manipulated
+
+
+### Fixed in 23.5.0
+
+### Changed in 23.5.0
+
+- SC-4957 user.ldapId and user.ldapDn are now indexed to improve performance
+
+
+## [23.4.7] - 2020-07-01
+
+### Fixed in 23.4.7
+
+- SC-4965 Converted "consent" subdocument in "users" to a nested document to fix changing consents in administration and removing a bug in registration that resulted in deleted users.
+
+## [23.4.5] - 2020-06-17
+
+### Fixed in 23.4.5
+
+- SC-5007 re-introduces ldap system root path to API result to fix issue with duplicating schools
+
+
+## [23.4.3-nbc] - 2020-06-15
+
+### Fixed in 23.4.3-nbc
+
+- SC-5054 Revert hook restrictions that prevented registration with custom deata privacy documents enabled
+
+
+## [23.4.0-nbc] - 2020-06-11
+
+### Added - 23.4.0-nbc
+
+- SC-4577 extend consentversions with school specific privacy policy, which can be added by the school admin
+
+
+## [23.2.4] - 2020-06-05
+
+### Fixed - 23.2.4
+
+- SC-4876 soften sanitization to allow editor actions to be persisted correctly
+
+## [23.2.1] - 2020-06-04
+
+### Security - 23.2.1
+
+- SC-4720 improve importhashes for registrationlinks
+
+## [23.2.0] - 2020-06-03
+
+### Security - 23.2.0
+
+- SC-4506 Secure Find User Route. Access user list by students is allowed only if they are eligible to create teams.
+- SC-4506 Secure Get User Route. Read user details may only users with STUDENT_LIST or TEACHER_LIST permissions
+
+## [23.1.4] - 2020-05-29
+
+### Fixed in 23.1.4
+
+- SC-4749 avoid xss in image onerror event attribute for submissions
+
+## [23.0.0] - 2020-05-19
+
+### Changed in 23.0.0
 
 - SC-4075 Teams creation by students logic was changed. New environment enumeration variable `STUDENT_TEAM_CREATION` 
 with possible values `disabled`, `enabled`, `opt-in`, `opt-out` was introduced. The feature value is set by instance deployment. 
 In case of `disabled`, `enabled` it is valid for all schools of the instance and cannot be changed by the admin. 
 In case of `opt-in` and `opt-out` the feature should be enabled/disabled by the school admin.
-
-### Removed
 
 ## [22.10.3] - 2020-05-13
 
@@ -55,6 +173,7 @@ In case of `opt-in` and `opt-out` the feature should be enabled/disabled by the 
 -   SC-3395 if fetching the release fails, a error will be thrown
 -   backup.js now outputs valid json exports
 -   SC-4105 fixed a problem with new users tests not working with recent hotfix.
+-   Checks of user consent calculated correct now
 
 ### Changed in 22.10.0
 
