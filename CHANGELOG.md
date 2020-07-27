@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+
+## [23.6.3] - 2020-07-27
+### Changed
+- SC-5283 set dates to set schools in maintenance mode
+
 ## [23.6.2] - 2020-07-22
 
 ### Fixed - 23.6.2
@@ -29,11 +34,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-4142: Added indexes on TSP sync related attributes in user and school schema.
 - SC-4142: Adds info about unchanged entities to TSP sync statistics
-
-
-## [23.5.5] - 2020-07-08
-### Changed
-- SC-5283 set dates to set schools in maintenance mode
 
 ## [23.5.4] - 2020-07-08
 ### Added
