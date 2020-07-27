@@ -3,7 +3,7 @@ const sift = require('sift');
 const { RoleModel } = require('../model');
 const { preparedRoles, unique } = require('../utils/preparedRoles');
 
-// Do not proteced this route with authentication.
+// Do not protect this route with authentication.
 const RoleServiceHooks = {
 	before: {
 		all: [],
