@@ -116,7 +116,6 @@ module.exports = function roster() {
 				}
 				const course = courses.data[0];
 				const pseudoService = app.service('pseudonym');
-
 				return Promise.all([
 					pseudoService.find({
 						query: {
@@ -134,11 +133,11 @@ module.exports = function roster() {
 					data: {
 						students: users.data.map((user) => ({
 							user_id: user.pseudonym,
-							username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
+							username: encodeURI(oauth2.getSubject(user.pseudonym, app.settings.services.web)),
 						})),
 						teachers: teachers.data.map((user) => ({
 							user_id: user.pseudonym,
-							username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
+							username: encodeURI(oauth2.getSubject(user.pseudonym, app.settings.services.web)),
 						})),
 					},
 				}));
