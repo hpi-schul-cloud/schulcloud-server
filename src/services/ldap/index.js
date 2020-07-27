@@ -102,8 +102,8 @@ module.exports = function LDAPService() {
          * rejects with error otherwise
          */
 		_connect(config, username, password) {
-			username = username || config.searchUser;
-			password = password || config.searchUserPassword;
+			const bindUser = username || config.searchUser;
+			const bindPasword = password || config.searchUserPassword;
 
 			return new Promise((resolve, reject) => {
 				if (!(config && config.url)) {
@@ -113,7 +113,11 @@ module.exports = function LDAPService() {
 					url: config.url,
 				});
 
-				client.bind(username, password, (err) => {
+				client.on('error', (e) => {
+					reject(new errors.GeneralError('LDAP error', e));
+				});
+
+				client.bind(bindUser, bindPasword, (err) => {
 					if (err) {
 						reject(new errors.NotAuthenticated('Wrong credentials'));
 					} else {
