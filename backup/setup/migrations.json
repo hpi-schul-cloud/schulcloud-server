@@ -587,5 +587,16 @@
 			"$date": "2020-01-13T08:55:24.955Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f1e8e7ad5e1e110c4e9100b"
+		},
+		"state": "up",
+		"name": "start_new_school_year",
+		"createdAt": {
+			"$date": "2020-07-27T07:11:21.178Z"
+		},
+		"__v": 0
 	}
 ]
