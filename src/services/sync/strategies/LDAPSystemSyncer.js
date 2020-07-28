@@ -44,7 +44,7 @@ class LDAPSystemSyncer extends Syncer {
 		for (const job of jobs) {
 			await job();
 		}
-		return this.stats;
+		return [...Object.values(this.stats.systems)];
 	}
 
 	getSystems() {
