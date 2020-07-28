@@ -111,6 +111,11 @@ module.exports = function LDAPService() {
 				}
 				const client = ldap.createClient({
 					url: config.url,
+					reconnect: {
+						initialDelay: 100,
+						maxDelay: 300,
+						failAfter: 3,
+					},
 				});
 
 				client.on('error', (e) => {
