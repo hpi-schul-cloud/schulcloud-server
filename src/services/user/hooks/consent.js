@@ -3,7 +3,8 @@ const addDates = (context) => {
 		const { parentConsents, userConsent } = context.data.consent;
 		if (parentConsents
 			&& parentConsents.length
-			&& parentConsents.length !== 0) {
+			&& parentConsents.length !== 0
+			&& typeof parentConsents[0] === 'object') {
 			const parentConsent = parentConsents[0];
 			if ('privacyConsent' in parentConsent && !('dateOfPrivacyConsent' in parentConsent)) {
 				parentConsent.dateOfPrivacyConsent = Date.now();
@@ -12,7 +13,7 @@ const addDates = (context) => {
 				parentConsent.dateOfTermsOfUseConsent = Date.now();
 			}
 		}
-		if (userConsent) {
+		if (typeof userConsent === 'object') {
 			if ('privacyConsent' in userConsent && !('dateOfPrivacyConsent' in userConsent)) {
 				userConsent.dateOfPrivacyConsent = Date.now();
 			}

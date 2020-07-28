@@ -24,11 +24,21 @@ const getVersion = (ref, type, schoolId, date) => ref.find({
 	query: {
 		publishedAt: {
 			$gt: new Date(date),
-			$lt: new Date(),
+			$lte: new Date(),
 		},
-		schoolId,
+		$or: [
+			{
+				schoolId: {
+					$exists: false,
+				},
+			},
+			{ schoolId },
+		],
 		consentTypes: type,
-		$sort: { publishedAt: -1 },
+		$sort: {
+			schoolId: -1,
+			publishedAt: -1,
+		},
 	},
 });
 
@@ -36,7 +46,7 @@ const getVersion = (ref, type, schoolId, date) => ref.find({
 class ConsentCheckService {
 	async find(params) {
 		const _id = params.route.userId;
-		const { query } = params;
+		const { query = {} } = params;
 		const user = await this.userService.get(_id);
 		const consent = userToConsent(user);
 
