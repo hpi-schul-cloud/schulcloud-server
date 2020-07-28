@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const hooks = require('./hooks');
 
 const getLDAPStrategy = require('./strategies');
+const logger = require('../../logger');
 
 module.exports = function LDAPService() {
 	const app = this;
@@ -79,11 +80,13 @@ module.exports = function LDAPService() {
 		/**
          * Connect or get a reference to an existing connection
          * @param {LdapConfig} config the ldapConfig
+		 * @param {Boolean} [autoconect=true] automatically connect to the server if the connection
+		 * is not established yet? Default: `true`
          * @return {Promise} resolves with LDAPClient or rejects with error
          */
-		_getClient(config) {
+		_getClient(config, autoconnect = true) {
 			const client = this.clients[config.url];
-			if (client && client.connected) {
+			if ((client && client.connected) || autoconnect === false) {
 				return Promise.resolve(client);
 			}
 			return this._connect(config).then((newClient) => {
@@ -109,6 +112,7 @@ module.exports = function LDAPService() {
 				if (!(config && config.url)) {
 					reject(new errors.BadRequest('Invalid URL in config object.'));
 				}
+				logger.debug(`[LDAP] Connecting to "${config.url}"`);
 				const client = ldap.createClient({
 					url: config.url,
 					reconnect: {
@@ -119,6 +123,7 @@ module.exports = function LDAPService() {
 				});
 
 				client.on('error', (e) => {
+					logger.error('Error during LDAP operation', { error: e });
 					reject(new errors.GeneralError('LDAP error', e));
 				});
 
@@ -126,6 +131,7 @@ module.exports = function LDAPService() {
 					if (err) {
 						reject(new errors.NotAuthenticated('Wrong credentials'));
 					} else {
+						logger.debug('[LDAP] Bind successful');
 						resolve(client);
 					}
 				});
@@ -139,12 +145,15 @@ module.exports = function LDAPService() {
          * @return {Promise} resolves if successfully disconnected, otherwise
          * rejects with error
          */
-		disconnect(config) {
-			return this._getClient(config)
-				.then((client) => client.unbind((err) => {
-					if (err) return Promise.reject(err);
-					return Promise.resolve();
-				}));
+		async disconnect(config) {
+			logger.debug(`[LDAP] Disconnecting from "${config.url}"`);
+			try {
+				// get client, but don't connect if the connection already broke down:
+				const client = await this._getClient(config, false);
+				if (client) client.destroy(); // will also unbind internally
+			} catch (err) {
+				logger.error('Could not disconnect from LDAP server', { error: err });
+			}
 		}
 
 		/**
