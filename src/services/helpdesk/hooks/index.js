@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 const userModel = require('../../user/model');
+const app = require('../../../app');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
@@ -15,17 +16,17 @@ Deine ${data.cloud}
 	`;
 }
 
-async function generateSystemInformation(account) {
-	const { userId, username } = account;
+async function generateSystemInformation(hook) {
+	const { userId, username } = hook.params.account;
+	const userInformation = await hook.app.service('users').get((userId), {
+		query: {
+			$populate: { path: 'roles' },
+		},
+	});
 
-	const userInformation = await userModel.userModel.findOne(userId)
-		.select({ roles: '1', email: '1' })
-		.populate('roles', 'name')
-		.lean();
-
-	const roles = userInformation.roles.length ? userInformation.roles.map((info) => info.name) : 'NO ROLES';
+	const roles = userInformation.roles.length ? userInformation.roles.map((info) => info.name) : 'NO ROLE(S)';
 	const email = userInformation.email || 'NO EMAIL';
-	const systemInformation = ` System Information:
+	const systemInformation = `
 	User login: ${username}
 	User role(s): ${roles}
 	User registrated email: ${email}\n`;
@@ -96,7 +97,7 @@ const feedback = () => async (hook) => {
 		});
 		// TODO: NOTIFICATION SERVICE
 	} else {
-		data.systemInformation = await generateSystemInformation(hook.params.account);
+		data.systemInformation = await generateSystemInformation(hook);
 		globalHooks.sendEmail(hook, {
 			subject: data.title || data.subject || 'nosubject',
 			emails: ['ticketsystem@schul-cloud.org'],
