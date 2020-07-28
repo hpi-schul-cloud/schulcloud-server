@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
 ## Unreleased
+### Changed
+## [23.6.3] - 2020-07-28
 
 ### Added
 
@@ -47,7 +49,7 @@ Also added a sub-service for changing email/username in Activation Service
 ### Fixed - 23.6.2
 
 - SC-5773: LDAPSchoolSyncer now correctly populates classes synced from an LDAP server, even if only students or only teachers are assigned to the class.
-
+- SC-5250: Fixes the CSV-Import, if there are whitespaces in the columnnames
 
 ## [23.6.1] - 2020-07-22
 
