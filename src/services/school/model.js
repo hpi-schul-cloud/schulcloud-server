@@ -117,6 +117,10 @@ schoolSchema.virtual('documentBaseDir').get(function get() {
 	return getDocumentBaseDir(school);
 });
 
+schoolSchema.virtual('isExternal').get(function get() {
+	return !!this.ldapSchoolIdentifier || !!this.source;
+});
+
 const yearSchema = new Schema({
 	name: {
 		type: String, required: true, match: /^[0-9]{4}\/[0-9]{2}$/, unique: true,

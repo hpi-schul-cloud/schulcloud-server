@@ -337,6 +337,24 @@ describe('AdminUsersService', () => {
 		expect(studentId2).to.not.be.equal(studentId1);
 	});
 
+	it('birthday date in DD.MM.YYYY format', async () => {
+		// given
+		const birthdayMock = new Date(2000, 0, 1, 20, 45, 30);
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const mockStudent = await testObjects.createTestUser({
+			firstName: 'Lukas',
+			birthday: birthdayMock,
+			roles: ['student'],
+		});
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		// when
+		const students = (await adminStudentsService.find(params)).data;
+
+		// then
+		const testStudent = students.find((stud) => mockStudent.firstName === stud.firstName);
+		expect(testStudent.birthday).equals('01.01.2000');
+	});
+
 	after(async () => {
 		await testObjects.cleanup();
 	});

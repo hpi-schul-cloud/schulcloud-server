@@ -290,6 +290,16 @@
 			"default":"https://etherpad.schul-cloud.org/p",
 			"description": "The etherpad api version uri."
 		},
+		"ETHERPAD_NEW_PAD_URI": {
+			"type": "string",
+			"default":"https://schul-cloud.org/etherpad/p",
+			"description": "The etherpad api version uri."
+		},
+		"ETHERPAD_OLD_PAD_DOMAIN": {
+			"type": "string",
+			"default": "etherpad.schul-cloud.org",
+			"description": "The old etherpad domain."
+		},
 		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
 			"type": "integer",
 			"default": 28800,
@@ -299,12 +309,17 @@
 			"type": "integer",
 			"default": 7200,
 			"description": "If Session Valid time is smaller than this, a new session is created on request."
-    },
+    	},
 		"SKIP_CONDITIONS_CONSENT": {
 			"type": "string",
 			"default": "",
 			"description": "A string with concatenated user types (student, employee) that don't need to explicitly state their consent with the terms and conditions. \"employee\" means teachers and admins."
 		},
+		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS": {
+			"type": "integer",
+			"default": 7200,
+			"description": "The time in seconds during which the activation link is valid. After expiration the entry is removed from the database"
+    	},
 		"ADMIN_MAIL_RECEIVERS": {
 			"type": "string",
 			"default": null,
@@ -345,6 +360,11 @@
 		"ES_CLIENT_ID": {
 			"type": "string",
 			"description": "The client id for edu-sharing api access"
+		},
+		"SILENT_ERROR_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Brute force flag during recovery password process"
 		}
 	},
 	"required": [
@@ -352,6 +372,7 @@
 		"STUDENT_TEAM_CREATION",
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
+		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
 		"LERNSTORE_MODE"
 	]
 }
