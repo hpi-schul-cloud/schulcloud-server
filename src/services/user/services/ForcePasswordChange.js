@@ -46,22 +46,18 @@ class ForcePasswordChangeService {
 
 		const accountPromise = this.app.service('/accounts')
 			.patch(params.account._id, accountUpdate, params);
+		await accountPromise
+			.then((result) => Promise.resolve(result))
+			.catch((err) => {
+				throw new BadRequest(this.err.failed, err)
+			});
 
 		const userPromise = this.app.service('/users')
 			.patch(params.account.userId, { forcePasswordChange: false });
-
-		return Promise.allSettled([accountPromise, userPromise])
-			.then(([accountResponse, userResponse]) => {
-				if (accountResponse.status === 'rejected') {
-					throw new Error(accountResponse.reason);
-				}
-				if (userResponse.status === 'rejected') {
-					throw new Error(userResponse.reason);
-				}
-				return userResponse.value;
-			})
+		return userPromise
+			.then((result) => Promise.resolve(result))
 			.catch((err) => {
-				throw new BadRequest(this.err.failed, err);
+				throw new BadRequest(this.err.failed, err)
 			});
 	}
 
