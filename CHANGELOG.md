@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [23.6.4] - 2020-07-29
+### Fixed - 23.6.4
+- SC-5883: Choose current schoolyear based on the school instead of the date for creating classes.
+
 ## [23.6.3] - 2020-07-28
 
 ### Fixed - 23.6.3
