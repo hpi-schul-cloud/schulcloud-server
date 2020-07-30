@@ -4,12 +4,17 @@ const { authenticate } = require('@feathersjs/authentication');
 const { passwordsMatch } = require('../../../utils/passwordHelpers');
 const bcrypt = require('bcryptjs');
 
+const addUserForcedToChangePasswordFlag = (context) => {
+	context.params.userForcedToChangePassword = true;
+	return context;
+};
+
 const ForcePasswordChangeServiceHooks = {
 	before: {
 		all: [],
 		find: disallow('external'),
 		get: disallow('external'),
-		create: [authenticate('jwt')],
+		create: [authenticate('jwt'), addUserForcedToChangePasswordFlag],
 		update: disallow('external'),
 		patch: disallow('external'),
 		remove: disallow('external'),
@@ -47,8 +52,7 @@ class ForcePasswordChangeService {
 		}
 
 		const accountUpdate = {
-			password: newPassword,
-			userForcedToChangePassword: true,
+			password: newPassword
 		};
 
 		const accountPromise = this.app.service('/accounts')

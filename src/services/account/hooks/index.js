@@ -85,7 +85,7 @@ const validatePassword = (hook) => {
 			const editsOwnAccount = equalIds(hook.id, hook.params.account._id);
 			// Check if it is firstLogin
 			const userDidFirstLogin = (user.preferences && user.preferences.firstLogin);
-			const { userForcedToChangePassword } = hook.data;
+			const { userForcedToChangePassword } = hook.params;
 			if (
 				(!userDidFirstLogin && editsOwnAccount)
 				|| (
