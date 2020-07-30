@@ -2,6 +2,7 @@ const { BadRequest } = require('@feathersjs/errors');
 const { disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const { passwordsMatch } = require('../../../utils/passwordHelpers');
+const bcrypt = require('bcryptjs');
 
 const ForcePasswordChangeServiceHooks = {
 	before: {
@@ -30,6 +31,7 @@ class ForcePasswordChangeService {
 		this.err = Object.freeze({
 			missmatch: 'Die neuen Passwörter stimmen nicht überein.',
 			failed: 'Can not update the password. Please contact the administrator',
+			passwordSameAsPrevious: 'You need to setup your new unique password',
 		});
 	}
 
@@ -37,6 +39,11 @@ class ForcePasswordChangeService {
 		const newPassword = data['password-1'];
 		if (!passwordsMatch(newPassword, data['password-2'])) {
 			throw new BadRequest(this.err.missmatch);
+		}
+
+		const passwordSameAsPrevious = await bcrypt.compare(newPassword, params.account.password);
+		if (passwordSameAsPrevious) {
+			throw new BadRequest(this.err.passwordSameAsPrevious);
 		}
 
 		const accountUpdate = {
