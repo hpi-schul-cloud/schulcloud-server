@@ -1,10 +1,14 @@
 const { authenticate } = require('@feathersjs/authentication');
+const {
+	iff, isProvider, discard, disallow, keepInArray, keep,
+} = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
 
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
+const populateInQuery = (context) => (context.params.query || {}).$populate;
 
 const {
 	addWholeClassToCourse,
@@ -100,7 +104,14 @@ const courseHooks = {
 	},
 	after: {
 		all: [],
-		find: [],
+		find: [
+			iff(populateInQuery,
+				[
+					keepInArray('classIds', ['_id', 'displayName']),
+					keepInArray('teacherIds', ['_id', 'firstName', 'lastName']),
+					keepInArray('userIds', ['_id', 'firstName', 'lastName', 'fullName', 'schoolId']),
+				]),
+		],
 		get: [
 			globalHooks.ifNotLocal(
 				globalHooks.denyIfNotCurrentSchool({
