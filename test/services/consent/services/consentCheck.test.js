@@ -1,61 +1,27 @@
 const assert = require('assert');
 const { expect } = require('chai');
+const { Configuration } = require('@schul-cloud/commons');
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
-const { Configuration } = require('@schul-cloud/commons');
+const { createDateFromAge, createParentConsent, createUserConsent } = require('../utils/helper');
 
-
-const TERMS = 'termsOfUseConsent';
-const PRIVACY = 'privacyConsent';
-const TERMS_DATE = 'dateOfTermsOfUseConsent';
-const PRIVACY_DATE = 'dateOfPrivacyConsent';
-
-const createDateFromAge = (age) => {
-	const currentDate = new Date();
-	const birthday = new Date();
-
-	const randomMonth = Number.parseInt(Math.random() * 11, 10);
-	let offset = 0;
-	if (currentDate.getMonth() < randomMonth) {
-		offset = 1;
-	}
-
-	birthday.setFullYear(currentDate.getFullYear() - age + offset);
-	birthday.setMonth(randomMonth);
-	return birthday;
-};
 
 const createUserWithConsent = ({
 	age,
 	userConsent,
-	parentConsents,
+	parentConsent,
 	...others
 }) => testObjects.createTestUser({
 	birthday: createDateFromAge(age),
 	consent: {
 		userConsent,
-		parentConsents,
+		parentConsents: [parentConsent],
 	},
 	...others,
 });
 
 
-const createUserConsent = (privacy, terms, pDate = new Date(), tDate = new Date()) => ({
-	[PRIVACY]: privacy,
-	[TERMS]: terms,
-	[PRIVACY_DATE]: pDate,
-	[TERMS_DATE]: tDate,
-});
-
-const createParentConsent = (privacy, terms, pDate = new Date(), tDate = new Date()) => ([{
-	[PRIVACY]: privacy,
-	[TERMS]: terms,
-	[PRIVACY_DATE]: pDate,
-	[TERMS_DATE]: tDate,
-}]);
-
-
-describe.only('consentCheck tests', () => {
+describe('consentCheck tests', () => {
 	let server;
 	let consentCheckService;
 	let schoolSerivce;
@@ -95,10 +61,10 @@ describe.only('consentCheck tests', () => {
 	});
 
 	it('need update for privacy consent', async () => {
-		const parentConsents = createParentConsent(true, true, (new Date()).setFullYear('1990'));
+		const parentConsent = createParentConsent(true, true, (new Date()).setFullYear('1990'));
 		const age = Configuration.get('CONSENT_AGE_FIRST') - 1;
 
-		const testUser = await createUserWithConsent({ age, parentConsents });
+		const testUser = await createUserWithConsent({ age, parentConsent });
 
 		const res = await consentCheckService.find({
 			route: {
@@ -115,19 +81,22 @@ describe.only('consentCheck tests', () => {
 	});
 
 	it('need update for school consent', async () => {
-		const userConsent = createUserConsent(true, true, (new Date()).setFullYear('1990'));
-		const parentConsents = createParentConsent(true, true);
+		const userConsent = createUserConsent(true, true);
+		const parentConsent = createParentConsent(true, true);
 		const schools = await schoolSerivce.find({});
 		const [{ _id: schoolId }] = schools.data;
+		const consentTitle = 'I accept to buy an ape';
 		testObjects.createTestConsentVersion({
+			title: consentTitle,
 			schoolId,
+			consentTypes: ['privacy', 'termsOfUse'],
 		});
 		const age = Configuration.get('CONSENT_AGE_FIRST') + 1;
 
 		const testUser = await createUserWithConsent({
 			age,
 			userConsent,
-			parentConsents,
+			parentConsent,
 			schoolId,
 		});
 
@@ -139,9 +108,54 @@ describe.only('consentCheck tests', () => {
 
 		// TODO: check for school consent
 		expect(res).to.have.property('haveBeenUpdated');
+		expect(res.haveBeenUpdated).to.equal(true);
 		expect(res).to.have.property('consentStatus');
 		expect(res).to.have.property('privacy');
+		expect(res.privacy.length).to.equal(1);
+		expect(res.privacy[0].title).to.equal(consentTitle);
 		expect(res).to.have.property('termsOfUse');
+		expect(res.termsOfUse.length).to.equal(1);
+	});
+
+	it('if have school consent, only check school consent', async () => {
+		const userConsent = createUserConsent(true, true);
+		const parentConsent = createParentConsent(true, true);
+		const schools = await schoolSerivce.find({});
+		const [{ _id: schoolId }] = schools.data;
+		const consentTitle = 'I accept to buy an ape';
+		const consentTitleSchool = 'One ape for each school';
+		testObjects.createTestConsentVersion({
+			title: consentTitleSchool,
+			schoolId,
+			consentTypes: ['privacy'],
+		});
+		testObjects.createTestConsentVersion({
+			title: consentTitle,
+			consentTypes: ['privacy'],
+		});
+		const age = Configuration.get('CONSENT_AGE_FIRST') + 1;
+
+		const testUser = await createUserWithConsent({
+			age,
+			userConsent,
+			parentConsent,
+			schoolId,
+		});
+
+		const res = await consentCheckService.find({
+			route: {
+				userId: testUser._id,
+			},
+		});
+
+		expect(res).to.have.property('haveBeenUpdated');
 		expect(res.haveBeenUpdated).to.equal(true);
+		expect(res).to.have.property('consentStatus');
+		expect(res).to.have.property('privacy');
+		expect(Array.isArray(res.privacy)).to.equal(true);
+		expect(res.privacy.length).to.equal(1);
+		expect(res.privacy[0].title).to.equal(consentTitleSchool);
+		expect(res).to.have.property('termsOfUse');
+		expect(res.termsOfUse.length).to.equal(0);
 	});
 });

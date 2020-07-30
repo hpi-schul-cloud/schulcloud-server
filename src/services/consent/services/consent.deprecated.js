@@ -1,7 +1,7 @@
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
-const { userToConsent, modifyDataForUserSchema } = require('../utils');
+const { userToConsent, modifyDataForUserSchema } = require('../utils/consent');
 const { restrictToCurrentUser } = require('../hooks/consents');
 
 

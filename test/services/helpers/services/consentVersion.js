@@ -8,7 +8,7 @@ const createTestConsentVersion = (app) => ({
 	publishedAt = new Date(),
 	title = 'test consent',
 	manualCleanup = false,
-} = {}) => app.service('consents').create({
+} = {}) => app.service('/consentVersionsModel').create({
 	consentTypes,
 	consentText,
 	consentDataId,
@@ -28,7 +28,7 @@ const cleanup = (app) => () => {
 	}
 	const ids = createdVersionIds;
 	createdVersionIds = [];
-	return ids.map((id) => app.service('/consentVersions').remove(id));
+	return ids.map((id) => app.service('/consentVersionsModel').remove(id));
 };
 
 module.exports = (app, opt) => ({

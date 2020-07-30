@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider } = require('feathers-hooks-common');
 const { consentTypes } = require('../model');
 const { restrictToCurrentUser } = require('../hooks/consentCheck');
-const { userToConsent } = require('../utils');
+const { userToConsent } = require('../utils/consent');
 
 const removeQuery = (context) => ({
 	...context,
@@ -42,6 +42,13 @@ const getVersion = (ref, type, schoolId, date) => ref.find({
 	},
 });
 
+const onlyConsentsWithOrWithoutSchool = (data) => {
+	if (data.length === 0) return data;
+	const ref = data[0];
+	if (!({}).hasOwnProperty.call(ref, 'schoolId')) return data;
+	return data.filter((version) => ({}).hasOwnProperty.call(version, 'schoolId'));
+};
+
 
 class ConsentCheckService {
 	async find(params) {
@@ -60,10 +67,13 @@ class ConsentCheckService {
 		const selectedConsent = consent.userConsent || consent.parentConsents[0];
 		const { dateOfPrivacyConsent, dateOfTermsOfUseConsent } = (selectedConsent || {});
 
-		const [{ data: privacy }, { data: termsOfUse }] = await Promise.all([
+		let [{ data: privacy }, { data: termsOfUse }] = await Promise.all([
 			getVersion(this.versionService, consentTypes.PRIVACY, user.schoolId, dateOfPrivacyConsent),
 			getVersion(this.versionService, consentTypes.TERMS_OF_USE, user.schoolId, dateOfTermsOfUseConsent),
 		]);
+
+		privacy = onlyConsentsWithOrWithoutSchool(privacy);
+		termsOfUse = onlyConsentsWithOrWithoutSchool(termsOfUse);
 
 		const haveBeenUpdated = privacy.length !== 0 || termsOfUse.length !== 0;
 

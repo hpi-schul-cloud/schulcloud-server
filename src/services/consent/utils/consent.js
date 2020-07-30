@@ -87,6 +87,7 @@ const createConsentFilterQuery = (...status) => {
 
 
 const checkParentConsent = (parentConsents) => {
+	if (!parentConsents) return false;
 	const agrements = parentConsents.filter((consent) => consent.privacyConsent && consent.termsOfUseConsent);
 	if (parentConsents.length !== 0 && agrements.length === parentConsents.length) {
 		return true;
@@ -132,32 +133,25 @@ const defineConsentStatus = (birthday, consent) => {
 
 
 	const { parentConsents, userConsent } = consent;
-	let amount = 0;
 
 	if (birthday.getTime() > firstConsentSwitchDate.getTime()) {
 		// only parents have to agre
 		if (checkParentConsent(parentConsents) === true) {
-			amount = 2;
+			return 'ok';
 		}
 	} else if (birthday.getTime() < secoundConsentSwitchDate.getTime()) {
 		// only user have to agre
 		if (checkUserConsent(userConsent) === true) {
-			amount = 2;
-		}
-	} else {
-		// parents and user have to agre
-		amount = checkParentConsent(parentConsents) + checkUserConsent(userConsent);
-	}
-
-	switch (amount) {
-		case 2:
 			return 'ok';
-
-		case 1:
-			return 'parentsAgreed';
-		default:
-			return 'missing';
+		}
+	} else if (checkParentConsent(parentConsents)) {
+		if (checkUserConsent(userConsent) === true) {
+			return 'ok';
+		}
+		return 'parentsAgreed';
 	}
+
+	return 'missing';
 };
 
 /**
@@ -193,13 +187,15 @@ const userToConsent = (user) => ({
  * data will be moved to the attribute consent
  * @param {Object} data
  */
-const modifyDataForUserSchema = (data) => ({
+const modifyDataForUserSchema = ({ _id, ...data }) => ({
 	consent: {
 		...data,
 	},
 });
 
 module.exports = {
+	defineConsentStatus,
+	isParentConsentRequired,
 	createConsentFilterQuery,
 	userToConsent,
 	modifyDataForUserSchema,
