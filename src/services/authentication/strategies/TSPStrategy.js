@@ -6,8 +6,10 @@ const {
 	verifyToken,
 	decryptToken,
 	createUserAndAccount,
+	createTSPConsent,
 	findSchool,
 	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
+	config: TSP_CONFIG,
 } = require('../../sync/strategies/TSP/TSP');
 const { SYNCER_TARGET } = require('../../sync/strategies/TSP/TSPSchoolSyncer');
 
@@ -126,6 +128,10 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 				roles,
 				systemId,
 			);
+
+			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
+				await createTSPConsent(app, user);
+			}
 		} else if (Array.isArray(roles)) {
 			// if we know the user and roles were supplied, we need to reflect role & school changes
 			await app.service('users').patch(user._id, { roles, schoolId: school._id });
