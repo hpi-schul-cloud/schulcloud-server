@@ -1,4 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
+const {
+	iff, isProvider,
+} = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
 
@@ -73,27 +76,27 @@ const courseHooks = {
 			globalHooks.hasPermission('COURSE_VIEW'),
 			restrictToCurrentSchool,
 			restrictToUsersOwnCourses,
-			globalHooks.getRestrictPopulatesHook(populateWhitelist),
+			iff(isProvider('external'), globalHooks.getRestrictPopulatesHook(populateWhitelist)),
 			globalHooks.mapPaginationQuery,
 			globalHooks.addCollation,
 		],
 		get: [
 			courseInviteHook,
-			globalHooks.getRestrictPopulatesHook(populateWhitelist),
+			iff(isProvider('external'), globalHooks.getRestrictPopulatesHook(populateWhitelist)),
 		],
 		create: [
 			globalHooks.injectUserId,
 			globalHooks.hasPermission('COURSE_CREATE'),
 			removeSubstitutionDuplicates,
 			restrictToCurrentSchool,
-			globalHooks.preventPopulate,
+			iff(isProvider('external'), globalHooks.preventPopulate),
 		],
 		update: [
 			checkScopePermissions(['COURSE_EDIT']),
 			restrictToCurrentSchool,
 			restrictToUsersOwnCourses,
 			restrictChangesToArchivedCourse,
-			globalHooks.preventPopulate,
+			iff(isProvider('external'), globalHooks.preventPopulate),
 		],
 		patch: [
 			patchPermissionHook,
@@ -102,14 +105,14 @@ const courseHooks = {
 			globalHooks.permitGroupOperation,
 			removeSubstitutionDuplicates,
 			deleteWholeClassFromCourse,
-			globalHooks.preventPopulate,
+			iff(isProvider('external'), globalHooks.preventPopulate),
 		],
 		remove: [
 			checkScopePermissions(['COURSE_DELETE']),
 			restrictToCurrentSchool,
 			restrictToUsersOwnCourses,
 			globalHooks.permitGroupOperation,
-			globalHooks.preventPopulate,
+			iff(isProvider('external'), globalHooks.preventPopulate),
 		],
 	},
 	after: {
