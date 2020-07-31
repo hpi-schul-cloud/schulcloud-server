@@ -160,6 +160,7 @@ const defineConsentStatus = (birthday, consent) => {
  * @returns {boolean}
  */
 const isParentConsentRequired = (birthday) => {
+	if (!(birthday instanceof Date)) return undefined;
 	const currentDate = new Date();
 	const secoundConsentSwitchDate = new Date();
 	secoundConsentSwitchDate.setFullYear(currentDate.getFullYear() - Configuration.get('CONSENT_AGE_SECOND'));

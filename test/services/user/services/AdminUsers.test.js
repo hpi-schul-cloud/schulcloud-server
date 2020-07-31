@@ -150,6 +150,18 @@ describe('AdminUsersService', () => {
 		const student1 = await testObjects.createTestUser({
 			firstName: 'Max',
 			roles: ['student'],
+			consent: {
+				userConsent: {
+					form: 'digital',
+					privacyConsent: true,
+					termsOfUseConsent: true,
+				},
+				parentConsents: [{
+					form: 'digital',
+					privacyConsent: true,
+					termsOfUseConsent: true,
+				}],
+			},
 		}).catch((err) => {
 			logger.warning('Can not create student', err);
 		});
@@ -158,20 +170,6 @@ describe('AdminUsersService', () => {
 			roles: ['student'],
 		}).catch((err) => {
 			logger.warning('Can not create student', err);
-		});
-
-		await testObjects.createTestConsent({
-			userId: student1._id,
-			userConsent: {
-				form: 'digital',
-				privacyConsent: true,
-				termsOfUseConsent: true,
-			},
-			parentConsents: [{
-				form: 'digital',
-				privacyConsent: true,
-				termsOfUseConsent: true,
-			}],
 		});
 
 		expect(teacher).to.not.be.undefined;
@@ -230,31 +228,30 @@ describe('AdminUsersService', () => {
 		const studentWithParentConsent = await testObjects.createTestUser({
 			roles: ['student'],
 			birthday,
-		});
-
-		await testObjects.createTestConsent({
-			userId: studentWithParentConsent._id,
-			parentConsents: [{
-				form: 'digital',
-				privacyConsent: true,
-				termsOfUseConsent: true,
-			}],
-		});
-
-		const studentWithConsents = await testObjects.createTestUser({ roles: ['student'] });
-
-		await testObjects.createTestConsent({
-			userId: studentWithConsents._id,
-			userConsent: {
-				form: 'digital',
-				privacyConsent: true,
-				termsOfUseConsent: true,
+			consent: {
+				parentConsents: [{
+					form: 'digital',
+					privacyConsent: true,
+					termsOfUseConsent: true,
+				}],
 			},
-			parentConsents: [{
-				form: 'digital',
-				privacyConsent: true,
-				termsOfUseConsent: true,
-			}],
+		});
+
+
+		const studentWithConsents = await testObjects.createTestUser({
+			roles: ['student'],
+			consent: {
+				userConsent: {
+					form: 'digital',
+					privacyConsent: true,
+					termsOfUseConsent: true,
+				},
+				parentConsents: [{
+					form: 'digital',
+					privacyConsent: true,
+					termsOfUseConsent: true,
+				}],
+			},
 		});
 
 		const createParams = (status) => ({
