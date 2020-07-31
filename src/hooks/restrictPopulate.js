@@ -21,8 +21,16 @@ const getRestrictPopulatesHook = (whitelist) => (context) => {
 	return context;
 };
 
+const preventPopulate = (context) => {
+	if (((context.params || {}).query || {}).$populate) {
+		throw new BadRequest(errorMessage);
+	}
+	return context;
+}
+
 module.exports = {
 	getRestrictPopulatesHook,
+	preventPopulate,
 	populateSelectHelper,
 	errorMessage,
 };

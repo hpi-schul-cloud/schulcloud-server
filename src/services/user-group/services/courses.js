@@ -86,12 +86,14 @@ const courseHooks = {
 			globalHooks.hasPermission('COURSE_CREATE'),
 			removeSubstitutionDuplicates,
 			restrictToCurrentSchool,
+			globalHooks.preventPopulate,
 		],
 		update: [
 			checkScopePermissions(['COURSE_EDIT']),
 			restrictToCurrentSchool,
 			restrictToUsersOwnCourses,
 			restrictChangesToArchivedCourse,
+			globalHooks.preventPopulate,
 		],
 		patch: [
 			patchPermissionHook,
@@ -100,12 +102,14 @@ const courseHooks = {
 			globalHooks.permitGroupOperation,
 			removeSubstitutionDuplicates,
 			deleteWholeClassFromCourse,
+			globalHooks.preventPopulate,
 		],
 		remove: [
 			checkScopePermissions(['COURSE_DELETE']),
 			restrictToCurrentSchool,
 			restrictToUsersOwnCourses,
 			globalHooks.permitGroupOperation,
+			globalHooks.preventPopulate,
 		],
 	},
 	after: {
