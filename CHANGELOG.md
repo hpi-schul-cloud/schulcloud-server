@@ -9,6 +9,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 ### Changed
+
 ## [23.6.3] - 2020-07-28
 
 ### Added
@@ -43,6 +44,15 @@ Also added a sub-service for changing email/username in Activation Service
 ### Fixed - 23.6.3
 - SC-5416: Enable maintenance Mode for LDAP Schools and change the currentSchoolYear for non-LDAP Schools
 
+
+## [23.6.4] - 2020-07-29
+### Fixed - 23.6.4
+- SC-5883: Choose current schoolyear based on the school instead of the date for creating classes.
+
+## [23.6.3] - 2020-07-28
+
+### Fixed - 23.6.3
+- SC-5416: Enable maintenance Mode for LDAP Schools and change the currentSchoolYear for non-LDAP Schools
 
 ## [23.6.2] - 2020-07-22
 
