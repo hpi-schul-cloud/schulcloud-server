@@ -1,14 +1,10 @@
 const { authenticate } = require('@feathersjs/authentication');
-const {
-	iff, keepInArray,
-} = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
 
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
-const populateInQuery = (context) => (context.params.query || {}).$populate;
 
 const {
 	addWholeClassToCourse,
@@ -62,6 +58,12 @@ const courseService = new Courses({
 	},
 });
 
+const populateWhitelist = {
+	classIds: ['_id', 'displayName'],
+	userIds: ['_id', 'firstName', 'lastName', 'fullName', 'schoolId'],
+	teacherIds: ['_id', 'firstName', 'lastName'],
+};
+
 const courseHooks = {
 	before: {
 		all: [
@@ -71,10 +73,14 @@ const courseHooks = {
 			globalHooks.hasPermission('COURSE_VIEW'),
 			restrictToCurrentSchool,
 			restrictToUsersOwnCourses,
+			globalHooks.getRestrictPopulatesHook(populateWhitelist),
 			globalHooks.mapPaginationQuery,
 			globalHooks.addCollation,
 		],
-		get: [courseInviteHook],
+		get: [
+			courseInviteHook,
+			globalHooks.getRestrictPopulatesHook(populateWhitelist),
+		],
 		create: [
 			globalHooks.injectUserId,
 			globalHooks.hasPermission('COURSE_CREATE'),
@@ -104,20 +110,14 @@ const courseHooks = {
 	},
 	after: {
 		all: [],
-		find: [
-			iff(populateInQuery,
-				[
-					keepInArray('classIds', ['_id', 'displayName']),
-					keepInArray('teacherIds', ['_id', 'firstName', 'lastName']),
-					keepInArray('userIds', ['_id', 'firstName', 'lastName', 'fullName', 'schoolId']),
-				]),
-		],
+		find: [],
 		get: [
 			globalHooks.ifNotLocal(
 				globalHooks.denyIfNotCurrentSchool({
 					errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
 				}),
-			)],
+			),
+		],
 		create: [addWholeClassToCourse],
 		update: [],
 		patch: [addWholeClassToCourse],
