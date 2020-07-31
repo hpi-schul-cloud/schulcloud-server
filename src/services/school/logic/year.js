@@ -28,6 +28,9 @@ class SchoolYearFacade {
 		if (school) {
 			this.customYears = (school.customYears || []).sort(SchoolYearFacade.yearCompare);
 			this.schoolYears = generateSchoolYears();
+			if (school.currentYear) {
+				this.activeYearIndex = this.schoolYears.findIndex((year) => year._id.equals(school.currentYear));
+			}
 		} else {
 			// use defaults if there is no school present to give access to default getters
 			this.customYears = [];
@@ -48,6 +51,7 @@ class SchoolYearFacade {
 	 * @memberof SchoolYearFacade
 	 */
 	get activeYear() {
+		if (this.activeYearIndex != null) return this.schoolYears[this.activeYearIndex];
 		const now = Date.now();
 		const activeYears = this.schoolYears
 			.filter((year) => year.startDate <= now
@@ -73,6 +77,9 @@ class SchoolYearFacade {
 	 * @memberof SchoolYearFacade
 	 */
 	get nextYear() {
+		if (this.activeYearIndex != null && this.activeYearIndex + 1 < this.schoolYears.length) {
+			return this.schoolYears[this.activeYearIndex + 1];
+		}
 		const now = Date.now();
 		const nextYears = this.schoolYears
 			.filter((year) => year.startDate >= now);
@@ -88,6 +95,9 @@ class SchoolYearFacade {
 	 * @memberof SchoolYearFacade
 	 */
 	get lastYear() {
+		if (this.activeYearIndex != null && this.activeYearIndex !== 0) {
+			return this.schoolYears[this.activeYearIndex - 1];
+		}
 		const now = Date.now();
 		const pastYears = this.schoolYears.filter((year) => year.endDate < now);
 		// last year is on last place
