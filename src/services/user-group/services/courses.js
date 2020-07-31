@@ -1,6 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const {
-	iff, isProvider, discard, disallow, keepInArray, keep,
+	iff, keepInArray,
 } = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
