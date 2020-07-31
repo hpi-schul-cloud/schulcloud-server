@@ -8,14 +8,8 @@ const createDateFromAge = (age) => {
 	const currentDate = new Date();
 	const birthday = new Date();
 
-	const randomMonth = Number.parseInt(Math.random() * 11, 10);
-	let offset = 0;
-	if (currentDate.getMonth() < randomMonth) {
-		offset = 1;
-	}
 
-	birthday.setFullYear(currentDate.getFullYear() - age + offset);
-	birthday.setMonth(randomMonth);
+	birthday.setFullYear(currentDate.getFullYear() - age);
 	return birthday;
 };
 

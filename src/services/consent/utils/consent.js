@@ -165,11 +165,11 @@ const isParentConsentRequired = (birthday) => {
 	const secoundConsentSwitchDate = new Date();
 	secoundConsentSwitchDate.setFullYear(currentDate.getFullYear() - Configuration.get('CONSENT_AGE_SECOND'));
 
-	if (birthday.getTime() < secoundConsentSwitchDate.getTime()) {
-		return false;
+	if (birthday.getTime() >= secoundConsentSwitchDate.getTime()) {
+		return true;
 	}
 
-	return true;
+	return false;
 };
 
 /**

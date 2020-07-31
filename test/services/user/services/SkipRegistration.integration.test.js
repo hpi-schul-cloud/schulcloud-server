@@ -145,7 +145,7 @@ describe('SkipRegistration integration', () => {
 			expect(result).to.equal('success');
 		}).timeout(6000);
 
-		it.only('succeeds for admin skipping teacher registration', async () => {
+		it('succeeds for admin skipping teacher registration', async () => {
 			let targetUser = await testObjects.createTestUser({
 				roles: ['teacher'],
 			});
