@@ -1,7 +1,7 @@
 const { expect } = require('chai');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const app = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(app);
+const { generateRequestParamsFromUser, generateRequestParams } = require('../../helpers/services/login')(app);
 
 const accountService = app.service('accounts');
 const forcePasswordChangeService = app.service('forcePasswordChange');
@@ -84,6 +84,29 @@ describe('forcePasswordChange service tests', () => {
 						.to
 						.equal(false);
 					accountService.remove(account._id);
+				});
+		});
+		// eslint-disable-next-line max-len
+		it('when the the user sets the password the same as the one specified by the admin, the proper error message will be shown', async () => {
+			const testUser = await testObjects.createTestUser();
+			const password = 'Schulcloud1!';
+			await testObjects.createTestAccount({ username: testUser.email, password }, null, testUser);
+
+			const userRequestAuthentication = await generateRequestParams({
+				username: testUser.email,
+				password
+			});
+			return postChangePassword(userRequestAuthentication, password, password)
+				.catch((err) => {
+					expect(err.code)
+						.to
+						.equal(400);
+					expect(err.name)
+						.to
+						.equal('BadRequest');
+					expect(err.message)
+						.to
+						.equal('You need to setup your new unique password');
 				});
 		});
 	});
