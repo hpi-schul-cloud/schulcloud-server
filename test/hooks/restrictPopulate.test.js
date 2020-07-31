@@ -1,6 +1,8 @@
 const { expect } = require('chai');
 
-const { getRestrictPopulatesHook, populateSelectHelper, errorMessage } = require('../../src/hooks/restrictPopulate');
+const {
+	preventPopulate, getRestrictPopulatesHook, populateSelectHelper, errorMessage,
+} = require('../../src/hooks/restrictPopulate');
 
 describe('restrictPopulate Hook', () => {
 	describe('populateSelectHelper', () => {
@@ -120,6 +122,29 @@ describe('restrictPopulate Hook', () => {
 			const hook = getRestrictPopulatesHook(whitelist);
 			const result = hook(testContext);
 			expect(result.params.query).to.not.haveOwnProperty('$populate');
+		});
+	});
+
+	describe('preventPopulate', () => {
+		it('should pass without $populate', () => {
+			const testContext = {
+				params: { query: {} },
+			};
+			const result = preventPopulate(testContext);
+			exports(result).to.be.defined;
+		});
+
+		it('should throw with $populate', () => {
+			const testContext = {
+				params: { query: { $populate: 'anything' } },
+			};
+			try {
+				preventPopulate(testContext);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.message).to.equal(errorMessage);
+			}
 		});
 	});
 });
