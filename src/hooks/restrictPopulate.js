@@ -8,12 +8,6 @@ const populateSelectHelper = (input, whitelist) => {
 	return { path, select: whitelist[path] };
 };
 
-/* const whitelist = {
-	classIds: ['_id', 'displayName'],
-	userIds: ['_id', 'firstName', 'lastName', 'fullName', 'schoolId'],
-	teacherIds: ['_id', 'firstName', 'lastName'],
-}; */
-
 const getRestrictPopulatesHook = (whitelist) => (context) => {
 	if (((context.params || {}).query || {}).$populate) {
 		let populate = context.params.query.$populate;
