@@ -17,6 +17,10 @@ const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE, NODE_ENV, ENVIRONMENTS } 
 const { isDisposableEmail } = require('../utils/disposableEmail');
 // Add any common hooks you want to share across services in here.
 
+const { getRestrictPopulatesHook } = require('./restrictPopulate');
+
+exports.getRestrictPopulatesHook = getRestrictPopulatesHook;
+
 // don't require authentication for internal requests
 exports.ifNotLocal = function ifNotLocal(hookForRemoteRequests) {
 	return (context) => {
