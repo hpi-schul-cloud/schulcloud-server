@@ -82,9 +82,9 @@ describe('restrictPopulate Hook', () => {
 
 			const hook = getRestrictPopulatesHook(whitelist);
 			const result = hook(testContext);
-			expect(result.query.$populate.path).to.equal('accepted');
-			expect(result.query.$populate.select).to.include('_id');
-			expect(result.query.$populate.select.length).to.equal(1);
+			expect(result.params.query.$populate.path).to.equal('accepted');
+			expect(result.params.query.$populate.select).to.include('_id');
+			expect(result.params.query.$populate.select.length).to.equal(1);
 		});
 
 		it('should handle an array of populate strings', () => {
@@ -100,8 +100,8 @@ describe('restrictPopulate Hook', () => {
 
 			const hook = getRestrictPopulatesHook(whitelist);
 			const result = hook(testContext);
-			expect(Array.isArray(result.query.$populate)).to.equal(true);
-			result.query.$populate.forEach((el) => {
+			expect(Array.isArray(result.params.query.$populate)).to.equal(true);
+			result.params.query.$populate.forEach((el) => {
 				expect(['accepted', 'allowed']).to.include(el.path);
 				expect(el.select).to.include('_id');
 				expect(el.select.length).to.equal(1);
@@ -119,7 +119,7 @@ describe('restrictPopulate Hook', () => {
 
 			const hook = getRestrictPopulatesHook(whitelist);
 			const result = hook(testContext);
-			expect(result.query).to.not.haveOwnProperty('select');
+			expect(result.params.query).to.not.haveOwnProperty('$populate');
 		});
 	});
 });
