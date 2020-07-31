@@ -229,7 +229,7 @@ const deepValue = (obj, path, newValue) => {
 };
 
 // resolves IDs of objects from serviceName specified by *key* instead of their *_id*
-exports.resolveToIds = (serviceName, path, key, context) => {
+exports.resolveToIds = (serviceName, path, key) => (context) => {
 	// get ids from a probably really deep nested path
 	const service = context.app.service(serviceName);
 
@@ -249,6 +249,8 @@ exports.resolveToIds = (serviceName, path, key, context) => {
 		.then((_values) => {
 			deepValue(context, path, _values);
 			return context;
+		}).catch((err) => {
+			console.log(err);
 		});
 };
 

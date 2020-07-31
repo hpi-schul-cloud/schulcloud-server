@@ -258,8 +258,10 @@ const main = async () => {
 		throw new Error('to many arguments');
 	} else if (args._[0] === 'import') {
 		await importDirectory(CONFIG.BACKUP_PATH_IMPORT);
+		process.exit(0);
 	} else if (args._[0] === 'export') {
 		await exportBackup(CONFIG.BACKUP_PATH_EXPORT);
+		process.exit(0);
 	} else {
 		throw new Error('invalid argument');
 	}
@@ -267,9 +269,5 @@ const main = async () => {
 
 // exit not well without exit(0)
 // eslint-disable-next-line no-useless-catch
-try {
-	main();
-	process.exit(0);
-} catch (err) {
-	throw err;
-}
+
+main();

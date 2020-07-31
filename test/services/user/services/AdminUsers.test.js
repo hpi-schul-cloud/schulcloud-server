@@ -11,7 +11,7 @@ const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const testGenericErrorMessage = 'You have not the permission to execute this.';
 
-describe('AdminUsersService', () => {
+describe.only('AdminUsersService', () => {
 	let server;
 
 	before((done) => {
@@ -20,6 +20,10 @@ describe('AdminUsersService', () => {
 
 	after((done) => {
 		server.close(done);
+	});
+
+	afterEach(async () => {
+		await testObjects.cleanup();
 	});
 
 	it('is properly registered', () => {
@@ -36,7 +40,6 @@ describe('AdminUsersService', () => {
 
 		expect(teacher).to.not.be.undefined;
 		expect(student).to.not.be.undefined;
-
 		const testClass = await testObjects.createTestClass({
 			name: 'staticName',
 			userIds: [student._id],
@@ -69,14 +72,13 @@ describe('AdminUsersService', () => {
 		const searchClass = (users, name) => users.some(
 			(user) => (equalIds(student._id, user._id) && user.classes.includes(name)),
 		);
-
 		expect(result.data).to.not.be.undefined;
 		expect(searchClass(result.data, 'staticName')).to.be.true;
 		expect(searchClass(result.data, '2A')).to.be.true;
 	});
 
 	// https://ticketsystem.schul-cloud.org/browse/SC-5076
-	xit('student can not administrate students', async () => {
+	it('student can not administrate students', async () => {
 		const student = await testObjects.createTestUser({ roles: ['student'] });
 		const params = await testObjects.generateRequestParamsFromUser(student);
 		params.query = {};
@@ -351,10 +353,6 @@ describe('AdminUsersService', () => {
 		const testStudent = students.find((stud) => mockStudent.firstName === stud.firstName);
 		expect(testStudent.birthday).equals('01.01.2000');
 	});
-
-	after(async () => {
-		await testObjects.cleanup();
-	});
 });
 
 describe('AdminTeachersService', () => {
@@ -366,6 +364,10 @@ describe('AdminTeachersService', () => {
 
 	after((done) => {
 		server.close(done);
+	});
+
+	afterEach(async () => {
+		await testObjects.cleanup();
 	});
 
 	it('is properly registered', () => {
@@ -454,9 +456,5 @@ describe('AdminTeachersService', () => {
 		const idsOk = resultOk.map((e) => e._id.toString());
 		expect(idsOk).to.include(teacherWithConsent._id.toString());
 		expect(idsOk).to.not.include(teacherWithoutConsent._id.toString());
-	});
-
-	after(async () => {
-		await testObjects.cleanup();
 	});
 });

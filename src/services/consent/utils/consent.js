@@ -139,7 +139,7 @@ const defineConsentStatus = (birthday, consent) => {
 		if (checkParentConsent(parentConsents) === true) {
 			return 'ok';
 		}
-	} else if (birthday.getTime() < secoundConsentSwitchDate.getTime()) {
+	} else if (birthday.getTime() <= secoundConsentSwitchDate.getTime()) {
 		// only user have to agre
 		if (checkUserConsent(userConsent) === true) {
 			return 'ok';
@@ -165,11 +165,11 @@ const isParentConsentRequired = (birthday) => {
 	const secoundConsentSwitchDate = new Date();
 	secoundConsentSwitchDate.setFullYear(currentDate.getFullYear() - Configuration.get('CONSENT_AGE_SECOND'));
 
-	if (birthday.getTime() >= secoundConsentSwitchDate.getTime()) {
-		return true;
+	if (birthday.getTime() <= secoundConsentSwitchDate.getTime()) {
+		return false;
 	}
 
-	return false;
+	return true;
 };
 
 /**
