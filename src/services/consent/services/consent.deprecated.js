@@ -36,7 +36,8 @@ class ConsentService {
 		};
 
 		if (userId !== undefined) {
-			if (typeof userId === 'string') {
+			// eslint-disable-next-line no-underscore-dangle
+			if (typeof userId === 'string' || userId._bsontype === 'ObjectID') {
 				const user = await this.modelService.get(userId);
 				return {
 					total: 1,
