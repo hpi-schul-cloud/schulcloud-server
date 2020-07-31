@@ -9,9 +9,9 @@ const consentService = app.service('consents');
 
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
-const testGenericErrorMessage = 'You have not the permission to execute this.';
+const testGenericErrorMessage = 'You don\'t have one of the permissions: STUDENT_LIST.';
 
-describe.only('AdminUsersService', () => {
+describe('AdminUsersService', () => {
 	let server;
 
 	before((done) => {
