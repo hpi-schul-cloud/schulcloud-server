@@ -94,7 +94,7 @@ describe('forcePasswordChange service tests', () => {
 
 			const userRequestAuthentication = await generateRequestParams({
 				username: testUser.email,
-				password
+				password,
 			});
 			return postChangePassword(userRequestAuthentication, password, password)
 				.catch((err) => {
