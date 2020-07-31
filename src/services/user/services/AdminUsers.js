@@ -23,10 +23,8 @@ const getCurrentYear = (ref, schoolId) => ref.app.service('schools')
 	.then(({ currentYear }) => currentYear.toString());
 
 class AdminUsers {
-	constructor(role) {
-		this.role = {
-			name: role,
-		};
+	constructor(roleName) {
+		this.roleName = roleName;
 		this.docs = {};
 	}
 
@@ -110,7 +108,9 @@ class AdminUsers {
 
 	async setup(app) {
 		this.app = app;
-		this.role = (await app.service('roles').find({ query: this.role })).data[0];
+		this.role = (await this.app.service('roles').find({
+			query: { name: this.roleName },
+		})).data[0];
 	}
 }
 
