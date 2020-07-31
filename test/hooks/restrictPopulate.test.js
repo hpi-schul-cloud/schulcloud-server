@@ -131,7 +131,7 @@ describe('restrictPopulate Hook', () => {
 				params: { query: {} },
 			};
 			const result = preventPopulate(testContext);
-			exports(result).to.be.defined;
+			expect(result).to.not.be.undefined;
 		});
 
 		it('should throw with $populate', () => {
