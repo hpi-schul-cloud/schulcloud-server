@@ -7,6 +7,7 @@ const UserService = require('./userService');
 const MailRegistrationLink = require('./MailRegistrationLink');
 const QrRegistrationLinks = require('./QrRegistrationLinks');
 const { RegistrationConsentService, registrationConsentServiceHooks } = require('./registrationConsent');
+const ForcePasswordChange = require('./ForcePasswordChange');
 
 module.exports = {
 	AdminUsers,
@@ -19,4 +20,5 @@ module.exports = {
 	RegistrationConsentService,
 	registrationConsentServiceHooks,
 	QrRegistrationLinks,
+	ForcePasswordChange,
 };
