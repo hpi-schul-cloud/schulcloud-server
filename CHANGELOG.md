@@ -8,10 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
 ## Unreleased
+### Changed
 
-## [24.0.1] - 2020-07-31
+## [24.0.0] - 2020-07-31
 ### Fixed - 24.0.1
 -  SC-5917 Fix activation of LDAP system
+
+## [23.6.3] - 2020-07-28
+
+### Fixed - 23.6.3
+- SC-5416: Enable maintenance Mode for LDAP Schools and change the currentSchoolYear for non-LDAP Schools
 
 ## [23.6.4] - 2020-07-29
 ### Fixed - 23.6.4
@@ -27,7 +33,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed - 23.6.2
 
 - SC-5773: LDAPSchoolSyncer now correctly populates classes synced from an LDAP server, even if only students or only teachers are assigned to the class.
-
+- SC-5250: Fixes the CSV-Import, if there are whitespaces in the columnnames
 
 ## [23.6.1] - 2020-07-22
 
