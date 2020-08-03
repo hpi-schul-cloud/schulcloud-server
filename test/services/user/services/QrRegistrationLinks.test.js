@@ -18,7 +18,7 @@ describe('qrRegistrationLinks service tests', () => {
 	});
 
 	const postRegistrationLinks = (requestParams, userIds) => qrRegistrationLinksService.create({
-		userIds: userIds
+		userIds
 	}, requestParams, app);
 
 	describe('CREATE', () => {
@@ -63,7 +63,7 @@ describe('qrRegistrationLinks service tests', () => {
 		it('should return bad request if the id is invalid', async () => {
 			const testUser = await testObjects.createTestUser({ roles: ['teacher'] });
 			const userRequestAuthentication = await generateRequestParamsFromUser(testUser);
-			return postRegistrationLinks(userRequestAuthentication, [testUser._id + 'some_invalid_id'])
+			return postRegistrationLinks(userRequestAuthentication, [`${testUser._id}_some_invalid_id`])
 				.catch((err) => {
 					expect(err.code)
 						.to
@@ -77,16 +77,15 @@ describe('qrRegistrationLinks service tests', () => {
 				});
 		});
 		it('should return empty array if user already has an account', async () => {
-
 			const user = await testObjects.createTestUser({ roles: 'teacher' });
 			const credentials = {
 				username: user.email,
-				password: user.email
+				password: user.email,
 			};
 			const testAccount = await testObjects.createTestAccount(credentials, null, user);
 			const params = {
 				...await generateRequestParams(credentials),
-				query: {}
+				query: {},
 			};
 
 			return postRegistrationLinks(params, [String(user._id)])
