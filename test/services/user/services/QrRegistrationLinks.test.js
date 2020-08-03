@@ -18,7 +18,7 @@ describe('qrRegistrationLinks service tests', () => {
 	});
 
 	const postRegistrationLinks = (requestParams, userIds) => qrRegistrationLinksService.create({
-		userIds
+		userIds,
 	}, requestParams, app);
 
 	describe('CREATE', () => {
