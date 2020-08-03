@@ -1,10 +1,13 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { Forbidden, BadRequest } = require('@feathersjs/errors');
+const { BadRequest } = require('@feathersjs/errors');
 const { hasPermission } = require('../../../hooks');
 
 class QrRegistrationLinks {
 	constructor(userModel) {
 		this.userModel = userModel;
+		this.err = Object.freeze({
+			failed: 'Can not generate QR registration links',
+		});
 	}
 
 	async create(data) {
@@ -16,10 +19,7 @@ class QrRegistrationLinks {
 			}
 			return this.generateQrRegistrationLinks(userIds);
 		} catch (err) {
-			if ((err || {}).code === 403) {
-				throw new Forbidden('You have not the permission to execute this!', err);
-			}
-			throw new BadRequest('Can not generate QR registration links', err);
+			throw new BadRequest(this.err.failed, err);
 		}
 	}
 
@@ -44,11 +44,7 @@ class QrRegistrationLinks {
 	}
 
 	getUserInfo(userId) {
-		return this.userModel.findById(userId)
-			.select(['schoolId', 'email', 'firstName', 'lastName', 'preferences'])
-			.populate('roles')
-			.lean()
-			.exec();
+		return this.app.service('usersModel').get(userId);
 	}
 
 	async getUsersIdsWithoutAccount(userIds) {
@@ -67,6 +63,7 @@ class QrRegistrationLinks {
 	}
 
 	setup(app) {
+		this.app = app;
 		this.accountService = app.service('/accounts');
 		this.registrationLinkService = app.service('/registrationlink');
 	}
