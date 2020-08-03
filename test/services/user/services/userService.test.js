@@ -446,7 +446,7 @@ describe('user service', () => {
 	});
 
 	describe('REMOVE', () => {
-		it.only('user gets removed from classes and courses after delete', async () => {
+		it('user gets removed from classes and courses after delete', async () => {
 			const userToDelete = await testObjects.createTestUser({ roles: ['student'] });
 			const userId = userToDelete._id.toString();
 			const { _id: classId } = await testObjects.createTestClass({ userIds: userToDelete._id });
