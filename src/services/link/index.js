@@ -114,20 +114,16 @@ module.exports = function setup() {
 					{ teamId } = data;
 
 				if (email) {
-					// generate import hash
-					const user = (await app.service('users').find({ query: { email: data.toHash } }) || {}).data[0];
-					if (user && user.importHash) linkInfo.hash = user.importHash;
-					else {
-						await app.service('hash').create({
-							toHash: email,
-							save: true,
-							patchUser: true,
-						}).then((generatedHash) => {
-							linkInfo.hash = generatedHash;
-						}).catch((err) => {
-							logger.warning(err);
-							return Promise.resolve('Success!');
-						});
+					const { data: userData } = await app.service('users').find({ query: { email: data.toHash } });
+					if (userData && userData[0] && userData[0].importHash) {
+						linkInfo.hash = userData[0].importHash;
+					} else {
+						linkInfo.hash = await app.service('hash')
+							.create({
+								toHash: email,
+								save: true,
+								patchUser: true,
+							});
 					}
 				}
 
