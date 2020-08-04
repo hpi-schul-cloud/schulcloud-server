@@ -10,7 +10,6 @@ describe('notification service', function () {
 
 	let app = null;
 	let notificationService = null;
-	const jwt = null;
 
 	before((done) => {
 		mockery.enable({

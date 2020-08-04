@@ -1,9 +1,12 @@
 const Sentry = require('@sentry/node');
+const { Configuration } = require('@schul-cloud/commons');
 const { sha } = require('../helper/version');
 const { version } = require('../../package.json');
-const { deepObject } = require('../utils');
+
 const {
-	SENTRY_DSN, SC_DOMAIN, NODE_ENV, ENVIRONMENTS,
+	SC_DOMAIN,
+	NODE_ENV,
+	ENVIRONMENTS,
 } = require('../../config/globals');
 /**
  * helpers
@@ -77,7 +80,7 @@ const skipItMiddleware = () => null;
 module.exports = (app) => {
 	const release = version;
 
-	if (SENTRY_DSN) {
+	if (Configuration.has('SENTRY_DSN')) {
 		// middleware to modified events that, are post to sentry
 		let middlewares = [
 			filterByErrorCodesMiddleware(404),
@@ -107,11 +110,11 @@ module.exports = (app) => {
 		};
 
 		Sentry.init({
-			dsn: SENTRY_DSN,
+			dsn: Configuration.get('SENTRY_DSN'),
 			environment: NODE_ENV,
 			release,
 			//	debug: true,
-			sampleRate: 1.0,
+			sampleRate: Configuration.get('SENTRY_SAMPLE_RATE'),
 			//	captureUnhandledRejections: true,
 			beforeSend(event, hint) {
 				const modifiedEvent = runMiddlewares(event, hint);

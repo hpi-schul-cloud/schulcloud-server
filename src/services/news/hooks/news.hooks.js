@@ -1,4 +1,3 @@
-const { BadRequest } = require('@feathersjs/errors');
 const { newsHistoryModel } = require('../model');
 
 const deleteNewsHistory = async (context) => {

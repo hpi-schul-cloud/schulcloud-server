@@ -4,6 +4,13 @@ const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
+const TEAM_FEATURES = {
+	IS_TEAM: 'isTeam',
+	ROCKET_CHAT: 'rocketChat',
+	VIDEOCONFERENCE: 'videoconference',
+	MESSENGER: 'messenger',
+};
+
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: { type: String, required: true },
@@ -40,7 +47,7 @@ const teamsSchema = getUserGroupSchema({
 	description: { type: String, default: '' },
 	classIds: [{ type: Schema.Types.ObjectId, ref: 'class' }],
 	color: { type: String, default: '#ACACAC' },
-	features: [{ type: String, enum: ['isTeam', 'rocketChat', 'videoconference', 'messenger'] }],
+	features: [{ type: String, enum: Object.values(TEAM_FEATURES) }],
 	filePermission: [permissionSchema],
 });
 
@@ -51,6 +58,7 @@ const teamUserModel = mongoose.model('_teamUserSchema', teamUserSchema);
 const teamsModel = mongoose.model('teams', teamsSchema);
 
 module.exports = {
+	TEAM_FEATURES,
 	teamsModel,
 	permissionSchema,
 	teamInvitedUserModel,

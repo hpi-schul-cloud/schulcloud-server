@@ -45,6 +45,7 @@ jobs:
       install:
         - echo "skipping install"
     - stage: deploy
+      if: NOT fork
       script:
         - ./deploy.sh
       name: deploy

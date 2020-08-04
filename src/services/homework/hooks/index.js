@@ -43,7 +43,8 @@ function isValidSubmission(submission) {
 }
 function isGraded(submission) {
 	return (submission.gradeComment && submission.gradeComment !== '')
-        || (submission.grade && Number.isInteger(submission.grade));
+		|| (submission.grade && Number.isInteger(submission.grade))
+		|| (submission.gradeFileIds && submission.gradeFileIds.length > 0);
 }
 function isTeacher(userId, homework) {
 	const user = userId.toString();
@@ -116,12 +117,12 @@ const addStats = (hook) => {
 			const copy = JSON.parse(JSON.stringify(e)); // don't know why, but without this line it's not working :/
 
 			if (!isTeacher(hook.params.account.userId, copy)) {
-				const filteredSubmission = submissions.data.filter((submission) => (
-					equalIds(copy._id, submission.homeworkId)
-					&& submission.teamMembers
-					&& (
-						submission.teamMembers.some((member) => equalIds(hook.params.account.userId, member))
-						|| equalIds(hook.params.account.userId, submission.studentId)
+				const currentSubmissions = submissions.data.filter((s) => equalIds(copy._id, s.homeworkId));
+				const filteredSubmission = currentSubmissions.filter((submission) => (
+					equalIds(hook.params.account.userId, submission.studentId)
+					|| (
+						submission.teamMembers
+						&& submission.teamMembers.some((member) => equalIds(hook.params.account.userId, member))
 					)
 				));
 				const submissionWithGrade = filteredSubmission.filter((submission) => submission.grade);

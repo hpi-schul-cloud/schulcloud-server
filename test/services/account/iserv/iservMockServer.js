@@ -7,7 +7,7 @@ const config = require('./config');
 module.exports = function () {
 	const findFreePort = freeport();
 
-	return findFreePort.then((port) => new Promise((resolve, reject) => {
+	return findFreePort.then((port) => new Promise((resolve) => {
 		const mockIServ = express();
 		mockIServ.use(bodyParser.json()); // for parsing application/json
 		mockIServ.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies

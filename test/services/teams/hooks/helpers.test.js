@@ -6,16 +6,12 @@ const app = require('../../../../src/app');
 const {
 	ifSuperhero,
 	getSessionUser,
-	updateMissingDataInHookForCreate,
-	isAcceptWay,
-	getTeam,
 	arrayRemoveAddDiffs,
-	getTeamUsers,
 	populateUsersForEachUserIdinHookData,
 	removeDuplicatedTeamUsers,
 } = require('../../../../src/services/teams/hooks/helpers.js');
 
-const { teamInvitedUserModel, teamUserModel } = require('../../../../src/services/teams/model');
+const { teamUserModel } = require('../../../../src/services/teams/model');
 
 describe('hook helpers', () => {
 	let server;

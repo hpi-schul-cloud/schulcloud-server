@@ -1,9 +1,7 @@
-const { authenticate } = require('@feathersjs/authentication');
-const local = require('@feathersjs/authentication-local');
-const { Forbidden, BadRequest } = require('@feathersjs/errors');
+const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 const bcrypt = require('bcryptjs');
-const hooks = require('feathers-hooks-common');
 const { ObjectId } = require('mongoose').Types;
+const { checkPasswordStrength } = require('../../../utils/passwordHelpers');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const globalHooks = require('../../../hooks');
@@ -26,7 +24,7 @@ const sanitizeUsername = (hook) => {
 // This is only for SSO
 const validateCredentials = async (hook) => {
 	const {
-		username, password, systemId, schoolId,
+		username, password, systemId,
 	} = hook.data;
 
 	if (!username) throw new BadRequest('no username specified');
@@ -63,8 +61,7 @@ const validatePassword = (hook) => {
 	const { password } = hook.data;
 
 	// Check against Pattern which is also used in Frontend
-	const pattern = new RegExp('^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\\-_!<>§$%&\\/()=?\\\\;:,.#+*~\']).{8,255}$');
-	const patternResult = pattern.test(password);
+	const patternResult = checkPasswordStrength(password);
 
 	// only check result if also a password was really given
 	if (!patternResult && password) {
@@ -88,7 +85,7 @@ const validatePassword = (hook) => {
 			const editsOwnAccount = equalIds(hook.id, hook.params.account._id);
 			// Check if it is firstLogin
 			const userDidFirstLogin = (user.preferences && user.preferences.firstLogin);
-
+			const { userForcedToChangePassword } = hook.params;
 			if (
 				(!userDidFirstLogin && editsOwnAccount)
 				|| (
@@ -100,6 +97,7 @@ const validatePassword = (hook) => {
 						)
 					)
 				)
+				|| userForcedToChangePassword
 			) {
 				return hook;
 			}
@@ -250,56 +248,31 @@ const filterToRelated = (keys) => globalHooks.ifNotLocal((hook) => {
 	return hook;
 });
 
-const testIfJWTExist = (context) => {
-	if ((context.params.headers || {}).authorization) {
-		return authenticate('jwt')(context);
+const restrictToUsersSchool = async (context) => {
+	const userIsSuperhero = await globalHooks.hasRoleNoHook(context, context.params.account.userId, 'superhero');
+	if (userIsSuperhero) return context;
+	const userService = context.app.service('users');
+	const { schoolId: usersSchoolId } = await userService.get(context.params.account.userId);
+
+	const targetAccount = await context.app.service('accountModel').get(context.id);
+	const { schoolId: targetSchoolId } = await userService.get(targetAccount.userId);
+	if (!equalIds(usersSchoolId, targetSchoolId)) {
+		throw new NotFound('this account doesnt exist');
 	}
 	return context;
 };
 
-exports.before = {
-	// find, get and create cannot be protected by authenticate('jwt')
-	// otherwise we cannot get the accounts required for login
-	find: [testIfJWTExist, globalHooks.ifNotLocal(restrictAccess)],
-	get: [hooks.disallow('external')],
-	create: [
-		sanitizeUsername,
-		checkExistence,
-		validateCredentials,
-		trimPassword,
-		local.hooks.hashPassword('password'),
-		checkUnique,
-		removePassword,
-	],
-	update: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('ACCOUNT_EDIT'),
-		globalHooks.restrictToCurrentSchool,
-		sanitizeUsername,
-	],
-	patch: [
-		authenticate('jwt'),
-		sanitizeUsername,
-		globalHooks.ifNotLocal(securePatching),
-		protectUserId,
-		globalHooks.permitGroupOperation,
-		trimPassword,
-		globalHooks.ifNotLocal(validatePassword),
-		local.hooks.hashPassword('password'),
-	],
-	remove: [
-		authenticate('jwt'),
-		globalHooks.hasPermission('ACCOUNT_CREATE'),
-		globalHooks.permitGroupOperation,
-	],
-};
-
-exports.after = {
-	all: [local.hooks.protect('password')],
-	find: [],
-	get: [filterToRelated(['_id', 'username', 'userId', 'systemId'])],
-	create: [],
-	update: [],
-	patch: [],
-	remove: [],
+module.exports = {
+	sanitizeUsername,
+	validateCredentials,
+	trimPassword,
+	validatePassword,
+	checkUnique,
+	removePassword,
+	restrictAccess,
+	checkExistence,
+	protectUserId,
+	securePatching,
+	filterToRelated,
+	restrictToUsersSchool,
 };

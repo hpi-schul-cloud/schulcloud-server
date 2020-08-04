@@ -1,5 +1,6 @@
 const { BadRequest, Forbidden, NotFound } = require('@feathersjs/errors');
 const hooks = require('../hooks');
+const { TEAM_FEATURES } = require('../model');
 const { warning } = require('../../../logger/index');
 const { SC_SHORT_TITLE } = require('../../../../config/globals');
 
@@ -53,7 +54,7 @@ class AdminOverview {
 	}
 
 	static mapped(teams, sessionSchoolId) {
-		return teams.data.map((team) => {
+		const mappedData =  teams.data.map((team) => {
 			const createdAtMySchool = isSameId(team.schoolId, sessionSchoolId);
 			const hasMembersOfOtherSchools = team.schoolIds.length > 1;
 			let schoolMembers = AdminOverview.getMembersBySchool(
@@ -63,7 +64,7 @@ class AdminOverview {
 			const ownerExist = team.userIds.some(
 				(user) => user.role.name === 'teamowner',
 			); // role is populated
-			const hasRocketChat = team.features.includes('rocketChat');
+			const hasRocketChat = team.features.includes(TEAM_FEATURES.ROCKET_CHAT);
 
 
 			const reducedSchoolMembers = [];
@@ -111,10 +112,20 @@ class AdminOverview {
 				schoolMembers,
 			};
 		});
+
+		const mapResult = {
+			limit: teams.limit,
+			skip: teams.skip,
+			total: teams.total,
+			data: mappedData,
+		}
+
+		return mapResult;
 	}
 
 	find(params) {
 		return getSessionUser(this, params).then((sessionUser) => {
+			const { limit, skip } = params.query;
 			const { schoolId } = sessionUser;
 			return this.app
 				.service('teams')
@@ -130,6 +141,8 @@ class AdminOverview {
 							},
 							'schoolIds',
 						], // schoolId
+						$limit: limit,
+						$skip: skip,
 					},
 				})
 				.then((teams) => AdminOverview.mapped(teams, schoolId))
@@ -206,7 +219,7 @@ class AdminOverview {
 	static formatText(text) {
 		return `Hallo,
 		\nes besteht Klärungsbedarf zu deinem Team.
-		\nDu wurdest über die Administratoren-Kontaktfunktion benachrichtigt. 
+		\nDu wurdest über die Administratoren-Kontaktfunktion benachrichtigt.
 		\n\nText der Nachricht: \n${text}
 		\n\nVielen Dank
 		\nDein ${SC_SHORT_TITLE}-Team`;

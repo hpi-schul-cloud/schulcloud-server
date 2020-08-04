@@ -39,11 +39,11 @@ class Classes {
 		const years = await this.getSchoolYearsFromQuery(params.query);
 
 		const classPromises = years.map((y) => {
-			const yearParams = Object.assign(
-				{},
-				params,
-				{ query: Object.assign({}, params.query, { year: y._id || y }) },
-			);
+			const yearParams = {
+
+				...params,
+				query: { ...params.query, year: y._id || y },
+			};
 			return this.app.service('classModel').find(yearParams);
 		});
 		const classesByYear = await Promise.all(classPromises);

@@ -1,7 +1,11 @@
 const request = require('request-promise-native');
 const service = require('feathers-mongoose');
-const hooks = require('./hooks');
 const material = require('./material-model');
+
+const resourcesHooks = require('./hooks/resources');
+const redirectHooks = require('./hooks/redirect');
+const searchHooks = require('./hooks/search');
+const materialsHooks = require('./hooks/materials');
 
 const { REQUEST_TIMEOUT } = require('../../../config/globals');
 
@@ -31,7 +35,7 @@ class ResourcesService {
 		return request(options).then((message) => message);
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
@@ -52,7 +56,7 @@ class SearchService {
 		return request(options).then((message) => message);
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
@@ -86,7 +90,7 @@ class RedirectService {
 		res.redirect(res.data);
 	}
 
-	setup(app, path) {
+	setup(app) {
 		this.app = app;
 	}
 }
@@ -110,7 +114,11 @@ module.exports = function () {
 
 	const resourcesService = app.service('/content/resources');
 	const searchService = app.service('/content/search');
+	const redirectService = app.service('/content/redirect');
+	const materialsService = app.service('/materials');
 
-	resourcesService.hooks(hooks);
-	searchService.hooks(hooks);
+	resourcesService.hooks(resourcesHooks);
+	searchService.hooks(searchHooks);
+	redirectService.hooks(redirectHooks);
+	materialsService.hooks(materialsHooks);
 };

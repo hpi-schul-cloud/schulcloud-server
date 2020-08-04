@@ -1,6 +1,7 @@
 const { parse } = require('papaparse');
 const stripBOM = require('strip-bom');
 const { mix } = require('mixwith');
+const { Configuration } = require('@schul-cloud/commons');
 
 const Syncer = require('./Syncer');
 const ClassImporter = require('./mixins/ClassImporter');
@@ -31,7 +32,7 @@ const ATTRIBUTES = [
 const buildMappingFunction = (sourceSchema, targetSchema = ATTRIBUTES) => {
 	const mapping = {};
 	Object.keys(sourceSchema).forEach((key) => {
-		const attribute = targetSchema.find((a) => a.aliases.includes(key.toLowerCase()));
+		const attribute = targetSchema.find((a) => a.aliases.includes(key.toLowerCase().trim()));
 		if (attribute !== undefined) {
 			mapping[key] = attribute.name;
 		}
@@ -52,8 +53,13 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		super(app, stats, logger);
 
 		this.options = options;
-		this.requestParams = requestParams;
-
+		this.requestParams = {
+			...requestParams,
+			headers: {
+				'x-api-key': Configuration.get('CLIENT_API_KEY'),
+			},
+			authenticated: false,
+		};
 		Object.assign(this.stats, {
 			users: {
 				successful: 0,
@@ -183,7 +189,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		}
 
 		ATTRIBUTES.filter((a) => a.required).forEach((attr) => {
-			const attributeIsUsed = Object.keys(records[0]).some((k) => attr.aliases.includes(k.toLowerCase()));
+			const attributeIsUsed = Object.keys(records[0]).some((k) => attr.aliases.includes(k.toLowerCase().trim()));
 			if (!attributeIsUsed) {
 				this.stats.errors.push({
 					type: 'file',

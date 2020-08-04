@@ -1,6 +1,6 @@
 let createdConsentIds = [];
 
-const createTestConsent = (app, opt) => ({
+const createTestConsent = (app) => ({
 	userId = undefined,
 	userConsent = undefined,
 	parentConsents = [],

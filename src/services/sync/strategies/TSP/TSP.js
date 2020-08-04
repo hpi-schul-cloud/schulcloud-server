@@ -91,6 +91,35 @@ const createUserAndAccount = async (app, userOptions, roles, systemId) => {
 };
 
 /**
+ * Create a consent if the user is created via TSP sync.
+ * In this case, the consent process was already handled from the TSP side.
+ * @param {Object} app the Feathers app
+ * @param {User} student the student created via TSP sync
+ * @async
+ */
+const createTSPConsent = async (app, student) => {
+	const currentDate = Date.now();
+	const tspConsent = {
+		form: 'digital',
+		source: 'tsp-sync',
+		privacyConsent: true,
+		termsOfUseConsent: true,
+		dateOfPrivacyConsent: currentDate,
+		dateOfTermsOfUseConsent: currentDate,
+	};
+
+	/**
+	 * During the user creation process, the age of the users is unknown.
+	 * Therfore, we create a user and a parent consent in any case.
+	 */
+	await app.service('consents').create({
+		userId: student._id,
+		userConsent: tspConsent,
+		parentConsents: [tspConsent],
+	});
+};
+
+/**
  * Finds and returns the school identified by the given identifier
  * @async
  * @param {Object} app Feathers app
@@ -207,11 +236,13 @@ module.exports = {
 	TspApi,
 	config: {
 		FEATURE_ENABLED: Configuration.get('FEATURE_TSP_ENABLED'),
+		FEATURE_AUTO_CONSENT: Configuration.get('FEATURE_TSP_AUTO_CONSENT_ENABLED'),
 		BASE_URL,
 	},
 	getUsername,
 	getEmail,
 	createUserAndAccount,
+	createTSPConsent,
 	findSchool,
 	encryptToken,
 	decryptToken,

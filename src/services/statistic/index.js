@@ -1,7 +1,7 @@
 const moment = require('moment');
 const _ = require('lodash');
 const hooks = require('./hooks/index');
-const swaggerDocs = require('./docs/');
+const swaggerDocs = require('./docs');
 const schoolModel = require('../school/model');
 const userModel = require('../user/model');
 const accountModel = require('../account/model');
@@ -35,11 +35,6 @@ const promises = [
 		name: 'submissions',
 		promise: homeworkModel.submissionModel.countDocuments(),
 		model: homeworkModel.submissionModel.find(),
-	},
-	{
-		name: 'comments',
-		promise: homeworkModel.commentModel.countDocuments(),
-		model: homeworkModel.commentModel.find(),
 	},
 	{
 		name: 'lessons',
@@ -100,10 +95,12 @@ const promises = [
 const fetchStatistics = () => {
 	const statistics = {};
 
-	return Promise.all(promises.map((p) => p.promise.exec().then((res) => {
-		statistics[p.name] = res;
-		return res;
-	}))).then((_) => statistics);
+	return Promise.all(
+		promises.map((p) => p.promise.exec().then((res) => {
+			statistics[p.name] = res;
+			return res;
+		})),
+	).then(() => statistics);
 };
 
 class StatisticsService {
@@ -111,23 +108,29 @@ class StatisticsService {
 		this.docs = swaggerDocs.statisticsService;
 	}
 
-	find({ query, payload }) {
+	find() {
 		return fetchStatistics()
 			.then((statistics) => statistics);
 	}
 
 	get(id, params) {
-		return _.find(promises, { name: id }).model.select({ createdAt: 1 }).exec()
+		return _.find(promises, { name: id })
+			.model.select({ createdAt: 1 })
+			.exec()
 			.then((generic) => {
 				const stats = generic.map((gen) => moment(gen.createdAt).format('YYYY-MM-DD'));
 
 				const counts = {};
-				stats.forEach((x) => { counts[x] = (counts[x] || 0) + 1; });
+				stats.forEach((x) => {
+					counts[x] = (counts[x] || 0) + 1;
+				});
 
 				const ordered = {};
-				Object.keys(counts).sort().forEach((key) => {
-					ordered[key] = counts[key];
-				});
+				Object.keys(counts)
+					.sort()
+					.forEach((key) => {
+						ordered[key] = counts[key];
+					});
 
 				const x = [];
 				const y = [];
@@ -141,7 +144,7 @@ class StatisticsService {
 					}
 				}
 
-				return (params.query.returnArray) ? { x, y } : ordered;
+				return params.query.returnArray ? { x, y } : ordered;
 			});
 	}
 }
