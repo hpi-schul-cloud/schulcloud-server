@@ -36,6 +36,7 @@ const addSecret = (context) => {
 		return context.app.service('/ltiTools/').get(context.data.originTool)
 			.then((tool) => {
 				context.data.secret = tool.secret;
+				context.data.oAuthClientId = tool.oAuthClientId;
 				return context;
 			});
 	}
