@@ -10,6 +10,5 @@
 		"hydra": "HYDRA_URI",
 		"web": "HOST"
 	},
-	"HOST": "http://localhost:3100",
 	"NOTIFICATION_PLATFORM":"NOTIFICATION_PLATFORM"
 }
