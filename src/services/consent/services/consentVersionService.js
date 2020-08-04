@@ -7,8 +7,8 @@ const {
 } = require('feathers-hooks-common');
 
 const {
-	populateCurrentSchool,
 	restrictToCurrentSchool,
+	denyIfNotCurrentSchoolOrEmpty,
 	hasPermission,
 } = require('../../../hooks');
 
@@ -16,14 +16,13 @@ const { modelServices: { prepareInternalParams } } = require('../../../utils');
 
 const ConsentVersionServiceHooks = {
 	before: {
-		all: [iff(isProvider('external'), [
-			authenticate('jwt'),
-			populateCurrentSchool, // TODO: test if it is needed
-			restrictToCurrentSchool, // TODO restricted erscheint mir hier nicht hilfreich
-		])],
+		all: [authenticate('jwt')],
 		find: [],
 		get: [],
-		create: [iff(isProvider('external'), hasPermission('SCHOOL_EDIT'))],
+		create: [iff(isProvider('external'), [
+			hasPermission('SCHOOL_EDIT'),
+			restrictToCurrentSchool,
+		])],
 		update: [disallow()],
 		patch: [disallow()],
 		remove: [disallow()],
@@ -31,7 +30,12 @@ const ConsentVersionServiceHooks = {
 	after: {
 		all: [],
 		find: [],
-		get: [],
+		get: [
+			iff(isProvider('external'),
+				denyIfNotCurrentSchoolOrEmpty({
+					errorMessage: 'The current user is not allowed to list other users!',
+				})),
+		],
 		create: [],
 		update: [],
 		patch: [],
@@ -51,7 +55,7 @@ class ConsentVersionService {
 			if (!schoolId) {
 				return Promise.reject(new BadRequest('SchoolId is required for school consents.'));
 			}
-			return this.app.service('base64Files').create({ 
+			return this.app.service('base64Files').create({
 				schoolId,
 				data: consentData,
 				filetype: 'pdf',
@@ -65,17 +69,18 @@ class ConsentVersionService {
 		return this.app.service('consentVersionsModel').get(id, prepareInternalParams(params));
 	}
 
-	find(params) {
-		const { query } = params;
-		if (query && query.schoolId) {
-			if (!query.$or) {
-				query.$or = [];
-			}
-			query.$or.push({ schoolId: query.schoolId });
-			delete query.schoolId;
+	async find(params) {
+		const { query = {}, ...restParams } = params;
+		let searchResult;
+		if (query.schoolId) {
+			searchResult = await this.app.service('consentVersionsModel').find(prepareInternalParams(params));
 		}
 
-		return this.app.service('consentVersionsModel').find(prepareInternalParams(params));
+		if (searchResult && searchResult.total > 0) {
+			return searchResult;
+		}
+		const querySchoolIdEmpty = { ...restParams, query: { ...query, schoolId: { $exists: false } } };
+		return this.app.service('consentVersionsModel').find(prepareInternalParams(querySchoolIdEmpty));
 	}
 
 	async create(data, params) {

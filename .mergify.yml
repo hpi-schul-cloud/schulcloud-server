@@ -19,6 +19,14 @@ pull_request_rules:
         add:
           - WIP
   #######################
+  # AUTO UPDATE
+  #######################
+  - name: auto update when label is set
+    conditions:
+      - label=auto update
+    actions:
+      update: {}
+  #######################
   # AUTO MERGED
   #######################
   - name: auto merge when label is set

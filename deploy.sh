@@ -84,6 +84,17 @@ function deploytostaging {
 	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@staging.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:$DOCKERTAG staging_server
 }
 
+function deploytohotfix {
+	# Deploys new masters on the instances brandenburg, open, demo
+	# compose-files are distributed via Ansible, many different secrets, Mongo_URIs etc.
+
+	# copy config-file to server and execute mit travis_rsa
+	chmod 600 travis_rsa
+
+	# staging
+	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@hotfix$1.schul-cloud.dev /usr/bin/docker service update --force --image schulcloud/schulcloud-server:$DOCKERTAG hotfix$1_server
+}
+
 function inform {
 	if [[ "$TRAVIS_EVENT_TYPE" != "cron" ]]
 	then
@@ -98,6 +109,13 @@ function inform_staging {
 	fi
 }
 
+function inform_hotfix {
+	if [[ "$TRAVIS_EVENT_TYPE" != "cron" ]]
+	then
+		curl -X POST -H 'Content-Type: application/json' --data '{"text":":boom: Das Hotfix-'$1'-System wurde aktualisiert: Schul-Cloud Server! https://api.hotfix'$1'.schul-cloud.org/version (Dockertag: '$DOCKERTAG')"}' $WEBHOOK_URL_CHAT
+	fi
+}
+
 # write version file
 printf "%s\n%s\n%s" $TRAVIS_COMMIT $TRAVIS_BRANCH $TRAVIS_COMMIT_MESSAGE > ./version
 
@@ -109,11 +127,22 @@ elif [[ "$TRAVIS_BRANCH" = "develop" ]]
 then
 	buildandpush
 	deploytotest
-elif [[ $TRAVIS_BRANCH = release* || $TRAVIS_BRANCH = hotfix* ]]
+elif [[ $TRAVIS_BRANCH = release* ]]
 then
 	buildandpush
 	deploytostaging
 	inform_staging
+elif [[ $TRAVIS_BRANCH = hotfix* ]]
+then
+	TEAM="$(cut -d'/' -f2 <<< $TRAVIS_BRANCH)"
+	if [[ "$TEAM" -gt 0 && "$TEAM" -lt 8 ]]; then
+		buildandpush
+		deploytohotfix $TEAM
+		inform_hotfix $TEAM
+	else
+		echo "Hotfix branch name do not match requirements to deploy"
+	fi
+
 else
 	echo "Nix wird deployt"
 fi

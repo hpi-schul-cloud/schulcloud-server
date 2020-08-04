@@ -4,6 +4,7 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
+const { Configuration } = require('@schul-cloud/commons');
 const { getDocumentBaseDir } = require('./logic/school');
 const { enableAuditLog } = require('../../utils/database');
 const externalSourceSchema = require('../../helper/externalSourceSchema');
@@ -88,6 +89,11 @@ const schoolSchema = new Schema({
 	timestamps: true,
 });
 
+if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
+	// to speed up lookups during TSP sync
+	schoolSchema.index({ 'sourceOptions.$**': 1 });
+}
+
 
 const schoolGroupSchema = new Schema({
 	name: { type: String, required: true },
@@ -109,6 +115,10 @@ schoolSchema.virtual('inMaintenance').get(function get() {
 schoolSchema.virtual('documentBaseDir').get(function get() {
 	const school = this;
 	return getDocumentBaseDir(school);
+});
+
+schoolSchema.virtual('isExternal').get(function get() {
+	return !!this.ldapSchoolIdentifier || !!this.source;
 });
 
 const yearSchema = new Schema({
@@ -136,6 +146,7 @@ const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 
 module.exports = {
 	SCHOOL_FEATURES,
+	schoolSchema,
 	schoolModel,
 	schoolGroupModel,
 	yearModel,
