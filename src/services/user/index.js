@@ -14,6 +14,10 @@ const {
 	MailRegistrationLink,
 	RegistrationConsentService,
 	registrationConsentServiceHooks,
+	ForcePasswordChange: {
+		ForcePasswordChangeService,
+		ForcePasswordChangeServiceHooks,
+	},
 } = require('./services');
 
 
@@ -59,6 +63,10 @@ module.exports = (app) => {
 	app.use('/registration/consent', new RegistrationConsentService());
 	const registrationConsentService = app.service('/registration/consent');
 	registrationConsentService.hooks(registrationConsentServiceHooks);
+
+	app.use('/forcePasswordChange', new ForcePasswordChangeService());
+	const forcePasswordChangeService = app.service('forcePasswordChange');
+	forcePasswordChangeService.hooks(ForcePasswordChangeServiceHooks);
 
 	const FirstLoginService = require('./firstLogin')(app);
 	app.use('/firstLogin', new FirstLoginService());
