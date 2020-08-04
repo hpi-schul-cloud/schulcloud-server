@@ -37,6 +37,7 @@ const {
 	enforceRoleHierarchyOnCreate,
 	filterResult,
 	generateRegistrationLink,
+	sendRegistrationLink,
 	includeOnlySchoolRoles,
 } = require('../hooks/userService');
 
@@ -152,6 +153,7 @@ const userHooks = {
 		],
 		create: [
 			handleClassId,
+			sendRegistrationLink,
 		],
 		update: [iff(isProvider('external'), filterResult)],
 		patch: [iff(isProvider('external'), filterResult)],

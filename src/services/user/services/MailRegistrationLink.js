@@ -9,10 +9,10 @@ const mailContent = (firstName, lastName, registrationLink) => {
 		subject: `Einladung für die Nutzung der ${SC_SHORT_TITLE}!`,
 		content: {
 			text: `Einladung in die ${SC_SHORT_TITLE}
-    Hallo ${firstName} ${lastName}!
-    \\nDu wurdest eingeladen, der ${SC_SHORT_TITLE} beizutreten,
-    \\nbitte vervollständige deine Registrierung unter folgendem Link: ${registrationLink}
-    \\nViel Spaß und einen guten Start wünscht dir dein ${SC_SHORT_TITLE}-Team`,
+Hallo ${firstName} ${lastName}!
+\nDu wurdest eingeladen, der ${SC_SHORT_TITLE} beizutreten,
+\nbitte vervollständige deine Registrierung unter folgendem Link: ${registrationLink}
+\nViel Spaß und einen guten Start wünscht dir dein ${SC_SHORT_TITLE}-Team`,
 			html: '',
 		},
 	};
