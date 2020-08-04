@@ -1,11 +1,10 @@
 /* eslint-disable max-classes-per-file */
-
+const { Configuration } = require('@schul-cloud/commons');
 const queryString = require('querystring');
 const service = require('feathers-mongoose');
 const logger = require('../../logger');
 const link = require('./link-model');
 const hooks = require('./hooks');
-const { HOST } = require('../../../config/globals');
 
 module.exports = function setup() {
 	const app = this;
@@ -141,7 +140,7 @@ module.exports = function setup() {
 
 				// generate short url
 				// build final short link and remove possible double-slashes in url except the protocol ones
-				linkInfo.shortLink = data.host || HOST;
+				linkInfo.shortLink = data.host || Configuration.get('HOST');
 				linkInfo.shortLink += linkInfo.link;
 
 				resolve(linkInfo);
