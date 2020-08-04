@@ -2,6 +2,7 @@
 /* eslint-disable class-methods-use-this */
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication').hooks;
+const moment = require('moment');
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../../consent/utils/aggregations');
 const {
@@ -50,7 +51,7 @@ const getAllUsers = async (schoolId, schoolYearId, role, clientQuery = {}) => {
 	if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 
 	return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
-		collation: { locale: 'de', caseLevel: true },
+		collation: { locale: 'de', caseLevel: true, numericOrdering: true },
 	}).exec((err, res) => {
 		if (err) reject(err);
 		else resolve(res[0]);
@@ -87,7 +88,9 @@ class AdminUsers {
 
 			// fetch data that are scoped to schoolId
 			const searchedRole = roles.find((role) => role.name === this.role);
-			return getAllUsers(schoolId, currentYear, searchedRole._id, query);
+			const users = await getAllUsers(schoolId, currentYear, searchedRole._id, query);
+
+			return users;
 		} catch (err) {
 			logger.error(err);
 			if ((err || {}).code === 403) {
@@ -102,6 +105,10 @@ class AdminUsers {
 	}
 }
 
+const formatBirthdayOfUsers = ({ result: { data: users } }) => {
+	users.forEach((user) => { user.birthday = moment(user.birthday).format('DD.MM.YYYY'); });
+};
+
 const adminHookGenerator = (kind) => ({
 	before: {
 		all: [authenticate('jwt')],
@@ -111,6 +118,9 @@ const adminHookGenerator = (kind) => ({
 		update: [hasSchoolPermission(`${kind}_EDIT`)],
 		patch: [hasSchoolPermission(`${kind}_EDIT`)],
 		remove: [hasSchoolPermission(`${kind}_DELETE`)],
+	},
+	after: {
+		find: [formatBirthdayOfUsers],
 	},
 });
 
