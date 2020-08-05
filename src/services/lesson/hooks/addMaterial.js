@@ -19,10 +19,17 @@ const addLessonToParams = async (context) => {
 	return context;
 };
 
+const getCourseFromLesson = async (lesson, app) => {
+	let { courseId } = lesson;
+	if (lesson.courseGroupId) {
+		({ courseId } = await app.service('courseGroupModel').get(lesson.courseGroupId));
+	}
+	return app.service('courseModel').get(courseId);
+};
+
 const restrictToUsersCoursesLessons = async (context) => {
-	const { courseId } = context.params.lesson;
-	const course = await context.app.service('courseModel').get(courseId);
 	const { userId } = context.params.account;
+	const course = await getCourseFromLesson(context.params.lesson, context.app);
 
 	const userInCourse = course.userIds.some((id) => equal(id, userId))
 		|| course.teacherIds.some((id) => equal(id, userId))

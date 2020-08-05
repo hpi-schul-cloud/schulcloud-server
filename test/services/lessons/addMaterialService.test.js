@@ -35,11 +35,31 @@ describe('addMaterial Service', () => {
 		expect(result).to.haveOwnProperty('url');
 	});
 
-	it('adds the material to the lesson', async () => {
+	it('adds the material to the lesson in course', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
 		const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId: course._id });
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		params.query = {};
+		params.route = { lessonId: lesson._id };
+		const { _id: materialId } = await app.service('/lessons/:lessonId/material').create({
+			title: 'testTitle',
+			client: 'someclient',
+			url: 'hpi.schul-cloud.org',
+		}, params);
+		const result = await app.service('lessons').get(lesson._id);
+		expect(result).to.not.be.undefined;
+		expect(result).to.haveOwnProperty('materialIds');
+		expect(result.materialIds[0].toString()).to.equal(materialId.toString());
+	});
+
+	it('adds the material to the lesson in courseGroup', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool({});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+		const courseGroup = await testObjects.createTestCourseGroup({ courseId: course._id });
+		const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseGroupId: courseGroup._id });
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = {};
 		params.route = { lessonId: lesson._id };
