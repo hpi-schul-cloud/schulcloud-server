@@ -1,12 +1,16 @@
 const { authenticate } = require('@feathersjs/authentication');
 const nanoid = require('nanoid');
 const {
+	iff, isProvider,
+} = require('feathers-hooks-common');
+const {
 	injectUserId,
 	restrictToUsersOwnLessons,
 	hasPermission,
 	ifNotLocal,
 	permitGroupOperation,
 	checkCorrectCourseOrTeamId,
+	getRestrictPopulatesHook,
 } = require('../../../hooks');
 const lesson = require('../model');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
@@ -54,6 +58,14 @@ const mapUsers = (context) => {
 	return context;
 };
 
+const populateWhitelist = {
+	materialIds: [
+		'name', 'description', 'date', 'time', 'contents', 'materialIds',
+		'courseId', 'courseGroupId', 'teamId', 'hidden', 'shareToken',
+		'isCopyFrom', 'position',
+	],
+};
+
 exports.before = () => ({
 	all: [authenticate('jwt'), mapUsers],
 	find: [
@@ -63,6 +75,7 @@ exports.before = () => ({
 	get: [
 		hasPermission('TOPIC_VIEW'),
 		ifNotLocal(restrictToUsersOwnLessons),
+		iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
 	],
 	create: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
