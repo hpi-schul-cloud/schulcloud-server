@@ -61,9 +61,10 @@ const mapUsers = (context) => {
 
 const populateWhitelist = {
 	materialIds: [
-		'name', 'description', 'date', 'time', 'contents', 'materialIds',
-		'courseId', 'courseGroupId', 'teamId', 'hidden', 'shareToken',
-		'isCopyFrom', 'position',
+		'_id', 'originId', 'title', 'client', 'url', 'license', 'description',
+		'contentType', 'lastModified', 'language', 'subjects', 'targetGroups',
+		'target', 'tags', 'relatedResources', 'popularity', 'thumbnailUrl',
+		'editorsPick', 'createdAt',
 	],
 };
 
