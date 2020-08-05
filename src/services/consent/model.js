@@ -4,48 +4,9 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
-const mongooseHistory = require('mongoose-history');
-const { enableAuditLog } = require('../../utils/database');
+const { consentTypes } = require('../user/model');
 
 const { Schema } = mongoose;
-/*
-const consentForm = ['analog', 'digital', 'update'];
-const consentSource = ['automatic-consent', 'tsp-sync'];
-
-const consentSchema = new Schema({
-	userId: {
-		type: Schema.Types.ObjectId,
-		ref: 'user',
-		required: true,
-		index: true,
-	},
-	userConsent: {
-		form: { type: String, enum: consentForm },
-		source: { type: String, enum: consentSource },
-		dateOfPrivacyConsent: { type: Date },
-		dateOfTermsOfUseConsent: { type: Date },
-		privacyConsent: { type: Boolean },
-		termsOfUseConsent: { type: Boolean },
-	},
-	parentConsents: [{
-		parentId: { type: Schema.Types.ObjectId, ref: 'user' },
-		form: { type: String, enum: consentForm },
-		source: { type: String, enum: consentSource },
-		dateOfPrivacyConsent: { type: Date },
-		dateOfTermsOfUseConsent: { type: Date },
-		privacyConsent: { type: Boolean },
-		termsOfUseConsent: { type: Boolean },
-	}],
-});
-
-enableAuditLog(consentSchema);
-consentSchema.plugin(mongooseHistory);
-*/
-// TODO: get it from user schema where consent is defines!?
-const consentTypes = {
-	PRIVACY: 'privacy',
-	TERMS_OF_USE: 'termsOfUse',
-};
 
 const consentVersionSchema = new Schema({
 	consentTypes: [{
@@ -66,7 +27,6 @@ const consentVersionSchema = new Schema({
 const ConsentVersionModel = mongoose.model('consentVersion', consentVersionSchema);
 
 module.exports = {
-	// consentModel,
 	consentTypes,
 	ConsentVersionModel,
 };

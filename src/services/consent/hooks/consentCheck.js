@@ -1,5 +1,10 @@
 const { Forbidden } = require('@feathersjs/errors');
 
+/**
+ * Check if user id from route is the same like in authenticaiton payload
+ * Works only with authenticated user
+ * @param {*} context
+ */
 exports.restrictToCurrentUser = (context) => {
 	if (context.params.route.userId === context.params.authentication.payload.userId) {
 		return context;

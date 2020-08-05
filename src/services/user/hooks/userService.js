@@ -516,7 +516,6 @@ const generateRegistrationLink = async (context) => {
 
 const filterResult = async (context) => {
 	const userCallingHimself = ObjectId.equal(context.id, context.params.account.userId);
-	// TODO: map super hero to admin route
 	const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
 	if (userCallingHimself || userIsSuperhero) {
 		return context;

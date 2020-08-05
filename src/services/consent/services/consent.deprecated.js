@@ -9,7 +9,7 @@ const consentHooks = {
 	before: {
 		all: [
 			authenticate('jwt'),
-		], // TODO: restrict to current user
+		],
 		get: [iff(isProvider('external'), restrictToCurrentUser)],
 		find: [iff(isProvider('external'), restrictToCurrentUser)],
 		create: [disallow('external')],
@@ -36,6 +36,8 @@ class ConsentService {
 		};
 
 		if (userId !== undefined) {
+			// check for _basonType is need for internal request
+			// and because of id could also include an $in or simular
 			// eslint-disable-next-line no-underscore-dangle
 			if (typeof userId === 'string' || userId._bsontype === 'ObjectID') {
 				const user = await this.modelService.get(userId);
@@ -56,7 +58,7 @@ class ConsentService {
 		}
 
 		if (Object.keys(oldQuery).length !== 0) {
-			query.constent = {
+			query.consent = {
 				...oldQuery, // TODO: check if necassery or cleanup client
 			};
 		} else {

@@ -90,8 +90,6 @@ class ConsentVersionService {
 			delete data.consentData;
 		}
 
-		// TODO: set Flag in consents on update
-
 		return this.app.service('consentVersionsModel').create(data, prepareInternalParams(params));
 	}
 

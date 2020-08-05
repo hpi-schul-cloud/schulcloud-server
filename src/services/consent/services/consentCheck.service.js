@@ -19,7 +19,6 @@ const consentCheckHooks = {
 	},
 };
 
-// TODO: add Indexes if needed
 const getVersion = (ref, type, schoolId, date) => ref.find({
 	query: {
 		publishedAt: {

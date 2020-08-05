@@ -96,16 +96,9 @@ const checkParentConsent = (parentConsents) => {
 	return false;
 };
 
-const checkUserConsent = (userConsent) => {
-	if (userConsent
-		&& userConsent.privacyConsent === true
-		&& userConsent.termsOfUseConsent === true
-	) {
-		return true;
-	}
-
-	return false;
-};
+const checkUserConsent = (userConsent) => userConsent
+		&& userConsent.privacyConsent
+		&& userConsent.termsOfUseConsent;
 
 /**
  * Calculate the consent status
@@ -122,8 +115,8 @@ const defineConsentStatus = (birthday, consent) => {
 	}
 
 	const currentDate = new Date();
-	const secoundConsentSwitchDate = new Date();
-	secoundConsentSwitchDate
+	const secondConsentSwitchDate = new Date();
+	secondConsentSwitchDate
 		.setFullYear(
 			currentDate.getFullYear()
 			- Configuration.get('CONSENT_AGE_SECOND'),
@@ -139,7 +132,7 @@ const defineConsentStatus = (birthday, consent) => {
 		if (checkParentConsent(parentConsents) === true) {
 			return 'ok';
 		}
-	} else if (birthday.getTime() <= secoundConsentSwitchDate.getTime()) {
+	} else if (birthday.getTime() <= secondConsentSwitchDate.getTime()) {
 		// only user have to agre
 		if (checkUserConsent(userConsent) === true) {
 			return 'ok';
@@ -162,10 +155,10 @@ const defineConsentStatus = (birthday, consent) => {
 const isParentConsentRequired = (birthday) => {
 	if (!(birthday instanceof Date)) return undefined;
 	const currentDate = new Date();
-	const secoundConsentSwitchDate = new Date();
-	secoundConsentSwitchDate.setFullYear(currentDate.getFullYear() - Configuration.get('CONSENT_AGE_SECOND'));
+	const secondConsentSwitchDate = new Date();
+	secondConsentSwitchDate.setFullYear(currentDate.getFullYear() - Configuration.get('CONSENT_AGE_SECOND'));
 
-	if (birthday.getTime() <= secoundConsentSwitchDate.getTime()) {
+	if (birthday.getTime() <= secondConsentSwitchDate.getTime()) {
 		return false;
 	}
 
@@ -188,7 +181,8 @@ const userToConsent = (user) => ({
  * data will be moved to the attribute consent
  * @param {Object} data
  */
-const modifyDataForUserSchema = ({ _id, ...data }) => ({
+// eslint-disable-next-line no-unused-vars
+const modifyDataForUserSchema = ({ _id, userId, ...data }) => ({
 	consent: {
 		...data,
 	},

@@ -249,8 +249,6 @@ exports.resolveToIds = (serviceName, path, key) => (context) => {
 		.then((_values) => {
 			deepValue(context, path, _values);
 			return context;
-		}).catch((err) => {
-			console.log(err);
 		});
 };
 

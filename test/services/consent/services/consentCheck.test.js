@@ -106,7 +106,6 @@ describe('consentCheck tests', () => {
 			},
 		});
 
-		// TODO: check for school consent
 		expect(res).to.have.property('haveBeenUpdated');
 		expect(res.haveBeenUpdated).to.equal(true);
 		expect(res).to.have.property('consentStatus');
