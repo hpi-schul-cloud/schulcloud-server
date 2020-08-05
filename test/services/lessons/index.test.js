@@ -138,4 +138,28 @@ describe('lessons service', () => {
 			expect(err.message).to.equal('populate not supported');
 		}
 	});
+
+	it('can populate materials', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool({});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const { _id: courseId } = await testObjects.createTestCourse({
+			schoolId, teacherIds: [teacher._id],
+		});
+		const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId });
+		await app.service('/lessons/:lessonId/material').create({
+			title: 'testTitle',
+			client: 'someclient',
+			url: 'hpi.schul-cloud.org',
+		}, { route: { lessonId: lesson._id } });
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		params.query = { $populate: ['materialIds'] };
+		const result = await app.service('lessons').get(lesson._id, params);
+
+		expect(result.materialIds.length).to.equal(1);
+		expect(typeof result.materialIds[0]).to.equal('object');
+		expect(result.materialIds[0]).to.haveOwnProperty('_id');
+		expect(result.materialIds[0]).to.haveOwnProperty('title');
+		expect(result.materialIds[0]).to.haveOwnProperty('client');
+		expect(result.materialIds[0]).to.haveOwnProperty('url');
+	});
 });
