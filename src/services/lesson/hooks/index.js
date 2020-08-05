@@ -11,6 +11,7 @@ const {
 	permitGroupOperation,
 	checkCorrectCourseOrTeamId,
 	getRestrictPopulatesHook,
+	preventPopulate,
 } = require('../../../hooks');
 const lesson = require('../model');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
@@ -83,18 +84,22 @@ exports.before = () => ({
 		injectUserId,
 		checkCorrectCourseOrTeamId,
 		setPosition,
+		iff(isProvider('external'), preventPopulate),
 	],
 	update: [
+		iff(isProvider('external'), preventPopulate),
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 	],
 	patch: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 		permitGroupOperation,
 		ifNotLocal(checkCorrectCourseOrTeamId),
+		iff(isProvider('external'), preventPopulate),
 	],
 	remove: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', false),
 		permitGroupOperation,
+		iff(isProvider('external'), preventPopulate),
 	],
 });
 
