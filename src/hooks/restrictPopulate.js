@@ -26,7 +26,7 @@ const preventPopulate = (context) => {
 		throw new BadRequest(errorMessage);
 	}
 	return context;
-}
+};
 
 module.exports = {
 	getRestrictPopulatesHook,
