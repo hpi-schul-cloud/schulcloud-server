@@ -54,6 +54,15 @@ module.exports = function setup() {
 			this.docs = {};
 		}
 
+		/**
+		 * Generates short registration link, optionally with user hash.
+		 * @param {String} data.role user role = "teacher" / "student"
+		 * @param {Boolean} data.save hash will be generated with URI-safe characters
+		 * @param {Boolean} data.patchUser hash will be patched into the user (DB)
+		 * @param {String} data.host urrent webaddress from client
+		 * @param {String} data.schoolId users schoolId
+		 * @param {String} data.toHash optional, user account mail for hash generation
+		 */
 		async create(data, params) {
 			const linkData = {};
 			if (data.toHash) {
