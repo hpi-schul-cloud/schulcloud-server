@@ -128,7 +128,7 @@ const defineConsentStatus = (birthday, consent) => {
 	const { parentConsents, userConsent } = consent;
 
 	if (birthday.getTime() > firstConsentSwitchDate.getTime()) {
-		// only parents have to agre
+		// only parents have to agree
 		if (checkParentConsent(parentConsents) === true) {
 			return 'ok';
 		}
