@@ -14,7 +14,7 @@ describe('course service', () => {
 	it('creates a course', async () => {
 		const course = await courseService.create({
 			name: 'testCourse',
-			schoolId: '0000d186816abba584714c5f',
+			schoolId: '5f2987e020834114b8efd6f8',
 			userIds: [],
 			classIds: [],
 			teacherIds: [],

@@ -58,7 +58,7 @@ describe('user service', () => {
 			.then((testSubrole) => testObjects.createTestUser({
 				id: '0000d231816abba584714d01',
 				accounts: [],
-				schoolId: '0000d186816abba584714c5f',
+				schoolId: '5f2987e020834114b8efd6f8',
 				email: 'user@testusers.net',
 				firstName: 'Max',
 				lastName: 'Tester',
@@ -278,7 +278,7 @@ describe('user service', () => {
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {
 				$populate: [
-					'0000d186816abba584714c5f',
+					'5f2987e020834114b8efd6f8',
 					'roles',
 				],
 			};
@@ -613,7 +613,7 @@ describe('user service', () => {
 				firstName: 'Test',
 				lastName: 'Testington',
 				email: 'ExistinG@aCCount.de',
-				schoolId: '0000d186816abba584714c5f',
+				schoolId: '5f2987e020834114b8efd6f8',
 			};
 
 			await new Promise((resolve, reject) => {
