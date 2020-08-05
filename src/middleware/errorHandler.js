@@ -132,7 +132,7 @@ const filterQuery = (url) => {
 };
 
 const handleSilentError = (error, req, res, next) => {
-	if (error.catchedError instanceof SilentError) {
+	if (error.catchedError.name === SilentError.name) {
 		if (Configuration.get('SILENT_ERROR_ENABLED')) {
 			res.append('x-silent-error', true);
 		}
