@@ -1,4 +1,3 @@
-const assert = require('assert');
 const { expect } = require('chai');
 const { Configuration } = require('@schul-cloud/commons');
 const app = require('../../../../src/app');
