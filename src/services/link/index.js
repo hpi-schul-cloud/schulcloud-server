@@ -72,9 +72,9 @@ module.exports = function setup() {
 
 			// base link
 			if (data.role === 'student') {
-				linkData.link = `${(data.host || HOST)}/registration/${data.schoolId}`;
+				linkData.link = `${(data.host || Configuration.get('HOST'))}/registration/${data.schoolId}`;
 			} else {
-				linkData.link = `${(data.host || HOST)}/registration/${data.schoolId}/byemployee`;
+				linkData.link = `${(data.host || Configuration.get('HOST'))}/registration/${data.schoolId}/byemployee`;
 			}
 			if (linkData.hash) linkData.link += `?importHash=${linkData.hash}`;
 
