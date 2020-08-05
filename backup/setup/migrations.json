@@ -598,5 +598,16 @@
 			"$date": "2020-07-27T07:11:21.178Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f290c7d44aefd8b14bf28f4"
+		},
+		"state": "up",
+		"name": "start_new_school_year_cluster_4",
+		"createdAt": {
+			"$date": "2020-08-03T12:58:31.983Z"
+		},
+		"__v": 0
 	}
 ]

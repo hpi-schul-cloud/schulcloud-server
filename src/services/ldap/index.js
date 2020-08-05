@@ -59,8 +59,8 @@ module.exports = function LDAPService() {
 				const school = await schoolsService.get(user.schoolId);
 				system.ldapConfig.active = payload.ldapConfig.active;
 				school.ldapSchoolIdentifier = system.ldapConfig.rootPath;
-				await schoolsService.patch(school);
-				await systemService.patch(system);
+				await schoolsService.patch(school._id, school);
+				await systemService.patch(system._id, system);
 				return Promise.resolve('success');
 			});
 			session.endSession();
