@@ -154,10 +154,7 @@ then
 	# and deploy to according hotfix environment
 	TEAM="$(cut -d'/' -f2 <<< $TRAVIS_BRANCH)"
 	if [[ "$TEAM" -gt 0 && "$TEAM" -lt 8 ]]; then
-<<<<<<< HEAD
-=======
-		echo "Event detected on branch hotfix/$TEAM/... . Attempting to deploy to hotfix environment $TEAM..."
->>>>>>> 44064b2b... add deployment output commands
+    	echo "Event detected on branch hotfix/$TEAM/... . Attempting to deploy to hotfix environment $TEAM..."
 		buildandpush
 		deploytohotfix $TEAM
 		inform_hotfix $TEAM
