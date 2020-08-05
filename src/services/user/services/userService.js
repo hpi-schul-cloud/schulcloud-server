@@ -86,7 +86,7 @@ const userHooks = {
 	before: {
 		all: [],
 		find: [
-			mapPaginationQuery.bind(this),
+			mapPaginationQuery,
 			// resolve ids for role strings (e.g. 'TEACHER')
 			resolveToIds('/roles', 'params.query.roles', 'name'),
 			authenticate('jwt'),
