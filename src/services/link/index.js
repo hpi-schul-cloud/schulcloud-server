@@ -1,11 +1,10 @@
 /* eslint-disable max-classes-per-file */
-
+const { Configuration } = require('@schul-cloud/commons');
 const queryString = require('querystring');
 const service = require('feathers-mongoose');
 const logger = require('../../logger');
 const link = require('./link-model');
 const hooks = require('./hooks');
-const { HOST } = require('../../../config/globals');
 
 module.exports = function setup() {
 	const app = this;
@@ -73,9 +72,9 @@ module.exports = function setup() {
 
 			// base link
 			if (data.role === 'student') {
-				linkData.link = `${(data.host || HOST)}/registration/${data.schoolId}`;
+				linkData.link = `${(data.host || Configuration.get('HOST'))}/registration/${data.schoolId}`;
 			} else {
-				linkData.link = `${(data.host || HOST)}/registration/${data.schoolId}/byemployee`;
+				linkData.link = `${(data.host || Configuration.get('HOST'))}/registration/${data.schoolId}/byemployee`;
 			}
 			if (linkData.hash) linkData.link += `?importHash=${linkData.hash}`;
 
@@ -113,53 +112,36 @@ module.exports = function setup() {
 				const expertSchoolId = data.esid; const { email } = data; const
 					{ teamId } = data;
 
-				const hashService = app.service('hash');
-				const linkService = app.service('link');
-
 				if (email) {
-					// generate import hash
-					const user = (await app.service('users').find({ query: { email: data.toHash } }) || {}).data[0];
-					if (user && user.importHash) linkInfo.hash = user.importHash;
-					else {
-						await hashService.create({
-							toHash: email,
-							save: true,
-							patchUser: true,
-						}).then((generatedHash) => {
-							linkInfo.hash = generatedHash;
-						}).catch((err) => {
-							logger.warning(err);
-							return Promise.resolve('Success!');
-						});
+					const { data: userData } = await app.service('users').find({ query: { email: data.toHash } });
+					if (userData && userData[0] && userData[0].importHash) {
+						linkInfo.hash = userData[0].importHash;
+					} else {
+						linkInfo.hash = await app.service('hash')
+							.create({
+								toHash: email,
+								save: true,
+								patchUser: true,
+							});
 					}
 				}
 
 				// build final link and remove possible double-slashes in url except the protocol ones
 				if (expertSchoolId && linkInfo.hash) {
 					// expert registration link for new users
-					linkInfo.link = data.host || HOST;
-					linkInfo.link += `/registration/${expertSchoolId}/byexpert/?importHash=${linkInfo.hash}`
-						.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
+					linkInfo.link = `/registration/${expertSchoolId}/byexpert/?importHash=${linkInfo.hash}`;
 				} else if (teamId) { /** @replaced logic is inside team services now * */
 					// team accept link for existing users
-					linkInfo.link = data.host || HOST;
-					linkInfo.link += `/teams/invitation/accept/${teamId}`
-						.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
+					linkInfo.link = `/teams/invitation/accept/${teamId}`;
 				} else {
 					logger.warning('Nicht alle Daten für den Experten-Link vorhanden.');
 					return Promise.resolve('Success!');
 				}
 
 				// generate short url
-				await linkService.create({ target: linkInfo.link }).then((generatedShortLink) => {
-					linkInfo.shortLinkId = generatedShortLink._id;
-					// build final short link and remove possible double-slashes in url except the protocol ones
-					linkInfo.shortLink = data.host || HOST;
-					linkInfo.shortLink += `/link/${generatedShortLink._id}`.replace(/(https?:\/\/)|(\/)+/g, '$1$2');
-				}).catch(() => {
-					logger.warning('Fehler beim Erstellen des Kurzlinks.');
-					return Promise.resolve('Success!');
-				});
+				// build final short link and remove possible double-slashes in url except the protocol ones
+				linkInfo.shortLink = data.host || Configuration.get('HOST');
+				linkInfo.shortLink += linkInfo.link;
 
 				resolve(linkInfo);
 			});
