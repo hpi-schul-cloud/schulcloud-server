@@ -161,7 +161,6 @@ then
 	else
 		echo "Event detected on branch hotfix*. However, branch name pattern does not match requirements to deploy. Expected hotfix/<team_number>/XX.XX.XX but got $TRAVIS_BRANCH"
 	fi
-
 else
 	# If no condition is met, nothing will be deployed.
 	echo "Event detected which does not meet any conditions. Deployment will be skipped."
