@@ -1,5 +1,8 @@
 const { BadRequest, NotFound } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
+const {
+	iff, isProvider,
+} = require('feathers-hooks-common');
 const { ObjectId } = require('../../../helper/compare');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
 const { equal } = require('../../../helper/compare').ObjectId;
@@ -52,7 +55,7 @@ module.exports = {
 		create: [
 			validateData,
 			addLessonToParams,
-			restrictToUsersCoursesLessons,
+			iff(isProvider('external'), restrictToUsersCoursesLessons),
 			// checks permission for COURSE and TOPIC for creation
 			checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', true),
 		],
