@@ -14,9 +14,27 @@ Deine ${data.cloud}
 	`;
 }
 
+async function generateSystemInformation(hook) {
+	const { userId, username } = hook.params.account;
+	const userInformation = await hook.app.service('users').get((userId), {
+		query: {
+			$populate: { path: 'roles' },
+		},
+	});
+
+	const roles = userInformation.roles.length ? userInformation.roles.map((info) => info.name) : 'NO ROLE(S)';
+	const email = userInformation.email || 'NO EMAIL';
+	const systemInformation = `
+	User login: ${username}
+	User role(s): ${roles}
+	User registrated email: ${email}\n`;
+	return systemInformation;
+}
+
 function createFeedbackText(user, data) {
 	const device = data.deviceUserAgent ? `${data.device} [auto-detection: ${data.deviceUserAgent}]` : data.device;
 	let text = `
+SystemInformation: ${data.systemInformation}
 ReplyEmail: ${data.replyEmail}
 User: ${user}
 User-ID: ${data.userId}
@@ -27,7 +45,7 @@ Browser: ${data.browserName}
 Browser Version: ${data.browserVersion}
 Betriebssystem: ${data.os}
 Gerät: ${device}
-    `;
+`;
 
 	if (data.desire && data.desire !== '') {
 		text = `
@@ -37,19 +55,19 @@ Als ${data.role}
 möchte ich ${data.desire},
 um ${data.benefit}.
 Akzeptanzkriterien: ${data.acceptanceCriteria}
-        `;
+`;
 	} else {
 		text = `
 ${text}
 User meldet folgendes:
 Problem Kurzbeschreibung: ${data.subject}
 Problembeschreibung: ${data.problemDescription}
-        `;
+`;
 		if (data.notes) {
 			text = `
 ${text}
 Anmerkungen: ${data.notes}
-            `;
+`;
 		}
 	}
 	return text;
@@ -62,7 +80,7 @@ const denyDbWriteOnType = (hook) => {
 	return hook;
 };
 
-const feedback = () => (hook) => {
+const feedback = () => async (hook) => {
 	const data = hook.data || {};
 	if (data.type === 'contactAdmin') {
 		globalHooks.sendEmail(hook, {
@@ -77,6 +95,7 @@ const feedback = () => (hook) => {
 		});
 		// TODO: NOTIFICATION SERVICE
 	} else {
+		data.systemInformation = await generateSystemInformation(hook);
 		globalHooks.sendEmail(hook, {
 			subject: data.title || data.subject || 'nosubject',
 			emails: ['ticketsystem@schul-cloud.org'],

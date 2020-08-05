@@ -287,22 +287,22 @@
 		},
 		"ETHERPAD_API_PATH": {
 			"type": "string",
-			"default":"/api/1",
+			"default": "/api/1",
 			"description": "The etherpad api path."
 		},
 		"ETHERPAD_URI": {
 			"type": "string",
-			"default":"https://schul-cloud.org/etherpad/api/1",
+			"default": "https://schul-cloud.org/etherpad/api/1",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_URI": {
 			"type": "string",
-			"default":"https://etherpad.schul-cloud.org/p",
+			"default": "https://etherpad.schul-cloud.org/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_NEW_PAD_URI": {
 			"type": "string",
-			"default":"https://schul-cloud.org/etherpad/p",
+			"default": "https://schul-cloud.org/etherpad/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_DOMAIN": {
@@ -319,7 +319,7 @@
 			"type": "integer",
 			"default": 7200,
 			"description": "If Session Valid time is smaller than this, a new session is created on request."
-    	},
+		},
 		"SKIP_CONDITIONS_CONSENT": {
 			"type": "string",
 			"default": "",
@@ -329,7 +329,7 @@
 			"type": "integer",
 			"default": 7200,
 			"description": "The time in seconds during which the activation link is valid. After expiration the entry is removed from the database"
-    	},
+		},
 		"ADMIN_MAIL_RECEIVERS": {
 			"type": "string",
 			"default": null,
@@ -373,7 +373,7 @@
 		},
 		"SILENT_ERROR_ENABLED": {
 			"type": "boolean",
-			"default": true,
+			"default": false,
 			"description": "Brute force flag during recovery password process"
 		}
 	},
