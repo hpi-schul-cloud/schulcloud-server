@@ -10,6 +10,14 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 ### Changed
 
+## [24.0.2] - 2020-08-05
+### Fixed - 24.0.2
+- SC-5835: Starting the new school year automatically - Cluster 4
+
+## [24.0.1] - 2020-07-31
+### Fixed - 24.0.1
+-  SC-5917 Fix activation of LDAP system
+
 ## [23.6.3] - 2020-07-28
 
 ### Added
