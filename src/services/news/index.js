@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 const service = require('feathers-mongoose');
 const { Forbidden, NotFound, BadRequest } = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
@@ -349,6 +350,7 @@ class NewsService extends AbstractService {
 				$or: subqueries,
 				$limit: query.$limit,
 				$skip: query.$skip,
+				$sort: query.$sort, // sortQuery do not work as expect and need in client
 				...NewsService.populateParams().query,
 				...searchFilter,
 				...sortQuery,
