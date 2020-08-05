@@ -258,10 +258,8 @@ const main = async () => {
 		throw new Error('to many arguments');
 	} else if (args._[0] === 'import') {
 		await importDirectory(CONFIG.BACKUP_PATH_IMPORT);
-		process.exit(0);
 	} else if (args._[0] === 'export') {
 		await exportBackup(CONFIG.BACKUP_PATH_EXPORT);
-		process.exit(0);
 	} else {
 		throw new Error('invalid argument');
 	}
