@@ -1,8 +1,8 @@
-const { BadRequest } = require('@feathersjs/errors');
+const { BadRequest, NotFound } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const { ObjectId } = require('../../../helper/compare');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
-
+const { equal } = require('../../../helper/compare').ObjectId;
 
 const addLessonToParams = async (context) => {
 	const { lessonId } = context.params.route;
@@ -14,6 +14,17 @@ const addLessonToParams = async (context) => {
 	context.params.lesson = lesson;
 
 	return context;
+};
+
+const restrictToUsersCoursesLessons = async (context) => {
+	const { courseId } = context.params.lesson;
+	const course = await context.app.service('courseModel').get(courseId);
+	const { userId } = context.params.account;
+
+	const userInCourse = course.userIds.some((id) => equal(id, userId))
+		|| course.teacherIds.some((id) => equal(id, userId))
+		|| course.substitutionIds.some((id) => equal(id, userId));
+	if (!userInCourse) throw new NotFound(`no record found for id '${context.params.route.lessonId}'`);
 };
 
 const validateData = async (context) => {
@@ -41,6 +52,7 @@ module.exports = {
 		create: [
 			validateData,
 			addLessonToParams,
+			restrictToUsersCoursesLessons,
 			// checks permission for COURSE and TOPIC for creation
 			checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', true),
 		],
