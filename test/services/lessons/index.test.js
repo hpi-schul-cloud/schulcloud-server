@@ -114,5 +114,28 @@ describe('lessons service', () => {
 		}
 	});
 
-	it('can not populate other than materialIds');
+	it('can not populate courseId', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool({});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
+		const otherStudent = await testObjects.createTestUser({ roles: ['student'], schoolId });
+		const { _id: courseId } = await testObjects.createTestCourse({
+			schoolId, teacherIds: [teacher._id], userIds: [student._id, otherStudent._id],
+		});
+		const { _id: courseGroupId } = await testObjects.createTestCourseGroup({
+			userIds: [student._id], schoolId, courseId,
+		});
+		const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId, courseGroupId });
+		const params = await testObjects.generateRequestParamsFromUser(otherStudent);
+		params.query = { $populate: ['courseId'] };
+
+		try {
+			await app.service('lessons').get(lesson._id, params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should not have failed');
+			expect(err.code).to.equal(400);
+			expect(err.message).to.equal('populate not supported');
+		}
+	});
 });

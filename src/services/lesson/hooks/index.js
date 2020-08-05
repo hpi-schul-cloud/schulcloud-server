@@ -70,12 +70,13 @@ exports.before = () => ({
 	all: [authenticate('jwt'), mapUsers],
 	find: [
 		hasPermission('TOPIC_VIEW'),
+		iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
 		ifNotLocal(restrictToUsersOwnLessons),
 	],
 	get: [
 		hasPermission('TOPIC_VIEW'),
-		ifNotLocal(restrictToUsersOwnLessons),
 		iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
+		ifNotLocal(restrictToUsersOwnLessons),
 	],
 	create: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
