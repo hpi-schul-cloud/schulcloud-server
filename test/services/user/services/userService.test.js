@@ -191,10 +191,7 @@ describe('user service', () => {
 			expect(result).to.haveOwnProperty('firstName');
 			expect(result).to.haveOwnProperty('lastName');
 			expect(result).to.haveOwnProperty('displayName');
-			// expect(result).to.haveOwnProperty('email');
-			// expect(result).to.haveOwnProperty('birthday');
-			// TODO: ask max about ldapid
-			// expect(result).not.to.haveOwnProperty('ldapId');
+			expect(result).not.to.haveOwnProperty('ldapId');
 		});
 
 		// https://ticketsystem.schul-cloud.org/browse/SC-5163
