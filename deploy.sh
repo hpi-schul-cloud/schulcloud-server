@@ -133,7 +133,7 @@ then
 	# no pull request, call inform. Discard if event 
 	# is related to a pull request.
 	echo "Event detected on branch master. Event is no Pull Request. Informing team."
-  	buildandpush
+	buildandpush
 	inform
 elif [[ "$TRAVIS_BRANCH" = "develop" ]]
 then
