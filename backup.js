@@ -265,7 +265,5 @@ const main = async () => {
 	}
 };
 
-// exit not well without exit(0)
-// eslint-disable-next-line no-useless-catch
 
 main();
