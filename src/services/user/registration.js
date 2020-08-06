@@ -1,3 +1,4 @@
+const { Configuration } = require('@schul-cloud/commons');
 const errors = require('@feathersjs/errors');
 const userModel = require('./model');
 const accountModel = require('../account/model');
@@ -31,26 +32,37 @@ const populateUser = (app, data) => {
 
 	if (data.classId) user.classId = data.classId;
 
-	if (data.importHash) {
-		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId, $populate: ['roles'] } }).then((users) => {
-			if (users.data.length <= 0 || users.data.length > 1) {
-				throw new errors.BadRequest('Kein Nutzer für die eingegebenen Daten gefunden.');
-			}
-			oldUser = users.data[0];
-
-			Object.keys(oldUser).forEach((key) => {
-				if (oldUser[key] !== null && key !== 'firstName' && key !== 'lastName') {
-					user[key] = oldUser[key];
-				}
-			});
-
-			user.roles = user.roles.map((role) => (typeof role === 'object' ? role.name : role));
-
-			delete user.importHash;
-			return { user, oldUser };
-		});
+	if (!data.importHash) {
+		return Promise.reject('Ungültiger Link');
 	}
-	return Promise.resolve({ user, oldUser });
+
+	if (data.userId) {
+		data.userId = data.userId.toString();
+	}
+
+	return app.service('users').find({
+		query: {
+			importHash: data.importHash.toString(),
+			_id: data.userId,
+			$populate: ['roles'],
+		},
+	}).then((users) => {
+		if (users.data.length <= 0 || users.data.length > 1) {
+			throw new errors.BadRequest('Kein Nutzer für die eingegebenen Daten gefunden.');
+		}
+		oldUser = users.data[0];
+
+		Object.keys(oldUser).forEach((key) => {
+			if (oldUser[key] !== null && key !== 'firstName' && key !== 'lastName') {
+				user[key] = oldUser[key];
+			}
+		});
+
+		user.roles = user.roles.map((role) => (typeof role === 'object' ? role.name : role));
+
+		delete user.importHash;
+		return { user, oldUser };
+	});
 };
 
 const insertUserToDB = async (app, data, user) => {
@@ -118,6 +130,7 @@ const registerUser = function register(data, params, app) {
 			user = response.user;
 			oldUser = response.oldUser;
 		})).then(() => {
+		const consentSkipCondition = Configuration.get('SKIP_CONDITIONS_CONSENT');
 		if ((user.roles || []).includes('student')) {
 			// wrong birthday object?
 			if (user.birthday instanceof Date && Number.isNaN(user.birthday)) {
@@ -133,7 +146,8 @@ const registerUser = function register(data, params, app) {
 					`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler`
 						+ `nicht ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre oder älter sein.`,
 				));
-			} if (!data.parent_email && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
+			} if (!data.parent_email && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS
+				&& !consentSkipCondition.includes('student')) {
 				return Promise.reject(new errors.BadRequest(
 					`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler`
 						+ ` nicht jünger als ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre sein.`,
@@ -183,23 +197,11 @@ const registerUser = function register(data, params, app) {
 				userId: user._id,
 				activated: true,
 			};
-			if (data.sso === 'true' && data.account) {
-				const accountId = data.account;
-				return accountModel.findByIdAndUpdate(
-					accountId,
-					{ $set: { activated: true, userId: user._id } },
-					{ new: true },
-				).lean().exec()
-					.then((accountResponse) => {
-						account = accountResponse;
-					})
-					.catch((err) => Promise.reject(new Error('Fehler der Account existiert nicht.', err)));
-			}
 			return app.service('accounts').create(account)
 				.then((newAccount) => { account = newAccount; })
 				.catch((err) => Promise.reject(new Error('Fehler beim Erstellen des Accounts.', err)));
 		})
-		.then((res) => {
+		.then(async (res) => {
 			// add parent if necessary
 			if (data.parent_email) {
 				parent = {
@@ -210,21 +212,15 @@ const registerUser = function register(data, params, app) {
 					schoolId: data.schoolId,
 					roles: ['parent'],
 				};
-				return app.service('users').create(parent, { _additional: { asTask: 'parent' } })
-					.catch((err) => {
-						if (err.message.startsWith('parentCreatePatch')) {
-							return Promise.resolve(err.data);
-						}
-						return Promise.reject(new Error(`Fehler beim Erstellen des Elternaccounts. ${err}`));
-					}).then((newParent) => {
-						parent = newParent;
-						return userModel.userModel.findByIdAndUpdate(user._id, { parents: [parent._id] }, { new: true }).exec()
-							.then((updatedUser) => user = updatedUser);
-					})
-					.catch((err) => {
-						logger.log('warn', `Fehler beim Verknüpfen der Eltern. ${err}`);
-						return Promise.reject(new Error('Fehler beim Verknüpfen der Eltern.', err));
-					});
+				try {
+					parent = await app.service('usersModel').create(parent);
+					user = await userModel.userModel.findByIdAndUpdate(
+						user._id, { $push: { parents: [parent._id] } }, { new: true },
+					).exec();
+				} catch (err) {
+					logger.log('warn', `Fehler beim Verknüpfen der Eltern. ${err}`);
+					return Promise.reject(new Error('Fehler beim Verknüpfen der Eltern.', err));
+				}
 			}
 			return Promise.resolve();
 		})
@@ -263,6 +259,7 @@ const registerUser = function register(data, params, app) {
 						if (oldUser) {
 							return userModel.userModel.create(oldUser);
 						}
+						return Promise.resolve();
 					}));
 			}
 			if (parent && parent._id) {
@@ -280,7 +277,7 @@ const registerUser = function register(data, params, app) {
 		});
 };
 
-module.exports = function (app) {
+module.exports = (app) => {
 	class RegistrationService {
 		create(data, params) {
 			return registerUser(data, params, app);

@@ -37,6 +37,7 @@ const ltiToolSchema = new Schema({
 	oAuthClientId: { type: String },
 	friendlyUrl: { type: String, unique: true, sparse: true },
 	skipConsent: { type: Boolean },
+	openNewTab: { type: Boolean, default: false },
 });
 
 function validateKey(value) {

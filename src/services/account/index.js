@@ -1,19 +1,18 @@
-const service = require('feathers-mongoose');
-const RandExp = require('randexp');
-const Chance = require('chance');
+// const RandExp = require('randexp');
+// const Chance = require('chance');
 
 const account = require('./model');
-const hooks = require('./hooks');
 
+// const { getRandomInt } = require('../../utils/randomNumberGenerator');
 const { supportJWTServiceSetup, jwtTimerServiceSetup } = require('./services');
+const { accountModelService, accountModelServiceHooks } = require('./services/accountModelService');
+const { accountService, accountServiceHooks } = require('./services/accountApiService');
 
+/* @deprecated
 const chance = new Chance();
 
 function randomGen(arr) {
-	const pos = Math.floor(Math.random() * arr.length);
-	const tempEle = arr[pos];
-
-	arr = arr.filter((item) => item !== tempEle);
+	const tempEle = arr[getRandomInt(arr.length - 1)];
 
 	if (arr.length === 0) return tempEle;
 
@@ -21,11 +20,11 @@ function randomGen(arr) {
 }
 
 class PasswordGenService {
-	/**
-     * generates a random String depending on the query params
-     * @param query (length<Integer> | readable<Boolean>)
-     * @returns {Promise.<TResult>}
-     */
+
+    // generates a random String depending on the query params
+    // @param query (length<Integer> | readable<Boolean>)
+    // @returns {Promise.<TResult>}
+
 	find({ query }) {
 		if (query.readable) {
 			const p2 = new Promise((resolve) => {
@@ -53,21 +52,17 @@ class PasswordGenService {
 		return p1.then((res) => res);
 	}
 }
-
+*/
 module.exports = (app) => {
-	const options = {
-		Model: account,
-		paginate: false,
-		lean: true,
-	};
+	app.use('/accountModel', accountModelService);
+	app.service('/accountModel').hooks(accountModelServiceHooks);
 
-	// Initialize our service with any options it requires
+	app.use('accounts', accountService);
+	app.service('/accounts').hooks(accountServiceHooks);
 
-	app.use('/accounts/pwgen', new PasswordGenService());
+	// app.use('/accounts/pwgen', new PasswordGenService());
 
 	app.configure(jwtTimerServiceSetup);
-
-	app.use('/accounts', service(options));
 
 	app.configure(supportJWTServiceSetup);
 
@@ -76,9 +71,4 @@ module.exports = (app) => {
 			return account.update({ _id: data.accountId }, { $set: { activated: true } });
 		},
 	});
-
-	// Get our initialize service to that we can bind hooks
-	const accountService = app.service('/accounts');
-
-	accountService.hooks(hooks);
 };

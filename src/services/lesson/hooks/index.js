@@ -76,7 +76,7 @@ exports.before = () => ({
 	patch: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 		permitGroupOperation,
-		checkCorrectCourseOrTeamId,
+		ifNotLocal(checkCorrectCourseOrTeamId),
 	],
 	remove: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', false),

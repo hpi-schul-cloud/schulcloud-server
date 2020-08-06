@@ -4,15 +4,18 @@ const { iff, isProvider, disallow } = require('feathers-hooks-common');
 // const logger = require('../../../logger');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
 const { userModel } = require('../model');
-const { hasEditPermissionForUser } = require('../hooks/index.hooks');
+const { hasEditPermissionForUser, hasReadPermissionForUser } = require('../hooks/index.hooks');
+
 const {
 	mapPaginationQuery,
 	resolveToIds,
 	restrictToCurrentSchool,
 	permitGroupOperation,
 	denyIfNotCurrentSchool,
+	denyIfStudentTeamCreationNotAllowed,
 	computeProperty,
 	addCollation,
+	blockDisposableEmail,
 } = require('../../../hooks');
 const {
 	mapRoleFilterQuery,
@@ -31,11 +34,13 @@ const {
 	handleClassId,
 	pushRemoveEvent,
 	enforceRoleHierarchyOnDelete,
+	enforceRoleHierarchyOnCreate,
 	filterResult,
 	generateRegistrationLink,
 	includeOnlySchoolRoles,
 } = require('../hooks/userService');
 
+// const USER_RABBIT_EXCHANGE = 'user';
 class UserService {
 	constructor(options) {
 		this.options = options || {};
@@ -65,7 +70,7 @@ class UserService {
 		return this.app.service('usersModel').remove(id, prepareInternalParams(params));
 	}
 
-	setup(app) {
+	async setup(app) {
 		this.app = app;
 	}
 }
@@ -90,13 +95,18 @@ const userHooks = {
 			addCollation,
 			iff(isProvider('external'), includeOnlySchoolRoles),
 		],
-		get: [authenticate('jwt')],
+		get: [
+			authenticate('jwt'),
+		],
 		create: [
 			checkJwt(),
 			pinIsVerified,
+			iff(isProvider('external'), restrictToCurrentSchool),
+			iff(isProvider('external'), enforceRoleHierarchyOnCreate),
 			sanitizeData,
 			checkUnique,
 			checkUniqueAccount,
+			blockDisposableEmail('email'),
 			generateRegistrationLink,
 			resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 		],
@@ -104,7 +114,6 @@ const userHooks = {
 			iff(isProvider('external'), disallow()),
 			authenticate('jwt'),
 			sanitizeData,
-			hasEditPermissionForUser,
 			resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name'),
 		],
 		patch: [
@@ -112,7 +121,8 @@ const userHooks = {
 			iff(isProvider('external'), securePatching),
 			permitGroupOperation,
 			sanitizeData,
-			hasEditPermissionForUser,
+			iff(isProvider('external'), hasEditPermissionForUser),
+			iff(isProvider('external'), restrictToCurrentSchool),
 			resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
 			updateAccountUsername,
 		],
@@ -126,16 +136,18 @@ const userHooks = {
 		find: [
 			decorateAvatar,
 			decorateUsers,
-			iff(isProvider('external'), filterResult),
+			iff(isProvider('external'), [filterResult, denyIfStudentTeamCreationNotAllowed({
+				errorMessage: 'The current user is not allowed to list other users!',
+			})]),
 		],
 		get: [
 			decorateAvatar,
 			decorateUser,
 			computeProperty(userModel, 'getPermissions', 'permissions'),
-			iff(isProvider('external'),
+			iff(isProvider('external'), [hasReadPermissionForUser,
 				denyIfNotCurrentSchool({
 					errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
-				})),
+				})]),
 			iff(isProvider('external'), filterResult),
 		],
 		create: [

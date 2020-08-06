@@ -8,7 +8,6 @@ const { SC_SHORT_TITLE } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const logger = require('../../../logger');
 
-const { SCHOOL_FEATURES } = require('../../school/model');
 const { set, get } = require('./scope');
 const createEmailText = require('./mail-text.js');
 const {
@@ -626,9 +625,7 @@ const isAllowedToCreateTeams = (hook) => getSessionUser(hook).then((sessionUser)
 		|| roleNames.includes('administrator')
 		|| roleNames.includes('teacher')
 		|| roleNames.includes('student')) {
-			if (roleNames.includes('student')
-				&& school.features instanceof Array
-				&& school.features.includes(SCHOOL_FEATURES.DISABLE_STUDENT_TEAM_CREATION)) {
+			if (roleNames.includes('student') && !school.isTeamCreationByStudentsEnabled) {
 				throw new Forbidden('Your school admin does not allow team creations by students.');
 			}
 		} else {
@@ -738,6 +735,7 @@ exports.before = {
 		testChangesForPermissionRouting,
 		updateUsersForEachClass,
 		teamMainHook,
+		hasTeamPermission('RENAME_TEAM'),
 	], // todo: filterToRelated(keys.data,'data')
 	remove: [
 		teamMainHook,
@@ -777,6 +775,7 @@ exports.beforeExtern = {
 		globalHooks.hasPermission('TEAM_INVITE_EXTERNAL'),
 		hasTeamPermission(['INVITE_EXPERTS', 'INVITE_ADMINISTRATORS']),
 		filterToRelated(['userId', 'email', 'role'], 'data'),
+		globalHooks.blockDisposableEmail('email'),
 		isTeacherDirectlyImport,
 	], // later with switch ..see role names
 	remove: [blockedMethod],
@@ -797,7 +796,6 @@ exports.beforeAdmin = {
 		authenticate('jwt'),
 		isAdmin,
 		existId,
-		filterToRelated([], 'params.query'),
 	],
 	find: [],
 	get: [blockedMethod],

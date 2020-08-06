@@ -1,23 +1,77 @@
 pull_request_rules:
+  #######################
+  # ADD WIP LABEL
+  #######################
+  - name: add wip label if no progress label is set
+    conditions:
+      - -draft
+      - label!=WIP
+      - label!=ready to merge
+      - label!=waiting for review
+      - label!=request_changes
+      - label!=merge_conflicts
+      - label!=help wanted
+      - label!=needs data protection review
+      - label!=dependencies
+      - -merged
+    actions:
+      label:
+        add:
+          - WIP
+  #######################
+  # AUTO UPDATE
+  #######################
+  - name: auto update when label is set
+    conditions:
+      - label=auto update
+    actions:
+      update: {}
+  #######################
+  # AUTO MERGED
+  #######################
   - name: auto merge when label is set
     conditions:
       - label!=WIP
       - label!=waiting
       - label=ready to merge
+      - label!=request_changes
+      - status-success~=Travis CI
+      - status-success~=Codacy
+      - status-success~=pullapprove
     actions:
       merge:
         method: merge
         strict: smart
-  - name: remove ready to merge label when merged
+  #######################
+  # CLEANUP AFTER MERGE
+  #######################
+  # FROM BOT
+  - name: remove ready to merge label when mergify merged
     conditions:
       - merged
       - label=ready to merge
+      - merged-by=mergify[bot]
     actions:
       label:
         add:
           - auto_merged
         remove:
           - ready to merge
+          - help wanted
+  # FROM USER
+  - name: remove ready to merge label when user merged
+    conditions:
+      - merged
+      - label=ready to merge
+      - -merged-by=mergify[bot]
+    actions:
+      label:
+        remove:
+          - ready to merge
+          - help wanted
+  #######################
+  # CLEANUP IF PR IS NOT READY
+  #######################
   - name: remove "ready to merge" label when pull is not approved
     conditions:
       - -status-success~=pullapprove

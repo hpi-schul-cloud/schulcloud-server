@@ -1,6 +1,7 @@
 const { Forbidden, GeneralError } = require('@feathersjs/errors');
 const logger = require('../../logger');
 const hooks = require('./hooks');
+const { externallyManaged } = require('../helpers/utils');
 
 class Service {
 	constructor(options) {
@@ -27,11 +28,18 @@ class Service {
 			logger.warning(err);
 			throw new Forbidden('Your access token is not valid.');
 		}
+		user.accountId = params.account._id;
 		try {
 			user.schoolName = (await this.app.service('/schools').get(user.schoolId)).name;
 		} catch (err) {
 			logger.warning(err);
 			throw new GeneralError('Can\'t find connected school.');
+		}
+		try {
+			user.externallyManaged = await externallyManaged(this.app, user);
+		} catch (err) {
+			logger.warning(err);
+			throw new GeneralError('Can\'t check externallyManaged');
 		}
 		return user;
 	}

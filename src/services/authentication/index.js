@@ -10,7 +10,7 @@ const { authenticationSecret, audience } = require('./logic');
 
 const authConfig = {
 	entity: 'account',
-	service: 'accounts',
+	service: 'accountModel',
 	secret: authenticationSecret,
 	authStrategies: ['jwt', 'local', 'ldap', 'moodle', 'iserv', 'tsp', 'api-key'],
 	jwtOptions: {

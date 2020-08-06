@@ -50,8 +50,12 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		super(app, stats, logger);
 		this.stats = Object.assign(this.stats, {
 			users: {
-				teachers: { created: 0, updated: 0, errors: 0 },
-				students: { created: 0, updated: 0, errors: 0 },
+				teachers: {
+					unchanged: 0, created: 0, updated: 0, errors: 0,
+				},
+				students: {
+					unchanged: 0, created: 0, updated: 0, errors: 0,
+				},
 			},
 		});
 		this.config = this.normalizeConfig(config);
@@ -236,22 +240,30 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		query[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`] = tspTeacher.lehrerUid;
 		const users = await this.app.service('users').find({ query });
 		if (users.total > 0) {
-			return this.updateTeacher(users.data[0]._id, tspTeacher);
+			return this.updateTeacher(users.data[0], tspTeacher);
 		}
 		return this.createTeacher(tspTeacher, school, systemId);
 	}
 
 	/**
 	 * Patches a Schul-Cloud user based on information from a TSP teacher object
-	 * @param {ObjectId|String} userId userId
+	 * @param {User} user the current user
 	 * @param {Object} tspTeacher TSP teacher object
 	 * @returns {User|null} the patched user or null (on error)
 	 * @async
 	 */
-	async updateTeacher(userId, tspTeacher) {
+	async updateTeacher(user, tspTeacher) {
+		const equal = (user.namePrefix === tspTeacher.lehrerTitel || (!user.namePrefix && !tspTeacher.namePrefix))
+			&& user.firstName === tspTeacher.lehrerVorname
+			&& user.lastName === tspTeacher.lehrerNachname;
+		if (equal) {
+			this.stats.users.teachers.unchanged += 1;
+			return user;
+		}
+
 		try {
 			const teacher = await this.app.service('users').patch(
-				userId,
+				user._id,
 				{
 					namePrefix: tspTeacher.lehrerTitel,
 					firstName: tspTeacher.lehrerVorname,
@@ -262,7 +274,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			return teacher;
 		} catch (err) {
 			this.stats.users.teachers.errors += 1;
-			this.logError('User update error', err, userId, tspTeacher);
+			this.logError('User update error', err, user._id, tspTeacher);
 			this.stats.errors.push({
 				type: 'update-teacher',
 				entity: tspTeacher.lehrerUid,
@@ -326,22 +338,29 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		query[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`] = tspStudent.schuelerUid;
 		const users = await this.app.service('users').find({ query });
 		if (users.total !== 0) {
-			return this.updateStudent(users.data[0]._id, tspStudent);
+			return this.updateStudent(users.data[0], tspStudent);
 		}
 		return this.createStudent(tspStudent, school, systemId);
 	}
 
 	/**
 	 * Patches a Schul-Cloud user based on information from a TSP student object
-	 * @param {ObjectId|String} userId userId
+	 * @param {User} user the current user
 	 * @param {Object} tspStudent TSP student object
 	 * @returns {User|null} the patched user or null (on error)
 	 * @async
 	 */
-	async updateStudent(userId, tspStudent) {
+	async updateStudent(user, tspStudent) {
+		const equal = user.firstName === tspStudent.schuelerVorname
+			&& user.lastName === tspStudent.schuelerNachname;
+		if (equal) {
+			this.stats.users.students.unchanged += 1;
+			return user;
+		}
+
 		try {
 			const student = await this.app.service('users').patch(
-				userId,
+				user._id,
 				{
 					firstName: tspStudent.schuelerVorname,
 					lastName: tspStudent.schuelerNachname,
@@ -351,7 +370,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			return student;
 		} catch (err) {
 			this.stats.users.students.errors += 1;
-			this.logError('User update error', err, userId, tspStudent);
+			this.logError('User update error', err, user._id, tspStudent);
 			this.stats.errors.push({
 				type: 'update-student',
 				entity: tspStudent.schuelerUid,
@@ -387,6 +406,9 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				systemId,
 			);
 			this.stats.users.students.created += 1;
+			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
+				await this.createTSPConsent(student);
+			}
 			return student;
 		} catch (err) {
 			this.stats.users.students.errors += 1;
@@ -399,6 +421,34 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			});
 			return null;
 		}
+	}
+
+	/**
+	 * Create a consent if the user is created via TSP sync.
+	 * In this case, the consent process was already handled from the TSP side.
+	 * @param {User} student the student created via TSP sync
+	 * @async
+	 */
+	async createTSPConsent(student) {
+		const currentDate = Date.now();
+		const tspConsent = {
+			form: 'digital',
+			source: 'tsp-sync',
+			privacyConsent: true,
+			termsOfUseConsent: true,
+			dateOfPrivacyConsent: currentDate,
+			dateOfTermsOfUseConsent: currentDate,
+		};
+
+		/**
+		 * During the user creation process, the age of the users is unknown.
+		 * Therfore, we create a user and a parent consent in any case.
+		 */
+		await this.app.service('consents').create({
+			userId: student._id,
+			userConsent: tspConsent,
+			parentConsents: [tspConsent],
+		});
 	}
 
 	/**
@@ -418,11 +468,12 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				source: ENTITY_SOURCE,
 				sourceOptions,
 			};
+			const teacher = teacherMapping[klass.lehrerUid];
 			const options = {
 				name: klass.klasseName,
 				schoolId: school._id,
 				year: school.currentYear,
-				teacherIds: [teacherMapping[klass.lehrerUid]] || [],
+				teacherIds: teacher ? [teacher] : [],
 				userIds: classMapping[klass.klasseId] || [],
 				source: ENTITY_SOURCE,
 				sourceOptions,
