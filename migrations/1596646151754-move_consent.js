@@ -1,11 +1,8 @@
 const mongoose = require('mongoose');
-// eslint-disable-next-line no-unused-vars
 const { info, error } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
-// use your own name for your model, otherwise other migrations may fail.
-// The third parameter is the actually relevent one for what collection to write to.
 const consentForm = ['analog', 'digital', 'update'];
 const Consent = mongoose.model('oldConsentModel_20200805', new mongoose.Schema({
 	userId: {
@@ -55,19 +52,6 @@ const User = mongoose.model('newUserConsent_20200805', new mongoose.Schema({
 }, {
 	timestamps: true,
 }), 'users');
-
-// How to use more than one schema per collection on mongodb
-// https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
-
-
-// TODO npm run migration-persist and remove this line
-// TODO update seed data and remove this line
-
-
-/** ***
- *
- *
- */
 
 
 module.exports = {
