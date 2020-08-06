@@ -54,16 +54,15 @@ class Syncer {
 	sync() {
 		this.logInfo('Started syncing');
 		return this.steps()
-			.then((stats) => {
-				this.stats.success = this.stats.errors.length === 0;
-				const aggregated = Syncer.aggregateStats(stats);
-				this.logInfo('Finished syncing', aggregated);
-				return Promise.resolve(this.stats);
-			})
 			.catch((err) => {
-				this.stats.success = false;
-				this.logError('Error while syncing', err);
-				return Promise.resolve(this.stats);
+				this.logError('Error while syncing', { error: err });
+				this.stats.errors.push(err);
+			})
+			.then(() => {
+				this.stats.success = this.stats.errors.length === 0;
+				const aggregated = Syncer.aggregateStats(this.stats);
+				this.logInfo('Finished syncing', aggregated);
+				return this.stats;
 			});
 	}
 
