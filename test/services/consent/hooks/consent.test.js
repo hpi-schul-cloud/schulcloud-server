@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { restrictToCurrentUser } = require('../../../services/consent/hooks/consentCheck');
+const { restrictToCurrentUser } = require('../../../../src/services/consent/hooks/consents');
 
 describe('test consentCheck hooks', () => {
 	it('restict to current user find', () => {

@@ -4,7 +4,7 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
-const { consentTypes } = require('../user/model');
+const { consentTypes } = require('../user/model/user.schema');
 
 const { Schema } = mongoose;
 
