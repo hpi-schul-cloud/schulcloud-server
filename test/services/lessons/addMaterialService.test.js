@@ -1,4 +1,3 @@
-const assert = require('assert');
 const { expect } = require('chai');
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
