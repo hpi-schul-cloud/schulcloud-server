@@ -41,7 +41,7 @@ const getVersion = (ref, type, schoolId, date) => ref.find({
 	},
 });
 
-const onlyConsentsWithOrWithoutSchool = (data) => {
+const getRelevantConsentVersions = (data) => {
 	if (data.length === 0) return data;
 	const ref = data[0];
 	if (!({}).hasOwnProperty.call(ref, 'schoolId')) return data;
@@ -71,8 +71,8 @@ class ConsentCheckService {
 			getVersion(this.versionService, consentTypes.TERMS_OF_USE, user.schoolId, dateOfTermsOfUseConsent),
 		]);
 
-		privacy = onlyConsentsWithOrWithoutSchool(privacy);
-		termsOfUse = onlyConsentsWithOrWithoutSchool(termsOfUse);
+		privacy = getRelevantConsentVersions(privacy);
+		termsOfUse = getRelevantConsentVersions(termsOfUse);
 
 		const haveBeenUpdated = privacy.length !== 0 || termsOfUse.length !== 0;
 
