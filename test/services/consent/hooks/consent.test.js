@@ -1,7 +1,8 @@
 const { expect } = require('chai');
 const { restrictToCurrentUser } = require('../../../../src/services/consent/hooks/consents');
 
-describe('test consentCheck hooks', () => {
+
+describe('test consent hooks', () => {
 	it('restict to current user find', () => {
 		const someUserId = 'Affen tanzen tango';
 		const context = {
@@ -57,7 +58,7 @@ describe('test consentCheck hooks', () => {
 			expect(res).to.be.undefined;
 		} catch (err) {
 			expect(err).to.be.not.undefined;
-			expect(err.status).to.equal(403);
+			expect(err.code).to.equal(403);
 		}
 	});
 
@@ -80,7 +81,7 @@ describe('test consentCheck hooks', () => {
 			expect(res).to.be.undefined;
 		} catch (err) {
 			expect(err).to.be.not.undefined;
-			expect(err.status).to.equal(403);
+			expect(err.code).to.equal(403);
 		}
 	});
 });

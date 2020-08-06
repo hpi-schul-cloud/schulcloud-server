@@ -41,7 +41,7 @@ describe('test consentCheck hooks', () => {
 			expect(res).to.be.undefined;
 		} catch (err) {
 			expect(err).to.be.not.undefined;
-			expect(err.status).to.equal(403);
+			expect(err.code).to.equal(403);
 		}
 	});
 });
