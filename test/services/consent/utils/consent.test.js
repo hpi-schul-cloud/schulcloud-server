@@ -144,7 +144,8 @@ describe('test consent utils', () => {
 			data: new Date(),
 		};
 
-		const { _id, ...reduced } = data;
+		// eslint-disable-next-line no-unused-vars
+		const { _id, userId, ...reduced } = data;
 
 		const user = modifyDataForUserSchema(data);
 
