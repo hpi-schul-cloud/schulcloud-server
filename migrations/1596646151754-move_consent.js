@@ -58,7 +58,7 @@ module.exports = {
 	up: async function up() {
 		await connect();
 
-		const amount = await Consent.find().countDocuments();
+		const amount = await Consent.countDocuments();
 		info(`${amount} consent will be moved`);
 		const limit = 500;
 		let skip = 0;
