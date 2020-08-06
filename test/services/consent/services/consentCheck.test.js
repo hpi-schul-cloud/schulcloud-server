@@ -35,9 +35,7 @@ describe('consentCheck tests', () => {
 		server.close(done);
 	});
 
-	afterEach(async () => {
-		await testObjects.cleanup(app);
-	});
+	afterEach(testObjects.cleanup);
 
 	it('simple consent', async () => {
 		const userConsent = createUserConsent(true, true);

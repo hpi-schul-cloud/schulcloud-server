@@ -100,8 +100,9 @@ describe('publicTeachers service', () => {
 
 	after((done) => {
 		server.close(done);
-		testObjects.cleanup();
 	});
+	
+	after(testObjects.cleanup);
 
 	it('test if services registered', async () => {
 		assert.ok(userService);
