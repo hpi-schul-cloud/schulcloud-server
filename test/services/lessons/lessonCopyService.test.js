@@ -54,7 +54,7 @@ describe('lesson copy service', () => {
 		const targetTeacher = await testObjects.createTestUser({ roles: ['teacher'] });
 		const originalCourse = await testObjects.createTestCourse({ teacherIds: [originalTeacher._id] });
 		const targetCourse = await testObjects.createTestCourse({ teacherIds: [originalTeacher._id] });
-		const shareToken = `sharetoken${Date.now()}`
+		const shareToken = `sharetoken${Date.now()}`;
 		const lesson = await testObjects.createTestLesson({ courseId: originalCourse._id, shareToken });
 
 		const copy = await lessonCopyService.create({
