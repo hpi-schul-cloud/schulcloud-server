@@ -4,6 +4,7 @@ const errors = require('@feathersjs/errors');
 const mongoose = require('mongoose');
 const hooks = require('./hooks');
 
+const { NoClientInstanceError } = require('./errors');
 const getLDAPStrategy = require('./strategies');
 const logger = require('../../logger');
 
@@ -84,15 +85,24 @@ module.exports = function LDAPService() {
 		 * is not established yet? Default: `true`
          * @return {Promise} resolves with LDAPClient or rejects with error
          */
-		_getClient(config, autoconnect = true) {
-			const client = this.clients[config.url];
-			if ((client && client.connected) || autoconnect === false) {
-				return Promise.resolve(client);
-			}
-			return this._connect(config).then((newClient) => {
+		async _getClient(config, autoconnect = true) {
+			const getNewClient = async () => {
+				const newClient = await this._connect(config);
 				this._addClient(config, newClient);
-				return Promise.resolve(newClient);
-			});
+				return newClient;
+			};
+
+			const client = this.clients[config.url];
+			if (client) {
+				if (autoconnect && !client.connected) {
+					return getNewClient();
+				}
+				return client;
+			}
+			if (autoconnect) {
+				return getNewClient();
+			}
+			throw new NoClientInstanceError('No client exists and autoconnect is not enabled.');
 		}
 
 		/**
@@ -153,9 +163,13 @@ module.exports = function LDAPService() {
 			try {
 				// get client, but don't connect if the connection already broke down:
 				const client = await this._getClient(config, false);
-				if (client) client.destroy(); // will also unbind internally
+				client.destroy(); // will also unbind internally
 			} catch (err) {
-				logger.error('Could not disconnect from LDAP server', { error: err });
+				if (err instanceof NoClientInstanceError) {
+					logger.warning(err);
+				} else {
+					logger.error('Could not disconnect from LDAP server', { error: err });
+				}
 			}
 		}
 
