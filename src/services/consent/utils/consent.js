@@ -133,7 +133,7 @@ const defineConsentStatus = (birthday, consent) => {
 			return 'ok';
 		}
 	} else if (birthday.getTime() <= secondConsentSwitchDate.getTime()) {
-		// only user have to agre
+		// only user has to agree
 		if (checkUserConsent(userConsent) === true) {
 			return 'ok';
 		}
