@@ -32,7 +32,7 @@ const ConsentVersion = mongoose.model('consentVersions_20200805', new mongoose.S
 
 module.exports = {
 	up: async function up() {
-		ConsentVersion.ensureIndexes();
+		await ConsentVersion.syncIndexes();
 	},
 
 	down: async function down() {
