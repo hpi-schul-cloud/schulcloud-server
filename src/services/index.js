@@ -10,6 +10,7 @@ const school = require('./school');
 const system = require('./system');
 const lesson = require('./lesson');
 const analytics = require('./analytics');
+const edusharing = require('./edusharing');
 const account = require('./account');
 const authentication = require('./authentication');
 const user = require('./user');
@@ -46,6 +47,7 @@ const messengerSync = require('./messengerSync');
 const nexboard = require('./nexboard');
 const etherpad = require('./etherpad');
 const storageProvider = require('./storageProvider');
+const activation = require('./activation');
 
 module.exports = function initializeServices() {
 	const app = this;
@@ -92,12 +94,14 @@ module.exports = function initializeServices() {
 	app.configure(roster);
 	app.configure(datasources);
 	app.configure(alert);
+	app.configure(edusharing);
 	app.configure(webuntis);
 	app.configure(videoconference);
 	app.configure(messengerSync);
 	app.configure(nexboard);
 	app.configure(etherpad);
 	app.configure(storageProvider);
+	app.configure(activation);
 
 	// initialize events
 	newsEvents.configure(app);

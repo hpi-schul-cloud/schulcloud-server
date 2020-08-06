@@ -3,11 +3,10 @@
 const whitelistNoJwt = {
 	'accounts/confirm':        { post: 201 },
 	'alert':                   { get:  200 },
-	'consentVersions':         { get:  200 },
 	'gradeLevels':             { get:  200 },
 	'lessons/contents/{type}': { get:  200 },
-	'passwordRecovery':        { post: 201 },
-	'passwordRecovery/reset':  { post: 201 },
+	'passwordRecovery':        { post: 400 },
+	'passwordRecovery/reset':  { post: 400 },
 	'oauth2/baseUrl':          { get:  200 },
 	'registrationlink':        { post: 201 },
 	'roster':                  { get:  200 },

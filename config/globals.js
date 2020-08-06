@@ -58,8 +58,6 @@ const globals = {
 	NODE_ENV,
 	ENVIRONMENTS,
 	LOG_LEVEL: process.env.LOG_LEVEL || defaultLogLevel,
-	/** HOST=https://schul-cloud.org in bosscloud, see misuse in todo */
-	HOST: process.env.HOST || 'localhost:3100', // todo this is client url in config
 	SYSTEM_LOG_LEVEL: process.env.SYSTEM_LOG_LEVEL || 'sendRequests',
 	// secrets smtp
 	SMTP: process.env.SMTP,
@@ -110,6 +108,8 @@ const globals = {
 	ETHERPAD_API_KEY: process.env.ETHERPAD_API_KEY,
 	ETHERPAD_API_PATH: process.env.ETHERPAD_API_PATH,
 	ETHERPAD_URI: process.env.ETHERPAD_URI,
+	ETHERPAD_OLD_PAD_URI: process.env.ETHERPAD_OLD_PAD_URI,
+	ETHERPAD_OLD_PAD_DOMAIN: process.env.ETHERPAD_OLD_PAD_DOMAIN,
 	ETHERPAD_COOKIE__EXPIRES_SECONDS: process.env.ETHERPAD_COOKIE__EXPIRES_SECONDS,
 	ETHERPAD_ETHERPAD_COOKIE_RELEASE_THRESHOLD: process.env.ETHERPAD_COOKIE_RELEASE_THRESHOLD,
 };

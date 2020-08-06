@@ -26,6 +26,7 @@ const create = (app) => async ({
 	source = undefined,
 	sourceOptions = undefined,
 	enableStudentTeamCreation = undefined,
+	permissions = undefined,
 } = {}) => {
 	const school = await app.service('schools').create({
 		name,
@@ -51,6 +52,7 @@ const create = (app) => async ({
 		source,
 		sourceOptions,
 		enableStudentTeamCreation,
+		permissions,
 	});
 	createdSchoolIds.push(school._id);
 	return school;
