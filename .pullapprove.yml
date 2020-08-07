@@ -72,5 +72,5 @@ groups:
       author_value: 1
     labels:
       pending: "needs data protection review"
-      aproved: "data protection review approved"
+      approved: "data protection review approved"
       rejected: "data protection review rejected"
