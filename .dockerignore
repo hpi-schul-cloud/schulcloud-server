@@ -3,6 +3,7 @@
 .gitignore
 .gitattributes
 .idea
+.build
 .travis.yml
 Dockerfile
 README.md
@@ -10,4 +11,4 @@ compose-server-test.dummy
 deploy.sh
 node_modules
 test
-travis_rsa.enc
+travis*
