@@ -168,6 +168,8 @@ class EduSharingConnector {
 		const maxItems = parseInt($limit, 10) || 9;
 		const sortAscending = false;
 		const propertyFilter = '-all-'; // '-all-' for all properties OR ccm-stuff
+		// ES seems to expect a lowercase String
+		searchQuery = searchQuery.toLowerCase();
 		if (searchQuery.trim().length < 2) {
 			return {
 				total: 0,
