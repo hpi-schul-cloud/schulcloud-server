@@ -168,8 +168,6 @@ class EduSharingConnector {
 		const maxItems = parseInt($limit, 10) || 9;
 		const sortAscending = false;
 		const propertyFilter = '-all-'; // '-all-' for all properties OR ccm-stuff
-		// ES seems to expect a lowercase String
-		searchQuery = searchQuery.toLowerCase();
 		if (searchQuery.trim().length < 2) {
 			return {
 				total: 0,
@@ -182,7 +180,9 @@ class EduSharingConnector {
 		if (this.isLoggedin() === false) {
 			await this.login();
 		}
-
+		// ES seems to expect a lowercase String
+		searchQuery = searchQuery.toLowerCase();
+		
 		const urlBase = `${Configuration.get('ES_DOMAIN')}${ES_PATH.SEARCH}?`;
 		const url = urlBase
 			+ [
