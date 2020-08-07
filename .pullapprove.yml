@@ -70,3 +70,6 @@ groups:
       required: 1  # number of approvals required from this group
       request: -1  # request from all members a review
       author_value: 1
+    labels:
+      pending: "needs data protection review"
+      rejected: "data protection review rejected"
