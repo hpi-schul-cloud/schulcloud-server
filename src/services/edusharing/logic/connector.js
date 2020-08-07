@@ -180,9 +180,7 @@ class EduSharingConnector {
 		if (this.isLoggedin() === false) {
 			await this.login();
 		}
-		// ES seems to expect a lowercase String
-		searchQuery = searchQuery.toLowerCase();
-		
+
 		const urlBase = `${Configuration.get('ES_DOMAIN')}${ES_PATH.SEARCH}?`;
 		const url = urlBase
 			+ [
@@ -205,7 +203,7 @@ class EduSharingConnector {
 			},
 			body: JSON.stringify({
 				criterias: [
-					{ property: 'ngsearchword', values: [`${searchQuery}`] },
+					{ property: 'ngsearchword', values: [`${searchQuery.toLowerCase()}`] },
 				],
 				facettes: ['cclom:general_keyword'],
 			}),
