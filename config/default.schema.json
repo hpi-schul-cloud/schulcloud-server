@@ -32,6 +32,16 @@
 			"default": "https://s3.hidrive.strato.com/schul-cloud-hpi/",
 			"description": "basedir used for static file links, must have a trailing slash"
 		},
+		"FEATURE_API_METRICS_ENABLED": {
+			"type":"boolean",
+			"default": false,
+			"description": "enable prometheus api metrics"
+		},
+		"METRICS_PATH": {
+			"type":"string",
+			"pattern": "^/\\.+$",
+			"description": "custom path to collect api metrics from, defaults to /metrics, needs a leading slash"
+		},
 		"REQUEST_TIMEOUT_MILLIS": {
 			"type": "number",
 			"minimum": 0,

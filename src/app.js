@@ -12,7 +12,7 @@ const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
-const { KEEP_ALIVE, METRICS_PATH } = require('../config/globals');
+const { KEEP_ALIVE } = require('../config/globals');
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
@@ -35,11 +35,13 @@ app.disable('x-powered-by');
 
 app.configure(feathersConfig());
 
-const metricsOptions = {};
-if (METRICS_PATH) {
-	metricsOptions.metricsPath = METRICS_PATH;
+if (Configuration.get('FEATURE_API_METRICS_ENABLED') === true) {
+	const metricsOptions = {};
+	if (Configuration.has('METRICS_PATH')) {
+		metricsOptions.metricsPath = Configuration.get('METRICS_PATH');
+	}
+	app.use(apiMetrics(metricsOptions));
 }
-app.use(apiMetrics(metricsOptions));
 
 setupSwagger(app);
 initializeRedisClient();
