@@ -46,26 +46,26 @@ describe('school service', () => {
 			const params = {
 				provider: 'rest',
 				headers: {
-					authorization: undefined
+					authorization: undefined,
 				},
 				account: undefined,
-			}
+			};
 			const result = await schoolService.find(params);
 			const expectedFields = ['purpose', 'name', '_id', 'id',
 				'systems', 'years', 'isTeamCreationByStudentsEnabled'];
 			const notExpectedFields = ['fileStorageType', 'documentBaseDir', 'inMaintenance', 'currentYear',
 				'federalState'];
 			result.data.forEach((school) => {
-				expectedFields.forEach(field => {
+				expectedFields.forEach((field) => {
 					expect(school).to.haveOwnProperty(field);
 				});
-				notExpectedFields.forEach(field => {
+				notExpectedFields.forEach((field) => {
 					expect(school).to.not.haveOwnProperty(field);
-				})
-			})
+				});
+			});
 		});
 		it('should be possible to see all fields if the call is done from the server', async () => {
-			const params = { provider: undefined }
+			const params = { provider: undefined };
 
 			const result = await schoolService.find(params);
 			const expectedFields = [
@@ -83,10 +83,9 @@ describe('school service', () => {
 			];
 
 			result.data.forEach((school) => {
-				expectedFields.forEach(field => {
-					expect(school).to.haveOwnProperty(field)
-				}
-			)
+				expectedFields.forEach((field) => {
+					expect(school).to.haveOwnProperty(field);
+				});
 			});
 		});
 		it('load the school results with pagination', async () => {

@@ -202,10 +202,9 @@ const populateInQuery = (context) => (context.params.query || {}).$populate;
 const isNotAuthenticated = async (context) => {
 	if (typeof (context.params.provider) === 'undefined') {
 		return false;
-	} else {
-		return !((context.params.headers || {}).authorization || context.params.account && context.params.account.userId);
 	}
-}
+	return !((context.params.headers || {}).authorization || context.params.account && context.params.account.userId);
+};
 
 exports.before = {
 	all: [

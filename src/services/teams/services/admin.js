@@ -54,7 +54,7 @@ class AdminOverview {
 	}
 
 	static mapped(teams, sessionSchoolId) {
-		const mappedData =  teams.data.map((team) => {
+		const mappedData = teams.data.map((team) => {
 			const createdAtMySchool = isSameId(team.schoolId, sessionSchoolId);
 			const hasMembersOfOtherSchools = team.schoolIds.length > 1;
 			let schoolMembers = AdminOverview.getMembersBySchool(
@@ -118,7 +118,7 @@ class AdminOverview {
 			skip: teams.skip,
 			total: teams.total,
 			data: mappedData,
-		}
+		};
 
 		return mapResult;
 	}

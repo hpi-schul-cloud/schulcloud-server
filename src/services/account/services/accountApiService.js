@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const local = require('@feathersjs/authentication-local');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const {
-	hasPermission, permitGroupOperation, authenticateWhenJWTExist
+	hasPermission, permitGroupOperation, authenticateWhenJWTExist,
 } = require('../../../hooks');
 const {
 	sanitizeUsername,

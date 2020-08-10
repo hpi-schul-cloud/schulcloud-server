@@ -76,7 +76,7 @@ describe('\'/teams/manage/admin\' service', () => {
 				limit: 50,
 				skip: 0,
 				total: 1,
-				data:[{
+				data: [{
 					membersTotal: 1,
 					name: 'spinatenpower',
 					_id: teamId,
@@ -103,8 +103,7 @@ describe('\'/teams/manage/admin\' service', () => {
 						},
 					],
 				}],
-			}
-			
+			};
 		});
 
 
