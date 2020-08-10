@@ -4,6 +4,7 @@
 		"prettier/prettier": [
 			"error",
 			{
+				"usePrettierrc": false,
 				"singleQuote": true,
 				"trailingComma": "all",
 				"useTabs": true,
