@@ -1,10 +1,9 @@
 const {
-	REQUEST_TIMEOUT,
 	ROCKET_CHAT_URI,
 	ROCKET_CHAT_ADMIN_TOKEN,
 	ROCKET_CHAT_ADMIN_ID,
 } = require('../../../config/globals');
-
+const { Configuration } = require('@schul-cloud/commons');
 /**
  * create a valid options object to call a rocketChat request.
  * @param {String} shortUri Uri of the Rocket.Chat endpoint. Example: '/api/v1/users.register'
@@ -33,7 +32,7 @@ exports.getRequestOptions = (shortUri, body, asAdmin, auth, method) => {
 		body,
 		headers,
 		json: true,
-		timeout: REQUEST_TIMEOUT,
+		timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 	};
 };
 
@@ -45,8 +44,18 @@ exports.getRequestOptions = (shortUri, body, asAdmin, auth, method) => {
  */
 exports.makeStringRCConform = (input) => {
 	const dict = {
-		ä: 'ae', Ä: 'Ae', ö: 'oe', Ö: 'Oe', ü: 'ue', Ü: 'Ue', ' ': '-', ß: 'ss',
+		ä: 'ae',
+		Ä: 'Ae',
+		ö: 'oe',
+		Ö: 'Oe',
+		ü: 'ue',
+		Ü: 'Ue',
+		' ': '-',
+		ß: 'ss',
 	};
-	const inputResolvedUmlauts = input.replace(/[äÄöÖüÜß ]/g, (match) => dict[match]);
+	const inputResolvedUmlauts = input.replace(
+		/[äÄöÖüÜß ]/g,
+		(match) => dict[match],
+	);
 	return inputResolvedUmlauts.replace(/[^\w\d.\-_]/g, '_');
 };

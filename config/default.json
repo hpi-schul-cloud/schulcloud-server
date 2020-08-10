@@ -22,5 +22,6 @@
 	"BODYPARSER_JSON_LIMIT_DEFAULT_MB": "10mb",
 	"BODYPARSER_JSON_LIMIT_HELPDESK_MB": "20mb",
 	"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": "enabled",
-	"DOCUMENT_BASE_DIR": "https://s3.hidrive.strato.com/schul-cloud-hpi/"
+	"DOCUMENT_BASE_DIR": "https://s3.hidrive.strato.com/schul-cloud-hpi/",
+	"REQUEST_TIMEOUT_MILLIS": 8000
 }

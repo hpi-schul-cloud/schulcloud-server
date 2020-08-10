@@ -1,9 +1,8 @@
 const request = require('request-promise-native');
 const { GeneralError, MethodNotAllowed } = require('@feathersjs/errors');
 const logger = require('../../logger');
-
+const { Configuration } = require('@schul-cloud/commons');
 const {
-	REQUEST_TIMEOUT,
 	SMTP_SENDER,
 	NODE_ENV,
 	ENVIRONMENTS,
@@ -33,7 +32,9 @@ module.exports = function setup(app) {
 			const notificationPlatform = app.get('NOTIFICATION_PLATFORM');
 
 			if (!notificationPlatform) {
-				throw new MethodNotAllowed('Required Env NOTIFICATION_PLATFORM is not defined');
+				throw new MethodNotAllowed(
+					'Required Env NOTIFICATION_PLATFORM is not defined',
+				);
 			}
 
 			const serviceUrls = app.get('services') || {};
@@ -75,7 +76,7 @@ module.exports = function setup(app) {
 					...Mail,
 				},
 				json: true,
-				timeout: REQUEST_TIMEOUT,
+				timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 			};
 
 			// send mail with defined transport object in production mode
@@ -85,7 +86,10 @@ module.exports = function setup(app) {
 				});
 			}
 			// otherwise print email message object on console
-			return logger.debug('E-Mail Message not sent (not in production mode):', Mail);
+			return logger.debug(
+				'E-Mail Message not sent (not in production mode):',
+				Mail,
+			);
 		}
 	}
 

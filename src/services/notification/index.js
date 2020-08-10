@@ -1,7 +1,7 @@
 const request = require('request-promise-native');
 const hooks = require('./hooks/index');
 
-const { REQUEST_TIMEOUT } = require('../../../config/globals');
+const { Configuration } = require('@schul-cloud/commons');
 
 /**
  * maps jsonapi properties of a response to fit anything but jsonapi
@@ -13,10 +13,15 @@ const mapResponseProps = (response) => {
 	return response;
 };
 
-const toQueryString = (paramsObject) => Object
-	.keys(paramsObject)
-	.map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
-	.join('&');
+const toQueryString = (paramsObject) =>
+	Object.keys(paramsObject)
+		.map(
+			(key) =>
+				`${encodeURIComponent(key)}=${encodeURIComponent(
+					paramsObject[key],
+				)}`,
+		)
+		.join('&');
 
 class MessageService {
 	constructor(options) {
@@ -35,7 +40,7 @@ class MessageService {
 			},
 			body: Object.assign(data, { serviceUrl: serviceUrls.notification }),
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 
 		return request(options).then((response) => response);
@@ -51,7 +56,7 @@ class MessageService {
 				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 
 		return request(options).then((message) => message);
@@ -77,7 +82,7 @@ class DeviceService {
 				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 
 		return request(options).then((devices) => devices);
@@ -96,7 +101,7 @@ class DeviceService {
 			},
 			body: data,
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 
 		return request(options).then((response) => mapResponseProps(response));
@@ -110,7 +115,7 @@ class DeviceService {
 			uri: `${serviceUrls.notification}/devices/${id}?token=${userId}`,
 			method: 'DELETE',
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 
 		return request(options).then((message) => message);
@@ -138,7 +143,7 @@ class CallbackService {
 			},
 			body: data,
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 
 		return request(options).then((response) => response);
@@ -164,7 +169,7 @@ class NotificationService {
 				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 
 		return request(options).then((message) => message);
@@ -176,13 +181,14 @@ class NotificationService {
 		const userId = (params.account || {}).userId || params.payload.userId;
 
 		const options = {
-			uri: `${serviceUrls.notification}/notifications/`
-                + `?user=${userId}&${toQueryString(params.query)}`,
+			uri:
+				`${serviceUrls.notification}/notifications/` +
+				`?user=${userId}&${toQueryString(params.query)}`,
 			headers: {
 				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 
 		return request(options).then((message) => message);

@@ -24,7 +24,6 @@ switch (NODE_ENV) {
 }
 
 const globals = {
-	REQUEST_TIMEOUT: process.env.REQUEST_TIMEOUT || 8000,
 	METRICS_PATH: process.env.METRICS_PATH || '/metrics',
 	MONGOOSE_CONNECTION_POOL_SIZE: parseInt(
 		process.env.MONGOOSE_CONNECTION_POOL_SIZE || '10',

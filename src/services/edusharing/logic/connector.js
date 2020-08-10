@@ -1,4 +1,3 @@
-const REQUEST_TIMEOUT = 8000; // ms
 const request = require('request-promise-native');
 const { Configuration } = require('@schul-cloud/commons');
 const { GeneralError } = require('@feathersjs/errors');
@@ -7,7 +6,8 @@ const logger = require('../../../logger');
 const ES_PATH = {
 	AUTH: '/edu-sharing/rest/authentication/v1/validateSession',
 	NODE: '/edu-sharing/rest/node/v1/nodes/mv-repo.schul-cloud.org/',
-	SEARCH: '/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/',
+	SEARCH:
+		'/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/',
 	TOKEN: '/edu-sharing/oauth2/token',
 };
 
@@ -31,15 +31,15 @@ class EduSharingConnector {
 	static get authorization() {
 		const headers = {
 			...EduSharingConnector.headers,
-			Authorization: `Basic ${Buffer.from(`${Configuration.get('ES_USER')
-			}:${Configuration.get('ES_PASSWORD')}`).toString(
-				'base64',
-			)}`,
+			Authorization: `Basic ${Buffer.from(
+				`${Configuration.get('ES_USER')}:${Configuration.get(
+					'ES_PASSWORD',
+				)}`,
+			).toString('base64')}`,
 		};
 
 		return headers;
 	}
-
 
 	// gets cookie (JSESSION) and attach it to header
 	getCookie() {
@@ -53,8 +53,8 @@ class EduSharingConnector {
 		return request(cookieOptions)
 			.then((result) => {
 				if (
-					result.statusCode !== 200
-					|| result.body.isValidLogin !== true
+					result.statusCode !== 200 ||
+					result.body.isValidLogin !== true
 				) {
 					throw Error('authentication error with edu sharing');
 				}
@@ -72,12 +72,16 @@ class EduSharingConnector {
 			url: `${Configuration.get('ES_DOMAIN')}${ES_PATH.TOKEN}`,
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 
-			body: `grant_type=${Configuration.get('ES_GRANT_TYPE')}&client_id=${
-				Configuration.get('ES_CLIENT_ID')
-			}&client_secret=${Configuration.get('ES_OAUTH_SECRET')}&username=${
-				Configuration.get('ES_USER')
-			}&password=${Configuration.get('ES_PASSWORD')}`,
-			timeout: REQUEST_TIMEOUT,
+			body: `grant_type=${Configuration.get(
+				'ES_GRANT_TYPE',
+			)}&client_id=${Configuration.get(
+				'ES_CLIENT_ID',
+			)}&client_secret=${Configuration.get(
+				'ES_OAUTH_SECRET',
+			)}&username=${Configuration.get(
+				'ES_USER',
+			)}&password=${Configuration.get('ES_PASSWORD')}`,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 		return request(oauthoptions).then((result) => {
 			if (result) {
@@ -90,12 +94,12 @@ class EduSharingConnector {
 
 	allConfigurationValuesHaveBeenDefined() {
 		return (
-			Configuration.has('ES_DOMAIN')
-			&& Configuration.has('ES_USER')
-			&& Configuration.has('ES_PASSWORD')
-			&& Configuration.has('ES_GRANT_TYPE')
-			&& Configuration.has('ES_OAUTH_SECRET')
-			&& Configuration.has('ES_CLIENT_ID')
+			Configuration.has('ES_DOMAIN') &&
+			Configuration.has('ES_USER') &&
+			Configuration.has('ES_PASSWORD') &&
+			Configuration.has('ES_GRANT_TYPE') &&
+			Configuration.has('ES_OAUTH_SECRET') &&
+			Configuration.has('ES_CLIENT_ID')
 		);
 	}
 
@@ -108,7 +112,9 @@ class EduSharingConnector {
 				return JSON.parse(eduResponse);
 			} catch (e) {
 				if (e.statusCode === 401) {
-					logger.info(`Trying to renew Edu Sharing connection. Attempt ${retry}`);
+					logger.info(
+						`Trying to renew Edu Sharing connection. Attempt ${retry}`,
+					);
 					await this.login();
 				} else {
 					logger.error(e);
@@ -120,7 +126,6 @@ class EduSharingConnector {
 
 		throw new GeneralError('Edu Sharing Retry failed', errors);
 	}
-
 
 	async login() {
 		this.authorization = await this.getCookie();
@@ -141,14 +146,14 @@ class EduSharingConnector {
 		const options = {
 			method: 'GET',
 			// eslint-disable-next-line max-len
-			url: `${Configuration.get('ES_DOMAIN')
-			}${ES_PATH.NODE}${id
-			}/metadata?propertyFilter=${propertyFilter}`,
+			url: `${Configuration.get('ES_DOMAIN')}${
+				ES_PATH.NODE
+			}${id}/metadata?propertyFilter=${propertyFilter}`,
 			headers: {
 				...EduSharingConnector.headers,
 				cookie: this.authorization,
 			},
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 
 		const eduResponse = await this.requestRepeater(options);
@@ -182,8 +187,9 @@ class EduSharingConnector {
 		}
 
 		const urlBase = `${Configuration.get('ES_DOMAIN')}${ES_PATH.SEARCH}?`;
-		const url = urlBase
-			+ [
+		const url =
+			urlBase +
+			[
 				`contentType=${contentType}`,
 				`skipCount=${skipCount}`,
 				`maxItems=${maxItems}`,
@@ -207,7 +213,7 @@ class EduSharingConnector {
 				],
 				facettes: ['cclom:general_keyword'],
 			}),
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 
 		const parsed = await this.requestRepeater(options);
@@ -228,7 +234,6 @@ class EduSharingConnector {
 			data: parsed.nodes,
 		};
 	}
-
 
 	static get Instance() {
 		if (!EduSharingConnector.instance) {

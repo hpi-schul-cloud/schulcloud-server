@@ -7,7 +7,7 @@ const redirectHooks = require('./hooks/redirect');
 const searchHooks = require('./hooks/search');
 const materialsHooks = require('./hooks/materials');
 
-const { REQUEST_TIMEOUT } = require('../../../config/globals');
+const { Configuration } = require('@schul-cloud/commons');
 
 class ResourcesService {
 	constructor(options) {
@@ -20,7 +20,7 @@ class ResourcesService {
 			uri: `${serviceUrls.content}/resources/`,
 			qs: params.query,
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 		return request(options).then((message) => message);
 	}
@@ -30,7 +30,7 @@ class ResourcesService {
 		const options = {
 			uri: `${serviceUrls.content}/resources/${id}`,
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 		return request(options).then((message) => message);
 	}
@@ -51,7 +51,7 @@ class SearchService {
 			uri: `${serviceUrls.content}/search/`,
 			qs: params.query,
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 		return request(options).then((message) => message);
 	}
@@ -71,7 +71,7 @@ class RedirectService {
 		const options = {
 			uri: `${serviceUrls.content}/resources/${id}`,
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 		return request(options).then((resource) => {
 			// Increase Click Counter
@@ -109,7 +109,11 @@ module.exports = function () {
 
 	app.use('/content/resources', new ResourcesService());
 	app.use('/content/search', new SearchService());
-	app.use('/content/redirect', new RedirectService(), RedirectService.redirect);
+	app.use(
+		'/content/redirect',
+		new RedirectService(),
+		RedirectService.redirect,
+	);
 	app.use('/materials', service(options));
 
 	const resourcesService = app.service('/content/resources');

@@ -32,6 +32,12 @@
 			"default": "https://s3.hidrive.strato.com/schul-cloud-hpi/",
 			"description": "basedir used for static file links, must have a trailing slash"
 		},
+		"REQUEST_TIMEOUT_MILLIS": {
+			"type": "number",
+			"minimum": 0,
+			"default": 8000,
+			"description": "Request timeout in milliseconds, inter alia used for api calls"
+		},
 		"MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE": {
 			"type": "number",
 			"default": 5242880,
