@@ -6,6 +6,11 @@
 			"$ref": "#/definitions/non-empty-string",
 			"description": "reference this schema in related json files to apply auto correction by setting this property"
 		},
+		"DATABASE_AUDIT": {
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, diffHistory gets applied to selected collections."
+		},
 		"MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE": {
 			"type": "number",
 			"default": 5242880,

@@ -33,7 +33,6 @@ switch (NODE_ENV) {
 }
 
 const globals = {
-	DATABASE_AUDIT: process.env.DATABASE_AUDIT || 'false',
 	DB_URL: process.env.DB_URL || defaultDbUrl,
 	DB_USERNAME: process.env.DB_USERNAME,
 	DB_PASSWORD: process.env.DB_PASSWORD,
