@@ -1,6 +1,7 @@
 {
-	"extends": ["airbnb-base"],
+	"extends": ["airbnb-base", "plugin:prettier/recommended"],
 	"rules": {
+		"prettier/prettier": "error",
 		"no-process-env": "error",
 		"no-multiple-empty-lines": [
 			"error",
@@ -94,7 +95,7 @@
 		],
 		"arrow-parens": ["error", "always"]
 	},
-	"plugins": ["import"],
+	"plugins": ["import", "prettier"],
 	"env": {
 		"node": true,
 		"mocha": true,
