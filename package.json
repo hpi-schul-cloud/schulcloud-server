@@ -124,12 +124,5 @@
 		"prettier": "^2.0.5",
 		"simple-oauth2": "^3.0.0",
 		"sinon": "^9.0.0"
-	},
-	"greenkeeper": {
-		"ignore": [
-			"eslint",
-			"eslint-config-airbnb-base",
-			"eslint-plugin-import"
-		]
 	}
 }
