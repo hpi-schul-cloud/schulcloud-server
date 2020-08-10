@@ -1,10 +1,13 @@
 const { URL } = require('url');
 const logger = require('../../../logger');
-const { SC_THEME, DOCUMENT_BASE_DIR } = require('../../../../config/globals');
+const { SC_THEME } = require('../../../../config/globals');
+const { Configuration } = require('@schul-cloud/commons');
 
 const getDocumentBaseDir = (school) => {
 	// parse id eventually from populated schoolGroup if defined, otherwise set false
-	const groupId = school.schoolGroupId ? school.schoolGroupId._id || school.schoolGroupId : false;
+	const groupId = school.schoolGroupId
+		? school.schoolGroupId._id || school.schoolGroupId
+		: false;
 	let schoolBaseDir;
 	switch (school.documentBaseDirType) {
 		case 'school':
@@ -14,7 +17,10 @@ const getDocumentBaseDir = (school) => {
 		case 'schoolGroup':
 			// use schoolGroup id
 			if (!groupId) {
-				logger.error('school group id requested but not defined', school);
+				logger.error(
+					'school group id requested but not defined',
+					school,
+				);
 				schoolBaseDir = `${SC_THEME}/`;
 				break;
 			}
@@ -24,7 +30,9 @@ const getDocumentBaseDir = (school) => {
 			schoolBaseDir = `${SC_THEME}/`;
 			break;
 	}
-	return String(new URL(schoolBaseDir, DOCUMENT_BASE_DIR));
+	return String(
+		new URL(schoolBaseDir, Configuration.get('DOCUMENT_BASE_DIR')),
+	);
 };
 
 module.exports = { getDocumentBaseDir };

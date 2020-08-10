@@ -25,6 +25,13 @@
 			"default": false,
 			"description": "If enabled, diffHistory gets applied to selected collections."
 		},
+		"DOCUMENT_BASE_DIR": {
+			"type":"string",
+			"format": "uri",
+			"pattern": ".*(/)$",
+			"default": "https://s3.hidrive.strato.com/schul-cloud-hpi/",
+			"description": "basedir used for static file links, must have a trailing slash"
+		},
 		"MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE": {
 			"type": "number",
 			"default": 5242880,

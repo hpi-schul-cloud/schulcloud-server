@@ -24,9 +24,6 @@ switch (NODE_ENV) {
 }
 
 const globals = {
-	DOCUMENT_BASE_DIR:
-		process.env.DOCUMENT_BASE_DIR ||
-		'https://s3.hidrive.strato.com/schul-cloud-hpi/',
 	REQUEST_TIMEOUT: process.env.REQUEST_TIMEOUT || 8000,
 	METRICS_PATH: process.env.METRICS_PATH || '/metrics',
 	MONGOOSE_CONNECTION_POOL_SIZE: parseInt(
