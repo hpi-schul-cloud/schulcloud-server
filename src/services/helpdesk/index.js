@@ -2,11 +2,23 @@ const service = require('feathers-mongoose');
 const problemModel = require('./model');
 const hooks = require('./hooks');
 const logger = require('../../logger');
-const { BODYPARSER_JSON_LIMIT, MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE } = require('../../../config/globals');
+const {} = require('../../../config/globals');
+const { Configuration } = require('@schul-cloud/commons');
 
-if (BODYPARSER_JSON_LIMIT === undefined) {
+if (!Configuration.has('BODYPARSER_JSON_LIMIT')) {
 	/* eslint-disable-next-line  */
-	logger.warning(`please set the environment variable BODYPARSER_JSON_LIMIT to min. '${Math.ceil(1.36*(MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE/1024/1024))}mb' for helpdesk to work correctly! (Currently: ${BODYPARSER_JSON_LIMIT})`);
+	logger.warning(
+		`please set the environment variable BODYPARSER_JSON_LIMIT to min. '${Math.ceil(
+			1.36 *
+				(Configuration.get(
+					'MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE',
+				) /
+					1024 /
+					1024),
+		)}mb' for helpdesk to work correctly! (Currently: ${Configuration.get(
+			'BODYPARSER_JSON_LIMIT',
+		)})`,
+	);
 }
 
 module.exports = function () {

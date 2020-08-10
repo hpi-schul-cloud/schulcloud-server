@@ -6,6 +6,24 @@
 			"$ref": "#/definitions/non-empty-string",
 			"description": "reference this schema in related json files to apply auto correction by setting this property"
 		},
+		"MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE": {
+			"type": "number",
+			"default": 5242880,
+			"minimum": 0,
+			"description": "E-Mail maximum attachment size (default is 5MB)"
+		},
+		"BODYPARSER_JSON_LIMIT_HELPDESK_MB": {
+			"$ref": "#/definitions/non-empty-string",
+			"pattern": "^\\d+mb$",
+			"default": "20mb",
+			"description": "Request body limit used by body-parser"
+		},
+		"BODYPARSER_JSON_LIMIT_DEFAULT_MB": {
+			"$ref": "#/definitions/non-empty-string",
+			"pattern": "^\\d+mb$",
+			"default": "10mb",
+			"description": "Request body limit used by body-parser"
+		},
 		"CLIENT_API_KEY": {
 			"type": "string",
 			"default": "example",

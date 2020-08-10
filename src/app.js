@@ -1,6 +1,7 @@
 const express = require('@feathersjs/express');
 const feathers = require('@feathersjs/feathers');
-const configuration = require('@feathersjs/configuration');
+const feathersConfig = require('@feathersjs/configuration');
+const { Configuration } = require('@schul-cloud/commons');
 const apiMetrics = require('prometheus-api-metrics');
 const path = require('path');
 const favicon = require('serve-favicon');
@@ -11,9 +12,7 @@ const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
-const {
-	KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH,
-} = require('../config/globals');
+const { KEEP_ALIVE, METRICS_PATH } = require('../config/globals');
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
@@ -34,8 +33,7 @@ const versionService = require('./services/version');
 const app = express(feathers());
 app.disable('x-powered-by');
 
-const config = configuration();
-app.configure(config);
+app.configure(feathersConfig());
 
 const metricsOptions = {};
 if (METRICS_PATH) {
@@ -61,14 +59,33 @@ app.use(compress())
 	.use(favicon(path.join(app.get('public'), 'favicon.ico')))
 	.use('/', express.static('public'))
 	.configure(sentry)
-	.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
-	.use('/', bodyParser.json({ limit: '10mb' }))
+	.use(
+		'/helpdesk',
+		bodyParser.json({
+			limit: Configuration.get('BODYPARSER_JSON_LIMIT_HELPDESK_MB'),
+		}),
+	)
+	.use(
+		'/',
+		bodyParser.json({
+			limit: Configuration.get('BODYPARSER_JSON_LIMIT_DEFAULT_MB'),
+		}),
+	)
 	.use(bodyParser.urlencoded({ extended: true }))
-	.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
+	.use(
+		bodyParser.raw({
+			type: () => true,
+			limit: Configuration.get('BODYPARSER_JSON_LIMIT_DEFAULT_MB'),
+		}),
+	)
 	.use(versionService)
 	.use(defaultHeaders)
-	.get('/system_info/haproxy', (req, res) => { res.send({ timestamp: new Date().getTime() }); })
-	.get('/ping', (req, res) => { res.send({ message: 'pong', timestamp: new Date().getTime() }); })
+	.get('/system_info/haproxy', (req, res) => {
+		res.send({ timestamp: new Date().getTime() });
+	})
+	.get('/ping', (req, res) => {
+		res.send({ message: 'pong', timestamp: new Date().getTime() });
+	})
 	.configure(rest(handleResponseType))
 	.configure(socketio())
 	.configure(requestLogger)
