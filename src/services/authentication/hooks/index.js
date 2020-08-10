@@ -2,9 +2,15 @@ const { TooManyRequests } = require('@feathersjs/errors');
 const { discard } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const {
-	getRedisClient, redisSetAsync, redisDelAsync, extractDataFromJwt, getRedisData,
+	getRedisClient,
+	redisSetAsync,
+	redisDelAsync,
+	extractDataFromJwt,
+	getRedisData,
 } = require('../../../utils/redis');
-const { LOGIN_BLOCK_TIME: allowedTimeDifference } = require('../../../../config/globals');
+const {
+	LOGIN_BLOCK_TIME: allowedTimeDifference,
+} = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 
 const disabledBruteForceCheck = Configuration.get('DISABLED_BRUTE_FORCE_CHECK');
@@ -13,9 +19,12 @@ const updateUsernameForLDAP = async (context) => {
 	const { schoolId, strategy } = context.data;
 
 	if (strategy === 'ldap' && schoolId) {
-		await context.app.service('schools').get(schoolId).then((school) => {
-			context.data.username = `${school.ldapSchoolIdentifier}/${context.data.username}`;
-		});
+		await context.app
+			.service('schools')
+			.get(schoolId)
+			.then((school) => {
+				context.data.username = `${school.ldapSchoolIdentifier}/${context.data.username}`;
+			});
 	}
 	return context;
 };
@@ -38,17 +47,19 @@ const bruteForceCheck = async (context) => {
 		// if account doesn't exist we can not update (e.g. iserv, moodle)
 		if (account) {
 			if (account.lasttriedFailedLogin) {
-				const timeDifference = (Date.now() - account.lasttriedFailedLogin) / 1000;
+				const timeDifference =
+					(Date.now() - account.lasttriedFailedLogin) / 1000;
 				if (timeDifference < allowedTimeDifference) {
-					throw new TooManyRequests(
-						'Brute Force Prevention!', {
-							timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
-						},
-					);
+					throw new TooManyRequests('Brute Force Prevention!', {
+						timeToWait:
+							allowedTimeDifference - Math.ceil(timeDifference),
+					});
 				}
 			}
 			// set current time to last tried login
-			await context.app.service('/accounts').patch(account._id, { lasttriedFailedLogin: Date.now() });
+			await context.app
+				.service('/accounts')
+				.patch(account._id, { lasttriedFailedLogin: Date.now() });
 		}
 	}
 	return context;
@@ -60,7 +71,9 @@ const bruteForceReset = async (context) => {
 		return context;
 	}
 	// if successful login enable next login try directly
-	await context.app.service('/accounts').patch(context.result.account._id, { lasttriedFailedLogin: 0 });
+	await context.app
+		.service('/accounts')
+		.patch(context.result.account._id, { lasttriedFailedLogin: 0 });
 	return context;
 };
 
@@ -68,38 +81,43 @@ const injectUserId = async (context) => {
 	const { systemId, strategy } = context.data;
 
 	if (strategy !== 'jwt') {
-		return context.app.service('/accounts').find({
-			query: {
-				username: context.data.username,
-				systemId,
-			},
-			paginate: false,
-		}).then(async ([account]) => {
-			if (account) {
-				context.params.payload = {};
-				context.params.payload.accountId = account._id;
-				if (account.userId) {
-					context.params.payload.userId = account.userId;
-				}
-				if (account.systemId) {
-					context.params.payload.systemId = account.systemId;
-				}
-			} else if (['moodle', 'iserv'].includes(strategy)) {
-				const accountParameters = {
+		return context.app
+			.service('/accounts')
+			.find({
+				query: {
 					username: context.data.username,
-					password: context.data.password,
-					strategy,
 					systemId,
-				};
-				const newAccount = await context.app.service('accounts').create(accountParameters);
-				context.params.payload = {};
-				context.params.payload.accountId = newAccount._id;
-				if (newAccount.systemId) {
-					context.params.payload.systemId = newAccount.systemId;
+				},
+				paginate: false,
+			})
+			.then(async ([account]) => {
+				if (account) {
+					context.params.payload = {};
+					context.params.payload.accountId = account._id;
+					if (account.userId) {
+						context.params.payload.userId = account.userId;
+					}
+					if (account.systemId) {
+						context.params.payload.systemId = account.systemId;
+					}
+				} else if (['moodle', 'iserv'].includes(strategy)) {
+					const accountParameters = {
+						username: context.data.username,
+						password: context.data.password,
+						strategy,
+						systemId,
+					};
+					const newAccount = await context.app
+						.service('accounts')
+						.create(accountParameters);
+					context.params.payload = {};
+					context.params.payload.accountId = newAccount._id;
+					if (newAccount.systemId) {
+						context.params.payload.systemId = newAccount.systemId;
+					}
 				}
-			}
-			return context;
-		});
+				return context;
+			});
 	}
 	return context;
 };
@@ -143,12 +161,17 @@ const removeProvider = (context) => {
  */
 const addJwtToWhitelist = async (context) => {
 	if (getRedisClient()) {
-		const { redisIdentifier, privateDevice } = extractDataFromJwt(context.result.accessToken);
+		const { redisIdentifier, privateDevice } = extractDataFromJwt(
+			context.result.accessToken,
+		);
 		const redisData = getRedisData({ privateDevice });
 		const { expirationInSeconds } = redisData;
 		// todo, do this async without await
 		await redisSetAsync(
-			redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds,
+			redisIdentifier,
+			JSON.stringify(redisData),
+			'EX',
+			expirationInSeconds,
 		);
 	}
 
@@ -161,7 +184,9 @@ const addJwtToWhitelist = async (context) => {
  */
 const removeJwtFromWhitelist = async (context) => {
 	if (getRedisClient()) {
-		const { redisIdentifier } = extractDataFromJwt(context.params.authentication.accessToken);
+		const { redisIdentifier } = extractDataFromJwt(
+			context.params.authentication.accessToken,
+		);
 		await redisDelAsync(redisIdentifier);
 	}
 

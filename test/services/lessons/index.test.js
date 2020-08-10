@@ -18,10 +18,12 @@ describe('lessons service', () => {
 		assert.ok(lessonCopyService);
 	});
 
-	it('creates a lesson', () => lessonService.create(testLesson)
-		.then((lesson) => {
+	it('creates a lesson', () =>
+		lessonService.create(testLesson).then((lesson) => {
 			chai.expect(lesson.name).to.equal(testLesson.name);
 			chai.expect(lesson.description).to.equal(testLesson.description);
-			chai.expect(lesson.courseId.toString()).to.equal(testLesson.courseId);
+			chai.expect(lesson.courseId.toString()).to.equal(
+				testLesson.courseId,
+			);
 		}));
 });

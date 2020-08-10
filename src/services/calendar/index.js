@@ -4,9 +4,13 @@ const hooks = require('./hooks');
 const { REQUEST_TIMEOUT } = require('../../../config/globals');
 
 function toQueryString(paramsObject) {
-	return Object
-		.keys(paramsObject)
-		.map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
+	return Object.keys(paramsObject)
+		.map(
+			(key) =>
+				`${encodeURIComponent(key)}=${encodeURIComponent(
+					paramsObject[key],
+				)}`,
+		)
 		.join('&');
 }
 
@@ -45,7 +49,11 @@ const convertEventToJsonApi = (body) => ({
 				location: body.location,
 				description: body.description,
 				dtstart: body.startDate,
-				dtend: body.endDate || new Date(new Date(body.startDate).getTime() + body.duration).toISOString(),
+				dtend:
+					body.endDate ||
+					new Date(
+						new Date(body.startDate).getTime() + body.duration,
+					).toISOString(),
 				dtstamp: new Date(),
 				transp: 'OPAQUE',
 				sequence: 0,
@@ -54,13 +62,12 @@ const convertEventToJsonApi = (body) => ({
 				repeat_until: body.repeat_until,
 				'x-sc-courseId': body.courseId,
 				'x-sc-teamId': body.teamId,
-				'x-sc-featureVideoConference': body.featureVideoConference === 'on',
+				'x-sc-featureVideoConference':
+					body.featureVideoConference === 'on',
 				'x-sc-courseTimeId': body.courseTimeId,
 			},
 			relationships: {
-				'scope-ids': [
-					body.scopeId,
-				],
+				'scope-ids': [body.scopeId],
 				'separate-users': false,
 			},
 		},
@@ -71,7 +78,8 @@ class Service {
 	constructor(options) {
 		this.options = options || {};
 		this.docs = {
-			description: 'A proxy-service to handle the standalone schul-cloud calendar service ',
+			description:
+				'A proxy-service to handle the standalone schul-cloud calendar service ',
 			create: {
 				parameters: [
 					{
@@ -120,12 +128,14 @@ class Service {
 						type: 'date',
 					},
 					{
-						description: 'the course reference of a event, e.g. for linking to a course page',
+						description:
+							'the course reference of a event, e.g. for linking to a course page',
 						name: 'courseId',
 						type: 'string',
 					},
 					{
-						description: 'the course-time reference of a event, e.g. for linking to a specific course-time',
+						description:
+							'the course-time reference of a event, e.g. for linking to a specific course-time',
 						name: 'courseTimeId',
 						type: 'string',
 					},
@@ -134,7 +144,6 @@ class Service {
 						name: 'scopeId',
 						type: 'string',
 					},
-
 				],
 				summary: 'Creates a new event for the given scope',
 			},
@@ -179,7 +188,10 @@ class Service {
 	create(data, params) {
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
+		const userId =
+			(params.query || {}).userId ||
+			(params.account || {}).userId ||
+			params.payload.userId;
 		const options = {
 			uri: `${serviceUrls.calendar}/events/`,
 			method: 'POST',
@@ -192,22 +204,29 @@ class Service {
 		};
 
 		return request(options).then((events) => {
-			events = (events.data || []).map((event) => Object.assign(event, {
-				title: event.summary,
-				allDay: false, // TODO: find correct value
-				start: Date.parse(event.dtstart),
-				end: Date.parse(event.dtend),
-				url: '', // TODO: add x-sc-field
-			}));
+			events = (events.data || []).map((event) =>
+				Object.assign(event, {
+					title: event.summary,
+					allDay: false, // TODO: find correct value
+					start: Date.parse(event.dtstart),
+					end: Date.parse(event.dtend),
+					url: '', // TODO: add x-sc-field
+				}),
+			);
 			return events.map(convertJsonApiToEvent);
 		});
 	}
 
 	find(params) {
 		const serviceUrls = this.app.get('services') || {};
-		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
+		const userId =
+			(params.query || {}).userId ||
+			(params.account || {}).userId ||
+			params.payload.userId;
 		const options = {
-			uri: `${serviceUrls.calendar}/events?${toQueryString(params.query)}`,
+			uri: `${serviceUrls.calendar}/events?${toQueryString(
+				params.query,
+			)}`,
 			headers: {
 				Authorization: userId,
 			},
@@ -216,12 +235,16 @@ class Service {
 		};
 
 		return request(options).then((events) => {
-			events = (params.query || {}).userId || (events.data || events || []).map((event) => Object.assign(event, {
-				title: event.summary,
-				allDay: false, // TODO: find correct value
-				start: Date.parse(event.dtstart),
-				end: Date.parse(event.dtend),
-			}));
+			events =
+				(params.query || {}).userId ||
+				(events.data || events || []).map((event) =>
+					Object.assign(event, {
+						title: event.summary,
+						allDay: false, // TODO: find correct value
+						start: Date.parse(event.dtstart),
+						end: Date.parse(event.dtend),
+					}),
+				);
 
 			return events.map(convertJsonApiToEvent);
 		});
@@ -230,7 +253,10 @@ class Service {
 	remove(id, params) {
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
+		const userId =
+			(params.query || {}).userId ||
+			(params.account || {}).userId ||
+			params.payload.userId;
 		const options = {
 			uri: `${serviceUrls.calendar}/events/${id}`,
 			headers: {
@@ -252,7 +278,10 @@ class Service {
 	update(id, data, params) {
 		const serviceUrls = this.app.get('services') || {};
 
-		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
+		const userId =
+			(params.query || {}).userId ||
+			(params.account || {}).userId ||
+			params.payload.userId;
 		const options = {
 			uri: `${serviceUrls.calendar}/events/${id}`,
 			method: 'PUT',
@@ -265,7 +294,7 @@ class Service {
 		};
 
 		return request(options).then((events) => {
-			events = (events.data || events || []);
+			events = events.data || events || [];
 			return events.map(convertJsonApiToEvent);
 		});
 	}

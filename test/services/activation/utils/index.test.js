@@ -28,7 +28,11 @@ const mockData = {
 
 const createEntry = async () => {
 	const user = await createTestUser({ roles: ['student'] });
-	const entry = await createTestActivation(user, mockData.keyword, mockData.email);
+	const entry = await createTestActivation(
+		user,
+		mockData.keyword,
+		mockData.email,
+	);
 	return { entry, user };
 };
 
@@ -62,13 +66,21 @@ describe('activation/utils utils', () => {
 
 	it('create entry with same email twice', async () => {
 		const { entry, user } = await createEntry();
-		const entry2 = await createTestActivation(user, mockData.keyword, mockData.email);
+		const entry2 = await createTestActivation(
+			user,
+			mockData.keyword,
+			mockData.email,
+		);
 		expect(entry).to.be.deep.include(entry2);
 	});
 
 	it('create entry with new email', async () => {
 		const { entry, user } = await createEntry();
-		const entry2 = await createTestActivation(user, mockData.keyword, mockData.email2);
+		const entry2 = await createTestActivation(
+			user,
+			mockData.keyword,
+			mockData.email2,
+		);
 		expect(entry).to.be.not.deep.include(entry2);
 		expect(entry._id.toString()).to.be.not.equal(entry2._id.toString());
 		expect(entry.activationCode).to.be.not.equal(entry2.activationCode);
@@ -88,14 +100,19 @@ describe('activation/utils utils', () => {
 		const changedEntry = await util.setEntryState(app, entry._id, newState);
 		expect(changedEntry.state).to.be.equal(newState);
 
-		await expect(util.setEntryState(app, entry._id, 'something')).to.be.rejected;
+		await expect(util.setEntryState(app, entry._id, 'something')).to.be
+			.rejected;
 	});
 
 	it('lookup entry by ActivationCode', async () => {
 		const { entry, user } = await createEntry();
 
 		const { activationCode } = entry;
-		const lookup = await util.getEntryByActivationCode(app, user._id, activationCode);
+		const lookup = await util.getEntryByActivationCode(
+			app,
+			user._id,
+			activationCode,
+		);
 
 		expect(lookup).to.not.be.undefined;
 		expect(lookup._id.toString()).to.equal(entry._id.toString());
@@ -108,10 +125,18 @@ describe('activation/utils utils', () => {
 		const { keyword } = mockData;
 		const testUser1 = await createTestUser();
 		const testUser2 = await createTestUser();
-		const entry = await createTestActivation(testUser1._id, keyword, mockData.email);
+		const entry = await createTestActivation(
+			testUser1._id,
+			keyword,
+			mockData.email,
+		);
 
 		const { activationCode } = entry;
-		const entryUser2 = await util.getEntryByActivationCode(app, testUser2._id, activationCode);
+		const entryUser2 = await util.getEntryByActivationCode(
+			app,
+			testUser2._id,
+			activationCode,
+		);
 		expect(entryUser2, 'this is bad!!').to.be.null;
 	});
 
@@ -119,10 +144,18 @@ describe('activation/utils utils', () => {
 		const keyword = util.KEYWORDS.E_MAIL_ADDRESS;
 		const testUser1 = await createTestUser();
 		const testUser2 = await createTestUser();
-		const entry = await createTestActivation(testUser1._id, keyword, mockData.email);
+		const entry = await createTestActivation(
+			testUser1._id,
+			keyword,
+			mockData.email,
+		);
 
 		const userIdOfUser1 = testUser1._id;
-		const lookup = await util.getEntriesByUserId(app, userIdOfUser1, keyword);
+		const lookup = await util.getEntriesByUserId(
+			app,
+			userIdOfUser1,
+			keyword,
+		);
 
 		expect(lookup).to.not.be.undefined;
 		expect(lookup._id.toString()).to.equal(entry._id.toString());
@@ -131,7 +164,11 @@ describe('activation/utils utils', () => {
 		expect(lookup.activationCode).to.be.equal(entry.activationCode);
 
 		const userIdOfUser2 = testUser2._id;
-		const lookupUser2 = await util.getEntriesByUserId(app, userIdOfUser2, keyword);
+		const lookupUser2 = await util.getEntriesByUserId(
+			app,
+			userIdOfUser2,
+			keyword,
+		);
 
 		expect(lookupUser2).to.be.null;
 	});
@@ -141,13 +178,22 @@ describe('activation/utils utils', () => {
 		await expect(util.validEntry(entry)).to.not.rejected;
 
 		entry.state = util.STATE.PENDING;
-		await expect(util.validEntry(entry)).to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_INVALID);
+		await expect(util.validEntry(entry)).to.be.rejectedWith(
+			customErrorMessages.ACTIVATION_LINK_INVALID,
+		);
 
 		entry.state = util.STATE.NOT_STARTED;
 		entry.updatedAt = new Date(
-			Date.parse(entry.updatedAt) - 1000 * Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS') - 1000,
+			Date.parse(entry.updatedAt) -
+				1000 *
+					Configuration.get(
+						'ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS',
+					) -
+				1000,
 		);
-		await expect(util.validEntry(entry)).to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_EXPIRED);
+		await expect(util.validEntry(entry)).to.be.rejectedWith(
+			customErrorMessages.ACTIVATION_LINK_EXPIRED,
+		);
 	});
 
 	it('get User', async () => {
@@ -155,7 +201,9 @@ describe('activation/utils utils', () => {
 		const getUser = await util.getUser(app, user._id);
 		expect(user._id.toString()).to.be.equal(getUser._id.toString());
 		expect(user.email).to.be.equal(getUser.email);
-		expect(new Date(user.createdAt).toISOString).to.be.equal(new Date(getUser.createdAt).toISOString);
+		expect(new Date(user.createdAt).toISOString).to.be.equal(
+			new Date(getUser.createdAt).toISOString,
+		);
 	});
 
 	it('create Activation Link', async () => {

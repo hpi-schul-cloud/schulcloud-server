@@ -39,16 +39,15 @@ describe('hook helpers', () => {
 			expect(ifSuperhero([])).to.equal(false);
 			expect(ifSuperhero({})).to.equal(false);
 			expect(ifSuperhero(['admin', 'lehrer'])).to.equal(false);
-			expect(ifSuperhero([
-				{ name: 'admin' },
-				{ name: 'schueler' },
-			])).to.equal(false);
+			expect(
+				ifSuperhero([{ name: 'admin' }, { name: 'schueler' }]),
+			).to.equal(false);
 		});
 	});
 
 	describe('removeDuplicatedTeamUsers', () => {
-		const userList = []; let
-			populatedUserList;
+		const userList = [];
+		let populatedUserList;
 		before(() => {
 			const schoolId = ObjectId();
 			const role = ObjectId();
@@ -57,9 +56,9 @@ describe('hook helpers', () => {
 				{ schoolId, role, userId: ObjectId() },
 				{ schoolId, role, userId: ObjectId() },
 			];
-			userList.push((new teamUserModel(data[0]))._doc);
-			userList.push((new teamUserModel(data[1]))._doc);
-			userList.push((new teamUserModel(data[2]))._doc);
+			userList.push(new teamUserModel(data[0])._doc);
+			userList.push(new teamUserModel(data[1])._doc);
+			userList.push(new teamUserModel(data[2])._doc);
 
 			populatedUserList = userList.slice();
 			// fake populate
@@ -69,69 +68,107 @@ describe('hook helpers', () => {
 		});
 
 		it('should work for empty array', () => {
-			expect((removeDuplicatedTeamUsers([])).length).to.equal(0);
+			expect(removeDuplicatedTeamUsers([]).length).to.equal(0);
 		});
 
 		it('should work for basic model', () => {
-			expect(removeDuplicatedTeamUsers(userList)).to.be.an('array').with.lengthOf(3);
-			expect(removeDuplicatedTeamUsers(userList.concat(userList))).to.be.an('array').with.lengthOf(3);
+			expect(removeDuplicatedTeamUsers(userList))
+				.to.be.an('array')
+				.with.lengthOf(3);
+			expect(removeDuplicatedTeamUsers(userList.concat(userList)))
+				.to.be.an('array')
+				.with.lengthOf(3);
 		});
 
 		it('should work for *populated* userIds', () => {
-			expect(removeDuplicatedTeamUsers(populatedUserList)).to.be.an('array').with.lengthOf(3);
-			expect(removeDuplicatedTeamUsers(populatedUserList.concat(populatedUserList))).to.be.an('array').with.lengthOf(3);
+			expect(removeDuplicatedTeamUsers(populatedUserList))
+				.to.be.an('array')
+				.with.lengthOf(3);
+			expect(
+				removeDuplicatedTeamUsers(
+					populatedUserList.concat(populatedUserList),
+				),
+			)
+				.to.be.an('array')
+				.with.lengthOf(3);
 		});
 
 		it('should work for mixed *populated* and NOT *populated* userIds', () => {
-			expect(removeDuplicatedTeamUsers(userList.concat(populatedUserList))).to.be.an('array').with.lengthOf(3);
+			expect(
+				removeDuplicatedTeamUsers(userList.concat(populatedUserList)),
+			)
+				.to.be.an('array')
+				.with.lengthOf(3);
 		});
 
 		it('should get empty array for wrong input types', () => {
-			expect(removeDuplicatedTeamUsers({})).to.be.an('array').that.is.empty;
-			expect(removeDuplicatedTeamUsers('')).to.be.an('array').that.is.empty;
-			expect(removeDuplicatedTeamUsers(true)).to.be.an('array').that.is.empty;
-			expect(removeDuplicatedTeamUsers(false)).to.be.an('array').that.is.empty;
+			expect(removeDuplicatedTeamUsers({})).to.be.an('array').that.is
+				.empty;
+			expect(removeDuplicatedTeamUsers('')).to.be.an('array').that.is
+				.empty;
+			expect(removeDuplicatedTeamUsers(true)).to.be.an('array').that.is
+				.empty;
+			expect(removeDuplicatedTeamUsers(false)).to.be.an('array').that.is
+				.empty;
 		});
 	});
 
 	describe('arrayRemoveAddDiffs', () => {
 		it('should work for empty arrays', () => {
-			expect(arrayRemoveAddDiffs([], [])).to.deep.equal({ add: [], remove: [] });
+			expect(arrayRemoveAddDiffs([], [])).to.deep.equal({
+				add: [],
+				remove: [],
+			});
 		});
 
 		it('should work for plain arrays', () => {
-			expect(arrayRemoveAddDiffs([1], [2])).to.deep.equal({ add: [2], remove: [1] });
-			expect(arrayRemoveAddDiffs([1, 2, 3], [2, 4])).to.deep.equal({ add: [4], remove: [1, 3] });
-			expect(arrayRemoveAddDiffs(['foo', 'bar'], ['foo', 'baz', 'bar'])).to.deep.equal({ add: ['baz'], remove: [] });
-			expect(arrayRemoveAddDiffs(['foo', 'bar'], ['bar'])).to.deep.equal({ add: [], remove: ['foo'] });
+			expect(arrayRemoveAddDiffs([1], [2])).to.deep.equal({
+				add: [2],
+				remove: [1],
+			});
+			expect(arrayRemoveAddDiffs([1, 2, 3], [2, 4])).to.deep.equal({
+				add: [4],
+				remove: [1, 3],
+			});
+			expect(
+				arrayRemoveAddDiffs(['foo', 'bar'], ['foo', 'baz', 'bar']),
+			).to.deep.equal({ add: ['baz'], remove: [] });
+			expect(arrayRemoveAddDiffs(['foo', 'bar'], ['bar'])).to.deep.equal({
+				add: [],
+				remove: ['foo'],
+			});
 		});
 
 		it('should ignore duplicate values', () => {
-			expect(arrayRemoveAddDiffs([1, 1, 2], [1, 2])).to.deep.equal({ add: [], remove: [] });
-			expect(arrayRemoveAddDiffs([1, 1, 2], [1, 1, 1, 1, 3])).to.deep.equal({ add: [3], remove: [2] });
+			expect(arrayRemoveAddDiffs([1, 1, 2], [1, 2])).to.deep.equal({
+				add: [],
+				remove: [],
+			});
+			expect(
+				arrayRemoveAddDiffs([1, 1, 2], [1, 1, 1, 1, 3]),
+			).to.deep.equal({ add: [3], remove: [2] });
 		});
 
 		it('should work on huge arrays', () => {
 			const arr = new Array(2 ** 12).fill(1);
 			const arr2 = Array.from(arr);
 			arr2.push(2);
-			expect(arrayRemoveAddDiffs(arr, arr2)).to.deep.equal({ add: [2], remove: [] });
+			expect(arrayRemoveAddDiffs(arr, arr2)).to.deep.equal({
+				add: [2],
+				remove: [],
+			});
 		});
 
 		it('should use a provided key to compare elements', () => {
-			const original = [
-				{ name: 'foo' },
-				{ name: 'bar', data: 1 },
-			];
-			const changed = [
-				{ name: 'baz' },
-				{ name: 'bar', data: 2 },
-			];
+			const original = [{ name: 'foo' }, { name: 'bar', data: 1 }];
+			const changed = [{ name: 'baz' }, { name: 'bar', data: 2 }];
 			const expected = {
 				add: [{ name: 'baz' }],
 				remove: [{ name: 'foo' }],
 			};
-			expect(arrayRemoveAddDiffs(original, changed, 'name')).to.deep.equal(expected);
+			expect(
+				arrayRemoveAddDiffs(original, changed, 'name'),
+			).to.deep.equal(expected);
 		});
 
 		it('should work on lists of ObjectIds', () => {
@@ -139,53 +176,61 @@ describe('hook helpers', () => {
 			const id2 = new ObjectId();
 			const id3 = new ObjectId();
 
-			const original = [
-				{ _id: id1 },
-				{ _id: id2 },
-			];
-			const changed = [
-				{ _id: id1 },
-				{ _id: id3 },
-			];
+			const original = [{ _id: id1 }, { _id: id2 }];
+			const changed = [{ _id: id1 }, { _id: id3 }];
 			const expected = {
 				add: [{ _id: id3 }],
 				remove: [{ _id: id2 }],
 			};
-			expect(arrayRemoveAddDiffs(original, changed, '_id')).to.deep.equal(expected);
+			expect(arrayRemoveAddDiffs(original, changed, '_id')).to.deep.equal(
+				expected,
+			);
 		});
 	});
 
 	describe('populateUsersForEachUserIdinHookData', () => {
 		it('should not break for request methods != CREATE, PATCH', async () => {
 			const hook = { method: 'delete' };
-			expect(await populateUsersForEachUserIdinHookData(hook)).to.deep.equal([]);
-			expect(() => populateUsersForEachUserIdinHookData(hook)).to.not.throw();
+			expect(
+				await populateUsersForEachUserIdinHookData(hook),
+			).to.deep.equal([]);
+			expect(() =>
+				populateUsersForEachUserIdinHookData(hook),
+			).to.not.throw();
 		});
 
 		it('should fail for empty request bodies', async () => {
 			const hook = { method: 'patch', data: [] };
-			expect(await populateUsersForEachUserIdinHookData(hook)).to.deep.equal([]);
-			expect(() => populateUsersForEachUserIdinHookData(hook)).to.not.throw();
+			expect(
+				await populateUsersForEachUserIdinHookData(hook),
+			).to.deep.equal([]);
+			expect(() =>
+				populateUsersForEachUserIdinHookData(hook),
+			).to.not.throw();
 		});
 
 		it('should populate userIds in the request data', async () => {
-			await Promise.all(['create', 'patch'].map(async (method) => {
-				const { userId, user } = await setupUser();
-				expect(userId).to.not.equal(undefined);
-				const hook = {
-					app,
-					method,
-					data: {
-						userIds: [
-							userId,
-						],
-					},
-				};
-				const result = await populateUsersForEachUserIdinHookData(hook);
-				expect(result[0]._id.toString()).to.equal(user._id.toString());
-				expect(result[0].firstName).to.equal(user.firstName);
-				await deleteUser(userId);
-			}));
+			await Promise.all(
+				['create', 'patch'].map(async (method) => {
+					const { userId, user } = await setupUser();
+					expect(userId).to.not.equal(undefined);
+					const hook = {
+						app,
+						method,
+						data: {
+							userIds: [userId],
+						},
+					};
+					const result = await populateUsersForEachUserIdinHookData(
+						hook,
+					);
+					expect(result[0]._id.toString()).to.equal(
+						user._id.toString(),
+					);
+					expect(result[0].firstName).to.equal(user.firstName);
+					await deleteUser(userId);
+				}),
+			);
 		});
 
 		it('should fail for invalid userIds', async () => {
@@ -195,17 +240,18 @@ describe('hook helpers', () => {
 				app,
 				method: 'create',
 				data: {
-					userIds: [
-						userId,
-						'123456',
-					],
+					userIds: [userId, '123456'],
 				},
 			};
 
 			await new Promise((resolve, reject) => {
 				populateUsersForEachUserIdinHookData(hook)
 					.then(() => {
-						reject(new Error('This call should fail because of an invalid userId'));
+						reject(
+							new Error(
+								'This call should fail because of an invalid userId',
+							),
+						);
 					})
 					.catch((err) => {
 						expect(err instanceof BadRequest).to.equal(true);
@@ -217,68 +263,76 @@ describe('hook helpers', () => {
 		});
 
 		it('should resolve duplicate IDs only once', async () => {
-			await Promise.all(['create', 'patch'].map(async (method) => {
-				const { userId, user } = await setupUser();
-				expect(userId).to.not.equal(undefined);
-				const hook = {
-					app,
-					method,
-					data: {
-						userIds: [
-							userId,
-							userId,
-							userId,
-							userId,
-						],
-					},
-				};
-				const result = await populateUsersForEachUserIdinHookData(hook);
-				expect(result.length).to.equal(1);
-				expect(result[0]._id.toString()).to.equal(user._id.toString());
-				expect(result[0].firstName).to.equal(user.firstName);
-				await deleteUser(userId);
-			}));
+			await Promise.all(
+				['create', 'patch'].map(async (method) => {
+					const { userId, user } = await setupUser();
+					expect(userId).to.not.equal(undefined);
+					const hook = {
+						app,
+						method,
+						data: {
+							userIds: [userId, userId, userId, userId],
+						},
+					};
+					const result = await populateUsersForEachUserIdinHookData(
+						hook,
+					);
+					expect(result.length).to.equal(1);
+					expect(result[0]._id.toString()).to.equal(
+						user._id.toString(),
+					);
+					expect(result[0].firstName).to.equal(user.firstName);
+					await deleteUser(userId);
+				}),
+			);
 		});
 
 		it('should work for multiple userIds', async () => {
-			await Promise.all(['create', 'patch'].map(async (method) => {
-				const { userId: userId1, user: user1 } = await setupUser();
-				const { userId: userId2, user: user2 } = await setupUser();
-				const { userId: userId3, user: user3 } = await setupUser();
-				const { userId: userId4, user: user4 } = await setupUser();
+			await Promise.all(
+				['create', 'patch'].map(async (method) => {
+					const { userId: userId1, user: user1 } = await setupUser();
+					const { userId: userId2, user: user2 } = await setupUser();
+					const { userId: userId3, user: user3 } = await setupUser();
+					const { userId: userId4, user: user4 } = await setupUser();
 
-				const hook = {
-					app,
-					method,
-					data: {
-						userIds: [
-							userId1,
-							userId2,
-							userId3,
-							userId4,
-						],
-					},
-				};
-				const result = await populateUsersForEachUserIdinHookData(hook);
-				expect(result.length).to.equal(4);
+					const hook = {
+						app,
+						method,
+						data: {
+							userIds: [userId1, userId2, userId3, userId4],
+						},
+					};
+					const result = await populateUsersForEachUserIdinHookData(
+						hook,
+					);
+					expect(result.length).to.equal(4);
 
-				expect(result[0]._id.toString()).to.equal(user1._id.toString());
-				expect(result[0].firstName).to.equal(user1.firstName);
+					expect(result[0]._id.toString()).to.equal(
+						user1._id.toString(),
+					);
+					expect(result[0].firstName).to.equal(user1.firstName);
 
-				expect(result[1]._id.toString()).to.equal(user2._id.toString());
-				expect(result[1].firstName).to.equal(user2.firstName);
+					expect(result[1]._id.toString()).to.equal(
+						user2._id.toString(),
+					);
+					expect(result[1].firstName).to.equal(user2.firstName);
 
-				expect(result[2]._id.toString()).to.equal(user3._id.toString());
-				expect(result[2].firstName).to.equal(user3.firstName);
+					expect(result[2]._id.toString()).to.equal(
+						user3._id.toString(),
+					);
+					expect(result[2].firstName).to.equal(user3.firstName);
 
-				expect(result[3]._id.toString()).to.equal(user4._id.toString());
-				expect(result[3].firstName).to.equal(user4.firstName);
+					expect(result[3]._id.toString()).to.equal(
+						user4._id.toString(),
+					);
+					expect(result[3].firstName).to.equal(user4.firstName);
 
-				await deleteUser(userId1);
-				await deleteUser(userId2);
-				await deleteUser(userId3);
-				await deleteUser(userId4);
-			}));
+					await deleteUser(userId1);
+					await deleteUser(userId2);
+					await deleteUser(userId3);
+					await deleteUser(userId4);
+				}),
+			);
 		});
 	});
 
@@ -293,7 +347,9 @@ describe('hook helpers', () => {
 			};
 			return getSessionUser(hook)
 				.then(() => {
-					throw new Error('This should not happen due to an invalid sessionUser object');
+					throw new Error(
+						'This should not happen due to an invalid sessionUser object',
+					);
 				})
 				.catch((err) => {
 					expect(err instanceof NotFound).to.equal(true);
@@ -314,11 +370,12 @@ describe('hook helpers', () => {
 					},
 				},
 			};
-			return getSessionUser(hook)
-				.then((sessionUser) => {
-					expect(sessionUser).to.deep.equal(hook.additionalInfosTeam.sessionUser);
-					expect(hook.additionalInfosTeam.isSuperhero).to.equal(false);
-				});
+			return getSessionUser(hook).then((sessionUser) => {
+				expect(sessionUser).to.deep.equal(
+					hook.additionalInfosTeam.sessionUser,
+				);
+				expect(hook.additionalInfosTeam.isSuperhero).to.equal(false);
+			});
 		});
 
 		it('should should set isSuperhero flag according to sessionUser roles', () => {
@@ -330,18 +387,16 @@ describe('hook helpers', () => {
 				},
 				additionalInfosTeam: {
 					sessionUser: {
-						roles: [
-							{ name: 'teacher' },
-							{ name: 'superhero' },
-						],
+						roles: [{ name: 'teacher' }, { name: 'superhero' }],
 					},
 				},
 			};
-			return getSessionUser(hook)
-				.then((sessionUser) => {
-					expect(sessionUser).to.deep.equal(hook.additionalInfosTeam.sessionUser);
-					expect(hook.additionalInfosTeam.isSuperhero).to.equal(true);
-				});
+			return getSessionUser(hook).then((sessionUser) => {
+				expect(sessionUser).to.deep.equal(
+					hook.additionalInfosTeam.sessionUser,
+				);
+				expect(hook.additionalInfosTeam.isSuperhero).to.equal(true);
+			});
 		});
 
 		it('should populate the sessionUser if an account id is set', async () => {
@@ -356,13 +411,12 @@ describe('hook helpers', () => {
 				additionalInfosTeam: {},
 			};
 
-			await getSessionUser(hook)
-				.then((sessionUser) => {
-					expect(sessionUser._id).to.deep.equal(user._id);
-					expect(sessionUser.firstName).to.deep.equal(user.firstName);
-					expect(sessionUser.lastName).to.deep.equal(user.lastName);
-					expect(hook.additionalInfosTeam.isSuperhero).to.equal(true);
-				});
+			await getSessionUser(hook).then((sessionUser) => {
+				expect(sessionUser._id).to.deep.equal(user._id);
+				expect(sessionUser.firstName).to.deep.equal(user.firstName);
+				expect(sessionUser.lastName).to.deep.equal(user.lastName);
+				expect(hook.additionalInfosTeam.isSuperhero).to.equal(true);
+			});
 
 			await deleteUser(user._id);
 		});

@@ -26,7 +26,9 @@ const getPermissionService = (app, scopeName) => {
 	const permissionServicePath = `/${scopeName}/:scopeId/userPermissions`;
 	const permissionService = app.service(permissionServicePath);
 	if (permissionService === undefined) {
-		throw new BadRequest(`There is no userPermission service for the scope '${scopeName}'.`);
+		throw new BadRequest(
+			`There is no userPermission service for the scope '${scopeName}'.`,
+		);
 	}
 	return permissionService;
 };
@@ -63,14 +65,27 @@ const getScopePermissions = async (app, userId, scope) => {
 const checkScopePermissions = (requiredPermissions) => async (context) => {
 	const { scopeName, scopeId } = await getScope(context);
 	const { userId } = context.params.account;
-	const userPermissions = await getScopePermissions(context.app, userId, { id: scopeId, name: scopeName });
+	const userPermissions = await getScopePermissions(context.app, userId, {
+		id: scopeId,
+		name: scopeName,
+	});
 
-	if (requiredPermissions.every((permission) => userPermissions.includes(permission))) {
+	if (
+		requiredPermissions.every((permission) =>
+			userPermissions.includes(permission),
+		)
+	) {
 		return context;
 	}
-	throw new Forbidden(`Missing one of the required permissions ${requiredPermissions}.`, {
-		userId, scopeName, scopeId, requiredPermissions,
-	});
+	throw new Forbidden(
+		`Missing one of the required permissions ${requiredPermissions}.`,
+		{
+			userId,
+			scopeName,
+			scopeId,
+			requiredPermissions,
+		},
+	);
 };
 
 module.exports = {

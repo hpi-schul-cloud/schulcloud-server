@@ -1,7 +1,9 @@
 const { expect } = require('chai');
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
+const {
+	generateRequestParamsFromUser,
+} = require('../../helpers/services/login')(app);
 
 const courseScopeListService = app.service('/users/:scopeId/courses');
 
@@ -23,13 +25,18 @@ describe('courses scopelist service', () => {
 			userIds: [user._id],
 			untilDate: Date.now() - twoDays,
 		});
-		const response = await courseScopeListService.find({ route: { scopeId: user._id }, query: {} });
+		const response = await courseScopeListService.find({
+			route: { scopeId: user._id },
+			query: {},
+		});
 		expect(response).to.not.equal(undefined);
 		expect(response.total).to.equal(1);
 		expect(response.data).to.not.equal(undefined);
 		const courseIds = response.data.map((course) => course._id.toString());
 		expect(courseIds.includes(activeCourse._id.toString())).to.equal(true);
-		expect(courseIds.includes(archivedCourse._id.toString())).to.equal(false);
+		expect(courseIds.includes(archivedCourse._id.toString())).to.equal(
+			false,
+		);
 	});
 
 	it('may explicitly fetch only active courses', async () => {
@@ -51,7 +58,9 @@ describe('courses scopelist service', () => {
 		expect(response.data).to.not.equal(undefined);
 		const courseIds = response.data.map((course) => course._id.toString());
 		expect(courseIds.includes(activeCourse._id.toString())).to.equal(true);
-		expect(courseIds.includes(archivedCourse._id.toString())).to.equal(false);
+		expect(courseIds.includes(archivedCourse._id.toString())).to.equal(
+			false,
+		);
 	});
 
 	it('may fetch only archived courses', async () => {
@@ -73,7 +82,9 @@ describe('courses scopelist service', () => {
 		expect(response.data).to.not.equal(undefined);
 		const courseIds = response.data.map((course) => course._id.toString());
 		expect(courseIds.includes(activeCourse._id.toString())).to.equal(false);
-		expect(courseIds.includes(archivedCourse._id.toString())).to.equal(true);
+		expect(courseIds.includes(archivedCourse._id.toString())).to.equal(
+			true,
+		);
 	});
 
 	it('may fetch all courses', async () => {
@@ -95,7 +106,9 @@ describe('courses scopelist service', () => {
 		expect(response.data).to.not.equal(undefined);
 		const courseIds = response.data.map((course) => course._id.toString());
 		expect(courseIds.includes(activeCourse._id.toString())).to.equal(true);
-		expect(courseIds.includes(archivedCourse._id.toString())).to.equal(true);
+		expect(courseIds.includes(archivedCourse._id.toString())).to.equal(
+			true,
+		);
 	});
 
 	it('fetches all courses by default', async () => {
@@ -120,9 +133,15 @@ describe('courses scopelist service', () => {
 		expect(response.total).to.equal(3);
 		expect(response.data).to.not.equal(undefined);
 		const courseIds = response.data.map((course) => course._id.toString());
-		expect(courseIds.includes(courseAsStudent._id.toString())).to.equal(true);
-		expect(courseIds.includes(courseAsTeacher._id.toString())).to.equal(true);
-		expect(courseIds.includes(courseAsSubstitutionTeacher._id.toString())).to.equal(true);
+		expect(courseIds.includes(courseAsStudent._id.toString())).to.equal(
+			true,
+		);
+		expect(courseIds.includes(courseAsTeacher._id.toString())).to.equal(
+			true,
+		);
+		expect(
+			courseIds.includes(courseAsSubstitutionTeacher._id.toString()),
+		).to.equal(true);
 	});
 
 	it('may fetch only courses as student/teacher', async () => {
@@ -147,9 +166,15 @@ describe('courses scopelist service', () => {
 		expect(response.total).to.equal(2);
 		expect(response.data).to.not.equal(undefined);
 		const courseIds = response.data.map((course) => course._id.toString());
-		expect(courseIds.includes(courseAsStudent._id.toString())).to.equal(true);
-		expect(courseIds.includes(courseAsTeacher._id.toString())).to.equal(true);
-		expect(courseIds.includes(courseAsSubstitutionTeacher._id.toString())).to.equal(false);
+		expect(courseIds.includes(courseAsStudent._id.toString())).to.equal(
+			true,
+		);
+		expect(courseIds.includes(courseAsTeacher._id.toString())).to.equal(
+			true,
+		);
+		expect(
+			courseIds.includes(courseAsSubstitutionTeacher._id.toString()),
+		).to.equal(false);
 	});
 
 	it('may fetch only courses as substitution teacher', async () => {
@@ -174,9 +199,15 @@ describe('courses scopelist service', () => {
 		expect(response.total).to.equal(1);
 		expect(response.data).to.not.equal(undefined);
 		const courseIds = response.data.map((course) => course._id.toString());
-		expect(courseIds.includes(courseAsStudent._id.toString())).to.equal(false);
-		expect(courseIds.includes(courseAsTeacher._id.toString())).to.equal(false);
-		expect(courseIds.includes(courseAsSubstitutionTeacher._id.toString())).to.equal(true);
+		expect(courseIds.includes(courseAsStudent._id.toString())).to.equal(
+			false,
+		);
+		expect(courseIds.includes(courseAsTeacher._id.toString())).to.equal(
+			false,
+		);
+		expect(
+			courseIds.includes(courseAsSubstitutionTeacher._id.toString()),
+		).to.equal(true);
 	});
 
 	it('may fetch as both substitution teacher and student/teacher', async () => {
@@ -201,9 +232,15 @@ describe('courses scopelist service', () => {
 		expect(response.total).to.equal(3);
 		expect(response.data).to.not.equal(undefined);
 		const courseIds = response.data.map((course) => course._id.toString());
-		expect(courseIds.includes(courseAsStudent._id.toString())).to.equal(true);
-		expect(courseIds.includes(courseAsTeacher._id.toString())).to.equal(true);
-		expect(courseIds.includes(courseAsSubstitutionTeacher._id.toString())).to.equal(true);
+		expect(courseIds.includes(courseAsStudent._id.toString())).to.equal(
+			true,
+		);
+		expect(courseIds.includes(courseAsTeacher._id.toString())).to.equal(
+			true,
+		);
+		expect(
+			courseIds.includes(courseAsSubstitutionTeacher._id.toString()),
+		).to.equal(true);
 	});
 
 	it('passes on pagination', async () => {
@@ -318,7 +355,9 @@ describe('courses scopelist service integration', () => {
 		} catch (err) {
 			expect(err).to.not.equal(undefined);
 			expect(err.name).to.equal('Forbidden');
-			expect(err.message).to.equal('Requested and requesting userIds do not match.');
+			expect(err.message).to.equal(
+				'Requested and requesting userIds do not match.',
+			);
 		}
 	}).timeout(4000);
 

@@ -12,7 +12,8 @@ const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const checkForShareToken = (context) => {
 	const { shareToken = '', lessonId } = context.data;
 	const currentUserId = context.params.account.userId.toString();
-	return lesson.findOne({ _id: lessonId })
+	return lesson
+		.findOne({ _id: lessonId })
 		.populate('courseId')
 		.select('shareToken courseId')
 		.lean()
@@ -20,13 +21,15 @@ const checkForShareToken = (context) => {
 		.then((_lesson) => {
 			const course = _lesson.courseId;
 			if (
-				_lesson.shareToken === shareToken
-				|| course.shareToken === shareToken
-				|| course.teacherIds.some((t) => equalIds(t, currentUserId))
+				_lesson.shareToken === shareToken ||
+				course.shareToken === shareToken ||
+				course.teacherIds.some((t) => equalIds(t, currentUserId))
 			) {
 				return context;
 			}
-			throw new Forbidden("The entered lesson doesn't belong to you or is not allowed to be shared!");
+			throw new Forbidden(
+				"The entered lesson doesn't belong to you or is not allowed to be shared!",
+			);
 		})
 		.catch((err) => {
 			logger.warning(err);
@@ -34,14 +37,18 @@ const checkForShareToken = (context) => {
 		});
 };
 
-
 exports.before = () => ({
 	all: [authenticate('jwt')],
 	find: [disallow()],
 	get: [disallow()],
 	create: [
 		mapPayload,
-		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
+		checkIfCourseGroupLesson.bind(
+			this,
+			'COURSEGROUP_CREATE',
+			'TOPIC_CREATE',
+			true,
+		),
 		injectUserId,
 		checkForShareToken,
 		resolveStorageType,

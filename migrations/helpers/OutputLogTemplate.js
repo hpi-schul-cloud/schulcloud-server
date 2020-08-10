@@ -1,6 +1,5 @@
 const logger = require('../../src/logger');
 
-
 class OutputLogTempalte {
 	constructor({
 		total,

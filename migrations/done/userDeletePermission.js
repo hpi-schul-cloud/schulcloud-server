@@ -11,36 +11,45 @@ const run = async () => {
 	console.log('console is working!');
 	database.connect();
 
-	const userRoles = await RoleModel.find({ name: { $in: ['teacher', 'administrator'] } }).exec();
+	const userRoles = await RoleModel.find({
+		name: { $in: ['teacher', 'administrator'] },
+	}).exec();
 	const addTeacherPermissions = ['STUDENT_DELETE'];
 	const addAdminPermissions = ['STUDENT_DELETE', 'TEACHER_DELETE'];
 
 	const chain = [];
 
 	const addPermissions = (permissionArray, userRole) => {
-		Promise.all(permissionArray.map((permission) => {
-			if (!userRole.permissions.includes(permission)) {
-				console.log(`add permission ${permission} for userrole ${userRole.name}`);
-				return RoleModel
-					.findByIdAndUpdate(userRole._id,
-						{ $push: { permissions: permission } })
-					.exec();
-			}
-			console.log(`${permission} already exists for userRole ${userRole.name}`);
-			return Promise.resolve();
-		}));
+		Promise.all(
+			permissionArray.map((permission) => {
+				if (!userRole.permissions.includes(permission)) {
+					console.log(
+						`add permission ${permission} for userrole ${userRole.name}`,
+					);
+					return RoleModel.findByIdAndUpdate(userRole._id, {
+						$push: { permissions: permission },
+					}).exec();
+				}
+				console.log(
+					`${permission} already exists for userRole ${userRole.name}`,
+				);
+				return Promise.resolve();
+			}),
+		);
 	};
 
 	// update user roles/permissions
-	chain.push(userRoles.map((userRole) => {
-		if (userRole.name === 'teacher') {
-			return addPermissions(addTeacherPermissions, userRole);
-		}
-		if (userRole.name === 'administrator') {
-			return addPermissions(addAdminPermissions, userRole);
-		}
-		return Promise.reject(new Error('unexpected Role'));
-	}));
+	chain.push(
+		userRoles.map((userRole) => {
+			if (userRole.name === 'teacher') {
+				return addPermissions(addTeacherPermissions, userRole);
+			}
+			if (userRole.name === 'administrator') {
+				return addPermissions(addAdminPermissions, userRole);
+			}
+			return Promise.reject(new Error('unexpected Role'));
+		}),
+	);
 
 	return Promise.all(chain);
 };

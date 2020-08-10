@@ -3,14 +3,19 @@ const { authenticate } = require('@feathersjs/authentication');
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
 const {
-	NODE_ENV, ENVIRONMENTS, SC_TITLE, SC_SHORT_TITLE,
+	NODE_ENV,
+	ENVIRONMENTS,
+	SC_TITLE,
+	SC_SHORT_TITLE,
 } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../model').registrationPinModel;
 const { getRandomInt } = require('../../../utils/randomNumberGenerator');
 
-const removeOldPins = (hook) => pinModel.deleteMany({ email: hook.data.email })
-	.then(() => Promise.resolve(hook));
+const removeOldPins = (hook) =>
+	pinModel
+		.deleteMany({ email: hook.data.email })
+		.then(() => Promise.resolve(hook));
 
 const generatePin = (hook) => {
 	const pin = getRandomInt(9999, 1000);
@@ -62,8 +67,14 @@ const checkAndVerifyPin = (hook) => {
 		const firstDataItem = hook.result.data[0];
 		// check generation age
 		const now = Date.now();
-		if (firstDataItem.updatedAt.getTime() + (Configuration.get('PIN_MAX_AGE_SECONDS') * 1000) < now) {
-			throw new Forbidden('Der eingegebene Code ist nicht mehr gültig. Bitte fordere einen neuen Code an.');
+		if (
+			firstDataItem.updatedAt.getTime() +
+				Configuration.get('PIN_MAX_AGE_SECONDS') * 1000 <
+			now
+		) {
+			throw new Forbidden(
+				'Der eingegebene Code ist nicht mehr gültig. Bitte fordere einen neuen Code an.',
+			);
 		}
 		if (firstDataItem.verified === true) {
 			// already verified
@@ -71,7 +82,8 @@ const checkAndVerifyPin = (hook) => {
 		}
 		if (firstDataItem.pin) {
 			if (firstDataItem.pin === hook.params.query.pin) {
-				return hook.app.service('registrationPins')
+				return hook.app
+					.service('registrationPins')
 					.patch(firstDataItem._id, { verified: true })
 					.then((result) => {
 						hook.result.data = [result];
@@ -108,7 +120,9 @@ const returnPinOnlyToSuperHero = async (hook) => {
 
 	if (((hook.params || {}).account || {}).userId) {
 		const userService = hook.app.service('/users/');
-		const currentUser = await userService.get(hook.params.account.userId, { query: { $populate: 'roles' } });
+		const currentUser = await userService.get(hook.params.account.userId, {
+			query: { $populate: 'roles' },
+		});
 		const userRoles = currentUser.roles.map((role) => role.name);
 		if (userRoles.includes('superhero')) {
 			return Promise.resolve(hook);
@@ -124,8 +138,12 @@ const validateEmailAndPin = (hook) => {
 	if (!hook.params.query || !email) {
 		throw new BadRequest('email required');
 	}
-	if (email && typeof email === 'string' && email.length
-		&& (!pin || (pin && typeof pin === 'string' && pin.length === 4))) {
+	if (
+		email &&
+		typeof email === 'string' &&
+		email.length &&
+		(!pin || (pin && typeof pin === 'string' && pin.length === 4))
+	) {
 		return hook;
 	}
 	throw new BadRequest('pin or email invalid', { email, pin });

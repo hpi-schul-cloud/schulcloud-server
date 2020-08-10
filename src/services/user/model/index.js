@@ -7,7 +7,10 @@ const { registrationPinSchema } = require('./registrationPin.schema');
 
 const displayName = (user) => `${user.firstName} ${user.lastName}`;
 
-const registrationPinModel = mongoose.model('registrationPin', registrationPinSchema);
+const registrationPinModel = mongoose.model(
+	'registrationPin',
+	registrationPinSchema,
+);
 const userModel = mongoose.model('user', userSchema);
 
 module.exports = {

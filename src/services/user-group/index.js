@@ -1,20 +1,32 @@
 const service = require('feathers-mongoose');
-const {
-	gradeModel,
-} = require('./model');
+const { gradeModel } = require('./model');
 const hooks = require('./hooks');
 const courseCopyService = require('./services/course-copy-service');
 const courseScopelistService = require('./services/courseScopeLists');
 const ClassSuccessorService = require('./services/classSuccessor');
-const { setup: coursePermissionService } = require('./services/coursePermission');
+const {
+	setup: coursePermissionService,
+} = require('./services/coursePermission');
 const { setup: courseMembersService } = require('./services/courseMembers');
 const classSuccessorHooks = require('./hooks/classSuccessor');
 const { classesService, classesHooks } = require('./services/classes');
-const { classModelService, classModelServiceHooks } = require('./services/classModelService');
-const { courseModelService, courseModelServiceHooks } = require('./services/courseModelService');
+const {
+	classModelService,
+	classModelServiceHooks,
+} = require('./services/classModelService');
+const {
+	courseModelService,
+	courseModelServiceHooks,
+} = require('./services/courseModelService');
 const { courseService, courseHooks } = require('./services/courses');
-const { courseGroupModelService, courseGroupModelServiceHooks } = require('./services/courseGroupModelService');
-const { courseGroupHooks, courseGroupService } = require('./services/courseGroups');
+const {
+	courseGroupModelService,
+	courseGroupModelServiceHooks,
+} = require('./services/courseGroupModelService');
+const {
+	courseGroupHooks,
+	courseGroupService,
+} = require('./services/courseGroups');
 
 // eslint-disable-next-line func-names
 module.exports = function () {
@@ -44,14 +56,17 @@ module.exports = function () {
 	app.service('/classes').hooks(classesHooks);
 
 	/* Grade model */
-	app.use('/grades', service({
-		Model: gradeModel,
-		paginate: {
-			default: 25,
-			max: 100,
-		},
-		lean: true,
-	}));
+	app.use(
+		'/grades',
+		service({
+			Model: gradeModel,
+			paginate: {
+				default: 25,
+				max: 100,
+			},
+			lean: true,
+		}),
+	);
 	const gradeService = app.service('/grades');
 	gradeService.hooks(hooks);
 

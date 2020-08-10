@@ -1,6 +1,9 @@
 const { expect } = require('chai');
 const {
-	ScopeService, ScopePermissionService, ScopeListService, ScopeMembersService,
+	ScopeService,
+	ScopePermissionService,
+	ScopeListService,
+	ScopeMembersService,
 } = require('../../../../src/services/helpers/scopePermissions');
 
 describe('ScopeService', () => {
@@ -22,7 +25,9 @@ describe('ScopeService', () => {
 					hooks: () => true,
 				}),
 			};
-			expect(() => ScopeService.initialize(fakeApp, SERVICE_PATH, () => true)).not.to.throw(Error);
+			expect(() =>
+				ScopeService.initialize(fakeApp, SERVICE_PATH, () => true),
+			).not.to.throw(Error);
 		});
 
 		it('should return an instance of the provided subclass', () => {
@@ -38,7 +43,12 @@ describe('ScopeService', () => {
 				}),
 			};
 
-			[ScopeService, ScopePermissionService, ScopeListService, ScopeMembersService].forEach((klass) => {
+			[
+				ScopeService,
+				ScopePermissionService,
+				ScopeListService,
+				ScopeMembersService,
+			].forEach((klass) => {
 				klass.initialize(fakeApp, SERVICE_PATH, () => true);
 				expect(registeredService).to.be.instanceOf(klass);
 			});

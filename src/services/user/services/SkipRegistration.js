@@ -8,15 +8,26 @@ const { BadRequest } = require('@feathersjs/errors');
  */
 const validateRequest = (data, targetUser) => {
 	const targetIsStudent = targetUser.roles[0].name === 'student';
-	if (!((data.parent_privacyConsent && data.parent_termsOfUseConsent)
-		|| (data.privacyConsent && data.termsOfUseConsent))) {
-		return Promise.reject(new BadRequest('you have to set valid consents!'));
+	if (
+		!(
+			(data.parent_privacyConsent && data.parent_termsOfUseConsent) ||
+			(data.privacyConsent && data.termsOfUseConsent)
+		)
+	) {
+		return Promise.reject(
+			new BadRequest('you have to set valid consents!'),
+		);
 	}
-	if (!data.password) return Promise.reject(new BadRequest('you have to set a password!'));
-	if (targetIsStudent && !data.birthday) return Promise.reject(new BadRequest('students require a birthdate'));
+	if (!data.password)
+		return Promise.reject(new BadRequest('you have to set a password!'));
+	if (targetIsStudent && !data.birthday)
+		return Promise.reject(new BadRequest('students require a birthdate'));
 
 	// todo: what status code?
-	if (!targetUser.importHash) return Promise.reject(new BadRequest('this user is not viable for registration'));
+	if (!targetUser.importHash)
+		return Promise.reject(
+			new BadRequest('this user is not viable for registration'),
+		);
 	return Promise.resolve(true);
 };
 
@@ -27,7 +38,9 @@ const validateRequest = (data, targetUser) => {
  * @param {App} app the app object.
  */
 const createAccount = async function createAccount(data, targetUser, app) {
-	const existingAccount = await app.service('accounts').find({ query: { userId: targetUser._id } });
+	const existingAccount = await app
+		.service('accounts')
+		.find({ query: { userId: targetUser._id } });
 	if (existingAccount.length === 0) {
 		return app.service('accounts').create({
 			userId: targetUser._id,
@@ -49,11 +62,13 @@ const createAccount = async function createAccount(data, targetUser, app) {
 const updateConsent = (data, targetUserId, app) => {
 	const consent = { userId: targetUserId };
 	if (data.parent_privacyConsent || data.parent_termsOfUseConsent) {
-		consent.parentConsents = [{
-			form: 'analog',
-			privacyConsent: data.parent_privacyConsent,
-			termsOfUseConsent: data.parent_termsOfUseConsent,
-		}];
+		consent.parentConsents = [
+			{
+				form: 'analog',
+				privacyConsent: data.parent_privacyConsent,
+				termsOfUseConsent: data.parent_termsOfUseConsent,
+			},
+		];
 	}
 	if (data.privacyConsent || data.termsOfUseConsent) {
 		consent.userConsent = {
@@ -72,8 +87,11 @@ const updateConsent = (data, targetUserId, app) => {
  * @param {ObjectId} targetUserId the id of the user to be updated.
  * @param {App} app the app object.
  */
-const updateUser = (data, targetUserId, app) => app.service('users')
-	.patch(targetUserId, { birthday: data.birthday, $unset: { importHash: '' } });
+const updateUser = (data, targetUserId, app) =>
+	app.service('users').patch(targetUserId, {
+		birthday: data.birthday,
+		$unset: { importHash: '' },
+	});
 
 class SkipRegistrationService {
 	constructor() {
@@ -81,8 +99,9 @@ class SkipRegistrationService {
 	}
 
 	async skipUserRegistration(data) {
-		const targetUser = await this.app.service('users').get(data.userId,
-			{ query: { $populate: 'roles' } });
+		const targetUser = await this.app
+			.service('users')
+			.get(data.userId, { query: { $populate: 'roles' } });
 		await validateRequest(data, targetUser);
 
 		await Promise.all([

@@ -11,15 +11,11 @@ const { expect } = chai;
 
 chai.use(chaiHttp);
 
-function request({
-	server,
-	method = 'get',
-	endpoint,
-	data,
-	accessToken,
-}) {
-	return new Promise((resolve, reject) => (
-		chai.request(server)[method](endpoint)
+function request({ server, method = 'get', endpoint, data, accessToken }) {
+	return new Promise((resolve, reject) =>
+		chai
+			.request(server)
+			[method](endpoint)
 			.set({
 				Accept: 'application/json',
 				Authorization: accessToken,
@@ -32,8 +28,8 @@ function request({
 					return;
 				}
 				resolve(res);
-			})
-	));
+			}),
+	);
 }
 
 describe('Etherpad services', () => {
@@ -60,7 +56,11 @@ describe('Etherpad services', () => {
 			server = app.listen(0);
 			testHelpers = testObjects(app);
 
-			const mock = MockServer(mockUrl, Configuration.get('ETHERPAD_API_PATH'), done);
+			const mock = MockServer(
+				mockUrl,
+				Configuration.get('ETHERPAD_API_PATH'),
+				done,
+			);
 			mockServer = mock.server;
 		});
 	});
@@ -73,7 +73,9 @@ describe('Etherpad services', () => {
 
 	it('should create a new etherpad author', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const data = {};
@@ -88,17 +90,20 @@ describe('Etherpad services', () => {
 		expect(!!body.data.authorID).to.equal(true);
 	});
 
-
 	it('should create a new etherpad group', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({
 			roles: ['teacher'],
 			permissions: ['COURSE_VIEW'],
 		});
 
 		const jwt = decode(accessToken);
-		const course = await testHelpers.createTestCourse({ teacherIds: [jwt.userId] });
+		const course = await testHelpers.createTestCourse({
+			teacherIds: [jwt.userId],
+		});
 
 		const data = { courseId: course.id };
 
@@ -115,11 +120,15 @@ describe('Etherpad services', () => {
 
 	it('should create a new pad', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const jwt = decode(accessToken);
-		const course = await testHelpers.createTestCourse({ userIds: [jwt.userId] });
+		const course = await testHelpers.createTestCourse({
+			userIds: [jwt.userId],
+		});
 
 		const data = {
 			courseId: course.id,
@@ -140,11 +149,15 @@ describe('Etherpad services', () => {
 
 	it('should create a new session', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const jwt = decode(accessToken);
-		const course = await testHelpers.createTestCourse({ userIds: [jwt.userId] });
+		const course = await testHelpers.createTestCourse({
+			userIds: [jwt.userId],
+		});
 
 		const data = {
 			courseId: course.id,

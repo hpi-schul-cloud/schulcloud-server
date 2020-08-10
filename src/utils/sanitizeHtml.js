@@ -6,9 +6,43 @@ const maxDeep = 12;
 const keys = ['content', 'text', 'comment', 'gradeComment', 'description'];
 const paths = ['lessons', 'news', 'newsModel', 'homework', 'submissions'];
 const saveKeys = ['password', 'secret'];
-const allowedTags = ['h1', 'h2', 'h3', 'blockquote', 'p', 'a', 'ul', 'ol', 's', 'u', 'span', 'del',
-	'li', 'b', 'i', 'img', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
-	'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'audio', 'video', 'sub', 'sup'];
+const allowedTags = [
+	'h1',
+	'h2',
+	'h3',
+	'blockquote',
+	'p',
+	'a',
+	'ul',
+	'ol',
+	's',
+	'u',
+	'span',
+	'del',
+	'li',
+	'b',
+	'i',
+	'img',
+	'strong',
+	'em',
+	'strike',
+	'code',
+	'hr',
+	'br',
+	'div',
+	'table',
+	'thead',
+	'caption',
+	'tbody',
+	'tr',
+	'th',
+	'td',
+	'pre',
+	'audio',
+	'video',
+	'sub',
+	'sup',
+];
 const allowedSchemes = ['http', 'https', 'ftp', 'mailto'];
 
 // const allowedSchemesByTag = {
@@ -21,12 +55,21 @@ const allowedAttributes = {
 	'*': ['class'],
 	a: ['href', 'name', 'target'],
 	img: MEDIA_ATTRIBUTES,
-	video: [...MEDIA_ATTRIBUTES, 'autoplay', 'name', 'controls', 'controlslist'],
+	video: [
+		...MEDIA_ATTRIBUTES,
+		'autoplay',
+		'name',
+		'controls',
+		'controlslist',
+	],
 	audio: [...MEDIA_ATTRIBUTES, 'controls', 'controlslist'],
 	span: ['style'],
 };
 
-const COLOR_REGEX = [/^#(0x)?[0-9a-f]+$/i, /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/];
+const COLOR_REGEX = [
+	/^#(0x)?[0-9a-f]+$/i,
+	/^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/,
+];
 // Match any number with px, em, or %
 const SIZE_REGEX = [/^\d+(?:px|em|%)$/];
 
@@ -73,14 +116,16 @@ const normalize = (data) => {
  * @param {*} data
  * @param {*} param
  */
-const sanitize = (data, isHTML = false) => sanitizeHtml(normalize(data), isHTML ? htmlTrueOptions : htmlFalseOptions);
+const sanitize = (data, isHTML = false) =>
+	sanitizeHtml(normalize(data), isHTML ? htmlTrueOptions : htmlFalseOptions);
 
 /**
  * disables sanitization for defined keys if a path is matching
  * @param {*} path
  * @param {*} key
  */
-const allowedHtmlByPathAndKeys = (path, key) => paths.includes(path) && keys.includes(key);
+const allowedHtmlByPathAndKeys = (path, key) =>
+	paths.includes(path) && keys.includes(key);
 
 /**
  * Strips JS/HTML Code from data and returns clean version of it
@@ -92,7 +137,10 @@ const allowedHtmlByPathAndKeys = (path, key) => paths.includes(path) && keys.inc
  */
 const sanitizeDeep = (data, path, depth = 0, safeAttributes = []) => {
 	if (depth >= maxDeep) {
-		throw new Error('Data level is to deep. (sanitizeDeep)', { path, data });
+		throw new Error('Data level is to deep. (sanitizeDeep)', {
+			path,
+			data,
+		});
 	}
 	if (typeof data === 'object' && data !== null) {
 		// we have an object, can match strings or recurse child objects
@@ -103,7 +151,10 @@ const sanitizeDeep = (data, path, depth = 0, safeAttributes = []) => {
 				if (saveKeys.includes(key) || safeAttributes.includes(key)) {
 					return data; // TODO:  why not over keys in allowedHtmlByPathAndKeys
 				}
-				data[key] = sanitize(value, allowedHtmlByPathAndKeys(path, key));
+				data[key] = sanitize(
+					value,
+					allowedHtmlByPathAndKeys(path, key),
+				);
 			} else {
 				sanitizeDeep(value, path, depth + 1, safeAttributes);
 			}

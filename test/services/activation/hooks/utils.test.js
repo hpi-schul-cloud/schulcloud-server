@@ -16,9 +16,15 @@ const {
 const hookUtils = require('../../../../src/services/activation/hooks/utils');
 const moodleMockServer = require('../../account/moodle/moodleMockServer');
 
-const newTestAccount = { username: 'testMoodleLoginUser', password: 'testPassword' };
+const newTestAccount = {
+	username: 'testMoodleLoginUser',
+	password: 'testPassword',
+};
 
-const existingTestAccount = { username: 'testMoodleLoginE', password: 'testPasswordE' };
+const existingTestAccount = {
+	username: 'testMoodleLoginE',
+	password: 'testPasswordE',
+};
 const existingTestAccountParameters = {
 	username: existingTestAccount.username,
 	password: existingTestAccount.password,
@@ -48,17 +54,15 @@ describe('activation/hooks utils', () => {
 		const account = await createTestAccount(credentials, 'local', user);
 
 		try {
-			await hookUtils.validPassword(
-				{
-					data: {
-						password: credentials.password,
-					},
-					params: {
-						account,
-					},
-					app,
+			await hookUtils.validPassword({
+				data: {
+					password: credentials.password,
 				},
-			);
+				params: {
+					account,
+				},
+				app,
+			});
 		} catch (error) {
 			expect(error).to.be.instanceOf(Forbidden);
 		}
@@ -66,9 +70,16 @@ describe('activation/hooks utils', () => {
 
 	it('blockThirdParty', async () => {
 		const mockMoodle = await createMoodleTestServer();
-		const system = await createTestSystem({ url: mockMoodle.url, type: 'moodle' });
+		const system = await createTestSystem({
+			url: mockMoodle.url,
+			type: 'moodle',
+		});
 		const user1 = await createTestUser({ roles: ['student'] });
-		user1.account = await createTestAccount(existingTestAccountParameters, system, user1);
+		user1.account = await createTestAccount(
+			existingTestAccountParameters,
+			system,
+			user1,
+		);
 
 		const user2 = await createTestUser({ roles: ['student'] });
 		const credentials = { username: user2.email, password: user2.email };
@@ -86,8 +97,9 @@ describe('activation/hooks utils', () => {
 			throw new Error('This should never happen');
 		} catch (error) {
 			expect(error).to.be.instanceOf(Forbidden);
-			expect(error.message)
-				.to.be.equal('Your user data is managed by a IDM. Changes to it can only be made in the source system');
+			expect(error.message).to.be.equal(
+				'Your user data is managed by a IDM. Changes to it can only be made in the source system',
+			);
 		}
 
 		await hookUtils.blockThirdParty({ app, params: params(user2) });
@@ -115,35 +127,44 @@ describe('activation/hooks utils', () => {
 			expect(err).to.be.instanceOf(BadRequest);
 		}
 		try {
-			hookUtils.validateEmail({ data: { email: '' }, params: username1.params });
+			hookUtils.validateEmail({
+				data: { email: '' },
+				params: username1.params,
+			});
 			throw new Error('This should never happen');
 		} catch (err) {
 			expect(err).to.be.instanceOf(BadRequest);
 		}
 		try {
-			hookUtils.validateEmail({ data: { email: 'test@test.de' }, params: username1.params });
+			hookUtils.validateEmail({
+				data: { email: 'test@test.de' },
+				params: username1.params,
+			});
 			throw new Error('This should never happen');
 		} catch (err) {
 			expect(err).to.be.instanceOf(BadRequest);
 		}
 		try {
-			hookUtils.validateEmail(
-				{ data: { email: 'test@test.de', repeatEmail: 'test@test.de123' }, params: username1.params },
-			);
+			hookUtils.validateEmail({
+				data: { email: 'test@test.de', repeatEmail: 'test@test.de123' },
+				params: username1.params,
+			});
 			throw new Error('This should never happen');
 		} catch (err) {
 			expect(err).to.be.instanceOf(BadRequest);
 		}
 		try {
-			hookUtils.validateEmail(
-				{ data: { email: 'testtest.de', repeatEmail: 'testtest.de' }, params: username2.params },
-			);
+			hookUtils.validateEmail({
+				data: { email: 'testtest.de', repeatEmail: 'testtest.de' },
+				params: username2.params,
+			});
 			throw new Error('This should never happen');
 		} catch (err) {
 			expect(err).to.be.instanceOf(BadRequest);
 		}
-		hookUtils.validateEmail(
-			{ data: { email: 'test@test.de', repeatEmail: 'test@test.de' }, params: username2.params },
-		);
+		hookUtils.validateEmail({
+			data: { email: 'test@test.de', repeatEmail: 'test@test.de' },
+			params: username2.params,
+		});
 	});
 });

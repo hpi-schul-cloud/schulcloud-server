@@ -1,6 +1,8 @@
 const { BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
-const { modelServices: { prepareInternalParams } } = require('../../utils');
+const {
+	modelServices: { prepareInternalParams },
+} = require('../../utils');
 const { userToConsent, modifyDataForUserSchema } = require('./utils');
 const globalHooks = require('../../hooks');
 
@@ -8,25 +10,31 @@ const MODEL_SERVICE = 'usersModel';
 
 const restrictToUserOrRole = (hook) => {
 	const userService = hook.app.service('users');
-	return userService.find({
-		query: {
-			_id: hook.params.account.userId,
-			$populate: 'roles',
-		},
-	}).then((res) => {
-		let access = false;
-		res.data[0].roles.forEach((role) => {
-			if (role.name === 'superhero' || role.name === 'teacher' || role.name === 'administrator') {
-				access = true;
+	return userService
+		.find({
+			query: {
+				_id: hook.params.account.userId,
+				$populate: 'roles',
+			},
+		})
+		.then((res) => {
+			let access = false;
+			res.data[0].roles.forEach((role) => {
+				if (
+					role.name === 'superhero' ||
+					role.name === 'teacher' ||
+					role.name === 'administrator'
+				) {
+					access = true;
+				}
+			});
+			if (access) {
+				return hook;
 			}
-		});
-		if (access) {
-			return hook;
-		}
 
-		hook.params.query.userId = hook.params.account.userId;
-		return hook;
-	});
+			hook.params.query.userId = hook.params.account.userId;
+			return hook;
+		});
 };
 
 /**
@@ -39,12 +47,16 @@ const setUserIdToCorrectForm = (context) => {
 		context.params.query = {};
 	}
 
-	if ((context.params.query.userId || {}).$in && !Array.isArray(context.params.query.userId.$in)) {
-		context.params.query.userId.$in = Object.values(context.params.query.userId.$in);
+	if (
+		(context.params.query.userId || {}).$in &&
+		!Array.isArray(context.params.query.userId.$in)
+	) {
+		context.params.query.userId.$in = Object.values(
+			context.params.query.userId.$in,
+		);
 	}
 	return context;
 };
-
 
 const consentHook = {
 	before: {
@@ -59,11 +71,13 @@ const consentHook = {
 
 class ConsentService {
 	async find(params) {
-		const { query: { userId, ...oldQuery } } = params;
+		const {
+			query: { userId, ...oldQuery },
+		} = params;
 
 		params.query = {};
 
-		if (({}).hasOwnProperty.call(oldQuery, 'userId')) {
+		if ({}.hasOwnProperty.call(oldQuery, 'userId')) {
 			if (!userId.$in) {
 				const user = await this.modelService.get(userId);
 				return {
@@ -88,8 +102,9 @@ class ConsentService {
 			};
 		}
 
-
-		const users = await this.app.service(MODEL_SERVICE).find(prepareInternalParams(params));
+		const users = await this.app
+			.service(MODEL_SERVICE)
+			.find(prepareInternalParams(params));
 		return {
 			...users,
 			data: users.data.map(userToConsent),
@@ -97,11 +112,13 @@ class ConsentService {
 	}
 
 	async get(_id, params) {
-		return this.app.service(MODEL_SERVICE).get(_id, prepareInternalParams(params));
+		return this.app
+			.service(MODEL_SERVICE)
+			.get(_id, prepareInternalParams(params));
 	}
 
 	async create(data, params) {
-		if (!({}).hasOwnProperty.call(data, 'userId')) {
+		if (!{}.hasOwnProperty.call(data, 'userId')) {
 			throw BadRequest('Consent could only create with a UserId');
 		}
 
@@ -117,13 +134,21 @@ class ConsentService {
 	async patch(_id, data, params) {
 		return this.app
 			.service(MODEL_SERVICE)
-			.patch(_id, modifyDataForUserSchema(data), prepareInternalParams(params));
+			.patch(
+				_id,
+				modifyDataForUserSchema(data),
+				prepareInternalParams(params),
+			);
 	}
 
 	async update(_id, data, params) {
 		return this.app
 			.service(MODEL_SERVICE)
-			.update(_id, modifyDataForUserSchema(data), prepareInternalParams(params));
+			.update(
+				_id,
+				modifyDataForUserSchema(data),
+				prepareInternalParams(params),
+			);
 	}
 
 	setup(app) {

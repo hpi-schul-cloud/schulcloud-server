@@ -17,7 +17,9 @@ describe('multple S3 AWS file storage strategy', () => {
 		schoolId: '0000d186816abba584714c5f',
 	};
 
-	const ShouldFail = new Error('It succeeded but should have returned an error.');
+	const ShouldFail = new Error(
+		'It succeeded but should have returned an error.',
+	);
 
 	let configBefore = {};
 
@@ -39,9 +41,15 @@ describe('multple S3 AWS file storage strategy', () => {
 		Configuration.set('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED', true);
 		Configuration.set('S3_KEY', '1234567891234567');
 
-		await testObjects.createTestStorageProvider({ secretAccessKey: '123456789' });
+		await testObjects.createTestStorageProvider({
+			secretAccessKey: '123456789',
+		});
 
-		delete require.cache[require.resolve('../../../../src/services/fileStorage/strategies/awsS3')];
+		delete require.cache[
+			require.resolve(
+				'../../../../src/services/fileStorage/strategies/awsS3',
+			)
+		];
 		// eslint-disable-next-line global-require
 		const AWSStrategy = require('../../../../src/services/fileStorage/strategies/awsS3');
 		aws = new AWSStrategy();
@@ -90,7 +98,9 @@ describe('multple S3 AWS file storage strategy', () => {
 			);
 			expect(res).to.not.be.undefined;
 			expect(res.Deleted).to.have.lengthOf(1);
-			expect(res.Deleted[0].Key).to.equal('users/0000d213816abba584714c0a/example.jpg');
+			expect(res.Deleted[0].Key).to.equal(
+				'users/0000d213816abba584714c0a/example.jpg',
+			);
 		});
 
 		it('rejects with missing parameters', async () => {

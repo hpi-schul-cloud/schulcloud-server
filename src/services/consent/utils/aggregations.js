@@ -1,6 +1,5 @@
 const { ObjectId } = require('mongoose').Types;
 
-
 const convertToIn = (value) => {
 	let list = [];
 	if (Array.isArray(value)) {
@@ -12,7 +11,6 @@ const convertToIn = (value) => {
 	}
 	return list;
 };
-
 
 /**
  * Allows to filter a attribute by a value
@@ -34,7 +32,8 @@ const stageBaseFilter = (aggregation, attr, value) => {
  * Convert a "select"-array to an object to handle it with aggregaitons
  * @param {Array} select
  */
-const convertSelect = (select) => select.reduce((acc, curr) => ({ ...acc, [curr]: 1 }), {});
+const convertSelect = (select) =>
+	select.reduce((acc, curr) => ({ ...acc, [curr]: 1 }), {});
 
 /**
  * Creates an reducer to filter parent consent
@@ -45,7 +44,6 @@ const getParentReducer = (type) => ({
 		input: '$consent.parentConsents',
 		initialValue: false,
 		in: { $or: ['$$value', `$$this.${type}`] },
-
 	},
 });
 
@@ -97,7 +95,6 @@ const getConsentStatusSwitch = () => {
 	const firstLevel = new Date();
 	firstLevel.setFullYear(currentDate.getFullYear() - 14);
 
-
 	return {
 		$switch: {
 			branches: [
@@ -107,32 +104,74 @@ const getConsentStatusSwitch = () => {
 							{
 								$and: [
 									{ $lte: ['$birthday', secondLevel] },
-									{ $eq: ['$consent.userConsent.privacyConsent', true] },
-									{ $eq: ['$consent.userConsent.termsOfUseConsent', true] },
+									{
+										$eq: [
+											'$consent.userConsent.privacyConsent',
+											true,
+										],
+									},
+									{
+										$eq: [
+											'$consent.userConsent.termsOfUseConsent',
+											true,
+										],
+									},
 								],
 							},
 							{
 								$and: [
 									{ $gt: ['$birthday', secondLevel] },
 									{ $lte: ['$birthday', firstLevel] },
-									{ $eq: ['$consent.userConsent.privacyConsent', true] },
-									{ $eq: ['$consent.userConsent.termsOfUseConsent', true] },
-									{ $eq: [getParentReducer('privacyConsent'), true] },
-									{ $eq: [getParentReducer('termsOfUseConsent'), true] },
+									{
+										$eq: [
+											'$consent.userConsent.privacyConsent',
+											true,
+										],
+									},
+									{
+										$eq: [
+											'$consent.userConsent.termsOfUseConsent',
+											true,
+										],
+									},
+									{
+										$eq: [
+											getParentReducer('privacyConsent'),
+											true,
+										],
+									},
+									{
+										$eq: [
+											getParentReducer(
+												'termsOfUseConsent',
+											),
+											true,
+										],
+									},
 								],
 							},
 							{
 								$and: [
 									{ $gt: ['$birthday', firstLevel] },
-									{ $eq: [getParentReducer('privacyConsent'), true] },
-									{ $eq: [getParentReducer('termsOfUseConsent'), true] },
+									{
+										$eq: [
+											getParentReducer('privacyConsent'),
+											true,
+										],
+									},
+									{
+										$eq: [
+											getParentReducer(
+												'termsOfUseConsent',
+											),
+											true,
+										],
+									},
 								],
 							},
-
 						],
 					},
 					then: 'ok',
-
 				},
 				{
 					case: {
@@ -140,7 +179,12 @@ const getConsentStatusSwitch = () => {
 							{ $gt: ['$birthday', secondLevel] },
 							{ $lte: ['$birthday', firstLevel] },
 							{ $eq: [getParentReducer('privacyConsent'), true] },
-							{ $eq: [getParentReducer('termsOfUseConsent'), true] },
+							{
+								$eq: [
+									getParentReducer('termsOfUseConsent'),
+									true,
+								],
+							},
 						],
 					},
 					then: 'parentsAgreed',
@@ -177,7 +221,6 @@ const stageAddSelectProjectWithConsentCreate = (aggregation, select) => {
 	});
 };
 
-
 /**
  * Only select fields which are in select
  */
@@ -189,9 +232,7 @@ const stageSimpleProject = (aggregation, select) => {
 
 const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 	aggregation.push({
-		$lookup:
-		{
-
+		$lookup: {
 			from: 'classes',
 			let: { id: '$_id' },
 			pipeline: [
@@ -199,19 +240,44 @@ const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 					$match: {
 						$expr: {
 							$and: [
-								{ $eq: ['$schoolId', ObjectId(schoolId.toString())] },
+								{
+									$eq: [
+										'$schoolId',
+										ObjectId(schoolId.toString()),
+									],
+								},
 								{
 									$and: [
 										{
 											$or: [
-												{ $eq: ['$year', ObjectId(schoolYearId.toString())] },
-												{ $eq: [{ $type: '$year' }, 'missing'] },
+												{
+													$eq: [
+														'$year',
+														ObjectId(
+															schoolYearId.toString(),
+														),
+													],
+												},
+												{
+													$eq: [
+														{ $type: '$year' },
+														'missing',
+													],
+												},
 											],
 										},
 										{
 											$or: [
 												{ $max: '$gradeLevel' },
-												{ $eq: [{ $type: '$gradeLevel' }, 'missing'] },
+												{
+													$eq: [
+														{
+															$type:
+																'$gradeLevel',
+														},
+														'missing',
+													],
+												},
 											],
 										},
 									],
@@ -281,16 +347,19 @@ const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 const stageSort = (aggregation, sort) => {
 	const mSort = {};
 	for (const k in sort) {
-		if (({}).hasOwnProperty.call(sort, k)) mSort[k] = Number(sort[k]);
+		if ({}.hasOwnProperty.call(sort, k)) mSort[k] = Number(sort[k]);
 	}
 
-	if (typeof sort === 'object' && ({}).hasOwnProperty.call(sort, 'consentStatus')) {
+	if (
+		typeof sort === 'object' &&
+		{}.hasOwnProperty.call(sort, 'consentStatus')
+	) {
 		mSort.consentSortParam = mSort.consentStatus;
 		delete mSort.consentStatus;
 		stageAddConsentSortParam(aggregation);
 	}
 
-	if (typeof sort === 'object' && ({}).hasOwnProperty.call(sort, 'classes')) {
+	if (typeof sort === 'object' && {}.hasOwnProperty.call(sort, 'classes')) {
 		mSort['classesSort.gradeLevel'] = mSort.classes;
 		mSort['classesSort.name'] = mSort.classes;
 		delete mSort.classes;
@@ -300,7 +369,6 @@ const stageSort = (aggregation, sort) => {
 		$sort: mSort,
 	});
 };
-
 
 /**
  *	Convert the output to a feathers-mongoose like format:
@@ -327,9 +395,11 @@ const stageFormatWithTotal = (aggregation, limit, skip) => {
 					$limit: limit,
 				},
 			],
-			total: [{
-				$count: 'count',
-			}],
+			total: [
+				{
+					$count: 'count',
+				},
+			],
 		},
 	});
 
@@ -361,14 +431,23 @@ const stageFormatWithTotal = (aggregation, limit, skip) => {
  * @param {{select: Array, sort: Object, limit: Int, skip: Int, ...matches}} param0
  */
 const createMultiDocumentAggregation = ({
-	select, sort, limit = 25, skip = 0, consentStatus, classes, schoolYearId, ...match
+	select,
+	sort,
+	limit = 25,
+	skip = 0,
+	consentStatus,
+	classes,
+	schoolYearId,
+	...match
 }) => {
 	// eslint-disable-next-line no-param-reassign
 	limit = Number(limit);
 	// eslint-disable-next-line no-param-reassign
 	skip = Number(skip);
 
-	const selectSortDiff = Object.getOwnPropertyNames(sort || {}).filter((s) => !select.includes(s));
+	const selectSortDiff = Object.getOwnPropertyNames(sort || {}).filter(
+		(s) => !select.includes(s),
+	);
 	const aggregation = [];
 
 	if (match) {
@@ -378,13 +457,17 @@ const createMultiDocumentAggregation = ({
 	}
 
 	if (select) {
-		stageAddSelectProjectWithConsentCreate(aggregation, select.concat(selectSortDiff));
-		if (select.includes('classes')) stageLookupClasses(aggregation, match.schoolId, schoolYearId);
+		stageAddSelectProjectWithConsentCreate(
+			aggregation,
+			select.concat(selectSortDiff),
+		);
+		if (select.includes('classes'))
+			stageLookupClasses(aggregation, match.schoolId, schoolYearId);
 	} else {
 		stageAddConsentStatus(aggregation);
-		if (match.schoolId && schoolYearId) stageLookupClasses(aggregation, match.schoolId, schoolYearId);
+		if (match.schoolId && schoolYearId)
+			stageLookupClasses(aggregation, match.schoolId, schoolYearId);
 	}
-
 
 	if (consentStatus) {
 		stageBaseFilter(aggregation, 'consentStatus', consentStatus);
@@ -406,7 +489,6 @@ const createMultiDocumentAggregation = ({
 	stageFormatWithTotal(aggregation, limit, skip);
 	return aggregation;
 };
-
 
 module.exports = {
 	convertSelect,

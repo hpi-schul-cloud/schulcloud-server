@@ -30,22 +30,26 @@ const mockData = {
 
 const createEntry = async () => {
 	const user = await createTestUser({ roles: ['student'] });
-	const entry = await createTestActivation(user, mockData.keyword, mockData.email);
+	const entry = await createTestActivation(
+		user,
+		mockData.keyword,
+		mockData.email,
+	);
 	return { entry, user };
 };
 
-const getNotificationMock = (expectedData = {}) => new Promise((resolve) => {
-	nock(config.services.notification)
-		.post('/mails')
-		.reply(200,
-			(uri, requestBody) => {
+const getNotificationMock = (expectedData = {}) =>
+	new Promise((resolve) => {
+		nock(config.services.notification)
+			.post('/mails')
+			.reply(200, (uri, requestBody) => {
 				Object.entries(expectedData).forEach(([key, value]) => {
 					expect(requestBody[key]).to.eql(value);
 				});
 				resolve(true);
 				return 'Message queued';
 			});
-});
+	});
 
 describe('activation/services activationService', () => {
 	let server;
@@ -71,19 +75,27 @@ describe('activation/services activationService', () => {
 
 	it('find entry', async () => {
 		const user1 = await createTestUser({ roles: ['student'] });
-		let entries1 = await activationService.find({ account: { userId: user1._id } });
+		let entries1 = await activationService.find({
+			account: { userId: user1._id },
+		});
 		expect(entries1.entry).to.have.lengthOf(0);
 
 		const { entry, user } = await createEntry();
-		const entries2 = await activationService.find({ account: { userId: user._id } });
+		const entries2 = await activationService.find({
+			account: { userId: user._id },
+		});
 		expect(entries2).to.not.be.null;
 		expect(entries2.entry).to.have.lengthOf(1);
-		expect(entries2.entry[0].quarantinedObject).to.be.equal(entry.quarantinedObject);
+		expect(entries2.entry[0].quarantinedObject).to.be.equal(
+			entry.quarantinedObject,
+		);
 		expect(entries2.entry[0].keyword).to.be.equal(entry.keyword);
 		expect(entries2.entry[0]._id).to.be.undefined;
 		expect(entries2.entry[0].userId).to.be.undefined;
 
-		entries1 = await activationService.find({ account: { userId: user1._id } });
+		entries1 = await activationService.find({
+			account: { userId: user1._id },
+		});
 		expect(entries1.entry).to.have.lengthOf(0);
 	});
 
@@ -93,7 +105,11 @@ describe('activation/services activationService', () => {
 		const account = await createTestAccount(credentials, 'local', user);
 
 		const cb = getNotificationMock();
-		const res = await activationService.update(entry.activationCode, {}, { account: { userId: user._id } });
+		const res = await activationService.update(
+			entry.activationCode,
+			{},
+			{ account: { userId: user._id } },
+		);
 		expect(await cb).to.equal(true);
 		expect(res.success).to.be.true;
 
@@ -117,9 +133,13 @@ describe('activation/services activationService', () => {
 		const credentials = { username: user.email, password: user.email };
 		const account = await createTestAccount(credentials, 'local', user);
 
-		await expect(activationService
-			.update('thisisaninvalidactivationcode', {}, { account: { userId: user._id } }))
-			.to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_INVALID);
+		await expect(
+			activationService.update(
+				'thisisaninvalidactivationcode',
+				{},
+				{ account: { userId: user._id } },
+			),
+		).to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_INVALID);
 
 		const changedUser = await util.getUser(app, user._id);
 		const changedAccounts = await app.service('/accounts').find({
@@ -143,9 +163,13 @@ describe('activation/services activationService', () => {
 
 		const userHacker = await createTestUser({ roles: ['student'] });
 
-		await expect(activationService
-			.update(entry.activationCode, {}, { account: { userId: userHacker._id } }))
-			.to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_INVALID);
+		await expect(
+			activationService.update(
+				entry.activationCode,
+				{},
+				{ account: { userId: userHacker._id } },
+			),
+		).to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_INVALID);
 
 		const changedUser = await util.getUser(app, user._id);
 		const changedAccounts = await app.service('/accounts').find({
@@ -166,11 +190,15 @@ describe('activation/services activationService', () => {
 		const { entry, user } = await createEntry();
 		expect(entry).to.not.be.null;
 
-		const res = await activationService.remove(entry.keyword, { account: { userId: user._id } });
+		const res = await activationService.remove(entry.keyword, {
+			account: { userId: user._id },
+		});
 		expect(res.success).to.be.true;
 		expect(res.removed).to.be.equal(1);
 
-		const entries = await activationService.find({ account: { userId: user._id } });
+		const entries = await activationService.find({
+			account: { userId: user._id },
+		});
 		expect(entries.entry).to.have.lengthOf(0);
 	});
 });

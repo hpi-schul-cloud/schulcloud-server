@@ -2,8 +2,15 @@
 const { expect } = require('chai');
 const mongoose = require('mongoose');
 const url = require('url');
-const { ROLES, RESPONSE_STATUS, MESSAGE_KEYS } = require('../../../../src/services/videoconference/logic/constants');
-const { joinMeeting, getMeetingInfo } = require('../../../../src/services/videoconference/logic');
+const {
+	ROLES,
+	RESPONSE_STATUS,
+	MESSAGE_KEYS,
+} = require('../../../../src/services/videoconference/logic/constants');
+const {
+	joinMeeting,
+	getMeetingInfo,
+} = require('../../../../src/services/videoconference/logic');
 const testServer = require('../../../../src/services/videoconference/logic/server');
 const utils = require('../../../../src/services/videoconference/logic/utils');
 
@@ -14,23 +21,17 @@ describe('videoconference logic', () => {
 		});
 
 		it('constants have not been modified', () => {
-			expect(Object.values(ROLES))
-				.to.be.deep.equal([
-					'moderator',
-					'attendee',
-				]);
-			expect(Object.values(RESPONSE_STATUS))
-				.to.be.deep.equal([
-					'SUCCESS',
-					'ERROR',
-				]);
-			expect(Object.values(MESSAGE_KEYS))
-				.to.be.deep.equal([
-					'notFound',
-				]);
+			expect(Object.values(ROLES)).to.be.deep.equal([
+				'moderator',
+				'attendee',
+			]);
+			expect(Object.values(RESPONSE_STATUS)).to.be.deep.equal([
+				'SUCCESS',
+				'ERROR',
+			]);
+			expect(Object.values(MESSAGE_KEYS)).to.be.deep.equal(['notFound']);
 		});
 	});
-
 
 	it('get meeting information for not existing meeting', async () => {
 		const otherRandomId = String(new mongoose.Types.ObjectId());

@@ -22,8 +22,11 @@ const renameFileIfAlreadyExistInParent = (existingFile, newFileObject) => {
 			throw new NotAcceptable('File name test is fail.');
 		}
 		const [name, extension, others] = existingFile.name.split('.');
-		if (!others) { // found more then 2 elements after split
-			throw new NotAcceptable('File with points in name is not valid file name.');
+		if (!others) {
+			// found more then 2 elements after split
+			throw new NotAcceptable(
+				'File with points in name is not valid file name.',
+			);
 		}
 		newFileObject.name = `${name}_${Date.now()}.${extension}`;
 	}
@@ -34,7 +37,11 @@ const renameFileIfAlreadyExistInParent = (existingFile, newFileObject) => {
  * @param {Object} { payload: {userId, fileStorageType}}
  * @param {Function} [ permissionHandler ] <optional> permissionHandler(userId, file, parent)
  */
-const copyFile = async ({ file, parent, sourceSchoolId }, { payload, account }, permissionHandler) => {
+const copyFile = async (
+	{ file, parent, sourceSchoolId },
+	{ payload, account },
+	permissionHandler,
+) => {
 	const userId = (payload || {}).userId || account.userId;
 	const strategy = createCorrectStrategy(payload.fileStorageType);
 
@@ -45,7 +52,10 @@ const copyFile = async ({ file, parent, sourceSchoolId }, { payload, account }, 
 	// if existingFile in this directory === parent exist, then rename it
 	const [existingFile, fileObject] = await Promise.all([
 		// only select name to reduce traffic
-		FileModel.findOne({ parent, name: file.name }).select('name').lean().exec(),
+		FileModel.findOne({ parent, name: file.name })
+			.select('name')
+			.lean()
+			.exec(),
 		FileModel.findOne({ _id: file }).lean().exec(),
 	]);
 
@@ -69,9 +79,16 @@ const copyFile = async ({ file, parent, sourceSchoolId }, { payload, account }, 
 		newFileObject.creator = userId;
 	}
 	// copy file on external storage
-	newFileObject.storageFileName = generateFileNameSuffix(newFileObject.name || fileObject.name);
+	newFileObject.storageFileName = generateFileNameSuffix(
+		newFileObject.name || fileObject.name,
+	);
 	// copy file into bucket from user schoolId
-	await strategy.copyFile(userId, fileObject.storageFileName, newFileObject.storageFileName, sourceSchoolId);
+	await strategy.copyFile(
+		userId,
+		fileObject.storageFileName,
+		newFileObject.storageFileName,
+		sourceSchoolId,
+	);
 	return FileModel.create(safeOverrideAndClear(fileObject, newFileObject));
 };
 

@@ -15,7 +15,9 @@ const parseData = (context) => {
 			return context;
 		}
 	}
-	throw new BadRequest('Expected request data to exist and to be a String or a Buffer.');
+	throw new BadRequest(
+		'Expected request data to exist and to be a String or a Buffer.',
+	);
 };
 
 exports.before = {

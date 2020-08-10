@@ -42,17 +42,33 @@ describe('service', function test() {
 	});
 
 	it('admin can trigger a schoolSync', async () => {
-		const school = await testObjects.createTestSchool({ features: ['messenger'] });
+		const school = await testObjects.createTestSchool({
+			features: ['messenger'],
+		});
 		const users = await Promise.all([
-			testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id }),
-			testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id }),
-			testObjects.createTestUser({ roles: ['student'], schoolId: school._id }),
+			testObjects.createTestUser({
+				roles: ['administrator'],
+				schoolId: school._id,
+			}),
+			testObjects.createTestUser({
+				roles: ['teacher'],
+				schoolId: school._id,
+			}),
+			testObjects.createTestUser({
+				roles: ['student'],
+				schoolId: school._id,
+			}),
 		]);
 		const testingQueue = rabbitmqMock.queues.matrix_sync_unpopulated;
 		expect(testingQueue).to.not.be.undefined;
-		expect(testingQueue.length, '3 user creation events + 1 school creation event').to.equal(4);
+		expect(
+			testingQueue.length,
+			'3 user creation events + 1 school creation event',
+		).to.equal(4);
 
-		const params = await testObjects.generateRequestParamsFromUser(users[0]);
+		const params = await testObjects.generateRequestParamsFromUser(
+			users[0],
+		);
 		params.route = { schoolId: school._id.toString() };
 		await app.service('schools/:schoolId/messengerSync').create({}, params);
 
@@ -67,17 +83,32 @@ describe('service', function test() {
 	it('do not trigger without feature flag schoolSync', async () => {
 		const school = await testObjects.createTestSchool({ features: [] });
 		const users = await Promise.all([
-			testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id }),
-			testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id }),
-			testObjects.createTestUser({ roles: ['student'], schoolId: school._id }),
+			testObjects.createTestUser({
+				roles: ['administrator'],
+				schoolId: school._id,
+			}),
+			testObjects.createTestUser({
+				roles: ['teacher'],
+				schoolId: school._id,
+			}),
+			testObjects.createTestUser({
+				roles: ['student'],
+				schoolId: school._id,
+			}),
 		]);
 		const testingQueue = rabbitmqMock.queues.matrix_sync_unpopulated;
 		expect(testingQueue).to.not.be.undefined;
-		expect(testingQueue.length, '3 user creation events + 1 school creation event').to.equal(4);
+		expect(
+			testingQueue.length,
+			'3 user creation events + 1 school creation event',
+		).to.equal(4);
 
-		const params = await testObjects.generateRequestParamsFromUser(users[0]);
+		const params = await testObjects.generateRequestParamsFromUser(
+			users[0],
+		);
 		params.route = { schoolId: school._id.toString() };
-		await app.service('schools/:schoolId/messengerSync')
+		await app
+			.service('schools/:schoolId/messengerSync')
 			.create({}, params)
 			.catch((err) => {
 				expect(err.code).to.be.equal(400);

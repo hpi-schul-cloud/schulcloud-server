@@ -15,19 +15,24 @@ describe('course service', () => {
 		await server.close();
 	});
 
-
 	it('CREATE a course', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const teacher = await testObjects.createTestUser({
+			roles: ['teacher'],
+			schoolId,
+		});
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
-		const result = await app.service('courses').create({
-			name: 'testcourse',
-			schoolId: schoolId.toString(),
-			teacherIds: [teacher._id],
-			substitutionIds: [],
-			classIds: [],
-			userIds: [],
-		}, params);
+		const result = await app.service('courses').create(
+			{
+				name: 'testcourse',
+				schoolId: schoolId.toString(),
+				teacherIds: [teacher._id],
+				substitutionIds: [],
+				classIds: [],
+				userIds: [],
+			},
+			params,
+		);
 		expect(result).to.not.be.undefined;
 		expect(result).to.haveOwnProperty('_id');
 		expect(result.name).to.eq('testcourse');
@@ -42,8 +47,14 @@ describe('course service', () => {
 
 	it('GET a course', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+		const teacher = await testObjects.createTestUser({
+			roles: ['teacher'],
+			schoolId,
+		});
+		const course = await testObjects.createTestCourse({
+			schoolId,
+			teacherIds: [teacher._id],
+		});
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		const result = await app.service('courses').get(course._id, params);
 		expect(result).to.not.be.undefined;
@@ -54,8 +65,14 @@ describe('course service', () => {
 
 	it('FIND courses', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+		const teacher = await testObjects.createTestUser({
+			roles: ['teacher'],
+			schoolId,
+		});
+		const course = await testObjects.createTestCourse({
+			schoolId,
+			teacherIds: [teacher._id],
+		});
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = { _id: course._id };
 		const result = await app.service('courses').find(params);
@@ -68,12 +85,22 @@ describe('course service', () => {
 
 	it('PATCH a course', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+		const teacher = await testObjects.createTestUser({
+			roles: ['teacher'],
+			schoolId,
+		});
+		const course = await testObjects.createTestCourse({
+			schoolId,
+			teacherIds: [teacher._id],
+		});
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
-		const result = await app.service('courses').patch(
-			course._id, { description: 'this description has been changed' }, params,
-		);
+		const result = await app
+			.service('courses')
+			.patch(
+				course._id,
+				{ description: 'this description has been changed' },
+				params,
+			);
 		expect(result).to.not.be.undefined;
 		expect(result.description).to.eq('this description has been changed');
 	});
@@ -81,47 +108,76 @@ describe('course service', () => {
 	describe('security features', () => {
 		it('can not CREATE course on different school', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
-			const { _id: otherSchoolId } = await testObjects.createTestSchool({});
-			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			const { _id: otherSchoolId } = await testObjects.createTestSchool(
+				{},
+			);
+			const teacher = await testObjects.createTestUser({
+				roles: ['teacher'],
+				schoolId,
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				teacher,
+			);
 			try {
-				await app.service('courses').create({
-					name: 'testcourse',
-					schoolId: otherSchoolId.toString(),
-					teacherIds: [teacher._id],
-					substitutionIds: [],
-					classIds: [],
-					userIds: [],
-				}, params);
+				await app.service('courses').create(
+					{
+						name: 'testcourse',
+						schoolId: otherSchoolId.toString(),
+						teacherIds: [teacher._id],
+						substitutionIds: [],
+						classIds: [],
+						userIds: [],
+					},
+					params,
+				);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(403);
-				expect(err.message).to.equal('You do not have valid permissions to access this.');
+				expect(err.message).to.equal(
+					'You do not have valid permissions to access this.',
+				);
 			}
 		});
 
 		it('can not GET course on different school', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
-			const { _id: otherSchoolId } = await testObjects.createTestSchool({});
-			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-			const course = await testObjects.createTestCourse({ otherSchoolId, teacherIds: teacher._id });
-			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			const { _id: otherSchoolId } = await testObjects.createTestSchool(
+				{},
+			);
+			const teacher = await testObjects.createTestUser({
+				roles: ['teacher'],
+				schoolId,
+			});
+			const course = await testObjects.createTestCourse({
+				otherSchoolId,
+				teacherIds: teacher._id,
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				teacher,
+			);
 			try {
 				await app.service('courses').get(course._id, params);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(403);
-				expect(err.message).to.equal('Die angefragte Gruppe gehört nicht zur eigenen Schule!');
+				expect(err.message).to.equal(
+					'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
+				);
 			}
 		});
 
 		it('can not GET course the user is not in', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
-			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const teacher = await testObjects.createTestUser({
+				roles: ['teacher'],
+				schoolId,
+			});
 			const course = await testObjects.createTestCourse({ schoolId });
-			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			const params = await testObjects.generateRequestParamsFromUser(
+				teacher,
+			);
 			try {
 				await app.service('courses').get(course._id, params);
 				throw new Error('should have failed');
@@ -134,9 +190,14 @@ describe('course service', () => {
 
 		it('can not FIND course the user is not in', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
-			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const teacher = await testObjects.createTestUser({
+				roles: ['teacher'],
+				schoolId,
+			});
 			const course = await testObjects.createTestCourse({ schoolId });
-			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			const params = await testObjects.generateRequestParamsFromUser(
+				teacher,
+			);
 			params.query = { _id: course._id };
 			const result = await app.service('courses').find(params);
 			expect(result.total).to.equal(0);
@@ -144,57 +205,84 @@ describe('course service', () => {
 
 		it('can not REMOVE course the user is not in', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
-			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const teacher = await testObjects.createTestUser({
+				roles: ['teacher'],
+				schoolId,
+			});
 			const course = await testObjects.createTestCourse({ schoolId });
-			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			const params = await testObjects.generateRequestParamsFromUser(
+				teacher,
+			);
 			try {
 				await app.service('courses').remove(course._id, params);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(403);
-				expect(err.message).to.equal(`User ${teacher._id} ist nicht Teil des Kurses`);
+				expect(err.message).to.equal(
+					`User ${teacher._id} ist nicht Teil des Kurses`,
+				);
 			}
 		});
 
 		it('can not PATCH course the user is not in', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
-			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const teacher = await testObjects.createTestUser({
+				roles: ['teacher'],
+				schoolId,
+			});
 			const course = await testObjects.createTestCourse({ schoolId });
-			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			const params = await testObjects.generateRequestParamsFromUser(
+				teacher,
+			);
 			try {
-				await app.service('courses').patch(
-					course._id, { description: 'this description has been changed' }, params,
-				);
+				await app
+					.service('courses')
+					.patch(
+						course._id,
+						{ description: 'this description has been changed' },
+						params,
+					);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(403);
-				expect(err.message).to.equal(`User ${teacher._id} ist nicht Teil des Kurses`);
+				expect(err.message).to.equal(
+					`User ${teacher._id} ist nicht Teil des Kurses`,
+				);
 			}
 		});
 
 		it('can not UPDATE course the user is not in', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
-			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const teacher = await testObjects.createTestUser({
+				roles: ['teacher'],
+				schoolId,
+			});
 			const course = await testObjects.createTestCourse({ schoolId });
-			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			const params = await testObjects.generateRequestParamsFromUser(
+				teacher,
+			);
 			try {
 				await app.service('courses').update(
-					course._id, {
+					course._id,
+					{
 						name: 'changedName',
 						schoolId: schoolId.toString(),
 						teacherIds: [teacher._id],
 						substitutionIds: [],
 						classIds: [],
 						userIds: [],
-					}, params,
+					},
+					params,
 				);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(403);
-				expect(err.message).to.equal(`User ${teacher._id} ist nicht Teil des Kurses`);
+				expect(err.message).to.equal(
+					`User ${teacher._id} ist nicht Teil des Kurses`,
+				);
 			}
 		});
 	});

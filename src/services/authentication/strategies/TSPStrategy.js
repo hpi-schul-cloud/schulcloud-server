@@ -8,7 +8,8 @@ const {
 	createUserAndAccount,
 	createTSPConsent,
 	findSchool,
-	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
+	ENTITY_SOURCE,
+	SOURCE_ID_ATTRIBUTE,
 	config: TSP_CONFIG,
 } = require('../../sync/strategies/TSP/TSP');
 const { SYNCER_TARGET } = require('../../sync/strategies/TSP/TSPSchoolSyncer');
@@ -28,15 +29,26 @@ const validateTicket = (decryptedTicket) => {
 	// creation and expiration date
 	const now = Date.now() / 1000;
 	const tenMinutesBuffer = 60 * 10;
-	if (decryptedTicket.iat > now + tenMinutesBuffer || now > decryptedTicket.exp) {
+	if (
+		decryptedTicket.iat > now + tenMinutesBuffer ||
+		now > decryptedTicket.exp
+	) {
 		throw new BadRequest('TSP ticket expired.');
 	}
 
 	// required attributes for user creation
-	const required = ['personVorname', 'personNachname', 'ptscSchuleNummer', 'ptscListRolle', 'authUID'];
+	const required = [
+		'personVorname',
+		'personNachname',
+		'ptscSchuleNummer',
+		'ptscListRolle',
+		'authUID',
+	];
 	required.forEach((attr) => {
 		if (!decryptedTicket[attr]) {
-			throw new BadRequest(`TSP ticket does not contain required attribute "${attr}".`);
+			throw new BadRequest(
+				`TSP ticket does not contain required attribute "${attr}".`,
+			);
 		}
 	});
 
@@ -86,20 +98,27 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		// translate TSP roles into SC roles
 		const roleList = decryptedTicket.ptscListRolle.split(',');
 		const roles = roleList
-			.map((tspRole) => ({
-				schueler: 'student',
-				lehrer: 'teacher',
-				admin: 'administrator',
-			}[tspRole.toLowerCase()]))
+			.map(
+				(tspRole) =>
+					({
+						schueler: 'student',
+						lehrer: 'teacher',
+						admin: 'administrator',
+					}[tspRole.toLowerCase()]),
+			)
 			.filter((role) => {
 				const validRole = role !== undefined;
 				if (!validRole) {
-					logger.warning(`Got invalid role(s) from TSP API: [${roleList}].`);
+					logger.warning(
+						`Got invalid role(s) from TSP API: [${roleList}].`,
+					);
 				}
 				return validRole;
 			});
 		if (roles.length === 0) {
-			throw new NotAuthenticated('No Schul-Cloud role included in TSP ticket.');
+			throw new NotAuthenticated(
+				'No Schul-Cloud role included in TSP ticket.',
+			);
 		}
 
 		const { app } = this;
@@ -134,7 +153,9 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 			}
 		} else if (Array.isArray(roles)) {
 			// if we know the user and roles were supplied, we need to reflect role & school changes
-			await app.service('users').patch(user._id, { roles, schoolId: school._id });
+			await app
+				.service('users')
+				.patch(user._id, { roles, schoolId: school._id });
 		}
 
 		const oneDayInMilliseconds = 864e5;
@@ -171,6 +192,5 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		};
 	}
 }
-
 
 module.exports = TSPStrategy;

@@ -4,12 +4,17 @@ const { Forbidden } = require('@feathersjs/errors');
 const { permitGroupOperation } = require('../../../hooks');
 const { ObjectId } = require('../../../helper/compare');
 const globalHooks = require('../../../hooks');
-const { encryptSecret, decryptSecret } = require('./searchUserPasswordEncryption');
+const {
+	encryptSecret,
+	decryptSecret,
+} = require('./searchUserPasswordEncryption');
 
 const restrictToCurrentSchool = (context) => {
 	const systemids = context.params.school.systems || [];
 	if (context.id) {
-		const schoolSystem = systemids.some((s) => ObjectId.equal(s, context.id));
+		const schoolSystem = systemids.some((s) =>
+			ObjectId.equal(s, context.id),
+		);
 		if (schoolSystem) {
 			return context;
 		}
@@ -22,17 +27,40 @@ const restrictToCurrentSchool = (context) => {
 };
 
 exports.before = {
-	all: [iff(isProvider('external'), [
-		authenticate('jwt'),
-		globalHooks.populateCurrentSchool,
-		restrictToCurrentSchool,
-	])],
-	find: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_EDIT'))],
-	get: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_EDIT'))],
-	create: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_CREATE')), encryptSecret],
-	update: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_EDIT')), encryptSecret],
-	patch: [iff(isProvider('external'), [globalHooks.hasPermission('SYSTEM_EDIT'), permitGroupOperation]), encryptSecret],
-	remove: [iff(isProvider('external'), [globalHooks.hasPermission('SYSTEM_CREATE'), permitGroupOperation])],
+	all: [
+		iff(isProvider('external'), [
+			authenticate('jwt'),
+			globalHooks.populateCurrentSchool,
+			restrictToCurrentSchool,
+		]),
+	],
+	find: [
+		iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_EDIT')),
+	],
+	get: [
+		iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_EDIT')),
+	],
+	create: [
+		iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_CREATE')),
+		encryptSecret,
+	],
+	update: [
+		iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_EDIT')),
+		encryptSecret,
+	],
+	patch: [
+		iff(isProvider('external'), [
+			globalHooks.hasPermission('SYSTEM_EDIT'),
+			permitGroupOperation,
+		]),
+		encryptSecret,
+	],
+	remove: [
+		iff(isProvider('external'), [
+			globalHooks.hasPermission('SYSTEM_CREATE'),
+			permitGroupOperation,
+		]),
+	],
 };
 
 exports.after = {

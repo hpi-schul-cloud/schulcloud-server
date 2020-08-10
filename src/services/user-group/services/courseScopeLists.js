@@ -14,7 +14,9 @@ const buildUserQuery = (query, userId) => {
 };
 
 const buildArchiveQuery = (query) => {
-	const filter = ['active', 'archived', 'all'].includes(query.filter) ? query.filter : 'active';
+	const filter = ['active', 'archived', 'all'].includes(query.filter)
+		? query.filter
+		: 'active';
 
 	const yesterday = new Date();
 	yesterday.setDate(yesterday.getDate() - 1);
@@ -35,33 +37,33 @@ const buildArchiveQuery = (query) => {
 };
 
 module.exports = (app) => {
-	ScopeListService.initialize(app, '/users/:scopeId/courses', async (user, permissions, params) => {
-		const userQuery = buildUserQuery(params.query, user._id);
-		const untilQuery = buildArchiveQuery(params.query);
+	ScopeListService.initialize(
+		app,
+		'/users/:scopeId/courses',
+		async (user, permissions, params) => {
+			const userQuery = buildUserQuery(params.query, user._id);
+			const untilQuery = buildArchiveQuery(params.query);
 
-		if (params.query.count === 'true') {
-			const courseCount = await courseModel.count({
-				$and: [
-					userQuery,
-					untilQuery,
-				],
-			}).exec();
+			if (params.query.count === 'true') {
+				const courseCount = await courseModel
+					.count({
+						$and: [userQuery, untilQuery],
+					})
+					.exec();
 
-			return {
-				total: courseCount,
-			};
-		}
+				return {
+					total: courseCount,
+				};
+			}
 
-		return app.service('courses').find({
-			query: {
-				$and: [
-					userQuery,
-					untilQuery,
-				],
-				$skip: params.query.$skip,
-				$limit: params.query.$limit,
-			},
-			paginate: params.paginate,
-		});
-	});
+			return app.service('courses').find({
+				query: {
+					$and: [userQuery, untilQuery],
+					$skip: params.query.$skip,
+					$limit: params.query.$limit,
+				},
+				paginate: params.paginate,
+			});
+		},
+	);
 };

@@ -3,7 +3,9 @@ const { Forbidden } = require('@feathersjs/errors');
 
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
+const {
+	generateRequestParamsFromUser,
+} = require('../../helpers/services/login')(app);
 
 const courseMembersService = app.service('/courses/:scopeId/members');
 
@@ -45,21 +47,35 @@ describe('course scope members service', () => {
 		after(testObjects.cleanup);
 
 		it('returns the right members', async () => {
-			const response = await courseMembersService.find({ route: { scopeId: course._id } });
-			expect(Object.keys(response)).to.have.members([teacher._id.toString(), student._id.toString()]);
+			const response = await courseMembersService.find({
+				route: { scopeId: course._id },
+			});
+			expect(Object.keys(response)).to.have.members([
+				teacher._id.toString(),
+				student._id.toString(),
+			]);
 		});
 
 		it('assigns the correct permissions to each userId', async () => {
-			const response = await courseMembersService.find({ route: { scopeId: course._id } });
+			const response = await courseMembersService.find({
+				route: { scopeId: course._id },
+			});
 			for (const userId in response) {
 				if (userId === teacher._id.toString()) {
 					expect(response[userId]).to.include.members([
-						'COURSE_EDIT', 'COURSE_DELETE', 'SCOPE_PERMISSIONS_VIEW',
+						'COURSE_EDIT',
+						'COURSE_DELETE',
+						'SCOPE_PERMISSIONS_VIEW',
 					]);
 				} else if (userId === student._id.toString()) {
-					expect(response[userId]).to.include.members(['HOMEWORK_VIEW', 'COURSE_VIEW']);
+					expect(response[userId]).to.include.members([
+						'HOMEWORK_VIEW',
+						'COURSE_VIEW',
+					]);
 					expect(response[userId]).to.not.include.members([
-						'COURSE_EDIT', 'COURSE_DELETE', 'SCOPE_PERMISSIONS_VIEW',
+						'COURSE_EDIT',
+						'COURSE_DELETE',
+						'SCOPE_PERMISSIONS_VIEW',
 					]);
 				}
 			}
@@ -109,10 +125,14 @@ describe('course scope members service', () => {
 			];
 			substitutionTeachers = [await testObjects.createTestUser()];
 			students = [
-				await testObjects.createTestUser(), await testObjects.createTestUser(),
-				await testObjects.createTestUser(), await testObjects.createTestUser(),
-				await testObjects.createTestUser(), await testObjects.createTestUser(),
-				await testObjects.createTestUser(), await testObjects.createTestUser(),
+				await testObjects.createTestUser(),
+				await testObjects.createTestUser(),
+				await testObjects.createTestUser(),
+				await testObjects.createTestUser(),
+				await testObjects.createTestUser(),
+				await testObjects.createTestUser(),
+				await testObjects.createTestUser(),
+				await testObjects.createTestUser(),
 			];
 			course = await testObjects.createTestCourse({
 				teacherIds: teachers.map(toId),
@@ -120,19 +140,30 @@ describe('course scope members service', () => {
 				userIds: students.map(toId),
 			});
 			teacherParams = await generateRequestParamsFromUser(teachers[0]);
-			substitutionTeacherParams = await generateRequestParamsFromUser(substitutionTeachers[0]);
+			substitutionTeacherParams = await generateRequestParamsFromUser(
+				substitutionTeachers[0],
+			);
 			studentParams = await generateRequestParamsFromUser(students[0]);
 		});
 
 		after(testObjects.cleanup);
 
 		it('returns all members', async () => {
-			const response = await courseMembersService.find({ route: { scopeId: course._id } });
-			expect(Object.keys(response).length)
-				.to.equal(teachers.length + substitutionTeachers.length + students.length);
-			expect(Object.keys(response)).to.include.members(teachers.map(toIdString));
-			expect(Object.keys(response)).to.include.members(substitutionTeachers.map(toIdString));
-			expect(Object.keys(response)).to.include.members(students.map(toIdString));
+			const response = await courseMembersService.find({
+				route: { scopeId: course._id },
+			});
+			expect(Object.keys(response).length).to.equal(
+				teachers.length + substitutionTeachers.length + students.length,
+			);
+			expect(Object.keys(response)).to.include.members(
+				teachers.map(toIdString),
+			);
+			expect(Object.keys(response)).to.include.members(
+				substitutionTeachers.map(toIdString),
+			);
+			expect(Object.keys(response)).to.include.members(
+				students.map(toIdString),
+			);
 		});
 
 		it('allows access to teachers and substitution teachers', async () => {

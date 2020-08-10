@@ -18,11 +18,7 @@ describe('userPermissions', async () => {
 		'RUN_FLOOR',
 	];
 
-	const otherPermissions = [
-		'SITTING',
-		'SITTING_ON_CHAIR',
-		'SITTING_ON_DESK',
-	];
+	const otherPermissions = ['SITTING', 'SITTING_ON_CHAIR', 'SITTING_ON_DESK'];
 
 	let testRole;
 	let otherRole;
@@ -36,7 +32,8 @@ describe('userPermissions', async () => {
 	let accountTestUserOther;
 
 	const commonAccountData = {
-		password: '$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJACla',
+		password:
+			'$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJACla',
 		activated: true,
 		createdAt: '2017-09-04T12:51:58.49Z',
 	};
@@ -91,9 +88,21 @@ describe('userPermissions', async () => {
 				roles: [otherRole._id],
 			});
 
-			accountTestUser = await testObjects.createTestAccount(dataTestUser1, null, testUser);
-			accountTestUser2 = await testObjects.createTestAccount(dataTestUser2, null, testUser2);
-			accountTestUserOther = await testObjects.createTestAccount(dataTestUserOther, null, otherUser);
+			accountTestUser = await testObjects.createTestAccount(
+				dataTestUser1,
+				null,
+				testUser,
+			);
+			accountTestUser2 = await testObjects.createTestAccount(
+				dataTestUser2,
+				null,
+				testUser2,
+			);
+			accountTestUserOther = await testObjects.createTestAccount(
+				dataTestUserOther,
+				null,
+				otherUser,
+			);
 
 			done();
 		});
@@ -108,18 +117,27 @@ describe('userPermissions', async () => {
 		expect(userPermissions).to.not.equal(undefined);
 	});
 	it('should get permissions from user role and school by role', async () => {
-		const permissions = await userPermissions.get(testUser._id, { account: accountTestUser });
+		const permissions = await userPermissions.get(testUser._id, {
+			account: accountTestUser,
+		});
 		expect(permissions).to.be.an('array');
-		expect(permissions).to.deep.equal([...testPermissions, otherPermissions[0]]);
+		expect(permissions).to.deep.equal([
+			...testPermissions,
+			otherPermissions[0],
+		]);
 	});
 	it('should get not duplicate permissions', async () => {
-		const permissions = await userPermissions.get(testUser2._id, { account: accountTestUser2 });
+		const permissions = await userPermissions.get(testUser2._id, {
+			account: accountTestUser2,
+		});
 		expect(permissions).to.be.an('array');
 		expect(permissions).to.deep.equal(otherPermissions);
 	});
 
 	it('should get not updated permissions', async () => {
-		const permissions = await userPermissions.get(otherUser._id, { account: accountTestUserOther });
+		const permissions = await userPermissions.get(otherUser._id, {
+			account: accountTestUserOther,
+		});
 		expect(permissions).to.be.an('array');
 		expect(permissions).to.deep.equal(otherPermissions);
 	});

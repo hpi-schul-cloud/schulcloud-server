@@ -13,10 +13,15 @@ const mapResponseProps = (response) => {
 	return response;
 };
 
-const toQueryString = (paramsObject) => Object
-	.keys(paramsObject)
-	.map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
-	.join('&');
+const toQueryString = (paramsObject) =>
+	Object.keys(paramsObject)
+		.map(
+			(key) =>
+				`${encodeURIComponent(key)}=${encodeURIComponent(
+					paramsObject[key],
+				)}`,
+		)
+		.join('&');
 
 class MessageService {
 	constructor(options) {
@@ -176,8 +181,9 @@ class NotificationService {
 		const userId = (params.account || {}).userId || params.payload.userId;
 
 		const options = {
-			uri: `${serviceUrls.notification}/notifications/`
-                + `?user=${userId}&${toQueryString(params.query)}`,
+			uri:
+				`${serviceUrls.notification}/notifications/` +
+				`?user=${userId}&${toQueryString(params.query)}`,
 			headers: {
 				token: userId,
 			},

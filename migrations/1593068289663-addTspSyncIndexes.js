@@ -8,7 +8,11 @@ const { userSchema } = require('../src/services/user/model/user.schema');
 const { schoolSchema } = require('../src/services/school/model');
 
 const User = mongoose.model('user735498457893247852', userSchema, 'users');
-const School = mongoose.model('school735498457893247852', schoolSchema, 'schools');
+const School = mongoose.model(
+	'school735498457893247852',
+	schoolSchema,
+	'schools',
+);
 
 module.exports = {
 	up: async function up() {

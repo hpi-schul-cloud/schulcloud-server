@@ -39,10 +39,16 @@ function isDisposableEmailDomain(domain) {
 
 	// check custom wildcards
 	if (Configuration.has('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS')) {
-		const customWildcards = Configuration.get('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS');
+		const customWildcards = Configuration.get(
+			'ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS',
+		);
 		for (const wildcard of customWildcards.split(',')) {
 			const index = domain.indexOf(wildcard);
-			if (index !== -1 && wildcard.length > 0 && index === domainLength - wildcard.length) {
+			if (
+				index !== -1 &&
+				wildcard.length > 0 &&
+				index === domainLength - wildcard.length
+			) {
 				return true;
 			}
 		}
@@ -59,7 +65,6 @@ function isDisposableEmail(email) {
 
 	return isDisposableEmailDomain(domain);
 }
-
 
 module.exports = {
 	hasValidEmailFormat,

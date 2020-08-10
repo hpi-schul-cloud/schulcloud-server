@@ -27,15 +27,17 @@ const consentSchema = new Schema({
 		privacyConsent: { type: Boolean },
 		termsOfUseConsent: { type: Boolean },
 	},
-	parentConsents: [{
-		parentId: { type: Schema.Types.ObjectId, ref: 'user' },
-		form: { type: String, enum: consentForm },
-		source: { type: String, enum: consentSource },
-		dateOfPrivacyConsent: { type: Date },
-		dateOfTermsOfUseConsent: { type: Date },
-		privacyConsent: { type: Boolean },
-		termsOfUseConsent: { type: Boolean },
-	}],
+	parentConsents: [
+		{
+			parentId: { type: Schema.Types.ObjectId, ref: 'user' },
+			form: { type: String, enum: consentForm },
+			source: { type: String, enum: consentSource },
+			dateOfPrivacyConsent: { type: Date },
+			dateOfTermsOfUseConsent: { type: Date },
+			privacyConsent: { type: Boolean },
+			termsOfUseConsent: { type: Boolean },
+		},
+	],
 });
 
 enableAuditLog(consentSchema);
@@ -46,22 +48,30 @@ const consentTypes = {
 	TERMS_OF_USE: 'termsOfUse',
 };
 
-const consentVersionSchema = new Schema({
-	consentTypes: [{
-		type: String,
-		required: true,
-		enum: Object.values(consentTypes),
-	}],
-	consentText: { type: String, required: true },
-	// create request that include consentData, create a new base64Files entries and pass the id to consentDataId
-	consentDataId: { type: Schema.Types.ObjectId, ref: 'base64Files' },
-	schoolId: { type: Schema.Types.ObjectId },
-	publishedAt: { type: Date, required: true },
-	title: { type: String, required: true },
-}, { timestamps: true });
+const consentVersionSchema = new Schema(
+	{
+		consentTypes: [
+			{
+				type: String,
+				required: true,
+				enum: Object.values(consentTypes),
+			},
+		],
+		consentText: { type: String, required: true },
+		// create request that include consentData, create a new base64Files entries and pass the id to consentDataId
+		consentDataId: { type: Schema.Types.ObjectId, ref: 'base64Files' },
+		schoolId: { type: Schema.Types.ObjectId },
+		publishedAt: { type: Date, required: true },
+		title: { type: String, required: true },
+	},
+	{ timestamps: true },
+);
 
 const consentModel = mongoose.model('consent', consentSchema);
-const ConsentVersionModel = mongoose.model('consentVersion', consentVersionSchema);
+const ConsentVersionModel = mongoose.model(
+	'consentVersion',
+	consentVersionSchema,
+);
 
 module.exports = {
 	consentModel,

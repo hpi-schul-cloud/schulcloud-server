@@ -11,7 +11,9 @@ const {
 
 const { users: createdTestUsers, accounts: createdAccounts } = info();
 
-const { equal: equalIds } = require('../../../../../src/helper/compare').ObjectId;
+const {
+	equal: equalIds,
+} = require('../../../../../src/helper/compare').ObjectId;
 
 const {
 	findSchool,
@@ -32,7 +34,10 @@ describe('TSP API integration tests', () => {
 	describe('#findSchool', () => {
 		it('should find a school based on its TSP school identifier', async () => {
 			const tspIdentifier = '47274';
-			const school = await createSchool({ source: 'tsp', sourceOptions: { schoolIdentifier: tspIdentifier } });
+			const school = await createSchool({
+				source: 'tsp',
+				sourceOptions: { schoolIdentifier: tspIdentifier },
+			});
 			const foundSchool = await findSchool(app, tspIdentifier);
 			expect(equalIds(school._id, foundSchool._id)).to.equal(true);
 		});
@@ -58,7 +63,12 @@ describe('TSP API integration tests', () => {
 			};
 			const roles = ['administrator', 'teacher'];
 			const systemId = (await createSystem())._id;
-			const createdUser = await createUserAndAccount(app, userDetails, roles, systemId);
+			const createdUser = await createUserAndAccount(
+				app,
+				userDetails,
+				roles,
+				systemId,
+			);
 			createdTestUsers.push(createdUser._id);
 
 			expect(createdUser).to.be.ok;

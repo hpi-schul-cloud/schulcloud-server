@@ -12,9 +12,15 @@ chai.use(chaiHttp);
 describe('Moodle single-sign-on', () => {
 	let testSystem = null;
 
-	const newTestAccount = { username: 'testMoodleLoginUser', password: 'testPassword' };
+	const newTestAccount = {
+		username: 'testMoodleLoginUser',
+		password: 'testPassword',
+	};
 
-	const existingTestAccount = { username: 'testMoodleLoginExisting', password: 'testPasswordExisting' };
+	const existingTestAccount = {
+		username: 'testMoodleLoginExisting',
+		password: 'testPasswordExisting',
+	};
 	const existingTestAccountParameters = {
 		username: existingTestAccount.username,
 		password: existingTestAccount.password,
@@ -27,50 +33,64 @@ describe('Moodle single-sign-on', () => {
 		});
 	}
 
-	before(() => createMoodleTestServer()
-		.then((moodle) => {
-			mockMoodle = moodle;
-			return Promise.all([
-				testObjects.createTestSystem({ url: moodle.url, type: 'moodle' }),
-				testObjects.createTestUser()]);
-		})
-		.then(([system, testUser]) => {
-			testSystem = system;
-			return testObjects.createTestAccount(existingTestAccountParameters, system, testUser);
+	before(() =>
+		createMoodleTestServer()
+			.then((moodle) => {
+				mockMoodle = moodle;
+				return Promise.all([
+					testObjects.createTestSystem({
+						url: moodle.url,
+						type: 'moodle',
+					}),
+					testObjects.createTestUser(),
+				]);
+			})
+			.then(([system, testUser]) => {
+				testSystem = system;
+				return testObjects.createTestAccount(
+					existingTestAccountParameters,
+					system,
+					testUser,
+				);
+			}),
+	);
+
+	it('should create an account for a new user who logs in with moodle', () =>
+		new Promise((resolve, reject) => {
+			chai.request(app)
+				.post('/accounts')
+				.set('Accept', 'application/json')
+				.set('content-type', 'application/json')
+				// send credentials
+				.send({
+					username: newTestAccount.username,
+					password: newTestAccount.password,
+					systemId: testSystem._id,
+				})
+				.end((err, res) => {
+					if (err) {
+						reject(err);
+						return;
+					}
+
+					const account = res.body;
+
+					account.should.have.property('_id');
+					account.username.should.equal(
+						newTestAccount.username.toLowerCase(),
+					);
+					account.should.include({
+						systemId: testSystem._id.toString(),
+						activated: false,
+					});
+
+					resolve();
+				});
 		}));
 
-	it('should create an account for a new user who logs in with moodle', () => new Promise((resolve, reject) => {
-		chai.request(app)
-			.post('/accounts')
-			.set('Accept', 'application/json')
-			.set('content-type', 'application/json')
-			// send credentials
-			.send({
-				username: newTestAccount.username,
-				password: newTestAccount.password,
-				systemId: testSystem._id,
-			})
-			.end((err, res) => {
-				if (err) {
-					reject(err);
-					return;
-				}
-
-				const account = res.body;
-
-				account.should.have.property('_id');
-				account.username.should.equal(newTestAccount.username.toLowerCase());
-				account.should.include({
-					systemId: testSystem._id.toString(),
-					activated: false,
-				});
-
-				resolve();
-			});
-	}));
-
 	after((done) => {
-		testObjects.cleanup()
+		testObjects
+			.cleanup()
 			.then(() => {
 				done();
 			})

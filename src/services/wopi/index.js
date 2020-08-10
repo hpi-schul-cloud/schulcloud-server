@@ -75,7 +75,12 @@ class WopiFilesInfoService {
 					UserCanNotWriteRelative: true,
 				};
 
-				return Promise.resolve(Object.assign(hostCapabilitiesHelper.defaultCapabilities(), capabilities));
+				return Promise.resolve(
+					Object.assign(
+						hostCapabilitiesHelper.defaultCapabilities(),
+						capabilities,
+					),
+				);
 			})
 			.catch((err) => {
 				logger.warning(new Error(err));
@@ -86,14 +91,21 @@ class WopiFilesInfoService {
 	// eslint-disable-next-line object-curly-newline
 	create(data, { payload, _id, account, wopiAction }) {
 		// check whether a valid file is requested
-		return FileModel.findOne({ _id }).exec().then((file) => {
-			if (!file) {
-				throw new NotFound('The requested file was not found! (2)');
-			}
+		return FileModel.findOne({ _id })
+			.exec()
+			.then((file) => {
+				if (!file) {
+					throw new NotFound('The requested file was not found! (2)');
+				}
 
-			// trigger specific action
-			return filePostActionHelper(wopiAction)(file, payload, account, this.app);
-		});
+				// trigger specific action
+				return filePostActionHelper(wopiAction)(
+					file,
+					payload,
+					account,
+					this.app,
+				);
+			});
 	}
 }
 
@@ -106,10 +118,11 @@ class WopiFilesContentsService {
 	}
 
 	/**
-     * retrieves a file`s binary contents
-     * https://wopirest.readthedocs.io/en/latest/files/GetFile.html
-     */
-	find(params) { // {fileId: _id, payload, account}
+	 * retrieves a file`s binary contents
+	 * https://wopirest.readthedocs.io/en/latest/files/GetFile.html
+	 */
+	find(params) {
+		// {fileId: _id, payload, account}
 		if (!(params.route || {}).fileId) {
 			throw new BadRequest('No fileId exist.');
 		}
@@ -125,24 +138,27 @@ class WopiFilesContentsService {
 					throw new NotFound('The requested file was not found! (3)');
 				}
 				// generate signed Url for fetching file from storage
-				return signedUrlService.find({
-					query: {
-						file: file._id,
-					},
-					payload,
-					account,
-				}).then((signedUrl) => {
-					const opt = {
-						uri: signedUrl.url,
-						encoding: null,
-					};
-					return rp(opt).catch((err) => {
+				return signedUrlService
+					.find({
+						query: {
+							file: file._id,
+						},
+						payload,
+						account,
+					})
+					.then((signedUrl) => {
+						const opt = {
+							uri: signedUrl.url,
+							encoding: null,
+						};
+						return rp(opt).catch((err) => {
+							logger.warning(new Error(err));
+						});
+					})
+					.catch((err) => {
 						logger.warning(new Error(err));
+						return 'Die Datei konnte leider nicht geladen werden!';
 					});
-				}).catch((err) => {
-					logger.warning(new Error(err));
-					return 'Die Datei konnte leider nicht geladen werden!';
-				});
 			})
 			.catch((err) => {
 				logger.warning(err);
@@ -150,11 +166,10 @@ class WopiFilesContentsService {
 			});
 	}
 
-
 	/*
-    * updates a file’s binary contents, file has to exist in proxy db
-    * https://wopirest.readthedocs.io/en/latest/files/PutFile.html
-    */
+	 * updates a file’s binary contents, file has to exist in proxy db
+	 * https://wopirest.readthedocs.io/en/latest/files/PutFile.html
+	 */
 	create(data, params) {
 		if (!(params.route || {}).fileId) {
 			throw new BadRequest('No fileId exist.');
@@ -162,7 +177,9 @@ class WopiFilesContentsService {
 		const { payload, account, wopiAction } = params;
 		const { fileId } = params.route;
 		if (wopiAction !== 'PUT') {
-			throw new BadRequest('WopiFilesContentsService: Wrong X-WOPI-Override header value!');
+			throw new BadRequest(
+				'WopiFilesContentsService: Wrong X-WOPI-Override header value!',
+			);
 		}
 
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
@@ -175,35 +192,40 @@ class WopiFilesContentsService {
 			file.key = decodeURIComponent(file.key);
 
 			// generate signedUrl for updating file to storage
-			return signedUrlService.patch(
-				file._id,
-				{},
-				{ payload, account },
-			).then((signedUrl) => {
-				// put binary content directly to file in storage
-				const options = {
-					method: 'PUT',
-					uri: signedUrl.url,
-					contentType: file.type,
-					body: data,
-				};
+			return signedUrlService
+				.patch(file._id, {}, { payload, account })
+				.then((signedUrl) => {
+					// put binary content directly to file in storage
+					const options = {
+						method: 'PUT',
+						uri: signedUrl.url,
+						contentType: file.type,
+						body: data,
+					};
 
-				return rp(options)
-					.then(
-						() => FileModel.findOneAndUpdate(
-							{ _id: file._id },
-							{ $inc: { __v: 1 }, updatedAt: Date.now(), size: data.length },
-						).exec().catch((err) => {
-							logger.warning(new Error(err));
-						}),
-					)
-					.then(() => Promise.resolve({ lockId: file.lockId }))
-					.catch((err) => {
-						logger.warning(err);
-					});
-			}).catch((err) => {
-				logger.warning(new Error(err));
-			});
+					return rp(options)
+						.then(() =>
+							FileModel.findOneAndUpdate(
+								{ _id: file._id },
+								{
+									$inc: { __v: 1 },
+									updatedAt: Date.now(),
+									size: data.length,
+								},
+							)
+								.exec()
+								.catch((err) => {
+									logger.warning(new Error(err));
+								}),
+						)
+						.then(() => Promise.resolve({ lockId: file.lockId }))
+						.catch((err) => {
+							logger.warning(err);
+						});
+				})
+				.catch((err) => {
+					logger.warning(new Error(err));
+				});
 		});
 	}
 }
@@ -211,8 +233,16 @@ class WopiFilesContentsService {
 module.exports = function setup() {
 	const app = this;
 
-	app.use(`${wopiPrefix}:fileId/contents`, new WopiFilesContentsService(app), handleResponseHeaders);
-	app.use(`${wopiPrefix}:fileId`, new WopiFilesInfoService(app), handleResponseHeaders);
+	app.use(
+		`${wopiPrefix}:fileId/contents`,
+		new WopiFilesContentsService(app),
+		handleResponseHeaders,
+	);
+	app.use(
+		`${wopiPrefix}:fileId`,
+		new WopiFilesInfoService(app),
+		handleResponseHeaders,
+	);
 
 	const filesService = app.service(`${wopiPrefix}:fileId`);
 	const filesContentService = app.service(`${wopiPrefix}:fileId/contents`);

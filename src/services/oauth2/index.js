@@ -3,7 +3,10 @@ const Hydra = require('./hydra.js');
 
 const setClientDefaults = (data) => {
 	data.scope = data.scope || 'openid offline';
-	data.grant_types = data.grant_types || ['authorization_code', 'refresh_token'];
+	data.grant_types = data.grant_types || [
+		'authorization_code',
+		'refresh_token',
+	];
 	data.response_types = data.response_types || ['code', 'token', 'id_token'];
 	data.redirect_uris = data.redirect_uris || [];
 	return data;
@@ -47,10 +50,9 @@ module.exports = function oauth2() {
 			return hydra.getLoginRequest(challenge);
 		},
 		patch(challenge, body, params) {
-			return (params.query.accept
+			return params.query.accept
 				? hydra.acceptLoginRequest(challenge, body)
-				: hydra.rejectLoginRequest(challenge, body)
-			);
+				: hydra.rejectLoginRequest(challenge, body);
 		},
 	});
 	app.service('/oauth2/loginRequest').hooks(hooks.hooks.loginRequest);
@@ -60,10 +62,9 @@ module.exports = function oauth2() {
 			return hydra.getConsentRequest(challenge);
 		},
 		patch(challenge, body, params) {
-			return (params.query.accept
+			return params.query.accept
 				? hydra.acceptConsentRequest(challenge, body)
-				: hydra.rejectConsentRequest(challenge, body)
-			);
+				: hydra.rejectConsentRequest(challenge, body);
 		},
 	});
 	app.service('/oauth2/consentRequest').hooks(hooks.hooks.consentRequest);
@@ -83,5 +84,7 @@ module.exports = function oauth2() {
 			return hydra.revokeConsentSession(user, params.query.client);
 		},
 	});
-	app.service('/oauth2/auth/sessions/consent').hooks(hooks.hooks.consentSessions);
+	app.service('/oauth2/auth/sessions/consent').hooks(
+		hooks.hooks.consentSessions,
+	);
 };

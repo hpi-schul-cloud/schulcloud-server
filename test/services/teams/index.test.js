@@ -4,13 +4,16 @@ const logger = require('../../../src/logger/index');
 
 const app = require('../../../src/app');
 const {
-	createTestUser, cleanup, teams: teamsHelper, generateRequestParams, createTestAccount,
+	createTestUser,
+	cleanup,
+	teams: teamsHelper,
+	generateRequestParams,
+	createTestAccount,
 } = require('../helpers/testObjects')(app);
 const testHelper = require('../helpers/testObjects')(app);
 
 const teamService = app.service('/teams');
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
-
 
 describe('Test team basic methods', () => {
 	describe('teams create', () => {
@@ -19,7 +22,9 @@ describe('Test team basic methods', () => {
 		let userId;
 
 		before(async () => {
-			const user = await createTestUser({ roles: ['administrator'] }).catch((err) => {
+			const user = await createTestUser({
+				roles: ['administrator'],
+			}).catch((err) => {
 				logger.warning('Can not create test user', err);
 			});
 
@@ -32,13 +37,18 @@ describe('Test team basic methods', () => {
 				query: {},
 			};
 
-			team = await teamService.create({
-				name: 'TestTeam',
-				schoolId,
-				userIds: [userId],
-			}, fakeLoginParams).catch((err) => {
-				logger.warning('Can not create test team', err);
-			});
+			team = await teamService
+				.create(
+					{
+						name: 'TestTeam',
+						schoolId,
+						userIds: [userId],
+					},
+					fakeLoginParams,
+				)
+				.catch((err) => {
+					logger.warning('Can not create test team', err);
+				});
 
 			teamId = team._id.toString();
 
@@ -46,7 +56,6 @@ describe('Test team basic methods', () => {
 		});
 
 		after(() => Promise.all([cleanup(), teamsHelper.removeOne(teamId)]));
-
 
 		it('should for extern request only return the _id', () => {
 			expect(Object.keys(team)).to.be.an('array').to.has.lengthOf(1);
@@ -84,21 +93,32 @@ describe('Test team basic methods', () => {
 					schoolIds: [hero.schoolId],
 					userIds: [hero._id],
 				};
-				const slimteam = await teamService.create(record, { ...params, query: {} });
+				const slimteam = await teamService.create(record, {
+					...params,
+					query: {},
+				});
 				expect(slimteam).to.be.ok;
 
 				const { userIds } = await teamService.get(slimteam._id);
-				expect(userIds.some((item) => equalIds(item.userId, hero._id))).to.equal(true);
+				expect(
+					userIds.some((item) => equalIds(item.userId, hero._id)),
+				).to.equal(true);
 			} finally {
 				cleanup();
 			}
 		});
 
 		it('is not allowed for demoStudent', async () => {
-			const demoStudent = await createTestUser({ roles: ['demoStudent'] });
+			const demoStudent = await createTestUser({
+				roles: ['demoStudent'],
+			});
 			const username = demoStudent.email;
 			const password = 'Schulcloud1!';
-			await createTestAccount({ username, password }, 'local', demoStudent);
+			await createTestAccount(
+				{ username, password },
+				'local',
+				demoStudent,
+			);
 			const params = await generateRequestParams({ username, password });
 
 			try {
@@ -108,10 +128,14 @@ describe('Test team basic methods', () => {
 					schoolIds: [demoStudent.schoolId],
 					userIds: [demoStudent._id],
 				};
-				await teamService.create(record, { ...params, query: {} }).catch((e) => {
-					expect(e.name).to.equal('Forbidden');
-					expect(e.message).to.equal('Only administrator, teacher and students can create teams.');
-				});
+				await teamService
+					.create(record, { ...params, query: {} })
+					.catch((e) => {
+						expect(e.name).to.equal('Forbidden');
+						expect(e.message).to.equal(
+							'Only administrator, teacher and students can create teams.',
+						);
+					});
 			} finally {
 				cleanup();
 			}
@@ -159,7 +183,9 @@ describe('Test team extern add services', () => {
 		expect(message).to.equal('Success!');
 		const { userIds } = await teamsHelper.getById(teamId);
 		expect(userIds).to.be.an('array').with.lengthOf(2);
-		const exist = userIds.some((teamUser) => teamUser.userId.toString() === userId);
+		const exist = userIds.some(
+			(teamUser) => teamUser.userId.toString() === userId,
+		);
 		expect(exist).to.be.true;
 	});
 

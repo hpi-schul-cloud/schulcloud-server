@@ -5,8 +5,14 @@ const account = require('./model');
 
 // const { getRandomInt } = require('../../utils/randomNumberGenerator');
 const { supportJWTServiceSetup, jwtTimerServiceSetup } = require('./services');
-const { accountModelService, accountModelServiceHooks } = require('./services/accountModelService');
-const { accountService, accountServiceHooks } = require('./services/accountApiService');
+const {
+	accountModelService,
+	accountModelServiceHooks,
+} = require('./services/accountModelService');
+const {
+	accountService,
+	accountServiceHooks,
+} = require('./services/accountApiService');
 
 /* @deprecated
 const chance = new Chance();
@@ -68,7 +74,10 @@ module.exports = (app) => {
 
 	app.use('/accounts/confirm', {
 		create(data, params) {
-			return account.update({ _id: data.accountId }, { $set: { activated: true } });
+			return account.update(
+				{ _id: data.accountId },
+				{ $set: { activated: true } },
+			);
 		},
 	});
 };

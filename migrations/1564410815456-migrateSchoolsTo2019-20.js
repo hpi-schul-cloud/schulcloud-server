@@ -2,7 +2,10 @@ const { connect, close } = require('../src/utils/database');
 // We need to import the systems model to register it with mongoose
 /* eslint-disable-next-line no-unused-vars */
 const System = require('../src/services/system/model');
-const { schoolModel: School, yearModel: Year } = require('../src/services/school/model');
+const {
+	schoolModel: School,
+	yearModel: Year,
+} = require('../src/services/school/model');
 const { schoolUsesLdap } = require('../src/services/school/maintenance');
 const { info, warning } = require('../src/logger');
 
@@ -28,17 +31,25 @@ module.exports = {
 		for (const school of schools) {
 			info(`Migrating ${school.name} (${school._id})...`);
 			if (school.inMaintenance) {
-				warning(`School is already in maintenance mode (since ${school.inMaintenanceSince})!`);
+				warning(
+					`School is already in maintenance mode (since ${school.inMaintenanceSince})!`,
+				);
 			}
 			if (schoolUsesLdap(school)) {
 				info('School uses LDAP');
 				// schools with active LDAP systems are set into maintenance mode effective immediately
-				const result = await School.updateOne({ _id: school._id }, { inMaintenanceSince: today }).exec();
+				const result = await School.updateOne(
+					{ _id: school._id },
+					{ inMaintenanceSince: today },
+				).exec();
 				info(result);
 			} else {
 				info('School does not use LDAP');
 				// all other schools are migrated to the next year directly
-				const result = await School.updateOne({ _id: school._id }, { currentYear: nextYear._id }).exec();
+				const result = await School.updateOne(
+					{ _id: school._id },
+					{ currentYear: nextYear._id },
+				).exec();
 				info(result);
 			}
 		}

@@ -12,7 +12,8 @@ module.exports = {
 						required: true,
 					},
 					{
-						description: 'ID of either an course or team. For user files leave out.',
+						description:
+							'ID of either an course or team. For user files leave out.',
 						type: 'String (ObjectID)',
 						name: 'owner',
 					},
@@ -37,7 +38,8 @@ module.exports = {
 						},
 					},
 					{
-						description: 'Filename aka identifier in storage context',
+						description:
+							'Filename aka identifier in storage context',
 						name: 'storageFileName',
 						type: 'String',
 						required: true,
@@ -51,7 +53,8 @@ module.exports = {
 						name: 'thumbnail',
 					},
 					{
-						description: 'Determine if students can edit if file is a course file',
+						description:
+							'Determine if students can edit if file is a course file',
 						type: 'Boolean',
 						name: 'studentCanEdit',
 						schema: {
@@ -76,14 +79,16 @@ module.exports = {
 				summary: 'Creates a new file object',
 				responses: {
 					200: {
-						description: 'Returns the data of the newly created file',
+						description:
+							'Returns the data of the newly created file',
 						example: {
 							name: '24-1.gif',
 							owner: '0000dcfbfb5c7a3f00bf21ab',
 							type: 'image/gif',
 							size: 2545,
 							storageFileName: '1560977688023-24-1.gif',
-							thumbnail: 'https://schulcloud.org/images/login-right.png',
+							thumbnail:
+								'https://schulcloud.org/images/login-right.png',
 							parent: '5c6490eeb07d3c7eacedc9a8',
 							refOwnerModel: 'course',
 							_id: '5d0aa11841ff829edda019c8',
@@ -119,7 +124,8 @@ module.exports = {
 						},
 					},
 					403: {
-						description: 'File operation is forbidden due to missing permissions',
+						description:
+							'File operation is forbidden due to missing permissions',
 					},
 					500: {
 						description: 'Error performing operation',
@@ -128,7 +134,8 @@ module.exports = {
 			},
 			find: {
 				description: '',
-				summary: 'Retrieve all files and directories of given owner and parent folder',
+				summary:
+					'Retrieve all files and directories of given owner and parent folder',
 				parameters: [
 					{
 						in: 'query',
@@ -149,7 +156,8 @@ module.exports = {
 						description: 'Returns an array of all files ',
 					},
 					403: {
-						description: 'File operation is forbidden due to missing permissions',
+						description:
+							'File operation is forbidden due to missing permissions',
 					},
 					500: {
 						description: 'Error performing operation',
@@ -173,13 +181,15 @@ module.exports = {
 					},
 				],
 				description: '',
-				summary: 'Removes the file with given Object ID either in query or path',
+				summary:
+					'Removes the file with given Object ID either in query or path',
 				responses: {
 					200: {
 						description: 'OK - file deleted',
 					},
 					403: {
-						description: 'File operation is forbidden due to missing permissions',
+						description:
+							'File operation is forbidden due to missing permissions',
 					},
 					404: {
 						description: 'File not found',
@@ -211,13 +221,15 @@ module.exports = {
 					},
 				],
 				description: '',
-				summary: 'Moves a file with given Object ID either in query or path to a new destination',
+				summary:
+					'Moves a file with given Object ID either in query or path to a new destination',
 				responses: {
 					200: {
 						description: 'OK - file moved',
 					},
 					403: {
-						description: 'File operation is forbidden due to missing permissions',
+						description:
+							'File operation is forbidden due to missing permissions',
 					},
 					404: {
 						description: 'File not found',
@@ -245,64 +257,68 @@ module.exports = {
 				],
 				responses: {
 					200: {
-						description: 'Returns an array of the directory objects',
-						example: [{
-							name: 'Lehrertest',
-							owner: '0000dcfbfb5c7a3f00bf21ab',
-							refOwnerModel: 'course',
-							_id: '5d0f65eed5aa885773d402c4',
-							updatedAt: '2019-05-23T11:43:42.206Z',
-							createdAt: '2019-05-23T11:43:42.206Z',
-							permissions: [
-								{
-									refId: '0000d231816abba584714c9e',
-									refPermModel: 'user',
-									delete: true,
-									create: true,
-									read: true,
-									write: true,
-								},
-								{
-									refId: '0000d186816abba584714c99',
-									refPermModel: 'role',
-									delete: false,
-									create: true,
-									read: true,
-									write: false,
-								},
-							],
-							isDirectory: true,
-						},
-						{
-							name: 'Lehrertest2',
-							owner: '0000dcfbfb5c7a3f00bf21ab',
-							refOwnerModel: 'course',
-							_id: '5d0f65eed5aa885773d402c3',
-							updatedAt: '2019-05-23T11:53:14.206Z',
-							createdAt: '2019-05-23T11:53:14.206Z',
-							permissions: [
-								{
-									refId: '0000d231816abba584714c9e',
-									refPermModel: 'user',
-									delete: true,
-									create: true,
-									read: true,
-									write: true,
-								},
-								{
-									refId: '0000d186816abba584714c99',
-									refPermModel: 'role',
-									delete: false,
-									create: true,
-									read: true,
-									write: false,
-								},
-							],
-							isDirectory: true,
-						}],
+						description:
+							'Returns an array of the directory objects',
+						example: [
+							{
+								name: 'Lehrertest',
+								owner: '0000dcfbfb5c7a3f00bf21ab',
+								refOwnerModel: 'course',
+								_id: '5d0f65eed5aa885773d402c4',
+								updatedAt: '2019-05-23T11:43:42.206Z',
+								createdAt: '2019-05-23T11:43:42.206Z',
+								permissions: [
+									{
+										refId: '0000d231816abba584714c9e',
+										refPermModel: 'user',
+										delete: true,
+										create: true,
+										read: true,
+										write: true,
+									},
+									{
+										refId: '0000d186816abba584714c99',
+										refPermModel: 'role',
+										delete: false,
+										create: true,
+										read: true,
+										write: false,
+									},
+								],
+								isDirectory: true,
+							},
+							{
+								name: 'Lehrertest2',
+								owner: '0000dcfbfb5c7a3f00bf21ab',
+								refOwnerModel: 'course',
+								_id: '5d0f65eed5aa885773d402c3',
+								updatedAt: '2019-05-23T11:53:14.206Z',
+								createdAt: '2019-05-23T11:53:14.206Z',
+								permissions: [
+									{
+										refId: '0000d231816abba584714c9e',
+										refPermModel: 'user',
+										delete: true,
+										create: true,
+										read: true,
+										write: true,
+									},
+									{
+										refId: '0000d186816abba584714c99',
+										refPermModel: 'role',
+										delete: false,
+										create: true,
+										read: true,
+										write: false,
+									},
+								],
+								isDirectory: true,
+							},
+						],
 					},
 					403: {
-						description: 'File operation is forbidden due to missing permissions',
+						description:
+							'File operation is forbidden due to missing permissions',
 					},
 					500: {
 						description: 'Error performing operation',
@@ -318,7 +334,8 @@ module.exports = {
 						required: true,
 					},
 					{
-						description: 'ID of either an course or team. For user dirs leave out.',
+						description:
+							'ID of either an course or team. For user dirs leave out.',
 						type: 'String (ObjectID)',
 						name: 'owner',
 					},
@@ -345,7 +362,8 @@ module.exports = {
 				summary: 'Creates a new directory object',
 				responses: {
 					200: {
-						description: 'Returns the data of the newly created directory',
+						description:
+							'Returns the data of the newly created directory',
 						example: {
 							name: 'Lehrertest',
 							owner: '0000dcfbfb5c7a3f00bf21ab',
@@ -375,7 +393,8 @@ module.exports = {
 						},
 					},
 					403: {
-						description: 'File operation is forbidden due to missing permissions',
+						description:
+							'File operation is forbidden due to missing permissions',
 					},
 					500: {
 						description: 'Error performing operation',
@@ -399,7 +418,8 @@ module.exports = {
 						description: 'OK - file deleted',
 					},
 					403: {
-						description: 'File operation is forbidden due to missing permissions',
+						description:
+							'File operation is forbidden due to missing permissions',
 					},
 					404: {
 						description: 'File not found',
@@ -423,7 +443,8 @@ module.exports = {
 						type: 'string',
 					},
 					{
-						description: 'The new name for the file object to be renamed',
+						description:
+							'The new name for the file object to be renamed',
 						required: true,
 						name: 'newName',
 						type: 'string',
@@ -436,7 +457,8 @@ module.exports = {
 						description: 'OK - file object renamed',
 					},
 					403: {
-						description: 'File operation is forbidden due to missing permissions',
+						description:
+							'File operation is forbidden due to missing permissions',
 					},
 					404: {
 						description: 'File not found',
@@ -473,18 +495,21 @@ module.exports = {
 	},
 	signedUrlService: {
 		description: '',
-		summary: 'A service for generating signed urls, e.g. for uploading (action = putObject) and downloading files (action = getObject)',
+		summary:
+			'A service for generating signed urls, e.g. for uploading (action = putObject) and downloading files (action = getObject)',
 		operations: {
 			create: {
 				parameters: [
 					{
-						description: 'The path where the file can be found/should be created',
+						description:
+							'The path where the file can be found/should be created',
 						required: true,
 						name: 'filename',
 						type: 'string',
 					},
 					{
-						description: 'the mime type of the file that will be uploaded',
+						description:
+							'the mime type of the file that will be uploaded',
 						required: true,
 						name: 'fileType',
 						type: 'string',
@@ -496,24 +521,30 @@ module.exports = {
 					},
 				],
 				description: '',
-				summary: 'Creates a new signed url for the given file information',
+				summary:
+					'Creates a new signed url for the given file information',
 				responses: {
 					200: {
-						description: 'Returns the data signed url and meta properties',
+						description:
+							'Returns the data signed url and meta properties',
 						example: {
 							signedUrl: {
-								url: 'https://dev-storage.schul-cloud.org:9001/bucket-0000d186816abba584714c5f/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
+								url:
+									'https://dev-storage.schul-cloud.org:9001/bucket-0000d186816abba584714c5f/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
 								header: {
 									'Content-Type': 'image/gif',
 									'x-amz-meta-name': '24-1.gif',
-									'x-amz-meta-flat-name': '1561200908775-24-1.gif',
-									'x-amz-meta-thumbnail': 'https://schulcloud.org/images/login-right.png',
+									'x-amz-meta-flat-name':
+										'1561200908775-24-1.gif',
+									'x-amz-meta-thumbnail':
+										'https://schulcloud.org/images/login-right.png',
 								},
 							},
 						},
 					},
 					403: {
-						description: 'File operation is forbidden due to missing permissions',
+						description:
+							'File operation is forbidden due to missing permissions',
 					},
 					500: {
 						description: 'Error performing operation',
@@ -531,7 +562,8 @@ module.exports = {
 						type: 'String (ObjectID)',
 					},
 					{
-						description: 'If true sets the ResponseContentDisposition-Header for the returned signed Url',
+						description:
+							'If true sets the ResponseContentDisposition-Header for the returned signed Url',
 						name: 'download',
 						in: 'query',
 						type: 'Boolean',
@@ -542,12 +574,14 @@ module.exports = {
 						description: 'Returns the data with the signed url',
 						example: {
 							signedUrl: {
-								url: 'https://dev-storage.schul-cloud.org:9001/bucket-0000d186816abba584714c5f/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
+								url:
+									'https://dev-storage.schul-cloud.org:9001/bucket-0000d186816abba584714c5f/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
 							},
 						},
 					},
 					403: {
-						description: 'File operation is forbidden due to missing permissions',
+						description:
+							'File operation is forbidden due to missing permissions',
 					},
 					404: {
 						description: 'File not found',
@@ -567,18 +601,21 @@ module.exports = {
 					},
 				],
 				description: '',
-				summary: 'Request a signed url for updating the content of an already existing file',
+				summary:
+					'Request a signed url for updating the content of an already existing file',
 				responses: {
 					200: {
 						description: 'Returns the data with the signed url',
 						example: {
 							signedUrl: {
-								url: 'https://dev-storage.schul-cloud.org:9001/bucket-0000d186816abba584714c5f/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
+								url:
+									'https://dev-storage.schul-cloud.org:9001/bucket-0000d186816abba584714c5f/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
 							},
 						},
 					},
 					403: {
-						description: 'File operation is forbidden due to missing permissions',
+						description:
+							'File operation is forbidden due to missing permissions',
 					},
 					404: {
 						description: 'File not found',
@@ -650,7 +687,8 @@ module.exports = {
 							type: 'image/gif',
 							size: 2545,
 							storageFileName: '1560977688023-24-1.gif',
-							thumbnail: 'https://schulcloud.org/images/login-right.png',
+							thumbnail:
+								'https://schulcloud.org/images/login-right.png',
 							parent: '5d0f65eed5aa885773d402c4',
 							refOwnerModel: 'course',
 							_id: '5d0aa11841ff829edda019c8',
@@ -686,7 +724,8 @@ module.exports = {
 						},
 					},
 					403: {
-						description: 'File operation is forbidden due to missing permissions',
+						description:
+							'File operation is forbidden due to missing permissions',
 					},
 					404: {
 						description: 'File not found',
@@ -703,7 +742,8 @@ module.exports = {
 		operations: {
 			create: {
 				summary: 'Creating a new empty file',
-				description: 'This service lets you create an new empty file. Right now the following file types are supported: .pptx, .xlsx, .docx',
+				description:
+					'This service lets you create an new empty file. Right now the following file types are supported: .pptx, .xlsx, .docx',
 				parameters: [
 					{
 						description: 'Filename',
@@ -712,7 +752,8 @@ module.exports = {
 						required: true,
 					},
 					{
-						description: 'ID of either an course or team. For user files leave out.',
+						description:
+							'ID of either an course or team. For user files leave out.',
 						type: 'String (ObjectID)',
 						name: 'owner',
 					},
@@ -722,7 +763,8 @@ module.exports = {
 						name: 'parent',
 					},
 					{
-						description: 'Determine if students can edit if file is a course file',
+						description:
+							'Determine if students can edit if file is a course file',
 						type: 'Boolean',
 						name: 'studentCanEdit',
 						schema: {
@@ -732,15 +774,19 @@ module.exports = {
 				],
 				responses: {
 					200: {
-						description: 'Returns the data of the newly created file',
+						description:
+							'Returns the data of the newly created file',
 						example: {
 							_id: '5d0aa11841ff829edda019c8',
 							name: '1542141103353-praesi.docx',
 							owner: '5c1a4fba954956c51f6de53c',
-							type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+							type:
+								'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 							size: 0,
-							storageFileName: '1554392225392-1542141103353-praesi.docx',
-							thumbnail: 'https://schulcloud.org/images/login-right.png',
+							storageFileName:
+								'1554392225392-1542141103353-praesi.docx',
+							thumbnail:
+								'https://schulcloud.org/images/login-right.png',
 							parent: '5c6490eeb07d3c7eacedc9a8',
 							refOwnerModel: 'course',
 							updatedAt: '2019-04-04T15:37:06.201Z',
@@ -775,7 +821,8 @@ module.exports = {
 						},
 					},
 					403: {
-						description: 'File operation is forbidden due to missing permissions',
+						description:
+							'File operation is forbidden due to missing permissions',
 					},
 					500: {
 						description: 'Error performing operation',
@@ -822,7 +869,8 @@ module.exports = {
 						description: 'OK - file permissions updated',
 					},
 					403: {
-						description: 'File operation is forbidden due to missing permissions',
+						description:
+							'File operation is forbidden due to missing permissions',
 					},
 					404: {
 						description: 'File not found',
@@ -834,7 +882,8 @@ module.exports = {
 			},
 			find: {
 				description: '',
-				summary: 'Returns the permissions of a file filtered by owner model and permissions based on the role of the user',
+				summary:
+					'Returns the permissions of a file filtered by owner model and permissions based on the role of the user',
 				parameters: [
 					{
 						description: 'File ID to copy',
@@ -880,7 +929,8 @@ module.exports = {
 						],
 					},
 					403: {
-						description: 'File operation is forbidden due to missing permissions',
+						description:
+							'File operation is forbidden due to missing permissions',
 					},
 					404: {
 						description: 'File not found',

@@ -1,4 +1,7 @@
-const { modelServices: { prepareInternalParams }, modifyDataForUserSchema } = require('../../utils');
+const {
+	modelServices: { prepareInternalParams },
+	modifyDataForUserSchema,
+} = require('../../utils');
 
 const MODEL_SERVICE = 'usersModel';
 
@@ -11,7 +14,9 @@ class ConsentService {
 		if (params.query.consent) {
 			const currentDate = new Date();
 			const secoundConsentSwitchDate = new Date();
-			secoundConsentSwitchDate.setFullYear(currentDate.getFullYear() - 16); // TODO: get age from default.conf
+			secoundConsentSwitchDate.setFullYear(
+				currentDate.getFullYear() - 16,
+			); // TODO: get age from default.conf
 			const firstConsentSwitchDate = new Date();
 			firstConsentSwitchDate.setFullYear(currentDate.getFullYear() - 14);
 			switch (params.query.consent) {
@@ -29,44 +34,54 @@ class ConsentService {
 					};
 					break;
 				case 'completed':
-					mQuery.$or = [{
-						consent: {
-							userConsent: {
-								privacyConsent: true,
-								termsOfUseConsent: true,
+					mQuery.$or = [
+						{
+							consent: {
+								userConsent: {
+									privacyConsent: true,
+									termsOfUseConsent: true,
+								},
+							},
+							birthday: {
+								$gt: firstConsentSwitchDate,
+								$lte: secoundConsentSwitchDate,
 							},
 						},
-						birthday: {
-							$gt: firstConsentSwitchDate,
-							$lte: secoundConsentSwitchDate,
-						},
-
-
-					}];
+					];
 					break;
 				default:
 			}
 		}
 
-
-		return this.app.service(MODEL_SERVICE).find(prepareInternalParams(params));
+		return this.app
+			.service(MODEL_SERVICE)
+			.find(prepareInternalParams(params));
 	}
 
 	async get(_id, params) {
 		return this.app
-			.service(MODEL_SERVICE).get(_id, prepareInternalParams(params));
+			.service(MODEL_SERVICE)
+			.get(_id, prepareInternalParams(params));
 	}
 
 	async patch(_id, data, params) {
 		return this.app
 			.service(MODEL_SERVICE)
-			.patch(_id, modifyDataForUserSchema(data), prepareInternalParams(params));
+			.patch(
+				_id,
+				modifyDataForUserSchema(data),
+				prepareInternalParams(params),
+			);
 	}
 
 	async update(_id, data, params) {
 		return this.app
 			.service(MODEL_SERVICE)
-			.update(_id, modifyDataForUserSchema(data), prepareInternalParams(params));
+			.update(
+				_id,
+				modifyDataForUserSchema(data),
+				prepareInternalParams(params),
+			);
 	}
 
 	setup(app) {

@@ -6,7 +6,8 @@ const hooks = require('./hooks/index');
 class ReleaseFetchService {
 	async find() {
 		const options = {
-			uri: 'https://api.github.com/repos/schul-cloud/schulcloud-client/releases',
+			uri:
+				'https://api.github.com/repos/schul-cloud/schulcloud-client/releases',
 			headers: {
 				'User-Agent': 'Request-Promise',
 			},

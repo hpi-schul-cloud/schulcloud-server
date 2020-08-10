@@ -2,7 +2,11 @@ const { BadRequest } = require('@feathersjs/errors');
 const { resolveScope } = require('./util/resolveScope');
 
 const lookupScope = async (context) => {
-	if (context.params === undefined || context.params.route === undefined || context.path === undefined) {
+	if (
+		context.params === undefined ||
+		context.params.route === undefined ||
+		context.path === undefined
+	) {
 		throw new BadRequest('Missing required params.');
 	}
 	const { scopeName, scopeId } = resolveScope(context);

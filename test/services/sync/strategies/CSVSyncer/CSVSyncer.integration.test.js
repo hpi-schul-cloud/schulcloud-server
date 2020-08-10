@@ -152,10 +152,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email\n'
-					+ `Peter,Pan,${TEACHER_EMAILS[0]}\n`
-					+ `Peter,Lustig,${TEACHER_EMAILS[1]}\n`
-					+ `Test,Testington,${TEACHER_EMAILS[2]}\n`,
+					'firstName,lastName,email\n' +
+					`Peter,Pan,${TEACHER_EMAILS[0]}\n` +
+					`Peter,Lustig,${TEACHER_EMAILS[1]}\n` +
+					`Test,Testington,${TEACHER_EMAILS[2]}\n`,
 			};
 		});
 
@@ -228,12 +228,12 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email,class\n'
-					+ `Turanga,Leela,${STUDENT_EMAILS[0]},\n`
-					+ `Dr. John A.,Zoidberg,${STUDENT_EMAILS[1]},1a+1a\n`
-					+ `Amy,Wong,${STUDENT_EMAILS[2]},1a\n`
-					+ `Philip J.,Fry,${STUDENT_EMAILS[3]},1b+2b\n`
-					+ `Bender Bending,Rodriguez,${STUDENT_EMAILS[4]},2b+2c\n`,
+					'firstName,lastName,email,class\n' +
+					`Turanga,Leela,${STUDENT_EMAILS[0]},\n` +
+					`Dr. John A.,Zoidberg,${STUDENT_EMAILS[1]},1a+1a\n` +
+					`Amy,Wong,${STUDENT_EMAILS[2]},1a\n` +
+					`Philip J.,Fry,${STUDENT_EMAILS[3]},1b+2b\n` +
+					`Bender Bending,Rodriguez,${STUDENT_EMAILS[4]},2b+2c\n`,
 			};
 		});
 
@@ -350,7 +350,9 @@ describe('CSVSyncer Integration', () => {
 		before(async function before() {
 			this.timeout(5000);
 			await Promise.all(
-				EXISTING_CLASSES.map((klass) => createClass([...klass, SCHOOL_ID])),
+				EXISTING_CLASSES.map((klass) =>
+					createClass([...klass, SCHOOL_ID]),
+				),
 			);
 
 			const user = await createUser({
@@ -365,12 +367,12 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email,class\n'
-					+ `Jonathan 'Jack',O'Neill,${TEACHER_EMAILS[0]},1a\n`
-					+ `Dr. Samantha 'Sam',Carter,${TEACHER_EMAILS[1]},1a+SG1\n`
-					+ `Daniel,Jackson,${TEACHER_EMAILS[2]},Archeology\n`
-					+ `Teal'c,of Chulak,${TEACHER_EMAILS[3]},SG1\n`
-					+ `George,Hammond,${TEACHER_EMAILS[4]},12/3\n`,
+					'firstName,lastName,email,class\n' +
+					`Jonathan 'Jack',O'Neill,${TEACHER_EMAILS[0]},1a\n` +
+					`Dr. Samantha 'Sam',Carter,${TEACHER_EMAILS[1]},1a+SG1\n` +
+					`Daniel,Jackson,${TEACHER_EMAILS[2]},Archeology\n` +
+					`Teal'c,of Chulak,${TEACHER_EMAILS[3]},SG1\n` +
+					`George,Hammond,${TEACHER_EMAILS[4]},12/3\n`,
 			};
 		});
 
@@ -490,10 +492,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email,class\n'
-					+ `Chuck,Bartowski,${TEACHER_EMAILS[0]},BuyMore\n`
-					+ `Sarah,Walker,${TEACHER_EMAILS[1]},NSA\n`
-					+ `Colonel John,Casey,${TEACHER_EMAILS[2]},CIA\n`,
+					'firstName,lastName,email,class\n' +
+					`Chuck,Bartowski,${TEACHER_EMAILS[0]},BuyMore\n` +
+					`Sarah,Walker,${TEACHER_EMAILS[1]},NSA\n` +
+					`Colonel John,Casey,${TEACHER_EMAILS[2]},CIA\n`,
 			};
 		});
 
@@ -538,7 +540,9 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.classes.failed).to.equal(0);
 
 			expect(emails.length).to.equal(3);
-			expect(emails[0].subject).to.equal(`Einladung für die Nutzung der ${SC_TITLE}!`);
+			expect(emails[0].subject).to.equal(
+				`Einladung für die Nutzung der ${SC_TITLE}!`,
+			);
 			expect(emails[0].content.text).to.include('Hallo Chuck Bartowski!');
 
 			await Promise.all(
@@ -564,7 +568,9 @@ describe('CSVSyncer Integration', () => {
 
 		before(async () => {
 			await Promise.all(
-				EXISTING_CLASSES.map((klass) => createClass([...klass, SCHOOL_ID])),
+				EXISTING_CLASSES.map((klass) =>
+					createClass([...klass, SCHOOL_ID]),
+				),
 			);
 
 			const user = await createUser({
@@ -579,10 +585,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email,class\n'
-					+ `工藤,新,${STUDENT_EMAILS[0]},1a\n`
-					+ `毛利,蘭,${STUDENT_EMAILS[1]},1a\n`
-					+ `毛利,小五郎,${STUDENT_EMAILS[2]},2b\n`,
+					'firstName,lastName,email,class\n' +
+					`工藤,新,${STUDENT_EMAILS[0]},1a\n` +
+					`毛利,蘭,${STUDENT_EMAILS[1]},1a\n` +
+					`毛利,小五郎,${STUDENT_EMAILS[2]},2b\n`,
 			};
 		});
 
@@ -676,10 +682,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email\n'
-					+ `Peter,Pan,${TEACHER_EMAILS[0]}\n`
-					+ `Peter,Lustig,${TEACHER_EMAILS[0]}\n`
-					+ `Test,Testington,${TEACHER_EMAILS[0]}\n`,
+					'firstName,lastName,email\n' +
+					`Peter,Pan,${TEACHER_EMAILS[0]}\n` +
+					`Peter,Lustig,${TEACHER_EMAILS[0]}\n` +
+					`Test,Testington,${TEACHER_EMAILS[0]}\n`,
 			};
 		});
 
@@ -724,15 +730,15 @@ describe('CSVSyncer Integration', () => {
 				type: 'user',
 				entity: `Peter,Lustig,${TEACHER_EMAILS[0]}`,
 				message:
-					`Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
-					+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
+					`Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". ` +
+					'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 			});
 			expect(stats.errors).to.deep.include({
 				type: 'user',
 				entity: `Test,Testington,${TEACHER_EMAILS[0]}`,
 				message:
-					`Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
-					+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
+					`Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". ` +
+					'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 			});
 		});
 	});
@@ -767,10 +773,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email,class\n'
-					+ `Chuck,Bartowski,${TEACHER_EMAILS[0]},BuyMore\n`
-					+ `Sarah,Walker,${TEACHER_EMAILS[1]},NSA\n`
-					+ `Colonel John,Casey,${TEACHER_EMAILS[2]},CIA\n`,
+					'firstName,lastName,email,class\n' +
+					`Chuck,Bartowski,${TEACHER_EMAILS[0]},BuyMore\n` +
+					`Sarah,Walker,${TEACHER_EMAILS[1]},NSA\n` +
+					`Colonel John,Casey,${TEACHER_EMAILS[2]},CIA\n`,
 			};
 		});
 
@@ -838,10 +844,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email\n'
-					+ `Peter,Pan,${TEACHER_EMAILS[0]}\n`
-					+ `Peter,Lustig,${TEACHER_EMAILS[0]}\n`
-					+ `Test,Testington,${TEACHER_EMAILS[0]}\n`,
+					'firstName,lastName,email\n' +
+					`Peter,Pan,${TEACHER_EMAILS[0]}\n` +
+					`Peter,Lustig,${TEACHER_EMAILS[0]}\n` +
+					`Test,Testington,${TEACHER_EMAILS[0]}\n`,
 			};
 		});
 
@@ -886,15 +892,15 @@ describe('CSVSyncer Integration', () => {
 				type: 'user',
 				entity: `Peter,Lustig,${TEACHER_EMAILS[0]}`,
 				message:
-					`Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
-					+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
+					`Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". ` +
+					'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 			});
 			expect(stats.errors).to.deep.include({
 				type: 'user',
 				entity: `Test,Testington,${TEACHER_EMAILS[0]}`,
 				message:
-					`Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
-					+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
+					`Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". ` +
+					'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 			});
 
 			// only one email should ever be sent, as the second and third user are never
@@ -990,12 +996,12 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email,class\n'
-					+ `Dr. Temperance,Brennan,${TEACHER_EMAILS[0]},Jeffersonian Institute\n`
-					+ `Seeley,Booth,${TEACHER_EMAILS[1]},FBI\n`
-					+ `Lance,Sweets,${TEACHER_EMAILS[2]},FBI\n`
-					+ `Camille,Saroyan,${TEACHER_EMAILS[3]},Jeffersonian Institute\n`
-					+ `Zack,Addy,${TEACHER_EMAILS[4]},\n`,
+					'firstName,lastName,email,class\n' +
+					`Dr. Temperance,Brennan,${TEACHER_EMAILS[0]},Jeffersonian Institute\n` +
+					`Seeley,Booth,${TEACHER_EMAILS[1]},FBI\n` +
+					`Lance,Sweets,${TEACHER_EMAILS[2]},FBI\n` +
+					`Camille,Saroyan,${TEACHER_EMAILS[3]},Jeffersonian Institute\n` +
+					`Zack,Addy,${TEACHER_EMAILS[4]},\n`,
 			};
 		});
 
@@ -1108,17 +1114,17 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData1 = {
 				data:
-					'firstName,lastName,email,class\n'
-					+ `Richard,Winters,${TEACHER_EMAILS[0]},Easy Company\n`
-					+ `Lewis,Nixon,${TEACHER_EMAILS[1]},Easy Company\n`
-					+ `Carwood,Lipton,${TEACHER_EMAILS[2]},Easy Company\n`,
+					'firstName,lastName,email,class\n' +
+					`Richard,Winters,${TEACHER_EMAILS[0]},Easy Company\n` +
+					`Lewis,Nixon,${TEACHER_EMAILS[1]},Easy Company\n` +
+					`Carwood,Lipton,${TEACHER_EMAILS[2]},Easy Company\n`,
 			};
 			scenarioData2 = {
 				data:
-					'firstName,lastName,email,class\n'
-					+ `Richard,Winters,${TEACHER_EMAILS[0]},Easy Company\n`
-					+ `LeW1s,Nixx0n,${TEACHER_EMAILS[1]},Best Company\n`
-					+ `Donald,Malarkey,${TEACHER_EMAILS[3]},Easy Company\n`,
+					'firstName,lastName,email,class\n' +
+					`Richard,Winters,${TEACHER_EMAILS[0]},Easy Company\n` +
+					`LeW1s,Nixx0n,${TEACHER_EMAILS[1]},Best Company\n` +
+					`Donald,Malarkey,${TEACHER_EMAILS[3]},Easy Company\n`,
 			};
 		});
 
@@ -1240,9 +1246,9 @@ describe('CSVSyncer Integration', () => {
 				},
 				data: {
 					data:
-						'firstName,lastName,email,class\n'
-						+ `Dr. John W.,Thackery,${STUDENT_EMAILS[0]},1a\n`
-						+ `Dr. Algernon C.,Edwards,${STUDENT_EMAILS[1]},1b\n`,
+						'firstName,lastName,email,class\n' +
+						`Dr. John W.,Thackery,${STUDENT_EMAILS[0]},1a\n` +
+						`Dr. Algernon C.,Edwards,${STUDENT_EMAILS[1]},1b\n`,
 				},
 			};
 			scenario2 = {
@@ -1257,9 +1263,9 @@ describe('CSVSyncer Integration', () => {
 				},
 				data: {
 					data:
-						'firstName,lastName,email,class\n'
-						+ `Herman,Barrow,${STUDENT_EMAILS[2]},2a\n`
-						+ `Cornelia,Robertson,${STUDENT_EMAILS[3]},2b\n`,
+						'firstName,lastName,email,class\n' +
+						`Herman,Barrow,${STUDENT_EMAILS[2]},2a\n` +
+						`Cornelia,Robertson,${STUDENT_EMAILS[3]},2b\n`,
 				},
 			};
 		});
@@ -1389,8 +1395,9 @@ describe('CSVSyncer Integration', () => {
 			).to.equal(true);
 			expect(
 				classes1a.some(
-					(c) => c.year.toString()
-						=== scenario1.school.currentYear._id.toString(),
+					(c) =>
+						c.year.toString() ===
+						scenario1.school.currentYear._id.toString(),
 				),
 			).to.equal(true);
 
@@ -1422,10 +1429,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'affix,first,middle,last,eMail\n'
-					+ `Dr.,Peter,F.,Pan,${TEACHER_EMAILS[0]}\n`
-					+ `Mr.,Peter,,Lustig,${TEACHER_EMAILS[1]}\n`
-					+ `HM,Test,T.,Testington,${TEACHER_EMAILS[2]}\n`,
+					'affix,first,middle,last,eMail\n' +
+					`Dr.,Peter,F.,Pan,${TEACHER_EMAILS[0]}\n` +
+					`Mr.,Peter,,Lustig,${TEACHER_EMAILS[1]}\n` +
+					`HM,Test,T.,Testington,${TEACHER_EMAILS[2]}\n`,
 			};
 		});
 
@@ -1465,12 +1472,12 @@ describe('CSVSyncer Integration', () => {
 				email: { $in: TEACHER_EMAILS },
 			});
 			expect(users.length).to.equal(3);
-			expect(users.some((u) => u.fullName === 'Dr. Peter F. Pan')).to.equal(
-				true,
-			);
-			expect(users.some((u) => u.fullName === 'Mr. Peter Lustig')).to.equal(
-				true,
-			);
+			expect(
+				users.some((u) => u.fullName === 'Dr. Peter F. Pan'),
+			).to.equal(true);
+			expect(
+				users.some((u) => u.fullName === 'Mr. Peter Lustig'),
+			).to.equal(true);
 			expect(
 				users.some((u) => u.fullName === 'HM Test T. Testington'),
 			).to.equal(true);
@@ -1498,10 +1505,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email\n'
-					+ `Chester,Bennington,${TEACHER_EMAILS[0]}\n`
-					+ `Mike,Shinoda,${TEACHER_EMAILS[1]}\n`
-					+ `Dave "Phoenix,Pharell${TEACHER_EMAILS[2]}\n`, // should produce a parsing error
+					'firstName,lastName,email\n' +
+					`Chester,Bennington,${TEACHER_EMAILS[0]}\n` +
+					`Mike,Shinoda,${TEACHER_EMAILS[1]}\n` +
+					`Dave "Phoenix,Pharell${TEACHER_EMAILS[2]}\n`, // should produce a parsing error
 			};
 		});
 
@@ -1519,10 +1526,11 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.users.successful).to.equal(2);
 			expect(stats.users.failed).to.equal(1);
 
-			expect(stats.errors.filter((e) => e.type === 'file').length).to.equal(1);
+			expect(
+				stats.errors.filter((e) => e.type === 'file').length,
+			).to.equal(1);
 		});
 	});
-
 
 	describe('Scenario 16 - Importing students with birthdays', () => {
 		let scenarioParams;
@@ -1553,7 +1561,8 @@ describe('CSVSyncer Integration', () => {
 			},
 		];
 
-		before(async () => { // this user does the csv importing
+		before(async () => {
+			// this user does the csv importing
 			const user = await createUser({
 				roles: 'administrator',
 				schoolId: SCHOOL_ID,
@@ -1565,12 +1574,12 @@ describe('CSVSyncer Integration', () => {
 				role: 'student',
 			};
 			scenarioData = {
-				data:
-					`firstName,lastName,email,birthday\n${
-						PEOPLE.map((p) => `${p.firstName},${p.lastName},${p.email},${p.birthday}`).join('\n')}`,
+				data: `firstName,lastName,email,birthday\n${PEOPLE.map(
+					(p) =>
+						`${p.firstName},${p.lastName},${p.email},${p.birthday}`,
+				).join('\n')}`,
 			};
 		});
-
 
 		after(async () => {
 			await Promise.all(PEOPLE.map((person) => deleteUser(person.email)));
@@ -1604,7 +1613,11 @@ describe('CSVSyncer Integration', () => {
 			});
 
 			PEOPLE.forEach((person) => {
-				const user = users.find((u) => u.firstName === person.firstName && u.lastName === person.lastName);
+				const user = users.find(
+					(u) =>
+						u.firstName === person.firstName &&
+						u.lastName === person.lastName,
+				);
 				expect(user).to.be.ok;
 				expect(user.birthday).to.deep.equal(person.parsed);
 			});
@@ -1692,10 +1705,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					' firstName,lastName , email\n'
-					+ `Peter,Pan,${TEACHER_EMAILS[0]}\n`
-					+ `Peter,Lustig,${TEACHER_EMAILS[1]}\n`
-					+ `Test,Testington,${TEACHER_EMAILS[2]}\n`,
+					' firstName,lastName , email\n' +
+					`Peter,Pan,${TEACHER_EMAILS[0]}\n` +
+					`Peter,Lustig,${TEACHER_EMAILS[1]}\n` +
+					`Test,Testington,${TEACHER_EMAILS[2]}\n`,
 			};
 		});
 

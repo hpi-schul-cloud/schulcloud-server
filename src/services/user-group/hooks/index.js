@@ -1,8 +1,12 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
-const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
-const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
+const restrictToCurrentSchool = globalHooks.ifNotLocal(
+	globalHooks.restrictToCurrentSchool,
+);
+const restrictToUsersOwnCourses = globalHooks.ifNotLocal(
+	globalHooks.restrictToUsersOwnCourses,
+);
 
 const {
 	addWholeClassToCourse,
@@ -14,9 +18,7 @@ const {
 } = require('./courses');
 
 exports.before = {
-	all: [
-		authenticate('jwt'),
-	],
+	all: [authenticate('jwt')],
 	find: [
 		globalHooks.hasPermission('COURSE_VIEW'),
 		restrictToCurrentSchool,
@@ -58,9 +60,11 @@ exports.after = {
 	get: [
 		globalHooks.ifNotLocal(
 			globalHooks.denyIfNotCurrentSchool({
-				errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
+				errorMessage:
+					'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
 			}),
-		)],
+		),
+	],
 	create: [addWholeClassToCourse],
 	update: [],
 	patch: [addWholeClassToCourse],

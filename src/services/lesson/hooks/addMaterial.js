@@ -3,7 +3,6 @@ const { authenticate } = require('@feathersjs/authentication');
 const { ObjectId } = require('../../../helper/compare');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
 
-
 const addLessonToParams = async (context) => {
 	const { lessonId } = context.params.route;
 	if (!ObjectId.isValid(lessonId)) {
@@ -34,7 +33,6 @@ const validateData = async (context) => {
 	return context;
 };
 
-
 module.exports = {
 	before: () => ({
 		all: [authenticate('jwt')],
@@ -42,7 +40,12 @@ module.exports = {
 			validateData,
 			addLessonToParams,
 			// checks permission for COURSE and TOPIC for creation
-			checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', true),
+			checkIfCourseGroupLesson.bind(
+				this,
+				'COURSEGROUP_EDIT',
+				'TOPIC_EDIT',
+				true,
+			),
 		],
 	}),
 };

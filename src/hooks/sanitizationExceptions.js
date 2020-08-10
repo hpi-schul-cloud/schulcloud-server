@@ -1,4 +1,6 @@
-exports.excludeAttributesFromSanitization = (excludePath, attributeNames) => (context) => {
+exports.excludeAttributesFromSanitization = (excludePath, attributeNames) => (
+	context,
+) => {
 	if (context.path === excludePath) {
 		context.safeAttributes = attributeNames;
 	}

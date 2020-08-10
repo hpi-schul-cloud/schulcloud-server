@@ -109,7 +109,11 @@ module.exports = function () {
 
 	app.use('/content/resources', new ResourcesService());
 	app.use('/content/search', new SearchService());
-	app.use('/content/redirect', new RedirectService(), RedirectService.redirect);
+	app.use(
+		'/content/redirect',
+		new RedirectService(),
+		RedirectService.redirect,
+	);
 	app.use('/materials', service(options));
 
 	const resourcesService = app.service('/content/resources');

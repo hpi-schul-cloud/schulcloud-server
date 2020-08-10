@@ -7,8 +7,14 @@ describe('activation/utils customeUtils', () => {
 		it(`${customUtils.KEYWORDS.E_MAIL_ADDRESS}`, () => {
 			const keyword = customUtils.KEYWORDS.E_MAIL_ADDRESS;
 			const email = 'test@mail.de';
-			const quarantinedObject = customUtils.createQuarantinedObject(keyword, email);
-			const reconstructedData = customUtils.getQuarantinedObject({ keyword, quarantinedObject });
+			const quarantinedObject = customUtils.createQuarantinedObject(
+				keyword,
+				email,
+			);
+			const reconstructedData = customUtils.getQuarantinedObject({
+				keyword,
+				quarantinedObject,
+			});
 			expect(reconstructedData).to.be.equal(email);
 		});
 	});

@@ -1,7 +1,9 @@
 class AbstractFileStorageStrategy {
 	constructor() {
 		if (new.target === AbstractFileStorageStrategy) {
-			throw new TypeError('Cannot construct AbstractFileStorageStrategy instances directly.');
+			throw new TypeError(
+				'Cannot construct AbstractFileStorageStrategy instances directly.',
+			);
 		}
 	}
 

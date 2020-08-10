@@ -46,6 +46,9 @@ describe('sorting method', () => {
 			},
 		};
 		const result = sortByGradeAndOrName(context);
-		expect(result.params.query.$sort).to.deep.equal({ gradeLevel: -1, name: -1 });
+		expect(result.params.query.$sort).to.deep.equal({
+			gradeLevel: -1,
+			name: -1,
+		});
 	});
 });

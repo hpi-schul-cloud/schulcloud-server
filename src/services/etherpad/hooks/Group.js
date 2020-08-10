@@ -6,7 +6,9 @@ const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
 
 const getCourseData = async (context) => {
-	const courseService = context.app.service('/courses').get(context.data.courseId);
+	const courseService = context.app
+		.service('/courses')
+		.get(context.data.courseId);
 	try {
 		context.data = await courseService;
 		return context;

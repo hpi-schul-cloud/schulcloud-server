@@ -64,7 +64,9 @@ module.exports = function MockServer(
 				's.2d470b52539b77200c87e68590fec220': {
 					groupID: '3414',
 					authorID: '1234',
-					validUntil: parseInt(new Date(Date.now()).getTime() / 1000, 10) + 10000,
+					validUntil:
+						parseInt(new Date(Date.now()).getTime() / 1000, 10) +
+						10000,
 				},
 			},
 		});
@@ -98,6 +100,9 @@ module.exports = function MockServer(
 		}
 	});
 	return {
-		server, app, port, uris,
+		server,
+		app,
+		port,
+		uris,
 	};
 };

@@ -12,18 +12,25 @@ amqp.connect(Configuration.get('RABBITMQ_URI'), (error0, connection) => {
 			throw error1;
 		}
 
-		channel.assertQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), {
-			durable: false,
-		});
+		channel.assertQueue(
+			Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'),
+			{
+				durable: false,
+			},
+		);
 
 		// eslint-disable-next-line no-console
 		console.log(' [*] Waiting for messages in %s. To exit press CTRL+C');
 
-		channel.consume(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), (msg) => {
-			// eslint-disable-next-line no-console
-			console.log(' [x] Received %s', msg.content.toString());
-		}, {
-			noAck: true,
-		});
+		channel.consume(
+			Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'),
+			(msg) => {
+				// eslint-disable-next-line no-console
+				console.log(' [x] Received %s', msg.content.toString());
+			},
+			{
+				noAck: true,
+			},
+		);
 	});
 });

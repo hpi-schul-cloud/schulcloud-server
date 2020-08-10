@@ -2,7 +2,10 @@ const service = require('feathers-mongoose');
 const Ajv = require('ajv');
 const auth = require('@feathersjs/authentication');
 const {
-	iff, isProvider, validateSchema, disallow,
+	iff,
+	isProvider,
+	validateSchema,
+	disallow,
 } = require('feathers-hooks-common');
 const { customHook } = require('../hooks');
 const { hasPermission } = require('../../../hooks');
@@ -29,9 +32,7 @@ const modelService = service({
  */
 const modelServiceHooks = {
 	before: {
-		all: [
-			auth.hooks.authenticate('jwt'),
-		],
+		all: [auth.hooks.authenticate('jwt')],
 		find: [
 			iff(isProvider('external'), hasPermission('SERVICE_TEMPLATE_VIEW')),
 		],
@@ -44,9 +45,7 @@ const modelServiceHooks = {
 				hasPermission('SERVICE_TEMPLATE_CREATE'),
 			]),
 		],
-		update: [
-			disallow(),
-		],
+		update: [disallow()],
 		patch: [
 			customHook,
 			iff(isProvider('external'), [

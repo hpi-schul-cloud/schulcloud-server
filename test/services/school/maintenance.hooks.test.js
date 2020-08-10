@@ -37,7 +37,9 @@ describe('lookupSchool hook', () => {
 				foo: 'bar',
 			},
 		};
-		await expect(lookupSchool(ctx)).to.eventually.be.rejected.and.be.an.instanceOf(BadRequest);
+		await expect(
+			lookupSchool(ctx),
+		).to.eventually.be.rejected.and.be.an.instanceOf(BadRequest);
 	});
 
 	it('should fail gracefully if the referenced school does not exist', () => {
@@ -48,7 +50,9 @@ describe('lookupSchool hook', () => {
 				},
 			},
 		};
-		return expect(lookupSchool(ctx)).to.eventually.be.rejected.and.be.an.instanceOf(NotFound);
+		return expect(
+			lookupSchool(ctx),
+		).to.eventually.be.rejected.and.be.an.instanceOf(NotFound);
 	});
 
 	after(cleanup);

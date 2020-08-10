@@ -1,9 +1,16 @@
 const {
-	Forbidden, NotFound, BadRequest, GeneralError,
+	Forbidden,
+	NotFound,
+	BadRequest,
+	GeneralError,
 } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
 const { HOST } = require('../../../../config/globals');
-const { getQuarantinedObject, createQuarantinedObject, KEYWORDS } = require('./customStrategyUtils');
+const {
+	getQuarantinedObject,
+	createQuarantinedObject,
+	KEYWORDS,
+} = require('./customStrategyUtils');
 const customErrorMessages = require('./customErrorMessages');
 const Mail = require('../services/interface/mailFormat');
 const { getUser } = require('../../helpers/utils');
@@ -26,7 +33,9 @@ const STATE = {
  */
 const deleteEntry = async (ref, entryId) => {
 	try {
-		const res = await (ref.app || ref).service('activationModel').remove({ _id: entryId });
+		const res = await (ref.app || ref)
+			.service('activationModel')
+			.remove({ _id: entryId });
 		return res;
 	} catch (error) {
 		/* eslint-disable-next-line */
@@ -43,11 +52,14 @@ const deleteEntry = async (ref, entryId) => {
  * @returns	{Object}			changed entry
  */
 const setEntryState = async (ref, entryId, state) => {
-	const entry = await (ref.app || ref).service('activationModel').patch({ _id: entryId }, {
-		$set: {
-			state,
+	const entry = await (ref.app || ref).service('activationModel').patch(
+		{ _id: entryId },
+		{
+			$set: {
+				state,
+			},
 		},
-	});
+	);
 	return entry;
 };
 
@@ -64,7 +76,9 @@ const getEntriesByUserId = async (ref, requestingId, keyword = null) => {
 	const query = { userId: requestingId };
 	if (keyword) query.keyword = keyword;
 
-	const entry = await (ref.app || ref).service('activationModel').find({ query });
+	const entry = await (ref.app || ref)
+		.service('activationModel')
+		.find({ query });
 
 	if (keyword) {
 		if (entry.length === 1) return entry[0];
@@ -103,8 +117,12 @@ const getEntryByActivationCode = async (ref, requestingId, activationCode) => {
 const validEntry = async (entry) => {
 	if (!entry) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
 	if (
-		Date.parse(entry.updatedAt) + 1000 * Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS')
-		< Date.now()
+		Date.parse(entry.updatedAt) +
+			1000 *
+				Configuration.get(
+					'ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS',
+				) <
+		Date.now()
 	) {
 		await deleteEntry(this, entry._id);
 		throw new BadRequest(customErrorMessages.ACTIVATION_LINK_EXPIRED);
@@ -114,15 +132,13 @@ const validEntry = async (entry) => {
 	}
 };
 
-
 const createNewEntry = async (ref, userId, keyword, quarantinedObject) => {
 	try {
-		const entry = await (ref.app || ref).service('activationModel')
-			.create({
-				userId,
-				keyword,
-				quarantinedObject,
-			});
+		const entry = await (ref.app || ref).service('activationModel').create({
+			userId,
+			keyword,
+			quarantinedObject,
+		});
 		return entry;
 	} catch (error) {
 		throw new Error('Could not create a quarantined object.');
@@ -145,10 +161,14 @@ const createEntry = async (ref, userId, keyword, quarantinedObject) => {
 		}
 		await deleteEntry(ref, entry._id);
 	}
-	const newEntry = await createNewEntry(ref, userId, keyword, quarantinedObject);
+	const newEntry = await createNewEntry(
+		ref,
+		userId,
+		keyword,
+		quarantinedObject,
+	);
 	return newEntry;
 };
-
 
 /**
  * Will send email with informatrion from mail {receiver, subject, content}
@@ -158,21 +178,24 @@ const createEntry = async (ref, userId, keyword, quarantinedObject) => {
  * @param {ObjectId} entryId	ObjectId of entry
  */
 const sendMail = async (ref, mail, entry) => {
-	if (!mail || !mail.receiver || !mail.subject || !mail.content || !entry) throw SyntaxError('missing parameters');
+	if (!mail || !mail.receiver || !mail.subject || !mail.content || !entry)
+		throw SyntaxError('missing parameters');
 
 	try {
-		await ref.app.service('/mails')
-			.create({
-				email: mail.receiver,
-				subject: mail.subject,
-				content: mail.content,
-			});
-
-		await ref.app.service('activationModel').patch({ _id: entry._id }, {
-			$push: {
-				mailSent: Date.now(),
-			},
+		await ref.app.service('/mails').create({
+			email: mail.receiver,
+			subject: mail.subject,
+			content: mail.content,
 		});
+
+		await ref.app.service('activationModel').patch(
+			{ _id: entry._id },
+			{
+				$push: {
+					mailSent: Date.now(),
+				},
+			},
+		);
 	} catch (error) {
 		if (entry.mailSent.length === 0) await deleteEntry(ref, entry._id);
 		throw new Error('Can not send mail with activation link');
@@ -184,7 +207,8 @@ const sendMail = async (ref, mail, entry) => {
  * @param {String} activationCode	activationCode from entry
  * @returns {String}				activationLink
  */
-const createActivationLink = (activationCode) => `${HOST}/activation/${activationCode}`;
+const createActivationLink = (activationCode) =>
+	`${HOST}/activation/${activationCode}`;
 
 module.exports = {
 	STATE,

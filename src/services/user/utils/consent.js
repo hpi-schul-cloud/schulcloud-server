@@ -1,6 +1,11 @@
 const checkParentConsent = (parentConsents = []) => {
-	const agrements = parentConsents.filter((consent) => consent.privacyConsent && consent.termsOfUseConsent);
-	if (parentConsents.length !== 0 && agrements.length === parentConsents.length) {
+	const agrements = parentConsents.filter(
+		(consent) => consent.privacyConsent && consent.termsOfUseConsent,
+	);
+	if (
+		parentConsents.length !== 0 &&
+		agrements.length === parentConsents.length
+	) {
 		return true;
 	}
 
@@ -8,9 +13,10 @@ const checkParentConsent = (parentConsents = []) => {
 };
 
 const checkUserConsent = (userConsent) => {
-	if (userConsent
-		&& userConsent.privacyConsent === true
-		&& userConsent.termsOfUseConsent === true
+	if (
+		userConsent &&
+		userConsent.privacyConsent === true &&
+		userConsent.termsOfUseConsent === true
 	) {
 		return true;
 	}
@@ -33,7 +39,6 @@ const defineConsentStatus = (birthday, consent) => {
 	const firstConsentSwitchDate = new Date();
 	firstConsentSwitchDate.setFullYear(currentDate.getFullYear() - 14);
 
-
 	const { parentConsents, userConsent } = consent;
 	let amount = 0;
 
@@ -49,7 +54,8 @@ const defineConsentStatus = (birthday, consent) => {
 		}
 	} else {
 		// parents and user have to agre
-		amount = checkParentConsent(parentConsents) + checkUserConsent(userConsent);
+		amount =
+			checkParentConsent(parentConsents) + checkUserConsent(userConsent);
 	}
 
 	switch (amount) {
@@ -63,7 +69,6 @@ const defineConsentStatus = (birthday, consent) => {
 	}
 };
 
-
 const isParentConsentRequired = (birthday) => {
 	const currentDate = new Date();
 	const secoundConsentSwitchDate = new Date();
@@ -75,7 +80,6 @@ const isParentConsentRequired = (birthday) => {
 
 	return true;
 };
-
 
 module.exports = {
 	defineConsentStatus,

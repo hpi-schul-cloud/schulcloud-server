@@ -1,16 +1,19 @@
 const accountsHelper = require('./accounts');
 
 const generateJWT = (app) => async ({ username, password }) => {
-	const result = await app.service('authentication').create({
-		strategy: 'local',
-		username,
-		password,
-	}, {
-		headers: {
-			'content-type': 'application/json',
+	const result = await app.service('authentication').create(
+		{
+			strategy: 'local',
+			username,
+			password,
 		},
-		provider: 'rest',
-	});
+		{
+			headers: {
+				'content-type': 'application/json',
+			},
+			provider: 'rest',
+		},
+	);
 	return result.accessToken;
 };
 
@@ -39,7 +42,11 @@ const generateRequestParams = (app) => async ({ username, password }) => {
  */
 const generateRequestParamsFromUser = (app) => async (user) => {
 	const credentials = { username: user.email, password: user.email };
-	const account = await accountsHelper(app).create(credentials, 'local', user);
+	const account = await accountsHelper(app).create(
+		credentials,
+		'local',
+		user,
+	);
 
 	const requestParams = await generateRequestParams(app)(credentials);
 	requestParams.account = account;

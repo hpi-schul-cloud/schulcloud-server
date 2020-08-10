@@ -1,6 +1,7 @@
 module.exports = {
 	wopiFilesInfoService: {
-		description: 'A service to get files specific information for a wopi client',
+		description:
+			'A service to get files specific information for a wopi client',
 		find: {
 			parameters: [
 				{
@@ -30,11 +31,13 @@ module.exports = {
 					type: 'string',
 				},
 			],
-			summary: 'Triggers a specific wopi action for a given X-WOPI-OVERRIDE value',
+			summary:
+				'Triggers a specific wopi action for a given X-WOPI-OVERRIDE value',
 		},
 	},
 	wopiFilesContentsService: {
-		description: 'A service for handling the wopi GetFile & PutFile operation',
+		description:
+			'A service for handling the wopi GetFile & PutFile operation',
 		create: {
 			parameters: [
 				{

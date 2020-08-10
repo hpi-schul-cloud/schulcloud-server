@@ -4,32 +4,45 @@ const assert = require('assert');
 const app = require('../../../src/app');
 const accountModel = require('../../../src/services/account/model');
 const { consentModel } = require('../../../src/services/consent/model');
-const { userModel, registrationPinModel } = require('../../../src/services/user/model');
+const {
+	userModel,
+	registrationPinModel,
+} = require('../../../src/services/user/model');
 const { schoolModel } = require('../../../src/services/school/model');
 
 const registrationService = app.service('registration');
 const registrationPinService = app.service('registrationPins');
 const testObjects = require('../helpers/testObjects')(app);
 
-const patchSchool = (system, schoolId) => schoolModel.findOneAndUpdate({ _id: schoolId }, {
-	$push: {
-		systems: system._id,
-	},
-}, { new: true }).lean().exec();
+const patchSchool = (system, schoolId) =>
+	schoolModel
+		.findOneAndUpdate(
+			{ _id: schoolId },
+			{
+				$push: {
+					systems: system._id,
+				},
+			},
+			{ new: true },
+		)
+		.lean()
+		.exec();
 
-const createAccount = (system) => accountModel.create({
-	lasttriedFailedLogin: '1970-01-01T00:00:00.000+0000',
-	activated: false,
-	username: 'fritz',
-	password: '',
-	systemId: system._id,
-});
+const createAccount = (system) =>
+	accountModel.create({
+		lasttriedFailedLogin: '1970-01-01T00:00:00.000+0000',
+		activated: false,
+		username: 'fritz',
+		password: '',
+		systemId: system._id,
+	});
 
-const createPin = (pin = 6716, email) => registrationPinModel.create({
-	verified: false,
-	email: email || `${Date.now()}@test.de`,
-	pin,
-});
+const createPin = (pin = 6716, email) =>
+	registrationPinModel.create({
+		verified: false,
+		email: email || `${Date.now()}@test.de`,
+		pin,
+	});
 
 describe('registration service', () => {
 	after(async () => {
@@ -44,9 +57,13 @@ describe('registration service', () => {
 		const email = `max${Date.now()}@mustermann.de`;
 		const importHash = `${Date.now()}`;
 		await testObjects.createTestUser({
-			importHash, email, firstName: 'Max', lastName: 'Mustermann',
+			importHash,
+			email,
+			firstName: 'Max',
+			lastName: 'Mustermann',
 		});
-		return registrationPinService.create({ email, silent: true })
+		return registrationPinService
+			.create({ email, silent: true })
 			.then((registrationPin) => {
 				const registrationInput = {
 					classOrSchoolId: '0000d186816abba584714c5f',
@@ -77,9 +94,13 @@ describe('registration service', () => {
 		const email = `max${Date.now()}@mustermann.de`;
 		const importHash = `${Date.now()}`;
 		await testObjects.createTestUser({
-			importHash, email: parentEmail, firstName: 'Max', lastName: 'Mustermann',
+			importHash,
+			email: parentEmail,
+			firstName: 'Max',
+			lastName: 'Mustermann',
 		});
-		return registrationPinService.create({ email: parentEmail, silent: true })
+		return registrationPinService
+			.create({ email: parentEmail, silent: true })
 			.then((registrationPin) => {
 				const registrationInput = {
 					classOrSchoolId: '0000d186816abba584714c5f',
@@ -102,10 +123,16 @@ describe('registration service', () => {
 			.then((response) => {
 				expect(response.user).to.have.property('_id');
 				expect(response.consent).to.have.property('_id');
-				expect(response.consent.parentConsents.length).to.be.at.least(1);
+				expect(response.consent.parentConsents.length).to.be.at.least(
+					1,
+				);
 				expect(response.parent).to.have.property('_id');
-				expect(response.user.parents[0].toString()).to.equal(response.parent._id.toString());
-				expect(response.parent.children[0].toString()).to.include(response.user._id.toString());
+				expect(response.user.parents[0].toString()).to.equal(
+					response.parent._id.toString(),
+				);
+				expect(response.parent.children[0].toString()).to.include(
+					response.user._id.toString(),
+				);
 				expect(response.account).to.have.property('_id');
 			});
 	});
@@ -114,9 +141,13 @@ describe('registration service', () => {
 		const email = `max${Date.now()}@mustermann.de`;
 		const importHash = `${Date.now()}`;
 		await testObjects.createTestUser({
-			importHash, email, firstName: 'Max', lastName: 'Mustermann',
+			importHash,
+			email,
+			firstName: 'Max',
+			lastName: 'Mustermann',
 		});
-		return registrationPinService.create({ email, silent: true })
+		return registrationPinService
+			.create({ email, silent: true })
 			.then((registrationPin) => {
 				let pin = Number(registrationPin.pin);
 				pin = pin === 9999 ? 1000 : pin + 1;
@@ -130,7 +161,8 @@ describe('registration service', () => {
 					firstName: 'Max',
 					lastName: 'Mustermann',
 				});
-			}).catch((err) => {
+			})
+			.catch((err) => {
 				expect(err).to.not.equal(undefined);
 				expect(err.message).to.equal(
 					'Der eingegebene Code konnte leider nicht verfiziert werden. Versuch es doch noch einmal.',
@@ -142,26 +174,39 @@ describe('registration service', () => {
 		const email = `max${Date.now()}@mustermann.de`;
 		const importHash = `${Date.now()}`;
 		await testObjects.createTestUser({
-			importHash, email, firstName: 'Max', lastName: 'Mustermann',
-		});
-		registrationService.create({
 			importHash,
-			classOrSchoolId: '0000d186816abba584714c5f',
 			email,
-			parent_email: email,
-			birthDate: '18.02.2015',
-		}).catch((err) => {
-			expect(err.message).to.equal('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.');
+			firstName: 'Max',
+			lastName: 'Mustermann',
 		});
+		registrationService
+			.create({
+				importHash,
+				classOrSchoolId: '0000d186816abba584714c5f',
+				email,
+				parent_email: email,
+				birthDate: '18.02.2015',
+			})
+			.catch((err) => {
+				expect(err.message).to.equal(
+					'Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.',
+				);
+			});
 	});
 
 	it('undoes changes on fail', async () => {
 		const email = `max${Date.now()}@mustermann.de`;
 		const importHash = `${Date.now()}`;
 		await testObjects.createTestUser({
-			importHash, email, firstName: 'Max', lastName: 'Mustermann',
+			importHash,
+			email,
+			firstName: 'Max',
+			lastName: 'Mustermann',
 		});
-		const registrationPin = await registrationPinService.create({ email, silent: true });
+		const registrationPin = await registrationPinService.create({
+			email,
+			silent: true,
+		});
 		const registrationInput = {
 			importHash,
 			classOrSchoolId: '0000d186816abba584714c5f',
@@ -195,7 +240,9 @@ describe('registration service', () => {
 			toHash: email,
 			save: true,
 		};
-		return app.service('hash').create(hashData)
+		return app
+			.service('hash')
+			.create(hashData)
 			.then((newHash) => {
 				hash = newHash;
 				return userModel.create({
@@ -225,13 +272,17 @@ describe('registration service', () => {
 					privacyConsent: true,
 					termsOfUseConsent: true,
 				};
-				return registrationService.create(registrationInput).then((response) => {
-					expect(response.user).to.have.property('_id');
-					expect(response.account).to.have.property('_id');
-					expect(response.consent).to.have.property('_id');
-					expect(response.consent).to.have.property('userConsent');
-					expect(response.parent).to.equal(null);
-				});
+				return registrationService
+					.create(registrationInput)
+					.then((response) => {
+						expect(response.user).to.have.property('_id');
+						expect(response.account).to.have.property('_id');
+						expect(response.consent).to.have.property('_id');
+						expect(response.consent).to.have.property(
+							'userConsent',
+						);
+						expect(response.parent).to.equal(null);
+					});
 			});
 	});
 });

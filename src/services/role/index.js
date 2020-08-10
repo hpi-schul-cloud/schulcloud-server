@@ -1,10 +1,20 @@
 const service = require('feathers-mongoose');
 const Role = require('./model');
 const hooks = require('./hooks');
-const { PermissionService, permissionHooks } = require('./services/permissions');
-const { UserPermissions, userPermissionsHooks } = require('./services/userPermissions');
+const {
+	PermissionService,
+	permissionHooks,
+} = require('./services/permissions');
+const {
+	UserPermissions,
+	userPermissionsHooks,
+} = require('./services/userPermissions');
 const { UserRoles, userRolesHooks } = require('./services/userRoles');
-const { definePermissions, PERMISSIONS, ROLES } = require('./utils/permissions');
+const {
+	definePermissions,
+	PERMISSIONS,
+	ROLES,
+} = require('./utils/permissions');
 
 module.exports = function setup() {
 	const app = this;
@@ -36,7 +46,6 @@ module.exports = function setup() {
 	app.use('/roles/:roleName/permissions', new PermissionService());
 	const permissionService = app.service('/roles/:roleName/permissions');
 	permissionService.hooks(permissionHooks);
-
 
 	definePermissions(
 		'ADMIN_TOGGLE_STUDENT_VISIBILITY',

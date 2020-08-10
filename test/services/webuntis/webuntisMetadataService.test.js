@@ -4,7 +4,9 @@ const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
 
 const webuntisMetadataService = app.service('webuntisMetadata');
-const { webuntisMetadataModel } = require('../../../src/services/webuntis/model');
+const {
+	webuntisMetadataModel,
+} = require('../../../src/services/webuntis/model');
 
 describe('webuntis metadata service', () => {
 	let server;
@@ -35,9 +37,14 @@ describe('webuntis metadata service', () => {
 			state: 'new',
 		});
 		expect(createResult).to.not.be.undefined;
-		expect(createResult.datasourceId.toString()).to.equal(datasource._id.toString());
+		expect(createResult.datasourceId.toString()).to.equal(
+			datasource._id.toString(),
+		);
 
-		await webuntisMetadataModel.deleteOne({ _id: createResult._id }).lean().exec();
+		await webuntisMetadataModel
+			.deleteOne({ _id: createResult._id })
+			.lean()
+			.exec();
 	});
 
 	it('internal call can FIND metadata', async () => {
@@ -54,13 +61,18 @@ describe('webuntis metadata service', () => {
 			state: 'new',
 		});
 
-		const result = await webuntisMetadataService.find({ query: { datasourceId: datasource._id } });
+		const result = await webuntisMetadataService.find({
+			query: { datasourceId: datasource._id },
+		});
 
 		expect(result).to.not.be.undefined;
 		expect(Array.isArray(result.data)).to.be.true;
 		expect(result.total).to.eq(1);
 
-		await webuntisMetadataModel.deleteOne({ _id: metadata._id }).lean().exec();
+		await webuntisMetadataModel
+			.deleteOne({ _id: metadata._id })
+			.lean()
+			.exec();
 	});
 
 	it('internal call can GET metadata', async () => {
@@ -82,7 +94,10 @@ describe('webuntis metadata service', () => {
 		expect(result).to.not.be.undefined;
 		expect(result.datasourceId.toString()).to.eq(datasource._id.toString());
 
-		await webuntisMetadataModel.deleteOne({ _id: metadata._id }).lean().exec();
+		await webuntisMetadataModel
+			.deleteOne({ _id: metadata._id })
+			.lean()
+			.exec();
 	});
 
 	it('internal call can PATCH metadata', async () => {
@@ -99,13 +114,18 @@ describe('webuntis metadata service', () => {
 			state: 'new',
 		});
 
-		const result = await webuntisMetadataService.patch(metadata._id, { state: 'imported' });
+		const result = await webuntisMetadataService.patch(metadata._id, {
+			state: 'imported',
+		});
 
 		expect(result).to.not.be.undefined;
 		expect(result.datasourceId.toString()).to.eq(datasource._id.toString());
 		expect(result.state).to.equal('imported');
 
-		await webuntisMetadataModel.deleteOne({ _id: metadata._id }).lean().exec();
+		await webuntisMetadataModel
+			.deleteOne({ _id: metadata._id })
+			.lean()
+			.exec();
 	});
 
 	it('internal call can REMOVE metadata', async () => {
@@ -131,7 +151,10 @@ describe('webuntis metadata service', () => {
 
 	it('admin can FIND metadata belonging to his school.', async () => {
 		const school = await testObjects.createTestSchool();
-		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+		const admin = await testObjects.createTestUser({
+			roles: ['administrator'],
+			schoolId: school._id,
+		});
 		const datasource = await testObjects.createTestDatasource({
 			schoolId: admin.schoolId,
 			config: { target: 'none' },
@@ -151,14 +174,22 @@ describe('webuntis metadata service', () => {
 		expect(result).to.not.be.undefined;
 		expect(Array.isArray(result.data)).to.be.true;
 		expect(result.total).to.eq(1);
-		expect(result.data[0].datasourceId.toString()).to.eq(datasource._id.toString());
+		expect(result.data[0].datasourceId.toString()).to.eq(
+			datasource._id.toString(),
+		);
 
-		await webuntisMetadataModel.deleteOne({ _id: metadata._id }).lean().exec();
+		await webuntisMetadataModel
+			.deleteOne({ _id: metadata._id })
+			.lean()
+			.exec();
 	});
 
 	it('admin can not GET metadata.', async () => {
 		const school = await testObjects.createTestSchool();
-		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+		const admin = await testObjects.createTestUser({
+			roles: ['administrator'],
+			schoolId: school._id,
+		});
 		const datasource = await testObjects.createTestDatasource({
 			schoolId: admin.schoolId,
 			config: { target: 'none' },
@@ -180,13 +211,19 @@ describe('webuntis metadata service', () => {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.eq(405);
 		}
-		await webuntisMetadataModel.deleteOne({ _id: metadata._id }).lean().exec();
+		await webuntisMetadataModel
+			.deleteOne({ _id: metadata._id })
+			.lean()
+			.exec();
 	});
 
 	it('admin can not FIND metadata belonging to a different scool', async () => {
 		const userSchool = await testObjects.createTestSchool();
 		const datasourceSchool = await testObjects.createTestSchool();
-		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: userSchool._id });
+		const admin = await testObjects.createTestUser({
+			roles: ['administrator'],
+			schoolId: userSchool._id,
+		});
 		const datasource = await testObjects.createTestDatasource({
 			schoolId: datasourceSchool._id,
 			config: { target: 'none' },
@@ -210,12 +247,18 @@ describe('webuntis metadata service', () => {
 			expect(err.code).to.eq(404);
 		}
 
-		await webuntisMetadataModel.deleteOne({ _id: metadata._id }).lean().exec();
+		await webuntisMetadataModel
+			.deleteOne({ _id: metadata._id })
+			.lean()
+			.exec();
 	});
 
 	it('admin can not CREATE metadata', async () => {
 		const school = await testObjects.createTestSchool();
-		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+		const admin = await testObjects.createTestUser({
+			roles: ['administrator'],
+			schoolId: school._id,
+		});
 		const datasource = await testObjects.createTestDatasource({
 			schoolId: admin.schoolId,
 			config: { target: 'none' },
@@ -223,15 +266,21 @@ describe('webuntis metadata service', () => {
 		});
 		const params = await testObjects.generateRequestParamsFromUser(admin);
 		try {
-			const metadata = await webuntisMetadataService.create({
-				datasourceId: datasource._id,
-				teacher: 'Renz',
-				class: '2a',
-				room: '0-23',
-				subject: 'Verteidigung gegen die dunklen Künste',
-				state: 'new',
-			}, params);
-			await webuntisMetadataModel.deleteOne({ _id: metadata._id }).lean().exec();
+			const metadata = await webuntisMetadataService.create(
+				{
+					datasourceId: datasource._id,
+					teacher: 'Renz',
+					class: '2a',
+					room: '0-23',
+					subject: 'Verteidigung gegen die dunklen Künste',
+					state: 'new',
+				},
+				params,
+			);
+			await webuntisMetadataModel
+				.deleteOne({ _id: metadata._id })
+				.lean()
+				.exec();
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
@@ -241,7 +290,10 @@ describe('webuntis metadata service', () => {
 
 	it('admin can not REMOVE metadata', async () => {
 		const school = await testObjects.createTestSchool();
-		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+		const admin = await testObjects.createTestUser({
+			roles: ['administrator'],
+			schoolId: school._id,
+		});
 		const datasource = await testObjects.createTestDatasource({
 			schoolId: admin.schoolId,
 			config: { target: 'none' },
@@ -263,12 +315,18 @@ describe('webuntis metadata service', () => {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.eq(405);
 		}
-		await webuntisMetadataModel.deleteOne({ _id: metadata._id }).lean().exec();
+		await webuntisMetadataModel
+			.deleteOne({ _id: metadata._id })
+			.lean()
+			.exec();
 	});
 
 	it('admin can not UPDATE metadata', async () => {
 		const school = await testObjects.createTestSchool();
-		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+		const admin = await testObjects.createTestUser({
+			roles: ['administrator'],
+			schoolId: school._id,
+		});
 		const datasource = await testObjects.createTestDatasource({
 			schoolId: admin.schoolId,
 			config: { target: 'none' },
@@ -284,18 +342,28 @@ describe('webuntis metadata service', () => {
 		});
 		const params = await testObjects.generateRequestParamsFromUser(admin);
 		try {
-			await webuntisMetadataService.update(metadata._id, { room: 'Olympiastadion' }, params);
+			await webuntisMetadataService.update(
+				metadata._id,
+				{ room: 'Olympiastadion' },
+				params,
+			);
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.eq(405);
 		}
-		await webuntisMetadataModel.deleteOne({ _id: metadata._id }).lean().exec();
+		await webuntisMetadataModel
+			.deleteOne({ _id: metadata._id })
+			.lean()
+			.exec();
 	});
 
 	it('admin can not PATCH metadata', async () => {
 		const school = await testObjects.createTestSchool();
-		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+		const admin = await testObjects.createTestUser({
+			roles: ['administrator'],
+			schoolId: school._id,
+		});
 		const datasource = await testObjects.createTestDatasource({
 			schoolId: admin.schoolId,
 			config: { target: 'none' },
@@ -311,12 +379,19 @@ describe('webuntis metadata service', () => {
 		});
 		const params = await testObjects.generateRequestParamsFromUser(admin);
 		try {
-			await webuntisMetadataService.patch(metadata._id, { teacher: 'Slughorn' }, params);
+			await webuntisMetadataService.patch(
+				metadata._id,
+				{ teacher: 'Slughorn' },
+				params,
+			);
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.eq(405);
 		}
-		await webuntisMetadataModel.deleteOne({ _id: metadata._id }).lean().exec();
+		await webuntisMetadataModel
+			.deleteOne({ _id: metadata._id })
+			.lean()
+			.exec();
 	});
 });

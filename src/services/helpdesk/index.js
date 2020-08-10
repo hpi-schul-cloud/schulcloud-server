@@ -2,7 +2,10 @@ const service = require('feathers-mongoose');
 const problemModel = require('./model');
 const hooks = require('./hooks');
 const logger = require('../../logger');
-const { BODYPARSER_JSON_LIMIT, MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE } = require('../../../config/globals');
+const {
+	BODYPARSER_JSON_LIMIT,
+	MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE,
+} = require('../../../config/globals');
 
 if (BODYPARSER_JSON_LIMIT === undefined) {
 	/* eslint-disable-next-line  */

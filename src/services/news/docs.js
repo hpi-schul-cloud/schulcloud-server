@@ -19,7 +19,8 @@ module.exports = {
 				displayAt: {
 					type: 'string',
 					format: 'date',
-					description: 'the news will become public at this date. Defaults to be the same as creation date.',
+					description:
+						'the news will become public at this date. Defaults to be the same as creation date.',
 				},
 				creatorId: {
 					type: 'string',
@@ -46,14 +47,16 @@ module.exports = {
 				target: {
 					type: 'string',
 					pattern: '[a-f0-9]{24}',
-					description: 'id of the scope the news belongs to.'
-					+ 'If no target is given, the news will belong to the school.',
+					description:
+						'id of the scope the news belongs to.' +
+						'If no target is given, the news will belong to the school.',
 				},
 				targetModel: {
 					type: 'string',
 					enum: ['courses', 'teams', 'class'],
-					description: 'the type of the scope the news belongs to.'
-					+ 'required if a target is given',
+					description:
+						'the type of the scope the news belongs to.' +
+						'required if a target is given',
 				},
 				source: {
 					type: 'string',
@@ -93,7 +96,11 @@ module.exports = {
 			responses: {
 				201: {
 					description: 'created',
-					content: { 'application/json': { schema: { $ref: '#/components/schemas/news' } } },
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/news' },
+						},
+					},
 				},
 				401: {
 					description: 'not authenticated',
@@ -107,14 +114,19 @@ module.exports = {
 			},
 		},
 		find: {
-			description: 'Find all news the user has access to, optionally filtered by scope.',
+			description:
+				'Find all news the user has access to, optionally filtered by scope.',
 		},
 		get: {
 			description: 'Returns the news specified by id.',
 			responses: {
 				200: {
 					description: 'success',
-					content: { 'application/json': { schema: { $ref: '#/components/schemas/news' } } },
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/news' },
+						},
+					},
 				},
 				401: {
 					description: 'not authenticated',
@@ -135,7 +147,11 @@ module.exports = {
 			responses: {
 				201: {
 					description: 'success',
-					content: { 'application/json': { schema: { $ref: '#/components/schemas/news' } } },
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/news' },
+						},
+					},
 				},
 				401: {
 					description: 'not authenticated',
@@ -156,7 +172,11 @@ module.exports = {
 			responses: {
 				201: {
 					description: 'success',
-					content: { 'application/json': { schema: { $ref: '#/components/schemas/news' } } },
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/news' },
+						},
+					},
 				},
 				401: {
 					description: 'not authenticated',
@@ -177,7 +197,11 @@ module.exports = {
 			responses: {
 				201: {
 					description: 'success',
-					content: { 'application/json': { schema: { $ref: '#/components/schemas/news' } } },
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/news' },
+						},
+					},
 				},
 				401: {
 					description: 'not authenticated',

@@ -15,7 +15,8 @@ describe('passwordRecovery service', () => {
 
 	const newAccount = {
 		username: recoveryUsername,
-		password: '$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJACla',
+		password:
+			'$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJACla',
 		activated: true,
 		createdAt: '2017-09-04T12:51:58.49Z',
 	};
@@ -23,8 +24,14 @@ describe('passwordRecovery service', () => {
 	before((done) => {
 		server = app.listen(PORT, async () => {
 			savedUser = await testObjects.createTestUser();
-			savedAccount = await testObjects.createTestAccount(newAccount, null, savedUser);
-			await passwordRecoveryService.create({ username: recoveryUsername });
+			savedAccount = await testObjects.createTestAccount(
+				newAccount,
+				null,
+				savedUser,
+			);
+			await passwordRecoveryService.create({
+				username: recoveryUsername,
+			});
 			done();
 		});
 	});
@@ -68,7 +75,10 @@ describe('passwordRecovery service', () => {
 		const result = await passwordRecovery.findOne({
 			account: savedAccount._id,
 		});
-		assert.equal(result.account.toHexString(), savedAccount._id.toHexString());
+		assert.equal(
+			result.account.toHexString(),
+			savedAccount._id.toHexString(),
+		);
 	});
 
 	it('registered the passwordRecovery service', () => {

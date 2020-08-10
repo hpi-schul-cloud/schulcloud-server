@@ -2,9 +2,11 @@ const hooks = require('./hooks/maintenance.hooks');
 const { schoolModel: School, yearModel: Years } = require('./model');
 const SchoolYearFacade = require('./logic/year');
 
-const ldapSystemFilter = (s) => s.type === 'ldap' && s.ldapConfig && s.ldapConfig.active === true;
+const ldapSystemFilter = (s) =>
+	s.type === 'ldap' && s.ldapConfig && s.ldapConfig.active === true;
 
-const schoolUsesLdap = (school) => (school.systems || []).some(ldapSystemFilter);
+const schoolUsesLdap = (school) =>
+	(school.systems || []).some(ldapSystemFilter);
 
 class SchoolMaintenanceService {
 	async setup(app) {
@@ -80,8 +82,15 @@ class SchoolMaintenanceService {
 			bumpYear();
 		}
 
-		school = await School.findOneAndUpdate({ _id: school._id }, patch, { new: true })
-			.select(['name', 'currentYear', 'inMaintenanceSince', 'inMaintenance'])
+		school = await School.findOneAndUpdate({ _id: school._id }, patch, {
+			new: true,
+		})
+			.select([
+				'name',
+				'currentYear',
+				'inMaintenanceSince',
+				'inMaintenance',
+			])
 			.populate(['currentYear', 'systems'])
 			.lean({ virtuals: true });
 		return Promise.resolve(this.getStatus(school));

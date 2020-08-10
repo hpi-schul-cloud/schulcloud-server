@@ -24,7 +24,6 @@ describe('consent aggregation', () => {
 				input: '$consent.parentConsents',
 				initialValue: false,
 				in: { $or: ['$$value', `$$this.${variable}`] },
-
 			},
 		});
 	});
@@ -43,21 +42,29 @@ describe('consent aggregation', () => {
 		let selectAggregation;
 
 		aggregation.forEach((agg) => {
-			if (({}).hasOwnProperty.call(agg, '$project')) {
+			if ({}.hasOwnProperty.call(agg, '$project')) {
 				if (!statusAggregation) statusAggregation = agg;
 				else if (!selectAggregation) selectAggregation = agg;
-			} else if (({}).hasOwnProperty.call(agg, '$sort')) {
+			} else if ({}.hasOwnProperty.call(agg, '$sort')) {
 				sortAggregation = agg;
 			}
 		});
 
-		expect(statusAggregation).to.have.nested.property('$project.consentStatus');
+		expect(statusAggregation).to.have.nested.property(
+			'$project.consentStatus',
+		);
 		expect(statusAggregation).to.have.nested.property('$project.lastname');
 		expect(statusAggregation).to.have.nested.property('$project.firstname');
 
-		expect(sortAggregation).to.have.nested.include({ '$sort.consentSortParam': 1 });
-		expect(sortAggregation).to.have.nested.include({ '$sort.lastname': -1 });
+		expect(sortAggregation).to.have.nested.include({
+			'$sort.consentSortParam': 1,
+		});
+		expect(sortAggregation).to.have.nested.include({
+			'$sort.lastname': -1,
+		});
 
-		expect(selectAggregation).to.have.nested.include({ '$project.firstname': 1 });
+		expect(selectAggregation).to.have.nested.include({
+			'$project.firstname': 1,
+		});
 	});
 });

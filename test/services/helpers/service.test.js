@@ -17,18 +17,23 @@ const isMailbodyValid = ({
 	attachments,
 }) => {
 	// file content must be base64 encoded ant therefore of type string
-	const attachmentsAreValid = attachments
-		.every((attachment) => Boolean(typeof attachment.filename === 'string'
-			&& typeof attachment.content === 'string'));
-	const hasRequiredAttributes = Boolean(platform && platformId && to && subject && (text || html));
+	const attachmentsAreValid = attachments.every((attachment) =>
+		Boolean(
+			typeof attachment.filename === 'string' &&
+				typeof attachment.content === 'string',
+		),
+	);
+	const hasRequiredAttributes = Boolean(
+		platform && platformId && to && subject && (text || html),
+	);
 	return Boolean(hasRequiredAttributes && attachmentsAreValid);
 };
 
-const getNotificationMock = (expectedData = {}) => new Promise((resolve) => {
-	nock(config.services.notification)
-		.post('/mails')
-		.reply(200,
-			(uri, requestBody) => {
+const getNotificationMock = (expectedData = {}) =>
+	new Promise((resolve) => {
+		nock(config.services.notification)
+			.post('/mails')
+			.reply(200, (uri, requestBody) => {
 				Object.entries(expectedData).forEach(([key, value]) => {
 					expect(requestBody[key]).to.eql(value);
 				});
@@ -36,7 +41,7 @@ const getNotificationMock = (expectedData = {}) => new Promise((resolve) => {
 				resolve(true);
 				return 'Message queued';
 			});
-});
+	});
 
 describe('Mail Service', () => {
 	const mailService = app.service('/mails');
@@ -71,7 +76,8 @@ describe('Mail Service', () => {
 				attachments: [
 					{
 						filename: 'test.gif',
-						content: 'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+						content:
+							'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
 					},
 				],
 			});
@@ -82,7 +88,10 @@ describe('Mail Service', () => {
 				attachments: [
 					{
 						filename: 'test.gif',
-						content: Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64'),
+						content: Buffer.from(
+							'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+							'base64',
+						),
 					},
 				],
 			});

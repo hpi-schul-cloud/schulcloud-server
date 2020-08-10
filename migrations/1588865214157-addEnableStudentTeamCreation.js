@@ -16,7 +16,10 @@ module.exports = {
 			info(`Migrating ${school.name} (${school._id})...`);
 			if (school.features.includes(disableStudentTeamCreation)) {
 				school.enableStudentTeamCreation = false;
-				school.features.splice(school.features.indexOf(disableStudentTeamCreation), 1);
+				school.features.splice(
+					school.features.indexOf(disableStudentTeamCreation),
+					1,
+				);
 				result.push(school.save());
 			}
 		}
@@ -26,8 +29,9 @@ module.exports = {
 	},
 
 	down: async function down() {
-		warning(`Can not rollback data. '${disableStudentTeamCreation}' is not available in school features anymore`);
+		warning(
+			`Can not rollback data. '${disableStudentTeamCreation}' is not available in school features anymore`,
+		);
 		throw new Error('down is not supported for this migration');
 	},
-
 };

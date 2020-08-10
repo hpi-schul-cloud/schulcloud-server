@@ -3,7 +3,11 @@ const service = require('feathers-mongoose');
 const lessonModel = require('./model');
 const hooks = require('./hooks/index');
 const copyHooks = require('./hooks/copy');
-const { LessonCopyService, LessonFilesService, AddMaterialService } = require('./services');
+const {
+	LessonCopyService,
+	LessonFilesService,
+	AddMaterialService,
+} = require('./services');
 
 module.exports = function setup() {
 	const app = this;
@@ -26,12 +30,25 @@ module.exports = function setup() {
 	// Return all lesson.contets which have component = query.type And User = query.user or null
 	app.use('/lessons/contents/:type/', {
 		find(params) {
-			return lessonModel.aggregate([
-				{ $unwind: '$contents' },
-				{ $match: { 'contents.component': params.query.type } },
-				{ $match: { 'contents.user_id': { $in: [params.query.user, null] } } },
-				{ $project: { _id: '$contents._id', content: '$contents.content' } },
-			]).exec();
+			return lessonModel
+				.aggregate([
+					{ $unwind: '$contents' },
+					{ $match: { 'contents.component': params.query.type } },
+					{
+						$match: {
+							'contents.user_id': {
+								$in: [params.query.user, null],
+							},
+						},
+					},
+					{
+						$project: {
+							_id: '$contents._id',
+							content: '$contents.content',
+						},
+					},
+				])
+				.exec();
 		},
 	});
 

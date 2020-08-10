@@ -1,8 +1,11 @@
 const { authenticate } = require('@feathersjs/authentication');
 const {
-	Forbidden, GeneralError, BadRequest, Conflict,
+	Forbidden,
+	GeneralError,
+	BadRequest,
+	Conflict,
 } = require('@feathersjs/errors');
-const {	iff, isProvider } = require('feathers-hooks-common');
+const { iff, isProvider } = require('feathers-hooks-common');
 
 const globalHooks = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
@@ -43,7 +46,6 @@ const filterRequestedSubmissions = async (context) => {
 
 	permissionQuery = { $or: [permissionQuery, andTeamMebersQuery] };
 
-
 	// user is in course group of the submission and the homework is not private
 	try {
 		const courseGroupService = context.app.service('/courseGroups');
@@ -63,7 +65,9 @@ const filterRequestedSubmissions = async (context) => {
 				],
 			},
 		});
-		const nonPrivateHomeworkIds = nonPrivateHomeworks.data.map((h) => h._id);
+		const nonPrivateHomeworkIds = nonPrivateHomeworks.data.map(
+			(h) => h._id,
+		);
 
 		const andQueryCondition = {
 			$and: [
@@ -74,7 +78,9 @@ const filterRequestedSubmissions = async (context) => {
 
 		permissionQuery = { $or: [permissionQuery, andQueryCondition] };
 	} catch (err) {
-		return Promise.reject(new GeneralError({ message: "can't reach course group service" }));
+		return Promise.reject(
+			new GeneralError({ message: "can't reach course group service" }),
+		);
 	}
 
 	const courseService = context.app.service('/courses');
@@ -96,9 +102,16 @@ const filterRequestedSubmissions = async (context) => {
 			},
 		});
 		const accessibleHomeworkIds = accessibleHomework.data.map((h) => h._id);
-		permissionQuery = { $or: [permissionQuery, { homeworkId: { $in: accessibleHomeworkIds } }] };
+		permissionQuery = {
+			$or: [
+				permissionQuery,
+				{ homeworkId: { $in: accessibleHomeworkIds } },
+			],
+		};
 	} catch (err) {
-		return Promise.reject(new GeneralError({ message: "can't reach course service" }));
+		return Promise.reject(
+			new GeneralError({ message: "can't reach course service" }),
+		);
 	}
 
 	// user is responsible for this homework
@@ -121,9 +134,16 @@ const filterRequestedSubmissions = async (context) => {
 			},
 		});
 		const accessibleHomeworkIds = accessibleHomework.data.map((h) => h._id);
-		permissionQuery = { $or: [permissionQuery, { homeworkId: { $in: accessibleHomeworkIds } }] };
+		permissionQuery = {
+			$or: [
+				permissionQuery,
+				{ homeworkId: { $in: accessibleHomeworkIds } },
+			],
+		};
 	} catch (err) {
-		return Promise.reject(new GeneralError({ message: "can't reach course service" }));
+		return Promise.reject(
+			new GeneralError({ message: "can't reach course service" }),
+		);
 	}
 
 	// move populates and limit from original query to new query root
@@ -152,7 +172,10 @@ const insertSubmissionData = (context) => {
 	const submissionId = context.id || context.data.submissionId;
 	if (submissionId) {
 		const submissionService = context.app.service('/submissions');
-		return submissionService.get(submissionId, { account: { userId: context.params.account.userId } })
+		return submissionService
+			.get(submissionId, {
+				account: { userId: context.params.account.userId },
+			})
 			.then((submission) => {
 				context.data = {
 					...context.data,
@@ -161,18 +184,30 @@ const insertSubmissionData = (context) => {
 				context.data = JSON.parse(JSON.stringify(context.data));
 				context.data.isTeamMember = false;
 				context.data.isOwner = false;
-				if (context.data.submission.studentId === context.params.account.userId) {
+				if (
+					context.data.submission.studentId ===
+					context.params.account.userId
+				) {
 					context.data.isOwner = true;
 					context.data.isTeamMember = true;
 				}
 
-				if ((context.data.submission.teamMembers || []).includes(context.params.account.userId)) {
+				if (
+					(context.data.submission.teamMembers || []).includes(
+						context.params.account.userId,
+					)
+				) {
 					context.data.isTeamMember = true;
 				}
 
-				if (context.data.submission.courseGroupId || context.data.courseGroupId) {
+				if (
+					context.data.submission.courseGroupId ||
+					context.data.courseGroupId
+				) {
 					context.data.isTeamMember = true;
-					(context.data.submission.teamMembers || []).push(context.params.account.userId);
+					(context.data.submission.teamMembers || []).push(
+						context.params.account.userId,
+					);
 				}
 
 				return Promise.resolve(context);
@@ -181,90 +216,126 @@ const insertSubmissionData = (context) => {
 				if (err.code === 403) {
 					return Promise.reject(err);
 				}
-				return Promise.reject(new GeneralError({ message: "can't reach submission service" }));
+				return Promise.reject(
+					new GeneralError({
+						message: "can't reach submission service",
+					}),
+				);
 			});
 	}
 	return Promise.resolve(context);
 };
 
 const insertHomeworkData = (context) => {
-	const homeworkId = context.data.homeworkId || (context.data.submission || {}).homeworkId;
+	const homeworkId =
+		context.data.homeworkId || (context.data.submission || {}).homeworkId;
 	if (homeworkId) {
 		const userId = context.params.account.userId.toString();
 		const homeworkService = context.app.service('/homework');
-		return homeworkService.get(homeworkId, {
-			account: { userId },
-			query: {
-				$populate: ['courseId'],
-			},
-		})
+		return homeworkService
+			.get(homeworkId, {
+				account: { userId },
+				query: {
+					$populate: ['courseId'],
+				},
+			})
 			.then((homework) => {
 				context.data.homework = homework;
 				// isTeacher?
 				context.data.isTeacher = false;
-				if ((equalIds(context.data.homework.teacherId, userId))
-					|| (context.data.homework.courseId.teacherIds || [])
-						.some((teacherId) => equalIds(teacherId, userId))
-					|| (context.data.homework.courseId.substitutionIds || [])
-						.some((subsId) => equalIds(subsId, userId))
+				if (
+					equalIds(context.data.homework.teacherId, userId) ||
+					(
+						context.data.homework.courseId.teacherIds || []
+					).some((teacherId) => equalIds(teacherId, userId)) ||
+					(
+						context.data.homework.courseId.substitutionIds || []
+					).some((subsId) => equalIds(subsId, userId))
 				) {
 					context.data.isTeacher = true;
 				}
 				return Promise.resolve(context);
 			})
-			.catch(() => Promise.reject(new GeneralError({ message: "can't reach homework service" })));
+			.catch(() =>
+				Promise.reject(
+					new GeneralError({
+						message: "can't reach homework service",
+					}),
+				),
+			);
 	}
 	return Promise.reject(new BadRequest());
 };
 
 const insertSubmissionsData = (context) => {
-// get all the submissions for the homework
+	// get all the submissions for the homework
 	const submissionService = context.app.service('/submissions');
-	return submissionService.find({
-		query: {
-			homeworkId: context.data.homeworkId,
-			$select: ['teamMembers'],
-			$populate: [{ path: 'studentId', select: ['_id'] }],
-		},
-	}).then((submissions) => {
-		context.data.submissions = submissions.data;
-		return Promise.resolve(context);
-	})
-		.catch(() => Promise.reject(new GeneralError({ message: "can't reach submission service" })));
+	return submissionService
+		.find({
+			query: {
+				homeworkId: context.data.homeworkId,
+				$select: ['teamMembers'],
+				$populate: [{ path: 'studentId', select: ['_id'] }],
+			},
+		})
+		.then((submissions) => {
+			context.data.submissions = submissions.data;
+			return Promise.resolve(context);
+		})
+		.catch(() =>
+			Promise.reject(
+				new GeneralError({ message: "can't reach submission service" }),
+			),
+		);
 };
 
 const preventNoTeamMember = (context) => {
 	if (!(context.data.submission || {}).teamMembers) {
 		context.data.teamMembers = [context.params.account.userId];
 	}
-	if (context.method == 'update' && (!context.data.teamMembers || context.data.teamMembers.length == 0)) {
-		return Promise.reject(new Conflict({
-			message: 'Abgaben ohne TeamMember sind nicht erlaubt!',
-		}));
+	if (
+		context.method == 'update' &&
+		(!context.data.teamMembers || context.data.teamMembers.length == 0)
+	) {
+		return Promise.reject(
+			new Conflict({
+				message: 'Abgaben ohne TeamMember sind nicht erlaubt!',
+			}),
+		);
 	}
 	return Promise.resolve(context);
 };
 
 const setTeamMembers = (context) => {
-	if (!context.data.teamMembers) { // if student (no grading) is going to submit without teamMembers set
+	if (!context.data.teamMembers) {
+		// if student (no grading) is going to submit without teamMembers set
 		context.data.teamMembers = [context.params.account.userId];
 	}
 	if (!context.data.teamMembers.includes(context.params.account.userId)) {
-		return Promise.reject(new Conflict({
-			message: 'Du kannst nicht ausschließlich für andere Abgeben. Füge dich selbst zur Abgabe hinzu!',
-		}));
+		return Promise.reject(
+			new Conflict({
+				message:
+					'Du kannst nicht ausschließlich für andere Abgeben. Füge dich selbst zur Abgabe hinzu!',
+			}),
+		);
 	}
 };
 
 const noSubmissionBefore = (context) => {
-// check that no one has already submitted for the current User
-	const submissionsForMe = context.data.submissions.filter((submission) => // is there an submission for the current user?
-		(submission.teamMembers.includes(context.params.account.userId))
-		|| ((submission.studentId || {})._id == context.params.account.userId));
+	// check that no one has already submitted for the current User
+	const submissionsForMe = context.data.submissions.filter(
+		(
+			submission, // is there an submission for the current user?
+		) =>
+			submission.teamMembers.includes(context.params.account.userId) ||
+			(submission.studentId || {})._id == context.params.account.userId,
+	);
 	if (submissionsForMe.length > 0) {
-		return Promise.reject(new Conflict({
-			message: 'Die Aufgabe wurde bereits abgegeben!',
-		}));
+		return Promise.reject(
+			new Conflict({
+				message: 'Die Aufgabe wurde bereits abgegeben!',
+			}),
+		);
 	}
 	return Promise.resolve(context);
 };
@@ -274,26 +345,46 @@ const noDuplicateSubmissionForTeamMembers = (context) => {
 		// check if a teamMember submitted a solution on his own => display names
 		let newTeamMembers = context.data.teamMembers;
 		if (context.data.submission) {
-			newTeamMembers = newTeamMembers.filter((teamMember) => !context.data.submission.teamMembers.includes(teamMember.toString()));
+			newTeamMembers = newTeamMembers.filter(
+				(teamMember) =>
+					!context.data.submission.teamMembers.includes(
+						teamMember.toString(),
+					),
+			);
 		}
 
-		const submissionsForTeamMembers = context.data.submissions.filter((submission) => {
-			for (let i = 0; i < newTeamMembers.length; i += 1) {
-				const teamMember = newTeamMembers[i].toString();
-				if (submission.teamMembers.includes(teamMember)
-						|| (((submission.studentId || {})._id || {}).toString() == teamMember)
-				) {
-					return true;
+		const submissionsForTeamMembers = context.data.submissions.filter(
+			(submission) => {
+				for (let i = 0; i < newTeamMembers.length; i += 1) {
+					const teamMember = newTeamMembers[i].toString();
+					if (
+						submission.teamMembers.includes(teamMember) ||
+						((submission.studentId || {})._id || {}).toString() ==
+							teamMember
+					) {
+						return true;
+					}
 				}
-			}
-			return false;
-		});
+				return false;
+			},
+		);
 		if (submissionsForTeamMembers.length > 0) {
-			return Promise.reject(new Conflict({
-				message: `${submissionsForTeamMembers.length + ((submissionsForTeamMembers.length === 1)
-					? ' Mitglied hat' : ' Mitglieder haben')} bereits eine Lösung abgegeben!`
-					+ ` Entferne diese ${(submissionsForTeamMembers.length === 1) ? 's Mitglied!' : ' Mitglieder!'}`,
-			}));
+			return Promise.reject(
+				new Conflict({
+					message:
+						`${
+							submissionsForTeamMembers.length +
+							(submissionsForTeamMembers.length === 1
+								? ' Mitglied hat'
+								: ' Mitglieder haben')
+						} bereits eine Lösung abgegeben!` +
+						` Entferne diese ${
+							submissionsForTeamMembers.length === 1
+								? 's Mitglied!'
+								: ' Mitglieder!'
+						}`,
+				}),
+			);
 		}
 		return Promise.resolve(context);
 	}
@@ -304,58 +395,82 @@ const populateCourseGroup = (context) => {
 		return Promise.resolve(context);
 	}
 
-	return context.app.service('/courseGroups/').get(context.data.courseGroupId).then((courseGroup) => {
-		context.courseGroupTemp = courseGroup;
-		return Promise.resolve(context);
-	});
+	return context.app
+		.service('/courseGroups/')
+		.get(context.data.courseGroupId)
+		.then((courseGroup) => {
+			context.courseGroupTemp = courseGroup;
+			return Promise.resolve(context);
+		});
 };
 
 const maxTeamMembers = (context) => {
 	if (!context.data.isTeacher && context.data.homework.teamSubmissions) {
 		if (context.data.homework.maxTeamMembers) {
 			// NOTE the following conditional is a bit hard to understand. To prevent side effects, I added a pre-conditional above.
-			if ((context.data.homework.maxTeamMembers || 0) >= 1
-				&& ((context.data.teamMembers || []).length > context.data.homework.maxTeamMembers)
-				|| (context.courseGroupTemp && (context.courseGroupTemp.userIds || []).length > context.data.homework.maxTeamMembers)) {
-				return Promise.reject(new Conflict({
-					message: `Dein Team ist größer als erlaubt! ( maximal ${context.data.homework.maxTeamMembers} Teammitglieder erlaubt)`,
-				}));
+			if (
+				((context.data.homework.maxTeamMembers || 0) >= 1 &&
+					(context.data.teamMembers || []).length >
+						context.data.homework.maxTeamMembers) ||
+				(context.courseGroupTemp &&
+					(context.courseGroupTemp.userIds || []).length >
+						context.data.homework.maxTeamMembers)
+			) {
+				return Promise.reject(
+					new Conflict({
+						message: `Dein Team ist größer als erlaubt! ( maximal ${context.data.homework.maxTeamMembers} Teammitglieder erlaubt)`,
+					}),
+				);
 			}
 		}
 	} else if ((context.data.teamMembers || []).length > 1) {
-		return Promise.reject(new Conflict({
-			message: 'Teamabgaben sind nicht erlaubt!',
-		}));
+		return Promise.reject(
+			new Conflict({
+				message: 'Teamabgaben sind nicht erlaubt!',
+			}),
+		);
 	}
 	return Promise.resolve(context);
 };
 
 const canRemoveOwner = (context) => {
-	if (context.data.teamMembers
-&& !context.data.teamMembers.includes(context.data.submission.studentId)
-&& !context.data.courseGroupId) {
+	if (
+		context.data.teamMembers &&
+		!context.data.teamMembers.includes(context.data.submission.studentId) &&
+		!context.data.courseGroupId
+	) {
 		if (context.data.isOwner) {
-			return Promise.reject(new Conflict({
-				message: 'Du hast diese Abgabe erstellt. Du darfst dich nicht selbst von dieser löschen!',
-			}));
+			return Promise.reject(
+				new Conflict({
+					message:
+						'Du hast diese Abgabe erstellt. Du darfst dich nicht selbst von dieser löschen!',
+				}),
+			);
 		}
-		return Promise.reject(new Conflict({
-			message: 'Du darfst den Ersteller nicht von der Abgabe löschen!',
-		}));
+		return Promise.reject(
+			new Conflict({
+				message:
+					'Du darfst den Ersteller nicht von der Abgabe löschen!',
+			}),
+		);
 	}
 	return Promise.resolve(context);
 };
 
 const canGrade = (context) => {
-	if (!context.data.isTeacher
-&& (Number.isInteger(context.data.grade) || typeof context.data.gradeComment === 'string')) { // students try to grade? BLOCK!
+	if (
+		!context.data.isTeacher &&
+		(Number.isInteger(context.data.grade) ||
+			typeof context.data.gradeComment === 'string')
+	) {
+		// students try to grade? BLOCK!
 		return Promise.reject(new Forbidden());
 	}
 	return Promise.resolve(context);
 };
 
 const hasEditPermission = (context) => {
-// may check that the teacher can't edit the submission itself (only grading allowed)
+	// may check that the teacher can't edit the submission itself (only grading allowed)
 	if (context.data.isTeamMember || context.data.isTeacher) {
 		return Promise.resolve(context);
 	}
@@ -377,7 +492,9 @@ const hasViewPermission = async (context, submission, currentUserId) => {
 	}
 
 	// user is team member (should only be available if team work for this homework is enabled)
-	const teamMemberIds = submission.teamMembers ? submission.teamMembers.map((m) => m.toString()) : [];
+	const teamMemberIds = submission.teamMembers
+		? submission.teamMembers.map((m) => m.toString())
+		: [];
 	if (teamMemberIds.includes(currentUserId)) {
 		return submission;
 	}
@@ -394,16 +511,24 @@ const hasViewPermission = async (context, submission, currentUserId) => {
 			const courseService = context.app.service('/courses');
 			const course = await courseService.get(homework.courseId);
 			const teacherIds = course.teacherIds.map((t) => t.toString());
-			const substitutionIds = (course.substitutionIds || []).map((s) => s.toString());
+			const substitutionIds = (course.substitutionIds || []).map((s) =>
+				s.toString(),
+			);
 
 			// user is course or substitution teacher
-			if (teacherIds.includes(currentUserId) || substitutionIds.includes(currentUserId)) {
+			if (
+				teacherIds.includes(currentUserId) ||
+				substitutionIds.includes(currentUserId)
+			) {
 				return submission;
 			}
 
 			// user is course student and submissions are public
 			const courseStudentIds = course.userIds.map((u) => u.toString());
-			if (courseStudentIds.includes(currentUserId) && homework.publicSubmissions) {
+			if (
+				courseStudentIds.includes(currentUserId) &&
+				homework.publicSubmissions
+			) {
 				return submission;
 			}
 		}
@@ -411,14 +536,20 @@ const hasViewPermission = async (context, submission, currentUserId) => {
 		// user is part of a courseGroup
 		if (submission.courseGroupId) {
 			const courseGroupService = context.app.service('/courseGroups');
-			const courseGroup = await courseGroupService.get(submission.courseGroupId);
-			const courseGroupStudents = courseGroup.userIds.map((u) => u.toString());
+			const courseGroup = await courseGroupService.get(
+				submission.courseGroupId,
+			);
+			const courseGroupStudents = courseGroup.userIds.map((u) =>
+				u.toString(),
+			);
 			if (courseGroupStudents.includes(currentUserId)) {
 				return submission;
 			}
 		}
 	} catch (err) {
-		return Promise.reject(new GeneralError({ message: "can't reach homework service" }));
+		return Promise.reject(
+			new GeneralError({ message: "can't reach homework service" }),
+		);
 	}
 
 	// user is someone else and not authorized
@@ -428,7 +559,11 @@ const hasViewPermission = async (context, submission, currentUserId) => {
 const checkGetSubmissionViewPermission = async (context) => {
 	const currentUserId = context.params.account.userId;
 
-	const hasViewPermissionResult = await hasViewPermission(context, context.result, currentUserId);
+	const hasViewPermissionResult = await hasViewPermission(
+		context,
+		context.result,
+		currentUserId,
+	);
 	if (hasViewPermissionResult) {
 		return context;
 	}
@@ -444,12 +579,11 @@ exports.before = () => ({
 		iff(isProvider('external'), filterRequestedSubmissions),
 		globalHooks.mapPaginationQuery.bind(this),
 	],
-	get: [
-		globalHooks.hasPermission('SUBMISSIONS_VIEW'),
-	],
+	get: [globalHooks.hasPermission('SUBMISSIONS_VIEW')],
 	create: [
 		globalHooks.hasPermission('SUBMISSIONS_CREATE'),
-		insertHomeworkData, insertSubmissionsData,
+		insertHomeworkData,
+		insertSubmissionsData,
 		setTeamMembers,
 		noSubmissionBefore,
 		noDuplicateSubmissionForTeamMembers,
@@ -468,7 +602,8 @@ exports.before = () => ({
 		noDuplicateSubmissionForTeamMembers,
 		populateCourseGroup,
 		maxTeamMembers,
-		canGrade],
+		canGrade,
+	],
 	patch: [
 		globalHooks.hasPermission('SUBMISSIONS_EDIT'),
 		insertSubmissionData,

@@ -15,7 +15,6 @@ describe('handleAutoLogout hook', function test() {
 	let server;
 	let testObjects;
 
-
 	before(async () => {
 		configBefore = Configuration.toObject(); // deep copy current config
 		Configuration.set('REDIS_URI', '//validHost:3333');
@@ -58,7 +57,9 @@ describe('handleAutoLogout hook', function test() {
 	it('whitelisted JWT is accepted and extended', async () => {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const { redisIdentifier } = redisHelper.extractDataFromJwt(params.authentication.accessToken);
+		const { redisIdentifier } = redisHelper.extractDataFromJwt(
+			params.authentication.accessToken,
+		);
 		await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', 1000);
 		const result = await fut({ params });
 		expect(result).to.not.equal(undefined);
@@ -69,7 +70,9 @@ describe('handleAutoLogout hook', function test() {
 	it('not whitelisted JWT is rejected', async () => {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const { redisIdentifier } = redisHelper.extractDataFromJwt(params.authentication.accessToken);
+		const { redisIdentifier } = redisHelper.extractDataFromJwt(
+			params.authentication.accessToken,
+		);
 		await redisHelper.redisDelAsync(redisIdentifier);
 		try {
 			await fut({ params });
@@ -77,7 +80,9 @@ describe('handleAutoLogout hook', function test() {
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(401);
-			expect(err.message).to.equal('Session was expired due to inactivity - autologout.');
+			expect(err.message).to.equal(
+				'Session was expired due to inactivity - autologout.',
+			);
 		}
 	});
 
@@ -86,7 +91,9 @@ describe('handleAutoLogout hook', function test() {
 		Configuration.set('JWT_WHITELIST_ACCEPT_ALL', true);
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const { redisIdentifier } = redisHelper.extractDataFromJwt(params.authentication.accessToken);
+		const { redisIdentifier } = redisHelper.extractDataFromJwt(
+			params.authentication.accessToken,
+		);
 		await redisHelper.redisDelAsync(redisIdentifier);
 		const result = await fut({ params });
 		expect(result).to.have.property('params');

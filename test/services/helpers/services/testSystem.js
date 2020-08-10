@@ -1,6 +1,8 @@
 let createdSystemIds = [];
 
-const createTestSystem = (app) => async (options = { url: '', type: 'moodle' }) => {
+const createTestSystem = (app) => async (
+	options = { url: '', type: 'moodle' },
+) => {
 	const system = await app.service('systems').create(options);
 	createdSystemIds.push(system._id.toString());
 	return system;

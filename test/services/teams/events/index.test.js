@@ -29,22 +29,31 @@ describe('Test user remove events for teams.', () => {
 			expect(team.userIds).to.be.an('array').with.lengthOf(1);
 
 			const user = await testObjects.createTestUser();
-			const teamWithAddedUser = await testObjects.teams.addTeamUserToTeam(team._id.toString(), user);
+			const teamWithAddedUser = await testObjects.teams.addTeamUserToTeam(
+				team._id.toString(),
+				user,
+			);
 
 			// Test if patch user into team works.
-			expect(teamWithAddedUser.userIds).to.be.an('array').with.lengthOf(2);
+			expect(teamWithAddedUser.userIds)
+				.to.be.an('array')
+				.with.lengthOf(2);
 
 			await app.service('users').remove(user._id);
 
 			// Execute the primary test with short delay. That the async event process can finished.
 			await sleep(DELAY_TIME);
 
-			const teamWithRemovedUser = await testObjects.teams.getById(team._id.toString());
-			const found = teamWithRemovedUser.userIds.some(
-				(teamUser) => equalIds(teamUser.userId, user._id),
+			const teamWithRemovedUser = await testObjects.teams.getById(
+				team._id.toString(),
+			);
+			const found = teamWithRemovedUser.userIds.some((teamUser) =>
+				equalIds(teamUser.userId, user._id),
 			);
 			expect(found).to.equal(false);
-			expect(teamWithRemovedUser.userIds).to.be.an('array').with.lengthOf(1);
+			expect(teamWithRemovedUser.userIds)
+				.to.be.an('array')
+				.with.lengthOf(1);
 		});
 	});
 
@@ -53,7 +62,10 @@ describe('Test user remove events for teams.', () => {
 		let owner;
 
 		before(async () => {
-			({ team, user: owner } = await testObjects.createTestTeamWithOwner());
+			({
+				team,
+				user: owner,
+			} = await testObjects.createTestTeamWithOwner());
 			return Promise.resolve();
 		});
 
@@ -70,7 +82,9 @@ describe('Test user remove events for teams.', () => {
 			// Execute the primary test with short delay. That the async event process can finished.
 			await sleep(DELAY_TIME);
 
-			const notExistingTeam = await testObjects.teams.getById(team._id.toString());
+			const notExistingTeam = await testObjects.teams.getById(
+				team._id.toString(),
+			);
 			expect(notExistingTeam).to.not.be.undefined;
 		});
 	});

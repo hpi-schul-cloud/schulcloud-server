@@ -23,11 +23,21 @@ describe('rocket.chat user service', () => {
 		});
 
 		// ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID
-		mockery.registerMock('../../../config/globals', { ROCKET_CHAT_URI: rcMock.url });
+		mockery.registerMock('../../../config/globals', {
+			ROCKET_CHAT_URI: rcMock.url,
+		});
 
-		delete require.cache[require.resolve('../../../src/services/rocketChat/services/rocketChatUser.js')];
-		delete require.cache[require.resolve('../../../src/services/rocketChat/helpers.js')];
-		delete require.cache[require.resolve('../../../src/services/rocketChat/index.js')];
+		delete require.cache[
+			require.resolve(
+				'../../../src/services/rocketChat/services/rocketChatUser.js',
+			)
+		];
+		delete require.cache[
+			require.resolve('../../../src/services/rocketChat/helpers.js')
+		];
+		delete require.cache[
+			require.resolve('../../../src/services/rocketChat/index.js')
+		];
 		const rocketChat = require('../../../src/services/rocketChat');
 		app.configure(rocketChat);
 		rocketChatUserService = app.service('/rocketChat/user');
@@ -45,7 +55,10 @@ describe('rocket.chat user service', () => {
 	});
 
 	it('creates a rc user for a sc user', async () => {
-		const user = await testObjects.createTestUser({ roles: ['student'], schoolId: '0000d186816abba584714c5f' });
+		const user = await testObjects.createTestUser({
+			roles: ['student'],
+			schoolId: '0000d186816abba584714c5f',
+		});
 		const rcUser = await rocketChatUserService.get(user._id);
 		expect(rcUser.rcId).to.exist;
 		expect(rcUser.username).to.exist;
@@ -53,7 +66,10 @@ describe('rocket.chat user service', () => {
 	});
 
 	it('retrieves existing rc users instead of creating new', async () => {
-		const user = await testObjects.createTestUser({ roles: ['student'], schoolId: '0000d186816abba584714c5f' });
+		const user = await testObjects.createTestUser({
+			roles: ['student'],
+			schoolId: '0000d186816abba584714c5f',
+		});
 		const firstResult = await rocketChatUserService.get(user._id);
 		const secondResult = await rocketChatUserService.get(user._id);
 		expect(firstResult.username).to.equal(secondResult.username);
@@ -62,7 +78,10 @@ describe('rocket.chat user service', () => {
 
 	it('recovers if email is already used in rc', async () => {
 		const rcModels = require('../../../src/services/rocketChat/model');
-		const user = await testObjects.createTestUser({ roles: ['student'], schoolId: '0000d186816abba584714c5f' });
+		const user = await testObjects.createTestUser({
+			roles: ['student'],
+			schoolId: '0000d186816abba584714c5f',
+		});
 		const rcUser = await rocketChatUserService.get(user._id);
 		await rcModels.userModel.remove(rcUser._id); // break something
 		const newUser = await rocketChatUserService.get(user._id);

@@ -1,7 +1,10 @@
 /* eslint-disable no-underscore-dangle */
 const { FileModel } = require('../src/services/fileStorage/model');
 const LessonModel = require('../src/services/lesson/model');
-const { courseGroupModel, courseModel } = require('../src/services/user-group/model');
+const {
+	courseGroupModel,
+	courseModel,
+} = require('../src/services/user-group/model');
 const { connect, close } = require('../src/utils/database');
 const logger = require('../src/logger');
 const { OutputLogTemplate } = require('./helpers');
@@ -11,7 +14,8 @@ const DETAIL_LOGS = true;
 const EXECUTE_FIX = true;
 
 const isUndefined = (e) => typeof e === 'undefined';
-const isTextContent = (content) => content.component === 'text' && content.content.text;
+const isTextContent = (content) =>
+	content.component === 'text' && content.content.text;
 
 const createDataTree = (courses = []) => {
 	const map = {};
@@ -20,7 +24,10 @@ const createDataTree = (courses = []) => {
 		const { _id, teacherIds } = course;
 		const teacher = teacherIds[0];
 		if (!teacher) {
-			courseWithoutTeachers.push({ courseId: _id, error: 'no teacher exist in course' });
+			courseWithoutTeachers.push({
+				courseId: _id,
+				error: 'no teacher exist in course',
+			});
 		}
 		if (isUndefined(map[_id])) {
 			map[_id] = {
@@ -34,7 +41,9 @@ const createDataTree = (courses = []) => {
 		}
 	});
 	if (courseWithoutTeachers.length > 0) {
-		logger.warning(`It exist ${courseWithoutTeachers.length} courses without teachers, also no owner exist.`);
+		logger.warning(
+			`It exist ${courseWithoutTeachers.length} courses without teachers, also no owner exist.`,
+		);
 		if (DETAIL_LOGS) {
 			logger.warning(JSON.stringify(courseWithoutTeachers));
 		}
@@ -58,7 +67,9 @@ const addCourseGroupIds = (datatree, courseGroups) => {
 		}
 	});
 	if (courseGroupWithoutCourse.length > 0) {
-		logger.warning(`It exist ${courseGroupWithoutCourse.length} courseGroups without course.`);
+		logger.warning(
+			`It exist ${courseGroupWithoutCourse.length} courseGroups without course.`,
+		);
 		if (DETAIL_LOGS) {
 			logger.warning(JSON.stringify(courseGroupWithoutCourse));
 		}
@@ -69,9 +80,7 @@ const addCourseGroupIds = (datatree, courseGroups) => {
 const addCourseLessons = (datatree, lessons) => {
 	const courseGroupdLessons = [];
 	lessons.forEach((lesson) => {
-		const {
-			_id, contents, courseId,
-		} = lesson;
+		const { _id, contents, courseId } = lesson;
 		if (datatree[courseId]) {
 			datatree[courseId].lessons[_id] = contents;
 		} else {
@@ -84,16 +93,16 @@ const addCourseLessons = (datatree, lessons) => {
 const addCourseGroupLessons = (datatree, courseGroupdLessons) => {
 	const lessonsWithoutCourse = [];
 	courseGroupdLessons.forEach((lesson) => {
-		const {
-			_id, courseId, contents, courseGroupId,
-		} = lesson;
+		const { _id, courseId, contents, courseGroupId } = lesson;
 		let found = false;
 		Object.keys(datatree).forEach((_courseId) => {
 			if (datatree[_courseId].courseGroups.includes(courseGroupId)) {
 				if (found === false) {
 					found = true;
 				} else {
-					logger.warning(`A courseGroup lesson ${_id} is added in diffent courses, one is ${courseId}.`);
+					logger.warning(
+						`A courseGroup lesson ${_id} is added in diffent courses, one is ${courseId}.`,
+					);
 				}
 				datatree[_courseId].lessons[_id] = contents;
 			}
@@ -109,7 +118,9 @@ const addCourseGroupLessons = (datatree, courseGroupdLessons) => {
 		}
 	});
 	if (lessonsWithoutCourse.length > 0) {
-		logger.warning(`It exist ${lessonsWithoutCourse.length} lessons without course or courseGroup.`);
+		logger.warning(
+			`It exist ${lessonsWithoutCourse.length} lessons without course or courseGroup.`,
+		);
 		if (DETAIL_LOGS) {
 			logger.warning(JSON.stringify(lessonsWithoutCourse));
 		}
@@ -117,7 +128,8 @@ const addCourseGroupLessons = (datatree, courseGroupdLessons) => {
 	return datatree;
 };
 
-const filterCourseFiles = (files) => files.filter((f) => f.refOwnerModel === 'course');
+const filterCourseFiles = (files) =>
+	files.filter((f) => f.refOwnerModel === 'course');
 
 const extracFileIdsFromContents = (contents, courseId, lessonId) => {
 	let list = [];
@@ -158,9 +170,16 @@ const extractAndAddFile = (datatree) => {
 		const { lessons } = datatree[courseId];
 		Object.keys(lessons).forEach((lessonId) => {
 			const contents = lessons[lessonId];
-			const files = extracFileIdsFromContents(contents, courseId, lessonId);
+			const files = extracFileIdsFromContents(
+				contents,
+				courseId,
+				lessonId,
+			);
 			if (files.length > 0) {
-				datatree[courseId].files = [...datatree[courseId].files, ...files];
+				datatree[courseId].files = [
+					...datatree[courseId].files,
+					...files,
+				];
 			}
 		});
 	});
@@ -182,8 +201,8 @@ const detectNotExistingFiles = (datatree, files) => {
 	});
 	if (notExists.length > 0) {
 		logger.warning(
-			`They are ${notExists.length} Files that are added in lessons,`
-			+ 'but not exist as meta data in file collection with targetModel="course".',
+			`They are ${notExists.length} Files that are added in lessons,` +
+				'but not exist as meta data in file collection with targetModel="course".',
 		);
 		if (DETAIL_LOGS) {
 			logger.warning(JSON.stringify(notExists));
@@ -199,8 +218,10 @@ const removeCourseWithoutFiles = (datatree) => {
 		}
 	});
 	logger.info(
-		`From ${Object.keys(datatree).length} courses,`
-		+ `are filtered ${Object.keys(newDatatree).length} with includes files.`,
+		`From ${Object.keys(datatree).length} courses,` +
+			`are filtered ${
+				Object.keys(newDatatree).length
+			} with includes files.`,
 	);
 	return newDatatree;
 };
@@ -222,7 +243,9 @@ const addRealFilesToCourse = (datatree, files) => {
 		}
 	});
 	if (courseFilesWithoutCourse.length > 0) {
-		logger.warning(`It exist ${courseFilesWithoutCourse.length} course files without course.`);
+		logger.warning(
+			`It exist ${courseFilesWithoutCourse.length} course files without course.`,
+		);
 		if (DETAIL_LOGS) {
 			logger.warning(JSON.stringify(courseFilesWithoutCourse));
 		}
@@ -234,14 +257,23 @@ const foundMissingFiles = (datatree, collectionFiles) => {
 	const missingFiles = [];
 	const notExistingSourceFiles = [];
 	Object.keys(datatree).forEach((courseId) => {
-		const { files: filesShouldExist, realFiles: filesThatExist, teacher } = datatree[courseId];
+		const {
+			files: filesShouldExist,
+			realFiles: filesThatExist,
+			teacher,
+		} = datatree[courseId];
 
 		filesShouldExist.forEach((shouldExist) => {
 			const id = shouldExist._id;
 			if (!filesThatExist.some((f) => f._id.toString() === id)) {
-				const sourceFile = collectionFiles.filter((f) => f._id.toString() === id)[0];
+				const sourceFile = collectionFiles.filter(
+					(f) => f._id.toString() === id,
+				)[0];
 				if (sourceFile === undefined) {
-					notExistingSourceFiles.push({ shouldExist, error: 'Source file do not exist.' });
+					notExistingSourceFiles.push({
+						shouldExist,
+						error: 'Source file do not exist.',
+					});
 				} else {
 					missingFiles.push({
 						target: shouldExist,
@@ -253,7 +285,9 @@ const foundMissingFiles = (datatree, collectionFiles) => {
 		});
 	});
 	if (notExistingSourceFiles.length > 0) {
-		logger.warning(`It exist ${notExistingSourceFiles.length} file links in lessons without source files.`);
+		logger.warning(
+			`It exist ${notExistingSourceFiles.length} file links in lessons without source files.`,
+		);
 		if (DETAIL_LOGS) {
 			logger.warning(JSON.stringify(notExistingSourceFiles));
 		}
@@ -265,15 +299,13 @@ const cloneMissingFilesAndUpdateLessons = (missingFileInfos, out) => {
 	const tasks = [];
 	missingFileInfos.forEach(({ target, sourceFile: file, teacher }) => {
 		// with the condition that we have at the moment only awsS3 as strategie, it is not check for every school.
-		const {
-			content, lessonId, index, courseId: parent,
-		} = target;
+		const { content, lessonId, index, courseId: parent } = target;
 		const id = file._id;
 		if (!teacher) {
 			out.pushFail(
 				lessonId,
-				'Skip fix file. No teachers in course exist.'
-				+ `Owner can not set. {fileId:${id}, lessonId:${lessonId}}`,
+				'Skip fix file. No teachers in course exist.' +
+					`Owner can not set. {fileId:${id}, lessonId:${lessonId}}`,
 			);
 		}
 
@@ -292,7 +324,6 @@ const cloneMissingFilesAndUpdateLessons = (missingFileInfos, out) => {
 					new: `file=${_id}&name=${name}`,
 				});
 
-
 				fileChangelog.forEach((change) => {
 					content.content.text = content.content.text.replace(
 						new RegExp(change.old, 'g'),
@@ -300,18 +331,25 @@ const cloneMissingFilesAndUpdateLessons = (missingFileInfos, out) => {
 					);
 				});
 
-				return LessonModel.updateOne({
-					_id: lessonId,
-				}, {
-					$set: {
-						[`contents.${index}`]: content,
+				return LessonModel.updateOne(
+					{
+						_id: lessonId,
 					},
-				}, {
-					new: true,
-				}).lean().exec().then((lesson) => {
-					out.pushModified(lesson._id);
-					return lesson;
-				});
+					{
+						$set: {
+							[`contents.${index}`]: content,
+						},
+					},
+					{
+						new: true,
+					},
+				)
+					.lean()
+					.exec()
+					.then((lesson) => {
+						out.pushModified(lesson._id);
+						return lesson;
+					});
 			})
 			.catch((err) => {
 				const { message, code, name } = err;
@@ -327,7 +365,10 @@ module.exports = {
 		await connect();
 		const [files, lessons, courses, courseGroups] = await Promise.all([
 			FileModel.find({}).lean().exec(),
-			LessonModel.find({}).select('_id contents courseId courseGroupId').lean().exec(),
+			LessonModel.find({})
+				.select('_id contents courseId courseGroupId')
+				.lean()
+				.exec(),
 			courseModel.find({}).select('_id teacherIds').lean().exec(),
 			courseGroupModel.find({}).select('_id courseId').lean().exec(),
 		]);
@@ -344,7 +385,9 @@ module.exports = {
 		datatree = removeCourseWithoutFiles(datatree);
 		const missingFileInfos = foundMissingFiles(datatree, courseFiles);
 		if (missingFileInfos.length > 0) {
-			logger.info(`It found ${missingFileInfos.length} to start fixing with this script.`);
+			logger.info(
+				`It found ${missingFileInfos.length} to start fixing with this script.`,
+			);
 		}
 		if (EXECUTE_FIX) {
 			const out = new OutputLogTemplate({
@@ -352,7 +395,10 @@ module.exports = {
 				name: 'persist_files_by_copied_courses',
 			});
 			// do stuff to fix it
-			const tasks = cloneMissingFilesAndUpdateLessons(missingFileInfos, out);
+			const tasks = cloneMissingFilesAndUpdateLessons(
+				missingFileInfos,
+				out,
+			);
 			await Promise.all(tasks);
 			out.printResults();
 		}

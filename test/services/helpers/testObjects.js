@@ -31,35 +31,40 @@ module.exports = (app, opt = { schoolId: '0000d186816abba584714c5f' }) => {
 		users,
 	} = serviceHelpers(app, opt);
 
-	const cleanup = () => Promise.all([
-		accounts,
-		activation,
-		users,
-		consents,
-		testSystem,
-		classes,
-		courses,
-		courseGroups,
-		teams,
-		roles,
-		schools,
-		schoolGroups,
-		years,
-		datasources,
-		submissions,
-		lessons,
-		homeworks,
-		storageProviders,
-		files,
-	].reverse().map((factory) => factory.cleanup()))
-		.then((res) => {
-			logger.info('[TestObjects] cleanup data.');
-			return res;
-		})
-		.catch((err) => {
-			logger.warning('[TestObjects] Can not cleanup.', err);
-			return err;
-		});
+	const cleanup = () =>
+		Promise.all(
+			[
+				accounts,
+				activation,
+				users,
+				consents,
+				testSystem,
+				classes,
+				courses,
+				courseGroups,
+				teams,
+				roles,
+				schools,
+				schoolGroups,
+				years,
+				datasources,
+				submissions,
+				lessons,
+				homeworks,
+				storageProviders,
+				files,
+			]
+				.reverse()
+				.map((factory) => factory.cleanup()),
+		)
+			.then((res) => {
+				logger.info('[TestObjects] cleanup data.');
+				return res;
+			})
+			.catch((err) => {
+				logger.warning('[TestObjects] Can not cleanup.', err);
+				return err;
+			});
 
 	const info = () => ({
 		accounts: accounts.info,
@@ -91,7 +96,9 @@ module.exports = (app, opt = { schoolId: '0000d186816abba584714c5f' }) => {
 	const setupUser = async (userData) => {
 		try {
 			const user = await users.create(userData);
-			const requestParams = await login.generateRequestParamsFromUser(user);
+			const requestParams = await login.generateRequestParamsFromUser(
+				user,
+			);
 			const { account } = requestParams;
 
 			return {

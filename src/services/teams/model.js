@@ -14,7 +14,11 @@ const TEAM_FEATURES = {
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: { type: String, required: true },
-		schoolId: { type: Schema.Types.ObjectId, required: true, ref: 'school' },
+		schoolId: {
+			type: Schema.Types.ObjectId,
+			required: true,
+			ref: 'school',
+		},
 		userIds: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 	};
 
@@ -23,18 +27,30 @@ const getUserGroupSchema = (additional = {}) => {
 	});
 };
 
-const teamInvitedUserSchema = new Schema({
-	email: { type: String, required: true },
-	role: { type: String, required: true, enum: ['teamexpert', 'teamadministrator'] },
-}, { _id: false, timestamps: true });
+const teamInvitedUserSchema = new Schema(
+	{
+		email: { type: String, required: true },
+		role: {
+			type: String,
+			required: true,
+			enum: ['teamexpert', 'teamadministrator'],
+		},
+	},
+	{ _id: false, timestamps: true },
+);
 
-
-const teamUserSchema = new Schema({
-	userId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
-	role: { type: Schema.Types.ObjectId, ref: 'role', required: true },
-	schoolId: { type: Schema.Types.ObjectId, ref: 'school', required: true },
-}, { _id: false, timestamps: true });
-
+const teamUserSchema = new Schema(
+	{
+		userId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
+		role: { type: Schema.Types.ObjectId, ref: 'role', required: true },
+		schoolId: {
+			type: Schema.Types.ObjectId,
+			ref: 'school',
+			required: true,
+		},
+	},
+	{ _id: false, timestamps: true },
+);
 
 const teamsSchema = getUserGroupSchema({
 	schoolIds: {
@@ -53,7 +69,10 @@ const teamsSchema = getUserGroupSchema({
 
 enableAuditLog(teamsSchema);
 
-const teamInvitedUserModel = mongoose.model('_teamInvitedUserSchema', teamInvitedUserSchema);
+const teamInvitedUserModel = mongoose.model(
+	'_teamInvitedUserSchema',
+	teamInvitedUserSchema,
+);
 const teamUserModel = mongoose.model('_teamUserSchema', teamUserSchema);
 const teamsModel = mongoose.model('teams', teamsSchema);
 

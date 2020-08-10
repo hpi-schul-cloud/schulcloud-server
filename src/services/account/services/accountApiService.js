@@ -2,7 +2,9 @@ const { authenticate } = require('@feathersjs/authentication');
 const local = require('@feathersjs/authentication-local');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const {
-	hasPermission, permitGroupOperation, authenticateWhenJWTExist,
+	hasPermission,
+	permitGroupOperation,
+	authenticateWhenJWTExist,
 } = require('../../../hooks');
 const {
 	sanitizeUsername,
@@ -18,7 +20,9 @@ const {
 	filterToRelated,
 	restrictToUsersSchool,
 } = require('../hooks');
-const { modelServices: { prepareInternalParams } } = require('../../../utils');
+const {
+	modelServices: { prepareInternalParams },
+} = require('../../../utils');
 
 class Accounts {
 	constructor(options) {
@@ -26,27 +30,39 @@ class Accounts {
 	}
 
 	find(params) {
-		return this.app.service('accountModel').find(prepareInternalParams(params));
+		return this.app
+			.service('accountModel')
+			.find(prepareInternalParams(params));
 	}
 
 	get(id, params) {
-		return this.app.service('accountModel').get(id, prepareInternalParams(params));
+		return this.app
+			.service('accountModel')
+			.get(id, prepareInternalParams(params));
 	}
 
 	create(data, params) {
-		return this.app.service('accountModel').create(data, prepareInternalParams(params));
+		return this.app
+			.service('accountModel')
+			.create(data, prepareInternalParams(params));
 	}
 
 	update(id, data, params) {
-		return this.app.service('accountModel').update(id, data, prepareInternalParams(params));
+		return this.app
+			.service('accountModel')
+			.update(id, data, prepareInternalParams(params));
 	}
 
 	patch(id, data, params) {
-		return this.app.service('accountModel').patch(id, data, prepareInternalParams(params));
+		return this.app
+			.service('accountModel')
+			.patch(id, data, prepareInternalParams(params));
 	}
 
 	remove(id, params) {
-		return this.app.service('accountModel').remove(id, prepareInternalParams(params));
+		return this.app
+			.service('accountModel')
+			.remove(id, prepareInternalParams(params));
 	}
 
 	setup(app) {
@@ -76,9 +92,7 @@ const accountServiceHooks = {
 			checkUnique,
 			removePassword,
 		],
-		update: [
-			disallow('external'),
-		],
+		update: [disallow('external')],
 		patch: [
 			authenticate('jwt'),
 			sanitizeUsername,

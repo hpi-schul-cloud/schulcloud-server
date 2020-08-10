@@ -28,16 +28,25 @@ describe('authentication hooks', function test() {
 
 		delete require.cache[require.resolve('../../../../src/app')];
 		delete require.cache[require.resolve('../../../../src/utils/redis')];
-		delete require.cache[require.resolve('../../../services/helpers/testObjects')];
-		delete require.cache[require.resolve('../../../services/helpers/services/login')];
-		delete require.cache[require.resolve('../../../../src/services/authentication/hooks')];
+		delete require.cache[
+			require.resolve('../../../services/helpers/testObjects')
+		];
+		delete require.cache[
+			require.resolve('../../../services/helpers/services/login')
+		];
+		delete require.cache[
+			require.resolve('../../../../src/services/authentication/hooks')
+		];
 		/* eslint-disable global-require */
 
 		redisHelper = require('../../../../src/utils/redis');
 		app = require('../../../../src/app');
 		server = await app.listen(0);
 		testObjects = require('../../helpers/testObjects')(app);
-		({ addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/services/authentication/hooks'));
+		({
+			addJwtToWhitelist,
+			removeJwtFromWhitelist,
+		} = require('../../../../src/services/authentication/hooks'));
 		/* eslint-enable global-require */
 
 		Configuration.set('REDIS_URI', '//validHost:5555');
@@ -52,9 +61,15 @@ describe('authentication hooks', function test() {
 
 		delete require.cache[require.resolve('../../../../src/app')];
 		delete require.cache[require.resolve('../../../../src/utils/redis')];
-		delete require.cache[require.resolve('../../../services/helpers/testObjects')];
-		delete require.cache[require.resolve('../../../services/helpers/services/login')];
-		delete require.cache[require.resolve('../../../../src/services/authentication/hooks')];
+		delete require.cache[
+			require.resolve('../../../services/helpers/testObjects')
+		];
+		delete require.cache[
+			require.resolve('../../../services/helpers/services/login')
+		];
+		delete require.cache[
+			require.resolve('../../../../src/services/authentication/hooks')
+		];
 
 		Configuration.reset(configBefore);
 		await server.close();
@@ -76,7 +91,9 @@ describe('authentication hooks', function test() {
 	it('removeJwtFromWhitelist', async () => {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const { redisIdentifier } = redisHelper.extractDataFromJwt(params.authentication.accessToken);
+		const { redisIdentifier } = redisHelper.extractDataFromJwt(
+			params.authentication.accessToken,
+		);
 		await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', 7200);
 		const result = await removeJwtFromWhitelist({
 			params,

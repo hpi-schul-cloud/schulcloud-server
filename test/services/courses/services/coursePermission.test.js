@@ -4,7 +4,9 @@ const { Forbidden } = require('@feathersjs/errors');
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 
-const coursePermissionService = app.service('/courses/:scopeId/userPermissions');
+const coursePermissionService = app.service(
+	'/courses/:scopeId/userPermissions',
+);
 
 describe('CoursePermissionService', async () => {
 	let server;
@@ -18,80 +20,86 @@ describe('CoursePermissionService', async () => {
 	});
 
 	const studentPermissions = [
-		...new Set([
-			'COMMENTS_CREATE',
-			'COMMENTS_EDIT',
-			'COMMENTS_VIEW',
-			'CONTENT_NON_OER_VIEW',
-			'CONTENT_VIEW',
-			'COURSE_VIEW',
-			'COURSEGROUP_CREATE',
-			'COURSEGROUP_EDIT',
-			'FILESTORAGE_CREATE',
-			'FILESTORAGE_EDIT',
-			'FILESTORAGE_REMOVE',
-			'FILESTORAGE_VIEW',
-			'HOMEWORK_CREATE',
-			'HOMEWORK_EDIT',
-			'HOMEWORK_VIEW',
-			'JOIN_MEETING',
-			'LESSONS_VIEW',
-			'NEWS_VIEW',
-			'ROLE_VIEW',
-			'SUBMISSIONS_CREATE',
-			'SUBMISSIONS_EDIT',
-			'SUBMISSIONS_VIEW',
-			'TOOL_VIEW',
-			'USERGROUP_VIEW',
-		].sort()),
+		...new Set(
+			[
+				'COMMENTS_CREATE',
+				'COMMENTS_EDIT',
+				'COMMENTS_VIEW',
+				'CONTENT_NON_OER_VIEW',
+				'CONTENT_VIEW',
+				'COURSE_VIEW',
+				'COURSEGROUP_CREATE',
+				'COURSEGROUP_EDIT',
+				'FILESTORAGE_CREATE',
+				'FILESTORAGE_EDIT',
+				'FILESTORAGE_REMOVE',
+				'FILESTORAGE_VIEW',
+				'HOMEWORK_CREATE',
+				'HOMEWORK_EDIT',
+				'HOMEWORK_VIEW',
+				'JOIN_MEETING',
+				'LESSONS_VIEW',
+				'NEWS_VIEW',
+				'ROLE_VIEW',
+				'SUBMISSIONS_CREATE',
+				'SUBMISSIONS_EDIT',
+				'SUBMISSIONS_VIEW',
+				'TOOL_VIEW',
+				'USERGROUP_VIEW',
+			].sort(),
+		),
 	];
 
 	const teacherPermissions = [
-		...new Set([
-			'COURSE_CREATE',
-			'COURSE_EDIT',
-			'COURSE_DELETE',
-			'HOMEWORK_CREATE',
-			'HOMEWORK_EDIT',
-			'JOIN_MEETING',
-			'LESSONS_VIEW',
-			'LESSONS_CREATE',
-			'NEWS_CREATE',
-			'NEWS_EDIT',
-			'TOOL_CREATE',
-			'TOOL_EDIT',
-			'TOOL_NEW_VIEW',
-			'TOPIC_CREATE',
-			'TOPIC_EDIT',
-			'USER_CREATE',
-			'USERGROUP_CREATE',
-			'USERGROUP_EDIT',
-			'SCOPE_PERMISSIONS_VIEW',
-			'START_MEETING',
-			...studentPermissions,
-		].sort()),
+		...new Set(
+			[
+				'COURSE_CREATE',
+				'COURSE_EDIT',
+				'COURSE_DELETE',
+				'HOMEWORK_CREATE',
+				'HOMEWORK_EDIT',
+				'JOIN_MEETING',
+				'LESSONS_VIEW',
+				'LESSONS_CREATE',
+				'NEWS_CREATE',
+				'NEWS_EDIT',
+				'TOOL_CREATE',
+				'TOOL_EDIT',
+				'TOOL_NEW_VIEW',
+				'TOPIC_CREATE',
+				'TOPIC_EDIT',
+				'USER_CREATE',
+				'USERGROUP_CREATE',
+				'USERGROUP_EDIT',
+				'SCOPE_PERMISSIONS_VIEW',
+				'START_MEETING',
+				...studentPermissions,
+			].sort(),
+		),
 	];
 
 	const substitutionTeacherPermissions = [
-		...new Set([
-			'HOMEWORK_CREATE',
-			'HOMEWORK_EDIT',
-			'JOIN_MEETING',
-			'LESSONS_CREATE',
-			'NEWS_CREATE',
-			'NEWS_EDIT',
-			'TOOL_CREATE',
-			'TOOL_EDIT',
-			'TOOL_NEW_VIEW',
-			'TOPIC_CREATE',
-			'TOPIC_EDIT',
-			'USER_CREATE',
-			'USERGROUP_CREATE',
-			'USERGROUP_EDIT',
-			'SCOPE_PERMISSIONS_VIEW',
-			'START_MEETING',
-			...studentPermissions,
-		].sort()),
+		...new Set(
+			[
+				'HOMEWORK_CREATE',
+				'HOMEWORK_EDIT',
+				'JOIN_MEETING',
+				'LESSONS_CREATE',
+				'NEWS_CREATE',
+				'NEWS_EDIT',
+				'TOOL_CREATE',
+				'TOOL_EDIT',
+				'TOOL_NEW_VIEW',
+				'TOPIC_CREATE',
+				'TOPIC_EDIT',
+				'USER_CREATE',
+				'USERGROUP_CREATE',
+				'USERGROUP_EDIT',
+				'SCOPE_PERMISSIONS_VIEW',
+				'START_MEETING',
+				...studentPermissions,
+			].sort(),
+		),
 	];
 
 	let course;
@@ -162,7 +170,6 @@ describe('CoursePermissionService', async () => {
 			query: {
 				userId: userIds[1],
 			},
-
 		});
 		const currentUserPermissions = permissions[userIds[1]].sort();
 		expect(currentUserPermissions).to.have.members(studentPermissions);
@@ -177,7 +184,6 @@ describe('CoursePermissionService', async () => {
 			query: {
 				userId: teacherIds[0],
 			},
-
 		});
 		const currentTeacherPermissions = permissions[teacherIds[0]].sort();
 		expect(currentTeacherPermissions).to.have.members(teacherPermissions);
@@ -192,10 +198,13 @@ describe('CoursePermissionService', async () => {
 			query: {
 				userId: substitutionIds[0],
 			},
-
 		});
-		const currentSubstitutionTeacherPermissions = permissions[substitutionIds[0]].sort();
-		expect(currentSubstitutionTeacherPermissions).to.have.members(substitutionTeacherPermissions);
+		const currentSubstitutionTeacherPermissions = permissions[
+			substitutionIds[0]
+		].sort();
+		expect(currentSubstitutionTeacherPermissions).to.have.members(
+			substitutionTeacherPermissions,
+		);
 	});
 
 	it('request as not part of the course', async () => {
@@ -216,7 +225,9 @@ describe('CoursePermissionService', async () => {
 	});
 
 	it('rejects actions by users from other schools', async () => {
-		const otherAdmin = await testObjects.createTestUser({ schoolId: '599ec14d8e4e364ec18ff46e' });
+		const otherAdmin = await testObjects.createTestUser({
+			schoolId: '599ec14d8e4e364ec18ff46e',
+		});
 		try {
 			await coursePermissionService.find({
 				route: {

@@ -13,7 +13,9 @@ const { FileModel } = require('../../src/services/fileStorage/model.js');
 mongoose.Promise = global.Promise;
 
 const sanitizeObj = (obj) => {
-	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
+	Object.keys(obj).forEach(
+		(key) => obj[key] === undefined && delete obj[key],
+	);
 	return obj;
 };
 
@@ -57,10 +59,12 @@ const oldFileSchema = new Schema({
 	type: { type: String },
 	flatFileName: { type: String },
 	thumbnail: { type: String },
-	permissions: [{
-		userId: { type: Schema.Types.ObjectId, ref: 'user' },
-		permissions: [{ type: String, enum: permissionTypes }],
-	}],
+	permissions: [
+		{
+			userId: { type: Schema.Types.ObjectId, ref: 'user' },
+			permissions: [{ type: String, enum: permissionTypes }],
+		},
+	],
 	lockId: { type: Schema.Types.ObjectId },
 	shareToken: { type: String },
 	schoolId: { type: Schema.Types.ObjectId, ref: 'school' },
@@ -68,7 +72,6 @@ const oldFileSchema = new Schema({
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });
-
 
 const run = async () => {
 	database.connect();
@@ -80,66 +83,94 @@ const run = async () => {
 	};
 
 	// take lessons
-	let lessons = await lessonsModel.find({
-		contents: {
-			$not: { $size: 0 },
-		},
-	}, { contents: 1, _id: 1 }).exec().catch(errorHandler);
+	let lessons = await lessonsModel
+		.find(
+			{
+				contents: {
+					$not: { $size: 0 },
+				},
+			},
+			{ contents: 1, _id: 1 },
+		)
+		.exec()
+		.catch(errorHandler);
 
-	lessons = lessons
-		.filter((lesson) => lesson.contents.some((c) => c.component === 'text'));
+	lessons = lessons.filter((lesson) =>
+		lesson.contents.some((c) => c.component === 'text'),
+	);
 
 	const promises = lessons.map((lesson) => {
 		const regex = /(?:src|href)=\"(.*?\/files\/file\?(?:path|file)=(.+?\/[0-9a-z]+?\/.*?))\"/gm;
 		const { contents } = lesson;
 
-		const lessonPromises = contents
-			.map((content) => {
-				if (content.component !== 'text' || !regex.test(content.content.text)) {
-					return Promise.resolve(false);
-				}
-				console.log(`Touching lesson with ID ${lesson._id}`);
+		const lessonPromises = contents.map((content) => {
+			if (
+				content.component !== 'text' ||
+				!regex.test(content.content.text)
+			) {
+				return Promise.resolve(false);
+			}
+			console.log(`Touching lesson with ID ${lesson._id}`);
 
-				const oldKeys = content.content.text
-					.match(regex)
-					.map((str) => str.replace(regex, '$2'));
+			const oldKeys = content.content.text
+				.match(regex)
+				.map((str) => str.replace(regex, '$2'));
 
-				console.log(`Found old path keys ${oldKeys}`);
+			console.log(`Found old path keys ${oldKeys}`);
 
-				const oldPromises = oldKeys
-					.map((key) => {
-						const fn = key.split('/').pop();
-						return key.replace(fn, encodeURIComponent(fn));
-					})
-					.map((key) => oldfileModel.findOne({ key }).lean().exec().catch(errorHandler));
+			const oldPromises = oldKeys
+				.map((key) => {
+					const fn = key.split('/').pop();
+					return key.replace(fn, encodeURIComponent(fn));
+				})
+				.map((key) =>
+					oldfileModel
+						.findOne({ key })
+						.lean()
+						.exec()
+						.catch(errorHandler),
+				);
 
-				return Promise.all(oldPromises)
-					.then((oldFiles) => {
-						const newFiles = oldFiles
-							.filter((file) => file)
-							.map((file) => convertDocument(file))
-							.map((file) => FileModel.findOne(file).exec().catch(errorHandler));
+			return Promise.all(oldPromises)
+				.then((oldFiles) => {
+					const newFiles = oldFiles
+						.filter((file) => file)
+						.map((file) => convertDocument(file))
+						.map((file) =>
+							FileModel.findOne(file).exec().catch(errorHandler),
+						);
 
-						return Promise.all(newFiles);
-					})
-					.then((files) => {
-						const update = contents.map((c) => {
-							if (c.component === 'text' && regex.test(c.content.text)) {
-								const { text } = c.content;
-								c.content.text = text.replace(regex, (...[match, attribute, key]) => {
+					return Promise.all(newFiles);
+				})
+				.then((files) => {
+					const update = contents.map((c) => {
+						if (
+							c.component === 'text' &&
+							regex.test(c.content.text)
+						) {
+							const { text } = c.content;
+							c.content.text = text.replace(
+								regex,
+								(...[match, attribute, key]) => {
 									const oldKey = oldKeys.indexOf(key);
 									if (files[oldKey]) {
-										return match.replace(attribute, `/files/file?file=${files[oldKey]._id}`);
+										return match.replace(
+											attribute,
+											`/files/file?file=${files[oldKey]._id}`,
+										);
 									}
 									return match;
-								});
-							}
-							return c;
-						});
-						return lessonsModel
-							.update({ _id: lesson._id }, { contents: update }).exec().catch(errorHandler);
+								},
+							);
+						}
+						return c;
 					});
-			});
+					return lessonsModel
+						.update({ _id: lesson._id }, { contents: update })
+						.exec()
+						.catch(errorHandler);
+				});
+		});
 
 		return Promise.all(lessonPromises);
 	});

@@ -32,7 +32,10 @@ const getUserGroupSchema = (additional = {}) => {
  */
 const timeSchema = new Schema({
 	weekday: {
-		type: Number, min: 0, max: 6, required: true,
+		type: Number,
+		min: 0,
+		max: 6,
+		required: true,
 	},
 	startTime: { type: Number },
 	duration: { type: Number },
@@ -44,13 +47,20 @@ const courseSchema = getUserGroupSchema({
 	description: { type: String },
 	classIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'class' }],
 	teacherIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
-	substitutionIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
-	ltiToolIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
+	substitutionIds: [
+		{ type: Schema.Types.ObjectId, required: true, ref: 'user' },
+	],
+	ltiToolIds: [
+		{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' },
+	],
 	color: { type: String, required: true, default: '#ACACAC' },
 	startDate: { type: Date },
 	untilDate: { type: Date, index: true },
 	shareToken: {
-		type: String, unique: true, sparse: true, index: true,
+		type: String,
+		unique: true,
+		sparse: true,
+		index: true,
 	},
 	times: [timeSchema],
 	// optional information if this course is a copy from other
@@ -64,7 +74,6 @@ courseSchema.index({ teacherIds: 1 });
 courseSchema.index({ substitutionIds: 1 });
 
 courseSchema.plugin(mongooseLeanVirtuals);
-
 
 const getCourseIsArchived = (aCourse) => {
 	const oneDayInMilliseconds = 864e5;
@@ -120,7 +129,6 @@ classSchema.virtual('displayName').get(function displayName() {
 
 classSchema.set('toObject', { virtuals: true });
 classSchema.set('toJSON', { virtuals: true }); // virtuals could not call with autopopulate for toJSON
-
 
 const gradeSchema = getUserGroupSchema();
 

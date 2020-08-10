@@ -15,9 +15,7 @@ module.exports = {
 			lookupSchool,
 		],
 		find: [],
-		create: [
-			ifNotLocal(hasPermission('SCHOOL_EDIT')),
-		],
+		create: [ifNotLocal(hasPermission('SCHOOL_EDIT'))],
 		update: [disallow()],
 		get: [disallow()],
 		patch: [disallow()],

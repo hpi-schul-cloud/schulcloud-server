@@ -12,7 +12,11 @@ exports.before = {
 	all: [authenticate('jwt'), globalHooks.hasPermission('COURSE_CREATE')],
 	find: [hooks.disallow()],
 	get: [hooks.disallow()],
-	create: [globalHooks.injectUserId, injectCourseId, globalHooks.ifNotLocal(globalHooks.checkCorrectCourseOrTeamId)],
+	create: [
+		globalHooks.injectUserId,
+		injectCourseId,
+		globalHooks.ifNotLocal(globalHooks.checkCorrectCourseOrTeamId),
+	],
 	update: [hooks.disallow()],
 	patch: [hooks.disallow()],
 	remove: [hooks.disallow()],

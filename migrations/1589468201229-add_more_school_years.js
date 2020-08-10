@@ -14,17 +14,21 @@ const yearSchema = new mongoose.Schema({
 
 const YearModel = mongoose.model('year3244382362348795', yearSchema, 'years');
 
-const createYear = (year) => new YearModel({
-	name: year,
-	startDate: yearLogic.getDefaultStartDate(year),
-	endDate: yearLogic.getDefaultEndDate(year),
-});
+const createYear = (year) =>
+	new YearModel({
+		name: year,
+		startDate: yearLogic.getDefaultStartDate(year),
+		endDate: yearLogic.getDefaultEndDate(year),
+	});
 
 module.exports = {
 	up: async function up() {
 		await connect();
 		const chain = [];
-		const existingYears = await YearModel.find().where('name').in(YEARS_TO_ADD).exec();
+		const existingYears = await YearModel.find()
+			.where('name')
+			.in(YEARS_TO_ADD)
+			.exec();
 		if (existingYears.length > 0) {
 			warning(`some year already has been created: ${existingYears}`);
 		} else {
@@ -51,5 +55,4 @@ module.exports = {
 		});
 		await close();
 	},
-
 };

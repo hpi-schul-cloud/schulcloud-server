@@ -4,7 +4,6 @@ const { info, error } = require('../src/logger');
 const { connect, close } = require('../src/utils/database');
 const federalStateModel = require('../src/services/federalState/model');
 
-
 // TODO npm run migration-persist and remove this line
 // TODO update seed data and remove this line
 
@@ -19,7 +18,8 @@ module.exports = {
 		await federalStateModel.create({
 			name: 'Internationale Schule',
 			abbreviation: 'IN',
-			logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/7/71/Earth_icon_2.png',
+			logoUrl:
+				'https://upload.wikimedia.org/wikipedia/commons/7/71/Earth_icon_2.png',
 		});
 		// ////////////////////////////////////////////////////
 		await close();

@@ -11,15 +11,11 @@ const { expect } = chai;
 
 chai.use(chaiHttp);
 
-function request({
-	server,
-	method = 'get',
-	endpoint,
-	data,
-	accessToken,
-}) {
-	return new Promise((resolve, reject) => (
-		chai.request(server)[method](endpoint)
+function request({ server, method = 'get', endpoint, data, accessToken }) {
+	return new Promise((resolve, reject) =>
+		chai
+			.request(server)
+			[method](endpoint)
 			.set({
 				Accept: 'application/json',
 				Authorization: accessToken,
@@ -32,8 +28,8 @@ function request({
 					return;
 				}
 				resolve(res);
-			})
-	));
+			}),
+	);
 }
 
 describe('Etherpad Permission Check: Students', () => {
@@ -60,7 +56,11 @@ describe('Etherpad Permission Check: Students', () => {
 			server = app.listen(0);
 			testHelpers = testObjects(app);
 
-			const mock = MockServer(mockUrl, Configuration.get('ETHERPAD_API_PATH'), done);
+			const mock = MockServer(
+				mockUrl,
+				Configuration.get('ETHERPAD_API_PATH'),
+				done,
+			);
 			mockServer = mock.server;
 		});
 	});
@@ -75,7 +75,9 @@ describe('Etherpad Permission Check: Students', () => {
 
 	it('should be able to create session for own course', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['student'] });
 		const jwt = decode(accessToken);
 		const course = await testHelpers.createTestCourse({
@@ -97,7 +99,9 @@ describe('Etherpad Permission Check: Students', () => {
 
 	it('should not be able to create session for foreign course', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['student'] });
 
 		const { body } = await request({
@@ -113,7 +117,9 @@ describe('Etherpad Permission Check: Students', () => {
 
 	it('should not be able to create a pad', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['student'] });
 
 		const data = {

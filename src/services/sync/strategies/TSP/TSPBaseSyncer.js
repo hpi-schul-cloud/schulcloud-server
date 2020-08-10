@@ -1,6 +1,9 @@
 const Syncer = require('../Syncer');
 const {
-	TspApi, config: TSP_CONFIG, ENTITY_SOURCE, findSchool,
+	TspApi,
+	config: TSP_CONFIG,
+	ENTITY_SOURCE,
+	findSchool,
 } = require('./TSP');
 const SchoolYearFacade = require('../../../school/logic/year');
 
@@ -29,7 +32,8 @@ class TSPBaseSyncer extends Syncer {
 	 */
 	static params(params, data) {
 		// todo: filter
-		const config = ((params || {}).query || {}).config || (data || {}).config;
+		const config =
+			((params || {}).query || {}).config || (data || {}).config;
 		return [config];
 	}
 
@@ -63,22 +67,29 @@ class TSPBaseSyncer extends Syncer {
 
 		// Create/update all schools from the API and create/update a school-specific data source
 		const schools = await this.getSchools();
-		const tasks = schools.map(async ({ schuleNummer: identifier, schuleName: name }) => {
-			try {
-				const school = await this.createOrUpdateSchool(identifier, name);
-				await this.ensureDatasourceExists(school);
-				this.stats.schools.successful += 1;
-			} catch (err) {
-				this.logError(`Encountered an error while creating or updating '${name}' (${identifier}):`,
-					{ error: err });
-				this.stats.schools.errors += 1;
-				this.stats.errors.push({
-					type: 'sync-school',
-					entity: `'${name}' (${identifier})`,
-					message: 'Fehler bei der Synchronisierung der Schule.',
-				});
-			}
-		});
+		const tasks = schools.map(
+			async ({ schuleNummer: identifier, schuleName: name }) => {
+				try {
+					const school = await this.createOrUpdateSchool(
+						identifier,
+						name,
+					);
+					await this.ensureDatasourceExists(school);
+					this.stats.schools.successful += 1;
+				} catch (err) {
+					this.logError(
+						`Encountered an error while creating or updating '${name}' (${identifier}):`,
+						{ error: err },
+					);
+					this.stats.schools.errors += 1;
+					this.stats.errors.push({
+						type: 'sync-school',
+						entity: `'${name}' (${identifier})`,
+						message: 'Fehler bei der Synchronisierung der Schule.',
+					});
+				}
+			},
+		);
 		await Promise.all(tasks);
 		return this.stats;
 	}
@@ -118,7 +129,9 @@ class TSPBaseSyncer extends Syncer {
 		// todo: eventuell nur Änderungen seit letztem Sync?
 		let schools = [];
 		try {
-			schools = await this.api.request('/tip-ms/api/schulverwaltung_export_schule');
+			schools = await this.api.request(
+				'/tip-ms/api/schulverwaltung_export_schule',
+			);
 		} catch (err) {
 			this.logError('Cannot fetch schools.', err);
 			this.stats.errors.push({
@@ -145,7 +158,9 @@ class TSPBaseSyncer extends Syncer {
 			this.logInfo(`Updating '${name}' (${identifier})...`);
 			result = await this.updateSchool(school, name);
 		} else {
-			this.logInfo(`School not found. Creating '${name}' (${identifier})...`);
+			this.logInfo(
+				`School not found. Creating '${name}' (${identifier})...`,
+			);
 			result = await this.createSchool(identifier, name);
 		}
 		this.logInfo(`'${name}' (${identifier}) exists.`);
@@ -190,7 +205,9 @@ class TSPBaseSyncer extends Syncer {
 		if (!this.currentYear) {
 			const years = await this.app.service('years').find();
 			if (years.total === 0) {
-				throw new Error('At least one year has to exist in the database.');
+				throw new Error(
+					'At least one year has to exist in the database.',
+				);
 			}
 			this.currentYear = new SchoolYearFacade(years.data).defaultYear;
 		}
@@ -200,7 +217,9 @@ class TSPBaseSyncer extends Syncer {
 	// async getters do not exist, so this will have to do
 	async getFederalState() {
 		if (!this.federalState) {
-			const states = await this.app.service('federalStates').find({ query: { abbreviation: 'TH' } });
+			const states = await this.app
+				.service('federalStates')
+				.find({ query: { abbreviation: 'TH' } });
 			if (states.total === 0) {
 				throw new Error('The federal state does not exist.');
 			}
@@ -213,7 +232,9 @@ class TSPBaseSyncer extends Syncer {
 		const schoolName = `'${school.name}' (${school.sourceOptions.schoolIdentifier})`;
 		const existingDatasource = await this.findDatasource(school);
 		if (existingDatasource === null) {
-			this.logInfo(`There is no datasource for ${schoolName} yet. Creating it...`);
+			this.logInfo(
+				`There is no datasource for ${schoolName} yet. Creating it...`,
+			);
 			await this.createDatasource(school);
 		}
 		this.logInfo(`Datasource for ${schoolName} exists.`);

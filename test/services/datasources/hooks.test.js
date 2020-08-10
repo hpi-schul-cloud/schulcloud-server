@@ -3,7 +3,10 @@ const { expect } = require('chai');
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
 const {
-	updatedBy, createdBy, protectFields, validateParams,
+	updatedBy,
+	createdBy,
+	protectFields,
+	validateParams,
 } = require('../../../src/services/datasources/hooks');
 
 describe('datasources hooks', () => {
@@ -13,7 +16,9 @@ describe('datasources hooks', () => {
 		const fut = updatedBy;
 
 		it('adds the updatedBy field', async () => {
-			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const admin = await testObjects.createTestUser({
+				roles: ['administrator'],
+			});
 			const result = fut({
 				data: {
 					config: { type: 'csv' },
@@ -21,7 +26,9 @@ describe('datasources hooks', () => {
 				params: { account: { userId: admin._id } },
 			});
 			expect(result).to.not.be.undefined;
-			expect(result.data.updatedBy.toString()).to.equal(admin._id.toString());
+			expect(result.data.updatedBy.toString()).to.equal(
+				admin._id.toString(),
+			);
 		});
 	});
 
@@ -29,7 +36,9 @@ describe('datasources hooks', () => {
 		const fut = createdBy;
 
 		it('adds the createdBy field', async () => {
-			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const admin = await testObjects.createTestUser({
+				roles: ['administrator'],
+			});
 			const result = fut({
 				data: {
 					config: { type: 'csv' },
@@ -39,7 +48,9 @@ describe('datasources hooks', () => {
 				params: { account: { userId: admin._id } },
 			});
 			expect(result).to.not.be.undefined;
-			expect(result.data.createdBy.toString()).to.equal(admin._id.toString());
+			expect(result.data.createdBy.toString()).to.equal(
+				admin._id.toString(),
+			);
 		});
 	});
 
@@ -47,7 +58,9 @@ describe('datasources hooks', () => {
 		const fut = protectFields;
 
 		it('censures protected values', async () => {
-			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const admin = await testObjects.createTestUser({
+				roles: ['administrator'],
+			});
 			const context = await fut({
 				result: {
 					config: { type: 'csv', secret: '1234556678' },
@@ -62,11 +75,16 @@ describe('datasources hooks', () => {
 		});
 
 		it('always censures password', async () => {
-			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const admin = await testObjects.createTestUser({
+				roles: ['administrator'],
+			});
 			const context = await fut({
 				result: {
 					config: {
-						type: 'csv', password: 'password123', secret: '1234556678', public: 'lorem ipsum',
+						type: 'csv',
+						password: 'password123',
+						secret: '1234556678',
+						public: 'lorem ipsum',
 					},
 					name: `somename${Date.now()}`,
 					schoolId: admin.schoolId,
@@ -81,7 +99,9 @@ describe('datasources hooks', () => {
 		});
 
 		it('works if protected is not defined', async () => {
-			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const admin = await testObjects.createTestUser({
+				roles: ['administrator'],
+			});
 			const context = await fut({
 				result: {
 					config: { type: 'csv', public: 'lorem ipsum' },
@@ -95,7 +115,9 @@ describe('datasources hooks', () => {
 		});
 
 		it('works if config has not been returned with result', async () => {
-			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const admin = await testObjects.createTestUser({
+				roles: ['administrator'],
+			});
 			const context = await fut({
 				result: {
 					name: `somename${Date.now()}`,
@@ -108,7 +130,9 @@ describe('datasources hooks', () => {
 		});
 
 		it('works for FIND', async () => {
-			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const admin = await testObjects.createTestUser({
+				roles: ['administrator'],
+			});
 			const context = await fut({
 				result: {
 					data: [
@@ -132,7 +156,9 @@ describe('datasources hooks', () => {
 				method: 'find',
 			});
 			expect(context).to.not.be.undefined;
-			expect(context.result.data[0].config.public).to.equal('lorem ipsum');
+			expect(context.result.data[0].config.public).to.equal(
+				'lorem ipsum',
+			);
 			expect(context.result.data[1].config.secret).to.equal('<secret>');
 		});
 	});
@@ -140,7 +166,9 @@ describe('datasources hooks', () => {
 	describe('validateParams', () => {
 		const fut = validateParams;
 		it('appends protectedFields to $select when config is selected', async () => {
-			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const admin = await testObjects.createTestUser({
+				roles: ['administrator'],
+			});
 			const context = await fut({
 				params: {
 					account: { userId: admin._id },
@@ -154,7 +182,9 @@ describe('datasources hooks', () => {
 		});
 
 		it('doesnt append ProtectedFields if config is not selected', async () => {
-			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const admin = await testObjects.createTestUser({
+				roles: ['administrator'],
+			});
 			const context = await fut({
 				params: {
 					account: { userId: admin._id },
@@ -168,7 +198,9 @@ describe('datasources hooks', () => {
 		});
 
 		it('works if $select is undefined', async () => {
-			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const admin = await testObjects.createTestUser({
+				roles: ['administrator'],
+			});
 			const context = await fut({
 				params: {
 					account: { userId: admin._id },

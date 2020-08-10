@@ -11,24 +11,36 @@ describe('systemId service', () => {
 	it('FIND only shows systems of the current school', async () => {
 		const usersSystem = await testObjects.createTestSystem();
 		const otherSystem = await testObjects.createTestSystem();
-		const usersSchool = await testObjects.createTestSchool({ systems: [usersSystem._id] });
+		const usersSchool = await testObjects.createTestSchool({
+			systems: [usersSystem._id],
+		});
 		await testObjects.createTestSchool({ systems: [otherSystem._id] });
 
-		const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: [usersSchool._id] });
+		const user = await testObjects.createTestUser({
+			roles: ['administrator'],
+			schoolId: [usersSchool._id],
+		});
 		const params = await testObjects.generateRequestParamsFromUser(user);
 
 		const result = await app.service('systems').find(params);
 		expect(result.total).to.equal(1);
-		expect(result.data[0]._id.toString()).to.equal(usersSystem._id.toString());
+		expect(result.data[0]._id.toString()).to.equal(
+			usersSystem._id.toString(),
+		);
 	});
 
 	it('FIND fails without proper permissions', async () => {
 		const usersSystem = await testObjects.createTestSystem();
 		const otherSystem = await testObjects.createTestSystem();
-		const usersSchool = await testObjects.createTestSchool({ systems: [usersSystem._id] });
+		const usersSchool = await testObjects.createTestSchool({
+			systems: [usersSystem._id],
+		});
 		await testObjects.createTestSchool({ systems: [otherSystem._id] });
 
-		const user = await testObjects.createTestUser({ roles: ['student'], schoolId: [usersSchool._id] });
+		const user = await testObjects.createTestUser({
+			roles: ['student'],
+			schoolId: [usersSchool._id],
+		});
 		const params = await testObjects.generateRequestParamsFromUser(user);
 
 		try {
@@ -37,7 +49,9 @@ describe('systemId service', () => {
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(403);
-			expect(err.message).to.equal('You don\'t have one of the permissions: SYSTEM_EDIT.');
+			expect(err.message).to.equal(
+				"You don't have one of the permissions: SYSTEM_EDIT.",
+			);
 		}
 	});
 
@@ -46,7 +60,10 @@ describe('systemId service', () => {
 		const usersSchool = await testObjects.createTestSchool({});
 		await testObjects.createTestSchool({ systems: [otherSystem._id] });
 
-		const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: [usersSchool._id] });
+		const user = await testObjects.createTestUser({
+			roles: ['administrator'],
+			schoolId: [usersSchool._id],
+		});
 		const params = await testObjects.generateRequestParamsFromUser(user);
 
 		try {
@@ -55,7 +72,9 @@ describe('systemId service', () => {
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(403);
-			expect(err.message).to.equal('You are not allowed to access this system.');
+			expect(err.message).to.equal(
+				'You are not allowed to access this system.',
+			);
 		}
 	});
 });

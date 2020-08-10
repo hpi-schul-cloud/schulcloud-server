@@ -6,10 +6,7 @@ const accountModel = require('../../../../src/services/account/model.js');
 // const app = require(SRC + 'app');
 const app = require('../../../../src/app');
 
-const {
-	TEST_PW,
-	TEST_HASH,
-} = require('../../../../config/globals');
+const { TEST_PW, TEST_HASH } = require('../../../../config/globals');
 
 const AT = '@schul-cloud.org';
 
@@ -24,28 +21,39 @@ const REQUEST_PARAMS = {
 };
 
 const getToken = async ({ userId }) => {
-	const result = app.service('authentication').create({
-		strategy: 'local',
-		username: userId + AT,
-		password: TEST_PW,
-	}, REQUEST_PARAMS);
+	const result = app.service('authentication').create(
+		{
+			strategy: 'local',
+			username: userId + AT,
+			password: TEST_PW,
+		},
+		REQUEST_PARAMS,
+	);
 	return result.accessToken;
 };
 
-const getRoleByKey = (key, value) => rolesModel.find({
-	[key]: value,
-})
-	.then(([role]) => role);
+const getRoleByKey = (key, value) =>
+	rolesModel
+		.find({
+			[key]: value,
+		})
+		.then(([role]) => role);
 
-const createUser = async (userId, roleName = 'student', schoolId = '0000d186816abba584714c5f') => {
-	if (![
-		'expert',
-		'student',
-		'teacher',
-		'parent',
-		'administrator',
-		'superhero',
-	].includes(roleName)) {
+const createUser = async (
+	userId,
+	roleName = 'student',
+	schoolId = '0000d186816abba584714c5f',
+) => {
+	if (
+		![
+			'expert',
+			'student',
+			'teacher',
+			'parent',
+			'administrator',
+			'superhero',
+		].includes(roleName)
+	) {
 		throw BadRequest(`You want to test a not related role .${roleName}`);
 	}
 
@@ -57,18 +65,17 @@ const createUser = async (userId, roleName = 'student', schoolId = '0000d186816a
 		schoolId,
 		firstName: userId,
 		lastName: 'GeneratedTestUser',
-		roles: [
-			role._id,
-		],
+		roles: [role._id],
 	});
 };
 
-const createAccount = (userId) => accountModel.create({
-	username: userId + AT,
-	password: TEST_HASH,
-	userId,
-	activated: true,
-});
+const createAccount = (userId) =>
+	accountModel.create({
+		username: userId + AT,
+		password: TEST_HASH,
+		userId,
+		activated: true,
+	});
 
 const setupUser = async (roleName, schoolId) => {
 	const userId = new ObjectId();
@@ -76,12 +83,16 @@ const setupUser = async (roleName, schoolId) => {
 	const account = await createAccount(user._id);
 	const accessToken = await getToken(account);
 	return {
-		userId: user._id, account, user, accessToken,
+		userId: user._id,
+		account,
+		user,
+		accessToken,
 	};
 };
 
 const deleteUser = async (userId) => {
-	if (typeof userId === 'object' && userId.userId !== undefined) userId = userId.userId;
+	if (typeof userId === 'object' && userId.userId !== undefined)
+		userId = userId.userId;
 
 	const email = userId + AT;
 	await userModel.deleteOne({ email }); // todo: add error handling if not exist

@@ -18,11 +18,7 @@ describe('userRoles', async () => {
 		'RUN_FLOOR',
 	];
 
-	const otherPermissions = [
-		'SITTING',
-		'SITTING_ON_CHAIR',
-		'SITTING_ON_DESK',
-	];
+	const otherPermissions = ['SITTING', 'SITTING_ON_CHAIR', 'SITTING_ON_DESK'];
 
 	let testRole;
 	let testRoleWithDiffrentPermissons;
@@ -37,7 +33,8 @@ describe('userRoles', async () => {
 	let accountTestUserOther;
 
 	const commonAccountData = {
-		password: '$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJACla',
+		password:
+			'$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJACla',
 		activated: true,
 		createdAt: '2017-09-04T12:51:58.49Z',
 	};
@@ -78,8 +75,7 @@ describe('userRoles', async () => {
 				permissions: { test: { SINGING: true } },
 			});
 
-			testSchool2 = await testObjects.createTestSchool({
-			});
+			testSchool2 = await testObjects.createTestSchool({});
 
 			testUser = await testObjects.createTestUser({
 				schoolId: testSchool._id,
@@ -96,9 +92,21 @@ describe('userRoles', async () => {
 				roles: [otherRole._id],
 			});
 
-			accountTestUser = await testObjects.createTestAccount(dataTestUser1, null, testUser);
-			accountTestUser2 = await testObjects.createTestAccount(dataTestUser2, null, testUser2);
-			accountTestUserOther = await testObjects.createTestAccount(dataTestUserOther, null, otherUser);
+			accountTestUser = await testObjects.createTestAccount(
+				dataTestUser1,
+				null,
+				testUser,
+			);
+			accountTestUser2 = await testObjects.createTestAccount(
+				dataTestUser2,
+				null,
+				testUser2,
+			);
+			accountTestUserOther = await testObjects.createTestAccount(
+				dataTestUserOther,
+				null,
+				otherUser,
+			);
 
 			done();
 		});
@@ -114,19 +122,28 @@ describe('userRoles', async () => {
 	});
 
 	it('should get updated roles', async () => {
-		const roles = await userRoles.get(testUser._id, { account: accountTestUser });
+		const roles = await userRoles.get(testUser._id, {
+			account: accountTestUser,
+		});
 		const result = roles.map((role) => role.permissions);
 		expect(result[0]).to.have.members(testRole.permissions);
 	});
 
 	it('should get role with new permisson', async () => {
-		const roles = await userRoles.get(testUser2._id, { account: accountTestUser2 });
+		const roles = await userRoles.get(testUser2._id, {
+			account: accountTestUser2,
+		});
 		const result = roles.map((role) => role.permissions);
-		expect(result[0]).to.deep.equal([...testRoleWithDiffrentPermissons.permissions, testPermissions[0]]);
+		expect(result[0]).to.deep.equal([
+			...testRoleWithDiffrentPermissons.permissions,
+			testPermissions[0],
+		]);
 	});
 
 	it('should get not updated role permissions', async () => {
-		const roles = await userRoles.get(otherUser._id, { account: accountTestUserOther });
+		const roles = await userRoles.get(otherUser._id, {
+			account: accountTestUserOther,
+		});
 		const result = roles.map((role) => role.permissions);
 		expect(result[0]).to.have.members(otherRole.permissions);
 	});

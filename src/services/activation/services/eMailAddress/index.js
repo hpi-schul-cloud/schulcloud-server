@@ -88,11 +88,17 @@ class EMailAddressActivationService {
 	 * create job
 	 */
 	async create(data, params) {
-		if (!data || !data.email || !data.password) throw new BadRequest('Missing information');
+		if (!data || !data.email || !data.password)
+			throw new BadRequest('Missing information');
 		const user = await getUser(this.app, params.account.userId);
 
 		// create new entry
-		const entry = await createEntry(this, params.account.userId, E_MAIL_ADDRESS, data.email);
+		const entry = await createEntry(
+			this,
+			params.account.userId,
+			E_MAIL_ADDRESS,
+			data.email,
+		);
 
 		// send email
 		await mail(this, 'activationLinkMail', user, entry);
@@ -106,12 +112,15 @@ class EMailAddressActivationService {
 				userId: user._id,
 			},
 		});
-		if ((account || []).length !== 1) throw new Forbidden(customErrorMessages.NOT_AUTHORIZED);
+		if ((account || []).length !== 1)
+			throw new Forbidden(customErrorMessages.NOT_AUTHORIZED);
 
 		const email = entry.quarantinedObject;
 		if (!email) {
 			await deleteEntry(this, entry._id);
-			throw new GeneralError('Link incorrectly constructed and will be removed');
+			throw new GeneralError(
+				'Link incorrectly constructed and will be removed',
+			);
 		}
 
 		try {
@@ -119,7 +128,9 @@ class EMailAddressActivationService {
 
 			// update user and account
 			await this.app.service('users').patch(account[0].userId, { email });
-			await this.app.service('/accounts').patch(account[0]._id, { username: email });
+			await this.app
+				.service('/accounts')
+				.patch(account[0]._id, { username: email });
 
 			// set activation link as consumed
 			await setEntryState(this, entry._id, STATE.SUCCESS);
@@ -139,10 +150,7 @@ class EMailAddressActivationService {
 
 const EMailAddressActivationHooks = {
 	before: {
-		all: [
-			authenticate('jwt'),
-			hasPermission(['ACCOUNT_EDIT']),
-		],
+		all: [authenticate('jwt'), hasPermission(['ACCOUNT_EDIT'])],
 		find: [disallow()],
 		get: [disallow()],
 		create: [

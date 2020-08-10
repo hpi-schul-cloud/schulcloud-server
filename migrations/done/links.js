@@ -13,7 +13,9 @@ const { FileModel } = require('../../src/services/fileStorage/model.js');
 mongoose.Promise = global.Promise;
 
 const sanitizeObj = (obj) => {
-	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
+	Object.keys(obj).forEach(
+		(key) => obj[key] === undefined && delete obj[key],
+	);
 	return obj;
 };
 
@@ -57,10 +59,12 @@ const oldFileSchema = new Schema({
 	type: { type: String },
 	flatFileName: { type: String },
 	thumbnail: { type: String },
-	permissions: [{
-		userId: { type: Schema.Types.ObjectId, ref: 'user' },
-		permissions: [{ type: String, enum: permissionTypes }],
-	}],
+	permissions: [
+		{
+			userId: { type: Schema.Types.ObjectId, ref: 'user' },
+			permissions: [{ type: String, enum: permissionTypes }],
+		},
+	],
 	lockId: { type: Schema.Types.ObjectId },
 	shareToken: { type: String },
 	schoolId: { type: Schema.Types.ObjectId, ref: 'school' },
@@ -73,7 +77,9 @@ const run = async (dry) => {
 	database.connect();
 
 	const oldfileModel = mongoose.model('oldfile', oldFileSchema, '_files');
-	const linkObjects = await LinkModel.find({ target: { $regex: '/files/fileModel/' } }).exec();
+	const linkObjects = await LinkModel.find({
+		target: { $regex: '/files/fileModel/' },
+	}).exec();
 	const regex = RegExp('(.+?/files/fileModel/)(.*?)(/.*)');
 
 	const errorHandler = (e) => {
@@ -81,34 +87,42 @@ const run = async (dry) => {
 		return undefined;
 	};
 
-	const promises = linkObjects
-		.map((link) => {
-			const { target } = link;
-			const id = target.replace(regex, '$2');
+	const promises = linkObjects.map((link) => {
+		const { target } = link;
+		const id = target.replace(regex, '$2');
 
-			return oldfileModel.findOne({ _id: id }).lean().exec().catch(errorHandler)
-				.then((file) => file
-					? FileModel.findOne(convertDocument(file)).exec().catch(errorHandler)
-					: Promise.resolve())
-				.then((file) => {
-					if (!file) {
-						return Promise.resolve();
-					}
+		return oldfileModel
+			.findOne({ _id: id })
+			.lean()
+			.exec()
+			.catch(errorHandler)
+			.then((file) =>
+				file
+					? FileModel.findOne(convertDocument(file))
+						.exec()
+						.catch(errorHandler)
+					: Promise.resolve(),
+			)
+			.then((file) => {
+				if (!file) {
+					return Promise.resolve();
+				}
 
-					const { _id: fileId } = file;
-					const newTarget = target.replace(regex, `$1${fileId}$3`);
+				const { _id: fileId } = file;
+				const newTarget = target.replace(regex, `$1${fileId}$3`);
 
-					console.log(`Replace target of link ${link._id}:`);
-					console.log(target);
-					console.log('with');
-					console.log(newTarget);
+				console.log(`Replace target of link ${link._id}:`);
+				console.log(target);
+				console.log('with');
+				console.log(newTarget);
 
-					return dry
-						? Promise.resolve()
-						: LinkModel.update({ _id: link._id }, { target: newTarget }).exec().catch(errorHandler);
-				});
-		});
-
+				return dry
+					? Promise.resolve()
+					: LinkModel.update({ _id: link._id }, { target: newTarget })
+						.exec()
+						.catch(errorHandler);
+			});
+	});
 
 	return Promise.all(promises);
 };

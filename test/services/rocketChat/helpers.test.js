@@ -1,5 +1,7 @@
 const { expect } = require('chai');
-const { makeStringRCConform } = require('../../../src/services/rocketChat/helpers');
+const {
+	makeStringRCConform,
+} = require('../../../src/services/rocketChat/helpers');
 
 describe('makeStringRCConform', () => {
 	it('replaces german umlaute', () => {
@@ -11,11 +13,15 @@ describe('makeStringRCConform', () => {
 	});
 
 	it('replaces special characters', () => {
-		expect(makeStringRCConform('?!"\'\\[]()´*+´§$%&/=,;:^°')).to.equal('________________________');
+		expect(makeStringRCConform('?!"\'\\[]()´*+´§$%&/=,;:^°')).to.equal(
+			'________________________',
+		);
 	});
 
 	it('does not replace normal chars or numbers', () => {
-		expect(makeStringRCConform('LoremIpsum0815')).to.equal('LoremIpsum0815');
+		expect(makeStringRCConform('LoremIpsum0815')).to.equal(
+			'LoremIpsum0815',
+		);
 	});
 
 	it('does not replace allowed sepcial characters', () => {

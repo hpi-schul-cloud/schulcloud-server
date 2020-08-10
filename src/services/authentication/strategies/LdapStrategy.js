@@ -8,7 +8,9 @@ class LdapStrategy extends AuthenticationBaseStrategy {
 
 		['usernameField'].forEach((prop) => {
 			if (typeof config[prop] !== 'string') {
-				throw new Error(`'${this.name}' authentication strategy requires a '${prop}' setting`);
+				throw new Error(
+					`'${this.name}' authentication strategy requires a '${prop}' setting`,
+				);
 			}
 		});
 	}
@@ -35,10 +37,17 @@ class LdapStrategy extends AuthenticationBaseStrategy {
 	}
 
 	async findEntity(username, params) {
-		const { entityUsernameField, service, errorMessage } = this.configuration;
-		const query = await this.getEntityQuery({
-			[entityUsernameField]: username,
-		}, params);
+		const {
+			entityUsernameField,
+			service,
+			errorMessage,
+		} = this.configuration;
+		const query = await this.getEntityQuery(
+			{
+				[entityUsernameField]: username,
+			},
+			params,
+		);
 
 		const findParams = { ...params, query };
 		const entityService = this.app.service(service);
@@ -78,7 +87,9 @@ class LdapStrategy extends AuthenticationBaseStrategy {
 		const ldapService = app.service('ldap');
 
 		const user = await app.service('users').get(params.payload.userId);
-		const system = await app.service('systems').get(authentication.systemId);
+		const system = await app
+			.service('systems')
+			.get(authentication.systemId);
 		if (user && system) {
 			const isAuthenticated = await ldapService.authenticate(
 				system,
@@ -87,7 +98,10 @@ class LdapStrategy extends AuthenticationBaseStrategy {
 			);
 			if (isAuthenticated) {
 				const { entity } = this.configuration;
-				const result = await this.findEntity(authentication.username, omit(params, 'provider'));
+				const result = await this.findEntity(
+					authentication.username,
+					omit(params, 'provider'),
+				);
 				return {
 					authentication: { strategy: this.name },
 					[entity]: await this.getEntity(result, params),

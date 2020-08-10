@@ -3,7 +3,10 @@ const { userModel, registrationPinModel } = require('./model');
 const registrationPinsHooks = require('./hooks/registrationPins');
 const publicTeachersHooks = require('./hooks/publicTeachers');
 const firstLoginHooks = require('./hooks/firstLogin');
-const { skipRegistrationSingleHooks, skipRegistrationBulkHooks } = require('./hooks/skipRegistration');
+const {
+	skipRegistrationSingleHooks,
+	skipRegistrationBulkHooks,
+} = require('./hooks/skipRegistration');
 const {
 	AdminUsers,
 	UserLinkImportService,
@@ -20,7 +23,6 @@ const {
 	},
 } = require('./services');
 
-
 module.exports = (app) => {
 	app.use('usersModel', UsersModelService.userModelService);
 	app.service('usersModel').hooks(UsersModelService.userModelHooks);
@@ -32,28 +34,33 @@ module.exports = (app) => {
 	app.use('users/linkImport', new UserLinkImportService(userService)); // do not use hooks
 
 	/* publicTeachers Service */
-	app.use('/publicTeachers', service({
-		Model: userModel,
-		paginate: {
-			default: 25,
-			max: 1000,
-		},
-		lean: true,
-	}));
+	app.use(
+		'/publicTeachers',
+		service({
+			Model: userModel,
+			paginate: {
+				default: 25,
+				max: 1000,
+			},
+			lean: true,
+		}),
+	);
 
 	const publicTeachersService = app.service('/publicTeachers');
 	publicTeachersService.hooks(publicTeachersHooks);
 
-
 	/* registrationPin Service */
-	app.use('/registrationPins', service({
-		Model: registrationPinModel,
-		paginate: {
-			default: 500,
-			max: 5000,
-		},
-		lean: true,
-	}));
+	app.use(
+		'/registrationPins',
+		service({
+			Model: registrationPinModel,
+			paginate: {
+				default: 500,
+				max: 5000,
+			},
+			lean: true,
+		}),
+	);
 	const registrationPinService = app.service('/registrationPins');
 	registrationPinService.hooks(registrationPinsHooks);
 
@@ -89,7 +96,9 @@ module.exports = (app) => {
 	RegistrationLinkService.hooks(MailRegistrationLink.Hooks);
 
 	app.use('/users/:userId/skipregistration', new SkipRegistrationService());
-	app.service('/users/:userId/skipregistration').hooks(skipRegistrationSingleHooks);
+	app.service('/users/:userId/skipregistration').hooks(
+		skipRegistrationSingleHooks,
+	);
 	app.use('/users/skipregistration', new SkipRegistrationService());
 	app.service('/users/skipregistration').hooks(skipRegistrationBulkHooks);
 

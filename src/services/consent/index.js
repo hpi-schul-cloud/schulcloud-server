@@ -4,7 +4,10 @@ const consentHooks = require('./hooks/consents');
 const consentVersionModelHooks = require('./hooks/consentversionsModelHooks');
 const consentDocs = require('./docs');
 const { ConsentStatusService } = require('./consentStatus.service');
-const { ConsentVersionService, ConsentVersionServiceHooks } = require('./services/consentVersionService');
+const {
+	ConsentVersionService,
+	ConsentVersionServiceHooks,
+} = require('./services/consentVersionService');
 // const depricated = require('./consent.depricated');
 
 // eslint-disable-next-line func-names
@@ -32,14 +35,17 @@ module.exports = function () {
 	// app.use('/consents/:type/users', new ConsentStatusService());
 
 	/* ConsentVersion Model */
-	app.use('consentVersionsModel', service({
-		Model: ConsentVersionModel,
-		paginate: {
-			default: 100,
-			max: 200,
-		},
-		lean: true,
-	}));
+	app.use(
+		'consentVersionsModel',
+		service({
+			Model: ConsentVersionModel,
+			paginate: {
+				default: 100,
+				max: 200,
+			},
+			lean: true,
+		}),
+	);
 	app.service('consentVersionsModel').hooks(consentVersionModelHooks);
 
 	app.use('/consentVersions', new ConsentVersionService());

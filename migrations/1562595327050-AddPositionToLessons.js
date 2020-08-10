@@ -5,12 +5,12 @@ const { OutputLogTemplate, DatabaseTaskTemplate } = require('./helpers');
 
 const isUndefined = (e) => typeof e === 'undefined';
 
-const getSortedLessons = async () => LessonModel
-	.find({})
-	.sort({ position: 1 })
-	.sort({ createdAt: 1 })
-	.lean()
-	.exec();
+const getSortedLessons = async () =>
+	LessonModel.find({})
+		.sort({ position: 1 })
+		.sort({ createdAt: 1 })
+		.lean()
+		.exec();
 
 const createDataTree = (lessons = [], key) => {
 	logger.info(`create datatree ${key}`);
@@ -30,11 +30,13 @@ const createDatabaseTask = (datatree = []) => {
 	Object.values(datatree).forEach((courseLessons) => {
 		courseLessons.forEach((lesson, index) => {
 			/* In client the sorting is first null without number and after it the number from 1 to x */
-			tasks.push(new DatabaseTaskTemplate({
-				id: lesson._id,
-				isModified: lesson.position !== index,
-				set: { position: index },
-			}));
+			tasks.push(
+				new DatabaseTaskTemplate({
+					id: lesson._id,
+					isModified: lesson.position !== index,
+					set: { position: index },
+				}),
+			);
 		});
 	});
 	return tasks;
@@ -50,7 +52,10 @@ module.exports = {
 		const courseMap = createDataTree(lessons, 'courseId');
 
 		// create courseGroup tree courseMap.undefined contain all courseGroupLessons
-		const courseGroupMap = createDataTree(courseMap.undefined, 'courseGroupId');
+		const courseGroupMap = createDataTree(
+			courseMap.undefined,
+			'courseGroupId',
+		);
 		delete courseMap.undefined;
 
 		// update database step by step
@@ -59,9 +64,15 @@ module.exports = {
 			name: 'AddPositionToLessons',
 		});
 		// add position if not exist, by oldest first | convert data to mongoose request
-		const databaseTasks = createDatabaseTask(Object.assign(courseMap, courseGroupMap));
+		const databaseTasks = createDatabaseTask(
+			Object.assign(courseMap, courseGroupMap),
+		);
 
-		await Promise.all(databaseTasks.map((task) => task.exec(LessonModel, 'updateOne', out)));
+		await Promise.all(
+			databaseTasks.map((task) =>
+				task.exec(LessonModel, 'updateOne', out),
+			),
+		);
 		out.printResults();
 		await close();
 	},

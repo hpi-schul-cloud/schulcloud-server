@@ -23,7 +23,9 @@ const extractTokenFromBearerHeader = (header) => header.replace('Bearer ', '');
 
 const authHeaderExtractor = (req) => {
 	const authHeader = req.headers.authorization;
-	if (!authHeader) { return undefined; }
+	if (!authHeader) {
+		return undefined;
+	}
 	return extractTokenFromBearerHeader(authHeader);
 };
 
@@ -41,7 +43,9 @@ try {
 	secrets = {};
 }
 
-const authenticationSecret = (secrets.authentication) ? secrets.authentication : 'secrets';
+const authenticationSecret = secrets.authentication
+	? secrets.authentication
+	: 'secrets';
 if (NODE_ENV === ENVIRONMENTS.PRODUCTION && !secrets.authentication) {
 	logger.error('use default authentication secret');
 }

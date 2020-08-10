@@ -23,8 +23,9 @@ const filterForPublicTeacher = (hook) => {
 	// Limit accessible user (only teacher which are discoverable)
 	hook.params.query.roles = ['teacher'];
 
-	const TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION = Configuration
-		.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
+	const TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION = Configuration.get(
+		'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION',
+	);
 	switch (TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION) {
 		case 'opt-in':
 			// own school and other schools if opted-in
@@ -39,8 +40,15 @@ const filterForPublicTeacher = (hook) => {
 			break;
 		case 'disabled':
 			// force foreign school id to be set
-			if (equalIds(hook.params.account.schoolId, hook.params.query.schoolId) !== true) {
-				throw new Forbidden('access to foreign school teachers prohibited');
+			if (
+				equalIds(
+					hook.params.account.schoolId,
+					hook.params.query.schoolId,
+				) !== true
+			) {
+				throw new Forbidden(
+					'access to foreign school teachers prohibited',
+				);
 			}
 			break;
 		default:
@@ -58,7 +66,12 @@ exports.before = {
 		globalHooks.mapPaginationQuery.bind(this),
 		filterForPublicTeacher,
 		// resolve ids for role strings (e.g. 'TEACHER')
-		globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),
+		globalHooks.resolveToIds.bind(
+			this,
+			'/roles',
+			'params.query.roles',
+			'name',
+		),
 		mapRoleFilterQuery,
 		globalHooks.addCollation,
 	],

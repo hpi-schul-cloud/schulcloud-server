@@ -9,10 +9,12 @@ const prepareGradeLevelUnset = (context) => {
 
 const sortByGradeAndOrName = (context) => {
 	const defaultQuery = { year: 1, gradeLevel: 1, name: 1 };
-	if (!context.params
-	|| !context.params.query
-	|| !context.params.query.$sort
-	|| Object.keys(context.params.query.$sort).length === 0) {
+	if (
+		!context.params ||
+		!context.params.query ||
+		!context.params.query.$sort ||
+		Object.keys(context.params.query.$sort).length === 0
+	) {
 		context.params = context.params || {};
 		context.params.query = context.params.query || {};
 
@@ -23,7 +25,10 @@ const sortByGradeAndOrName = (context) => {
 	if (context.params.query.$sort) {
 		const displayNameSortOrder = context.params.query.$sort.displayName;
 		if (displayNameSortOrder !== undefined) {
-			Object.assign(context.params.query.$sort, { gradeLevel: displayNameSortOrder, name: displayNameSortOrder });
+			Object.assign(context.params.query.$sort, {
+				gradeLevel: displayNameSortOrder,
+				name: displayNameSortOrder,
+			});
 			delete context.params.query.$sort.displayName;
 		}
 	}
@@ -32,9 +37,15 @@ const sortByGradeAndOrName = (context) => {
 
 const saveSuccessor = async (context) => {
 	if (context.data.predecessor) {
-		await context.app.service('classes').patch(context.data.predecessor, { successor: context.result._id });
+		await context.app
+			.service('classes')
+			.patch(context.data.predecessor, { successor: context.result._id });
 	}
 	return context;
 };
 
-module.exports = { prepareGradeLevelUnset, sortByGradeAndOrName, saveSuccessor };
+module.exports = {
+	prepareGradeLevelUnset,
+	sortByGradeAndOrName,
+	saveSuccessor,
+};

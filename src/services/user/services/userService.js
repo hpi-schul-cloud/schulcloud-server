@@ -2,9 +2,14 @@ const { authenticate } = require('@feathersjs/authentication');
 // const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 // const logger = require('../../../logger');
-const { modelServices: { prepareInternalParams } } = require('../../../utils');
+const {
+	modelServices: { prepareInternalParams },
+} = require('../../../utils');
 const { userModel } = require('../model');
-const { hasEditPermissionForUser, hasReadPermissionForUser } = require('../hooks/index.hooks');
+const {
+	hasEditPermissionForUser,
+	hasReadPermissionForUser,
+} = require('../hooks/index.hooks');
 
 const {
 	mapPaginationQuery,
@@ -47,27 +52,39 @@ class UserService {
 	}
 
 	find(params) {
-		return this.app.service('usersModel').find(prepareInternalParams(params));
+		return this.app
+			.service('usersModel')
+			.find(prepareInternalParams(params));
 	}
 
 	get(id, params) {
-		return this.app.service('usersModel').get(id, prepareInternalParams(params));
+		return this.app
+			.service('usersModel')
+			.get(id, prepareInternalParams(params));
 	}
 
 	create(data, params) {
-		return this.app.service('usersModel').create(data, prepareInternalParams(params));
+		return this.app
+			.service('usersModel')
+			.create(data, prepareInternalParams(params));
 	}
 
 	update(id, data, params) {
-		return this.app.service('usersModel').update(id, data, prepareInternalParams(params));
+		return this.app
+			.service('usersModel')
+			.update(id, data, prepareInternalParams(params));
 	}
 
 	patch(id, data, params) {
-		return this.app.service('usersModel').patch(id, data, prepareInternalParams(params));
+		return this.app
+			.service('usersModel')
+			.patch(id, data, prepareInternalParams(params));
 	}
 
 	remove(id, params) {
-		return this.app.service('usersModel').remove(id, prepareInternalParams(params));
+		return this.app
+			.service('usersModel')
+			.remove(id, prepareInternalParams(params));
 	}
 
 	async setup(app) {
@@ -95,9 +112,7 @@ const userHooks = {
 			addCollation,
 			iff(isProvider('external'), includeOnlySchoolRoles),
 		],
-		get: [
-			authenticate('jwt'),
-		],
+		get: [authenticate('jwt')],
 		create: [
 			checkJwt(),
 			pinIsVerified,
@@ -128,7 +143,10 @@ const userHooks = {
 		],
 		remove: [
 			authenticate('jwt'),
-			iff(isProvider('external'), [restrictToCurrentSchool, enforceRoleHierarchyOnDelete]),
+			iff(isProvider('external'), [
+				restrictToCurrentSchool,
+				enforceRoleHierarchyOnDelete,
+			]),
 		],
 	},
 	after: {
@@ -136,23 +154,28 @@ const userHooks = {
 		find: [
 			decorateAvatar,
 			decorateUsers,
-			iff(isProvider('external'), [filterResult, denyIfStudentTeamCreationNotAllowed({
-				errorMessage: 'The current user is not allowed to list other users!',
-			})]),
+			iff(isProvider('external'), [
+				filterResult,
+				denyIfStudentTeamCreationNotAllowed({
+					errorMessage:
+						'The current user is not allowed to list other users!',
+				}),
+			]),
 		],
 		get: [
 			decorateAvatar,
 			decorateUser,
 			computeProperty(userModel, 'getPermissions', 'permissions'),
-			iff(isProvider('external'), [hasReadPermissionForUser,
+			iff(isProvider('external'), [
+				hasReadPermissionForUser,
 				denyIfNotCurrentSchool({
-					errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
-				})]),
+					errorMessage:
+						'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
+				}),
+			]),
 			iff(isProvider('external'), filterResult),
 		],
-		create: [
-			handleClassId,
-		],
+		create: [handleClassId],
 		update: [iff(isProvider('external'), filterResult)],
 		patch: [iff(isProvider('external'), filterResult)],
 		remove: [

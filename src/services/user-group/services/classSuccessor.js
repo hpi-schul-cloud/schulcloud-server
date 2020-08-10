@@ -8,10 +8,14 @@ const { classModel } = require('../model');
 const findDuplicates = async (successor, app) => {
 	const query = { $and: [{ name: successor.name }] };
 	query.$and.push(
-		successor.gradeLevel ? { gradeLevel: successor.gradeLevel } : { gradeLevel: { $exists: false } },
+		successor.gradeLevel
+			? { gradeLevel: successor.gradeLevel }
+			: { gradeLevel: { $exists: false } },
 	);
 	query.$and.push(
-		successor.year ? { year: successor.year } : { year: { $exists: false } },
+		successor.year
+			? { year: successor.year }
+			: { year: { $exists: false } },
 	);
 	query.$and.push({ schoolId: successor.schoolId });
 	// for some reason this only works via the model, the service always returns all classes on the school.
@@ -39,9 +43,14 @@ const constructSuccessor = async (currentClass, app) => {
 	}
 
 	if (currentClass.year) {
-		const school = await (app.service('schools').get(currentClass.schoolId));
-		const schoolYears = new SchoolYearFacade(school.years.schoolYears, school);
-		const successorYear = await schoolYears.getNextYearAfter(currentClass.year);
+		const school = await app.service('schools').get(currentClass.schoolId);
+		const schoolYears = new SchoolYearFacade(
+			school.years.schoolYears,
+			school,
+		);
+		const successorYear = await schoolYears.getNextYearAfter(
+			currentClass.year,
+		);
 		if (!successorYear) {
 			throw new BadRequest('class is already in latest year.');
 		}
@@ -58,14 +67,28 @@ const constructSuccessor = async (currentClass, app) => {
  * make sure the removed class is not linked as successor to any class.
  * @param {Object} context a class that has just been deleted
  */
-const updateClassPredecessors = async function updateClassPredecessors(context, app) {
+const updateClassPredecessors = async function updateClassPredecessors(
+	context,
+	app,
+) {
 	// using the class service returns all classes of the school.
 	// Once that behaviour is fixed, the class Service schould be used.
 	try {
-		const classes = await classModel.find({ successor: context._id }).lean();
-		await Promise.all(classes.map((c) => app.service('classes').patch(c._id, { $unset: { successor: '' } })));
+		const classes = await classModel
+			.find({ successor: context._id })
+			.lean();
+		await Promise.all(
+			classes.map((c) =>
+				app
+					.service('classes')
+					.patch(c._id, { $unset: { successor: '' } }),
+			),
+		);
 	} catch (err) {
-		logger.warning('error while updating predecessors of deleted class', err);
+		logger.warning(
+			'error while updating predecessors of deleted class',
+			err,
+		);
 	}
 	return Promise.resolve();
 };
@@ -86,9 +109,16 @@ class ClassSuccessorService {
 			const currentClass = await this.app.service('classes').get(id);
 
 			if (params.account) {
-				const user = await this.app.service('users').get(params.account.userId);
-				if (user.schoolId.toString() !== currentClass.schoolId.toString()) {
-					throw new Forbidden('You do not have valid permissions to access this.');
+				const user = await this.app
+					.service('users')
+					.get(params.account.userId);
+				if (
+					user.schoolId.toString() !==
+					currentClass.schoolId.toString()
+				) {
+					throw new Forbidden(
+						'You do not have valid permissions to access this.',
+					);
 				}
 			}
 
@@ -101,21 +131,34 @@ class ClassSuccessorService {
 
 	async find(params) {
 		try {
-			if (!((params.query || {}).classIds && Array.isArray(params.query.classIds))) {
-				throw new BadRequest('please pass an array of classIds in query.classIds');
+			if (
+				!(
+					(params.query || {}).classIds &&
+					Array.isArray(params.query.classIds)
+				)
+			) {
+				throw new BadRequest(
+					'please pass an array of classIds in query.classIds',
+				);
 			}
 
-			const classIds = params.query.classIds.map((classId) => classId.toString());
+			const classIds = params.query.classIds.map((classId) =>
+				classId.toString(),
+			);
 			const classesQuery = { _id: { $in: classIds } };
 			if (params.account) {
-				const { schoolId } = await this.app.service('users').get(params.account.userId);
+				const { schoolId } = await this.app
+					.service('users')
+					.get(params.account.userId);
 				classesQuery.schoolId = schoolId;
 			}
 
 			// for some reason this only works via the model, the service always returns all classes on the school.
 			// eventually, this should go against the class service
 			const classes = await classModel.find(classesQuery).lean();
-			const result = await Promise.all(classes.map((c) => constructSuccessor(c, this.app)));
+			const result = await Promise.all(
+				classes.map((c) => constructSuccessor(c, this.app)),
+			);
 			return result;
 		} catch (err) {
 			logger.warning(err);
@@ -128,11 +171,13 @@ class ClassSuccessorService {
 	}
 
 	/**
-     * Register methods of the service to listen to events of other services
-     * @listens classes:removed
-     */
+	 * Register methods of the service to listen to events of other services
+	 * @listens classes:removed
+	 */
 	registerEventListeners() {
-		this.app.service('/classes').on('removed', ClassSuccessorService.onClassRemoved.bind(this));
+		this.app
+			.service('/classes')
+			.on('removed', ClassSuccessorService.onClassRemoved.bind(this));
 	}
 
 	setup(app) {

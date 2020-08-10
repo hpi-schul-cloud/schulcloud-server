@@ -2,14 +2,23 @@
 const { GeneralError, NotAuthenticated } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
-const { sanitizeHtml: { sanitizeDeep } } = require('./utils');
 const {
-	getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData,
+	sanitizeHtml: { sanitizeDeep },
+} = require('./utils');
+const {
+	getRedisClient,
+	redisGetAsync,
+	redisSetAsync,
+	extractDataFromJwt,
+	getRedisData,
 } = require('./utils/redis');
 
-
 const sanitizeDataHook = (context) => {
-	if ((context.data || context.result) && context.path && context.path !== 'authentication') {
+	if (
+		(context.data || context.result) &&
+		context.path &&
+		context.path !== 'authentication'
+	) {
 		sanitizeDeep(
 			context.type === 'before' ? context.data : context.result,
 			context.path,
@@ -31,9 +40,7 @@ const displayInternRequests = (level) => (context) => {
 	if (context.params.provider === 'rest') {
 		return context;
 	}
-	const {
-		id, params, path, data, method,
-	} = context;
+	const { id, params, path, data, method } = context;
 
 	if (['accounts'].includes(path) && level < 4) {
 		return context;
@@ -42,11 +49,17 @@ const displayInternRequests = (level) => (context) => {
 		path,
 		method,
 	};
-	if (id) { out.id = id; }
+	if (id) {
+		out.id = id;
+	}
 	Object.keys(params).forEach((key) => {
-		if (params.key) { out[key] = params.key; }
+		if (params.key) {
+			out[key] = params.key;
+		}
 	});
-	if (data) { out.data = data; }
+	if (data) {
+		out.data = data;
+	}
 
 	// eslint-disable-next-line no-console
 	console.log('[intern]');
@@ -74,30 +87,42 @@ const AUTO_LOGOUT_BLACKLIST = [
  * @param {Object} context feathers context
  */
 const handleAutoLogout = async (context) => {
-	const ignoreRoute = typeof context.path === 'string'
-		&& AUTO_LOGOUT_BLACKLIST.some((entry) => context.path.match(entry));
+	const ignoreRoute =
+		typeof context.path === 'string' &&
+		AUTO_LOGOUT_BLACKLIST.some((entry) => context.path.match(entry));
 	const redisClientExists = !!getRedisClient();
-	const authorizedRequest = ((context.params || {}).authentication || {}).accessToken;
+	const authorizedRequest = ((context.params || {}).authentication || {})
+		.accessToken;
 	if (!ignoreRoute && redisClientExists && authorizedRequest) {
-		const { redisIdentifier, privateDevice } = extractDataFromJwt(context.params.authentication.accessToken);
+		const { redisIdentifier, privateDevice } = extractDataFromJwt(
+			context.params.authentication.accessToken,
+		);
 		const redisResponse = await redisGetAsync(redisIdentifier);
 		const redisData = getRedisData({ privateDevice });
 		const { expirationInSeconds } = redisData;
 		if (redisResponse) {
 			await redisSetAsync(
-				redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds,
+				redisIdentifier,
+				JSON.stringify(redisData),
+				'EX',
+				expirationInSeconds,
 			);
 		} else {
 			// ------------------------------------------------------------------------
 			// this is so we can ensure a fluid release without booting out all users.
 			if (Configuration.get('JWT_WHITELIST_ACCEPT_ALL')) {
 				await redisSetAsync(
-					redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds,
+					redisIdentifier,
+					JSON.stringify(redisData),
+					'EX',
+					expirationInSeconds,
 				);
 				return context;
 			}
 			// ------------------------------------------------------------------------
-			throw new NotAuthenticated('Session was expired due to inactivity - autologout.');
+			throw new NotAuthenticated(
+				'Session was expired due to inactivity - autologout.',
+			);
 		}
 	}
 	return context;
@@ -116,7 +141,10 @@ const errorHandler = (context) => {
 				// too much for logging...
 				delete catchedError.hook;
 			}
-			context.error = new GeneralError(context.error.message || 'Server Error', context.error.stack);
+			context.error = new GeneralError(
+				context.error.message || 'Server Error',
+				context.error.stack,
+			);
 			context.error.catchedError = catchedError;
 		}
 		context.error.code = context.error.code || 500;
@@ -127,7 +155,9 @@ const errorHandler = (context) => {
 		}
 		return context;
 	}
-	context.app.logger.warning('Error with no error key is throw. Error logic can not handle it.');
+	context.app.logger.warning(
+		'Error with no error key is throw. Error logic can not handle it.',
+	);
 
 	throw new GeneralError('server error');
 };
@@ -139,34 +169,19 @@ function setupAppHooks(app) {
 		get: [],
 		create: [
 			iff(isProvider('external'), [
-				sanitizeDataHook, removeObjectIdInData,
-			]),
-		],
-		update: [
-			iff(isProvider('external'), [
 				sanitizeDataHook,
+				removeObjectIdInData,
 			]),
 		],
-		patch: [
-			iff(isProvider('external'), [
-				sanitizeDataHook,
-			]),
-		],
+		update: [iff(isProvider('external'), [sanitizeDataHook])],
+		patch: [iff(isProvider('external'), [sanitizeDataHook])],
 		remove: [],
 	};
 
 	const after = {
 		all: [],
-		find: [
-			iff(isProvider('external'), [
-				sanitizeDataHook,
-			]),
-		],
-		get: [
-			iff(isProvider('external'), [
-				sanitizeDataHook,
-			]),
-		],
+		find: [iff(isProvider('external'), [sanitizeDataHook])],
+		get: [iff(isProvider('external'), [sanitizeDataHook])],
 		create: [],
 		update: [],
 		patch: [],
@@ -186,7 +201,9 @@ function setupAppHooks(app) {
 	// DISPLAY_REQUEST_LEVEL is set by requestLogger middleware in production it is force to 0
 	// level 2+ adding intern request
 	if (app.get('DISPLAY_REQUEST_LEVEL') > 1) {
-		before.all.unshift(displayInternRequests(app.get('DISPLAY_REQUEST_LEVEL')));
+		before.all.unshift(
+			displayInternRequests(app.get('DISPLAY_REQUEST_LEVEL')),
+		);
 	}
 	app.hooks({ before, after, error });
 }

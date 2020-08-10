@@ -6,7 +6,6 @@ const { homeworkModel } = require('../../../src/services/homework/model');
 const homeworkCopyService = app.service('homework/copy');
 const { expect } = chai;
 
-
 describe('homework copy service', () => {
 	const homeworkIdsToDelete = [];
 
@@ -29,7 +28,10 @@ describe('homework copy service', () => {
 			courseId: null,
 		});
 
-		const copy = await homeworkCopyService.create({ _id: homework._id, userId: user._id });
+		const copy = await homeworkCopyService.create({
+			_id: homework._id,
+			userId: user._id,
+		});
 		expect(copy.courseId).to.equal(null);
 		expect(copy.lessonId).to.equal(null);
 		expect(copy.name).to.equal('Testaufgabe');
@@ -51,7 +53,10 @@ describe('homework copy service', () => {
 			courseId: null,
 		});
 
-		const copy = await homeworkCopyService.create({ _id: homework._id, userId: user._id });
+		const copy = await homeworkCopyService.create({
+			_id: homework._id,
+			userId: user._id,
+		});
 		expect(copy._id.toString()).to.not.eq(homework._id.toString());
 		expect(copy.name).to.equal('Testaufgabe');
 		expect(copy.private).to.equal(true);
@@ -59,7 +64,9 @@ describe('homework copy service', () => {
 
 	it('internal call can copy a homework for a different user', async () => {
 		const user = await testObjects.createTestUser({ roles: ['teacher'] });
-		const otherUser = await testObjects.createTestUser({ roles: ['teacher'] });
+		const otherUser = await testObjects.createTestUser({
+			roles: ['teacher'],
+		});
 		const homework = await testObjects.createTestHomework({
 			teacherId: user._id,
 			name: 'Testaufgabe',
@@ -73,7 +80,9 @@ describe('homework copy service', () => {
 		});
 
 		const copy = await homeworkCopyService.create({
-			_id: homework._id, userId: otherUser._id, newTeacher: otherUser._id,
+			_id: homework._id,
+			userId: otherUser._id,
+			newTeacher: otherUser._id,
 		});
 		expect(copy.courseId).to.equal(null);
 		expect(copy.lessonId).to.equal(null);
@@ -86,8 +95,12 @@ describe('homework copy service', () => {
 
 	it('internal call can copy a homework into course or lesson', async () => {
 		const user = await testObjects.createTestUser({ roles: ['teacher'] });
-		const otherUser = await testObjects.createTestUser({ roles: ['teacher'] });
-		const course = await testObjects.createTestCourse({ teacherIds: [otherUser._id] });
+		const otherUser = await testObjects.createTestUser({
+			roles: ['teacher'],
+		});
+		const course = await testObjects.createTestCourse({
+			teacherIds: [otherUser._id],
+		});
 		const homework = await testObjects.createTestHomework({
 			teacherId: user._id,
 			name: 'Testaufgabe',
@@ -101,12 +114,19 @@ describe('homework copy service', () => {
 		});
 
 		const copyForCourse = await homeworkCopyService.create({
-			_id: homework._id, userId: otherUser._id, newTeacher: otherUser._id, courseId: course._id,
+			_id: homework._id,
+			userId: otherUser._id,
+			newTeacher: otherUser._id,
+			courseId: course._id,
 		});
 		expect(copyForCourse.courseId).to.equal(course._id);
 		expect(copyForCourse.lessonId).to.equal(null);
-		expect(copyForCourse._id.toString()).to.not.equal(homework._id.toString());
-		expect(copyForCourse.teacherId.toString()).to.equal(otherUser._id.toString());
+		expect(copyForCourse._id.toString()).to.not.equal(
+			homework._id.toString(),
+		);
+		expect(copyForCourse.teacherId.toString()).to.equal(
+			otherUser._id.toString(),
+		);
 		expect(copyForCourse.name).to.equal('Testaufgabe');
 		expect(copyForCourse.stats).to.equal(undefined);
 		expect(copyForCourse.grade).to.equal(undefined);
@@ -115,9 +135,17 @@ describe('homework copy service', () => {
 	it('internal call can copy a homework into another school', async () => {
 		const originalSchool = await testObjects.createTestSchool();
 		const destinationSchool = await testObjects.createTestSchool();
-		const originalUser = await testObjects.createTestUser({ roles: ['teacher'], schoolId: originalSchool._id });
-		const destUser = await testObjects.createTestUser({ roles: ['teacher'], schoolId: destinationSchool._id });
-		const destCourse = await testObjects.createTestCourse({ teacherIds: [destUser._id] });
+		const originalUser = await testObjects.createTestUser({
+			roles: ['teacher'],
+			schoolId: originalSchool._id,
+		});
+		const destUser = await testObjects.createTestUser({
+			roles: ['teacher'],
+			schoolId: destinationSchool._id,
+		});
+		const destCourse = await testObjects.createTestCourse({
+			teacherIds: [destUser._id],
+		});
 		const homework = await testObjects.createTestHomework({
 			schoolId: originalSchool._id,
 			teacherId: originalUser._id,
@@ -132,7 +160,10 @@ describe('homework copy service', () => {
 		});
 
 		const copy = await homeworkCopyService.create({
-			_id: homework._id, userId: destUser._id, newTeacher: destUser._id, courseId: destCourse._id,
+			_id: homework._id,
+			userId: destUser._id,
+			newTeacher: destUser._id,
+			courseId: destCourse._id,
 		});
 		expect(copy.courseId).to.equal(destCourse._id);
 		expect(copy.lessonId).to.equal(null);
@@ -168,7 +199,9 @@ describe('homework copy service', () => {
 
 	it('user can not copy someone elses homework', async () => {
 		const user = await testObjects.createTestUser({ roles: ['teacher'] });
-		const otherUser = await testObjects.createTestUser({ roles: ['teacher'] });
+		const otherUser = await testObjects.createTestUser({
+			roles: ['teacher'],
+		});
 		const params = await testObjects.generateRequestParamsFromUser(user);
 		const homework = await testObjects.createTestHomework({
 			teacherId: otherUser._id,
@@ -182,7 +215,10 @@ describe('homework copy service', () => {
 			courseId: null,
 		});
 		try {
-			const copy = await homeworkCopyService.create({ homeworkId: homework._id, userId: user._id }, params);
+			const copy = await homeworkCopyService.create(
+				{ homeworkId: homework._id, userId: user._id },
+				params,
+			);
 			homeworkIdsToDelete.push(copy._id);
 			throw new Error('should have failed');
 		} catch (err) {

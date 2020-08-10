@@ -15,10 +15,12 @@ describe('course model service', () => {
 		await server.close();
 	});
 
-
 	it('CREATE a course on internal call', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
-		const { _id: teacherId } = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const { _id: teacherId } = await testObjects.createTestUser({
+			roles: ['teacher'],
+			schoolId,
+		});
 		const result = await app.service('courseModel').create({
 			name: 'testcourse',
 			schoolId,
@@ -41,8 +43,14 @@ describe('course model service', () => {
 
 	it('GET a course on internal call', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
-		const { _id: teacherId } = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacherId] });
+		const { _id: teacherId } = await testObjects.createTestUser({
+			roles: ['teacher'],
+			schoolId,
+		});
+		const course = await testObjects.createTestCourse({
+			schoolId,
+			teacherIds: [teacherId],
+		});
 		const result = await app.service('courseModel').get(course._id);
 		expect(result).to.not.be.undefined;
 		expect(result).to.haveOwnProperty('_id');
@@ -52,9 +60,17 @@ describe('course model service', () => {
 
 	it('FIND courses on internal call', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
-		const { _id: teacherId } = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacherId] });
-		const result = await app.service('courseModel').find({ query: { _id: course._id } });
+		const { _id: teacherId } = await testObjects.createTestUser({
+			roles: ['teacher'],
+			schoolId,
+		});
+		const course = await testObjects.createTestCourse({
+			schoolId,
+			teacherIds: [teacherId],
+		});
+		const result = await app
+			.service('courseModel')
+			.find({ query: { _id: course._id } });
 		expect(result.data).to.not.be.undefined;
 		expect(result.total).to.equal(1);
 		expect(result.data[0]).to.haveOwnProperty('_id');
@@ -64,8 +80,14 @@ describe('course model service', () => {
 
 	it('external call is blocked', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+		const teacher = await testObjects.createTestUser({
+			roles: ['teacher'],
+			schoolId,
+		});
+		const course = await testObjects.createTestCourse({
+			schoolId,
+			teacherIds: [teacher._id],
+		});
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		try {
 			await app.service('courseModel').get(course._id, params);
@@ -73,7 +95,9 @@ describe('course model service', () => {
 		} catch (err) {
 			expect(err.message).to.not.eq('should have failed');
 			expect(err.code).to.eq(405);
-			expect(err.message).to.eq('Provider \'rest\' can not call \'get\'. (disallow)');
+			expect(err.message).to.eq(
+				"Provider 'rest' can not call 'get'. (disallow)",
+			);
 		}
 	});
 });

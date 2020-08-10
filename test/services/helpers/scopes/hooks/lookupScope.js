@@ -62,7 +62,11 @@ describe('lookupScope', () => {
 		};
 		const context = {
 			app: fakeApp(team),
-			params: { route: { /* scopeId: team._id */ } },
+			params: {
+				route: {
+					/* scopeId: team._id */
+				},
+			},
 			path: `/teams/${team._id.toString()}/userPermissions/`,
 		};
 		expect(lookupScope(context)).to.eventually.throw(BadRequest);

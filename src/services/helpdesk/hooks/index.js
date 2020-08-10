@@ -1,7 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
-const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
+const restrictToCurrentSchool = globalHooks.ifNotLocal(
+	globalHooks.restrictToCurrentSchool,
+);
 
 function createInfoText(user, data) {
 	return `
@@ -16,13 +18,15 @@ Deine ${data.cloud}
 
 async function generateSystemInformation(hook) {
 	const { userId, username } = hook.params.account;
-	const userInformation = await hook.app.service('users').get((userId), {
+	const userInformation = await hook.app.service('users').get(userId, {
 		query: {
 			$populate: { path: 'roles' },
 		},
 	});
 
-	const roles = userInformation.roles.length ? userInformation.roles.map((info) => info.name) : 'NO ROLE(S)';
+	const roles = userInformation.roles.length
+		? userInformation.roles.map((info) => info.name)
+		: 'NO ROLE(S)';
 	const email = userInformation.email || 'NO EMAIL';
 	const systemInformation = `
 	User login: ${username}
@@ -32,7 +36,9 @@ async function generateSystemInformation(hook) {
 }
 
 function createFeedbackText(user, data) {
-	const device = data.deviceUserAgent ? `${data.device} [auto-detection: ${data.deviceUserAgent}]` : data.device;
+	const device = data.deviceUserAgent
+		? `${data.device} [auto-detection: ${data.deviceUserAgent}]`
+		: data.device;
 	let text = `
 SystemInformation: ${data.systemInformation}
 ReplyEmail: ${data.replyEmail}
@@ -88,7 +94,8 @@ const feedback = () => async (hook) => {
 			roles: ['helpdesk', 'administrator'],
 			content: {
 				text: createInfoText(
-					(hook.params.account || {}).username || 'nouser', data,
+					(hook.params.account || {}).username || 'nouser',
+					data,
 				),
 			},
 			attachments: data.files,
@@ -116,9 +123,20 @@ exports.before = {
 	all: [authenticate('jwt')],
 	find: [globalHooks.hasPermission('HELPDESK_VIEW')],
 	get: [globalHooks.hasPermission('HELPDESK_VIEW')],
-	create: [globalHooks.hasPermission('HELPDESK_CREATE'), restrictToCurrentSchool, denyDbWriteOnType],
-	update: [globalHooks.hasPermission('HELPDESK_EDIT'), restrictToCurrentSchool],
-	patch: [globalHooks.hasPermission('HELPDESK_EDIT'), globalHooks.permitGroupOperation, restrictToCurrentSchool],
+	create: [
+		globalHooks.hasPermission('HELPDESK_CREATE'),
+		restrictToCurrentSchool,
+		denyDbWriteOnType,
+	],
+	update: [
+		globalHooks.hasPermission('HELPDESK_EDIT'),
+		restrictToCurrentSchool,
+	],
+	patch: [
+		globalHooks.hasPermission('HELPDESK_EDIT'),
+		globalHooks.permitGroupOperation,
+		restrictToCurrentSchool,
+	],
 	remove: [
 		globalHooks.hasPermission('HELPDESK_CREATE'),
 		globalHooks.permitGroupOperation,

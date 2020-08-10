@@ -43,7 +43,9 @@ describe('[utils] deepObject', () => {
 		});
 
 		it('should work for strings with a lot of dot noations', () => {
-			const result = pathsToArray('ele0.ele1.ele2.ele3.ele4.ele5.ele6.ele7.ele8.ele9.ele10');
+			const result = pathsToArray(
+				'ele0.ele1.ele2.ele3.ele4.ele5.ele6.ele7.ele8.ele9.ele10',
+			);
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(11);
 			expect(result[0]).to.equal('ele0');
@@ -51,39 +53,45 @@ describe('[utils] deepObject', () => {
 		});
 		// the implementation is slower, becouse it can resolve mutch more combinations
 		// and loadash is optimize for re-runs with momory cache
-		it('[profiling] pathsToArray - '
-			+ 'should not significantly slower for string notations like lodash.toPath.', () => {
-			const testPath = 'ele0.ele1.ele2.ele3.ele4.ele5.ele6.ele7.ele8.ele9.ele10';
-			const iterations = 100000;
-			const slowerFactor = 10;
+		it(
+			'[profiling] pathsToArray - ' +
+				'should not significantly slower for string notations like lodash.toPath.',
+			() => {
+				const testPath =
+					'ele0.ele1.ele2.ele3.ele4.ele5.ele6.ele7.ele8.ele9.ele10';
+				const iterations = 100000;
+				const slowerFactor = 10;
 
-			const s3 = Date.now();
-			for (let i = 0; i <= iterations; i += 1) {
-				testPath.split('.');
-			}
-			const baseSplitOperation = Date.now() - s3;
+				const s3 = Date.now();
+				for (let i = 0; i <= iterations; i += 1) {
+					testPath.split('.');
+				}
+				const baseSplitOperation = Date.now() - s3;
 
-			const s2 = Date.now();
-			for (let i = 0; i <= iterations; i += 1) {
-				toPath(testPath);
-			}
-			const loadashToPathDelta = Date.now() - s2;
+				const s2 = Date.now();
+				for (let i = 0; i <= iterations; i += 1) {
+					toPath(testPath);
+				}
+				const loadashToPathDelta = Date.now() - s2;
 
-			const s1 = Date.now();
-			for (let i = 0; i <= iterations; i += 1) {
-				pathsToArray(testPath);
-			}
-			const pathToArrayDelta = Date.now() - s1;
+				const s1 = Date.now();
+				for (let i = 0; i <= iterations; i += 1) {
+					pathsToArray(testPath);
+				}
+				const pathToArrayDelta = Date.now() - s1;
 
-			logger.info({
-				type: 'profiling',
-				iterations,
-				pathToArrayDelta,
-				loadashToPathDelta,
-				baseSplitOperation,
-			});
-			expect(pathToArrayDelta <= (loadashToPathDelta * slowerFactor)).to.equal(true);
-		});
+				logger.info({
+					type: 'profiling',
+					iterations,
+					pathToArrayDelta,
+					loadashToPathDelta,
+					baseSplitOperation,
+				});
+				expect(
+					pathToArrayDelta <= loadashToPathDelta * slowerFactor,
+				).to.equal(true);
+			},
+		);
 
 		it('should work for strings with point before or after', () => {
 			const result = pathsToArray('.x.y.z.');
@@ -148,7 +156,11 @@ describe('[utils] deepObject', () => {
 		});
 
 		it('should work for muliple arrays', () => {
-			const result = pathsToArray(['x1', 'y1', 'z1'], ['x2', 'y2', 'z2'], ['x3', 'y3', 'z3']);
+			const result = pathsToArray(
+				['x1', 'y1', 'z1'],
+				['x2', 'y2', 'z2'],
+				['x3', 'y3', 'z3'],
+			);
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(9);
 			expect(result[0]).to.equal('x1');
@@ -163,7 +175,11 @@ describe('[utils] deepObject', () => {
 		});
 
 		it('should work for muliple arrays and string mixes inputs', () => {
-			const result = pathsToArray(['x1', 'y1', 'z1'], 'x2.y2.z2', ['x3', 'y3', 'z3']);
+			const result = pathsToArray(['x1', 'y1', 'z1'], 'x2.y2.z2', [
+				'x3',
+				'y3',
+				'z3',
+			]);
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(9);
 			expect(result[0]).to.equal('x1');
@@ -178,7 +194,11 @@ describe('[utils] deepObject', () => {
 		});
 
 		it('should work for dot notation strings in arrays with mixed inputs', () => {
-			const result = pathsToArray(['x1.y1.z1', 'x2.y2.z2', 'x3.y3.z3'], 'x4.y4.z4', ['x5', 'y5', 'z5']);
+			const result = pathsToArray(
+				['x1.y1.z1', 'x2.y2.z2', 'x3.y3.z3'],
+				'x4.y4.z4',
+				['x5', 'y5', 'z5'],
+			);
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(15);
 			expect(result[0]).to.equal('x1');
@@ -200,8 +220,14 @@ describe('[utils] deepObject', () => {
 
 		it('should work for dot notation strings in deep arrays with mixed inputs', () => {
 			const result = pathsToArray(
-				['x1.y1.z1', 'x2.y2.z2', 'x3.y3.z3', ['x4.y4.z4', 'x5', 'y5', 'z5']],
-				'x6.y6.z6', ['x7', 'y7', 'z7', 'ele1.ele2.ele3'],
+				[
+					'x1.y1.z1',
+					'x2.y2.z2',
+					'x3.y3.z3',
+					['x4.y4.z4', 'x5', 'y5', 'z5'],
+				],
+				'x6.y6.z6',
+				['x7', 'y7', 'z7', 'ele1.ele2.ele3'],
 			);
 			expect(result).to.be.an('array');
 			expect(result).have.lengthOf(24);

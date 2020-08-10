@@ -26,19 +26,27 @@ function getRedisClient() {
 
 const redisGetAsync = (...args) => {
 	if (redisClient) return promisify(redisClient.get).apply(redisClient, args);
-	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
+	throw new GeneralError(
+		'No redis connection. Check for this via getRedisClient().',
+	);
 };
 const redisSetAsync = (...args) => {
 	if (redisClient) return promisify(redisClient.set).apply(redisClient, args);
-	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
+	throw new GeneralError(
+		'No redis connection. Check for this via getRedisClient().',
+	);
 };
 const redisDelAsync = (...args) => {
 	if (redisClient) return promisify(redisClient.del).apply(redisClient, args);
-	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
+	throw new GeneralError(
+		'No redis connection. Check for this via getRedisClient().',
+	);
 };
 const redisTtlAsync = (...args) => {
 	if (redisClient) return promisify(redisClient.ttl).apply(redisClient, args);
-	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
+	throw new GeneralError(
+		'No redis connection. Check for this via getRedisClient().',
+	);
 };
 
 function extractDataFromJwt(token) {
@@ -67,9 +75,11 @@ function getRedisData({
 }) {
 	// set expiration longer for private devices
 	let expirationInSeconds = Configuration.get('JWT_TIMEOUT_SECONDS');
-	if (Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') === true
-	&& Configuration.has('JWT_EXTENDED_TIMEOUT_SECONDS')
-	&& privateDevice === true) {
+	if (
+		Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') === true &&
+		Configuration.has('JWT_EXTENDED_TIMEOUT_SECONDS') &&
+		privateDevice === true
+	) {
 		expirationInSeconds = Configuration.get('JWT_EXTENDED_TIMEOUT_SECONDS');
 	}
 	return {

@@ -16,7 +16,10 @@ describe('webuntis metadata hooks', () => {
 				name: 'datasource',
 				schoolId,
 			});
-			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+			const admin = await testObjects.createTestUser({
+				roles: ['administrator'],
+				schoolId,
+			});
 			const result = await fut({
 				app,
 				params: {
@@ -31,7 +34,9 @@ describe('webuntis metadata hooks', () => {
 
 		it('fails if no datasourceId is provided', async () => {
 			const fut = requireDatasourceId;
-			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const admin = await testObjects.createTestUser({
+				roles: ['administrator'],
+			});
 			try {
 				await fut({
 					app,
@@ -44,20 +49,27 @@ describe('webuntis metadata hooks', () => {
 			} catch (err) {
 				expect(err.message).to.not.eq('should have failed');
 				expect(err.code).to.eq(400);
-				expect(err.message).to.equal('you have to filter by a datasourceId.');
+				expect(err.message).to.equal(
+					'you have to filter by a datasourceId.',
+				);
 			}
 		});
 
 		it('fails if schools dont match', async () => {
 			const fut = requireDatasourceId;
 			const { _id: userSchoolId } = await testObjects.createTestSchool();
-			const { _id: datasourceSchoolId } = await testObjects.createTestSchool();
+			const {
+				_id: datasourceSchoolId,
+			} = await testObjects.createTestSchool();
 			const datasource = await testObjects.createTestDatasource({
 				config: { target: 'none' },
 				name: 'datasource',
 				schoolId: datasourceSchoolId,
 			});
-			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: userSchoolId });
+			const admin = await testObjects.createTestUser({
+				roles: ['administrator'],
+				schoolId: userSchoolId,
+			});
 			try {
 				await fut({
 					app,
@@ -78,7 +90,9 @@ describe('webuntis metadata hooks', () => {
 
 		it('fails if datasource doesnt exist', async () => {
 			const fut = requireDatasourceId;
-			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const admin = await testObjects.createTestUser({
+				roles: ['administrator'],
+			});
 			try {
 				await fut({
 					app,

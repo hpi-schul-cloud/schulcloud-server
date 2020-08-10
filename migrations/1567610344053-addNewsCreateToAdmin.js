@@ -14,7 +14,9 @@ module.exports = {
 			},
 			{
 				$addToSet: {
-					permissions: { $each: ['NEWS_CREATE', 'NEWS_EDIT', 'SCHOOL_NEWS_EDIT'] },
+					permissions: {
+						$each: ['NEWS_CREATE', 'NEWS_EDIT', 'SCHOOL_NEWS_EDIT'],
+					},
 				},
 			},
 		)

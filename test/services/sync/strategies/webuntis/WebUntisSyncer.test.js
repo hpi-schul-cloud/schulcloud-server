@@ -37,16 +37,19 @@ describe('webuntis Syncer', () => {
 		});
 		expect(minimalParams).to.not.be.false;
 
-		const paramsWithData = WebUntisSyncer.params({
-			query: {
-				username: 'webuntisusername',
-				password: 'secret123',
-				url: 'url.com',
+		const paramsWithData = WebUntisSyncer.params(
+			{
+				query: {
+					username: 'webuntisusername',
+					password: 'secret123',
+					url: 'url.com',
+				},
 			},
-		}, {
-			datatype: 'inclusive',
-			courseMetadataIds: [],
-		});
+			{
+				datatype: 'inclusive',
+				courseMetadataIds: [],
+			},
+		);
 		expect(paramsWithData).to.not.be.false;
 
 		const dryrunParams = WebUntisSyncer.params({
@@ -76,7 +79,9 @@ describe('webuntis Syncer', () => {
 		const syncer = new WebUntisSyncer(app, {}, undefined, ...args);
 		const result = await syncer.sync();
 		expect(result.success).to.eq(true);
-		const metadata = await app.service('webuntisMetadata').find({ query: { datasourceId } });
+		const metadata = await app
+			.service('webuntisMetadata')
+			.find({ query: { datasourceId } });
 		expect(metadata.total).to.be.greaterThan(0);
 		metadata.data.forEach((el) => {
 			expect(el.state).to.equal('new');
@@ -87,34 +92,42 @@ describe('webuntis Syncer', () => {
 		const { _id: datasourceId } = await testObjects.createTestDatasource({
 			config: { target: 'webuntis' },
 		});
-		await Promise.all(new Array(20).fill('').map(
-			() => app.service('webuntisMetadata').create({
-				datasourceId,
-				teacher: 'Renz',
-				class: '2a',
-				room: '0-23',
-				subject: 'mathe',
-				state: 'new',
-			}),
-		));
-		const metadata = await app.service('webuntisMetadata')
+		await Promise.all(
+			new Array(20).fill('').map(() =>
+				app.service('webuntisMetadata').create({
+					datasourceId,
+					teacher: 'Renz',
+					class: '2a',
+					room: '0-23',
+					subject: 'mathe',
+					state: 'new',
+				}),
+			),
+		);
+		const metadata = await app
+			.service('webuntisMetadata')
 			.find({ query: { datasourceId, $limit: 5 } });
 		const toImport = metadata.data.map((md) => md._id);
-		const args = WebUntisSyncer.params({
-			datasourceId,
-			query: {
-				username: 'webuntisusername',
-				password: 'secret123',
-				url: 'url.com',
+		const args = WebUntisSyncer.params(
+			{
+				datasourceId,
+				query: {
+					username: 'webuntisusername',
+					password: 'secret123',
+					url: 'url.com',
+				},
 			},
-		}, {
-			datatype: 'inclusive',
-			courseMetadataIds: toImport,
-		});
+			{
+				datatype: 'inclusive',
+				courseMetadataIds: toImport,
+			},
+		);
 		const syncer = new WebUntisSyncer(app, {}, undefined, ...args);
 		const result = await syncer.sync();
 		expect(result.success).to.eq(true);
-		const updatedMetadata = await app.service('webuntisMetadata').find({ query: { datasourceId } });
+		const updatedMetadata = await app
+			.service('webuntisMetadata')
+			.find({ query: { datasourceId } });
 		expect(updatedMetadata.total).to.be.greaterThan(0);
 		updatedMetadata.data.forEach((el) => {
 			if (toImport.includes(el._id)) {
@@ -129,34 +142,42 @@ describe('webuntis Syncer', () => {
 		const { _id: datasourceId } = await testObjects.createTestDatasource({
 			config: { target: 'webuntis' },
 		});
-		await Promise.all(new Array(20).fill('').map(
-			() => app.service('webuntisMetadata').create({
-				datasourceId,
-				teacher: 'Renz',
-				class: '2a',
-				room: '0-23',
-				subject: 'mathe',
-				state: 'new',
-			}),
-		));
-		const metadata = await app.service('webuntisMetadata')
+		await Promise.all(
+			new Array(20).fill('').map(() =>
+				app.service('webuntisMetadata').create({
+					datasourceId,
+					teacher: 'Renz',
+					class: '2a',
+					room: '0-23',
+					subject: 'mathe',
+					state: 'new',
+				}),
+			),
+		);
+		const metadata = await app
+			.service('webuntisMetadata')
 			.find({ query: { datasourceId, $limit: 5 } });
 		const toDiscard = metadata.data.map((md) => md._id);
-		const args = WebUntisSyncer.params({
-			datasourceId,
-			query: {
-				username: 'webuntisusername',
-				password: 'secret123',
-				url: 'url.com',
+		const args = WebUntisSyncer.params(
+			{
+				datasourceId,
+				query: {
+					username: 'webuntisusername',
+					password: 'secret123',
+					url: 'url.com',
+				},
 			},
-		}, {
-			datatype: 'exclusive',
-			courseMetadataIds: toDiscard,
-		});
+			{
+				datatype: 'exclusive',
+				courseMetadataIds: toDiscard,
+			},
+		);
 		const syncer = new WebUntisSyncer(app, {}, undefined, ...args);
 		const result = await syncer.sync();
 		expect(result.success).to.eq(true);
-		const updatedMetadata = await app.service('webuntisMetadata').find({ query: { datasourceId } });
+		const updatedMetadata = await app
+			.service('webuntisMetadata')
+			.find({ query: { datasourceId } });
 		expect(updatedMetadata.total).to.be.greaterThan(0);
 		updatedMetadata.data.forEach((el) => {
 			if (toDiscard.includes(el._id)) {
@@ -186,7 +207,9 @@ describe('webuntis Syncer', () => {
 		});
 		await sleep(500); // give sync time to run
 
-		const updatedMetadata = await app.service('webuntisMetadata').find({ query: { datasourceId } });
+		const updatedMetadata = await app
+			.service('webuntisMetadata')
+			.find({ query: { datasourceId } });
 		expect(updatedMetadata.total).to.be.greaterThan(0);
 		updatedMetadata.data.forEach((el) => {
 			expect(el.state).to.equal('new');

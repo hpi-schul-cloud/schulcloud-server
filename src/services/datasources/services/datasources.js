@@ -2,15 +2,28 @@ const Ajv = require('ajv');
 const service = require('feathers-mongoose');
 const { authenticate } = require('@feathersjs/authentication');
 const {
-	iff, isProvider, validateSchema, disallow,
+	iff,
+	isProvider,
+	validateSchema,
+	disallow,
 } = require('feathers-hooks-common');
 const { datasourceModel } = require('../model');
 const {
-	updatedBy, createdBy, protectFields, validateParams,
+	updatedBy,
+	createdBy,
+	protectFields,
+	validateParams,
 } = require('../hooks');
 
-const { restrictToCurrentSchool, hasPermission, denyIfNotCurrentSchool } = require('../../../hooks');
-const { datasourcesCreateSchema, datasourcesPatchSchema } = require('../schemas');
+const {
+	restrictToCurrentSchool,
+	hasPermission,
+	denyIfNotCurrentSchool,
+} = require('../../../hooks');
+const {
+	datasourcesCreateSchema,
+	datasourcesPatchSchema,
+} = require('../schemas');
 
 /**
  * the datasources service manages the datasources collection.
@@ -27,9 +40,7 @@ const datasourceHooks = {
 	before: {
 		all: [
 			authenticate('jwt'),
-			iff(isProvider('external'), [
-				validateParams,
-			]),
+			iff(isProvider('external'), [validateParams]),
 		],
 		find: [
 			iff(isProvider('external'), [
@@ -68,7 +79,8 @@ const datasourceHooks = {
 		get: [
 			iff(isProvider('external'), [
 				denyIfNotCurrentSchool({
-					errorMessage: 'You do not have valid permissions to access this.',
+					errorMessage:
+						'You do not have valid permissions to access this.',
 				}),
 			]),
 		],

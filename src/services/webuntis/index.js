@@ -1,4 +1,7 @@
-const { webuntisMetadataService, webuntisMetadataServiceHooks } = require('./services/webuntisMetadata');
+const {
+	webuntisMetadataService,
+	webuntisMetadataServiceHooks,
+} = require('./services/webuntisMetadata');
 
 /* In addition to setting up the service code, the service has to be included in src/index.js. */
 

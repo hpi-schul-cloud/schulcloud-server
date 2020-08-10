@@ -19,11 +19,15 @@ describe('news hooks', () => {
 				},
 			};
 			expect(() => preparePagination(context)).not.to.throw(Error);
-			expect(preparePagination(context).params.query).to.deep.equal({ $paginate: true });
+			expect(preparePagination(context).params.query).to.deep.equal({
+				$paginate: true,
+			});
 
 			context.params.query.$paginate = 'false';
 			expect(() => preparePagination(context)).not.to.throw(Error);
-			expect(preparePagination(context).params.query).to.deep.equal({ $paginate: false });
+			expect(preparePagination(context).params.query).to.deep.equal({
+				$paginate: false,
+			});
 		});
 
 		it('should work if no query is given', () => {
@@ -53,7 +57,11 @@ describe('news hooks', () => {
 				{ title: 'foo', content: 'bar', parentId: newsId },
 				{ title: 'baz', content: '420', parentId: newsId },
 				{ title: 'test', content: 'bla' },
-				{ title: 'title', content: 'content', parentId: new ObjectId() },
+				{
+					title: 'title',
+					content: 'content',
+					parentId: new ObjectId(),
+				},
 			]);
 
 			expect(await newsHistoryModel.countDocuments()).to.equal(4);

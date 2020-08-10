@@ -14,7 +14,9 @@ const {
 	createTestRole,
 	createTestSchool,
 } = require('../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(
+	app,
+);
 const teamHelper = require('../helpers/services/teams');
 const {
 	newsModel: News,
@@ -56,22 +58,34 @@ describe('news service', () => {
 					expect.fail('The previous call should have failed');
 				} catch (err) {
 					expect(err).to.be.instanceOf(BadRequest);
-					expect(err.message).that.equal('Authentication is required.');
+					expect(err.message).that.equal(
+						'Authentication is required.',
+					);
 				}
 			});
 
 			it('should return news items by id', async () => {
 				const school = await createTestSchool();
-				const studentUser = await createTestUser({ schoolId: school._id, roles: 'student' });
+				const studentUser = await createTestUser({
+					schoolId: school._id,
+					roles: 'student',
+				});
 				const schoolNews = await News.create({
 					schoolId: school._id,
 					creatorId: studentUser._id,
 					title: 'knightly news',
 					content: 'ni ni ni ni ni ni',
 				});
-				const studentParams = await generateRequestParamsFromUser(studentUser);
-				const result = await newsService.get(schoolNews._id, studentParams);
-				expect(result._id.toString()).to.equal(schoolNews._id.toString());
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
+				const result = await newsService.get(
+					schoolNews._id,
+					studentParams,
+				);
+				expect(result._id.toString()).to.equal(
+					schoolNews._id.toString(),
+				);
 				expect(result.title).to.equal(schoolNews.title);
 				expect(result.content).that.equal(schoolNews.content);
 			});
@@ -80,10 +94,20 @@ describe('news service', () => {
 				const schoolId = (await createTestSchool())._id;
 				const school2Id = (await createTestSchool())._id;
 				const teams = teamHelper(app, { schoolId });
-				const adminUser = await createTestUser({ schoolId, roles: 'administrator' });
-				const teacherUser = await createTestUser({ schoolId: school2Id, roles: 'teacher' });
+				const adminUser = await createTestUser({
+					schoolId,
+					roles: 'administrator',
+				});
+				const teacherUser = await createTestUser({
+					schoolId: school2Id,
+					roles: 'teacher',
+				});
 				const team = await teams.create(teacherUser);
-				await teams.addTeamUserToTeam(team._id, adminUser, 'teammember');
+				await teams.addTeamUserToTeam(
+					team._id,
+					adminUser,
+					'teammember',
+				);
 				const news = await News.create({
 					schoolId,
 					creatorId: adminUser._id,
@@ -92,7 +116,9 @@ describe('news service', () => {
 					target: team._id,
 					targetModel: 'teams',
 				});
-				const adminParams = await generateRequestParamsFromUser(adminUser);
+				const adminParams = await generateRequestParamsFromUser(
+					adminUser,
+				);
 				const result = await newsService.get(news._id, adminParams);
 				expect(result).to.not.equal(undefined);
 				expect(result._id.toString()).to.equal(news._id.toString());
@@ -106,10 +132,13 @@ describe('news service', () => {
 					creatorId: noRoleUser._id,
 					schoolId,
 					title: 'bridge news',
-					content: 'What is thy name? What is thy task? What is thy favourite colour?',
+					content:
+						'What is thy name? What is thy task? What is thy favourite colour?',
 				});
 				expect(noRoleUser.roles.length).to.equal(0);
-				const noRoleParams = await generateRequestParamsFromUser(noRoleUser);
+				const noRoleParams = await generateRequestParamsFromUser(
+					noRoleUser,
+				);
 				try {
 					await newsService.get(schoolNews._id, noRoleParams);
 					expect.fail('The previous call should have failed');
@@ -127,8 +156,13 @@ describe('news service', () => {
 					title: 'French news',
 					content: 'obtenir la vache!',
 				});
-				const studentUser = await createTestUser({ schoolId: otherSchoolId, roles: 'student' });
-				const studentParams = await generateRequestParamsFromUser(studentUser);
+				const studentUser = await createTestUser({
+					schoolId: otherSchoolId,
+					roles: 'student',
+				});
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
 				try {
 					await newsService.get(schoolNews._id, studentParams);
 					expect.fail('The previous call should have failed');
@@ -139,8 +173,13 @@ describe('news service', () => {
 
 			it('should respond with an error if no news exist for the given id', async () => {
 				const schoolId = (await createTestSchool())._id;
-				const studentUser = await createTestUser({ schoolId, roles: 'student' });
-				const studentParams = await generateRequestParamsFromUser(studentUser);
+				const studentUser = await createTestUser({
+					schoolId,
+					roles: 'student',
+				});
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
 				try {
 					await newsService.get(new ObjectId(), studentParams);
 					expect.fail('The previous call should have failed');
@@ -174,11 +213,14 @@ describe('news service', () => {
 					title: 'hacker news',
 					content:
 						"I can't access news articles that are not public yet",
-					displayAt:
-						now + weekInMilSeconds,
+					displayAt: now + weekInMilSeconds,
 				});
-				const studentParams = await generateRequestParamsFromUser(studentUser);
-				const adminParams = await generateRequestParamsFromUser(adminUser);
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
+				const adminParams = await generateRequestParamsFromUser(
+					adminUser,
+				);
 
 				try {
 					await newsService.get(schoolNews._id, studentParams);
@@ -187,7 +229,10 @@ describe('news service', () => {
 					expect(err).to.be.instanceOf(Forbidden);
 					expect(err.code).to.equal(403);
 				} finally {
-					const result = await newsService.get(schoolNews._id, adminParams);
+					const result = await newsService.get(
+						schoolNews._id,
+						adminParams,
+					);
 					expect(result.title).to.be.equal('hacker news');
 				}
 			});
@@ -214,7 +259,9 @@ describe('news service', () => {
 					expect.fail('The previous call should have failed');
 				} catch (err) {
 					expect(err).to.be.instanceOf(BadRequest);
-					expect(err.message).that.equal('Authentication is required.');
+					expect(err.message).that.equal(
+						'Authentication is required.',
+					);
 				}
 			});
 
@@ -240,11 +287,20 @@ describe('news service', () => {
 						content: 'we have content, too',
 					},
 				]);
-				const studentUser = await createTestUser({ schoolId, roles: 'student' }); // user is student at school A
-				const studentParams = await generateRequestParamsFromUser(studentUser);
+				const studentUser = await createTestUser({
+					schoolId,
+					roles: 'student',
+				}); // user is student at school A
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
 				const result = await newsService.find(studentParams);
 				expect(result.total).to.equal(2);
-				expect(result.data.every((item) => item.title.includes('school A news'))).to.equal(true);
+				expect(
+					result.data.every((item) =>
+						item.title.includes('school A news'),
+					),
+				).to.equal(true);
 			});
 
 			it('should not return any news items if the user has no NEWS_VIEW permission', async () => {
@@ -270,7 +326,9 @@ describe('news service', () => {
 					},
 				]);
 				const noRoleUser = await createTestUser({ schoolId }); // user is at school A, but has no role
-				const noRoleParams = await generateRequestParamsFromUser(noRoleUser);
+				const noRoleParams = await generateRequestParamsFromUser(
+					noRoleUser,
+				);
 				const result = await newsService.find(noRoleParams);
 				expect(result.total).to.equal(0);
 			});
@@ -278,8 +336,14 @@ describe('news service', () => {
 			it('should return team news of teams the user is in', async () => {
 				const schoolId = (await createTestSchool())._id;
 				const teams = teamHelper(app, { schoolId });
-				const adminUser = await createTestUser({ schoolId, roles: 'administrator' });
-				const teacherUser = await createTestUser({ schoolId, roles: 'teacher' });
+				const adminUser = await createTestUser({
+					schoolId,
+					roles: 'administrator',
+				});
+				const teacherUser = await createTestUser({
+					schoolId,
+					roles: 'teacher',
+				});
 				const teamA = await teams.create(adminUser);
 				const teamB = await teams.create(teacherUser);
 				await News.create([
@@ -314,22 +378,40 @@ describe('news service', () => {
 						targetModel: 'teams',
 					},
 				]);
-				const adminParams = await generateRequestParamsFromUser(adminUser);
+				const adminParams = await generateRequestParamsFromUser(
+					adminUser,
+				);
 				const result = await newsService.find(adminParams);
 				expect(result.total).to.equal(3);
-				expect(result.data.some((item) => item.title === 'school news')).to.equal(true);
-				expect(result.data.some((item) => item.title === 'team A news')).to.equal(true);
-				expect(result.data.some((item) => item.title === 'team A news 2')).to.equal(true);
+				expect(
+					result.data.some((item) => item.title === 'school news'),
+				).to.equal(true);
+				expect(
+					result.data.some((item) => item.title === 'team A news'),
+				).to.equal(true);
+				expect(
+					result.data.some((item) => item.title === 'team A news 2'),
+				).to.equal(true);
 			});
 
 			it('should return team news of non-school teams the user is in', async () => {
 				const teamSchoolId = (await createTestSchool())._id;
 				const schoolId = (await createTestSchool())._id;
 				const teams = teamHelper(app, { schoolId: teamSchoolId });
-				const adminUser = await createTestUser({ schoolId, roles: 'administrator' });
-				const teacherUser = await createTestUser({ schoolId: teamSchoolId, roles: 'teacher' });
+				const adminUser = await createTestUser({
+					schoolId,
+					roles: 'administrator',
+				});
+				const teacherUser = await createTestUser({
+					schoolId: teamSchoolId,
+					roles: 'teacher',
+				});
 				const team = await teams.create(teacherUser);
-				await teams.addTeamUserToTeam(team._id, adminUser, 'teammember');
+				await teams.addTeamUserToTeam(
+					team._id,
+					adminUser,
+					'teammember',
+				);
 				await News.create([
 					{
 						schoolId: teamSchoolId,
@@ -354,22 +436,40 @@ describe('news service', () => {
 						targetModel: 'teams',
 					},
 				]);
-				const adminParams = await generateRequestParamsFromUser(adminUser);
+				const adminParams = await generateRequestParamsFromUser(
+					adminUser,
+				);
 				const result = await newsService.find(adminParams);
 				expect(result.total).to.equal(2);
-				expect(result.data.some((item) => item.title === 'school news')).to.equal(false);
-				expect(result.data.some((item) => item.title === 'team news')).to.equal(true);
-				expect(result.data.some((item) => item.title === 'team news 2')).to.equal(true);
+				expect(
+					result.data.some((item) => item.title === 'school news'),
+				).to.equal(false);
+				expect(
+					result.data.some((item) => item.title === 'team news'),
+				).to.equal(true);
+				expect(
+					result.data.some((item) => item.title === 'team news 2'),
+				).to.equal(true);
 			});
 
 			it('should not return team news if the user has no NEWS_VIEW permission inside the team', async () => {
 				const schoolId = (await createTestSchool())._id;
 				const teams = teamHelper(app, { schoolId });
-				const studentUser = await createTestUser({ schoolId, roles: 'student' });
-				const teacherUser = await createTestUser({ schoolId, roles: 'teacher' });
+				const studentUser = await createTestUser({
+					schoolId,
+					roles: 'student',
+				});
+				const teacherUser = await createTestUser({
+					schoolId,
+					roles: 'teacher',
+				});
 				const team = await teams.create(teacherUser);
 				await createTestRole({ name: 'teamuser', permissions: [] });
-				await teams.addTeamUserToTeam(team._id, studentUser, 'teamuser');
+				await teams.addTeamUserToTeam(
+					team._id,
+					studentUser,
+					'teamuser',
+				);
 				await News.create([
 					{
 						schoolId,
@@ -380,7 +480,9 @@ describe('news service', () => {
 						targetModel: 'teams',
 					},
 				]);
-				const studentParams = await generateRequestParamsFromUser(studentUser);
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
 				const result = await newsService.find(studentParams);
 				expect(result.total).to.equal(0);
 			});
@@ -401,13 +503,22 @@ describe('news service', () => {
 						content: 'even more content',
 					},
 				]);
-				const studentUser = await createTestUser({ schoolId, roles: 'student' });
-				const studentParams = await generateRequestParamsFromUser(studentUser);
+				const studentUser = await createTestUser({
+					schoolId,
+					roles: 'student',
+				});
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
 
 				// default: $paginate=true
 				const paginatedResult = await newsService.find(studentParams);
 				expect(paginatedResult.total).to.equal(2);
-				expect(paginatedResult.data.every((item) => item.title.includes('school news'))).to.equal(true);
+				expect(
+					paginatedResult.data.every((item) =>
+						item.title.includes('school news'),
+					),
+				).to.equal(true);
 
 				// query param:
 				studentParams.query = { $paginate: false };
@@ -418,8 +529,13 @@ describe('news service', () => {
 
 			it('should paginate unpublished news, even if empty', async () => {
 				const schoolId = new ObjectId();
-				const studentUser = await createTestUser({ schoolId, roles: 'student' });
-				const studentParams = await generateRequestParamsFromUser(studentUser);
+				const studentUser = await createTestUser({
+					schoolId,
+					roles: 'student',
+				});
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
 				studentParams.query = { unpublished: true };
 
 				const paginatedResult = await newsService.find(studentParams);
@@ -450,8 +566,13 @@ describe('news service', () => {
 						content: 'content galore',
 					},
 				]);
-				const studentUser = await createTestUser({ schoolId, roles: 'student' });
-				const studentParams = await generateRequestParamsFromUser(studentUser);
+				const studentUser = await createTestUser({
+					schoolId,
+					roles: 'student',
+				});
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
 				studentParams.query = { sort: '-title' };
 				const result = await newsService.find(studentParams);
 				expect(result.total).to.equal(3);
@@ -486,8 +607,13 @@ describe('news service', () => {
 						createdAt: new Date('2019/06/03'),
 					},
 				]);
-				const studentUser = await createTestUser({ schoolId, roles: 'student' });
-				const studentParams = await generateRequestParamsFromUser(studentUser);
+				const studentUser = await createTestUser({
+					schoolId,
+					roles: 'student',
+				});
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
 				studentParams.query = { sort: 'createdAt' };
 				const result = await newsService.find(studentParams);
 				expect(result.total).to.equal(3);
@@ -533,15 +659,21 @@ describe('news service', () => {
 					schoolId,
 					roles: 'student',
 				});
-				const studentParams = await generateRequestParamsFromUser(studentUser);
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
 				// studentParams.query = { pusblished: true }; this is deafault
 				const result = await newsService.find(studentParams);
 				expect(result.total).to.equal(2);
 				expect(
-					result.data.every((item) => item.title.includes('school A news')),
+					result.data.every((item) =>
+						item.title.includes('school A news'),
+					),
 				).to.equal(true);
 				expect(
-					result.data.every((item) => item.title.includes('Unpublished newstitle')),
+					result.data.every((item) =>
+						item.title.includes('Unpublished newstitle'),
+					),
 				).to.equal(false);
 			});
 
@@ -596,7 +728,9 @@ describe('news service', () => {
 						displayAt: new Date('2019-09-01T10:01:58.135Z'),
 					},
 				]);
-				const adminParams = await generateRequestParamsFromUser(adminUser);
+				const adminParams = await generateRequestParamsFromUser(
+					adminUser,
+				);
 				const result = await newsService.find(adminParams);
 				expect(result.total).to.equal(1);
 				expect(
@@ -656,13 +790,17 @@ describe('news service', () => {
 					},
 				]);
 
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
 				teacherParams.query = { unpublished: true };
 				const result = await newsService.find(teacherParams);
 
 				expect(result.total).to.equal(3);
 				expect(
-					result.data.every((item) => item.title.includes('Unpublished')),
+					result.data.every((item) =>
+						item.title.includes('Unpublished'),
+					),
 				).to.equal(true);
 			});
 
@@ -717,20 +855,27 @@ describe('news service', () => {
 					},
 				]);
 
-				const studentParams = await generateRequestParamsFromUser(studentUser);
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
 				studentParams.query = { unpublished: true };
 				const studentResult = await newsService.find(studentParams);
 
-
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
 				teacherParams.query = { unpublished: true };
 				const teacherResult2 = await newsService.find(teacherParams);
 				// filter out any news that have display date in the past or now for testing purpose.
-				const filteredResult = teacherResult2.data.filter((a) => a.displayAt > Date.now());
+				const filteredResult = teacherResult2.data.filter(
+					(a) => a.displayAt > Date.now(),
+				);
 
 				expect(teacherResult2.total).to.equal(3);
-				expect(teacherResult2.data.length).to.be.equal(filteredResult.length,
-					'something is wrong with the query');
+				expect(teacherResult2.data.length).to.be.equal(
+					filteredResult.length,
+					'something is wrong with the query',
+				);
 				expect(studentResult.total).to.equal(0);
 			});
 
@@ -765,7 +910,9 @@ describe('news service', () => {
 					},
 				]);
 
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
 				teacherParams.query = { unpublished: true, sort: 'displayAt' };
 
 				const result = await newsService.find(teacherParams);
@@ -787,10 +934,14 @@ describe('news service', () => {
 
 				// returns a random string
 				function titleAndContentGenerator() {
-					const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+					const characters =
+						'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 					let result = '';
 					for (let i = 0; i < 8; i += 1) {
-						result += characters[Math.floor(Math.random() * characters.length)];
+						result +=
+							characters[
+								Math.floor(Math.random() * characters.length)
+							];
 					}
 					return result;
 				}
@@ -814,19 +965,24 @@ describe('news service', () => {
 					});
 				}
 
-				const randomNumber = Math.floor(Math.random() * newsArray.length);
+				const randomNumber = Math.floor(
+					Math.random() * newsArray.length,
+				);
 				newsArray[randomNumber].content = 'I will always be first';
 				newsArray[randomNumber].displayAt = 31415926535897;
 
-
 				await News.create(newsArray);
 
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
 				teacherParams.query = { unpublished: true, sort: '-displayAt' };
 
 				const result = await newsService.find(teacherParams);
 
-				expect(result.data[0].content).to.equal('I will always be first');
+				expect(result.data[0].content).to.equal(
+					'I will always be first',
+				);
 			});
 
 			after(async () => {
@@ -839,7 +995,10 @@ describe('news service', () => {
 			it('should not work without authentication', async () => {
 				// external request
 				try {
-					await newsService.create({ foo: 'bar' }, { provider: 'rest' });
+					await newsService.create(
+						{ foo: 'bar' },
+						{ provider: 'rest' },
+					);
 					expect.fail('The previous call should have failed');
 				} catch (err) {
 					expect(err).to.be.instanceOf(NotAuthenticated);
@@ -851,20 +1010,30 @@ describe('news service', () => {
 					expect.fail('The previous call should have failed');
 				} catch (err) {
 					expect(err).to.be.instanceOf(BadRequest);
-					expect(err.message).that.equal('Authentication is required.');
+					expect(err.message).that.equal(
+						'Authentication is required.',
+					);
 				}
 			});
 
-			it('should enable to create news items at the user\'s school', async () => {
+			it("should enable to create news items at the user's school", async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
-				const teacherUser = await createTestUser({ schoolId, roles: 'teacher' });
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
-				const result = await newsService.create({
+				const teacherUser = await createTestUser({
 					schoolId,
-					title: 'school news',
-					content: 'foo bar baz',
-				}, teacherParams);
+					roles: 'teacher',
+				});
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
+				const result = await newsService.create(
+					{
+						schoolId,
+						title: 'school news',
+						content: 'foo bar baz',
+					},
+					teacherParams,
+				);
 
 				expect(result).to.not.equal(undefined);
 				expect(result._id).to.not.equal(undefined);
@@ -874,13 +1043,21 @@ describe('news service', () => {
 			it('should enable administrators to create school news', async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
-				const adminUser = await createTestUser({ schoolId, roles: 'administrator' });
-				const adminParams = await generateRequestParamsFromUser(adminUser);
-				const result = await newsService.create({
+				const adminUser = await createTestUser({
 					schoolId,
-					title: 'admin news',
-					content: 'content from an admin',
-				}, adminParams);
+					roles: 'administrator',
+				});
+				const adminParams = await generateRequestParamsFromUser(
+					adminUser,
+				);
+				const result = await newsService.create(
+					{
+						schoolId,
+						title: 'admin news',
+						content: 'content from an admin',
+					},
+					adminParams,
+				);
 				expect(result).to.not.equal(undefined);
 				expect(result._id).to.not.equal(undefined);
 				expect(await News.count({ schoolId })).to.equal(1);
@@ -890,15 +1067,21 @@ describe('news service', () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
 				const studentUser = await createTestUser({
-					schoolId, roles: 'student',
+					schoolId,
+					roles: 'student',
 				}); // student lacks the permission
-				const studentParams = await generateRequestParamsFromUser(studentUser);
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
 				try {
-					await newsService.create({
-						schoolId,
-						title: 'school news',
-						content: 'foo bar baz',
-					}, studentParams);
+					await newsService.create(
+						{
+							schoolId,
+							title: 'school news',
+							content: 'foo bar baz',
+						},
+						studentParams,
+					);
 					expect.fail('The previous call should have failed.');
 				} catch (err) {
 					expect(err).to.be.instanceOf(Forbidden);
@@ -910,17 +1093,25 @@ describe('news service', () => {
 			it('should enable creating news in scopes the user has the necessary permissions in', async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
-				const teacherUser = await createTestUser({ schoolId, roles: 'teacher' });
+				const teacherUser = await createTestUser({
+					schoolId,
+					roles: 'teacher',
+				});
 				const teams = teamHelper(app, { schoolId });
 				const team = await teams.create(teacherUser);
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
-				const result = await newsService.create({
-					schoolId,
-					title: 'school news',
-					content: 'foo bar baz',
-					target: team._id,
-					targetModel: 'teams',
-				}, teacherParams);
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
+				const result = await newsService.create(
+					{
+						schoolId,
+						title: 'school news',
+						content: 'foo bar baz',
+						target: team._id,
+						targetModel: 'teams',
+					},
+					teacherParams,
+				);
 				expect(result).to.not.equal(undefined);
 				expect(result._id).to.not.equal(undefined);
 				expect(await News.count({ schoolId })).to.equal(1);
@@ -929,19 +1120,30 @@ describe('news service', () => {
 			it('should not allow creating news in other scopes', async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
-				const teacherUser = await createTestUser({ schoolId, roles: 'teacher' });
-				const studentUser = await createTestUser({ schoolId, roles: 'student' });
+				const teacherUser = await createTestUser({
+					schoolId,
+					roles: 'teacher',
+				});
+				const studentUser = await createTestUser({
+					schoolId,
+					roles: 'student',
+				});
 				const teams = teamHelper(app, { schoolId });
 				const team = await teams.create(studentUser);
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
 				try {
-					await newsService.create({
-						schoolId,
-						title: 'school news',
-						content: 'foo bar baz',
-						target: team._id,
-						targetModel: 'teams',
-					}, teacherParams);
+					await newsService.create(
+						{
+							schoolId,
+							title: 'school news',
+							content: 'foo bar baz',
+							target: team._id,
+							targetModel: 'teams',
+						},
+						teacherParams,
+					);
 					expect.fail('The previous call should have failed.');
 				} catch (err) {
 					expect(err).to.be.instanceOf(Forbidden);
@@ -950,31 +1152,51 @@ describe('news service', () => {
 				}
 			});
 
-			it('should set the creatorId to the creating user\'s id', async () => {
+			it("should set the creatorId to the creating user's id", async () => {
 				const schoolId = (await createTestSchool())._id;
-				const teacherUser = await createTestUser({ schoolId, roles: 'teacher' });
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
-				const result = await newsService.create({
+				const teacherUser = await createTestUser({
 					schoolId,
-					title: 'school news',
-					content: 'foo bar baz',
-				}, teacherParams);
+					roles: 'teacher',
+				});
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
+				const result = await newsService.create(
+					{
+						schoolId,
+						title: 'school news',
+						content: 'foo bar baz',
+					},
+					teacherParams,
+				);
 				expect(result).to.not.equal(undefined);
-				expect(result.creatorId.toString()).to.equal(teacherUser._id.toString());
+				expect(result.creatorId.toString()).to.equal(
+					teacherUser._id.toString(),
+				);
 			});
 
 			it('should not allow seting someone else as creator', async () => {
 				const schoolId = (await createTestSchool())._id;
-				const teacherUser = await createTestUser({ schoolId, roles: 'teacher' });
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
-				const result = await newsService.create({
+				const teacherUser = await createTestUser({
 					schoolId,
-					creatorId: (await createTestUser())._id,
-					title: 'school news',
-					content: 'foo bar baz',
-				}, teacherParams);
+					roles: 'teacher',
+				});
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
+				const result = await newsService.create(
+					{
+						schoolId,
+						creatorId: (await createTestUser())._id,
+						title: 'school news',
+						content: 'foo bar baz',
+					},
+					teacherParams,
+				);
 				expect(result).to.not.equal(undefined);
-				expect(result.creatorId.toString()).to.equal(teacherUser._id.toString());
+				expect(result.creatorId.toString()).to.equal(
+					teacherUser._id.toString(),
+				);
 			});
 
 			after(async () => {
@@ -987,7 +1209,9 @@ describe('news service', () => {
 			it('should not work without authentication', async () => {
 				// external request
 				try {
-					await newsService.remove(new ObjectId(), { provider: 'rest' });
+					await newsService.remove(new ObjectId(), {
+						provider: 'rest',
+					});
 					expect.fail('The previous call should have failed');
 				} catch (err) {
 					expect(err).to.be.instanceOf(NotAuthenticated);
@@ -999,14 +1223,19 @@ describe('news service', () => {
 					expect.fail('The previous call should have failed');
 				} catch (err) {
 					expect(err).to.be.instanceOf(BadRequest);
-					expect(err.message).that.equal('Authentication is required.');
+					expect(err.message).that.equal(
+						'Authentication is required.',
+					);
 				}
 			});
 
-			it('should delete news items at the user\'s school', async () => {
+			it("should delete news items at the user's school", async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
-				const teacherUser = await createTestUser({ schoolId, roles: 'teacher' });
+				const teacherUser = await createTestUser({
+					schoolId,
+					roles: 'teacher',
+				});
 				const news = await News.create({
 					title: 'Old news',
 					content: 'Please delete',
@@ -1014,7 +1243,9 @@ describe('news service', () => {
 					creatorId: (await createTestUser())._id,
 				});
 				expect(await News.count({ schoolId })).to.equal(1);
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
 				await newsService.remove(news._id, teacherParams);
 				expect(await News.count({ schoolId })).to.equal(0);
 			});
@@ -1023,7 +1254,8 @@ describe('news service', () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
 				const studentUser = await createTestUser({
-					schoolId, roles: 'student',
+					schoolId,
+					roles: 'student',
 				}); // student lacks the permission
 				const news = await News.create({
 					title: 'Old news',
@@ -1032,7 +1264,9 @@ describe('news service', () => {
 					creatorId: (await createTestUser())._id,
 				});
 				expect(await News.count({ schoolId })).to.equal(1);
-				const studentParams = await generateRequestParamsFromUser(studentUser);
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
 				try {
 					await newsService.remove(news._id, studentParams);
 					expect.fail('The previous call should have failed.');
@@ -1046,7 +1280,10 @@ describe('news service', () => {
 			it('should enable deleting news in scopes the user has the necessary permissions in', async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
-				const teacherUser = await createTestUser({ schoolId, roles: 'teacher' });
+				const teacherUser = await createTestUser({
+					schoolId,
+					roles: 'teacher',
+				});
 				const teams = teamHelper(app, { schoolId });
 				const team = await teams.create(teacherUser);
 				const teamNews = await News.create([
@@ -1068,7 +1305,9 @@ describe('news service', () => {
 					},
 				]);
 				expect(await News.count({ schoolId })).to.equal(2);
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
 				await newsService.remove(teamNews[0]._id, teacherParams);
 				expect(await News.count({ schoolId })).to.equal(1);
 			});
@@ -1076,8 +1315,14 @@ describe('news service', () => {
 			it('should not allow creating news in other scopes', async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
-				const teacherUser = await createTestUser({ schoolId, roles: 'teacher' });
-				const studentUser = await createTestUser({ schoolId, roles: 'student' });
+				const teacherUser = await createTestUser({
+					schoolId,
+					roles: 'teacher',
+				});
+				const studentUser = await createTestUser({
+					schoolId,
+					roles: 'student',
+				});
 				const teams = teamHelper(app, { schoolId });
 				const team = await teams.create(studentUser);
 				const teamNews = await News.create([
@@ -1098,7 +1343,9 @@ describe('news service', () => {
 						targetModel: 'teams',
 					},
 				]);
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
 				try {
 					await newsService.remove(teamNews[0]._id, teacherParams);
 					expect.fail('The previous call should have failed.');
@@ -1120,7 +1367,11 @@ describe('news service', () => {
 			it('should not work without authentication', async () => {
 				// external request
 				try {
-					await newsService.patch(new ObjectId(), { foo: 'bar' }, { provider: 'rest' });
+					await newsService.patch(
+						new ObjectId(),
+						{ foo: 'bar' },
+						{ provider: 'rest' },
+					);
 					expect.fail('The previous call should have failed');
 				} catch (err) {
 					expect(err).to.be.instanceOf(NotAuthenticated);
@@ -1132,36 +1383,54 @@ describe('news service', () => {
 					expect.fail('The previous call should have failed');
 				} catch (err) {
 					expect(err).to.be.instanceOf(BadRequest);
-					expect(err.message).that.equal('Authentication is required.');
+					expect(err.message).that.equal(
+						'Authentication is required.',
+					);
 				}
 			});
 
-			it('should enable to patch news items at the user\'s school', async () => {
+			it("should enable to patch news items at the user's school", async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
-				const teacherUser = await createTestUser({ schoolId, roles: 'teacher' });
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
+				const teacherUser = await createTestUser({
+					schoolId,
+					roles: 'teacher',
+				});
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
 				const news = await News.create({
 					title: 'school news',
 					content: 'some content',
 					schoolId,
 					creatorId: (await createTestUser())._id,
 				});
-				const patchedNews = await newsService.patch(news._id, { title: 'patched!' }, teacherParams);
+				const patchedNews = await newsService.patch(
+					news._id,
+					{ title: 'patched!' },
+					teacherParams,
+				);
 				expect(patchedNews).to.not.equal(undefined);
-				expect(patchedNews._id.toString()).to.equal(news._id.toString());
+				expect(patchedNews._id.toString()).to.equal(
+					news._id.toString(),
+				);
 				expect(patchedNews.title).to.equal('patched!');
 				expect(await News.count({ schoolId })).to.equal(1);
-				expect(await News.findOne({ title: 'patched!' })).to.not.equal(undefined);
+				expect(await News.findOne({ title: 'patched!' })).to.not.equal(
+					undefined,
+				);
 			});
 
 			it('should not allow patching news if the permission NEWS_EDIT is not set', async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
 				const studentUser = await createTestUser({
-					schoolId, roles: 'student',
+					schoolId,
+					roles: 'student',
 				}); // student lacks the permission
-				const studentParams = await generateRequestParamsFromUser(studentUser);
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
 				const news = await News.create({
 					title: 'school news',
 					content: 'some content',
@@ -1183,18 +1452,27 @@ describe('news service', () => {
 					expect(err).to.be.instanceOf(Forbidden);
 				} finally {
 					expect(await News.count({ schoolId })).to.equal(1);
-					expect(await News.count({ title: 'school news' })).to.equal(1);
-					expect(await News.count({ title: 'patched school news' })).to.equal(0);
+					expect(await News.count({ title: 'school news' })).to.equal(
+						1,
+					);
+					expect(
+						await News.count({ title: 'patched school news' }),
+					).to.equal(0);
 				}
 			});
 
 			it('should enable patching news in scopes the user has the necessary permissions in', async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
-				const studentUser = await createTestUser({ schoolId, roles: 'student' });
+				const studentUser = await createTestUser({
+					schoolId,
+					roles: 'student',
+				});
 				const teams = teamHelper(app, { schoolId });
 				const team = await teams.create(studentUser);
-				const studentParams = await generateRequestParamsFromUser(studentUser);
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
 				const news = await News.create({
 					schoolId,
 					creatorId: (await createTestUser())._id,
@@ -1203,21 +1481,35 @@ describe('news service', () => {
 					target: team._id,
 					targetModel: 'teams',
 				});
-				const result = await newsService.patch(news._id, { content: 'patched content' }, studentParams);
+				const result = await newsService.patch(
+					news._id,
+					{ content: 'patched content' },
+					studentParams,
+				);
 				expect(result).to.not.equal(undefined);
 				expect(result._id.toString()).to.equal(news._id.toString());
 				expect(await News.count({ schoolId })).to.equal(1);
-				expect(await News.count({ content: 'patched content' })).to.equal(1);
+				expect(
+					await News.count({ content: 'patched content' }),
+				).to.equal(1);
 			});
 
 			it('should not allow patching news in other scopes', async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
-				const teacherUser = await createTestUser({ schoolId, roles: 'teacher' });
-				const studentUser = await createTestUser({ schoolId, roles: 'student' });
+				const teacherUser = await createTestUser({
+					schoolId,
+					roles: 'teacher',
+				});
+				const studentUser = await createTestUser({
+					schoolId,
+					roles: 'student',
+				});
 				const teams = teamHelper(app, { schoolId });
 				const team = await teams.create(studentUser);
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
 				const news = await News.create({
 					schoolId,
 					creatorId: studentUser._id,
@@ -1227,54 +1519,92 @@ describe('news service', () => {
 					targetModel: 'teams',
 				});
 				try {
-					await newsService.patch(news._id, { content: 'patched content in other scope' }, teacherParams);
+					await newsService.patch(
+						news._id,
+						{ content: 'patched content in other scope' },
+						teacherParams,
+					);
 					expect.fail('The previous call should have failed.');
 				} catch (err) {
 					expect(err).to.be.instanceOf(Forbidden);
 				} finally {
 					expect(await News.count({ schoolId })).to.equal(1);
-					expect(await News.count({ content: 'patched content in other scope' })).to.equal(0);
+					expect(
+						await News.count({
+							content: 'patched content in other scope',
+						}),
+					).to.equal(0);
 				}
 			});
 
-			it('should set the updaterId to the patching user\'s id', async () => {
+			it("should set the updaterId to the patching user's id", async () => {
 				const schoolId = (await createTestSchool())._id;
-				const teacherUser = await createTestUser({ schoolId, roles: 'teacher' });
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
+				const teacherUser = await createTestUser({
+					schoolId,
+					roles: 'teacher',
+				});
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
 				const news = await News.create({
 					title: 'school news',
 					content: 'some content',
 					schoolId,
 					creatorId: (await createTestUser())._id,
 				});
-				const patchedNews = await newsService.patch(news._id, { title: 'patched!' }, teacherParams);
+				const patchedNews = await newsService.patch(
+					news._id,
+					{ title: 'patched!' },
+					teacherParams,
+				);
 				expect(patchedNews).to.not.equal(undefined);
 				expect(patchedNews.updaterId).to.not.equal(undefined);
-				expect(patchedNews.updaterId.toString()).to.equal(teacherUser._id.toString());
-				expect(patchedNews.updater.firstName).to.equal(teacherUser.firstName);
-				expect(patchedNews.updater.lastName).to.equal(teacherUser.lastName);
-				expect(patchedNews.creatorId.toString()).to.equal(news.creatorId.toString());
+				expect(patchedNews.updaterId.toString()).to.equal(
+					teacherUser._id.toString(),
+				);
+				expect(patchedNews.updater.firstName).to.equal(
+					teacherUser.firstName,
+				);
+				expect(patchedNews.updater.lastName).to.equal(
+					teacherUser.lastName,
+				);
+				expect(patchedNews.creatorId.toString()).to.equal(
+					news.creatorId.toString(),
+				);
 			});
 
 			it.skip('should not allow patching the creatorId', async () => {
 				// skip until immutable is implemented
 				const schoolId = (await createTestSchool())._id;
-				const teacherUser = await createTestUser({ schoolId, roles: 'teacher' });
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
+				const teacherUser = await createTestUser({
+					schoolId,
+					roles: 'teacher',
+				});
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
 				const news = await News.create({
 					title: 'school news',
 					content: 'some content',
 					schoolId,
 					creatorId: (await createTestUser())._id,
 				});
-				const patchedNews = await newsService.patch(news._id, {
-					title: 'patched!',
-					creatorId: teacherUser._id,
-				}, teacherParams);
+				const patchedNews = await newsService.patch(
+					news._id,
+					{
+						title: 'patched!',
+						creatorId: teacherUser._id,
+					},
+					teacherParams,
+				);
 				expect(patchedNews).to.not.equal(undefined);
 				expect(patchedNews.updaterId).to.not.equal(undefined);
-				expect(patchedNews.updaterId.toString()).to.equal(teacherUser._id.toString());
-				expect(patchedNews.creatorId.toString()).to.equal(news.creatorId.toString());
+				expect(patchedNews.updaterId.toString()).to.equal(
+					teacherUser._id.toString(),
+				);
+				expect(patchedNews.creatorId.toString()).to.equal(
+					news.creatorId.toString(),
+				);
 			});
 
 			after(async () => {
@@ -1288,7 +1618,11 @@ describe('news service', () => {
 			it('should not work without authentication', async () => {
 				// external request
 				try {
-					await newsService.update(new ObjectId(), { foo: 'bar' }, { provider: 'rest' });
+					await newsService.update(
+						new ObjectId(),
+						{ foo: 'bar' },
+						{ provider: 'rest' },
+					);
 					expect.fail('The previous call should have failed');
 				} catch (err) {
 					expect(err).to.be.instanceOf(NotAuthenticated);
@@ -1300,38 +1634,58 @@ describe('news service', () => {
 					expect.fail('The previous call should have failed');
 				} catch (err) {
 					expect(err).to.be.instanceOf(BadRequest);
-					expect(err.message).that.equal('Authentication is required.');
+					expect(err.message).that.equal(
+						'Authentication is required.',
+					);
 				}
 			});
 
-			it('should enable to update news items at the user\'s school', async () => {
+			it("should enable to update news items at the user's school", async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
-				const teacherUser = await createTestUser({ schoolId, roles: 'teacher' });
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
+				const teacherUser = await createTestUser({
+					schoolId,
+					roles: 'teacher',
+				});
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
 				const news = await News.create({
 					title: 'school news',
 					content: 'some content',
 					schoolId,
 					creatorId: (await createTestUser())._id,
 				});
-				const updatedNews = await newsService.patch(news._id, {
-					title: 'updated!', content: news.content, schoolId,
-				}, teacherParams);
+				const updatedNews = await newsService.patch(
+					news._id,
+					{
+						title: 'updated!',
+						content: news.content,
+						schoolId,
+					},
+					teacherParams,
+				);
 				expect(updatedNews).to.not.equal(undefined);
-				expect(updatedNews._id.toString()).to.equal(news._id.toString());
+				expect(updatedNews._id.toString()).to.equal(
+					news._id.toString(),
+				);
 				expect(updatedNews.title).to.equal('updated!');
 				expect(await News.count({ schoolId })).to.equal(1);
-				expect(await News.findOne({ title: 'updated!' })).to.not.equal(undefined);
+				expect(await News.findOne({ title: 'updated!' })).to.not.equal(
+					undefined,
+				);
 			});
 
 			it('should not allow updating news if the permission NEWS_EDIT is not set', async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
 				const studentUser = await createTestUser({
-					schoolId, roles: 'student',
+					schoolId,
+					roles: 'student',
 				}); // student lacks the permission
-				const studentParams = await generateRequestParamsFromUser(studentUser);
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
 				const news = await News.create({
 					title: 'school news',
 					content: 'some content',
@@ -1353,18 +1707,27 @@ describe('news service', () => {
 					expect(err).to.be.instanceOf(Forbidden);
 				} finally {
 					expect(await News.count({ schoolId })).to.equal(1);
-					expect(await News.count({ title: 'school news' })).to.equal(1);
-					expect(await News.count({ title: 'updated school news' })).to.equal(0);
+					expect(await News.count({ title: 'school news' })).to.equal(
+						1,
+					);
+					expect(
+						await News.count({ title: 'updated school news' }),
+					).to.equal(0);
 				}
 			});
 
 			it('should enable updating news in scopes the user has the necessary permissions in', async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
-				const studentUser = await createTestUser({ schoolId, roles: 'student' });
+				const studentUser = await createTestUser({
+					schoolId,
+					roles: 'student',
+				});
 				const teams = teamHelper(app, { schoolId });
 				const team = await teams.create(studentUser);
-				const studentParams = await generateRequestParamsFromUser(studentUser);
+				const studentParams = await generateRequestParamsFromUser(
+					studentUser,
+				);
 				const news = await News.create({
 					schoolId,
 					creatorId: (await createTestUser())._id,
@@ -1373,23 +1736,40 @@ describe('news service', () => {
 					target: team._id,
 					targetModel: 'teams',
 				});
-				const result = await newsService.update(news._id, {
-					content: 'updated content', title: news.title, schoolId, creatorId: news.creatorId,
-				}, studentParams);
+				const result = await newsService.update(
+					news._id,
+					{
+						content: 'updated content',
+						title: news.title,
+						schoolId,
+						creatorId: news.creatorId,
+					},
+					studentParams,
+				);
 				expect(result).to.not.equal(undefined);
 				expect(result._id.toString()).to.equal(news._id.toString());
 				expect(await News.count({ schoolId })).to.equal(1);
-				expect(await News.count({ content: 'updated content' })).to.equal(1);
+				expect(
+					await News.count({ content: 'updated content' }),
+				).to.equal(1);
 			});
 
 			it('should not allow patching news in other scopes', async () => {
 				const schoolId = (await createTestSchool())._id;
 				expect(await News.count({ schoolId })).to.equal(0);
-				const teacherUser = await createTestUser({ schoolId, roles: 'teacher' });
-				const studentUser = await createTestUser({ schoolId, roles: 'student' });
+				const teacherUser = await createTestUser({
+					schoolId,
+					roles: 'teacher',
+				});
+				const studentUser = await createTestUser({
+					schoolId,
+					roles: 'student',
+				});
 				const teams = teamHelper(app, { schoolId });
 				const team = await teams.create(studentUser);
-				const teacherParams = await generateRequestParamsFromUser(teacherUser);
+				const teacherParams = await generateRequestParamsFromUser(
+					teacherUser,
+				);
 				const news = await News.create({
 					schoolId,
 					creatorId: studentUser._id,
@@ -1399,15 +1779,25 @@ describe('news service', () => {
 					targetModel: 'teams',
 				});
 				try {
-					await newsService.update(news._id, {
-						content: 'updated content in other scope', title: news.title, schoolId,
-					}, teacherParams);
+					await newsService.update(
+						news._id,
+						{
+							content: 'updated content in other scope',
+							title: news.title,
+							schoolId,
+						},
+						teacherParams,
+					);
 					expect.fail('The previous call should have failed.');
 				} catch (err) {
 					expect(err).to.be.instanceOf(Forbidden);
 				} finally {
 					expect(await News.count({ schoolId })).to.equal(1);
-					expect(await News.count({ content: 'updated content in other scope' })).to.equal(0);
+					expect(
+						await News.count({
+							content: 'updated content in other scope',
+						}),
+					).to.equal(0);
 				}
 			});
 

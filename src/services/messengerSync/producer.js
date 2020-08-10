@@ -14,7 +14,11 @@ let channel;
 const sendToQueue = (message) => {
 	const msgJson = JSON.stringify(message);
 	const msgBuffer = Buffer.from(msgJson);
-	channel.sendToQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msgBuffer, { persistent: true });
+	channel.sendToQueue(
+		Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'),
+		msgBuffer,
+		{ persistent: true },
+	);
 };
 
 const requestFullSchoolSync = (school) => {
@@ -46,7 +50,10 @@ const requestSyncForEachTeamUser = async (team) => {
 		fullTeam = await teamsModel.findOne(
 			{ _id: team._id },
 			{
-				_id: 1, name: 1, userIds: 1, features: 1,
+				_id: 1,
+				name: 1,
+				userIds: 1,
+				features: 1,
 			},
 		);
 	}
@@ -79,11 +86,13 @@ const requestSyncForEachSchoolUser = async (schoolId) => {
 
 const setup = (app_) => {
 	app = app_;
-	return createChannel()
-		.then((createdChannel) => {
-			channel = createdChannel;
-			return channel.assertQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true });
-		});
+	return createChannel().then((createdChannel) => {
+		channel = createdChannel;
+		return channel.assertQueue(
+			Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'),
+			{ durable: true },
+		);
+	});
 };
 
 module.exports = {

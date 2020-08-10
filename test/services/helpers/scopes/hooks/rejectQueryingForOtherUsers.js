@@ -12,9 +12,13 @@ describe('rejectQueryingOtherUsers', () => {
 		const userId = new ObjectId();
 		const id = new ObjectId().toString();
 		const params = { account: { userId } };
-		expect(() => fut({
-			method: 'get', id, params,
-		})).to.throw(Forbidden);
+		expect(() =>
+			fut({
+				method: 'get',
+				id,
+				params,
+			}),
+		).to.throw(Forbidden);
 	});
 
 	it('should fail if a user requests a different user id on FIND', () => {
@@ -34,7 +38,9 @@ describe('rejectQueryingOtherUsers', () => {
 			account: { userId },
 			route: { scopeId: id },
 		};
-		expect(() => fut({ method: 'find', params, path: `users/${id}/courses` })).to.throw(Forbidden);
+		expect(() =>
+			fut({ method: 'find', params, path: `users/${id}/courses` }),
+		).to.throw(Forbidden);
 	});
 
 	it('should fail if no user id is requested', () => {
@@ -56,12 +62,19 @@ describe('rejectQueryingOtherUsers', () => {
 		const params = {
 			account: { userId },
 		};
-		expect(() => fut({ method: 'find', params: { ...params, query: { userId: id } } })).not.to.throw();
+		expect(() =>
+			fut({
+				method: 'find',
+				params: { ...params, query: { userId: id } },
+			}),
+		).not.to.throw();
 		expect(() => fut({ method: 'get', id, params })).not.to.throw();
-		expect(() => fut({
-			method: 'find',
-			params: { ...params, route: { scopeId: id } },
-			path: `users/${id}/courses`,
-		})).not.to.throw();
+		expect(() =>
+			fut({
+				method: 'find',
+				params: { ...params, route: { scopeId: id } },
+				path: `users/${id}/courses`,
+			}),
+		).not.to.throw();
 	});
 });

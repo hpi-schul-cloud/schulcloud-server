@@ -17,7 +17,8 @@ module.exports = {
 		// access to the correct database connection. Otherwise Mongoose calls never return.
 
 		const demoItem = new Clipboard({
-			foo: 'take care, the collection exist, otherwise direct removal fails',
+			foo:
+				'take care, the collection exist, otherwise direct removal fails',
 		});
 		await demoItem.save();
 

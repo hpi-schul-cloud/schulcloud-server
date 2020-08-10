@@ -1,5 +1,11 @@
-const { UserResolver, userResolverHooks } = require('./services/userResolveService');
-const { ScopeResolver, scopeResolverHooks } = require('./services/scopeResolverService');
+const {
+	UserResolver,
+	userResolverHooks,
+} = require('./services/userResolveService');
+const {
+	ScopeResolver,
+	scopeResolverHooks,
+} = require('./services/scopeResolverService');
 
 module.exports = (app) => {
 	// Initialize our service with any options it requires

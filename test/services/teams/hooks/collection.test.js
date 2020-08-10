@@ -185,8 +185,12 @@ describe('collection helpers', () => {
 
 		it('should return false for other types', () => {
 			expect(isObjectIdWithTryToCast(123)).to.equal(false);
-			expect(isObjectIdWithTryToCast('5c3da7980ba3be0a64f1d38ca')).to.equal(false);
-			expect(isObjectIdWithTryToCast({ _bsontype: 'ObjectID' })).to.equal(false);
+			expect(
+				isObjectIdWithTryToCast('5c3da7980ba3be0a64f1d38ca'),
+			).to.equal(false);
+			expect(isObjectIdWithTryToCast({ _bsontype: 'ObjectID' })).to.equal(
+				false,
+			);
 			expect(isObjectIdWithTryToCast('123')).to.equal(false);
 			expect(isObjectIdWithTryToCast(() => {})).to.equal(false);
 			expect(isObjectIdWithTryToCast([])).to.equal(false);
@@ -199,7 +203,9 @@ describe('collection helpers', () => {
 		});
 
 		it('throws a BadRequest error if applicable', () => {
-			expect(() => throwErrorIfNotObjectId('foobar')).to.throw(BadRequest);
+			expect(() => throwErrorIfNotObjectId('foobar')).to.throw(
+				BadRequest,
+			);
 			expect(() => throwErrorIfNotObjectId(1234)).to.throw(BadRequest);
 		});
 	});

@@ -13,8 +13,10 @@ const {
 } = require('../../../src/services/school/model');
 
 const testObjects = require('../helpers/testObjects')(app);
-const { create: createSchool, info: createdSchoolIds } = require('../helpers/services/schools')(app);
-
+const {
+	create: createSchool,
+	info: createdSchoolIds,
+} = require('../helpers/services/schools')(app);
 
 describe('school service', () => {
 	it('registered the schools services', () => {
@@ -27,7 +29,6 @@ describe('school service', () => {
 			expect(resultYear.name).to.be.equal(defaultYear.name);
 		});
 	};
-
 
 	describe('create school with or without year', () => {
 		let defaultYears = null;
@@ -51,10 +52,22 @@ describe('school service', () => {
 				account: undefined,
 			};
 			const result = await schoolService.find(params);
-			const expectedFields = ['purpose', 'name', '_id', 'id',
-				'systems', 'years', 'isTeamCreationByStudentsEnabled'];
-			const notExpectedFields = ['fileStorageType', 'documentBaseDir', 'inMaintenance', 'currentYear',
-				'federalState'];
+			const expectedFields = [
+				'purpose',
+				'name',
+				'_id',
+				'id',
+				'systems',
+				'years',
+				'isTeamCreationByStudentsEnabled',
+			];
+			const notExpectedFields = [
+				'fileStorageType',
+				'documentBaseDir',
+				'inMaintenance',
+				'currentYear',
+				'federalState',
+			];
 			result.data.forEach((school) => {
 				expectedFields.forEach((field) => {
 					expect(school).to.haveOwnProperty(field);
@@ -92,7 +105,8 @@ describe('school service', () => {
 			const result = await schoolService.find();
 			result.data.forEach((school) => {
 				compareSchoolYears(school.years.schoolYears, defaultYears);
-				expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
+				expect(school.isTeamCreationByStudentsEnabled).to.be.not
+					.undefined;
 			});
 		});
 
@@ -102,41 +116,57 @@ describe('school service', () => {
 			});
 			result.forEach((school) => {
 				compareSchoolYears(school.years.schoolYears, defaultYears);
-				expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
+				expect(school.isTeamCreationByStudentsEnabled).to.be.not
+					.undefined;
 			});
 		});
 
 		it('create school with currentYear defined explictly', async () => {
-			const serviceCreatedSchool = await schoolService.create(
-				{ ...sampleSchoolData, currentYear: sampleYear },
-			);
+			const serviceCreatedSchool = await schoolService.create({
+				...sampleSchoolData,
+				currentYear: sampleYear,
+			});
 			const { _id: schoolId } = serviceCreatedSchool;
 			createdSchoolIds.push(schoolId);
 			const out = await schoolService.get(schoolId);
 			expect(out, 'school has been saved').to.be.not.null;
-			expect(out.currentYear, 'the defined year has been added to the school').to.be.ok;
-			expect(equalIds(sampleYear._id, out.currentYear),
-				'the defined year has been added to the school').to.be.true;
+			expect(
+				out.currentYear,
+				'the defined year has been added to the school',
+			).to.be.ok;
+			expect(
+				equalIds(sampleYear._id, out.currentYear),
+				'the defined year has been added to the school',
+			).to.be.true;
 		});
 
 		it('create school with no currentYear defined that will be added', async () => {
-			const serviceCreatedSchool = await schoolService.create(sampleSchoolData);
+			const serviceCreatedSchool = await schoolService.create(
+				sampleSchoolData,
+			);
 			const { _id: schoolId } = serviceCreatedSchool;
 			createdSchoolIds.push(schoolId);
 			const out = await schoolService.get(schoolId);
 			expect(out, 'school has been saved').to.be.not.null;
 			const { currentYear } = out;
-			expect(currentYear, 'the defined year has been added to the school').to.be.ok;
-			const foundYear = defaultYears.filter((year) => equalIds(year._id, currentYear));
-			expect(foundYear.length, 'the auto added year exists in years').to.be.equal(1);
+			expect(currentYear, 'the defined year has been added to the school')
+				.to.be.ok;
+			const foundYear = defaultYears.filter((year) =>
+				equalIds(year._id, currentYear),
+			);
+			expect(
+				foundYear.length,
+				'the auto added year exists in years',
+			).to.be.equal(1);
 			// here we could test, we have defaultYear added but however we just need any year
 			// to be set and this should not test year logic
 		});
 
 		it('isExternal attribute is true when ldapSchoolIdentifier is not undefined', async () => {
-			const serviceCreatedSchool = await schoolService.create(
-				{ ...sampleSchoolData, ldapSchoolIdentifier: 'testId' },
-			);
+			const serviceCreatedSchool = await schoolService.create({
+				...sampleSchoolData,
+				ldapSchoolIdentifier: 'testId',
+			});
 			const { _id: schoolId } = serviceCreatedSchool;
 			createdSchoolIds.push(schoolId);
 			const school = await schoolService.get(schoolId);
@@ -144,9 +174,10 @@ describe('school service', () => {
 		});
 
 		it('isExternal attribute is true when source is not undefined', async () => {
-			const serviceCreatedSchool = await schoolService.create(
-				{ ...sampleSchoolData, source: 'testSource' },
-			);
+			const serviceCreatedSchool = await schoolService.create({
+				...sampleSchoolData,
+				source: 'testSource',
+			});
 			const { _id: schoolId } = serviceCreatedSchool;
 			createdSchoolIds.push(schoolId);
 			const school = await schoolService.get(schoolId);
@@ -154,9 +185,11 @@ describe('school service', () => {
 		});
 
 		it('isExternal attribute is true when ldapSchoolIdentifier and source are defined', async () => {
-			const serviceCreatedSchool = await schoolService.create(
-				{ ...sampleSchoolData, ldapSchoolIdentifier: 'testId', source: 'testSource' },
-			);
+			const serviceCreatedSchool = await schoolService.create({
+				...sampleSchoolData,
+				ldapSchoolIdentifier: 'testId',
+				source: 'testSource',
+			});
 			const { _id: schoolId } = serviceCreatedSchool;
 			createdSchoolIds.push(schoolId);
 			const school = await schoolService.get(schoolId);
@@ -164,9 +197,9 @@ describe('school service', () => {
 		});
 
 		it('isExternal attribute is false when source is undefined', async () => {
-			const serviceCreatedSchool = await schoolService.create(
-				{ ...sampleSchoolData },
-			);
+			const serviceCreatedSchool = await schoolService.create({
+				...sampleSchoolData,
+			});
 			const { _id: schoolId } = serviceCreatedSchool;
 			createdSchoolIds.push(schoolId);
 			const school = await schoolService.get(schoolId);
@@ -192,9 +225,13 @@ describe('school service', () => {
 				schoolId: school._id,
 				roles: ['administrator'],
 			});
-			const params = await testObjects.generateRequestParamsFromUser(admin);
+			const params = await testObjects.generateRequestParamsFromUser(
+				admin,
+			);
 
-			const result = await app.service('/schools').patch(school._id, { features: ['rocketChat'] }, params);
+			const result = await app
+				.service('/schools')
+				.patch(school._id, { features: ['rocketChat'] }, params);
 			expect(result).to.not.be.undefined;
 			expect(result.features).to.include('rocketChat');
 		});
@@ -206,12 +243,18 @@ describe('school service', () => {
 				schoolId: usersSchool._id,
 				roles: ['administrator'],
 			});
-			const params = await testObjects.generateRequestParamsFromUser(admin);
+			const params = await testObjects.generateRequestParamsFromUser(
+				admin,
+			);
 
 			try {
-				await app.service('/schools').patch(
-					otherSchool._id, { features: ['rocketChat'] }, params,
-				);
+				await app
+					.service('/schools')
+					.patch(
+						otherSchool._id,
+						{ features: ['rocketChat'] },
+						params,
+					);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
@@ -226,13 +269,21 @@ describe('school service', () => {
 				schoolId: usersSchool._id,
 				roles: ['superhero'],
 			});
-			const params = await testObjects.generateRequestParamsFromUser(batman);
-
-			const result = await app.service('/schools').patch(
-				otherSchool._id, { name: 'all strings are better with "BATMAN!" in it!' }, params,
+			const params = await testObjects.generateRequestParamsFromUser(
+				batman,
 			);
+
+			const result = await app
+				.service('/schools')
+				.patch(
+					otherSchool._id,
+					{ name: 'all strings are better with "BATMAN!" in it!' },
+					params,
+				);
 			expect(result).to.not.be.undefined;
-			expect(result.name).to.equal('all strings are better with "BATMAN!" in it!');
+			expect(result.name).to.equal(
+				'all strings are better with "BATMAN!" in it!',
+			);
 		});
 
 		it('push as admin', async () => {
@@ -241,25 +292,36 @@ describe('school service', () => {
 				schoolId: school._id,
 				roles: ['administrator'],
 			});
-			const params = await testObjects.generateRequestParamsFromUser(admin);
+			const params = await testObjects.generateRequestParamsFromUser(
+				admin,
+			);
 
 			const body = { $push: { features: 'rocketChat' } };
-			const result = await app.service('/schools').patch(school._id, body, params);
+			const result = await app
+				.service('/schools')
+				.patch(school._id, body, params);
 			expect(result).to.not.be.undefined;
 			expect(result.features).to.include('rocketChat');
 		});
 
 		it('unable without permissions', async () => {
 			const school = await testObjects.createTestSchool({});
-			const role = await testObjects.createTestRole({ name: 'noPermissions', permissions: [] });
+			const role = await testObjects.createTestRole({
+				name: 'noPermissions',
+				permissions: [],
+			});
 			const admin = await testObjects.createTestUser({
 				schoolId: school._id,
 				roles: [role.name],
 			});
-			const params = await testObjects.generateRequestParamsFromUser(admin);
+			const params = await testObjects.generateRequestParamsFromUser(
+				admin,
+			);
 
 			const body = { $push: { features: 'rocketChat' } };
-			const result = await app.service('/schools').patch(school._id, body, params);
+			const result = await app
+				.service('/schools')
+				.patch(school._id, body, params);
 			expect(result).to.not.be.undefined;
 			expect(result.features).to.not.include('rocketChat');
 		});
@@ -274,80 +336,97 @@ describe('school service', () => {
 				schoolId: school._id,
 				roles: [role.name],
 			});
-			const params = await testObjects.generateRequestParamsFromUser(admin);
+			const params = await testObjects.generateRequestParamsFromUser(
+				admin,
+			);
 
 			const body = { $push: { features: 'rocketChat' } };
-			const result = await app.service('/schools').patch(school._id, body, params);
+			const result = await app
+				.service('/schools')
+				.patch(school._id, body, params);
 			expect(result).to.not.be.undefined;
 			expect(result.features).to.include('rocketChat');
 		});
 
-		it('team creation by students should be updated according to environment setting'
-			+ ' without admin setting', async () => {
-			const school = await testObjects.createTestSchool({});
+		it(
+			'team creation by students should be updated according to environment setting' +
+				' without admin setting',
+			async () => {
+				const school = await testObjects.createTestSchool({});
 
-			Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
-			let result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+				Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
+				let result = await app.service('/schools').get(school._id);
+				expect(result.isTeamCreationByStudentsEnabled).to.be.true;
 
-			Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+				Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
+				result = await app.service('/schools').get(school._id);
+				expect(result.isTeamCreationByStudentsEnabled).to.be.false;
 
-			Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+				Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
+				result = await app.service('/schools').get(school._id);
+				expect(result.isTeamCreationByStudentsEnabled).to.be.false;
 
-			Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
-		});
+				Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
+				result = await app.service('/schools').get(school._id);
+				expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+			},
+		);
 
-		it('team creation by students should be updated according to '
-			+ 'environment setting and enabled by admin', async () => {
-			// school with enabled student team creation by admin
-			const school = await testObjects.createTestSchool({ enableStudentTeamCreation: true });
-			expect(school.enableStudentTeamCreation).to.be.true;
+		it(
+			'team creation by students should be updated according to ' +
+				'environment setting and enabled by admin',
+			async () => {
+				// school with enabled student team creation by admin
+				const school = await testObjects.createTestSchool({
+					enableStudentTeamCreation: true,
+				});
+				expect(school.enableStudentTeamCreation).to.be.true;
 
-			Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
-			let result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+				Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
+				let result = await app.service('/schools').get(school._id);
+				expect(result.isTeamCreationByStudentsEnabled).to.be.true;
 
-			Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+				Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
+				result = await app.service('/schools').get(school._id);
+				expect(result.isTeamCreationByStudentsEnabled).to.be.false;
 
-			Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+				Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
+				result = await app.service('/schools').get(school._id);
+				expect(result.isTeamCreationByStudentsEnabled).to.be.true;
 
-			Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
-		});
+				Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
+				result = await app.service('/schools').get(school._id);
+				expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+			},
+		);
 
-		it('team creation by students should be updated according to '
-			+ 'environment setting and disabled by admin', async () => {
-			// school with enabled student team creation by admin
-			const school = await testObjects.createTestSchool({ enableStudentTeamCreation: false });
-			expect(school.enableStudentTeamCreation).to.be.false;
+		it(
+			'team creation by students should be updated according to ' +
+				'environment setting and disabled by admin',
+			async () => {
+				// school with enabled student team creation by admin
+				const school = await testObjects.createTestSchool({
+					enableStudentTeamCreation: false,
+				});
+				expect(school.enableStudentTeamCreation).to.be.false;
 
-			Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
-			let result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+				Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
+				let result = await app.service('/schools').get(school._id);
+				expect(result.isTeamCreationByStudentsEnabled).to.be.true;
 
-			Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+				Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
+				result = await app.service('/schools').get(school._id);
+				expect(result.isTeamCreationByStudentsEnabled).to.be.false;
 
-			Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+				Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
+				result = await app.service('/schools').get(school._id);
+				expect(result.isTeamCreationByStudentsEnabled).to.be.false;
 
-			Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
-			result = await app.service('/schools').get(school._id);
-			expect(result.isTeamCreationByStudentsEnabled).to.be.false;
-		});
+				Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
+				result = await app.service('/schools').get(school._id);
+				expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+			},
+		);
 	});
 });
 

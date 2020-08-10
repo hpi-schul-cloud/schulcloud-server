@@ -23,7 +23,9 @@ describe('MailRegistrationLinkService', () => {
 
 	// https://ticketsystem.schul-cloud.org/browse/SC-5127
 	xit('student can not create', async () => {
-		const student = await testObjects.createTestUser({ roles: ['student'] });
+		const student = await testObjects.createTestUser({
+			roles: ['student'],
+		});
 		const params = await testObjects.generateRequestParamsFromUser(student);
 		params.query = {};
 		try {
@@ -38,7 +40,9 @@ describe('MailRegistrationLinkService', () => {
 
 	// https://ticketsystem.schul-cloud.org/browse/SC-5127
 	xit('teacher can not create', async () => {
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const teacher = await testObjects.createTestUser({
+			roles: ['teacher'],
+		});
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = {};
 		try {

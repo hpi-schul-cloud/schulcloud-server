@@ -31,57 +31,58 @@ describe('user service', () => {
 
 	it('resolves permissions and attributes correctly', () => {
 		function createTestBase() {
-			return app.service('roles')
-				.create({
-					name: 'test_base',
-					roles: [],
-					permissions: [
-						'TEST_BASE',
-						'TEST_BASE_2',
-					],
-				});
+			return app.service('roles').create({
+				name: 'test_base',
+				roles: [],
+				permissions: ['TEST_BASE', 'TEST_BASE_2'],
+			});
 		}
 
 		function createTestSubrole(testBase) {
-			return app.service('roles')
-				.create({
-					name: 'test_subrole',
-					roles: [testBase._id],
-					permissions: [
-						'TEST_SUB',
-					],
-				});
+			return app.service('roles').create({
+				name: 'test_subrole',
+				roles: [testBase._id],
+				permissions: ['TEST_SUB'],
+			});
 		}
 
 		return createTestBase()
 			.then((testBase) => createTestSubrole(testBase))
-			.then((testSubrole) => testObjects.createTestUser({
-				id: '0000d231816abba584714d01',
-				accounts: [],
-				schoolId: '0000d186816abba584714c5f',
-				email: 'user@testusers.net',
-				firstName: 'Max',
-				lastName: 'Tester',
-				roles: [
-					testSubrole._id,
-				],
-				manualCleanup: true,
-			}))
+			.then((testSubrole) =>
+				testObjects.createTestUser({
+					id: '0000d231816abba584714d01',
+					accounts: [],
+					schoolId: '0000d186816abba584714c5f',
+					email: 'user@testusers.net',
+					firstName: 'Max',
+					lastName: 'Tester',
+					roles: [testSubrole._id],
+					manualCleanup: true,
+				}),
+			)
 			.then((user) => userService.get(user._id))
 			.then((user) => {
 				testUserId = user._id;
 				expect(user.avatarInitials).to.eq('MT');
 				const array = Array.from(user.permissions);
 				expect(array).to.have.lengthOf(3);
-				expect(array).to.include('TEST_BASE', 'TEST_BASE_2', 'TEST_SUB');
+				expect(array).to.include(
+					'TEST_BASE',
+					'TEST_BASE_2',
+					'TEST_SUB',
+				);
 			});
 	});
 	describe('GET', () => {
 		it('student can read himself', async () => {
 			const student = await testObjects.createTestUser({
-				roles: ['student'], birthday: Date.now(), ldapId: 'thisisauniqueid',
+				roles: ['student'],
+				birthday: Date.now(),
+				ldapId: 'thisisauniqueid',
 			});
-			const params = await testObjects.generateRequestParamsFromUser(student);
+			const params = await testObjects.generateRequestParamsFromUser(
+				student,
+			);
 			params.query = {};
 			const result = await app.service('users').get(student._id, params);
 			expect(result).to.not.be.undefined;
@@ -95,18 +96,25 @@ describe('user service', () => {
 
 		it('student can not read admin email', async () => {
 			const student = await testObjects.createTestUser({
-				roles: ['student'], birthday: Date.now(), ldapId: 'thisisauniqueid',
+				roles: ['student'],
+				birthday: Date.now(),
+				ldapId: 'thisisauniqueid',
 			});
-			const params = await testObjects.generateRequestParamsFromUser(student);
+			const params = await testObjects.generateRequestParamsFromUser(
+				student,
+			);
 			params.query = {};
-			const result = await app.service('users').get('0000d213816abba584714c0a', params); // admin user id
+			const result = await app
+				.service('users')
+				.get('0000d213816abba584714c0a', params); // admin user id
 			expect(result.email).to.be.undefined;
 		});
 
 		// https://ticketsystem.schul-cloud.org/browse/SC-5076
 		xit('student can not read student from foreign school', async () => {
 			await testObjects.createTestRole({
-				name: 'studentList', permissions: ['STUDENT_LIST'],
+				name: 'studentList',
+				permissions: ['STUDENT_LIST'],
 			});
 			const school = await testObjects.createTestSchool({
 				name: 'testSchool1',
@@ -114,9 +122,17 @@ describe('user service', () => {
 			const otherSchool = await testObjects.createTestSchool({
 				name: 'testSchool2',
 			});
-			const student = await testObjects.createTestUser({ roles: ['studentList'], schoolId: school._id });
-			const otherStudent = await testObjects.createTestUser({ roles: ['student'], schoolId: otherSchool._id });
-			const params = await testObjects.generateRequestParamsFromUser(student);
+			const student = await testObjects.createTestUser({
+				roles: ['studentList'],
+				schoolId: school._id,
+			});
+			const otherStudent = await testObjects.createTestUser({
+				roles: ['student'],
+				schoolId: otherSchool._id,
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				student,
+			);
 			params.query = {};
 			try {
 				await app.service('users').get(otherStudent._id, params);
@@ -131,13 +147,20 @@ describe('user service', () => {
 		// https://ticketsystem.schul-cloud.org/browse/SC-5074
 		xit('student can not read unknown student', async () => {
 			await testObjects.createTestRole({
-				name: 'studentList', permissions: ['STUDENT_LIST'],
+				name: 'studentList',
+				permissions: ['STUDENT_LIST'],
 			});
-			const student = await testObjects.createTestUser({ roles: ['studentList'] });
-			const params = await testObjects.generateRequestParamsFromUser(student);
+			const student = await testObjects.createTestUser({
+				roles: ['studentList'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				student,
+			);
 			params.query = {};
 			try {
-				await app.service('users').get('AAAAAAAAAAAAAAAAAAAAAAAAAAA', params);
+				await app
+					.service('users')
+					.get('AAAAAAAAAAAAAAAAAAAAAAAAAAA', params);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
@@ -148,13 +171,23 @@ describe('user service', () => {
 
 		it('student can read other student with STUDENT_LIST permission', async () => {
 			await testObjects.createTestRole({
-				name: 'studentList', permissions: ['STUDENT_LIST'],
+				name: 'studentList',
+				permissions: ['STUDENT_LIST'],
 			});
-			const student = await testObjects.createTestUser({ roles: ['studentList'] });
-			const otherStudent = await testObjects.createTestUser({ roles: ['student'], birthday: Date.now() });
-			const params = await testObjects.generateRequestParamsFromUser(student);
+			const student = await testObjects.createTestUser({
+				roles: ['studentList'],
+			});
+			const otherStudent = await testObjects.createTestUser({
+				roles: ['student'],
+				birthday: Date.now(),
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				student,
+			);
 			params.query = {};
-			const result = await app.service('users').get(otherStudent._id, params);
+			const result = await app
+				.service('users')
+				.get(otherStudent._id, params);
 			expect(result).to.not.be.undefined;
 			expect(result).to.haveOwnProperty('firstName');
 			expect(result).to.haveOwnProperty('lastName');
@@ -166,10 +199,19 @@ describe('user service', () => {
 
 		// https://ticketsystem.schul-cloud.org/browse/SC-5076
 		xit('does not allow students to read other students without STUDENT_LIST permission', async () => {
-			await testObjects.createTestRole({ name: 'notAuthorized', permissions: [] });
-			const studentToRead = await testObjects.createTestUser({ roles: ['student'] });
-			const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
-			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			await testObjects.createTestRole({
+				name: 'notAuthorized',
+				permissions: [],
+			});
+			const studentToRead = await testObjects.createTestUser({
+				roles: ['student'],
+			});
+			const actingUser = await testObjects.createTestUser({
+				roles: ['notAuthorized'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				actingUser,
+			);
 			params.query = {};
 			try {
 				await app.service('users').get(studentToRead._id, params);
@@ -182,9 +224,16 @@ describe('user service', () => {
 		});
 
 		it('teacher can read student', async () => {
-			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-			const student = await testObjects.createTestUser({ roles: ['student'], birthday: Date.now() });
-			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			const teacher = await testObjects.createTestUser({
+				roles: ['teacher'],
+			});
+			const student = await testObjects.createTestUser({
+				roles: ['student'],
+				birthday: Date.now(),
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				teacher,
+			);
 			params.query = {};
 			const result = await app.service('users').get(student._id, params);
 			expect(result).to.not.be.undefined;
@@ -199,9 +248,15 @@ describe('user service', () => {
 		// https://ticketsystem.schul-cloud.org/browse/SC-5163
 		// See linked implementation issue if needed!
 		xit('teacher can not read other teacher', async () => {
-			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-			const otherTeacher = await testObjects.createTestUser({ roles: ['teacher'] });
-			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			const teacher = await testObjects.createTestUser({
+				roles: ['teacher'],
+			});
+			const otherTeacher = await testObjects.createTestUser({
+				roles: ['teacher'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				teacher,
+			);
 			params.query = {};
 			try {
 				await app.service('users').get(otherTeacher._id, params);
@@ -216,11 +271,17 @@ describe('user service', () => {
 		// https://ticketsystem.schul-cloud.org/browse/SC-5163
 		// See linked implementation issue if needed!
 		xit('teacher can not read admin', async () => {
-			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			const teacher = await testObjects.createTestUser({
+				roles: ['teacher'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				teacher,
+			);
 			params.query = {};
 			try {
-				await app.service('users').get('0000d213816abba584714c0a', params); // admin user id
+				await app
+					.service('users')
+					.get('0000d213816abba584714c0a', params); // admin user id
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
@@ -232,11 +293,17 @@ describe('user service', () => {
 		// https://ticketsystem.schul-cloud.org/browse/SC-5163
 		// See linked implementation issue if needed!
 		xit('teacher can not read superhero', async () => {
-			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			const teacher = await testObjects.createTestUser({
+				roles: ['teacher'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				teacher,
+			);
 			params.query = {};
 			try {
-				await app.service('users').get('0000d231816abba584714c9c', params); // superhero user id
+				await app
+					.service('users')
+					.get('0000d231816abba584714c9c', params); // superhero user id
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
@@ -248,7 +315,8 @@ describe('user service', () => {
 		// https://ticketsystem.schul-cloud.org/browse/SC-5076
 		xit('teacher can not read student from foreign school', async () => {
 			await testObjects.createTestRole({
-				name: 'studentList', permissions: ['STUDENT_LIST'],
+				name: 'studentList',
+				permissions: ['STUDENT_LIST'],
 			});
 			const school = await testObjects.createTestSchool({
 				name: 'testSchool1',
@@ -256,9 +324,17 @@ describe('user service', () => {
 			const otherSchool = await testObjects.createTestSchool({
 				name: 'testSchool2',
 			});
-			const student = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
-			const otherStudent = await testObjects.createTestUser({ roles: ['student'], schoolId: otherSchool._id });
-			const params = await testObjects.generateRequestParamsFromUser(student);
+			const student = await testObjects.createTestUser({
+				roles: ['teacher'],
+				schoolId: school._id,
+			});
+			const otherStudent = await testObjects.createTestUser({
+				roles: ['student'],
+				schoolId: otherSchool._id,
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				student,
+			);
 			params.query = {};
 			try {
 				await app.service('users').get(otherStudent._id, params);
@@ -274,13 +350,14 @@ describe('user service', () => {
 	describe('FIND', () => {
 		// https://ticketsystem.schul-cloud.org/browse/SC-3929
 		xit('does not allow population', async () => {
-			const student = await testObjects.createTestUser({ roles: ['student'] });
-			const params = await testObjects.generateRequestParamsFromUser(student);
+			const student = await testObjects.createTestUser({
+				roles: ['student'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				student,
+			);
 			params.query = {
-				$populate: [
-					'0000d186816abba584714c5f',
-					'roles',
-				],
+				$populate: ['0000d186816abba584714c5f', 'roles'],
 			};
 			try {
 				await app.service('users').find(params);
@@ -293,56 +370,82 @@ describe('user service', () => {
 		});
 
 		it('does not allow teachers to find parents', async () => {
-			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-			const parent = await testObjects.createTestUser({ roles: ['parent'] });
+			const teacher = await testObjects.createTestUser({
+				roles: ['teacher'],
+			});
+			const parent = await testObjects.createTestUser({
+				roles: ['parent'],
+			});
 
-			const teacherParams = await testObjects.generateRequestParamsFromUser(teacher);
+			const teacherParams = await testObjects.generateRequestParamsFromUser(
+				teacher,
+			);
 			teacherParams.query = {};
 			const result = await app.service('users').find(teacherParams);
-			expect(result.data.some((r) => equalIds(r._id, parent._id))).to.be.false;
+			expect(result.data.some((r) => equalIds(r._id, parent._id))).to.be
+				.false;
 		});
 
 		it('does not allow students who may not create teams list other users', async () => {
-			const student = await testObjects.createTestUser({ roles: ['student'] });
-			const studentParams = await testObjects.generateRequestParamsFromUser(student);
+			const student = await testObjects.createTestUser({
+				roles: ['student'],
+			});
+			const studentParams = await testObjects.generateRequestParamsFromUser(
+				student,
+			);
 			studentParams.query = {};
 
-			await app.service('schools').patch(
-				student.schoolId,
-				{ enableStudentTeamCreation: false },
-			);
+			await app
+				.service('schools')
+				.patch(student.schoolId, { enableStudentTeamCreation: false });
 
 			try {
 				await app.service('users').find(studentParams);
-				assert.fail('students who maynot create a team are not allowed to list other users');
+				assert.fail(
+					'students who maynot create a team are not allowed to list other users',
+				);
 			} catch (error) {
 				expect(error.code).to.equal(403);
-				expect(error.message).to.equal('The current user is not allowed to list other users!');
+				expect(error.message).to.equal(
+					'The current user is not allowed to list other users!',
+				);
 			}
 		});
 
 		it('allows students who may create teams list other users', async () => {
-			const student = await testObjects.createTestUser({ roles: ['student'] });
-			const studentParams = await testObjects.generateRequestParamsFromUser(student);
+			const student = await testObjects.createTestUser({
+				roles: ['student'],
+			});
+			const studentParams = await testObjects.generateRequestParamsFromUser(
+				student,
+			);
 			studentParams.query = {};
 
-			await app.service('schools').patch(
-				student.schoolId,
-				{ enableStudentTeamCreation: true },
-			);
+			await app
+				.service('schools')
+				.patch(student.schoolId, { enableStudentTeamCreation: true });
 
-			const studentResults = await app.service('users').find(studentParams);
+			const studentResults = await app
+				.service('users')
+				.find(studentParams);
 			expect(studentResults.data).to.be.not.empty;
 		});
 
 		it('allows access to parents by superheroes', async () => {
-			const hero = await testObjects.createTestUser({ roles: ['superhero'] });
-			const parent = await testObjects.createTestUser({ roles: ['parent'] });
+			const hero = await testObjects.createTestUser({
+				roles: ['superhero'],
+			});
+			const parent = await testObjects.createTestUser({
+				roles: ['parent'],
+			});
 
-			const params = await testObjects.generateRequestParamsFromUser(hero);
+			const params = await testObjects.generateRequestParamsFromUser(
+				hero,
+			);
 			params.query = {};
 			const result = await app.service('users').find(params);
-			expect(result.data.some((r) => equalIds(r._id, parent._id))).to.be.true;
+			expect(result.data.some((r) => equalIds(r._id, parent._id))).to.be
+				.true;
 		});
 	});
 
@@ -350,10 +453,16 @@ describe('user service', () => {
 		it('can create student with STUDENT_CREATE', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			await testObjects.createTestRole({
-				name: 'studentCreate', permissions: ['STUDENT_CREATE'],
+				name: 'studentCreate',
+				permissions: ['STUDENT_CREATE'],
 			});
-			const actingUser = await testObjects.createTestUser({ roles: ['studentCreate'], schoolId });
-			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			const actingUser = await testObjects.createTestUser({
+				roles: ['studentCreate'],
+				schoolId,
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				actingUser,
+			);
 			const data = {
 				firstName: 'Luke',
 				lastName: 'Skywalker',
@@ -370,10 +479,16 @@ describe('user service', () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const { _id: otherSchoolId } = await testObjects.createTestSchool();
 			await testObjects.createTestRole({
-				name: 'studentCreate', permissions: ['STUDENT_CREATE'],
+				name: 'studentCreate',
+				permissions: ['STUDENT_CREATE'],
 			});
-			const actingUser = await testObjects.createTestUser({ roles: ['studentCreate'], schoolId });
-			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			const actingUser = await testObjects.createTestUser({
+				roles: ['studentCreate'],
+				schoolId,
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				actingUser,
+			);
 			const data = {
 				firstName: 'Leia',
 				lastName: 'Skywalker',
@@ -387,23 +502,30 @@ describe('user service', () => {
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(403);
-				expect(err.message).to.equal('You do not have valid permissions to access this.');
+				expect(err.message).to.equal(
+					'You do not have valid permissions to access this.',
+				);
 			}
 		});
 
 		it('superhero can create admin', async () => {
-			const hero = await testObjects.createTestUser({ roles: ['superhero'] });
+			const hero = await testObjects.createTestUser({
+				roles: ['superhero'],
+			});
 			const { _id: schoolId } = await testObjects.createTestSchool();
-			const params = await testObjects.generateRequestParamsFromUser(hero);
-			const user = await app.service('users').create({
-				schoolId,
-				email: `${Date.now()}@testadmin.org`,
-				firstName: 'Max',
-				lastName: 'Tester',
-				roles: [
-					'administrator',
-				],
-			}, params);
+			const params = await testObjects.generateRequestParamsFromUser(
+				hero,
+			);
+			const user = await app.service('users').create(
+				{
+					schoolId,
+					email: `${Date.now()}@testadmin.org`,
+					firstName: 'Max',
+					lastName: 'Tester',
+					roles: ['administrator'],
+				},
+				params,
+			);
 			expect(user).to.not.equal(undefined);
 			expect(user._id).to.not.equal(undefined);
 		});
@@ -413,15 +535,23 @@ describe('user service', () => {
 		it('rejects on group patching', async () => {
 			await userService.patch(null, { email: 'test' }).catch((err) => {
 				expect(err).to.not.equal(undefined);
-				expect(err.message).to.equal('Operation on this service requires an id!');
+				expect(err.message).to.equal(
+					'Operation on this service requires an id!',
+				);
 			});
 		});
 
 		it('student can edit himself', async () => {
-			const student = await testObjects.createTestUser({ roles: ['student'] });
-			const params = await testObjects.generateRequestParamsFromUser(student);
+			const student = await testObjects.createTestUser({
+				roles: ['student'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				student,
+			);
 			params.query = {};
-			const result = await app.service('users').patch(student._id, { firstName: 'Bruce' }, params);
+			const result = await app
+				.service('users')
+				.patch(student._id, { firstName: 'Bruce' }, params);
 			expect(result).to.not.be.undefined;
 			expect(result.firstName).to.equal('Bruce');
 		});
@@ -429,26 +559,44 @@ describe('user service', () => {
 		it('fail to patch user on other school', async () => {
 			const school = await testObjects.createTestSchool();
 			const otherSchool = await testObjects.createTestSchool();
-			const studentToDelete = await testObjects.createTestUser({ roles: ['student'], schoolId: otherSchool._id });
-			const actingUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
-			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			const studentToDelete = await testObjects.createTestUser({
+				roles: ['student'],
+				schoolId: otherSchool._id,
+			});
+			const actingUser = await testObjects.createTestUser({
+				roles: ['administrator'],
+				schoolId: school._id,
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				actingUser,
+			);
 
 			try {
-				await app.service('users').patch(studentToDelete._id, { lastName: 'Vader' }, params);
+				await app
+					.service('users')
+					.patch(studentToDelete._id, { lastName: 'Vader' }, params);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(404);
-				expect(err.message).to.equal(`no record found for id '${studentToDelete._id.toString()}'`);
+				expect(err.message).to.equal(
+					`no record found for id '${studentToDelete._id.toString()}'`,
+				);
 			}
 		});
 	});
 
 	describe('REMOVE', () => {
 		it('user gets removed from classes and courses after delete', async () => {
-			const userToDelete = await testObjects.createTestUser({ roles: ['student'] });
-			const { _id: classId } = await testObjects.createTestClass({ userIds: userToDelete._id });
-			const { _id: courseId } = await testObjects.createTestCourse({ userIds: userToDelete._id });
+			const userToDelete = await testObjects.createTestUser({
+				roles: ['student'],
+			});
+			const { _id: classId } = await testObjects.createTestClass({
+				userIds: userToDelete._id,
+			});
+			const { _id: courseId } = await testObjects.createTestCourse({
+				userIds: userToDelete._id,
+			});
 
 			await userService.remove(testUserId);
 
@@ -457,40 +605,71 @@ describe('user service', () => {
 				coursesService.get(courseId),
 			]);
 
-			expect(course.userIds.map((id) => id.toString())).to.not.include(testUserId.toString());
-			expect(klass.userIds.map((id) => id.toString())).to.not.include(testUserId.toString());
+			expect(course.userIds.map((id) => id.toString())).to.not.include(
+				testUserId.toString(),
+			);
+			expect(klass.userIds.map((id) => id.toString())).to.not.include(
+				testUserId.toString(),
+			);
 		});
 
 		it('fail to delete single student without STUDENT_DELETE permission', async () => {
-			await testObjects.createTestRole({ name: 'notAuthorized', permissions: [] });
-			const studentToDelete = await testObjects.createTestUser({ roles: ['student'] });
-			const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
-			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			await testObjects.createTestRole({
+				name: 'notAuthorized',
+				permissions: [],
+			});
+			const studentToDelete = await testObjects.createTestUser({
+				roles: ['student'],
+			});
+			const actingUser = await testObjects.createTestUser({
+				roles: ['notAuthorized'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				actingUser,
+			);
 			params.query = {};
-			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
+			params.headers = {
+				'x-api-key': Configuration.get('CLIENT_API_KEY'),
+			}; // toDO remove with SC-4112
 			try {
 				await app.service('users').remove(studentToDelete._id, params);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(403);
-				expect(err.message).to.equal('you dont have permission to delete this user!');
+				expect(err.message).to.equal(
+					'you dont have permission to delete this user!',
+				);
 			}
 		});
 
 		it('can delete single student with STUDENT_DELETE permission', async () => {
 			await testObjects.createTestRole({
-				name: 'studentDelete', permissions: ['STUDENT_DELETE'],
+				name: 'studentDelete',
+				permissions: ['STUDENT_DELETE'],
 			});
-			const studentToDelete = await testObjects.createTestUser({ roles: ['student'], manualCleanup: true });
-			const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });
-			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			const studentToDelete = await testObjects.createTestUser({
+				roles: ['student'],
+				manualCleanup: true,
+			});
+			const actingUser = await testObjects.createTestUser({
+				roles: ['studentDelete'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				actingUser,
+			);
 			params.query = {};
-			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
+			params.headers = {
+				'x-api-key': Configuration.get('CLIENT_API_KEY'),
+			}; // toDO remove with SC-4112
 			try {
-				const result = await app.service('users').remove(studentToDelete._id, params);
+				const result = await app
+					.service('users')
+					.remove(studentToDelete._id, params);
 				expect(result).to.not.be.undefined;
-				expect(result._id.toString()).to.equal(studentToDelete._id.toString());
+				expect(result._id.toString()).to.equal(
+					studentToDelete._id.toString(),
+				);
 			} catch (err) {
 				// in case of error, make sure user gets deleted
 				testObjects.createdUserIds.push(studentToDelete._id);
@@ -499,35 +678,62 @@ describe('user service', () => {
 		});
 
 		it('fail to  single teacher without TEACHER_DELETE permission', async () => {
-			await testObjects.createTestRole({ name: 'notAuthorized', permissions: ['STUDENT_DELETE'] });
-			const studentToDelete = await testObjects.createTestUser({ roles: ['teacher'] });
-			const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
-			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			await testObjects.createTestRole({
+				name: 'notAuthorized',
+				permissions: ['STUDENT_DELETE'],
+			});
+			const studentToDelete = await testObjects.createTestUser({
+				roles: ['teacher'],
+			});
+			const actingUser = await testObjects.createTestUser({
+				roles: ['notAuthorized'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				actingUser,
+			);
 			params.query = {};
-			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
+			params.headers = {
+				'x-api-key': Configuration.get('CLIENT_API_KEY'),
+			}; // toDO remove with SC-4112
 			try {
 				await app.service('users').remove(studentToDelete._id, params);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(403);
-				expect(err.message).to.equal('you dont have permission to delete this user!');
+				expect(err.message).to.equal(
+					'you dont have permission to delete this user!',
+				);
 			}
 		});
 
 		it('can delete single teacher with TEACHER_DELETE permission', async () => {
 			await testObjects.createTestRole({
-				name: 'teacherDelete', permissions: ['TEACHER_DELETE'],
+				name: 'teacherDelete',
+				permissions: ['TEACHER_DELETE'],
 			});
-			const studentToDelete = await testObjects.createTestUser({ roles: ['teacher'], manualCleanup: true });
-			const actingUser = await testObjects.createTestUser({ roles: ['teacherDelete'] });
-			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			const studentToDelete = await testObjects.createTestUser({
+				roles: ['teacher'],
+				manualCleanup: true,
+			});
+			const actingUser = await testObjects.createTestUser({
+				roles: ['teacherDelete'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				actingUser,
+			);
 			params.query = {};
-			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
+			params.headers = {
+				'x-api-key': Configuration.get('CLIENT_API_KEY'),
+			}; // toDO remove with SC-4112
 			try {
-				const result = await app.service('users').remove(studentToDelete._id, params);
+				const result = await app
+					.service('users')
+					.remove(studentToDelete._id, params);
 				expect(result).to.not.be.undefined;
-				expect(result._id.toString()).to.equal(studentToDelete._id.toString());
+				expect(result._id.toString()).to.equal(
+					studentToDelete._id.toString(),
+				);
 			} catch (err) {
 				// in case of error, make sure user gets deleted
 				testObjects.createdUserIds.push(studentToDelete._id);
@@ -538,9 +744,17 @@ describe('user service', () => {
 		it('fail to delete user on other school', async () => {
 			const school = await testObjects.createTestSchool();
 			const otherSchool = await testObjects.createTestSchool();
-			const studentToDelete = await testObjects.createTestUser({ roles: ['student'], schoolId: otherSchool._id });
-			const actingUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
-			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			const studentToDelete = await testObjects.createTestUser({
+				roles: ['student'],
+				schoolId: otherSchool._id,
+			});
+			const actingUser = await testObjects.createTestUser({
+				roles: ['administrator'],
+				schoolId: school._id,
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				actingUser,
+			);
 			params.query = {};
 			try {
 				await app.service('users').remove(studentToDelete._id, params);
@@ -548,7 +762,9 @@ describe('user service', () => {
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(404);
-				expect(err.message).to.equal(`no record found for id '${studentToDelete._id.toString()}'`);
+				expect(err.message).to.equal(
+					`no record found for id '${studentToDelete._id.toString()}'`,
+				);
 			}
 		});
 	});
@@ -556,16 +772,27 @@ describe('user service', () => {
 	describe('bulk delete', () => {
 		it('can delete multiple students when user has STUDENT_DELETE permission', async () => {
 			await testObjects.createTestRole({
-				name: 'studentDelete', permissions: ['STUDENT_DELETE'],
+				name: 'studentDelete',
+				permissions: ['STUDENT_DELETE'],
 			});
 			const userIds = await Promise.all([
-				testObjects.createTestUser({ roles: ['student'], manualCleanup: true }).then((u) => u._id),
-				testObjects.createTestUser({ roles: ['student'], manualCleanup: true }).then((u) => u._id),
+				testObjects
+					.createTestUser({ roles: ['student'], manualCleanup: true })
+					.then((u) => u._id),
+				testObjects
+					.createTestUser({ roles: ['student'], manualCleanup: true })
+					.then((u) => u._id),
 			]);
-			const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });
-			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			const actingUser = await testObjects.createTestUser({
+				roles: ['studentDelete'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				actingUser,
+			);
 			params.query = { _id: { $in: userIds } };
-			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
+			params.headers = {
+				'x-api-key': Configuration.get('CLIENT_API_KEY'),
+			}; // toDO remove with SC-4112
 			let result;
 			try {
 				result = await app.service('users').remove(null, params);
@@ -576,21 +803,34 @@ describe('user service', () => {
 			expect(result).to.not.be.undefined;
 			expect(Array.isArray(result)).to.equal(true);
 			const resultUserIds = result.map((e) => e._id.toString());
-			userIds.forEach((userId) => expect(resultUserIds).to.include(userId.toString()));
+			userIds.forEach((userId) =>
+				expect(resultUserIds).to.include(userId.toString()),
+			);
 		});
 
 		it('only deletes students when user has STUDENT_DELETE permission', async () => {
 			await testObjects.createTestRole({
-				name: 'studentDelete', permissions: ['STUDENT_DELETE'],
+				name: 'studentDelete',
+				permissions: ['STUDENT_DELETE'],
 			});
 			const userIds = await Promise.all([
-				testObjects.createTestUser({ roles: ['student'], manualCleanup: true }).then((u) => u._id),
-				testObjects.createTestUser({ roles: ['teacher'] }).then((u) => u._id),
+				testObjects
+					.createTestUser({ roles: ['student'], manualCleanup: true })
+					.then((u) => u._id),
+				testObjects
+					.createTestUser({ roles: ['teacher'] })
+					.then((u) => u._id),
 			]);
-			const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });
-			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			const actingUser = await testObjects.createTestUser({
+				roles: ['studentDelete'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				actingUser,
+			);
 			params.query = { _id: { $in: userIds } };
-			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
+			params.headers = {
+				'x-api-key': Configuration.get('CLIENT_API_KEY'),
+			}; // toDO remove with SC-4112
 			let result;
 			try {
 				result = await app.service('users').remove(null, params);
@@ -617,14 +857,21 @@ describe('user service', () => {
 			};
 
 			await new Promise((resolve, reject) => {
-				testObjects.createTestUser(newUser)
+				testObjects
+					.createTestUser(newUser)
 					.then(() => {
 						// eslint-disable-next-line max-len
-						reject(new Error('This call should fail because of an already existing user with the same email'));
+						reject(
+							new Error(
+								'This call should fail because of an already existing user with the same email',
+							),
+						);
 					})
 					.catch((err) => {
 						// eslint-disable-next-line max-len
-						expect(err.message).to.equal('Die E-Mail Adresse ExistinG@aCCount.de ist bereits in Verwendung!');
+						expect(err.message).to.equal(
+							'Die E-Mail Adresse ExistinG@aCCount.de ist bereits in Verwendung!',
+						);
 						resolve();
 					});
 			});

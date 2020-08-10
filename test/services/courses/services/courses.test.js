@@ -25,22 +25,40 @@ describe('course service', () => {
 	});
 
 	it('teacher can PATCH course', async () => {
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-		const course = await testObjects.createTestCourse({ name: 'courseNotChanged', teacherIds: [teacher._id] });
+		const teacher = await testObjects.createTestUser({
+			roles: ['teacher'],
+		});
+		const course = await testObjects.createTestCourse({
+			name: 'courseNotChanged',
+			teacherIds: [teacher._id],
+		});
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 
-		const result = await courseService.patch(course._id, { name: 'courseChanged' }, params);
+		const result = await courseService.patch(
+			course._id,
+			{ name: 'courseChanged' },
+			params,
+		);
 		expect(result.name).to.equal('courseChanged');
 	});
 
 	it('substitution teacher can not PATCH course', async () => {
 		try {
-			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-			const course = await testObjects.createTestCourse({
-				name: 'courseNotChanged', substitutionIds: [teacher._id],
+			const teacher = await testObjects.createTestUser({
+				roles: ['teacher'],
 			});
-			const params = await testObjects.generateRequestParamsFromUser(teacher);
-			await courseService.patch(course._id, { name: 'courseChanged' }, params);
+			const course = await testObjects.createTestCourse({
+				name: 'courseNotChanged',
+				substitutionIds: [teacher._id],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(
+				teacher,
+			);
+			await courseService.patch(
+				course._id,
+				{ name: 'courseChanged' },
+				params,
+			);
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
@@ -49,8 +67,13 @@ describe('course service', () => {
 	});
 
 	it('teacher can DELETE course', async () => {
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-		const course = await testObjects.createTestCourse({ name: 'course', teacherIds: [teacher._id] });
+		const teacher = await testObjects.createTestUser({
+			roles: ['teacher'],
+		});
+		const course = await testObjects.createTestCourse({
+			name: 'course',
+			teacherIds: [teacher._id],
+		});
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = {};
 
@@ -60,11 +83,15 @@ describe('course service', () => {
 
 	it('substitution teacher can not DELETE course', async () => {
 		try {
-			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+			const teacher = await testObjects.createTestUser({
+				roles: ['teacher'],
+			});
 			const course = await testObjects.createTestCourse({
 				substitutionIds: [teacher._id],
 			});
-			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			const params = await testObjects.generateRequestParamsFromUser(
+				teacher,
+			);
 			params.query = {};
 			await courseService.remove(course._id, params);
 			throw new Error('should have failed');

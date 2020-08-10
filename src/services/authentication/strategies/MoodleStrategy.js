@@ -10,7 +10,9 @@ class MoodleStrategy extends AuthenticationBaseStrategy {
 
 		['usernameField', 'systemIdField'].forEach((prop) => {
 			if (typeof config[prop] !== 'string') {
-				throw new Error(`'${this.name}' authentication strategy requires a '${prop}' setting`);
+				throw new Error(
+					`'${this.name}' authentication strategy requires a '${prop}' setting`,
+				);
 			}
 		});
 	}
@@ -44,10 +46,13 @@ class MoodleStrategy extends AuthenticationBaseStrategy {
 			service,
 			errorMessage,
 		} = this.configuration;
-		const query = await this.getEntityQuery({
-			[entityUsernameField]: username,
-			[entitySystemIdField]: systemId,
-		}, params);
+		const query = await this.getEntityQuery(
+			{
+				[entityUsernameField]: username,
+				[entitySystemIdField]: systemId,
+			},
+			params,
+		);
 
 		const findParams = { ...params, query };
 		const entityService = this.app.service(service);
@@ -109,9 +114,15 @@ class MoodleStrategy extends AuthenticationBaseStrategy {
 	async authenticate(authentication, params) {
 		const { app } = this;
 
-		const system = await app.service('systems').get(authentication.systemId);
+		const system = await app
+			.service('systems')
+			.get(authentication.systemId);
 
-		const client = await this.credentialCheck(authentication.username, authentication.password, system);
+		const client = await this.credentialCheck(
+			authentication.username,
+			authentication.password,
+			system,
+		);
 
 		if (client) {
 			if (client.token) {
@@ -128,7 +139,9 @@ class MoodleStrategy extends AuthenticationBaseStrategy {
 				};
 			}
 		}
-		throw new NotAuthenticated('Wrong Credentials - Unable to obtain token');
+		throw new NotAuthenticated(
+			'Wrong Credentials - Unable to obtain token',
+		);
 	}
 }
 

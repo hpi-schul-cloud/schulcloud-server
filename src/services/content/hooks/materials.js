@@ -1,7 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
 const { hasPermission } = require('../../../hooks');
-const { getScopePermissions } = require('../../helpers/scopePermissions/hooks/checkScopePermissions');
+const {
+	getScopePermissions,
+} = require('../../helpers/scopePermissions/hooks/checkScopePermissions');
 
 /**
  * Returns true if the user making the request has the required permissions
@@ -26,12 +28,20 @@ const hasMaterialAccess = async (context, id, permissions) => {
 		const scope = { id: courseId, name: 'courses' };
 		let userPermissions;
 		try {
-			userPermissions = await getScopePermissions(context.app, context.params.account.userId, scope);
+			userPermissions = await getScopePermissions(
+				context.app,
+				context.params.account.userId,
+				scope,
+			);
 		} catch (err) {
 			// the course scope throws Forbidden if the user is not in the course (?!)
 			userPermissions = [];
 		}
-		access = access && permissions.every((permission) => userPermissions.includes(permission));
+		access =
+			access &&
+			permissions.every((permission) =>
+				userPermissions.includes(permission),
+			);
 		if (!access) break;
 	}
 	return access;
@@ -62,7 +72,9 @@ const checkAssociatedCoursePermission = (...permissions) => async (context) => {
  * @param  {...String} permissions list of permissions necessary for this hook to resolve
  * @returns {Context} hook context
  */
-const checkAssociatedCoursePermissionForSearchResult = (...permissions) => async (context) => {
+const checkAssociatedCoursePermissionForSearchResult = (
+	...permissions
+) => async (context) => {
 	const results = context.result.data ? context.result.data : context.result;
 	const filteredResults = [];
 	for (const result of results) {
@@ -80,9 +92,7 @@ const checkAssociatedCoursePermissionForSearchResult = (...permissions) => async
 };
 
 exports.before = {
-	all: [
-		authenticate('jwt'),
-	],
+	all: [authenticate('jwt')],
 	find: [
 		// filtered in after-hook
 	],

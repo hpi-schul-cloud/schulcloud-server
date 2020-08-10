@@ -4,64 +4,83 @@ const rp = require('request-promise-native');
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
 
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(
+	app,
+);
 
 const createService = app.service('videoconference');
 const getService = app.service('videoconference/:scopeName');
 
-const { VIDEOCONFERENCE } = require('../../../src/services/school/model').SCHOOL_FEATURES;
+const {
+	VIDEOCONFERENCE,
+} = require('../../../src/services/school/model').SCHOOL_FEATURES;
 
 const getServiceRespondsDependingOnUserPermissions = (testData) => {
 	it('test get with start or join permission works after creation', async () => {
 		// expect creation finished like above...
-		const teacherResponse = getService
-			.get(testData.serviceParams.scopeId, {
-				route: { scopeName: testData.serviceParams.scopeName },
-				...testData.teacherRequestAuthentication,
-			});
-		const substitutionTeacherResponse = getService
-			.get(testData.serviceParams.scopeId, {
+		const teacherResponse = getService.get(testData.serviceParams.scopeId, {
+			route: { scopeName: testData.serviceParams.scopeName },
+			...testData.teacherRequestAuthentication,
+		});
+		const substitutionTeacherResponse = getService.get(
+			testData.serviceParams.scopeId,
+			{
 				route: { scopeName: testData.serviceParams.scopeName },
 				...testData.substitutionTeacherRequestAuthentication,
-			});
-		const courseStudentResponse = getService
-			.get(testData.serviceParams.scopeId, {
+			},
+		);
+		const courseStudentResponse = getService.get(
+			testData.serviceParams.scopeId,
+			{
 				route: { scopeName: testData.serviceParams.scopeName },
 				...testData.studentRequestAuthentication,
-			});
+			},
+		);
 		let successCounter = 0;
-		await Promise.all([teacherResponse, substitutionTeacherResponse, courseStudentResponse])
-			.then(([...serviceResponses]) => Promise.all(serviceResponses.map((serviceResponse) => {
-				expect(serviceResponse.status).to.be.equal('SUCCESS');
-				expect(serviceResponse.url).to.be.undefined;
-				successCounter += 1;
-				return successCounter;
-			})));
+		await Promise.all([
+			teacherResponse,
+			substitutionTeacherResponse,
+			courseStudentResponse,
+		]).then(([...serviceResponses]) =>
+			Promise.all(
+				serviceResponses.map((serviceResponse) => {
+					expect(serviceResponse.status).to.be.equal('SUCCESS');
+					expect(serviceResponse.url).to.be.undefined;
+					successCounter += 1;
+					return successCounter;
+				}),
+			),
+		);
 		expect(successCounter).to.be.equal(3);
 		return Promise.resolve(successCounter);
 	});
 };
 
 const expectNoCreatePermission = (testData) => {
-	expect(() => createService
-		.create(testData.serviceParams), 'no authentication should fail')
-		.to.throw;
-	expect(() => createService
-		.create(testData.serviceParams, testData.someUserAuth), 'missing scope permission should fail')
-		.to.throw;
+	expect(
+		() => createService.create(testData.serviceParams),
+		'no authentication should fail',
+	).to.throw;
+	expect(
+		() =>
+			createService.create(testData.serviceParams, testData.someUserAuth),
+		'missing scope permission should fail',
+	).to.throw;
 };
 
 const expectNoGetPermission = (testData) => {
-	expect(() => getService
-		.get(testData.serviceParams.scopeId, {
+	expect(() =>
+		getService.get(testData.serviceParams.scopeId, {
 			route: { scopeName: testData.serviceParams.scopeName },
 			...testData.someUserAuth,
-		})).to.throw;
-	expect(() => getService
-		.get(testData.serviceParams.scopeId, {
+		}),
+	).to.throw;
+	expect(() =>
+		getService.get(testData.serviceParams.scopeId, {
 			route: { scopeName: testData.serviceParams.scopeName },
 			// no user
-		})).to.throw;
+		}),
+	).to.throw;
 };
 
 describe('videoconference service', function slowServiceTests() {
@@ -97,10 +116,16 @@ describe('videoconference service', function slowServiceTests() {
 			schoolId,
 			firstName: 'student',
 		});
-		const teacherRequestAuthentication = await generateRequestParamsFromUser(courseTeacher);
+		const teacherRequestAuthentication = await generateRequestParamsFromUser(
+			courseTeacher,
+		);
 		const someUserAuth = await generateRequestParamsFromUser(someUser);
-		const substitutionTeacherRequestAuthentication = await generateRequestParamsFromUser(coursesubstitutionTeacher);
-		const studentRequestAuthentication = await generateRequestParamsFromUser(courseStudent);
+		const substitutionTeacherRequestAuthentication = await generateRequestParamsFromUser(
+			coursesubstitutionTeacher,
+		);
+		const studentRequestAuthentication = await generateRequestParamsFromUser(
+			courseStudent,
+		);
 		const course = await testObjects.createTestCourse({
 			name: 'test videoconference course',
 			userIds: [courseStudent.id],
@@ -125,12 +150,14 @@ describe('videoconference service', function slowServiceTests() {
 		};
 
 		// fails with school feature disabled, enables school feature and starts meeting for further tests
-		expect(() => createService.create(
-			testData.createOptions,
-			testData.teacherRequestAuthentication,
-		),
-		'feature should not be enabled in school')
-			.to.throw;
+		expect(
+			() =>
+				createService.create(
+					testData.createOptions,
+					testData.teacherRequestAuthentication,
+				),
+			'feature should not be enabled in school',
+		).to.throw;
 		testData.school.features.push(VIDEOCONFERENCE);
 		await testData.school.save();
 	});
@@ -146,20 +173,27 @@ describe('videoconference service', function slowServiceTests() {
 		});
 
 		it('expect join works not for students upon creation', async () => {
-			const studentResponse = await createService
-				.create(testData.serviceParams, testData.studentRequestAuthentication);
-			expect(studentResponse.status,
-				'students should not have the permission to join a not started videoconference in courses')
-				.not.to.be.equal('NOT_STARTED');
-			expect(studentResponse.url,
-				'students should not have the permission to join a not started videoconference in courses')
-				.to.be.undefined;
+			const studentResponse = await createService.create(
+				testData.serviceParams,
+				testData.studentRequestAuthentication,
+			);
+			expect(
+				studentResponse.status,
+				'students should not have the permission to join a not started videoconference in courses',
+			).not.to.be.equal('NOT_STARTED');
+			expect(
+				studentResponse.url,
+				'students should not have the permission to join a not started videoconference in courses',
+			).to.be.undefined;
 		});
 	});
 
 	describe('B - has been started', () => {
 		before('start the conference', async () => {
-			const response = await createService.create(testData.serviceParams, testData.teacherRequestAuthentication);
+			const response = await createService.create(
+				testData.serviceParams,
+				testData.teacherRequestAuthentication,
+			);
 			expect(response).to.be.ok;
 			expect(response.status).to.be.equal('SUCCESS');
 			expect(response.url).to.be.not.empty;
@@ -175,23 +209,32 @@ describe('videoconference service', function slowServiceTests() {
 		});
 
 		it('join works for authenticated roles', async () => {
-			const studentResponse = await createService
-				.create(testData.serviceParams, testData.studentRequestAuthentication);
-			expect(studentResponse.url,
-				'students should not have the permission to join a started videoconference in courses')
-				.not.to.be.empty;
+			const studentResponse = await createService.create(
+				testData.serviceParams,
+				testData.studentRequestAuthentication,
+			);
+			expect(
+				studentResponse.url,
+				'students should not have the permission to join a started videoconference in courses',
+			).not.to.be.empty;
 
-			const substitutionteacherResponse = await createService
-				.create(testData.serviceParams, testData.substitutionTeacherRequestAuthentication);
-			expect(substitutionteacherResponse.url,
-				'substitutionteachers should be able to start a videoconference in courses')
-				.not.to.be.empty;
+			const substitutionteacherResponse = await createService.create(
+				testData.serviceParams,
+				testData.substitutionTeacherRequestAuthentication,
+			);
+			expect(
+				substitutionteacherResponse.url,
+				'substitutionteachers should be able to start a videoconference in courses',
+			).not.to.be.empty;
 
-			const teacherSecondResponse = await createService
-				.create(testData.serviceParams, testData.teacherRequestAuthentication);
-			expect(teacherSecondResponse.url,
-				'teachers should be able to start a videoconference in courses again (=join)')
-				.not.to.be.empty;
+			const teacherSecondResponse = await createService.create(
+				testData.serviceParams,
+				testData.teacherRequestAuthentication,
+			);
+			expect(
+				teacherSecondResponse.url,
+				'teachers should be able to start a videoconference in courses again (=join)',
+			).not.to.be.empty;
 		});
 
 		describe('bbb mass request tests', () => {
@@ -207,18 +250,26 @@ describe('videoconference service', function slowServiceTests() {
 						firstName: 'student',
 					});
 					studentIds.push(student.id);
-					const authentication = await generateRequestParamsFromUser(student);
+					const authentication = await generateRequestParamsFromUser(
+						student,
+					);
 					courseStudents.push({ student, authentication });
 				}
-				studentIds.forEach((userId) => testData.course.userIds.push(userId));
+				studentIds.forEach((userId) =>
+					testData.course.userIds.push(userId),
+				);
 				await testData.course.save();
 
 				for (let i = 0; i < 20; i += 1) {
-					const response = await getService
-						.get(testData.serviceParams.scopeId, {
-							route: { scopeName: testData.serviceParams.scopeName },
+					const response = await getService.get(
+						testData.serviceParams.scopeId,
+						{
+							route: {
+								scopeName: testData.serviceParams.scopeName,
+							},
 							...courseStudents[i].authentication,
-						});
+						},
+					);
 					expect(response).to.be.ok;
 					expect(response.status).to.be.equal('SUCCESS');
 					expect(response.url).to.be.undefined;
@@ -241,15 +292,21 @@ describe('videoconference service', function slowServiceTests() {
 						firstName: 'student',
 					});
 					studentIds.push(student.id);
-					const authentication = await generateRequestParamsFromUser(student);
+					const authentication = await generateRequestParamsFromUser(
+						student,
+					);
 					courseStudents.push({ student, authentication });
 				}
-				studentIds.forEach((userId) => testData.course.userIds.push(userId));
+				studentIds.forEach((userId) =>
+					testData.course.userIds.push(userId),
+				);
 				await testData.course.save();
 
 				for (let i = 0; i < 20; i += 1) {
-					const response = await createService
-						.create(testData.serviceParams, courseStudents[i].authentication);
+					const response = await createService.create(
+						testData.serviceParams,
+						courseStudents[i].authentication,
+					);
 					expect(response).to.be.ok;
 					expect(response.status).to.be.equal('SUCCESS');
 					expect(response.url).to.be.not.empty;
@@ -267,7 +324,6 @@ describe('videoconference service', function slowServiceTests() {
 		before('create team event, enable videoconference', async () => {
 			// const { team, user } = await testObjects.createTestTeamWithOwner();
 			// const event = await testObjects.createTestEvent();
-
 		});
 	});
 

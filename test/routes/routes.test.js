@@ -3,7 +3,10 @@ const request = require('request-promise-native');
 const app = require('../../src/app');
 const getAllRoutes = require('../services/helpers/getAllRoutes');
 const {
-	whitelistNoJwt, whitelistInvalidJwt, ignorelistNoJwt, ignorelistInvalidJwt,
+	whitelistNoJwt,
+	whitelistInvalidJwt,
+	ignorelistNoJwt,
+	ignorelistInvalidJwt,
 } = require('./whitelist');
 const { API_HOST } = require('../../config/globals');
 
@@ -63,7 +66,9 @@ const createTests = (token, whitelist, ignorelist) => {
 						this.timeout(20000);
 						await sleep(15000);
 					}
-					if (method === 'find') { method = 'get'; }
+					if (method === 'find') {
+						method = 'get';
+					}
 
 					const options = {
 						uri: `http://localhost:${PORT}${detail.route}`,
@@ -90,10 +95,13 @@ const createTests = (token, whitelist, ignorelist) => {
 	}
 };
 
-describe('Call routes without jwt', () => createTests(undefined, whitelistNoJwt, ignorelistNoJwt));
-describe('Call routes with empty jwt', () => createTests('', whitelistNoJwt, ignorelistNoJwt));
-describe('Call routes with invalid jwt', () => createTests(
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJhY2Nv',
-	whitelistInvalidJwt,
-	ignorelistInvalidJwt,
-));
+describe('Call routes without jwt', () =>
+	createTests(undefined, whitelistNoJwt, ignorelistNoJwt));
+describe('Call routes with empty jwt', () =>
+	createTests('', whitelistNoJwt, ignorelistNoJwt));
+describe('Call routes with invalid jwt', () =>
+	createTests(
+		'eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJhY2Nv',
+		whitelistInvalidJwt,
+		ignorelistInvalidJwt,
+	));

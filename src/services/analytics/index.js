@@ -40,7 +40,8 @@ class Service {
 			school: data.cd5,
 			networkProtocol: data.cd6,
 		});
-		return model.save()
+		return model
+			.save()
 			.then((_) => Promise.resolve())
 			.catch((err) => {
 				logger.error(err);

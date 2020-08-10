@@ -14,14 +14,25 @@ const {
 /**
  * WARNING: Document will be removed after 7 days
  */
-const activationSchema = new Schema({
-	activationCode: { type: String, required: true },
-	userId: { type: Schema.Types.ObjectId, required: true, ref: 'user' },
-	keyword: { type: String, required: true, enum: Object.values(KEYWORDS) },
-	quarantinedObject: { type: Object, required: true },
-	mailSent: { type: [Date] },
-	state: { type: String, default: STATE.NOT_STARTED, enum: Object.values(STATE) },
-}, { timestamps: true });
+const activationSchema = new Schema(
+	{
+		activationCode: { type: String, required: true },
+		userId: { type: Schema.Types.ObjectId, required: true, ref: 'user' },
+		keyword: {
+			type: String,
+			required: true,
+			enum: Object.values(KEYWORDS),
+		},
+		quarantinedObject: { type: Object, required: true },
+		mailSent: { type: [Date] },
+		state: {
+			type: String,
+			default: STATE.NOT_STARTED,
+			enum: Object.values(STATE),
+		},
+	},
+	{ timestamps: true },
+);
 activationSchema.index({ activationCode: 1 }, { unique: true });
 activationSchema.index({ userId: 1, keyword: 1 }, { unique: true });
 activationSchema.index(
@@ -32,7 +43,10 @@ activationSchema.index(
 // add activationCode and construct quarantinedObject
 activationSchema.pre('validate', function handleSave(next) {
 	this.activationCode = crypto.randomBytes(64).toString('hex');
-	this.quarantinedObject = createQuarantinedObject(this.keyword, this.quarantinedObject);
+	this.quarantinedObject = createQuarantinedObject(
+		this.keyword,
+		this.quarantinedObject,
+	);
 	next();
 });
 

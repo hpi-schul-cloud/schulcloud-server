@@ -12,8 +12,14 @@ const {
 module.exports = function setup() {
 	const app = this;
 
-	app.use('/passwordRecovery', new GenerateRecoveryPasswordTokenService(passwordRecovery));
-	app.use('/passwordRecovery/reset', new ChangePasswordService(passwordRecovery, AccountModel));
+	app.use(
+		'/passwordRecovery',
+		new GenerateRecoveryPasswordTokenService(passwordRecovery),
+	);
+	app.use(
+		'/passwordRecovery/reset',
+		new ChangePasswordService(passwordRecovery, AccountModel),
+	);
 	const passwordRecoveryService = app.service('/passwordRecovery');
 	const changePasswordService = app.service('/passwordRecovery/reset');
 

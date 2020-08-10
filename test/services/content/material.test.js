@@ -6,7 +6,11 @@ const app = require('../../../src/app');
 const Material = require('../../../src/services/content/material-model');
 
 const {
-	cleanup, createTestCourse, createTestUser, createTestLesson, generateRequestParamsFromUser,
+	cleanup,
+	createTestCourse,
+	createTestUser,
+	createTestLesson,
+	generateRequestParamsFromUser,
 } = require('../helpers/testObjects')(app);
 
 describe('material service', () => {
@@ -57,89 +61,136 @@ describe('material service', () => {
 				createTestUser({ roles: 'teacher' }),
 				createTestUser({ roles: 'teacher' }),
 			]);
-			[studentAParams, studentBParams, teacherAParams, teacherBParams] = await Promise.all([
+			[
+				studentAParams,
+				studentBParams,
+				teacherAParams,
+				teacherBParams,
+			] = await Promise.all([
 				generateRequestParamsFromUser(studentA),
 				generateRequestParamsFromUser(studentB),
 				generateRequestParamsFromUser(teacherA),
 				generateRequestParamsFromUser(teacherB),
 			]);
 			[courseA, courseB] = await Promise.all([
-				createTestCourse({ teacherIds: [teacherA], userIds: [studentA] }),
-				createTestCourse({ teacherIds: [teacherB], userIds: [studentB] }),
+				createTestCourse({
+					teacherIds: [teacherA],
+					userIds: [studentA],
+				}),
+				createTestCourse({
+					teacherIds: [teacherB],
+					userIds: [studentB],
+				}),
 			]);
 			await Promise.all([
-				createTestLesson({ courseId: courseA._id, materialIds: [materialA] }),
-				createTestLesson({ courseId: courseB._id, materialIds: [materialB] }),
+				createTestLesson({
+					courseId: courseA._id,
+					materialIds: [materialA],
+				}),
+				createTestLesson({
+					courseId: courseB._id,
+					materialIds: [materialB],
+				}),
 			]);
 		});
 
 		it('enables accessing material via ID for courses the user has access to', async () => {
-			const studentResult = await app.service('materials').get(materialA._id, studentAParams);
+			const studentResult = await app
+				.service('materials')
+				.get(materialA._id, studentAParams);
 			expect(studentResult.title).to.equal(materialA.title);
 
-			const teacherResult = await app.service('materials').get(materialA._id, teacherAParams);
+			const teacherResult = await app
+				.service('materials')
+				.get(materialA._id, teacherAParams);
 			expect(teacherResult.title).to.equal(materialA.title);
 		});
 
 		it('prohibits access to materials of courses a user is not a member of', async () => {
 			try {
-				await app.service('materials').get(materialA._id, studentBParams);
+				await app
+					.service('materials')
+					.get(materialA._id, studentBParams);
 				throw new Error('This should not happen');
 			} catch (err) {
 				expect(err).to.be.instanceOf(Forbidden);
-				expect(err.message).to.equal('No permision to access this material');
+				expect(err.message).to.equal(
+					'No permision to access this material',
+				);
 			}
 
 			try {
-				await app.service('materials').get(materialA._id, teacherBParams);
+				await app
+					.service('materials')
+					.get(materialA._id, teacherBParams);
 				throw new Error('This should not happen');
 			} catch (err) {
 				expect(err).to.be.instanceOf(Forbidden);
-				expect(err.message).to.equal('No permision to access this material');
+				expect(err.message).to.equal(
+					'No permision to access this material',
+				);
 			}
 		});
 
 		it('allows changing a material if it is associated to a teachers course', async () => {
-			const patched = await app.service('materials').patch(materialB._id, { title: 'changed' }, teacherBParams);
+			const patched = await app
+				.service('materials')
+				.patch(materialB._id, { title: 'changed' }, teacherBParams);
 			expect(patched.title).to.equal('changed');
 		});
 
 		it('prohibits changing a material if it is not associated to a user via a course', async () => {
 			try {
-				await app.service('materials').patch(materialB._id, { title: 'changed' }, teacherAParams);
+				await app
+					.service('materials')
+					.patch(materialB._id, { title: 'changed' }, teacherAParams);
 				throw new Error('This should not happen');
 			} catch (err) {
 				expect(err).to.be.instanceOf(Forbidden);
-				expect(err.message).to.equal('No permision to access this material');
+				expect(err.message).to.equal(
+					'No permision to access this material',
+				);
 			}
 		});
 
 		it('prohibits removing a material if it is not associated to a user via a course', async () => {
 			try {
-				await app.service('materials').remove(materialB._id, teacherAParams);
+				await app
+					.service('materials')
+					.remove(materialB._id, teacherAParams);
 				throw new Error('This should not happen');
 			} catch (err) {
 				expect(err).to.be.instanceOf(Forbidden);
-				expect(err.message).to.equal('No permision to access this material');
+				expect(err.message).to.equal(
+					'No permision to access this material',
+				);
 			}
 		});
 
 		it('prohibits changing a material by students even from associated courses', async () => {
 			try {
-				await app.service('materials').patch(materialB._id, { title: 'changed' }, studentBParams);
+				await app
+					.service('materials')
+					.patch(materialB._id, { title: 'changed' }, studentBParams);
 				throw new Error('This should not happen');
 			} catch (err) {
 				expect(err).to.be.instanceOf(Forbidden);
-				expect(err.message).to.equal('No permision to access this material');
+				expect(err.message).to.equal(
+					'No permision to access this material',
+				);
 			}
 		});
 
 		it('allows to find only materials associated to courses a user has access to', async () => {
-			const resultsStudentA = await app.service('materials').find({ query: {}, ...studentAParams });
+			const resultsStudentA = await app
+				.service('materials')
+				.find({ query: {}, ...studentAParams });
 			expect(resultsStudentA.total).to.equal(1);
 			expect(resultsStudentA.data[0].title).to.equal(materialA.title);
 
-			const resultsTeacherB = await app.service('materials').find({ query: {}, ...teacherBParams });
+			const resultsTeacherB = await app
+				.service('materials')
+				.find({ query: {}, ...teacherBParams });
 			expect(resultsTeacherB.total).to.equal(1);
 			expect(resultsTeacherB.data[0].url).to.equal(materialB.url);
 		});

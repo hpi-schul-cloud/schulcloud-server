@@ -33,7 +33,9 @@ module.exports = function setup(app) {
 			const notificationPlatform = app.get('NOTIFICATION_PLATFORM');
 
 			if (!notificationPlatform) {
-				throw new MethodNotAllowed('Required Env NOTIFICATION_PLATFORM is not defined');
+				throw new MethodNotAllowed(
+					'Required Env NOTIFICATION_PLATFORM is not defined',
+				);
 			}
 
 			const serviceUrls = app.get('services') || {};
@@ -85,7 +87,10 @@ module.exports = function setup(app) {
 				});
 			}
 			// otherwise print email message object on console
-			return logger.debug('E-Mail Message not sent (not in production mode):', Mail);
+			return logger.debug(
+				'E-Mail Message not sent (not in production mode):',
+				Mail,
+			);
 		}
 	}
 

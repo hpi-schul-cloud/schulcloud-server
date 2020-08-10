@@ -6,7 +6,9 @@ const { Forbidden } = require('@feathersjs/errors');
 const app = require('../../../src/app');
 const { cleanup } = require('../helpers/testObjects')(app);
 const { create: createSchool } = require('../helpers/services/schools')(app);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(
+	app,
+);
 const { create: createUser } = require('../helpers/services/users')(app);
 const { create: createSystem } = require('../helpers/services/testSystem')(app);
 const { create: createYear } = require('../helpers/services/years');
@@ -41,15 +43,22 @@ describe('school maintenance mode', () => {
 
 				const result = await maintenanceService.find(params);
 				expect(result).to.not.equal(undefined);
-				expect(result.currentYear._id.toString()).to.equal(currentYear._id.toString());
-				expect(result.nextYear._id.toString()).to.equal(nextYear._id.toString());
+				expect(result.currentYear._id.toString()).to.equal(
+					currentYear._id.toString(),
+				);
+				expect(result.nextYear._id.toString()).to.equal(
+					nextYear._id.toString(),
+				);
 				expect(result.schoolUsesLdap).to.equal(false);
 				expect(result.maintenance.active).to.equal(false);
 			});
 
 			it('should react to the school being in maintenance mode', async () => {
 				const currentYear = await createYear();
-				const school = await createSchool({ currentYear, inMaintenanceSince: new Date() });
+				const school = await createSchool({
+					currentYear,
+					inMaintenanceSince: new Date(),
+				});
 				const params = {
 					route: { schoolId: school._id.toString() },
 				};
@@ -72,15 +81,22 @@ describe('school maintenance mode', () => {
 						active: true,
 					},
 				});
-				const school = await createSchool({ currentYear, systems: [ldapSystem] });
+				const school = await createSchool({
+					currentYear,
+					systems: [ldapSystem],
+				});
 				const params = {
 					route: { schoolId: school._id.toString() },
 				};
 
 				const result = await maintenanceService.find(params);
 				expect(result).to.not.equal(undefined);
-				expect(result.currentYear._id.toString()).to.equal(currentYear._id.toString());
-				expect(result.nextYear._id.toString()).to.equal(nextYear._id.toString());
+				expect(result.currentYear._id.toString()).to.equal(
+					currentYear._id.toString(),
+				);
+				expect(result.nextYear._id.toString()).to.equal(
+					nextYear._id.toString(),
+				);
 				expect(result.schoolUsesLdap).to.equal(true);
 				expect(result.maintenance.active).to.equal(false);
 			});
@@ -98,9 +114,14 @@ describe('school maintenance mode', () => {
 					route: { schoolId: school._id.toString() },
 				};
 
-				const result = await maintenanceService.create({ maintenance: true }, params);
+				const result = await maintenanceService.create(
+					{ maintenance: true },
+					params,
+				);
 				expect(result).to.not.equal(undefined);
-				expect(result.currentYear._id.toString()).to.equal(nextYear._id.toString());
+				expect(result.currentYear._id.toString()).to.equal(
+					nextYear._id.toString(),
+				);
 				expect(result.nextYear).to.equal(undefined);
 				expect(result.schoolUsesLdap).to.equal(false);
 				expect(result.maintenance.active).to.equal(false);
@@ -111,15 +132,22 @@ describe('school maintenance mode', () => {
 				const nextYear = await createYear();
 				maintenanceService.years = [currentYear, nextYear];
 				const school = await createSchool({ currentYear });
-				const user = await createUser({ schoolId: school._id, roles: 'teacher' });
+				const user = await createUser({
+					schoolId: school._id,
+					roles: 'teacher',
+				});
 				const params = await generateRequestParamsFromUser(user);
 				params.route = { schoolId: school._id.toString() };
 				params.query = {};
 
 				const result = await maintenanceService.find(params);
 				expect(result).to.not.equal(undefined);
-				expect(result.currentYear._id.toString()).to.equal(currentYear._id.toString());
-				expect(result.nextYear._id.toString()).to.equal(nextYear._id.toString());
+				expect(result.currentYear._id.toString()).to.equal(
+					currentYear._id.toString(),
+				);
+				expect(result.nextYear._id.toString()).to.equal(
+					nextYear._id.toString(),
+				);
 				expect(result.schoolUsesLdap).to.equal(false);
 				expect(result.maintenance.active).to.equal(false);
 			});
@@ -129,12 +157,17 @@ describe('school maintenance mode', () => {
 				const nextYear = await createYear();
 				maintenanceService.years = [currentYear, nextYear];
 				const school = await createSchool({ currentYear });
-				const user = await createUser({ schoolId: new ObjectId(), roles: 'teacher' });
+				const user = await createUser({
+					schoolId: new ObjectId(),
+					roles: 'teacher',
+				});
 				const params = await generateRequestParamsFromUser(user);
 				params.route = { schoolId: school._id.toString() };
 				params.query = {};
 
-				await expect(maintenanceService.find(params)).to.eventually.be.rejectedWith(Forbidden);
+				await expect(
+					maintenanceService.find(params),
+				).to.eventually.be.rejectedWith(Forbidden);
 			});
 		});
 
@@ -149,15 +182,25 @@ describe('school maintenance mode', () => {
 						active: true,
 					},
 				});
-				const school = await createSchool({ currentYear, systems: [ldapSystem] });
+				const school = await createSchool({
+					currentYear,
+					systems: [ldapSystem],
+				});
 				const params = {
 					route: { schoolId: school._id.toString() },
 				};
 
-				const result = await maintenanceService.create({ maintenance: true }, params);
+				const result = await maintenanceService.create(
+					{ maintenance: true },
+					params,
+				);
 				expect(result).to.not.equal(undefined);
-				expect(result.currentYear._id.toString()).to.equal(currentYear._id.toString());
-				expect(result.nextYear._id.toString()).to.equal(nextYear._id.toString());
+				expect(result.currentYear._id.toString()).to.equal(
+					currentYear._id.toString(),
+				);
+				expect(result.nextYear._id.toString()).to.equal(
+					nextYear._id.toString(),
+				);
 				expect(result.schoolUsesLdap).to.equal(true);
 				expect(result.maintenance.active).to.equal(true);
 			});
@@ -181,9 +224,14 @@ describe('school maintenance mode', () => {
 					route: { schoolId: school._id.toString() },
 				};
 
-				const result = await maintenanceService.create({ maintenance: false }, params);
+				const result = await maintenanceService.create(
+					{ maintenance: false },
+					params,
+				);
 				expect(result).to.not.equal(undefined);
-				expect(result.currentYear._id.toString()).to.equal(nextYear._id.toString());
+				expect(result.currentYear._id.toString()).to.equal(
+					nextYear._id.toString(),
+				);
 				expect(result.nextYear).to.equal(undefined);
 				expect(result.schoolUsesLdap).to.equal(true);
 				expect(result.maintenance.active).to.equal(false);
@@ -195,21 +243,37 @@ describe('school maintenance mode', () => {
 				maintenanceService.years = [currentYear, nextYear];
 				const school = await createSchool({ currentYear });
 
-				const teacher = await createUser({ schoolId: school._id, roles: 'student' });
-				const teacherParams = await generateRequestParamsFromUser(teacher);
+				const teacher = await createUser({
+					schoolId: school._id,
+					roles: 'student',
+				});
+				const teacherParams = await generateRequestParamsFromUser(
+					teacher,
+				);
 				teacherParams.route = { schoolId: school._id.toString() };
 				teacherParams.query = {};
 
-				const admin = await createUser({ schoolId: school._id, roles: 'administrator' });
+				const admin = await createUser({
+					schoolId: school._id,
+					roles: 'administrator',
+				});
 				const adminParams = await generateRequestParamsFromUser(admin);
 				adminParams.route = { schoolId: school._id.toString() };
 				adminParams.query = {};
 
-				await expect(maintenanceService.create({ maintenance: true }, teacherParams))
-					.to.eventually.be.rejectedWith(Forbidden);
+				await expect(
+					maintenanceService.create(
+						{ maintenance: true },
+						teacherParams,
+					),
+				).to.eventually.be.rejectedWith(Forbidden);
 
-				await expect(maintenanceService.create({ maintenance: true }, adminParams))
-					.to.eventually.be.fulfilled;
+				await expect(
+					maintenanceService.create(
+						{ maintenance: true },
+						adminParams,
+					),
+				).to.eventually.be.fulfilled;
 			}).timeout(5000);
 		});
 	});

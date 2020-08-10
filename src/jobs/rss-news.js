@@ -11,7 +11,7 @@ const parser = new Parser();
  * NOTE: this is the first job script. To run it, simply execute 'node src/jobs/rss-news.js'.
  * It is expected to pass MongoDB parameters as process environment variables.
  * Please see src/utils/database.js for more.
-*/
+ */
 
 async function handleFeed(dbFeed, schoolId) {
 	const data = await parser.parseURL(dbFeed.url);
@@ -58,7 +58,11 @@ async function processSchool(school, errors) {
 
 	await school.save();
 
-	await newsModel.deleteMany({ _id: { $nin: allCheckedNews }, source: 'rss', schoolId: school._id });
+	await newsModel.deleteMany({
+		_id: { $nin: allCheckedNews },
+		source: 'rss',
+		schoolId: school._id,
+	});
 }
 
 async function run() {
@@ -81,7 +85,9 @@ async function run() {
 
 	await database.close();
 	if (listOfErrors.length) {
-		logger.error(`updating rss feeds finished with ${listOfErrors.length} errors`);
+		logger.error(
+			`updating rss feeds finished with ${listOfErrors.length} errors`,
+		);
 	} else {
 		logger.info('updating rss feeds finished without errors');
 	}

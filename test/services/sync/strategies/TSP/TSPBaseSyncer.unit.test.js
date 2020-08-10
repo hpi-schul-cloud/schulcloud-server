@@ -26,8 +26,12 @@ describe('TSPBaseSyncer', () => {
 
 		it('should accept valid config objects via params.query or data', () => {
 			const config = { schoolIdentifier: '42' };
-			expect(TSPBaseSyncer.params({ query: { config } })).to.deep.equal([config]);
-			expect(TSPBaseSyncer.params(undefined, { config })).to.deep.equal([config]);
+			expect(TSPBaseSyncer.params({ query: { config } })).to.deep.equal([
+				config,
+			]);
+			expect(TSPBaseSyncer.params(undefined, { config })).to.deep.equal([
+				config,
+			]);
 		});
 	});
 });

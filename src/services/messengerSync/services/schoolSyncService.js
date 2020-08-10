@@ -1,8 +1,6 @@
-const {	BadRequest } = require('@feathersjs/errors');
+const { BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
-const {
-	iff, isProvider, disallow,
-} = require('feathers-hooks-common');
+const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { hasPermission, restrictToCurrentSchool } = require('../../../hooks');
 const { requestFullSchoolSync } = require('../producer');
 const { SCHOOL_FEATURES } = require('../../school/model');
@@ -22,9 +20,13 @@ class MessengerSchoolSync {
 	 * @param {Object} params feathers params object.
 	 */
 	async create(data, params) {
-		const school = await this.app.service('schools').get(params.route.schoolId);
+		const school = await this.app
+			.service('schools')
+			.get(params.route.schoolId);
 		if (!school.features.includes(SCHOOL_FEATURES.MESSENGER)) {
-			throw new BadRequest('This school does not support the messenger feature.');
+			throw new BadRequest(
+				'This school does not support the messenger feature.',
+			);
 		}
 
 		requestFullSchoolSync(school);
@@ -41,30 +43,18 @@ const messengerSchoolSyncService = new MessengerSchoolSync({
 
 const messengerSchoolSyncHooks = {
 	before: {
-		all: [
-			authenticate('jwt'),
-		],
-		find: [
-			disallow(),
-		],
-		get: [
-			disallow(),
-		],
+		all: [authenticate('jwt')],
+		find: [disallow()],
+		get: [disallow()],
 		create: [
 			iff(isProvider('external'), [
 				hasPermission('MESSENGER_SYNC'),
 				restrictToCurrentSchool,
 			]),
 		],
-		update: [
-			disallow(),
-		],
-		patch: [
-			disallow(),
-		],
-		remove: [
-			disallow(),
-		],
+		update: [disallow()],
+		patch: [disallow()],
+		remove: [disallow()],
 	},
 	after: {
 		all: [],

@@ -7,15 +7,18 @@ const { connect, close } = require('../src/utils/database');
 
 const { Schema } = mongoose;
 
-const roleSchema = new Schema({
-	name: { type: String, required: true },
-	permissions: [{ type: String }],
+const roleSchema = new Schema(
+	{
+		name: { type: String, required: true },
+		permissions: [{ type: String }],
 
-	// inheritance
-	roles: [{ type: Schema.Types.ObjectId }],
-}, {
-	timestamps: true,
-});
+		// inheritance
+		roles: [{ type: Schema.Types.ObjectId }],
+	},
+	{
+		timestamps: true,
+	},
+);
 
 const Role = mongoose.model('role323323', roleSchema, 'roles');
 
@@ -28,7 +31,9 @@ const roleNames = ['teacher', 'administrator', 'superhero'];
 module.exports = {
 	up: async function up() {
 		if (process.env.SC_THEME === 'thr') {
-			info('no further updates required, this migration continues only iff SC_THEME is not set to "thr"');
+			info(
+				'no further updates required, this migration continues only iff SC_THEME is not set to "thr"',
+			);
 			return Promise.resolve();
 		}
 
@@ -40,14 +45,20 @@ module.exports = {
 				throw new Error(`role not found: ${roleName}`);
 			}
 			if (role.permissions.includes(REQUEST_CONSENTS)) {
-				info(`role ${roleName} already has permission ${REQUEST_CONSENTS}, ignore...`);
+				info(
+					`role ${roleName} already has permission ${REQUEST_CONSENTS}, ignore...`,
+				);
 				break;
 			} else {
-				info(`add permission ${REQUEST_CONSENTS} into role ${roleName}...`);
+				info(
+					`add permission ${REQUEST_CONSENTS} into role ${roleName}...`,
+				);
 				role.permissions.push(REQUEST_CONSENTS);
 				role.permissions.sort();
 				await role.save();
-				info(`successfully added permission ${REQUEST_CONSENTS} for role ${roleName}.`);
+				info(
+					`successfully added permission ${REQUEST_CONSENTS} for role ${roleName}.`,
+				);
 			}
 		}
 
@@ -67,10 +78,14 @@ module.exports = {
 				throw new Error(`role not found: ${roleName}`);
 			}
 			if (role.permissions.includes(REQUEST_CONSENTS)) {
-				info(`role ${roleName} has permission ${REQUEST_CONSENTS}, remove...`);
+				info(
+					`role ${roleName} has permission ${REQUEST_CONSENTS}, remove...`,
+				);
 				role.permissions.pull(REQUEST_CONSENTS);
 				await role.save();
-				info(`permission ${REQUEST_CONSENTS} successfully removed from role ${roleName}.`);
+				info(
+					`permission ${REQUEST_CONSENTS} successfully removed from role ${roleName}.`,
+				);
 			}
 		}
 

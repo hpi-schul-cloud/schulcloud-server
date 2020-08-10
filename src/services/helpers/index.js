@@ -1,5 +1,7 @@
 /* eslint-disable global-require */
-const { verifyApiKeyIfProviderIsExternal } = require('../../hooks/authentication');
+const {
+	verifyApiKeyIfProviderIsExternal,
+} = require('../../hooks/authentication');
 
 module.exports = function setup() {
 	const app = this;

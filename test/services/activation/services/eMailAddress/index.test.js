@@ -23,18 +23,18 @@ const mockData = {
 	email: 'testmail@schul-cloud.org123',
 };
 
-const getNotificationMock = (expectedData = {}) => new Promise((resolve) => {
-	nock(config.services.notification)
-		.post('/mails')
-		.reply(200,
-			(uri, requestBody) => {
+const getNotificationMock = (expectedData = {}) =>
+	new Promise((resolve) => {
+		nock(config.services.notification)
+			.post('/mails')
+			.reply(200, (uri, requestBody) => {
 				Object.entries(expectedData).forEach(([key, value]) => {
 					expect(requestBody[key]).to.eql(value);
 				});
 				resolve(true);
 				return 'Message queued';
 			});
-});
+	});
 
 describe('activation/services/eMailAddress EMailAdresseActivationService', () => {
 	let server;
@@ -71,7 +71,9 @@ describe('activation/services/eMailAddress EMailAdresseActivationService', () =>
 		};
 
 		const cb = getNotificationMock();
-		const res = await activationService.create(data, { account: { userId: user._id } });
+		const res = await activationService.create(data, {
+			account: { userId: user._id },
+		});
 		expect(await cb).to.be.true;
 		expect(res.success).to.be.true;
 

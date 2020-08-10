@@ -21,23 +21,13 @@ describe('PermissionService', async () => {
 		'RUN_FLOOR',
 	];
 
-	const otherPermissions = [
-		'SITTING',
-		'SITTING_ON_CHAIR',
-		'SITTING_ON_DESK',
-	];
+	const otherPermissions = ['SITTING', 'SITTING_ON_CHAIR', 'SITTING_ON_DESK'];
 
-	const extendedPermissions = [
-		'EAT_TO_KEEP_ALIVE',
-	];
+	const extendedPermissions = ['EAT_TO_KEEP_ALIVE'];
 
-	const multipleExtendedPermission = [
-		'WRITE_ON_BOARD',
-	];
+	const multipleExtendedPermission = ['WRITE_ON_BOARD'];
 
-	const xxPermissions = [
-		'GO_TO_TOILET',
-	];
+	const xxPermissions = ['GO_TO_TOILET'];
 
 	before(async () => {
 		const testRole = await testObjects.createTestRole({
@@ -142,8 +132,6 @@ describe('PermissionService', async () => {
 			},
 		});
 
-		expect(permissions).to.have.members([
-			...otherPermissions,
-		]);
+		expect(permissions).to.have.members([...otherPermissions]);
 	});
 });

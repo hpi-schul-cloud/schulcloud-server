@@ -1,10 +1,11 @@
 const { expect } = require('chai');
 const { BadRequest } = require('@feathersjs/errors');
-const {	lookupSchool } = require('../../src/hooks');
+const { lookupSchool } = require('../../src/hooks');
 
 const app = require('../../src/app');
-const { createTestUser, cleanup } = require('../services/helpers/testObjects')(app);
-
+const { createTestUser, cleanup } = require('../services/helpers/testObjects')(
+	app,
+);
 
 describe('#lookupSchool', () => {
 	it('should require authentication to provide a user', async () => {
@@ -26,7 +27,7 @@ describe('#lookupSchool', () => {
 		}
 	});
 
-	it('should add the logged-in user\' school to the request params', async () => {
+	it("should add the logged-in user' school to the request params", async () => {
 		const user = await createTestUser();
 		const context = await lookupSchool({
 			app,
@@ -36,7 +37,9 @@ describe('#lookupSchool', () => {
 				},
 			},
 		});
-		expect(context.params.account.schoolId.toString()).to.equal(user.schoolId.toString());
+		expect(context.params.account.schoolId.toString()).to.equal(
+			user.schoolId.toString(),
+		);
 	});
 
 	after(cleanup);

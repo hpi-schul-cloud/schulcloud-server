@@ -1,8 +1,6 @@
 const errors = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
-const {
-	iff, isProvider,
-} = require('feathers-hooks-common');
+const { iff, isProvider } = require('feathers-hooks-common');
 const { hasPermission } = require('../../hooks');
 
 const Syncer = require('./strategies/Syncer');
@@ -32,18 +30,28 @@ module.exports = function setup() {
 				if (StrategySyncer.respondsTo(target)) {
 					const args = StrategySyncer.params(params, data);
 					if (args) {
-						instances.push(new StrategySyncer(app, {}, logger, ...args));
+						instances.push(
+							new StrategySyncer(app, {}, logger, ...args),
+						);
 					} else {
-						throw new Error(`Invalid params for ${StrategySyncer.name}: "${JSON.stringify(params)}"`);
+						throw new Error(
+							`Invalid params for ${
+								StrategySyncer.name
+							}: "${JSON.stringify(params)}"`,
+						);
 					}
 				}
 			});
 			if (instances.length === 0) {
 				throw new Error(`No syncer responds to target "${target}"`);
 			} else {
-				const stats = await Promise.all(instances.map((instance) => instance.sync()));
+				const stats = await Promise.all(
+					instances.map((instance) => instance.sync()),
+				);
 				const aggregated = Syncer.aggregateStats(stats);
-				logger.info(`Sync finished. Successful: ${aggregated.successful}, Errors: ${aggregated.failed}`);
+				logger.info(
+					`Sync finished. Successful: ${aggregated.successful}, Errors: ${aggregated.failed}`,
+				);
 				return Promise.resolve(stats);
 			}
 		}
@@ -54,10 +62,15 @@ module.exports = function setup() {
 	const syncService = app.service('/sync');
 	syncService.hooks({
 		before: {
-			all: [iff(isProvider('external'), [
-				authenticate('jwt', 'api-key'),
-				iff(((context) => context.account), hasPermission('SYNC_START')),
-			])],
+			all: [
+				iff(isProvider('external'), [
+					authenticate('jwt', 'api-key'),
+					iff(
+						(context) => context.account,
+						hasPermission('SYNC_START'),
+					),
+				]),
+			],
 		},
 	});
 };

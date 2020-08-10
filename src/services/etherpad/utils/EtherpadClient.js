@@ -19,35 +19,45 @@ class EtherpadClient {
 			logger.info('Etherpad uri is not defined');
 		}
 		if (Configuration.has('ETHERPAD_COOKIE__EXPIRES_SECONDS')) {
-			this.cookieExpiresSeconds = Configuration.get('ETHERPAD_COOKIE__EXPIRES_SECONDS');
+			this.cookieExpiresSeconds = Configuration.get(
+				'ETHERPAD_COOKIE__EXPIRES_SECONDS',
+			);
 		} else {
 			this.cookieExpiresSeconds = 28800;
 		}
 		if (Configuration.has('ETHERPAD_COOKIE_RELEASE_THRESHOLD')) {
-			this.cookieReleaseThreshold = Configuration.get('ETHERPAD_COOKIE_RELEASE_THRESHOLD');
+			this.cookieReleaseThreshold = Configuration.get(
+				'ETHERPAD_COOKIE_RELEASE_THRESHOLD',
+			);
 		} else {
 			this.cookieReleaseThreshold = 7200;
 		}
 
 		this.err = {
 			createOrGetGroupPad: 'Could not create/get given pad for group.',
-			copyOldPadToGroupPad: 'Could not copy given public pad to new group pad.',
+			copyOldPadToGroupPad:
+				'Could not copy given public pad to new group pad.',
 			createSession: 'Could not create a session for the given user.',
 			createOrGetGroup: 'Could not create/get this group.',
 			createOrGetAuthor: 'Could not create/get this author.',
-			getActiveSessions: 'Could not get active sessions for this author/group combination.',
-			createSession: 'Could not create a session for this author/group combination.',
+			getActiveSessions:
+				'Could not get active sessions for this author/group combination.',
+			createSession:
+				'Could not create a session for this author/group combination.',
 		};
 	}
 
-	createSettings({
-		method = 'POST',
-		endpoint,
-		formDef = {
-			apikey: Configuration.get('ETHERPAD_API_KEY'),
+	createSettings(
+		{
+			method = 'POST',
+			endpoint,
+			formDef = {
+				apikey: Configuration.get('ETHERPAD_API_KEY'),
+			},
+			body,
 		},
-		body,
-	}, params = {}) {
+		params = {},
+	) {
 		const form = { ...formDef, ...params };
 		return {
 			method,
@@ -64,9 +74,15 @@ class EtherpadClient {
 			case 0:
 				return responseJSON;
 			case 1:
-				throw new Conflict(responseJSON.message, rpErrors.RequestError(responseJSON.message, res));
+				throw new Conflict(
+					responseJSON.message,
+					rpErrors.RequestError(responseJSON.message, res),
+				);
 			default:
-				throw new BadRequest(responseJSON.message, rpErrors.RequestError(responseJSON.message, res));
+				throw new BadRequest(
+					responseJSON.message,
+					rpErrors.RequestError(responseJSON.message, res),
+				);
 		}
 	}
 
@@ -75,35 +91,63 @@ class EtherpadClient {
 	}
 
 	createOrGetAuthor(params) {
-		return rp(this.createSettings({
-			endpoint: 'createAuthorIfNotExistsFor',
-		}, params))
+		return rp(
+			this.createSettings(
+				{
+					endpoint: 'createAuthorIfNotExistsFor',
+				},
+				params,
+			),
+		)
 			.then((res) => this.handleEtherpadResponse(res))
-			.catch((err) => { this.handleEtherpadError(err, this.err.createOrGetAuthor); });
+			.catch((err) => {
+				this.handleEtherpadError(err, this.err.createOrGetAuthor);
+			});
 	}
 
 	createOrGetGroup(params) {
-		return rp(this.createSettings({
-			endpoint: 'createGroupIfNotExistsFor',
-		}, params))
+		return rp(
+			this.createSettings(
+				{
+					endpoint: 'createGroupIfNotExistsFor',
+				},
+				params,
+			),
+		)
 			.then((res) => this.handleEtherpadResponse(res))
-			.catch((err) => { this.handleEtherpadError(err, this.err.createOrGetGroup); });
+			.catch((err) => {
+				this.handleEtherpadError(err, this.err.createOrGetGroup);
+			});
 	}
 
 	getActiveSessions(params) {
-		return rp(this.createSettings({
-			endpoint: 'listSessionsOfAuthor',
-		}, params))
+		return rp(
+			this.createSettings(
+				{
+					endpoint: 'listSessionsOfAuthor',
+				},
+				params,
+			),
+		)
 			.then((res) => this.handleEtherpadResponse(res))
-			.catch((err) => { this.handleEtherpadError(err, this.err.getActiveSessions); });
+			.catch((err) => {
+				this.handleEtherpadError(err, this.err.getActiveSessions);
+			});
 	}
 
 	createSession(params) {
-		return rp(this.createSettings({
-			endpoint: 'createSession',
-		}, params))
+		return rp(
+			this.createSettings(
+				{
+					endpoint: 'createSession',
+				},
+				params,
+			),
+		)
 			.then((res) => this.handleEtherpadResponse(res))
-			.catch((err) => { this.handleEtherpadError(err, this.err.createSession); });
+			.catch((err) => {
+				this.handleEtherpadError(err, this.err.createSession);
+			});
 	}
 
 	createOrGetGroupPad(params) {
@@ -113,9 +157,14 @@ class EtherpadClient {
 				sourceID: params.oldPadId,
 				destinationID: newPadId,
 			};
-			return rp(this.createSettings({
-				endpoint: 'copyPad',
-			}, copyParams))
+			return rp(
+				this.createSettings(
+					{
+						endpoint: 'copyPad',
+					},
+					copyParams,
+				),
+			)
 				.then((res) => {
 					const response = this.handleEtherpadResponse(res);
 					response.data = {
@@ -123,14 +172,24 @@ class EtherpadClient {
 					};
 					return response;
 				})
-				.catch((err) => { this.handleEtherpadError(err, this.err.copyOldPadToGroupPad); });
+				.catch((err) => {
+					this.handleEtherpadError(
+						err,
+						this.err.copyOldPadToGroupPad,
+					);
+				});
 		}
-		return rp(this.createSettings({
-			endpoint: 'createGroupPad',
-		}, params))
+		return rp(
+			this.createSettings(
+				{
+					endpoint: 'createGroupPad',
+				},
+				params,
+			),
+		)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
-			// pad is already there, just return the constructed pad path
+				// pad is already there, just return the constructed pad path
 				if (err.code === 409) {
 					return {
 						code: 0,

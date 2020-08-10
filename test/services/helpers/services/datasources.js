@@ -1,5 +1,7 @@
 let createdDatasourceIds = [];
-const { datasourceModel } = require('../../../../src/services/datasources/model');
+const {
+	datasourceModel,
+} = require('../../../../src/services/datasources/model');
 
 const createTestDatasource = (app, opt) => async ({
 	name = 'testDatasource',
@@ -9,7 +11,9 @@ const createTestDatasource = (app, opt) => async ({
 	manualCleanup = false,
 } = {}) => {
 	if (!config.target) {
-		throw new Error('datasource requires a config with a target! No the testobjects cant do that for you...');
+		throw new Error(
+			'datasource requires a config with a target! No the testobjects cant do that for you...',
+		);
 	}
 	const datasource = await app.service('datasources').create({
 		schoolId,
@@ -28,7 +32,10 @@ const cleanup = () => {
 	}
 	const ids = createdDatasourceIds;
 	createdDatasourceIds = [];
-	return datasourceModel.deleteMany({ _id: { $in: ids } }).lean().exec();
+	return datasourceModel
+		.deleteMany({ _id: { $in: ids } })
+		.lean()
+		.exec();
 };
 
 module.exports = (app, opt) => ({

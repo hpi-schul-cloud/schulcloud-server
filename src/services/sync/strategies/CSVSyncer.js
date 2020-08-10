@@ -9,13 +9,31 @@ const { SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const ATTRIBUTES = [
 	{ name: 'namePrefix', aliases: ['nameprefix', 'prefix', 'title', 'affix'] },
-	{ name: 'firstName', required: true, aliases: ['firstname', 'first', 'first-name', 'fn'] },
+	{
+		name: 'firstName',
+		required: true,
+		aliases: ['firstname', 'first', 'first-name', 'fn'],
+	},
 	{ name: 'middleName', aliases: ['middlename', 'middle'] },
-	{ name: 'lastName', required: true, aliases: ['lastname', 'last', 'last-name', 'n'] },
+	{
+		name: 'lastName',
+		required: true,
+		aliases: ['lastname', 'last', 'last-name', 'n'],
+	},
 	{ name: 'nameSuffix', aliases: ['namesuffix', 'suffix'] },
 	{ name: 'email', required: true, aliases: ['email', 'mail', 'e-mail'] },
 	{ name: 'class', aliases: ['class', 'classes'] },
-	{ name: 'birthday', aliases: ['birthday', 'birth date', 'birthdate', 'birth', 'geburtstag', 'geburtsdatum'] },
+	{
+		name: 'birthday',
+		aliases: [
+			'birthday',
+			'birth date',
+			'birthdate',
+			'birth',
+			'geburtstag',
+			'geburtsdatum',
+		],
+	},
 ];
 
 /**
@@ -32,15 +50,18 @@ const ATTRIBUTES = [
 const buildMappingFunction = (sourceSchema, targetSchema = ATTRIBUTES) => {
 	const mapping = {};
 	Object.keys(sourceSchema).forEach((key) => {
-		const attribute = targetSchema.find((a) => a.aliases.includes(key.toLowerCase().trim()));
+		const attribute = targetSchema.find((a) =>
+			a.aliases.includes(key.toLowerCase().trim()),
+		);
 		if (attribute !== undefined) {
 			mapping[key] = attribute.name;
 		}
 	});
-	return (record) => Object.keys(mapping).reduce((res, key) => {
-		res[mapping[key]] = record[key];
-		return res;
-	}, {});
+	return (record) =>
+		Object.keys(mapping).reduce((res, key) => {
+			res[mapping[key]] = record[key];
+			return res;
+		}, {});
 };
 
 /**
@@ -75,15 +96,15 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	}
 
 	/**
-     * @see {Syncer#respondsTo}
-     */
+	 * @see {Syncer#respondsTo}
+	 */
 	static respondsTo(target) {
 		return target === 'csv';
 	}
 
 	/**
-     * @see {Syncer#params}
-     */
+	 * @see {Syncer#params}
+	 */
 	static params(params, data = {}) {
 		const query = (params || {}).query || {};
 		if (query.school && data.data) {
@@ -104,8 +125,8 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	}
 
 	/**
-     * @see {Syncer#steps}
-     */
+	 * @see {Syncer#steps}
+	 */
 	async steps() {
 		await super.steps();
 		this.options.schoolYear = await this.determineSchoolYear();
@@ -114,13 +135,15 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		const importClasses = CSVSyncer.needsToImportClasses(sanitizedRecords);
 		const clusteredRecords = this.clusterByEmail(sanitizedRecords);
 
-		const actions = Object.values(clusteredRecords).map((record) => async () => {
-			const enrichedRecord = await this.enrichUserData(record);
-			const user = await this.createOrUpdateUser(enrichedRecord);
-			if (importClasses) {
-				await this.createClasses(enrichedRecord, user);
-			}
-		});
+		const actions = Object.values(clusteredRecords).map(
+			(record) => async () => {
+				const enrichedRecord = await this.enrichUserData(record);
+				const user = await this.createOrUpdateUser(enrichedRecord);
+				if (importClasses) {
+					await this.createClasses(enrichedRecord, user);
+				}
+			},
+		);
 		while (actions.length > 0) {
 			const action = actions.shift();
 			await action.apply(this);
@@ -134,13 +157,18 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			if (this.options.schoolYear) {
 				return this.app.service('years').get(this.options.schoolYear);
 			}
-			const school = await this.app.service('schools').get(this.options.schoolId);
+			const school = await this.app
+				.service('schools')
+				.get(this.options.schoolId);
 			return this.app.service('years').get(school.currentYear);
 		} catch (err) {
-			this.logError('Cannot determine school year to import from params', {
-				paramSchoolYear: this.options.schoolYear,
-				paramSchool: this.options.school,
-			});
+			this.logError(
+				'Cannot determine school year to import from params',
+				{
+					paramSchoolYear: this.options.schoolYear,
+					paramSchool: this.options.school,
+				},
+			);
 		}
 		return undefined;
 	}
@@ -150,8 +178,8 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		try {
 			const strippedData = stripBOM(this.options.csvData);
 			const parseResult = parse(strippedData, {
-				delimiter: '',	// auto-detect
-				newline: '',	// auto-detect
+				delimiter: '', // auto-detect
+				newline: '', // auto-detect
 				header: true,
 				skipEmptyLines: true,
 				fastMode: true,
@@ -159,7 +187,10 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			const { errors } = parseResult;
 			if (Array.isArray(errors) && errors.length > 0) {
 				errors.forEach((error) => {
-					this.logWarning('Skipping line, because it contains an error', { error });
+					this.logWarning(
+						'Skipping line, because it contains an error',
+						{ error },
+					);
 					this.stats.errors.push({
 						type: 'file',
 						entity: 'Eingabedatei fehlerhaft',
@@ -189,14 +220,18 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		}
 
 		ATTRIBUTES.filter((a) => a.required).forEach((attr) => {
-			const attributeIsUsed = Object.keys(records[0]).some((k) => attr.aliases.includes(k.toLowerCase().trim()));
+			const attributeIsUsed = Object.keys(records[0]).some((k) =>
+				attr.aliases.includes(k.toLowerCase().trim()),
+			);
 			if (!attributeIsUsed) {
 				this.stats.errors.push({
 					type: 'file',
 					entity: 'Eingabedatei fehlerhaft',
 					message: `benötigtes Attribut "${attr.name}" nicht gefunden`,
 				});
-				throw new Error(`Parsing failed. Expected attribute "${attr.name}"`);
+				throw new Error(
+					`Parsing failed. Expected attribute "${attr.name}"`,
+				);
 			}
 		});
 		return records;
@@ -207,7 +242,9 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	}
 
 	sanitizeRecords(records) {
-		const requiredAttributes = ATTRIBUTES.filter((a) => a.required).map((a) => a.name);
+		const requiredAttributes = ATTRIBUTES.filter((a) => a.required).map(
+			(a) => a.name,
+		);
 		const mappingFunction = buildMappingFunction(records[0]);
 		const processed = [];
 		records.forEach((record) => {
@@ -216,12 +253,15 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 				mappedRecord.email = mappedRecord.email.trim().toLowerCase();
 				if (mappedRecord.birthday) {
 					if (CSVSyncer.isValidBirthday(mappedRecord.birthday)) {
-						mappedRecord.birthday = CSVSyncer.convertToDate(mappedRecord.birthday);
+						mappedRecord.birthday = CSVSyncer.convertToDate(
+							mappedRecord.birthday,
+						);
 					} else {
 						this.stats.errors.push({
 							type: 'user',
 							entity: `${record.firstName},${record.lastName},${record.email},${mappedRecord.birthday}`,
-							message: 'Geburtsdatum fehlerhaft. Zulässige Formate: dd.mm.yyyy | dd/mm/yyyy | dd-mm-yyyy',
+							message:
+								'Geburtsdatum fehlerhaft. Zulässige Formate: dd.mm.yyyy | dd/mm/yyyy | dd-mm-yyyy',
 						});
 						delete mappedRecord.birthday;
 					}
@@ -241,8 +281,9 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 				this.stats.errors.push({
 					type: 'user',
 					entity: `${record.firstName},${record.lastName},${record.email}`,
-					message: `Mehrfachnutzung der E-Mail-Adresse "${record.email}". `
-						+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
+					message:
+						`Mehrfachnutzung der E-Mail-Adresse "${record.email}". ` +
+						'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 				});
 				this.stats.users.failed += 1;
 			} else {
@@ -282,13 +323,16 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	}
 
 	async findUserIdForRecord(record) {
-		const users = await this.app.service('users').find({
-			query: {
-				email: record.email,
+		const users = await this.app.service('users').find(
+			{
+				query: {
+					email: record.email,
+				},
+				paginate: false,
+				lean: true,
 			},
-			paginate: false,
-			lean: true,
-		}, this.requestParams);
+			this.requestParams,
+		);
 		if (users.length >= 1) {
 			return users[0]._id;
 		}
@@ -298,7 +342,9 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	async createUser(record) {
 		let userObject;
 		try {
-			userObject = await this.app.service('users').create(record, this.requestParams);
+			userObject = await this.app
+				.service('users')
+				.create(record, this.requestParams);
 			this.stats.users.created += 1;
 			this.stats.users.successful += 1;
 			if (this.options.sendEmails) {
@@ -328,7 +374,9 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 				query: undefined,
 				payload: undefined,
 			};
-			userObject = await this.app.service('users').patch(userId, patch, params);
+			userObject = await this.app
+				.service('users')
+				.patch(userId, patch, params);
 			this.stats.users.updated += 1;
 			this.stats.users.successful += 1;
 		} catch (err) {
@@ -344,7 +392,9 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'user',
 				entity: `${record.firstName},${record.lastName},${record.email}`,
-				message: `Ungültiger Wert in Spalte "${err.message.match(/Path `(.+)` is required/)[1]}"`,
+				message: `Ungültiger Wert in Spalte "${
+					err.message.match(/Path `(.+)` is required/)[1]
+				}"`,
 			});
 		} else {
 			this.stats.errors.push({
@@ -363,13 +413,14 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 					subject: `Einladung für die Nutzung der ${SC_TITLE}!`,
 					headers: {},
 					content: {
-						text: `Einladung in die ${SC_TITLE}\n`
-							+ `Hallo ${user.firstName} ${user.lastName}!\n\n`
-							+ `Du wurdest eingeladen, der ${SC_TITLE} beizutreten, `
-							+ 'bitte vervollständige deine Registrierung unter folgendem Link: '
-							+ `${user.shortLink}\n\n`
-							+ 'Viel Spaß und einen guten Start wünscht dir dein '
-							+ `${SC_SHORT_TITLE}-Team`,
+						text:
+							`Einladung in die ${SC_TITLE}\n` +
+							`Hallo ${user.firstName} ${user.lastName}!\n\n` +
+							`Du wurdest eingeladen, der ${SC_TITLE} beizutreten, ` +
+							'bitte vervollständige deine Registrierung unter folgendem Link: ' +
+							`${user.shortLink}\n\n` +
+							'Viel Spaß und einen guten Start wünscht dir dein ' +
+							`${SC_SHORT_TITLE}-Team`,
 					},
 				});
 				this.stats.invitations.successful += 1;
@@ -381,7 +432,8 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'invitation',
 				entity: user.email,
-				message: 'Die automatische Einladungs-E-Mail konnte nicht gesendet werden. Bitte manuell einladen.',
+				message:
+					'Die automatische Einladungs-E-Mail konnte nicht gesendet werden. Bitte manuell einladen.',
 			});
 			this.logError('Cannot send invitation link to user', err);
 		}
@@ -399,12 +451,17 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			const classObject = classMapping[klass];
 			if (classObject === undefined) return;
 
-			const collection = this.options.role === 'teacher' ? 'teacherIds' : 'userIds';
-			const importIds = classObject[collection].map((uid) => uid.toString());
+			const collection =
+				this.options.role === 'teacher' ? 'teacherIds' : 'userIds';
+			const importIds = classObject[collection].map((uid) =>
+				uid.toString(),
+			);
 			if (!importIds.includes(user._id.toString())) {
 				const patchData = {};
 				patchData[collection] = [...importIds, user._id.toString()];
-				await this.app.service('/classes').patch(classObject._id, patchData);
+				await this.app
+					.service('/classes')
+					.patch(classObject._id, patchData);
 			}
 		});
 		await Promise.all(actions);
@@ -423,13 +480,15 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	static isValidBirthday(dateString) {
 		// Adapted from https://stackoverflow.com/questions/15491894/regex-to-validate-date-format-dd-mm-yyyy
-		const dateValidationRegex = new RegExp([
-			'^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|',
-			'(?:(?:29|30)(\\/|-|\\.)(?:0?[13-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|',
-			'^(?:29(\\/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|',
-			'(?:(?:16|[2468][048]|[3579][26])00))))$|',
-			'^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$',
-		].join(''));
+		const dateValidationRegex = new RegExp(
+			[
+				'^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|',
+				'(?:(?:29|30)(\\/|-|\\.)(?:0?[13-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|',
+				'^(?:29(\\/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|',
+				'(?:(?:16|[2468][048]|[3579][26])00))))$|',
+				'^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$',
+			].join(''),
+		);
 		return dateValidationRegex.test(dateString);
 	}
 
@@ -450,6 +509,5 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		return date;
 	}
 }
-
 
 module.exports = CSVSyncer;

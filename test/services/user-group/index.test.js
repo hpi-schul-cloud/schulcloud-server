@@ -1,7 +1,9 @@
 const { expect } = require('chai');
 const app = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(
+	app,
+);
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
 const classesService = app.service('/classes');
@@ -27,9 +29,12 @@ describe('classes service', () => {
 		afterEach(testObjects.cleanup);
 
 		it('should allow teachers and admins to find all classes', async () => {
-			const teacherUser = await testObjects.createTestUser({ roles: ['teacher'] });
+			const teacherUser = await testObjects.createTestUser({
+				roles: ['teacher'],
+			});
 			const adminUser = await testObjects.createTestUser({
-				roles: ['administrator'], schoolId: teacherUser.schoolId,
+				roles: ['administrator'],
+				schoolId: teacherUser.schoolId,
 			});
 
 			const classes = [
@@ -49,23 +54,31 @@ describe('classes service', () => {
 				}),
 			];
 
-			await Promise.all([teacherUser, adminUser].map(async (role) => {
-				const params = {
-					query: {},
-					...await generateRequestParamsFromUser(role),
-				};
-				const { data } = await classesService.find(params);
-				expect(data.length).to.equal(classes.length);
-				// all created classes should be in the response:
-				expect(classes.reduce(
-					(agg, cur) => agg && data.some((d) => equalIds(d._id, cur._id)),
-					true,
-				)).to.equal(true);
-			}));
+			await Promise.all(
+				[teacherUser, adminUser].map(async (role) => {
+					const params = {
+						query: {},
+						...(await generateRequestParamsFromUser(role)),
+					};
+					const { data } = await classesService.find(params);
+					expect(data.length).to.equal(classes.length);
+					// all created classes should be in the response:
+					expect(
+						classes.reduce(
+							(agg, cur) =>
+								agg &&
+								data.some((d) => equalIds(d._id, cur._id)),
+							true,
+						),
+					).to.equal(true);
+				}),
+			);
 		}).timeout(4000);
 
 		it('should allow students to only find classes they participate in', async () => {
-			const studentUser = await testObjects.createTestUser({ roles: ['student'] });
+			const studentUser = await testObjects.createTestUser({
+				roles: ['student'],
+			});
 
 			const classes = [
 				await testObjects.createTestClass({
@@ -84,7 +97,7 @@ describe('classes service', () => {
 
 			const params = {
 				query: {},
-				...await generateRequestParamsFromUser(studentUser),
+				...(await generateRequestParamsFromUser(studentUser)),
 			};
 			const { data } = await classesService.find(params);
 			expect(data.length).to.equal(1);
@@ -92,7 +105,9 @@ describe('classes service', () => {
 		});
 
 		it('should display the classes in correct order', async () => {
-			const adminUser = await testObjects.createTestUser({ roles: ['administrator'] });
+			const adminUser = await testObjects.createTestUser({
+				roles: ['administrator'],
+			});
 
 			const classes = [
 				await testObjects.createTestClass({
@@ -108,7 +123,7 @@ describe('classes service', () => {
 
 			const adminParams = {
 				query: {},
-				...await generateRequestParamsFromUser(adminUser),
+				...(await generateRequestParamsFromUser(adminUser)),
 			};
 
 			const { data } = await classesService.find(adminParams);
@@ -119,7 +134,9 @@ describe('classes service', () => {
 		});
 
 		it('should display the classes in correct order when gradelevel is included', async () => {
-			const adminUser = await testObjects.createTestUser({ roles: ['administrator'] });
+			const adminUser = await testObjects.createTestUser({
+				roles: ['administrator'],
+			});
 
 			const classes = [
 				await testObjects.createTestClass({
@@ -138,7 +155,7 @@ describe('classes service', () => {
 
 			const adminParams = {
 				query: {},
-				...await generateRequestParamsFromUser(adminUser),
+				...(await generateRequestParamsFromUser(adminUser)),
 			};
 			const { data } = await classesService.find(adminParams);
 
@@ -151,7 +168,9 @@ describe('classes service', () => {
 		it('should display the classes in correct order when years are included', async () => {
 			const { _id } = await testObjects.createTestSchool();
 			const school = await app.service('schools').get(_id);
-			const adminUser = await testObjects.createTestUser({ roles: ['administrator'] });
+			const adminUser = await testObjects.createTestUser({
+				roles: ['administrator'],
+			});
 
 			const classes = [
 				await testObjects.createTestClass({
@@ -170,7 +189,7 @@ describe('classes service', () => {
 
 			const adminParams = {
 				query: {},
-				...await generateRequestParamsFromUser(adminUser),
+				...(await generateRequestParamsFromUser(adminUser)),
 			};
 			const { data } = await classesService.find(adminParams);
 
@@ -195,7 +214,9 @@ describe('classes service', () => {
 			const updatedOrgClass = await classesService.get(orgClass._id);
 			expect(updatedOrgClass.name).to.equal('sonnenklasse 1');
 			expect(successorClass.name).to.equal('sonnenklasse 2');
-			expect(updatedOrgClass.successor.toString()).to.equal(successorClass._id.toString());
+			expect(updatedOrgClass.successor.toString()).to.equal(
+				successorClass._id.toString(),
+			);
 		});
 	});
 });

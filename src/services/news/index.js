@@ -5,11 +5,18 @@ const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const logger = require('../../logger/index');
 const newsDocs = require('./docs');
 const {
-	newsModel, targetModels, newsHistoryModel, newsPermissions,
+	newsModel,
+	targetModels,
+	newsHistoryModel,
+	newsPermissions,
 } = require('./model');
 const hooks = require('./hooks');
 const newsModelHooks = require('./hooks/newsModel.hooks');
-const { flatten, paginate, convertToSortOrderObject } = require('../../utils/array');
+const {
+	flatten,
+	paginate,
+	convertToSortOrderObject,
+} = require('../../utils/array');
 
 const DEFAULT_PAGINATION_OPTIONS = {
 	default: 25,
@@ -21,22 +28,25 @@ class AbstractService {
 	}
 
 	/**
-	* Returns school query if the user is allowed to see.
-	* @param userId The user's Id
-	* @param schoolId The schoolId
-	* @returns Query
-	*/
+	 * Returns school query if the user is allowed to see.
+	 * @param userId The user's Id
+	 * @param schoolId The schoolId
+	 * @returns Query
+	 */
 	createSchoolQuery(userId, schoolId, permission) {
-		return this.hasSchoolPermission(userId, schoolId, permission)
-			.then((hasPermission) => {
+		return this.hasSchoolPermission(userId, schoolId, permission).then(
+			(hasPermission) => {
 				if (!hasPermission) {
 					return null;
 				}
-				return [{
-					schoolId,
-					target: { $exists: false },
-				}];
-			});
+				return [
+					{
+						schoolId,
+						target: { $exists: false },
+					},
+				];
+			},
+		);
 	}
 
 	/**
@@ -46,24 +56,36 @@ class AbstractService {
 	 * @param {BsonId|String} target (optional) Id of the news target (course, team, etc.)
 	 * @returns Array<Query>
 	 */
-	async createScopedQuery(userId, permission, target = null, targetModel = null) {
+	async createScopedQuery(
+		userId,
+		permission,
+		target = null,
+		targetModel = null,
+	) {
 		// check params
 		if (target ? !targetModel : targetModel) {
-			throw new BadRequest('target and targetModel, both must be given or not');
+			throw new BadRequest(
+				'target and targetModel, both must be given or not',
+			);
 		}
 		// only one target requested
 		if (target && targetModel) {
-			return this.hasPermission(userId, permission, { target, targetModel })
-				.then(() => (
-					[{
-						targetModel,
-						target,
-					}]));
+			return this.hasPermission(userId, permission, {
+				target,
+				targetModel,
+			}).then(() => [
+				{
+					targetModel,
+					target,
+				},
+			]);
 		}
 		// return data of all user scopes
 		const ops = targetModels.map(async (scope) => {
 			// For each possible target model, find all targets the user has NEWS_VIEW permissions in.
-			const scopeListService = this.app.service(`/users/:scopeId/${scope}`);
+			const scopeListService = this.app.service(
+				`/users/:scopeId/${scope}`,
+			);
 			if (scopeListService === undefined) {
 				return null;
 			}
@@ -87,18 +109,26 @@ class AbstractService {
 
 	async getPermissions(userId, { target, targetModel, schoolId } = {}) {
 		// target and school might be populated or not
-		const isObjectId = (o) => o instanceof ObjectId || typeof o === 'string';
+		const isObjectId = (o) =>
+			o instanceof ObjectId || typeof o === 'string';
 		// scope case: user role in scope must have given permission
 		if (target && targetModel) {
-			const targetId = isObjectId(target) ? target.toString() : target._id.toString();
-			const scope = this.app.service(`${targetModel}/:scopeId/userPermissions/`);
+			const targetId = isObjectId(target)
+				? target.toString()
+				: target._id.toString();
+			const scope = this.app.service(
+				`${targetModel}/:scopeId/userPermissions/`,
+			);
 			const params = { route: { scopeId: targetId } };
 			const scopePermissions = await scope.get(userId, params);
 			return scopePermissions;
 		}
 
 		// default school case: dataItem and users schoolId must match and user permission must exist
-		return this.getSchoolPermissions(userId, isObjectId(schoolId) ? schoolId : schoolId._id);
+		return this.getSchoolPermissions(
+			userId,
+			isObjectId(schoolId) ? schoolId : schoolId._id,
+		);
 	}
 
 	/**
@@ -163,7 +193,9 @@ class AbstractService {
 
 	checkExistence(resource, query) {
 		if (!resource) {
-			logger.error(`Cannot find resource item with query "${query}" => "${resource}"`);
+			logger.error(
+				`Cannot find resource item with query "${query}" => "${resource}"`,
+			);
 			throw new NotFound('Resource does not exist.');
 		}
 	}
@@ -180,8 +212,14 @@ class NewsService extends AbstractService {
 			query: {
 				$populate: [
 					{ path: 'schoolId', select: ['_id', 'name'] },
-					{ path: 'creatorId', select: ['_id', 'firstName', 'lastName'] },
-					{ path: 'updaterId', select: ['_id', 'firstName', 'lastName'] },
+					{
+						path: 'creatorId',
+						select: ['_id', 'firstName', 'lastName'],
+					},
+					{
+						path: 'updaterId',
+						select: ['_id', 'firstName', 'lastName'],
+					},
 					{ path: 'target', select: ['_id', 'name'] },
 				],
 			},
@@ -208,7 +246,8 @@ class NewsService extends AbstractService {
 		if (result instanceof Array) {
 			return result.map(decorate);
 		}
-		if (result.data) { // paginated result set
+		if (result.data) {
+			// paginated result set
 			const dataIdsFixed = result.data.map(decorate);
 			return { ...result, data: dataIdsFixed };
 		}
@@ -235,7 +274,8 @@ class NewsService extends AbstractService {
 		if (result instanceof Array) {
 			return Promise.all(result.map(decorate));
 		}
-		if (result.data) { // paginated result set
+		if (result.data) {
+			// paginated result set
 			const decoratedData = await Promise.all(result.data.map(decorate));
 			return { ...result, data: decoratedData };
 		}
@@ -254,7 +294,9 @@ class NewsService extends AbstractService {
 			title: oldItem.title,
 			content: oldItem.content,
 			displayAt: oldItem.displayAt,
-			creatorId: oldItem.updaterId ? oldItem.updaterId : oldItem.creatorId,
+			creatorId: oldItem.updaterId
+				? oldItem.updaterId
+				: oldItem.creatorId,
 			parentId: oldItem._id,
 		};
 		return newsHistoryModel.create(historyEntry);
@@ -271,22 +313,37 @@ class NewsService extends AbstractService {
 	 */
 	async buildFindQuery(params, baseFilter) {
 		const query = [];
-		const scoped = !!(params.query && (params.query.target || params.query.targetModel));
+		const scoped = !!(
+			params.query &&
+			(params.query.target || params.query.targetModel)
+		);
 		if (scoped) {
 			// add selected scope news
-			query.push(await super.createScopedQuery(
-				params.account.userId, baseFilter.permission, params.query.target, params.query.targetModel,
-			));
+			query.push(
+				await super.createScopedQuery(
+					params.account.userId,
+					baseFilter.permission,
+					params.query.target,
+					params.query.targetModel,
+				),
+			);
 		} else {
 			// add school news
-			query.push(await super.createSchoolQuery(
-				params.account.userId, params.account.schoolId, baseFilter.permission,
-			));
+			query.push(
+				await super.createSchoolQuery(
+					params.account.userId,
+					params.account.schoolId,
+					baseFilter.permission,
+				),
+			);
 			if ((params.query || {}).target !== 'school') {
 				// add all scope news if more than the current school is requested
-				query.push(await super.createScopedQuery(
-					params.account.userId, baseFilter.permission,
-				));
+				query.push(
+					await super.createScopedQuery(
+						params.account.userId,
+						baseFilter.permission,
+					),
+				);
 			}
 		}
 		return flatten(query.filter((q) => q !== null));
@@ -303,16 +360,29 @@ class NewsService extends AbstractService {
 	 * @memberof NewsService
 	 */
 	async get(id, params) {
-		const news = await this.app.service('newsModel').get(id, NewsService.populateParams());
+		const news = await this.app
+			.service('newsModel')
+			.get(id, NewsService.populateParams());
 		this.checkExistence(news, id);
 		const now = Date.now();
 		if (news.displayAt > now) {
-			await this.authorize(news, params.account.userId, newsPermissions.EDIT);
+			await this.authorize(
+				news,
+				params.account.userId,
+				newsPermissions.EDIT,
+			);
 		} else {
-			await this.authorize(news, params.account.userId, newsPermissions.VIEW);
+			await this.authorize(
+				news,
+				params.account.userId,
+				newsPermissions.VIEW,
+			);
 		}
 
-		news.permissions = await this.getPermissions(params.account.userId, news);
+		news.permissions = await this.getPermissions(
+			params.account.userId,
+			news,
+		);
 		return NewsService.decorateResults(news);
 	}
 
@@ -324,12 +394,17 @@ class NewsService extends AbstractService {
 	 * @memberof NewsService
 	 */
 	async find(params) {
-		const query = { $paginate: DEFAULT_PAGINATION_OPTIONS, ...params.query };
+		const query = {
+			$paginate: DEFAULT_PAGINATION_OPTIONS,
+			...params.query,
+		};
 		const now = Date.now();
 		// based on params.unpublished divide between view published news and unpublished news with edit permission
 		const baseFilter = {
 			published: query.unpublished ? { $gt: now } : { $lte: now },
-			permission: query.unpublished ? newsPermissions.EDIT : newsPermissions.VIEW,
+			permission: query.unpublished
+				? newsPermissions.EDIT
+				: newsPermissions.VIEW,
 		};
 		const searchFilter = {};
 		if (query.q && /^[\w\s\d]{0,50}$/.test(query.q)) {
@@ -355,10 +430,13 @@ class NewsService extends AbstractService {
 			},
 			paginate: query.$paginate,
 		};
-		return this.app.service('newsModel')
+		return this.app
+			.service('newsModel')
 			.find(internalRequestParams)
 			.then(NewsService.decorateResults)
-			.then((result) => this.decoratePermissions(result, params.account.userId));
+			.then((result) =>
+				this.decoratePermissions(result, params.account.userId),
+			);
 	}
 
 	/**
@@ -371,7 +449,11 @@ class NewsService extends AbstractService {
 	 * @memberof NewsService
 	 */
 	async create(data, params) {
-		await this.authorize(data, params.account.userId, newsPermissions.CREATE);
+		await this.authorize(
+			data,
+			params.account.userId,
+			newsPermissions.CREATE,
+		);
 		const newNewsData = {
 			...data,
 			creatorId: params.account.userId,
@@ -391,9 +473,15 @@ class NewsService extends AbstractService {
 	 * @memberof NewsService
 	 */
 	async remove(id, params) {
-		const news = await this.app.service('newsModel').get(id, NewsService.populateParams());
+		const news = await this.app
+			.service('newsModel')
+			.get(id, NewsService.populateParams());
 		this.checkExistence(news, id);
-		await this.authorize(news, params.account.userId, newsPermissions.REMOVE);
+		await this.authorize(
+			news,
+			params.account.userId,
+			newsPermissions.REMOVE,
+		);
 		await this.app.service('newsModel').remove(id);
 		return NewsService.decorateResults(news);
 	}
@@ -417,7 +505,8 @@ class NewsService extends AbstractService {
 			...data,
 			updaterId: params.account.userId,
 		};
-		const updatedNews = await this.app.service('newsModel')
+		const updatedNews = await this.app
+			.service('newsModel')
 			.update(id, updatedNewsData, NewsService.populateParams());
 		await NewsService.createHistoryEntry(news);
 		return NewsService.decorateResults(updatedNews);
@@ -435,14 +524,17 @@ class NewsService extends AbstractService {
 	 * @memberof NewsService
 	 */
 	async patch(id, data, params) {
-		const news = await this.app.service('newsModel').get(id, NewsService.populateParams());
+		const news = await this.app
+			.service('newsModel')
+			.get(id, NewsService.populateParams());
 		this.checkExistence(news, id);
 		await this.authorize(news, params.account.userId, newsPermissions.EDIT);
 		const patchedNewsData = {
 			...data,
 			updaterId: params.account.userId,
 		};
-		const patchedNews = await this.app.service('newsModel')
+		const patchedNews = await this.app
+			.service('newsModel')
 			.patch(id, patchedNewsData, NewsService.populateParams());
 		await NewsService.createHistoryEntry(news);
 		return NewsService.decorateResults(patchedNews);
@@ -460,10 +552,13 @@ module.exports = function news() {
 
 	// use /newsModel to directly access the model from other services
 	// (external requests are blocked)
-	app.use('/newsModel', service({
-		Model: newsModel,
-		lean: true,
-		paginate: DEFAULT_PAGINATION_OPTIONS,
-	}));
+	app.use(
+		'/newsModel',
+		service({
+			Model: newsModel,
+			lean: true,
+			paginate: DEFAULT_PAGINATION_OPTIONS,
+		}),
+	);
 	app.service('/newsModel').hooks(newsModelHooks);
 };

@@ -23,7 +23,9 @@ describe('UserLinkImportService', () => {
 
 	// https://ticketsystem.schul-cloud.org/browse/SC-4606
 	xit('student can not use link import service', async () => {
-		const student = await testObjects.createTestUser({ roles: ['student'] });
+		const student = await testObjects.createTestUser({
+			roles: ['student'],
+		});
 		const params = await testObjects.generateRequestParamsFromUser(student);
 		params.query = {};
 		try {
@@ -38,7 +40,9 @@ describe('UserLinkImportService', () => {
 
 	// https://ticketsystem.schul-cloud.org/browse/SC-4606
 	xit('teacher can not use link import service', async () => {
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const teacher = await testObjects.createTestUser({
+			roles: ['teacher'],
+		});
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = {};
 		try {

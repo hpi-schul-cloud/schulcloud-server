@@ -4,9 +4,12 @@ const { MethodNotAllowed, NotAuthenticated } = require('@feathersjs/errors');
 const docs = require('./jwtTimerDocs');
 
 const {
-	getRedisClient, redisSetAsync, redisTtlAsync, extractDataFromJwt, getRedisData,
+	getRedisClient,
+	redisSetAsync,
+	redisTtlAsync,
+	extractDataFromJwt,
+	getRedisData,
 } = require('../../../utils/redis');
-
 
 class JwtTimerService {
 	constructor(options) {
@@ -20,11 +23,15 @@ class JwtTimerService {
 	 */
 	async find(params) {
 		if (getRedisClient()) {
-			const { redisIdentifier } = extractDataFromJwt(params.authentication.accessToken);
+			const { redisIdentifier } = extractDataFromJwt(
+				params.authentication.accessToken,
+			);
 			const redisResponse = await redisTtlAsync(redisIdentifier);
 			return Promise.resolve({ ttl: redisResponse });
 		}
-		throw new MethodNotAllowed('This feature is disabled on this instance!');
+		throw new MethodNotAllowed(
+			'This feature is disabled on this instance!',
+		);
 	}
 
 	/**
@@ -34,17 +41,27 @@ class JwtTimerService {
 	 */
 	async create(data, params) {
 		if (getRedisClient()) {
-			const { redisIdentifier, privateDevice } = extractDataFromJwt(params.authentication.accessToken);
+			const { redisIdentifier, privateDevice } = extractDataFromJwt(
+				params.authentication.accessToken,
+			);
 			const redisResponse = await redisTtlAsync(redisIdentifier);
-			if (redisResponse < 0) throw new NotAuthenticated('Session was expired due to inactivity - autologout.');
+			if (redisResponse < 0)
+				throw new NotAuthenticated(
+					'Session was expired due to inactivity - autologout.',
+				);
 			const redisData = getRedisData({ privateDevice });
 			const { expirationInSeconds } = redisData;
 			await redisSetAsync(
-				redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds,
+				redisIdentifier,
+				JSON.stringify(redisData),
+				'EX',
+				expirationInSeconds,
 			);
 			return Promise.resolve({ ttl: expirationInSeconds });
 		}
-		throw new MethodNotAllowed('This feature is disabled on this instance!');
+		throw new MethodNotAllowed(
+			'This feature is disabled on this instance!',
+		);
 	}
 
 	setup(app) {
@@ -56,9 +73,7 @@ const jwtTimerService = new JwtTimerService();
 
 const jwtTimerHooks = {
 	before: {
-		all: [
-			auth.hooks.authenticate('jwt'),
-		],
+		all: [auth.hooks.authenticate('jwt')],
 		find: [],
 		get: [disallow()],
 		create: [],

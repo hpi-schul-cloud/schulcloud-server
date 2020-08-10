@@ -21,11 +21,13 @@ const mailContent = (firstName, lastName, registrationLink) => {
 
 const { userModel } = require('../model');
 
-const getCurrentUserInfo = (id) => userModel.findById(id)
-	.select(['schoolId', 'email', 'firstName', 'lastName', 'preferences'])
-	.populate('roles')
-	.lean()
-	.exec();
+const getCurrentUserInfo = (id) =>
+	userModel
+		.findById(id)
+		.select(['schoolId', 'email', 'firstName', 'lastName', 'preferences'])
+		.populate('roles')
+		.lean()
+		.exec();
 
 class SendRegistrationLinkService {
 	async create(data, params) {
@@ -47,7 +49,8 @@ class SendRegistrationLinkService {
 					const user = await getCurrentUserInfo(userId);
 
 					// get registrationLink
-					const { shortLink } = await this.app.service('/registrationlink')
+					const { shortLink } = await this.app
+						.service('/registrationlink')
 						.create({
 							role: user.roles[0],
 							save: true,
@@ -57,19 +60,27 @@ class SendRegistrationLinkService {
 						});
 
 					// send mail
-					const { subject, content } = mailContent(user.firstName, user.lastName, shortLink);
-					await this.app.service('/mails')
-						.create({
-							email: user.email,
-							subject,
-							content,
-						});
+					const { subject, content } = mailContent(
+						user.firstName,
+						user.lastName,
+						shortLink,
+					);
+					await this.app.service('/mails').create({
+						email: user.email,
+						subject,
+						content,
+					});
 
 					if (!(user.preferences || {}).registrationMailSend) {
 						const updatedPreferences = user.preferences || {};
 						updatedPreferences.registrationMailSend = true;
-						await this.app.service('users')
-							.patch(user._id, { preferences: updatedPreferences }, params);
+						await this.app
+							.service('users')
+							.patch(
+								user._id,
+								{ preferences: updatedPreferences },
+								params,
+							);
 					}
 					totalMailsSend += 1;
 				}
@@ -78,13 +89,19 @@ class SendRegistrationLinkService {
 			return {
 				totalReceivedIds: userIds.length,
 				totalMailsSend,
-				alreadyRegisteredUsers: (userIds.length - totalMailsSend),
+				alreadyRegisteredUsers: userIds.length - totalMailsSend,
 			};
 		} catch (err) {
 			if ((err || {}).code === 403) {
-				throw new Forbidden('You have not the permission to execute this!', err);
+				throw new Forbidden(
+					'You have not the permission to execute this!',
+					err,
+				);
 			}
-			throw new BadRequest('Can not send mail(s) with registration link', err);
+			throw new BadRequest(
+				'Can not send mail(s) with registration link',
+				err,
+			);
 		}
 	}
 
@@ -95,7 +112,10 @@ class SendRegistrationLinkService {
 
 const SendRegistrationLinkHooks = {
 	before: {
-		all: [authenticate('jwt'), hasPermission(['STUDENT_LIST', 'TEACHER_LIST'])],
+		all: [
+			authenticate('jwt'),
+			hasPermission(['STUDENT_LIST', 'TEACHER_LIST']),
+		],
 	},
 };
 

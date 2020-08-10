@@ -8,7 +8,9 @@ const { KEYWORDS } = require('./utils/customStrategyUtils');
 
 module.exports = (app) => {
 	app.use('activationModel', ActivationModelService.activationModelService);
-	app.service('activationModel').hooks(ActivationModelService.activationModelHooks);
+	app.service('activationModel').hooks(
+		ActivationModelService.activationModelHooks,
+	);
 
 	/** This service does all general things like finding open jobs,
 	 * redeeming activation codes, deleting jobs. But this service
@@ -26,6 +28,8 @@ module.exports = (app) => {
 	 */
 	const EMailAddressActivationRoute = `/activation/${KEYWORDS.E_MAIL_ADDRESS}`;
 	app.use(EMailAddressActivationRoute, new EMailAddressActivation.Service());
-	const EMailAddressActivationService = app.service(EMailAddressActivationRoute);
+	const EMailAddressActivationService = app.service(
+		EMailAddressActivationRoute,
+	);
 	EMailAddressActivationService.hooks(EMailAddressActivation.Hooks);
 };

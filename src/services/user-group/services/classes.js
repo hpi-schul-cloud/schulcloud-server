@@ -1,13 +1,23 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
-const { sortByGradeAndOrName, prepareGradeLevelUnset, saveSuccessor } = require('../hooks/helpers/classHooks');
+const {
+	sortByGradeAndOrName,
+	prepareGradeLevelUnset,
+	saveSuccessor,
+} = require('../hooks/helpers/classHooks');
 const { paginate } = require('../../../utils/array');
 
-const { modelServices: { prepareInternalParams } } = require('../../../utils');
+const {
+	modelServices: { prepareInternalParams },
+} = require('../../../utils');
 
-const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
-const restrictToUsersOwnClasses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnClasses);
+const restrictToCurrentSchool = globalHooks.ifNotLocal(
+	globalHooks.restrictToCurrentSchool,
+);
+const restrictToUsersOwnClasses = globalHooks.ifNotLocal(
+	globalHooks.restrictToUsersOwnClasses,
+);
 
 class Classes {
 	constructor(options) {
@@ -24,7 +34,10 @@ class Classes {
 
 		const school = await this.app.service('schools').get(query.schoolId);
 		const years = school.years.schoolYears.map((y) => y._id);
-		if (((query.$sort || {}).year === '-1' || (query.$sort || {}).year === 'desc')) {
+		if (
+			(query.$sort || {}).year === '-1' ||
+			(query.$sort || {}).year === 'desc'
+		) {
 			years.reverse();
 		}
 		years.push({ $exists: false }); // to find classes that dont have a year
@@ -40,23 +53,29 @@ class Classes {
 
 		const classPromises = years.map((y) => {
 			const yearParams = {
-
 				...params,
 				query: { ...params.query, year: y._id || y },
 			};
 			return this.app.service('classModel').find(yearParams);
 		});
 		const classesByYear = await Promise.all(classPromises);
-		const data = classesByYear.reduce((acc, current) => acc.concat(current.data || current), []);
+		const data = classesByYear.reduce(
+			(acc, current) => acc.concat(current.data || current),
+			[],
+		);
 
-		if (params.query.$paginate !== false && params.paginate !== false) params.query.$paginate = true;
+		if (params.query.$paginate !== false && params.paginate !== false)
+			params.query.$paginate = true;
 		const result = paginate(data, params.query);
 		return result;
 	}
 
 	async find(params) {
 		const internalParams = prepareInternalParams(params);
-		if ((internalParams.query.$sort || {}).year && internalParams.query.schoolId) {
+		if (
+			(internalParams.query.$sort || {}).year &&
+			internalParams.query.schoolId
+		) {
 			return this.findClassesByYear(internalParams);
 		}
 
@@ -111,10 +130,7 @@ const classesHooks = {
 			globalHooks.addCollation,
 			globalHooks.mapPaginationQuery,
 		],
-		get: [
-			restrictToCurrentSchool,
-			restrictToUsersOwnClasses,
-		],
+		get: [restrictToCurrentSchool, restrictToUsersOwnClasses],
 		create: [
 			globalHooks.hasPermission('CLASS_CREATE'),
 			restrictToCurrentSchool,
@@ -130,7 +146,11 @@ const classesHooks = {
 			globalHooks.permitGroupOperation,
 			prepareGradeLevelUnset,
 		],
-		remove: [globalHooks.hasPermission('CLASS_REMOVE'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
+		remove: [
+			globalHooks.hasPermission('CLASS_REMOVE'),
+			restrictToCurrentSchool,
+			globalHooks.permitGroupOperation,
+		],
 	},
 	after: {
 		all: [],
@@ -138,12 +158,12 @@ const classesHooks = {
 		get: [
 			globalHooks.ifNotLocal(
 				globalHooks.denyIfNotCurrentSchool({
-					errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
+					errorMessage:
+						'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
 				}),
-			)],
-		create: [
-			saveSuccessor,
+			),
 		],
+		create: [saveSuccessor],
 		update: [],
 		patch: [],
 		remove: [],

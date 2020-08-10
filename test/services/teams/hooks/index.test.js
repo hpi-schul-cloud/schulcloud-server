@@ -26,8 +26,7 @@ describe('Team service hook tests.', () => {
 		server.close(done);
 	});
 
-	describe.skip('sendInfo', () => {
-	});
+	describe.skip('sendInfo', () => {});
 
 	describe('filterToRelated', () => {
 		let getDeepCopy;
@@ -54,7 +53,8 @@ describe('Team service hook tests.', () => {
 
 			getDeepCopy = () => {
 				const copy = { ...baseHook };
-				baseHook.result = { // create 4 new Objects and override
+				baseHook.result = {
+					// create 4 new Objects and override
 					key1: { ...key1 },
 					key2: { ...key2 },
 					key3: { ...key3 },
@@ -63,7 +63,10 @@ describe('Team service hook tests.', () => {
 			};
 		});
 		it('should work for keys as string, deep path as string', () => {
-			const filterToRelatedInstance = filterToRelated('deepKey1', 'result.key1');
+			const filterToRelatedInstance = filterToRelated(
+				'deepKey1',
+				'result.key1',
+			);
 			const output = filterToRelatedInstance(getDeepCopy());
 			const outputExpected = getDeepCopy();
 			delete outputExpected.result.key1.deepKey2;
@@ -72,7 +75,10 @@ describe('Team service hook tests.', () => {
 		});
 
 		it('should work for keys as array, deep path as string', () => {
-			const filterToRelatedInstance = filterToRelated(['deepKey1', 'deepKey2'], 'result.key1');
+			const filterToRelatedInstance = filterToRelated(
+				['deepKey1', 'deepKey2'],
+				'result.key1',
+			);
 			const output = filterToRelatedInstance(getDeepCopy());
 			const outputExpected = getDeepCopy();
 			delete outputExpected.result.key1.deepKey3;
@@ -80,7 +86,10 @@ describe('Team service hook tests.', () => {
 		});
 
 		it('should work for keys as array, normal path as string', () => {
-			const filterToRelatedInstance = filterToRelated(['key1', 'key2'], 'result');
+			const filterToRelatedInstance = filterToRelated(
+				['key1', 'key2'],
+				'result',
+			);
 			const output = filterToRelatedInstance(getDeepCopy());
 			const outputExpected = getDeepCopy();
 			delete outputExpected.result.key3;
@@ -88,7 +97,10 @@ describe('Team service hook tests.', () => {
 		});
 
 		it('should pass local request without changes', () => {
-			const filterToRelatedInstance = filterToRelated(['key1', 'key2'], 'result');
+			const filterToRelatedInstance = filterToRelated(
+				['key1', 'key2'],
+				'result',
+			);
 			const testHook = getDeepCopy();
 			delete testHook.params.provider; // set to local request
 			const output = filterToRelatedInstance(testHook);
@@ -97,7 +109,11 @@ describe('Team service hook tests.', () => {
 		});
 
 		it('should NOT pass local request without changes if it is disabled', () => {
-			const filterToRelatedInstance = filterToRelated(['key1', 'key2'], 'result', false);
+			const filterToRelatedInstance = filterToRelated(
+				['key1', 'key2'],
+				'result',
+				false,
+			);
 			const testHook = getDeepCopy();
 			delete testHook.params.provider; // set to local request
 			const output = filterToRelatedInstance(testHook);
@@ -107,7 +123,10 @@ describe('Team service hook tests.', () => {
 		});
 
 		it('should try an error becouse result is not updated', () => {
-			const filterToRelatedInstance = filterToRelated(['key1', 'key2'], 'result');
+			const filterToRelatedInstance = filterToRelated(
+				['key1', 'key2'],
+				'result',
+			);
 			const testHook = getDeepCopy();
 			delete testHook.params.provider; // set to local request
 			const output = filterToRelatedInstance(testHook);
@@ -141,9 +160,15 @@ describe('Team service hook tests.', () => {
 			const team = await teams.create(user);
 			const credentials = { username: user.email, password: user.email };
 			await createTestAccount(credentials, 'local', user);
-			const params = { ...await generateRequestParams(credentials), query: {} };
+			const params = {
+				...(await generateRequestParams(credentials)),
+				query: {},
+			};
 			const newFilePermission = {
-				write: false, read: true, create: false, delete: false,
+				write: false,
+				read: true,
+				create: false,
+				delete: false,
 			};
 			const ctx = await authenticate('jwt')({
 				id: team._id,
@@ -163,11 +188,20 @@ describe('Team service hook tests.', () => {
 			const user2 = await createTestUser({ schoolId, roles: 'user' });
 			const team = await teams.create(user);
 			await teams.addTeamUserToTeam(team._id, user2, 'teamexpert');
-			const credentials = { username: user2.email, password: user2.email };
+			const credentials = {
+				username: user2.email,
+				password: user2.email,
+			};
 			await createTestAccount(credentials, 'local', user2);
-			const params = { ...await generateRequestParams(credentials), query: {} };
+			const params = {
+				...(await generateRequestParams(credentials)),
+				query: {},
+			};
 			const newFilePermission = {
-				write: false, read: true, create: false, delete: false,
+				write: false,
+				read: true,
+				create: false,
+				delete: false,
 			};
 			const ctx = await authenticate('jwt')({
 				id: team._id,

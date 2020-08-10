@@ -29,7 +29,11 @@ const create = (app) => async ({
 	permissions = undefined,
 } = {}) => {
 	if (systems && systems.length === 0) {
-		const localSystem = (await app.service('systems').find({ query: { type: 'local' }, paginate: false }))[0];
+		const localSystem = (
+			await app
+				.service('systems')
+				.find({ query: { type: 'local' }, paginate: false })
+		)[0];
 		systems.push(localSystem._id);
 	}
 	const school = await app.service('schools').create({

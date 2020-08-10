@@ -30,7 +30,8 @@ const addShareTokenIfCourseShareable = async (context) => {
 		return context;
 	}
 
-	return lesson.findByIdAndUpdate(_id, { shareToken: nanoid(12) })
+	return lesson
+		.findByIdAndUpdate(_id, { shareToken: nanoid(12) })
 		.then(() => context);
 };
 
@@ -56,30 +57,44 @@ const mapUsers = (context) => {
 
 exports.before = () => ({
 	all: [authenticate('jwt'), mapUsers],
-	find: [
-		hasPermission('TOPIC_VIEW'),
-		ifNotLocal(restrictToUsersOwnLessons),
-	],
-	get: [
-		hasPermission('TOPIC_VIEW'),
-		ifNotLocal(restrictToUsersOwnLessons),
-	],
+	find: [hasPermission('TOPIC_VIEW'), ifNotLocal(restrictToUsersOwnLessons)],
+	get: [hasPermission('TOPIC_VIEW'), ifNotLocal(restrictToUsersOwnLessons)],
 	create: [
-		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
+		checkIfCourseGroupLesson.bind(
+			this,
+			'COURSEGROUP_CREATE',
+			'TOPIC_CREATE',
+			true,
+		),
 		injectUserId,
 		checkCorrectCourseOrTeamId,
 		setPosition,
 	],
 	update: [
-		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
+		checkIfCourseGroupLesson.bind(
+			this,
+			'COURSEGROUP_EDIT',
+			'TOPIC_EDIT',
+			false,
+		),
 	],
 	patch: [
-		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
+		checkIfCourseGroupLesson.bind(
+			this,
+			'COURSEGROUP_EDIT',
+			'TOPIC_EDIT',
+			false,
+		),
 		permitGroupOperation,
 		ifNotLocal(checkCorrectCourseOrTeamId),
 	],
 	remove: [
-		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', false),
+		checkIfCourseGroupLesson.bind(
+			this,
+			'COURSEGROUP_CREATE',
+			'TOPIC_CREATE',
+			false,
+		),
 		permitGroupOperation,
 	],
 });

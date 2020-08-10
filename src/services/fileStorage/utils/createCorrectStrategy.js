@@ -8,7 +8,8 @@ const strategies = {
 
 const createCorrectStrategy = (fileStorageType) => {
 	const Strategy = strategies[fileStorageType];
-	if (!Strategy) throw new BadRequest('No file storage provided for this school');
+	if (!Strategy)
+		throw new BadRequest('No file storage provided for this school');
 	return new Strategy();
 };
 

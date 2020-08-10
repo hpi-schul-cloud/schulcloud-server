@@ -2,22 +2,15 @@ const ifNotFunction = (e) => !typeof e === 'function';
 
 const testLogger = (log = {}) => {
 	if (ifNotFunction(log.pushModified) || ifNotFunction(log.pushFail)) {
-		throw new Error('Is not a valid logger. It need the methods pushModified and pushFail.');
+		throw new Error(
+			'Is not a valid logger. It need the methods pushModified and pushFail.',
+		);
 	}
 	return log;
 };
 
 class DatabaseTaskTemplate {
-	constructor({
-		id,
-		_id,
-		$set,
-		set,
-		$unset,
-		unset,
-		isModified = true,
-		log,
-	}) {
+	constructor({ id, _id, $set, set, $unset, unset, isModified = true, log }) {
 		this.id = _id || id;
 		this.set = $set || set || {};
 		this.unset = $unset || unset || {};

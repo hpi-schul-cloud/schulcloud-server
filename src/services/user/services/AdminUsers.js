@@ -4,25 +4,18 @@ const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
 const logger = require('../../../logger');
-const { createMultiDocumentAggregation } = require('../../consent/utils/aggregations');
 const {
-	hasSchoolPermission,
-} = require('../../../hooks');
+	createMultiDocumentAggregation,
+} = require('../../consent/utils/aggregations');
+const { hasSchoolPermission } = require('../../../hooks');
 
 const { userModel } = require('../model');
 const roleModel = require('../../role/model');
 
-const getCurrentUserInfo = (id) => userModel.findById(id)
-	.select('schoolId')
-	.populate('roles')
-	.lean()
-	.exec();
+const getCurrentUserInfo = (id) =>
+	userModel.findById(id).select('schoolId').populate('roles').lean().exec();
 
-const getRoles = () => roleModel.find()
-	.select('name')
-	.lean()
-	.exec();
-
+const getRoles = () => roleModel.find().select('name').lean().exec();
 
 const getAllUsers = async (schoolId, schoolYearId, role, clientQuery = {}) => {
 	const query = {
@@ -50,19 +43,30 @@ const getAllUsers = async (schoolId, schoolYearId, role, clientQuery = {}) => {
 	if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 	if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 
-	return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
-		collation: { locale: 'de', caseLevel: true, numericOrdering: true },
-	}).exec((err, res) => {
-		if (err) reject(err);
-		else resolve(res[0]);
-	}));
+	return new Promise((resolve, reject) =>
+		userModel
+			.aggregate(createMultiDocumentAggregation(query))
+			.option({
+				collation: {
+					locale: 'de',
+					caseLevel: true,
+					numericOrdering: true,
+				},
+			})
+			.exec((err, res) => {
+				if (err) reject(err);
+				else resolve(res[0]);
+			}),
+	);
 };
 
-const getCurrentYear = (ref, schoolId) => ref.app.service('schools')
-	.get(schoolId, {
-		query: { $select: ['currentYear'] },
-	})
-	.then(({ currentYear }) => currentYear.toString());
+const getCurrentYear = (ref, schoolId) =>
+	ref.app
+		.service('schools')
+		.get(schoolId, {
+			query: { $select: ['currentYear'] },
+		})
+		.then(({ currentYear }) => currentYear.toString());
 
 class AdminUsers {
 	constructor(role) {
@@ -77,10 +81,17 @@ class AdminUsers {
 			const currentUserId = account.userId.toString();
 
 			// fetch base data
-			const [currentUser, roles] = await Promise.all([getCurrentUserInfo(currentUserId), getRoles()]);
+			const [currentUser, roles] = await Promise.all([
+				getCurrentUserInfo(currentUserId),
+				getRoles(),
+			]);
 
 			// permission check
-			if (!currentUser.roles.some((role) => this.rolesThatCanAccess.includes(role.name))) {
+			if (
+				!currentUser.roles.some((role) =>
+					this.rolesThatCanAccess.includes(role.name),
+				)
+			) {
 				throw new Forbidden();
 			}
 			const { schoolId } = currentUser;
@@ -88,13 +99,21 @@ class AdminUsers {
 
 			// fetch data that are scoped to schoolId
 			const searchedRole = roles.find((role) => role.name === this.role);
-			const users = await getAllUsers(schoolId, currentYear, searchedRole._id, query);
+			const users = await getAllUsers(
+				schoolId,
+				currentYear,
+				searchedRole._id,
+				query,
+			);
 
 			return users;
 		} catch (err) {
 			logger.error(err);
 			if ((err || {}).code === 403) {
-				throw new Forbidden('You have not the permission to execute this.', err);
+				throw new Forbidden(
+					'You have not the permission to execute this.',
+					err,
+				);
 			}
 			throw new BadRequest('Can not fetch data.', err);
 		}
@@ -106,7 +125,9 @@ class AdminUsers {
 }
 
 const formatBirthdayOfUsers = ({ result: { data: users } }) => {
-	users.forEach((user) => { user.birthday = moment(user.birthday).format('DD.MM.YYYY'); });
+	users.forEach((user) => {
+		user.birthday = moment(user.birthday).format('DD.MM.YYYY');
+	});
 };
 
 const adminHookGenerator = (kind) => ({
@@ -123,7 +144,6 @@ const adminHookGenerator = (kind) => ({
 		find: [formatBirthdayOfUsers],
 	},
 });
-
 
 module.exports = {
 	AdminUsers,

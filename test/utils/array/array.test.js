@@ -20,7 +20,13 @@ describe('[utils] array helpers', () => {
 		});
 
 		it('should work on arrays which are nested multiple times', () => {
-			expect(flatten([[1], [2, 3], [[4], 5]])).to.deep.equal([1, 2, 3, 4, 5]);
+			expect(flatten([[1], [2, 3], [[4], 5]])).to.deep.equal([
+				1,
+				2,
+				3,
+				4,
+				5,
+			]);
 		});
 	});
 
@@ -29,7 +35,11 @@ describe('[utils] array helpers', () => {
 			expect(() => paginate([])).not.to.throw(Error);
 			expect(paginate([])).to.deep.equal([]);
 			expect(paginate([1, 2, 3])).to.deep.equal([1, 2, 3]);
-			expect(paginate([1, 2, 3]), { $paginate: false }).to.deep.equal([1, 2, 3]);
+			expect(paginate([1, 2, 3]), { $paginate: false }).to.deep.equal([
+				1,
+				2,
+				3,
+			]);
 		});
 
 		it('should emulate feathers pagination', () => {
@@ -52,20 +62,24 @@ describe('[utils] array helpers', () => {
 
 		describe('$skip', () => {
 			it('should not return skipped elements', () => {
-				expect(paginate([1, 2, 3, 4], {
-					$paginate: true,
-					$skip: 1,
-				})).to.deep.equal({
+				expect(
+					paginate([1, 2, 3, 4], {
+						$paginate: true,
+						$skip: 1,
+					}),
+				).to.deep.equal({
 					total: 4,
 					skip: 1,
 					limit: 4,
 					data: [2, 3, 4],
 				});
 
-				expect(paginate([1, 2, 3, 4], {
-					$paginate: true,
-					$skip: 3,
-				})).to.deep.equal({
+				expect(
+					paginate([1, 2, 3, 4], {
+						$paginate: true,
+						$skip: 3,
+					}),
+				).to.deep.equal({
 					total: 4,
 					skip: 3,
 					limit: 4,
@@ -74,10 +88,12 @@ describe('[utils] array helpers', () => {
 			});
 
 			it('should work for skip > total', () => {
-				expect(paginate([1, 2, 3, 4], {
-					$paginate: true,
-					$skip: 25,
-				})).to.deep.equal({
+				expect(
+					paginate([1, 2, 3, 4], {
+						$paginate: true,
+						$skip: 25,
+					}),
+				).to.deep.equal({
 					total: 4,
 					skip: 25,
 					limit: 4,
@@ -86,10 +102,12 @@ describe('[utils] array helpers', () => {
 			});
 
 			it('should work for skip < 0', () => {
-				expect(paginate([1, 2, 3, 4], {
-					$paginate: true,
-					$skip: -3,
-				})).to.deep.equal({
+				expect(
+					paginate([1, 2, 3, 4], {
+						$paginate: true,
+						$skip: -3,
+					}),
+				).to.deep.equal({
 					total: 4,
 					skip: 0,
 					limit: 4,
@@ -100,20 +118,24 @@ describe('[utils] array helpers', () => {
 
 		describe('$limit', () => {
 			it('should limit the result length', () => {
-				expect(paginate([1, 2, 3, 4], {
-					$paginate: true,
-					$limit: 2,
-				})).to.deep.equal({
+				expect(
+					paginate([1, 2, 3, 4], {
+						$paginate: true,
+						$limit: 2,
+					}),
+				).to.deep.equal({
 					total: 4,
 					skip: 0,
 					limit: 2,
 					data: [1, 2],
 				});
 
-				expect(paginate([1, 2, 3, 4], {
-					$paginate: true,
-					$limit: 1,
-				})).to.deep.equal({
+				expect(
+					paginate([1, 2, 3, 4], {
+						$paginate: true,
+						$limit: 1,
+					}),
+				).to.deep.equal({
 					total: 4,
 					skip: 0,
 					limit: 1,
@@ -122,10 +144,12 @@ describe('[utils] array helpers', () => {
 			});
 
 			it('should work for limit < 0', () => {
-				expect(paginate([1, 2, 3, 4], {
-					$paginate: true,
-					$limit: -3,
-				})).to.deep.equal({
+				expect(
+					paginate([1, 2, 3, 4], {
+						$paginate: true,
+						$limit: -3,
+					}),
+				).to.deep.equal({
 					total: 4,
 					skip: 0,
 					limit: 4,
@@ -134,10 +158,12 @@ describe('[utils] array helpers', () => {
 			});
 
 			it('should work for limit > length', () => {
-				expect(paginate([1, 2, 3, 4], {
-					$paginate: true,
-					$limit: 22,
-				})).to.deep.equal({
+				expect(
+					paginate([1, 2, 3, 4], {
+						$paginate: true,
+						$limit: 22,
+					}),
+				).to.deep.equal({
 					total: 4,
 					skip: 0,
 					limit: 22,
@@ -147,33 +173,39 @@ describe('[utils] array helpers', () => {
 		});
 
 		it('should work with $limit and $skip set', () => {
-			expect(paginate([1, 2, 3, 4, 5, 6, 7], {
-				$paginate: true,
-				$limit: 2,
-				$skip: 2,
-			})).to.deep.equal({
+			expect(
+				paginate([1, 2, 3, 4, 5, 6, 7], {
+					$paginate: true,
+					$limit: 2,
+					$skip: 2,
+				}),
+			).to.deep.equal({
 				total: 7,
 				skip: 2,
 				limit: 2,
 				data: [3, 4],
 			});
 
-			expect(paginate([1, 2, 3, 4, 5, 6, 7], {
-				$paginate: true,
-				$limit: 5,
-				$skip: 2,
-			})).to.deep.equal({
+			expect(
+				paginate([1, 2, 3, 4, 5, 6, 7], {
+					$paginate: true,
+					$limit: 5,
+					$skip: 2,
+				}),
+			).to.deep.equal({
 				total: 7,
 				skip: 2,
 				limit: 5,
 				data: [3, 4, 5, 6, 7],
 			});
 
-			expect(paginate([1, 2, 3, 4, 5, 6, 7], {
-				$paginate: true,
-				$limit: 1,
-				$skip: 5,
-			})).to.deep.equal({
+			expect(
+				paginate([1, 2, 3, 4, 5, 6, 7], {
+					$paginate: true,
+					$limit: 1,
+					$skip: 5,
+				}),
+			).to.deep.equal({
 				total: 7,
 				skip: 5,
 				limit: 1,
@@ -191,7 +223,16 @@ describe('[utils] array helpers', () => {
 		it('should work without sortOrder', () => {
 			expect(() => sort([3, 1, 2])).not.to.throw(Error);
 			expect(sort([3, 1, 2])).to.deep.equal([1, 2, 3]);
-			expect(sort([5, 6, 1, 9, 2, 5, 5, 7])).to.deep.equal([1, 2, 5, 5, 5, 6, 7, 9]);
+			expect(sort([5, 6, 1, 9, 2, 5, 5, 7])).to.deep.equal([
+				1,
+				2,
+				5,
+				5,
+				5,
+				6,
+				7,
+				9,
+			]);
 		});
 
 		it('should return undefined if given an undefined array', () => {

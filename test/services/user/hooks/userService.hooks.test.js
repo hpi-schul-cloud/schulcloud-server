@@ -3,10 +3,14 @@ const assert = require('assert');
 
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
-const { enforceRoleHierarchyOnCreate } = require('../../../../src/services/user/hooks/userService');
+const {
+	enforceRoleHierarchyOnCreate,
+} = require('../../../../src/services/user/hooks/userService');
 
 const {
-	removeStudentFromCourses, removeStudentFromClasses, generateRegistrationLink,
+	removeStudentFromCourses,
+	removeStudentFromClasses,
+	generateRegistrationLink,
 } = require('../../../../src/services/user/hooks/userService');
 
 describe('removeStudentFromCourses', () => {
@@ -22,32 +26,40 @@ describe('removeStudentFromCourses', () => {
 		});
 
 		expect(updatedCourses.length).to.equal(2);
-		const userInAnyCourse = updatedCourses.some(
-			(course) => course.userIds.some(
-				(id) => id.toString() === user._id.toString(),
-			),
+		const userInAnyCourse = updatedCourses.some((course) =>
+			course.userIds.some((id) => id.toString() === user._id.toString()),
 		);
 		expect(userInAnyCourse).to.equal(false);
 	});
 
 	it('removes multiple students from all their courses', async () => {
-		const { _id: firstId } = await testObjects.createTestUser({ roles: ['student'] });
-		const { _id: secondId } = await testObjects.createTestUser({ roles: ['student'] });
+		const { _id: firstId } = await testObjects.createTestUser({
+			roles: ['student'],
+		});
+		const { _id: secondId } = await testObjects.createTestUser({
+			roles: ['student'],
+		});
 		const courses = await Promise.all([
 			testObjects.createTestCourse({ userIds: [firstId._id] }),
-			testObjects.createTestCourse({ userIds: [firstId._id, secondId._id] }),
+			testObjects.createTestCourse({
+				userIds: [firstId._id, secondId._id],
+			}),
 			testObjects.createTestCourse({ userIds: [secondId._id] }),
 		]);
-		await removeStudentFromCourses({ id: null, result: [{ _id: firstId }, { _id: secondId }], app });
+		await removeStudentFromCourses({
+			id: null,
+			result: [{ _id: firstId }, { _id: secondId }],
+			app,
+		});
 		const { data: updatedCourses } = await app.service('courses').find({
 			query: { _id: { $in: courses.map((c) => c._id) } },
 		});
 		expect(updatedCourses.length).to.equal(3);
-		const userInAnyCourse = updatedCourses.some(
-			(course) => course.userIds.some(
-				(id) => (
-					id.toString() === firstId._id.toString()
-					|| id.toString() === secondId._id.toString()),
+		const userInAnyCourse = updatedCourses.some((course) =>
+			course.userIds.some(
+				(id) =>
+					id.toString() === firstId._id.toString() ||
+					id.toString() === secondId._id.toString(),
 			),
 		);
 		expect(userInAnyCourse).to.equal(false);
@@ -81,32 +93,40 @@ describe('removeStudentFromClasses', () => {
 		});
 
 		expect(updatedClasses.length).to.equal(2);
-		const userInAnyClass = updatedClasses.some(
-			(klass) => klass.userIds.some(
-				(id) => id.toString() === user._id.toString(),
-			),
+		const userInAnyClass = updatedClasses.some((klass) =>
+			klass.userIds.some((id) => id.toString() === user._id.toString()),
 		);
 		expect(userInAnyClass).to.equal(false);
 	});
 
 	it('removes multiple students from all their classes', async () => {
-		const { _id: firstId } = await testObjects.createTestUser({ roles: ['student'] });
-		const { _id: secondId } = await testObjects.createTestUser({ roles: ['student'] });
+		const { _id: firstId } = await testObjects.createTestUser({
+			roles: ['student'],
+		});
+		const { _id: secondId } = await testObjects.createTestUser({
+			roles: ['student'],
+		});
 		const classes = await Promise.all([
 			testObjects.createTestClass({ userIds: [firstId._id] }),
-			testObjects.createTestClass({ userIds: [firstId._id, secondId._id] }),
+			testObjects.createTestClass({
+				userIds: [firstId._id, secondId._id],
+			}),
 			testObjects.createTestClass({ userIds: [secondId._id] }),
 		]);
-		await removeStudentFromClasses({ id: null, result: [{ _id: firstId }, { _id: secondId }], app });
+		await removeStudentFromClasses({
+			id: null,
+			result: [{ _id: firstId }, { _id: secondId }],
+			app,
+		});
 		const { data: updatedClasses } = await app.service('classes').find({
 			query: { _id: { $in: classes.map((c) => c._id) } },
 		});
 		expect(updatedClasses.length).to.equal(3);
-		const userInAnyClass = updatedClasses.some(
-			(klass) => klass.userIds.some(
-				(id) => (
-					id.toString() === firstId._id.toString()
-					|| id.toString() === secondId._id.toString()),
+		const userInAnyClass = updatedClasses.some((klass) =>
+			klass.userIds.some(
+				(id) =>
+					id.toString() === firstId._id.toString() ||
+					id.toString() === secondId._id.toString(),
 			),
 		);
 		expect(userInAnyClass).to.equal(false);
@@ -128,14 +148,15 @@ describe('generateRegistrationLink', () => {
 		await testObjects.cleanup();
 	});
 
-	const expectedErrorMessage = 'Roles must be exactly of length one if generateRegistrationLink=true is set.';
+	const expectedErrorMessage =
+		'Roles must be exactly of length one if generateRegistrationLink=true is set.';
 
 	const getAppMock = (registrationlinkMock) => ({
 		service: (service) => {
 			if (service === '/registrationlink') {
-				return ({
+				return {
 					create: async (data) => registrationlinkMock(data),
-				});
+				};
 			}
 			throw new Error('unknown service');
 		},
@@ -176,7 +197,9 @@ describe('generateRegistrationLink', () => {
 
 	it('catches errors from /registrationlink', async () => {
 		const context = {
-			app: getAppMock(() => { throw new Error('test error'); }),
+			app: getAppMock(() => {
+				throw new Error('test error');
+			}),
 			data: {
 				generateRegistrationLink: true,
 				roles: ['student'],
@@ -188,7 +211,9 @@ describe('generateRegistrationLink', () => {
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(500);
-			expect(err.message).to.equal('Can not create registrationlink. Error: test error');
+			expect(err.message).to.equal(
+				'Can not create registrationlink. Error: test error',
+			);
 		}
 	});
 
@@ -201,16 +226,19 @@ describe('generateRegistrationLink', () => {
 		};
 		const context = {
 			app: getAppMock((data) => {
-				if (data.role === userData.roles[0]
-					&& data.save === true
-					&& data.patchUser === true
-					&& data.host
-					&& data.schoolId === userData.schoolId
-					&& data.toHash === userData.email
+				if (
+					data.role === userData.roles[0] &&
+					data.save === true &&
+					data.patchUser === true &&
+					data.host &&
+					data.schoolId === userData.schoolId &&
+					data.toHash === userData.email
 				) {
 					return { hash: expectedHash };
 				}
-				throw new Error('wrong arguments passed to CREATE /registrationlink');
+				throw new Error(
+					'wrong arguments passed to CREATE /registrationlink',
+				);
 			}),
 			data: {
 				...userData,
@@ -236,15 +264,25 @@ describe('enforceRoleHierarchyOnCreate', () => {
 		await testObjects.cleanup();
 	});
 
-	const expectedErrorMessageForbidden = 'Your are not allowed to create a user with the given role';
+	const expectedErrorMessageForbidden =
+		'Your are not allowed to create a user with the given role';
 
-	function createContext(createrRoles, createrPermissions, createdRoleIDs, createdRole) {
+	function createContext(
+		createrRoles,
+		createrPermissions,
+		createdRoleIDs,
+		createdRole,
+	) {
 		const context = {
 			app: {
 				service: (serviceName) => {
 					if (serviceName === 'users') {
 						return {
-							get: () => (Promise.resolve({ permissions: createrPermissions, roles: createrRoles })),
+							get: () =>
+								Promise.resolve({
+									permissions: createrPermissions,
+									roles: createrRoles,
+								}),
 						};
 					}
 					if (serviceName === 'roles') {
@@ -282,7 +320,12 @@ describe('enforceRoleHierarchyOnCreate', () => {
 	});
 
 	it('fails to create a user with role "student" by role ID', async () => {
-		const context = createContext([], [], ['1234d186816abba584714c00'], ['student']);
+		const context = createContext(
+			[],
+			[],
+			['1234d186816abba584714c00'],
+			['student'],
+		);
 		try {
 			await enforceRoleHierarchyOnCreate(context);
 			assert.fail('role check resolved, but role is forbidden');
@@ -326,16 +369,25 @@ describe('enforceRoleHierarchyOnCreate', () => {
 		try {
 			await enforceRoleHierarchyOnCreate(context);
 		} catch (error) {
-			assert.fail(`expected promise resolved, but error was '${error.message}'`);
+			assert.fail(
+				`expected promise resolved, but error was '${error.message}'`,
+			);
 		}
 	});
 
 	it('succeeds to create user with role "student" by role ID', async () => {
-		const context = createContext([], ['STUDENT_CREATE'], ['1234d186816abba584714c00'], { name: 'student' });
+		const context = createContext(
+			[],
+			['STUDENT_CREATE'],
+			['1234d186816abba584714c00'],
+			{ name: 'student' },
+		);
 		try {
 			await enforceRoleHierarchyOnCreate(context);
 		} catch (error) {
-			assert.fail(`expected promise resolved, but error was '${error.message}'`);
+			assert.fail(
+				`expected promise resolved, but error was '${error.message}'`,
+			);
 		}
 	});
 
@@ -344,25 +396,39 @@ describe('enforceRoleHierarchyOnCreate', () => {
 		try {
 			await enforceRoleHierarchyOnCreate(context);
 		} catch (error) {
-			assert.fail(`expected promise resolved, but error was '${error.message}'`);
+			assert.fail(
+				`expected promise resolved, but error was '${error.message}'`,
+			);
 		}
 	});
 
 	it('succeeds to create a user with an unknown role by a superhero user', async () => {
-		const context = createContext([{ name: 'superhero' }], [], ['asdfasdf']);
+		const context = createContext(
+			[{ name: 'superhero' }],
+			[],
+			['asdfasdf'],
+		);
 		try {
 			await enforceRoleHierarchyOnCreate(context);
 		} catch (error) {
-			assert.fail(`expected promise resolved, but error was '${error.message}'`);
+			assert.fail(
+				`expected promise resolved, but error was '${error.message}'`,
+			);
 		}
 	});
 
 	it('succeeds to create auser with role "student" and "parent', async () => {
-		const context = createContext([], ['STUDENT_CREATE'], ['student', 'parent']);
+		const context = createContext(
+			[],
+			['STUDENT_CREATE'],
+			['student', 'parent'],
+		);
 		try {
 			await enforceRoleHierarchyOnCreate(context);
 		} catch (error) {
-			assert.fail(`expected promise resolved, but error was '${error.message}'`);
+			assert.fail(
+				`expected promise resolved, but error was '${error.message}'`,
+			);
 		}
 	});
 });

@@ -1,6 +1,8 @@
 let entryIds = [];
 const util = require('../../../../src/services/activation/utils/generalUtils');
-const { activationModel } = require('../../../../src/services/activation/model');
+const {
+	activationModel,
+} = require('../../../../src/services/activation/model');
 
 const createTestEntry = (app) => async (user, keyword, payload) => {
 	if (!user) throw new SyntaxError('User object missing');
@@ -19,7 +21,10 @@ const cleanup = (app) => () => {
 	}
 	const ids = entryIds;
 	entryIds = [];
-	return activationModel.deleteMany({ _id: { $in: ids } }).lean().exec();
+	return activationModel
+		.deleteMany({ _id: { $in: ids } })
+		.lean()
+		.exec();
 };
 
 module.exports = (app, opt) => ({

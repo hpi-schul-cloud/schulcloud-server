@@ -17,24 +17,42 @@ class ChangePasswordService {
 			throw new BadRequest('Malformed request body.');
 		}
 
-		const pwrecover = await this.passwordRecoveryModel.findOne({ token: data.resetId });
+		const pwrecover = await this.passwordRecoveryModel.findOne({
+			token: data.resetId,
+		});
 		if (!pwrecover || pwrecover.changed) {
 			delete data.password;
 			throw new SilentError('Invalid token!');
 		}
 		const time = Date.now() - Date.parse(pwrecover.createdAt);
 		if (time >= MAX_LIVE_TIME) {
-			logger.info('passwordRecovery is requested but the link is too old.', { time: `${time * 0.001} sec` });
+			logger.info(
+				'passwordRecovery is requested but the link is too old.',
+				{ time: `${time * 0.001} sec` },
+			);
 			throw new SilentError('Token expired!');
 		}
 		try {
 			await Promise.all([
-				this.accountModel.updateOne({ _id: pwrecover.account },
-					{ $set: { password: data.password } }).lean().exec(),
-				this.passwordRecoveryModel.updateOne({ token: data.resetId },
-					{ $set: { changed: true } }).lean().exec(),
+				this.accountModel
+					.updateOne(
+						{ _id: pwrecover.account },
+						{ $set: { password: data.password } },
+					)
+					.lean()
+					.exec(),
+				this.passwordRecoveryModel
+					.updateOne(
+						{ token: data.resetId },
+						{ $set: { changed: true } },
+					)
+					.lean()
+					.exec(),
 			]).catch((err) => {
-				throw new GeneralError('passwordRecovery can not patch data', err);
+				throw new GeneralError(
+					'passwordRecovery can not patch data',
+					err,
+				);
 			});
 		} catch (err) {
 			throw new GeneralError('passwordRecovery unexpected error', err);

@@ -53,12 +53,16 @@ const promises = [
 	},
 	{
 		name: 'teachers',
-		promise: userModel.userModel.countDocuments({ roles: '0000d186816abba584714c98' }),
+		promise: userModel.userModel.countDocuments({
+			roles: '0000d186816abba584714c98',
+		}),
 		model: userModel.userModel.find({ roles: '0000d186816abba584714c98' }),
 	},
 	{
 		name: 'students',
-		promise: userModel.userModel.countDocuments({ roles: '0000d186816abba584714c99' }),
+		promise: userModel.userModel.countDocuments({
+			roles: '0000d186816abba584714c99',
+		}),
 		model: userModel.userModel.find({ roles: '0000d186816abba584714c99' }),
 	},
 	{
@@ -96,10 +100,12 @@ const fetchStatistics = () => {
 	const statistics = {};
 
 	return Promise.all(
-		promises.map((p) => p.promise.exec().then((res) => {
-			statistics[p.name] = res;
-			return res;
-		})),
+		promises.map((p) =>
+			p.promise.exec().then((res) => {
+				statistics[p.name] = res;
+				return res;
+			}),
+		),
 	).then(() => statistics);
 };
 
@@ -109,8 +115,7 @@ class StatisticsService {
 	}
 
 	find() {
-		return fetchStatistics()
-			.then((statistics) => statistics);
+		return fetchStatistics().then((statistics) => statistics);
 	}
 
 	get(id, params) {
@@ -118,7 +123,9 @@ class StatisticsService {
 			.model.select({ createdAt: 1 })
 			.exec()
 			.then((generic) => {
-				const stats = generic.map((gen) => moment(gen.createdAt).format('YYYY-MM-DD'));
+				const stats = generic.map((gen) =>
+					moment(gen.createdAt).format('YYYY-MM-DD'),
+				);
 
 				const counts = {};
 				stats.forEach((x) => {

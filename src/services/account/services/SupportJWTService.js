@@ -4,12 +4,18 @@ const { authenticate } = require('@feathersjs/authentication');
 const { ObjectId } = require('mongoose').Types;
 
 const { hasPermission } = require('../../../hooks/index');
-const { authenticationSecret, audience: audienceName } = require('../../authentication/logic');
+const {
+	authenticationSecret,
+	audience: audienceName,
+} = require('../../authentication/logic');
 const accountModel = require('../model');
 const logger = require('../../../logger');
 
 const {
-	getRedisClient, redisSetAsync, extractDataFromJwt, getRedisData,
+	getRedisClient,
+	redisSetAsync,
+	extractDataFromJwt,
+	getRedisData,
 } = require('../../../utils/redis');
 
 const DEFAULT_EXPIRED = 60 * 60 * 1000; // in ms => 1h
@@ -21,7 +27,11 @@ class JWT {
 	 * @param {String} [audience] Name of jwt creator.
 	 * @param {Number} [expiredOffset] The jwt expire time in ms.
 	 */
-	constructor(secret, audience = DEFAULT_AUDIENCE, expiredOffset = DEFAULT_EXPIRED) {
+	constructor(
+		secret,
+		audience = DEFAULT_AUDIENCE,
+		expiredOffset = DEFAULT_EXPIRED,
+	) {
 		this.secret = secret;
 		this.aud = audience;
 		this.expiredOffset = expiredOffset;
@@ -54,10 +64,16 @@ class JWT {
 	}
 
 	async create(userId, secret) {
-		const account = await accountModel.findOne({ userId }).select('_id').lean().exec();
+		const account = await accountModel
+			.findOne({ userId })
+			.select('_id')
+			.lean()
+			.exec();
 
 		if (!account && !account._id) {
-			throw new Error(`Account for user with the id ${userId} do not exist.`);
+			throw new Error(
+				`Account for user with the id ${userId} do not exist.`,
+			);
 		}
 		const accountId = account._id.toString();
 
@@ -107,7 +123,11 @@ class SupportJWTService {
 	 * @param {String} [audience] Name of jwt creator.
 	 * @param {Number} [expiredOffset] The jwt expire time in ms.
 	 */
-	constructor(secret, audience = DEFAULT_AUDIENCE, expiredOffset = DEFAULT_EXPIRED) {
+	constructor(
+		secret,
+		audience = DEFAULT_AUDIENCE,
+		expiredOffset = DEFAULT_EXPIRED,
+	) {
 		this.err = Object.freeze({
 			missingParams: 'Missing param userId.',
 			canNotCreateJWT: 'Can not create support jwt.',
@@ -125,7 +145,9 @@ class SupportJWTService {
 	executeInfo(currentUserId, userId) {
 		const minutes = this.expiredOffset / (60 * 1000);
 		// eslint-disable-next-line max-len
-		logger.info(`[support][jwt] The support employee with the Id ${currentUserId} has created  a short live JWT for the user with the Id ${userId}. The JWT expires expires in ${minutes} minutes`);
+		logger.info(
+			`[support][jwt] The support employee with the Id ${currentUserId} has created  a short live JWT for the user with the Id ${userId}. The JWT expires expires in ${minutes} minutes`,
+		);
 	}
 
 	async addToWhitelist(jwt) {
@@ -133,7 +155,10 @@ class SupportJWTService {
 			const { redisIdentifier, privateDevice } = extractDataFromJwt(jwt);
 			const redisData = getRedisData({ privateDevice });
 			await redisSetAsync(
-				redisIdentifier, JSON.stringify(redisData), 'EX', this.expiredOffset,
+				redisIdentifier,
+				JSON.stringify(redisData),
+				'EX',
+				this.expiredOffset,
 			);
 		}
 	}

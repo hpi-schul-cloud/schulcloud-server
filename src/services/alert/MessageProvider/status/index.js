@@ -24,7 +24,9 @@ const importance = {
 async function getInstance(instance, componentId) {
 	if (componentId !== 0) {
 		try {
-			const response = await api(Configuration.get('ALERT_STATUS_API_URL')).get(`/components/${componentId}`);
+			const response = await api(
+				Configuration.get('ALERT_STATUS_API_URL'),
+			).get(`/components/${componentId}`);
 			if (dict[instance] && response.data.group_id === dict[instance]) {
 				return importance.CURRENT_INSTANCE;
 			}
@@ -42,7 +44,9 @@ async function getInstance(instance, componentId) {
  * @returns {Promise}
  */
 async function getIncidents() {
-	const response = await api(Configuration.get('ALERT_STATUS_API_URL')).get('/incidents?sort=id');
+	const response = await api(Configuration.get('ALERT_STATUS_API_URL')).get(
+		'/incidents?sort=id',
+	);
 	return response;
 }
 
@@ -62,17 +66,30 @@ function compare(a, b) {
 
 module.exports = {
 	async getData(instance) {
-		if (Configuration.has('ALERT_STATUS_API_URL') && Configuration.has('ALERT_STATUS_URL')) {
+		if (
+			Configuration.has('ALERT_STATUS_API_URL') &&
+			Configuration.has('ALERT_STATUS_URL')
+		) {
 			try {
 				const rawData = await getIncidents();
 				const instanceSpecific = [];
 				const noneSpecific = [];
 				for (const element of rawData.data) {
 					// only mind incidents not older than 2 days
-					if (Date.parse(element.updated_at) + 1000 * 60 * 60 * 24 * 2 >= Date.now()) {
+					if (
+						Date.parse(element.updated_at) +
+							1000 * 60 * 60 * 24 * 2 >=
+						Date.now()
+					) {
 						// only mind messages for own instance (including none instance specific messages)
-						const isinstance = await getInstance(instance, element.component_id);
-						if (isinstance !== importance.ALL_INSTANCES && isinstance !== importance.INGORE) {
+						const isinstance = await getInstance(
+							instance,
+							element.component_id,
+						);
+						if (
+							isinstance !== importance.ALL_INSTANCES &&
+							isinstance !== importance.INGORE
+						) {
 							instanceSpecific.push(element);
 						} else if (isinstance !== importance.INGORE) {
 							noneSpecific.push(element);
@@ -84,7 +101,8 @@ module.exports = {
 				noneSpecific.sort(compare);
 
 				return instanceSpecific.concat(noneSpecific);
-			} catch (err) { // return null on error
+			} catch (err) {
+				// return null on error
 				logger.error(err);
 				return null;
 			}

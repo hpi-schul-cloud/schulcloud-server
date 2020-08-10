@@ -16,7 +16,9 @@ const replaceFields = (datasource) => {
  */
 module.exports = (context) => {
 	if (context.method === 'find') {
-		context.result.data = (context.result.data || []).map((ds) => replaceFields(ds));
+		context.result.data = (context.result.data || []).map((ds) =>
+			replaceFields(ds),
+		);
 	} else {
 		context.result = replaceFields(context.result);
 	}

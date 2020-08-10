@@ -35,8 +35,10 @@ class ForcePasswordChangeService {
 		this.options = options || {};
 		this.err = Object.freeze({
 			missmatch: 'Die neuen Passwörter stimmen nicht überein.',
-			failed: 'Can not update the password. Please contact the administrator',
-			passwordSameAsPrevious: 'You need to setup your new unique password',
+			failed:
+				'Can not update the password. Please contact the administrator',
+			passwordSameAsPrevious:
+				'You need to setup your new unique password',
 		});
 	}
 
@@ -46,7 +48,10 @@ class ForcePasswordChangeService {
 			throw new BadRequest(this.err.missmatch);
 		}
 
-		const passwordSameAsPrevious = await bcrypt.compare(newPassword, params.account.password);
+		const passwordSameAsPrevious = await bcrypt.compare(
+			newPassword,
+			params.account.password,
+		);
 		if (passwordSameAsPrevious) {
 			throw new BadRequest(this.err.passwordSameAsPrevious);
 		}
@@ -55,7 +60,8 @@ class ForcePasswordChangeService {
 			password: newPassword,
 		};
 
-		const accountPromise = this.app.service('/accounts')
+		const accountPromise = this.app
+			.service('/accounts')
 			.patch(params.account._id, accountUpdate, params);
 		await accountPromise
 			.then((result) => Promise.resolve(result))
@@ -63,7 +69,8 @@ class ForcePasswordChangeService {
 				throw new BadRequest(this.err.failed, err);
 			});
 
-		const userPromise = this.app.service('/users')
+		const userPromise = this.app
+			.service('/users')
 			.patch(params.account.userId, { forcePasswordChange: false });
 		return userPromise
 			.then((result) => Promise.resolve(result))

@@ -10,22 +10,25 @@ const logger = require('../../../logger');
 
 const nullOrEmpty = (string) => !string;
 
-const login = async (app, username, password, strategy = 'local') => app.service('authentication')
-	.create({
-		strategy,
-		username,
-		password,
-	})
-	.then((result) => result.accessToken)
-	.catch((error) => {
-		logger.error(error);
-		return null;
-	});
+const login = async (app, username, password, strategy = 'local') =>
+	app
+		.service('authentication')
+		.create({
+			strategy,
+			username,
+			password,
+		})
+		.then((result) => result.accessToken)
+		.catch((error) => {
+			logger.error(error);
+			return null;
+		});
 
 const isValidLogin = (jwt) => !!jwt;
 
 const validPassword = async (hook) => {
-	if (!hook.data || !hook.data.password) throw new BadRequest('Missing information');
+	if (!hook.data || !hook.data.password)
+		throw new BadRequest('Missing information');
 	const { password } = hook.data;
 	const { username } = hook.params.account;
 
@@ -39,7 +42,9 @@ const validPassword = async (hook) => {
 const blockThirdParty = async (hook) => {
 	const exm = await externallyManaged(hook.app, hook.params.account.userId);
 	if (exm === true) {
-		throw new Forbidden('Your user data is managed by a IDM. Changes to it can only be made in the source system');
+		throw new Forbidden(
+			'Your user data is managed by a IDM. Changes to it can only be made in the source system',
+		);
 	}
 	return hook;
 };
@@ -67,9 +72,7 @@ const validateEmail = (hook) => {
 };
 
 const filterEntryParamNames = async (context) => {
-	const allowedAttributes = [
-		'keyword', 'quarantinedObject', 'state',
-	];
+	const allowedAttributes = ['keyword', 'quarantinedObject', 'state'];
 	return keepInArray('entry', allowedAttributes)(context);
 };
 

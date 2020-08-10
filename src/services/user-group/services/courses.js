@@ -1,10 +1,15 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
-const { modelServices: { prepareInternalParams } } = require('../../../utils');
+const {
+	modelServices: { prepareInternalParams },
+} = require('../../../utils');
 
-
-const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
-const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
+const restrictToCurrentSchool = globalHooks.ifNotLocal(
+	globalHooks.restrictToCurrentSchool,
+);
+const restrictToUsersOwnCourses = globalHooks.ifNotLocal(
+	globalHooks.restrictToUsersOwnCourses,
+);
 
 const {
 	addWholeClassToCourse,
@@ -15,7 +20,9 @@ const {
 	removeSubstitutionDuplicates,
 } = require('../hooks/courses');
 
-const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
+const {
+	checkScopePermissions,
+} = require('../../helpers/scopePermissions/hooks');
 
 class Courses {
 	constructor(options) {
@@ -23,27 +30,39 @@ class Courses {
 	}
 
 	find(params) {
-		return this.app.service('courseModel').find(prepareInternalParams(params));
+		return this.app
+			.service('courseModel')
+			.find(prepareInternalParams(params));
 	}
 
 	get(id, params) {
-		return this.app.service('courseModel').get(id, prepareInternalParams(params));
+		return this.app
+			.service('courseModel')
+			.get(id, prepareInternalParams(params));
 	}
 
 	create(data, params) {
-		return this.app.service('courseModel').create(data, prepareInternalParams(params));
+		return this.app
+			.service('courseModel')
+			.create(data, prepareInternalParams(params));
 	}
 
 	update(id, data, params) {
-		return this.app.service('courseModel').update(id, data, prepareInternalParams(params));
+		return this.app
+			.service('courseModel')
+			.update(id, data, prepareInternalParams(params));
 	}
 
 	patch(id, data, params) {
-		return this.app.service('courseModel').patch(id, data, prepareInternalParams(params));
+		return this.app
+			.service('courseModel')
+			.patch(id, data, prepareInternalParams(params));
 	}
 
 	remove(id, params) {
-		return this.app.service('courseModel').remove(id, prepareInternalParams(params));
+		return this.app
+			.service('courseModel')
+			.remove(id, prepareInternalParams(params));
 	}
 
 	setup(app) {
@@ -60,9 +79,7 @@ const courseService = new Courses({
 
 const courseHooks = {
 	before: {
-		all: [
-			authenticate('jwt'),
-		],
+		all: [authenticate('jwt')],
 		find: [
 			globalHooks.hasPermission('COURSE_VIEW'),
 			restrictToCurrentSchool,
@@ -104,9 +121,11 @@ const courseHooks = {
 		get: [
 			globalHooks.ifNotLocal(
 				globalHooks.denyIfNotCurrentSchool({
-					errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
+					errorMessage:
+						'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
 				}),
-			)],
+			),
+		],
 		create: [addWholeClassToCourse],
 		update: [],
 		patch: [addWholeClassToCourse],

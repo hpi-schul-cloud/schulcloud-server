@@ -14,20 +14,25 @@ const courseRoles = {
 	superhero: 'courseAdministrator', // Not a typo. There is no dedicated superhero role
 };
 
-const belongsToSameSchool = (user, course) => compareIds(user.schoolId, course.schoolId);
-const userIsAdmin = (u) => u.roles.some((role) => role.name === 'administrator');
-const userIsSuperhero = (u) => u.roles.some((role) => role.name === 'superhero');
+const belongsToSameSchool = (user, course) =>
+	compareIds(user.schoolId, course.schoolId);
+const userIsAdmin = (u) =>
+	u.roles.some((role) => role.name === 'administrator');
+const userIsSuperhero = (u) =>
+	u.roles.some((role) => role.name === 'superhero');
 
 /**
  * Setup the userPermissions service for the course scope
  */
 const setup = (app) => {
 	const getPermissions = async (roleName) => {
-		const permissions = await app.service('roles/:roleName/permissions').find({
-			route: {
-				roleName,
-			},
-		});
+		const permissions = await app
+			.service('roles/:roleName/permissions')
+			.find({
+				route: {
+					roleName,
+				},
+			});
 		return permissions;
 	};
 
@@ -40,18 +45,22 @@ const setup = (app) => {
 	const determineCoursePermissions = async (userId, course) => {
 		if (!userId || !course) return [];
 
-		const user = await app.service('users').get(userId, { query: { $populate: 'roles' } });
+		const user = await app
+			.service('users')
+			.get(userId, { query: { $populate: 'roles' } });
 		if (userIsSuperhero(user)) {
 			return getPermissions(courseRoles.superhero);
 		}
-		if ((userIsAdmin(user) && belongsToSameSchool(user, course))) {
+		if (userIsAdmin(user) && belongsToSameSchool(user, course)) {
 			return getPermissions(courseRoles.administrator);
 		}
 
 		if ((course.teacherIds || []).some((id) => compareIds(userId, id))) {
 			return getPermissions(courseRoles.teacher);
 		}
-		if ((course.substitutionIds || []).some((id) => compareIds(userId, id))) {
+		if (
+			(course.substitutionIds || []).some((id) => compareIds(userId, id))
+		) {
 			return getPermissions(courseRoles.substitutionTeacher);
 		}
 		if ((course.userIds || []).some((id) => compareIds(userId, id))) {
@@ -60,7 +69,11 @@ const setup = (app) => {
 		throw new Forbidden(`User ${userId} ist nicht Teil des Kurses`);
 	};
 
-	ScopePermissionService.initialize(app, '/courses/:scopeId/userPermissions', determineCoursePermissions);
+	ScopePermissionService.initialize(
+		app,
+		'/courses/:scopeId/userPermissions',
+		determineCoursePermissions,
+	);
 };
 
 module.exports = {

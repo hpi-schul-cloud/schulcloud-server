@@ -7,18 +7,22 @@ const { SECURITY_CHECK_SERVICE_PATH } = require('../../../config/globals');
 class SecurityCheckService {
 	async update(id, data) {
 		if (data.error) {
-			logger.error(`Anti-virus service cannot check file with id ${id}. Error message: '${data.error}'`, data);
+			logger.error(
+				`Anti-virus service cannot check file with id ${id}. Error message: '${data.error}'`,
+				data,
+			);
 			return Promise.resolve();
 		}
-		const status = data.virus_detected === true
-			? SecurityCheckStatusTypes.BLOCKED
-			: SecurityCheckStatusTypes.VERIFIED;
+		const status =
+			data.virus_detected === true
+				? SecurityCheckStatusTypes.BLOCKED
+				: SecurityCheckStatusTypes.VERIFIED;
 		await FileModel.updateOne(
 			{ 'securityCheck.requestToken': id },
 			{
 				$set: {
 					'securityCheck.requestToken': null,
-					'securityCheck.status':	status,
+					'securityCheck.status': status,
 					'securityCheck.reason': data.virus_signature || 'Clean',
 					'securityCheck.updatedAt': Date.now(),
 				},

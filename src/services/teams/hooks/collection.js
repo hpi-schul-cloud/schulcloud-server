@@ -1,7 +1,6 @@
 const { BadRequest } = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
 
-
 /**
  * If Array use it.
  * If Object use Object.keys.
@@ -9,7 +8,8 @@ const { ObjectId } = require('mongoose').Types;
  * @private
  * @collection
  */
-const mapToArray = (e) => (isArray(e) ? e : (isObject(e) ? Object.values(e) : [e]));
+const mapToArray = (e) =>
+	isArray(e) ? e : isObject(e) ? Object.values(e) : [e];
 
 /**
  * @private
@@ -18,8 +18,8 @@ const mapToArray = (e) => (isArray(e) ? e : (isObject(e) ? Object.values(e) : [e
  * @param {Function} execute
  * @param {*} additional Is a value that is pass as second parameter to the executed function.
  */
-const batch = (array, execute, additional) => (mapToArray(array)).map((e) => execute(e, additional));
-
+const batch = (array, execute, additional) =>
+	mapToArray(array).map((e) => execute(e, additional));
 
 /**
  * Test if any of the elements in this function are true
@@ -29,7 +29,6 @@ const batch = (array, execute, additional) => (mapToArray(array)).map((e) => exe
  * @return {Boolean}
  */
 const allTrue = (arrayOfBools) => !arrayOfBools.some((b) => b === false);
-
 
 /**
  * Test if one of the elements in this function are true
@@ -142,13 +141,14 @@ const isObjectId = (id) => id instanceof ObjectId && id !== undefined;
  * @collection
  * @requires const Schema = require('mongoose').Schema;
  */
-const isObjectIdWithTryToCast = (id) => isObjectId(id) || !isNull(tryToCastToObjectId((id || '').toString()));
+const isObjectIdWithTryToCast = (id) =>
+	isObjectId(id) || !isNull(tryToCastToObjectId((id || '').toString()));
 
 /**
-*   @collection
-*   @throws {BadRequest} If input is no typeof moongose Schema.Types.ObjectId
-*                       or a String that can cast to this schema, it is throw an error
-*/
+ *   @collection
+ *   @throws {BadRequest} If input is no typeof moongose Schema.Types.ObjectId
+ *                       or a String that can cast to this schema, it is throw an error
+ */
 const throwErrorIfNotObjectId = (id) => {
 	if (!isObjectIdWithTryToCast(id)) {
 		throw new BadRequest('Is not instance of Schema.Types.ObjectId.');
@@ -179,7 +179,8 @@ const bsonIdToString = (input) => {
  * @param {StringId||BsonId} value1
  * @param {StringId||BsonId} value2
  */
-const isSameId = (value1, value2) => bsonIdToString(value1) === bsonIdToString(value2);
+const isSameId = (value1, value2) =>
+	bsonIdToString(value1) === bsonIdToString(value2);
 
 /**
  * @collection

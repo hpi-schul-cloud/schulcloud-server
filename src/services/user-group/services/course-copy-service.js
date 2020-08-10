@@ -16,9 +16,18 @@ const createHomework = (
 	userId,
 	app,
 	newTeacherId,
-) => app.service('homework/copy').create({
-	_id: homework._id, courseId, lessonId, userId, newTeacherId,
-}).then((res) => res).catch((err) => Promise.reject(err));
+) =>
+	app
+		.service('homework/copy')
+		.create({
+			_id: homework._id,
+			courseId,
+			lessonId,
+			userId,
+			newTeacherId,
+		})
+		.then((res) => res)
+		.catch((err) => Promise.reject(err));
 
 const createLesson = (app, data) => app.service('lessons/copy').create(data);
 
@@ -28,12 +37,12 @@ class CourseCopyService {
 	}
 
 	/**
-     * Copies a course and copies homework and lessons of that course.
-     * @param data object consisting of name, color, teacherIds, classIds, userIds,
+	 * Copies a course and copies homework and lessons of that course.
+	 * @param data object consisting of name, color, teacherIds, classIds, userIds,
 	 * .... everything you can edit or what is required by a course.
-     * @param params user Object and other params.
-     * @returns newly created course.
-     */
+	 * @param params user Object and other params.
+	 * @returns newly created course.
+	 */
 	async create(data, params) {
 		let tempData = JSON.parse(JSON.stringify(data));
 		tempData = _.omit(tempData, ['_id', 'courseId', 'copyCourseId']);
@@ -62,41 +71,56 @@ class CourseCopyService {
 		];
 		tempCourse = _.omit(tempCourse, attributs);
 
-		tempCourse = Object.assign(tempCourse, tempData, { userId: (params.account || {}).userId });
+		tempCourse = Object.assign(tempCourse, tempData, {
+			userId: (params.account || {}).userId,
+		});
 		tempCourse.isCopyFrom = sourceCourseId;
 		const res = await this.app.service('courses').create(tempCourse);
 
 		const [homeworks, lessons] = await Promise.all([
-			homeworkModel.find({ courseId: sourceCourseId }).populate('lessonId'),
+			homeworkModel
+				.find({ courseId: sourceCourseId })
+				.populate('lessonId'),
 			lessonsModel.find({ courseId: sourceCourseId }),
 		]).catch((err) => {
-			throw new GeneralError('Can not fetch data to copy this course.', err);
+			throw new GeneralError(
+				'Can not fetch data to copy this course.',
+				err,
+			);
 		});
 
-		await Promise.all(lessons.map((lesson) => createLesson(this.app, {
-			lessonId: lesson._id,
-			newCourseId: res._id,
-			userId: params.account.userId,
-			shareToken: lesson.shareToken,
-		}))).catch((err) => {
+		await Promise.all(
+			lessons.map((lesson) =>
+				createLesson(this.app, {
+					lessonId: lesson._id,
+					newCourseId: res._id,
+					userId: params.account.userId,
+					shareToken: lesson.shareToken,
+				}),
+			),
+		).catch((err) => {
 			logger.warning(err);
 			throw new GeneralError('Can not copy one or many lessons.', err);
 		});
 
-		await Promise.all(homeworks.map((homework) => {
-			// homeworks that are part of a lesson are copied in LessonCopyService
-			if (!homework.lessonId) {
-				return createHomework(
-					homework,
-					res._id,
-					undefined,
-					equalIds(params.account.userId, homework.teacherId) ? params.account.userId : homework.teacherId,
-					this.app,
-					params.account.userId,
-				);
-			}
-			return false;
-		})).catch((err) => {
+		await Promise.all(
+			homeworks.map((homework) => {
+				// homeworks that are part of a lesson are copied in LessonCopyService
+				if (!homework.lessonId) {
+					return createHomework(
+						homework,
+						res._id,
+						undefined,
+						equalIds(params.account.userId, homework.teacherId)
+							? params.account.userId
+							: homework.teacherId,
+						this.app,
+						params.account.userId,
+					);
+				}
+				return false;
+			}),
+		).catch((err) => {
 			throw new GeneralError('Can not copy one or many homeworks.', err);
 		});
 
@@ -111,7 +135,8 @@ class CourseShareService {
 
 	// If provided with param shareToken then return course name
 	find(params) {
-		return courseModel.findOne({ shareToken: params.query.shareToken })
+		return courseModel
+			.findOne({ shareToken: params.query.shareToken })
 			.then((course) => course.name);
 	}
 
@@ -124,16 +149,22 @@ class CourseShareService {
 		// Also check the corresponding lessons and add shareToken
 		const course = coursesService.get(id);
 		if (!course.shareToken) {
-			const lessons = await lessonsService.find({ query: { courseId: id } });
+			const lessons = await lessonsService.find({
+				query: { courseId: id },
+			});
 			for (let i = 0; i < lessons.data.length; i += 1) {
 				if (!lessons.data[i].shareToken) {
 					lessonsModel
-						.findByIdAndUpdate(lessons.data[i]._id, { shareToken: nanoid(12) })
+						.findByIdAndUpdate(lessons.data[i]._id, {
+							shareToken: nanoid(12),
+						})
 						.exec();
 				}
 			}
 
-			return this.app.service('/courseModel').patch(id, { shareToken: nanoid(12) })
+			return this.app
+				.service('/courseModel')
+				.patch(id, { shareToken: nanoid(12) })
 				.then((res) => ({ shareToken: res.shareToken }));
 		}
 		return { shareToken: course.shareToken };
@@ -145,44 +176,43 @@ class CourseShareService {
 		const { courseName } = data;
 		const copyService = this.app.service('courses/copy');
 
-		return courseModel.find({ shareToken })
-			.then((courses) => {
-				const course = courses[0];
-				let tempCourse = JSON.parse(JSON.stringify(course));
-				tempCourse = _.omit(
-					tempCourse,
-					[
-						'createdAt',
-						'updatedAt',
-						'__v',
-						'teacherIds',
-						'classIds',
-						'userIds',
-						'substitutionIds',
-						'shareToken',
-						'schoolId',
-						'untilDate',
-						'startDate',
-						'times',
-					],
-				);
+		return courseModel.find({ shareToken }).then((courses) => {
+			const course = courses[0];
+			let tempCourse = JSON.parse(JSON.stringify(course));
+			tempCourse = _.omit(tempCourse, [
+				'createdAt',
+				'updatedAt',
+				'__v',
+				'teacherIds',
+				'classIds',
+				'userIds',
+				'substitutionIds',
+				'shareToken',
+				'schoolId',
+				'untilDate',
+				'startDate',
+				'times',
+			]);
 
-				tempCourse.teacherIds = [userId];
+			tempCourse.teacherIds = [userId];
 
-				if (courseName) {
-					tempCourse.name = courseName;
-				}
+			if (courseName) {
+				tempCourse.name = courseName;
+			}
 
-				return this.app.service('users').get(userId)
-					.then((user) => {
-						tempCourse.schoolId = user.schoolId;
-						tempCourse.userId = userId;
+			return this.app
+				.service('users')
+				.get(userId)
+				.then((user) => {
+					tempCourse.schoolId = user.schoolId;
+					tempCourse.userId = userId;
 
-						return copyService.create(tempCourse)
-							.then((res) => res)
-							.catch((err) => err);
-					});
-			});
+					return copyService
+						.create(tempCourse)
+						.then((res) => res)
+						.catch((err) => err);
+				});
+		});
 	}
 }
 

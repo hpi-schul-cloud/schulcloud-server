@@ -1,7 +1,9 @@
 const { expect } = require('chai');
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
-const { restrictChangesToArchivedCourse } = require('../../../../src/services/user-group/hooks/courses');
+const {
+	restrictChangesToArchivedCourse,
+} = require('../../../../src/services/user-group/hooks/courses');
 
 const oneHour = 600000;
 const twoDays = 172800000;
@@ -23,7 +25,11 @@ describe('course hooks', () => {
 			const activeCourse = await testObjects.createTestCourse({
 				untilDate: Date.now() + oneHour,
 			});
-			const result = await fut({ app, method: 'update', id: activeCourse._id });
+			const result = await fut({
+				app,
+				method: 'update',
+				id: activeCourse._id,
+			});
 			expect(result).to.not.equal(undefined);
 			expect(result.app).to.not.equal(undefined);
 			expect(result.method).to.not.equal(undefined);
@@ -32,7 +38,11 @@ describe('course hooks', () => {
 
 		it('returns for course without end date', async () => {
 			const activeCourse = await testObjects.createTestCourse({});
-			const result = await fut({ app, method: 'update', id: activeCourse._id });
+			const result = await fut({
+				app,
+				method: 'update',
+				id: activeCourse._id,
+			});
 			expect(result).to.not.equal(undefined);
 			expect(result.app).to.not.equal(undefined);
 			expect(result.method).to.not.equal(undefined);
@@ -73,7 +83,7 @@ describe('course hooks', () => {
 						otherField: 'this is set',
 					},
 				});
-				throw (new Error('should have failed'));
+				throw new Error('should have failed');
 			} catch (err) {
 				expect(err).to.not.equal(undefined);
 				expect(err.message).to.not.equal('should have failed');

@@ -35,24 +35,37 @@ class ActivationService {
 	 */
 	async update(activationCode, data, params) {
 		// valid entry and valid activtionCode
-		if (!activationCode) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
+		if (!activationCode)
+			throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
 		const user = await getUser(this.app, params.account.userId);
-		const entry = await getEntryByActivationCode(this, user._id, activationCode);
+		const entry = await getEntryByActivationCode(
+			this,
+			user._id,
+			activationCode,
+		);
 
-		if (!user) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
-		if (!entry) throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
+		if (!user)
+			throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
+		if (!entry)
+			throw new NotFound(customErrorMessages.ACTIVATION_LINK_INVALID);
 		validEntry(entry);
 
 		try {
 			// custom job part here (done by specific service)
-			await this.app.service(`/activation/${entry.keyword}`).update(activationCode, { user, entry });
+			await this.app
+				.service(`/activation/${entry.keyword}`)
+				.update(activationCode, { user, entry });
 
 			// delete entry
 			await deleteEntry(this, entry._id);
 			return { success: true, keyword: entry.keyword };
 		} catch (error) {
 			logger.error(error);
-			return { success: false, keyword: entry.keyword, error: error.message };
+			return {
+				success: false,
+				keyword: entry.keyword,
+				error: error.message,
+			};
 		}
 	}
 
@@ -78,9 +91,7 @@ class ActivationService {
 
 const activationHooks = {
 	before: {
-		all: [
-			authenticate('jwt'),
-		],
+		all: [authenticate('jwt')],
 		find: [],
 		get: [disallow()],
 		create: [disallow()],

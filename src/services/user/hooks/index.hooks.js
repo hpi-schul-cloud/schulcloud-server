@@ -12,7 +12,9 @@ exports.hasEditPermissionForUser = async (context) => {
 	if (ObjectId.equal(((context.params || {}).account || {}).userId, id)) {
 		return context;
 	}
-	const requestedUser = await userService.get(id, { query: { $populate: 'roles' } });
+	const requestedUser = await userService.get(id, {
+		query: { $populate: 'roles' },
+	});
 	const requestedUserRoles = requestedUser.roles.map((r) => r.name);
 	if (requestedUserRoles.includes('administrator')) {
 		await globalHooks.hasPermission(['ADMIN_EDIT'])(context);
@@ -32,7 +34,9 @@ exports.hasReadPermissionForUser = async (context) => {
 	if (ObjectId.equal(((context.params || {}).account || {}).userId, id)) {
 		return context;
 	}
-	const requestedUser = await userService.get(id, { query: { $populate: 'roles' } });
+	const requestedUser = await userService.get(id, {
+		query: { $populate: 'roles' },
+	});
 	const requestedUserRoles = requestedUser.roles.map((r) => r.name);
 	if (requestedUserRoles.includes('teacher')) {
 		await globalHooks.hasPermission(['TEACHER_LIST'])(context);

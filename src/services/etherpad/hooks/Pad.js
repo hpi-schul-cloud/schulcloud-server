@@ -7,16 +7,22 @@ const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
 
 const restrictOldPadsToCourse = async (context) => {
-	if (typeof (context.data.oldPadId) === 'undefined') {
+	if (typeof context.data.oldPadId === 'undefined') {
 		return context;
 	}
-	const oldPadURI = Configuration.get('ETHERPAD_OLD_PAD_URI') || 'https://etherpad.schul-cloud.org/p';
+	const oldPadURI =
+		Configuration.get('ETHERPAD_OLD_PAD_URI') ||
+		'https://etherpad.schul-cloud.org/p';
 	try {
 		const lessonsService = context.app.service('/lessons');
 		const foundLessons = await lessonsService.find({
 			query: {
 				courseId: context.id,
-				contents: { $elemMatch: { 'content.url': `${oldPadURI}/${context.data.oldPadId}` } },
+				contents: {
+					$elemMatch: {
+						'content.url': `${oldPadURI}/${context.data.oldPadId}`,
+					},
+				},
 			},
 		});
 		if (foundLessons.total < 1) {
@@ -33,7 +39,9 @@ const getGroupData = async (context) => {
 		...context.data,
 		userId: context.params.account.userId,
 	};
-	const groupService = context.app.service('etherpad/groups').create(context.data);
+	const groupService = context.app
+		.service('etherpad/groups')
+		.create(context.data);
 	try {
 		const response = await groupService;
 		context.data = {

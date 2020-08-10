@@ -7,7 +7,9 @@ const {
 	createTestUser,
 	cleanup,
 } = require('../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(
+	app,
+);
 const { helpDocumentsModel } = require('../../../src/services/help/model');
 
 const { expect } = chai;
@@ -37,23 +39,31 @@ describe('help documents service', () => {
 		} catch (err) {
 			expect(err).to.not.equal('should have failed');
 			expect(err.code).to.equal(400);
-			expect(err.message).to.equal('this method requires querying for a theme - query:{theme:"themename"}');
+			expect(err.message).to.equal(
+				'this method requires querying for a theme - query:{theme:"themename"}',
+			);
 		}
 	});
 
 	it('FIND throws an error if no documents are found', async () => {
 		try {
-			await helpDocumentService.find({ query: { theme: 'thisThemeDoesntExist' } });
+			await helpDocumentService.find({
+				query: { theme: 'thisThemeDoesntExist' },
+			});
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err).to.not.equal('should have failed');
 			expect(err.code).to.equal(404);
-			expect(err.message).to.equal('could not find help documents for this user or theme.');
+			expect(err.message).to.equal(
+				'could not find help documents for this user or theme.',
+			);
 		}
 	});
 
 	it('FIND returns valid default document links', async () => {
-		const response = await helpDocumentService.find({ query: { theme: 'default' } });
+		const response = await helpDocumentService.find({
+			query: { theme: 'default' },
+		});
 		expect(response).to.not.equal(undefined);
 		expect(Array.isArray(response)).to.equal(true);
 		expect(response.length).to.be.greaterThan(0);
@@ -66,7 +76,9 @@ describe('help documents service', () => {
 	});
 
 	it('FIND returns valid school document links', async () => {
-		const schoolId = (await createTestSchool({ documentBaseDirType: 'school' }))._id;
+		const schoolId = (
+			await createTestSchool({ documentBaseDirType: 'school' })
+		)._id;
 		const user = await createTestUser({ schoolId, roles: 'student' });
 		const params = await generateRequestParamsFromUser(user);
 		params.query = { theme: 'default' };
@@ -80,7 +92,10 @@ describe('help documents service', () => {
 				content: 'another link',
 			},
 		];
-		const helpDocument = await helpDocumentsModel.create({ schoolId, data });
+		const helpDocument = await helpDocumentsModel.create({
+			schoolId,
+			data,
+		});
 
 		const response = await helpDocumentService.find(params);
 		expect(response).to.not.equal(undefined);
@@ -94,26 +109,39 @@ describe('help documents service', () => {
 	});
 
 	it('FIND returns valid schoolgroup document links', async () => {
-		const schoolGroupId = (await createTestSchoolGroup({ name: 'FBI-schools' }))._id;
-		const schoolId = (await createTestSchool({ documentBaseDirType: 'schoolGroup', schoolGroupId }))._id;
+		const schoolGroupId = (
+			await createTestSchoolGroup({ name: 'FBI-schools' })
+		)._id;
+		const schoolId = (
+			await createTestSchool({
+				documentBaseDirType: 'schoolGroup',
+				schoolGroupId,
+			})
+		)._id;
 		const user = await createTestUser({ schoolId, roles: 'student' });
 		const params = await generateRequestParamsFromUser(user);
 		params.query = { theme: 'default' };
 		const data = [
 			{
 				title: 'the first rule',
-				content: 'the first rule of the FBI-schools: you dont talk about the FBI-schools',
+				content:
+					'the first rule of the FBI-schools: you dont talk about the FBI-schools',
 			},
 			{
 				title: 'the second rule',
-				content: 'the second rule of the FBI-schools: you dont talk about the FBI-schools',
+				content:
+					'the second rule of the FBI-schools: you dont talk about the FBI-schools',
 			},
 			{
 				title: 'the third rule',
-				content: 'the third rule of the FBI-schools: these strings are actually used as links',
+				content:
+					'the third rule of the FBI-schools: these strings are actually used as links',
 			},
 		];
-		const helpDocument = await helpDocumentsModel.create({ schoolGroupId, data });
+		const helpDocument = await helpDocumentsModel.create({
+			schoolGroupId,
+			data,
+		});
 
 		const response = await helpDocumentService.find(params);
 		expect(response).to.not.equal(undefined);
