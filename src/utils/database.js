@@ -9,9 +9,6 @@ const logger = require('../logger');
 const {
 	NODE_ENV,
 	MONGOOSE_CONNECTION_POOL_SIZE,
-	DB_URL,
-	DB_USERNAME,
-	DB_PASSWORD,
 	ENVIRONMENTS,
 } = require('../../config/globals');
 
@@ -55,9 +52,13 @@ function addAuthenticationToMongooseOptions(
 
 function getConnectionOptions() {
 	return {
-		url: DB_URL,
-		username: DB_USERNAME,
-		password: DB_PASSWORD,
+		url: Configuration.get('DB_URL'),
+		username: Configuration.has('DB_USERNAME')
+			? Configuration.get('DB_USERNAME')
+			: false,
+		password: Configuration.has('DB_PASSWORD')
+			? Configuration.get('DB_PASSWORD')
+			: false,
 	};
 }
 

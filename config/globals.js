@@ -23,19 +23,7 @@ switch (NODE_ENV) {
 		defaultLogLevel = 'debug';
 }
 
-let defaultDbUrl = null;
-switch (NODE_ENV) {
-	case ENVIRONMENTS.TEST:
-		defaultDbUrl = 'mongodb://127.0.0.1:27017/schulcloud-test';
-		break;
-	default:
-		defaultDbUrl = 'mongodb://127.0.0.1:27017/schulcloud';
-}
-
 const globals = {
-	DB_URL: process.env.DB_URL || defaultDbUrl,
-	DB_USERNAME: process.env.DB_USERNAME,
-	DB_PASSWORD: process.env.DB_PASSWORD,
 	DOCUMENT_BASE_DIR:
 		process.env.DOCUMENT_BASE_DIR ||
 		'https://s3.hidrive.strato.com/schul-cloud-hpi/',

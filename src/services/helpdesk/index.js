@@ -5,10 +5,10 @@ const logger = require('../../logger');
 const {} = require('../../../config/globals');
 const { Configuration } = require('@schul-cloud/commons');
 
-if (!Configuration.has('BODYPARSER_JSON_LIMIT')) {
+if (!Configuration.has('BODYPARSER_JSON_LIMIT_HELPDESK_MB')) {
 	/* eslint-disable-next-line  */
 	logger.warning(
-		`please set the environment variable BODYPARSER_JSON_LIMIT to min. '${Math.ceil(
+		`please set the environment variable BODYPARSER_JSON_LIMIT_HELPDESK_MB to min. '${Math.ceil(
 			1.36 *
 				(Configuration.get(
 					'MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE',
@@ -16,7 +16,7 @@ if (!Configuration.has('BODYPARSER_JSON_LIMIT')) {
 					1024 /
 					1024),
 		)}mb' for helpdesk to work correctly! (Currently: ${Configuration.get(
-			'BODYPARSER_JSON_LIMIT',
+			'BODYPARSER_JSON_LIMIT_HELPDESK_MB',
 		)})`,
 	);
 }

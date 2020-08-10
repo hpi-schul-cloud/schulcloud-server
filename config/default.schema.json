@@ -6,6 +6,20 @@
 			"$ref": "#/definitions/non-empty-string",
 			"description": "reference this schema in related json files to apply auto correction by setting this property"
 		},
+		"DB_URL": {
+			"type": "string",
+			"default": "mongodb://127.0.0.1:27017/schulcloud",
+			"format": "uri",
+			"description": "Required mongo connection string"
+		},
+		"DB_USERNAME": {
+			"type":"string",
+			"description": "Optional, mongo connection username"
+		},
+		"DB_PASSWORD": {
+			"type":"string",
+			"description": "Optional, mongo connection password"
+		},
 		"DATABASE_AUDIT": {
 			"type": "boolean",
 			"default": false,
@@ -18,13 +32,13 @@
 			"description": "E-Mail maximum attachment size (default is 5MB)"
 		},
 		"BODYPARSER_JSON_LIMIT_HELPDESK_MB": {
-			"$ref": "#/definitions/non-empty-string",
+			"type":"string",
 			"pattern": "^\\d+mb$",
 			"default": "20mb",
 			"description": "Request body limit used by body-parser"
 		},
 		"BODYPARSER_JSON_LIMIT_DEFAULT_MB": {
-			"$ref": "#/definitions/non-empty-string",
+			"type":"string",
 			"pattern": "^\\d+mb$",
 			"default": "10mb",
 			"description": "Request body limit used by body-parser"
@@ -50,13 +64,13 @@
 			"description": "The API Key that the Sync Cron-Job uses to authenticate itself.This should be removed with SC-3387"
 		},
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": {
-			"$ref": "#/definitions/non-empty-string",
+			"type": "string",
 			"default": "enabled",
 			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "defines wheter external team invitation shows teachers from different schools or not. if enabled system wide there are options general enabled or opt-in/-out by user required."
 		},
 		"STUDENT_TEAM_CREATION": {
-			"$ref": "#/definitions/non-empty-string",
+			"type": "string",
 			"default": "opt-out",
 			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "defines wheter students may create teams or not. if enabled system wide there are options general enabled or opt-in/-out by school admin required."
@@ -205,7 +219,7 @@
 			"description": "Name of queue used to publish synchronization request."
 		},
 		"HOST": {
-			"$ref": "#/definitions/non-empty-string",
+			"type": "string",
 			"format": "uri",
 			"default": "http://localhost:3100",
 			"pattern": ".*(?<!/)$",
@@ -339,7 +353,7 @@
 			"description": "A string that contains recievers of the daily stat and other mails. Can contain mutliple mails, seperated by comma"
 		},
 		"LERNSTORE_MODE": {
-			"$ref": "#/definitions/non-empty-string",
+			"type": "string",
 			"enum": ["DISABLED", "LEGACY", "EDUSHARING"],
 			"default": "DISABLED",
 			"description": "Defines the backend for the lernstore, the client just may be enabled or disabled only, if this is not disabled in the server."
