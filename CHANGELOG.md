@@ -20,8 +20,38 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [23.6.3] - 2020-07-28
 
+### Added
+
+- SC-5754 Added isExternal attribute to school model. If ldapSchoolIdentifier or source is defined, isExternal will be set to true
+otherwise, if none of them are defined it wil be set to false.
+
+### Changed
+
+- SC-4289 Changed aggregations in admin tables, classes are now taken only from current year or max grade level, and are sorted
+by numeric ordering.
+
+### Added
+
+- SC-4520 created a new Service called Activation Service; with which jobs can be defined and are 
+only executed when an activation link (activation code) is confirmed (e.g.: change of e-mail address/username)
+Also added a sub-service for changing email/username in Activation Service
+
+### Fixed
+
+- SC-5250: Fixes the CSV-Import, if there are whitespaces in the columnnames
+- SC-5686: only users with the team permission "RENAME_TEAM" can execute the patch method in teams route
+
+### Changed
+
+- SC-5542: Added an after hook for AdminUsers find method which formats birthday date to DD.MM.YYYY format.
+
+### Security
+
+## [23.6.3] - 2020-07-28
+
 ### Fixed - 23.6.3
 - SC-5416: Enable maintenance Mode for LDAP Schools and change the currentSchoolYear for non-LDAP Schools
+
 
 ## [23.6.4] - 2020-07-29
 ### Fixed - 23.6.4
@@ -53,27 +83,25 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-4142: Added indexes on TSP sync related attributes in user and school schema.
 - SC-4142: Adds info about unchanged entities to TSP sync statistics
 
-
 ## [23.5.4] - 2020-07-08
-### Added
+
+### Added - 23.5.4
+
 - SC-2714 Added the federal state "Internationale Schule"
 
 
 ## [23.5.0] - 2020-06-15
 
 ### Added in 23.5.0
+
 - SC-4192 add tests that ensure classes on other schools cant be manipulated
 
 
 ### Fixed in 23.5.0
 
 ### Changed in 23.5.0
+
 - SC-4957 user.ldapId and user.ldapDn are now indexed to improve performance
-
-### Security in 23.5.0
-
-### Removed in 23.5.0
-
 
 
 ## [23.4.7] - 2020-07-01
@@ -98,26 +126,28 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [23.4.0-nbc] - 2020-06-11
 
-### Added
+### Added - 23.4.0-nbc
+
 - SC-4577 extend consentversions with school specific privacy policy, which can be added by the school admin
 
 
 ## [23.2.4] - 2020-06-05
 
-### Fixed
+### Fixed - 23.2.4
 
 - SC-4876 soften sanitization to allow editor actions to be persisted correctly
 
 ## [23.2.1] - 2020-06-04
 
-### Security
+### Security - 23.2.1
 
 - SC-4720 improve importhashes for registrationlinks
 
 ## [23.2.0] - 2020-06-03
 
-### Security
-- SC-4506 Secure Find User Route. Access user list by students is allowed only if they are eligible to create teams.   
+### Security - 23.2.0
+
+- SC-4506 Secure Find User Route. Access user list by students is allowed only if they are eligible to create teams.
 - SC-4506 Secure Get User Route. Read user details may only users with STUDENT_LIST or TEACHER_LIST permissions
 
 ## [23.1.4] - 2020-05-29
