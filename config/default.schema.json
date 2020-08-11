@@ -22,6 +22,11 @@
 			"default": "example",
 			"description": "The API Key that the Sync Cron-Job uses to authenticate itself.This should be removed with SC-3387"
 		},
+		"SILENT_ERROR_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Appends the silent error to the header"
+		},
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": {
 			"type": "string",
 			"default": "enabled",
@@ -277,22 +282,22 @@
 		},
 		"ETHERPAD_API_PATH": {
 			"type": "string",
-			"default":"/api/1",
+			"default": "/api/1",
 			"description": "The etherpad api path."
 		},
 		"ETHERPAD_URI": {
 			"type": "string",
-			"default":"https://schul-cloud.org/etherpad/api/1",
+			"default": "https://schul-cloud.org/etherpad/api/1",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_URI": {
 			"type": "string",
-			"default":"https://etherpad.schul-cloud.org/p",
+			"default": "https://etherpad.schul-cloud.org/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_NEW_PAD_URI": {
 			"type": "string",
-			"default":"https://schul-cloud.org/etherpad/p",
+			"default": "https://schul-cloud.org/etherpad/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_DOMAIN": {
@@ -309,7 +314,7 @@
 			"type": "integer",
 			"default": 7200,
 			"description": "If Session Valid time is smaller than this, a new session is created on request."
-    },
+		},
 		"SKIP_CONDITIONS_CONSENT": {
 			"type": "string",
 			"default": "",
