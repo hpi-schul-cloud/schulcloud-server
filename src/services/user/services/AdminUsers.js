@@ -75,8 +75,9 @@ class AdminUsers {
 				collation: { locale: 'de', caseLevel: true },
 			}).exec((err, res) => {
 				if (err) reject(err);
-				else if (_id) resolve(res[0].data[0] || {});
 				else resolve(res[0]);
+				// else if (_id) resolve(res[0].data[0] || {});
+				// else resolve(res[0]);
 			}));
 		} catch (err) {
 			if ((err || {}).code === 403) {

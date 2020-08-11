@@ -404,7 +404,7 @@ const createMultiDocumentAggregation = ({
 	stageSimpleProject(aggregation, select);
 	// }
 
-	stageFormatWithTotal(aggregation, limit, skip);
+	if (!match._id) stageFormatWithTotal(aggregation, limit, skip);
 	return aggregation;
 };
 
