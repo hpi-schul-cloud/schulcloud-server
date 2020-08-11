@@ -15,7 +15,11 @@ const { equal: equalIds } = require('../helper/compare').ObjectId;
 const logger = require('../logger');
 const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 const { isDisposableEmail } = require('../utils/disposableEmail');
+const { getRestrictPopulatesHook, preventPopulate } = require('./restrictPopulate');
 // Add any common hooks you want to share across services in here.
+
+exports.preventPopulate = preventPopulate;
+exports.getRestrictPopulatesHook = getRestrictPopulatesHook;
 
 // don't require authentication for internal requests
 exports.ifNotLocal = function ifNotLocal(hookForRemoteRequests) {
