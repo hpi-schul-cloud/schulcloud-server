@@ -12,4 +12,12 @@
 	},
 	"type": "itslearning",
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "0000d186816abba584714c92"
+	},
+	"type": "local",
+	"__v": 0
 }]
+
