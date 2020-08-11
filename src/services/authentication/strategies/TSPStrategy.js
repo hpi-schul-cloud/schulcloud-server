@@ -7,6 +7,7 @@ const {
 	decryptToken,
 	createUserAndAccount,
 	createTSPConsent,
+	addDummyBirthday,
 	findSchool,
 	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
 	config: TSP_CONFIG,
@@ -130,6 +131,7 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 			);
 
 			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
+				await addDummyBirthday(app, user);
 				await createTSPConsent(app, user);
 			}
 		} else if (Array.isArray(roles)) {

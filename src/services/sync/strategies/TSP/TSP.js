@@ -120,6 +120,15 @@ const createTSPConsent = async (app, student) => {
 };
 
 /**
+ * Add a dummy birthday if the user is created via TSP sync.
+ * In this case, the consent process was already handled from the TSP side and the birthday is not needed.
+ * @param {Object} app the Feathers app
+ * @param {User} student the student created via TSP sync
+ * @async
+ */
+const addDummyBirthday = async (app, student) => app.service('users').patch(student._id, { birthday: new Date() });
+
+/**
  * Finds and returns the school identified by the given identifier
  * @async
  * @param {Object} app Feathers app
@@ -243,6 +252,7 @@ module.exports = {
 	getEmail,
 	createUserAndAccount,
 	createTSPConsent,
+	addDummyBirthday,
 	findSchool,
 	encryptToken,
 	decryptToken,
