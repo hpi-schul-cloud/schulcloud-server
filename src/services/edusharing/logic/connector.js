@@ -107,7 +107,7 @@ class EduSharingConnector {
 				const eduResponse = await request(options);
 				return JSON.parse(eduResponse);
 			} catch (e) {
-				if (e.statusCode === 401) {
+				if (e.statusCode >= 400 && e.statusCode < 500) {
 					logger.info(`Trying to renew Edu Sharing connection. Attempt ${retry}`);
 					await this.login();
 				} else {
