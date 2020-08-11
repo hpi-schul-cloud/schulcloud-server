@@ -1,12 +1,17 @@
 const { authenticate } = require('@feathersjs/authentication');
 const nanoid = require('nanoid');
 const {
+	iff, isProvider,
+} = require('feathers-hooks-common');
+const {
 	injectUserId,
 	restrictToUsersOwnLessons,
 	hasPermission,
 	ifNotLocal,
 	permitGroupOperation,
 	checkCorrectCourseOrTeamId,
+	getRestrictPopulatesHook,
+	preventPopulate,
 } = require('../../../hooks');
 const lesson = require('../model');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
@@ -54,14 +59,25 @@ const mapUsers = (context) => {
 	return context;
 };
 
+const populateWhitelist = {
+	materialIds: [
+		'_id', 'originId', 'title', 'client', 'url', 'license', 'description',
+		'contentType', 'lastModified', 'language', 'subjects', 'targetGroups',
+		'target', 'tags', 'relatedResources', 'popularity', 'thumbnailUrl',
+		'editorsPick', 'createdAt',
+	],
+};
+
 exports.before = () => ({
 	all: [authenticate('jwt'), mapUsers],
 	find: [
 		hasPermission('TOPIC_VIEW'),
+		iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
 		ifNotLocal(restrictToUsersOwnLessons),
 	],
 	get: [
 		hasPermission('TOPIC_VIEW'),
+		iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
 		ifNotLocal(restrictToUsersOwnLessons),
 	],
 	create: [
@@ -69,18 +85,22 @@ exports.before = () => ({
 		injectUserId,
 		checkCorrectCourseOrTeamId,
 		setPosition,
+		iff(isProvider('external'), preventPopulate),
 	],
 	update: [
+		iff(isProvider('external'), preventPopulate),
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 	],
 	patch: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 		permitGroupOperation,
 		ifNotLocal(checkCorrectCourseOrTeamId),
+		iff(isProvider('external'), preventPopulate),
 	],
 	remove: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', false),
 		permitGroupOperation,
+		iff(isProvider('external'), preventPopulate),
 	],
 });
 
