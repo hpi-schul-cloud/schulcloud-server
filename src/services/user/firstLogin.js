@@ -1,6 +1,5 @@
 const { Configuration } = require('@schul-cloud/commons');
 const constants = require('../../utils/constants');
-const { passwordsMatch } = require('../../utils/passwordHelpers');
 
 /* eslint-disable prefer-promise-reject-errors */ // fixmer this should be removed
 const createParent = (data, params, user, app) => app.service('/registrationPins/')
@@ -37,7 +36,7 @@ const getAutomaticConsent = () => ({
 });
 
 const firstLogin = async (data, params, app) => {
-	if (!passwordsMatch(data['password-1'], data['password-2'])) {
+	if (data['password-1'] !== data['password-2']) {
 		return Promise.reject('Die neuen Passwörter stimmen nicht überein.');
 	}
 

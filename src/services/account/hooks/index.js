@@ -1,7 +1,6 @@
 const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 const bcrypt = require('bcryptjs');
 const { ObjectId } = require('mongoose').Types;
-const { checkPasswordStrength } = require('../../../utils/passwordHelpers');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const globalHooks = require('../../../hooks');
@@ -61,7 +60,8 @@ const validatePassword = (hook) => {
 	const { password } = hook.data;
 
 	// Check against Pattern which is also used in Frontend
-	const patternResult = checkPasswordStrength(password);
+	const pattern = new RegExp('^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z])(?=.*[\\-_!<>§$%&\\/()=?\\\\;:,.#+*~\']).{8,255}$');
+	const patternResult = pattern.test(password);
 
 	// only check result if also a password was really given
 	if (!patternResult && password) {
@@ -85,7 +85,7 @@ const validatePassword = (hook) => {
 			const editsOwnAccount = equalIds(hook.id, hook.params.account._id);
 			// Check if it is firstLogin
 			const userDidFirstLogin = (user.preferences && user.preferences.firstLogin);
-			const { userForcedToChangePassword } = hook.params;
+
 			if (
 				(!userDidFirstLogin && editsOwnAccount)
 				|| (
@@ -97,7 +97,6 @@ const validatePassword = (hook) => {
 						)
 					)
 				)
-				|| userForcedToChangePassword
 			) {
 				return hook;
 			}
