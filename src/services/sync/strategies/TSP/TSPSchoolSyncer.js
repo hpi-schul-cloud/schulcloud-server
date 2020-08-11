@@ -2,6 +2,7 @@ const { mix } = require('mixwith');
 
 const Syncer = require('../Syncer');
 const ClassImporter = require('../mixins/ClassImporter');
+const { equal: sameObjectId } = require('../../../../helper/compare').ObjectId;
 
 const {
 	TspApi,
@@ -10,6 +11,13 @@ const {
 	createUserAndAccount,
 	createTSPConsent,
 } = require('./TSP');
+
+const {
+	deleteUser,
+	grantAccessToPrivateFiles,
+	grantAccessToSharedFiles,
+	invalidateUser,
+} = require('./SchoolChange');
 
 const SYNCER_TARGET = 'tsp-school';
 
@@ -339,7 +347,24 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		query[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`] = tspStudent.schuelerUid;
 		const users = await this.app.service('users').find({ query });
 		if (users.total !== 0) {
-			return this.updateStudent(users.data[0], tspStudent);
+			const oldUser = users.data[0];
+			if (sameObjectId(oldUser.schoolId, school._id)) {
+				// school change detected
+				try {
+					await invalidateUser(this.app, oldUser);
+					const newUser = await this.createStudent(tspStudent, school, systemId);
+					await Promise.all([
+						grantAccessToPrivateFiles(this.app, oldUser, newUser),
+						grantAccessToSharedFiles(this.app, oldUser, newUser),
+					]);
+					await deleteUser(this.app, oldUser);
+					return newUser;
+				} catch (err) {
+					// rollback?
+					return oldUser;
+				}
+			}
+			return this.updateStudent(oldUser, tspStudent);
 		}
 		return this.createStudent(tspStudent, school, systemId);
 	}
