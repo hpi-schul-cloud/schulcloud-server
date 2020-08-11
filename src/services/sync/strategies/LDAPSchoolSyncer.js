@@ -35,20 +35,19 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	/**
      * @see {Syncer#steps}
      */
-	steps() {
-		return super.steps()
-			.then((_) => this.getUserData())
-			.then((_) => this.getClassData())
-			.then((_) => this.stats);
+	async steps() {
+		await super.steps();
+		await this.getUserData();
+		await this.getClassData();
+		return this.stats;
 	}
 
 	async getUserData() {
 		this.logInfo('Getting users...');
 		const ldapUsers = await this.app.service('ldap').getUsers(this.system.ldapConfig, this.school);
 		this.logInfo(`Creating and updating ${ldapUsers.length} users...`);
-		const jobs = ldapUsers.map((idmUser) => async () => this.createOrUpdateUser(idmUser, this.school));
-		for (const job of jobs) {
-			await job();
+		for (const ldapUser of ldapUsers) {
+			await this.createOrUpdateUser(ldapUser, this.school);
 		}
 
 		this.logInfo(`Created ${this.stats.users.created} users, `
@@ -83,6 +82,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 				})
 				.catch((err) => {
 					this.stats.users.errors += 1;
+					this.stats.errors.push(err);
 					this.logError('User creation error', err);
 					return {};
 				});
@@ -146,16 +146,16 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	}
 
 	async createClassesFromLdapData(data, school) {
-		const jobs = data.map((ldapClass) => async () => {
+		for (const ldapClass of data) {
 			try {
 				const klass = await this.getOrCreateClassFromLdapData(ldapClass, school);
 				await this.populateClassUsers(ldapClass, klass, school);
 			} catch (err) {
 				this.stats.classes.errors += 1;
+				this.stats.errors.push(err);
 				this.logError('Cannot create synced class', { error: err, data });
 			}
-		});
-		for (const job of jobs) await job();
+		}
 	}
 
 	async getOrCreateClassFromLdapData(data, school) {
