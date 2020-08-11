@@ -65,8 +65,7 @@ const bruteForceReset = async (context) => {
 };
 
 const injectUserId = async (context) => {
-	const { strategy } = context.data;
-	const systemId = (strategy === 'local') ? undefined : context.data.systemId;
+	const { systemId, strategy } = context.data;
 
 	if (strategy !== 'jwt') {
 		return context.app.service('/accounts').find({
