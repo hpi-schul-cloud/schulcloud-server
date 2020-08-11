@@ -75,11 +75,10 @@ class AdminUsers {
 				collation: { locale: 'de', caseLevel: true },
 			}).exec((err, res) => {
 				if (err) reject(err);
-				else resolve(res[0]);
-				// else if (_id) resolve(res[0].data[0] || {});
-				// else resolve(res[0]);
+				else resolve(res[0] || {});
 			}));
 		} catch (err) {
+			logger.error('------------------------------Spezial error:', err);
 			if ((err || {}).code === 403) {
 				throw new Forbidden('You have not the permission to execute this.', err);
 			}
