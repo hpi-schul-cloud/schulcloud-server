@@ -134,7 +134,7 @@ then
 	# no pull request, call inform. Discard if event
 	# is related to a pull request.
 	echo "Event detected on branch master. Event is no Pull Request. Informing team."
-  	buildandpush
+	buildandpush
 	inform
 elif [[ "$TRAVIS_BRANCH" = "develop" ]]
 then
@@ -155,7 +155,7 @@ then
 	# and deploy to according hotfix environment
 	TEAM="$(cut -d'/' -f2 <<< $TRAVIS_BRANCH)"
 	if [[ "$TEAM" -gt 0 && "$TEAM" -lt 8 ]]; then
-		echo "Event detected on branch hotfix/$TEAM/... . Attempting to deploy to hotfix environment $TEAM..."
+    	echo "Event detected on branch hotfix/$TEAM/... . Attempting to deploy to hotfix environment $TEAM..."
 		buildandpush
 		deploytohotfix $TEAM
 		inform_hotfix $TEAM

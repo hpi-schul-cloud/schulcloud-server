@@ -51,7 +51,8 @@ describe('school service', () => {
 				account: undefined,
 			}
 			const result = await schoolService.find(params);
-			const expectedFields = ['purpose', 'name', '_id', 'id', 'years', 'isTeamCreationByStudentsEnabled'];
+			const expectedFields = ['purpose', 'name', '_id', 'id',
+				'systems', 'years', 'isTeamCreationByStudentsEnabled'];
 			const notExpectedFields = ['fileStorageType', 'documentBaseDir', 'inMaintenance', 'currentYear',
 				'federalState'];
 			result.data.forEach((school) => {
@@ -131,6 +132,46 @@ describe('school service', () => {
 			expect(foundYear.length, 'the auto added year exists in years').to.be.equal(1);
 			// here we could test, we have defaultYear added but however we just need any year
 			// to be set and this should not test year logic
+		});
+
+		it('isExternal attribute is true when ldapSchoolIdentifier is not undefined', async () => {
+			const serviceCreatedSchool = await schoolService.create(
+				{ ...sampleSchoolData, ldapSchoolIdentifier: 'testId' },
+			);
+			const { _id: schoolId } = serviceCreatedSchool;
+			createdSchoolIds.push(schoolId);
+			const school = await schoolService.get(schoolId);
+			expect(school.isExternal).to.be.true;
+		});
+
+		it('isExternal attribute is true when source is not undefined', async () => {
+			const serviceCreatedSchool = await schoolService.create(
+				{ ...sampleSchoolData, source: 'testSource' },
+			);
+			const { _id: schoolId } = serviceCreatedSchool;
+			createdSchoolIds.push(schoolId);
+			const school = await schoolService.get(schoolId);
+			expect(school.isExternal).to.be.true;
+		});
+
+		it('isExternal attribute is true when ldapSchoolIdentifier and source are defined', async () => {
+			const serviceCreatedSchool = await schoolService.create(
+				{ ...sampleSchoolData, ldapSchoolIdentifier: 'testId', source: 'testSource' },
+			);
+			const { _id: schoolId } = serviceCreatedSchool;
+			createdSchoolIds.push(schoolId);
+			const school = await schoolService.get(schoolId);
+			expect(school.isExternal).to.be.true;
+		});
+
+		it('isExternal attribute is false when source is undefined', async () => {
+			const serviceCreatedSchool = await schoolService.create(
+				{ ...sampleSchoolData },
+			);
+			const { _id: schoolId } = serviceCreatedSchool;
+			createdSchoolIds.push(schoolId);
+			const school = await schoolService.get(schoolId);
+			expect(school.isExternal).to.be.false;
 		});
 	});
 
