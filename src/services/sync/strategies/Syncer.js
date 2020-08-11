@@ -54,16 +54,15 @@ class Syncer {
 	sync() {
 		this.logInfo('Started syncing');
 		return this.steps()
-			.then((stats) => {
-				this.stats.success = this.stats.errors.length === 0;
-				const aggregated = Syncer.aggregateStats(stats);
-				this.logInfo('Finished syncing', aggregated);
-				return Promise.resolve(this.stats);
-			})
 			.catch((err) => {
-				this.stats.success = false;
-				this.logError('Error while syncing', err);
-				return Promise.resolve(this.stats);
+				this.logError('Error while syncing', { error: err });
+				this.stats.errors.push(err);
+			})
+			.then(() => {
+				this.stats.success = this.stats.errors.length === 0;
+				const aggregated = Syncer.aggregateStats(this.stats);
+				this.logInfo('Finished syncing', aggregated);
+				return this.stats;
 			});
 	}
 
@@ -84,15 +83,16 @@ class Syncer {
 	static aggregateStats(stats) {
 		if (Array.isArray(stats)) {
 			return stats.reduce((agg, cur) => {
-				cur = this.aggregateStats(cur);
-				agg.successful += cur.successful;
-				agg.failed += cur.failed;
-				return agg;
+				const current = this.aggregateStats(cur);
+				return {
+					successful: agg.successful + current.successful,
+					failed: agg.failed + current.failed,
+				};
 			}, { successful: 0, failed: 0 });
 		}
 		return {
-			successful: stats && stats.success === true ? 1 : 0,
-			failed: stats && stats.success === false ? 1 : 0,
+			successful: (stats && stats.success === true) ? 1 : 0,
+			failed: (stats && stats.success !== true) ? 1 : 0,
 		};
 	}
 
