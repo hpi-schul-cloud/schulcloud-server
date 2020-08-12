@@ -24,6 +24,21 @@ const getCurrentYear = (ref, schoolId) => ref.app.service('schools')
 	})
 	.then(({ currentYear }) => currentYear.toString());
 
+
+/**
+ * Secure request with conditions, should be used for create, update, patch and remove
+ * @param {*} params
+ */
+const createRestrictionQuery = async (params) => {
+	const { account } = params;
+	const { schoolId } = getCurrentUserInfo(account.userId.toString());
+	return ({
+		query: {
+			schoolId,
+		},
+	});
+};
+
 class AdminUsers {
 	constructor(roleName) {
 		this.roleName = roleName;
@@ -101,24 +116,33 @@ class AdminUsers {
 		}
 	}
 
+
 	async create(data, params) {
-		return this.app.service('usersModel').create(data);
+		return this.app.service('usersModel').create(data, createRestrictionQuery(params));
 	}
 
 	async update(id, data, params) {
-		return this.app.service('usersModel').update(id, data);
+		return this.app.service('usersModel').update(id, data, createRestrictionQuery(params));
 	}
 
 	async patch(id, data, params) {
-		return this.app.service('usersModel').patch(id, data);
+		return this.app.service('usersModel').patch(id, data, createRestrictionQuery(params));
 	}
 
 	async remove(id, params) {
 		const { _ids } = params.query;
+		const generatetParams = createRestrictionQuery(params);
 		if (id) {
-			return this.app.service('usersModel').remove(id);
+			return this.app.service('usersModel').remove(id, generatetParams);
 		}
-		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
+		return this.app.service('usersModel')
+			.remove(null, {
+				...generatetParams,
+				query: {
+					_id: { $in: _ids },
+					...generatetParams.query,
+				},
+			});
 	}
 
 	async setup(app) {
