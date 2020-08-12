@@ -39,6 +39,12 @@ class AdminUsers {
 	}
 
 	async getUsers(_id, params) {
+		if (!this.role) {
+			this.role = (await this.app.service('roles').find({
+				query: { name: this.roleName },
+			})).data[0];
+		}
+
 		try {
 			const { query: clientQuery = {}, account } = params;
 			const currentUserId = account.userId.toString();
