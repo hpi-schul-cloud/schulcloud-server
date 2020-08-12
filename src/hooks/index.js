@@ -1,11 +1,14 @@
 /* eslint-disable no-param-reassign */
 const {
 	Forbidden,
+	GeneralError,
 	NotFound,
 	BadRequest,
 	TypeError,
 } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
+
+const { v4: uuidv4 } = require('uuid');
 
 const { Configuration } = require('@schul-cloud/commons');
 const _ = require('lodash');
@@ -112,30 +115,37 @@ exports.hasSchoolPermission = (inputPermission) => async (context) => {
 	if (!account && !account.userId) {
 		throw new Forbidden('Cannot read account data');
 	}
-	const user = await app.service('usersModel').get(account.userId, {
-		query: {
-			$populate: ['roles', 'schoolId'],
-		},
-	});
+	try {
+		const user = await app.service('usersModel').get(account.userId, {
+			query: {
+				$populate: ['roles', 'schoolId'],
+			},
+		});
 
-	const { schoolId: school } = user;
+		const { schoolId: school } = user;
 
-	const results = await Promise.allSettled(user.roles.map(async (role) => {
-		const { permissions = {} } = school;
-		// If there are no special school permissions, continue with normal permission check
-		if (!permissions[role.name]
+		const results = await Promise.allSettled(user.roles.map(async (role) => {
+			const { permissions = {} } = school;
+			// If there are no special school permissions, continue with normal permission check
+			if (!permissions[role.name]
 				|| !Object.prototype.hasOwnProperty.call(permissions[role.name], inputPermission)) {
-			return hasPermission(inputPermission)(context);
-		}
-		// Otherwise check for user's special school permission
-		if (permissions[role.name][inputPermission]) {
+				return hasPermission(inputPermission)(context);
+			}
+			// Otherwise check for user's special school permission
+			if (permissions[role.name][inputPermission]) {
+				return context;
+			}
+			throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
+		}));
+		if (results.some((r) => r.status === 'fulfilled')) {
 			return context;
 		}
-		throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
-	}));
-
-	if (results.some((r) => r.status === 'fulfilled')) {
-		return context;
+	} catch (err) {
+		const uuid = uuidv4();
+		if (err.code >= 500) {
+			throw new GeneralError(uuid);
+		}
+		logger.error(uuid, err);
 	}
 
 	throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
@@ -233,7 +243,7 @@ const deepValue = (obj, path, newValue) => {
 };
 
 // resolves IDs of objects from serviceName specified by *key* instead of their *_id*
-exports.resolveToIds = (serviceName, path, key, context) => {
+exports.resolveToIds = (serviceName, path, key) => (context) => {
 	// get ids from a probably really deep nested path
 	const service = context.app.service(serviceName);
 
