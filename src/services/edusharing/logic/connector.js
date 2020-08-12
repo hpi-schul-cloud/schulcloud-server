@@ -1,7 +1,7 @@
 const REQUEST_TIMEOUT = 8000; // ms
 const request = require('request-promise-native');
 const { Configuration } = require('@schul-cloud/commons');
-const { GeneralError } = require('@feathersjs/errors');
+const { GeneralError, NotFound } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 
 const ES_PATH = {
@@ -102,14 +102,17 @@ class EduSharingConnector {
 	async requestRepeater(options) {
 		let retry = 0;
 		const errors = [];
+		const retryErrors = [401, 403];
 		do {
 			try {
 				const eduResponse = await request(options);
 				return JSON.parse(eduResponse);
 			} catch (e) {
-				if (e.statusCode >= 400 && e.statusCode < 500) {
+				if (retryErrors.indexOf(e.statusCode) >= 0) {
 					logger.info(`Trying to renew Edu Sharing connection. Attempt ${retry}`);
 					await this.login();
+				} else if (e.statusCode === 404) {
+					throw new NotFound('Edu Sharing returned no results');
 				} else {
 					logger.error(e);
 					errors.push(e);
