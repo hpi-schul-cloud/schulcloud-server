@@ -1,10 +1,17 @@
 const { authenticate } = require('@feathersjs/authentication');
-const globalHooks = require('../../../hooks');
+const {
+	iff, isProvider,
+} = require('feathers-hooks-common');
+const {
+	ifNotLocal, restrictToCurrentSchool, restrictToUsersOwnCourses, hasPermission,
+	getRestrictPopulatesHook, mapPaginationQuery, permitGroupOperation,
+	addCollation, preventPopulate, injectUserId, denyIfNotCurrentSchool,
+} = require('../../../hooks');
 const { modelServices: { prepareInternalParams } } = require('../../../utils');
 
 
-const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
-const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
+const restrictToCurrentSchoolIfNotLocal = ifNotLocal(restrictToCurrentSchool);
+const restrictToUsersOwnCoursesIfNotLocal = ifNotLocal(restrictToUsersOwnCourses);
 
 const {
 	addWholeClassToCourse,
@@ -58,55 +65,70 @@ const courseService = new Courses({
 	},
 });
 
+const populateWhitelist = {
+	classIds: ['_id', 'displayName'],
+	userIds: ['_id', 'firstName', 'lastName', 'fullName'],
+	teacherIds: ['_id', 'firstName', 'lastName'],
+};
+
 const courseHooks = {
 	before: {
 		all: [
 			authenticate('jwt'),
 		],
 		find: [
-			globalHooks.hasPermission('COURSE_VIEW'),
-			restrictToCurrentSchool,
-			restrictToUsersOwnCourses,
-			globalHooks.mapPaginationQuery,
-			globalHooks.addCollation,
+			hasPermission('COURSE_VIEW'),
+			restrictToCurrentSchoolIfNotLocal,
+			restrictToUsersOwnCoursesIfNotLocal,
+			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
+			mapPaginationQuery,
+			addCollation,
 		],
-		get: [courseInviteHook],
+		get: [
+			courseInviteHook,
+			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
+		],
 		create: [
-			globalHooks.injectUserId,
-			globalHooks.hasPermission('COURSE_CREATE'),
+			injectUserId,
+			hasPermission('COURSE_CREATE'),
 			removeSubstitutionDuplicates,
-			restrictToCurrentSchool,
+			restrictToCurrentSchoolIfNotLocal,
+			iff(isProvider('external'), preventPopulate),
 		],
 		update: [
 			checkScopePermissions(['COURSE_EDIT']),
-			restrictToCurrentSchool,
-			restrictToUsersOwnCourses,
+			restrictToCurrentSchoolIfNotLocal,
+			restrictToUsersOwnCoursesIfNotLocal,
 			restrictChangesToArchivedCourse,
+			iff(isProvider('external'), preventPopulate),
 		],
 		patch: [
 			patchPermissionHook,
-			restrictToCurrentSchool,
+			restrictToCurrentSchoolIfNotLocal,
 			restrictChangesToArchivedCourse,
-			globalHooks.permitGroupOperation,
+			permitGroupOperation,
 			removeSubstitutionDuplicates,
 			deleteWholeClassFromCourse,
+			iff(isProvider('external'), preventPopulate),
 		],
 		remove: [
 			checkScopePermissions(['COURSE_DELETE']),
-			restrictToCurrentSchool,
-			restrictToUsersOwnCourses,
-			globalHooks.permitGroupOperation,
+			restrictToCurrentSchoolIfNotLocal,
+			restrictToUsersOwnCoursesIfNotLocal,
+			permitGroupOperation,
+			iff(isProvider('external'), preventPopulate),
 		],
 	},
 	after: {
 		all: [],
 		find: [],
 		get: [
-			globalHooks.ifNotLocal(
-				globalHooks.denyIfNotCurrentSchool({
+			ifNotLocal(
+				denyIfNotCurrentSchool({
 					errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
 				}),
-			)],
+			),
+		],
 		create: [addWholeClassToCourse],
 		update: [],
 		patch: [addWholeClassToCourse],

@@ -58,6 +58,8 @@ const globals = {
 	NODE_ENV,
 	ENVIRONMENTS,
 	LOG_LEVEL: process.env.LOG_LEVEL || defaultLogLevel,
+	/** HOST=https://schul-cloud.org in bosscloud, see misuse in todo */
+	HOST: process.env.HOST || 'localhost:3100', // todo this is client url in config
 	SYSTEM_LOG_LEVEL: process.env.SYSTEM_LOG_LEVEL || 'sendRequests',
 	// secrets smtp
 	SMTP: process.env.SMTP,

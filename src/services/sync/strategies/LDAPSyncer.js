@@ -24,29 +24,25 @@ class LDAPSyncer extends SystemSyncer {
 		await super.steps();
 		const schools = await this.getSchools();
 		const activeSchools = schools.filter((s) => !s.inMaintenance);
-		const jobs = activeSchools.map((school) => async () => (
-			new LDAPSchoolSyncer(
+		for (const school of activeSchools) {
+			const stats = await (new LDAPSchoolSyncer(
 				this.app,
-				this.getSchoolStats(school),
+				{},
 				this.logger,
 				this.system,
 				school,
-			)).sync());
-		for (const job of jobs) {
-			await job();
+			)).sync();
+			if (stats.success !== true) {
+				this.stats.errors.push(`LDAP sync failed for school "${school.name}" (${school._id}).`);
+			}
+			this.stats.schools[school.ldapSchoolIdentifier] = stats;
 		}
+		return this.stats;
 	}
 
 	getSchools() {
 		return this.app.service('ldap').getSchools(this.system.ldapConfig)
 			.then((data) => this.createSchoolsFromLdapData(data));
-	}
-
-	getSchoolStats(school) {
-		if (!this.stats.schools[school.ldapSchoolIdentifier]) {
-			this.stats.schools[school.ldapSchoolIdentifier] = {};
-		}
-		return this.stats.schools[school.ldapSchoolIdentifier];
 	}
 
 	getCurrentYearAndFederalState() {
