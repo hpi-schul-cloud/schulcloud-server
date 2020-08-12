@@ -135,6 +135,25 @@ class EduSharingConnector {
 		return !!this.authorization && !!this.accessToken;
 	}
 
+	async getImage(url) {
+		const reqOptions = {
+			uri: url,
+			method: 'GET',
+			headers: {},
+			// necessary to get the image as binary value
+			encoding: null,
+		};
+		return request(reqOptions)
+			.then((result) => {
+				const encodedData = `data:image;base64,${result.toString('base64')}`;
+				return Promise.resolve(encodedData);
+			})
+			.catch((err) => {
+				logger.error('error: ', err);
+				return Promise.reject(err);
+			});
+	}
+
 	async GET(id) {
 		if (this.isLoggedin() === false) {
 			await this.login();
@@ -155,7 +174,12 @@ class EduSharingConnector {
 		};
 
 		const eduResponse = await this.requestRepeater(options);
-		return eduResponse.node;
+		const node = eduResponse.node;
+		if (node.preview && node.preview.url) {
+			// eslint-disable-next-line max-len
+			node.preview.url = await this.getImage(`${node.preview.url}&accessToken=${this.accessToken}&crop=true&maxWidth=1200&maxHeight=800`);
+		}
+		return node;
 	}
 
 	async FIND({
@@ -215,13 +239,14 @@ class EduSharingConnector {
 
 		const parsed = await this.requestRepeater(options);
 
-		// adds accesstoken to image-url to let user see the picture on client-side.
+		// // adds accesstoken to image-url to let user see the picture on client-side.
 		if (parsed && parsed.nodes) {
-			parsed.nodes.forEach((node) => {
+			for (const node of parsed.nodes) {
 				if (node.preview && node.preview.url) {
-					node.preview.url += `&accessToken=${this.accessToken}`;
+					// eslint-disable-next-line max-len
+					node.preview.url = await this.getImage(`${node.preview.url}&accessToken=${this.accessToken}&crop=true&maxWidth=300&maxHeight=300`);
 				}
-			});
+			}
 		}
 
 		return {
