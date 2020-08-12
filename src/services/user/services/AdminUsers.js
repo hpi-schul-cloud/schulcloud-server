@@ -1,8 +1,10 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const { BadRequest, Forbidden, GeneralError } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
+const { v4: uuidv4 } = require('uuid');
+const { Configuration } = require('@schul-cloud/commons');
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const {
@@ -82,7 +84,13 @@ class AdminUsers {
 			if ((err || {}).code === 403) {
 				throw new Forbidden('You have not the permission to execute this.', err);
 			}
-			throw new BadRequest('Can not fetch data.', err);
+			if (err && err.code >= 500) {
+				const uuid = uuidv4();
+				logger.error(uuid, err);
+				if (Configuration.get('NODE_ENV') !== 'production') { throw err; }
+				throw new GeneralError(uuid);
+			}
+			throw err;
 		}
 	}
 
