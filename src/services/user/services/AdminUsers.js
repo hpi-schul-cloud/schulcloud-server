@@ -41,7 +41,6 @@ const getAllUsers = async (schoolId, schoolYearId, role, clientQuery = {}) => {
 			'createdAt',
 			'importHash',
 			'birthday',
-			'preferences.registrationMailSend',
 		],
 		skip: clientQuery.$skip || clientQuery.skip,
 		limit: clientQuery.$limit || clientQuery.limit,
