@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
-const { BadRequest, Forbidden, GeneralError } = require('@feathersjs/errors');
+const { Forbidden, GeneralError } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
@@ -88,7 +88,6 @@ class AdminUsers {
 				else resolve(res[0] || {});
 			}));
 		} catch (err) {
-			logger.error('------------------------------Spezial error:', err);
 			if ((err || {}).code === 403) {
 				throw new Forbidden('You have not the permission to execute this.', err);
 			}
