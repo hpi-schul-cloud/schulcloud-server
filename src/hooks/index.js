@@ -13,7 +13,6 @@ const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@schul-cloud/commons');
 const _ = require('lodash');
 const mongoose = require('mongoose');
-const { result } = require('lodash');
 const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
