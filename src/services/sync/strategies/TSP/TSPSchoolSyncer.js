@@ -8,8 +8,7 @@ const {
 	config: TSP_CONFIG,
 	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
 	createUserAndAccount,
-	createTSPConsent,
-	addDummyBirthday,
+	shortenedRegistrationProcess,
 } = require('./TSP');
 
 const SYNCER_TARGET = 'tsp-school';
@@ -409,8 +408,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			);
 			this.stats.users.students.created += 1;
 			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
-				await addDummyBirthday(this.app, student);
-				await createTSPConsent(this.app, student);
+				await shortenedRegistrationProcess(this.app, student);
 			}
 			return student;
 		} catch (err) {

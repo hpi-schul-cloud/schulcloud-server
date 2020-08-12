@@ -123,10 +123,18 @@ const createTSPConsent = async (app, student) => {
  * Add a dummy birthday if the user is created via TSP sync.
  * In this case, the consent process was already handled from the TSP side and the birthday is not needed.
  * @param {Object} app the Feathers app
- * @param {User} student the student created via TSP sync
+ * @param {User} user the user created via TSP sync
  * @async
  */
-const addDummyBirthday = async (app, student) => app.service('users').patch(student._id, { birthday: new Date() });
+const addDummyBirthday = async (app, user) => app.service('users').patch(user._id, { birthday: new Date() });
+
+const removeFirstLogin = async (app, user) => app.service('users').patch(user._id, { preferences: { firstLogin: false } });
+
+const shortenedRegistrationProcess = async (app, student) => {
+	await createTSPConsent(app, student);
+	await addDummyBirthday(app, student);
+	await removeFirstLogin(app, student);
+}
 
 /**
  * Finds and returns the school identified by the given identifier
@@ -251,8 +259,7 @@ module.exports = {
 	getUsername,
 	getEmail,
 	createUserAndAccount,
-	createTSPConsent,
-	addDummyBirthday,
+	shortenedRegistrationProcess,
 	findSchool,
 	encryptToken,
 	decryptToken,
