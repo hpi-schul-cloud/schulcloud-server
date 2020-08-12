@@ -174,7 +174,7 @@ class EduSharingConnector {
 		};
 
 		const eduResponse = await this.requestRepeater(options);
-		const node = eduResponse.node;
+		const { node } = eduResponse;
 		if (node.preview && node.preview.url) {
 			// eslint-disable-next-line max-len
 			node.preview.url = await this.getImage(`${node.preview.url}&accessToken=${this.accessToken}&crop=true&maxWidth=1200&maxHeight=800`);
@@ -239,14 +239,13 @@ class EduSharingConnector {
 
 		const parsed = await this.requestRepeater(options);
 
-		// // adds accesstoken to image-url to let user see the picture on client-side.
 		if (parsed && parsed.nodes) {
-			for (const node of parsed.nodes) {
+			await Promise.all(parsed.nodes.map(async (node) => {
 				if (node.preview && node.preview.url) {
 					// eslint-disable-next-line max-len
 					node.preview.url = await this.getImage(`${node.preview.url}&accessToken=${this.accessToken}&crop=true&maxWidth=300&maxHeight=300`);
 				}
-			}
+			}));
 		}
 
 		return {
