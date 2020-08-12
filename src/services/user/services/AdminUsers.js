@@ -39,6 +39,8 @@ class AdminUsers {
 	}
 
 	async getUsers(_id, params) {
+		// integration test did not get the role in the setup
+		// so here is a workaround set it at first call
 		if (!this.role) {
 			this.role = (await this.app.service('roles').find({
 				query: { name: this.roleName },
