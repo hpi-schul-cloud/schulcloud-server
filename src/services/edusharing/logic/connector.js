@@ -240,12 +240,13 @@ class EduSharingConnector {
 		const parsed = await this.requestRepeater(options);
 
 		if (parsed && parsed.nodes) {
-			await Promise.all(parsed.nodes.map(async (node) => {
+			const promises = parsed.nodes.map(async (node) => {
 				if (node.preview && node.preview.url) {
-					// eslint-disable-next-line max-len
-					node.preview.url = await this.getImage(`${node.preview.url}&accessToken=${this.accessToken}&crop=true&maxWidth=300&maxHeight=300`);
+					node.preview.url = await this.getImage(`${node.preview.url}
+					&accessToken=${this.accessToken}&crop=true&maxWidth=300&maxHeight=300`);
 				}
-			}));
+			});
+			await Promise.allSettled(promises);
 		}
 
 		return {
