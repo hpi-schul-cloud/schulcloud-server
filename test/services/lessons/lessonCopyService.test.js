@@ -54,13 +54,14 @@ describe('lesson copy service', () => {
 		const targetTeacher = await testObjects.createTestUser({ roles: ['teacher'] });
 		const originalCourse = await testObjects.createTestCourse({ teacherIds: [originalTeacher._id] });
 		const targetCourse = await testObjects.createTestCourse({ teacherIds: [originalTeacher._id] });
-		const lesson = await testObjects.createTestLesson({ courseId: originalCourse._id, shareToken: 'abcdefg' });
+		const shareToken = `sharetoken${Date.now()}`;
+		const lesson = await testObjects.createTestLesson({ courseId: originalCourse._id, shareToken });
 
 		const copy = await lessonCopyService.create({
 			lessonId: lesson._id,
 			newCourseId: targetCourse._id,
 			userId: targetTeacher._id,
-			shareToken: 'abcdefg',
+			shareToken,
 		});
 		expect(copy._id.toString()).to.not.equal(lesson._id.toString());
 		expect(copy.courseId.toString()).to.equal(targetCourse._id.toString());
@@ -78,13 +79,14 @@ describe('lesson copy service', () => {
 		const targetCourse = await testObjects.createTestCourse({
 			teacherIds: [originalTeacher._id], schoolId: targetSchool._id,
 		});
-		const lesson = await testObjects.createTestLesson({ courseId: originalCourse._id, shareToken: 'gfedcba' });
+		const shareToken = `sharetoken${Date.now()}`;
+		const lesson = await testObjects.createTestLesson({ courseId: originalCourse._id, shareToken });
 
 		const copy = await lessonCopyService.create({
 			lessonId: lesson._id,
 			newCourseId: targetCourse._id,
 			userId: targetTeacher._id,
-			shareToken: 'gfedcba',
+			shareToken,
 		});
 		expect(copy._id.toString()).to.not.equal(lesson._id.toString());
 		expect(copy.courseId.toString()).to.equal(targetCourse._id.toString());

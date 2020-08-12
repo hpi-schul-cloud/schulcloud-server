@@ -7,6 +7,7 @@ const isEdusharing = (context) => {
 	if (Configuration.get('LERNSTORE_MODE') !== 'EDUSHARING') {
 		throw new NotFound('This API is activated only for the lernstore mode Edusharing');
 	}
+	context.safeAttributes = ['url'];
 	return Promise.resolve(context);
 };
 
