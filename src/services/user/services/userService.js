@@ -87,9 +87,9 @@ const userHooks = {
 	before: {
 		all: [],
 		find: [
-			mapPaginationQuery.bind(this),
+			mapPaginationQuery,
 			// resolve ids for role strings (e.g. 'TEACHER')
-			resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),
+			resolveToIds('/roles', 'params.query.roles', 'name'),
 			authenticate('jwt'),
 			iff(isProvider('external'), restrictToCurrentSchool),
 			mapRoleFilterQuery,
@@ -109,13 +109,13 @@ const userHooks = {
 			checkUniqueAccount,
 			blockDisposableEmail('email'),
 			generateRegistrationLink,
-			resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
+			resolveToIds('/roles', 'data.roles', 'name'),
 		],
 		update: [
 			iff(isProvider('external'), disallow()),
 			authenticate('jwt'),
 			sanitizeData,
-			resolveToIds.bind(this, '/roles', 'data.$set.roles', 'name'),
+			resolveToIds('/roles', 'data.$set.roles', 'name'),
 		],
 		patch: [
 			authenticate('jwt'),
@@ -124,7 +124,7 @@ const userHooks = {
 			sanitizeData,
 			iff(isProvider('external'), hasEditPermissionForUser),
 			iff(isProvider('external'), restrictToCurrentSchool),
-			resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
+			resolveToIds('/roles', 'data.roles', 'name'),
 			updateAccountUsername,
 		],
 		remove: [
