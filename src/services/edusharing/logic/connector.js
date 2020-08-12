@@ -203,7 +203,7 @@ class EduSharingConnector {
 			},
 			body: JSON.stringify({
 				criterias: [
-					{ property: 'ngsearchword', values: [`${searchQuery}`] },
+					{ property: 'ngsearchword', values: [`${searchQuery.toLowerCase()}`] },
 				],
 				facettes: ['cclom:general_keyword'],
 			}),

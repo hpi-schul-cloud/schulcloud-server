@@ -521,20 +521,11 @@ const filterResult = async (context) => {
 		return context;
 	}
 
-	// TODO: check if elevatedUser can remove and handled by the amdin route
-	const elevatedUser = await hasPermissionNoHook(context, context.params.account.userId, 'STUDENT_EDIT');
 	const allowedAttributes = [
 		'_id', 'roles', 'schoolId', 'firstName', 'middleName', 'lastName',
 		'namePrefix', 'nameSuffix', 'discoverable', 'fullName',
 		'displayName', 'avatarInitials', 'avatarBackgroundColor',
 	];
-	if (elevatedUser) {
-		const elevatedAttributes = [
-			'email', 'birthday', 'children', 'parents', 'updatedAt',
-			'createdAt', 'age', 'ldapDn', 'consentStatus', 'consent',
-		];
-		allowedAttributes.push(...elevatedAttributes);
-	}
 	return keep(...allowedAttributes)(context);
 };
 
