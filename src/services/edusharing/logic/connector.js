@@ -18,6 +18,7 @@ class EduSharingConnector {
 		}
 		this.authorization = null; /* JSESSION COOKIE */
 		this.accessToken = null; /* ACCESSTOKEN */
+		this.accessTokenCreationTime = null; 
 		EduSharingConnector.instance = this;
 	}
 
@@ -128,9 +129,15 @@ class EduSharingConnector {
 	async login() {
 		this.authorization = await this.getCookie();
 		this.accessToken = await this.getAuth();
+		this.accessTokenCreationTime = new Date().getTime();
 	}
 
 	isLoggedin() {
+		const TwoHoursAgo = new Date().getTime() - 1000*60*120;
+		if (this.accessTokenCreationTime <  TwoHoursAgo){
+			logger.info(`Custom Token Expire (2h)`);
+			return false;
+		}
 		// returns false if cookie or accesstoken is falsy
 		return !!this.authorization && !!this.accessToken;
 	}
