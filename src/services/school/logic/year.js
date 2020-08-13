@@ -105,20 +105,6 @@ class SchoolYearFacade {
 		return pastYears[pastYears.length - 1];
 	}
 
-	/** returns the year a gived date is in, or the next year of a date that is not in a year.
-	 * returns null for a date after the last year.
-	 * @param {Date} date the date to be processed.
-	 * @returns {SchoolYear}
-	 * @memberof SchoolYears
-	 */
-	yearFromDate(date) {
-		const filteredYears = this.schoolYears
-			.filter((year) => year.startDate >= date);
-		// next year is in first place
-		if (filteredYears.length === 0) return null;
-		return filteredYears[0];
-	}
-
 	/**
 	 *
 	 *
