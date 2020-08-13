@@ -1,19 +1,34 @@
+const { getUsername } = require('./TSP');
+
+const getInvalidatedUuid = (uuid) => `${uuid}/invalid!`;
+const getInvalidatedEmail = (email) => `${email}.invalid`;
+
 const invalidateUser = async (app, user) => {
-	/*
-		Invalidate user, so that:
-			a) searching for user.sourceOptions.tspUid should no longer return this user
-			b) the user's email is no longer in use (it's based on the TSP UUID, see TSP.js:59)
-	*/
-	const userService = app.service('users');
-	return Promise.resolve();
+	const userService = app.service('userModel');
+	const accountService = app.service('accountModel');
+
+	const invalidatedUuid = getInvalidatedUuid(user.sourceOptions.tspUid);
+	const userChanges = {
+		sourceOptions: {
+			tspUid: invalidatedUuid,
+		},
+		email: getInvalidatedEmail(user.email),
+	};
+	await userService.patch(user._id, userChanges);
+
+	const accountChanges = {
+		username: getUsername(userChanges),
+	};
+	await accountService.patch({ userId: user._id }, accountChanges);
 };
 
 const deleteUser = (app, user) => {
-	/*
-		I'm not sure if we actually need to remove the user, or just set a deletion notice (for cleanup later)
-	*/
-	const userService = app.service('users');
-	return Promise.resolve();
+	const userService = app.service('userModel');
+	const accountService = app.service('accountModel');
+	return Promise.all([
+		userService.remove({ _id: user._id }),
+		accountService.remove({ userId: user._id }),
+	]);
 };
 
 const grantAccessToPrivateFiles = async (app, oldUser, newUser) => {
@@ -34,9 +49,22 @@ const grantAccessToSharedFiles = async (app, oldUser, newUser) => {
 	*/
 };
 
+const switchSchool = async (app, currentUser, createUserMethod) => {
+	await invalidateUser(app, currentUser);
+	const newUser = await createUserMethod();
+	await Promise.all([
+		grantAccessToPrivateFiles(app, currentUser, newUser),
+		grantAccessToSharedFiles(app, currentUser, newUser),
+	]);
+	await deleteUser(app, currentUser);
+	return newUser;
+};
+
 module.exports = {
+	getInvalidatedUuid,
 	invalidateUser,
 	deleteUser,
 	grantAccessToPrivateFiles,
 	grantAccessToSharedFiles,
+	switchSchool,
 };
