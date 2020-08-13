@@ -4,11 +4,17 @@ const {
 	iff, isProvider, disallow,
 } = require('feathers-hooks-common');
 const { userModel } = require('../model');
-const { enableQuery, enableQueryAfter } = require('../../../hooks');
+const { addDates: addConsentDate } = require('../hooks/consent');
+const { enableQuery, enableQueryAfter, resolveToIds } = require('../../../hooks');
 
 const userModelHooks = {
 	before: {
-		all: [auth.hooks.authenticate('jwt'), iff(isProvider('external'), disallow())],
+		all: [auth.hooks.authenticate('jwt'),
+			iff(isProvider('external'), disallow()),
+		],
+		create: [resolveToIds('/roles', 'data.roles', 'name'), addConsentDate],
+		update: [addConsentDate],
+		patch: [addConsentDate],
 		remove: [enableQuery],
 	},
 	after: {

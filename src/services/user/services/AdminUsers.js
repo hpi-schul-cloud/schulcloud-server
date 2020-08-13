@@ -1,70 +1,22 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const { Forbidden, GeneralError } = require('@feathersjs/errors');
+const { authenticate } = require('@feathersjs/authentication').hooks;
+const moment = require('moment');
+const { v4: uuidv4 } = require('uuid');
+const { Configuration } = require('@schul-cloud/commons');
 const logger = require('../../../logger');
+const { createMultiDocumentAggregation } = require('../utils/aggregations');
+const {
+	hasSchoolPermission,
+} = require('../../../hooks');
 
 const { userModel } = require('../model');
-const roleModel = require('../../role/model');
 
 const getCurrentUserInfo = (id) => userModel.findById(id)
 	.select('schoolId')
-	.populate('roles')
 	.lean()
 	.exec();
-
-const getRoles = () => roleModel.find()
-	.select('name')
-	.lean()
-	.exec();
-
-
-const getAllUsers = (ref, schoolId, role, clientQuery) => {
-	const query = {
-		schoolId,
-		roles: role.toString(),
-		$sort: clientQuery.$sort,
-		$select: ['firstName', 'lastName', 'email', 'createdAt', 'importHash', 'birthday'],
-	};
-	if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
-	if (clientQuery.firstName) query.firstName = clientQuery.firstName;
-	if (clientQuery.lastName) query.lastName = clientQuery.lastName;
-	return ref.app.service('usersModel').find({ collation: { locale: 'de', caseLevel: true }, query });
-};
-
-const getClasses = (app, schoolId, schoolYearId) => app.service('classes')
-	.find({
-		query: {
-			schoolId,
-			$or: [
-				{ year: schoolYearId },
-				{ year: { $exists: false } },
-			],
-			$limit: 1000,
-		},
-	})
-	.then((classes) => classes.data)
-	.catch((err) => {
-		logger.warning(`Can not execute app.service("classes").find for ${schoolId}`, err);
-		return err;
-	});
-
-const findConsents = (ref, userIds, $limit) => ref.app.service('/consents')
-	.find({
-		query: {
-			userId: { $in: userIds },
-			$limit,
-			$select: [
-				'userId',
-				'userConsent.form',
-				'userConsent.privacyConsent',
-				'userConsent.termsOfUseConsent',
-				'parentConsents.parentId',
-				'parentConsents.form',
-				'parentConsents.privacyConsent',
-				'parentConsents.termsOfUseConsent'],
-		},
-	})
-	.then((consents) => consents.data);
 
 const getCurrentYear = (ref, schoolId) => ref.app.service('schools')
 	.get(schoolId, {
@@ -73,125 +25,131 @@ const getCurrentYear = (ref, schoolId) => ref.app.service('schools')
 	.then(({ currentYear }) => currentYear.toString());
 
 class AdminUsers {
-	constructor(role) {
-		this.role = role || {};
+	constructor(roleName) {
+		this.roleName = roleName;
 		this.docs = {};
-		this.rolesThatCanAccess = ['teacher', 'administrator', 'superhero'];
 	}
 
 	async find(params) {
+		return this.getUsers(undefined, params);
+	}
+
+	async get(id, params) {
+		return this.getUsers(id, params);
+	}
+
+	async getUsers(_id, params) {
+		// integration test did not get the role in the setup
+		// so here is a workaround set it at first call
+		if (!this.role) {
+			this.role = (await this.app.service('roles').find({
+				query: { name: this.roleName },
+			})).data[0];
+		}
+
 		try {
-			const { query, account } = params;
+			const { query: clientQuery = {}, account } = params;
 			const currentUserId = account.userId.toString();
-			const {
-				$limit,
-				$skip,
-				$sort,
-				consentStatus,
-			} = query;
 
 			// fetch base data
-			const [currentUser, roles] = await Promise.all([getCurrentUserInfo(currentUserId), getRoles()]);
+			const { schoolId } = await getCurrentUserInfo(currentUserId);
+			const schoolYearId = await getCurrentYear(this, schoolId);
 
-			// permission check
-			if (!currentUser.roles.some((role) => this.rolesThatCanAccess.includes(role.name))) {
-				throw new Forbidden();
-			}
-			const { schoolId } = currentUser;
-			const currentYear = await getCurrentYear(this, schoolId);
-
-			// fetch data that are scoped to schoolId
-			const searchedRole = roles.find((role) => role.name === this.role);
-			const [usersData, classes] = await Promise.all([
-				getAllUsers(this, schoolId, searchedRole._id, query),
-				getClasses(this.app, schoolId, currentYear),
-			]);
-			const { total } = usersData;
-			const users = usersData.data;
-			const userIds = users.map((user) => user._id.toString());
-			const consents = await findConsents(this, userIds, $limit).then((data) => {
-				// rebuild consent to object for faster sorting
-				const out = {};
-				data.forEach((e) => {
-					out[e.userId.toString()] = e;
-				});
-				return out;
-			});
-			// bsonId to stringId that it can use .includes for is in test
-			classes.forEach((c) => {
-				if (Array.isArray(c.userIds)) {
-					c.userIds = c.userIds.map((id) => id.toString());
-				} else {
-					c.userIds = [];
-				}
-				if (Array.isArray(c.teacherIds)) {
-					c.teacherIds = c.teacherIds.map((id) => id.toString());
-				} else {
-					c.teacherIds = [];
-				}
-			});
-
-			// patch classes and consent into user
-			users.forEach((user) => {
-				user.classes = [];
-				const userId = user._id.toString();
-				user.consent = consents[userId] || {};
-				classes.forEach((c) => {
-					if (c.userIds.includes(userId) || c.teacherIds.includes(userId)) {
-						user.classes.push(c.displayName);
-					}
-				});
-				return user;
-			});
-
-			// sorting by class and by consent is implemented manually,
-			// as classes and consents are fetched from seperate db collection
-			const classSortParam = (($sort || {}).class || {}).toString();
-			if (classSortParam === '1') {
-				users.sort((a, b) => (a.classes[0] || '').toLowerCase() > (b.classes[0] || '').toLowerCase());
-			} else if (classSortParam === '-1') {
-				users.sort((a, b) => (a.classes[0] || '').toLowerCase() < (b.classes[0] || '').toLowerCase());
-			}
-
-			const sortOrder = {
-				ok: 1,
-				parentsAgreed: 2,
-				missing: 3,
+			const query = {
+				schoolId,
+				roles: this.role._id,
+				schoolYearId,
+				sort: clientQuery.$sort || clientQuery.sort,
+				select: [
+					'consentStatus',
+					'consent',
+					'classes',
+					'firstName',
+					'lastName',
+					'email',
+					'createdAt',
+					'importHash',
+					'birthday',
+				],
+				skip: clientQuery.$skip || clientQuery.skip,
+				limit: clientQuery.$limit || clientQuery.limit,
 			};
-			const consentSortParam = (($sort || {}).consent || {}).toString();
-			if (consentSortParam === '1') {
-				users.sort((a, b) => (sortOrder[a.consent.consentStatus || 'missing']
-					- sortOrder[b.consent.consentStatus || 'missing']));
-			} else if (consentSortParam === '-1') {
-				users.sort((a, b) => (sortOrder[b.consent.consentStatus || 'missing']
-					- sortOrder[a.consent.consentStatus || 'missing']));
-			}
+			if (_id) query._id = _id;
+			if (clientQuery.consentStatus) query.consentStatus = clientQuery.consentStatus;
+			if (clientQuery.classes) query.classes = clientQuery.classes;
+			if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
+			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
+			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 
-			const filteredUsers = users.filter((user) => {
-				if ((consentStatus || {}).$in) {
-					const userStatus = user.consent.consentStatus || 'missing';
-					return consentStatus.$in.includes(userStatus);
-				}
-				return true;
-			}).splice($skip || 0, $limit || 25);
-
-			return {
-				total,
-				limit: $limit || 25,
-				skip: $skip || 0,
-				data: filteredUsers,
-			};
+			return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
+				collation: { locale: 'de', caseLevel: true },
+			}).exec((err, res) => {
+				if (err) reject(err);
+				else resolve(res[0] || {});
+			}));
 		} catch (err) {
 			if ((err || {}).code === 403) {
 				throw new Forbidden('You have not the permission to execute this.', err);
 			}
-			throw new BadRequest('Can not fetch data.', err);
+			if (err && err.code >= 500) {
+				const uuid = uuidv4();
+				logger.error(uuid, err);
+				if (Configuration.get('NODE_ENV') !== 'production') { throw err; }
+				throw new GeneralError(uuid);
+			}
+			throw err;
 		}
 	}
 
-	setup(app) {
+	async create(data, params) {
+		return this.app.service('usersModel').create(data);
+	}
+
+	async update(id, data, params) {
+		return this.app.service('usersModel').update(id, data);
+	}
+
+	async patch(id, data, params) {
+		return this.app.service('usersModel').patch(id, data);
+	}
+
+	async remove(id, params) {
+		const { _ids } = params.query;
+		if (id) {
+			return this.app.service('usersModel').remove(id);
+		}
+		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
+	}
+
+	async setup(app) {
 		this.app = app;
+		this.role = (await this.app.service('roles').find({
+			query: { name: this.roleName },
+		})).data[0];
 	}
 }
 
-module.exports = AdminUsers;
+const formatBirthdayOfUsers = ({ result: { data: users } }) => {
+	users.forEach((user) => { user.birthday = moment(user.birthday).format('DD.MM.YYYY'); });
+};
+
+const adminHookGenerator = (kind) => ({
+	before: {
+		all: [authenticate('jwt')],
+		find: [hasSchoolPermission(`${kind}_LIST`)],
+		get: [hasSchoolPermission(`${kind}_LIST`)],
+		create: [hasSchoolPermission(`${kind}_CREATE`)],
+		update: [hasSchoolPermission(`${kind}_EDIT`)],
+		patch: [hasSchoolPermission(`${kind}_EDIT`)],
+		remove: [hasSchoolPermission(`${kind}_DELETE`)],
+	},
+	after: {
+		find: [formatBirthdayOfUsers],
+	},
+});
+
+
+module.exports = {
+	AdminUsers,
+	adminHookGenerator,
+};

@@ -53,6 +53,7 @@ const setIdToken = (hook) => {
 				email: (scope.includes('email') ? user.email : undefined),
 				name: (scope.includes('profile') ? name : undefined),
 				userId: (scope.includes('profile') ? user._id : undefined),
+				schoolId: user.schoolId,
 			},
 		};
 		return hook;

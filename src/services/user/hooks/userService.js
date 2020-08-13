@@ -448,6 +448,10 @@ const enforceRoleHierarchyOnCreate = async (context) => {
 		return Promise.resolve(context);
 	}
 
+	// created user has no role
+	if (!context.data || !context.data.roles) {
+		return Promise.resolve(context);
+	}
 	await Promise.all(context.data.roles.map(async (roleId) => {
 		// Roles are given by ID or by name.
 		// For IDs we load the name from the DB.
@@ -516,19 +520,12 @@ const filterResult = async (context) => {
 	if (userCallingHimself || userIsSuperhero) {
 		return context;
 	}
-	const elevatedUser = await hasPermissionNoHook(context, context.params.account.userId, 'STUDENT_EDIT');
+
 	const allowedAttributes = [
 		'_id', 'roles', 'schoolId', 'firstName', 'middleName', 'lastName',
 		'namePrefix', 'nameSuffix', 'discoverable', 'fullName',
 		'displayName', 'avatarInitials', 'avatarBackgroundColor',
 	];
-	if (elevatedUser) {
-		const elevatedAttributes = [
-			'email', 'birthday', 'children', 'parents', 'updatedAt',
-			'createdAt', 'age', 'ldapDn',
-		];
-		allowedAttributes.push(...elevatedAttributes);
-	}
 	return keep(...allowedAttributes)(context);
 };
 

@@ -28,6 +28,7 @@ describe('school service', () => {
 		});
 	};
 
+
 	describe('create school with or without year', () => {
 		let defaultYears = null;
 		let sampleYear;
@@ -41,7 +42,53 @@ describe('school service', () => {
 			sampleSchoolData = await School.findById(school._id).lean().exec();
 			delete sampleSchoolData._id;
 		});
+		it('should be possible to see only limited amount of fields if the user is not logged in', async () => {
+			const params = {
+				provider: 'rest',
+				headers: {
+					authorization: undefined
+				},
+				account: undefined,
+			}
+			const result = await schoolService.find(params);
+			const expectedFields = ['purpose', 'name', '_id', 'id',
+				'systems', 'years', 'isTeamCreationByStudentsEnabled'];
+			const notExpectedFields = ['fileStorageType', 'documentBaseDir', 'inMaintenance', 'currentYear',
+				'federalState'];
+			result.data.forEach((school) => {
+				expectedFields.forEach(field => {
+					expect(school).to.haveOwnProperty(field);
+				});
+				notExpectedFields.forEach(field => {
+					expect(school).to.not.haveOwnProperty(field);
+				})
+			})
+		});
+		it('should be possible to see all fields if the call is done from the server', async () => {
+			const params = { provider: undefined }
 
+			const result = await schoolService.find(params);
+			const expectedFields = [
+				'purpose',
+				'name',
+				'id',
+				'years',
+				'isTeamCreationByStudentsEnabled',
+				'fileStorageType',
+				'documentBaseDir',
+				'inMaintenance',
+				'currentYear',
+				'systems',
+				// 'federalState', // there is a school in the test database that doesn't have this field
+			];
+
+			result.data.forEach((school) => {
+				expectedFields.forEach(field => {
+					expect(school).to.haveOwnProperty(field)
+				}
+			)
+			});
+		});
 		it('load the school results with pagination', async () => {
 			const result = await schoolService.find();
 			result.data.forEach((school) => {
@@ -85,6 +132,46 @@ describe('school service', () => {
 			expect(foundYear.length, 'the auto added year exists in years').to.be.equal(1);
 			// here we could test, we have defaultYear added but however we just need any year
 			// to be set and this should not test year logic
+		});
+
+		it('isExternal attribute is true when ldapSchoolIdentifier is not undefined', async () => {
+			const serviceCreatedSchool = await schoolService.create(
+				{ ...sampleSchoolData, ldapSchoolIdentifier: 'testId' },
+			);
+			const { _id: schoolId } = serviceCreatedSchool;
+			createdSchoolIds.push(schoolId);
+			const school = await schoolService.get(schoolId);
+			expect(school.isExternal).to.be.true;
+		});
+
+		it('isExternal attribute is true when source is not undefined', async () => {
+			const serviceCreatedSchool = await schoolService.create(
+				{ ...sampleSchoolData, source: 'testSource' },
+			);
+			const { _id: schoolId } = serviceCreatedSchool;
+			createdSchoolIds.push(schoolId);
+			const school = await schoolService.get(schoolId);
+			expect(school.isExternal).to.be.true;
+		});
+
+		it('isExternal attribute is true when ldapSchoolIdentifier and source are defined', async () => {
+			const serviceCreatedSchool = await schoolService.create(
+				{ ...sampleSchoolData, ldapSchoolIdentifier: 'testId', source: 'testSource' },
+			);
+			const { _id: schoolId } = serviceCreatedSchool;
+			createdSchoolIds.push(schoolId);
+			const school = await schoolService.get(schoolId);
+			expect(school.isExternal).to.be.true;
+		});
+
+		it('isExternal attribute is false when source is undefined', async () => {
+			const serviceCreatedSchool = await schoolService.create(
+				{ ...sampleSchoolData },
+			);
+			const { _id: schoolId } = serviceCreatedSchool;
+			createdSchoolIds.push(schoolId);
+			const school = await schoolService.get(schoolId);
+			expect(school.isExternal).to.be.false;
 		});
 	});
 

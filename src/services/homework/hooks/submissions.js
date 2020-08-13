@@ -6,6 +6,7 @@ const {	iff, isProvider } = require('feathers-hooks-common');
 
 const globalHooks = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { submissionModel } = require('../model');
 
 const filterRequestedSubmissions = async (context) => {
 	const currentUserId = context.params.account.userId;
@@ -13,10 +14,37 @@ const filterRequestedSubmissions = async (context) => {
 	// user is submitter
 	let permissionQuery = { studentId: currentUserId };
 
-	// user is team member
-	permissionQuery = { $or: [permissionQuery, { teamMembers: { $in: currentUserId } }] };
+	// user is team member and the homework is not private
+	const homeworkService = context.app.service('/homework');
+	const subquery = {
+		$and: [
+			{ teamMembers: { $in: currentUserId } },
+			{ studentId: { $ne: currentUserId } },
+		],
+	};
+	const subqueryResult = await submissionModel.find(subquery).exec();
+	const teamMeberSubmissions = subqueryResult.map((s) => s._id);
+	const subqueryHomeworkIds = subqueryResult.map((s) => s.homeworkId);
+	const validHomeworks = await homeworkService.find({
+		query: {
+			$and: [
+				{ _id: { $in: subqueryHomeworkIds } },
+				{ private: { $ne: true } },
+			],
+		},
+	});
+	const validHomeworksIds = validHomeworks.data.map((h) => h._id);
+	const andTeamMebersQuery = {
+		$and: [
+			{ _id: { $in: teamMeberSubmissions } },
+			{ homeworkId: { $in: validHomeworksIds } },
+		],
+	};
 
-	// user is in course group of the submission
+	permissionQuery = { $or: [permissionQuery, andTeamMebersQuery] };
+
+
+	// user is in course group of the submission and the homework is not private
 	try {
 		const courseGroupService = context.app.service('/courseGroups');
 		const courseGroup = await courseGroupService.find({
@@ -25,15 +53,32 @@ const filterRequestedSubmissions = async (context) => {
 			},
 		});
 		const courseGroupIds = courseGroup.data.map((c) => c._id);
-		permissionQuery = { $or: [permissionQuery, { courseGroupId: { $in: courseGroupIds } }] };
+		const courseIds = courseGroup.data.map((c) => c.courseId);
+
+		const nonPrivateHomeworks = await homeworkService.find({
+			query: {
+				$and: [
+					{ courseId: { $in: courseIds } },
+					{ private: { $ne: true } },
+				],
+			},
+		});
+		const nonPrivateHomeworkIds = nonPrivateHomeworks.data.map((h) => h._id);
+
+		const andQueryCondition = {
+			$and: [
+				{ courseGroupId: { $in: courseGroupIds } },
+				{ homeworkId: { $in: nonPrivateHomeworkIds } },
+			],
+		};
+
+		permissionQuery = { $or: [permissionQuery, andQueryCondition] };
 	} catch (err) {
 		return Promise.reject(new GeneralError({ message: "can't reach course group service" }));
 	}
 
 	const courseService = context.app.service('/courses');
-	const homeworkService = context.app.service('/homework');
-
-	// user is enrolled in a course with public submissions
+	// user is enrolled in a course with public submissions and the homework is not private
 	try {
 		const enrolledCourses = await courseService.find({
 			query: {
@@ -46,6 +91,7 @@ const filterRequestedSubmissions = async (context) => {
 				$and: [
 					{ courseId: { $in: enrolledCourseIds } },
 					{ publicSubmissions: true },
+					{ private: { $ne: true } },
 				],
 			},
 		});
@@ -177,7 +223,8 @@ const insertSubmissionsData = (context) => {
 	return submissionService.find({
 		query: {
 			homeworkId: context.data.homeworkId,
-			$populate: ['studentId'],
+			$select: ['teamMembers'],
+			$populate: [{ path: 'studentId', select: ['_id'] }],
 		},
 	}).then((submissions) => {
 		context.data.submissions = submissions.data;
@@ -216,7 +263,7 @@ const noSubmissionBefore = (context) => {
 		|| ((submission.studentId || {})._id == context.params.account.userId));
 	if (submissionsForMe.length > 0) {
 		return Promise.reject(new Conflict({
-			message: `${submissionsForMe[0].studentId.firstName} ${submissionsForMe[0].studentId.lastName} hat bereits für dich abgegeben!`,
+			message: 'Die Aufgabe wurde bereits abgegeben!',
 		}));
 	}
 	return Promise.resolve(context);
@@ -230,15 +277,12 @@ const noDuplicateSubmissionForTeamMembers = (context) => {
 			newTeamMembers = newTeamMembers.filter((teamMember) => !context.data.submission.teamMembers.includes(teamMember.toString()));
 		}
 
-		let toRemove = '';
 		const submissionsForTeamMembers = context.data.submissions.filter((submission) => {
 			for (let i = 0; i < newTeamMembers.length; i += 1) {
 				const teamMember = newTeamMembers[i].toString();
 				if (submission.teamMembers.includes(teamMember)
 						|| (((submission.studentId || {})._id || {}).toString() == teamMember)
 				) {
-					toRemove += (toRemove == '') ? '' : ', ';
-					toRemove += `${submission.studentId.firstName} ${submission.studentId.lastName}`;
 					return true;
 				}
 			}
@@ -246,7 +290,9 @@ const noDuplicateSubmissionForTeamMembers = (context) => {
 		});
 		if (submissionsForTeamMembers.length > 0) {
 			return Promise.reject(new Conflict({
-				message: `${toRemove + ((submissionsForTeamMembers.length == 1) ? ' hat' : ' haben')} bereits eine Lösung abgegeben! Entferne diese${(submissionsForTeamMembers.length == 1) ? 's Mitglied!' : ' Mitglieder!'}`,
+				message: `${submissionsForTeamMembers.length + ((submissionsForTeamMembers.length === 1)
+					? ' Mitglied hat' : ' Mitglieder haben')} bereits eine Lösung abgegeben!`
+					+ ` Entferne diese ${(submissionsForTeamMembers.length === 1) ? 's Mitglied!' : ' Mitglieder!'}`,
 			}));
 		}
 		return Promise.resolve(context);

@@ -1,10 +1,15 @@
 /* eslint-disable no-param-reassign */
 const {
 	Forbidden,
+	GeneralError,
 	NotFound,
 	BadRequest,
 	TypeError,
 } = require('@feathersjs/errors');
+const { authenticate } = require('@feathersjs/authentication');
+
+const { v4: uuidv4 } = require('uuid');
+
 const { Configuration } = require('@schul-cloud/commons');
 const _ = require('lodash');
 const mongoose = require('mongoose');
@@ -13,7 +18,11 @@ const { equal: equalIds } = require('../helper/compare').ObjectId;
 const logger = require('../logger');
 const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 const { isDisposableEmail } = require('../utils/disposableEmail');
+const { getRestrictPopulatesHook, preventPopulate } = require('./restrictPopulate');
 // Add any common hooks you want to share across services in here.
+
+exports.preventPopulate = preventPopulate;
+exports.getRestrictPopulatesHook = getRestrictPopulatesHook;
 
 // don't require authentication for internal requests
 exports.ifNotLocal = function ifNotLocal(hookForRemoteRequests) {
@@ -91,6 +100,55 @@ const hasPermission = (inputPermissions) => {
 				return Promise.resolve(context);
 			});
 	};
+};
+
+/**
+ * Test a permission again a user request.
+ * When the hook funtkion is called, it requires an account object in params
+ *
+ * @param {string} inputPermission
+ * @return {funktion} - feathers hook function requires context as an attribute
+ */
+// TODO: should accept and check multiple permissions
+exports.hasSchoolPermission = (inputPermission) => async (context) => {
+	const { params: { account }, app } = context;
+	if (!account && !account.userId) {
+		throw new Forbidden('Cannot read account data');
+	}
+	try {
+		const user = await app.service('usersModel').get(account.userId, {
+			query: {
+				$populate: ['roles', 'schoolId'],
+			},
+		});
+
+		const { schoolId: school } = user;
+
+		const results = await Promise.allSettled(user.roles.map(async (role) => {
+			const { permissions = {} } = school;
+			// If there are no special school permissions, continue with normal permission check
+			if (!permissions[role.name]
+				|| !Object.prototype.hasOwnProperty.call(permissions[role.name], inputPermission)) {
+				return hasPermission(inputPermission)(context);
+			}
+			// Otherwise check for user's special school permission
+			if (permissions[role.name][inputPermission]) {
+				return context;
+			}
+			throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
+		}));
+		if (results.some((r) => r.status === 'fulfilled')) {
+			return context;
+		}
+	} catch (err) {
+		const uuid = uuidv4();
+		if (err.code >= 500) {
+			throw new GeneralError(uuid);
+		}
+		logger.error(uuid, err);
+	}
+
+	throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
 };
 
 /**
@@ -185,7 +243,7 @@ const deepValue = (obj, path, newValue) => {
 };
 
 // resolves IDs of objects from serviceName specified by *key* instead of their *_id*
-exports.resolveToIds = (serviceName, path, key, context) => {
+exports.resolveToIds = (serviceName, path, key) => (context) => {
 	// get ids from a probably really deep nested path
 	const service = context.app.service(serviceName);
 
@@ -345,29 +403,45 @@ exports.enableQueryAfter = (context) => {
 	return context;
 };
 
-exports.restrictToCurrentSchool = (context) => getUser(context).then((user) => {
+exports.restrictToCurrentSchool = async (context) => {
+	const user = await getUser(context);
 	if (testIfRoleNameExist(user, 'superhero')) {
 		return context;
 	}
 	const currentSchoolId = user.schoolId.toString();
 	const { params } = context;
+	// route
 	if (params.route && params.route.schoolId && params.route.schoolId !== currentSchoolId) {
 		throw new Forbidden('You do not have valid permissions to access this.');
 	}
-	if (['get', 'find', 'remove'].includes(context.method)) {
+	// id
+	if (['update', 'patch', 'remove'].includes(context.method) && context.id) {
+		const target = await context.service.get(context.id);
+		if (!equalIds(target.schoolId, user.schoolId)) {
+			throw new NotFound(`no record found for id '${context.id.toString()}'`);
+		}
+	}
+	// query
+	const methodWithQuery = ['get', 'find'].includes(context.method)
+		|| (['update', 'patch', 'remove'].includes(context.method) && context.id == null);
+	if (methodWithQuery) {
 		if (params.query.schoolId === undefined) {
 			params.query.schoolId = user.schoolId;
 		} else if (!equalIds(params.query.schoolId, currentSchoolId)) {
 			throw new Forbidden('You do not have valid permissions to access this.');
 		}
-	} else if (context.data.schoolId === undefined) {
-		context.data.schoolId = currentSchoolId;
-	} else if (!equalIds(context.data.schoolId, currentSchoolId)) {
-		throw new Forbidden('You do not have valid permissions to access this.');
+	}
+	// data
+	if (['create', 'update', 'patch'].includes(context.method)) {
+		if (context.data.schoolId === undefined) {
+			context.data.schoolId = currentSchoolId;
+		} else if (!equalIds(context.data.schoolId, currentSchoolId)) {
+			throw new Forbidden('You do not have valid permissions to access this.');
+		}
 	}
 
 	return context;
-});
+};
 
 /* todo: Many request pass id as second parameter, but it is confused with the logic that should pass.
 	It should evaluate and make clearly.
@@ -550,6 +624,16 @@ exports.denyIfNotCurrentSchool = (
 	}
 	return context;
 });
+
+// meant to be used as an after context
+exports.denyIfNotCurrentSchoolOrEmpty = (
+	{ errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!' },
+) => (context) => {
+	if (!(context.result || {}).schoolId) {
+		return context;
+	}
+	return this.denyIfNotCurrentSchool(errorMessage)(context);
+};
 
 exports.denyIfStudentTeamCreationNotAllowed = (
 	{ errorMessage = 'The current user is not allowed to list other users!' },
@@ -823,5 +907,12 @@ exports.blockDisposableEmail = (property, optional = true) => async (context) =>
 		}
 	}
 
+	return context;
+};
+
+exports.authenticateWhenJWTExist = (context) => {
+	if ((context.params.headers || {}).authorization) {
+		return authenticate('jwt')(context);
+	}
 	return context;
 };
