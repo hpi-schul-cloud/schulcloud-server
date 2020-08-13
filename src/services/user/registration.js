@@ -32,26 +32,37 @@ const populateUser = (app, data) => {
 
 	if (data.classId) user.classId = data.classId;
 
-	if (data.importHash) {
-		return app.service('users').find({ query: { importHash: data.importHash, _id: data.userId, $populate: ['roles'] } }).then((users) => {
-			if (users.data.length <= 0 || users.data.length > 1) {
-				throw new errors.BadRequest('Kein Nutzer für die eingegebenen Daten gefunden.');
-			}
-			oldUser = users.data[0];
-
-			Object.keys(oldUser).forEach((key) => {
-				if (oldUser[key] !== null && key !== 'firstName' && key !== 'lastName') {
-					user[key] = oldUser[key];
-				}
-			});
-
-			user.roles = user.roles.map((role) => (typeof role === 'object' ? role.name : role));
-
-			delete user.importHash;
-			return { user, oldUser };
-		});
+	if (!data.importHash) {
+		return Promise.reject('Ungültiger Link');
 	}
-	return Promise.resolve({ user, oldUser });
+
+	if (data.userId) {
+		data.userId = data.userId.toString();
+	}
+
+	return app.service('users').find({
+		query: {
+			importHash: data.importHash.toString(),
+			_id: data.userId,
+			$populate: ['roles'],
+		},
+	}).then((users) => {
+		if (users.data.length <= 0 || users.data.length > 1) {
+			throw new errors.BadRequest('Kein Nutzer für die eingegebenen Daten gefunden.');
+		}
+		oldUser = users.data[0];
+
+		Object.keys(oldUser).forEach((key) => {
+			if (oldUser[key] !== null && key !== 'firstName' && key !== 'lastName') {
+				user[key] = oldUser[key];
+			}
+		});
+
+		user.roles = user.roles.map((role) => (typeof role === 'object' ? role.name : role));
+
+		delete user.importHash;
+		return { user, oldUser };
+	});
 };
 
 const insertUserToDB = async (app, data, user) => {
@@ -118,7 +129,6 @@ const registerUser = function register(data, params, app) {
 		.then((response) => {
 			user = response.user;
 			oldUser = response.oldUser;
-			if (!oldUser && data.sso !== 'true') return Promise.reject('Ungültiger Link');
 		})).then(() => {
 		const consentSkipCondition = Configuration.get('SKIP_CONDITIONS_CONSENT');
 		if ((user.roles || []).includes('student')) {
@@ -187,18 +197,6 @@ const registerUser = function register(data, params, app) {
 				userId: user._id,
 				activated: true,
 			};
-			if (data.sso === 'true' && data.account) {
-				const accountId = data.account;
-				return accountModel.findByIdAndUpdate(
-					accountId,
-					{ $set: { activated: true, userId: user._id } },
-					{ new: true },
-				).lean().exec()
-					.then((accountResponse) => {
-						account = accountResponse;
-					})
-					.catch((err) => Promise.reject(new Error('Fehler der Account existiert nicht.', err)));
-			}
 			return app.service('accounts').create(account)
 				.then((newAccount) => { account = newAccount; })
 				.catch((err) => Promise.reject(new Error('Fehler beim Erstellen des Accounts.', err)));
@@ -261,6 +259,7 @@ const registerUser = function register(data, params, app) {
 						if (oldUser) {
 							return userModel.userModel.create(oldUser);
 						}
+						return Promise.resolve();
 					}));
 			}
 			if (parent && parent._id) {
@@ -278,7 +277,7 @@ const registerUser = function register(data, params, app) {
 		});
 };
 
-module.exports = function (app) {
+module.exports = (app) => {
 	class RegistrationService {
 		create(data, params) {
 			return registerUser(data, params, app);
