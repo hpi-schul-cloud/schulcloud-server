@@ -128,7 +128,11 @@ const createTSPConsent = async (app, student) => {
  */
 const addDummyBirthday = async (app, user) => app.service('users').patch(user._id, { birthday: new Date() });
 
-const removeFirstLogin = async (app, user) => app.service('users').patch(user._id, { preferences: { firstLogin: false } });
+const removeFirstLogin = async (app, user) => {
+	const updatedPreferences = user.preferences || {};
+	updatedPreferences.firstLogin = true;
+	return app.service('users').patch(user._id, { preferences: updatedPreferences });
+}
 
 const shortenedRegistrationProcess = async (app, student) => {
 	await createTSPConsent(app, student);
