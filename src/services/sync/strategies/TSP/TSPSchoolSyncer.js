@@ -17,6 +17,7 @@ const {
 	grantAccessToPrivateFiles,
 	grantAccessToSharedFiles,
 	invalidateUser,
+	getInvalidatedUuid,
 } = require('./SchoolChange');
 
 const SYNCER_TARGET = 'tsp-school';
@@ -343,26 +344,29 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	async createOrUpdateStudent(tspStudent, school) {
 		const systemId = school.systems[0];
-		const query = { source: ENTITY_SOURCE };
-		query[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`] = tspStudent.schuelerUid;
+		const query = {
+			source: ENTITY_SOURCE,
+			[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`]: {
+				$in: [
+					tspStudent.schuelerUid,
+					// try to heal if school change process was interupted before the invalidated user was deleted:
+					getInvalidatedUuid(tspStudent.schuelerUid),
+				],
+			},
+		};
 		const users = await this.app.service('users').find({ query });
 		if (users.total !== 0) {
 			const oldUser = users.data[0];
-			if (sameObjectId(oldUser.schoolId, school._id)) {
+			if (!sameObjectId(oldUser.schoolId, school._id)) {
 				// school change detected
-				try {
-					await invalidateUser(this.app, oldUser);
-					const newUser = await this.createStudent(tspStudent, school, systemId);
-					await Promise.all([
-						grantAccessToPrivateFiles(this.app, oldUser, newUser),
-						grantAccessToSharedFiles(this.app, oldUser, newUser),
-					]);
-					await deleteUser(this.app, oldUser);
-					return newUser;
-				} catch (err) {
-					// rollback?
-					return oldUser;
-				}
+				await invalidateUser(this.app, oldUser);
+				const newUser = await this.createStudent(tspStudent, school, systemId);
+				await Promise.all([
+					grantAccessToPrivateFiles(this.app, oldUser, newUser),
+					grantAccessToSharedFiles(this.app, oldUser, newUser),
+				]);
+				await deleteUser(this.app, oldUser);
+				return newUser;
 			}
 			return this.updateStudent(oldUser, tspStudent);
 		}

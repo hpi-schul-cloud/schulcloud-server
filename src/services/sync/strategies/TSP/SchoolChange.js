@@ -1,3 +1,8 @@
+const { getUsername } = require('./TSP');
+
+const getInvalidatedUuid = (uuid) => `${uuid}/invalid!`;
+const getInvalidatedEmail = (email) => `${email}.invalid`;
+
 const invalidateUser = async (app, user) => {
 	/*
 		Invalidate user, so that:
@@ -5,7 +10,21 @@ const invalidateUser = async (app, user) => {
 			b) the user's email is no longer in use (it's based on the TSP UUID, see TSP.js:59)
 	*/
 	const userService = app.service('users');
-	return Promise.resolve();
+	const accountService = app.service('accounts');
+
+	const invalidatedUuid = getInvalidatedUuid(user.sourceOptions.tspUid);
+	const userChanges = {
+		sourceOptions: {
+			tspUid: invalidatedUuid,
+		},
+		email: getInvalidatedEmail(user.email),
+	};
+	await userService.patch(user._id, userChanges);
+
+	const accountChanges = {
+		username: getUsername(userChanges),
+	};
+	await accountService.patch({ userId: user._id }, accountChanges);
 };
 
 const deleteUser = (app, user) => {
@@ -35,6 +54,7 @@ const grantAccessToSharedFiles = async (app, oldUser, newUser) => {
 };
 
 module.exports = {
+	getInvalidatedUuid,
 	invalidateUser,
 	deleteUser,
 	grantAccessToPrivateFiles,
