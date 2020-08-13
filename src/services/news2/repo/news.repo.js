@@ -42,7 +42,7 @@ module.exports = class NewsRepo {
 	 * @param {NewsSearchParam} searchParams
 	 * @param {*} scopeParams
 	 */
-	async searchForNews(searchParams, scopeQuery) {
+	async searchForNews(searchParams, scopeQuery) { // searchParams = titleRegex and unpublished only
 		// TODO validate scope params
 		if ((scopeQuery || {}).length === 0) {
 			return paginate([], searchParams);
