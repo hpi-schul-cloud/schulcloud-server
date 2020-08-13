@@ -41,6 +41,11 @@ module.exports = class ScopeUc {
 		return user.permissions;
 	}
 
+	async hasSchoolPermission(userId, schoolId, permision) {
+		const permissions = await this.getSchoolPermissions(userId, schoolId);
+		return permissions.includes(permision);
+	}
+
 	/**
 	 * Checks scoped permission for a user and given news.
 	 * @param {BsonId|String} userId
@@ -176,6 +181,6 @@ module.exports = class ScopeUc {
 
 	setup(app) {
 		this.app = app;
-		this.userService = app.service('user');
+		this.userService = app.service('users');
 	}
 };

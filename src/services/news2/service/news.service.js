@@ -2,27 +2,8 @@ const { BadRequest } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 
 module.exports = class NewsRestService {
-	constructor(serviceLocator) {
-		this.newsUc = serviceLocator.service('newsUc');
-	}
-
-	createSearchParams({
-		title, q, unpublished, $sort, $limit, $paginate,
-	}) { // just to avoid ...servParams
-		return Object.freeze({
-			title, titleRegex: q, unpublished, $sort, $limit, $paginate,
-		});
-	}
-
-	transformIntoResultTo(results) {
-		return results;
-
-		// return results.map((newsEntry) => {
-		// 	const { _id, title, displayAt } = newsEntry;
-		// 	return Object.freeze({
-		// 		_id, title, displayAt, schoolId:
-		// 	});
-		// });
+	setup(app) {
+		this.newsUc = app.service('newsUc');
 	}
 
 	//
@@ -33,19 +14,11 @@ module.exports = class NewsRestService {
 		// i.e. separate application logic from frameworks, transport protocols etc.
 		const searchParams = params.query;
 		const { account } = params;
-		return this.newsUc.find(searchParams, account).then(this.transformIntoResultTo);
+		return this.newsUc.findNews(searchParams, account).then(this.transformIntoResultTo);
 	}
 
 	async create(news, params) {
-		if (news && news.title) {
-			try {
-				return await this.newsUc.createNews(news);
-			} catch (error) {
-				logger.error(error);
-				throw new BadRequest(`News '${news.title}' already exists`);
-			}
-		}
-		throw new BadRequest('Property \'login\' not provided');
+		return this.newsUc.createNews(news, params.account);
 	}
 
 	/**
@@ -60,5 +33,16 @@ module.exports = class NewsRestService {
 	 */
 	async get(id, params) {
 		return this.newsUc.readNews(id, params.account);
+	}
+
+	transformIntoResultTo(results) {
+		// return results;
+
+		const data = results.data.map((newsEntry) => {
+			const { __v, ...rest } = newsEntry; // example: skip __v from the result Transport Object
+			return rest;
+		});
+
+		return { ...results, data };
 	}
 };

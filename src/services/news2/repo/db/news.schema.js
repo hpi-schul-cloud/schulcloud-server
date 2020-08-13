@@ -68,8 +68,8 @@ const newsHistorySchema = new Schema({
 	parentId: { type: Schema.Types.ObjectId, ref: 'news' },
 });
 
-const newsModel = mongoose.model('news', newsSchema);
-const newsHistoryModel = mongoose.model('newshistory', newsHistorySchema);
+const newsModel = mongoose.model('news13082020', newsSchema, 'news');
+const newsHistoryModel = mongoose.model('newshistory13082020', newsHistorySchema, 'newshistories');
 
 module.exports = {
 	newsModel,

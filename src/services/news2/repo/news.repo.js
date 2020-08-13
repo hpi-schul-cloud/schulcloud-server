@@ -6,8 +6,11 @@ const { DocumentNotFound } = require('../../../middleware/errors');
 /**
  * @typedef {*} NewsSearchParam
  */
-
 module.exports = class NewsRepo {
+	setup(app) {
+		this.newsModelService = app.service('newsModelService');
+	}
+
 	// should be a part of base class
 	checkExistence(resource, query) {
 		if (!resource) {
@@ -70,17 +73,18 @@ module.exports = class NewsRepo {
 			},
 			paginate: searchParams.$paginate,
 		};
-		return newsModel.find(internalRequestParams);
+		return this.newsModelService.find(internalRequestParams);
 	}
 
 	async readNews(id) {
-		const internalRequestParams = {
-			query: {
-				_id: id,
-				...NewsRepo.populateParams().query,
-			},
-		};
-		const resource = await newsModel.findOne(internalRequestParams);
+		const internalRequestParams = { _id: id };
+
+		const resource = await newsModel.findOne(internalRequestParams)
+			.populate([{ path: 'schoolId', select: ['_id', 'name'] },
+				{ path: 'creatorId', select: ['_id', 'firstName', 'lastName'] },
+				{ path: 'updaterId', select: ['_id', 'firstName', 'lastName'] },
+				{ path: 'target', select: ['_id', 'name'] }]).lean().exec();
+
 		this.checkExistence(resource, internalRequestParams);
 		return resource;
 	}

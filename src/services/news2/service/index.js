@@ -1,6 +1,7 @@
 const NewsRestService = require('./news.service');
+const newsHooks = require('./news.service.hooks');
 
-const NEWS_SERVICE_NAME = '/news2';
 module.exports = function setUpNewsServices(app) {
-	app.use(NEWS_SERVICE_NAME, new NewsRestService());
+	app.use('/news2', new NewsRestService());
+	app.service('news2').hooks(newsHooks);
 };

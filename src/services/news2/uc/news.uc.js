@@ -87,9 +87,9 @@ module.exports = class NewsUc {
 		return NewsUc.decorateResults(news);
 	}
 
-	async find(searchParams, account) {
+	async findNews(searchParams, account) {
 		const permission = searchParams.unpublished ? newsPermissions.EDIT : newsPermissions.VIEW;
-		const scopeParams = this.scopeUc.buildScopeParams(searchParams, account, permission);
+		const scopeParams = await this.scopeUc.buildScopeParams(searchParams, account, permission);
 
 		return this.newsRepo.searchForNews(searchParams, scopeParams)
 			.then(NewsUc.decorateResults)
