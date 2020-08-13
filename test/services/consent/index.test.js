@@ -2,10 +2,17 @@ const assert = require('assert');
 const chai = require('chai');
 const app = require('../../../src/app');
 
-const consentService = app.service('consents');
-const consentVersionService = app.service('consentVersions');
+let consentService;
+let consentVersionService;
 
 describe('consent service', () => {
+	before(() => {
+		consentService = app.service('/consents');
+		consentService.setup(app);
+		consentVersionService = app.service('consentVersions');
+		consentVersionService.setup(app);
+	});
+
 	it('registered the consent service', () => {
 		assert.ok(consentService);
 		assert.ok(consentVersionService);
@@ -31,6 +38,7 @@ describe('consent service', () => {
 			chai.expect(consent.parentConsents[0]).to.have.property('dateOfPrivacyConsent');
 			chai.expect(consent).to.have.property('userConsent');
 		}));
+
 
 	it('patches date of user consent', () => consentService
 		.create({

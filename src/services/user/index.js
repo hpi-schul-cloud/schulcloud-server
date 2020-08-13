@@ -16,7 +16,6 @@ const {
 	registrationConsentServiceHooks,
 } = require('./services');
 
-
 module.exports = (app) => {
 	app.use('usersModel', UsersModelService.userModelService);
 	app.service('usersModel').hooks(UsersModelService.userModelHooks);
