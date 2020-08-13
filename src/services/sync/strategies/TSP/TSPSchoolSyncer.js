@@ -3,6 +3,7 @@ const { mix } = require('mixwith');
 const Syncer = require('../Syncer');
 const ClassImporter = require('../mixins/ClassImporter');
 const { equal: sameObjectId } = require('../../../../helper/compare').ObjectId;
+const { getSchoolYearByPeriod } = require('../../../school/utils/year');
 
 const {
 	TspApi,
@@ -476,10 +477,13 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				sourceOptions,
 			};
 			const teacher = teacherMapping[klass.lehrerUid];
+			const year = klass.startDate
+				? getSchoolYearByPeriod(klass.startDate, klass.endDate, school)
+				: school.currentYear;
 			const options = {
 				name: klass.klasseName,
 				schoolId: school._id,
-				year: school.currentYear,
+				year,
 				teacherIds: teacher ? [teacher] : [],
 				userIds: classMapping[klass.klasseId] || [],
 				source: ENTITY_SOURCE,
