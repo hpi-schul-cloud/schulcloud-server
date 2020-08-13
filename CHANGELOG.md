@@ -10,6 +10,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 ### Changed
 
+## [24.0.2] - 2020-08-05
+### Fixed - 24.0.2
+- SC-5835: Starting the new school year automatically - Cluster 4
+
 ## [24.0.1] - 2020-07-31
 ### Fixed - 24.0.1
 -  SC-5917 Fix activation of LDAP system
@@ -21,25 +25,28 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-5754 Added isExternal attribute to school model. If ldapSchoolIdentifier or source is defined, isExternal will be set to true
 otherwise, if none of them are defined it wil be set to false.
 
-### Changed
-
-- SC-4289 Changed aggregations in admin tables, classes are now taken only from current year or max grade level, and are sorted
-by numeric ordering.
-
 ### Added
 
 - SC-4520 created a new Service called Activation Service; with which jobs can be defined and are 
 only executed when an activation link (activation code) is confirmed (e.g.: change of e-mail address/username)
 Also added a sub-service for changing email/username in Activation Service
+- SC-5280: the LDAP service will try to reconnect up to three times if the connection was lost or could not be established
+- SC-5280: the LDAP service and LDAP syncers now report more errors to the stats object
 
 ### Fixed
 
 - SC-5250: Fixes the CSV-Import, if there are whitespaces in the columnnames
 - SC-5686: only users with the team permission "RENAME_TEAM" can execute the patch method in teams route
+- SC-5280: the LDAP sync now handles (timeout/firewall) errors much more gracefully
+- SC-5280: LDAP bind operations will only be issued if the connection was established successfully
+- SC-5280: aggregated LDAP statistics will now show the number of succesful and failed sub-syncs instead of just 1 or 0
 
 ### Changed
 
 - SC-5542: Added an after hook for AdminUsers find method which formats birthday date to DD.MM.YYYY format.
+- SC-4289 Changed aggregations in admin tables, classes are now taken only from current year or max grade level, and are sorted
+by numeric ordering.
+- SC-5280: if disconnected prematurely, the LDAP service will not try to connect again just to unbind from the server
 
 ### Security
 
