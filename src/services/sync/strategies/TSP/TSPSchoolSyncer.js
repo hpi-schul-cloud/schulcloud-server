@@ -13,10 +13,7 @@ const {
 } = require('./TSP');
 
 const {
-	deleteUser,
-	grantAccessToPrivateFiles,
-	grantAccessToSharedFiles,
-	invalidateUser,
+	switchSchool,
 	getInvalidatedUuid,
 } = require('./SchoolChange');
 
@@ -246,11 +243,25 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	async createOrUpdateTeacher(tspTeacher, school) {
 		const systemId = school.systems[0];
-		const query = { source: ENTITY_SOURCE };
-		query[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`] = tspTeacher.lehrerUid;
+		const query = {
+			source: ENTITY_SOURCE,
+			[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`]: {
+				$in: [
+					tspTeacher.lehrerUid,
+					// try to heal if school change process was interupted before the invalidated user was deleted:
+					getInvalidatedUuid(tspTeacher.lehrerUid),
+				],
+			},
+		};
 		const users = await this.app.service('users').find({ query });
 		if (users.total > 0) {
-			return this.updateTeacher(users.data[0], tspTeacher);
+			const oldUser = users.data[0];
+			if (!sameObjectId(oldUser.schoolId, school._id)) {
+				// school change detected
+				return switchSchool(this.app, oldUser, school,
+					this.createTeacher.bind(this, [tspTeacher, school, systemId]));
+			}
+			return this.updateTeacher(oldUser, tspTeacher);
 		}
 		return this.createTeacher(tspTeacher, school, systemId);
 	}
@@ -359,14 +370,8 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			const oldUser = users.data[0];
 			if (!sameObjectId(oldUser.schoolId, school._id)) {
 				// school change detected
-				await invalidateUser(this.app, oldUser);
-				const newUser = await this.createStudent(tspStudent, school, systemId);
-				await Promise.all([
-					grantAccessToPrivateFiles(this.app, oldUser, newUser),
-					grantAccessToSharedFiles(this.app, oldUser, newUser),
-				]);
-				await deleteUser(this.app, oldUser);
-				return newUser;
+				return switchSchool(this.app, oldUser, school,
+					this.createStudent.bind(this, [tspStudent, school, systemId]));
 			}
 			return this.updateStudent(oldUser, tspStudent);
 		}

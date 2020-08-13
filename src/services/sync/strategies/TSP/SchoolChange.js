@@ -53,10 +53,22 @@ const grantAccessToSharedFiles = async (app, oldUser, newUser) => {
 	*/
 };
 
+const switchSchool = async (app, currentUser, newSchool, createUserMethod) => {
+	await invalidateUser(this.app, currentUser);
+	const newUser = await createUserMethod();
+	await Promise.all([
+		grantAccessToPrivateFiles(this.app, currentUser, newUser),
+		grantAccessToSharedFiles(this.app, currentUser, newUser),
+	]);
+	await deleteUser(this.app, currentUser);
+	return newUser;
+};
+
 module.exports = {
 	getInvalidatedUuid,
 	invalidateUser,
 	deleteUser,
 	grantAccessToPrivateFiles,
 	grantAccessToSharedFiles,
+	switchSchool,
 };
