@@ -35,20 +35,19 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	/**
      * @see {Syncer#steps}
      */
-	steps() {
-		return super.steps()
-			.then((_) => this.getUserData())
-			.then((_) => this.getClassData())
-			.then((_) => this.stats);
+	async steps() {
+		await super.steps();
+		await this.getUserData();
+		await this.getClassData();
+		return this.stats;
 	}
 
 	async getUserData() {
 		this.logInfo('Getting users...');
 		const ldapUsers = await this.app.service('ldap').getUsers(this.system.ldapConfig, this.school);
 		this.logInfo(`Creating and updating ${ldapUsers.length} users...`);
-		const jobs = ldapUsers.map((idmUser) => async () => this.createOrUpdateUser(idmUser, this.school));
-		for (const job of jobs) {
-			await job();
+		for (const ldapUser of ldapUsers) {
+			await this.createOrUpdateUser(ldapUser, this.school);
 		}
 
 		this.logInfo(`Created ${this.stats.users.created} users, `
@@ -67,7 +66,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	}
 
 	createOrUpdateUser(idmUser) {
-		return this.app.service('users').find({
+		return this.app.service('usersModel').find({
 			query: {
 				ldapId: idmUser.ldapUUID,
 			},
@@ -83,6 +82,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 				})
 				.catch((err) => {
 					this.stats.users.errors += 1;
+					this.stats.errors.push(err);
 					this.logError('User creation error', err);
 					return {};
 				});
@@ -146,17 +146,16 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	}
 
 	async createClassesFromLdapData(data, school) {
-		const classes = data.filter((d) => 'uniqueMembers' in d && d.uniqueMembers !== undefined);
-		const jobs = classes.map((ldapClass) => async () => {
+		for (const ldapClass of data) {
 			try {
 				const klass = await this.getOrCreateClassFromLdapData(ldapClass, school);
 				await this.populateClassUsers(ldapClass, klass, school);
 			} catch (err) {
 				this.stats.classes.errors += 1;
+				this.stats.errors.push(err);
 				this.logError('Cannot create synced class', { error: err, data });
 			}
-		});
-		for (const job of jobs) await job();
+		}
 	}
 
 	async getOrCreateClassFromLdapData(data, school) {
@@ -193,10 +192,15 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	async populateClassUsers(ldapClass, currentClass) {
 		const students = [];
 		const teachers = [];
-		if (Array.isArray(ldapClass.uniqueMembers) === false) {
+		if (ldapClass.uniqueMembers === undefined) {
+			// no members means nothing to do here
+			return;
+		}
+		if (!Array.isArray(ldapClass.uniqueMembers)) {
+			// if there is only one member, ldapjs doesn't give us an array here
 			ldapClass.uniqueMembers = [ldapClass.uniqueMembers];
 		}
-		const userData = await this.app.service('users').find(
+		const userData = await this.app.service('usersModel').find(
 			{
 				query:
 				{
@@ -212,7 +216,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 			});
 		});
 
-		if (students.length > 0 && teachers.length > 0) {
+		if (students.length > 0 || teachers.length > 0) {
 			await this.app.service('classes').patch(
 				currentClass._id,
 				{ userIds: students, teacherIds: teachers },

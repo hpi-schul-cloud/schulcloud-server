@@ -8,7 +8,7 @@ module.exports = function () {
 	const options = {
 		Model: federalState,
 		paginate: {
-			default: 16,
+			default: 20,
 			max: 25,
 		},
 		lean: true,
