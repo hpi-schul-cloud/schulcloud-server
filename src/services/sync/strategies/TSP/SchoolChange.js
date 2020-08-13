@@ -53,14 +53,14 @@ const grantAccessToSharedFiles = async (app, oldUser, newUser) => {
 	*/
 };
 
-const switchSchool = async (app, currentUser, newSchool, createUserMethod) => {
-	await invalidateUser(this.app, currentUser);
+const switchSchool = async (app, currentUser, createUserMethod) => {
+	await invalidateUser(app, currentUser);
 	const newUser = await createUserMethod();
 	await Promise.all([
-		grantAccessToPrivateFiles(this.app, currentUser, newUser),
-		grantAccessToSharedFiles(this.app, currentUser, newUser),
+		grantAccessToPrivateFiles(app, currentUser, newUser),
+		grantAccessToSharedFiles(app, currentUser, newUser),
 	]);
-	await deleteUser(this.app, currentUser);
+	await deleteUser(app, currentUser);
 	return newUser;
 };
 

@@ -258,7 +258,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			const oldUser = users.data[0];
 			if (!sameObjectId(oldUser.schoolId, school._id)) {
 				// school change detected
-				return switchSchool(this.app, oldUser, school,
+				return switchSchool(this.app, oldUser,
 					this.createTeacher.bind(this, [tspTeacher, school, systemId]));
 			}
 			return this.updateTeacher(oldUser, tspTeacher);
@@ -370,7 +370,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			const oldUser = users.data[0];
 			if (!sameObjectId(oldUser.schoolId, school._id)) {
 				// school change detected
-				return switchSchool(this.app, oldUser, school,
+				return switchSchool(this.app, oldUser,
 					this.createStudent.bind(this, [tspStudent, school, systemId]));
 			}
 			return this.updateStudent(oldUser, tspStudent);
