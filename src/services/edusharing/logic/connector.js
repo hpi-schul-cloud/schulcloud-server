@@ -1,8 +1,11 @@
 const REQUEST_TIMEOUT = 8000; // ms
 const request = require('request-promise-native');
 const { Configuration } = require('@schul-cloud/commons');
-const { GeneralError, NotFound } = require('@feathersjs/errors');
+const { GeneralError } = require('@feathersjs/errors');
 const logger = require('../../../logger');
+const EduSearchResponse = require('./EduSearchResponse');
+
+const NO_PERMISSIONS_IMG = '/edu-sharing/themes/default/images/common/mime-types/previews/no-permissions.svg';
 
 const ES_PATH = {
 	AUTH: '/edu-sharing/rest/authentication/v1/validateSession',
@@ -88,17 +91,6 @@ class EduSharingConnector {
 		});
 	}
 
-	allConfigurationValuesHaveBeenDefined() {
-		return (
-			Configuration.has('ES_DOMAIN')
-			&& Configuration.has('ES_USER')
-			&& Configuration.has('ES_PASSWORD')
-			&& Configuration.has('ES_GRANT_TYPE')
-			&& Configuration.has('ES_OAUTH_SECRET')
-			&& Configuration.has('ES_CLIENT_ID')
-		);
-	}
-
 	async requestRepeater(options) {
 		let retry = 0;
 		const errors = [];
@@ -112,7 +104,7 @@ class EduSharingConnector {
 					logger.info(`Trying to renew Edu Sharing connection. Attempt ${retry}`);
 					await this.login();
 				} else if (e.statusCode === 404) {
-					throw new NotFound('Edu Sharing returned no results');
+					return null;
 				} else {
 					logger.error(e);
 					errors.push(e);
@@ -135,17 +127,22 @@ class EduSharingConnector {
 		return !!this.authorization && !!this.accessToken;
 	}
 
-	async getImage(url) {
+	async getImage(url, retry = true) {
 		const reqOptions = {
 			uri: url,
 			method: 'GET',
 			headers: {},
 			// necessary to get the image as binary value
 			encoding: null,
+			resolveWithFullResponse: true,
 		};
 		return request(reqOptions)
-			.then((result) => {
-				const encodedData = `data:image;base64,${result.toString('base64')}`;
+			.then(async (result) => {
+				if (retry && result.req.path === NO_PERMISSIONS_IMG) {
+					this.accessToken = await this.getAuth();
+					return this.getImage(url, false);
+				}
+				const encodedData = `data:image;base64,${result.body.toString('base64')}`;
 				return Promise.resolve(encodedData);
 			})
 			.catch((err) => {
@@ -175,7 +172,7 @@ class EduSharingConnector {
 
 		const eduResponse = await this.requestRepeater(options);
 		const { node } = eduResponse;
-		if (node.preview && node.preview.url) {
+		if (node && node.preview && node.preview.url) {
 			// eslint-disable-next-line max-len
 			node.preview.url = await this.getImage(`${node.preview.url}&accessToken=${this.accessToken}&crop=true&maxWidth=1200&maxHeight=800`);
 		}
@@ -196,12 +193,7 @@ class EduSharingConnector {
 		const sortAscending = false;
 		const propertyFilter = '-all-'; // '-all-' for all properties OR ccm-stuff
 		if (searchQuery.trim().length < 2) {
-			return {
-				total: 0,
-				limit: 0,
-				skip: 0,
-				data: [],
-			};
+			return new EduSearchResponse();
 		}
 
 		if (this.isLoggedin() === false) {
@@ -247,14 +239,11 @@ class EduSharingConnector {
 				}
 			});
 			await Promise.allSettled(promises);
+		} else {
+			return new EduSearchResponse();
 		}
 
-		return {
-			total: parsed.pagination.total,
-			limit: parsed.pagination.count,
-			skip: parsed.pagination.from,
-			data: parsed.nodes,
-		};
+		return new EduSearchResponse(parsed);
 	}
 
 
