@@ -2,6 +2,8 @@ const base64Files = require('./base64Files');
 const fileStorage = require('./fileStorage');
 const link = require('./link');
 const news = require('./news');
+const news2 = require('./news2');
+const scope = require('./scope');
 const newsEvents = require('./news/events');
 const content = require('./content');
 const calendar = require('./calendar');
@@ -73,6 +75,8 @@ module.exports = function initializeServices() {
 	app.configure(fileStorage);
 	app.configure(link);
 	app.configure(news);
+	app.configure(news2);
+	app.configure(scope);
 	app.configure(helpers);
 	app.configure(homework);
 	app.configure(federalState);

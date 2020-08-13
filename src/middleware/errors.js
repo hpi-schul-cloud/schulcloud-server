@@ -10,6 +10,14 @@ class ApplicationError extends Error {
 class SilentError extends ApplicationError {
 }
 
+class DocumentNotFound extends ApplicationError {
+}
+
+class ValidationError extends ApplicationError {
+}
+
 module.exports = {
 	SilentError,
+	DocumentNotFound,
+	ValidationError,
 };
