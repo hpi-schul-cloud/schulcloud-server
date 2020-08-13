@@ -5,6 +5,7 @@ const { GeneralError } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const EduSearchResponse = require('./EduSearchResponse');
 
+const RETRY_ERROR_CODES = [401, 403];
 const NO_PERMISSIONS_IMG = '/edu-sharing/themes/default/images/common/mime-types/previews/no-permissions.svg';
 
 const ES_PATH = {
@@ -64,7 +65,7 @@ class EduSharingConnector {
 				return result.headers['set-cookie'][0];
 			})
 			.catch((err) => {
-				logger.error('error: ', err);
+				logger.error(`Couldn't get edusharing cookie: ${err.statusCode} ${err.message}`);
 			});
 	}
 
@@ -94,19 +95,18 @@ class EduSharingConnector {
 	async requestRepeater(options) {
 		let retry = 0;
 		const errors = [];
-		const retryErrors = [401, 403];
 		do {
 			try {
 				const eduResponse = await request(options);
 				return JSON.parse(eduResponse);
 			} catch (e) {
-				if (retryErrors.indexOf(e.statusCode) >= 0) {
+				if (RETRY_ERROR_CODES.indexOf(e.statusCode) >= 0) {
 					logger.info(`Trying to renew Edu Sharing connection. Attempt ${retry}`);
 					await this.login();
 				} else if (e.statusCode === 404) {
 					return null;
 				} else {
-					logger.error(e);
+					logger.error(`Edusharing error occurred ${e.statusCode} ${e.message}`);
 					errors.push(e);
 				}
 			}
@@ -118,6 +118,7 @@ class EduSharingConnector {
 
 
 	async login() {
+		logger.info('Renewal of Edusharing credentials');
 		this.authorization = await this.getCookie();
 		this.accessToken = await this.getAuth();
 	}
@@ -138,17 +139,30 @@ class EduSharingConnector {
 		};
 		return request(reqOptions)
 			.then(async (result) => {
+				// edusharing sometimes doesn't return error code if access token is expired
+				// but redirect to no permission image
 				if (retry && result.req.path === NO_PERMISSIONS_IMG) {
-					this.accessToken = await this.getAuth();
-					return this.getImage(url, false);
+					return this.tryToGetImageWithNewAccessToken(url);
 				}
 				const encodedData = `data:image;base64,${result.body.toString('base64')}`;
 				return Promise.resolve(encodedData);
 			})
-			.catch((err) => {
-				logger.error('error: ', err);
+			.catch(async (err) => {
+				if (retry && RETRY_ERROR_CODES.indexOf(err.statusCode) >= 0) {
+					return this.tryToGetImageWithNewAccessToken(url);
+				}
+				logger.error(`Couldn't fetch image for ${url}:
+				Edusharing responded with ${err.statusCode} ${err.message}`);
 				return Promise.reject(err);
 			});
+	}
+
+	async tryToGetImageWithNewAccessToken(url) {
+		logger.info('Trying to renew Edusharing access token.');
+		this.accessToken = await this.getAuth();
+		const urlObj = new URL(url);
+		urlObj.searchParams.set('accessToken', this.accessToken);
+		return this.getImage(urlObj.toString(), false);
 	}
 
 	async GET(id) {
