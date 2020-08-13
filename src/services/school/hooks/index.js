@@ -239,8 +239,10 @@ exports.before = {
 
 exports.after = {
 	all: [
-		iff(isNotAuthenticated, keep('name', 'purpose', 'id')),
-		iff(populateInQuery, keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active'])),
+		// todo: remove id if possible (shouldnt exist)
+		iff(isNotAuthenticated, keep('name', 'purpose', 'systems', '_id', 'id')),
+		iff(populateInQuery,
+			keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active', 'ldapConfig.rootPath'])),
 		iff(isProvider('external') && !globalHooks.isSuperHero(), discard('storageProvider')),
 	],
 	find: [decorateYears, setStudentsCanCreateTeams],

@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
+const { Configuration } = require('@schul-cloud/commons');
+const mongooseHistory = require('mongoose-history');
 const roleModel = require('../../role/model');
 const { enableAuditLog } = require('../../../utils/database');
-const { consentSchema } = require('./consent.schema');
 const externalSourceSchema = require('../../../helper/externalSourceSchema');
-const { defineConsentStatus, isParentConsentRequired } = require('../utils/consent');
 
 const { Schema } = mongoose;
 
@@ -12,6 +12,13 @@ const defaultFeatures = [];
 const USER_FEATURES = {
 	EDTR: 'edtr',
 };
+
+const consentForm = ['analog', 'digital', 'update'];
+const consentTypes = {
+	PRIVACY: 'privacy',
+	TERMS_OF_USE: 'termsOfUse',
+};
+
 
 const userSchema = new Schema({
 	roles: [{ type: Schema.Types.ObjectId, ref: 'role' }],
@@ -42,7 +49,31 @@ const userSchema = new Schema({
 		enum: Object.values(USER_FEATURES),
 	},
 
-	consent: consentSchema,
+	consent: {
+		userConsent: {
+			form: { type: String, enum: consentForm },
+			dateOfPrivacyConsent: { type: Date },
+			dateOfTermsOfUseConsent: { type: Date },
+			privacyConsent: { type: Boolean },
+			termsOfUseConsent: { type: Boolean },
+		},
+		parentConsents: [{
+			parentId: { type: Schema.Types.ObjectId, ref: 'user' },
+			form: { type: String, enum: consentForm },
+			dateOfPrivacyConsent: { type: Date },
+			dateOfTermsOfUseConsent: { type: Date },
+			privacyConsent: { type: Boolean },
+			termsOfUseConsent: { type: Boolean },
+		}],
+		consentVersionUpdated: {
+			type: 'string',
+			enum: [
+				'all',
+				'dateOfPrivacyConsent',
+				'dateOfTermsOfUseConsent',
+			],
+		},
+	},
 
 	/**
 	 * depending on system settings,
@@ -51,8 +82,9 @@ const userSchema = new Schema({
 	*/
 	discoverable: { type: Boolean, required: false },
 
-	ldapDn: { type: String },
-	ldapId: { type: String },
+	// optional attributes if user was created during LDAP sync:
+	ldapDn: { type: String, index: true }, // LDAP login username
+	ldapId: { type: String, index: true }, // UUID to identify during the sync
 
 	...externalSourceSchema,
 
@@ -66,6 +98,11 @@ userSchema.index({ schoolId: 1, roles: -1 });
 // maybe the schoolId index is enough ?
 // https://ticketsystem.schul-cloud.org/browse/SC-3724
 
+if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
+	// to speed up lookups during TSP sync
+	userSchema.index({ 'sourceOptions.$**': 1 });
+}
+
 userSchema.virtual('fullName').get(function get() {
 	return [
 		this.namePrefix,
@@ -76,18 +113,6 @@ userSchema.virtual('fullName').get(function get() {
 	].join(' ').trim().replace(/\s+/g, ' ');
 });
 
-userSchema.virtual('consentStatus').get(function get() {
-	if (!this.consent) return undefined; // TODO: what happen if not defined, is it on query?
-	return defineConsentStatus(this.birthday, this.consent);
-});
-
-
-userSchema.virtual('requiresParentConsent').get(function get() {
-	if (!this.birthday) return undefined;
-	return isParentConsentRequired(this.birthday);
-});
-
-
 userSchema.plugin(leanVirtuals);
 
 userSchema.methods.getPermissions = function getPermissions() {
@@ -95,8 +120,10 @@ userSchema.methods.getPermissions = function getPermissions() {
 };
 
 enableAuditLog(userSchema);
+userSchema.plugin(mongooseHistory);
 
 module.exports = {
 	USER_FEATURES,
 	userSchema,
+	consentTypes,
 };

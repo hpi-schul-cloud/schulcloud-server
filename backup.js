@@ -264,4 +264,6 @@ const main = async () => {
 		throw new Error('invalid argument');
 	}
 };
+
+
 main();
