@@ -6,6 +6,7 @@ const logger = require('../../../logger');
 const EduSearchResponse = require('./EduSearchResponse');
 
 const RETRY_ERROR_CODES = [401, 403];
+const COOKIE_RENEWAL_PERIOD_MS = 1800000; // 30 min
 const NO_PERMISSIONS_IMG = '/edu-sharing/themes/default/images/common/mime-types/previews/no-permissions.svg';
 
 const ES_PATH = {
@@ -14,6 +15,8 @@ const ES_PATH = {
 	SEARCH: '/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/',
 	TOKEN: '/edu-sharing/oauth2/token',
 };
+
+let lastCookieRenewalTime = null;
 
 class EduSharingConnector {
 	constructor() {
@@ -123,9 +126,16 @@ class EduSharingConnector {
 		this.accessToken = await this.getAuth();
 	}
 
-	isLoggedin() {
-		// returns false if cookie or accesstoken is falsy
-		return !!this.authorization && !!this.accessToken;
+	shouldRelogin() {
+		const nextCookieRenewalTime = lastCookieRenewalTime
+			? new Date(lastCookieRenewalTime.getTime() + COOKIE_RENEWAL_PERIOD_MS)
+			: new Date();
+		// should relogin if cookie expired or cookie or access token is empty
+		const shouldRelogin = (new Date() >= nextCookieRenewalTime) || !this.authorization || !this.accessToken;
+		if (shouldRelogin) {
+			lastCookieRenewalTime = new Date();
+		}
+		return shouldRelogin;
 	}
 
 	async getImage(url, retry = true) {
@@ -166,7 +176,7 @@ class EduSharingConnector {
 	}
 
 	async GET(id) {
-		if (this.isLoggedin() === false) {
+		if (this.shouldRelogin()) {
 			await this.login();
 		}
 		const propertyFilter = '-all-';
@@ -210,7 +220,7 @@ class EduSharingConnector {
 			return new EduSearchResponse();
 		}
 
-		if (this.isLoggedin() === false) {
+		if (this.shouldRelogin()) {
 			await this.login();
 		}
 
