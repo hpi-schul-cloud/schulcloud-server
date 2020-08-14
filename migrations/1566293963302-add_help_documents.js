@@ -140,7 +140,7 @@ module.exports = {
 			},
 			{
 				theme: 'open',
-				schoolId: mongoose.Types.ObjectId('0000d186816abba584714c5f'),
+				schoolId: mongoose.Types.ObjectId('5f2987e020834114b8efd6f8'),
 				data: [
 					{
 						title: 'Arbeitsgruppen (Paul-Gerhardt-Gymnasium Test)',
