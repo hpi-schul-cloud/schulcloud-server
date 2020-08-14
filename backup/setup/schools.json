@@ -1,6 +1,6 @@
 [{
 	"_id": {
-		"$oid": "0000d186816abba584714c55"
+		"$oid": "5f2987e020834114b8efd6f7"
 	},
 	"name": "Schiller-Oberschule",
 	"fileStorageType": "awsS3",
@@ -23,7 +23,7 @@
 },
 {
 	"_id": {
-		"$oid": "0000d186816abba584714c5f"
+		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"name": "Paul-Gerhardt-Gymnasium",
 	"fileStorageType": "awsS3",
@@ -59,7 +59,7 @@
 },
 {
 	"_id": {
-		"$oid": "598ec0bc8e4e364ec18ff46d"
+		"$oid": "5f2987e020834114b8efd6f9"
 	},
 	"updatedAt": {
 		"$date": "2020-07-27T08:21:14.719Z"
@@ -81,7 +81,7 @@
 },
 {
 	"_id": {
-		"$oid": "599ec0bb8e4e364ec18ff46c"
+		"$oid": "5f2987e020834114b8efd6f6"
 	},
 	"updatedAt": {
 		"$date": "2020-07-27T08:21:14.719Z"

@@ -37,7 +37,7 @@ const getRoleByKey = (key, value) => rolesModel.find({
 })
 	.then(([role]) => role);
 
-const createUser = async (userId, roleName = 'student', schoolId = '0000d186816abba584714c5f') => {
+const createUser = async (userId, roleName = 'student', schoolId = '5f2987e020834114b8efd6f8') => {
 	if (![
 		'expert',
 		'student',
