@@ -24,6 +24,7 @@ module.exports = {
 		info(`${amount} user.importHashs will be removed`);
 		const limit = 200;
 		let looped = 0;
+		let removedImportHashes = 0;
 
 		while (looped < amount) {
 			const users = await userModel
@@ -36,29 +37,26 @@ module.exports = {
 				.lean()
 				.exec();
 
-			console.log(users.length, 'users found');
-			info('remove user.consent.id\'s');
 			for (const user of users) {
 				const accounts = await accountModel.find({ userId: user._id }).countDocuments();
-				console.log(`found ${accounts} accounts for user ${user.email}`);
 				if (accounts > 0) {
 					user.importHash = null;
 					await userModel.findByIdAndUpdate(user._id, user);
-					console.log('user updated');
+					removedImportHashes += 1;
 				}
 			}
 			looped += users.length;
 		}
 		// ////////////////////////////////////////////////////
+		info(`removed the import hash from ${removedImportHashes} users`);
 		await close();
-		console.log('connection closed');
 	},
 
 	down: async function down() {
 		await connect();
 		// ////////////////////////////////////////////////////
 		// Implement the necessary steps to roll back the migration here.
-		console.log('It is impossible to roleback the removal of the user\'s importHashes');
+		error('It is impossible to roleback the removal of the user\'s importHashes');
 		// ////////////////////////////////////////////////////
 		await close();
 	},
