@@ -4,7 +4,7 @@ const getInvalidatedUuid = (uuid) => `${uuid}/invalid!`;
 const getInvalidatedEmail = (email) => `${email}.invalid`;
 
 const invalidateUser = async (app, user) => {
-	const userService = app.service('userModel');
+	const userService = app.service('usersModel');
 	const accountService = app.service('accountModel');
 
 	const invalidatedUuid = getInvalidatedUuid(user.sourceOptions.tspUid);
@@ -23,7 +23,7 @@ const invalidateUser = async (app, user) => {
 };
 
 const deleteUser = (app, user) => {
-	const userService = app.service('userModel');
+	const userService = app.service('usersModel');
 	const accountService = app.service('accountModel');
 	return Promise.all([
 		userService.remove({ _id: user._id }),
