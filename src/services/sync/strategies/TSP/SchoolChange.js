@@ -32,11 +32,17 @@ const deleteUser = (app, user) => {
 };
 
 const grantAccessToPrivateFiles = async (app, oldUser, newUser) => {
-	/*
-		- private files are those with (refOwnerModel === 'user' && owner === oldUser._id)
-		- Let's discuss if we should copy them (the metadata) or just override all fields that
-		contain oldUser._id with newUser._id...
-	*/
+	const fileService = app.service('/files');
+	const searchParams = {
+		query: {
+			refOwnerModel: 'user',
+			owner: oldUser._id,
+		},
+	};
+	const updateData = {
+		owner: newUser._id,
+	};
+	await fileService.patch(null, updateData, searchParams);
 };
 
 const grantAccessToSharedFiles = async (app, oldUser, newUser) => {
