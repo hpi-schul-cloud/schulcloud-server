@@ -19,7 +19,7 @@ const invalidateUser = async (app, user) => {
 	const accountChanges = {
 		username: getUsername(userChanges),
 	};
-	await accountService.patch({ userId: user._id }, accountChanges);
+	await accountService.patch(null, accountChanges, { query: { userId: user._id } });
 };
 
 const deleteUser = (app, user) => {
