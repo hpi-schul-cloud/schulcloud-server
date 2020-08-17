@@ -27,7 +27,7 @@ const deleteUser = (app, user) => {
 	const accountService = app.service('accountModel');
 	return Promise.all([
 		userService.remove({ _id: user._id }),
-		accountService.remove({ userId: user._id }),
+		accountService.remove(null, { query: { userId: user._id } }),
 	]);
 };
 
