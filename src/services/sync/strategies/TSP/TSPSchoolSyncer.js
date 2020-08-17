@@ -144,25 +144,17 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 
 			this.logInfo('Syncing teachers...');
 			// create teachers and add them to the mapping (teacherUID => User)
-			const teacherActions = schoolTeachers.map((tspTeacher) => async () => {
+			for (const tspTeacher of schoolTeachers) {
 				const teacher = await this.createOrUpdateTeacher(tspTeacher, school);
 				teacherMapping[tspTeacher.lehrerUid] = teacher;
-			});
-			// serialize create actions to be duplicate-proof
-			for (const action of teacherActions) {
-				await action();
 			}
 
 			this.logInfo('Syncing students...');
 			// create students and add them to the mapping (classUid => [User])
-			const studentActions = schoolStudents.map((tspStudent) => async () => {
+			for (const tspStudent of schoolStudents) {
 				const student = await this.createOrUpdateStudent(tspStudent, school);
 				classMapping[tspStudent.klasseId] = classMapping[tspStudent.klasseId] || [];
 				classMapping[tspStudent.klasseId].push(student._id);
-			});
-			// serialize create actions to be duplicate-proof
-			for (const action of studentActions) {
-				await action();
 			}
 
 			this.logInfo('Syncing classes...');
