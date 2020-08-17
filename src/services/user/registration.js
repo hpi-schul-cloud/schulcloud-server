@@ -199,7 +199,11 @@ const registerUser = function register(data, params, app) {
 			};
 			return app.service('accounts').create(account)
 				.then((newAccount) => { account = newAccount; })
-				.catch((err) => Promise.reject(new Error('Fehler beim Erstellen des Accounts.', err)));
+				.catch((err) => {
+					const msg = 'Fehler beim Erstellen des Accounts.';
+					logger.warn(msg, err);
+					return Promise.reject(new Error(msg));
+				});
 		})
 		.then(async (res) => {
 			// add parent if necessary
@@ -246,7 +250,11 @@ const registerUser = function register(data, params, app) {
 				.then((newConsent) => {
 					consent = newConsent;
 					return Promise.resolve();
-				}).catch((err) => Promise.reject(new Error('Fehler beim Speichern der Einverständniserklärung.', err)));
+				}).catch((err) => {
+					const msg = 'Fehler beim Speichern der Einverständniserklärung.';
+					logger.warn(msg, err);
+					return Promise.reject(new Error('Fehler beim Speichern der Einverständniserklärung.'));
+				});
 		})
 		.then(() => Promise.resolve({
 			user, parent, account, consent,
@@ -272,8 +280,16 @@ const registerUser = function register(data, params, app) {
 				rollbackPromises.push(consentModel.consentModel.findOneAndRemove({ _id: consent._id }).exec());
 			}
 			return Promise.all(rollbackPromises)
-				.catch((err) => Promise.reject(new errors.BadRequest((err.error || {}).message || err.message || err || 'Kritischer Fehler bei der Registrierung. Bitte wenden sie sich an den Administrator.')))
-				.then(() => Promise.reject(new errors.BadRequest((err.error || {}).message || err.message || err || 'Fehler bei der Registrierung.')));
+				.catch((err) => {
+					logger.error('error while roling back registration', err);
+					const msg = (err.error || {}).message || err.message || err
+						|| 'Kritischer Fehler bei der Registrierung. Bitte wenden sie sich an den Administrator.';
+					return Promise.reject(new errors.BadRequest(msg));
+				})
+				.then(() => {
+					const msg = (err.error || {}).message || err.message || err || 'Fehler bei der Registrierung.';
+					return Promise.reject(new errors.BadRequest(msg));
+				});
 		});
 };
 
