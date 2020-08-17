@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Test a change in deploy.sh
+
 # automatically rolls out new versions on brandenburg, demo, open and test
 # develop-Branch goes to test, Master-Branch goes to productive systems
 
