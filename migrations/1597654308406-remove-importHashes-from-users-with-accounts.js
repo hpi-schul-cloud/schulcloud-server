@@ -19,7 +19,7 @@ module.exports = {
 		// Hint: Access models via this('modelName'), not an imported model to have
 		// access to the correct database connection. Otherwise Mongoose calls never return.
 		const amount = await userModel.find({ importHash: { $ne: null } }).countDocuments();
-		info(`${amount} user.importHashs will be removed`);
+		info(`${amount} user.importHashs found. Will check these users for accounts`);
 		const limit = 200;
 		let looped = 0;
 		let removedImportHashes = 0;
@@ -34,15 +34,17 @@ module.exports = {
 				.limit(limit)
 				.lean()
 				.exec();
+			// eslint-disable-next-line no-loop-func
+			await Promise.all(users.map((user) => accountModel.find({ userId: user._id }).countDocuments()
+				.then((accounts) => {
+					if (accounts > 0) {
+						user.importHash = null;
+						removedImportHashes += 1;
+						return userModel.findByIdAndUpdate(user._id, user);
+					}
+					return Promise.resolve();
+				})));
 
-			for (const user of users) {
-				const accounts = await accountModel.find({ userId: user._id }).countDocuments();
-				if (accounts > 0) {
-					user.importHash = null;
-					await userModel.findByIdAndUpdate(user._id, user);
-					removedImportHashes += 1;
-				}
-			}
 			looped += users.length;
 		}
 		// ////////////////////////////////////////////////////

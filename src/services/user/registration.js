@@ -201,7 +201,7 @@ const registerUser = function register(data, params, app) {
 				.then((newAccount) => { account = newAccount; })
 				.catch((err) => {
 					const msg = 'Fehler beim Erstellen des Accounts.';
-					logger.warn(msg, err);
+					logger.warning(msg, err);
 					return Promise.reject(new Error(msg));
 				});
 		})
@@ -252,7 +252,7 @@ const registerUser = function register(data, params, app) {
 					return Promise.resolve();
 				}).catch((err) => {
 					const msg = 'Fehler beim Speichern der Einverständniserklärung.';
-					logger.warn(msg, err);
+					logger.warning(msg, err);
 					return Promise.reject(new Error('Fehler beim Speichern der Einverständniserklärung.'));
 				});
 		})
