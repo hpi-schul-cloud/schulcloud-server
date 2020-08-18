@@ -11,7 +11,7 @@ exports.before = () => ({
 	],
 	create: [
 		globalHooks.hasPermission('ROLE_CREATE'),
-		globalHooks.resolveToIds.bind(this, '/roles', 'data.roles', 'name'),
+		globalHooks.resolveToIds('/roles', 'data.roles', 'name'),
 	],
 	update: [
 		globalHooks.hasPermission('ROLE_EDIT'),

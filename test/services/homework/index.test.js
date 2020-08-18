@@ -17,7 +17,7 @@ describe('homework service', function test() {
 	});
 
 	const testAufgabe = {
-		schoolId: '0000d186816abba584714c5f',
+		schoolId: '5f2987e020834114b8efd6f8',
 		teacherId: '0000d231816abba584714c9e',
 		name: 'Testaufgabe',
 		description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',

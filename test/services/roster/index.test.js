@@ -44,7 +44,7 @@ describe('roster service', function oauth() {
 		testCourse = {
 			_id: '5cb8dc8e7cccac0e98a29975',
 			name: 'rosterTestCourse',
-			schoolId: '0000d186816abba584714c5f',
+			schoolId: '5f2987e020834114b8efd6f8',
 			teacherIds: [testUser1._id],
 			userIds: [
 				'0000d213816abba584714c0a',

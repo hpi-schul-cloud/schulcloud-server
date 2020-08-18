@@ -55,10 +55,10 @@ exports.before = {
 	all: [authenticate('jwt')],
 	find: [
 		lookupSchool,
-		globalHooks.mapPaginationQuery.bind(this),
+		globalHooks.mapPaginationQuery,
 		filterForPublicTeacher,
 		// resolve ids for role strings (e.g. 'TEACHER')
-		globalHooks.resolveToIds.bind(this, '/roles', 'params.query.roles', 'name'),
+		globalHooks.resolveToIds('/roles', 'params.query.roles', 'name'),
 		mapRoleFilterQuery,
 		globalHooks.addCollation,
 	],

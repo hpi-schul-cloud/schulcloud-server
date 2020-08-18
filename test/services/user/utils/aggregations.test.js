@@ -3,7 +3,7 @@ const {
 	convertSelect,
 	getParentReducer,
 	createMultiDocumentAggregation,
-} = require('../../../../src/services/consent/utils/aggregations');
+} = require('../../../../src/services/user/utils/aggregations');
 
 describe('consent aggregation', () => {
 	it('convert select', () => {
