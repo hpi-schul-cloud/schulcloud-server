@@ -46,6 +46,29 @@ const grantAccessToPrivateFiles = async (app, oldUser, newUser) => {
 };
 
 const grantAccessToSharedFiles = async (app, oldUser, newUser) => {
+	console.log('here');
+	const fileModel = app.service('file');
+
+	try {
+		const filesToUpdate = await fileModel.find(
+			{
+				'permissions.refPermModel': 'user',
+				'permissions.refId': oldUser._id,
+				owner: {
+					$ne: oldUser._id,
+				}
+			});
+		const updateFilesRefIdResult = await Promise.all(filesToUpdate.map((file) => {
+			return fileModel.update({_id: file._id, 'permissions.refId': oldUser._id },
+				{ $set: { 'permissions.$.refId': newUser._id }});
+		}));
+		console.log(updateFilesRefIdResult);
+		return updateFilesRefIdResult;
+
+	} catch (err) {
+		console.log(err);
+	}
+
 	/*
 		- shared files are those with
 			a) one item in the permissions array with (refPermModel === 'user' && refId === oldUser._id) AND
