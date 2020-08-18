@@ -7,10 +7,6 @@ const { DocumentNotFound } = require('../../../middleware/errors');
  * @typedef {*} NewsSearchParam
  */
 module.exports = class NewsRepo {
-	setup(app) {
-		this.newsModelService = app.service('newsModelService');
-	}
-
 	// should be a part of base class
 	checkExistence(resource, query) {
 		if (!resource) {
@@ -73,7 +69,7 @@ module.exports = class NewsRepo {
 			},
 			paginate: searchParams.$paginate,
 		};
-		return this.newsModelService.find(internalRequestParams);
+		return paginate(await newsModel.find({}).lean().exec(), { $paginate: true });
 	}
 
 	async readNews(id) {

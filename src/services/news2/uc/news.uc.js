@@ -1,8 +1,9 @@
 const { newsPermissions } = require('../repo/db/news.schema');
+const NewsRepo = require('../repo/news.repo');
 
 module.exports = class NewsUc {
-	setup(app) {
-		this.newsRepo = app.service('newsRepo');
+	constructor(app) {
+		this.newsRepo = new NewsRepo();
 		// 1 Could be also achieved with mixins!
 		this.scopeUc = app.service('scopeUc');
 	}

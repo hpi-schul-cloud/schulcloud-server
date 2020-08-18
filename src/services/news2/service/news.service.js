@@ -1,9 +1,8 @@
-const { BadRequest } = require('@feathersjs/errors');
-const logger = require('../../../logger');
+const NewsUc = require('../uc/news.uc');
 
 module.exports = class NewsRestService {
 	setup(app) {
-		this.newsUc = app.service('newsUc');
+		this.newsUc = new NewsUc(app);
 	}
 
 	//
