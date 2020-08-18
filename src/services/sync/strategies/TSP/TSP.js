@@ -131,7 +131,7 @@ const addDummyBirthday = async (app, user) => app.service('users').patch(user._i
 const shortenedRegistrationProcess = async (app, student) => {
 	await createTSPConsent(app, student);
 	await addDummyBirthday(app, student);
-}
+};
 
 /**
  * Finds and returns the school identified by the given identifier
