@@ -70,6 +70,7 @@ class AdminUsers {
 					'createdAt',
 					'importHash',
 					'birthday',
+					'preferences.registrationMailSend',
 				],
 				skip: clientQuery.$skip || clientQuery.skip,
 				limit: clientQuery.$limit || clientQuery.limit,
