@@ -1,4 +1,5 @@
 const { getUsername } = require('./TSP');
+const { FileModel } = require('../../../fileStorage/model.js');
 
 const getInvalidatedUuid = (uuid) => `${uuid}/invalid!`;
 const getInvalidatedEmail = (email) => `${email}.invalid`;
@@ -46,25 +47,17 @@ const grantAccessToPrivateFiles = async (app, oldUser, newUser) => {
 };
 
 const grantAccessToSharedFiles = async (app, oldUser, newUser) => {
-	console.log('here');
-	const fileModel = app.service('file');
-
 	try {
-		const filesToUpdate = await fileModel.find(
+		const filesToUpdate = await FileModel.updateMany(
 			{
 				'permissions.refPermModel': 'user',
 				'permissions.refId': oldUser._id,
 				owner: {
 					$ne: oldUser._id,
 				}
-			});
-		const updateFilesRefIdResult = await Promise.all(filesToUpdate.map((file) => {
-			return fileModel.update({_id: file._id, 'permissions.refId': oldUser._id },
-				{ $set: { 'permissions.$.refId': newUser._id }});
-		}));
-		console.log(updateFilesRefIdResult);
-		return updateFilesRefIdResult;
-
+			},
+			{ $set: { 'permissions.$.refId': newUser._id } });
+		return filesToUpdate;
 	} catch (err) {
 		console.log(err);
 	}
