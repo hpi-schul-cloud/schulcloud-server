@@ -6,7 +6,7 @@ const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@schul-cloud/commons');
 const logger = require('../../../logger');
-const { createMultiDocumentAggregation } = require('../utils/aggregations');
+const { convertToIn, createMultiDocumentAggregation } = require('../utils/aggregations');
 const {
 	hasSchoolPermission,
 } = require('../../../hooks');
@@ -74,7 +74,11 @@ class AdminUsers {
 				skip: clientQuery.$skip || clientQuery.skip,
 				limit: clientQuery.$limit || clientQuery.limit,
 			};
-			if (_id) query._id = _id;
+			if (_id) {
+				query._id = _id;
+			} else if (clientQuery.users) {
+				query._id = { $in: convertToIn(clientQuery.users) };
+			}
 			if (clientQuery.consentStatus) query.consentStatus = clientQuery.consentStatus;
 			if (clientQuery.classes) query.classes = clientQuery.classes;
 			if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
