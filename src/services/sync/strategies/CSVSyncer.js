@@ -262,7 +262,6 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		const enrichedUser = Object.assign(record, {
 			schoolId: this.options.schoolId,
 			roles: [this.options.role],
-			sendRegistration: true,
 		});
 		enrichedUser.importHash = linkData.hash;
 		enrichedUser.shortLink = linkData.shortLink;
