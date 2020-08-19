@@ -74,8 +74,11 @@ class AdminUsers {
 				skip: clientQuery.$skip || clientQuery.skip,
 				limit: clientQuery.$limit || clientQuery.limit,
 			};
-			if (_id) query._id = _id;
-			if (clientQuery.users) query._id = { $in: convertToIn(clientQuery.users) };
+			if (_id) {
+				query._id = _id;
+			} else if (clientQuery.users) {
+				query._id = { $in: convertToIn(clientQuery.users) };
+			}
 			if (clientQuery.consentStatus) query.consentStatus = clientQuery.consentStatus;
 			if (clientQuery.classes) query.classes = clientQuery.classes;
 			if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
