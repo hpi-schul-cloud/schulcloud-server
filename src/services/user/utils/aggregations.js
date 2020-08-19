@@ -412,5 +412,6 @@ const createMultiDocumentAggregation = ({
 module.exports = {
 	convertSelect,
 	getParentReducer,
+	convertToIn,
 	createMultiDocumentAggregation,
 };
