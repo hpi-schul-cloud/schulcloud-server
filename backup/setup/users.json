@@ -341,5 +341,69 @@
 		}
 	],
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f551b28124e2e6e0f949705"
+	},
+	"__v": 0,
+	"firstName": "Schuler",
+	"lastName": "in SH",
+	"email": "schueler-sh@schul-cloud.org",
+	"updatedAt": {
+		"$date": "2020-09-06T14:49:08.845Z"
+	},
+	"createdAt": {
+		"$date": "2020-09-06T00:06:37.148Z"
+	},
+	"birthday": {
+		"$date": "2000-01-01T11:25:43.556Z"
+	},
+	"preferences": {
+		"firstLogin": true
+	},
+	"schoolId": {
+		"$oid": "5f4fd40d1dccb98783880859"
+	},
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714c99"
+		},
+		{
+			"$oid": "5f4f952f87b6aa066e22fff6"
+		}
+	],
+	"consent": {
+		"userConsent": {
+			"form": "digital",
+			"privacyConsent": true,
+			"termsOfUseConsent": true,
+			"dateOfPrivacyConsent": {
+				"$date": "2020-09-06T00:06:37.148Z"
+			},
+			"dateOfTermsOfUseConsent": {
+				"$date": "2020-09-06T00:06:37.148Z"
+			}
+		},
+		"parentConsents": [
+			{
+				"_id": {
+					"$oid": "5ece7de4a194604c6e31f434"
+				},
+				"parentId": {
+					"$oid": "0000d213816abba584714c0b"
+				},
+				"form": "digital",
+				"privacyConsent": true,
+				"termsOfUseConsent": true,
+				"dateOfPrivacyConsent": {
+					"$date": "2020-09-06T00:06:37.148Z"
+				},
+				"dateOfTermsOfUseConsent": {
+					"$date": "2020-09-06T00:06:37.148Z"
+				}
+			}
+		]
+	}
 }]
 

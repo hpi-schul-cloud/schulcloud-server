@@ -479,6 +479,56 @@ describe('user service', () => {
 				expect(err.code).to.equal(400);
 			}
 		});
+
+		it('should add extra role studentSH to students from SH federal state', async () => {
+			const school = await testObjects.createTestSchool({
+				name: 'hello',
+				federalState: ObjectId('0000b186816abba584714c64'),
+			});
+			const actingUser = await testObjects.createTestUser({ roles: ['superhero'] });
+			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			const data = {
+				firstName: 'Foo',
+				lastName: 'Bar',
+				schoolId: school._id,
+				roles: ['student'],
+				email: `${Date.now()}@test.org`,
+			};
+			const usersService = app.service('users');
+			const result = await usersService.create(data, params);
+			const roleService = app.service('roles');
+			const role = await roleService.find({
+				query: {
+					name: 'studentSH',
+				},
+			});
+			expect(result.roles.some((r) => equalIds(r._id, role.data[0]._id))).to.be.true;
+		});
+
+		it('should add extra role studentNI to students from NI federal state', async () => {
+			const school = await testObjects.createTestSchool({
+				name: 'hello',
+				federalState: ObjectId('0000b186816abba584714c58'),
+			});
+			const actingUser = await testObjects.createTestUser({ roles: ['superhero'] });
+			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			const data = {
+				firstName: 'Foo',
+				lastName: 'Bar',
+				schoolId: school._id,
+				roles: ['student'],
+				email: `${Date.now()}@test.org`,
+			};
+			const usersService = app.service('users');
+			const result = await usersService.create(data, params);
+			const roleService = app.service('roles');
+			const role = await roleService.find({
+				query: {
+					name: 'studentNI',
+				},
+			});
+			expect(result.roles.some((r) => equalIds(r._id, role.data[0]._id))).to.be.true;
+		});
 	});
 
 	describe('PATCH', () => {

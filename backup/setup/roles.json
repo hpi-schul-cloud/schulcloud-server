@@ -40,6 +40,7 @@
 		"HOMEWORK_CREATE",
 		"HOMEWORK_EDIT",
 		"HOMEWORK_VIEW",
+		"LERNSTORE_VIEW",
 		"LINK_CREATE",
 		"NEWS_VIEW",
 		"NOTIFICATION_CREATE",
@@ -244,6 +245,38 @@
 		}
 	],
 	"permissions": [],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f4f952f87b6aa066e22fff6"
+	},
+	"name": "studentSH",
+	"updatedAt": {
+		"$date": "2020-09-01T00:14:45.148Z"
+	},
+	"createdAt": {
+		"$date": "2020-09-01T00:14:45.148Z"
+	},
+	"roles": [
+	],
+	"permissions": ["LERNSTORE_HIDE"],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f624a692040a4d785607bc4"
+	},
+	"name": "studentNI",
+	"updatedAt": {
+		"$date": "2020-09-16T00:14:45.148Z"
+	},
+	"createdAt": {
+		"$date": "2020-09-16T00:14:45.148Z"
+	},
+	"roles": [
+	],
+	"permissions": ["LERNSTORE_HIDE"],
 	"__v": 0
 },
 {

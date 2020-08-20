@@ -174,5 +174,25 @@
 		"$oid": "59ae89b71f513506904e1cc9"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f551b3ef28ad2ef26226196"
+	},
+	"username": "schueler-sh@schul-cloud.org",
+	"password": "$2a$10$1AbGSKWODOd1CWF/efHINekqRiV40.ooy4AvacVLVUn.XKU.wDk6e",
+	"updatedAt": {
+		"$date": "2020-09-06T15:43:39.516Z"
+	},
+	"createdAt": {
+		"$date": "2017-09-06T00:06:37.148Z"
+	},
+	"userId": {
+		"$oid": "5f551b28124e2e6e0f949705"
+	},
+	"__v": 0,
+	"lasttriedFailedLogin": {
+		"$date": "1970-01-01T00:00:00Z"
+	}
 }]
 

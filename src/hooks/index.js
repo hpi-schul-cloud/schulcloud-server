@@ -68,10 +68,17 @@ exports.hasRole = (context, userId, roleName) => {
 
 /**
  * @param  {string, array[string]} inputPermissions
+ * @param {string} operator OR|AND|NOT
  * @returns resolves if the current user has ANY of the given permissions
  */
-const hasPermission = (inputPermissions) => {
+const hasPermission = (inputPermissions, operator = 'OR') => {
 	const permissionNames = typeof inputPermissions === 'string' ? [inputPermissions] : inputPermissions;
+
+	operator = operator.toUpperCase();
+	const operators = ['OR', 'AND', 'NOT'];
+	if (!inputPermissions.length || !operators.includes(operator)) {
+		throw new Forbidden('Invalid function call');
+	}
 
 	return (context) => {
 		const {
@@ -92,10 +99,17 @@ const hasPermission = (inputPermissions) => {
 			.service('users')
 			.get(account.userId)
 			.then(({ permissions = [] }) => {
-				const hasAnyPermission = permissionNames.some((perm) => permissions.includes(perm));
-				if (!hasAnyPermission) {
+				const userHasPermission = (permission) => permissions.includes(permission);
+				const hasAnyPermission = permissionNames.some(userHasPermission);
+				const hasAllPermissions = permissionNames.every(userHasPermission);
+				if (operator === 'OR' && !hasAnyPermission) {
 					throw new Forbidden(`You don't have one of the permissions: ${permissionNames.join(', ')}.`);
+				} else if (operator === 'AND' && !hasAllPermissions) {
+					throw new Forbidden(`You don't have all the required permissions: ${permissionNames.join(', ')}.`);
+				} else if (operator === 'NOT' && hasAnyPermission) {
+					throw new Forbidden(`You don't have permission to access this resource.`);
 				}
+
 				return Promise.resolve(context);
 			});
 	};
