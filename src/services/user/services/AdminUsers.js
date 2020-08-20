@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
 const { Forbidden, GeneralError } = require('@feathersjs/errors');
-const { ObjectId } = require('mongoose').Types;
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
