@@ -37,12 +37,6 @@ describe('Syncer interface', () => {
 	});
 
 	describe('aggregateStats method', () => {
-		it('reports neither success nor failure for empty inputs', () => {
-			const result = Syncer.aggregateStats({});
-			expect(result.successful).to.equal(0);
-			expect(result.failed).to.equal(0);
-		});
-
 		it('reports success for a single successful sync', () => {
 			const result = Syncer.aggregateStats({ success: true });
 			expect(result.successful).to.equal(1);
@@ -51,6 +45,12 @@ describe('Syncer interface', () => {
 
 		it('reports failure for a single failed sync', () => {
 			const result = Syncer.aggregateStats({ success: false });
+			expect(result.successful).to.equal(0);
+			expect(result.failed).to.equal(1);
+		});
+
+		it('reports failure if success is not explicitly set to true', () => {
+			const result = Syncer.aggregateStats({ foo: 'bar', baz: 42 });
 			expect(result.successful).to.equal(0);
 			expect(result.failed).to.equal(1);
 		});
