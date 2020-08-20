@@ -33,6 +33,7 @@ const userSchema = new Schema({
 	lastName: { type: String, required: true },
 	namePrefix: { type: String },
 	nameSuffix: { type: String },
+	forcePasswordChange: { type: Boolean, default: false },
 
 	birthday: { type: Date },
 
