@@ -708,5 +708,16 @@
 			"$date": "2020-08-24T10:57:52.663Z"
 		},
 		"__v" : 0
+	},
+	{
+		"_id": {
+			"$oid": "5f3f80abe50560a746473fc2"
+		},
+		"state": "up",
+		"name": "lernstore_view_permission",
+		"createdAt": {
+			"$date": "2020-08-20T20:55:43.277Z"
+		},
+		"__v": 0
 	}
 ]
