@@ -36,12 +36,15 @@ const grantAccessToPrivateFiles = async (app, oldUser, newUser) => {
 	const fileService = app.service('/files');
 	const searchParams = {
 		query: {
+			'permissions.refPermModel': 'user',
+			'permissions.refId': oldUser._id,
 			refOwnerModel: 'user',
 			owner: oldUser._id,
 		},
 	};
 	const updateData = {
 		owner: newUser._id,
+		$set: { 'permissions.$.refId': newUser._id },
 	};
 	await fileService.patch(null, updateData, searchParams);
 };
