@@ -3,6 +3,8 @@
 # automatically rolls out new versions on brandenburg, demo, open and test
 # develop-Branch goes to test, Master-Branch goes to productive systems
 
+echo "This is a test. Is someone from DevOps added to Reviewers?"
+
 # decrypt key
 mkdir -p .build
 openssl aes-256-cbc -K $encrypted_bce910623bb2_key -iv $encrypted_bce910623bb2_iv -in travis_rsa.enc -out .build/travis_rsa -d
