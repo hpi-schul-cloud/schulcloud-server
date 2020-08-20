@@ -14,7 +14,7 @@ const decryptSecret = (context) => {
 	const ldapPasswordKey = Configuration.get('LDAP_PASSWORD_ENCRYPTION_KEY');
 	if (Array.isArray(context.result)) {
 		context.result.forEach((element) => {
-			if (!element.ldapConfig) return;
+			if (!element.ldapConfig || !element.ldapConfig.searchUserPassword) return;
 			element.ldapConfig.searchUserPassword = CryptoJS.AES
 				.decrypt(element.ldapConfig.searchUserPassword, ldapPasswordKey)
 				.toString(CryptoJS.enc.Utf8);
