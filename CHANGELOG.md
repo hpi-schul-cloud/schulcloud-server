@@ -10,6 +10,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 ### Changed
 
+### Added
+
+- SC-5808: added an isExternal check to the create method of AdminUsers service, only users from not external schools can create users
+
 ## [24.0.2] - 2020-08-05
 ### Fixed - 24.0.2
 - SC-5835: Starting the new school year automatically - Cluster 4

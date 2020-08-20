@@ -103,6 +103,14 @@ class AdminUsers {
 	}
 
 	async create(data, params) {
+		const { account } = params;
+		const currentUserId = account.userId.toString();
+
+		const { schoolId } = await getCurrentUserInfo(currentUserId);
+		const { isExternal } = await this.app.service('schools').get(schoolId);
+		if (isExternal) {
+			throw new Forbidden('Creating new students or teachers is only possible in the source system.');
+		}
 		return this.app.service('usersModel').create(data);
 	}
 
