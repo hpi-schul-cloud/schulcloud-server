@@ -31,16 +31,22 @@ module.exports = function LDAPService() {
 		}
 
 		get(id, params) {
-			return app.service('systems').find({ query: { _id: id }, paginate: false })
-				.then((system) => {
-					if (system[0].ldapConfig.providerOptions.classPathAdditions === '') {
-						return this.getUsers(system[0].ldapConfig, '').then((userData) => ({
+			return app.service('systems').find({ query: { _id: id, type: 'ldap' }, paginate: false })
+				.then(([system]) => {
+					if (!system) {
+						throw new errors.NotFound();
+					}
+					if (system.ldapConfig.provider !== 'general') {
+						throw new errors.Forbidden('You are not allowed to access this provider.');
+					}
+					if (system.ldapConfig.providerOptions.classPathAdditions === '') {
+						return this.getUsers(system.ldapConfig, '').then((userData) => ({
 							users: userData,
 							classes: [],
 						}));
 					}
-					return this.getUsers(system[0].ldapConfig, '')
-						.then((userData) => this.getClasses(system[0].ldapConfig, '')
+					return this.getUsers(system.ldapConfig, '')
+						.then((userData) => this.getClasses(system.ldapConfig, '')
 							.then((classData) => ({
 								users: userData,
 								classes: classData,
