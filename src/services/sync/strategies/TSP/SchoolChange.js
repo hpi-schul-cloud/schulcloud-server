@@ -1,5 +1,6 @@
 const { getUsername } = require('./TSP');
 const { FileModel } = require('../../../fileStorage/model.js');
+const { info: logInfo, error: logError } = require('../../../../logger');
 
 const getInvalidatedUuid = (uuid) => `${uuid}/invalid!`;
 const getInvalidatedEmail = (email) => `${email}.invalid`;
@@ -48,6 +49,7 @@ const grantAccessToPrivateFiles = async (app, oldUser, newUser) => {
 
 const grantAccessToSharedFiles = async (app, oldUser, newUser) => {
 	try {
+		logInfo('Looking for the files, in which refId in permissions array should be rewritten to the new user id');
 		const filesToUpdate = await FileModel.updateMany(
 			{
 				'permissions.refPermModel': 'user',
@@ -56,19 +58,16 @@ const grantAccessToSharedFiles = async (app, oldUser, newUser) => {
 					$ne: oldUser._id,
 				}
 			},
-			{ $set: { 'permissions.$.refId': newUser._id } });
-		return filesToUpdate;
+			{
+				$set:
+					{
+						'permissions.$.refId': newUser._id
+					}
+			});
+		logInfo(`Amount of the files, in which refId has been changed: ${filesToUpdate.n}`);
 	} catch (err) {
-		console.log(err);
+		logError(`Something went wrong during assigning new user id to refId in permissions array: ${err}`);
 	}
-
-	/*
-		- shared files are those with
-			a) one item in the permissions array with (refPermModel === 'user' && refId === oldUser._id) AND
-			b) creator must not be oldUser._id (the creator of a file used to be denoted by the first item in the
-				permisions array; that is no longer the case -- we have the creator attribute now -- but files
-				still have both => SC-3851)
-	*/
 };
 
 const switchSchool = async (app, currentUser, createUserMethod) => {
