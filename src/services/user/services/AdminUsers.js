@@ -1,12 +1,13 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
 const { Forbidden, GeneralError } = require('@feathersjs/errors');
+const { ObjectId } = require('mongoose').Types;
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@schul-cloud/commons');
 const logger = require('../../../logger');
-const { convertToIn, createMultiDocumentAggregation } = require('../utils/aggregations');
+const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const {
 	hasSchoolPermission,
 } = require('../../../hooks');
@@ -77,7 +78,7 @@ class AdminUsers {
 			if (_id) {
 				query._id = _id;
 			} else if (clientQuery.users) {
-				query._id = { $in: convertToIn(clientQuery.users) };
+				query._id = clientQuery.users;
 			}
 			if (clientQuery.consentStatus) query.consentStatus = clientQuery.consentStatus;
 			if (clientQuery.classes) query.classes = clientQuery.classes;
