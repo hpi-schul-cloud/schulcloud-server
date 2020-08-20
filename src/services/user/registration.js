@@ -253,7 +253,7 @@ const registerUser = function register(data, params, app) {
 				}).catch((err) => {
 					const msg = 'Fehler beim Speichern der Einverständniserklärung.';
 					logger.warning(msg, err);
-					return Promise.reject(new Error('Fehler beim Speichern der Einverständniserklärung.'));
+					return Promise.reject(new Error(msg));
 				});
 		})
 		.then(() => Promise.resolve({
