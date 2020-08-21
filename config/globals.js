@@ -34,7 +34,6 @@ switch (NODE_ENV) {
 
 
 const globals = {
-	HOST: process.env.HOST,
 	BODYPARSER_JSON_LIMIT: process.env.BODYPARSER_JSON_LIMIT || '20mb',
 	DATABASE_AUDIT: process.env.DATABASE_AUDIT || 'false',
 	DB_URL: process.env.DB_URL || defaultDbUrl,
