@@ -7,7 +7,9 @@ const { expect } = chai;
 chai.use(chaiAsPromised);
 
 const { Configuration } = require('@schul-cloud/commons');
-const { HOST } = require('../../../../config/globals');
+
+const HOST = Configuration.get('HOST');
+
 const app = require('../../../../src/app');
 const {
 	createTestUser,
