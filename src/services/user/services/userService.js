@@ -37,6 +37,7 @@ const {
 	enforceRoleHierarchyOnCreate,
 	filterResult,
 	generateRegistrationLink,
+	sendRegistrationLink,
 	includeOnlySchoolRoles,
 } = require('../hooks/userService');
 
@@ -108,6 +109,7 @@ const userHooks = {
 			checkUniqueAccount,
 			blockDisposableEmail('email'),
 			generateRegistrationLink,
+			sendRegistrationLink,
 			resolveToIds('/roles', 'data.roles', 'name'),
 		],
 		update: [

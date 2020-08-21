@@ -2,7 +2,7 @@
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
 	"version": "24.2.4",
-	"homepage": "https://schul-cloud.org",
+	"homepage": "https://hpi.schul-cloud.org",
 	"main": "src/",
 	"keywords": [
 		"feathers"
