@@ -51,41 +51,38 @@ describe('[utils] deepObject', () => {
 		});
 		// the implementation is slower, becouse it can resolve mutch more combinations
 		// and loadash is optimize for re-runs with momory cache
-		it(
-			'[profiling] pathsToArray - ' + 'should not significantly slower for string notations like lodash.toPath.',
-			() => {
-				const testPath = 'ele0.ele1.ele2.ele3.ele4.ele5.ele6.ele7.ele8.ele9.ele10';
-				const iterations = 100000;
-				const slowerFactor = 10;
+		it('[profiling] pathsToArray - should not significantly slower for string notations like lodash.toPath.', () => {
+			const testPath = 'ele0.ele1.ele2.ele3.ele4.ele5.ele6.ele7.ele8.ele9.ele10';
+			const iterations = 100000;
+			const slowerFactor = 10;
 
-				const s3 = Date.now();
-				for (let i = 0; i <= iterations; i += 1) {
-					testPath.split('.');
-				}
-				const baseSplitOperation = Date.now() - s3;
-
-				const s2 = Date.now();
-				for (let i = 0; i <= iterations; i += 1) {
-					toPath(testPath);
-				}
-				const loadashToPathDelta = Date.now() - s2;
-
-				const s1 = Date.now();
-				for (let i = 0; i <= iterations; i += 1) {
-					pathsToArray(testPath);
-				}
-				const pathToArrayDelta = Date.now() - s1;
-
-				logger.info({
-					type: 'profiling',
-					iterations,
-					pathToArrayDelta,
-					loadashToPathDelta,
-					baseSplitOperation,
-				});
-				expect(pathToArrayDelta <= loadashToPathDelta * slowerFactor).to.equal(true);
+			const s3 = Date.now();
+			for (let i = 0; i <= iterations; i += 1) {
+				testPath.split('.');
 			}
-		);
+			const baseSplitOperation = Date.now() - s3;
+
+			const s2 = Date.now();
+			for (let i = 0; i <= iterations; i += 1) {
+				toPath(testPath);
+			}
+			const loadashToPathDelta = Date.now() - s2;
+
+			const s1 = Date.now();
+			for (let i = 0; i <= iterations; i += 1) {
+				pathsToArray(testPath);
+			}
+			const pathToArrayDelta = Date.now() - s1;
+
+			logger.info({
+				type: 'profiling',
+				iterations,
+				pathToArrayDelta,
+				loadashToPathDelta,
+				baseSplitOperation,
+			});
+			expect(pathToArrayDelta <= loadashToPathDelta * slowerFactor).to.equal(true);
+		});
 
 		it('should work for strings with point before or after', () => {
 			const result = pathsToArray('.x.y.z.');

@@ -30,7 +30,7 @@ const deleteUser = (app) => {
 			.then(() => {
 				const teamIds = teams.map((team) => team._id);
 				logger.info(
-					`Remove user ${userId} from the teams ${teamIds},` + 'if team.userIds empty then removed the team too.'
+					`Remove user ${userId} from the teams ${teamIds}, if team.userIds empty then removed the team too.`
 				);
 			})
 			.catch((err) => {

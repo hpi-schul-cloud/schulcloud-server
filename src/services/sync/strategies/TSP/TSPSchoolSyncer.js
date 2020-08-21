@@ -287,8 +287,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'update-teacher',
 				entity: tspTeacher.lehrerUid,
-				message:
-					`Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}"` + ' konnte nicht aktualisiert werden.',
+				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}" konnte nicht aktualisiert werden.`,
 			});
 			return null;
 		}

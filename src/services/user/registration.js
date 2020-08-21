@@ -156,7 +156,7 @@ const registerUser = function register(data, params, app) {
 				if (user.birthday instanceof Date && Number.isNaN(user.birthday)) {
 					return Promise.reject(
 						new errors.BadRequest(
-							'Fehler bei der Erkennung des ausgewählten Geburtstages.' + ' Bitte lade die Seite neu und starte erneut.'
+							'Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut.'
 						)
 					);
 				}

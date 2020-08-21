@@ -47,7 +47,7 @@ module.exports = {
 					type: 'string',
 					pattern: '[a-f0-9]{24}',
 					description:
-						'id of the scope the news belongs to.' + 'If no target is given, the news will belong to the school.',
+						'id of the scope the news belongs to. If no target is given, the news will belong to the school.',
 				},
 				targetModel: {
 					type: 'string',

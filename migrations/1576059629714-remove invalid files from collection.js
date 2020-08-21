@@ -56,9 +56,7 @@ module.exports = {
 			isDirectory: false,
 		}).exec();
 		if (undefinedStorageFileNameNotDirectory) {
-			info(
-				`found ${undefinedStorageFileNameNotDirectory.length}` + ' files with undefinedStorageFileNameNotDirectory...'
-			);
+			info(`found ${undefinedStorageFileNameNotDirectory.length} files with undefinedStorageFileNameNotDirectory...`);
 			for (const file of undefinedStorageFileNameNotDirectory) {
 				await copyAndRemove(file);
 			}
