@@ -6,7 +6,7 @@ const {
 	verifyToken,
 	decryptToken,
 	createUserAndAccount,
-	createTSPConsent,
+	shortenedRegistrationProcess,
 	findSchool,
 	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
 	config: TSP_CONFIG,
@@ -130,7 +130,7 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 			);
 
 			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
-				await createTSPConsent(app, user);
+				await shortenedRegistrationProcess(app, user);
 			}
 		} else if (Array.isArray(roles)) {
 			// if we know the user and roles were supplied, we need to reflect role & school changes
