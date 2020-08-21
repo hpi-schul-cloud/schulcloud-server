@@ -9,7 +9,7 @@ const consentService = app.service('consents');
 
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
-const testGenericErrorMessage = 'You don\'t have one of the permissions: STUDENT_LIST.';
+const testGenericErrorMessage = "You don't have one of the permissions: STUDENT_LIST.";
 
 describe('AdminUsersService', () => {
 	let server;
@@ -47,15 +47,17 @@ describe('AdminUsersService', () => {
 		});
 		expect(testClass).to.not.be.undefined;
 
-		const gradeLevelClass = await testObjects.createTestClass({
-			name: 'A',
-			userIds: [student._id],
-			teacherIds: [teacher._id],
-			nameFormat: 'gradeLevel+name',
-			gradeLevel: 2,
-		}).catch((err) => {
-			logger.warning('Can not create test class.', err);
-		});
+		const gradeLevelClass = await testObjects
+			.createTestClass({
+				name: 'A',
+				userIds: [student._id],
+				teacherIds: [teacher._id],
+				nameFormat: 'gradeLevel+name',
+				gradeLevel: 2,
+			})
+			.catch((err) => {
+				logger.warning('Can not create test class.', err);
+			});
 		expect(gradeLevelClass).to.not.be.undefined;
 
 		const params = {
@@ -69,9 +71,8 @@ describe('AdminUsersService', () => {
 			logger.warning('Can not execute adminStudentsService.find.', err);
 		});
 
-		const searchClass = (users, name) => users.some(
-			(user) => (equalIds(student._id, user._id) && user.classes.includes(name)),
-		);
+		const searchClass = (users, name) =>
+			users.some((user) => equalIds(student._id, user._id) && user.classes.includes(name));
 		expect(result.data).to.not.be.undefined;
 		expect(searchClass(result.data, 'staticName')).to.be.true;
 		expect(searchClass(result.data, '2A')).to.be.true;
@@ -109,23 +110,29 @@ describe('AdminUsersService', () => {
 		const lastYear = currentSchool.years.lastYear._id;
 
 		const classPromises = [];
-		classPromises.push(testObjects.createTestClass({
-			name: 'classFromThisYear',
-			userIds: [student._id],
-			teacherIds: [teacher._id],
-			year: currentYear,
-		}));
-		classPromises.push(testObjects.createTestClass({
-			name: 'classFromLastYear',
-			userIds: [student._id],
-			teacherIds: [teacher._id],
-			year: lastYear,
-		}));
-		classPromises.push(testObjects.createTestClass({
-			name: 'classWithoutYear',
-			userIds: [student._id],
-			teacherIds: [teacher._id],
-		}));
+		classPromises.push(
+			testObjects.createTestClass({
+				name: 'classFromThisYear',
+				userIds: [student._id],
+				teacherIds: [teacher._id],
+				year: currentYear,
+			})
+		);
+		classPromises.push(
+			testObjects.createTestClass({
+				name: 'classFromLastYear',
+				userIds: [student._id],
+				teacherIds: [teacher._id],
+				year: lastYear,
+			})
+		);
+		classPromises.push(
+			testObjects.createTestClass({
+				name: 'classWithoutYear',
+				userIds: [student._id],
+				teacherIds: [teacher._id],
+			})
+		);
 
 		await Promise.all(classPromises);
 
@@ -149,30 +156,36 @@ describe('AdminUsersService', () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] }).catch((err) => {
 			logger.warning('Can not create teacher', err);
 		});
-		const student1 = await testObjects.createTestUser({
-			firstName: 'Max',
-			roles: ['student'],
-			consent: {
-				userConsent: {
-					form: 'digital',
-					privacyConsent: true,
-					termsOfUseConsent: true,
+		const student1 = await testObjects
+			.createTestUser({
+				firstName: 'Max',
+				roles: ['student'],
+				consent: {
+					userConsent: {
+						form: 'digital',
+						privacyConsent: true,
+						termsOfUseConsent: true,
+					},
+					parentConsents: [
+						{
+							form: 'digital',
+							privacyConsent: true,
+							termsOfUseConsent: true,
+						},
+					],
 				},
-				parentConsents: [{
-					form: 'digital',
-					privacyConsent: true,
-					termsOfUseConsent: true,
-				}],
-			},
-		}).catch((err) => {
-			logger.warning('Can not create student', err);
-		});
-		const student2 = await testObjects.createTestUser({
-			firstName: 'Moritz',
-			roles: ['student'],
-		}).catch((err) => {
-			logger.warning('Can not create student', err);
-		});
+			})
+			.catch((err) => {
+				logger.warning('Can not create student', err);
+			});
+		const student2 = await testObjects
+			.createTestUser({
+				firstName: 'Moritz',
+				roles: ['student'],
+			})
+			.catch((err) => {
+				logger.warning('Can not create student', err);
+			});
 
 		expect(teacher).to.not.be.undefined;
 		expect(student1).to.not.be.undefined;
@@ -231,14 +244,15 @@ describe('AdminUsersService', () => {
 			roles: ['student'],
 			birthday,
 			consent: {
-				parentConsents: [{
-					form: 'digital',
-					privacyConsent: true,
-					termsOfUseConsent: true,
-				}],
+				parentConsents: [
+					{
+						form: 'digital',
+						privacyConsent: true,
+						termsOfUseConsent: true,
+					},
+				],
 			},
 		});
-
 
 		const studentWithConsents = await testObjects.createTestUser({
 			roles: ['student'],
@@ -248,11 +262,13 @@ describe('AdminUsersService', () => {
 					privacyConsent: true,
 					termsOfUseConsent: true,
 				},
-				parentConsents: [{
-					form: 'digital',
-					privacyConsent: true,
-					termsOfUseConsent: true,
-				}],
+				parentConsents: [
+					{
+						form: 'digital',
+						privacyConsent: true,
+						termsOfUseConsent: true,
+					},
+				],
 			},
 		});
 
@@ -275,10 +291,7 @@ describe('AdminUsersService', () => {
 		const resultParentsAgreed = (await adminStudentsService.find(createParams('parentsAgreed'))).data;
 		const idsParentsAgreed = resultParentsAgreed.map((e) => e._id.toString());
 		expect(idsParentsAgreed).to.include(studentWithParentConsent._id.toString());
-		expect(idsParentsAgreed).to.not.include(
-			studentWithoutConsents._id.toString(),
-			studentWithConsents._id.toString(),
-		);
+		expect(idsParentsAgreed).to.not.include(studentWithoutConsents._id.toString(), studentWithConsents._id.toString());
 
 		const resultOk = (await adminStudentsService.find(createParams('ok'))).data;
 		const idsOk = resultOk.map((e) => e._id.toString());
@@ -401,16 +414,18 @@ describe('AdminTeachersService', () => {
 		const otherTeacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: otherSchool._id });
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = {};
-		const resultOk = (await adminTeachersService.find({
-			account: {
-				userId: teacher._id,
-			},
-			query: {
+		const resultOk = (
+			await adminTeachersService.find({
 				account: {
-					userId: otherTeacher._id,
+					userId: teacher._id,
 				},
-			},
-		})).data;
+				query: {
+					account: {
+						userId: otherTeacher._id,
+					},
+				},
+			})
+		).data;
 		const idsOk = resultOk.map((e) => e._id.toString());
 		expect(idsOk).not.to.include(otherTeacher._id.toString());
 	});

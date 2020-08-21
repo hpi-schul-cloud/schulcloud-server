@@ -7,22 +7,19 @@ const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@schul-cloud/commons');
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
-const {
-	hasSchoolPermission,
-} = require('../../../hooks');
+const { hasSchoolPermission } = require('../../../hooks');
 
 const { userModel } = require('../model');
 
-const getCurrentUserInfo = (id) => userModel.findById(id)
-	.select('schoolId')
-	.lean()
-	.exec();
+const getCurrentUserInfo = (id) => userModel.findById(id).select('schoolId').lean().exec();
 
-const getCurrentYear = (ref, schoolId) => ref.app.service('schools')
-	.get(schoolId, {
-		query: { $select: ['currentYear'] },
-	})
-	.then(({ currentYear }) => currentYear.toString());
+const getCurrentYear = (ref, schoolId) =>
+	ref.app
+		.service('schools')
+		.get(schoolId, {
+			query: { $select: ['currentYear'] },
+		})
+		.then(({ currentYear }) => currentYear.toString());
 
 class AdminUsers {
 	constructor(roleName) {
@@ -42,9 +39,11 @@ class AdminUsers {
 		// integration test did not get the role in the setup
 		// so here is a workaround set it at first call
 		if (!this.role) {
-			this.role = (await this.app.service('roles').find({
-				query: { name: this.roleName },
-			})).data[0];
+			this.role = (
+				await this.app.service('roles').find({
+					query: { name: this.roleName },
+				})
+			).data[0];
 		}
 
 		try {
@@ -86,12 +85,17 @@ class AdminUsers {
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 
-			return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
-				collation: { locale: 'de', caseLevel: true },
-			}).exec((err, res) => {
-				if (err) reject(err);
-				else resolve(res[0] || {});
-			}));
+			return new Promise((resolve, reject) =>
+				userModel
+					.aggregate(createMultiDocumentAggregation(query))
+					.option({
+						collation: { locale: 'de', caseLevel: true },
+					})
+					.exec((err, res) => {
+						if (err) reject(err);
+						else resolve(res[0] || {});
+					})
+			);
 		} catch (err) {
 			if ((err || {}).code === 403) {
 				throw new Forbidden('You have not the permission to execute this.', err);
@@ -99,7 +103,9 @@ class AdminUsers {
 			if (err && err.code >= 500) {
 				const uuid = uuidv4();
 				logger.error(uuid, err);
-				if (Configuration.get('NODE_ENV') !== 'production') { throw err; }
+				if (Configuration.get('NODE_ENV') !== 'production') {
+					throw err;
+				}
 				throw new GeneralError(uuid);
 			}
 			throw err;
@@ -128,14 +134,18 @@ class AdminUsers {
 
 	async setup(app) {
 		this.app = app;
-		this.role = (await this.app.service('roles').find({
-			query: { name: this.roleName },
-		})).data[0];
+		this.role = (
+			await this.app.service('roles').find({
+				query: { name: this.roleName },
+			})
+		).data[0];
 	}
 }
 
 const formatBirthdayOfUsers = ({ result: { data: users } }) => {
-	users.forEach((user) => { user.birthday = moment(user.birthday).format('DD.MM.YYYY'); });
+	users.forEach((user) => {
+		user.birthday = moment(user.birthday).format('DD.MM.YYYY');
+	});
 };
 
 const adminHookGenerator = (kind) => ({
@@ -152,7 +162,6 @@ const adminHookGenerator = (kind) => ({
 		find: [formatBirthdayOfUsers],
 	},
 });
-
 
 module.exports = {
 	AdminUsers,

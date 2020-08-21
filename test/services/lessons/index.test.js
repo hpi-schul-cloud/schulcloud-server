@@ -30,8 +30,8 @@ describe('lessons service', () => {
 		assert.ok(lessonCopyService);
 	});
 
-	it('creates a lesson', () => lessonService.create(testLesson)
-		.then((lesson) => {
+	it('creates a lesson', () =>
+		lessonService.create(testLesson).then((lesson) => {
 			expect(lesson.name).to.equal(testLesson.name);
 			expect(lesson.description).to.equal(testLesson.description);
 			expect(lesson.courseId.toString()).to.equal(testLesson.courseId);
@@ -95,10 +95,14 @@ describe('lessons service', () => {
 		const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
 		const otherStudent = await testObjects.createTestUser({ roles: ['student'], schoolId });
 		const { _id: courseId } = await testObjects.createTestCourse({
-			schoolId, teacherIds: [teacher._id], userIds: [student._id, otherStudent._id],
+			schoolId,
+			teacherIds: [teacher._id],
+			userIds: [student._id, otherStudent._id],
 		});
 		const { _id: courseGroupId } = await testObjects.createTestCourseGroup({
-			userIds: [student._id], schoolId, courseId,
+			userIds: [student._id],
+			schoolId,
+			courseId,
 		});
 		const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId, courseGroupId });
 		const params = await testObjects.generateRequestParamsFromUser(otherStudent);
@@ -120,10 +124,14 @@ describe('lessons service', () => {
 		const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
 		const otherStudent = await testObjects.createTestUser({ roles: ['student'], schoolId });
 		const { _id: courseId } = await testObjects.createTestCourse({
-			schoolId, teacherIds: [teacher._id], userIds: [student._id, otherStudent._id],
+			schoolId,
+			teacherIds: [teacher._id],
+			userIds: [student._id, otherStudent._id],
 		});
 		const { _id: courseGroupId } = await testObjects.createTestCourseGroup({
-			userIds: [student._id], schoolId, courseId,
+			userIds: [student._id],
+			schoolId,
+			courseId,
 		});
 		const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId, courseGroupId });
 		const params = await testObjects.generateRequestParamsFromUser(otherStudent);
@@ -143,14 +151,18 @@ describe('lessons service', () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 		const { _id: courseId } = await testObjects.createTestCourse({
-			schoolId, teacherIds: [teacher._id],
+			schoolId,
+			teacherIds: [teacher._id],
 		});
 		const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId });
-		await app.service('/lessons/:lessonId/material').create({
-			title: 'testTitle',
-			client: 'someclient',
-			url: 'hpi.schul-cloud.org',
-		}, { route: { lessonId: lesson._id } });
+		await app.service('/lessons/:lessonId/material').create(
+			{
+				title: 'testTitle',
+				client: 'someclient',
+				url: 'hpi.schul-cloud.org',
+			},
+			{ route: { lessonId: lesson._id } }
+		);
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = { $populate: ['materialIds'] };
 		const result = await app.service('lessons').get(lesson._id, params);

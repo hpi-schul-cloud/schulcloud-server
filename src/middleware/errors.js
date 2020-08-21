@@ -7,8 +7,7 @@ class ApplicationError extends Error {
 	}
 }
 
-class SilentError extends ApplicationError {
-}
+class SilentError extends ApplicationError {}
 
 module.exports = {
 	SilentError,

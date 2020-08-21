@@ -5,7 +5,11 @@ const { classModel } = require('../../../../src/services/user-group/model');
 let createdClassesIds = [];
 let classesServices;
 
-const removeManyClasses = (ids) => classModel.deleteMany({ _id: { $in: ids } }).lean().exec();
+const removeManyClasses = (ids) =>
+	classModel
+		.deleteMany({ _id: { $in: ids } })
+		.lean()
+		.exec();
 const removeOneClass = (id) => classModel.findOneAndRemove({ _id: id }).lean().exec();
 
 const createTestClass = (app, opt) => ({
@@ -18,19 +22,22 @@ const createTestClass = (app, opt) => ({
 	gradeLevel = undefined,
 	year = undefined,
 	predecessor = undefined,
-}) => classesServices.create({
-	name,
-	schoolId,
-	userIds,
-	teacherIds,
-	nameFormat,
-	gradeLevel,
-	year,
-	predecessor,
-}).then((res) => {
-	createdClassesIds.push(res._id.toString());
-	return res;
-});
+}) =>
+	classesServices
+		.create({
+			name,
+			schoolId,
+			userIds,
+			teacherIds,
+			nameFormat,
+			gradeLevel,
+			year,
+			predecessor,
+		})
+		.then((res) => {
+			createdClassesIds.push(res._id.toString());
+			return res;
+		});
 
 const cleanup = () => {
 	if (createdClassesIds.length === 0) {
@@ -70,7 +77,7 @@ const findByName = (app) => async ([gradeLevel, className]) => {
 };
 
 const findOneByName = (app) => async ([gradeLevel, className]) => {
-	const classes = await (findByName(app)([gradeLevel, className]));
+	const classes = await findByName(app)([gradeLevel, className]);
 	return classes[0];
 };
 

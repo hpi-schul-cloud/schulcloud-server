@@ -8,11 +8,7 @@ const {
 } = require('../../../../src/services/teams/hooks/index.js');
 const app = require('../../../../src/app');
 const { createHook } = require('../helper/helper.hook');
-const {
-	createTestAccount,
-	createTestUser,
-	generateRequestParams,
-} = require('../../helpers/testObjects')(app);
+const { createTestAccount, createTestUser, generateRequestParams } = require('../../helpers/testObjects')(app);
 const teamHelper = require('../../helpers/services/teams');
 
 describe('Team service hook tests.', () => {
@@ -26,8 +22,7 @@ describe('Team service hook tests.', () => {
 		server.close(done);
 	});
 
-	describe.skip('sendInfo', () => {
-	});
+	describe.skip('sendInfo', () => {});
 
 	describe('filterToRelated', () => {
 		let getDeepCopy;
@@ -54,7 +49,8 @@ describe('Team service hook tests.', () => {
 
 			getDeepCopy = () => {
 				const copy = { ...baseHook };
-				baseHook.result = { // create 4 new Objects and override
+				baseHook.result = {
+					// create 4 new Objects and override
 					key1: { ...key1 },
 					key2: { ...key2 },
 					key3: { ...key3 },
@@ -141,9 +137,12 @@ describe('Team service hook tests.', () => {
 			const team = await teams.create(user);
 			const credentials = { username: user.email, password: user.email };
 			await createTestAccount(credentials, 'local', user);
-			const params = { ...await generateRequestParams(credentials), query: {} };
+			const params = { ...(await generateRequestParams(credentials)), query: {} };
 			const newFilePermission = {
-				write: false, read: true, create: false, delete: false,
+				write: false,
+				read: true,
+				create: false,
+				delete: false,
 			};
 			const ctx = await authenticate('jwt')({
 				id: team._id,
@@ -165,9 +164,12 @@ describe('Team service hook tests.', () => {
 			await teams.addTeamUserToTeam(team._id, user2, 'teamexpert');
 			const credentials = { username: user2.email, password: user2.email };
 			await createTestAccount(credentials, 'local', user2);
-			const params = { ...await generateRequestParams(credentials), query: {} };
+			const params = { ...(await generateRequestParams(credentials)), query: {} };
 			const newFilePermission = {
-				write: false, read: true, create: false, delete: false,
+				write: false,
+				read: true,
+				create: false,
+				delete: false,
 			};
 			const ctx = await authenticate('jwt')({
 				id: team._id,

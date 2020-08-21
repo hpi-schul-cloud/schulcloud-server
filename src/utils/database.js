@@ -67,10 +67,13 @@ function connect() {
 	mongoose.Promise = global.Promise;
 	const options = getConnectionOptions();
 
-	logger.info('connect to database host',
+	logger.info(
+		'connect to database host',
 		options.url,
 		options.username ? `with username ${options.username}` : 'without user',
-		options.password ? 'and' : 'and without', 'password');
+		options.password ? 'and' : 'and without',
+		'password'
+	);
 
 	const mongooseOptions = {
 		autoIndex: NODE_ENV !== ENVIRONMENTS.PRODUCTION,
@@ -81,16 +84,9 @@ function connect() {
 		useUnifiedTopology: true,
 	};
 
-	addAuthenticationToMongooseOptions(
-		options.username,
-		options.password,
-		mongooseOptions,
-	);
+	addAuthenticationToMongooseOptions(options.username, options.password, mongooseOptions);
 
-	return mongoose.connect(
-		encodeMongoURI(options.url),
-		mongooseOptions,
-	).then((resolved) => {
+	return mongoose.connect(encodeMongoURI(options.url), mongooseOptions).then((resolved) => {
 		// handle errors that appear after connection setup
 		mongoose.connection.on('error', (err) => {
 			logger.error(err);

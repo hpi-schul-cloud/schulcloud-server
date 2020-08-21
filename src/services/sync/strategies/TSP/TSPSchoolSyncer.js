@@ -6,7 +6,8 @@ const ClassImporter = require('../mixins/ClassImporter');
 const {
 	TspApi,
 	config: TSP_CONFIG,
-	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
+	ENTITY_SOURCE,
+	SOURCE_ID_ATTRIBUTE,
 	createUserAndAccount,
 	shortenedRegistrationProcess,
 } = require('./TSP');
@@ -52,10 +53,16 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		this.stats = Object.assign(this.stats, {
 			users: {
 				teachers: {
-					unchanged: 0, created: 0, updated: 0, errors: 0,
+					unchanged: 0,
+					created: 0,
+					updated: 0,
+					errors: 0,
 				},
 				students: {
-					unchanged: 0, created: 0, updated: 0, errors: 0,
+					unchanged: 0,
+					created: 0,
+					updated: 0,
+					errors: 0,
 				},
 			},
 		});
@@ -117,8 +124,9 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 		if (schools.length > 0) {
 			this.logInfo('Requesting and grouping entities. This can take a while...');
 			// fetch entities in parallel and create a mapping (schoolIdentifier => list<Entity>)
-			[teacherMap, studentMap, classMap] = await Promise.all(['teachers', 'students', 'classes']
-				.map((type) => this.fetch(type).then(this.createSchoolMap)));
+			[teacherMap, studentMap, classMap] = await Promise.all(
+				['teachers', 'students', 'classes'].map((type) => this.fetch(type).then(this.createSchoolMap))
+			);
 			this.logInfo('Done.');
 		}
 
@@ -130,8 +138,10 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			const schoolTeachers = teacherMap[schoolIdentifier] || [];
 			const schoolStudents = studentMap[schoolIdentifier] || [];
 			const schoolClasses = classMap[schoolIdentifier] || [];
-			this.logInfo(`School has ${schoolTeachers.length} teachers, ${schoolStudents.length} students`
-				+ `, and ${schoolClasses.length} classes.`);
+			this.logInfo(
+				`School has ${schoolTeachers.length} teachers, ${schoolStudents.length} students` +
+					`, and ${schoolClasses.length} classes.`
+			);
 
 			const teacherMapping = {};
 			const classMapping = {};
@@ -254,23 +264,21 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * @async
 	 */
 	async updateTeacher(user, tspTeacher) {
-		const equal = (user.namePrefix === tspTeacher.lehrerTitel || (!user.namePrefix && !tspTeacher.namePrefix))
-			&& user.firstName === tspTeacher.lehrerVorname
-			&& user.lastName === tspTeacher.lehrerNachname;
+		const equal =
+			(user.namePrefix === tspTeacher.lehrerTitel || (!user.namePrefix && !tspTeacher.namePrefix)) &&
+			user.firstName === tspTeacher.lehrerVorname &&
+			user.lastName === tspTeacher.lehrerNachname;
 		if (equal) {
 			this.stats.users.teachers.unchanged += 1;
 			return user;
 		}
 
 		try {
-			const teacher = await this.app.service('users').patch(
-				user._id,
-				{
-					namePrefix: tspTeacher.lehrerTitel,
-					firstName: tspTeacher.lehrerVorname,
-					lastName: tspTeacher.lehrerNachname,
-				},
-			);
+			const teacher = await this.app.service('users').patch(user._id, {
+				namePrefix: tspTeacher.lehrerTitel,
+				firstName: tspTeacher.lehrerVorname,
+				lastName: tspTeacher.lehrerNachname,
+			});
 			this.stats.users.teachers.updated += 1;
 			return teacher;
 		} catch (err) {
@@ -279,8 +287,8 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'update-teacher',
 				entity: tspTeacher.lehrerUid,
-				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}"`
-					+ ' konnte nicht aktualisiert werden.',
+				message:
+					`Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}"` + ' konnte nicht aktualisiert werden.',
 			});
 			return null;
 		}
@@ -309,7 +317,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 					sourceOptions,
 				},
 				'teacher',
-				systemId,
+				systemId
 			);
 			this.stats.users.teachers.created += 1;
 			return teacher;
@@ -319,8 +327,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'create-teacher',
 				entity: tspTeacher.lehrerUid,
-				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}"`
-					+ ' konnte nicht erstellt werden.',
+				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}"` + ' konnte nicht erstellt werden.',
 			});
 			return null;
 		}
@@ -352,21 +359,17 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * @async
 	 */
 	async updateStudent(user, tspStudent) {
-		const equal = user.firstName === tspStudent.schuelerVorname
-			&& user.lastName === tspStudent.schuelerNachname;
+		const equal = user.firstName === tspStudent.schuelerVorname && user.lastName === tspStudent.schuelerNachname;
 		if (equal) {
 			this.stats.users.students.unchanged += 1;
 			return user;
 		}
 
 		try {
-			const student = await this.app.service('users').patch(
-				user._id,
-				{
-					firstName: tspStudent.schuelerVorname,
-					lastName: tspStudent.schuelerNachname,
-				},
-			);
+			const student = await this.app.service('users').patch(user._id, {
+				firstName: tspStudent.schuelerVorname,
+				lastName: tspStudent.schuelerNachname,
+			});
 			this.stats.users.students.updated += 1;
 			return student;
 		} catch (err) {
@@ -375,8 +378,9 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'update-student',
 				entity: tspStudent.schuelerUid,
-				message: `Schüler "${tspStudent.schuelerVorname} ${tspStudent.schuelerNachname}"`
-					+ ' konnte nicht aktualisiert werden.',
+				message:
+					`Schüler "${tspStudent.schuelerVorname} ${tspStudent.schuelerNachname}"` +
+					' konnte nicht aktualisiert werden.',
 			});
 			return null;
 		}
@@ -404,7 +408,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 					sourceOptions,
 				},
 				'student',
-				systemId,
+				systemId
 			);
 			this.stats.users.students.created += 1;
 			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
@@ -417,8 +421,8 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'create-student',
 				entity: tspStudent.schuelerUid,
-				message: `Schüler "${tspStudent.schuelerVorname} ${tspStudent.schuelerNachname}"`
-					+ ' konnte nicht erstellt werden.',
+				message:
+					`Schüler "${tspStudent.schuelerVorname} ${tspStudent.schuelerNachname}"` + ' konnte nicht erstellt werden.',
 			});
 			return null;
 		}
@@ -434,26 +438,28 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * @async
 	 */
 	createOrUpdateClasses(classes, school, teacherMapping, classMapping) {
-		return Promise.all(classes.map((klass) => {
-			const sourceOptions = {};
-			sourceOptions[SOURCE_ID_ATTRIBUTE] = klass.klasseId;
-			const query = {
-				source: ENTITY_SOURCE,
-				sourceOptions,
-			};
-			const teacher = teacherMapping[klass.lehrerUid];
-			const options = {
-				name: klass.klasseName,
-				schoolId: school._id,
-				year: school.currentYear,
-				teacherIds: teacher ? [teacher] : [],
-				userIds: classMapping[klass.klasseId] || [],
-				source: ENTITY_SOURCE,
-				sourceOptions,
-			};
-			const onlyAddNew = this.config.lastChange !== undefined;
-			return this.createOrUpdateClass(options, query, onlyAddNew); // see ClassImporter mixin
-		}));
+		return Promise.all(
+			classes.map((klass) => {
+				const sourceOptions = {};
+				sourceOptions[SOURCE_ID_ATTRIBUTE] = klass.klasseId;
+				const query = {
+					source: ENTITY_SOURCE,
+					sourceOptions,
+				};
+				const teacher = teacherMapping[klass.lehrerUid];
+				const options = {
+					name: klass.klasseName,
+					schoolId: school._id,
+					year: school.currentYear,
+					teacherIds: teacher ? [teacher] : [],
+					userIds: classMapping[klass.klasseId] || [],
+					source: ENTITY_SOURCE,
+					sourceOptions,
+				};
+				const onlyAddNew = this.config.lastChange !== undefined;
+				return this.createOrUpdateClass(options, query, onlyAddNew); // see ClassImporter mixin
+			})
+		);
 	}
 }
 

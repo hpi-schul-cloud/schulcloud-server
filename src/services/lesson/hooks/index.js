@@ -1,8 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const nanoid = require('nanoid');
-const {
-	iff, isProvider,
-} = require('feathers-hooks-common');
+const { iff, isProvider } = require('feathers-hooks-common');
 const {
 	injectUserId,
 	restrictToUsersOwnLessons,
@@ -35,8 +33,7 @@ const addShareTokenIfCourseShareable = async (context) => {
 		return context;
 	}
 
-	return lesson.findByIdAndUpdate(_id, { shareToken: nanoid(12) })
-		.then(() => context);
+	return lesson.findByIdAndUpdate(_id, { shareToken: nanoid(12) }).then(() => context);
 };
 
 const setPosition = async (context) => {
@@ -61,10 +58,25 @@ const mapUsers = (context) => {
 
 const populateWhitelist = {
 	materialIds: [
-		'_id', 'originId', 'title', 'client', 'url', 'license', 'description',
-		'contentType', 'lastModified', 'language', 'subjects', 'targetGroups',
-		'target', 'tags', 'relatedResources', 'popularity', 'thumbnailUrl',
-		'editorsPick', 'createdAt',
+		'_id',
+		'originId',
+		'title',
+		'client',
+		'url',
+		'license',
+		'description',
+		'contentType',
+		'lastModified',
+		'language',
+		'subjects',
+		'targetGroups',
+		'target',
+		'tags',
+		'relatedResources',
+		'popularity',
+		'thumbnailUrl',
+		'editorsPick',
+		'createdAt',
 	],
 };
 
