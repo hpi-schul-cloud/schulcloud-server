@@ -513,6 +513,17 @@ const generateRegistrationLink = async (context) => {
 	}
 };
 
+const sendRegistrationLink = async (context) => {
+	const { result, data, app } = context;
+	if (data.sendRegistration === true) {
+		delete data.sendRegistration;
+		await app.service('/users/mail/registrationLink').create({
+			userIds: [result._id],
+		});
+	}
+	return context;
+};
+
 
 const filterResult = async (context) => {
 	const userCallingHimself = ObjectId.equal(context.id, context.params.account.userId);
@@ -582,5 +593,6 @@ module.exports = {
 	enforceRoleHierarchyOnCreate,
 	filterResult,
 	generateRegistrationLink,
+	sendRegistrationLink,
 	includeOnlySchoolRoles,
 };

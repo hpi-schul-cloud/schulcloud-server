@@ -5,7 +5,10 @@ const PasswordRecoveryModel = require('../model');
 const { randomStringAsBase64Url } = require('../../../utils/randomNumberGenerator');
 const globalHooks = require('../../../hooks');
 const logger = require('../../../logger/index');
-const { HOST, SC_SHORT_TITLE } = require('../../../../config/globals');
+const { SC_SHORT_TITLE } = require('../../../../config/globals');
+const { Configuration } = require('@schul-cloud/commons');
+
+const HOST = Configuration.get('HOST');
 
 class GenerateRecoveryPasswordTokenService {
 	constructor(passwordRecovery) {
