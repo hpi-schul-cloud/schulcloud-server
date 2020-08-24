@@ -403,6 +403,72 @@
 			"$date": "2020-04-07T13:45:21.906Z"
 		},
 		"__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "5ecd33ee93e6125170a84d4b"
+    },
+    "state": "up",
+    "name": "encrypt-ldap-search-user-password",
+    "createdAt": {
+      "$date": "2020-05-26T14:00:06.91Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "5eda255592ee4109ca3d423d"
+    },
+    "state": "up",
+    "name": "fix_move_consent",
+    "createdAt": {
+      "$date": "2020-06-04T09:14:00.473Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "5eda255592ee4109ca3d423e"
+    },
+    "state": "up",
+    "name": "add-SCHOOL_PERMISSION_VIEW-permission",
+    "createdAt": {
+      "$date": "2020-06-04T13:10:39.414Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "5edf56430383be55fc9a8ee3"
+    },
+    "state": "up",
+    "name": "updateUserIndexesForLDAP",
+    "createdAt": {
+      "$date": "2020-06-09T09:28:35.874Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "5ef44b01619afb4144b4286f"
+    },
+    "state": "up",
+    "name": "addTspSyncIndexes",
+    "createdAt": {
+      "$date": "2020-06-25T06:58:09.663Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "5df895ad9ac7d23f70ad66fa"
+    },
+    "state": "up",
+    "name": "removeUnnecessaryLocalSystems",
+    "createdAt": {
+      "$date": "2019-12-17T08:20:02.025Z"
+    },
+    "__v": 0
 	},
 	{
 		"_id": {
@@ -607,6 +673,246 @@
 		"name": "start_new_school_year_cluster_4",
 		"createdAt": {
 			"$date": "2020-08-03T12:58:31.983Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5d3e97e02d1b0f2c2cc7ec18"
+		},
+		"state": "up",
+		"name": "lessonIsCopyFrom",
+		"createdAt": "2019-07-11T12:18:30.503Z",
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5d3f03bf50c3d44bb83b93f8"
+		},
+		"state": "up",
+		"name": "migrateSchoolsTo2019-20",
+		"createdAt": {
+			"$date": "2019-07-29T14:33:35.456Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5d552b8bc1658a0682fc834a"
+		},
+		"state": "up",
+		"name": "set schoolspecific documentbasedir for instance open",
+		"createdAt": {
+			"$date": "2019-08-15T09:34:59.243Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3ec"
+		},
+		"state": "up",
+		"name": "fix-demo-permissions",
+		"createdAt": {
+			"$date": "2019-12-02T12:59:36.284Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3ed"
+		},
+		"state": "up",
+		"name": "remove invalid files from collection",
+		"createdAt": {
+			"$date": "2019-12-11T10:20:29.714Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3ee"
+		},
+		"state": "up",
+		"name": "removeUnnecessaryLocalSystems",
+		"createdAt": {
+			"$date": "2019-12-17T08:20:02.025Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3ef"
+		},
+		"state": "up",
+		"name": "disable-team-created-by-students-all-schools",
+		"createdAt": {
+			"$date": "2020-01-06T16:54:53.694Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3f0"
+		},
+		"state": "up",
+		"name": "addSchoolIdsForUsersInTeams",
+		"createdAt": {
+			"$date": "2020-01-14T12:48:46.081Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3f1"
+		},
+		"state": "up",
+		"name": "coursePermissions",
+		"createdAt": {
+			"$date": "2020-01-29T15:10:12.565Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3f2"
+		},
+		"state": "up",
+		"name": "remove_invalid_accounts",
+		"createdAt": {
+			"$date": "2020-02-17T09:50:02.639Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3f3"
+		},
+		"state": "up",
+		"name": "add-messenger-sync-permissions",
+		"createdAt": {
+			"$date": "2020-03-19T10:46:32.049Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3f4"
+		},
+		"state": "up",
+		"name": "runIndexSync",
+		"createdAt": {
+			"$date": "2020-03-21T19:35:25.407Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3f5"
+		},
+		"state": "up",
+		"name": "runIndexSync2",
+		"createdAt": {
+			"$date": "2020-03-23T12:30:05.306Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3f6"
+		},
+		"state": "up",
+		"name": "update schema indexes",
+		"createdAt": {
+			"$date": "2020-03-24T13:29:18.218Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3f7"
+		},
+		"state": "up",
+		"name": "remove clipboard",
+		"createdAt": {
+			"$date": "2020-03-25T10:18:50.713Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3f8"
+		},
+		"state": "up",
+		"name": "add-sync-start-permission",
+		"createdAt": {
+			"$date": "2020-04-16T10:21:00.933Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3f9"
+		},
+		"state": "up",
+		"name": "remove-student_edit-from-students",
+		"createdAt": {
+			"$date": "2020-04-27T13:08:26.485Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3fa"
+		},
+		"state": "up",
+		"name": "fix_move_consent",
+		"createdAt": {
+			"$date": "2020-06-04T09:14:00.473Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3fb"
+		},
+		"state": "up",
+		"name": "move_etherpad",
+		"createdAt": {
+			"$date": "2020-06-09T09:43:07.216Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3fc"
+		},
+		"state": "up",
+		"name": "remove_user-consent-ids",
+		"createdAt": {
+			"$date": "2020-06-26T15:12:58.869Z"
+		},
+		"__v": 0
+	},
+  	{
+		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3fd"
+		},
+		"state": "up",
+		"name": "revoke_student_creation_from_teachers",
+		"createdAt": {
+			"$date": "2020-08-06T14:12:27.575Z"
+		},
+		"__v": 0
+	},
+    	{
+		"_id": {
+			"$oid": "5f3a4524fc8acc32043af437"
+		},
+		"state": "up",
+		"name": "remove-importHashes-from-users-with-accounts",
+		"createdAt": {
+			"$date": "2020-08-17T08:51:48.406Z"
 		},
 		"__v": 0
 	}

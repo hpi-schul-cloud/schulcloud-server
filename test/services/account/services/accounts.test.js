@@ -37,7 +37,7 @@ describe('Account Service', () => {
 				firstName: 'Max',
 				lastName: 'Mustermann',
 				email: `max${Date.now()}@mustermann.de`,
-				schoolId: '0000d186816abba584714c5f',
+				schoolId: '5f2987e020834114b8efd6f8',
 			};
 
 			const registrationPin = await registrationPinsService.create({

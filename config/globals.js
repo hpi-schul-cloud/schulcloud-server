@@ -48,7 +48,7 @@ const globals = {
 	SC_DOMAIN: process.env.SC_DOMAIN || 'localhost',
 	SC_THEME: process.env.SC_THEME || 'default',
 	SC_TITLE: process.env.SC_TITLE || 'HPI Schul-Cloud',
-	SC_SHORT_TITLE: process.env.SC_SHORT_TITLE || 'Schul-Cloud',
+	SC_SHORT_TITLE: process.env.SC_SHORT_TITLE || 'HPI Schul-Cloud',
 	SMTP_SENDER: process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
 
 	KEEP_ALIVE: process.env.KEEP_ALIVE || false,
@@ -58,8 +58,6 @@ const globals = {
 	NODE_ENV,
 	ENVIRONMENTS,
 	LOG_LEVEL: process.env.LOG_LEVEL || defaultLogLevel,
-	/** HOST=https://schul-cloud.org in bosscloud, see misuse in todo */
-	HOST: process.env.HOST || 'localhost:3100', // todo this is client url in config
 	SYSTEM_LOG_LEVEL: process.env.SYSTEM_LOG_LEVEL || 'sendRequests',
 	// secrets smtp
 	SMTP: process.env.SMTP,

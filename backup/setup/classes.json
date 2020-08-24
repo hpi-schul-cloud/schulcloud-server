@@ -2,7 +2,7 @@
 {
 	"_id" : { "$oid": "59a3c81ca2049554a93fec58"},
 	"updatedAt" : { "$date": "2017-11-17T08:59:47.757Z" },
-	"schoolId" : { "$oid": "599ec0bb8e4e364ec18ff46c"},
+	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6"},
 	"name" : "Demo-Klasse",
 	"teacherIds" : [
 		{ "$oid": "599ec1688e4e364ec18ff46e"},

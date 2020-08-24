@@ -28,10 +28,6 @@ const create = (app) => async ({
 	enableStudentTeamCreation = undefined,
 	permissions = undefined,
 } = {}) => {
-	if (systems && systems.length === 0) {
-		const localSystem = (await app.service('systems').find({ query: { type: 'local' }, paginate: false }))[0];
-		systems.push(localSystem._id);
-	}
 	const school = await app.service('schools').create({
 		name,
 		address,

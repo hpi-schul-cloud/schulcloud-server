@@ -11,7 +11,7 @@ const User = mongoose.model('makeMeUnique', new mongoose.Schema({
 	lastName: { type: String, required: true },
 }, {
 	timestamps: true,
-}), 'user');
+}), 'users');
 
 // How to use more than one schema per collection on mongodb
 // https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
