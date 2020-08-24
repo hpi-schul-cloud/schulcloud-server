@@ -14,7 +14,7 @@ jobs:
       uses: actions/setup-node@v1
     - run: npm ci
     - run: npm run setup
-    - run: npm run migration-list    
-    - run: npm run migration-prune
     - run: npm run migration-persist
     - run: git status backup/**
+    - run: npm run migration-list    
+    - run: npm run migration-prune
