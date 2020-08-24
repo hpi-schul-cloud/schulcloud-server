@@ -22,7 +22,7 @@
 	"purpose": "demo",
 	"permissions" : {
         "teacher" : {
-            "STUDENT_LIST" : false
+            "STUDENT_LIST" : true
         }
     }
 },
@@ -63,7 +63,7 @@
 	"enableStudentTeamCreation": false,
 	"permissions" : {
         "teacher" : {
-            "STUDENT_LIST" : false
+            "STUDENT_LIST" : true
         }
     }
 },
@@ -112,7 +112,7 @@
 	"purpose": "demo",
 	"permissions" : {
         "teacher" : {
-            "STUDENT_LIST" : false
+            "STUDENT_LIST" : true
         }
     }
 }]
