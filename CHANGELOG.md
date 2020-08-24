@@ -9,6 +9,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Fixed
+- SC-6122 - Edusharing preload thumbnails in parallel. Edusharing authentication stabilisation.
+
 ## [24.2.4] - 2020-08-20
 
 ## [24.2.3] - 2020-08-20
