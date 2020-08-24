@@ -6,15 +6,11 @@ jobs:
   migration:
     runs-on: ubuntu-latest
     steps:
-    - name: checkout
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
     - name: install  
       uses: actions/setup-node@v1
-      run: npm ci
-    - name: all migrations are added to database
-      run: npm run migration-list    
-    - name: all migrations from database exist in filesystem
-      run: npm run migration-prune
-    - name: migration collection is up to date
-      run: npm run migration-persist
-      run: git status backup/**
+    - run: npm ci
+    - run: npm run migration-list    
+    - run: npm run migration-prune
+    - run: npm run migration-persist
+    - run: git status backup/**
