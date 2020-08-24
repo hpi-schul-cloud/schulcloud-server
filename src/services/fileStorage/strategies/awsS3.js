@@ -11,7 +11,9 @@ const { StorageProviderModel } = require('../../storageProvider/model');
 const UserModel = require('../../user/model');
 const filePermissionHelper = require('../utils/filePermissionHelper');
 const { removeLeadingSlash } = require('../utils/filePathHelper');
-const { NODE_ENV, ENVIRONMENTS, HOST } = require('../../../../config/globals');
+const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
+
+const HOST = Configuration.get('HOST');
 
 const AbstractFileStorageStrategy = require('./interface.js');
 
