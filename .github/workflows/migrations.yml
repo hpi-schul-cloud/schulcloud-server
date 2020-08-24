@@ -7,9 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: mongodb setup
+      uses: supercharge/mongodb-github-action@1.3.0
     - name: install  
       uses: actions/setup-node@v1
     - run: npm ci
+    - run: npm run setup
     - run: npm run migration-list    
     - run: npm run migration-prune
     - run: npm run migration-persist
