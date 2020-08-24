@@ -208,6 +208,7 @@ const exportCollection = async ({
 		...CONFIG.MONGO.CREDENTIALS_ARGS,
 		'--collection', collection,
 		'--out', filePath,
+		'--sort', '"{ id: 1 }"',
 		'--jsonArray',
 		args['--pretty'] ? '--pretty' : undefined,
 	];
