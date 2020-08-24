@@ -678,6 +678,17 @@
 	},
 	{
 		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3fd"
+		},
+		"state": "up",
+		"name": "revoke_student_creation_from_teachers",
+		"createdAt": {
+			"$date": "2020-08-06T14:12:27.575Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
 			"$oid": "5f3a4524fc8acc32043af437"
 		},
 		"state": "up",
