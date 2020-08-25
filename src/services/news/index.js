@@ -1,7 +1,7 @@
-const path = require('path');
 const service = require('feathers-mongoose');
 const { Forbidden, NotFound, BadRequest } = require('@feathersjs/errors');
 const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 const { ObjectId } = require('mongoose').Types;
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const logger = require('../../logger/index');
