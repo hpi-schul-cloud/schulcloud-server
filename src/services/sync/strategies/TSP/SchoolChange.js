@@ -1,4 +1,6 @@
 const { getUsername } = require('./TSP');
+const { FileModel } = require('../../../fileStorage/model.js');
+const { info: logInfo, error: logError } = require('../../../../logger');
 
 const getInvalidatedUuid = (uuid) => `${uuid}/invalid!`;
 const getInvalidatedEmail = (email) => `${email}.invalid`;
@@ -35,47 +37,40 @@ const grantAccessToPrivateFiles = async (app, oldUser, newUser) => {
 	const fileService = app.service('/files');
 	const searchParams = {
 		query: {
+			'permissions.refPermModel': 'user',
+			'permissions.refId': oldUser._id,
 			refOwnerModel: 'user',
 			owner: oldUser._id,
 		},
 	};
 	const updateData = {
 		owner: newUser._id,
+		$set: { 'permissions.$.refId': newUser._id },
 	};
 	await fileService.patch(null, updateData, searchParams);
 };
 
 const grantAccessToSharedFiles = async (app, oldUser, newUser) => {
-	console.log('here');
-	const fileModel = app.service('file');
-
 	try {
-		const filesToUpdate = await fileModel.find(
+		logInfo('Looking for the files, in which refId in permissions array should be rewritten to the new user id');
+		const filesToUpdate = await FileModel.updateMany(
 			{
 				'permissions.refPermModel': 'user',
 				'permissions.refId': oldUser._id,
 				owner: {
 					$ne: oldUser._id,
 				}
+			},
+			{
+				$set:
+					{
+						'permissions.$.refId': newUser._id
+					}
 			});
-		const updateFilesRefIdResult = await Promise.all(filesToUpdate.map((file) => {
-			return fileModel.update({_id: file._id, 'permissions.refId': oldUser._id },
-				{ $set: { 'permissions.$.refId': newUser._id }});
-		}));
-		console.log(updateFilesRefIdResult);
-		return updateFilesRefIdResult;
-
+		logInfo(`Amount of the files, in which refId has been changed: ${filesToUpdate.n}`);
 	} catch (err) {
-		console.log(err);
+		logError(`Something went wrong during assigning new user id to refId in permissions array: ${err}`);
 	}
-
-	/*
-		- shared files are those with
-			a) one item in the permissions array with (refPermModel === 'user' && refId === oldUser._id) AND
-			b) creator must not be oldUser._id (the creator of a file used to be denoted by the first item in the
-				permisions array; that is no longer the case -- we have the creator attribute now -- but files
-				still have both => SC-3851)
-	*/
 };
 
 const switchSchool = async (app, currentUser, createUserMethod) => {

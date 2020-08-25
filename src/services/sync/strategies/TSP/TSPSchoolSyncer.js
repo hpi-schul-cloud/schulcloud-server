@@ -363,7 +363,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			if (!sameObjectId(oldUser.schoolId, school._id)) {
 				// school change detected
 				return switchSchool(this.app, oldUser,
-					this.createStudent.bind(this, [tspStudent, school, systemId]));
+					this.createStudent.bind(this, tspStudent, school, systemId));
 			}
 			return this.updateStudent(oldUser, tspStudent);
 		}
