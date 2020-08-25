@@ -10,7 +10,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 ### Fixed
+
 - SC-6122 - Edusharing preload thumbnails in parallel. Edusharing authentication stabilisation.
+
+## [24.3.0] - 2020-08-25
+
 ## [24.2.5] - 2020-08-24
 
 - SC-6328 add migration to set student_list settings in all non n21 clouds schools to false.
