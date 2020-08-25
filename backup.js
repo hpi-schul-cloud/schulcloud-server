@@ -50,7 +50,7 @@ const args = arg({
 	'-b': '--pretty',
 
 	'--sort': String, // export sort object requires string parameter like "{ name: 1, id: 1 }"
-	'-s': '--sort'
+	'-s': '--sort',
 
 }, {
 	permissive: true,
@@ -212,7 +212,7 @@ const exportCollection = async ({
 		...CONFIG.MONGO.CREDENTIALS_ARGS,
 		'--collection', collection,
 		'--out', filePath,
-		args['--sort'] ? `--sort "${args['--sort']}"`: undefined,
+		args['--sort'] ? `--sort "${args['--sort']}"` : undefined,
 		'--jsonArray',
 		args['--pretty'] ? '--pretty' : undefined,
 	];
