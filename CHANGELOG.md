@@ -8,7 +8,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
 ## Unreleased
+
+### Fixed
+- SC-6122 - Edusharing preload thumbnails in parallel. Edusharing authentication stabilisation.
+## [24.2.5] - 2020-08-24
+
+- SC-6328 add migration to set student_list settings in all non n21 clouds schools to false.
+
+## [24.2.4] - 2020-08-20
+
+## [24.2.3] - 2020-08-20
+
+## [24.2.2] - 2020-08-20
+
+### Added
+- SC-5280: the LDAP service will try to reconnect up to three times if the connection was lost or could not be established
+- SC-5280: the LDAP service and LDAP syncers now report more errors to the stats object
+
+### Fixed
+- SC-5280: the LDAP sync now handles (timeout/firewall) errors much more gracefully
+- SC-5280: LDAP bind operations will only be issued if the connection was established successfully
+- SC-5280: aggregated LDAP statistics will now show the number of succesful and failed sub-syncs instead of just 1 or 0
+
 ### Changed
+- SC-5280: if disconnected prematurely, the LDAP service will not try to connect again just to unbind from the server
 
 ### Added
 

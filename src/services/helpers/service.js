@@ -33,7 +33,7 @@ module.exports = function setup(app) {
 			const notificationPlatform = app.get('NOTIFICATION_PLATFORM');
 
 			if (!notificationPlatform) {
-				throw new MethodNotAllowed('Required Env NOTIFICATION_PLATFORM is not defined');
+				logger.warning('Required Env NOTIFICATION_PLATFORM is not defined');
 			}
 
 			const serviceUrls = app.get('services') || {};
