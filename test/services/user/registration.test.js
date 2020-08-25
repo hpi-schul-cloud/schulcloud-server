@@ -49,7 +49,7 @@ describe('registration service', () => {
 		return registrationPinService.create({ email, silent: true })
 			.then((registrationPin) => {
 				const registrationInput = {
-					classOrSchoolId: '0000d186816abba584714c5f',
+					classOrSchoolId: '5f2987e020834114b8efd6f8',
 					pin: registrationPin.pin,
 					importHash,
 					password_1: 'Test123!',
@@ -82,7 +82,7 @@ describe('registration service', () => {
 		return registrationPinService.create({ email: parentEmail, silent: true })
 			.then((registrationPin) => {
 				const registrationInput = {
-					classOrSchoolId: '0000d186816abba584714c5f',
+					classOrSchoolId: '5f2987e020834114b8efd6f8',
 					pin: registrationPin.pin,
 					importHash,
 					password_1: 'Test123!',
@@ -122,7 +122,7 @@ describe('registration service', () => {
 				pin = pin === 9999 ? 1000 : pin + 1;
 				// make sure we pass a wrong pin
 				return registrationService.create({
-					classOrSchoolId: '0000d186816abba584714c5f',
+					classOrSchoolId: '5f2987e020834114b8efd6f8',
 					pin: String(pin),
 					importHash,
 					birthDate: '15.10.1999',
@@ -146,7 +146,7 @@ describe('registration service', () => {
 		});
 		registrationService.create({
 			importHash,
-			classOrSchoolId: '0000d186816abba584714c5f',
+			classOrSchoolId: '5f2987e020834114b8efd6f8',
 			email,
 			parent_email: email,
 			birthDate: '18.02.2015',
@@ -164,7 +164,7 @@ describe('registration service', () => {
 		const registrationPin = await registrationPinService.create({ email, silent: true });
 		const registrationInput = {
 			importHash,
-			classOrSchoolId: '0000d186816abba584714c5f',
+			classOrSchoolId: '5f2987e020834114b8efd6f8',
 			pin: registrationPin.pin,
 			birthDate: '15.10.1999',
 			email,
@@ -202,7 +202,7 @@ describe('registration service', () => {
 					email,
 					firstName: 'Max',
 					lastName: 'Mustermann',
-					schoolId: '0000d186816abba584714c5f',
+					schoolId: '5f2987e020834114b8efd6f8',
 					roles: ['0000d186816abba584714c98'], // teacher
 					importHash: hash,
 				});
@@ -213,7 +213,7 @@ describe('registration service', () => {
 			})
 			.then((registrationPin) => {
 				const registrationInput = {
-					classOrSchoolId: '0000d186816abba584714c5f',
+					classOrSchoolId: '5f2987e020834114b8efd6f8',
 					pin: registrationPin.pin,
 					password_1: 'Test123!',
 					password_2: 'Test123!',

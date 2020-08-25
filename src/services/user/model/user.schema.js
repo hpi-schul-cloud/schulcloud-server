@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
 const { Configuration } = require('@schul-cloud/commons');
+const mongooseHistory = require('mongoose-history');
 const roleModel = require('../../role/model');
 const { enableAuditLog } = require('../../../utils/database');
-const { consentSchema } = require('./consent.schema');
 const externalSourceSchema = require('../../../helper/externalSourceSchema');
-const { defineConsentStatus, isParentConsentRequired } = require('../utils/consent');
 
 const { Schema } = mongoose;
 
@@ -13,6 +12,13 @@ const defaultFeatures = [];
 const USER_FEATURES = {
 	EDTR: 'edtr',
 };
+
+const consentForm = ['analog', 'digital', 'update'];
+const consentTypes = {
+	PRIVACY: 'privacy',
+	TERMS_OF_USE: 'termsOfUse',
+};
+
 
 const userSchema = new Schema({
 	roles: [{ type: Schema.Types.ObjectId, ref: 'role' }],
@@ -27,6 +33,7 @@ const userSchema = new Schema({
 	lastName: { type: String, required: true },
 	namePrefix: { type: String },
 	nameSuffix: { type: String },
+	forcePasswordChange: { type: Boolean, default: false },
 
 	birthday: { type: Date },
 
@@ -43,7 +50,31 @@ const userSchema = new Schema({
 		enum: Object.values(USER_FEATURES),
 	},
 
-	consent: consentSchema,
+	consent: {
+		userConsent: {
+			form: { type: String, enum: consentForm },
+			dateOfPrivacyConsent: { type: Date },
+			dateOfTermsOfUseConsent: { type: Date },
+			privacyConsent: { type: Boolean },
+			termsOfUseConsent: { type: Boolean },
+		},
+		parentConsents: [{
+			parentId: { type: Schema.Types.ObjectId, ref: 'user' },
+			form: { type: String, enum: consentForm },
+			dateOfPrivacyConsent: { type: Date },
+			dateOfTermsOfUseConsent: { type: Date },
+			privacyConsent: { type: Boolean },
+			termsOfUseConsent: { type: Boolean },
+		}],
+		consentVersionUpdated: {
+			type: 'string',
+			enum: [
+				'all',
+				'dateOfPrivacyConsent',
+				'dateOfTermsOfUseConsent',
+			],
+		},
+	},
 
 	/**
 	 * depending on system settings,
@@ -83,18 +114,6 @@ userSchema.virtual('fullName').get(function get() {
 	].join(' ').trim().replace(/\s+/g, ' ');
 });
 
-userSchema.virtual('consentStatus').get(function get() {
-	if (!this.consent) return undefined; // TODO: what happen if not defined, is it on query?
-	return defineConsentStatus(this.birthday, this.consent);
-});
-
-
-userSchema.virtual('requiresParentConsent').get(function get() {
-	if (!this.birthday) return undefined;
-	return isParentConsentRequired(this.birthday);
-});
-
-
 userSchema.plugin(leanVirtuals);
 
 userSchema.methods.getPermissions = function getPermissions() {
@@ -102,8 +121,10 @@ userSchema.methods.getPermissions = function getPermissions() {
 };
 
 enableAuditLog(userSchema);
+userSchema.plugin(mongooseHistory);
 
 module.exports = {
 	USER_FEATURES,
 	userSchema,
+	consentTypes,
 };
