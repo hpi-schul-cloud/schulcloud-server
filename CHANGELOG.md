@@ -13,6 +13,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-6122 - Edusharing preload thumbnails in parallel. Edusharing authentication stabilisation.
 
+## [24.3.1] - 2020-08-25
+
+- SC-5420: TSC Schuljahreswechsel
+
 ## [24.3.0] - 2020-08-25
 
 ## [24.2.5] - 2020-08-24
