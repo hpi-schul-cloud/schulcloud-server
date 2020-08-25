@@ -1,5 +1,23 @@
 [{
 	"_id": {
+		"$oid": "5d3e97e02d1b0f2c2cc7ec18"
+	},
+	"state": "up",
+	"name": "lessonIsCopyFrom",
+	"createdAt": "2019-07-11T12:18:30.503Z",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d3ef5f4bd2cdb2075fc7e54"
+	},
+	"state": "up",
+	"name": "replace_grandlevel_id_with_number",
+	"createdAt": "2019-07-29T09:57:38.131Z",
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5d234fff63e4a27b68aceff0"
 	},
 	"name": "AddPositionToLessons",
@@ -44,30 +62,23 @@
 },
 {
 	"_id": {
-		"$oid": "5d3e97e02d1b0f2c2cc7ec18"
-	},
-	"state": "up",
-	"name": "lessonIsCopyFrom",
-	"createdAt": "2019-07-11T12:18:30.503Z",
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5d3ef5f4bd2cdb2075fc7e54"
-	},
-	"state": "up",
-	"name": "replace_grandlevel_id_with_number",
-	"createdAt": "2019-07-29T09:57:38.131Z",
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5d3f03bf50c3d44bb83b93f8"
 	},
 	"state": "up",
 	"name": "migrateSchoolsTo2019-20",
 	"createdAt": {
 		"$date": "2019-07-29T14:33:35.456Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5dc173583c9c9844881b6aca"
+	},
+	"state": "up",
+	"name": "persist_files_by_copied_courses",
+	"createdAt": {
+		"$date": "2019-07-30T13:24:23.114Z"
 	},
 	"__v": 0
 },
@@ -150,23 +161,23 @@
 },
 {
 	"_id": {
-		"$oid": "5d80a25a92de001d94db5046"
-	},
-	"state": "up",
-	"name": "addUserDeletePermissions",
-	"createdAt": {
-		"$date": "2019-09-17T09:07:38.792Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5d81ef4e6012563f98d225e5"
 	},
 	"state": "up",
 	"name": "AddCourseRoles",
 	"createdAt": {
 		"$date": "2019-09-09T09:38:21.926Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d80a25a92de001d94db5046"
+	},
+	"state": "up",
+	"name": "addUserDeletePermissions",
+	"createdAt": {
+		"$date": "2019-09-17T09:07:38.792Z"
 	},
 	"__v": 0
 },
@@ -205,6 +216,17 @@
 },
 {
 	"_id": {
+		"$oid": "5e39721290415d5374a306ba"
+	},
+	"state": "up",
+	"name": "granular_user_permissions",
+	"createdAt": {
+		"$date": "2019-10-09T10:04:25.556Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5d9db0a97bd9ad01a1734817"
 	},
 	"state": "up",
@@ -238,12 +260,12 @@
 },
 {
 	"_id": {
-		"$oid": "5dc173583c9c9844881b6aca"
+		"$oid": "5dc19483d15115187413f3c0"
 	},
 	"state": "up",
-	"name": "persist_files_by_copied_courses",
+	"name": "remove-broken-class-successor-links",
 	"createdAt": {
-		"$date": "2019-07-30T13:24:23.114Z"
+		"$date": "2019-11-05T14:19:26.569Z"
 	},
 	"__v": 0
 },
@@ -255,17 +277,6 @@
 	"name": "add-enterthecloud-start-permission",
 	"createdAt": {
 		"$date": "2019-11-05T14:38:44.172Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5dc19483d15115187413f3c0"
-	},
-	"state": "up",
-	"name": "remove-broken-class-successor-links",
-	"createdAt": {
-		"$date": "2019-11-05T14:19:26.569Z"
 	},
 	"__v": 0
 },
@@ -358,17 +369,6 @@
 },
 {
 	"_id": {
-		"$oid": "5e39721290415d5374a306ba"
-	},
-	"state": "up",
-	"name": "granular_user_permissions",
-	"createdAt": {
-		"$date": "2019-10-09T10:04:25.556Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5e4d449dc8fe4e2ff4993849"
 	},
 	"state": "up",
@@ -380,23 +380,12 @@
 },
 {
 	"_id": {
-		"$oid": "5e735028d4b12d5c4c77945a"
+		"$oid": "5f451e7c5ac2369bb4ccaf21"
 	},
 	"state": "up",
 	"name": "add-messenger-sync-permissions",
 	"createdAt": {
-		"$date": "2020-03-19T11:55:25.139Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e7f1d63e2c96215c85330f9"
-	},
-	"state": "up",
-	"name": "add_default_file_storage_provider",
-	"createdAt": {
-		"$date": "2020-03-28T09:48:19.167Z"
+		"$date": "2020-03-19T10:46:32.049Z"
 	},
 	"__v": 0
 },
@@ -413,12 +402,34 @@
 },
 {
 	"_id": {
+		"$oid": "5e7f1d63e2c96215c85330f9"
+	},
+	"state": "up",
+	"name": "add_default_file_storage_provider",
+	"createdAt": {
+		"$date": "2020-03-28T09:48:19.167Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5e8355da77736b6304a3e77e"
 	},
 	"state": "up",
 	"name": "add_edtr_feature_to_klara_fall",
 	"createdAt": {
 		"$date": "2020-03-31T14:38:18.001Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ece7de4a194604c6e31f432"
+	},
+	"state": "up",
+	"name": "move_consent_to_user",
+	"createdAt": {
+		"$date": "2020-04-07T13:45:21.906Z"
 	},
 	"__v": 0
 },
@@ -496,17 +507,6 @@
 	"name": "encrypt-ldap-search-user-password",
 	"createdAt": {
 		"$date": "2020-05-26T14:00:06.91Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5ece7de4a194604c6e31f432"
-	},
-	"state": "up",
-	"name": "move_consent_to_user",
-	"createdAt": {
-		"$date": "2020-04-07T13:45:21.906Z"
 	},
 	"__v": 0
 },
