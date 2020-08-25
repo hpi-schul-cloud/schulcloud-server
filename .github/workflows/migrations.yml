@@ -22,3 +22,5 @@ jobs:
       run: npm run migration-list    
     - name: check migrations in database exist in filesystem  
       run: npm run migration-prune
+    - name: all migrations are up
+      run: grep "\"down\"" ./backup/setup/migrations.json -c
