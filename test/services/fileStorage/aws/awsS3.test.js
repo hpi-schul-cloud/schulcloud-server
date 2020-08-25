@@ -12,7 +12,7 @@ describe('AWS file storage strategy', () => {
 	let aws;
 
 	const options = {
-		schoolId: '0000d186816abba584714c5f',
+		schoolId: '5f2987e020834114b8efd6f8',
 	};
 
 	const ShouldFail = new Error('It succeeded but should have returned an error.');

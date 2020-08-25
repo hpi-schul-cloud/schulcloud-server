@@ -58,7 +58,7 @@ describe('user service', () => {
 			.then((testSubrole) => testObjects.createTestUser({
 				id: '0000d231816abba584714d01',
 				accounts: [],
-				schoolId: '0000d186816abba584714c5f',
+				schoolId: '5f2987e020834114b8efd6f8',
 				email: 'user@testusers.net',
 				firstName: 'Max',
 				lastName: 'Tester',
@@ -191,8 +191,6 @@ describe('user service', () => {
 			expect(result).to.haveOwnProperty('firstName');
 			expect(result).to.haveOwnProperty('lastName');
 			expect(result).to.haveOwnProperty('displayName');
-			expect(result).to.haveOwnProperty('email');
-			expect(result).to.haveOwnProperty('birthday');
 			expect(result).not.to.haveOwnProperty('ldapId');
 		});
 
@@ -278,7 +276,7 @@ describe('user service', () => {
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {
 				$populate: [
-					'0000d186816abba584714c5f',
+					'5f2987e020834114b8efd6f8',
 					'roles',
 				],
 			};
@@ -447,18 +445,19 @@ describe('user service', () => {
 	describe('REMOVE', () => {
 		it('user gets removed from classes and courses after delete', async () => {
 			const userToDelete = await testObjects.createTestUser({ roles: ['student'] });
+			const userId = userToDelete._id.toString();
 			const { _id: classId } = await testObjects.createTestClass({ userIds: userToDelete._id });
 			const { _id: courseId } = await testObjects.createTestCourse({ userIds: userToDelete._id });
 
-			await userService.remove(testUserId);
+			await userService.remove(userId);
 
 			const [course, klass] = await Promise.all([
 				classesService.get(classId),
 				coursesService.get(courseId),
 			]);
 
-			expect(course.userIds.map((id) => id.toString())).to.not.include(testUserId.toString());
-			expect(klass.userIds.map((id) => id.toString())).to.not.include(testUserId.toString());
+			expect(course.userIds.map((id) => id.toString())).to.not.include(userId);
+			expect(klass.userIds.map((id) => id.toString())).to.not.include(userId);
 		});
 
 		it('fail to delete single student without STUDENT_DELETE permission', async () => {
@@ -613,7 +612,7 @@ describe('user service', () => {
 				firstName: 'Test',
 				lastName: 'Testington',
 				email: 'ExistinG@aCCount.de',
-				schoolId: '0000d186816abba584714c5f',
+				schoolId: '5f2987e020834114b8efd6f8',
 			};
 
 			await new Promise((resolve, reject) => {

@@ -31,7 +31,9 @@ const { ScopePermissionService, ScopeListService } = require('../helpers/scopePe
 // const {teamRolesToHook} = require('./hooks');
 // todo docs require
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
-const { HOST } = require('../../../config/globals');
+const { Configuration } = require('@schul-cloud/commons');
+
+const HOST = Configuration.get('HOST');
 
 const { AdminOverview } = require('./services');
 
