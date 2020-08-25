@@ -10,6 +10,10 @@ const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const {
 	hasSchoolPermission,
 } = require('../../../hooks');
+const {
+	checkUniqueAccount,
+} = require('../hooks/userService');
+const { blockDisposableEmail } = require('../../../hooks');
 
 const { userModel } = require('../model');
 
@@ -143,7 +147,7 @@ const adminHookGenerator = (kind) => ({
 		all: [authenticate('jwt')],
 		find: [hasSchoolPermission(`${kind}_LIST`)],
 		get: [hasSchoolPermission(`${kind}_LIST`)],
-		create: [hasSchoolPermission(`${kind}_CREATE`)],
+		create: [hasSchoolPermission(`${kind}_CREATE`), checkUniqueAccount, blockDisposableEmail('email')],
 		update: [hasSchoolPermission(`${kind}_EDIT`)],
 		patch: [hasSchoolPermission(`${kind}_EDIT`)],
 		remove: [hasSchoolPermission(`${kind}_DELETE`)],
