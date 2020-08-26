@@ -2,11 +2,12 @@ const {
 	Forbidden, NotFound, BadRequest, GeneralError,
 } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
-const { HOST } = require('../../../../config/globals');
 const { getQuarantinedObject, createQuarantinedObject, KEYWORDS } = require('./customStrategyUtils');
 const customErrorMessages = require('./customErrorMessages');
 const Mail = require('../services/interface/mailFormat');
 const { getUser } = require('../../helpers/utils');
+
+const HOST = Configuration.get('HOST');
 
 /**
  * Object of valid states of entry

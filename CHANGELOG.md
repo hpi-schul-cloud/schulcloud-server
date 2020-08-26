@@ -8,7 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
 ## Unreleased
-### Changed
+
+### Fixed
+
+- SC-6122 - Edusharing preload thumbnails in parallel. Edusharing authentication stabilisation.
+
+## [24.3.1] - 2020-08-25
+
+- SC-5420: TSC Schuljahreswechsel
+
+## [24.3.0] - 2020-08-25
+
+## [24.2.5] - 2020-08-24
+
+- SC-6328 add migration to set student_list settings in all non n21 clouds schools to false.
+
+## [24.2.4] - 2020-08-20
+
+## [24.2.3] - 2020-08-20
 
 ## [24.2.2] - 2020-08-20
 
@@ -60,6 +77,7 @@ Also added a sub-service for changing email/username in Activation Service
 - SC-5542: Added an after hook for AdminUsers find method which formats birthday date to DD.MM.YYYY format.
 - SC-4289 Changed aggregations in admin tables, classes are now taken only from current year or max grade level, and are sorted
 by numeric ordering.
+- SC-5280: if disconnected prematurely, the LDAP service will not try to connect again just to unbind from the server
 
 ### Security
 

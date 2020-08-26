@@ -678,6 +678,17 @@
 	},
 	{
 		"_id": {
+			"$oid": "5f32a956ab0f327164f7a3fd"
+		},
+		"state": "up",
+		"name": "revoke_student_creation_from_teachers",
+		"createdAt": {
+			"$date": "2020-08-06T14:12:27.575Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
 			"$oid": "5f3a4524fc8acc32043af437"
 		},
 		"state": "up",
@@ -686,5 +697,16 @@
 			"$date": "2020-08-17T08:51:48.406Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id" : {
+			"$oid": "5f439d30d25e2f22c81c0b08"
+		},
+		"state" : "up",
+		"name" : "setStudentListSettingsInSchoolsToFalse",
+		"createdAt" : {
+			"$date": "2020-08-24T10:57:52.663Z"
+		},
+		"__v" : 0
 	}
 ]
