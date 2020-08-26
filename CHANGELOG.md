@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [24.3.2] - 2020-08-26
+
+- SC-6382: fix handling of consents for users with unknown birthdays. consentStatus: 'ok' will be returned for valid consents without birthday.
+
 ## [24.3.1] - 2020-08-25
 
 - SC-5420: TSC Schuljahreswechsel
