@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Changed
+
+- SC-5987 Internationalisation: extend user and school model with default language
+
 ### Fixed
 
 - SC-6122 - Edusharing preload thumbnails in parallel. Edusharing authentication stabilisation.
