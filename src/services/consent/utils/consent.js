@@ -111,6 +111,9 @@ const defineConsentStatus = (birthday, consent) => {
 	}
 
 	if (!birthday) {
+		if (checkUserConsent(consent.userConsent) === true) {
+			return 'ok';
+		}
 		return 'unknown';
 	}
 
