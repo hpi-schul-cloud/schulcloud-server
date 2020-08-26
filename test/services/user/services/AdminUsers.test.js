@@ -353,6 +353,7 @@ describe('AdminUsersService', () => {
 		const testStudent = students.find((stud) => mockStudent.firstName === stud.firstName);
 		expect(testStudent.birthday).equals('01.01.2000');
 	});
+
 	it('does not allow user creation if email already exists', async () => {
 		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 		const params = await testObjects.generateRequestParamsFromUser(admin);
@@ -368,6 +369,22 @@ describe('AdminUsersService', () => {
 		// creates second student with existent data
 		await adminStudentsService.create(mockData, params).catch((err) => {
 			expect(err.code).to.equal(400);
+		});
+	});
+
+	it('does not allow user creation if email is disposable', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			email: 'disposable@20minutemail.com',
+			roles: ['student'],
+			schoolId: admin.schoolId,
+		};
+		// creates student with disposable email
+		await adminStudentsService.create(mockData, params).catch((err) => {
+			expect(err.message).to.equal('EMAIL_DOMAIN_BLOCKED');
 		});
 	});
 });
@@ -474,7 +491,8 @@ describe('AdminTeachersService', () => {
 		expect(idsOk).to.include(teacherWithConsent._id.toString());
 		expect(idsOk).to.not.include(teacherWithoutConsent._id.toString());
 	});
-	it.only('does not allow user creation if email already exists', async () => {
+
+	it('does not allow user creation if email already exists', async () => {
 		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 		const params = await testObjects.generateRequestParamsFromUser(admin);
 		const mockData = {
@@ -489,6 +507,22 @@ describe('AdminTeachersService', () => {
 		// creates second teacher with existent data
 		await adminTeachersService.create(mockData, params).catch((err) => {
 			expect(err.code).to.equal(400);
+		});
+	});
+
+	it('does not allow user creation if email is disposable', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			email: 'disposable@20minutemail.com',
+			roles: ['teacher'],
+			schoolId: admin.schoolId,
+		};
+		// creates teacher with disposable email
+		await adminTeachersService.create(mockData, params).catch((err) => {
+			expect(err.message).to.equal('EMAIL_DOMAIN_BLOCKED');
 		});
 	});
 });

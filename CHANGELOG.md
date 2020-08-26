@@ -9,6 +9,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Added
+- SC-6172: added hooks to check for unique and not disposable emails to adminUsers service
+
 ### Fixed
 
 - SC-6122 - Edusharing preload thumbnails in parallel. Edusharing authentication stabilisation.
