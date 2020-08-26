@@ -323,6 +323,9 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				'teacher',
 				systemId,
 			);
+			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
+				await shortenedRegistrationProcess(this.app, teacher);
+			}
 			this.stats.users.teachers.created += 1;
 			return teacher;
 		} catch (err) {
@@ -432,10 +435,10 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				'student',
 				systemId,
 			);
-			this.stats.users.students.created += 1;
 			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
 				await shortenedRegistrationProcess(this.app, student);
 			}
+			this.stats.users.students.created += 1;
 			return student;
 		} catch (err) {
 			this.stats.users.students.errors += 1;
