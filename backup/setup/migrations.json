@@ -227,17 +227,6 @@
 },
 {
 	"_id": {
-		"$oid": "5d9db0a97bd9ad01a1734817"
-	},
-	"state": "up",
-	"name": "granular_user_permissions",
-	"createdAt": {
-		"$date": "2019-10-09T12:46:22.613Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5da051503921a638b07b0ccf"
 	},
 	"state": "up",
@@ -457,17 +446,6 @@
 },
 {
 	"_id": {
-		"$oid": "5e735028d4b12d5c4c77945a"
-	},
-	"state": "up",
-	"name": "add-messenger-sync-permissions",
-	"createdAt": {
-		"$date": "2020-03-19T11:55:25.139Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5f4660afb6eeb8d5f8f25a78"
 	},
 	"state": "up",
@@ -578,17 +556,6 @@
 },
 {
 	"_id": {
-		"$oid": "5e98318cfb423a82b448ce99"
-	},
-	"state": "up",
-	"name": "add-sync-start-permission",
-	"createdAt": {
-		"$date": "2020-04-16T12:28:09.933Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5ea0049a18cc9c230f4fc936"
 	},
 	"state": "up",
@@ -606,17 +573,6 @@
 	"name": "remove-student_edit-from-students",
 	"createdAt": {
 		"$date": "2020-04-27T13:08:26.485Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5ea6d94a5735a85808dbc95a"
-	},
-	"state": "up",
-	"name": "remove-student_edit-from-students",
-	"createdAt": {
-		"$date": "2020-04-27T15:17:39.485Z"
 	},
 	"__v": 0
 },
@@ -818,3 +774,4 @@
 	},
 	"__v": 0
 }]
+
