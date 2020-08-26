@@ -353,6 +353,26 @@ describe('AdminUsersService', () => {
 		const testStudent = students.find((stud) => mockStudent.firstName === stud.firstName);
 		expect(testStudent.birthday).equals('01.01.2000');
 	});
+
+	it('does not allow student user creation if school is external', async () => {
+		const schoolService = app.service('/schools');
+		const serviceCreatedSchool = await schoolService.create(
+			{ name: 'test', ldapSchoolIdentifier: 'testId' },
+		);
+		const { _id: schoolId } = serviceCreatedSchool;
+		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			email: 'test@de.de',
+			roles: ['student'],
+			schoolId,
+		};
+		await adminStudentsService.create(mockData, params).catch((err) => {
+			expect(err.code).to.equal(403);
+		});
+	});
 });
 
 describe('AdminTeachersService', () => {
@@ -456,5 +476,25 @@ describe('AdminTeachersService', () => {
 		const idsOk = resultOk.map((e) => e._id.toString());
 		expect(idsOk).to.include(teacherWithConsent._id.toString());
 		expect(idsOk).to.not.include(teacherWithoutConsent._id.toString());
+	});
+
+	it.only('does not allow teacher user creation if school is external', async () => {
+		const schoolService = app.service('/schools');
+		const serviceCreatedSchool = await schoolService.create(
+			{ name: 'test', ldapSchoolIdentifier: 'testId' },
+		);
+		const { _id: schoolId } = serviceCreatedSchool;
+		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			email: 'test@de.de',
+			roles: ['teacher'],
+			schoolId,
+		};
+		await adminTeachersService.create(mockData, params).catch((err) => {
+			expect(err.code).to.equal(403);
+		});
 	});
 });
