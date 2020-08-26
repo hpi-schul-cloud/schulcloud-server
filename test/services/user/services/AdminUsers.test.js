@@ -478,7 +478,7 @@ describe('AdminTeachersService', () => {
 		expect(idsOk).to.not.include(teacherWithoutConsent._id.toString());
 	});
 
-	it.only('does not allow teacher user creation if school is external', async () => {
+	it('does not allow teacher user creation if school is external', async () => {
 		const schoolService = app.service('/schools');
 		const serviceCreatedSchool = await schoolService.create(
 			{ name: 'test', ldapSchoolIdentifier: 'testId' },
