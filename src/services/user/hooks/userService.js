@@ -573,6 +573,16 @@ const includeOnlySchoolRoles = async (context) => {
 	return context;
 };
 
+const adminUsersCheckUniqueAccount = async (hook) => {
+	const userService = hook.app.service('/users');
+	const { email } = hook.data;
+	const accounts = await userService.find({ query: { email: email.toLowerCase() } });
+	if (accounts.data.length > 0) {
+		return Promise.reject(new BadRequest('Email already exists.'));
+	}
+	return Promise.resolve(hook);
+};
+
 module.exports = {
 	mapRoleFilterQuery,
 	checkUnique,
@@ -595,4 +605,5 @@ module.exports = {
 	generateRegistrationLink,
 	sendRegistrationLink,
 	includeOnlySchoolRoles,
+	adminUsersCheckUniqueAccount,
 };

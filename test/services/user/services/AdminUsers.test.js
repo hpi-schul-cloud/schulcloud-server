@@ -353,6 +353,23 @@ describe('AdminUsersService', () => {
 		const testStudent = students.find((stud) => mockStudent.firstName === stud.firstName);
 		expect(testStudent.birthday).equals('01.01.2000');
 	});
+	it('does not allow user creation if email already exists', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			email: 'test@de.de',
+			roles: ['student'],
+			schoolId: admin.schoolId,
+		};
+		// creates first student with unique data
+		await adminStudentsService.create(mockData, params);
+		// creates second student with existent data
+		await adminStudentsService.create(mockData, params).catch((err) => {
+			expect(err.code).to.equal(400);
+		});
+	});
 });
 
 describe('AdminTeachersService', () => {
@@ -456,5 +473,22 @@ describe('AdminTeachersService', () => {
 		const idsOk = resultOk.map((e) => e._id.toString());
 		expect(idsOk).to.include(teacherWithConsent._id.toString());
 		expect(idsOk).to.not.include(teacherWithoutConsent._id.toString());
+	});
+	it.only('does not allow user creation if email already exists', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			email: 'test@de.de',
+			roles: ['teacher'],
+			schoolId: admin.schoolId,
+		};
+		// creates first teacher with unique data
+		await adminTeachersService.create(mockData, params);
+		// creates second teacher with existent data
+		await adminTeachersService.create(mockData, params).catch((err) => {
+			expect(err.code).to.equal(400);
+		});
 	});
 });
