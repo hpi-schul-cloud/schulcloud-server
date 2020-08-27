@@ -85,6 +85,13 @@ class AdminUsers {
 			if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
+			if (clientQuery.searchQuery) {
+				query.$or = [
+					{ firstName: { "$regex": clientQuery.searchQuery, $options: "i" } },
+					{ lastName: { "$regex": clientQuery.searchQuery, $options: "i" } },
+					{ email: { "$regex": clientQuery.searchQuery } },
+				];
+			} 
 
 			return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
 				collation: { locale: 'de', caseLevel: true },
