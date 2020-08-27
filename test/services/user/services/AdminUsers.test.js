@@ -360,16 +360,20 @@ describe('AdminUsersService', () => {
 		const mockData = {
 			firstName: 'testFirst',
 			lastName: 'testLast',
-			email: 'test@de.de',
+			email: 'studentTest@de.de',
 			roles: ['student'],
 			schoolId: admin.schoolId,
 		};
 		// creates first student with unique data
 		await adminStudentsService.create(mockData, params);
 		// creates second student with existent data
-		await adminStudentsService.create(mockData, params).catch((err) => {
+		try {
+			await adminStudentsService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
 			expect(err.code).to.equal(400);
-		});
+			expect(err.message).to.equal('Email already exists.');
+		}
 	});
 
 	it('does not allow user creation if email is disposable', async () => {
@@ -383,9 +387,13 @@ describe('AdminUsersService', () => {
 			schoolId: admin.schoolId,
 		};
 		// creates student with disposable email
-		await adminStudentsService.create(mockData, params).catch((err) => {
+		try {
+			await adminStudentsService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(400);
 			expect(err.message).to.equal('EMAIL_DOMAIN_BLOCKED');
-		});
+		}
 	});
 });
 
@@ -498,16 +506,20 @@ describe('AdminTeachersService', () => {
 		const mockData = {
 			firstName: 'testFirst',
 			lastName: 'testLast',
-			email: 'test@de.de',
+			email: 'teacherTest@de.de',
 			roles: ['teacher'],
 			schoolId: admin.schoolId,
 		};
 		// creates first teacher with unique data
 		await adminTeachersService.create(mockData, params);
 		// creates second teacher with existent data
-		await adminTeachersService.create(mockData, params).catch((err) => {
+		try {
+			await adminTeachersService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
 			expect(err.code).to.equal(400);
-		});
+			expect(err.message).to.equal('Email already exists.');
+		}
 	});
 
 	it('does not allow user creation if email is disposable', async () => {
@@ -521,8 +533,12 @@ describe('AdminTeachersService', () => {
 			schoolId: admin.schoolId,
 		};
 		// creates teacher with disposable email
-		await adminTeachersService.create(mockData, params).catch((err) => {
+		try {
+			await adminTeachersService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(400);
 			expect(err.message).to.equal('EMAIL_DOMAIN_BLOCKED');
-		});
+		}
 	});
 });
