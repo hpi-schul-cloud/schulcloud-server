@@ -317,6 +317,7 @@ exports.checkCorrectCourseOrTeamId = async (context) => {
 		// make it sense?
 		const validatedCourseId = (courseId || '').toString() || (context.id || '').toString();
 		let query = {
+			_id: validatedCourseId,
 			teacherIds: {
 				$in: [userId],
 			},
@@ -326,6 +327,7 @@ exports.checkCorrectCourseOrTeamId = async (context) => {
 		if (courseGroupId) {
 			delete context.data.courseId;
 			query = {
+				_id: validatedCourseId,
 				$or: [
 					{ teacherIds: { $in: [userId] } },
 					{ userIds: { $in: [userId] } },
@@ -334,9 +336,9 @@ exports.checkCorrectCourseOrTeamId = async (context) => {
 			};
 		}
 
-		const course = await context.app.service('courses').get(validatedCourseId, { query });
+		const course = await context.app.service('courses').find({ query });
 
-		if (course === null) {
+		if (course.total !== 1) {
 			throw new Forbidden("The entered course doesn't belong to you!");
 		}
 		return context;
@@ -524,7 +526,7 @@ exports.mapPayload = (context) => {
 };
 
 exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) => {
-	if (testIfRoleNameExist(user, ['superhero'])) {
+	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
 		return context;
 	}
 	// before-hook
