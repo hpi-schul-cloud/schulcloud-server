@@ -2,6 +2,7 @@ const { mix } = require('mixwith');
 
 const Syncer = require('../Syncer');
 const ClassImporter = require('../mixins/ClassImporter');
+const { equal: sameObjectId } = require('../../../../helper/compare').ObjectId;
 
 const {
 	TspApi,
@@ -10,6 +11,11 @@ const {
 	createUserAndAccount,
 	shortenedRegistrationProcess,
 } = require('./TSP');
+
+const {
+	switchSchool,
+	getInvalidatedUuid,
+} = require('./SchoolChange');
 
 const SYNCER_TARGET = 'tsp-school';
 
@@ -138,25 +144,17 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 
 			this.logInfo('Syncing teachers...');
 			// create teachers and add them to the mapping (teacherUID => User)
-			const teacherActions = schoolTeachers.map((tspTeacher) => async () => {
+			for (const tspTeacher of schoolTeachers) {
 				const teacher = await this.createOrUpdateTeacher(tspTeacher, school);
 				teacherMapping[tspTeacher.lehrerUid] = teacher;
-			});
-			// serialize create actions to be duplicate-proof
-			for (const action of teacherActions) {
-				await action();
 			}
 
 			this.logInfo('Syncing students...');
 			// create students and add them to the mapping (classUid => [User])
-			const studentActions = schoolStudents.map((tspStudent) => async () => {
+			for (const tspStudent of schoolStudents) {
 				const student = await this.createOrUpdateStudent(tspStudent, school);
 				classMapping[tspStudent.klasseId] = classMapping[tspStudent.klasseId] || [];
 				classMapping[tspStudent.klasseId].push(student._id);
-			});
-			// serialize create actions to be duplicate-proof
-			for (const action of studentActions) {
-				await action();
 			}
 
 			this.logInfo('Syncing classes...');
@@ -237,11 +235,25 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	async createOrUpdateTeacher(tspTeacher, school) {
 		const systemId = school.systems[0];
-		const query = { source: ENTITY_SOURCE };
-		query[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`] = tspTeacher.lehrerUid;
+		const query = {
+			source: ENTITY_SOURCE,
+			[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`]: {
+				$in: [
+					tspTeacher.lehrerUid,
+					// try to heal if school change process was interupted before the invalidated user was deleted:
+					getInvalidatedUuid(tspTeacher.lehrerUid),
+				],
+			},
+		};
 		const users = await this.app.service('users').find({ query });
 		if (users.total > 0) {
-			return this.updateTeacher(users.data[0], tspTeacher);
+			const oldUser = users.data[0];
+			if (!sameObjectId(oldUser.schoolId, school._id)) {
+				// school change detected
+				return switchSchool(this.app, oldUser,
+					this.createTeacher.bind(this, tspTeacher, school, systemId));
+			}
+			return this.updateTeacher(oldUser, tspTeacher);
 		}
 		return this.createTeacher(tspTeacher, school, systemId);
 	}
@@ -311,6 +323,9 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				'teacher',
 				systemId,
 			);
+			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
+				await shortenedRegistrationProcess(this.app, teacher);
+			}
 			this.stats.users.teachers.created += 1;
 			return teacher;
 		} catch (err) {
@@ -335,11 +350,25 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	async createOrUpdateStudent(tspStudent, school) {
 		const systemId = school.systems[0];
-		const query = { source: ENTITY_SOURCE };
-		query[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`] = tspStudent.schuelerUid;
+		const query = {
+			source: ENTITY_SOURCE,
+			[`sourceOptions.${SOURCE_ID_ATTRIBUTE}`]: {
+				$in: [
+					tspStudent.schuelerUid,
+					// try to heal if school change process was interupted before the invalidated user was deleted:
+					getInvalidatedUuid(tspStudent.schuelerUid),
+				],
+			},
+		};
 		const users = await this.app.service('users').find({ query });
 		if (users.total !== 0) {
-			return this.updateStudent(users.data[0], tspStudent);
+			const oldUser = users.data[0];
+			if (!sameObjectId(oldUser.schoolId, school._id)) {
+				// school change detected
+				return switchSchool(this.app, oldUser,
+					this.createStudent.bind(this, tspStudent, school, systemId));
+			}
+			return this.updateStudent(oldUser, tspStudent);
 		}
 		return this.createStudent(tspStudent, school, systemId);
 	}
@@ -406,10 +435,10 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				'student',
 				systemId,
 			);
-			this.stats.users.students.created += 1;
 			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
 				await shortenedRegistrationProcess(this.app, student);
 			}
+			this.stats.users.students.created += 1;
 			return student;
 		} catch (err) {
 			this.stats.users.students.errors += 1;
