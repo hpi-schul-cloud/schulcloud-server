@@ -1,3 +1,6 @@
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const logger = require('../../logger');
 const {
 	ROCKET_CHAT_URI, ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID,
@@ -5,8 +8,6 @@ const {
 const {
 	rocketChatUserHooks, rocketChatLoginHooks, rocketChatLogoutHooks, rocketChatChannelHooks,
 } = require('./hooks');
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
 
 const RocketChatUser = require('./services/rocketChatUser');
 const RocketChatLogin = require('./services/rocketChatLogin');

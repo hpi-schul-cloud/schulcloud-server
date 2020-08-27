@@ -1,11 +1,12 @@
 const { authenticate } = require('@feathersjs/authentication');
 const hooks = require('feathers-hooks-common');
 const errors = require('@feathersjs/errors');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const { helpDocumentsModel } = require('./model');
 const logger = require('../../logger');
 const { excludeAttributesFromSanitization } = require('../../hooks/sanitizationExceptions');
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
 
 /**
  * retrieve documents from database according to theme and userId

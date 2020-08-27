@@ -1,12 +1,13 @@
 const service = require('feathers-mongoose');
 const { Configuration } = require('@schul-cloud/commons');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const schoolModels = require('./model');
 const hooks = require('./hooks');
 const schoolGroupHooks = require('./hooks/schoolGroup.hooks');
 const { SchoolMaintenanceService } = require('./maintenance');
 const { HandlePermissions, handlePermissionsHooks } = require('./services/permissions');
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
 
 module.exports = function schoolServices() {
 	const app = this;

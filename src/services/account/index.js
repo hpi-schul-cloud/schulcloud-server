@@ -1,5 +1,7 @@
 // const RandExp = require('randexp');
 // const Chance = require('chance');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 const account = require('./model');
 
@@ -7,8 +9,6 @@ const account = require('./model');
 const { supportJWTServiceSetup, jwtTimerServiceSetup } = require('./services');
 const { accountModelService, accountModelServiceHooks } = require('./services/accountModelService');
 const { accountService, accountServiceHooks } = require('./services/accountApiService');
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
 
 /* @deprecated
 const chance = new Chance();

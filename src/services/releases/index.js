@@ -1,9 +1,10 @@
 const service = require('feathers-mongoose');
 const request = require('request-promise-native');
-const release = require('./release-model');
-const hooks = require('./hooks/index');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+
+const release = require('./release-model');
+const hooks = require('./hooks/index');
 
 class ReleaseFetchService {
 	async find() {

@@ -3,9 +3,10 @@ const { authenticate } = require('@feathersjs/authentication');
 const {
 	iff, isProvider,
 } = require('feathers-hooks-common');
-const { hasPermission } = require('../../hooks');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+
+const { hasPermission } = require('../../hooks');
 
 const Syncer = require('./strategies/Syncer');
 const syncers = require('./strategies');

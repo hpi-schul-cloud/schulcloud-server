@@ -1,8 +1,9 @@
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const hooks = require('./hooks');
 const globalHooks = require('../../hooks');
 const oauth2 = require('../oauth2/hooks');
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
 
 module.exports = function roster() {
 	const app = this;

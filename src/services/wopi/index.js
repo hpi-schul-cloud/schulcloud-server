@@ -3,6 +3,9 @@
  */
 const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 const rp = require('request-promise-native');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const logger = require('../../logger');
 const hooks = require('./hooks');
 const { FileModel } = require('../fileStorage/model');
@@ -14,8 +17,6 @@ const hostCapabilitiesHelper = require('./utils/hostCapabilitiesHelper');
 const filePostActionHelper = require('./utils/filePostActionHelper');
 const handleResponseHeaders = require('../../middleware/handleResponseHeaders');
 const docs = require('./docs');
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
 
 const wopiPrefix = '/wopi/files/';
 

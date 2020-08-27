@@ -1,8 +1,9 @@
 const ua = require('universal-analytics');
-const hooks = require('./hooks');
-const logger = require('../../logger');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+
+const hooks = require('./hooks');
+const logger = require('../../logger');
 
 const AnalyticsModel = require('./model');
 

@@ -1,7 +1,8 @@
 const request = require('request-promise-native');
-const hooks = require('./hooks/index');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+
+const hooks = require('./hooks/index');
 
 const { REQUEST_TIMEOUT } = require('../../../config/globals');
 

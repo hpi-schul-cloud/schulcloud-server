@@ -1,12 +1,13 @@
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const { ConsentVersionModel } = require('./model');
 const consentVersionModelHooks = require('./hooks/consentversionsModelHooks');
 const consentDocs = require('./docs');
 const { ConsentCheckService, consentCheckHooks } = require('./services/consentCheck.service');
 const { ConsentVersionService, ConsentVersionServiceHooks } = require('./services/consentVersionService');
 const deprecated = require('./services/consent.deprecated');
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
 
 // eslint-disable-next-line func-names
 module.exports = function () {

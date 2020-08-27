@@ -2,14 +2,14 @@
 const ldap = require('ldapjs');
 const errors = require('@feathersjs/errors');
 const mongoose = require('mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const hooks = require('./hooks');
 
 const { NoClientInstanceError } = require('./errors');
 const getLDAPStrategy = require('./strategies');
 const logger = require('../../logger');
-
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
 
 module.exports = function LDAPService() {
 	const app = this;

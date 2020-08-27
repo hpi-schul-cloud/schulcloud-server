@@ -2,12 +2,12 @@
 const { Configuration } = require('@schul-cloud/commons');
 const queryString = require('querystring');
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const logger = require('../../logger');
 const link = require('./link-model');
 const hooks = require('./hooks');
-
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
 
 module.exports = function setup() {
 	const app = this;

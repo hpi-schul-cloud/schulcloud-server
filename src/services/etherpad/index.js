@@ -1,3 +1,6 @@
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const {
 	Pad,
 	Session,
@@ -11,9 +14,6 @@ const {
 	groupHooks,
 	authorHooks,
 } = require('./hooks');
-
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
 
 module.exports = (app) => {
 	const padsRoute = '/etherpad/pads';

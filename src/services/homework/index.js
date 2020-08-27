@@ -1,7 +1,8 @@
-const copyService = require('./copy-service');
-const modelService = require('./model-service');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+
+const copyService = require('./copy-service');
+const modelService = require('./model-service');
 
 module.exports = (app) => {
 	app.configure(copyService);

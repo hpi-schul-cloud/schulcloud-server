@@ -4,6 +4,9 @@ const {
 	GeneralError,
 	NotFound,
 } = require('@feathersjs/errors');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const hooks = require('./hooks');
 const { warning } = require('../../logger/index');
 const { teamsModel } = require('./model');
@@ -32,9 +35,6 @@ const { ScopePermissionService, ScopeListService } = require('../helpers/scopePe
 // todo docs require
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const { Configuration } = require('@schul-cloud/commons');
-
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
 
 const HOST = Configuration.get('HOST');
 

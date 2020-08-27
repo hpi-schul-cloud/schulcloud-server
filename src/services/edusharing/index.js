@@ -1,7 +1,8 @@
-const hooks = require('./hooks');
-const EduSharingConnector = require('./logic/connector');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+
+const hooks = require('./hooks');
+const EduSharingConnector = require('./logic/connector');
 
 class EduSearch {
 	find(data) {

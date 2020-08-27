@@ -1,6 +1,7 @@
-const { webuntisMetadataService, webuntisMetadataServiceHooks } = require('./services/webuntisMetadata');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+
+const { webuntisMetadataService, webuntisMetadataServiceHooks } = require('./services/webuntisMetadata');
 
 /* In addition to setting up the service code, the service has to be included in src/index.js. */
 

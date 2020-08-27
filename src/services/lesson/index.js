@@ -1,12 +1,11 @@
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 const lessonModel = require('./model');
 const hooks = require('./hooks/index');
 const copyHooks = require('./hooks/copy');
 const { LessonCopyService, LessonFilesService, AddMaterialService } = require('./services');
-
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
 
 module.exports = function setup() {
 	const app = this;

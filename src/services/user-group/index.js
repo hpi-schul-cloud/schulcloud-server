@@ -1,4 +1,7 @@
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const {
 	gradeModel,
 } = require('./model');
@@ -15,9 +18,6 @@ const { courseModelService, courseModelServiceHooks } = require('./services/cour
 const { courseService, courseHooks } = require('./services/courses');
 const { courseGroupModelService, courseGroupModelServiceHooks } = require('./services/courseGroupModelService');
 const { courseGroupHooks, courseGroupService } = require('./services/courseGroups');
-
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
 
 // eslint-disable-next-line func-names
 module.exports = function () {

@@ -1,12 +1,13 @@
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const Role = require('./model');
 const hooks = require('./hooks');
 const { PermissionService, permissionHooks } = require('./services/permissions');
 const { UserPermissions, userPermissionsHooks } = require('./services/userPermissions');
 const { UserRoles, userRolesHooks } = require('./services/userRoles');
 const { definePermissions, PERMISSIONS, ROLES } = require('./utils/permissions');
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
 
 module.exports = function setup() {
 	const app = this;

@@ -1,3 +1,6 @@
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const passwordRecovery = require('./model');
 const AccountModel = require('../account/model');
 const {
@@ -8,8 +11,6 @@ const {
 	GenerateRecoveryPasswordTokenService,
 	hooks: generateRecoveryPasswordHooks,
 } = require('./services/GenerateRecoveryPasswordTokenService');
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
 
 module.exports = function setup() {
 	const app = this;

@@ -1,10 +1,11 @@
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const {
 	ActivationModelService,
 	Activation,
 	EMailAddressActivation,
 } = require('./services');
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
 
 const { KEYWORDS } = require('./utils/customStrategyUtils');
 

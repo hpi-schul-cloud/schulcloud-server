@@ -1,5 +1,8 @@
 const moment = require('moment');
 const _ = require('lodash');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const hooks = require('./hooks/index');
 const swaggerDocs = require('./docs');
 const schoolModel = require('../school/model');
@@ -9,8 +12,6 @@ const homeworkModel = require('../homework/model');
 const lessonModel = require('../lesson/model');
 const groupModel = require('../user-group/model');
 const { FileModel } = require('../fileStorage/model');
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
 
 const promises = [
 	{
