@@ -525,67 +525,6 @@ exports.mapPayload = (context) => {
 	return context;
 };
 
-exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) => {
-	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
-		return context;
-	}
-	// before-hook
-	if (context.type === 'before') {
-		let populate = context.params.query.$populate;
-		if (typeof (populate) === 'undefined') {
-			populate = ['courseId', 'courseGroupId'];
-		} else if (Array.isArray(populate) && !populate.includes('courseId')) {
-			populate.push('courseId');
-			populate.push('courseGroupId');
-		}
-		context.params.query.$populate = populate;
-	} else {
-		// after-hook
-		if (context.method === 'get' && (context.result || {})._id) {
-			let tempLesson = [context.result];
-			tempLesson = tempLesson.filter((lesson) => {
-				if ('courseGroupId' in lesson) {
-					return userIsInThatCourse(user, lesson.courseGroupId, false);
-				}
-				return userIsInThatCourse(user, lesson.courseId, true)
-					|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
-			});
-			if (tempLesson.length === 0) {
-				throw new Forbidden("You don't have access to that lesson.");
-			}
-			if ('courseGroupId' in context.result) {
-				context.result.courseGroupId = context.result.courseGroupId._id;
-			} else {
-				context.result.courseId = context.result.courseId._id;
-			}
-		}
-
-		if (context.method === 'find' && ((context.result || {}).data || []).length > 0) {
-			context.result.data = context.result.data.filter((lesson) => {
-				if ('courseGroupId' in lesson) {
-					return userIsInThatCourse(user, lesson.courseGroupId, false);
-				}
-				return userIsInThatCourse(user, lesson.courseId, true)
-					|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
-			});
-
-			if (context.result.data.length === 0) {
-				throw new NotFound('There are no lessons that you have access to.');
-			} else {
-				context.result.total = context.result.data.length;
-			}
-			context.result.data.forEach((lesson) => {
-				if ('courseGroupId' in lesson) {
-					lesson.courseGroupId = lesson.courseGroupId._id;
-				} else {
-					lesson.courseId = lesson.courseId._id;
-				}
-			});
-		}
-	}
-	return context;
-});
-
 exports.restrictToUsersOwnClasses = (context) => getUser(context).then((user) => {
 	if (testIfRoleNameExist(user, ['superhero', 'administrator', 'teacher'])) {
 		return context;

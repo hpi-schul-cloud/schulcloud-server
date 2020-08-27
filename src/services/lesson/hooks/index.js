@@ -8,7 +8,6 @@ const { equal } = require('../../../helper/compare').ObjectId;
 const {
 	hasRoleNoHook,
 	injectUserId,
-	restrictToUsersOwnLessons,
 	hasPermission,
 	ifNotLocal,
 	permitGroupOperation,
