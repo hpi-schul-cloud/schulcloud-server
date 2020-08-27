@@ -5,6 +5,8 @@ const consentDocs = require('./docs');
 const { ConsentCheckService, consentCheckHooks } = require('./services/consentCheck.service');
 const { ConsentVersionService, ConsentVersionServiceHooks } = require('./services/consentVersionService');
 const deprecated = require('./services/consent.deprecated');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 // eslint-disable-next-line func-names
 module.exports = function () {
@@ -13,6 +15,8 @@ module.exports = function () {
 	// REPLACEMENT FOR CURRENT consent ROUTE
 	app.use('/consents', new deprecated.ConsentService());
 	app.service('/consents').hooks(deprecated.consentHooks);
+
+	app.use('/consents/api', staticContent(path.join(__dirname, '/docs')));
 
 	// app.use('/consents/:type/users', new ConsentStatusService());
 

@@ -33,6 +33,9 @@ const { ScopePermissionService, ScopeListService } = require('../helpers/scopePe
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const { Configuration } = require('@schul-cloud/commons');
 
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const HOST = Configuration.get('HOST');
 
 const { AdminOverview } = require('./services');
@@ -459,6 +462,8 @@ module.exports = function setup() {
 		accept: app.service('/teams/extern/accept'),
 		remove: app.service('/teams/extern/remove'),
 	};
+
+	app.use('/teams/api', staticContent(path.join(__dirname, '/docs')));
 
 	teamsServices.hooks({
 		before: hooks.before,

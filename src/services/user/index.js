@@ -21,6 +21,9 @@ const {
 	QrRegistrationLinks: { QrRegistrationLinks, qrRegistrationLinksHooks },
 } = require('./services');
 
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 module.exports = (app) => {
 	app.use('usersModel', UsersModelService.userModelService);
 	app.service('usersModel').hooks(UsersModelService.userModelHooks);
@@ -99,4 +102,6 @@ module.exports = (app) => {
 	app.service('/users/skipregistration').hooks(skipRegistrationBulkHooks);
 
 	app.use('/registrationSchool', new RegistrationSchoolService());
+
+	app.use('/users/api', staticContent(path.join(__dirname, '/docs')));
 };

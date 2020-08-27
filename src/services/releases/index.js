@@ -2,6 +2,8 @@ const service = require('feathers-mongoose');
 const request = require('request-promise-native');
 const release = require('./release-model');
 const hooks = require('./hooks/index');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 class ReleaseFetchService {
 	async find() {
@@ -51,6 +53,7 @@ module.exports = function relases() {
 
 	app.use('/releases/fetch', new ReleaseFetchService());
 	app.use('/releases', service(options));
+	app.use('/releases/api', staticContent(path.join(__dirname, '/docs')));
 
 	const releaseFetchService = app.service('/releases/fetch');
 	const releaseService = app.service('/releases');

@@ -9,6 +9,8 @@ const homeworkModel = require('../homework/model');
 const lessonModel = require('../lesson/model');
 const groupModel = require('../user-group/model');
 const { FileModel } = require('../fileStorage/model');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 const promises = [
 	{
@@ -155,4 +157,6 @@ module.exports = function () {
 	app.use('/statistics', new StatisticsService());
 	const statisticsService = app.service('/statistics');
 	statisticsService.hooks(hooks);
+
+	app.use('/statistics/api', staticContent(path.join(__dirname, '/docs')));
 };

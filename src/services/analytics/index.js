@@ -1,6 +1,8 @@
 const ua = require('universal-analytics');
 const hooks = require('./hooks');
 const logger = require('../../logger');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 const AnalyticsModel = require('./model');
 
@@ -59,6 +61,8 @@ module.exports = function () {
 	app.use('/analytics', new Service());
 	const contentService = app.service('/analytics');
 	contentService.hooks(hooks);
+
+	app.use('/analytics/api', staticContent(path.join(__dirname, '/docs')));
 };
 
 module.exports.Service = Service;

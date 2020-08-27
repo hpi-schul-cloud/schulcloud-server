@@ -1,6 +1,8 @@
 const service = require('feathers-mongoose');
 const { StorageProviderModel } = require('./model');
 const hooks = require('./hooks');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 module.exports = (app) => {
 	const options = {
@@ -13,6 +15,7 @@ module.exports = (app) => {
 	};
 
 	app.use('/storageProvider', service(options));
+	app.use('/storageProvider/api', staticContent(path.join(__dirname, '/docs')));
 
 	const storageProviderService = app.service('/storageProvider');
 	storageProviderService.hooks(hooks);

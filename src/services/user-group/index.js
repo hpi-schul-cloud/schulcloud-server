@@ -16,11 +16,16 @@ const { courseService, courseHooks } = require('./services/courses');
 const { courseGroupModelService, courseGroupModelServiceHooks } = require('./services/courseGroupModelService');
 const { courseGroupHooks, courseGroupService } = require('./services/courseGroups');
 
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 // eslint-disable-next-line func-names
 module.exports = function () {
 	const app = this;
 
 	app.configure(courseCopyService);
+
+	app.use('/courses/api', staticContent(path.join(__dirname, '/docs')));
 
 	/* Course model */
 	app.use('/courseModel', courseModelService);

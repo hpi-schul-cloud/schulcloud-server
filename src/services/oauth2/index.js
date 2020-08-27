@@ -1,6 +1,9 @@
 const hooks = require('./hooks');
 const Hydra = require('./hydra.js');
 
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const setClientDefaults = (data) => {
 	data.scope = data.scope || 'openid offline';
 	data.grant_types = data.grant_types || ['authorization_code', 'refresh_token'];
@@ -84,4 +87,6 @@ module.exports = function oauth2() {
 		},
 	});
 	app.service('/oauth2/auth/sessions/consent').hooks(hooks.hooks.consentSessions);
+
+	app.use('/oauth2/api', staticContent(path.join(__dirname, '/docs')));
 };

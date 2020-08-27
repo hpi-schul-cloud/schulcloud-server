@@ -14,6 +14,8 @@ const hostCapabilitiesHelper = require('./utils/hostCapabilitiesHelper');
 const filePostActionHelper = require('./utils/filePostActionHelper');
 const handleResponseHeaders = require('../../middleware/handleResponseHeaders');
 const docs = require('./docs');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 const wopiPrefix = '/wopi/files/';
 
@@ -213,6 +215,7 @@ module.exports = function setup() {
 
 	app.use(`${wopiPrefix}:fileId/contents`, new WopiFilesContentsService(app), handleResponseHeaders);
 	app.use(`${wopiPrefix}:fileId`, new WopiFilesInfoService(app), handleResponseHeaders);
+	app.use('/wopi/api', staticContent(path.join(__dirname, '/docs')));
 
 	const filesService = app.service(`${wopiPrefix}:fileId`);
 	const filesContentService = app.service(`${wopiPrefix}:fileId/contents`);

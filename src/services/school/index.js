@@ -5,6 +5,8 @@ const hooks = require('./hooks');
 const schoolGroupHooks = require('./hooks/schoolGroup.hooks');
 const { SchoolMaintenanceService } = require('./maintenance');
 const { HandlePermissions, handlePermissionsHooks } = require('./services/permissions');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 module.exports = function schoolServices() {
 	const app = this;
@@ -23,6 +25,8 @@ module.exports = function schoolServices() {
 	app.use('/schools', service(options));
 	const schoolService = app.service('/schools');
 	schoolService.hooks(hooks);
+
+	app.use('/schools/api', staticContent(path.join(__dirname, '/docs')));
 
 	app.use('/schools/:schoolId/maintenance', new SchoolMaintenanceService());
 

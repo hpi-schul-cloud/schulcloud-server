@@ -1,6 +1,8 @@
 const hooks = require('./hooks');
 const globalHooks = require('../../hooks');
 const oauth2 = require('../oauth2/hooks');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 module.exports = function roster() {
 	const app = this;
@@ -158,4 +160,6 @@ module.exports = function roster() {
 
 	app.use('/roster/groups', groupsHandler);
 	app.service('/roster/groups').hooks(groupsHooks);
+
+	app.use('/roster/api', staticContent(path.join(__dirname, '/docs')));
 };

@@ -1,6 +1,8 @@
 const hooks = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const Cache = require('./cache');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 // add Message Provider Adapter here
 const StatusAdapter = require('./adapter/status');
@@ -26,6 +28,8 @@ module.exports = function alert() {
 
 	app.use('/alert', new AlertService());
 	const service = app.service('/alert');
+
+	app.use('/alert/api', staticContent(path.join(__dirname, '/docs')));
 
 	service.hooks({
 		before: {

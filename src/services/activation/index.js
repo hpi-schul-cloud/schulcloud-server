@@ -3,6 +3,8 @@ const {
 	Activation,
 	EMailAddressActivation,
 } = require('./services');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 const { KEYWORDS } = require('./utils/customStrategyUtils');
 
@@ -28,4 +30,6 @@ module.exports = (app) => {
 	app.use(EMailAddressActivationRoute, new EMailAddressActivation.Service());
 	const EMailAddressActivationService = app.service(EMailAddressActivationRoute);
 	EMailAddressActivationService.hooks(EMailAddressActivation.Hooks);
+
+	app.use('/activation/api', staticContent(path.join(__dirname, '/docs')));
 };

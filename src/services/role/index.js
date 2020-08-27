@@ -5,6 +5,8 @@ const { PermissionService, permissionHooks } = require('./services/permissions')
 const { UserPermissions, userPermissionsHooks } = require('./services/userPermissions');
 const { UserRoles, userRolesHooks } = require('./services/userRoles');
 const { definePermissions, PERMISSIONS, ROLES } = require('./utils/permissions');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 module.exports = function setup() {
 	const app = this;
@@ -37,6 +39,7 @@ module.exports = function setup() {
 	const permissionService = app.service('/roles/:roleName/permissions');
 	permissionService.hooks(permissionHooks);
 
+	app.use('/roles/api', staticContent(path.join(__dirname, '/docs')));
 
 	definePermissions(
 		'ADMIN_TOGGLE_STUDENT_VISIBILITY',

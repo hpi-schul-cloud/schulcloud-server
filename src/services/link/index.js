@@ -6,6 +6,9 @@ const logger = require('../../logger');
 const link = require('./link-model');
 const hooks = require('./hooks');
 
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 module.exports = function setup() {
 	const app = this;
 
@@ -161,6 +164,9 @@ module.exports = function setup() {
 	app.use('/link', redirectToTarget, linkService);
 	app.use('/registrationlink', new RegistrationLinkService());
 	app.use('/expertinvitelink', new ExpertLinkService());
+
+	app.use('/link/api', staticContent(path.join(__dirname, '/docs')));
+
 	linkService = app.service('/link');
 	linkService.hooks(hooks);
 };

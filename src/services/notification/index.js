@@ -1,5 +1,7 @@
 const request = require('request-promise-native');
 const hooks = require('./hooks/index');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 const { REQUEST_TIMEOUT } = require('../../../config/globals');
 
@@ -201,6 +203,7 @@ module.exports = function () {
 	app.use('/notification/devices', new DeviceService());
 	app.use('/notification/callback', new CallbackService());
 	app.use('/notification', new NotificationService());
+	app.use('/notification/api', staticContent(path.join(__dirname, '/docs')));
 
 	const messageService = app.service('/notification/messages');
 	const deviceService = app.service('/notification/devices');

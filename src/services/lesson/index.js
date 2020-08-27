@@ -5,6 +5,9 @@ const hooks = require('./hooks/index');
 const copyHooks = require('./hooks/copy');
 const { LessonCopyService, LessonFilesService, AddMaterialService } = require('./services');
 
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 module.exports = function setup() {
 	const app = this;
 
@@ -34,6 +37,8 @@ module.exports = function setup() {
 			]).exec();
 		},
 	});
+
+	app.use('/lessons/api', staticContent(path.join(__dirname, '/docs')));
 
 	const systemService = app.service('/lessons');
 	const lessonFilesService = app.service('/lessons/:lessonId/files/');

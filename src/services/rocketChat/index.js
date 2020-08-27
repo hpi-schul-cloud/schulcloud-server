@@ -5,6 +5,8 @@ const {
 const {
 	rocketChatUserHooks, rocketChatLoginHooks, rocketChatLogoutHooks, rocketChatChannelHooks,
 } = require('./hooks');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 const RocketChatUser = require('./services/rocketChatUser');
 const RocketChatLogin = require('./services/rocketChatLogin');
@@ -24,6 +26,7 @@ module.exports = function Setup() {
 	app.use('/rocketChat/user', new RocketChatUser());
 	app.use('/rocketChat/login', new RocketChatLogin());
 	app.use('/rocketChat/logout', new RocketChatLogout());
+	app.use('/rocketChat/api', staticContent(path.join(__dirname, '/docs')));
 
 	const rocketChatUserService = app.service('/rocketChat/user');
 	const rocketChatLoginService = app.service('/rocketChat/login');

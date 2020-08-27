@@ -1,5 +1,7 @@
 const { UserResolver, userResolverHooks } = require('./services/userResolveService');
 const { ScopeResolver, scopeResolverHooks } = require('./services/scopeResolverService');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 module.exports = (app) => {
 	// Initialize our service with any options it requires
@@ -7,4 +9,5 @@ module.exports = (app) => {
 	app.service('/resolve/scopes').hooks(scopeResolverHooks);
 	app.use('/resolve/users', new UserResolver());
 	app.service('/resolve/users').hooks(userResolverHooks);
+	app.use('/resolve/api', staticContent(path.join(__dirname, '/docs')));
 };

@@ -7,6 +7,8 @@ const account = require('./model');
 const { supportJWTServiceSetup, jwtTimerServiceSetup } = require('./services');
 const { accountModelService, accountModelServiceHooks } = require('./services/accountModelService');
 const { accountService, accountServiceHooks } = require('./services/accountApiService');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 /* @deprecated
 const chance = new Chance();
@@ -59,6 +61,8 @@ module.exports = (app) => {
 
 	app.use('accounts', accountService);
 	app.service('/accounts').hooks(accountServiceHooks);
+
+	app.use('/accounts/api', staticContent(path.join(__dirname, '/docs')));
 
 	// app.use('/accounts/pwgen', new PasswordGenService());
 

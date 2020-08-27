@@ -4,6 +4,8 @@ const errors = require('@feathersjs/errors');
 const { helpDocumentsModel } = require('./model');
 const logger = require('../../logger');
 const { excludeAttributesFromSanitization } = require('../../hooks/sanitizationExceptions');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 /**
  * retrieve documents from database according to theme and userId
@@ -54,14 +56,16 @@ class HelpDocumentsService {
 
 module.exports = function news() {
 	const app = this;
-	const path = 'help/documents';
-	app.use(path, new HelpDocumentsService());
-	const service = app.service(path);
+	const docPath = 'help/documents';
+	app.use(docPath, new HelpDocumentsService());
+	const service = app.service(docPath);
+
+	app.use('/help/api', staticContent(path.join(__dirname, '/docs')));
 
 	service.hooks({
 		before: {
 			all: [authenticate('jwt')],
-			find: [excludeAttributesFromSanitization(path, ['title', 'content'])],
+			find: [excludeAttributesFromSanitization(docPath, ['title', 'content'])],
 			get: [hooks.disallow()],
 			create: [hooks.disallow()],
 			update: [hooks.disallow()],

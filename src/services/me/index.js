@@ -2,6 +2,8 @@ const { Forbidden, GeneralError } = require('@feathersjs/errors');
 const logger = require('../../logger');
 const hooks = require('./hooks');
 const { externallyManaged } = require('../helpers/utils');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 class Service {
 	constructor(options) {
@@ -53,8 +55,10 @@ module.exports = function () {
 	const app = this;
 
 	app.use('/me', new Service());
+	app.use('/me/api', staticContent(path.join(__dirname, '/docs')));
 
 	const me = app.service('/me');
 
 	me.hooks(hooks);
+	
 };
