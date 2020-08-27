@@ -369,9 +369,13 @@ describe('AdminUsersService', () => {
 			roles: ['student'],
 			schoolId,
 		};
-		await adminStudentsService.create(mockData, params).catch((err) => {
+		try {
+			await adminStudentsService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
 			expect(err.code).to.equal(403);
-		});
+			expect(err.message).to.equal('Creating new students or teachers is only possible in the source system.');
+		}
 	});
 });
 
@@ -493,8 +497,12 @@ describe('AdminTeachersService', () => {
 			roles: ['teacher'],
 			schoolId,
 		};
-		await adminTeachersService.create(mockData, params).catch((err) => {
+		try {
+			await adminTeachersService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
 			expect(err.code).to.equal(403);
-		});
+			expect(err.message).to.equal('Creating new students or teachers is only possible in the source system.');
+		}
 	});
 });
