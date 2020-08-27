@@ -37,7 +37,7 @@ describe('lessons service', () => {
 			expect(lesson.courseId.toString()).to.equal(testLesson.courseId);
 		}));
 
-	it('GET a course', async () => {
+	it('GET a lesson', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
@@ -65,8 +65,28 @@ describe('lessons service', () => {
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
-			expect(err.code).to.equal(403);
-			expect(err.message).to.equal("You don't have access to that lesson.");
+			expect(err.code).to.equal(404);
+			expect(err.message).to.equal(`no record found for id '${lesson._id}'`);
+		}
+	});
+
+	it('Admin can not GET a lesson from a foreign school', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool({});
+		const { _id: otherschoolId } = await testObjects.createTestSchool({});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const foreignteacher = await testObjects.createTestUser({ roles: ['administrator'], schoolId: otherschoolId });
+		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+		const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId: course._id });
+		const params = await testObjects.generateRequestParamsFromUser(foreignteacher);
+		params.query = {};
+
+		try {
+			await app.service('lessons').get(lesson._id, params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.equal(404);
+			expect(err.message).to.equal(`no record found for id '${lesson._id}'`);
 		}
 	});
 
@@ -84,10 +104,26 @@ describe('lessons service', () => {
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
-			expect(err.code).to.equal(403);
-			expect(err.message).to.equal("You don't have access to that lesson.");
+			expect(err.code).to.equal(404);
+			expect(err.message).to.equal(`no record found for id '${lesson._id}'`);
 		}
 	});
+
+	/* it('Admin can not FIND foreign lessons', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool({});
+		const { _id: otherschoolId } = await testObjects.createTestSchool({});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: otherschoolId });
+		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+		const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId: course._id });
+		const admincourse = await testObjects.createTestCourse({ schoolId, teacherIds: [admin._id] });
+		const adminlesson = await testObjects.createTestLesson({ name: 'testlesson', courseId: course._id });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		params.query = {};
+
+		const results = await app.service('lessons').find(params);
+		expect(results.total).to.equal(1);
+	}); */
 
 	it('Student can not GET a lesson from a coursegroup the user is not in', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
@@ -109,8 +145,105 @@ describe('lessons service', () => {
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.equal(404);
+			expect(err.message).to.equal(`no record found for id '${lesson._id}'`);
+		}
+	});
+
+	it('Teacher can not create lesson on foreign school', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool({});
+		const { _id: otherschoolId } = await testObjects.createTestSchool({});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const otherTeacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: otherschoolId });
+		const course = await testObjects.createTestCourse({ otherschoolId, teacherIds: [otherTeacher._id] });
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		const data = {
+			name: 'about intrusions',
+			courseId: course._id,
+		};
+		try {
+			await app.service('lessons').create(data, params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(403);
-			expect(err.message).to.equal("You don't have access to that lesson.");
+			expect(err.message).to.equal("The entered course doesn't belong to you!");
+		}
+	});
+
+	it('Teacher can PATCH his own lessons', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool({});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+		const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId: course._id });
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		const data = {
+			name: 'this name is better',
+		};
+		const result = await app.service('lessons').patch(lesson._id, data, params);
+		expect(result._id.toString()).to.equal(lesson._id.toString());
+		expect(result.name).to.equal('this name is better');
+	});
+
+	it('Teacher can not PATCH lesson on foreign school', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool({});
+		const { _id: otherschoolId } = await testObjects.createTestSchool({});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const otherTeacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: otherschoolId });
+		const course = await testObjects.createTestCourse({ otherschoolId, teacherIds: [otherTeacher._id] });
+		const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId: course._id });
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		const data = {
+			name: 'hostile takeover',
+		};
+		try {
+			await app.service('lessons').patch(lesson._id, data, params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.equal(404);
+			expect(err.message).to.equal(`no record found for id '${lesson._id}'`);
+		}
+	});
+
+	it('Teacher can not UPDATE lesson on foreign school', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool({});
+		const { _id: otherschoolId } = await testObjects.createTestSchool({});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const otherTeacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: otherschoolId });
+		const course = await testObjects.createTestCourse({ otherschoolId, teacherIds: [otherTeacher._id] });
+		const targetCourse = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+		const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId: course._id });
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		const data = {
+			name: 'hostile takeover',
+			courseId: targetCourse._id,
+		};
+		try {
+			await app.service('lessons').update(lesson._id, data, params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.equal(404);
+			expect(err.message).to.equal(`no record found for id '${lesson._id}'`);
+		}
+	});
+
+	it('Teacher can not REMOVE lesson on foreign school', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool({});
+		const { _id: otherschoolId } = await testObjects.createTestSchool({});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const otherTeacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: otherschoolId });
+		const course = await testObjects.createTestCourse({ otherschoolId, teacherIds: [otherTeacher._id] });
+		const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId: course._id });
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		try {
+			await app.service('lessons').remove(lesson._id, params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.equal(404);
+			expect(err.message).to.equal(`no record found for id '${lesson._id}'`);
 		}
 	});
 
