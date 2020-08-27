@@ -6,6 +6,7 @@ const {
 } = require('feathers-hooks-common');
 const { equal } = require('../../../helper/compare').ObjectId;
 const {
+	hasRoleNoHook,
 	injectUserId,
 	restrictToUsersOwnLessons,
 	hasPermission,
@@ -61,37 +62,53 @@ const mapUsers = (context) => {
 	return context;
 };
 
-/* const validateLessonFind = (context) => {
+const validateLessonFind = (context) => {
 	const query = (context.params || {}).query || {};
 	if (query.courseId || query.courseGroupId || query.shareToken) {
 		return context;
 	}
 	throw new BadRequest('this operation requires courseId, courseGroupId, or shareToken');
-}; */
+};
 
-const getCourseAndCourseGroup = async (lessonId, app) => {
-	const lesson = await app.service('lessons').get(lessonId);
-	let { courseId } = lesson;
+const getCourseAndCourseGroup = async (courseId, courseGroupId, app) => {
+	let tempCourseId = courseId;
 	let courseGroup;
-	if (lesson.courseGroupId) {
-		courseGroup = await app.service('courseGroupModel').get(lesson.courseGroupId);
-		({ courseId } = courseGroup);
+	if (courseGroupId) {
+		courseGroup = await app.service('courseGroupModel').get(courseGroupId);
+		tempCourseId = courseGroup.courseId;
 	}
-	const course = await app.service('courseModel').get(courseId);
+	const course = await app.service('courseModel').get(tempCourseId);
 	return { course, courseGroup };
 };
 
 const restrictToUsersCoursesLessons = async (context) => {
-	const { userId } = context.params.account;
-	const { course, courseGroup } = await getCourseAndCourseGroup(context.id, context.app);
+	const { userId, schoolId } = context.params.account;
+	const userIsSuperhero = await hasRoleNoHook(context, userId, 'superhero');
+	const userIsAdmin = await hasRoleNoHook(context, userId, 'administrator');
 
+	let courseId;
+	let courseGroupId;
+	if (context.method === 'find') {
+		if (context.params.query.shareToken) return context;
+		({ courseId, courseGroupId } = context.params.query);
+	} else {
+		const lesson = await context.app.service('lessons').get(context.id);
+		({ courseId, courseGroupId } = lesson);
+	}
+
+	const { course, courseGroup } = await getCourseAndCourseGroup(courseId, courseGroupId, context.app);
 	let studentsWithAccess = course.userIds;
 	if (courseGroup) studentsWithAccess = courseGroup.userIds;
 
+	const hasAdminAccess = userIsSuperhero || (userIsAdmin && equal(course.schoolId, schoolId));
 	const userInCourse = studentsWithAccess.some((id) => equal(id, userId))
 		|| course.teacherIds.some((id) => equal(id, userId))
 		|| course.substitutionIds.some((id) => equal(id, userId));
-	if (!userInCourse) throw new NotFound(`no record found for id '${context.id}'`);
+
+	if (!(userInCourse || hasAdminAccess)) {
+		throw new NotFound(`no record found for id '${context.id || courseGroupId || courseId}'`);
+	}
+	return context;
 };
 
 const populateWhitelist = {
@@ -109,7 +126,7 @@ exports.before = () => ({
 		hasPermission('TOPIC_VIEW'),
 		iff(isProvider('external'), validateLessonFind),
 		iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
-		ifNotLocal(restrictToUsersOwnLessons),
+		iff(isProvider('external'), restrictToUsersCoursesLessons),
 	],
 	get: [
 		hasPermission('TOPIC_VIEW'),
@@ -147,7 +164,7 @@ exports.before = () => ({
 
 exports.after = {
 	all: [],
-	find: [ifNotLocal(restrictToUsersOwnLessons)],
+	find: [],
 	get: [],
 	create: [addShareTokenIfCourseShareable],
 	update: [],

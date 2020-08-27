@@ -109,21 +109,41 @@ describe('lessons service', () => {
 		}
 	});
 
-	/* it('Admin can not FIND foreign lessons', async () => {
+	it('can not FIND all lessons', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
-		const { _id: otherschoolId } = await testObjects.createTestSchool({});
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: otherschoolId });
-		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
-		const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId: course._id });
-		const admincourse = await testObjects.createTestCourse({ schoolId, teacherIds: [admin._id] });
-		const adminlesson = await testObjects.createTestLesson({ name: 'testlesson', courseId: course._id });
+		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
 		const params = await testObjects.generateRequestParamsFromUser(admin);
 		params.query = {};
 
-		const results = await app.service('lessons').find(params);
-		expect(results.total).to.equal(1);
-	}); */
+		try {
+			await app.service('lessons').find(params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.equal(400);
+			expect(err.message).to.equal('this operation requires courseId, courseGroupId, or shareToken');
+		}
+	});
+
+	it('Admin can not FIND foreign lessons', async () => {
+		const { _id: otherschoolId } = await testObjects.createTestSchool({});
+		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: otherschoolId });
+		const { _id: schoolId } = await testObjects.createTestSchool({});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+		await testObjects.createTestLesson({ name: 'testlesson', courseId: course._id });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		params.query = { courseId: course._id };
+
+		try {
+			await app.service('lessons').find(params);
+			throw new Error('should have failed');
+		} catch (err) {
+			expect(err.message).to.not.equal('should have failed');
+			expect(err.code).to.equal(404);
+			expect(err.message).to.equal(`no record found for id '${course._id}'`);
+		}
+	});
 
 	it('Student can not GET a lesson from a coursegroup the user is not in', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
