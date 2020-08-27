@@ -365,7 +365,6 @@ describe('AdminUsersService', () => {
 		const mockData = {
 			firstName: 'testFirst',
 			lastName: 'testLast',
-			email: 'test@de.de',
 			roles: ['student'],
 			schoolId,
 		};
@@ -493,7 +492,6 @@ describe('AdminTeachersService', () => {
 		const mockData = {
 			firstName: 'testFirst',
 			lastName: 'testLast',
-			email: 'test@de.de',
 			roles: ['teacher'],
 			schoolId,
 		};
