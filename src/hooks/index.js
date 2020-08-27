@@ -524,7 +524,7 @@ exports.mapPayload = (context) => {
 };
 
 exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) => {
-	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
+	if (testIfRoleNameExist(user, ['superhero'])) {
 		return context;
 	}
 	// before-hook
