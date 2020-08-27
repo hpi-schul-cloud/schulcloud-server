@@ -56,7 +56,7 @@ class ConsentCheckService {
 		const user = await this.userService.get(_id);
 		const consent = userToConsent(user);
 
-		if (consent.consentStatus === 'missing') {
+		if (['missing', 'unknown'].includes(consent.consentStatus)) {
 			return {
 				consentStatus: consent.consentStatus,
 			};
