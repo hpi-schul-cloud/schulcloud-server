@@ -80,10 +80,22 @@ const getCourseAndCourseGroup = async (courseId, courseGroupId, app) => {
 	return { course, courseGroup };
 };
 
+/**
+ * this hook checks that the user has access to a lesson. this is true for the following cases:
+ * 1. read access if the user has a correct shareToken.
+ * 2. students can access lessons in their courses that dont have a coursegroup, and lessons of their coursegroups.
+ * 3. teachers can access all lessons in their courses.
+ * 4. administrators can access all lessons on courses of their school. (this might change in the future)
+ * for FIND requests, the course or coursegroup can be found in the query, for other requests in the lesson itself.
+ * @param {*} context 
+ */
 const restrictToUsersCoursesLessons = async (context) => {
 	const { userId, schoolId } = context.params.account;
-	const userIsSuperhero = await hasRoleNoHook(context, userId, 'superhero');
-	const userIsAdmin = await hasRoleNoHook(context, userId, 'administrator');
+	const user = await context.app.service('users').get(
+		context.params.account.userId, { query: { $populate: 'roles' } },
+	);
+	const userIsSuperhero = user.roles.filter((u) => (u.name === 'superhero')).length > 0;
+	const userIsAdmin = user.roles.filter((u) => (u.name === 'administrator')).length > 0;
 
 	let courseId;
 	let courseGroupId;
