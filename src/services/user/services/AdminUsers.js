@@ -143,8 +143,8 @@ class AdminUsers {
 }
 
 const formatBirthdayOfUsers = ({ result: { data: users } }) => {
-	users.forEach((user) => { 
-		if (user.birthday) user.birthday = moment(user.birthday).format('DD.MM.YYYY'); 
+	users.forEach((user) => {
+		if (user.birthday) user.birthday = moment(user.birthday).format('DD.MM.YYYY');
 	});
 };
 
