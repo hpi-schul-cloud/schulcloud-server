@@ -13,6 +13,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-6122 - Edusharing preload thumbnails in parallel. Edusharing authentication stabilisation.
 
+## [24.3.3] - 2020-08-28
+
+- SC-6469: prevent admin access to lessons admins shouldnt have access to.
+
 ## [24.3.2] - 2020-08-26
 
 - SC-6382: fix handling of consents for users with unknown birthdays. consentStatus: 'ok' will be returned for valid consents without birthday.
