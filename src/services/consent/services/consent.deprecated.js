@@ -86,9 +86,12 @@ class ConsentService {
 
 		const { userId, ...consent } = data;
 
+		const oldUser = await this.modelService.get(userId);
+		const newConsentData = modifyDataForUserSchema({ ...oldUser.consent, ...consent });
+
 		const user = await this.modelService.patch(
 			userId,
-			modifyDataForUserSchema(consent),
+			newConsentData,
 		);
 
 		return userToConsent(user);
