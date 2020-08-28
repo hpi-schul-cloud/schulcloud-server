@@ -1,0 +1,78 @@
+[{
+	"_id": {
+		"$oid": "5f48c7b14f75d2822cab2074"
+	},
+	"t": {
+		"$date": "2020-08-28T09:00:33.88Z"
+	},
+	"o": "i",
+	"d": {
+		"consent": {
+			"parentConsents": []
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c96"
+			}
+		],
+		"children": [],
+		"parents": [],
+		"features": [],
+		"_id": {
+			"$oid": "5f48c7b14f75d2822cab2073"
+		},
+		"schoolId": {
+			"$oid": "5f48c6cb4f75d2822cab2043"
+		},
+		"firstName": "Integration Test",
+		"lastName": "Admin",
+		"email": "int-test-admin@schul-cloud.org",
+		"importHash": "L2aL08LfaUm1afkqBkTGnEev1x6yuIvqhLMsCedzTLH6uk2BX5LKD0sYUREL",
+		"createdAt": {
+			"$date": "2020-08-28T09:00:33.88Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-28T09:00:33.88Z"
+		}
+	}
+},
+{
+	"_id": {
+		"$oid": "5f48c7b14f75d2822cab2078"
+	},
+	"t": {
+		"$date": "2020-08-28T09:00:33.975Z"
+	},
+	"o": "u",
+	"d": {
+		"firstName": "Integration Test",
+		"lastName": "Admin",
+		"email": "int-test-admin@schul-cloud.org",
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c96"
+			}
+		],
+		"schoolId": {
+			"$oid": "5f48c6cb4f75d2822cab2043"
+		},
+		"consent": {
+			"parentConsents": []
+		},
+		"children": [],
+		"parents": [],
+		"features": [],
+		"createdAt": {
+			"$date": "2020-08-28T09:00:33.88Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-28T09:00:33.88Z"
+		},
+		"fullName": "Integration Test Admin",
+		"id": "5f48c7b14f75d2822cab2073",
+		"avatarInitials": "IA",
+		"avatarBackgroundColor": "#f6cd61",
+		"displayName": "Integration Test Admin"
+	}
+}]
+

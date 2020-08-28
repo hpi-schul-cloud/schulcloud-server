@@ -20,11 +20,11 @@
 		"$oid": "5d44297075e1502c27e405e2"
 	},
 	"purpose": "demo",
-	"permissions" : {
-        "teacher" : {
-            "STUDENT_LIST" : true
-        }
-    }
+	"permissions": {
+		"teacher": {
+			"STUDENT_LIST": true
+		}
+	}
 },
 {
 	"_id": {
@@ -61,33 +61,11 @@
 		"rocketChat"
 	],
 	"enableStudentTeamCreation": false,
-	"permissions" : {
-        "teacher" : {
-            "STUDENT_LIST" : true
-        }
-    }
-},
-{
-	"_id": {
-		"$oid": "5f2987e020834114b8efd6f9"
-	},
-	"updatedAt": {
-		"$date": "2020-07-27T08:21:14.719Z"
-	},
-	"name": "Expertenschule",
-	"federalState": {
-		"$oid": "0000b186816abba584714c53"
-	},
-	"createdAt": {
-		"$date": "2018-11-09T10:04:11.721Z"
-	},
-	"systems": [],
-	"__v": 0,
-	"fileStorageType": "awsS3",
-	"currentYear": {
-		"$oid": "5d44297075e1502c27e405e2"
-	},
-	"purpose": "expert"
+	"permissions": {
+		"teacher": {
+			"STUDENT_LIST": true
+		}
+	}
 },
 {
 	"_id": {
@@ -110,10 +88,32 @@
 		"$oid": "5d44297075e1502c27e405e2"
 	},
 	"purpose": "demo",
-	"permissions" : {
-        "teacher" : {
-            "STUDENT_LIST" : true
-        }
-    }
+	"permissions": {
+		"teacher": {
+			"STUDENT_LIST": true
+		}
+	}
+},
+{
+	"_id": {
+		"$oid": "5f2987e020834114b8efd6f9"
+	},
+	"updatedAt": {
+		"$date": "2020-07-27T08:21:14.719Z"
+	},
+	"name": "Expertenschule",
+	"federalState": {
+		"$oid": "0000b186816abba584714c53"
+	},
+	"createdAt": {
+		"$date": "2018-11-09T10:04:11.721Z"
+	},
+	"systems": [],
+	"__v": 0,
+	"fileStorageType": "awsS3",
+	"currentYear": {
+		"$oid": "5d44297075e1502c27e405e2"
+	},
+	"purpose": "expert"
 }]
 

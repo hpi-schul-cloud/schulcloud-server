@@ -1,22 +1,5 @@
 [{
 	"_id": {
-		"$oid": "0000d213816abba584714caa"
-	},
-	"username": "admin@schul-cloud.org",
-	"password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
-	"updatedAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
-	},
-	"createdAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
-	},
-	"userId": {
-		"$oid": "0000d213816abba584714c0a"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "0000d225816abba584714c9d"
 	},
 	"username": "schueler@schul-cloud.org",
@@ -100,6 +83,23 @@
 	"username": "waldemar.wunderlich@schul-cloud.org",
 	"userId": {
 		"$oid": "58b40278dac20e0645353e3a"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "0000d213816abba584714caa"
+	},
+	"username": "admin@schul-cloud.org",
+	"password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
+	"updatedAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
+	},
+	"createdAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
+	},
+	"userId": {
+		"$oid": "0000d213816abba584714c0a"
 	},
 	"__v": 0
 },
