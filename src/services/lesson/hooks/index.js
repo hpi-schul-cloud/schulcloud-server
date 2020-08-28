@@ -1,11 +1,12 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { BadRequest, NotFound } = require('@feathersjs/errors');
 const nanoid = require('nanoid');
 const {
 	iff, isProvider,
 } = require('feathers-hooks-common');
+const { equal } = require('../../../helper/compare').ObjectId;
 const {
 	injectUserId,
-	restrictToUsersOwnLessons,
 	hasPermission,
 	ifNotLocal,
 	permitGroupOperation,
@@ -13,7 +14,7 @@ const {
 	getRestrictPopulatesHook,
 	preventPopulate,
 } = require('../../../hooks');
-const lesson = require('../model');
+const lessonModel = require('../model');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
 
 // add a shareToken to a lesson if course has a shareToken
@@ -35,7 +36,7 @@ const addShareTokenIfCourseShareable = async (context) => {
 		return context;
 	}
 
-	return lesson.findByIdAndUpdate(_id, { shareToken: nanoid(12) })
+	return lessonModel.findByIdAndUpdate(_id, { shareToken: nanoid(12) })
 		.then(() => context);
 };
 
@@ -43,7 +44,7 @@ const setPosition = async (context) => {
 	const { courseId, courseGroupId } = context.data;
 	if (courseId || courseGroupId) {
 		const query = courseId ? { courseId } : { courseGroupId };
-		context.data.position = await lesson.count(query).exec(); // next free position
+		context.data.position = await lessonModel.count(query).exec(); // next free position
 	}
 
 	return context;
@@ -55,6 +56,67 @@ const mapUsers = (context) => {
 			item.user = item.user || context.params.account.userId;
 			return item;
 		});
+	}
+	return context;
+};
+
+const validateLessonFind = (context) => {
+	const query = (context.params || {}).query || {};
+	if (query.courseId || query.courseGroupId || query.shareToken) {
+		return context;
+	}
+	throw new BadRequest('this operation requires courseId, courseGroupId, or shareToken');
+};
+
+const getCourseAndCourseGroup = async (courseId, courseGroupId, app) => {
+	let tempCourseId = courseId;
+	let courseGroup;
+	if (courseGroupId) {
+		courseGroup = await app.service('courseGroupModel').get(courseGroupId);
+		tempCourseId = courseGroup.courseId;
+	}
+	const course = await app.service('courseModel').get(tempCourseId);
+	return { course, courseGroup };
+};
+
+/**
+ * this hook checks that the user has access to a lesson. this is true for the following cases:
+ * 1. read access if the user has a correct shareToken.
+ * 2. students can access lessons in their courses that dont have a coursegroup, and lessons of their coursegroups.
+ * 3. teachers can access all lessons in their courses.
+ * 4. administrators can access all lessons on courses of their school. (this might change in the future)
+ * for FIND requests, the course or coursegroup can be found in the query, for other requests in the lesson itself.
+ * @param {*} context feathers context
+ */
+const restrictToUsersCoursesLessons = async (context) => {
+	const { userId, schoolId } = context.params.account;
+	const user = await context.app.service('users').get(
+		context.params.account.userId, { query: { $populate: 'roles' } },
+	);
+	const userIsSuperhero = user.roles.filter((u) => (u.name === 'superhero')).length > 0;
+	const userIsAdmin = user.roles.filter((u) => (u.name === 'administrator')).length > 0;
+
+	let courseId;
+	let courseGroupId;
+	if (context.method === 'find') {
+		if (context.params.query.shareToken) return context;
+		({ courseId, courseGroupId } = context.params.query);
+	} else {
+		const lesson = await context.app.service('lessons').get(context.id);
+		({ courseId, courseGroupId } = lesson);
+	}
+
+	const { course, courseGroup } = await getCourseAndCourseGroup(courseId, courseGroupId, context.app);
+	let studentsWithAccess = course.userIds;
+	if (courseGroup) studentsWithAccess = courseGroup.userIds;
+
+	const hasAdminAccess = userIsSuperhero || (userIsAdmin && equal(course.schoolId, schoolId));
+	const userInCourse = studentsWithAccess.some((id) => equal(id, userId))
+		|| course.teacherIds.some((id) => equal(id, userId))
+		|| course.substitutionIds.some((id) => equal(id, userId));
+
+	if (!(userInCourse || hasAdminAccess)) {
+		throw new NotFound(`no record found for id '${context.id || courseGroupId || courseId}'`);
 	}
 	return context;
 };
@@ -72,13 +134,14 @@ exports.before = () => ({
 	all: [authenticate('jwt'), mapUsers],
 	find: [
 		hasPermission('TOPIC_VIEW'),
+		iff(isProvider('external'), validateLessonFind),
 		iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
-		ifNotLocal(restrictToUsersOwnLessons),
+		iff(isProvider('external'), restrictToUsersCoursesLessons),
 	],
 	get: [
 		hasPermission('TOPIC_VIEW'),
 		iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
-		ifNotLocal(restrictToUsersOwnLessons),
+		iff(isProvider('external'), restrictToUsersCoursesLessons),
 	],
 	create: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
@@ -89,25 +152,30 @@ exports.before = () => ({
 	],
 	update: [
 		iff(isProvider('external'), preventPopulate),
+		permitGroupOperation,
+		ifNotLocal(checkCorrectCourseOrTeamId),
+		iff(isProvider('external'), restrictToUsersCoursesLessons),
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 	],
 	patch: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 		permitGroupOperation,
 		ifNotLocal(checkCorrectCourseOrTeamId),
+		iff(isProvider('external'), restrictToUsersCoursesLessons),
 		iff(isProvider('external'), preventPopulate),
 	],
 	remove: [
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', false),
 		permitGroupOperation,
+		iff(isProvider('external'), restrictToUsersCoursesLessons),
 		iff(isProvider('external'), preventPopulate),
 	],
 });
 
 exports.after = {
 	all: [],
-	find: [ifNotLocal(restrictToUsersOwnLessons)],
-	get: [ifNotLocal(restrictToUsersOwnLessons)],
+	find: [],
+	get: [],
 	create: [addShareTokenIfCourseShareable],
 	update: [],
 	patch: [],
