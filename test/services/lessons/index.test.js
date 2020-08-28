@@ -109,7 +109,7 @@ describe('lessons service', () => {
 		}
 	});
 
-	it('can not FIND all lessons', async () => {
+	it('Admin can not FIND all lessons', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
 		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
 		const params = await testObjects.generateRequestParamsFromUser(admin);
