@@ -315,7 +315,7 @@ exports.checkCorrectCourseOrTeamId = async (context) => {
 	if (courseGroupId || courseId) {
 		const userId = context.params.account.userId.toString();
 		// make it sense?
-		const validatedCourseId = (courseId || '').toString() || (context.id || '').toString();
+		let validatedCourseId = (courseId || '').toString() || (context.id || '').toString();
 		let query = {
 			_id: validatedCourseId,
 			teacherIds: {
@@ -326,6 +326,8 @@ exports.checkCorrectCourseOrTeamId = async (context) => {
 
 		if (courseGroupId) {
 			delete context.data.courseId;
+			const courseGroup = context.app.service('courseGroups').get(courseGroupId);
+			validatedCourseId = courseGroup.courseId;
 			query = {
 				_id: validatedCourseId,
 				$or: [
