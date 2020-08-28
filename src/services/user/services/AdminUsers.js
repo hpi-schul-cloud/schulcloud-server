@@ -85,6 +85,7 @@ class AdminUsers {
 			if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
+			if (clientQuery.usersForConsent) query._id = clientQuery.usersForConsent;
 			if (clientQuery.searchQuery) {
 				query.$or = [
 					{ firstName: { "$regex": clientQuery.searchQuery, $options: "i" } },
@@ -142,7 +143,9 @@ class AdminUsers {
 }
 
 const formatBirthdayOfUsers = ({ result: { data: users } }) => {
-	users.forEach((user) => { user.birthday = moment(user.birthday).format('DD.MM.YYYY'); });
+	users.forEach((user) => { 
+		if (user.birthday) user.birthday = moment(user.birthday).format('DD.MM.YYYY'); 
+	});
 };
 
 const adminHookGenerator = (kind) => ({
