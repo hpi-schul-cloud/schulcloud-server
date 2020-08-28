@@ -1,34 +1,5 @@
 [{
 	"_id": {
-		"$oid": "0000d213816abba584714c0a"
-	},
-	"__v": 0,
-	"firstName": "Thorsten",
-	"lastName": "Test",
-	"email": "admin@schul-cloud.org",
-	"updatedAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
-	},
-	"birthday": {
-		"$date": "1977-01-01T11:25:43.556Z"
-	},
-	"createdAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
-	},
-	"preferences": {
-		"firstLogin": true
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c96"
-		}
-	]
-},
-{
-	"_id": {
 		"$oid": "0000d231816abba584714c9e"
 	},
 	"__v": 0,
@@ -53,35 +24,6 @@
 	"roles": [
 		{
 			"$oid": "0000d186816abba584714c98"
-		}
-	]
-},
-{
-	"_id": {
-		"$oid": "0000d213816abba584714c0b"
-	},
-	"__v": 0,
-	"firstName": "Janno",
-	"lastName": "Jura",
-	"email": "janno.jura@schul-cloud.org",
-	"updatedAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
-	},
-	"createdAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
-	},
-	"birthday": {
-		"$date": "1977-01-01T11:25:43.556Z"
-	},
-	"preferences": {
-		"firstLogin": true
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c96"
 		}
 	]
 },
@@ -131,6 +73,64 @@
 			}
 		]
 	}
+},
+{
+	"_id": {
+		"$oid": "0000d231816abba584714c9c"
+	},
+	"__v": 0,
+	"email": "superhero@schul-cloud.org",
+	"firstName": "Super",
+	"lastName": "Hero",
+	"updatedAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
+	},
+	"createdAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
+	},
+	"birthday": {
+		"$date": "1977-01-01T11:25:43.556Z"
+	},
+	"preferences": {
+		"firstLogin": true
+	},
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714c97"
+		}
+	]
+},
+{
+	"_id": {
+		"$oid": "0000d213816abba584714c0b"
+	},
+	"__v": 0,
+	"firstName": "Janno",
+	"lastName": "Jura",
+	"email": "janno.jura@schul-cloud.org",
+	"updatedAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
+	},
+	"createdAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
+	},
+	"birthday": {
+		"$date": "1977-01-01T11:25:43.556Z"
+	},
+	"preferences": {
+		"firstLogin": true
+	},
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714c96"
+		}
+	]
 },
 {
 	"_id": {
@@ -195,20 +195,20 @@
 },
 {
 	"_id": {
-		"$oid": "0000d231816abba584714c9c"
+		"$oid": "0000d213816abba584714c0a"
 	},
 	"__v": 0,
-	"email": "superhero@schul-cloud.org",
-	"firstName": "Super",
-	"lastName": "Hero",
+	"firstName": "Thorsten",
+	"lastName": "Test",
+	"email": "admin@schul-cloud.org",
 	"updatedAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
-	},
-	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
 	},
 	"birthday": {
 		"$date": "1977-01-01T11:25:43.556Z"
+	},
+	"createdAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
 	},
 	"preferences": {
 		"firstLogin": true
@@ -218,7 +218,7 @@
 	},
 	"roles": [
 		{
-			"$oid": "0000d186816abba584714c97"
+			"$oid": "0000d186816abba584714c96"
 		}
 	]
 },

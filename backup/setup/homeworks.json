@@ -662,7 +662,7 @@
 },
 {
 	"_id": {
-		"$oid": "59cce1d381297026d02cdc4b"
+		"$oid": "59cce2c61113d1132c98dc06"
 	},
 	"schoolId": {
 		"$oid": "5f2987e020834114b8efd6f8"
@@ -670,13 +670,13 @@
 	"teacherId": {
 		"$oid": "0000d224816abba584714c9c"
 	},
-	"name": "Private Aufgabe von Marla - mit Kurs, offen",
+	"name": "Private Aufgabe von Marla - mit Kurs, abgelaufen",
 	"description": "<p>Aufgabenbeschreibung</p>\r\n",
 	"availableDate": {
-		"$date": "2017-09-20T11:00:00Z"
+		"$date": "2016-09-20T11:00:00Z"
 	},
 	"dueDate": {
-		"$date": "2300-09-28T13:00:00Z"
+		"$date": "2017-07-28T13:00:00Z"
 	},
 	"private": true,
 	"archived": [],
@@ -694,7 +694,7 @@
 },
 {
 	"_id": {
-		"$oid": "59cce2c61113d1132c98dc06"
+		"$oid": "59cce1d381297026d02cdc4b"
 	},
 	"schoolId": {
 		"$oid": "5f2987e020834114b8efd6f8"
@@ -702,13 +702,13 @@
 	"teacherId": {
 		"$oid": "0000d224816abba584714c9c"
 	},
-	"name": "Private Aufgabe von Marla - mit Kurs, abgelaufen",
+	"name": "Private Aufgabe von Marla - mit Kurs, offen",
 	"description": "<p>Aufgabenbeschreibung</p>\r\n",
 	"availableDate": {
-		"$date": "2016-09-20T11:00:00Z"
+		"$date": "2017-09-20T11:00:00Z"
 	},
 	"dueDate": {
-		"$date": "2017-07-28T13:00:00Z"
+		"$date": "2300-09-28T13:00:00Z"
 	},
 	"private": true,
 	"archived": [],
