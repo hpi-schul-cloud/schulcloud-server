@@ -13,8 +13,8 @@ Codacy: [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b5a3d19c5ec6
 [![Version](https://img.shields.io/github/release/schul-cloud/schulcloud-server.svg)](https://github.com/schulcloud/schulcloud-server/releases)
 [![Greenkeeper badge](https://badges.greenkeeper.io/schul-cloud/schulcloud-server.svg)](https://greenkeeper.io/)
 
-Swagger UI documentation is available [here](https://schul-cloud.org:8080/docs/).
-When running the server locally, it is served at [http://localhost:3030/docs/](http://localhost:3030/docs/).
+OpenAPI specifications are available [here](https://schul-cloud.org:8080/docs/).
+When running the server locally, the specifications are served per service at [http://localhost:3030/<servicename>/api/openapi.yaml](http://localhost:3030/<servicename>/api/openapi.yaml).
 
 # Requirements
 

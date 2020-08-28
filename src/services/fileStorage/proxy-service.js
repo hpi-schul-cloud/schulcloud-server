@@ -9,7 +9,6 @@ const {
 } = require('@feathersjs/errors');
 
 const hooks = require('./hooks');
-const swaggerDocs = require('./docs');
 
 const {
 	canWrite,
@@ -149,7 +148,6 @@ const getRefOwnerModel = async (owner) => {
 };
 
 const fileStorageService = {
-	docs: swaggerDocs.fileStorageService,
 	/**
      * @param data, file data
      * @param params,
@@ -328,8 +326,6 @@ const fileStorageService = {
 };
 
 const signedUrlService = {
-	docs: swaggerDocs.signedUrlService,
-
 	fileRegexCheck(fileName) {
 		return [
 			/^[dD]esktop\.ini$/,
@@ -475,9 +471,6 @@ const signedUrlService = {
 };
 
 const directoryService = {
-
-	docs: swaggerDocs.directoryService,
-
 	setup(app) {
 		this.app = app;
 	},
@@ -657,8 +650,6 @@ const directoryService = {
 
 const renameService = {
 
-	docs: swaggerDocs.renameService,
-
 	/**
      * @param data, contains id of fileObject and newName
      * @returns {Promise}
@@ -687,8 +678,6 @@ const renameService = {
 
 const fileTotalSizeService = {
 
-	docs: swaggerDocs.fileTotalSizeService,
-
 	/**
      * @returns total file size and amount of files
 	 * FIX-ME:
@@ -703,7 +692,6 @@ const fileTotalSizeService = {
 };
 
 const bucketService = {
-	docs: swaggerDocs.bucketService,
 
 	/**
      * @param data, contains schoolId
@@ -720,7 +708,6 @@ const bucketService = {
 };
 
 const copyService = {
-	docs: swaggerDocs.copyService,
 
 	defaultPermissionHandler(userId, file, parent) {
 		return Promise.all([
@@ -738,8 +725,6 @@ const copyService = {
 };
 
 const newFileService = {
-
-	docs: swaggerDocs.newFileService,
 
 	/**
      * @param data, contains filename, owner, parent and studentCanEdit
@@ -785,8 +770,6 @@ const newFileService = {
 };
 
 const filePermissionService = {
-
-	docs: swaggerDocs.permissionService,
 
 	/**
 	* @param _id, Object-ID of file obejct to be altered

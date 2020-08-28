@@ -26,7 +26,6 @@ const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
 const rabbitMq = require('./utils/rabbitmq');
 
-const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
@@ -43,7 +42,6 @@ if (METRICS_PATH) {
 }
 app.use(apiMetrics(metricsOptions));
 
-setupSwagger(app);
 initializeRedisClient();
 rabbitMq.setup(app);
 

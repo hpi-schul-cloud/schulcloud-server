@@ -51,15 +51,5 @@ describe('Feathers application tests', () => {
 					resolve();
 				});
 		}));
-
-		it('serves swagger api docs', () => new Promise((resolve) => {
-			chai.request(app)
-				.get('/docs')
-				.end((err, res) => {
-					assert.equal(res.statusCode, 200);
-					expect(res.text).to.exist;
-					resolve();
-				});
-		}));
 	});
 });
