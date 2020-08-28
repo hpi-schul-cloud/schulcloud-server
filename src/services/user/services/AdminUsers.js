@@ -85,12 +85,14 @@ class AdminUsers {
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 
-			for (const [key, value] of Object.entries(clientQuery.createdAt)) {
-				if (['$gte', '$lte'].includes(key)) {
-					clientQuery.createdAt[key] = new Date(value);
+			if (clientQuery.createdAt) {
+				for (const [key, value] of Object.entries(clientQuery.createdAt)) {
+					if (['$gte', '$lte'].includes(key)) {
+						clientQuery.createdAt[key] = new Date(value);
+					}
 				}
+				query.createdAt = clientQuery.createdAt;
 			}
-			if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
 
 			return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
 				collation: { locale: 'de', caseLevel: true },
