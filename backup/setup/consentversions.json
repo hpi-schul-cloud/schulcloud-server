@@ -14,16 +14,6 @@
 },
 {
 	"_id": {
-		"$oid": "5f4917e43daf23af92e64563"
-	},
-	"versionNumber": "testversion",
-	"consentText": "lorem ipsum",
-	"date": {
-		"$date": "2017-01-01T00:06:40.15Z"
-	}
-},
-{
-	"_id": {
 		"$oid": "5e2e96015f1e4f83f86e3560"
 	},
 	"versionNumber": "prv-1",
@@ -34,6 +24,16 @@
 	],
 	"publishedAt": {
 		"$date": "2020-01-01T00:00:00Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "5f4917e43daf23af92e64563"
+	},
+	"versionNumber": "testversion",
+	"consentText": "lorem ipsum",
+	"date": {
+		"$date": "2017-01-01T00:06:40.15Z"
 	}
 }]
 

@@ -21,7 +21,7 @@
 		"lint": "eslint ./src ./test ./migrations --ext .js --fix",
 		"seed": "node ./backup.js -p setup/ -D schulcloud-test import",
 		"test": "cross-env NODE_ENV=test npm run seed && npm run coverage",
-		"backup": "node ./backup.js -b export --sort \"{ createdAt: 1, id: 1 }\"",
+		"backup": "node ./backup.js -b export --sort \"{ _id: 1 }\"",
 		"setup": "node ./backup.js -p setup/ import",
 		"start": "node src/",
 		"startd": "nodemon src/",

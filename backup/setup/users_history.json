@@ -1,5 +1,43 @@
 [{
 	"_id": {
+		"$oid": "5f48c7b14f75d2822cab2074"
+	},
+	"t": {
+		"$date": "2020-08-28T09:00:33.88Z"
+	},
+	"o": "i",
+	"d": {
+		"consent": {
+			"parentConsents": []
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c96"
+			}
+		],
+		"children": [],
+		"parents": [],
+		"features": [],
+		"_id": {
+			"$oid": "5f48c7b14f75d2822cab2073"
+		},
+		"schoolId": {
+			"$oid": "5f48c6cb4f75d2822cab2043"
+		},
+		"firstName": "Integration Test",
+		"lastName": "Admin",
+		"email": "int-test-admin@schul-cloud.org",
+		"importHash": "L2aL08LfaUm1afkqBkTGnEev1x6yuIvqhLMsCedzTLH6uk2BX5LKD0sYUREL",
+		"createdAt": {
+			"$date": "2020-08-28T09:00:33.88Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-28T09:00:33.88Z"
+		}
+	}
+},
+{
+	"_id": {
 		"$oid": "5f48c7b14f75d2822cab2078"
 	},
 	"t": {
@@ -35,44 +73,6 @@
 		"avatarInitials": "IA",
 		"avatarBackgroundColor": "#f6cd61",
 		"displayName": "Integration Test Admin"
-	}
-},
-{
-	"_id": {
-		"$oid": "5f48c7b14f75d2822cab2074"
-	},
-	"t": {
-		"$date": "2020-08-28T09:00:33.88Z"
-	},
-	"o": "i",
-	"d": {
-		"consent": {
-			"parentConsents": []
-		},
-		"roles": [
-			{
-				"$oid": "0000d186816abba584714c96"
-			}
-		],
-		"children": [],
-		"parents": [],
-		"features": [],
-		"_id": {
-			"$oid": "5f48c7b14f75d2822cab2073"
-		},
-		"schoolId": {
-			"$oid": "5f48c6cb4f75d2822cab2043"
-		},
-		"firstName": "Integration Test",
-		"lastName": "Admin",
-		"email": "int-test-admin@schul-cloud.org",
-		"importHash": "L2aL08LfaUm1afkqBkTGnEev1x6yuIvqhLMsCedzTLH6uk2BX5LKD0sYUREL",
-		"createdAt": {
-			"$date": "2020-08-28T09:00:33.88Z"
-		},
-		"updatedAt": {
-			"$date": "2020-08-28T09:00:33.88Z"
-		}
 	}
 }]
 
