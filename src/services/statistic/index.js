@@ -103,7 +103,6 @@ const fetchStatistics = () => {
 };
 
 class StatisticsService {
-	
 	find() {
 		return fetchStatistics()
 			.then((statistics) => statistics);
