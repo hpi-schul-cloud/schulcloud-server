@@ -82,9 +82,15 @@ class AdminUsers {
 			}
 			if (clientQuery.consentStatus) query.consentStatus = clientQuery.consentStatus;
 			if (clientQuery.classes) query.classes = clientQuery.classes;
-			if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
+
+			for (const [key, value] of Object.entries(clientQuery.createdAt)) {
+				if (['$gte', '$lte'].includes(key)) {
+					clientQuery.createdAt[key] = new Date(value);
+				}
+			}
+			if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
 
 			return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
 				collation: { locale: 'de', caseLevel: true },
