@@ -6,7 +6,6 @@ const {
 } = require('feathers-hooks-common');
 const { equal } = require('../../../helper/compare').ObjectId;
 const {
-	hasRoleNoHook,
 	injectUserId,
 	hasPermission,
 	ifNotLocal,
@@ -87,7 +86,7 @@ const getCourseAndCourseGroup = async (courseId, courseGroupId, app) => {
  * 3. teachers can access all lessons in their courses.
  * 4. administrators can access all lessons on courses of their school. (this might change in the future)
  * for FIND requests, the course or coursegroup can be found in the query, for other requests in the lesson itself.
- * @param {*} context 
+ * @param {*} context feathers context
  */
 const restrictToUsersCoursesLessons = async (context) => {
 	const { userId, schoolId } = context.params.account;
