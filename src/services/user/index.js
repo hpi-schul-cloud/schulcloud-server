@@ -12,8 +12,14 @@ const {
 	UsersModelService,
 	UserService,
 	MailRegistrationLink,
+	RegistrationConsentService,
+	registrationConsentServiceHooks,
+	ForcePasswordChange: {
+		ForcePasswordChangeService,
+		ForcePasswordChangeServiceHooks,
+	},
+	QrRegistrationLinks: { QrRegistrationLinks, qrRegistrationLinksHooks },
 } = require('./services');
-
 
 module.exports = (app) => {
 	app.use('usersModel', UsersModelService.userModelService);
@@ -54,6 +60,14 @@ module.exports = (app) => {
 	const RegistrationService = require('./registration')(app);
 	app.use('/registration', new RegistrationService());
 
+	app.use('/registration/consent', new RegistrationConsentService());
+	const registrationConsentService = app.service('/registration/consent');
+	registrationConsentService.hooks(registrationConsentServiceHooks);
+
+	app.use('/forcePasswordChange', new ForcePasswordChangeService());
+	const forcePasswordChangeService = app.service('forcePasswordChange');
+	forcePasswordChangeService.hooks(ForcePasswordChangeServiceHooks);
+
 	const FirstLoginService = require('./firstLogin')(app);
 	app.use('/firstLogin', new FirstLoginService());
 	const firstLoginService = app.service('firstLogin');
@@ -73,6 +87,11 @@ module.exports = (app) => {
 	app.use(RegistrationLinkRoute, new MailRegistrationLink.Service());
 	const RegistrationLinkService = app.service(RegistrationLinkRoute);
 	RegistrationLinkService.hooks(MailRegistrationLink.Hooks);
+
+	const qrRegistrationLinksRoute = '/users/qrRegistrationLink';
+	app.use(qrRegistrationLinksRoute, new QrRegistrationLinks(userModel));
+	const qrRegistrationLinksService = app.service(qrRegistrationLinksRoute);
+	qrRegistrationLinksService.hooks(qrRegistrationLinksHooks);
 
 	app.use('/users/:userId/skipregistration', new SkipRegistrationService());
 	app.service('/users/:userId/skipregistration').hooks(skipRegistrationSingleHooks);

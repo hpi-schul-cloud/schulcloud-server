@@ -32,7 +32,7 @@ const ATTRIBUTES = [
 const buildMappingFunction = (sourceSchema, targetSchema = ATTRIBUTES) => {
 	const mapping = {};
 	Object.keys(sourceSchema).forEach((key) => {
-		const attribute = targetSchema.find((a) => a.aliases.includes(key.toLowerCase()));
+		const attribute = targetSchema.find((a) => a.aliases.includes(key.toLowerCase().trim()));
 		if (attribute !== undefined) {
 			mapping[key] = attribute.name;
 		}
@@ -189,7 +189,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		}
 
 		ATTRIBUTES.filter((a) => a.required).forEach((attr) => {
-			const attributeIsUsed = Object.keys(records[0]).some((k) => attr.aliases.includes(k.toLowerCase()));
+			const attributeIsUsed = Object.keys(records[0]).some((k) => attr.aliases.includes(k.toLowerCase().trim()));
 			if (!attributeIsUsed) {
 				this.stats.errors.push({
 					type: 'file',
@@ -262,7 +262,6 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		const enrichedUser = Object.assign(record, {
 			schoolId: this.options.schoolId,
 			roles: [this.options.role],
-			sendRegistration: true,
 		});
 		enrichedUser.importHash = linkData.hash;
 		enrichedUser.shortLink = linkData.shortLink;

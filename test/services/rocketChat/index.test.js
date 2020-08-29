@@ -45,7 +45,7 @@ describe('rocket.chat user service', () => {
 	});
 
 	it('creates a rc user for a sc user', async () => {
-		const user = await testObjects.createTestUser({ roles: ['student'], schoolId: '0000d186816abba584714c5f' });
+		const user = await testObjects.createTestUser({ roles: ['student'], schoolId: '5f2987e020834114b8efd6f8' });
 		const rcUser = await rocketChatUserService.get(user._id);
 		expect(rcUser.rcId).to.exist;
 		expect(rcUser.username).to.exist;
@@ -53,7 +53,7 @@ describe('rocket.chat user service', () => {
 	});
 
 	it('retrieves existing rc users instead of creating new', async () => {
-		const user = await testObjects.createTestUser({ roles: ['student'], schoolId: '0000d186816abba584714c5f' });
+		const user = await testObjects.createTestUser({ roles: ['student'], schoolId: '5f2987e020834114b8efd6f8' });
 		const firstResult = await rocketChatUserService.get(user._id);
 		const secondResult = await rocketChatUserService.get(user._id);
 		expect(firstResult.username).to.equal(secondResult.username);
@@ -62,7 +62,7 @@ describe('rocket.chat user service', () => {
 
 	it('recovers if email is already used in rc', async () => {
 		const rcModels = require('../../../src/services/rocketChat/model');
-		const user = await testObjects.createTestUser({ roles: ['student'], schoolId: '0000d186816abba584714c5f' });
+		const user = await testObjects.createTestUser({ roles: ['student'], schoolId: '5f2987e020834114b8efd6f8' });
 		const rcUser = await rocketChatUserService.get(user._id);
 		await rcModels.userModel.remove(rcUser._id); // break something
 		const newUser = await rocketChatUserService.get(user._id);

@@ -44,7 +44,7 @@ describe('roster service', function oauth() {
 		testCourse = {
 			_id: '5cb8dc8e7cccac0e98a29975',
 			name: 'rosterTestCourse',
-			schoolId: '0000d186816abba584714c5f',
+			schoolId: '5f2987e020834114b8efd6f8',
 			teacherIds: [testUser1._id],
 			userIds: [
 				'0000d213816abba584714c0a',
@@ -109,6 +109,9 @@ describe('roster service', function oauth() {
 			},
 		}).then((group) => {
 			assert.strictEqual(pseudonym1, group.data.teachers[0].user_id);
+			const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
+			const iframe = `<iframe src="http://localhost:3100/oauth2/username/${pseudonym1}" ${properties}></iframe>`;
+			assert.strictEqual(encodeURI(iframe), group.data.teachers[0].username);
 			done();
 		});
 	});

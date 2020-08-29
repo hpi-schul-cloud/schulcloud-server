@@ -513,6 +513,17 @@ const generateRegistrationLink = async (context) => {
 	}
 };
 
+const sendRegistrationLink = async (context) => {
+	const { result, data, app } = context;
+	if (data.sendRegistration === true) {
+		delete data.sendRegistration;
+		await app.service('/users/mail/registrationLink').create({
+			userIds: [result._id],
+		});
+	}
+	return context;
+};
+
 
 const filterResult = async (context) => {
 	const userCallingHimself = ObjectId.equal(context.id, context.params.account.userId);
@@ -521,20 +532,11 @@ const filterResult = async (context) => {
 		return context;
 	}
 
-	// TODO: check if elevatedUser can remove and handled by the amdin route
-	const elevatedUser = await hasPermissionNoHook(context, context.params.account.userId, 'STUDENT_EDIT');
 	const allowedAttributes = [
 		'_id', 'roles', 'schoolId', 'firstName', 'middleName', 'lastName',
 		'namePrefix', 'nameSuffix', 'discoverable', 'fullName',
 		'displayName', 'avatarInitials', 'avatarBackgroundColor',
 	];
-	if (elevatedUser) {
-		const elevatedAttributes = [
-			'email', 'birthday', 'children', 'parents', 'updatedAt',
-			'createdAt', 'age', 'ldapDn', 'consentStatus', 'consent',
-		];
-		allowedAttributes.push(...elevatedAttributes);
-	}
 	return keep(...allowedAttributes)(context);
 };
 
@@ -591,5 +593,6 @@ module.exports = {
 	enforceRoleHierarchyOnCreate,
 	filterResult,
 	generateRegistrationLink,
+	sendRegistrationLink,
 	includeOnlySchoolRoles,
 };

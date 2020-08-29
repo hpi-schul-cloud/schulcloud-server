@@ -7,11 +7,13 @@ const warn = (message, pass) => {
 	return pass;
 };
 
-module.exports = (app, opt = { schoolId: '0000d186816abba584714c5f' }) => {
+module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 	const {
 		accounts,
+		activation,
 		classes,
 		consents,
+		consentVersion,
 		courses,
 		courseGroups,
 		roles,
@@ -32,8 +34,10 @@ module.exports = (app, opt = { schoolId: '0000d186816abba584714c5f' }) => {
 
 	const cleanup = () => Promise.all([
 		accounts,
+		activation,
 		users,
 		consents,
+		consentVersion,
 		testSystem,
 		classes,
 		courses,
@@ -61,6 +65,7 @@ module.exports = (app, opt = { schoolId: '0000d186816abba584714c5f' }) => {
 
 	const info = () => ({
 		accounts: accounts.info,
+		activation: activation.info,
 		classes: classes.info,
 		courseGroups: courseGroups.info,
 		courses: courses.info,
@@ -106,8 +111,10 @@ module.exports = (app, opt = { schoolId: '0000d186816abba584714c5f' }) => {
 
 	return {
 		createTestAccount: accounts.create,
+		createTestActivation: activation.create,
 		createTestClass: classes.create,
 		createTestConsent: consents.create,
+		createTestConsentVersion: consentVersion.create,
 		createTestCourse: courses.create,
 		createTestCourseGroup: courseGroups.create,
 		createTestDatasource: datasources.create,

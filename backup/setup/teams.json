@@ -1,7 +1,7 @@
 [{ 
     "_id" : { "$oid": "5e1dba1eaa30ab4df47e11d2" }, 
     "schoolIds" : [
-        { "$oid": "0000d186816abba584714c5f" }
+        { "$oid": "5f2987e020834114b8efd6f8" }
     ], 
     "description" : "Test Team Beschreibung", 
     "classIds" : [
@@ -12,26 +12,26 @@
         "isTeam"
     ], 
     "name" : "Test Team", 
-    "schoolId" : { "$oid": "0000d186816abba584714c5f" }, 
+    "schoolId" : { "$oid": "5f2987e020834114b8efd6f8" }, 
     "userIds" : [
         {
             "userId" : { "$oid": "0000d231816abba584714c9e" }, 
             "role" : { "$oid": "5bb5c62bfb457b1c3c0c7e14" }, 
-            "schoolId" : { "$oid": "0000d186816abba584714c5f" }, 
+            "schoolId" : { "$oid": "5f2987e020834114b8efd6f8" }, 
             "updatedAt" : { "$date": "2020-01-15T12:19:48.481Z" }, 
             "createdAt" : { "$date": "2020-01-15T12:19:48.481Z" }
         }, 
         {
             "userId" : { "$oid": "0000d213816abba584714c0b" }, 
             "role" : { "$oid": "5bb5c49efb457b1c3c0c7e11" }, 
-            "schoolId" : { "$oid": "0000d186816abba584714c5f" }, 
+            "schoolId" : { "$oid": "5f2987e020834114b8efd6f8" }, 
             "updatedAt" : { "$date": "2020-01-15T12:19:48.481Z" }, 
             "createdAt" : { "$date": "2020-01-15T12:19:48.481Z" }
         }, 
         {
             "userId" : { "$oid": "0000d224816abba584714c9c" }, 
             "role" : { "$oid": "5bb5c190fb457b1c3c0c7e0f" }, 
-            "schoolId" : { "$oid": "0000d186816abba584714c5f" }, 
+            "schoolId" : { "$oid": "5f2987e020834114b8efd6f8" }, 
             "updatedAt" : { "$date": "2020-01-15T12:19:48.481Z" }, 
             "createdAt" : { "$date": "2020-01-15T12:19:48.481Z" }
         }
@@ -69,8 +69,8 @@
 { 
     "_id" : { "$oid": "5e1dc275322ce040a850b14b" }, 
     "schoolIds" : [
-        { "$oid": "0000d186816abba584714c5f" }, 
-        { "$oid": "599ec0bb8e4e364ec18ff46c" }
+        { "$oid": "5f2987e020834114b8efd6f8" }, 
+        { "$oid": "5f2987e020834114b8efd6f6" }
     ], 
     "description" : "", 
     "classIds" : [
@@ -81,33 +81,33 @@
         "isTeam"
     ], 
     "name" : "A-Team", 
-    "schoolId" : { "$oid": "0000d186816abba584714c5f" }, 
+    "schoolId" : { "$oid": "5f2987e020834114b8efd6f8" }, 
     "userIds" : [
         {
             "userId" : { "$oid": "0000d231816abba584714c9e" }, 
             "role" : { "$oid": "5bb5c62bfb457b1c3c0c7e14" }, 
-            "schoolId" : { "$oid": "0000d186816abba584714c5f" }, 
+            "schoolId" : { "$oid": "5f2987e020834114b8efd6f8" }, 
             "updatedAt" : { "$date": "2020-01-15T12:20:53.682Z" }, 
             "createdAt" : { "$date": "2020-01-15T12:20:53.682Z" }
         }, 
         {
             "userId" : { "$oid": "0000d224816abba584714c9c" }, 
             "role" : { "$oid": "5bb5c391fb457b1c3c0c7e10" }, 
-            "schoolId" : { "$oid": "0000d186816abba584714c5f" }, 
+            "schoolId" : { "$oid": "5f2987e020834114b8efd6f8" }, 
             "updatedAt" : { "$date": "2020-01-15T12:20:53.682Z" }, 
             "createdAt" : { "$date": "2020-01-15T12:20:53.682Z" }
         }, 
         {
             "userId" : { "$oid": "58b40278dac20e0645353e3a" }, 
             "role" : { "$oid": "5bb5c190fb457b1c3c0c7e0f" }, 
-            "schoolId" : { "$oid": "0000d186816abba584714c5f" }, 
+            "schoolId" : { "$oid": "5f2987e020834114b8efd6f8" }, 
             "updatedAt" : { "$date": "2020-01-15T12:20:53.682Z" }, 
             "createdAt" : { "$date": "2020-01-15T12:20:53.682Z" }
         }, 
         {
             "userId" : { "$oid": "59ad4c412b442b7f81810285" }, 
             "role" : { "$oid": "5bb5c545fb457b1c3c0c7e13" }, 
-            "schoolId" : { "$oid": "599ec0bb8e4e364ec18ff46c" }, 
+            "schoolId" : { "$oid": "5f2987e020834114b8efd6f6" }, 
             "updatedAt" : { "$date": "2020-01-15T12:20:53.682Z" }, 
             "createdAt" : { "$date": "2020-01-15T12:20:53.682Z" }
         }

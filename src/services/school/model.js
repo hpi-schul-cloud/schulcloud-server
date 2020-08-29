@@ -16,7 +16,7 @@ const SCHOOL_FEATURES = {
 	ROCKET_CHAT: 'rocketChat',
 	VIDEOCONFERENCE: 'videoconference',
 	MESSENGER: 'messenger',
-	STUDENTVISIBILITY: 'studentVisibility',
+	STUDENTVISIBILITY: 'studentVisibility', // depricated
 	MESSENGER_SCHOOL_ROOM: 'messengerSchoolRoom',
 };
 
@@ -115,6 +115,10 @@ schoolSchema.virtual('inMaintenance').get(function get() {
 schoolSchema.virtual('documentBaseDir').get(function get() {
 	const school = this;
 	return getDocumentBaseDir(school);
+});
+
+schoolSchema.virtual('isExternal').get(function get() {
+	return !!this.ldapSchoolIdentifier || !!this.source;
 });
 
 const yearSchema = new Schema({
