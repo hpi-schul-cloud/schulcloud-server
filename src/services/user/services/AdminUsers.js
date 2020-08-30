@@ -88,11 +88,11 @@ class AdminUsers {
 			if (clientQuery.usersForConsent) query._id = clientQuery.usersForConsent;
 			if (clientQuery.searchQuery) {
 				query.$or = [
-					{ firstName: { "$regex": clientQuery.searchQuery, $options: "i" } },
-					{ lastName: { "$regex": clientQuery.searchQuery, $options: "i" } },
-					{ email: { "$regex": clientQuery.searchQuery } },
+					{ firstName: { '$regex': clientQuery.searchQuery, $options: 'i' } },
+					{ lastName: { '$regex': clientQuery.searchQuery, $options: 'i' } },
+					{ email: { '$regex': clientQuery.searchQuery, $options: 'i' } },
 				];
-			} 
+			}
 
 			return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
 				collation: { locale: 'de', caseLevel: true },
