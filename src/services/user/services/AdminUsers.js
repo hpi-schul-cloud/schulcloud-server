@@ -25,16 +25,6 @@ const getCurrentYear = (ref, schoolId) => ref.app.service('schools')
 	})
 	.then(({ currentYear }) => currentYear.toString());
 
-const checkUniqueAccount = async (hook) => {
-	const userService = hook.app.service('/users');
-	const { email } = hook.data;
-	const accounts = await userService.find({ query: { email: email.toLowerCase() } });
-	if (accounts.total > 0) {
-		return Promise.reject(new BadRequest('Email already exists.'));
-	}
-	return Promise.resolve(hook);
-};
-
 class AdminUsers {
 	constructor(roleName) {
 		this.roleName = roleName;
@@ -118,6 +108,14 @@ class AdminUsers {
 	}
 
 	async create(data, params) {
+		// checks for unique email accounts, throws bad request if it already exists
+		const { email } = data;
+		const userService = this.app.service('/users');
+		const accounts = await userService.find({ query: { email: email.toLowerCase() } });
+		if (accounts.total > 0) {
+			throw new BadRequest('Email already exists.');
+		}
+
 		return this.app.service('usersModel').create(data);
 	}
 
@@ -154,7 +152,7 @@ const adminHookGenerator = (kind) => ({
 		all: [authenticate('jwt')],
 		find: [hasSchoolPermission(`${kind}_LIST`)],
 		get: [hasSchoolPermission(`${kind}_LIST`)],
-		create: [hasSchoolPermission(`${kind}_CREATE`), checkUniqueAccount, blockDisposableEmail('email')],
+		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
 		update: [hasSchoolPermission(`${kind}_EDIT`)],
 		patch: [hasSchoolPermission(`${kind}_EDIT`)],
 		remove: [hasSchoolPermission(`${kind}_DELETE`)],
