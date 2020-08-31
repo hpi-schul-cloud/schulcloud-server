@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [24.4.2] - 2020-8-31
+
+## Fixed
+
+- SC-6293 - hide Lern-Store for students
+
 ## [24.4.0] - 2020-8-31
 
 ### Fixed
