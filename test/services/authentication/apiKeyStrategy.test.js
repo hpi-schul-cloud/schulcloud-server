@@ -45,15 +45,6 @@ describe('api-key authentication strategy', () => {
 		expect(result.params.authenticated).to.eq(true);
 	});
 
-	it('authenticates valid API-Key for Statistc Mail Trigger Route', async () => {
-		const result = await app.service(testRoute).create({
-			authentication: { strategy: 'api-key', apiKey: 'validKey', route: 'statisticmails' },
-		});
-		expect(result).to.not.be.undefined;
-		expect(result.success).to.eq(true);
-		expect(result.params.authenticated).to.eq(true);
-	});
-
 	it('denies valid API-Key for other routes', async () => {
 		try {
 			await app.service(testRoute).find({
