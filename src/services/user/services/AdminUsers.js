@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
-const { Forbidden, GeneralError } = require('@feathersjs/errors');
+const { Forbidden, GeneralError, BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
@@ -10,7 +10,6 @@ const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const {
 	hasSchoolPermission,
 } = require('../../../hooks');
-const { adminUsersCheckUniqueAccount } = require('../hooks/userService');
 const { blockDisposableEmail } = require('../../../hooks');
 
 const { userModel } = require('../model');
@@ -25,6 +24,16 @@ const getCurrentYear = (ref, schoolId) => ref.app.service('schools')
 		query: { $select: ['currentYear'] },
 	})
 	.then(({ currentYear }) => currentYear.toString());
+
+const checkUniqueAccount = async (hook) => {
+	const userService = hook.app.service('/users');
+	const { email } = hook.data;
+	const accounts = await userService.find({ query: { email: email.toLowerCase() } });
+	if (accounts.total > 0) {
+		return Promise.reject(new BadRequest('Email already exists.'));
+	}
+	return Promise.resolve(hook);
+};
 
 class AdminUsers {
 	constructor(roleName) {
@@ -145,7 +154,7 @@ const adminHookGenerator = (kind) => ({
 		all: [authenticate('jwt')],
 		find: [hasSchoolPermission(`${kind}_LIST`)],
 		get: [hasSchoolPermission(`${kind}_LIST`)],
-		create: [hasSchoolPermission(`${kind}_CREATE`), adminUsersCheckUniqueAccount, blockDisposableEmail('email')],
+		create: [hasSchoolPermission(`${kind}_CREATE`), checkUniqueAccount, blockDisposableEmail('email')],
 		update: [hasSchoolPermission(`${kind}_EDIT`)],
 		patch: [hasSchoolPermission(`${kind}_EDIT`)],
 		remove: [hasSchoolPermission(`${kind}_DELETE`)],
