@@ -9,9 +9,15 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [24.4.0] - 2020-8-31
+
 ### Fixed
 
 - SC-6122 - Edusharing preload thumbnails in parallel. Edusharing authentication stabilisation.
+
+## [24.3.3] - 2020-08-28
+
+- SC-6469: prevent admin access to lessons admins shouldnt have access to.
 
 ## [24.3.2] - 2020-08-26
 
