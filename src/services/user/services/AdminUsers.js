@@ -9,8 +9,8 @@ const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const {
 	hasSchoolPermission,
+	blockDisposableEmail,
 } = require('../../../hooks');
-const { blockDisposableEmail } = require('../../../hooks');
 
 const { userModel } = require('../model');
 
