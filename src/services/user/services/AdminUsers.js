@@ -10,6 +10,7 @@ const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const {
 	hasSchoolPermission,
 } = require('../../../hooks');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const { userModel } = require('../model');
 
@@ -124,17 +125,16 @@ class AdminUsers {
 
 		if (id) {
 			const userToRemove = await getCurrentUserInfo(id);
-			if (currentUser.schoolId.toString() !== userToRemove.schoolId.toString()) {
+			if (!equalIds(currentUser.schoolId, userToRemove.schoolId)) {
 				throw new Forbidden('You cannot remove users from other schools.');
 			}
 			return this.app.service('usersModel').remove(id);
 		}
 
 		const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
-		if (usersIds.some((us) => currentUser.schoolId.toString() !== us.schoolId.toString())) {
+		if (usersIds.some((us) => !equalIds(currentUser.schoolId, us.schoolId))) {
 			throw new Forbidden('You cannot remove users from other schools.');
 		}
-
 		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
 	}
 
