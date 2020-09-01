@@ -242,7 +242,8 @@ exports.after = {
 		// todo: remove id if possible (shouldnt exist)
 		iff(isNotAuthenticated, keep('name', 'purpose', 'systems', '_id', 'id', 'defaultLanguage')),
 		iff(populateInQuery,
-			keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active', 'ldapConfig.rootPath'])),
+			keepInArray('systems', ['_id', 'type', 'alias',
+				'ldapConfig.active', 'ldapConfig.provider', 'ldapConfig.rootPath'])),
 		iff(isProvider('external') && !globalHooks.isSuperHero(), discard('storageProvider')),
 	],
 	find: [decorateYears, setStudentsCanCreateTeams],
