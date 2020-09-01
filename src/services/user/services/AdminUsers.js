@@ -128,13 +128,16 @@ class AdminUsers {
 			if (!equalIds(currentUser.schoolId, userToRemove.schoolId)) {
 				throw new Forbidden('You cannot remove users from other schools.');
 			}
+			await this.app.service('accountModel').remove(id);
 			return this.app.service('usersModel').remove(id);
 		}
 
 		const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
-		if (usersIds.some((us) => !equalIds(currentUser.schoolId, us.schoolId))) {
+		if (usersIds.some((user) => !equalIds(currentUser.schoolId, user.schoolId))) {
 			throw new Forbidden('You cannot remove users from other schools.');
 		}
+
+		await this.app.service('accountModel').remove(null, { query: { _id: { $in: _ids } } });
 		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
 	}
 
