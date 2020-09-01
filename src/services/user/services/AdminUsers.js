@@ -120,9 +120,21 @@ class AdminUsers {
 
 	async remove(id, params) {
 		const { _ids } = params.query;
+		const currentUser = await getCurrentUserInfo(params.account.userId);
+
 		if (id) {
+			const userToRemove = await getCurrentUserInfo(id);
+			if (currentUser.schoolId !== userToRemove.schoolId) {
+				throw new Forbidden('You cannot remove users from other schools.');
+			}
 			return this.app.service('usersModel').remove(id);
 		}
+
+		const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
+		if (usersIds.some((us) => currentUser.schoolId.toString() !== us.schoolId.toString())) {
+			throw new Forbidden('You cannot remove users from other schools.');
+		}
+
 		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
 	}
 

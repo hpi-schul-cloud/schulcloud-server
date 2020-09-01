@@ -517,9 +517,9 @@ describe('AdminUsersService', () => {
 			...params.query,
 			_ids: [],
 		};
-		const deleted = await adminStudentsService.remove(student, params);
-		expect(deleted).to.not.be.undefined;
-		expect(deleted.firstName).to.equals('testDeleteStudent');
+		const deletedStudent = await adminStudentsService.remove(student, params);
+		expect(deletedStudent).to.not.be.undefined;
+		expect(deletedStudent.firstName).to.equals('testDeleteStudent');
 	});
 
 	it('users without STUDENT_DELETE permission cannnot access the REMOVE method', async () => {
@@ -550,6 +550,32 @@ describe('AdminUsersService', () => {
 		} catch (err) {
 			expect(err.code).to.equal(403);
 			expect(err.message).to.equal("You don't have one of the permissions: STUDENT_DELETE.");
+		}
+	});
+
+	it('users cannot REMOVE students from foreign schools', async () => {
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool1',
+		});
+		const otherSchool = await testObjects.createTestSchool({
+			name: 'testSchool2',
+		});
+		const testUSer = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+		const params = await testObjects.generateRequestParamsFromUser(testUSer);
+		const student = await testObjects.createTestUser({
+			roles: ['student'],
+			schoolId: otherSchool._id,
+		});
+		params.query = {
+			...params.query,
+			_ids: [],
+		};
+		try {
+			await adminStudentsService.remove(student, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal('You cannot remove users from other schools.');
 		}
 	});
 });
