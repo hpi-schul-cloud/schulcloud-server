@@ -46,6 +46,7 @@ jobs:
         - echo "skipping install"
       after_failure:
         - cat /home/travis/.npm/_logs/*debug.log
+        - cat /home/travis/reports/*
     - stage: deploy
       if: NOT fork
       script:
