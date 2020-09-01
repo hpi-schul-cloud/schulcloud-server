@@ -353,6 +353,205 @@ describe('AdminUsersService', () => {
 		const testStudent = students.find((stud) => mockStudent.firstName === stud.firstName);
 		expect(testStudent.birthday).equals('01.01.2000');
 	});
+
+	it('users with STUDENT_LIST permission can access the FIND method', async () => {
+		await testObjects.createTestRole({
+			name: 'studentListPerm', permissions: ['STUDENT_LIST'],
+		});
+		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
+			roles: ['studentListPerm'],
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUser);
+		const { data } = await adminStudentsService.find(params);
+		expect(data).to.not.have.lengthOf(0);
+	});
+
+	it('users without STUDENT_LIST permission cannot access the FIND method', async () => {
+		await testObjects.createTestRole({
+			name: 'noStudentListPerm', permissions: [],
+		});
+		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
+			roles: ['noStudentListPerm'],
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUser);
+
+		try {
+			await adminStudentsService.find(params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal("You don't have one of the permissions: STUDENT_LIST.");
+		}
+	});
+
+	it('users with STUDENT_LIST permission can access the GET method', async () => {
+		await testObjects.createTestRole({
+			name: 'studentListPerm', permissions: ['STUDENT_LIST'],
+		});
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
+		});
+		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
+			roles: ['studentListPerm'],
+			schoolId: school._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUser);
+		const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
+
+		const { data } = await adminStudentsService.get(student._id, params);
+		expect(data).to.have.lengthOf(1);
+	});
+
+	it('users without STUDENT_LIST permission cannot access the GET method', async () => {
+		await testObjects.createTestRole({
+			name: 'noStudentListPerm', permissions: [],
+		});
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
+		});
+		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
+			roles: ['noStudentListPerm'],
+			schoolId: school._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUser);
+		const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
+
+		try {
+			await adminStudentsService.get(student._id, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal("You don't have one of the permissions: STUDENT_LIST.");
+		}
+	});
+
+	it('users cannot GET students from foreign schools', async () => {
+		await testObjects.createTestRole({
+			name: 'studentListPerm', permissions: ['STUDENT_LIST'],
+		});
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool1',
+		});
+		const otherSchool = await testObjects.createTestSchool({
+			name: 'testSchool2',
+		});
+		const testUSer = await testObjects.createTestUser({ roles: ['studentListPerm'], schoolId: school._id });
+		const params = await testObjects.generateRequestParamsFromUser(testUSer);
+		const student = await testObjects.createTestUser({ roles: ['student'], schoolId: otherSchool._id });
+		const { data } = await adminStudentsService.get(student._id, params);
+		expect(data).to.have.lengthOf(0);
+	});
+
+	it('users with STUDENT_CREATE permission can access the CREATE method', async () => {
+		await testObjects.createTestRole({
+			name: 'studentCreatePerm', permissions: ['STUDENT_CREATE'],
+		});
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
+		});
+		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
+			roles: ['studentCreatePerm'],
+			schoolId: school._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUser);
+		const studentData = await testObjects.createTestUser({
+			firstName: 'testCreateStudent',
+			roles: ['student'],
+		});
+		const student = await adminStudentsService.create(studentData, params);
+		expect(student).to.not.be.undefined;
+		expect(student.firstName).to.equals('testCreateStudent');
+	});
+
+	it('users without STUDENT_CREATE permission cannot access the CREATE method', async () => {
+		await testObjects.createTestRole({
+			name: 'noStudentCreatePerm', permissions: [],
+		});
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
+		});
+		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
+			roles: ['noStudentCreatePerm'],
+			schoolId: school._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUser);
+		const studentData = await testObjects.createTestUser({
+			firstName: 'testCreateStudent',
+			roles: ['student'],
+		});
+
+		try {
+			await adminStudentsService.create(studentData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal("You don't have one of the permissions: STUDENT_CREATE.");
+		}
+	});
+
+	it('users with STUDENT_DELETE permission can access the REMOVE method', async () => {
+		await testObjects.createTestRole({
+			name: 'studentDeletePerm', permissions: ['STUDENT_CREATE', 'STUDENT_DELETE'],
+		});
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
+		});
+		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
+			roles: ['studentDeletePerm'],
+			schoolId: school._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUser);
+		const studentData = await testObjects.createTestUser({
+			firstName: 'testDeleteStudent',
+			roles: ['student'],
+		});
+		const student = await adminStudentsService.create(studentData, params);
+		params.query = {
+			...params.query,
+			_ids: [],
+		};
+		const deleted = await adminStudentsService.remove(student, params);
+		expect(deleted).to.not.be.undefined;
+		expect(deleted.firstName).to.equals('testDeleteStudent');
+	});
+
+	it('users without STUDENT_DELETE permission cannnot access the REMOVE method', async () => {
+		await testObjects.createTestRole({
+			name: 'noStudentDeletePerm', permissions: ['STUDENT_CREATE'],
+		});
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
+		});
+		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
+			roles: ['noStudentDeletePerm'],
+			schoolId: school._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUser);
+		const studentData = await testObjects.createTestUser({
+			firstName: 'testDeleteStudent',
+			roles: ['student'],
+		});
+		const student = await adminStudentsService.create(studentData, params);
+		params.query = {
+			...params.query,
+			_ids: [],
+		};
+		try {
+			await adminStudentsService.remove(student, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal("You don't have one of the permissions: STUDENT_DELETE.");
+		}
+	});
 });
 
 describe('AdminTeachersService', () => {
