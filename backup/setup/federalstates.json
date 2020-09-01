@@ -90,6 +90,15 @@
 },
 {
 	"_id": {
+		"$oid": "0000b186816abba584714c60"
+	},
+	"name": "Rheinland-Pfalz",
+	"abbreviation": "RP",
+	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Coat_of_arms_of_Rhineland-Palatinate.svg/600px-Coat_of_arms_of_Rhineland-Palatinate.svg.png",
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "0000b186816abba584714c61"
 	},
 	"name": "Saarland",
@@ -135,25 +144,16 @@
 },
 {
 	"_id": {
-		"$oid": "0000b186816abba584714c60"
-	},
-	"name": "Rheinland-Pfalz",
-	"abbreviation": "RP",
-	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Coat_of_arms_of_Rhineland-Palatinate.svg/600px-Coat_of_arms_of_Rhineland-Palatinate.svg.png",
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5f058f43174c832714864f96"
+		"$oid": "5f4e36992754463978cdc51b"
 	},
 	"name": "Internationale Schule",
 	"abbreviation": "IN",
 	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/7/71/Earth_icon_2.png",
 	"createdAt": {
-		"$date": "2020-07-08T09:17:55.124Z"
+		"$date": "2020-09-01T11:55:05.984Z"
 	},
 	"updatedAt": {
-		"$date": "2020-07-08T09:17:55.124Z"
+		"$date": "2020-09-01T11:55:05.984Z"
 	},
 	"__v": 0
 }]

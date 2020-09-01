@@ -22,7 +22,7 @@
 	"username": "schueler@schul-cloud.org",
 	"password": "$2a$10$1AbGSKWODOd1CWF/efHINekqRiV40.ooy4AvacVLVUn.XKU.wDk6e",
 	"updatedAt": {
-		"$date": "2020-02-05T15:43:39.516Z"
+		"$date": "2020-08-26T12:48:02.878Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -32,7 +32,7 @@
 	},
 	"__v": 0,
 	"lasttriedFailedLogin": {
-		"$date": "1970-01-01T00:00:00Z"
+		"$date": "1970-01-01T00:00:00.000Z"
 	}
 },
 {
@@ -76,7 +76,7 @@
 	"username": "lehrer@schul-cloud.org",
 	"password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
 	"updatedAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
+		"$date": "2020-08-31T16:28:16.920Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -84,7 +84,10 @@
 	"userId": {
 		"$oid": "0000d231816abba584714c9e"
 	},
-	"__v": 0
+	"__v": 0,
+	"lasttriedFailedLogin": {
+		"$date": "1970-01-01T00:00:00.000Z"
+	}
 },
 {
 	"_id": {
@@ -145,10 +148,10 @@
 	},
 	"password": "$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJXBla",
 	"updatedAt": {
-		"$date": "2017-09-04T12:51:58.49Z"
+		"$date": "2017-09-04T12:51:58.490Z"
 	},
 	"createdAt": {
-		"$date": "2017-09-04T12:51:58.49Z"
+		"$date": "2017-09-04T12:51:58.490Z"
 	},
 	"username": "klara.fall@schul-cloud.org",
 	"activated": true,

@@ -1,1 +1,1300 @@
-{}
+[{
+	"_id": {
+		"$oid": "5f0d99fa1fd15f3904d8dc9a"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"createdAt": {
+			"$date": "2020-07-14T11:41:46.761Z"
+		},
+		"updatedAt": {
+			"$date": "2020-07-14T11:41:46.761Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "impressum.PNG",
+	"type": "image/png",
+	"size": 29612,
+	"storageFileName": "1594726906055-impressum.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d231816abba584714c9e"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"thumbnailRequestToken": "b87a0d66-155b-43fc-86c8-00621a08c432",
+	"createdAt": {
+		"$date": "2020-07-14T11:41:46.761Z"
+	},
+	"updatedAt": {
+		"$date": "2020-07-14T11:41:46.761Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f2d0d0bb75089123c5166f6"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "143c74d2-c097-4dc2-8ea8-2eae87404297",
+		"createdAt": {
+			"$date": "2020-08-07T08:12:59.412Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-07T08:12:59.412Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_2.png",
+	"type": "image/png",
+	"size": 29803,
+	"storageFileName": "1596787978892-screenshot_2.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d231816abba584714c9e"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"thumbnailRequestToken": "222122c9-2b2e-4d7e-bad3-1d6feaf53390",
+	"createdAt": {
+		"$date": "2020-08-07T08:12:59.412Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-07T08:12:59.412Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f2d0d1cb75089123c516709"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "8072fa7a-f345-4804-a128-c53a17c2a5ef",
+		"createdAt": {
+			"$date": "2020-08-07T08:13:16.750Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-07T08:13:16.750Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_11.png",
+	"type": "image/png",
+	"size": 83611,
+	"storageFileName": "1596787995895-screenshot_11.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d231816abba584714c9e"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"thumbnailRequestToken": "60ca8dcf-15f6-479e-b729-1f45dcc1cc69",
+	"createdAt": {
+		"$date": "2020-08-07T08:13:16.750Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-07T08:13:16.750Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f310906982eb436dc65ec3a"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "94744eac-ad84-4b80-b7c3-918a76e9a242",
+		"createdAt": {
+			"$date": "2020-08-10T08:44:54.453Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-10T08:44:54.453Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_13.png",
+	"type": "image/png",
+	"size": 32010,
+	"storageFileName": "1597049093557-screenshot_13.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d231816abba584714c9e"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"thumbnailRequestToken": "68a46412-ab3b-4e63-b2ae-4aed29456fa7",
+	"createdAt": {
+		"$date": "2020-08-10T08:44:54.453Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-10T08:44:54.453Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f310984982eb436dc65ecb8"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "8da2b54a-0bad-4aca-8e27-2cdee5d6b13f",
+		"createdAt": {
+			"$date": "2020-08-10T08:47:00.232Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-10T08:47:00.232Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "loki.jpg",
+	"type": "image/jpeg",
+	"size": 66316,
+	"storageFileName": "1597049219697-loki.jpg",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d231816abba584714c9e"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"thumbnailRequestToken": "aa73f54a-f888-41ed-a4e2-66de07586015",
+	"createdAt": {
+		"$date": "2020-08-10T08:47:00.232Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-10T08:47:00.232Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f3109f09b19693fc8b1aa74"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"createdAt": {
+			"$date": "2020-08-10T08:48:48.125Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-10T08:48:48.125Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Overview.png",
+	"type": "image/png",
+	"size": 175347,
+	"storageFileName": "1597049327139-overview.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d231816abba584714c9e"
+			},
+			"refPermModel": "user"
+		},
+		{
+			"write": false,
+			"read": true,
+			"create": false,
+			"delete": false,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"thumbnailRequestToken": "0d813972-df9f-4058-bad3-f72cbbed378a",
+	"createdAt": {
+		"$date": "2020-08-10T08:48:48.125Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-10T08:48:48.125Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f329c8e61c8a527bc03dbc2"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"createdAt": {
+			"$date": "2020-08-11T13:26:38.104Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-11T13:26:38.104Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_15.png",
+	"type": "image/png",
+	"size": 59108,
+	"storageFileName": "1597152397585-screenshot_15.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d231816abba584714c9e"
+			},
+			"refPermModel": "user"
+		},
+		{
+			"write": false,
+			"read": true,
+			"create": false,
+			"delete": false,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"thumbnailRequestToken": "c4ee6859-5f25-4c72-b146-3f5223a503ec",
+	"createdAt": {
+		"$date": "2020-08-11T13:26:38.104Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-11T13:26:38.104Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f32a0d561c8a527bc03dc41"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"createdAt": {
+			"$date": "2020-08-11T13:44:53.874Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-11T13:44:53.874Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Overview.png",
+	"type": "image/png",
+	"size": 175347,
+	"storageFileName": "1597153492667-overview.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d231816abba584714c9e"
+			},
+			"refPermModel": "user"
+		},
+		{
+			"write": false,
+			"read": true,
+			"create": false,
+			"delete": false,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"thumbnailRequestToken": "0de3595c-b2b9-478a-b2d2-ae818d642b88",
+	"createdAt": {
+		"$date": "2020-08-11T13:44:53.874Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-11T13:44:53.874Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f32a11761c8a527bc03dc6f"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "4efdcf3a-27c7-43c8-90a1-09271fc97f5c",
+		"createdAt": {
+			"$date": "2020-08-11T13:45:59.814Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-11T13:45:59.814Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "loki.jpg",
+	"type": "image/jpeg",
+	"size": 66316,
+	"storageFileName": "1597153559299-loki.jpg",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d231816abba584714c9e"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"thumbnailRequestToken": "8e2937c3-cc8d-4877-89bd-d157315f60cb",
+	"createdAt": {
+		"$date": "2020-08-11T13:45:59.814Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-11T13:45:59.814Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f32a2ae61c8a527bc03dd2f"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "913783fb-9f9a-43f7-ba27-ac4831a80f83",
+		"createdAt": {
+			"$date": "2020-08-11T13:52:46.566Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-11T13:52:46.566Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Overview.png",
+	"type": "image/png",
+	"size": 175347,
+	"storageFileName": "1597153965401-overview.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"thumbnailRequestToken": "42c9fcfb-d8d9-4850-85c1-1b13a1552ff8",
+	"createdAt": {
+		"$date": "2020-08-11T13:52:46.566Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-11T13:52:46.566Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f32a36c61c8a527bc03dd61"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "5ba3f8f3-8303-41a4-a2ee-22a17a923360",
+		"createdAt": {
+			"$date": "2020-08-11T13:55:56.199Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-11T13:55:56.199Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_14.png",
+	"type": "image/png",
+	"size": 977193,
+	"storageFileName": "1597154152733-screenshot_14.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"thumbnailRequestToken": "b6f537bc-3f17-464a-9b51-e28c40bcb1d9",
+	"createdAt": {
+		"$date": "2020-08-11T13:55:56.199Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-11T13:55:56.199Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f32a69561c8a527bc03ddc9"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "90cdc71c-98d3-4652-90bd-f6daa2b8da31",
+		"createdAt": {
+			"$date": "2020-08-11T14:09:25.658Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-11T14:09:25.658Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_15.png",
+	"type": "image/png",
+	"size": 59108,
+	"storageFileName": "1597154965113-screenshot_15.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"thumbnailRequestToken": "a87a9a3f-9f66-448e-be7f-077301762f7c",
+	"createdAt": {
+		"$date": "2020-08-11T14:09:25.658Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-11T14:09:25.658Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f33ad78589c791fccd722b6"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "372a23a1-df95-42be-a7e4-ea4d639c5432",
+		"createdAt": {
+			"$date": "2020-08-12T08:51:04.068Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-12T08:51:04.068Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "loki.jpg",
+	"type": "image/jpeg",
+	"size": 66316,
+	"storageFileName": "1597222263136-loki.jpg",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"thumbnailRequestToken": "0ac3e564-d9a3-4651-8b24-dc05aed50cd7",
+	"createdAt": {
+		"$date": "2020-08-12T08:51:04.068Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-12T08:51:04.068Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f33adfa589c791fccd722d2"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "3e7ba6f9-5a93-4cd7-b08f-cc9ef111c775",
+		"createdAt": {
+			"$date": "2020-08-12T08:53:14.634Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-12T08:53:14.634Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_15.png",
+	"type": "image/png",
+	"size": 59108,
+	"storageFileName": "1597222394143-screenshot_15.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"thumbnailRequestToken": "58b652ae-5fa4-41aa-904f-3fd618445b4b",
+	"createdAt": {
+		"$date": "2020-08-12T08:53:14.634Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-12T08:53:14.634Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f33b183589c791fccd72335"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "cda24035-c211-4e42-886c-73009b5d2c71",
+		"createdAt": {
+			"$date": "2020-08-12T09:08:19.385Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-12T09:08:19.385Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_15.png",
+	"type": "image/png",
+	"size": 59108,
+	"storageFileName": "1597223298787-screenshot_15.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"thumbnailRequestToken": "5a10aadf-45c2-41f2-9f6a-4f11251e576b",
+	"createdAt": {
+		"$date": "2020-08-12T09:08:19.385Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-12T09:08:19.385Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f33b61e008c191898ec2505"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "60651834-0dc8-44c8-a122-1492f0d98f02",
+		"createdAt": {
+			"$date": "2020-08-12T09:27:58.815Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-12T09:27:58.815Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_15.png",
+	"type": "image/png",
+	"size": 59108,
+	"storageFileName": "1597224474793-screenshot_15.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"thumbnailRequestToken": "075337a5-d85d-4bcc-8fd5-908fd249d032",
+	"createdAt": {
+		"$date": "2020-08-12T09:27:58.815Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-12T09:27:58.815Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f33b89e008c191898ec252c"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "b431e0ba-9ad9-4a7f-aa68-ce9d679d3149",
+		"createdAt": {
+			"$date": "2020-08-12T09:38:38.458Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-12T09:38:38.458Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_15.png",
+	"type": "image/png",
+	"size": 59108,
+	"storageFileName": "1597225107812-screenshot_15.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"thumbnailRequestToken": "17147099-6c96-4586-8950-226e0b183157",
+	"createdAt": {
+		"$date": "2020-08-12T09:38:38.458Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-12T09:38:38.458Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f33b8b9008c191898ec2548"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "9737159c-5dbb-48f2-8146-f2f1899c304b",
+		"createdAt": {
+			"$date": "2020-08-12T09:39:05.463Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-12T09:39:05.463Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_15.png",
+	"type": "image/png",
+	"size": 59108,
+	"storageFileName": "1597225138662-screenshot_15.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"thumbnailRequestToken": "4bc791b5-fa68-4116-bc1c-1c62cdae1420",
+	"createdAt": {
+		"$date": "2020-08-12T09:39:05.463Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-12T09:39:05.463Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f33b920008c191898ec256f"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "fcdc3f24-67aa-4736-ade2-1b278bf896c2",
+		"createdAt": {
+			"$date": "2020-08-12T09:40:48.114Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-12T09:40:48.114Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_15.png",
+	"type": "image/png",
+	"size": 59108,
+	"storageFileName": "1597225231716-screenshot_15.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"thumbnailRequestToken": "a757ede2-e8cf-4bbf-8318-2b9cc2cc28f9",
+	"createdAt": {
+		"$date": "2020-08-12T09:40:48.114Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-12T09:40:48.114Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f33c9ef008c191898ec25a6"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "5e556926-d278-45d9-921c-b83b718ee8c9",
+		"createdAt": {
+			"$date": "2020-08-12T10:52:31.968Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-12T10:52:31.968Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_15.png",
+	"type": "image/png",
+	"size": 59108,
+	"storageFileName": "1597229547872-screenshot_15.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"thumbnailRequestToken": "3f6ef4b9-2fd4-4259-9f4a-65ce5700a0b8",
+	"createdAt": {
+		"$date": "2020-08-12T10:52:31.968Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-12T10:52:31.968Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f33cbc0008c191898ec25ed"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "62dc6468-c226-4172-90e0-d0b77797c143",
+		"createdAt": {
+			"$date": "2020-08-12T11:00:16.666Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-12T11:00:16.666Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_15.png",
+	"type": "image/png",
+	"size": 59108,
+	"storageFileName": "1597230013576-screenshot_15.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"thumbnailRequestToken": "2224b430-18de-41f3-aa54-d1f51c72902f",
+	"createdAt": {
+		"$date": "2020-08-12T11:00:16.666Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-12T11:00:16.666Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f33cc02008c191898ec2615"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "ded25db1-6536-4ce0-95a3-9a4b6edc272f",
+		"createdAt": {
+			"$date": "2020-08-12T11:01:22.030Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-12T11:01:22.030Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_15.png",
+	"type": "image/png",
+	"size": 59108,
+	"storageFileName": "1597230059474-screenshot_15.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"thumbnailRequestToken": "bf777b6c-0a2e-46bc-a30a-d8ad2d464e4a",
+	"createdAt": {
+		"$date": "2020-08-12T11:01:22.030Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-12T11:01:22.030Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f33cc81008c191898ec263e"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "d79660f6-08ab-492a-8716-efd496672e24",
+		"createdAt": {
+			"$date": "2020-08-12T11:03:29.332Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-12T11:03:29.332Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_15.png",
+	"type": "image/png",
+	"size": 59108,
+	"storageFileName": "1597230206112-screenshot_15.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"thumbnailRequestToken": "7132cf45-d614-4d79-92b0-8d51be69aa44",
+	"createdAt": {
+		"$date": "2020-08-12T11:03:29.332Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-12T11:03:29.332Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f33cdc3008c191898ec2666"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "cfc132df-2ac0-4706-9889-f136738dcbff",
+		"createdAt": {
+			"$date": "2020-08-12T11:08:51.231Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-12T11:08:51.231Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_14.png",
+	"type": "image/png",
+	"size": 977193,
+	"storageFileName": "1597230516781-screenshot_14.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"thumbnailRequestToken": "197d63b2-ba92-4e87-8efd-b5232215f86d",
+	"createdAt": {
+		"$date": "2020-08-12T11:08:51.231Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-12T11:08:51.231Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f33cf2d008c191898ec2683"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"createdAt": {
+			"$date": "2020-08-12T11:14:53.949Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-12T11:14:53.949Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Screenshot_15.png",
+	"type": "image/png",
+	"size": 59108,
+	"storageFileName": "1597230890929-screenshot_15.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"thumbnailRequestToken": "650dfd72-719b-48f3-9b1c-3fe96c2b44fb",
+	"createdAt": {
+		"$date": "2020-08-12T11:14:53.949Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-12T11:14:53.949Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f33d1b6008c191898ec26c8"
+	},
+	"securityCheck": {
+		"status": "pending",
+		"reason": "not yet scanned",
+		"requestToken": "5a0197e9-de2f-40b0-914a-41dd1f0fa2f7",
+		"createdAt": {
+			"$date": "2020-08-12T11:25:42.748Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-12T11:25:42.748Z"
+		}
+	},
+	"isDirectory": false,
+	"name": "Overview.png",
+	"type": "image/png",
+	"size": 175347,
+	"storageFileName": "1597231539522-overview.png",
+	"thumbnail": "https://schulcloud.org/images/login-right.png",
+	"owner": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"refOwnerModel": "user",
+	"permissions": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refId": {
+				"$oid": "0000d224816abba584714c9c"
+			},
+			"refPermModel": "user"
+		}
+	],
+	"creator": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"thumbnailRequestToken": "97b17224-ee4a-4dfe-a22d-3b00716e6001",
+	"createdAt": {
+		"$date": "2020-08-12T11:25:42.748Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-12T11:25:42.748Z"
+	},
+	"__v": 0
+}]
+

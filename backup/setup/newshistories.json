@@ -1,1 +1,41 @@
-{}
+[{
+	"_id": {
+		"$oid": "5f2964e3bc72ad3a70fde869"
+	},
+	"title": "07.07.2020",
+	"content": "\u003cp\u003e07.07.2020\u003c/p\u003e\r\n",
+	"displayAt": {
+		"$date": "2020-08-04T13:38:32.632Z"
+	},
+	"creatorId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"parentId": {
+		"$oid": "5f2964d8bc72ad3a70fde84a"
+	},
+	"createdAt": {
+		"$date": "2020-08-04T13:38:43.935Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f296575bc72ad3a70fde90e"
+	},
+	"title": "02.01.2019",
+	"content": "\u003cp\u003e02.01.2019\u003c/p\u003e\r\n",
+	"displayAt": {
+		"$date": "2019-01-02T16:00:00.000Z"
+	},
+	"creatorId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"parentId": {
+		"$oid": "5f296535bc72ad3a70fde894"
+	},
+	"createdAt": {
+		"$date": "2020-08-04T13:41:09.152Z"
+	},
+	"__v": 0
+}]
+

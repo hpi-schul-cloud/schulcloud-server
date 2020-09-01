@@ -19,7 +19,7 @@
 		"firstLogin": true
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
+		"$oid": "0000d186816abba584714c5f"
 	},
 	"roles": [
 		{
@@ -48,7 +48,7 @@
 		"firstLogin": true
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
+		"$oid": "0000d186816abba584714c5f"
 	},
 	"roles": [
 		{
@@ -65,19 +65,19 @@
 	"lastName": "Mathe",
 	"email": "schueler@schul-cloud.org",
 	"updatedAt": {
-		"$date": "2020-05-27T14:49:08.845Z"
+		"$date": "2020-09-01T11:55:06.192Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
 	},
 	"birthday": {
-		"$date": "2000-01-01T11:25:43.556Z"
+		"$date": "2000-01-01T00:00:00.000Z"
 	},
 	"preferences": {
 		"firstLogin": true
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
+		"$oid": "0000d186816abba584714c5f"
 	},
 	"roles": [
 		{
@@ -90,16 +90,16 @@
 			"privacyConsent": true,
 			"termsOfUseConsent": true,
 			"dateOfPrivacyConsent": {
-				"$date": "2017-01-01T00:06:37.148Z"
+				"$date": "2020-08-10T08:46:18.178Z"
 			},
 			"dateOfTermsOfUseConsent": {
-				"$date": "2017-01-01T00:06:37.148Z"
+				"$date": "2020-08-10T08:46:18.178Z"
 			}
 		},
 		"parentConsents": [
 			{
 				"_id": {
-					"$oid": "5ece7de4a194604c6e31f434"
+					"$oid": "5f4e369a2754463978cdc51d"
 				},
 				"parentId": {
 					"$oid": "0000d213816abba584714c0b"
@@ -138,7 +138,7 @@
 		"firstLogin": true
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
+		"$oid": "0000d186816abba584714c5f"
 	},
 	"roles": [
 		{
@@ -150,12 +150,34 @@
 	"_id": {
 		"$oid": "0000d231816abba584714c9e"
 	},
+	"consent": {
+		"parentConsents": [],
+		"userConsent": {
+			"form": "digital",
+			"privacyConsent": true,
+			"termsOfUseConsent": true,
+			"dateOfPrivacyConsent": {
+				"$date": "2020-07-14T07:32:17.927Z"
+			},
+			"dateOfTermsOfUseConsent": {
+				"$date": "2020-07-14T07:32:17.927Z"
+			}
+		}
+	},
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714c98"
+		}
+	],
+	"children": [],
+	"parents": [],
+	"features": [],
 	"__v": 0,
 	"firstName": "Cord",
 	"lastName": "Carl",
 	"email": "lehrer@schul-cloud.org",
 	"updatedAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
+		"$date": "2020-09-01T11:55:06.192Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -167,31 +189,26 @@
 		"firstLogin": true
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c98"
-		}
-	]
+		"$oid": "0000d186816abba584714c5f"
+	}
 },
 {
 	"_id": {
 		"$oid": "58b40278dac20e0645353e3a"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
+		"$oid": "0000d186816abba584714c5f"
 	},
 	"firstName": "Waldemar",
 	"lastName": "Wunderlich",
 	"updatedAt": {
-		"$date": "2020-05-27T14:49:08.844Z"
+		"$date": "2020-09-01T11:55:06.192Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
 	},
 	"birthday": {
-		"$date": "1989-01-01T11:25:43.556Z"
+		"$date": "2020-08-25T22:00:00.000Z"
 	},
 	"preferences": {
 		"firstLogin": true
@@ -202,12 +219,12 @@
 			"$oid": "0000d186816abba584714c99"
 		}
 	],
-	"__v": 0,
+	"__v": null,
 	"consent": {
 		"parentConsents": [
 			{
 				"_id": {
-					"$oid": "5ece7de4a194604c6e31f433"
+					"$oid": "5f4e369a2754463978cdc51c"
 				},
 				"form": "analog",
 				"privacyConsent": true,
@@ -234,7 +251,7 @@
 	},
 	"email": "demo-schueler@schul-cloud.org",
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"birthday": {
 		"$date": "2010-01-01T11:25:43.556Z"
@@ -263,7 +280,7 @@
 	},
 	"email": "demo-lehrer@schul-cloud.org",
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"birthday": {
 		"$date": "1977-01-01T11:25:43.556Z"
@@ -295,7 +312,7 @@
 		"$date": "1977-01-01T11:25:43.556Z"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"preferences": {
 		"firstLogin": true
@@ -330,13 +347,109 @@
 	},
 	"preferences": {},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"roles": [
 		{
 			"$oid": "0000d186816abba584714c99"
 		}
 	],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f465a3b8d6dcd117ca3fe44"
+	},
+	"consent": {
+		"parentConsents": []
+	},
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714c99"
+		}
+	],
+	"forcePasswordChange": false,
+	"children": [],
+	"parents": [],
+	"features": [],
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"firstName": "C",
+	"lastName": "E",
+	"email": "cedric.evers@hpi.de",
+	"birthday": null,
+	"importHash": "C2aC08CD9bH8Cac6naMlPtbeOURtCleiGh0bOVuhkRWIys6o7rTKqNiODX6G",
+	"createdAt": {
+		"$date": "2020-08-26T12:48:59.782Z"
+	},
+	"updatedAt": {
+		"$date": "2020-09-01T11:55:05.935Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f4cd27ae676593654588093"
+	},
+	"consent": {
+		"parentConsents": []
+	},
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714c99"
+		}
+	],
+	"forcePasswordChange": false,
+	"children": [],
+	"parents": [],
+	"features": [],
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"firstName": "M",
+	"lastName": "M",
+	"email": "test@test.org",
+	"birthday": null,
+	"importHash": "B2aB08BRBZrFGn2xBuBQWuxiePnYBpTUovLJ3jWIwW7zJJfBAtBP7lcBMb2i",
+	"createdAt": {
+		"$date": "2020-08-31T10:35:38.664Z"
+	},
+	"updatedAt": {
+		"$date": "2020-09-01T11:55:05.936Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f4cd2d8e6765936545880b4"
+	},
+	"consent": {
+		"parentConsents": []
+	},
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714c99"
+		}
+	],
+	"forcePasswordChange": false,
+	"children": [],
+	"parents": [],
+	"features": [],
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"firstName": "Falsch",
+	"lastName": "X",
+	"email": "nix@blub",
+	"birthday": null,
+	"importHash": "T2aT08TTDLLdivjc3Mwomi3xOEsheSnN4Aprbns2Gz7PNeOL8tjn03tn0xTu",
+	"createdAt": {
+		"$date": "2020-08-31T10:37:12.759Z"
+	},
+	"updatedAt": {
+		"$date": "2020-09-01T11:55:05.936Z"
+	},
 	"__v": 0
 }]
 

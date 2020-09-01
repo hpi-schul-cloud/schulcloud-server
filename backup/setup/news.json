@@ -1,46 +1,283 @@
-[
-{
-	"_id" : { "$oid": "59df0e03caee3e1158ee2f77" },
-	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6" },
-	"title" : "Willkommen in der Schul-Cloud!",
-	"content" : "<p>Liebe Schu&uuml;lerinnen und Sch&uuml;ler,</p>\r\n\r\n<p>um auch im n&auml;chsten Jahrzehnt des 21. Jahrhunderts bildungsm&auml;&szlig;ig spitze aufgestellt zu sein, nutzen wir ab sofort die Schul-Cloud. Mit Hilfe der Schul-Cloud k&ouml;nnen wir uns unter anderem mit den bereits bestehenden Moodle-Accounts anmelden, viele Tools nutzen und auf Bildungsinhalte zugreifen. Weiterhin k&ouml;nnen wir auch die Stundenpl&auml;ne online aktualisieren und Aufgaben erstellen.</p>\r\n",
-	"creatorId" : { "$oid": "59ad4c412b442b7f81810285" },
-	"history" : [],
-	"createdAt" : { "$date": "2017-10-12T06:38:59.755Z" },
-	"displayAt" : { "$date": "2017-10-12T06:00:00.000Z" },
-	"__v" : 0
+[{
+	"_id": {
+		"$oid": "59df0e03caee3e1158ee2f77"
+	},
+	"schoolId": {
+		"$oid": "599ec0bb8e4e364ec18ff46c"
+	},
+	"title": "Willkommen in der Schul-Cloud!",
+	"content": "\u003cp\u003eLiebe Schu\u0026uuml;lerinnen und Sch\u0026uuml;ler,\u003c/p\u003e\r\n\r\n\u003cp\u003eum auch im n\u0026auml;chsten Jahrzehnt des 21. Jahrhunderts bildungsm\u0026auml;\u0026szlig;ig spitze aufgestellt zu sein, nutzen wir ab sofort die Schul-Cloud. Mit Hilfe der Schul-Cloud k\u0026ouml;nnen wir uns unter anderem mit den bereits bestehenden Moodle-Accounts anmelden, viele Tools nutzen und auf Bildungsinhalte zugreifen. Weiterhin k\u0026ouml;nnen wir auch die Stundenpl\u0026auml;ne online aktualisieren und Aufgaben erstellen.\u003c/p\u003e\r\n",
+	"creatorId": {
+		"$oid": "59ad4c412b442b7f81810285"
+	},
+	"history": [],
+	"createdAt": {
+		"$date": "2017-10-12T06:38:59.755Z"
+	},
+	"displayAt": {
+		"$date": "2017-10-12T06:00:00.000Z"
+	},
+	"__v": 0
 },
 {
-	"_id" : { "$oid": "59df0f48caee3e1158ee2f78" },
-	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6" },
-	"title" : "Willkommen im Schuljahr 2017/18!",
-	"content" : "<p>Die Schulleitung hei&szlig;t alle (neuen) Sch&uuml;ler im neuen Schuljahr herzlich willkommen!</p>\r\n\r\n<p>Wir freuen uns auf ein neues spannendes Schuljahr mit vielen interessanten Highlights: Unter anderem ist ein Besuch der 12. Klassen bei der UNESCO sowie ein Sch&uuml;leraustausch mit einer Schule im Silicon Valley der Klassenstufe 10 geplant.</p>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<p>Einen guten Start und viel Erfolg w&uuml;nscht Euch die Schulleitung sowie das Lehrerkolleg!</p>\r\n",
-	"creatorId" : { "$oid": "59ad4c412b442b7f81810285" },
-	"history" : [],
-	"createdAt" : { "$date": "2017-10-12T06:44:24.134Z" },
-	"displayAt" : { "$date": "2017-10-12T06:00:00.000Z" },
-	"__v" : 0
+	"_id": {
+		"$oid": "59df0f48caee3e1158ee2f78"
+	},
+	"schoolId": {
+		"$oid": "599ec0bb8e4e364ec18ff46c"
+	},
+	"title": "Willkommen im Schuljahr 2017/18!",
+	"content": "\u003cp\u003eDie Schulleitung hei\u0026szlig;t alle (neuen) Sch\u0026uuml;ler im neuen Schuljahr herzlich willkommen!\u003c/p\u003e\r\n\r\n\u003cp\u003eWir freuen uns auf ein neues spannendes Schuljahr mit vielen interessanten Highlights: Unter anderem ist ein Besuch der 12. Klassen bei der UNESCO sowie ein Sch\u0026uuml;leraustausch mit einer Schule im Silicon Valley der Klassenstufe 10 geplant.\u003c/p\u003e\r\n\r\n\u003cp\u003e\u0026nbsp;\u003c/p\u003e\r\n\r\n\u003cp\u003eEinen guten Start und viel Erfolg w\u0026uuml;nscht Euch die Schulleitung sowie das Lehrerkolleg!\u003c/p\u003e\r\n",
+	"creatorId": {
+		"$oid": "59ad4c412b442b7f81810285"
+	},
+	"history": [],
+	"createdAt": {
+		"$date": "2017-10-12T06:44:24.134Z"
+	},
+	"displayAt": {
+		"$date": "2017-10-12T06:00:00.000Z"
+	},
+	"__v": 0
 },
 {
-	"_id" : { "$oid": "59df1285caee3e1158ee2f79" },
-	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6" },
-	"title" : "Gesunde Schule 2017",
-	"content" : "<p>Liebe Sch&uuml;lerinnen und Sch&uuml;ler,</p>\r\n\r\n<p>schon seit einigen Jahren sind wir eine &quot;Gesunde Schule&quot;. Um dieses Motto nun noch verst&auml;rkter umzusetzen, haben wir seit dem Beginn des neuen Schuljahres einen neuen Mensa-Anbieter! So wird eure Mittagspause mit regionalen und gesunden Produkten noch besser!</p>\r\n\r\n<p>Einen guten Appetit w&uuml;nscht euch die Schulleitung und das Lehrerkolleg!</p>\r\n",
-	"creatorId" : { "$oid": "59ad4c412b442b7f81810285" },
-	"history" : [],
-	"createdAt" : { "$date": "2017-10-12T06:58:13.541Z" },
-	"displayAt" : { "$date": "2017-10-12T06:00:00.000Z" },
-	"__v" : 0
+	"_id": {
+		"$oid": "59df1285caee3e1158ee2f79"
+	},
+	"schoolId": {
+		"$oid": "599ec0bb8e4e364ec18ff46c"
+	},
+	"title": "Gesunde Schule 2017",
+	"content": "\u003cp\u003eLiebe Sch\u0026uuml;lerinnen und Sch\u0026uuml;ler,\u003c/p\u003e\r\n\r\n\u003cp\u003eschon seit einigen Jahren sind wir eine \u0026quot;Gesunde Schule\u0026quot;. Um dieses Motto nun noch verst\u0026auml;rkter umzusetzen, haben wir seit dem Beginn des neuen Schuljahres einen neuen Mensa-Anbieter! So wird eure Mittagspause mit regionalen und gesunden Produkten noch besser!\u003c/p\u003e\r\n\r\n\u003cp\u003eEinen guten Appetit w\u0026uuml;nscht euch die Schulleitung und das Lehrerkolleg!\u003c/p\u003e\r\n",
+	"creatorId": {
+		"$oid": "59ad4c412b442b7f81810285"
+	},
+	"history": [],
+	"createdAt": {
+		"$date": "2017-10-12T06:58:13.541Z"
+	},
+	"displayAt": {
+		"$date": "2017-10-12T06:00:00.000Z"
+	},
+	"__v": 0
 },
 {
-	"_id" : { "$oid": "59e46072caee3e1158ee2fa4" },
-	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6" },
-	"title" : "Weekly-Challenge 8",
-	"content" : "<p>Ab jetzt k&ouml;nnen schulinterne News unter Neuigkeiten erstellt werden!</p>\r\n",
-	"creatorId" : { "$oid": "59ad4c412b442b7f81810285" },
-	"history" : [],
-	"createdAt" : { "$date": "2017-10-16T07:32:02.818Z"},
-	"displayAt" : { "$date": "2017-10-16T07:00:00.000Z"},
-	"__v" : 0
-}
-]
+	"_id": {
+		"$oid": "59e46072caee3e1158ee2fa4"
+	},
+	"schoolId": {
+		"$oid": "599ec0bb8e4e364ec18ff46c"
+	},
+	"title": "Weekly-Challenge 8",
+	"content": "\u003cp\u003eAb jetzt k\u0026ouml;nnen schulinterne News unter Neuigkeiten erstellt werden!\u003c/p\u003e\r\n",
+	"creatorId": {
+		"$oid": "59ad4c412b442b7f81810285"
+	},
+	"history": [],
+	"createdAt": {
+		"$date": "2017-10-16T07:32:02.818Z"
+	},
+	"displayAt": {
+		"$date": "2017-10-16T07:00:00.000Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f29646fbc72ad3a70fde808"
+	},
+	"source": "internal",
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"title": "04.08.2020",
+	"content": "\u003cp\u003e04.08.2020\u003c/p\u003e\r\n",
+	"creatorId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"createdAt": {
+		"$date": "2020-08-04T13:36:47.932Z"
+	},
+	"updaterId": null,
+	"displayAt": {
+		"$date": "2020-08-04T13:36:47.979Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f296499bc72ad3a70fde81e"
+	},
+	"source": "internal",
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"title": "01.01.2019",
+	"content": "\u003cp\u003e01.01.2019\u003c/p\u003e\r\n",
+	"displayAt": {
+		"$date": "2019-01-01T16:00:00.000Z"
+	},
+	"creatorId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"createdAt": {
+		"$date": "2020-08-04T13:37:29.038Z"
+	},
+	"updaterId": null,
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f2964b6bc72ad3a70fde834"
+	},
+	"source": "internal",
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"title": "10.10.2021",
+	"content": "\u003cp\u003e10.10.2021\u003c/p\u003e\r\n",
+	"displayAt": {
+		"$date": "2021-10-10T13:37:00.000Z"
+	},
+	"creatorId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"createdAt": {
+		"$date": "2020-08-04T13:37:58.572Z"
+	},
+	"updaterId": null,
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f2964d8bc72ad3a70fde84a"
+	},
+	"source": "internal",
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"title": "07.07.2020",
+	"content": "\u003cp\u003e07.07.2020\u003c/p\u003e\r\n",
+	"creatorId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"createdAt": {
+		"$date": "2020-08-04T13:38:32.594Z"
+	},
+	"updaterId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"displayAt": {
+		"$date": "2020-07-07T13:38:00.000Z"
+	},
+	"__v": 0,
+	"updatedAt": {
+		"$date": "2020-08-04T13:38:43.891Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "5f296535bc72ad3a70fde894"
+	},
+	"source": "internal",
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"title": "02.01.2019",
+	"content": "\u003cp\u003e02.01.2019\u003c/p\u003e\r\n",
+	"displayAt": {
+		"$date": "2019-01-02T16:00:00.000Z"
+	},
+	"creatorId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"createdAt": {
+		"$date": "2020-08-04T13:40:05.829Z"
+	},
+	"updaterId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"__v": 0,
+	"updatedAt": {
+		"$date": "2020-08-04T13:41:09.108Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "5f2a784a2d840825a83bca08"
+	},
+	"source": "internal",
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"title": "team 05-08-20",
+	"content": "\u003cp\u003eteam 05-08-20\u003c/p\u003e\r\n",
+	"displayAt": {
+		"$date": "2020-08-05T09:13:00.000Z"
+	},
+	"creatorId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"createdAt": {
+		"$date": "2020-08-05T09:13:46.460Z"
+	},
+	"target": {
+		"$oid": "5e1dba1eaa30ab4df47e11d2"
+	},
+	"targetModel": "teams",
+	"updaterId": null,
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f2a78c42d840825a83bca26"
+	},
+	"source": "internal",
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"title": "team 03-07-20",
+	"content": "\u003cp\u003eteam 03-07-20\u003c/p\u003e\r\n",
+	"displayAt": {
+		"$date": "2020-07-03T09:15:00.000Z"
+	},
+	"creatorId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"createdAt": {
+		"$date": "2020-08-05T09:15:48.357Z"
+	},
+	"target": {
+		"$oid": "5e1dba1eaa30ab4df47e11d2"
+	},
+	"targetModel": "teams",
+	"updaterId": null,
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f2a78e62d840825a83bca44"
+	},
+	"source": "internal",
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"title": "team 13-07-20",
+	"content": "\u003cp\u003eteam 13-07-20\u003c/p\u003e\r\n",
+	"displayAt": {
+		"$date": "2020-07-13T09:16:00.000Z"
+	},
+	"creatorId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"createdAt": {
+		"$date": "2020-08-05T09:16:22.053Z"
+	},
+	"target": {
+		"$oid": "5e1dba1eaa30ab4df47e11d2"
+	},
+	"targetModel": "teams",
+	"updaterId": null,
+	"__v": 0
+}]
+

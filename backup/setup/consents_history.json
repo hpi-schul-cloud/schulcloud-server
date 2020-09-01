@@ -1,1 +1,48 @@
-{}
+[{
+	"_id": {
+		"$oid": "5f0d5f7b1fd15f3904d8d860"
+	},
+	"t": {
+		"$date": "2020-07-14T07:32:11.199Z"
+	},
+	"o": "i",
+	"d": {
+		"_id": {
+			"$oid": "5f0d5f7b1fd15f3904d8d85f"
+		},
+		"userId": {
+			"$oid": "0000d231816abba584714c9e"
+		},
+		"parentConsents": []
+	}
+},
+{
+	"_id": {
+		"$oid": "5f0d5f811fd15f3904d8d872"
+	},
+	"t": {
+		"$date": "2020-07-14T07:32:17.969Z"
+	},
+	"o": "i",
+	"d": {
+		"_id": {
+			"$oid": "5f0d5f7b1fd15f3904d8d85f"
+		},
+		"userId": {
+			"$oid": "0000d231816abba584714c9e"
+		},
+		"parentConsents": [],
+		"userConsent": {
+			"form": "digital",
+			"privacyConsent": true,
+			"termsOfUseConsent": true,
+			"dateOfPrivacyConsent": {
+				"$date": "2020-07-14T07:32:17.927Z"
+			},
+			"dateOfTermsOfUseConsent": {
+				"$date": "2020-07-14T07:32:17.927Z"
+			}
+		}
+	}
+}]
+

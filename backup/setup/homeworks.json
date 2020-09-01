@@ -1,376 +1,9 @@
 [{
 	"_id": {
-		"$oid": "59cce16281297026d02cdc49"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"teacherId": {
-		"$oid": "0000d224816abba584714c9c"
-	},
-	"name": "Private Aufgabe von Marla - ohne Kurs, offen",
-	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-28T11:47:46.622Z"
-	},
-	"dueDate": {
-		"$date": "2030-11-16T12:47:00.000Z"
-	},
-	"private": true,
-	"archived": [],
-	"lessonId": null,
-	"courseId": null,
-	"updatedAt": {
-		"$date": "2017-09-28T11:47:46.648Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-28T11:47:46.648Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59cce19681297026d02cdc4a"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"teacherId": {
-		"$oid": "0000d224816abba584714c9c"
-	},
-	"name": "Private Aufgabe von Marla - ohne Kurs, abgelaufen",
-	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-20T11:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2017-09-20T13:00:00.000Z"
-	},
-	"private": true,
-	"archived": [],
-	"lessonId": null,
-	"courseId": null,
-	"updatedAt": {
-		"$date": "2017-09-28T11:48:38.156Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-28T11:48:38.156Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59cce1d381297026d02cdc4b"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"teacherId": {
-		"$oid": "0000d224816abba584714c9c"
-	},
-	"name": "Private Aufgabe von Marla - mit Kurs, offen",
-	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-20T11:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2300-09-28T13:00:00.000Z"
-	},
-	"private": true,
-	"archived": [],
-	"lessonId": null,
-	"courseId": {
-		"$oid": "0000dcfbfb5c7a3f00bf21ab"
-	},
-	"updatedAt": {
-		"$date": "2017-09-28T11:49:39.924Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-28T11:49:39.924Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59cce2c61113d1132c98dc06"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"teacherId": {
-		"$oid": "0000d224816abba584714c9c"
-	},
-	"name": "Private Aufgabe von Marla - mit Kurs, abgelaufen",
-	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2016-09-20T11:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2017-07-28T13:00:00.000Z"
-	},
-	"private": true,
-	"archived": [],
-	"lessonId": null,
-	"courseId": {
-		"$oid": "0000dcfbfb5c7a3f00bf21ab"
-	},
-	"updatedAt": {
-		"$date": "2017-09-28T11:49:39.924Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-28T11:49:39.924Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59cce352c6abf042248e888c"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"teacherId": {
-		"$oid": "0000d224816abba584714c9c"
-	},
-	"name": "zu archivierende Aufgabe von Marla",
-	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-28T12:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2020-09-29T13:00:00.000Z"
-	},
-	"private": true,
-	"archived": [],
-	"lessonId": null,
-	"courseId": {
-		"$oid": "0000dcfbfb5c7a3f00bf21ab"
-	},
-	"updatedAt": {
-		"$date": "2017-09-28T11:56:02.897Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-28T11:56:02.897Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59cce3f6c6abf042248e888d"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"teacherId": {
-		"$oid": "0000d231816abba584714c9e"
-	},
-	"name": "Aufgabe an Marla (Mathe) - offen",
-	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-28T08:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2300-09-28T15:00:00.000Z"
-	},
-	"archived": [],
-	"lessonId": null,
-	"courseId": {
-		"$oid": "0000dcfbfb5c7a3f00bf21ab"
-	},
-	"updatedAt": {
-		"$date": "2017-09-28T11:58:46.601Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-28T11:58:46.601Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59cce4171113d1132c98dc07"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"teacherId": {
-		"$oid": "0000d231816abba584714c9e"
-	},
-	"name": "Aufgabe an Marla (Mathe) - abgelaufen",
-	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-06-28T08:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2017-07-28T15:00:00.000Z"
-	},
-	"archived": [],
-	"lessonId": null,
-	"courseId": {
-		"$oid": "0000dcfbfb5c7a3f00bf21ab"
-	},
-	"updatedAt": {
-		"$date": "2017-06-28T11:58:46.601Z"
-	},
-	"createdAt": {
-		"$date": "2017-07-28T11:58:46.601Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59cce4c3c6abf042248e888e"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"teacherId": {
-		"$oid": "0000d231816abba584714c9e"
-	},
-	"name": "Private Aufgabe von Cord - mit Kurs, offen",
-	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-28T12:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2300-06-28T13:00:00.000Z"
-	},
-	"private": true,
-	"archived": [],
-	"lessonId": null,
-	"courseId": {
-		"$oid": "0000dcfbfb5c7a3f00bf21ab"
-	},
-	"updatedAt": {
-		"$date": "2017-09-28T12:02:11.432Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-28T12:02:11.432Z"
-	},
-	"__v": 0,
-	"publicSubmissions": false
-},{
-	"_id": {
-		"$oid": "59cce4ebc6abf042248e888f"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"teacherId": {
-		"$oid": "0000d231816abba584714c9e"
-	},
-	"name": "Private Aufgabe Cord - ohne Kurs",
-	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-28T12:02:51.553Z"
-	},
-	"dueDate": {
-		"$date": "2026-09-28T12:02:51.553Z"
-	},
-	"private": true,
-	"archived": [],
-	"lessonId": null,
-	"courseId": null,
-	"updatedAt": {
-		"$date": "2017-09-28T12:02:51.562Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-28T12:02:51.562Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59cce6c6d5e50214e47b601d"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"teacherId": {
-		"$oid": "0000d231816abba584714c9e"
-	},
-	"name": "Archivierte Aufgaben von Cord - mit Kurs, offen",
-	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-20T10:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2300-10-25T15:00:00.000Z"
-	},
-	"archived": [{
-			"$oid": "0000d231816abba584714c9e"
-		}
-	],
-	"lessonId": null,
-	"courseId": {
-		"$oid": "0000dcfbfb5c7a3f00bf21ab"
-	},
-	"updatedAt": {
-		"$date": "2017-09-28T12:10:46.181Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-28T12:10:46.180Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59d1f63ce0a06325e8b5288b"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"teacherId": {
-		"$oid": "0000d231816abba584714c9e"
-	},
-	"name": "Aufgabe an Marla (Mathe) - mit Abgabe & Bewertung",
-	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-20T10:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2300-10-25T15:00:00.000Z"
-	},
-	"archived": [],
-	"lessonId": null,
-	"courseId": {
-		"$oid": "0000dcfbfb5c7a3f00bf21ab"
-	},
-	"updatedAt": {
-		"$date": "2017-09-28T12:10:46.181Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-28T12:10:46.180Z"
-	},
-	"__v": 0
-},{
-	"_id": {
-		"$oid": "59d1fae6395c8218f82cb914"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"teacherId": {
-		"$oid": "0000d231816abba584714c9e"
-	},
-	"name": "Aufgabe an Marla (Mathe) - mit Abgabe, Bewertung, PublicSubmissions",
-	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
-	"availableDate": {
-		"$date": "2017-09-20T10:00:00.000Z"
-	},
-	"dueDate": {
-		"$date": "2300-10-25T15:00:00.000Z"
-	},
-	"archived": [],
-	"lessonId": null,
-	"courseId": {
-		"$oid": "0000dcfbfb5c7a3f00bf21ab"
-	},
-	"updatedAt": {
-		"$date": "2017-09-28T12:10:46.181Z"
-	},
-	"createdAt": {
-		"$date": "2017-09-28T12:10:46.180Z"
-	},
-    "publicSubmissions": true,
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "59a3c87aa2049554a93fec5c"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"teacherId": {
 		"$oid": "599ec1688e4e364ec18ff46e"
@@ -404,7 +37,7 @@
 		"$oid": "59a40665a2049554a93fecb9"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"teacherId": {
 		"$oid": "599ec1688e4e364ec18ff46e"
@@ -438,7 +71,7 @@
 		"$oid": "59a406a3a2049554a93fecba"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"teacherId": {
 		"$oid": "599ec1688e4e364ec18ff46e"
@@ -472,7 +105,7 @@
 		"$oid": "59a40c67a2049554a93feccf"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"teacherId": {
 		"$oid": "599ec1688e4e364ec18ff46e"
@@ -506,7 +139,7 @@
 		"$oid": "59a41144a2049554a93fecdb"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"teacherId": {
 		"$oid": "599ec1688e4e364ec18ff46e"
@@ -540,7 +173,7 @@
 		"$oid": "59a662f6a2049554a93fed43"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"teacherId": {
 		"$oid": "599ec1688e4e364ec18ff46e"
@@ -574,7 +207,7 @@
 		"$oid": "59ae6dc31f513506904e1c82"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"teacherId": {
 		"$oid": "59ad4c412b442b7f81810285"
@@ -608,7 +241,7 @@
 		"$oid": "59ae6f3d1f513506904e1c8a"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"teacherId": {
 		"$oid": "59ad4c412b442b7f81810285"
@@ -642,7 +275,7 @@
 		"$oid": "59ae6fa71f513506904e1c8b"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"teacherId": {
 		"$oid": "59ad4c412b442b7f81810285"
@@ -674,7 +307,7 @@
 		"$oid": "59ae6fc01f513506904e1c8c"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"teacherId": {
 		"$oid": "59ad4c412b442b7f81810285"
@@ -707,7 +340,7 @@
 		"$oid": "59ae709d1f513506904e1ca9"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"teacherId": {
 		"$oid": "59ad4c412b442b7f81810285"
@@ -741,7 +374,7 @@
 		"$oid": "59ae711c1f513506904e1cc5"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"teacherId": {
 		"$oid": "59ad4c412b442b7f81810285"
@@ -775,7 +408,7 @@
 		"$oid": "59afd42e1f513506904e1d1a"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"teacherId": {
 		"$oid": "599ec1688e4e364ec18ff46e"
@@ -809,7 +442,7 @@
 		"$oid": "59afdd5b1f513506904e1d33"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"teacherId": {
 		"$oid": "599ec1688e4e364ec18ff46e"
@@ -843,7 +476,7 @@
 		"$oid": "59afe3e31f513506904e1d53"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"teacherId": {
 		"$oid": "599ec1688e4e364ec18ff46e"
@@ -877,7 +510,7 @@
 		"$oid": "59afea401f513506904e1d61"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"teacherId": {
 		"$oid": "59ad4c412b442b7f81810285"
@@ -911,7 +544,7 @@
 		"$oid": "59c4daacd69d413e2ff0bd24"
 	},
 	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$oid": "599ec0bb8e4e364ec18ff46c"
 	},
 	"teacherId": {
 		"$oid": "59ad4c412b442b7f81810285"
@@ -935,5 +568,425 @@
 		"$date": "2017-09-22T09:41:00.385Z"
 	},
 	"__v": 0
-}
-]
+},
+{
+	"_id": {
+		"$oid": "59cce16281297026d02cdc49"
+	},
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"teacherId": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"name": "Private Aufgabe von Marla - ohne Kurs, offen",
+	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
+	"availableDate": {
+		"$date": "2017-09-28T11:47:46.622Z"
+	},
+	"dueDate": {
+		"$date": "2030-11-16T12:47:00.000Z"
+	},
+	"private": true,
+	"archived": [],
+	"lessonId": null,
+	"courseId": null,
+	"updatedAt": {
+		"$date": "2017-09-28T11:47:46.648Z"
+	},
+	"createdAt": {
+		"$date": "2017-09-28T11:47:46.648Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "59cce19681297026d02cdc4a"
+	},
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"teacherId": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"name": "Private Aufgabe von Marla - ohne Kurs, abgelaufen",
+	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
+	"availableDate": {
+		"$date": "2017-09-20T11:00:00.000Z"
+	},
+	"dueDate": {
+		"$date": "2017-09-20T13:00:00.000Z"
+	},
+	"private": true,
+	"archived": [],
+	"lessonId": null,
+	"courseId": null,
+	"updatedAt": {
+		"$date": "2017-09-28T11:48:38.156Z"
+	},
+	"createdAt": {
+		"$date": "2017-09-28T11:48:38.156Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "59cce1d381297026d02cdc4b"
+	},
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"teacherId": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"name": "Private Aufgabe von Marla - mit Kurs, offen",
+	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
+	"availableDate": {
+		"$date": "2017-09-20T11:00:00.000Z"
+	},
+	"dueDate": {
+		"$date": "2300-09-28T13:00:00.000Z"
+	},
+	"private": true,
+	"archived": [],
+	"lessonId": null,
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"updatedAt": {
+		"$date": "2017-09-28T11:49:39.924Z"
+	},
+	"createdAt": {
+		"$date": "2017-09-28T11:49:39.924Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "59cce2c61113d1132c98dc06"
+	},
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"teacherId": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"name": "Private Aufgabe von Marla - mit Kurs, abgelaufen",
+	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
+	"availableDate": {
+		"$date": "2016-09-20T11:00:00.000Z"
+	},
+	"dueDate": {
+		"$date": "2017-07-28T13:00:00.000Z"
+	},
+	"private": true,
+	"archived": [],
+	"lessonId": null,
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"updatedAt": {
+		"$date": "2017-09-28T11:49:39.924Z"
+	},
+	"createdAt": {
+		"$date": "2017-09-28T11:49:39.924Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "59cce352c6abf042248e888c"
+	},
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"teacherId": {
+		"$oid": "0000d224816abba584714c9c"
+	},
+	"name": "zu archivierende Aufgabe von Marla",
+	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
+	"availableDate": {
+		"$date": "2017-09-28T12:00:00.000Z"
+	},
+	"dueDate": {
+		"$date": "2020-09-29T13:00:00.000Z"
+	},
+	"private": true,
+	"archived": [],
+	"lessonId": null,
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"updatedAt": {
+		"$date": "2017-09-28T11:56:02.897Z"
+	},
+	"createdAt": {
+		"$date": "2017-09-28T11:56:02.897Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "59cce3f6c6abf042248e888d"
+	},
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"name": "Aufgabe an Marla (Mathe) - offen",
+	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
+	"availableDate": {
+		"$date": "2017-09-28T08:00:00.000Z"
+	},
+	"dueDate": {
+		"$date": "2300-09-28T15:00:00.000Z"
+	},
+	"archived": [],
+	"lessonId": null,
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"updatedAt": {
+		"$date": "2017-09-28T11:58:46.601Z"
+	},
+	"createdAt": {
+		"$date": "2017-09-28T11:58:46.601Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "59cce4171113d1132c98dc07"
+	},
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"name": "Aufgabe an Marla (Mathe) - abgelaufen",
+	"description": "\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n",
+	"availableDate": {
+		"$date": "2017-06-28T08:00:00.000Z"
+	},
+	"dueDate": {
+		"$date": "2017-07-28T15:00:00.000Z"
+	},
+	"archived": [],
+	"lessonId": null,
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"updatedAt": {
+		"$date": "2017-06-28T11:58:46.601Z"
+	},
+	"createdAt": {
+		"$date": "2017-07-28T11:58:46.601Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "59cce4c3c6abf042248e888e"
+	},
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"name": "Private Aufgabe von Cord - mit Kurs, offen",
+	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
+	"availableDate": {
+		"$date": "2017-09-28T12:00:00.000Z"
+	},
+	"dueDate": {
+		"$date": "2300-06-28T13:00:00.000Z"
+	},
+	"private": true,
+	"archived": [],
+	"lessonId": null,
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"updatedAt": {
+		"$date": "2017-09-28T12:02:11.432Z"
+	},
+	"createdAt": {
+		"$date": "2017-09-28T12:02:11.432Z"
+	},
+	"__v": 0,
+	"publicSubmissions": false
+},
+{
+	"_id": {
+		"$oid": "59cce4ebc6abf042248e888f"
+	},
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"name": "Private Aufgabe Cord - ohne Kurs",
+	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
+	"availableDate": {
+		"$date": "2017-09-28T12:02:51.553Z"
+	},
+	"dueDate": {
+		"$date": "2026-09-28T12:02:51.553Z"
+	},
+	"private": true,
+	"archived": [],
+	"lessonId": null,
+	"courseId": null,
+	"updatedAt": {
+		"$date": "2017-09-28T12:02:51.562Z"
+	},
+	"createdAt": {
+		"$date": "2017-09-28T12:02:51.562Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "59cce6c6d5e50214e47b601d"
+	},
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"name": "Archivierte Aufgaben von Cord - mit Kurs, offen",
+	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
+	"availableDate": {
+		"$date": "2017-09-20T10:00:00.000Z"
+	},
+	"dueDate": {
+		"$date": "2300-10-25T15:00:00.000Z"
+	},
+	"archived": [
+		{
+			"$oid": "0000d231816abba584714c9e"
+		}
+	],
+	"lessonId": null,
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"updatedAt": {
+		"$date": "2017-09-28T12:10:46.181Z"
+	},
+	"createdAt": {
+		"$date": "2017-09-28T12:10:46.180Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "59d1f63ce0a06325e8b5288b"
+	},
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"name": "Aufgabe an Marla (Mathe) - mit Abgabe \u0026 Bewertung",
+	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
+	"availableDate": {
+		"$date": "2017-09-20T10:00:00.000Z"
+	},
+	"dueDate": {
+		"$date": "2300-10-25T15:00:00.000Z"
+	},
+	"archived": [],
+	"lessonId": null,
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"updatedAt": {
+		"$date": "2017-09-28T12:10:46.181Z"
+	},
+	"createdAt": {
+		"$date": "2017-09-28T12:10:46.180Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "59d1fae6395c8218f82cb914"
+	},
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"name": "Aufgabe an Marla (Mathe) - mit Abgabe, Bewertung, PublicSubmissions",
+	"description": "\u003cp\u003eAufgabenstellung\u003c/p\u003e\r\n",
+	"availableDate": {
+		"$date": "2017-09-20T10:00:00.000Z"
+	},
+	"dueDate": {
+		"$date": "2300-10-25T15:00:00.000Z"
+	},
+	"archived": [],
+	"lessonId": null,
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"updatedAt": {
+		"$date": "2017-09-28T12:10:46.181Z"
+	},
+	"createdAt": {
+		"$date": "2017-09-28T12:10:46.180Z"
+	},
+	"publicSubmissions": true,
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f310986982eb436dc65ecc4"
+	},
+	"fileIds": [
+		{
+			"$oid": "5f310984982eb436dc65ecb8"
+		},
+		{
+			"$oid": "5f32a11761c8a527bc03dc6f"
+		}
+	],
+	"courseId": {
+		"$oid": "5f2d4b714e905911008a9133"
+	},
+	"lessonId": null,
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Abgabe",
+	"description": "\u003cp\u003eTest asdasd asdadsds\u003c/p\u003e",
+	"schoolId": {
+		"$oid": "0000d186816abba584714c5f"
+	},
+	"teacherId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"availableDate": {
+		"$date": "2020-08-10T08:47:00.000Z"
+	},
+	"dueDate": null,
+	"createdAt": {
+		"$date": "2020-08-10T08:47:02.090Z"
+	},
+	"updatedAt": {
+		"$date": "2020-08-10T08:47:02.090Z"
+	},
+	"__v": 0,
+	"private": false,
+	"publicSubmissions": false,
+	"teamSubmissions": false
+}]
+

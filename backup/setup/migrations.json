@@ -1,28 +1,10 @@
 [{
 	"_id": {
-		"$oid": "5d3e97e02d1b0f2c2cc7ec18"
-	},
-	"state": "up",
-	"name": "lessonIsCopyFrom",
-	"createdAt": "2019-07-11T12:18:30.503Z",
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5d3ef5f4bd2cdb2075fc7e54"
-	},
-	"state": "up",
-	"name": "replace_grandlevel_id_with_number",
-	"createdAt": "2019-07-29T09:57:38.131Z",
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5d234fff63e4a27b68aceff0"
 	},
 	"name": "AddPositionToLessons",
 	"createdAt": {
-		"$date": "2019-07-08T14:15:27.05Z"
+		"$date": "2019-07-08T14:15:27.050Z"
 	},
 	"state": "up",
 	"__v": 0
@@ -56,8 +38,26 @@
 	"state": "up",
 	"name": "addStartAndEndDateToYearCollection",
 	"createdAt": {
-		"$date": "2019-07-17T08:12:18.48Z"
+		"$date": "2019-07-17T08:12:18.480Z"
 	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d3e97e02d1b0f2c2cc7ec18"
+	},
+	"state": "up",
+	"name": "lessonIsCopyFrom",
+	"createdAt": "2019-07-11T12:18:30.503Z",
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d3ef5f4bd2cdb2075fc7e54"
+	},
+	"state": "up",
+	"name": "replace_grandlevel_id_with_number",
+	"createdAt": "2019-07-29T09:57:38.131Z",
 	"__v": 0
 },
 {
@@ -68,17 +68,6 @@
 	"name": "migrateSchoolsTo2019-20",
 	"createdAt": {
 		"$date": "2019-07-29T14:33:35.456Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5dc173583c9c9844881b6aca"
-	},
-	"state": "up",
-	"name": "persist_files_by_copied_courses",
-	"createdAt": {
-		"$date": "2019-07-30T13:24:23.114Z"
 	},
 	"__v": 0
 },
@@ -161,23 +150,23 @@
 },
 {
 	"_id": {
-		"$oid": "5d81ef4e6012563f98d225e5"
-	},
-	"state": "up",
-	"name": "AddCourseRoles",
-	"createdAt": {
-		"$date": "2019-09-09T09:38:21.926Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5d80a25a92de001d94db5046"
 	},
 	"state": "up",
 	"name": "addUserDeletePermissions",
 	"createdAt": {
 		"$date": "2019-09-17T09:07:38.792Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5d81ef4e6012563f98d225e5"
+	},
+	"state": "up",
+	"name": "AddCourseRoles",
+	"createdAt": {
+		"$date": "2019-09-09T09:38:21.926Z"
 	},
 	"__v": 0
 },
@@ -199,7 +188,7 @@
 	"state": "up",
 	"name": "AddScopePermissionsViewPermissionToCourseTeachers",
 	"createdAt": {
-		"$date": "2019-09-25T14:59:22.19Z"
+		"$date": "2019-09-25T14:59:22.190Z"
 	},
 	"__v": 0
 },
@@ -216,12 +205,12 @@
 },
 {
 	"_id": {
-		"$oid": "5e39721290415d5374a306ba"
+		"$oid": "5d9db0a97bd9ad01a1734817"
 	},
 	"state": "up",
 	"name": "granular_user_permissions",
 	"createdAt": {
-		"$date": "2019-10-09T10:04:25.556Z"
+		"$date": "2019-10-09T12:46:22.613Z"
 	},
 	"__v": 0
 },
@@ -249,12 +238,12 @@
 },
 {
 	"_id": {
-		"$oid": "5dc19483d15115187413f3c0"
+		"$oid": "5dc173583c9c9844881b6aca"
 	},
 	"state": "up",
-	"name": "remove-broken-class-successor-links",
+	"name": "persist_files_by_copied_courses",
 	"createdAt": {
-		"$date": "2019-11-05T14:19:26.569Z"
+		"$date": "2019-07-30T13:24:23.114Z"
 	},
 	"__v": 0
 },
@@ -271,23 +260,33 @@
 },
 {
 	"_id": {
+		"$oid": "5dc19483d15115187413f3c0"
+	},
+	"state": "up",
+	"name": "remove-broken-class-successor-links",
+	"createdAt": {
+		"$date": "2019-11-05T14:19:26.569Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5de50ab801498f0f504d349e"
+	},
+	"state": "up",
+	"name": "fix-demo-permissions",
+	"createdAt": {
+		"$date": "2019-12-02T12:59:36.284Z"
+	}
+},
+{
+	"_id": {
 		"$oid": "5de6838fc7c4a02707c337dd"
 	},
 	"state": "up",
 	"name": "remove_create_permissions_thuringia",
 	"createdAt": {
 		"$date": "2019-12-02T11:56:47.413Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5f4660afb6eeb8d5f8f25a71"
-	},
-	"state": "up",
-	"name": "fix-demo-permissions",
-	"createdAt": {
-		"$date": "2019-12-02T12:59:36.284Z"
 	},
 	"__v": 0
 },
@@ -314,34 +313,12 @@
 },
 {
 	"_id": {
-		"$oid": "5f4660afb6eeb8d5f8f25a72"
+		"$oid": "5df0d35872a8731352bf769f"
 	},
 	"state": "up",
 	"name": "remove invalid files from collection",
 	"createdAt": {
 		"$date": "2019-12-11T10:20:29.714Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5df895ad9ac7d23f70ad66fa"
-	},
-	"state": "up",
-	"name": "removeUnnecessaryLocalSystems",
-	"createdAt": {
-		"$date": "2019-12-17T08:20:02.025Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5f4660afb6eeb8d5f8f25a73"
-	},
-	"state": "up",
-	"name": "disable-team-created-by-students-all-schools",
-	"createdAt": {
-		"$date": "2020-01-06T16:54:53.694Z"
 	},
 	"__v": 0
 },
@@ -380,7 +357,40 @@
 },
 {
 	"_id": {
-		"$oid": "5f4660afb6eeb8d5f8f25a74"
+		"$oid": "5e37e55302b039321c3f200a"
+	},
+	"state": "up",
+	"name": "addVideoconferencePermissionsToTeamRoles",
+	"createdAt": {
+		"$date": "2020-02-03T09:18:11.130Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e39721290415d5374a306ba"
+	},
+	"state": "up",
+	"name": "granular_user_permissions",
+	"createdAt": {
+		"$date": "2019-10-09T10:04:25.556Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e39721290415d5374a306bb"
+	},
+	"state": "up",
+	"name": "disable-team-created-by-students-all-schools",
+	"createdAt": {
+		"$date": "2020-01-06T16:54:53.694Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5e39721290415d5374a306bc"
 	},
 	"state": "up",
 	"name": "addSchoolIdsForUsersInTeams",
@@ -391,7 +401,7 @@
 },
 {
 	"_id": {
-		"$oid": "5f4660afb6eeb8d5f8f25a75"
+		"$oid": "5e39721290415d5374a306bd"
 	},
 	"state": "up",
 	"name": "coursePermissions",
@@ -402,18 +412,7 @@
 },
 {
 	"_id": {
-		"$oid": "5e37e55302b039321c3f200a"
-	},
-	"state": "up",
-	"name": "addVideoconferencePermissionsToTeamRoles",
-	"createdAt": {
-		"$date": "2020-02-03T09:18:11.13Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5f4660afb6eeb8d5f8f25a76"
+		"$oid": "5e4a61ca1db4f62c8cb2b9df"
 	},
 	"state": "up",
 	"name": "remove_invalid_accounts",
@@ -429,24 +428,24 @@
 	"state": "up",
 	"name": "datasource-permissions-for-superhero",
 	"createdAt": {
-		"$date": "2020-02-19T14:22:21.2Z"
+		"$date": "2020-02-19T14:22:21.200Z"
 	},
 	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "5f4660afb6eeb8d5f8f25a77"
+		"$oid": "5e735028d4b12d5c4c77945a"
 	},
 	"state": "up",
 	"name": "add-messenger-sync-permissions",
 	"createdAt": {
-		"$date": "2020-03-19T10:46:32.049Z"
+		"$date": "2020-03-19T11:55:25.139Z"
 	},
 	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "5f4660afb6eeb8d5f8f25a78"
+		"$oid": "5e78b794a1e42c5728901f99"
 	},
 	"state": "up",
 	"name": "runIndexSync",
@@ -457,45 +456,12 @@
 },
 {
 	"_id": {
-		"$oid": "5f4660afb6eeb8d5f8f25a79"
+		"$oid": "5e78b794a1e42c5728901f9a"
 	},
 	"state": "up",
 	"name": "runIndexSync2",
 	"createdAt": {
 		"$date": "2020-03-23T12:30:05.306Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5f4660afb6eeb8d5f8f25a7a"
-	},
-	"state": "up",
-	"name": "update schema indexes",
-	"createdAt": {
-		"$date": "2020-03-24T13:29:18.218Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5f4660afb6eeb8d5f8f25a7b"
-	},
-	"state": "up",
-	"name": "remove clipboard",
-	"createdAt": {
-		"$date": "2020-03-25T10:18:50.713Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5e81e74b65f87a5a600f591b"
-	},
-	"state": "up",
-	"name": "addFileCreatorAndPermissionIndexes",
-	"createdAt": {
-		"$date": "2020-03-26T11:39:40.409Z"
 	},
 	"__v": 0
 },
@@ -512,6 +478,17 @@
 },
 {
 	"_id": {
+		"$oid": "5e81e74b65f87a5a600f591b"
+	},
+	"state": "up",
+	"name": "addFileCreatorAndPermissionIndexes",
+	"createdAt": {
+		"$date": "2020-03-26T11:39:40.409Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5e8355da77736b6304a3e77e"
 	},
 	"state": "up",
@@ -523,34 +500,23 @@
 },
 {
 	"_id": {
-		"$oid": "5ece7de4a194604c6e31f432"
-	},
-	"state": "up",
-	"name": "move_consent_to_user",
-	"createdAt": {
-		"$date": "2020-04-07T13:45:21.906Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5e970516325e804198ec63dd"
 	},
 	"state": "up",
 	"name": "addAdminPermissionForManagingStudentTeamCreation",
 	"createdAt": {
-		"$date": "2020-04-15T12:59:02.81Z"
+		"$date": "2020-04-15T12:59:02.810Z"
 	},
 	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "5f4660afb6eeb8d5f8f25a7c"
+		"$oid": "5e98318cfb423a82b448ce99"
 	},
 	"state": "up",
 	"name": "add-sync-start-permission",
 	"createdAt": {
-		"$date": "2020-04-16T10:21:00.933Z"
+		"$date": "2020-04-16T12:28:09.933Z"
 	},
 	"__v": 0
 },
@@ -567,12 +533,12 @@
 },
 {
 	"_id": {
-		"$oid": "5f4660afb6eeb8d5f8f25a7d"
+		"$oid": "5ea6d94a5735a85808dbc95a"
 	},
 	"state": "up",
 	"name": "remove-student_edit-from-students",
 	"createdAt": {
-		"$date": "2020-04-27T13:08:26.485Z"
+		"$date": "2020-04-27T15:17:39.485Z"
 	},
 	"__v": 0
 },
@@ -605,7 +571,18 @@
 	"state": "up",
 	"name": "encrypt-ldap-search-user-password",
 	"createdAt": {
-		"$date": "2020-05-26T14:00:06.91Z"
+		"$date": "2020-05-26T14:00:06.910Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ece7de4a194604c6e31f432"
+	},
+	"state": "up",
+	"name": "move_consent_to_user",
+	"createdAt": {
+		"$date": "2020-04-07T13:45:21.906Z"
 	},
 	"__v": 0
 },
@@ -644,17 +621,6 @@
 },
 {
 	"_id": {
-		"$oid": "5f4660afb6eeb8d5f8f25a7e"
-	},
-	"state": "up",
-	"name": "move_etherpad",
-	"createdAt": {
-		"$date": "2020-06-09T09:43:07.216Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5eec9105afc034cc35d94872"
 	},
 	"state": "up",
@@ -677,7 +643,95 @@
 },
 {
 	"_id": {
-		"$oid": "5f4660afb6eeb8d5f8f25a7f"
+		"$oid": "5f439d30d25e2f22c81c0b08"
+	},
+	"state": "up",
+	"name": "setStudentListSettingsInSchoolsToFalse",
+	"createdAt": {
+		"$date": "2020-08-24T10:57:52.663Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f4e36896652c90a38b65dde"
+	},
+	"state": "up",
+	"name": "removeUnnecessaryLocalSystems",
+	"createdAt": {
+		"$date": "2019-12-17T08:20:02.025Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f4e36896652c90a38b65ddf"
+	},
+	"state": "up",
+	"name": "add-messenger-sync-permissions",
+	"createdAt": {
+		"$date": "2020-03-19T10:46:32.049Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f4e36896652c90a38b65de0"
+	},
+	"state": "up",
+	"name": "update schema indexes",
+	"createdAt": {
+		"$date": "2020-03-24T13:29:18.218Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f4e36896652c90a38b65de1"
+	},
+	"state": "up",
+	"name": "remove clipboard",
+	"createdAt": {
+		"$date": "2020-03-25T10:18:50.713Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f4e36896652c90a38b65de2"
+	},
+	"state": "up",
+	"name": "add-sync-start-permission",
+	"createdAt": {
+		"$date": "2020-04-16T10:21:00.933Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f4e36896652c90a38b65de3"
+	},
+	"state": "up",
+	"name": "remove-student_edit-from-students",
+	"createdAt": {
+		"$date": "2020-04-27T13:08:26.485Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f4e36896652c90a38b65de4"
+	},
+	"state": "up",
+	"name": "move_etherpad",
+	"createdAt": {
+		"$date": "2020-06-09T09:43:07.216Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f4e36896652c90a38b65de5"
 	},
 	"state": "up",
 	"name": "remove_user-consent-ids",
@@ -688,7 +742,7 @@
 },
 {
 	"_id": {
-		"$oid": "5f058ea00cdad70880bac2bd"
+		"$oid": "5f4e36896652c90a38b65de6"
 	},
 	"state": "up",
 	"name": "add-federal-state-internation-school",
@@ -699,7 +753,7 @@
 },
 {
 	"_id": {
-		"$oid": "5f1e8e7ad5e1e110c4e9100b"
+		"$oid": "5f4e36896652c90a38b65de7"
 	},
 	"state": "up",
 	"name": "start_new_school_year",
@@ -710,7 +764,7 @@
 },
 {
 	"_id": {
-		"$oid": "5f290c7d44aefd8b14bf28f4"
+		"$oid": "5f4e36896652c90a38b65de8"
 	},
 	"state": "up",
 	"name": "start_new_school_year_cluster_4",
@@ -721,7 +775,7 @@
 },
 {
 	"_id": {
-		"$oid": "5f4660afb6eeb8d5f8f25a80"
+		"$oid": "5f4e36896652c90a38b65de9"
 	},
 	"state": "up",
 	"name": "move_consent",
@@ -732,7 +786,7 @@
 },
 {
 	"_id": {
-		"$oid": "5f4660afb6eeb8d5f8f25a81"
+		"$oid": "5f4e36896652c90a38b65dea"
 	},
 	"state": "up",
 	"name": "add_indexes_consent_version",
@@ -743,7 +797,7 @@
 },
 {
 	"_id": {
-		"$oid": "5f32a956ab0f327164f7a3fd"
+		"$oid": "5f4e36896652c90a38b65deb"
 	},
 	"state": "up",
 	"name": "revoke_student_creation_from_teachers",
@@ -754,23 +808,12 @@
 },
 {
 	"_id": {
-		"$oid": "5f3a4524fc8acc32043af437"
+		"$oid": "5f4e36896652c90a38b65dec"
 	},
 	"state": "up",
 	"name": "remove-importHashes-from-users-with-accounts",
 	"createdAt": {
 		"$date": "2020-08-17T08:51:48.406Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5f439d30d25e2f22c81c0b08"
-	},
-	"state": "up",
-	"name": "setStudentListSettingsInSchoolsToFalse",
-	"createdAt": {
-		"$date": "2020-08-24T10:57:52.663Z"
 	},
 	"__v": 0
 }]

@@ -1,0 +1,17 @@
+[{
+	"_id": "37d49mYATt",
+	"target": "http://localhost:3100/files/fileModel/5f0d99fa1fd15f3904d8dc9a/proxy?share=uOJumjxtJ",
+	"createdAt": {
+		"$date": "2020-07-14T11:42:08.105Z"
+	},
+	"__v": 0
+},
+{
+	"_id": "38zQo3guFc",
+	"target": "http://localhost:3100/files/fileModel/5f0d99fa1fd15f3904d8dc9a/proxy?share=zSxpKgeGt",
+	"createdAt": {
+		"$date": "2020-07-14T11:41:56.793Z"
+	},
+	"__v": 0
+}]
+

@@ -1,0 +1,181 @@
+[{
+	"_id": {
+		"$oid": "5f465a2b8d6dcd117ca3fe3b"
+	},
+	"t": {
+		"$date": "2020-08-26T12:48:43.744Z"
+	},
+	"o": "u",
+	"d": {
+		"importHash": "L2aL08LUUquQFLmLAMKi1R3xzLaLeNDZCk1xLcD8LHLc7IBY0sL87qmHLr6e",
+		"updatedAt": {
+			"$date": "2020-08-26T12:48:43.744Z"
+		}
+	}
+},
+{
+	"_id": {
+		"$oid": "5f465a3b8d6dcd117ca3fe42"
+	},
+	"t": {
+		"$date": "2020-08-26T12:48:59.736Z"
+	},
+	"o": "u",
+	"d": {
+		"importHash": "C2aC08CD9bH8Cac6naMlPtbeOURtCleiGh0bOVuhkRWIys6o7rTKqNiODX6G",
+		"updatedAt": {
+			"$date": "2020-08-26T12:48:59.736Z"
+		}
+	}
+},
+{
+	"_id": {
+		"$oid": "5f465a3b8d6dcd117ca3fe45"
+	},
+	"t": {
+		"$date": "2020-08-26T12:48:59.782Z"
+	},
+	"o": "i",
+	"d": {
+		"consent": {
+			"parentConsents": []
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c99"
+			}
+		],
+		"forcePasswordChange": false,
+		"children": [],
+		"parents": [],
+		"features": [],
+		"_id": {
+			"$oid": "5f465a3b8d6dcd117ca3fe44"
+		},
+		"schoolId": {
+			"$oid": "0000d186816abba584714c5f"
+		},
+		"firstName": "C",
+		"lastName": "E",
+		"email": "cedric.evers@hpi.de",
+		"birthday": null,
+		"importHash": "C2aC08CD9bH8Cac6naMlPtbeOURtCleiGh0bOVuhkRWIys6o7rTKqNiODX6G",
+		"createdAt": {
+			"$date": "2020-08-26T12:48:59.782Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-26T12:48:59.782Z"
+		}
+	}
+},
+{
+	"_id": {
+		"$oid": "5f4cd27ae676593654588091"
+	},
+	"t": {
+		"$date": "2020-08-31T10:35:38.584Z"
+	},
+	"o": "u",
+	"d": {
+		"importHash": "B2aB08BRBZrFGn2xBuBQWuxiePnYBpTUovLJ3jWIwW7zJJfBAtBP7lcBMb2i",
+		"updatedAt": {
+			"$date": "2020-08-31T10:35:38.584Z"
+		}
+	}
+},
+{
+	"_id": {
+		"$oid": "5f4cd27ae676593654588094"
+	},
+	"t": {
+		"$date": "2020-08-31T10:35:38.664Z"
+	},
+	"o": "i",
+	"d": {
+		"consent": {
+			"parentConsents": []
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c99"
+			}
+		],
+		"forcePasswordChange": false,
+		"children": [],
+		"parents": [],
+		"features": [],
+		"_id": {
+			"$oid": "5f4cd27ae676593654588093"
+		},
+		"schoolId": {
+			"$oid": "0000d186816abba584714c5f"
+		},
+		"firstName": "M",
+		"lastName": "M",
+		"email": "test@test.org",
+		"birthday": null,
+		"importHash": "B2aB08BRBZrFGn2xBuBQWuxiePnYBpTUovLJ3jWIwW7zJJfBAtBP7lcBMb2i",
+		"createdAt": {
+			"$date": "2020-08-31T10:35:38.664Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-31T10:35:38.664Z"
+		}
+	}
+},
+{
+	"_id": {
+		"$oid": "5f4cd2d8e6765936545880b2"
+	},
+	"t": {
+		"$date": "2020-08-31T10:37:12.715Z"
+	},
+	"o": "u",
+	"d": {
+		"importHash": "T2aT08TTDLLdivjc3Mwomi3xOEsheSnN4Aprbns2Gz7PNeOL8tjn03tn0xTu",
+		"updatedAt": {
+			"$date": "2020-08-31T10:37:12.715Z"
+		}
+	}
+},
+{
+	"_id": {
+		"$oid": "5f4cd2d8e6765936545880b5"
+	},
+	"t": {
+		"$date": "2020-08-31T10:37:12.760Z"
+	},
+	"o": "i",
+	"d": {
+		"consent": {
+			"parentConsents": []
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c99"
+			}
+		],
+		"forcePasswordChange": false,
+		"children": [],
+		"parents": [],
+		"features": [],
+		"_id": {
+			"$oid": "5f4cd2d8e6765936545880b4"
+		},
+		"schoolId": {
+			"$oid": "0000d186816abba584714c5f"
+		},
+		"firstName": "Falsch",
+		"lastName": "X",
+		"email": "nix@blub",
+		"birthday": null,
+		"importHash": "T2aT08TTDLLdivjc3Mwomi3xOEsheSnN4Aprbns2Gz7PNeOL8tjn03tn0xTu",
+		"createdAt": {
+			"$date": "2020-08-31T10:37:12.759Z"
+		},
+		"updatedAt": {
+			"$date": "2020-08-31T10:37:12.759Z"
+		}
+	}
+}]
+
