@@ -124,7 +124,7 @@ class AdminUsers {
 
 		if (id) {
 			const userToRemove = await getCurrentUserInfo(id);
-			if (currentUser.schoolId !== userToRemove.schoolId) {
+			if (currentUser.schoolId.toString() !== userToRemove.schoolId.toString()) {
 				throw new Forbidden('You cannot remove users from other schools.');
 			}
 			return this.app.service('usersModel').remove(id);
