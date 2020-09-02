@@ -718,7 +718,7 @@ describe('AdminUsersService', () => {
 		}
 	});
 
-	it('_ids should be of array type', async () => {
+	it('_ids must be of array type', async () => {
 		const testUSer = await testObjects.createTestUser({ roles: ['administrator'] });
 		const params = await testObjects.generateRequestParamsFromUser(testUSer);
 		params.query = {
@@ -734,20 +734,36 @@ describe('AdminUsersService', () => {
 		}
 	});
 
-	it('id should be of object type', async () => {
-		const testUSer = await testObjects.createTestUser({ roles: ['administrator'] });
+	it('id can be both object and string type', async () => {
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
+		});
+		const testUSer = await testObjects.createTestUser({
+			roles: ['administrator'],
+			schoolId: school._id,
+		});
 		const params = await testObjects.generateRequestParamsFromUser(testUSer);
 		params.query = {
 			...params.query,
 			_ids: [],
 		};
-		try {
-			await adminStudentsService.remove(['wrong type'], params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(400);
-			expect(err.message).to.equal('The type for id is incorrect.');
-		}
+		const studentData = {
+			firstName: 'testDeleteStudent',
+			lastName: 'lastDeleteStudent',
+			email: 'testDeleteStudent3@de.de',
+			roles: ['student'],
+			schoolId: school._id,
+		};
+
+		const objectTypeStudentTest = await adminStudentsService.create(studentData, params);
+		const deletedObjectType = await adminStudentsService.remove(objectTypeStudentTest, params);
+		expect(deletedObjectType).to.not.be.undefined;
+		expect(deletedObjectType.firstName).to.equals('testDeleteStudent');
+
+		const stringTypeStudentTest = await adminStudentsService.create(studentData, params);
+		const deletedeStringType = await adminStudentsService.remove(stringTypeStudentTest._id, params);
+		expect(deletedeStringType).to.not.be.undefined;
+		expect(deletedeStringType.firstName).to.equals('testDeleteStudent');
 	});
 });
 
