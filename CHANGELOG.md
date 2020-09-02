@@ -14,6 +14,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-6511 - LDAP edit button missing.
 
+### Added
+- SC-6172: added hooks and checks to look for unique and not disposable emails in adminUsers service
 
 ## [24.4.0] - 2020-8-31
 
