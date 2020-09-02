@@ -1634,6 +1634,10 @@ describe('CSVSyncer Integration', () => {
 			};
 		});
 
+		after(async () => {
+			await deleteUser(SCENARIO_EMAIL);
+		});
+
 		after(testObjects.cleanup);
 
 		it('should be accepted for execution', () => {
