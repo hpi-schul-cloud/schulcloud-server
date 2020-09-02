@@ -111,6 +111,7 @@ class AdminUsers {
 		const { account } = params;
 		const currentUserId = account.userId.toString();
 
+		// checks if school isExternal, throws forbidden if it is
 		const { schoolId } = await getCurrentUserInfo(currentUserId);
 		const { isExternal } = await this.app.service('schools').get(schoolId);
 		if (isExternal) {
