@@ -69,7 +69,6 @@ describe('user service', () => {
 			}))
 			.then((user) => userService.get(user._id))
 			.then((user) => {
-				testUserId = user._id;
 				expect(user.avatarInitials).to.eq('MT');
 				const array = Array.from(user.permissions);
 				expect(array).to.have.lengthOf(3);
@@ -103,8 +102,7 @@ describe('user service', () => {
 			expect(result.email).to.be.undefined;
 		});
 
-		// https://ticketsystem.schul-cloud.org/browse/SC-5076
-		xit('student can not read student from foreign school', async () => {
+		it('student can not read student from foreign school', async () => {
 			await testObjects.createTestRole({
 				name: 'studentList', permissions: ['STUDENT_LIST'],
 			});
@@ -164,8 +162,7 @@ describe('user service', () => {
 			expect(result).not.to.haveOwnProperty('ldapId');
 		});
 
-		// https://ticketsystem.schul-cloud.org/browse/SC-5076
-		xit('does not allow students to read other students without STUDENT_LIST permission', async () => {
+		it('does not allow students to read other students without STUDENT_LIST permission', async () => {
 			await testObjects.createTestRole({ name: 'notAuthorized', permissions: [] });
 			const studentToRead = await testObjects.createTestUser({ roles: ['student'] });
 			const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
@@ -176,7 +173,8 @@ describe('user service', () => {
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
-				expect(err.message).to.equal(testGenericErrorMessage);
+				// https://ticketsystem.schul-cloud.org/browse/SC-5076
+				// expect(err.message).to.equal(testGenericErrorMessage);
 				expect(err.code).to.equal(403);
 			}
 		});
@@ -243,8 +241,7 @@ describe('user service', () => {
 			}
 		});
 
-		// https://ticketsystem.schul-cloud.org/browse/SC-5076
-		xit('teacher can not read student from foreign school', async () => {
+		it('teacher can not read student from foreign school', async () => {
 			await testObjects.createTestRole({
 				name: 'studentList', permissions: ['STUDENT_LIST'],
 			});

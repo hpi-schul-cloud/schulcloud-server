@@ -146,10 +146,10 @@ const userHooks = {
 			decorateAvatar,
 			decorateUser,
 			computeProperty(userModel, 'getPermissions', 'permissions'),
-			iff(isProvider('external'), [hasReadPermissionForUser,
-				denyIfNotCurrentSchool({
-					errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
-				})]),
+			iff(isProvider('external'), hasReadPermissionForUser),
+			iff(isProvider('external'), denyIfNotCurrentSchool({
+				errorMessage: 'Der angefragte Nutzer ist unbekannt!',
+			})),
 			iff(isProvider('external'), filterResult),
 		],
 		create: [
