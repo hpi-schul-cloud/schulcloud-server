@@ -376,6 +376,48 @@ describe('AdminUsersService', () => {
 			expect(err.message).to.equal('Creating new students or teachers is only possible in the source system.');
 		}
 	});
+
+	it('does not allow user creation if email already exists', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			email: 'studentTest@de.de',
+			roles: ['student'],
+			schoolId: admin.schoolId,
+		};
+		// creates first student with unique data
+		await adminStudentsService.create(mockData, params);
+		// creates second student with existent data
+		try {
+			await adminStudentsService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(400);
+			expect(err.message).to.equal('Email already exists.');
+		}
+	});
+
+	it('does not allow user creation if email is disposable', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			email: 'disposable@20minutemail.com',
+			roles: ['student'],
+			schoolId: admin.schoolId,
+		};
+		// creates student with disposable email
+		try {
+			await adminStudentsService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(400);
+			expect(err.message).to.equal('EMAIL_DOMAIN_BLOCKED');
+		}
+	});
 });
 
 describe('AdminTeachersService', () => {
@@ -501,6 +543,48 @@ describe('AdminTeachersService', () => {
 		} catch (err) {
 			expect(err.code).to.equal(403);
 			expect(err.message).to.equal('Creating new students or teachers is only possible in the source system.');
+		}
+	});
+
+	it('does not allow user creation if email already exists', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			email: 'teacherTest@de.de',
+			roles: ['teacher'],
+			schoolId: admin.schoolId,
+		};
+		// creates first teacher with unique data
+		await adminTeachersService.create(mockData, params);
+		// creates second teacher with existent data
+		try {
+			await adminTeachersService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(400);
+			expect(err.message).to.equal('Email already exists.');
+		}
+	});
+
+	it('does not allow user creation if email is disposable', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			email: 'disposable@20minutemail.com',
+			roles: ['teacher'],
+			schoolId: admin.schoolId,
+		};
+		// creates teacher with disposable email
+		try {
+			await adminTeachersService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(400);
+			expect(err.message).to.equal('EMAIL_DOMAIN_BLOCKED');
 		}
 	});
 });
