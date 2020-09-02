@@ -12,7 +12,7 @@ const userModelHooks = {
 		all: [auth.hooks.authenticate('jwt'),
 			iff(isProvider('external'), disallow()),
 		],
-		create: [resolveToIds.bind(this, '/roles', 'data.roles', 'name'), addConsentDate],
+		create: [resolveToIds('/roles', 'data.roles', 'name'), addConsentDate],
 		update: [addConsentDate],
 		patch: [addConsentDate],
 		remove: [enableQuery],

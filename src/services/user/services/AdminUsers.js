@@ -1,62 +1,22 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const { Forbidden, GeneralError } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
+const { v4: uuidv4 } = require('uuid');
+const { Configuration } = require('@schul-cloud/commons');
 const logger = require('../../../logger');
-const { createMultiDocumentAggregation } = require('../../consent/utils/aggregations');
+const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const {
 	hasSchoolPermission,
 } = require('../../../hooks');
 
 const { userModel } = require('../model');
-const roleModel = require('../../role/model');
 
 const getCurrentUserInfo = (id) => userModel.findById(id)
 	.select('schoolId')
-	.populate('roles')
 	.lean()
 	.exec();
-
-const getRoles = () => roleModel.find()
-	.select('name')
-	.lean()
-	.exec();
-
-
-const getAllUsers = async (schoolId, schoolYearId, role, clientQuery = {}) => {
-	const query = {
-		schoolId,
-		roles: role,
-		schoolYearId,
-		consentStatus: clientQuery.consentStatus,
-		sort: clientQuery.$sort || clientQuery.sort,
-		select: [
-			'consentStatus',
-			'consent',
-			'classes',
-			'firstName',
-			'lastName',
-			'email',
-			'createdAt',
-			'importHash',
-			'birthday',
-		],
-		skip: clientQuery.$skip || clientQuery.skip,
-		limit: clientQuery.$limit || clientQuery.limit,
-	};
-	if (clientQuery.classes) query.classes = clientQuery.classes;
-	if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
-	if (clientQuery.firstName) query.firstName = clientQuery.firstName;
-	if (clientQuery.lastName) query.lastName = clientQuery.lastName;
-
-	return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
-		collation: { locale: 'de', caseLevel: true, numericOrdering: true },
-	}).exec((err, res) => {
-		if (err) reject(err);
-		else resolve(res[0]);
-	}));
-};
 
 const getCurrentYear = (ref, schoolId) => ref.app.service('schools')
 	.get(schoolId, {
@@ -65,43 +25,112 @@ const getCurrentYear = (ref, schoolId) => ref.app.service('schools')
 	.then(({ currentYear }) => currentYear.toString());
 
 class AdminUsers {
-	constructor(role) {
-		this.role = role || {};
+	constructor(roleName) {
+		this.roleName = roleName;
 		this.docs = {};
-		this.rolesThatCanAccess = ['teacher', 'administrator', 'superhero'];
 	}
 
 	async find(params) {
+		return this.getUsers(undefined, params);
+	}
+
+	async get(id, params) {
+		return this.getUsers(id, params);
+	}
+
+	async getUsers(_id, params) {
+		// integration test did not get the role in the setup
+		// so here is a workaround set it at first call
+		if (!this.role) {
+			this.role = (await this.app.service('roles').find({
+				query: { name: this.roleName },
+			})).data[0];
+		}
+
 		try {
-			const { query, account } = params;
+			const { query: clientQuery = {}, account } = params;
 			const currentUserId = account.userId.toString();
 
 			// fetch base data
-			const [currentUser, roles] = await Promise.all([getCurrentUserInfo(currentUserId), getRoles()]);
+			const { schoolId } = await getCurrentUserInfo(currentUserId);
+			const schoolYearId = await getCurrentYear(this, schoolId);
 
-			// permission check
-			if (!currentUser.roles.some((role) => this.rolesThatCanAccess.includes(role.name))) {
-				throw new Forbidden();
+			const query = {
+				schoolId,
+				roles: this.role._id,
+				schoolYearId,
+				sort: clientQuery.$sort || clientQuery.sort,
+				select: [
+					'consentStatus',
+					'consent',
+					'classes',
+					'firstName',
+					'lastName',
+					'email',
+					'createdAt',
+					'importHash',
+					'birthday',
+					'preferences.registrationMailSend',
+				],
+				skip: clientQuery.$skip || clientQuery.skip,
+				limit: clientQuery.$limit || clientQuery.limit,
+			};
+			if (_id) {
+				query._id = _id;
+			} else if (clientQuery.users) {
+				query._id = clientQuery.users;
 			}
-			const { schoolId } = currentUser;
-			const currentYear = await getCurrentYear(this, schoolId);
+			if (clientQuery.consentStatus) query.consentStatus = clientQuery.consentStatus;
+			if (clientQuery.classes) query.classes = clientQuery.classes;
+			if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
+			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
+			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 
-			// fetch data that are scoped to schoolId
-			const searchedRole = roles.find((role) => role.name === this.role);
-			const users = await getAllUsers(schoolId, currentYear, searchedRole._id, query);
-
-			return users;
+			return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
+				collation: { locale: 'de', caseLevel: true },
+			}).exec((err, res) => {
+				if (err) reject(err);
+				else resolve(res[0] || {});
+			}));
 		} catch (err) {
-			logger.error(err);
 			if ((err || {}).code === 403) {
 				throw new Forbidden('You have not the permission to execute this.', err);
 			}
-			throw new BadRequest('Can not fetch data.', err);
+			if (err && err.code >= 500) {
+				const uuid = uuidv4();
+				logger.error(uuid, err);
+				if (Configuration.get('NODE_ENV') !== 'production') { throw err; }
+				throw new GeneralError(uuid);
+			}
+			throw err;
 		}
 	}
 
-	setup(app) {
+	async create(data, params) {
+		return this.app.service('usersModel').create(data);
+	}
+
+	async update(id, data, params) {
+		return this.app.service('usersModel').update(id, data);
+	}
+
+	async patch(id, data, params) {
+		return this.app.service('usersModel').patch(id, data);
+	}
+
+	async remove(id, params) {
+		const { _ids } = params.query;
+		if (id) {
+			return this.app.service('usersModel').remove(id);
+		}
+		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
+	}
+
+	async setup(app) {
 		this.app = app;
+		this.role = (await this.app.service('roles').find({
+			query: { name: this.roleName },
+		})).data[0];
 	}
 }
 

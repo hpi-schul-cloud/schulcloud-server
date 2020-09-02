@@ -85,14 +85,14 @@ describe('Sanitization Hook', () => {
 			// eslint-disable-next-line max-len
 			+ 'Audio: <audio class="test-class" controlslist="nodownload" controls="controls" src="https://www.youtube.com/watch?v=zYo7gLzH8Uk"></audio>';
 		const data = {
-			schoolId: '0000d186816abba584714c5f',
+			schoolId: '5f2987e020834114b8efd6f8',
 			title: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
 			content,
 		};
 
 		const path = 'news';
 		const result = sanitizeDeep(data, path);
-		expect(result.schoolId).to.equal('0000d186816abba584714c5f');
+		expect(result.schoolId).to.equal('5f2987e020834114b8efd6f8');
 		expect(result.title).to.equal('SanitizationTest äöüß§$%/()=');
 		expect(result.content).to.equal(content);
 	});
@@ -100,7 +100,7 @@ describe('Sanitization Hook', () => {
 	// TODO: Map test to generic output for sanitizeConst keys, paths, saveKeys
 	it('sanitize in news, example', () => {
 		const data = {
-			schoolId: '0000d186816abba584714c5f',
+			schoolId: '5f2987e020834114b8efd6f8',
 			title: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
 			content: '<p>SanitizationTest<script>alert("test);</script>'
 				+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
@@ -108,14 +108,14 @@ describe('Sanitization Hook', () => {
 
 		const path = 'news';
 		const result = sanitizeDeep(data, path);
-		expect(result.schoolId).to.equal('0000d186816abba584714c5f');
+		expect(result.schoolId).to.equal('5f2987e020834114b8efd6f8');
 		expect(result.title).to.equal('SanitizationTest äöüß§$%/()=');
 		expect(result.content).to.equal('<p>SanitizationTest<a>SanitizationTest</a></p>äöüß§$%/()=');
 	});
 
 	it('sanitize in news, example 2', () => {
 		const data = {
-			schoolId: '0000d186816abba584714c5f',
+			schoolId: '5f2987e020834114b8efd6f8',
 			title: '<script>alert("test");</script><b></b><i></i><img src="bla" />',
 			content: 'a',
 		};
@@ -123,7 +123,7 @@ describe('Sanitization Hook', () => {
 		const path = 'news';
 		const result = sanitizeDeep(data, path);
 
-		expect(result.schoolId).to.equal('0000d186816abba584714c5f');
+		expect(result.schoolId).to.equal('5f2987e020834114b8efd6f8');
 		expect(result.title).to.equal(''); // filter all
 		expect(result.content).to.equal('a');
 	});
@@ -137,7 +137,7 @@ describe('Sanitization Hook', () => {
 			targetState: '<p>SanitizationTest<script>alert("test);</script>'
 				+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			category: 'dashboard',
-			schoolId: '0000d186816abba584714c5f',
+			schoolId: '5f2987e020834114b8efd6f8',
 		};
 
 		const path = 'helpdesk';
@@ -148,7 +148,7 @@ describe('Sanitization Hook', () => {
 		expect(result.currentState).to.equal('SanitizationTestSanitizationTestäöüß§$%/()=');
 		expect(result.targetState).to.equal('SanitizationTestSanitizationTestäöüß§$%/()=');
 		expect(result.category).to.equal('dashboard');
-		expect(result.schoolId).to.equal('0000d186816abba584714c5f');
+		expect(result.schoolId).to.equal('5f2987e020834114b8efd6f8');
 	});
 
 	it('sanitize in helpdesk, example 2', () => {
@@ -279,7 +279,7 @@ describe('Sanitization Hook', () => {
 				+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			color: '#d32f22',
 			teacherIds: ['0000d213816abba584714c0a'],
-			schoolId: '0000d186816abba584714c5f',
+			schoolId: '5f2987e020834114b8efd6f8',
 		};
 
 		const path = 'course';
@@ -289,7 +289,7 @@ describe('Sanitization Hook', () => {
 		expect(result.description).to.equal('SanitizationTestSanitizationTestäöüß§$%/()=');
 		expect(result.color).to.equal('#d32f22');
 		expect(result.teacherIds[0]).to.equal('0000d213816abba584714c0a');
-		expect(result.schoolId).to.equal('0000d186816abba584714c5f');
+		expect(result.schoolId).to.equal('5f2987e020834114b8efd6f8');
 	});
 
 	it('sanitize in course, example 2', () => {
@@ -319,7 +319,7 @@ describe('Sanitization Hook', () => {
 					},
 				},
 			],
-			schoolId: '0000d186816abba584714c5f',
+			schoolId: '5f2987e020834114b8efd6f8',
 			position: 0,
 			materialIds: [],
 		};
@@ -330,7 +330,7 @@ describe('Sanitization Hook', () => {
 		expect(result.courseId).to.equal('0000d186816abba584714c5d');
 		expect(result.name).to.equal('SanitizationTest äöüß§$%/()=');
 		expect(result.contents[0].content.text).to.equal('<p>SanitizationTest<a>SanitizationTest</a></p>äöüß§$%/()=');
-		expect(result.schoolId).to.equal('0000d186816abba584714c5f');
+		expect(result.schoolId).to.equal('5f2987e020834114b8efd6f8');
 		expect(result.position).to.equal(0);
 		expect(result.materialIds.length).to.equal(0);
 	});

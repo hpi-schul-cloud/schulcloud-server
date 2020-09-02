@@ -1,11 +1,14 @@
 /* eslint-disable no-param-reassign */
 const {
 	Forbidden,
+	GeneralError,
 	NotFound,
 	BadRequest,
 	TypeError,
 } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
+
+const { v4: uuidv4 } = require('uuid');
 
 const { Configuration } = require('@schul-cloud/commons');
 const _ = require('lodash');
@@ -15,7 +18,11 @@ const { equal: equalIds } = require('../helper/compare').ObjectId;
 const logger = require('../logger');
 const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 const { isDisposableEmail } = require('../utils/disposableEmail');
+const { getRestrictPopulatesHook, preventPopulate } = require('./restrictPopulate');
 // Add any common hooks you want to share across services in here.
+
+exports.preventPopulate = preventPopulate;
+exports.getRestrictPopulatesHook = getRestrictPopulatesHook;
 
 // don't require authentication for internal requests
 exports.ifNotLocal = function ifNotLocal(hookForRemoteRequests) {
@@ -108,30 +115,37 @@ exports.hasSchoolPermission = (inputPermission) => async (context) => {
 	if (!account && !account.userId) {
 		throw new Forbidden('Cannot read account data');
 	}
-	const user = await app.service('usersModel').get(account.userId, {
-		query: {
-			$populate: ['roles', 'schoolId'],
-		},
-	});
+	try {
+		const user = await app.service('usersModel').get(account.userId, {
+			query: {
+				$populate: ['roles', 'schoolId'],
+			},
+		});
 
-	const { schoolId: school } = user;
+		const { schoolId: school } = user;
 
-	const results = await Promise.allSettled(user.roles.map(async (role) => {
-		const { permissions = {} } = school;
-		// If there are no special school permissions, continue with normal permission check
-		if (!permissions[role.name]
+		const results = await Promise.allSettled(user.roles.map(async (role) => {
+			const { permissions = {} } = school;
+			// If there are no special school permissions, continue with normal permission check
+			if (!permissions[role.name]
 				|| !Object.prototype.hasOwnProperty.call(permissions[role.name], inputPermission)) {
-			return hasPermission(inputPermission)(context);
-		}
-		// Otherwise check for user's special school permission
-		if (permissions[role.name][inputPermission]) {
+				return hasPermission(inputPermission)(context);
+			}
+			// Otherwise check for user's special school permission
+			if (permissions[role.name][inputPermission]) {
+				return context;
+			}
+			throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
+		}));
+		if (results.some((r) => r.status === 'fulfilled')) {
 			return context;
 		}
-		throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
-	}));
-
-	if (results.some((r) => r.status === 'fulfilled')) {
-		return context;
+	} catch (err) {
+		const uuid = uuidv4();
+		if (err.code >= 500) {
+			throw new GeneralError(uuid);
+		}
+		logger.error(uuid, err);
 	}
 
 	throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
@@ -229,7 +243,7 @@ const deepValue = (obj, path, newValue) => {
 };
 
 // resolves IDs of objects from serviceName specified by *key* instead of their *_id*
-exports.resolveToIds = (serviceName, path, key, context) => {
+exports.resolveToIds = (serviceName, path, key) => (context) => {
 	// get ids from a probably really deep nested path
 	const service = context.app.service(serviceName);
 
@@ -301,8 +315,9 @@ exports.checkCorrectCourseOrTeamId = async (context) => {
 	if (courseGroupId || courseId) {
 		const userId = context.params.account.userId.toString();
 		// make it sense?
-		const validatedCourseId = (courseId || '').toString() || (context.id || '').toString();
+		let validatedCourseId = (courseId || '').toString() || (context.id || '').toString();
 		let query = {
+			_id: validatedCourseId,
 			teacherIds: {
 				$in: [userId],
 			},
@@ -311,7 +326,10 @@ exports.checkCorrectCourseOrTeamId = async (context) => {
 
 		if (courseGroupId) {
 			delete context.data.courseId;
+			const courseGroup = context.app.service('courseGroups').get(courseGroupId);
+			validatedCourseId = courseGroup.courseId;
 			query = {
+				_id: validatedCourseId,
 				$or: [
 					{ teacherIds: { $in: [userId] } },
 					{ userIds: { $in: [userId] } },
@@ -320,9 +338,9 @@ exports.checkCorrectCourseOrTeamId = async (context) => {
 			};
 		}
 
-		const course = await context.app.service('courses').get(validatedCourseId, { query });
+		const course = await context.app.service('courses').find({ query });
 
-		if (course === null) {
+		if (course.total !== 1) {
 			throw new Forbidden("The entered course doesn't belong to you!");
 		}
 		return context;
@@ -508,67 +526,6 @@ exports.mapPayload = (context) => {
 	});
 	return context;
 };
-
-exports.restrictToUsersOwnLessons = (context) => getUser(context).then((user) => {
-	if (testIfRoleNameExist(user, ['superhero', 'administrator'])) {
-		return context;
-	}
-	// before-hook
-	if (context.type === 'before') {
-		let populate = context.params.query.$populate;
-		if (typeof (populate) === 'undefined') {
-			populate = ['courseId', 'courseGroupId'];
-		} else if (Array.isArray(populate) && !populate.includes('courseId')) {
-			populate.push('courseId');
-			populate.push('courseGroupId');
-		}
-		context.params.query.$populate = populate;
-	} else {
-		// after-hook
-		if (context.method === 'get' && (context.result || {})._id) {
-			let tempLesson = [context.result];
-			tempLesson = tempLesson.filter((lesson) => {
-				if ('courseGroupId' in lesson) {
-					return userIsInThatCourse(user, lesson.courseGroupId, false);
-				}
-				return userIsInThatCourse(user, lesson.courseId, true)
-					|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
-			});
-			if (tempLesson.length === 0) {
-				throw new Forbidden("You don't have access to that lesson.");
-			}
-			if ('courseGroupId' in context.result) {
-				context.result.courseGroupId = context.result.courseGroupId._id;
-			} else {
-				context.result.courseId = context.result.courseId._id;
-			}
-		}
-
-		if (context.method === 'find' && ((context.result || {}).data || []).length > 0) {
-			context.result.data = context.result.data.filter((lesson) => {
-				if ('courseGroupId' in lesson) {
-					return userIsInThatCourse(user, lesson.courseGroupId, false);
-				}
-				return userIsInThatCourse(user, lesson.courseId, true)
-					|| (context.params.query.shareToken || {}) === (lesson.shareToken || {});
-			});
-
-			if (context.result.data.length === 0) {
-				throw new NotFound('There are no lessons that you have access to.');
-			} else {
-				context.result.total = context.result.data.length;
-			}
-			context.result.data.forEach((lesson) => {
-				if ('courseGroupId' in lesson) {
-					lesson.courseGroupId = lesson.courseGroupId._id;
-				} else {
-					lesson.courseId = lesson.courseId._id;
-				}
-			});
-		}
-	}
-	return context;
-});
 
 exports.restrictToUsersOwnClasses = (context) => getUser(context).then((user) => {
 	if (testIfRoleNameExist(user, ['superhero', 'administrator', 'teacher'])) {
