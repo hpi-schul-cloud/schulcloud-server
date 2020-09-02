@@ -15,7 +15,7 @@ module.exports = async (context) => {
 		context.params.school = await School
 			.findById(schoolId)
 			.select(['name', 'currentYear', 'inMaintenanceSince', 'inMaintenance',
-				'enableStudentTeamCreation', 'defaultLanguage'])
+				'enableStudentTeamCreation', 'language'])
 			.populate(['currentYear', 'systems'])
 			.lean({ virtuals: true })
 			.exec();

@@ -43,7 +43,7 @@ class Service {
 			logger.warning(err);
 			throw new GeneralError('Can\'t check externallyManaged');
 		}
-		user.defaultLanguage = user.defaultLanguage || school.defaultLanguage;
+		user.language = user.language || school.language;
 		return user;
 	}
 

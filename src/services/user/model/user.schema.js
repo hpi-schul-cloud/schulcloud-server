@@ -42,7 +42,7 @@ const userSchema = new Schema({
 
 	children: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 	parents: [{ type: Schema.Types.ObjectId, ref: 'user' }],
-	defaultLanguage: { type: String },
+	language: { type: String },
 	preferences: { type: Object }, // blackbox for frontend stuff like "cookies accepted"
 	features: {
 		type: [String],
