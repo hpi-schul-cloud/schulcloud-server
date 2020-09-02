@@ -714,7 +714,7 @@ describe('AdminUsersService', () => {
 			expect.fail('The previous call should have failed');
 		} catch (err) {
 			expect(err.code).to.equal(400);
-			expect(err.message).to.equal('The request is not correctly formed.');
+			expect(err.message).to.equal('The request requires either an id or ids to be present.');
 		}
 	});
 
@@ -731,6 +731,55 @@ describe('AdminUsersService', () => {
 		} catch (err) {
 			expect(err.code).to.equal(400);
 			expect(err.message).to.equal('The type for ids is incorrect.');
+		}
+	});
+
+	it('_ids elements must be a valid objectId', async () => {
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
+		});
+		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
+			roles: ['administrator'],
+			schoolId: school._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUser);
+		const studentData = {
+			firstName: 'validDeleteStudent',
+			lastName: 'lastValidDeleteStudent',
+			email: 'validDeleteStudent@de.de',
+			roles: ['student'],
+			schoolId: school._id,
+		};
+		const student = await adminStudentsService.create(studentData, params);
+		params.query = {
+			...params.query,
+			_ids: [student._id],
+		};
+
+		const deletedStudent = await adminStudentsService.remove(null, params);
+		expect(deletedStudent).to.not.be.undefined;
+		expect(deletedStudent.firstName).to.equals('validDeleteStudent');
+
+		const otherStudentData = {
+			firstName: 'otherValidDeleteStudent',
+			lastName: 'otherLastValidDeleteStudent',
+			email: 'otherValidDeleteStudent@de.de',
+			roles: ['student'],
+			schoolId: school._id,
+		};
+		const otherStudent = await adminStudentsService.create(otherStudentData, params);
+		params.query = {
+			...params.query,
+			_ids: [otherStudent._id, 'wrong type'],
+		};
+
+		try {
+			await adminStudentsService.remove(null, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(400);
+			expect(err.message).to.equal('The type for either one or several ids is incorrect.');
 		}
 	});
 
