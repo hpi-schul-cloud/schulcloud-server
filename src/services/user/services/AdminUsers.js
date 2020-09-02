@@ -108,6 +108,15 @@ class AdminUsers {
 	}
 
 	async create(data, params) {
+		const { account } = params;
+		const currentUserId = account.userId.toString();
+
+		const { schoolId } = await getCurrentUserInfo(currentUserId);
+		const { isExternal } = await this.app.service('schools').get(schoolId);
+		if (isExternal) {
+			throw new Forbidden('Creating new students or teachers is only possible in the source system.');
+		}
+
 		// checks for unique email accounts, throws bad request if it already exists
 		const { email } = data;
 		const userService = this.app.service('/users');
