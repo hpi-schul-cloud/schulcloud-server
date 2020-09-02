@@ -48,6 +48,13 @@ function buildandpush {
 	# take those images and push them up to docker hub
 	docker push schulcloud/schulcloud-server:$DOCKERTAG
 	docker push schulcloud/schulcloud-server:$GIT_SHA
+
+	# If branch is develop, add and push additional docker tags
+	if [[ "$TRAVIS_BRANCH" = "develop" ]]
+	then
+		docker tag schulcloud/schulcloud-server:$DOCKERTAG schulcloud/schulcloud-server:develop_latest
+		docker push schulcloud/schulcloud-server:develop_latest
+	fi
 }
 
 function deploytotest {
