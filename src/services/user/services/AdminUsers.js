@@ -85,13 +85,18 @@ class AdminUsers {
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 
-			if (clientQuery.createdAt) {
-				for (const [key, value] of Object.entries(clientQuery.createdAt)) {
-					if (['$gte', '$lte'].includes(key)) {
-						clientQuery.createdAt[key] = new Date(value);
+			const dateQueries = ['createdAt', 'birthday'];
+			for (const dateQuery of dateQueries) {
+				if (clientQuery[dateQuery]) {
+					if (typeof clientQuery[dateQuery] === 'object') {
+						for (const [key, value] of Object.entries(clientQuery[dateQuery])) {
+							if (['$gte', '$lte'].includes(key)) {
+								clientQuery[dateQuery][key] = new Date(value);
+							}
+						}
 					}
+					query[dateQuery] = clientQuery[dateQuery];
 				}
-				query.createdAt = clientQuery.createdAt;
 			}
 
 			return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({

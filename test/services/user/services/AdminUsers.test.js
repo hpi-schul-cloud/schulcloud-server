@@ -319,6 +319,29 @@ describe('AdminUsersService', () => {
 		expect(result.data[0]._id.toString()).to.equal(findUser._id.toString());
 	});
 
+	it('can filter by birthday as ISO string', async () => {
+		const birthdayBeforeRange = new Date(1999, 0, 1, 0, 0, 0);
+		const startDate = new Date(2000, 0, 1, 0, 0, 0);
+		const birthdayInRange = new Date(2005, 0, 1, 0, 0, 0);
+		const endDate = new Date(2010, 0, 1, 0, 0, 0);
+		const birthdayAfterRange = new Date(2011, 0, 1, 0, 0, 0);
+		const findUser = await testObjects.createTestUser({ roles: ['student'], birthday: birthdayInRange });
+		await testObjects.createTestUser({ roles: ['student'], birthday: birthdayBeforeRange });
+		await testObjects.createTestUser({ roles: ['student'], birthday: birthdayAfterRange });
+		const actingUser = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await testObjects.generateRequestParamsFromUser(actingUser);
+		params.query = {
+			birthday: {
+				$gte: startDate.toISOString(),
+				$lte: endDate.toISOString(),
+			},
+		};
+
+		const result = await adminStudentsService.find(params);
+		expect(result.total).to.equal(1);
+		expect(result.data[0]._id.toString()).to.equal(findUser._id.toString());
+	});
+
 	it('pagination should work', async () => {
 		const limit = 1;
 		let skip = 0;
