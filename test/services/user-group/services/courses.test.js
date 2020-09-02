@@ -198,4 +198,155 @@ describe('course service', () => {
 			}
 		});
 	});
+
+	describe('populate restrictions', () => {
+		it('only recieve allowed attributes of populated students', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const course = await testObjects.createTestCourse({
+				schoolId, teacherIds: [teacher._id], userIds: [student._id],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = { $populate: ['userIds'] };
+			const result = await app.service('courses').get(course._id, params);
+			expect(result).to.not.be.undefined;
+			expect(result.userIds).to.exist;
+			expect(result.userIds.length).to.equal(1);
+			expect(result.userIds[0]).to.haveOwnProperty('_id');
+			expect(result.userIds[0]).to.haveOwnProperty('firstName');
+			expect(result.userIds[0]).to.not.haveOwnProperty('email');
+		});
+
+		it('only recieve allowed attributes of populated teachers', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const course = await testObjects.createTestCourse({
+				schoolId, teacherIds: [teacher._id], userIds: [student._id],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = { $populate: ['teacherIds'] };
+			const result = await app.service('courses').get(course._id, params);
+			expect(result).to.not.be.undefined;
+			expect(result.teacherIds).to.exist;
+			expect(result.teacherIds.length).to.equal(1);
+			expect(result.teacherIds[0]).to.haveOwnProperty('_id');
+			expect(result.teacherIds[0]).to.haveOwnProperty('firstName');
+			expect(result.teacherIds[0]).to.not.haveOwnProperty('email');
+		});
+
+		it('only recieve allowed attributes of populated classes', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const klass = await testObjects.createTestClass({ userIds: [student.userId], schoolId });
+			const course = await testObjects.createTestCourse({
+				schoolId, teacherIds: [teacher._id], classIds: [klass._id],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = { $populate: ['classIds'] };
+			const result = await app.service('courses').get(course._id, params);
+			expect(result).to.not.be.undefined;
+			expect(result.classIds).to.exist;
+			expect(result.classIds.length).to.equal(1);
+			expect(result.classIds[0]).to.haveOwnProperty('_id');
+			expect(result.classIds[0]).to.haveOwnProperty('displayName');
+			expect(result.classIds[0]).to.not.haveOwnProperty('userIds');
+		});
+
+		it('can not populate school', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const course = await testObjects.createTestCourse({
+				schoolId, teacherIds: [teacher._id],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = { $populate: ['schoolId'] };
+			try {
+				await app.service('courses').get(course._id, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should not have failed');
+				expect(err.code).to.equal(400);
+				expect(err.message).to.equal('populate not supported');
+			}
+		});
+
+		it('can not populate on create', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = { $populate: ['schoolId'] };
+			try {
+				await app.service('courses').create({
+					name: 'testcourse',
+					schoolId: schoolId.toString(),
+					teacherIds: [teacher._id],
+					substitutionIds: [],
+					classIds: [],
+					userIds: [],
+				}, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should not have failed');
+				expect(err.code).to.equal(400);
+				expect(err.message).to.equal('populate not supported');
+			}
+		});
+
+		it('can not populate on patch', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = { $populate: ['schoolId'] };
+			try {
+				await app.service('courses').patch(
+					course._id, { description: 'this description has been changed' }, params,
+				);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should not have failed');
+				expect(err.code).to.equal(400);
+				expect(err.message).to.equal('populate not supported');
+			}
+		});
+
+		it('can not populate on update', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = { $populate: ['schoolId'] };
+			try {
+				await app.service('courses').update(
+					course._id, { description: 'this description has been changed' }, params,
+				);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should not have failed');
+				expect(err.code).to.equal(400);
+				expect(err.message).to.equal('populate not supported');
+			}
+		});
+
+		it('can not populate on remove', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = { $populate: ['schoolId'] };
+			try {
+				await app.service('courses').remove(
+					course._id, params,
+				);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should not have failed');
+				expect(err.code).to.equal(400);
+				expect(err.message).to.equal('populate not supported');
+			}
+		});
+	});
 });

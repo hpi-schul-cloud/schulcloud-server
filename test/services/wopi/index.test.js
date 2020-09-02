@@ -37,7 +37,7 @@ describe('wopi service', () => {
 	const testUserPayload = {
 		userId: '599ec14d8e4e364ec18ff46d',
 		email: 'demo-schueler@schul-cloud.org',
-		schoolId: '599ec0bb8e4e364ec18ff46c',
+		schoolId: '5f2987e020834114b8efd6f6',
 	};
 
 	before(function execute(done) {

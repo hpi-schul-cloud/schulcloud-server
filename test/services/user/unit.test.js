@@ -60,9 +60,12 @@ describe('publicTeachers service', () => {
 	let testTeacherEnabled = {};
 	let teacherFromDifferentSchool;
 	let params;
+	let server;
 	const schoolId = new ObjectId().toString();
 
-	it('register services and create test users', async () => {
+	before(async () => {
+		server = await app.listen(0);
+
 		testStudent = await testObjects.createTestUser({
 			roles: ['student'],
 			discoverable: false,
@@ -87,14 +90,23 @@ describe('publicTeachers service', () => {
 			schoolId,
 			firstName: 'teacher-enabled',
 		});
-		assert.ok(userService);
-		assert.ok(publicTeachersService);
 		teacherFromDifferentSchool = await testObjects.createTestUser({
 			schoolId: new ObjectId(),
 			roles: ['teacher'],
 			firstName: 'teacherFromdifferentSchool',
 		});
 		params = await testObjects.generateRequestParamsFromUser(teacherFromDifferentSchool);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
+	after(testObjects.cleanup);
+
+	it('test if services registered', async () => {
+		assert.ok(userService);
+		assert.ok(publicTeachersService);
 	});
 
 	describe('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', () => {

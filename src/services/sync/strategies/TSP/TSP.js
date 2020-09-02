@@ -91,6 +91,49 @@ const createUserAndAccount = async (app, userOptions, roles, systemId) => {
 };
 
 /**
+ * Create a consent if the user is created via TSP sync.
+ * In this case, the consent process was already handled from the TSP side.
+ * @param {Object} app the Feathers app
+ * @param {User} student the student created via TSP sync
+ * @async
+ */
+const createTSPConsent = async (app, student) => {
+	const currentDate = Date.now();
+	const tspConsent = {
+		form: 'digital',
+		source: 'tsp-sync',
+		privacyConsent: true,
+		termsOfUseConsent: true,
+		dateOfPrivacyConsent: currentDate,
+		dateOfTermsOfUseConsent: currentDate,
+	};
+
+	/**
+	 * During the user creation process, the age of the users is unknown.
+	 * Therfore, we create a user and a parent consent in any case.
+	 */
+	await app.service('consents').create({
+		userId: student._id,
+		userConsent: tspConsent,
+		parentConsents: [tspConsent],
+	});
+};
+
+/**
+ * Add a dummy birthday if the user is created via TSP sync.
+ * In this case, the consent process was already handled from the TSP side and the birthday is not needed.
+ * @param {Object} app the Feathers app
+ * @param {User} user the user created via TSP sync
+ * @async
+ */
+const addDummyBirthday = async (app, user) => app.service('users').patch(user._id, { birthday: new Date() });
+
+const shortenedRegistrationProcess = async (app, student) => {
+	await createTSPConsent(app, student);
+	await addDummyBirthday(app, student);
+};
+
+/**
  * Finds and returns the school identified by the given identifier
  * @async
  * @param {Object} app Feathers app
@@ -213,6 +256,7 @@ module.exports = {
 	getUsername,
 	getEmail,
 	createUserAndAccount,
+	shortenedRegistrationProcess,
 	findSchool,
 	encryptToken,
 	decryptToken,

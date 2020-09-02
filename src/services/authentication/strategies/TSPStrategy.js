@@ -6,8 +6,10 @@ const {
 	verifyToken,
 	decryptToken,
 	createUserAndAccount,
+	shortenedRegistrationProcess,
 	findSchool,
 	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
+	config: TSP_CONFIG,
 } = require('../../sync/strategies/TSP/TSP');
 const { SYNCER_TARGET } = require('../../sync/strategies/TSP/TSPSchoolSyncer');
 
@@ -126,24 +128,41 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 				roles,
 				systemId,
 			);
+
+			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
+				await shortenedRegistrationProcess(app, user);
+			}
 		} else if (Array.isArray(roles)) {
 			// if we know the user and roles were supplied, we need to reflect role & school changes
 			await app.service('users').patch(user._id, { roles, schoolId: school._id });
 		}
 
-		const oneDayInMilliseconds = 864e5;
-		const timeOfLastSync = Date.now() - oneDayInMilliseconds;
-
-		// trigger an asynchronous TSP sync to reflect changes to classes
-		app.service('sync').find({
-			query: {
-				target: SYNCER_TARGET,
-				config: {
-					schoolIdentifier: decryptedTicket.ptscSchuleNummer,
-					lastChange: timeOfLastSync,
+		const tspClasses = (decryptedTicket.ptscListKlasseId || '').split(',').map((s) => s.trim());
+		if (tspClasses.length > 0) {
+			// check if all classes exist and assign the person
+			const classes = await app.service('classes').find({
+				query: {
+					'sourceOptions.tspUid': { $in: tspClasses },
 				},
-			},
-		});
+			});
+			if (classes.total === tspClasses.length) {
+				// todo: assign and update if necessary
+			} else {
+				// trigger an asynchronous TSP sync to reflect changes to classes
+				const oneDayInMilliseconds = 864e5;
+				const timeOfLastSync = Date.now() - oneDayInMilliseconds;
+
+				app.service('sync').find({
+					query: {
+						target: SYNCER_TARGET,
+						config: {
+							schoolIdentifier: decryptedTicket.ptscSchuleNummer,
+							lastChange: timeOfLastSync,
+						},
+					},
+				});
+			}
+		}
 
 		// find account and generate JWT payload
 		const [account] = await app.service('accounts').find({
