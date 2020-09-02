@@ -332,8 +332,8 @@ describe('AdminUsersService', () => {
 	});
 
 	it('can filter by birthday as ISO string', async () => {
-		const birthday = new Date(2000, 0, 1, 0, 0, 0);
-		const otherBirthday = new Date(2000, 0, 2, 0, 0);
+		const birthday = new Date(1999, 0, 1, 0, 0, 0);
+		const otherBirthday = new Date(1999, 0, 2, 0, 0);
 		const findUser = await testObjects.createTestUser({ roles: ['student'], birthday });
 		const actingUser = await testObjects.createTestUser({ roles: ['administrator'] });
 		await testObjects.createTestUser({ roles: ['student'], birthday: otherBirthday });
