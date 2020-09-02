@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
+/*eslint no-control-regex: "error"*/
 const { Forbidden, GeneralError } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
@@ -88,9 +89,9 @@ class AdminUsers {
 			if (clientQuery.usersForConsent) query._id = clientQuery.usersForConsent;
 			if (clientQuery.searchQuery) {
 				query.$or = [
-					{ firstName: { '$regex': clientQuery.searchQuery, $options: 'i' } },
-					{ lastName: { '$regex': clientQuery.searchQuery, $options: 'i' } },
-					{ email: { '$regex': clientQuery.searchQuery, $options: 'i' } },
+					{ firstName: { $regex: clientQuery.searchQuery, $options: 'i'} },
+					{ lastName: { $regex: clientQuery.searchQuery, $options: 'i' } },
+					{ email: { $regex: clientQuery.searchQuery, $options: 'i' } },
 				];
 			}
 
