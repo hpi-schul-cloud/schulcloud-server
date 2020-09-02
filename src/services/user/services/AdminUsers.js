@@ -86,7 +86,7 @@ class AdminUsers {
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 
-			const dateQueries = ['createdAt', 'birthday'];
+			const dateQueries = ['createdAt'];
 			for (const dateQuery of dateQueries) {
 				if (clientQuery[dateQuery]) {
 					if (typeof clientQuery[dateQuery] === 'object') {
