@@ -287,6 +287,21 @@ describe('user service', () => {
 			}
 		});
 
+		it('can not populate school', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = { $populate: ['schoolId'] };
+			try {
+				await app.service('users').find(params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should not have failed');
+				expect(err.code).to.equal(400);
+				expect(err.message).to.equal('populate not supported');
+			}
+		});
+
 		it('does not allow teachers to find parents', async () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 			const parent = await testObjects.createTestUser({ roles: ['parent'] });
