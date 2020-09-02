@@ -301,6 +301,18 @@ describe('AdminUsersService', () => {
 	});
 
 	it('can filter by creation date as ISO string', async () => {
+		const findUser = await testObjects.createTestUser({ roles: ['student'] });
+		const actingUser = await testObjects.createTestUser({ roles: ['administrator'] });
+		await testObjects.createTestUser({ roles: ['student'] });
+		const params = await testObjects.generateRequestParamsFromUser(actingUser);
+		params.query = { createdAt: findUser.createdAt };
+
+		const result = await adminStudentsService.find(params);
+		expect(result.total).to.equal(1);
+		expect(result.data[0]._id.toString()).to.equal(findUser._id.toString());
+	});
+
+	it('can filter by creation date as ISO string with range', async () => {
 		const dateBefore = new Date();
 		const findUser = await testObjects.createTestUser({ roles: ['student'] });
 		const actingUser = await testObjects.createTestUser({ roles: ['administrator'] });
@@ -320,6 +332,20 @@ describe('AdminUsersService', () => {
 	});
 
 	it('can filter by birthday as ISO string', async () => {
+		const birthday = new Date(2000, 0, 1, 0, 0, 0);
+		const otherBirthday = new Date(2000, 0, 2, 0, 0);
+		const findUser = await testObjects.createTestUser({ roles: ['student'], birthday });
+		const actingUser = await testObjects.createTestUser({ roles: ['administrator'] });
+		await testObjects.createTestUser({ roles: ['student'], birthday: otherBirthday });
+		const params = await testObjects.generateRequestParamsFromUser(actingUser);
+		params.query = { birthday };
+
+		const result = await adminStudentsService.find(params);
+		expect(result.total).to.equal(1);
+		expect(result.data[0]._id.toString()).to.equal(findUser._id.toString());
+	});
+
+	it('can filter by birthday as ISO string with range', async () => {
 		const birthdayBeforeRange = new Date(1999, 0, 1, 0, 0, 0);
 		const startDate = new Date(2000, 0, 1, 0, 0, 0);
 		const birthdayInRange = new Date(2005, 0, 1, 0, 0, 0);
