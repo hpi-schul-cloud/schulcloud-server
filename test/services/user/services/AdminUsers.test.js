@@ -11,7 +11,7 @@ const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const testGenericErrorMessage = 'You don\'t have one of the permissions: STUDENT_LIST.';
 
-describe('AdminUsersService', () => {
+describe.only('AdminUsersService', () => {
 	let server;
 
 	before((done) => {
@@ -354,6 +354,71 @@ describe('AdminUsersService', () => {
 		expect(testStudent.birthday).equals('01.01.2000');
 	});
 
+	it('does not allow student user creation if school is external', async () => {
+		const schoolService = app.service('/schools');
+		const serviceCreatedSchool = await schoolService.create(
+			{ name: 'test', ldapSchoolIdentifier: 'testId' },
+		);
+		const { _id: schoolId } = serviceCreatedSchool;
+		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			roles: ['student'],
+			schoolId,
+		};
+		try {
+			await adminStudentsService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal('Creating new students or teachers is only possible in the source system.');
+		}
+	});
+
+	it('does not allow user creation if email already exists', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			email: 'studentTest@de.de',
+			roles: ['student'],
+			schoolId: admin.schoolId,
+		};
+		// creates first student with unique data
+		await adminStudentsService.create(mockData, params);
+		// creates second student with existent data
+		try {
+			await adminStudentsService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(400);
+			expect(err.message).to.equal('Email already exists.');
+		}
+	});
+
+	it('does not allow user creation if email is disposable', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			email: 'disposable@20minutemail.com',
+			roles: ['student'],
+			schoolId: admin.schoolId,
+		};
+		// creates student with disposable email
+		try {
+			await adminStudentsService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(400);
+			expect(err.message).to.equal('EMAIL_DOMAIN_BLOCKED');
+		}
+	});
+
 	it('users with STUDENT_LIST permission can access the FIND method', async () => {
 		await testObjects.createTestRole({
 			name: 'studentListPerm', permissions: ['STUDENT_LIST'],
@@ -455,14 +520,18 @@ describe('AdminUsersService', () => {
 		});
 		const testUser = await testObjects.createTestUser({
 			firstName: 'testUser',
+			lastName: 'lastTestUser',
 			roles: ['studentCreatePerm'],
 			schoolId: school._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
-		const studentData = await testObjects.createTestUser({
+		const studentData = {
 			firstName: 'testCreateStudent',
+			lastName: 'lastTestCreateStudent',
+			email: 'testCreateStudent@de.de',
 			roles: ['student'],
-		});
+			schoolId: school._id,
+		};
 		const student = await adminStudentsService.create(studentData, params);
 		expect(student).to.not.be.undefined;
 		expect(student.firstName).to.equals('testCreateStudent');
@@ -508,11 +577,13 @@ describe('AdminUsersService', () => {
 			schoolId: school._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
-		const studentData = await testObjects.createTestUser({
+		const studentData = {
 			firstName: 'testDeleteStudent',
+			lastName: 'lastTestDeleteStudent',
+			email: 'testDeleteStudent@de.de',
 			roles: ['student'],
 			schoolId: school._id,
-		});
+		};
 		const student = await adminStudentsService.create(studentData, params);
 		params.query = {
 			...params.query,
@@ -536,10 +607,13 @@ describe('AdminUsersService', () => {
 			schoolId: school._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
-		const studentData = await testObjects.createTestUser({
+		const studentData = {
 			firstName: 'testDeleteStudent',
+			lastName: 'lastDeleteStudent',
+			email: 'testDeleteStudent2@de.de',
 			roles: ['student'],
-		});
+			schoolId: school._id,
+		};
 		const student = await adminStudentsService.create(studentData, params);
 		params.query = {
 			...params.query,
@@ -804,5 +878,70 @@ describe('AdminTeachersService', () => {
 		const idsOk = resultOk.map((e) => e._id.toString());
 		expect(idsOk).to.include(teacherWithConsent._id.toString());
 		expect(idsOk).to.not.include(teacherWithoutConsent._id.toString());
+	});
+
+	it('does not allow teacher user creation if school is external', async () => {
+		const schoolService = app.service('/schools');
+		const serviceCreatedSchool = await schoolService.create(
+			{ name: 'test', ldapSchoolIdentifier: 'testId' },
+		);
+		const { _id: schoolId } = serviceCreatedSchool;
+		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			roles: ['teacher'],
+			schoolId,
+		};
+		try {
+			await adminTeachersService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal('Creating new students or teachers is only possible in the source system.');
+		}
+	});
+
+	it('does not allow user creation if email already exists', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			email: 'teacherTest@de.de',
+			roles: ['teacher'],
+			schoolId: admin.schoolId,
+		};
+		// creates first teacher with unique data
+		await adminTeachersService.create(mockData, params);
+		// creates second teacher with existent data
+		try {
+			await adminTeachersService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(400);
+			expect(err.message).to.equal('Email already exists.');
+		}
+	});
+
+	it('does not allow user creation if email is disposable', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			email: 'disposable@20minutemail.com',
+			roles: ['teacher'],
+			schoolId: admin.schoolId,
+		};
+		// creates teacher with disposable email
+		try {
+			await adminTeachersService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(400);
+			expect(err.message).to.equal('EMAIL_DOMAIN_BLOCKED');
+		}
 	});
 });
