@@ -60,6 +60,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 - SC-5280: if disconnected prematurely, the LDAP service will not try to connect again just to unbind from the server
 
+### Added
+
+- SC-5808: added an isExternal check to the create method of AdminUsers service, only users from not external schools can create users
+
 ## [24.0.2] - 2020-08-05
 ### Fixed - 24.0.2
 - SC-5835: Starting the new school year automatically - Cluster 4
