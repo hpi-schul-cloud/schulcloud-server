@@ -11,6 +11,7 @@ const {
 	hasSchoolPermission,
 } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { validateParams } = require('../hooks/adminUsers.hooks');
 
 const { userModel } = require('../model');
 
@@ -161,7 +162,7 @@ const adminHookGenerator = (kind) => ({
 		create: [hasSchoolPermission(`${kind}_CREATE`)],
 		update: [hasSchoolPermission(`${kind}_EDIT`)],
 		patch: [hasSchoolPermission(`${kind}_EDIT`)],
-		remove: [hasSchoolPermission(`${kind}_DELETE`)],
+		remove: [hasSchoolPermission(`${kind}_DELETE`), validateParams],
 	},
 	after: {
 		find: [formatBirthdayOfUsers],

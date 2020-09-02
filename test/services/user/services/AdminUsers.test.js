@@ -609,6 +609,98 @@ describe('AdminUsersService', () => {
 			expect(err.message).to.equal('You cannot remove users from other schools.');
 		}
 	});
+
+	it('REMOVED users should also have their account deleted', async () => {
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
+		});
+		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
+			roles: ['administrator'],
+			schoolId: school._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUser);
+
+		const studentDetails = {
+			firstName: 'testDeleteStudent',
+			lastName: 'Tested',
+			email: `testDeleteStudent${Date.now()}@tested.de`,
+			schoolId: school._id,
+		};
+		const student = await testObjects.createTestUser(studentDetails);
+
+		const accountDetails = {
+			username: `testDeleteStudent${Date.now()}@tested.de`,
+			password: 'ca4t9fsfr3dsd',
+			userId: student._id,
+		};
+		const studentAccount = await app.service('/accounts').create(accountDetails);
+
+		params.query = {
+			...params.query,
+			_ids: [student._id],
+		};
+		const deletedAccount = await app.service('accountModel').get(studentAccount._id);
+		expect(deletedAccount).to.not.be.undefined;
+		expect(deletedAccount.username).to.equals(studentAccount.username);
+
+		const deletedStudent = await adminStudentsService.remove(null, params);
+		expect(deletedStudent).to.not.be.undefined;
+		expect(deletedStudent.firstName).to.equals('testDeleteStudent');
+
+		try {
+			await app.service('accountModel').get(studentAccount._id);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(404);
+		}
+	});
+
+	it('REMOVE requests must include _ids or id', async () => {
+		const testUSer = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await testObjects.generateRequestParamsFromUser(testUSer);
+		// empty query without _ids key
+		params.query = {};
+		try {
+			await adminStudentsService.remove(null, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(400);
+			expect(err.message).to.equal('The request is not correctly formed.');
+		}
+	});
+
+	it('_ids should be of array type', async () => {
+		const testUSer = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await testObjects.generateRequestParamsFromUser(testUSer);
+		params.query = {
+			...params.query,
+			_ids: 'this is the wrong type',
+		};
+		try {
+			await adminStudentsService.remove(null, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(400);
+			expect(err.message).to.equal('The type for ids is incorrect.');
+		}
+	});
+
+	it('id should be of object type', async () => {
+		const testUSer = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await testObjects.generateRequestParamsFromUser(testUSer);
+		params.query = {
+			...params.query,
+			_ids: [],
+		};
+		try {
+			await adminStudentsService.remove('wrong type', params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(400);
+			expect(err.message).to.equal('The type for id is incorrect.');
+		}
+	});
 });
 
 describe('AdminTeachersService', () => {
