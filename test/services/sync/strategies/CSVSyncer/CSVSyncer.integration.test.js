@@ -1745,4 +1745,58 @@ describe('CSVSyncer Integration', () => {
 			expect(role.name).to.equal('teacher');
 		});
 	});
+
+	describe('Scenario 19 - don\'t allow updating roles', () => {
+		let scenarioParams;
+		let scenarioData;
+
+		const SCHOOL_ID = testObjects.options.schoolId;
+
+		before(async () => {
+			const user = await createUser({
+				roles: 'administrator',
+				schoolId: SCHOOL_ID,
+			});
+			const student = await createUser({
+				roles: 'student',
+				schoolId: SCHOOL_ID,
+			});
+			const parent = await createUser({
+				roles: 'parent',
+				schoolId: SCHOOL_ID,
+			});
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'teacher',
+			};
+			scenarioData = {
+				data:
+					'firstName,lastName,email\n'
+					+ `Peter,Pan,${user.email}\n`
+					+ `Peter,Lustig,${parent.email}\n`
+					+ `Test,Testington,${student.email}\n`,
+			};
+		});
+
+		after(async () => {
+			await testObjects.cleanup();
+		});
+
+		it('should not change any data and report three errors', async () => {
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
+
+			expect(stats.success).to.equal(false);
+			expect(stats.users.successful).to.equal(0);
+			expect(stats.users.created).to.equal(0);
+			expect(stats.users.updated).to.equal(0);
+			expect(stats.users.failed).to.equal(3);
+			expect(stats.errors.length).to.equal(3);
+			expect(stats.errors[0].message).to
+				.equal('Es existiert bereits ein Nutzer mit dieser E-Mail-Adresse, jedoch mit einer anderen Rolle.');
+		});
+	});
 });
