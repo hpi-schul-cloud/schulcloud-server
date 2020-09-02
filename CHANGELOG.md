@@ -8,10 +8,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
 ## Unreleased
+## [24.4.1] - 2020-08-31
+
+### Fixed
+
+- SC-6511 - LDAP edit button missing.
+
+### Added
+
+- SC-6172: added hooks and checks to look for unique and not disposable emails in adminUsers service
+
+## [24.4.0] - 2020-8-31
 
 ### Fixed
 
 - SC-6122 - Edusharing preload thumbnails in parallel. Edusharing authentication stabilisation.
+
+## [24.3.3] - 2020-08-28
+
+- SC-6469: prevent admin access to lessons admins shouldnt have access to.
 
 ## [24.3.2] - 2020-08-26
 
@@ -44,6 +59,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 - SC-5280: if disconnected prematurely, the LDAP service will not try to connect again just to unbind from the server
+
+### Added
+
+- SC-5808: added an isExternal check to the create method of AdminUsers service, only users from not external schools can create users
 
 ## [24.0.2] - 2020-08-05
 ### Fixed - 24.0.2
