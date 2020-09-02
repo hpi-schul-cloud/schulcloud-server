@@ -347,9 +347,9 @@ describe('AdminUsersService', () => {
 
 	it('can filter by birthday as ISO string with range', async () => {
 		const birthdayBeforeRange = new Date(1999, 0, 1, 0, 0, 0);
-		const startDate = new Date(2000, 0, 1, 0, 0, 0);
-		const birthdayInRange = new Date(2005, 0, 1, 0, 0, 0);
-		const endDate = new Date(2010, 0, 1, 0, 0, 0);
+		const startDate = new Date(2005, 0, 1, 0, 0, 0);
+		const birthdayInRange = new Date(2005, 0, 2, 0, 0, 0);
+		const endDate = new Date(2005, 0, 3, 0, 0, 0);
 		const birthdayAfterRange = new Date(2011, 0, 1, 0, 0, 0);
 		const findUser = await testObjects.createTestUser({ roles: ['student'], birthday: birthdayInRange });
 		await testObjects.createTestUser({ roles: ['student'], birthday: birthdayBeforeRange });
