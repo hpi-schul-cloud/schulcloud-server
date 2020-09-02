@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
-const { Forbidden, GeneralError } = require('@feathersjs/errors');
+const { Forbidden, GeneralError, BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
@@ -9,6 +9,7 @@ const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const {
 	hasSchoolPermission,
+	blockDisposableEmail,
 } = require('../../../hooks');
 
 const { userModel } = require('../model');
@@ -107,6 +108,24 @@ class AdminUsers {
 	}
 
 	async create(data, params) {
+		const { account } = params;
+		const currentUserId = account.userId.toString();
+
+		// checks if school isExternal, throws forbidden if it is
+		const { schoolId } = await getCurrentUserInfo(currentUserId);
+		const { isExternal } = await this.app.service('schools').get(schoolId);
+		if (isExternal) {
+			throw new Forbidden('Creating new students or teachers is only possible in the source system.');
+		}
+
+		// checks for unique email accounts, throws bad request if it already exists
+		const { email } = data;
+		const userService = this.app.service('/users');
+		const accounts = await userService.find({ query: { email: email.toLowerCase() } });
+		if (accounts.total > 0) {
+			throw new BadRequest('Email already exists.');
+		}
+
 		return this.app.service('usersModel').create(data);
 	}
 
@@ -147,7 +166,7 @@ const adminHookGenerator = (kind) => ({
 		all: [authenticate('jwt')],
 		find: [hasSchoolPermission(`${kind}_LIST`)],
 		get: [hasSchoolPermission(`${kind}_LIST`)],
-		create: [hasSchoolPermission(`${kind}_CREATE`)],
+		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
 		update: [hasSchoolPermission(`${kind}_EDIT`)],
 		patch: [hasSchoolPermission(`${kind}_EDIT`)],
 		remove: [hasSchoolPermission(`${kind}_DELETE`)],
