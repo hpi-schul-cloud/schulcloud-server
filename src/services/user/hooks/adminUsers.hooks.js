@@ -10,7 +10,7 @@ const validateParams = async (context) => {
 		throw new BadRequest('The request is not correctly formed.');
 	}
 
-	if (context.id && !isValidObjectId(context.id)) {
+	if (context.id && (!isValidObjectId(context.id) || typeof context.id !== 'string')) {
 		throw new BadRequest('The type for id is incorrect.');
 	}
 

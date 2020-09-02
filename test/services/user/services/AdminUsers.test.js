@@ -587,9 +587,9 @@ describe.only('AdminUsersService', () => {
 		const student = await adminStudentsService.create(studentData, params);
 		params.query = {
 			...params.query,
-			_ids: [],
+			_ids: [student._id],
 		};
-		const deletedStudent = await adminStudentsService.remove(student, params);
+		const deletedStudent = await adminStudentsService.remove(null, params);
 		expect(deletedStudent).to.not.be.undefined;
 		expect(deletedStudent.firstName).to.equals('testDeleteStudent');
 	});
@@ -628,33 +628,7 @@ describe.only('AdminUsersService', () => {
 		}
 	});
 
-	it('users cannot REMOVE students from foreign schools, single id', async () => {
-		const school = await testObjects.createTestSchool({
-			name: 'testSchool1',
-		});
-		const otherSchool = await testObjects.createTestSchool({
-			name: 'testSchool2',
-		});
-		const testUSer = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
-		const params = await testObjects.generateRequestParamsFromUser(testUSer);
-		const student = await testObjects.createTestUser({
-			roles: ['student'],
-			schoolId: otherSchool._id,
-		});
-		params.query = {
-			...params.query,
-			_ids: [],
-		};
-		try {
-			await adminStudentsService.remove(student, params);
-			expect.fail('The previous call should have failed');
-		} catch (err) {
-			expect(err.code).to.equal(403);
-			expect(err.message).to.equal('You cannot remove users from other schools.');
-		}
-	});
-
-	it('users cannot REMOVE students from foreign schools, several ids', async () => {
+	it('users cannot REMOVE students from foreign schools', async () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool1',
 		});
@@ -768,7 +742,7 @@ describe.only('AdminUsersService', () => {
 			_ids: [],
 		};
 		try {
-			await adminStudentsService.remove('wrong type', params);
+			await adminStudentsService.remove(['wrong type'], params);
 			expect.fail('The previous call should have failed');
 		} catch (err) {
 			expect(err.code).to.equal(400);
