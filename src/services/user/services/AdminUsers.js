@@ -92,9 +92,10 @@ class AdminUsers {
 					if (typeof clientQuery[dateQuery] === 'object') {
 						for (const [key, value] of Object.entries(clientQuery[dateQuery])) {
 							if (['$gte', '$lte'].includes(key)) {
-								query[dateQuery][key] = new Date(value);
+								clientQuery[dateQuery][key] = new Date(value);
 							}
 						}
+						query[dateQuery] = clientQuery[dateQuery];
 					} else {
 						query[dateQuery] = new Date(clientQuery[dateQuery]);
 					}
