@@ -353,6 +353,29 @@ describe('AdminUsersService', () => {
 		const testStudent = students.find((stud) => mockStudent.firstName === stud.firstName);
 		expect(testStudent.birthday).equals('01.01.2000');
 	});
+
+	it('does not allow student user creation if school is external', async () => {
+		const schoolService = app.service('/schools');
+		const serviceCreatedSchool = await schoolService.create(
+			{ name: 'test', ldapSchoolIdentifier: 'testId' },
+		);
+		const { _id: schoolId } = serviceCreatedSchool;
+		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			roles: ['student'],
+			schoolId,
+		};
+		try {
+			await adminStudentsService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal('Creating new students or teachers is only possible in the source system.');
+		}
+	});
 });
 
 describe('AdminTeachersService', () => {
@@ -456,5 +479,28 @@ describe('AdminTeachersService', () => {
 		const idsOk = resultOk.map((e) => e._id.toString());
 		expect(idsOk).to.include(teacherWithConsent._id.toString());
 		expect(idsOk).to.not.include(teacherWithoutConsent._id.toString());
+	});
+
+	it('does not allow teacher user creation if school is external', async () => {
+		const schoolService = app.service('/schools');
+		const serviceCreatedSchool = await schoolService.create(
+			{ name: 'test', ldapSchoolIdentifier: 'testId' },
+		);
+		const { _id: schoolId } = serviceCreatedSchool;
+		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		const mockData = {
+			firstName: 'testFirst',
+			lastName: 'testLast',
+			roles: ['teacher'],
+			schoolId,
+		};
+		try {
+			await adminTeachersService.create(mockData, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal('Creating new students or teachers is only possible in the source system.');
+		}
 	});
 });
