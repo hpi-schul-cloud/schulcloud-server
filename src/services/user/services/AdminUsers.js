@@ -85,7 +85,6 @@ class AdminUsers {
 			}
 			if (clientQuery.consentStatus) query.consentStatus = clientQuery.consentStatus;
 			if (clientQuery.classes) query.classes = clientQuery.classes;
-			if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 			if (clientQuery.usersForConsent) query._id = clientQuery.usersForConsent;
@@ -95,6 +94,22 @@ class AdminUsers {
 					{ lastName: { $regex: clientQuery.searchQuery, $options: 'i' } },
 					{ email: { $regex: clientQuery.searchQuery, $options: 'i' } },
 				];
+			}
+
+			const dateQueries = ['createdAt'];
+			for (const dateQuery of dateQueries) {
+				if (clientQuery[dateQuery]) {
+					if (typeof clientQuery[dateQuery] === 'object') {
+						for (const [key, value] of Object.entries(clientQuery[dateQuery])) {
+							if (['$gt', '$gte', '$lt', '$lte'].includes(key)) {
+								clientQuery[dateQuery][key] = new Date(value);
+							}
+						}
+						query[dateQuery] = clientQuery[dateQuery];
+					} else {
+						query[dateQuery] = new Date(clientQuery[dateQuery]);
+					}
+				}
 			}
 
 			return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({

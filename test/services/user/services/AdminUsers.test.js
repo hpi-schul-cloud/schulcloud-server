@@ -300,6 +300,37 @@ describe('AdminUsersService', () => {
 		expect(result.data[0]._id.toString()).to.equal(findUser._id.toString());
 	});
 
+	it('can filter by creation date as ISO string', async () => {
+		const findUser = await testObjects.createTestUser({ roles: ['student'] });
+		const actingUser = await testObjects.createTestUser({ roles: ['administrator'] });
+		await testObjects.createTestUser({ roles: ['student'] });
+		const params = await testObjects.generateRequestParamsFromUser(actingUser);
+		params.query = { createdAt: findUser.createdAt };
+
+		const result = await adminStudentsService.find(params);
+		expect(result.total).to.equal(1);
+		expect(result.data[0]._id.toString()).to.equal(findUser._id.toString());
+	});
+
+	it('can filter by creation date as ISO string with range', async () => {
+		const dateBefore = new Date();
+		const findUser = await testObjects.createTestUser({ roles: ['student'] });
+		const actingUser = await testObjects.createTestUser({ roles: ['administrator'] });
+		const dateAfter = new Date();
+		await testObjects.createTestUser({ roles: ['student'] });
+		const params = await testObjects.generateRequestParamsFromUser(actingUser);
+		params.query = {
+			createdAt: {
+				$gte: dateBefore.toISOString(),
+				$lte: dateAfter.toISOString(),
+			},
+		};
+
+		const result = await adminStudentsService.find(params);
+		expect(result.total).to.equal(1);
+		expect(result.data[0]._id.toString()).to.equal(findUser._id.toString());
+	});
+
 	it('pagination should work', async () => {
 		const limit = 1;
 		let skip = 0;
