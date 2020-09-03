@@ -23,6 +23,7 @@ const populateUser = (app, data) => {
 		email: data.email,
 		roles: ['student'],
 		schoolId: data.schoolId,
+		language: data.language,
 	};
 
 	const formatedBirthday = formatBirthdate1(data.birthDate);
