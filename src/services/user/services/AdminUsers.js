@@ -11,6 +11,8 @@ const {
 	hasSchoolPermission,
 	blockDisposableEmail,
 } = require('../../../hooks');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { validateParams } = require('../hooks/adminUsers.hooks');
 
 const { userModel } = require('../model');
 
@@ -85,6 +87,14 @@ class AdminUsers {
 			if (clientQuery.classes) query.classes = clientQuery.classes;
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
+			if (clientQuery.usersForConsent) query._id = clientQuery.usersForConsent;
+			if (clientQuery.searchQuery) {
+				query.$or = [
+					{ firstName: { $regex: clientQuery.searchQuery, $options: 'i' } },
+					{ lastName: { $regex: clientQuery.searchQuery, $options: 'i' } },
+					{ email: { $regex: clientQuery.searchQuery, $options: 'i' } },
+				];
+			}
 
 			const dateQueries = ['createdAt'];
 			for (const dateQuery of dateQueries) {
@@ -154,9 +164,23 @@ class AdminUsers {
 
 	async remove(id, params) {
 		const { _ids } = params.query;
+		const currentUser = await getCurrentUserInfo(params.account.userId);
+
 		if (id) {
+			const userToRemove = await getCurrentUserInfo(id);
+			if (!equalIds(currentUser.schoolId, userToRemove.schoolId)) {
+				throw new Forbidden('You cannot remove users from other schools.');
+			}
+			await this.app.service('accountModel').remove(null, { query: { userId: id } });
 			return this.app.service('usersModel').remove(id);
 		}
+
+		const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
+		if (usersIds.some((user) => !equalIds(currentUser.schoolId, user.schoolId))) {
+			throw new Forbidden('You cannot remove users from other schools.');
+		}
+
+		await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
 		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
 	}
 
@@ -170,6 +194,7 @@ class AdminUsers {
 
 const formatBirthdayOfUsers = ({ result: { data: users } }) => {
 	users.forEach((user) => {
+		if (user.birthday) user.birthday = moment(user.birthday).format('DD.MM.YYYY');
 		if (user.birthday) {
 			user.birthday = moment(user.birthday).format('DD.MM.YYYY');
 		}
@@ -184,7 +209,7 @@ const adminHookGenerator = (kind) => ({
 		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
 		update: [hasSchoolPermission(`${kind}_EDIT`)],
 		patch: [hasSchoolPermission(`${kind}_EDIT`)],
-		remove: [hasSchoolPermission(`${kind}_DELETE`)],
+		remove: [hasSchoolPermission(`${kind}_DELETE`), validateParams],
 	},
 	after: {
 		find: [formatBirthdayOfUsers],
