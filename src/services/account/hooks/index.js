@@ -153,14 +153,20 @@ const NotAllowed = new BadRequest('Not allowed');
 const restrictAccess = async (context) => {
 	// superhero can pass it
 	const user = (context.params.account || {}).userId;
+	let isStudent = false;
 	if (user) {
 		const { roles } = await context.app.service('users').get(user, {
 			query: {
 				$populate: { path: 'roles' },
 			},
 		});
+
 		if (roles.some((role) => role.name === 'superhero')) {
 			return context;
+		}
+
+		if (roles.some((role) => role.name === 'student')) {
+			isStudent = true;
 		}
 	}
 
@@ -168,6 +174,9 @@ const restrictAccess = async (context) => {
 	const { username, userId } = context.params.query || {};
 	if (!userId && !username) { throw NotAllowed; }
 	const query = {};
+	if (isStudent) {
+		query._id = context.params.account._id;
+	}
 	if (userId) {
 		if (!ObjectId.isValid(userId)) { throw NotAllowed; }
 		query.userId = userId;
@@ -176,6 +185,7 @@ const restrictAccess = async (context) => {
 		if (typeof username !== 'string') { throw NotAllowed; }
 		query.username = username;
 	}
+
 	// @override
 	context.params.query = query;
 	return context;
@@ -262,8 +272,14 @@ const restrictToUsersSchool = async (context) => {
 	return context;
 };
 
+const validateUserName = (context) => {
+	//TODO2: CHECK E-mail format
+};
+
+
 module.exports = {
 	sanitizeUsername,
+	validateUserName,
 	validateCredentials,
 	trimPassword,
 	validatePassword,
