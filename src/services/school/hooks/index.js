@@ -240,7 +240,7 @@ exports.before = {
 exports.after = {
 	all: [
 		// todo: remove id if possible (shouldnt exist)
-		iff(isNotAuthenticated, keep('name', 'purpose', 'systems', '_id', 'id')),
+		iff(isNotAuthenticated, keep('name', 'purpose', 'systems', '_id', 'id', 'language')),
 		iff(populateInQuery,
 			keepInArray('systems', ['_id', 'type', 'alias',
 				'ldapConfig.active', 'ldapConfig.provider', 'ldapConfig.rootPath'])),

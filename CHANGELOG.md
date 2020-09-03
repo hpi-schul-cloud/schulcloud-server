@@ -18,6 +18,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-6511 - LDAP edit button missing.
 
+### Changed
+
+- SC-5987 Internationalisation: extend user and school model with default language
+
 ### Added
 - SC-6172: added hooks and checks to look for unique and not disposable emails in adminUsers service
 
