@@ -14,7 +14,8 @@ module.exports = async (context) => {
 	try {
 		context.params.school = await School
 			.findById(schoolId)
-			.select(['name', 'currentYear', 'inMaintenanceSince', 'inMaintenance', 'enableStudentTeamCreation'])
+			.select(['name', 'currentYear', 'inMaintenanceSince', 'inMaintenance',
+				'enableStudentTeamCreation', 'language'])
 			.populate(['currentYear', 'systems'])
 			.lean({ virtuals: true })
 			.exec();
