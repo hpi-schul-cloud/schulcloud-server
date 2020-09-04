@@ -60,7 +60,7 @@ const accountService = new Accounts({
 });
 
 const populateWhitelist = {
-	//TODO Collect populate properties
+	userId: ['_id', 'firstName', 'lastName', 'email'],
 };
 
 const accountServiceHooks = {
@@ -91,6 +91,7 @@ const accountServiceHooks = {
 			iff(isProvider('external'), preventPopulate),
 			sanitizeUsername,
 			validateUserName,
+			checkUnique,
 			iff(isProvider('external'), restrictToUsersSchool),
 			iff(isProvider('external'), securePatching),
 			protectUserId,

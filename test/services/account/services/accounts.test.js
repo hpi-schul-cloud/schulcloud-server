@@ -317,6 +317,115 @@ describe('Account Service', () => {
 				await userService.remove(user._id);
 			}
 		});
+
+		it('should return an error if invalid email format was provided', async () => {
+			let user = await testObjects.createTestUser();
+			const accountDetails = {
+				username: user.email,
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+			const account = await accountService.create(accountDetails);
+			try {
+				await accountService.patch(account._id, {
+					username: 'some_bad_email_address',
+				});
+			} catch(err) {
+				expect(err.message).equal('Invalid username. Username should be a valid email format');
+				expect(err.code).to.equal(400);
+			} finally {
+				await accountService.remove(account._id);
+			}
+		});
+
+		it('should return account object with changed email address', async () => {
+			let user = await testObjects.createTestUser();
+			const accountDetails = {
+				username: user.email,
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+			const account = await accountService.create(accountDetails);
+			try {
+				const result = await accountService.patch(account._id, {
+					username: 'some_good@email.adderss',
+				});
+				expect(result.username)
+					.to
+					.equal('some_good@email.adderss');
+			} finally {
+				await accountService.remove(account._id);
+			}
+		});
+
+		it('should return an error if an username specified in the request body already exists', async () => {
+			let user = await testObjects.createTestUser();
+			const accountDetails = {
+				username: 'some_good2@email.adderss',
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+			const account = await accountService.create(accountDetails);
+			try {
+				await accountService.patch(account._id, {
+					username: 'some_good2@email.adderss',
+				});
+			} catch(err) {
+				expect(err.message).equal('Der Benutzername ist bereits vergeben!');
+				expect(err.code).to.equal(400);
+			} finally {
+				await accountService.remove(account._id);
+			}
+		});
+
+		it('should return an error if populate is specified in query params for a PATCH method', async () => {
+			const user = await testObjects.createTestUser();
+			const accountDetails = {
+				username: user.email,
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+
+			const account = await accountService.create(accountDetails);
+			try {
+				const params = await generateRequestParams(accountDetails);
+				params.query = { $populate: 'userId' };
+				params.provider = 'rest';
+				// params.username = 'some_goo@google.com';
+				await accountService.patch(account._id, {
+					password: 'Schulcloud1!',
+				}, params);
+			} catch(err) {
+				expect(err.message).equal('populate not supported');
+				expect(err.code).to.equal(400);
+			} finally {
+				await accountService.remove(account._id);
+			}
+		});
+
+	});
+
+	describe('REMOVE route', () => {
+		it('should return an error if populate is specified in query params for a REMOVE method', async () => {
+			const user = await testObjects.createTestUser({ roles: ['teacher'] });
+			const accountDetails = {
+				username: user.email,
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+
+			const account = await accountService.create(accountDetails);
+			try {
+				const params = await generateRequestParams(accountDetails);
+				params.query = { $populate: 'userId' };
+				params.provider = 'rest';
+				// params.username = 'some_goo@google.com';
+				await accountService.remove(account._id, params);
+			} catch(err) {
+				expect(err.message).equal('populate not supported');
+				expect(err.code).to.equal(400);
+			}
+		});
 	});
 
 	describe('FIND route', () => {
@@ -352,6 +461,33 @@ describe('Account Service', () => {
 					expect(err).to.have.status(400);
 					done();
 				});
+		});
+
+		it.skip('should return an error if populate is specified in query params for a FIND method', async () => {
+			// populate param is overrided in restrictAccess method - src/services/account/hooks/index.js
+			const user = await testObjects.createTestUser({ roles: ['student'] });
+			const accountDetails = {
+				username: user.email,
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+
+			const account = await accountService.create(accountDetails);
+			try {
+				const params = await generateRequestParams(accountDetails);
+				params.query = {
+					$populate: 'userId',
+					username: user.email
+				};
+				params.provider = 'rest';
+				const result = await accountService.find(params);
+				console.log(result);
+			} catch(err) {
+				expect(err.message).equal('populate not supported');
+				expect(err.code).to.equal(400);
+			} finally {
+				await accountService.remove(account._id);
+			}
 		});
 
 		// todo extern request with superhero

@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const { ObjectId } = require('mongoose').Types;
 const { checkPasswordStrength } = require('../../../utils/passwordHelpers');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const constants = require('../../../utils/constants');
 
 const globalHooks = require('../../../hooks');
 
@@ -272,8 +273,11 @@ const restrictToUsersSchool = async (context) => {
 	return context;
 };
 
-const validateUserName = (context) => {
-	//TODO2: CHECK E-mail format
+const validateUserName = async (context) => {
+	if (context.data && context.data.username && !constants.expressions.email.test(context.data.username)) {
+		throw new BadRequest('Invalid username. Username should be a valid email format');
+	}
+	return context;
 };
 
 
