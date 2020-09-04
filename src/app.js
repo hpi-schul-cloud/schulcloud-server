@@ -26,6 +26,7 @@ const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
 const rabbitMq = require('./utils/rabbitmq');
 
+const { setupFacadeLocator, setupFacades } = require('./facadeLocator');
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
@@ -43,6 +44,7 @@ if (METRICS_PATH) {
 }
 app.use(apiMetrics(metricsOptions));
 
+setupFacadeLocator(app);
 setupSwagger(app);
 initializeRedisClient();
 rabbitMq.setup(app);
@@ -86,6 +88,7 @@ app.use(compress())
 	.configure(sockets)
 	.configure(middleware)
 	.configure(setupAppHooks)
-	.configure(errorHandler);
+	.configure(errorHandler)
+	.configure(setupFacades);
 
 module.exports = app;

@@ -4,7 +4,7 @@ module.exports = class NewsUc {
 	setup(app) {
 		this.newsRepo = app.service('newsRepo');
 		// 1 Could be also achieved with mixins!
-		this.scopeUc = app.service('scopeUc');
+		this.scopeUc = app.facade('scope');
 	}
 
 	/**
