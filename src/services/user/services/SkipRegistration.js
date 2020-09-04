@@ -16,7 +16,7 @@ const validateRequest = (data, targetUser) => {
 	if (targetIsStudent && !data.birthday) return Promise.reject(new BadRequest('students require a birthdate'));
 
 	// todo: what status code?
-	// This line commented out for the analog consent process. 
+	// This line commented out for the analog consent process.
 	// A user which has been created manually has no importHash value.
 	// if (!targetUser.importHash) return Promise.reject(new BadRequest('this user is not viable for registration'));
 	return Promise.resolve(true);
