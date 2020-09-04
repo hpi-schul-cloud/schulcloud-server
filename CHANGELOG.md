@@ -9,6 +9,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Fixed
+- SC-6628 - Uncomment the line of checking the importHash value.
+
 ### Added
 - SC-5612 - Adding search feature to the admintables for nuxt-client.
 
