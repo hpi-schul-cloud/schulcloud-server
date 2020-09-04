@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
-const { Forbidden, GeneralError } = require('@feathersjs/errors');
+const { Forbidden, GeneralError, BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
@@ -9,7 +9,10 @@ const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const {
 	hasSchoolPermission,
+	blockDisposableEmail,
 } = require('../../../hooks');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { validateParams } = require('../hooks/adminUsers.hooks');
 
 const { userModel } = require('../model');
 
@@ -82,9 +85,32 @@ class AdminUsers {
 			}
 			if (clientQuery.consentStatus) query.consentStatus = clientQuery.consentStatus;
 			if (clientQuery.classes) query.classes = clientQuery.classes;
-			if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
+			if (clientQuery.usersForConsent) query._id = clientQuery.usersForConsent;
+			if (clientQuery.searchQuery) {
+				query.$or = [
+					{ firstName: { $regex: clientQuery.searchQuery, $options: 'i' } },
+					{ lastName: { $regex: clientQuery.searchQuery, $options: 'i' } },
+					{ email: { $regex: clientQuery.searchQuery, $options: 'i' } },
+				];
+			}
+
+			const dateQueries = ['createdAt'];
+			for (const dateQuery of dateQueries) {
+				if (clientQuery[dateQuery]) {
+					if (typeof clientQuery[dateQuery] === 'object') {
+						for (const [key, value] of Object.entries(clientQuery[dateQuery])) {
+							if (['$gt', '$gte', '$lt', '$lte'].includes(key)) {
+								clientQuery[dateQuery][key] = new Date(value);
+							}
+						}
+						query[dateQuery] = clientQuery[dateQuery];
+					} else {
+						query[dateQuery] = new Date(clientQuery[dateQuery]);
+					}
+				}
+			}
 
 			return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
 				collation: { locale: 'de', caseLevel: true },
@@ -107,6 +133,24 @@ class AdminUsers {
 	}
 
 	async create(data, params) {
+		const { account } = params;
+		const currentUserId = account.userId.toString();
+
+		// checks if school isExternal, throws forbidden if it is
+		const { schoolId } = await getCurrentUserInfo(currentUserId);
+		const { isExternal } = await this.app.service('schools').get(schoolId);
+		if (isExternal) {
+			throw new Forbidden('Creating new students or teachers is only possible in the source system.');
+		}
+
+		// checks for unique email accounts, throws bad request if it already exists
+		const { email } = data;
+		const userService = this.app.service('/users');
+		const accounts = await userService.find({ query: { email: email.toLowerCase() } });
+		if (accounts.total > 0) {
+			throw new BadRequest('Email already exists.');
+		}
+
 		return this.app.service('usersModel').create(data);
 	}
 
@@ -120,9 +164,23 @@ class AdminUsers {
 
 	async remove(id, params) {
 		const { _ids } = params.query;
+		const currentUser = await getCurrentUserInfo(params.account.userId);
+
 		if (id) {
+			const userToRemove = await getCurrentUserInfo(id);
+			if (!equalIds(currentUser.schoolId, userToRemove.schoolId)) {
+				throw new Forbidden('You cannot remove users from other schools.');
+			}
+			await this.app.service('accountModel').remove(null, { query: { userId: id } });
 			return this.app.service('usersModel').remove(id);
 		}
+
+		const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
+		if (usersIds.some((user) => !equalIds(currentUser.schoolId, user.schoolId))) {
+			throw new Forbidden('You cannot remove users from other schools.');
+		}
+
+		await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
 		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
 	}
 
@@ -135,7 +193,12 @@ class AdminUsers {
 }
 
 const formatBirthdayOfUsers = ({ result: { data: users } }) => {
-	users.forEach((user) => { user.birthday = moment(user.birthday).format('DD.MM.YYYY'); });
+	users.forEach((user) => {
+		if (user.birthday) user.birthday = moment(user.birthday).format('DD.MM.YYYY');
+		if (user.birthday) {
+			user.birthday = moment(user.birthday).format('DD.MM.YYYY');
+		}
+	});
 };
 
 const adminHookGenerator = (kind) => ({
@@ -143,10 +206,10 @@ const adminHookGenerator = (kind) => ({
 		all: [authenticate('jwt')],
 		find: [hasSchoolPermission(`${kind}_LIST`)],
 		get: [hasSchoolPermission(`${kind}_LIST`)],
-		create: [hasSchoolPermission(`${kind}_CREATE`)],
+		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
 		update: [hasSchoolPermission(`${kind}_EDIT`)],
 		patch: [hasSchoolPermission(`${kind}_EDIT`)],
-		remove: [hasSchoolPermission(`${kind}_DELETE`)],
+		remove: [hasSchoolPermission(`${kind}_DELETE`), validateParams],
 	},
 	after: {
 		find: [formatBirthdayOfUsers],
