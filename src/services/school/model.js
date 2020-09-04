@@ -70,6 +70,7 @@ const schoolSchema = new Schema({
 	logo_dataUrl: { type: String },
 	purpose: { type: String },
 	rssFeeds: [{ type: rssFeedSchema }],
+	language: { type: String },
 	features: {
 		type: [String],
 		default: defaultFeatures,
