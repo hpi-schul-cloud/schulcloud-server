@@ -115,10 +115,15 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		const clusteredRecords = this.clusterByEmail(sanitizedRecords);
 
 		const actions = Object.values(clusteredRecords).map((record) => async () => {
-			const enrichedRecord = await this.enrichUserData(record);
-			const user = await this.createOrUpdateUser(enrichedRecord);
-			if (importClasses) {
-				await this.createClasses(enrichedRecord, user);
+			try {
+				const enrichedRecord = await this.enrichUserData(record);
+				const user = await this.createOrUpdateUser(enrichedRecord);
+				if (importClasses) {
+					await this.createClasses(enrichedRecord, user);
+				}
+			} catch (err) {
+				this.logError('Cannot create user', record, JSON.stringify(err));
+				this.handleUserError(err, record);
 			}
 		});
 		while (actions.length > 0) {
@@ -284,29 +289,28 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		const users = await this.app.service('users').find({
 			query: {
 				email: record.email,
+				$populate: 'roles',
 			},
 			paginate: false,
 			lean: true,
 		}, this.requestParams);
 		if (users.length >= 1) {
-			return users[0]._id;
+			const existingUser = users[0];
+			if (record.roles && !existingUser.roles.some((r) => r.name === record.roles[0])) {
+				throw new Error('Cannot change user roles.');
+			}
+			return existingUser._id;
 		}
 		return null;
 	}
 
 	async createUser(record) {
-		let userObject;
-		try {
-			userObject = await this.app.service('users').create(record, this.requestParams);
-			this.stats.users.created += 1;
-			this.stats.users.successful += 1;
-			if (this.options.sendEmails) {
-				await this.emailUser(record);
-			}
-		} catch (err) {
-			this.logError('Cannot create user', record, JSON.stringify(err));
-			this.handleUserError(err, record);
+		const userObject = await this.app.service('users').create(record, this.requestParams);
+		if (this.options.sendEmails) {
+			await this.emailUser(record);
 		}
+		this.stats.users.created += 1;
+		this.stats.users.successful += 1;
 		return userObject;
 	}
 
@@ -344,6 +348,12 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 				type: 'user',
 				entity: `${record.firstName},${record.lastName},${record.email}`,
 				message: `Ungültiger Wert in Spalte "${err.message.match(/Path `(.+)` is required/)[1]}"`,
+			});
+		} else if (err.message.startsWith('Cannot change user role')) {
+			this.stats.errors.push({
+				type: 'user',
+				entity: `${record.firstName},${record.lastName},${record.email}`,
+				message: 'Es existiert bereits ein Nutzer mit dieser E-Mail-Adresse, jedoch mit einer anderen Rolle.',
 			});
 		} else {
 			this.stats.errors.push({
