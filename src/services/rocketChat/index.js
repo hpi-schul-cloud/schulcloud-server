@@ -1,21 +1,21 @@
 const logger = require('../../logger');
-const {
-	ROCKET_CHAT_URI, ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID,
-} = require('../../../config/globals');
-const {
-	rocketChatUserHooks, rocketChatLoginHooks, rocketChatLogoutHooks, rocketChatChannelHooks,
-} = require('./hooks');
+const { ROCKET_CHAT_URI, ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID } = require('../../../config/globals');
+const { rocketChatUserHooks, rocketChatLoginHooks, rocketChatLogoutHooks, rocketChatChannelHooks } = require('./hooks');
 
 const RocketChatUser = require('./services/rocketChatUser');
 const RocketChatLogin = require('./services/rocketChatLogin');
 const RocketChatLogout = require('./services/rocketChatLogout');
 const RocketChatChannel = require('./services/rocketChatChannel');
 
-if (ROCKET_CHAT_URI === undefined) { logger.warning('please set the environment variable ROCKET_CHAT_URI'); }
+if (ROCKET_CHAT_URI === undefined) {
+	logger.warning('please set the environment variable ROCKET_CHAT_URI');
+}
 if (ROCKET_CHAT_ADMIN_TOKEN === undefined) {
 	logger.warning('please set the environment variable ROCKET_CHAT_ADMIN_TOKEN');
 }
-if (ROCKET_CHAT_ADMIN_ID === undefined) { logger.warning('please set the environment variable ROCKET_CHAT_ADMIN_ID'); }
+if (ROCKET_CHAT_ADMIN_ID === undefined) {
+	logger.warning('please set the environment variable ROCKET_CHAT_ADMIN_ID');
+}
 
 module.exports = function Setup() {
 	const app = this;

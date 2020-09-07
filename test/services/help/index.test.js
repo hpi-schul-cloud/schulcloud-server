@@ -1,12 +1,7 @@
 const assert = require('assert');
 const chai = require('chai');
 const app = require('../../../src/app');
-const {
-	createTestSchoolGroup,
-	createTestSchool,
-	createTestUser,
-	cleanup,
-} = require('../helpers/testObjects')(app);
+const { createTestSchoolGroup, createTestSchool, createTestUser, cleanup } = require('../helpers/testObjects')(app);
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
 const { helpDocumentsModel } = require('../../../src/services/help/model');
 

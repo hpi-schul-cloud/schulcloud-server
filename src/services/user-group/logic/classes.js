@@ -34,7 +34,7 @@ const classObjectFromName = async (className, attributes) => {
 	if (classNameFormat !== undefined) {
 		return {
 			...attributes,
-			...await classNameFormat.values(className),
+			...(await classNameFormat.values(className)),
 		};
 	}
 	throw new Error('Class name does not match any format:', className);

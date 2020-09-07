@@ -6,12 +6,19 @@ const { connect, close } = require('../src/utils/database');
 
 // use your own name for your model, otherwise other migrations may fail.
 // The third parameter is the actually relevent one for what collection to write to.
-const Role = mongoose.model('takeAwayTeachersUserCreate080420', new mongoose.Schema({
-	name: { type: String, required: true },
-	permissions: [{ type: String }],
-}, {
-	timestamps: true,
-}), 'roles');
+const Role = mongoose.model(
+	'takeAwayTeachersUserCreate080420',
+	new mongoose.Schema(
+		{
+			name: { type: String, required: true },
+			permissions: [{ type: String }],
+		},
+		{
+			timestamps: true,
+		}
+	),
+	'roles'
+);
 
 // How to use more than one schema per collection on mongodb
 // https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
@@ -28,14 +35,10 @@ module.exports = {
 			{
 				$pull: {
 					permissions: {
-						$in: [
-							'STUDENT_CREATE',
-							'TEACHER_CREATE',
-							'STUDENT_DELETE',
-						],
+						$in: ['STUDENT_CREATE', 'TEACHER_CREATE', 'STUDENT_DELETE'],
 					},
 				},
-			},
+			}
 		).exec();
 		// ////////////////////////////////////////////////////
 		await close();
@@ -50,14 +53,10 @@ module.exports = {
 			{
 				$addToSet: {
 					permissions: {
-						$each: [
-							'STUDENT_CREATE',
-							'TEACHER_CREATE',
-							'STUDENT_DELETE',
-						],
+						$each: ['STUDENT_CREATE', 'TEACHER_CREATE', 'STUDENT_DELETE'],
 					},
 				},
-			},
+			}
 		).exec();
 		// ////////////////////////////////////////////////////
 		await close();

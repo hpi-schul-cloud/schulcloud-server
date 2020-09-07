@@ -29,7 +29,7 @@ describe('courses copy service', () => {
 	});
 
 	it('creates a course copy including homeworks', async () => {
-		const ONEDAYINMILLISECONDS = (1000 * 60 * 60 * 24);
+		const ONEDAYINMILLISECONDS = 1000 * 60 * 60 * 24;
 
 		const teacher = await testObjects.createTestUser();
 		const course = await testObjects.createTestCourse({ teacherIds: teacher._id });
@@ -45,7 +45,9 @@ describe('courses copy service', () => {
 		});
 
 		const courseCopy = await copyCourseService.create({
-			_id: testCourseExample, name: 'course copy', userId: teacher._id,
+			_id: testCourseExample,
+			name: 'course copy',
+			userId: teacher._id,
 		});
 
 		chai.expect(courseCopy.name).to.equal('course copy');
@@ -71,13 +73,16 @@ describe('courses copy service', () => {
 		chai.expect(courseName).to.equal('Deutsch 10a');
 	});
 
-	it('creates a course copy through shareToken', () => shareCourseService.create({
-		shareToken,
-		courseName: 'testCourse 76',
-		userId: testUserId,
-	}).then((course) => {
-		chai.expect(course.name).to.equal('testCourse 76');
-	}));
+	it('creates a course copy through shareToken', () =>
+		shareCourseService
+			.create({
+				shareToken,
+				courseName: 'testCourse 76',
+				userId: testUserId,
+			})
+			.then((course) => {
+				chai.expect(course.name).to.equal('testCourse 76');
+			}));
 
 	it('teacher can share a course', async () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });

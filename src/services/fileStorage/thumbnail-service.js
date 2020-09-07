@@ -9,7 +9,7 @@ class ThumbnailService {
 					thumbnailRequestToken: null,
 					thumbnail: data.thumbnail,
 				},
-			},
+			}
 		).exec();
 	}
 

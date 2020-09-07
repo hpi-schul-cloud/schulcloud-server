@@ -9,19 +9,25 @@ const logger = require('../src/logger');
 
 // use your own name for your model, otherwise other migrations may fail.
 // The third parameter is the actually relevent one for what collection to write to.
-const ConsentVersion = mongoose.model('consentVersions_20200805', new mongoose.Schema({
-	consentTypes: [{
-		type: String,
-		required: true,
-		index: true,
-	}],
-	consentText: { type: String, required: true },
-	// create request that include consentData, create a new base64Files entries and pass the id to consentDataId
-	consentDataId: { type: Schema.Types.ObjectId, ref: 'base64Files' },
-	schoolId: { type: Schema.Types.ObjectId, index: true },
-	publishedAt: { type: Date, required: true, index: true },
-	title: { type: String, required: true },
-}), 'consentversions');
+const ConsentVersion = mongoose.model(
+	'consentVersions_20200805',
+	new mongoose.Schema({
+		consentTypes: [
+			{
+				type: String,
+				required: true,
+				index: true,
+			},
+		],
+		consentText: { type: String, required: true },
+		// create request that include consentData, create a new base64Files entries and pass the id to consentDataId
+		consentDataId: { type: Schema.Types.ObjectId, ref: 'base64Files' },
+		schoolId: { type: Schema.Types.ObjectId, index: true },
+		publishedAt: { type: Date, required: true, index: true },
+		title: { type: String, required: true },
+	}),
+	'consentversions'
+);
 
 module.exports = {
 	up: async function up() {

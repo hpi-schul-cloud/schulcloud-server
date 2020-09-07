@@ -30,7 +30,6 @@ module.exports = (hydraUrl) => {
 	}
 
 	return {
-
 		// Fetches information on a login request.
 		getLoginRequest(challenge) {
 			return get('login', challenge);
@@ -68,59 +67,67 @@ module.exports = (hydraUrl) => {
 			};
 			return request(options);
 		},
-		isInstanceAlive: () => request({
-			uri: `${hydraUrl}/health/alive`,
-		}),
-		listOAuth2Clients: () => request({
-			uri: `${hydraUrl}/clients`,
-			headers: {
-				...mockTlsTermination,
-			},
-		}),
-		createOAuth2Client: (data) => request({
-			uri: `${hydraUrl}/clients`,
-			method: 'POST',
-			body: data,
-			headers: {
-				...mockTlsTermination,
-			},
-			json: true,
-		}),
-		getOAuth2Client: (id) => request({
-			uri: `${hydraUrl}/clients/${id}`,
-			method: 'GET',
-			headers: {
-				...mockTlsTermination,
-			},
-		}),
-		updateOAuth2Client: (id, data) => request({
-			uri: `${hydraUrl}/clients/${id}`,
-			method: 'PUT',
-			body: data,
-			json: true,
-			headers: {
-				...mockTlsTermination,
-			},
-		}),
-		deleteOAuth2Client: (id) => request({
-			uri: `${hydraUrl}/clients/${id}`,
-			method: 'DELETE',
-			headers: {
-				...mockTlsTermination,
-			},
-		}),
-		listConsentSessions: (user) => request({
-			uri: `${hydraUrl}/oauth2/auth/sessions/consent?subject=${user}`,
-			headers: {
-				...mockTlsTermination,
-			},
-		}),
-		revokeConsentSession: (user, client) => request({
-			uri: `${hydraUrl}/oauth2/auth/sessions/consent?subject=${user}&client=${client}`,
-			method: 'DELETE',
-			headers: {
-				...mockTlsTermination,
-			},
-		}),
+		isInstanceAlive: () =>
+			request({
+				uri: `${hydraUrl}/health/alive`,
+			}),
+		listOAuth2Clients: () =>
+			request({
+				uri: `${hydraUrl}/clients`,
+				headers: {
+					...mockTlsTermination,
+				},
+			}),
+		createOAuth2Client: (data) =>
+			request({
+				uri: `${hydraUrl}/clients`,
+				method: 'POST',
+				body: data,
+				headers: {
+					...mockTlsTermination,
+				},
+				json: true,
+			}),
+		getOAuth2Client: (id) =>
+			request({
+				uri: `${hydraUrl}/clients/${id}`,
+				method: 'GET',
+				headers: {
+					...mockTlsTermination,
+				},
+			}),
+		updateOAuth2Client: (id, data) =>
+			request({
+				uri: `${hydraUrl}/clients/${id}`,
+				method: 'PUT',
+				body: data,
+				json: true,
+				headers: {
+					...mockTlsTermination,
+				},
+			}),
+		deleteOAuth2Client: (id) =>
+			request({
+				uri: `${hydraUrl}/clients/${id}`,
+				method: 'DELETE',
+				headers: {
+					...mockTlsTermination,
+				},
+			}),
+		listConsentSessions: (user) =>
+			request({
+				uri: `${hydraUrl}/oauth2/auth/sessions/consent?subject=${user}`,
+				headers: {
+					...mockTlsTermination,
+				},
+			}),
+		revokeConsentSession: (user, client) =>
+			request({
+				uri: `${hydraUrl}/oauth2/auth/sessions/consent?subject=${user}&client=${client}`,
+				method: 'DELETE',
+				headers: {
+					...mockTlsTermination,
+				},
+			}),
 	};
 };

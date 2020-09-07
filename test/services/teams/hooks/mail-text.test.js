@@ -3,7 +3,6 @@ const { createHook } = require('../helper/helper.hook');
 const createEmailText = require('../../../../src/services/teams/hooks/mail-text.js');
 const app = require('../../../../src/app');
 
-
 describe('Team mail-text helper', () => {
 	let server;
 
@@ -51,11 +50,8 @@ describe('Team mail-text helper', () => {
 				email: user.email,
 			});
 
-
 			console.log(createEmailText(hookCopy, user));
-			expect(createEmailText(hookCopy, user)).to.equal({
-
-			});
+			expect(createEmailText(hookCopy, user)).to.equal({});
 			// todo check all results ..
 		});
 	});
