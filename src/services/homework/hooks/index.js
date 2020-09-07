@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
+const jwtDecode = require('jwt-decode');
+
 const {
 	iff, isProvider,
 } = require('feathers-hooks-common');
@@ -218,8 +220,26 @@ const hasPatchPermission = (hook) => {
 		});
 };
 
+const customAuthenticate = (context) => {
+	if (context.params.query.auth === 'oauth2') {
+		return context.app.service('/oauth2/introspect')
+			.create({ token: context.params.headers.authorization.replace('Bearer ', '') })
+			.then((introspection) => {
+				if (introspection.active && introspection.scope.indexOf('homework') !== -1) {
+					context.params.account = { userId: introspection.sub };
+					return context;
+				} else {
+					throw new errors.NotAuthenticated('Invalid access token!');
+				}
+			}).catch((error) => {
+				throw new Error(error);
+			});
+	}
+	return authenticate('jwt')(context);
+};
+
 exports.before = () => ({
-	all: [authenticate('jwt')],
+	all: [customAuthenticate],
 	find: [
 		iff(isProvider('external'), [
 			globalHooks.hasPermission('HOMEWORK_VIEW'),
