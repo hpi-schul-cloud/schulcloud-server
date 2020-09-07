@@ -319,7 +319,7 @@ describe('Account Service', () => {
 		});
 
 		it('should return an error if invalid email format was provided', async () => {
-			let user = await testObjects.createTestUser();
+			const user = await testObjects.createTestUser();
 			const accountDetails = {
 				username: user.email,
 				password: 'ca4t9fsfr3dsd',
@@ -330,7 +330,7 @@ describe('Account Service', () => {
 				await accountService.patch(account._id, {
 					username: 'some_bad_email_address',
 				});
-			} catch(err) {
+			} catch (err) {
 				expect(err.message).equal('Invalid username. Username should be a valid email format');
 				expect(err.code).to.equal(400);
 			} finally {
@@ -404,7 +404,6 @@ describe('Account Service', () => {
 				await accountService.remove(account._id);
 			}
 		});
-
 	});
 
 	describe('REMOVE route', () => {
@@ -481,10 +480,10 @@ describe('Account Service', () => {
 				const params = await generateRequestParams(accountDetails);
 				params.query = {
 					$populate: 'userId',
-					username: user.email
+					username: user.email,
 				};
 				params.provider = 'rest';
-				const result = await accountService.find(params);
+				await accountService.find(params);
 			} catch(err) {
 				expect(err.message).equal('populate not supported');
 				expect(err.code).to.equal(400);

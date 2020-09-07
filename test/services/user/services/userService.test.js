@@ -293,7 +293,6 @@ describe('user service', () => {
 			expect(result).to.haveOwnProperty('email');
 			expect(result).to.haveOwnProperty('birthday');
 			expect(result).to.haveOwnProperty('ldapId');
-
 		});
 	});
 
@@ -515,7 +514,7 @@ describe('user service', () => {
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = { $populate: 'not_whitelisted' };
 			try {
-				await app.service('users').patch(student._id, { lastName: 'Vader' },  params);
+				await app.service('users').patch(student._id, { lastName: 'Vader' }, params);
 				throw new Error('should have failed.');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed.');
