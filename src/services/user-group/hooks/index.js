@@ -14,9 +14,7 @@ const {
 } = require('./courses');
 
 exports.before = {
-	all: [
-		authenticate('jwt'),
-	],
+	all: [authenticate('jwt')],
 	find: [
 		globalHooks.hasPermission('COURSE_VIEW'),
 		restrictToCurrentSchool,
@@ -59,8 +57,9 @@ exports.after = {
 		globalHooks.ifNotLocal(
 			globalHooks.denyIfNotCurrentSchool({
 				errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
-			}),
-		)],
+			})
+		),
+	],
 	create: [addWholeClassToCourse],
 	update: [],
 	patch: [addWholeClassToCourse],

@@ -8,19 +8,23 @@ const createTestConsentVersion = (app) => ({
 	publishedAt = new Date(),
 	title = 'test consent',
 	manualCleanup = false,
-} = {}) => app.service('/consentVersionsModel').create({
-	consentTypes,
-	consentText,
-	consentDataId,
-	schoolId,
-	publishedAt,
-	title,
-}).then((version) => {
-	if (!manualCleanup) {
-		createdVersionIds.push(version._id.toString());
-	}
-	return version;
-});
+} = {}) =>
+	app
+		.service('/consentVersionsModel')
+		.create({
+			consentTypes,
+			consentText,
+			consentDataId,
+			schoolId,
+			publishedAt,
+			title,
+		})
+		.then((version) => {
+			if (!manualCleanup) {
+				createdVersionIds.push(version._id.toString());
+			}
+			return version;
+		});
 
 const cleanup = (app) => () => {
 	if (createdVersionIds.length === 0) {

@@ -17,12 +17,12 @@ const createPermission = (refId, refPermModel = 'user', permissions = null) => {
 	return newPermission;
 };
 
-const getRoles = (names = []) => RoleModel.find({
-	$or: names.map((name) => ({ name })),
-})
-	.lean()
-	.exec();
-
+const getRoles = (names = []) =>
+	RoleModel.find({
+		$or: names.map((name) => ({ name })),
+	})
+		.lean()
+		.exec();
 
 const getRoleIdByName = (roles, name) => {
 	const role = roles.find((r) => r.name === name);
@@ -41,24 +41,20 @@ const addCourseDefaultPermissions = async (permissions, studentCanEdit) => {
 	const studentRoleId = getRoleIdByName(roles, 'student');
 	const teacherRoleId = getRoleIdByName(roles, 'teacher');
 
-	permissions.push(createPermission(
-		studentRoleId,
-		'role',
-		{
+	permissions.push(
+		createPermission(studentRoleId, 'role', {
 			write: Boolean(studentCanEdit),
 			create: false,
 			delete: false,
-		},
-	));
+		})
+	);
 
-	permissions.push(createPermission(
-		teacherRoleId,
-		'role',
-		{
+	permissions.push(
+		createPermission(teacherRoleId, 'role', {
 			create: false,
 			delete: false,
-		},
-	));
+		})
+	);
 
 	return permissions;
 };
@@ -86,7 +82,7 @@ const fetchAndCreateTeamDefaultPermissions = async (owner) => {
 const createDefaultPermissions = async (
 	userId,
 	type = 'user',
-	{ studentCanEdit, sendPermissions = [], owner } = { sendPermissions: [] },
+	{ studentCanEdit, sendPermissions = [], owner } = { sendPermissions: [] }
 ) => {
 	let permissions = [createPermission(userId)];
 	let teamDefaultPermissions = [];

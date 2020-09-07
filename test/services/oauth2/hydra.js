@@ -89,43 +89,31 @@ describe('oauth2 service', function oauthTest() {
 								authorizePath: '/oauth2/auth',
 							},
 						});
-						const authorizationUri = oauth.authorizationCode.authorizeURL(
-							{
-								redirect_uri: client.redirect_uris[0],
-								scope: 'openid',
-								state: '12345678',
-							},
-						);
+						const authorizationUri = oauth.authorizationCode.authorizeURL({
+							redirect_uri: client.redirect_uris[0],
+							scope: 'openid',
+							state: '12345678',
+						});
 						request({
 							uri: authorizationUri,
 							method: 'GET',
 							followRedirect: false,
 						}).catch((res) => {
-							const position = res.error.indexOf('login_challenge=')
-								+ 'login_challenge'.length
-								+ 1;
+							const position = res.error.indexOf('login_challenge=') + 'login_challenge'.length + 1;
 							loginRequest1 = res.error.substr(position, 32);
 							request({
 								uri: authorizationUri,
 								method: 'GET',
 								followRedirect: false,
 							}).catch((res2) => {
-								const position2 = res2.error.indexOf('login_challenge=')
-									+ 'login_challenge'.length
-									+ 1;
-								loginRequest2 = res2.error.substr(
-									position2,
-									32,
-								);
+								const position2 = res2.error.indexOf('login_challenge=') + 'login_challenge'.length + 1;
+								loginRequest2 = res2.error.substr(position2, 32);
 								done();
 							});
 						});
 					})
 					.catch((err) => {
-						logger.warning(
-							'Can not execute oauth2 before all hook.',
-							err,
-						);
+						logger.warning('Can not execute oauth2 before all hook.', err);
 						done();
 					});
 			});
@@ -142,10 +130,7 @@ describe('oauth2 service', function oauthTest() {
 				done();
 			})
 			.catch((err) => {
-				logger.warning(
-					'Can not execute oauth2 after all hook.',
-					err,
-				);
+				logger.warning('Can not execute oauth2 after all hook.', err);
 				done();
 			});
 	});
@@ -155,28 +140,31 @@ describe('oauth2 service', function oauthTest() {
 		assert.ok(loginService);
 	});
 
-	it('GET BaseUrl', () => baseUrlService.find().then((response) => {
-		assert.ok(response);
-	}));
+	it('GET BaseUrl', () =>
+		baseUrlService.find().then((response) => {
+			assert.ok(response);
+		}));
 
-	it('CREATE Client', () => clientsService.create(testClient).then((result) => {
-		assert.strictEqual(result.client_id, testClient.client_id);
-	}));
+	it('CREATE Client', () =>
+		clientsService.create(testClient).then((result) => {
+			assert.strictEqual(result.client_id, testClient.client_id);
+		}));
 
-	it('FIND Clients', () => clientsService.find().then((result) => {
-		const foundTestClient = JSON.parse(result).find(
-			(client) => client.client_id === testClient.client_id,
-		);
-		assert(foundTestClient);
-	}));
+	it('FIND Clients', () =>
+		clientsService.find().then((result) => {
+			const foundTestClient = JSON.parse(result).find((client) => client.client_id === testClient.client_id);
+			assert(foundTestClient);
+		}));
 
-	it('DELETE Client', () => clientsService.remove(testClient.client_id).then((result) => {
-		assert(true);
-	}));
+	it('DELETE Client', () =>
+		clientsService.remove(testClient.client_id).then((result) => {
+			assert(true);
+		}));
 
-	it('GET Login Request', () => loginService.get(loginRequest1).then((result) => {
-		assert.strictEqual(result.challenge, loginRequest1);
-	}));
+	it('GET Login Request', () =>
+		loginService.get(loginRequest1).then((result) => {
+			assert.strictEqual(result.challenge, loginRequest1);
+		}));
 
 	it('PATCH Login Request Accept', () => {
 		loginService
@@ -186,50 +174,52 @@ describe('oauth2 service', function oauthTest() {
 				{
 					query: { accept: 1 },
 					account: { userId: testUser2._id },
-				},
+				}
 			)
 			.then((result) => {
 				// redirectTo = result.redirect_to;
-				assert.ok(
-					result.redirect_to.indexOf(testClient2.client_id) !== -1,
-				);
+				assert.ok(result.redirect_to.indexOf(testClient2.client_id) !== -1);
 			});
 	});
 
-	it('PATCH Login Request Reject', () => loginService
-		.patch(
-			loginRequest2,
-			{},
-			{
-				query: { accept: 0 },
-				account: { userId: '0000d224816abba584714c9c' },
-			},
-		)
-		.then(() => {
-			assert.ok(true);
+	it('PATCH Login Request Reject', () =>
+		loginService
+			.patch(
+				loginRequest2,
+				{},
+				{
+					query: { accept: 0 },
+					account: { userId: '0000d224816abba584714c9c' },
+				}
+			)
+			.then(() => {
+				assert.ok(true);
+			}));
+
+	it('Introspect Inactive Token', () =>
+		introspectService.create({ token: 'xxx' }).then((res) => {
+			assert(res.active === false);
 		}));
 
-	it('Introspect Inactive Token', () => introspectService.create({ token: 'xxx' }).then((res) => {
-		assert(res.active === false);
-	}));
+	it('GET Consent', () =>
+		consentService
+			.get(testUser2._id, {
+				account: { userId: testUser2._id },
+			})
+			.then((consents) => {
+				assert.ok(consents);
+			}));
 
-	it('GET Consent', () => consentService
-		.get(testUser2._id, {
-			account: { userId: testUser2._id },
-		})
-		.then((consents) => {
-			assert.ok(consents);
-		}));
-
-	it('REMOVE Consent', () => consentService
-		.remove(testUser2._id, {
-			account: { userId: testUser2._id },
-			query: { client: testClient.client_id },
-		})
-		.then(() => {
-			throw new Error('Should not supposed to succeed');
-		})
-		.catch((err) => {
-			assert.strictEqual(404, err.statusCode);
-		}));
+	it('REMOVE Consent', () =>
+		consentService
+			.remove(testUser2._id, {
+				account: { userId: testUser2._id },
+				query: { client: testClient.client_id },
+			})
+			.then(() => {
+				throw new Error('Should not supposed to succeed');
+			})
+			.catch((err) => {
+				assert.strictEqual(404, err.statusCode);
+			}));
 });

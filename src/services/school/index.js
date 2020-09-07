@@ -27,42 +27,50 @@ module.exports = function schoolServices() {
 	app.use('/schools/:schoolId/maintenance', new SchoolMaintenanceService());
 
 	/* schoolGroup service */
-	app.use('/schoolGroup', service({
-		Model: schoolModels.schoolGroupModel,
-		paginate: {
-			default: 500,
-			max: 5000,
-		},
-	}));
+	app.use(
+		'/schoolGroup',
+		service({
+			Model: schoolModels.schoolGroupModel,
+			paginate: {
+				default: 500,
+				max: 5000,
+			},
+		})
+	);
 	const schoolGroupService = app.service('/schoolGroup');
 	schoolGroupService.hooks(schoolGroupHooks);
 
 	/* year Service */
-	app.use('/years', service({
-		Model: schoolModels.yearModel,
-		paginate: {
-			default: 500,
-			max: 5000,
-		},
-		lean: true,
-	}));
+	app.use(
+		'/years',
+		service({
+			Model: schoolModels.yearModel,
+			paginate: {
+				default: 500,
+				max: 5000,
+			},
+			lean: true,
+		})
+	);
 	const yearService = app.service('/years');
 	yearService.hooks(hooks);
 
 	/* gradeLevel Service */
-	app.use('/gradeLevels', service({
-		Model: schoolModels.gradeLevelModel,
-		paginate: {
-			default: 500,
-			max: 5000,
-		},
-		lean: true,
-	}));
+	app.use(
+		'/gradeLevels',
+		service({
+			Model: schoolModels.gradeLevelModel,
+			paginate: {
+				default: 500,
+				max: 5000,
+			},
+			lean: true,
+		})
+	);
 	const gradeLevelService = app.service('/gradeLevels');
 	gradeLevelService.hooks(hooks);
 
-	const ADMIN_TOGGLE_STUDENT_VISIBILITY = Configuration
-		.get('ADMIN_TOGGLE_STUDENT_VISIBILITY');
+	const ADMIN_TOGGLE_STUDENT_VISIBILITY = Configuration.get('ADMIN_TOGGLE_STUDENT_VISIBILITY');
 
 	if (ADMIN_TOGGLE_STUDENT_VISIBILITY !== 'disabled') {
 		app.use('/school/teacher/studentvisibility', new HandlePermissions('teacher', 'STUDENT_LIST'));
