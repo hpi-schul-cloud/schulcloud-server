@@ -2,9 +2,7 @@ const { AuthenticationService, JWTStrategy } = require('@feathersjs/authenticati
 const { LocalStrategy } = require('@feathersjs/authentication-local');
 const { Configuration } = require('@schul-cloud/commons');
 
-const {
-	LdapStrategy, MoodleStrategy, IservStrategy, TSPStrategy, ApiKeyStrategy,
-} = require('./strategies');
+const { LdapStrategy, MoodleStrategy, IservStrategy, TSPStrategy, ApiKeyStrategy } = require('./strategies');
 const { hooks } = require('./hooks');
 const { authenticationSecret, audience } = require('./logic');
 

@@ -60,7 +60,6 @@ function isDisposableEmail(email) {
 	return isDisposableEmailDomain(domain);
 }
 
-
 module.exports = {
 	hasValidEmailFormat,
 	extractDomainFromEmail,

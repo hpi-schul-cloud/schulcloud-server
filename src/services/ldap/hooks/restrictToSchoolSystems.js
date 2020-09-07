@@ -15,7 +15,7 @@ const restrictToSchoolSystems = (context) => {
 	if (systemIds.some((systemId) => equalIds(systemId, context.id))) {
 		return context;
 	}
-	throw new Forbidden('You\'re not authorized to access this system.');
+	throw new Forbidden("You're not authorized to access this system.");
 };
 
 module.exports = restrictToSchoolSystems;

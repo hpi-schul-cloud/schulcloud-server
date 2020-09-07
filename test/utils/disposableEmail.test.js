@@ -47,7 +47,6 @@ describe('[utils] disposableEmail', () => {
 			expect(isDisposableEmail('user@schul-cloud.org')).is.false;
 		});
 
-
 		it('block', () => {
 			Configuration.set('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS', 'some.domain,schul-cloud.org,more.de');
 			expect(isDisposableEmail('user@schul-cloud.org')).is.true;
