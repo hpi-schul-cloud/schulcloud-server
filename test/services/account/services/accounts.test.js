@@ -395,7 +395,9 @@ describe('Account Service', () => {
 				await accountService.patch(account._id, {
 					password: 'Schulcloud1!',
 				}, params);
+				throw new Error('should have failed.');
 			} catch(err) {
+				expect(err.message).to.not.equal('should have failed.');
 				expect(err.message).equal('populate not supported');
 				expect(err.code).to.equal(400);
 			} finally {
@@ -421,7 +423,9 @@ describe('Account Service', () => {
 				params.provider = 'rest';
 				// params.username = 'some_goo@google.com';
 				await accountService.remove(account._id, params);
+				throw new Error('should have failed.');
 			} catch(err) {
+				expect(err.message).to.not.equal('should have failed.');
 				expect(err.message).equal('populate not supported');
 				expect(err.code).to.equal(400);
 			}
@@ -481,7 +485,6 @@ describe('Account Service', () => {
 				};
 				params.provider = 'rest';
 				const result = await accountService.find(params);
-				console.log(result);
 			} catch(err) {
 				expect(err.message).equal('populate not supported');
 				expect(err.code).to.equal(400);

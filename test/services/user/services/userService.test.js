@@ -272,7 +272,9 @@ describe('user service', () => {
 			params.query = { $populate: 'not_whitelisted' };
 			try {
 				await app.service('users').get(student._id, params);
+				throw new Error('should have failed.');
 			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
 				expect(err.message).equal('populate not supported');
 				expect(err.code).to.equal(400);
 			}
@@ -463,7 +465,9 @@ describe('user service', () => {
 						'administrator',
 					],
 				}, params);
+				throw new Error('should have failed.');
 			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
 				expect(err.message).equal('populate not supported');
 				expect(err.code).to.equal(400);
 			}
@@ -512,7 +516,9 @@ describe('user service', () => {
 			params.query = { $populate: 'not_whitelisted' };
 			try {
 				await app.service('users').patch(student._id, { lastName: 'Vader' },  params);
+				throw new Error('should have failed.');
 			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
 				expect(err.message).equal('populate not supported');
 				expect(err.code).to.equal(400);
 			}
@@ -638,10 +644,10 @@ describe('user service', () => {
 			params.query = { $populate: 'not_whitelisted' };
 			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
 			try {
-				const result = await app.service('users').remove(studentToDelete._id, params);
-				expect(result).to.not.be.undefined;
-				expect(result._id.toString()).to.equal(studentToDelete._id.toString());
+				await app.service('users').remove(studentToDelete._id, params);
+				throw new Error('should have failed.');
 			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
 				// in case of error, make sure user gets deleted
 				testObjects.createdUserIds.push(studentToDelete._id);
 				expect(err.message).equal('populate not supported');
