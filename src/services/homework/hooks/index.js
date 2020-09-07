@@ -221,9 +221,7 @@ const hasPatchPermission = (hook) => {
 };
 
 exports.before = () => ({
-	all: [
-		iff(isOAuth2, authenticateOAuth2('homework')).else(authenticate('jwt')),
-	],
+	all: [ iff(isOAuth2, authenticateOAuth2('homework')).else(authenticate('jwt')) ],
 	find: [
 		iff(isProvider('external'), [
 			globalHooks.hasPermission('HOMEWORK_VIEW'),
