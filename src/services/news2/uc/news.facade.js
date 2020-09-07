@@ -1,8 +1,20 @@
-
 // For inter-component calls
 module.exports = class NewsBcFacade {
-	setup(app, bcContext) {
+	setup(app) {
 		// import necessary serivce
-		this.newsRepo = app.service('newsRepo');
+		// could be done via mixin
+		this.newsUc = app.service('newsUc');
+	}
+
+	async createNews(news, account) {
+		return this.newsUc.createNews(news, account);
+	}
+
+	async readNews(id, account) {
+		return this.newsUc.readNews(id, account);
+	}
+
+	async findNews(searchParams, account) {
+		return this.newsUc.findNews(searchParams, account);
 	}
 };
