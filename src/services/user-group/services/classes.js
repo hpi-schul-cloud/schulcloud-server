@@ -4,7 +4,9 @@ const globalHooks = require('../../../hooks');
 const { sortByGradeAndOrName, prepareGradeLevelUnset, saveSuccessor } = require('../hooks/helpers/classHooks');
 const { paginate } = require('../../../utils/array');
 
-const { modelServices: { prepareInternalParams } } = require('../../../utils');
+const {
+	modelServices: { prepareInternalParams },
+} = require('../../../utils');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnClasses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnClasses);
@@ -24,7 +26,7 @@ class Classes {
 
 		const school = await this.app.service('schools').get(query.schoolId);
 		const years = school.years.schoolYears.map((y) => y._id);
-		if (((query.$sort || {}).year === '-1' || (query.$sort || {}).year === 'desc')) {
+		if ((query.$sort || {}).year === '-1' || (query.$sort || {}).year === 'desc') {
 			years.reverse();
 		}
 		years.push({ $exists: false }); // to find classes that dont have a year
@@ -40,7 +42,6 @@ class Classes {
 
 		const classPromises = years.map((y) => {
 			const yearParams = {
-
 				...params,
 				query: { ...params.query, year: y._id || y },
 			};
@@ -111,19 +112,9 @@ const classesHooks = {
 			globalHooks.addCollation,
 			globalHooks.mapPaginationQuery,
 		],
-		get: [
-			restrictToCurrentSchool,
-			restrictToUsersOwnClasses,
-		],
-		create: [
-			globalHooks.hasPermission('CLASS_CREATE'),
-			restrictToCurrentSchool,
-		],
-		update: [
-			globalHooks.hasPermission('CLASS_EDIT'),
-			restrictToCurrentSchool,
-			prepareGradeLevelUnset,
-		],
+		get: [restrictToCurrentSchool, restrictToUsersOwnClasses],
+		create: [globalHooks.hasPermission('CLASS_CREATE'), restrictToCurrentSchool],
+		update: [globalHooks.hasPermission('CLASS_EDIT'), restrictToCurrentSchool, prepareGradeLevelUnset],
 		patch: [
 			globalHooks.hasPermission('CLASS_EDIT'),
 			restrictToCurrentSchool,
@@ -139,11 +130,10 @@ const classesHooks = {
 			globalHooks.ifNotLocal(
 				globalHooks.denyIfNotCurrentSchool({
 					errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
-				}),
-			)],
-		create: [
-			saveSuccessor,
+				})
+			),
 		],
+		create: [saveSuccessor],
 		update: [],
 		patch: [],
 		remove: [],

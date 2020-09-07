@@ -1,6 +1,12 @@
 const {
-	HOST, SMTP, SMTP_HOST, SMTP_PORT,
-	AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_ENDPOINT_URL,
+	HOST,
+	SMTP,
+	SMTP_HOST,
+	SMTP_PORT,
+	AWS_ACCESS_KEY,
+	AWS_SECRET_ACCESS_KEY,
+	AWS_REGION,
+	AWS_ENDPOINT_URL,
 	AUTHENTICATION,
 } = require('./globals');
 
@@ -18,12 +24,14 @@ const secrets = {
 		secretAccessKey: AWS_SECRET_ACCESS_KEY,
 		region: AWS_REGION,
 		endpointUrl: AWS_ENDPOINT_URL,
-		cors_rules: [{
-			AllowedHeaders: ['*'],
-			AllowedMethods: ['PUT'],
-			AllowedOrigins: [HOST],
-			MaxAgeSeconds: 300,
-		}],
+		cors_rules: [
+			{
+				AllowedHeaders: ['*'],
+				AllowedMethods: ['PUT'],
+				AllowedOrigins: [HOST],
+				MaxAgeSeconds: 300,
+			},
+		],
 	},
 	authentication: AUTHENTICATION,
 };

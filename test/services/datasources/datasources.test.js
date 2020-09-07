@@ -81,7 +81,10 @@ describe('datasources service', () => {
 		const params = await generateRequestParamsFromUser(admin);
 		const data = {
 			config: {
-				target: 'csv', password: 'didumm', secret: 'Im an agent', public: 'im an expert',
+				target: 'csv',
+				password: 'didumm',
+				secret: 'Im an agent',
+				public: 'im an expert',
 			},
 			name: `test${Date.now()}`,
 			protected: ['password', 'secret'],
@@ -102,7 +105,9 @@ describe('datasources service', () => {
 		const params = await generateRequestParamsFromUser(admin);
 		const data = {
 			config: {
-				target: 'csv', secret: 'Im an agent', public: 'im an expert',
+				target: 'csv',
+				secret: 'Im an agent',
+				public: 'im an expert',
 			},
 			name: `test${Date.now()}`,
 			protected: ['secret'],
@@ -122,14 +127,20 @@ describe('datasources service', () => {
 		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
 		const params = await generateRequestParamsFromUser(admin);
 
-		const datasource01 = await datasourcesService.create({
-			config: { target: 'csv' },
-			name: `onetest${Date.now()}`,
-		}, params);
-		const datasource02 = await datasourcesService.create({
-			config: { target: 'csv' },
-			name: `othertest${Date.now()}`,
-		}, params);
+		const datasource01 = await datasourcesService.create(
+			{
+				config: { target: 'csv' },
+				name: `onetest${Date.now()}`,
+			},
+			params
+		);
+		const datasource02 = await datasourcesService.create(
+			{
+				config: { target: 'csv' },
+				name: `othertest${Date.now()}`,
+			},
+			params
+		);
 
 		params.query = {};
 		const result = await datasourcesService.find(params);

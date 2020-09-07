@@ -12,9 +12,12 @@ class SystemSyncer extends Syncer {
 	}
 
 	static getSystems(app, type) {
-		return app.service('systems').find({
-			query: { type },
-		}).then((systems) => systems.data);
+		return app
+			.service('systems')
+			.find({
+				query: { type },
+			})
+			.then((systems) => systems.data);
 	}
 
 	prefix() {

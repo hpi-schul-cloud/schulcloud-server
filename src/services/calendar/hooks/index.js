@@ -11,25 +11,29 @@ const { courseModel } = require('../../user-group/model');
  * */
 const persistCourseTimesEvent = (hook) => {
 	const courseService = hook.app.service('courses');
-	return Promise.all(hook.result.map((event) => {
-		if (event['x-sc-courseId']) {
-			const courseId = event['x-sc-courseId'];
-			const courseTimeId = event['x-sc-courseTimeId'];
+	return Promise.all(
+		hook.result.map((event) => {
+			if (event['x-sc-courseId']) {
+				const courseId = event['x-sc-courseId'];
+				const courseTimeId = event['x-sc-courseTimeId'];
 
-			// find course-time and update eventId
-			return courseService.get(courseId).then(() => courseModel.findOneAndUpdate(
-				{
-					_id: courseId,
-					'times._id': courseTimeId,
-				},
-				{
-					$set: {
-						'times.$.eventId': event._id,
-					},
-				},
-			));
-		}
-	})).then(() => Promise.resolve(hook));
+				// find course-time and update eventId
+				return courseService.get(courseId).then(() =>
+					courseModel.findOneAndUpdate(
+						{
+							_id: courseId,
+							'times._id': courseTimeId,
+						},
+						{
+							$set: {
+								'times.$.eventId': event._id,
+							},
+						}
+					)
+				);
+			}
+		})
+	).then(() => Promise.resolve(hook));
 };
 
 exports.before = {

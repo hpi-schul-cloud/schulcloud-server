@@ -14,7 +14,15 @@ const create = async ({
 	...other
 }) => {
 	const lesson = await LessonModel.create({
-		name, description, courseId, courseGroupId, contents, date, time, hidden, ...other,
+		name,
+		description,
+		courseId,
+		courseGroupId,
+		contents,
+		date,
+		time,
+		hidden,
+		...other,
 	});
 	createdLessons.push(lesson._id);
 	return lesson;
@@ -26,7 +34,9 @@ const cleanup = () => {
 	}
 	const ids = createdLessons;
 	createdLessons = [];
-	return LessonModel.deleteMany({ id: { $in: ids } }).lean().exec();
+	return LessonModel.deleteMany({ id: { $in: ids } })
+		.lean()
+		.exec();
 };
 
 module.exports = {

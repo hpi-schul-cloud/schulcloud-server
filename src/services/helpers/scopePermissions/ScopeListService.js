@@ -9,23 +9,23 @@ const { ScopeService } = require('./ScopeService');
  */
 class ScopeListService extends ScopeService {
 	/**
-     * Calls the handler function with the userId, requested permissions, and request params (for further querying).
-     * @param {ObjectId} userId the userId
-     * @param {Array<String>} permissions the permissions
-     * @returns {Array<Object>} an Array of scope objects
-     * @memberof ScopePermissionService
-     */
+	 * Calls the handler function with the userId, requested permissions, and request params (for further querying).
+	 * @param {ObjectId} userId the userId
+	 * @param {Array<String>} permissions the permissions
+	 * @returns {Array<Object>} an Array of scope objects
+	 * @memberof ScopePermissionService
+	 */
 	async getUserScopes(userId, permissions = [], params) {
 		const scopes = await this.handler.apply(this, [userId, permissions, params]);
 		return scopes || [];
 	}
 
 	/**
-     * Implements the route
-     * @param {Object} params Feathers request params
-     * @returns {Array<Object>} a list of scope objects
-     * @memberof ScopeListService
-     */
+	 * Implements the route
+	 * @param {Object} params Feathers request params
+	 * @returns {Array<Object>} a list of scope objects
+	 * @memberof ScopeListService
+	 */
 	find(params) {
 		let list = [];
 		if (params.query && params.query.permissions) {

@@ -8,12 +8,7 @@ const { expect } = chai;
 chai.use(chaiAsPromised);
 
 const app = require('../../../../src/app');
-const {
-	createTestUser,
-	createTestAccount,
-	createTestActivation,
-	cleanup,
-} = require('../../helpers/testObjects')(app);
+const { createTestUser, createTestAccount, createTestActivation, cleanup } = require('../../helpers/testObjects')(app);
 
 const util = require('../../../../src/services/activation/utils/generalUtils');
 const customUtils = require('../../../../src/services/activation/utils/customStrategyUtils');
@@ -34,18 +29,18 @@ const createEntry = async () => {
 	return { entry, user };
 };
 
-const getNotificationMock = (expectedData = {}) => new Promise((resolve) => {
-	nock(config.services.notification)
-		.post('/mails')
-		.reply(200,
-			(uri, requestBody) => {
+const getNotificationMock = (expectedData = {}) =>
+	new Promise((resolve) => {
+		nock(config.services.notification)
+			.post('/mails')
+			.reply(200, (uri, requestBody) => {
 				Object.entries(expectedData).forEach(([key, value]) => {
 					expect(requestBody[key]).to.eql(value);
 				});
 				resolve(true);
 				return 'Message queued';
 			});
-});
+	});
 
 describe('activation/services activationService', () => {
 	let server;
@@ -117,9 +112,9 @@ describe('activation/services activationService', () => {
 		const credentials = { username: user.email, password: user.email };
 		const account = await createTestAccount(credentials, 'local', user);
 
-		await expect(activationService
-			.update('thisisaninvalidactivationcode', {}, { account: { userId: user._id } }))
-			.to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_INVALID);
+		await expect(
+			activationService.update('thisisaninvalidactivationcode', {}, { account: { userId: user._id } })
+		).to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_INVALID);
 
 		const changedUser = await util.getUser(app, user._id);
 		const changedAccounts = await app.service('/accounts').find({
@@ -143,9 +138,9 @@ describe('activation/services activationService', () => {
 
 		const userHacker = await createTestUser({ roles: ['student'] });
 
-		await expect(activationService
-			.update(entry.activationCode, {}, { account: { userId: userHacker._id } }))
-			.to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_INVALID);
+		await expect(
+			activationService.update(entry.activationCode, {}, { account: { userId: userHacker._id } })
+		).to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_INVALID);
 
 		const changedUser = await util.getUser(app, user._id);
 		const changedAccounts = await app.service('/accounts').find({

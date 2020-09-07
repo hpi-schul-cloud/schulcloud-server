@@ -17,10 +17,10 @@
  */
 class AbstractLDAPStrategy {
 	/**
-     * @abstract
-     * @param {App} app
-     * @param {LDAPConfig} config
-     */
+	 * @abstract
+	 * @param {App} app
+	 * @param {LDAPConfig} config
+	 */
 	constructor(app, config) {
 		if (new.target === AbstractLDAPStrategy) {
 			throw new TypeError(`Cannot construct AbstractLDAPStrategy
@@ -32,11 +32,11 @@ class AbstractLDAPStrategy {
 	}
 
 	/**
-     * get provider-specific search string and options to find all schools in
-     * the LDAP directory
-     * @abstract
-     * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName
-     */
+	 * get provider-specific search string and options to find all schools in
+	 * the LDAP directory
+	 * @abstract
+	 * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName
+	 */
 	getSchools() {
 		throw new TypeError('Method has to be implemented.');
 	}
@@ -44,34 +44,34 @@ class AbstractLDAPStrategy {
 	/* eslint-disable no-unused-vars */
 
 	/**
-     * get provider-specific search string and options to find all users in
-     * a given school in the LDAP directory
-     * @abstract
-     * @param {School} school the school
-     * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
-     * (Array) roles = ['teacher', 'student', 'administrator']
-     */
+	 * get provider-specific search string and options to find all users in
+	 * a given school in the LDAP directory
+	 * @abstract
+	 * @param {School} school the school
+	 * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
+	 * (Array) roles = ['teacher', 'student', 'administrator']
+	 */
 	getUsers(school) {
 		throw new TypeError('Method has to be implemented.');
 	}
 
 	/**
-     * get provider-specific search string and options to find all classes in
-     * a given school in the LDAP directory
-     * @abstract
-     * @param {School} school the school
-     * @returns {Array} Array of Objects containing className, ldapDn, uniqueMember
-     */
+	 * get provider-specific search string and options to find all classes in
+	 * a given school in the LDAP directory
+	 * @abstract
+	 * @param {School} school the school
+	 * @returns {Array} Array of Objects containing className, ldapDn, uniqueMember
+	 */
 	getClasses(school) {
 		throw new TypeError('Method has to be implemented.');
 	}
 
 	/**
-     * get provider-specific search string and options to find all experts in
-     * the LDAP directory
-     * @abstract
-     * @returns {LDAPQueryOptions} Object containing `searchString` and `options`
-     */
+	 * get provider-specific search string and options to find all experts in
+	 * the LDAP directory
+	 * @abstract
+	 * @returns {LDAPQueryOptions} Object containing `searchString` and `options`
+	 */
 	getExpertsQuery() {
 		throw new TypeError('Method has to be implemented.');
 	}

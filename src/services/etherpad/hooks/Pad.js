@@ -7,7 +7,7 @@ const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
 
 const restrictOldPadsToCourse = async (context) => {
-	if(typeof(context.data.oldPadId) === 'undefined') {
+	if (typeof context.data.oldPadId === 'undefined') {
 		return context;
 	}
 	const oldPadURI = Configuration.get('ETHERPAD_OLD_PAD_URI') || 'https://etherpad.schul-cloud.org/p';
@@ -19,7 +19,7 @@ const restrictOldPadsToCourse = async (context) => {
 				contents: { $elemMatch: { 'content.url': `${oldPadURI}/${context.data.oldPadId}` } },
 			},
 		});
-		if(foundLessons.total < 1) {
+		if (foundLessons.total < 1) {
 			throw new Error('Forbidden');
 		}
 	} catch (err) {

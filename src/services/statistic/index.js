@@ -96,10 +96,12 @@ const fetchStatistics = () => {
 	const statistics = {};
 
 	return Promise.all(
-		promises.map((p) => p.promise.exec().then((res) => {
-			statistics[p.name] = res;
-			return res;
-		})),
+		promises.map((p) =>
+			p.promise.exec().then((res) => {
+				statistics[p.name] = res;
+				return res;
+			})
+		)
 	).then(() => statistics);
 };
 
@@ -109,8 +111,7 @@ class StatisticsService {
 	}
 
 	find() {
-		return fetchStatistics()
-			.then((statistics) => statistics);
+		return fetchStatistics().then((statistics) => statistics);
 	}
 
 	get(id, params) {

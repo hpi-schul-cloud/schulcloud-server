@@ -49,5 +49,9 @@ const createChannel = async () => ({
 const setup = async (app) => {};
 
 module.exports = {
-	setup, createChannel, queues, reset, triggerConsume,
+	setup,
+	createChannel,
+	queues,
+	reset,
+	triggerConsume,
 };
