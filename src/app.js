@@ -26,7 +26,7 @@ const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
 const rabbitMq = require('./utils/rabbitmq');
 
-const { setupFacadeLocator, setupFacades } = require('./facadeLocator');
+const { setupFacadeLocator, setupFacades } = require('./utils/facadeLocator');
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
