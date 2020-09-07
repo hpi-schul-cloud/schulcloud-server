@@ -1,16 +1,19 @@
 const accountsHelper = require('./accounts');
 
 const generateJWT = (app) => async ({ username, password }) => {
-	const result = await app.service('authentication').create({
-		strategy: 'local',
-		username,
-		password,
-	}, {
-		headers: {
-			'content-type': 'application/json',
+	const result = await app.service('authentication').create(
+		{
+			strategy: 'local',
+			username,
+			password,
 		},
-		provider: 'rest',
-	});
+		{
+			headers: {
+				'content-type': 'application/json',
+			},
+			provider: 'rest',
+		}
+	);
 	return result.accessToken;
 };
 

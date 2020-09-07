@@ -5,10 +5,7 @@ const rolesModel = require('../model');
 
 const hooks = {
 	before: {
-		all: [
-			authenticate('jwt'),
-			lookupSchool,
-		],
+		all: [authenticate('jwt'), lookupSchool],
 		get: [
 			restrictGetToCurrentUser,
 			// TODO: check it is restircted to current user and maybe some other have privileges
@@ -18,19 +15,19 @@ const hooks = {
 	},
 };
 
-const updateRoles = (userRoles = [], schoolPermissions = {}) => userRoles.map((role) => {
-	if (Object.keys(schoolPermissions).includes(role.name)) {
-		Object.keys(schoolPermissions[role.name]).forEach((r) => {
-			if (schoolPermissions[role.name][r] && !role.permissions.includes(r)) {
-				role.permissions.push(r);
-			} else if (!schoolPermissions[role.name][r]) {
-				role.permissions = role.permissions.filter((permission) => permission !== r);
-			}
-		});
-	}
-	return role;
-});
-
+const updateRoles = (userRoles = [], schoolPermissions = {}) =>
+	userRoles.map((role) => {
+		if (Object.keys(schoolPermissions).includes(role.name)) {
+			Object.keys(schoolPermissions[role.name]).forEach((r) => {
+				if (schoolPermissions[role.name][r] && !role.permissions.includes(r)) {
+					role.permissions.push(r);
+				} else if (!schoolPermissions[role.name][r]) {
+					role.permissions = role.permissions.filter((permission) => permission !== r);
+				}
+			});
+		}
+		return role;
+	});
 
 class UserRoles {
 	async get(id, params) {

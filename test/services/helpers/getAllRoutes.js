@@ -4,7 +4,9 @@ const getAllRoutes = () => {
 	const convert = {};
 	let paths;
 	try {
-		({ docs: { paths } } = app);
+		({
+			docs: { paths },
+		} = app);
 	} catch (err) {
 		throw new Error(err);
 	}
