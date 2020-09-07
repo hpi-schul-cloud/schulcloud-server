@@ -1,10 +1,17 @@
+function stripSlashes(path) {
+	return path.replace(/^(\/+)|(\/+)$/g, '');
+}
+
 const setupFacadeLocator = (app) => {
 	app.facadeDict = {};
 	app.registerFacade = (path, facade) => {
-		console.log('register facade ' + path);
-		app.facadeDict[path] = facade; // todo: deal with slashes and stuff
+		const strippedPath = stripSlashes(path);
+		app.facadeDict[strippedPath] = facade;
 	};
-	app.facade = (path) => app.facadeDict[path]; // todo: deal with slashes and stuff
+	app.facade = (path) => {
+		const strippedPath = stripSlashes(path);
+		return app.facadeDict[strippedPath];
+	};
 	return app;
 };
 
