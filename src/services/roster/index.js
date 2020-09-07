@@ -32,7 +32,7 @@ module.exports = function roster() {
 					return {
 						data: {
 							user_id: params.route.user,
-							username: oauth2.getSubject(params.pseudonym, app.settings.services.web),
+							username: encodeURI(oauth2.getSubject(params.pseudonym, app.settings.services.web)),
 							type: user.roles[0].name,
 						},
 
