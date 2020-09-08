@@ -14,6 +14,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Test changelog has been updated for feature or hotfix branches
 - SC-5612 - Adding search feature to the admintables for nuxt-client.
 
+### Changed
+
+- Extend JWT payload by schoolId and roleIds
+
 ## [24.4.1] - 2020-08-31
 
 ### Fixed
