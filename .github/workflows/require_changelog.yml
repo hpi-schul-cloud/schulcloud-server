@@ -27,9 +27,9 @@ jobs:
           echo ${{ steps.changed.outputs.matched }}
           echo "Changes in CHANGELOG.md have been found"
           exit 0
-          - name: Changelog updates missing
-          if: steps.changed.outputs.matched != 'true'
-          run: |
+      - name: Changelog updates missing
+        if: steps.changed.outputs.matched != 'true'
+        run: |
           echo ${{ steps.changed.outputs.matched }}
           echo "Features and Hotfixes must contain a changelog entry."
           echo "Add meaningful information into CHANGELOG.md about this PR."
