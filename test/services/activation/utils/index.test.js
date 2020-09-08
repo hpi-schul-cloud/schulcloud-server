@@ -11,11 +11,7 @@ const { Configuration } = require('@schul-cloud/commons');
 const HOST = Configuration.get('HOST');
 
 const app = require('../../../../src/app');
-const {
-	createTestUser,
-	createTestActivation,
-	cleanup,
-} = require('../../helpers/testObjects')(app);
+const { createTestUser, createTestActivation, cleanup } = require('../../helpers/testObjects')(app);
 
 const util = require('../../../../src/services/activation/utils/generalUtils');
 const customUtils = require('../../../../src/services/activation/utils/customStrategyUtils');
@@ -147,7 +143,7 @@ describe('activation/utils utils', () => {
 
 		entry.state = util.STATE.NOT_STARTED;
 		entry.updatedAt = new Date(
-			Date.parse(entry.updatedAt) - 1000 * Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS') - 1000,
+			Date.parse(entry.updatedAt) - 1000 * Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS') - 1000
 		);
 		await expect(util.validEntry(entry)).to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_EXPIRED);
 	});

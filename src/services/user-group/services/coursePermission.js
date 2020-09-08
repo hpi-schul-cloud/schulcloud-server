@@ -44,7 +44,7 @@ const setup = (app) => {
 		if (userIsSuperhero(user)) {
 			return getPermissions(courseRoles.superhero);
 		}
-		if ((userIsAdmin(user) && belongsToSameSchool(user, course))) {
+		if (userIsAdmin(user) && belongsToSameSchool(user, course)) {
 			return getPermissions(courseRoles.administrator);
 		}
 
