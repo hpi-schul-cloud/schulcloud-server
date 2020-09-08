@@ -10,7 +10,7 @@ const getAllRoutes = () => {
 			const name = route.replace(/^\//, '');
 			const methods = _.uniq(group.map((r) => Object.keys(r.methods).filter((k) => r.methods[k])).flat());
 
-			return [route, { methods, route, name }];
+			return [name, { methods, route, name }];
 		}),
 	);
 };
