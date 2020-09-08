@@ -20,7 +20,7 @@ jobs:
         with:
           paths: ^CHANGELOG.md
       - name: current head branch name
-        run: echo github.head_ref
+        run: echo ${{ github.head_ref }}
       - name: Changelog has been updated
         if: steps.changed.outputs.matched == 'true'
         run: |
