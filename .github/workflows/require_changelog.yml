@@ -1,0 +1,31 @@
+name: Require CHANGELOG.md update
+
+on:
+  pull_request:
+    branches: # filter target branch of pr
+      - develop
+      - master
+
+jobs:
+  FeatureOrHotfix:
+    runs-on: ubuntu-latest
+    # filter current branch name to be a feature or a hotfix branch
+    if: startsWith('feature', github.head_ref) || startsWith('hotfix', github.head_ref)
+    env:
+      GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    steps:
+      - name: Get Changed Files
+        id: changed
+        uses: foodee/pr-includes-file-change@master
+        with:
+          paths: ^CHANGELOG.md
+      - name: Changelog has been updated
+        if: steps.changed.outputs.matched == 'true'
+        run: |
+          echo "Changes in CHANGELOG.md have been found"
+          exit 0
+      - name: Changelog updates missing
+        if: steps.changed.outputs.matched != 'true'
+        run: |
+          echo "Features and Hotfixes must contain a changelog entry. Update CHANGELOG.md"
+          exit 1
