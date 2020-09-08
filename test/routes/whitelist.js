@@ -13,6 +13,9 @@ const whitelistNoJwt = {
 	schools: { get: 200 },
 	'tools/link': { post: 404 },
 	years: { get: 200 },
+	'system_info/haproxy': { get: 200 },
+	ping: { get: 200 },
+	docs: { get: 200},
 };
 
 const whitelistInvalidJwt = {
