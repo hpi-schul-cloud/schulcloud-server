@@ -92,7 +92,7 @@ describe('user service', () => {
 				roles: ['student'],
 				birthday: Date.now(),
 				ldapId: 'thisisauniqueid',
-				schoolId: new ObjectId('0000d186816abba584714c5f'), // admin school id
+				schoolId: new ObjectId('5f2987e020834114b8efd6f8'), // admin school id
 			});
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {};
