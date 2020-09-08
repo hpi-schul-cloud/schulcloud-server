@@ -360,7 +360,7 @@ describe('Account Service', () => {
 		});
 
 		it('should return account object with changed email address', async () => {
-			let user = await testObjects.createTestUser();
+			const user = await testObjects.createTestUser();
 			const accountDetails = {
 				username: user.email,
 				password: 'ca4t9fsfr3dsd',
