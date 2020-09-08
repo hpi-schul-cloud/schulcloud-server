@@ -10,7 +10,7 @@ jobs:
   FeatureOrHotfix:
     runs-on: ubuntu-latest
     # filter current branch name to be a feature or a hotfix branch
-    #if: startsWith('feature', github.head_ref) || startsWith('hotfix', github.head_ref)
+    if: startsWith(${{ github.head_ref }}, 'feature') || startsWith(${{ github.head_ref }}, 'hotfix')
     env:
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
     steps:
