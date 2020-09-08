@@ -486,7 +486,7 @@ describe('Account Service', () => {
 				.get('/accounts')
 				.query({ username: { $gte: 0 } })
 				.end((response, err) => {
-					expect(err).to.have.status(400);
+					expect(err).to.have.status(401);
 					done();
 				});
 		});

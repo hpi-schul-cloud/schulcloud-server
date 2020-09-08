@@ -8,8 +8,9 @@ const classesService = app.service('classes');
 const coursesService = app.service('courses');
 const testObjects = require('../../helpers/testObjects')(app);
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
+const { ObjectId } = require('mongoose').Types;
 
-const testGenericErrorMessage = 'Der angefragte Nutzer ist unbekannt!';
+const usersFromDifferentSchoolsErrorMessage = 'Der angefragte Nutzer gehört nicht zur eigenen Schule!';
 
 describe('user service', () => {
 	let server;
@@ -91,6 +92,7 @@ describe('user service', () => {
 				roles: ['student'],
 				birthday: Date.now(),
 				ldapId: 'thisisauniqueid',
+				schoolId: new ObjectId('0000d186816abba584714c5f'), // admin school id
 			});
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {};
@@ -118,7 +120,7 @@ describe('user service', () => {
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
-				expect(err.message).to.equal(testGenericErrorMessage);
+				expect(err.message).to.equal(usersFromDifferentSchoolsErrorMessage);
 				expect(err.code).to.equal(403);
 			}
 		});
@@ -137,7 +139,7 @@ describe('user service', () => {
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
-				expect(err.message).to.equal(testGenericErrorMessage);
+				expect(err.message).to.equal(usersFromDifferentSchoolsErrorMessage);
 				expect(err.code).to.equal(403);
 			}
 		});
@@ -173,7 +175,7 @@ describe('user service', () => {
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				// https://ticketsystem.schul-cloud.org/browse/SC-5076
-				// expect(err.message).to.equal(testGenericErrorMessage);
+				// expect(err.message).to.equal(usersFromDifferentSchoolsErrorMessage);
 				expect(err.code).to.equal(403);
 			}
 		});
@@ -203,7 +205,7 @@ describe('user service', () => {
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
-				expect(err.message).to.equal(testGenericErrorMessage);
+				expect(err.message).to.equal(usersFromDifferentSchoolsErrorMessage);
 				expect(err.code).to.equal(403);
 			}
 		});
@@ -219,7 +221,7 @@ describe('user service', () => {
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
-				expect(err.message).to.equal(testGenericErrorMessage);
+				expect(err.message).to.equal(usersFromDifferentSchoolsErrorMessage);
 				expect(err.code).to.equal(403);
 			}
 		});
@@ -235,7 +237,7 @@ describe('user service', () => {
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
-				expect(err.message).to.equal(testGenericErrorMessage);
+				expect(err.message).to.equal(usersFromDifferentSchoolsErrorMessage);
 				expect(err.code).to.equal(403);
 			}
 		});
@@ -260,7 +262,7 @@ describe('user service', () => {
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
-				expect(err.message).to.equal(testGenericErrorMessage);
+				expect(err.message).to.equal(usersFromDifferentSchoolsErrorMessage);
 				expect(err.code).to.equal(403);
 			}
 		});
@@ -315,7 +317,7 @@ describe('user service', () => {
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.message).to.equal('populate not supported');
-				expect(err.code).to.equal(403);
+				expect(err.code).to.equal(400);
 			}
 		});
 
