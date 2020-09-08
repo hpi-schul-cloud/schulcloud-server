@@ -105,10 +105,7 @@ const userHooks = {
 			addCollation,
 			iff(isProvider('external'), includeOnlySchoolRoles),
 		],
-		get: [
-			authenticate('jwt'),
-			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
-		],
+		get: [authenticate('jwt'), iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist))],
 		create: [
 			checkJwt(),
 			iff(isProvider('external'), preventPopulate),

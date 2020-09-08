@@ -278,7 +278,6 @@ const validateUserName = async (context) => {
 	return context;
 };
 
-
 module.exports = {
 	sanitizeUsername,
 	validateUserName,

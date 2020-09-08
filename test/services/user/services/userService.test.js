@@ -267,7 +267,9 @@ describe('user service', () => {
 
 		it('should throws an error, when performing GET with populate in query params', async () => {
 			const student = await testObjects.createTestUser({
-				roles: ['student'], birthday: Date.now(), ldapId: 'thisisauniqueid',
+				roles: ['student'],
+				birthday: Date.now(),
+				ldapId: 'thisisauniqueid',
 			});
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = { $populate: 'not_whitelisted' };
@@ -283,7 +285,9 @@ describe('user service', () => {
 
 		it('should NOT throws an error, when performing GET with whitelisted value of populate field', async () => {
 			const student = await testObjects.createTestUser({
-				roles: ['student'], birthday: Date.now(), ldapId: 'thisisauniqueid',
+				roles: ['student'],
+				birthday: Date.now(),
+				ldapId: 'thisisauniqueid',
 			});
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = { $populate: 'roles' };
@@ -450,15 +454,16 @@ describe('user service', () => {
 
 			params.query = { $populate: 'not_whitelisted' };
 			try {
-				await app.service('users').create({
-					schoolId,
-					email: `${Date.now()}@testadmin.org`,
-					firstName: 'Max',
-					lastName: 'Tester',
-					roles: [
-						'administrator',
-					],
-				}, params);
+				await app.service('users').create(
+					{
+						schoolId,
+						email: `${Date.now()}@testadmin.org`,
+						firstName: 'Max',
+						lastName: 'Tester',
+						roles: ['administrator'],
+					},
+					params
+				);
 				throw new Error('should have failed.');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed.');
@@ -504,7 +509,9 @@ describe('user service', () => {
 
 		it('should throws an error, when performing PATCH with populate in query params', async () => {
 			const student = await testObjects.createTestUser({
-				roles: ['student'], birthday: Date.now(), ldapId: 'thisisauniqueid',
+				roles: ['student'],
+				birthday: Date.now(),
+				ldapId: 'thisisauniqueid',
 			});
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = { $populate: 'not_whitelisted' };
@@ -629,7 +636,8 @@ describe('user service', () => {
 
 		it('should throws an error, when performing REMOVE with populate in query params', async () => {
 			await testObjects.createTestRole({
-				name: 'studentDelete', permissions: ['STUDENT_DELETE'],
+				name: 'studentDelete',
+				permissions: ['STUDENT_DELETE'],
 			});
 			const studentToDelete = await testObjects.createTestUser({ roles: ['student'], manualCleanup: true });
 			const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });

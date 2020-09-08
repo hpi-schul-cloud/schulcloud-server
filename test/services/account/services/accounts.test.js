@@ -371,9 +371,7 @@ describe('Account Service', () => {
 				const result = await accountService.patch(account._id, {
 					username: 'some_good@email.adderss',
 				});
-				expect(result.username)
-					.to
-					.equal('some_good@email.adderss');
+				expect(result.username).to.equal('some_good@email.adderss');
 			} finally {
 				await accountService.remove(account._id);
 			}
@@ -391,7 +389,7 @@ describe('Account Service', () => {
 				await accountService.patch(account._id, {
 					username: 'some_good2@email.adderss',
 				});
-			} catch(err) {
+			} catch (err) {
 				expect(err.message).equal('Der Benutzername ist bereits vergeben!');
 				expect(err.code).to.equal(400);
 			} finally {
@@ -413,11 +411,15 @@ describe('Account Service', () => {
 				params.query = { $populate: 'userId' };
 				params.provider = 'rest';
 				// params.username = 'some_goo@google.com';
-				await accountService.patch(account._id, {
-					password: 'Schulcloud1!',
-				}, params);
+				await accountService.patch(
+					account._id,
+					{
+						password: 'Schulcloud1!',
+					},
+					params
+				);
 				throw new Error('should have failed.');
-			} catch(err) {
+			} catch (err) {
 				expect(err.message).to.not.equal('should have failed.');
 				expect(err.message).equal('populate not supported');
 				expect(err.code).to.equal(400);
@@ -444,7 +446,7 @@ describe('Account Service', () => {
 				// params.username = 'some_goo@google.com';
 				await accountService.remove(account._id, params);
 				throw new Error('should have failed.');
-			} catch(err) {
+			} catch (err) {
 				expect(err.message).to.not.equal('should have failed.');
 				expect(err.message).equal('populate not supported');
 				expect(err.code).to.equal(400);
@@ -506,7 +508,7 @@ describe('Account Service', () => {
 				};
 				params.provider = 'rest';
 				await accountService.find(params);
-			} catch(err) {
+			} catch (err) {
 				expect(err.message).equal('populate not supported');
 				expect(err.code).to.equal(400);
 			} finally {

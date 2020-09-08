@@ -2,7 +2,11 @@ const { authenticate } = require('@feathersjs/authentication');
 const local = require('@feathersjs/authentication-local');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const {
-	hasPermission, permitGroupOperation, restrictToCurrentSchool, preventPopulate, getRestrictPopulatesHook,
+	hasPermission,
+	permitGroupOperation,
+	restrictToCurrentSchool,
+	preventPopulate,
+	getRestrictPopulatesHook,
 } = require('../../../hooks');
 const {
 	sanitizeUsername,
