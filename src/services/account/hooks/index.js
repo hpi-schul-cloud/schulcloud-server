@@ -120,6 +120,9 @@ const validatePassword = (hook) => {
 const checkUnique = (hook) => {
 	const accountService = hook.service;
 	const { username, systemId } = hook.data;
+	if (!username) {
+		return Promise.resolve(hook);
+	}
 	return accountService.find({ query: { username, systemId } }).then((result) => {
 		// systemId might be null. In that case, accounts with any systemId will be returned
 		const filtered = result.filter((a) => a.systemId === systemId);

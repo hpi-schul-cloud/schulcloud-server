@@ -251,7 +251,6 @@ describe('Account Service', () => {
 		});
 
 		it('should successfully patch activated to true', async () => {
-			let user = await testObjects.createTestUser();
 			user = await testObjects.createTestUser();
 			const accountDetails = {
 				username: user.email,
@@ -380,16 +379,18 @@ describe('Account Service', () => {
 		it('should return an error if an username specified in the request body already exists', async () => {
 			const user = await testObjects.createTestUser();
 			const accountDetails = {
-				username: 'some_good2@email.adderss',
+				username: 'some_good@email.adderss',
 				password: 'ca4t9fsfr3dsd',
 				userId: user._id,
 			};
 			const account = await accountService.create(accountDetails);
 			try {
 				await accountService.patch(account._id, {
-					username: 'some_good2@email.adderss',
+					username: 'some_good@email.adderss',
 				});
+				throw new Error('should have failed.');
 			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
 				expect(err.message).equal('Der Benutzername ist bereits vergeben!');
 				expect(err.code).to.equal(400);
 			} finally {
