@@ -185,13 +185,16 @@ class AdminUsers {
 			try{
 				return fu()
 			}
-			catch{
-				const {email} = await this.app.service('userModel').get(currentUserId);
-				await this.app.service('accountModel').patch(null, {username: email}, {
-					query: {
-						userId: currentUserId,
-					}
-				});
+			catch (err) {
+				if(data.email){
+					const {email} = await this.app.service('userModel').get(currentUserId);
+					await this.app.service('accountModel').patch(null, {username: email}, {
+						query: {
+							userId: currentUserId,
+						}
+					});
+				}
+				throw err;
 			}
 		}
 
