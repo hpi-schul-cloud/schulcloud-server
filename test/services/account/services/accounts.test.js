@@ -378,7 +378,7 @@ describe('Account Service', () => {
 		});
 
 		it('should return an error if an username specified in the request body already exists', async () => {
-			let user = await testObjects.createTestUser();
+			const user = await testObjects.createTestUser();
 			const accountDetails = {
 				username: 'some_good2@email.adderss',
 				password: 'ca4t9fsfr3dsd',
