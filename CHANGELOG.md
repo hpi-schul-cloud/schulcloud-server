@@ -8,14 +8,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
 ## Unreleased
+
+### Added
+
+- SC-5612 - Adding search feature to the admintables for nuxt-client.
+
+## [24.4.1] - 2020-08-31
+
+### Fixed
+
+- SC-6554: CSV-Importer no longer allows patching users with different roles
+
 ## [24.4.1] - 2020-08-31
 
 ### Fixed
 
 - SC-6511 - LDAP edit button missing.
 
-### Added
+### Changed
 
+- SC-5987 Internationalisation: extend user and school model with default language
+
+### Added
 - SC-6172: added hooks and checks to look for unique and not disposable emails in adminUsers service
 
 ## [24.4.0] - 2020-8-31

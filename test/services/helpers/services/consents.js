@@ -5,16 +5,20 @@ const createTestConsent = (app) => ({
 	userConsent = undefined,
 	parentConsents = [],
 	manualCleanup = false,
-} = {}) => app.service('consents').create({
-	userId,
-	userConsent,
-	parentConsents,
-}).then((consent) => {
-	if (!manualCleanup) {
-		createdConsentIds.push(consent._id.toString());
-	}
-	return consent;
-});
+} = {}) =>
+	app
+		.service('consents')
+		.create({
+			userId,
+			userConsent,
+			parentConsents,
+		})
+		.then((consent) => {
+			if (!manualCleanup) {
+				createdConsentIds.push(consent._id.toString());
+			}
+			return consent;
+		});
 
 const cleanup = (app) => () => {
 	if (createdConsentIds.length === 0) {

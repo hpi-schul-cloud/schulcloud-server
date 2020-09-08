@@ -7,21 +7,15 @@ exports.before = {
 	all: [],
 	find: [disallow()],
 	get: [
-		iffElse(isProvider('external'), [
-			authenticate('jwt'),
-			hasPermission('SYSTEM_EDIT'),
-			populateCurrentSchool,
-			restrictToSchoolSystems,
-		], [
-			disallow(),
-		]),
+		iffElse(
+			isProvider('external'),
+			[authenticate('jwt'), hasPermission('SYSTEM_EDIT'), populateCurrentSchool, restrictToSchoolSystems],
+			[disallow()]
+		),
 	],
 	create: [disallow()],
 	update: [disallow()],
-	patch: [
-		authenticate('jwt'),
-		hasPermission('SCHOOL_EDIT'),
-	],
+	patch: [authenticate('jwt'), hasPermission('SCHOOL_EDIT')],
 	remove: [disallow()],
 };
 

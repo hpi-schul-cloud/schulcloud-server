@@ -74,13 +74,13 @@ describe('Account Service', () => {
 				username: `max${Date.now()}@mHuEsLtIeXrmann.de`,
 				password: 'ca4t9fsfr3dsd',
 				userId: new ObjectId(),
-
 			};
 			const account = await accountService.create(accountDetails);
 
 			try {
 				await new Promise((resolve, reject) => {
-					accountService.create(accountDetails)
+					accountService
+						.create(accountDetails)
 						.then(() => {
 							reject(new Error('This call should fail because the user already exists'));
 						})
@@ -109,10 +109,10 @@ describe('Account Service', () => {
 			};
 
 			await new Promise((resolve, reject) => {
-				accountService.create(newAccount)
+				accountService
+					.create(newAccount)
 					.then(() => {
-						reject(new Error('This call should fail because '
-                        + 'of an already existing user with the same username'));
+						reject(new Error('This call should fail because ' + 'of an already existing user with the same username'));
 					})
 					.catch((err) => {
 						expect(err.message).to.equal('Der Benutzername ist bereits vergeben!');
@@ -135,7 +135,8 @@ describe('Account Service', () => {
 			try {
 				await new Promise((resolve, reject) => {
 					accountDetails.userId = new ObjectId();
-					accountService.create(accountDetails)
+					accountService
+						.create(accountDetails)
 						.then(() => {
 							reject(new Error('This call should fail because the user already exists'));
 						})
@@ -162,11 +163,15 @@ describe('Account Service', () => {
 			const account = await accountService.create(accountDetails);
 			try {
 				const params = await generateRequestParamsFromUser(user);
-				await accountService.update(account._id, {
-					username: 'other@user.de',
-					password: 'newpassword',
-					userId: otherUser._id,
-				}, params);
+				await accountService.update(
+					account._id,
+					{
+						username: 'other@user.de',
+						password: 'newpassword',
+						userId: otherUser._id,
+					},
+					params
+				);
 				throw new Error('should have failed.');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed.');
@@ -228,10 +233,14 @@ describe('Account Service', () => {
 			const account = await accountService.create(accountDetails);
 			try {
 				const params = await generateRequestParams(accountDetails);
-				await accountService.patch(account._id, {
-					password: 'Schul&Cluedo76 ',
-					password_verification: 'wrongpassword',
-				}, params);
+				await accountService.patch(
+					account._id,
+					{
+						password: 'Schul&Cluedo76 ',
+						password_verification: 'wrongpassword',
+					},
+					params
+				);
 				throw new Error('This should not happen.');
 			} catch (exception) {
 				assert.equal(exception.message, 'Dein Passwort ist nicht korrekt!');
@@ -251,13 +260,17 @@ describe('Account Service', () => {
 			};
 			const account = await accountService.create(accountDetails);
 			try {
-				const result = await accountService.patch(account._id, {
-					activated: true,
-				}, {
-					account: {
-						userId: account.userId,
+				const result = await accountService.patch(
+					account._id,
+					{
+						activated: true,
 					},
-				});
+					{
+						account: {
+							userId: account.userId,
+						},
+					}
+				);
 				assert.equal(result.activated, true);
 			} finally {
 				await accountService.remove(account._id);
@@ -275,10 +288,14 @@ describe('Account Service', () => {
 			const account = await accountService.create(accountDetails);
 			try {
 				const params = await generateRequestParamsFromUser(user);
-				await accountService.patch(account._id, {
-					password: 'Schul&Cluedo76',
-					password_verification: 'Schul&Cluedo76',
-				}, params);
+				await accountService.patch(
+					account._id,
+					{
+						password: 'Schul&Cluedo76',
+						password_verification: 'Schul&Cluedo76',
+					},
+					params
+				);
 				throw new Error('should have failed.');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed.');
@@ -303,10 +320,14 @@ describe('Account Service', () => {
 			const account = await accountService.create(accountDetails);
 			try {
 				const params = await generateRequestParamsFromUser(user);
-				await accountService.patch(account._id, {
-					password: 'Schul&Cluedo76',
-					password_verification: 'Schul&Cluedo76',
-				}, params);
+				await accountService.patch(
+					account._id,
+					{
+						password: 'Schul&Cluedo76',
+						password_verification: 'Schul&Cluedo76',
+					},
+					params
+				);
 				throw new Error('should have failed.');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed.');
@@ -432,8 +453,8 @@ describe('Account Service', () => {
 	});
 
 	describe('FIND route', () => {
-		it('should not be able to find all accounts via empty query', () => accountService.find()
-			.catch((exception) => {
+		it('should not be able to find all accounts via empty query', () =>
+			accountService.find().catch((exception) => {
 				assert.equal(exception.code, 400);
 			}));
 
@@ -457,7 +478,8 @@ describe('Account Service', () => {
 
 		// todo extern request without superhero
 		it('should filter querys for extern not authenticated requests', (done) => {
-			chai.request(app)
+			chai
+				.request(app)
 				.get('/accounts')
 				.query({ username: { $gte: 0 } })
 				.end((response, err) => {
@@ -499,7 +521,8 @@ describe('Account Service', () => {
 			// generate token for it
 			// start request with token
 			const token = '<token>';
-			chai.request(app)
+			chai
+				.request(app)
 				.get('/accounts')
 				.query({ username: { $gte: 0 } })
 				.set('Authorization', token)
@@ -516,7 +539,8 @@ describe('Account Service', () => {
 			// generate token for it
 			// start request with token
 			const token = '<token>';
-			chai.request(app)
+			chai
+				.request(app)
 				.get('/accounts')
 				.query({ username: { $gte: 0 } })
 				.set('Authorization', token)

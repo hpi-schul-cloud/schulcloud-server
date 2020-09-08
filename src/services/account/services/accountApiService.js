@@ -19,7 +19,9 @@ const {
 	restrictToUsersSchool,
 	validateUserName,
 } = require('../hooks');
-const { modelServices: { prepareInternalParams } } = require('../../../utils');
+const {
+	modelServices: { prepareInternalParams },
+} = require('../../../utils');
 
 class Accounts {
 	constructor(options) {
@@ -83,9 +85,7 @@ const accountServiceHooks = {
 			checkUnique,
 			removePassword,
 		],
-		update: [
-			disallow('external'),
-		],
+		update: [disallow('external')],
 		patch: [
 			authenticate('jwt'),
 			iff(isProvider('external'), preventPopulate),

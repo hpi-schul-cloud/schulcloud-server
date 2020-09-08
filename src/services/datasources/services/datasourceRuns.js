@@ -1,10 +1,8 @@
 const Ajv = require('ajv');
 const { Writable } = require('stream');
-const {	Forbidden, GeneralError } = require('@feathersjs/errors');
+const { Forbidden, GeneralError } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
-const {
-	iff, isProvider, validateSchema, disallow,
-} = require('feathers-hooks-common');
+const { iff, isProvider, validateSchema, disallow } = require('feathers-hooks-common');
 const { hasPermission } = require('../../../hooks');
 const { getDatasource, restrictToDatasourceSchool } = require('../hooks');
 // const { datasourcesDocs } = require('../docs');
@@ -18,9 +16,7 @@ class DatasourceRuns {
 		this.options = options || {};
 	}
 
-	registerEventListeners() {
-
-	}
+	registerEventListeners() {}
 
 	setup(app) {
 		this.app = app;
@@ -77,10 +73,11 @@ class DatasourceRuns {
 		if (schoolId) filter.schoolId = schoolId;
 		if (query.datasourceId) filter.datasourceId = query.datasourceId;
 
-		const result = await datasourceRunModel.find(
-			filter,
-			'datasourceId _id status dryrun duration',
-		).sort(query.sort).skip(query.$skip).limit(query.$limit);
+		const result = await datasourceRunModel
+			.find(filter, 'datasourceId _id status dryrun duration')
+			.sort(query.sort)
+			.skip(query.$skip)
+			.limit(query.$limit);
 
 		return this.paginationLikeFormat(result, query);
 	}
@@ -150,7 +147,8 @@ class DatasourceRuns {
 			await Promise.all([
 				datasourceRunModel.updateOne({ _id: datasourceRunId }, updateData),
 				this.app.service('datasources').patch(datasourceId, {
-					lastRun: endTime, lastStatus: status,
+					lastRun: endTime,
+					lastStatus: status,
 				}),
 			]);
 		} catch (err) {
@@ -175,7 +173,8 @@ class DatasourceRuns {
 		await Promise.all([
 			datasourceRunModel.updateOne({ _id: datasourceRunId }, updateData),
 			this.app.service('datasources').patch(datasourceId, {
-				lastRun: endTime, lastStatus: ERROR,
+				lastRun: endTime,
+				lastStatus: ERROR,
 			}),
 		]);
 	}
@@ -190,9 +189,7 @@ class DatasourceRuns {
 		// set up stream for the sync log
 		const dryrun = data.dryrun || false;
 
-		const datasourceRun = await this.persistPendingRun(
-			params.datasource, dryrun, (params.account || {}).userId,
-		);
+		const datasourceRun = await this.persistPendingRun(params.datasource, dryrun, (params.account || {}).userId);
 
 		let logString = '';
 		const logStream = new Writable({
@@ -219,7 +216,8 @@ class DatasourceRuns {
 		promise.catch(async (err) => {
 			await this.updateAfterFail(err.message, startTime, datasourceRun._id, params.datasource._id);
 			throw new GeneralError(
-				'datasourceRun encountered an error after invoking sync. This is most likely a user error.', err,
+				'datasourceRun encountered an error after invoking sync. This is most likely a user error.',
+				err
 			);
 		});
 
@@ -236,32 +234,17 @@ const datasourceRunService = new DatasourceRuns({
 
 const datasourceRunsHooks = {
 	before: {
-		all: [
-			authenticate('jwt'),
-		],
-		find: [
-			iff(isProvider('external'), hasPermission('DATASOURCES_RUN_VIEW')),
-		],
-		get: [
-			iff(isProvider('external'), hasPermission('DATASOURCES_RUN_VIEW')),
-		],
+		all: [authenticate('jwt')],
+		find: [iff(isProvider('external'), hasPermission('DATASOURCES_RUN_VIEW'))],
+		get: [iff(isProvider('external'), hasPermission('DATASOURCES_RUN_VIEW'))],
 		create: [
-			iff(isProvider('external'), [
-				validateSchema(datasourceRunCreateSchema, Ajv),
-				hasPermission('DATASOURCES_RUN'),
-			]),
+			iff(isProvider('external'), [validateSchema(datasourceRunCreateSchema, Ajv), hasPermission('DATASOURCES_RUN')]),
 			getDatasource,
 			iff(isProvider('external'), restrictToDatasourceSchool),
 		],
-		update: [
-			disallow(),
-		],
-		patch: [
-			disallow(),
-		],
-		remove: [
-			disallow(),
-		],
+		update: [disallow()],
+		patch: [disallow()],
+		remove: [disallow()],
 	},
 	after: {
 		all: [],

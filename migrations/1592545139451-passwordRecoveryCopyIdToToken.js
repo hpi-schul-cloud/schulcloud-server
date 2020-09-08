@@ -4,30 +4,32 @@ const { info, error } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
-const PasswordRecoveryModel = mongoose.model('passwordRecoveryModel', new mongoose.Schema({
-	account: { type: mongoose.Schema.Types.ObjectId, ref: 'account' },
-	changed: { type: Boolean, default: false },
-	token: { type: String, required: true, index: true },
-	createdAt: { type: Date, default: Date.now },
-	updatedAt: { type: Date, default: Date.now },
-}), 'passwordRecovery');
+const PasswordRecoveryModel = mongoose.model(
+	'passwordRecoveryModel',
+	new mongoose.Schema({
+		account: { type: mongoose.Schema.Types.ObjectId, ref: 'account' },
+		changed: { type: Boolean, default: false },
+		token: { type: String, required: true, index: true },
+		createdAt: { type: Date, default: Date.now },
+		updatedAt: { type: Date, default: Date.now },
+	}),
+	'passwordRecovery'
+);
 
 module.exports = {
 	up: async function up() {
 		await connect();
 
-		await PasswordRecoveryModel.aggregate(
-			[
-				{
-					$addFields: {
-						token: { $toString: '$_id' },
-					},
+		await PasswordRecoveryModel.aggregate([
+			{
+				$addFields: {
+					token: { $toString: '$_id' },
 				},
-				{
-					$out: 'passwordRecovery',
-				},
-			],
-		);
+			},
+			{
+				$out: 'passwordRecovery',
+			},
+		]);
 		await close();
 	},
 

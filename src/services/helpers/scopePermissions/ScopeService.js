@@ -8,29 +8,29 @@ const { lookupScope, rejectQueryingOtherUsers } = require('./hooks');
  */
 class ScopeService {
 	/**
-     * Creates an instance of ScopeService.
-     * @param {Function} handler instance-specific code
-     * @memberof ScopeService
-     */
+	 * Creates an instance of ScopeService.
+	 * @param {Function} handler instance-specific code
+	 * @memberof ScopeService
+	 */
 	constructor(handler) {
 		this.handler = handler;
 	}
 
 	/**
-     * Will be called by feathers upon initialization of this service.
-     * @param {App} app
-     * @memberof ScopeService
-     */
+	 * Will be called by feathers upon initialization of this service.
+	 * @param {App} app
+	 * @memberof ScopeService
+	 */
 	async setup(app) {
 		this.app = app;
 	}
 
 	/**
-     * Default set of hooks. Ready to override by sub-classes.
-     * @static
-     * @returns Object<FeathersHooksCollection>
-     * @memberof ScopeService
-     */
+	 * Default set of hooks. Ready to override by sub-classes.
+	 * @static
+	 * @returns Object<FeathersHooksCollection>
+	 * @memberof ScopeService
+	 */
 	static hooks() {
 		return {
 			before: {
@@ -44,14 +44,14 @@ class ScopeService {
 	}
 
 	/**
-     * Initializes this service at a specific route and adds hooks and use-case-specific handler.
-     * @static
-     * @param {App} app the feathers app
-     * @param {String} path service path to use
-     * @param {Function} handler use-case-specific code
-     * @returns {ScopePermissionService} the service instance
-     * @memberof ScopeService
-     */
+	 * Initializes this service at a specific route and adds hooks and use-case-specific handler.
+	 * @static
+	 * @param {App} app the feathers app
+	 * @param {String} path service path to use
+	 * @param {Function} handler use-case-specific code
+	 * @returns {ScopePermissionService} the service instance
+	 * @memberof ScopeService
+	 */
 	static initialize(app, path, handler) {
 		if (!handler) {
 			throw new Error(`ScopePermisionService initialized at '${path}' without handler.`);

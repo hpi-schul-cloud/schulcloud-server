@@ -12,7 +12,8 @@ const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const checkForShareToken = (context) => {
 	const { shareToken = '', lessonId } = context.data;
 	const currentUserId = context.params.account.userId.toString();
-	return lesson.findOne({ _id: lessonId })
+	return lesson
+		.findOne({ _id: lessonId })
 		.populate('courseId')
 		.select('shareToken courseId')
 		.lean()
@@ -20,9 +21,9 @@ const checkForShareToken = (context) => {
 		.then((_lesson) => {
 			const course = _lesson.courseId;
 			if (
-				_lesson.shareToken === shareToken
-				|| course.shareToken === shareToken
-				|| course.teacherIds.some((t) => equalIds(t, currentUserId))
+				_lesson.shareToken === shareToken ||
+				course.shareToken === shareToken ||
+				course.teacherIds.some((t) => equalIds(t, currentUserId))
 			) {
 				return context;
 			}
@@ -33,7 +34,6 @@ const checkForShareToken = (context) => {
 			throw new NotFound('Lesson not found.', err);
 		});
 };
-
 
 exports.before = () => ({
 	all: [authenticate('jwt')],

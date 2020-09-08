@@ -2,15 +2,12 @@ const hooks = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
-const {
-	NODE_ENV, ENVIRONMENTS, SC_TITLE, SC_SHORT_TITLE,
-} = require('../../../../config/globals');
+const { NODE_ENV, ENVIRONMENTS, SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../model').registrationPinModel;
 const { getRandomInt } = require('../../../utils/randomNumberGenerator');
 
-const removeOldPins = (hook) => pinModel.deleteMany({ email: hook.data.email })
-	.then(() => Promise.resolve(hook));
+const removeOldPins = (hook) => pinModel.deleteMany({ email: hook.data.email }).then(() => Promise.resolve(hook));
 
 const generatePin = (hook) => {
 	const pin = getRandomInt(9999, 1000);
@@ -62,7 +59,7 @@ const checkAndVerifyPin = (hook) => {
 		const firstDataItem = hook.result.data[0];
 		// check generation age
 		const now = Date.now();
-		if (firstDataItem.updatedAt.getTime() + (Configuration.get('PIN_MAX_AGE_SECONDS') * 1000) < now) {
+		if (firstDataItem.updatedAt.getTime() + Configuration.get('PIN_MAX_AGE_SECONDS') * 1000 < now) {
 			throw new Forbidden('Der eingegebene Code ist nicht mehr gültig. Bitte fordere einen neuen Code an.');
 		}
 		if (firstDataItem.verified === true) {
@@ -71,7 +68,8 @@ const checkAndVerifyPin = (hook) => {
 		}
 		if (firstDataItem.pin) {
 			if (firstDataItem.pin === hook.params.query.pin) {
-				return hook.app.service('registrationPins')
+				return hook.app
+					.service('registrationPins')
 					.patch(firstDataItem._id, { verified: true })
 					.then((result) => {
 						hook.result.data = [result];
@@ -79,7 +77,7 @@ const checkAndVerifyPin = (hook) => {
 					});
 			}
 			throw new BadRequest(
-				'Der eingegebene Code ist ungültig oder konnte nicht bestätigt werden. Bitte versuche es erneut.',
+				'Der eingegebene Code ist ungültig oder konnte nicht bestätigt werden. Bitte versuche es erneut.'
 			);
 		}
 		return hook;
@@ -124,8 +122,12 @@ const validateEmailAndPin = (hook) => {
 	if (!hook.params.query || !email) {
 		throw new BadRequest('email required');
 	}
-	if (email && typeof email === 'string' && email.length
-		&& (!pin || (pin && typeof pin === 'string' && pin.length === 4))) {
+	if (
+		email &&
+		typeof email === 'string' &&
+		email.length &&
+		(!pin || (pin && typeof pin === 'string' && pin.length === 4))
+	) {
 		return hook;
 	}
 	throw new BadRequest('pin or email invalid', { email, pin });
@@ -135,12 +137,7 @@ exports.before = {
 	all: [globalHooks.forceHookResolve(authenticate('jwt'))],
 	find: [hooks.disallow('external'), validateEmailAndPin],
 	get: hooks.disallow('external'),
-	create: [
-		globalHooks.blockDisposableEmail('email'),
-		removeOldPins,
-		generatePin,
-		mailPin,
-	],
+	create: [globalHooks.blockDisposableEmail('email'), removeOldPins, generatePin, mailPin],
 	update: hooks.disallow('external'),
 	patch: hooks.disallow('external'),
 	remove: hooks.disallow('external'),
