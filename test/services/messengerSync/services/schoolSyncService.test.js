@@ -77,7 +77,8 @@ describe('service', function test() {
 
 		const params = await testObjects.generateRequestParamsFromUser(users[0]);
 		params.route = { schoolId: school._id.toString() };
-		await app.service('schools/:schoolId/messengerSync')
+		await app
+			.service('schools/:schoolId/messengerSync')
 			.create({}, params)
 			.catch((err) => {
 				expect(err.code).to.be.equal(400);

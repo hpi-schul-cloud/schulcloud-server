@@ -1,6 +1,4 @@
-const {
-	BadRequest,
-} = require('@feathersjs/errors');
+const { BadRequest } = require('@feathersjs/errors');
 const { isValidObjectId } = require('mongoose');
 
 const validateParams = async (context) => {

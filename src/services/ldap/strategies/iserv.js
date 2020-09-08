@@ -6,25 +6,27 @@ const AbstractLDAPStrategy = require('./interface.js');
  */
 class iServLDAPStrategy extends AbstractLDAPStrategy {
 	/**
-     * @public
-     * @see AbstractLDAPStrategy#getSchools
-     * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName
-     * @memberof iServLDAPStrategy
-     */
+	 * @public
+	 * @see AbstractLDAPStrategy#getSchools
+	 * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName
+	 * @memberof iServLDAPStrategy
+	 */
 	getSchools() {
-		return Promise.resolve([{
-			displayName: this.config.providerOptions.schoolName,
-			ldapOu: this.config.rootPath,
-		}]);
+		return Promise.resolve([
+			{
+				displayName: this.config.providerOptions.schoolName,
+				ldapOu: this.config.rootPath,
+			},
+		]);
 	}
 
 	/**
-     * @public
-     * @see AbstractLDAPStrategy#getUsers
-     * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
-     * (Array) roles = ['teacher', 'student', 'administrator']
-     * @memberof iServLDAPStrategy
-     */
+	 * @public
+	 * @see AbstractLDAPStrategy#getUsers
+	 * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
+	 * (Array) roles = ['teacher', 'student', 'administrator']
+	 * @memberof iServLDAPStrategy
+	 */
 	getUsers() {
 		const options = {
 			filter: 'objectClass=person',
@@ -32,7 +34,9 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
 			attributes: ['givenName', 'sn', 'dn', 'uuid', 'uid', 'mail', 'objectClass', 'memberOf'],
 		};
 		const searchString = `ou=users,${this.config.rootPath}`;
-		return this.app.service('ldap').searchCollection(this.config, searchString, options)
+		return this.app
+			.service('ldap')
+			.searchCollection(this.config, searchString, options)
 			.then((data) => {
 				const results = [];
 				data.forEach((obj) => {
@@ -53,8 +57,8 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
 						roles.push('administrator');
 					}
 					if (roles.length === 0) {
-						const ignoredUser = obj.memberOf.some(
-							(item) => this.config.providerOptions.IgnoreMembershipPath.includes(item),
+						const ignoredUser = obj.memberOf.some((item) =>
+							this.config.providerOptions.IgnoreMembershipPath.includes(item)
 						);
 						if (ignoredUser || !obj.mail || !obj.sn || !obj.uuid || !obj.uid) {
 							return;
@@ -80,21 +84,21 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
 	}
 
 	/**
-     * @public
-     * @see AbstractLDAPStrategy#getClasses
-     * @returns {Array} Array of Objects containing className, ldapDn, uniqueMembers
-     * @memberof iServLDAPStrategy
-     */
+	 * @public
+	 * @see AbstractLDAPStrategy#getClasses
+	 * @returns {Array} Array of Objects containing className, ldapDn, uniqueMembers
+	 * @memberof iServLDAPStrategy
+	 */
 	getClasses() {
 		return Promise.resolve([]);
 	}
 
 	/**
-     * @public
-     * @see AbstractLDAPStrategy#getExpertsQuery
-     * @returns {LDAPQueryOptions} LDAP query options
-     * @memberof iServLDAPStrategy
-     */
+	 * @public
+	 * @see AbstractLDAPStrategy#getExpertsQuery
+	 * @returns {LDAPQueryOptions} LDAP query options
+	 * @memberof iServLDAPStrategy
+	 */
 	getExpertsQuery() {
 		const options = {
 			filter: 'ucsschoolRole=staff:school:Experte',

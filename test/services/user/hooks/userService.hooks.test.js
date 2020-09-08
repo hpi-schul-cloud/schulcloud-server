@@ -6,7 +6,9 @@ const testObjects = require('../../helpers/testObjects')(app);
 const { enforceRoleHierarchyOnCreate } = require('../../../../src/services/user/hooks/userService');
 
 const {
-	removeStudentFromCourses, removeStudentFromClasses, generateRegistrationLink,
+	removeStudentFromCourses,
+	removeStudentFromClasses,
+	generateRegistrationLink,
 } = require('../../../../src/services/user/hooks/userService');
 
 describe('removeStudentFromCourses', () => {
@@ -22,10 +24,8 @@ describe('removeStudentFromCourses', () => {
 		});
 
 		expect(updatedCourses.length).to.equal(2);
-		const userInAnyCourse = updatedCourses.some(
-			(course) => course.userIds.some(
-				(id) => id.toString() === user._id.toString(),
-			),
+		const userInAnyCourse = updatedCourses.some((course) =>
+			course.userIds.some((id) => id.toString() === user._id.toString())
 		);
 		expect(userInAnyCourse).to.equal(false);
 	});
@@ -43,12 +43,8 @@ describe('removeStudentFromCourses', () => {
 			query: { _id: { $in: courses.map((c) => c._id) } },
 		});
 		expect(updatedCourses.length).to.equal(3);
-		const userInAnyCourse = updatedCourses.some(
-			(course) => course.userIds.some(
-				(id) => (
-					id.toString() === firstId._id.toString()
-					|| id.toString() === secondId._id.toString()),
-			),
+		const userInAnyCourse = updatedCourses.some((course) =>
+			course.userIds.some((id) => id.toString() === firstId._id.toString() || id.toString() === secondId._id.toString())
 		);
 		expect(userInAnyCourse).to.equal(false);
 	});
@@ -81,10 +77,8 @@ describe('removeStudentFromClasses', () => {
 		});
 
 		expect(updatedClasses.length).to.equal(2);
-		const userInAnyClass = updatedClasses.some(
-			(klass) => klass.userIds.some(
-				(id) => id.toString() === user._id.toString(),
-			),
+		const userInAnyClass = updatedClasses.some((klass) =>
+			klass.userIds.some((id) => id.toString() === user._id.toString())
 		);
 		expect(userInAnyClass).to.equal(false);
 	});
@@ -102,12 +96,8 @@ describe('removeStudentFromClasses', () => {
 			query: { _id: { $in: classes.map((c) => c._id) } },
 		});
 		expect(updatedClasses.length).to.equal(3);
-		const userInAnyClass = updatedClasses.some(
-			(klass) => klass.userIds.some(
-				(id) => (
-					id.toString() === firstId._id.toString()
-					|| id.toString() === secondId._id.toString()),
-			),
+		const userInAnyClass = updatedClasses.some((klass) =>
+			klass.userIds.some((id) => id.toString() === firstId._id.toString() || id.toString() === secondId._id.toString())
 		);
 		expect(userInAnyClass).to.equal(false);
 	});
@@ -133,9 +123,9 @@ describe('generateRegistrationLink', () => {
 	const getAppMock = (registrationlinkMock) => ({
 		service: (service) => {
 			if (service === '/registrationlink') {
-				return ({
+				return {
 					create: async (data) => registrationlinkMock(data),
-				});
+				};
 			}
 			throw new Error('unknown service');
 		},
@@ -176,7 +166,9 @@ describe('generateRegistrationLink', () => {
 
 	it('catches errors from /registrationlink', async () => {
 		const context = {
-			app: getAppMock(() => { throw new Error('test error'); }),
+			app: getAppMock(() => {
+				throw new Error('test error');
+			}),
 			data: {
 				generateRegistrationLink: true,
 				roles: ['student'],
@@ -201,12 +193,13 @@ describe('generateRegistrationLink', () => {
 		};
 		const context = {
 			app: getAppMock((data) => {
-				if (data.role === userData.roles[0]
-					&& data.save === true
-					&& data.patchUser === true
-					&& data.host
-					&& data.schoolId === userData.schoolId
-					&& data.toHash === userData.email
+				if (
+					data.role === userData.roles[0] &&
+					data.save === true &&
+					data.patchUser === true &&
+					data.host &&
+					data.schoolId === userData.schoolId &&
+					data.toHash === userData.email
 				) {
 					return { hash: expectedHash };
 				}
@@ -244,7 +237,7 @@ describe('enforceRoleHierarchyOnCreate', () => {
 				service: (serviceName) => {
 					if (serviceName === 'users') {
 						return {
-							get: () => (Promise.resolve({ permissions: createrPermissions, roles: createrRoles })),
+							get: () => Promise.resolve({ permissions: createrPermissions, roles: createrRoles }),
 						};
 					}
 					if (serviceName === 'roles') {
