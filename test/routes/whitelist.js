@@ -39,6 +39,8 @@ const ignorelistNoJwt = {
 	hash: ['post'],
 	registration: ['post'],
 	registrationPins: ['post'],
+	'tools/{id}/link': ['post'],
+	'passwordRecovery/reset': ['get'],
 };
 
 const ignorelistInvalidJwt = {
