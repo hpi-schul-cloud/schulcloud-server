@@ -10,7 +10,7 @@ jobs:
   FeatureOrHotfix:
     runs-on: ubuntu-latest
     # filter current branch name to be a feature or a hotfix branch
-    if: startsWith('feature', github.head_ref) || startsWith('hotfix', github.head_ref)
+    #if: startsWith('feature', github.head_ref) || startsWith('hotfix', github.head_ref)
     env:
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
     steps:
@@ -19,13 +19,18 @@ jobs:
         uses: foodee/pr-includes-file-change@master
         with:
           paths: ^CHANGELOG.md
+      - name: current head branch name
+        run: echo github.head_ref
       - name: Changelog has been updated
         if: steps.changed.outputs.matched == 'true'
         run: |
+          echo ${{ steps.changed.outputs.matched }}
           echo "Changes in CHANGELOG.md have been found"
           exit 0
-      - name: Changelog updates missing
-        if: steps.changed.outputs.matched != 'true'
-        run: |
-          echo "Features and Hotfixes must contain a changelog entry. Update CHANGELOG.md"
+          - name: Changelog updates missing
+          if: steps.changed.outputs.matched != 'true'
+          run: |
+          echo ${{ steps.changed.outputs.matched }}
+          echo "Features and Hotfixes must contain a changelog entry."
+          echo "Add meaningful information into CHANGELOG.md about this PR."
           exit 1
