@@ -10,10 +10,10 @@ class Service {
 	}
 
 	/**
-     * request headers
-     * set Content-Type = application/json
-     * set Authorization = Bearer [jwt]
-     */
+	 * request headers
+	 * set Content-Type = application/json
+	 * set Authorization = Bearer [jwt]
+	 */
 	async find(params) {
 		const { userId } = params.account;
 		const userServiceParams = {
@@ -22,6 +22,7 @@ class Service {
 			},
 		};
 		let user = {};
+		let school = {};
 		try {
 			user = await this.app.service('/users').get(userId, userServiceParams);
 		} catch (err) {
@@ -30,17 +31,19 @@ class Service {
 		}
 		user.accountId = params.account._id;
 		try {
-			user.schoolName = (await this.app.service('/schools').get(user.schoolId)).name;
+			school = await this.app.service('/schools').get(user.schoolId);
+			user.schoolName = school.name;
 		} catch (err) {
 			logger.warning(err);
-			throw new GeneralError('Can\'t find connected school.');
+			throw new GeneralError("Can't find connected school.");
 		}
 		try {
 			user.externallyManaged = await externallyManaged(this.app, user);
 		} catch (err) {
 			logger.warning(err);
-			throw new GeneralError('Can\'t check externallyManaged');
+			throw new GeneralError("Can't check externallyManaged");
 		}
+		user.language = user.language || school.language;
 		return user;
 	}
 

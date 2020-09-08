@@ -7,30 +7,41 @@ let createdTeamIds = [];
 
 const createTeamUser = async (userId, schoolId, roleName = 'teammember') => {
 	const roleId = (await Role.findOne({ name: roleName }))._id;
-	return (new teamUserModel({ role: roleId, schoolId, userId }))._doc;
+	return new teamUserModel({ role: roleId, schoolId, userId })._doc;
 };
 
-const createTeam = () => async (owner) => teamsModel.create({
-	name: `${Date.now()}_test`,
-	schoolId: owner.schoolId,
-	schoolIds: [owner.schoolId],
-	userIds: [await createTeamUser(owner._id, owner.schoolId, 'teamowner')],
-}).then((team) => {
-	createdTeamIds.push(team._id.toString());
-	return team._doc;
-});
+const createTeam = () => async (owner) =>
+	teamsModel
+		.create({
+			name: `${Date.now()}_test`,
+			schoolId: owner.schoolId,
+			schoolIds: [owner.schoolId],
+			userIds: [await createTeamUser(owner._id, owner.schoolId, 'teamowner')],
+		})
+		.then((team) => {
+			createdTeamIds.push(team._id.toString());
+			return team._doc;
+		});
 
-const addTeamUserToTeam = (opt) => async (id, user, teamRoleName) => teamsModel.findOneAndUpdate(
-	{ _id: id },
-	{ $push: { userIds: await createTeamUser(user._id, opt.schoolId, teamRoleName) } },
-	{ new: true },
-).lean().exec();
+const addTeamUserToTeam = (opt) => async (id, user, teamRoleName) =>
+	teamsModel
+		.findOneAndUpdate(
+			{ _id: id },
+			{ $push: { userIds: await createTeamUser(user._id, opt.schoolId, teamRoleName) } },
+			{ new: true }
+		)
+		.lean()
+		.exec();
 
 const getTeamById = (id) => teamsModel.findById(id).lean().exec();
 
 const removeOneTeam = (id) => teamsModel.findOneAndRemove({ _id: id }).lean().exec();
 
-const removeManyTeams = (ids) => teamsModel.deleteMany({ _id: { $in: ids } }).lean().exec();
+const removeManyTeams = (ids) =>
+	teamsModel
+		.deleteMany({ _id: { $in: ids } })
+		.lean()
+		.exec();
 
 // const teamServices = app => app.service('teams');
 

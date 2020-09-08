@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "24.4.1",
+	"version": "24.4.2",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -18,7 +18,7 @@
 		"node": "lts/*"
 	},
 	"scripts": {
-		"lint": "eslint ./src ./test ./migrations --ext .js --fix",
+		"lint": "eslint . --fix --ignore-path .gitignore",
 		"seed": "node ./backup.js -p setup/ -D schulcloud-test import",
 		"test": "cross-env NODE_ENV=test npm run seed && npm run coverage",
 		"backup": "node ./backup.js -b export",
@@ -34,7 +34,9 @@
 		"mocha-inspect": "cross-env NODE_ENV=test mocha --inspect-brk --inspect --timeout 60000 --exit './test/**/*.test.js'",
 		"migration": "migrate --config ./config/migrate.js",
 		"migration-sync": "migrate list --autosync --config ./config/migrate.js",
-		"migration-persist": "node ./backup.js -b export -p setup/ -c migrations",
+		"migration-list": "migrate list --config ./config/migrate.js",
+		"migration-prune": "migrate prune --config ./config/migrate.js",
+		"migration-persist": "node ./backup.js -b export -p setup/ -c migrations --sort \"{ createdAt: 1 }\"",
 		"migrate-etherpads": "node ./migrate-etherpads.js"
 	},
 	"dependencies": {
@@ -110,23 +112,20 @@
 		"chai-as-promised": "^7.1.1",
 		"chai-http": "^4.2.0",
 		"codecov": "^3.6.5",
+		"eslint": "^7.6.0",
 		"eslint-config-airbnb-base": "^14.1.0",
+		"eslint-config-prettier": "^6.11.0",
 		"eslint-plugin-import": "^2.18.2",
-		"eslint": "^7.3.1",
+		"eslint-plugin-prettier": "^3.1.4",
 		"jwt-decode": "^2.2.0",
 		"mocha": "^8.0.1",
 		"mockery": "^2.0.0",
 		"nock": "^13.0.0",
 		"nodemon": "^2.0.2",
 		"nyc": "^15.0.1",
+		"prettier": "^2.0.5",
+		"prettier-eslint": "^11.0.0",
 		"simple-oauth2": "^3.0.0",
 		"sinon": "^9.0.0"
-	},
-	"greenkeeper": {
-		"ignore": [
-			"eslint",
-			"eslint-config-airbnb-base",
-			"eslint-plugin-import"
-		]
 	}
 }

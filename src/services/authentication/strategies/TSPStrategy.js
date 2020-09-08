@@ -8,7 +8,8 @@ const {
 	createUserAndAccount,
 	shortenedRegistrationProcess,
 	findSchool,
-	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
+	ENTITY_SOURCE,
+	SOURCE_ID_ATTRIBUTE,
 	config: TSP_CONFIG,
 } = require('../../sync/strategies/TSP/TSP');
 const { SYNCER_TARGET } = require('../../sync/strategies/TSP/TSPSchoolSyncer');
@@ -86,11 +87,14 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		// translate TSP roles into SC roles
 		const roleList = decryptedTicket.ptscListRolle.split(',');
 		const roles = roleList
-			.map((tspRole) => ({
-				schueler: 'student',
-				lehrer: 'teacher',
-				admin: 'administrator',
-			}[tspRole.toLowerCase()]))
+			.map(
+				(tspRole) =>
+					({
+						schueler: 'student',
+						lehrer: 'teacher',
+						admin: 'administrator',
+					}[tspRole.toLowerCase()])
+			)
 			.filter((role) => {
 				const validRole = role !== undefined;
 				if (!validRole) {
@@ -126,7 +130,7 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 					sourceOptions,
 				},
 				roles,
-				systemId,
+				systemId
 			);
 
 			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
@@ -184,6 +188,5 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		};
 	}
 }
-
 
 module.exports = TSPStrategy;

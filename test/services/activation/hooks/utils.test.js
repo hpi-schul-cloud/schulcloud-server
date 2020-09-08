@@ -6,12 +6,7 @@ const { expect } = chai;
 chai.use(chaiAsPromised);
 
 const app = require('../../../../src/app');
-const {
-	createTestUser,
-	createTestAccount,
-	createTestSystem,
-	cleanup,
-} = require('../../helpers/testObjects')(app);
+const { createTestUser, createTestAccount, createTestSystem, cleanup } = require('../../helpers/testObjects')(app);
 
 const hookUtils = require('../../../../src/services/activation/hooks/utils');
 const moodleMockServer = require('../../account/moodle/moodleMockServer');
@@ -48,17 +43,15 @@ describe('activation/hooks utils', () => {
 		const account = await createTestAccount(credentials, 'local', user);
 
 		try {
-			await hookUtils.validPassword(
-				{
-					data: {
-						password: credentials.password,
-					},
-					params: {
-						account,
-					},
-					app,
+			await hookUtils.validPassword({
+				data: {
+					password: credentials.password,
 				},
-			);
+				params: {
+					account,
+				},
+				app,
+			});
 		} catch (error) {
 			expect(error).to.be.instanceOf(Forbidden);
 		}
@@ -86,8 +79,9 @@ describe('activation/hooks utils', () => {
 			throw new Error('This should never happen');
 		} catch (error) {
 			expect(error).to.be.instanceOf(Forbidden);
-			expect(error.message)
-				.to.be.equal('Your user data is managed by a IDM. Changes to it can only be made in the source system');
+			expect(error.message).to.be.equal(
+				'Your user data is managed by a IDM. Changes to it can only be made in the source system'
+			);
 		}
 
 		await hookUtils.blockThirdParty({ app, params: params(user2) });
@@ -127,23 +121,20 @@ describe('activation/hooks utils', () => {
 			expect(err).to.be.instanceOf(BadRequest);
 		}
 		try {
-			hookUtils.validateEmail(
-				{ data: { email: 'test@test.de', repeatEmail: 'test@test.de123' }, params: username1.params },
-			);
+			hookUtils.validateEmail({
+				data: { email: 'test@test.de', repeatEmail: 'test@test.de123' },
+				params: username1.params,
+			});
 			throw new Error('This should never happen');
 		} catch (err) {
 			expect(err).to.be.instanceOf(BadRequest);
 		}
 		try {
-			hookUtils.validateEmail(
-				{ data: { email: 'testtest.de', repeatEmail: 'testtest.de' }, params: username2.params },
-			);
+			hookUtils.validateEmail({ data: { email: 'testtest.de', repeatEmail: 'testtest.de' }, params: username2.params });
 			throw new Error('This should never happen');
 		} catch (err) {
 			expect(err).to.be.instanceOf(BadRequest);
 		}
-		hookUtils.validateEmail(
-			{ data: { email: 'test@test.de', repeatEmail: 'test@test.de' }, params: username2.params },
-		);
+		hookUtils.validateEmail({ data: { email: 'test@test.de', repeatEmail: 'test@test.de' }, params: username2.params });
 	});
 });

@@ -11,18 +11,9 @@ describe('userRoles', async () => {
 		OTHER: 'other',
 		NOTHING: 'nothing spezial',
 	};
-	const testPermissions = [
-		'SINGING',
-		'DANCE_RAIN',
-		'WALK_LINES',
-		'RUN_FLOOR',
-	];
+	const testPermissions = ['SINGING', 'DANCE_RAIN', 'WALK_LINES', 'RUN_FLOOR'];
 
-	const otherPermissions = [
-		'SITTING',
-		'SITTING_ON_CHAIR',
-		'SITTING_ON_DESK',
-	];
+	const otherPermissions = ['SITTING', 'SITTING_ON_CHAIR', 'SITTING_ON_DESK'];
 
 	let testRole;
 	let testRoleWithDiffrentPermissons;
@@ -78,8 +69,7 @@ describe('userRoles', async () => {
 				permissions: { test: { SINGING: true } },
 			});
 
-			testSchool2 = await testObjects.createTestSchool({
-			});
+			testSchool2 = await testObjects.createTestSchool({});
 
 			testUser = await testObjects.createTestUser({
 				schoolId: testSchool._id,
