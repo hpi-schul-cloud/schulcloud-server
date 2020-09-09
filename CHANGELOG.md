@@ -18,7 +18,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-6506 - Remove dependecy to feathers-swagger in routes.test.js
 
-## [24.4.1] - 2020-08-31
+## [24.4.3] - 2020-09-09
+
+### Fixed
+- SC-6533 - Login not possible if admin reset password
+
+## [24.4.2] - 2020-08-31
 
 ### Fixed
 
