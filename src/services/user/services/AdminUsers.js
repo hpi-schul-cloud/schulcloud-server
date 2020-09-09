@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
-const { Forbidden, GeneralError } = require('@feathersjs/errors');
+const { Forbidden, GeneralError, BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
@@ -24,6 +24,7 @@ const getCurrentYear = (ref, schoolId) => ref.app.service('schools')
 		query: { $select: ['currentYear'] },
 	})
 	.then(({ currentYear }) => currentYear.toString());
+
 
 class AdminUsers {
 	constructor(roleName) {
@@ -108,15 +109,68 @@ class AdminUsers {
 	}
 
 	async create(data, params) {
-		return this.app.service('usersModel').create(data);
+		return (await this.changeUserData(null, data, params)).create();
 	}
 
 	async update(id, data, params) {
-		return this.app.service('usersModel').update(id, data);
+		if (!id) throw new BadRequest('id is required');
+		return (await this.changeUserData(id, data, params)).update();
 	}
 
 	async patch(id, data, params) {
-		return this.app.service('usersModel').patch(id, data);
+		if (!id) throw new BadRequest('id is required');
+		return (await this.changeUserData(id, data, params)).patch();
+	}
+
+	async changeUserData(id, data, params) {
+		const currentUserId = params.account.userId.toString();
+		const { schoolId } = await getCurrentUserInfo(currentUserId);
+		const { isExternal } = await this.app.service('schools').get(schoolId);
+		if (isExternal) {
+			throw new Forbidden('Creating new students or teachers is only possible in the source system.');
+		}
+
+		if (data.email) {
+			const accounts = await this.app.service('userModel').find({ query: { email: data.email.toLowerCase() } });
+			if (accounts.total !== 0) {
+				throw new BadRequest('Email already exists.');
+			}
+			data.email = data.email.toLowerCase();
+			await this.app.service('accountModel').patch(null, { username: data.email }, {
+				query: {
+					userId: currentUserId,
+					username: { $ne: data.email },
+				},
+			});
+		}
+		const query = {
+			schoolId,
+		};
+
+		const filterParams = { query };
+
+		const prepareRoleback = async (fu) => {
+			try {
+				return fu();
+			} catch (err) {
+				if (data.email) {
+					const { email } = await this.app.service('userModel').get(currentUserId);
+					await this.app.service('accountModel').patch(null, { username: email }, {
+						query: {
+							userId: currentUserId,
+						},
+					});
+				}
+				throw err;
+			}
+		};
+
+
+		return {
+			create: () => prepareRoleback(this.app.service('usersModel').create(data, filterParams)),
+			update: () => prepareRoleback(this.app.service('usersModel').update(id, data, filterParams)),
+			patch: () => prepareRoleback(this.app.service('usersModel').patch(id, data, filterParams)),
+		};
 	}
 
 	async remove(id, params) {
@@ -144,14 +198,14 @@ const adminHookGenerator = (kind) => ({
 		all: [authenticate('jwt')],
 		find: [hasSchoolPermission(`${kind}_LIST`)],
 		get: [hasSchoolPermission(`${kind}_LIST`)],
-		create: [hasSchoolPermission(`${kind}_CREATE`)],
-		update: [hasSchoolPermission(`${kind}_EDIT`)],
-		patch: [hasSchoolPermission(`${kind}_EDIT`)],
-		remove: [hasSchoolPermission(`${kind}_DELETE`)],
+		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
+		update: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
+		patch: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
+		remove: [hasSchoolPermission(`${kind}_DELETE`), validateParams],
 	},
 	after: {
 		find: [formatBirthdayOfUsers],
-		patch:[updateAccountUsername]
+		patch: [updateAccountUsername],
 	},
 });
 
