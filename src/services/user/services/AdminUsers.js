@@ -10,6 +10,7 @@ const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const {
 	hasSchoolPermission,
 } = require('../../../hooks');
+const { updateAccountUsername } = require('../hooks/userService');
 
 const { userModel } = require('../model');
 
@@ -150,6 +151,7 @@ const adminHookGenerator = (kind) => ({
 	},
 	after: {
 		find: [formatBirthdayOfUsers],
+		patch:[updateAccountUsername]
 	},
 });
 

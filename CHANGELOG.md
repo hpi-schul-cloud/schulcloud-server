@@ -9,7 +9,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-## [24.4.1] - 2020-08-31
+## [24.4.4] - 2020-09-08
+
+### Fixed
+- SC-6697: updates/sync account username when user is updated  
+
+## [24.4.3] - 2020-09-09
+
+### Fixed
+- SC-6533 - Login not possible if admin reset password
+
+## [24.4.2] - 2020-08-31
 
 ### Fixed
 
