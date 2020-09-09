@@ -10,10 +10,10 @@ const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const { hasSchoolPermission, blockDisposableEmail } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { validateParams } = require('../hooks/adminUsers.hooks');
-const { sendRegistrationLink } = require('../hooks/userService');
-const { updateAccountUsername } = require('../hooks/userService');
+const { updateAccountUsername, sendRegistrationLink, checkUniqueEmail } = require('../hooks/userService');
 
 const { userModel } = require('../model');
+
 
 const getCurrentUserInfo = (id) => userModel.findById(id).select('schoolId').lean().exec();
 
@@ -215,9 +215,9 @@ const adminHookGenerator = (kind) => ({
 		all: [authenticate('jwt')],
 		find: [hasSchoolPermission(`${kind}_LIST`)],
 		get: [hasSchoolPermission(`${kind}_LIST`)],
-		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
-		update: [hasSchoolPermission(`${kind}_EDIT`)],
-		patch: [hasSchoolPermission(`${kind}_EDIT`)],
+		create: [hasSchoolPermission(`${kind}_CREATE`), checkUniqueEmail, blockDisposableEmail('email')],
+		update: [hasSchoolPermission(`${kind}_EDIT`), checkUniqueEmail],
+		patch: [hasSchoolPermission(`${kind}_EDIT`), checkUniqueEmail],
 		remove: [hasSchoolPermission(`${kind}_DELETE`), validateParams],
 	},
 	after: {

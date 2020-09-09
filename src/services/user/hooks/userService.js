@@ -70,6 +70,38 @@ const checkUnique = (hook) => {
 	});
 };
 
+const checkUniqueEmail = async (hook) => {
+	const userService = hook.service;
+	const { email } = hook.data;
+	if (email === undefined) {
+		return Promise.reject(new BadRequest('Fehler beim Auslesen der E-Mail-Adresse bei der Nutzererstellung.'));
+	}
+
+	const query = { email: email.toLowerCase() };
+	if (hook.id) {
+		query._id = { $ne: hook.id };
+	}
+
+	return userService.find({ query }).then((result) => {
+		const { length } = result.data;
+		if (length === undefined) {
+			return Promise.reject(new BadRequest('Fehler beim Prüfen der Datenbankinformationen.'));
+		}
+		if (length >= 1) {
+			return Promise.reject(new BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
+		}
+		if (length === 0) {
+			return Promise.resolve(hook);
+		}
+
+		return Promise.resolve(hook);
+	}).catch((err) => {
+		logger.error(err)
+		return Promise.reject(err);
+
+	});
+}
+
 const checkUniqueAccount = (hook) => {
 	const accountService = hook.app.service('/accounts');
 	const { email } = hook.data;
@@ -607,6 +639,7 @@ const includeOnlySchoolRoles = async (context) => {
 module.exports = {
 	mapRoleFilterQuery,
 	checkUnique,
+	checkUniqueEmail,
 	checkJwt,
 	checkUniqueAccount,
 	updateAccountUsername,

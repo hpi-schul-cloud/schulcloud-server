@@ -112,7 +112,7 @@ exports.hasSchoolPermission = (inputPermission) => async (context) => {
 		params: { account },
 		app,
 	} = context;
-	if (!account && !account.userId) {
+	if (!account || !account.userId) {
 		throw new Forbidden('Cannot read account data');
 	}
 	try {
