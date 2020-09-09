@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- SC-6640 - Fixed email check within registration (case insensitive)
+
 ### Added
 
 - Test changelog has been updated for feature or hotfix branches
