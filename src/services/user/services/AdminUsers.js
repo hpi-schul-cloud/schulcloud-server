@@ -108,69 +108,98 @@ class AdminUsers {
 		}
 	}
 
-	async create(data, params) {
-		return (await this.changeUserData(null, data, params)).create();
+	async create(_data, _params) {
+		const { data, params } = this.prepareUserData(_data, _params);
+		const { userId } = params.account;
+		const { email } = data;
+		this.checkMail(email, userId);
+		this.updateAccount(email, userId);
+		return this.prepareRoleback(email, userId, this.app.service('usersModel').create, data, params);
 	}
 
-	async update(id, data, params) {
+	async update(id, _data, _params) {
 		if (!id) throw new BadRequest('id is required');
-		return (await this.changeUserData(id, data, params)).update();
+		const { data, params } = this.prepareUserData(_data, _params);
+		const { userId } = params.account;
+		const { email } = data;
+		this.checkMail(email, userId);
+		this.updateAccount(email, userId);
+		return this.prepareRoleback(email, userId, this.app.service('usersModel').update, id, data, params);
 	}
 
-	async patch(id, data, params) {
+	async patch(id, _data, _params) {
 		if (!id) throw new BadRequest('id is required');
-		return (await this.changeUserData(id, data, params)).patch();
+		const { data, params } = this.prepareUserData(_data, _params);
+		const { userId } = params.account;
+		const { email } = data;
+		this.checkMail(email, userId);
+		this.updateAccount(email, userId);
+		return this.prepareRoleback(email, userId, this.app.service('usersModel').patch, id, data, params);
 	}
 
-	async changeUserData(id, data, params) {
+	async prepareUserData(data, params) {
 		const currentUserId = params.account.userId.toString();
 		const { schoolId } = await getCurrentUserInfo(currentUserId);
 		const { isExternal } = await this.app.service('schools').get(schoolId);
 		if (isExternal) {
 			throw new Forbidden('Creating new students or teachers is only possible in the source system.');
 		}
+		if (data.email) data.email = data.email.toLowerCase();
 
-		if (data.email) {
-			const accounts = await this.app.service('userModel').find({ query: { email: data.email.toLowerCase() } });
+		return {
+			data: {
+				...data,
+			},
+			params: {
+				query: {
+					schoolId,
+				},
+			},
+		};
+	}
+
+	async checkMail(email, userId) {
+		if (email) {
+			const accounts = await this.app.service('userModel').find({ query: { email: email.toLowerCase() } });
 			if (accounts.total !== 0) {
 				throw new BadRequest('Email already exists.');
 			}
-			data.email = data.email.toLowerCase();
-			await this.app.service('accountModel').patch(null, { username: data.email }, {
+
+			await this.app.service('accountModel').patch(null, { username: email }, {
 				query: {
-					userId: currentUserId,
-					username: { $ne: data.email },
+					userId,
+					username: { $ne: email },
 				},
 			});
 		}
-		const query = {
-			schoolId,
-		};
+	}
 
-		const filterParams = { query };
+	async updateAccount(email, userId) {
+		if (email) {
+			email = email.toLowerCase();
+			await this.app.service('accountModel').patch(null, { username: email }, {
+				query: {
+					userId,
+					username: { $ne: email },
+				},
+			});
+		}
+	}
 
-		const prepareRoleback = async (fu) => {
-			try {
-				return fu();
-			} catch (err) {
-				if (data.email) {
-					const { email } = await this.app.service('userModel').get(currentUserId);
-					await this.app.service('accountModel').patch(null, { username: email }, {
-						query: {
-							userId: currentUserId,
-						},
-					});
-				}
-				throw err;
+	async prepareRoleback(email, userId, fu, ...args) {
+		try {
+			return fu(...args);
+		} catch (err) {
+			if (email) {
+				const { email: oldMail } = await this.app.service('userModel').get(currentUserId);
+				await this.app.service('accountModel').patch(null, { username: oldMail }, {
+					query: {
+						userId,
+					},
+				});
 			}
-		};
-
-
-		return {
-			create: () => prepareRoleback(this.app.service('usersModel').create(data, filterParams)),
-			update: () => prepareRoleback(this.app.service('usersModel').update(id, data, filterParams)),
-			patch: () => prepareRoleback(this.app.service('usersModel').patch(id, data, filterParams)),
-		};
+			throw err;
+		}
 	}
 
 	async remove(id, params) {
