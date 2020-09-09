@@ -8,7 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
 ## Unreleased
-## [24.4.1] - 2020-08-31
+## [24.4.3] - 2020-09-09
+- SC-6533 - Login not possible if admin reset password
+
+## Unreleased
+## [24.4.2] - 2020-08-31
 
 ### Fixed
 
