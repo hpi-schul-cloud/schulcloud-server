@@ -9,14 +9,19 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-### Added
+### Added - Unreleased
 
 - Test changelog has been updated for feature or hotfix branches
 - SC-5612 - Adding search feature to the admintables for nuxt-client.
 
-### Changed
+### Changed - Unreleased
 
 - Extend JWT payload by schoolId and roleIds
+
+## [24.4.4] - 2020-09-08
+
+### Fixed
+- SC-6697: updates/sync account username when user is updated  
 
 ## [24.4.3] - 2020-09-09
 
