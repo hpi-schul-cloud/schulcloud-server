@@ -18,14 +18,14 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
-- SC-6511 - LDAP edit button missing.
+- SC-6554: CSV-Importer no longer allows patching users with different roles
 
 ## Unreleased
 ## [24.4.1] - 2020-08-31
 
 ### Fixed
 
-- SC-6554: CSV-Importer no longer allows patching users with different roles
+- SC-6511 - LDAP edit button missing.
 
 ## [24.4.0] - 2020-8-31
 
