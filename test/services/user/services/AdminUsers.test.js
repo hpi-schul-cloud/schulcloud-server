@@ -3,6 +3,9 @@ const logger = require('../../../../src/logger/index');
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 
+const accountService = app.service('/accounts');
+const userService = app.service('/users');
+
 const adminStudentsService = app.service('/users/admin/students');
 const adminTeachersService = app.service('/users/admin/teachers');
 const consentService = app.service('consents');
@@ -864,6 +867,35 @@ describe('AdminUsersService', () => {
 		const deletedeStringType = await adminStudentsService.remove(stringTypeStudentTest._id, params);
 		expect(deletedeStringType).to.not.be.undefined;
 		expect(deletedeStringType.firstName).to.equals('testDeleteStudent');
+	});
+
+	it('updates account username if user email is updated', async () => {
+		// given
+		const user = await testObjects.createTestUser({ roles: ['student'] });
+		const accountDetails = {
+			username: user.email,
+			password: 'password',
+			userId: user._id,
+		};
+		const account = await accountService.create(accountDetails);
+		expect(user.email).equals(account.username);
+
+		// when
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		params.query = {};
+		await adminStudentsService.patch(
+			user._id,
+			{ email: 'foo@bar.baz' },
+			params,
+		);
+
+		// then
+		const updatedAccount = await accountService.get(account._id);
+		expect(updatedAccount.username).equals('foo@bar.baz');
+
+		await accountService.remove(account._id);
+		await userService.remove(user._id);
 	});
 });
 

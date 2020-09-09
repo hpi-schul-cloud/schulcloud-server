@@ -11,6 +11,7 @@ const { hasSchoolPermission, blockDisposableEmail } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { validateParams } = require('../hooks/adminUsers.hooks');
 const { sendRegistrationLink } = require('../hooks/userService');
+const { updateAccountUsername } = require('../hooks/userService');
 
 const { userModel } = require('../model');
 
@@ -222,6 +223,7 @@ const adminHookGenerator = (kind) => ({
 	after: {
 		find: [formatBirthdayOfUsers],
 		create: [sendRegistrationLink],
+		patch: [updateAccountUsername],
 	},
 });
 
