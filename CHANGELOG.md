@@ -9,10 +9,14 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 ## [24.4.3] - 2020-09-09
+
+### Fixed
 - SC-6533 - Login not possible if admin reset password
 
 ## Unreleased
 ## [24.4.2] - 2020-08-31
+
+## [24.4.1] - 2020-08-31
 
 ### Fixed
 
