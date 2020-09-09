@@ -162,8 +162,10 @@ describe('registration service', () => {
 	});
 
 	it('fails if parent and student email are the same', async () => {
-		const email = `max${Date.now()}@mustermann.de`;
-		const importHash = `${Date.now()}`;
+		const currentTS = Date.now();
+		const email = `max${currentTS}@mustermann.de`;
+		const parentEmail = `MAX${currentTS}@mustermann.DE`;
+		const importHash = `${currentTS}`;
 		await testObjects.createTestUser({
 			importHash,
 			email,
@@ -175,7 +177,7 @@ describe('registration service', () => {
 				importHash,
 				classOrSchoolId: '5f2987e020834114b8efd6f8',
 				email,
-				parent_email: email,
+				parent_email: parentEmail,
 				birthDate: '18.02.2015',
 			})
 			.catch((err) => {
