@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
 ## Unreleased
+
+## [24.4.4] - 2020-09-08
+
+### Fixed
+- SC-6697: updates/sync account username when user is updated  
+
 ## [24.4.3] - 2020-09-09
 
 ### Fixed
