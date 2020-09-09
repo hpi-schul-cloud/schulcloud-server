@@ -45,7 +45,6 @@ const firstLogin = async (data, params, app) => {
 	const accountUpdate = {};
 	let accountPromise = Promise.resolve();
 	const userUpdate = {};
-	// let userPromise;
 	let consentPromise = Promise.resolve();
 	let updateConsentUsingVersions = Promise.resolve();
 	const user = await app.service('users').get(params.account.userId);
@@ -85,6 +84,7 @@ const firstLogin = async (data, params, app) => {
 	const preferences = user.preferences || {};
 	preferences.firstLogin = true;
 	userUpdate.preferences = preferences;
+	userUpdate.forcePasswordChange = false;
 
 	const userPromise = app.service('users').patch(user._id, userUpdate, { account: params.account });
 

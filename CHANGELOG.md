@@ -12,6 +12,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 - SC-5612 - Adding search feature to the admintables for nuxt-client.
 
+## [24.4.3] - 2020-09-09
+
+### Fixed
+- SC-6533 - Login not possible if admin reset password
+
+## [24.4.2] - 2020-08-31
+
+### Fixed
+
+- SC-6554: CSV-Importer no longer allows patching users with different roles
+
 ## [24.4.1] - 2020-08-31
 
 ### Fixed
