@@ -1,6 +1,7 @@
 const assert = require('assert');
 const { expect } = require('chai');
 const { Configuration } = require('@schul-cloud/commons');
+const { ObjectId } = require('mongoose').Types;
 const app = require('../../../../src/app');
 
 const userService = app.service('users');
@@ -8,7 +9,6 @@ const classesService = app.service('classes');
 const coursesService = app.service('courses');
 const testObjects = require('../../helpers/testObjects')(app);
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
-const { ObjectId } = require('mongoose').Types;
 
 const usersFromDifferentSchoolsErrorMessage = 'Der angefragte Nutzer gehört nicht zur eigenen Schule!';
 
