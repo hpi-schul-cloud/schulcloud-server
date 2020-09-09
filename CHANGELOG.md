@@ -13,6 +13,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-5612 - Adding search feature to the admintables for nuxt-client.
 
+### Removed
+
+- SC-6506 - Remove dependecy to feathers-swagger in routes.test.js
+
 ## [24.4.1] - 2020-08-31
 
 ### Fixed

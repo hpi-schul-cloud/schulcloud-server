@@ -15,7 +15,7 @@ const whitelistNoJwt = {
 	years: { get: 200 },
 	'system_info/haproxy': { get: 200 },
 	ping: { get: 200 },
-	docs: { get: 200},
+	docs: { get: 200 },
 };
 
 const whitelistInvalidJwt = {
