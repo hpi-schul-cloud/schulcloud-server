@@ -164,6 +164,29 @@ describe('registration service', () => {
 	it('fails if parent and student email are the same', async () => {
 		const currentTS = Date.now();
 		const email = `max${currentTS}@mustermann.de`;
+		const importHash = `${currentTS}`;
+		await testObjects.createTestUser({
+			importHash,
+			email,
+			firstName: 'Max',
+			lastName: 'Mustermann',
+		});
+		registrationService
+			.create({
+				importHash,
+				classOrSchoolId: '5f2987e020834114b8efd6f8',
+				email,
+				parent_email: email,
+				birthDate: '18.02.2015',
+			})
+			.catch((err) => {
+				expect(err.message).to.equal('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.');
+			});
+	});
+
+	it('fails if parent and student email are the same (case insensitive)', async () => {
+		const currentTS = Date.now();
+		const email = `max${currentTS}@mustermann.de`;
 		const parentEmail = `MAX${currentTS}@mustermann.DE`;
 		const importHash = `${currentTS}`;
 		await testObjects.createTestUser({
