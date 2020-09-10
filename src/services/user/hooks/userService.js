@@ -4,6 +4,7 @@ const { BadRequest, Forbidden, GeneralError, NotFound } = require('@feathersjs/e
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
 const { hasRole, hasRoleNoHook, hasPermissionNoHook, hasPermission } = require('../../../hooks');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const { getAge } = require('../../../utils');
 
@@ -71,36 +72,31 @@ const checkUnique = (hook) => {
 };
 
 const checkUniqueEmail = async (hook) => {
-	const userService = hook.service;
+	// const userService = hook.service;
+	const userService = hook.app.service('/users/');
+
 	const { email } = hook.data;
 	if (email === undefined) {
 		return Promise.reject(new BadRequest('Fehler beim Auslesen der E-Mail-Adresse bei der Nutzererstellung.'));
 	}
 
-	const query = { email: email.toLowerCase() };
-	if (hook.id) {
-		query._id = { $ne: hook.id };
-	}
+	// Check if it is own account
+	const editsOwnAccount = equalIds(hook.id, hook.params.account._id);
+
+	const query = {
+		_id: { $ne: editsOwnAccount ? hook.params.account._id : hook.id },
+		email: email.toLowerCase(),
+	};
 
 	return userService.find({ query }).then((result) => {
-		const { length } = result.data;
-		if (length === undefined) {
-			return Promise.reject(new BadRequest('Fehler beim Prüfen der Datenbankinformationen.'));
-		}
-		if (length >= 1) {
-			return Promise.reject(new BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
-		}
-		if (length === 0) {
+		const users = (result || {}).data || [];
+		if (users.length === 0) {
 			return Promise.resolve(hook);
 		}
 
-		return Promise.resolve(hook);
-	}).catch((err) => {
-		logger.error(err)
-		return Promise.reject(err);
-
+		return Promise.reject(new BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung (${users.length})!`));
 	});
-}
+};
 
 const checkUniqueAccount = (hook) => {
 	const accountService = hook.app.service('/accounts');
