@@ -90,6 +90,15 @@
 },
 {
 	"_id": {
+		"$oid": "0000b186816abba584714c60"
+	},
+	"name": "Rheinland-Pfalz",
+	"abbreviation": "RP",
+	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Coat_of_arms_of_Rhineland-Palatinate.svg/600px-Coat_of_arms_of_Rhineland-Palatinate.svg.png",
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "0000b186816abba584714c61"
 	},
 	"name": "Saarland",
@@ -131,15 +140,6 @@
 	"name": "Thüringen",
 	"abbreviation": "TH",
 	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Coat_of_arms_of_Thuringia.svg/512px-Coat_of_arms_of_Thuringia.svg.png",
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "0000b186816abba584714c60"
-	},
-	"name": "Rheinland-Pfalz",
-	"abbreviation": "RP",
-	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Coat_of_arms_of_Rhineland-Palatinate.svg/600px-Coat_of_arms_of_Rhineland-Palatinate.svg.png",
 	"__v": 0
 },
 {
