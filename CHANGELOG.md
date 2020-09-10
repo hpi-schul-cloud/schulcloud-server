@@ -17,6 +17,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Test changelog has been updated for feature or hotfix branches
 - SC-5612 - Adding search feature to the admintables for nuxt-client.
 
+## [24.4.5] - 2020-09-10
+
+### Fixed
+- SC-6637: generate QR codes for consent print sheets if group size exceeds 20
+
 ## [24.4.4] - 2020-09-08
 
 ### Fixed
