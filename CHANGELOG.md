@@ -17,7 +17,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [24.4.4] - 2020-09-08
 
 ### Fixed
-- SC-6697: updates/sync account username when user is updated  
+- SC-6697: updates/sync account username when user is updated
 
 ## [24.4.3] - 2020-09-09
 
