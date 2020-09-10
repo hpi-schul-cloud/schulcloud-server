@@ -884,11 +884,7 @@ describe('AdminUsersService', () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = {};
-		await adminStudentsService.patch(
-			user._id,
-			{ email: 'foo@bar.baz' },
-			params,
-		);
+		await adminStudentsService.patch(user._id, { email: 'foo@bar.baz' }, params);
 
 		// then
 		const updatedAccount = await accountService.get(account._id);
