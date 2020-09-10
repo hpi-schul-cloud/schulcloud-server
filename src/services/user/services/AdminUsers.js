@@ -9,10 +9,12 @@ const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const {
 	hasSchoolPermission,
+	blockDisposableEmail,
 } = require('../../../hooks');
 const { updateAccountUsername } = require('../hooks/userService');
 
 const { userModel } = require('../model');
+const account = require('../../account');
 
 const getCurrentUserInfo = (id) => userModel.findById(id)
 	.select('schoolId')
@@ -109,71 +111,83 @@ class AdminUsers {
 	}
 
 	async create(_data, _params) {
-		const { data, params } = this.prepareUserData(_data, _params);
-		const { userId } = params.account;
-		const { email } = data;
-		this.checkMail(email, userId);
-		this.updateAccount(email, userId);
-		return this.prepareRoleback(email, userId, this.app.service('usersModel').create, data, params);
+		const params = await this.prepareParams(_params);
+		await this.checkExternal(params.query.schoolId);
+		const { email } = _data;
+		await this.checkMail(email);
+		return this.app.service('usersModel').create(_data, params);
 	}
 
-	async update(id, _data, _params) {
-		if (!id) throw new BadRequest('id is required');
-		const { data, params } = this.prepareUserData(_data, _params);
-		const { userId } = params.account;
-		const { email } = data;
-		this.checkMail(email, userId);
-		this.updateAccount(email, userId);
-		return this.prepareRoleback(email, userId, this.app.service('usersModel').update, id, data, params);
+	async update(_id, _data, _params) {
+		if (!_id) throw new BadRequest('id is required');
+		const params = await this.prepareParams(_params);
+		await this.checkExternal(params.query.schoolId);
+		const { email } = _data;
+		await this.checkMail(email, _id);
+		await this.updateAccount(email, _id);
+		return this.prepareRoleback(email, _id, () => this.app.service('usersModel').update(_id, _data, params));
 	}
 
-	async patch(id, _data, _params) {
-		if (!id) throw new BadRequest('id is required');
-		const { data, params } = this.prepareUserData(_data, _params);
-		const { userId } = params.account;
-		const { email } = data;
-		this.checkMail(email, userId);
-		this.updateAccount(email, userId);
-		return this.prepareRoleback(email, userId, this.app.service('usersModel').patch, id, data, params);
+	async patch(_id, _data, _params) {
+		if (!_id) throw new BadRequest('id is required');
+		const params = await this.prepareParams(_params);
+		await this.checkExternal(params.query.schoolId);
+		const { email } = _data;
+		await this.checkMail(email, _id);
+		await this.updateAccount(email, _id);
+		return this.prepareRoleback(email, _id, () => this.app.service('usersModel').patch(_id, _data, params));
 	}
 
-	async prepareUserData(data, params) {
-		const currentUserId = params.account.userId.toString();
-		const { schoolId } = await getCurrentUserInfo(currentUserId);
+	/**
+	 * Should be used only in create in future, t
+	 * he user itself should get a flag to define if it is from a external system
+	 * @param {*} schoolId
+	 */
+	async checkExternal(schoolId) {
 		const { isExternal } = await this.app.service('schools').get(schoolId);
 		if (isExternal) {
 			throw new Forbidden('Creating new students or teachers is only possible in the source system.');
 		}
-		if (data.email) data.email = data.email.toLowerCase();
+	}
+
+	/**
+	 * Create a params value for following request to filter and secure request
+	 * - admins only allowed to change user on own school
+	 * @param {Object} params - Feathersjs params
+	 */
+	async prepareParams(params) {
+		const currentUserId = params.account.userId.toString();
+		const { schoolId } = await getCurrentUserInfo(currentUserId);
 
 		return {
-			data: {
-				...data,
-			},
-			params: {
-				query: {
-					schoolId,
-				},
+			query: {
+				schoolId: schoolId.toString(),
 			},
 		};
 	}
 
+	/**
+	 * request user and compare the email address.
+	 * if possible it should be solved via unique index on database
+	 * @param {string} email
+	 * @param {string} userId
+	 */
 	async checkMail(email, userId) {
 		if (email) {
-			const accounts = await this.app.service('userModel').find({ query: { email: email.toLowerCase() } });
-			if (accounts.total !== 0) {
+			const user = await this.app.service('usersModel').find({ query: { email: email.toLowerCase() } });
+			if (userId && user.total === 1 && user.data[0]._id.toString() === userId.toString()) return;
+			if (user.total !== 0) {
 				throw new BadRequest('Email already exists.');
 			}
-
-			await this.app.service('accountModel').patch(null, { username: email }, {
-				query: {
-					userId,
-					username: { $ne: email },
-				},
-			});
 		}
 	}
 
+	/**
+	 * Update the account email if eamil will be changed on user.
+	 * IMPORTANT: Keep in min to do a roleback if saving the user failed
+	 * @param {*} email
+	 * @param {*} userId
+	 */
 	async updateAccount(email, userId) {
 		if (email) {
 			email = email.toLowerCase();
@@ -186,12 +200,12 @@ class AdminUsers {
 		}
 	}
 
-	async prepareRoleback(email, userId, fu, ...args) {
+	async prepareRoleback(email, userId, fu) {
 		try {
-			return fu(...args);
+			return fu();
 		} catch (err) {
 			if (email) {
-				const { email: oldMail } = await this.app.service('userModel').get(currentUserId);
+				const { email: oldMail } = await this.app.service('usersModel').get(userId);
 				await this.app.service('accountModel').patch(null, { username: oldMail }, {
 					query: {
 						userId,
@@ -230,7 +244,7 @@ const adminHookGenerator = (kind) => ({
 		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
 		update: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
 		patch: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
-		remove: [hasSchoolPermission(`${kind}_DELETE`), validateParams],
+		remove: [hasSchoolPermission(`${kind}_DELETE`)],
 	},
 	after: {
 		find: [formatBirthdayOfUsers],
