@@ -10,7 +10,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: check all migrations are up in database seed
         run: test $(grep "\"down\"" ./backup/setup/migrations.json -c) -eq 0
-      - uses: actions/checkout@v2
       - name: check all migrations are up in database seed
         run: test $(grep "\"down\"" ./backup/setup/migrations.json -c) -eq 0
       - name: mongodb setup
