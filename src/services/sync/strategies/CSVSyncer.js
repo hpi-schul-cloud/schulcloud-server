@@ -282,7 +282,8 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		if (userId === null) {
 			return this.createUser(record);
 		}
-		return this.updateUser(userId, record);
+		this.stats.users.successful += 1;
+		return this.app.service('users').get(userId);
 	}
 
 	async findUserIdForRecord(record) {
@@ -311,33 +312,6 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		}
 		this.stats.users.created += 1;
 		this.stats.users.successful += 1;
-		return userObject;
-	}
-
-	async updateUser(userId, record) {
-		let userObject;
-		try {
-			const patch = {
-				firstName: record.firstName,
-				lastName: record.lastName,
-			};
-			const params = {
-				/*
-                query and payload need to be deleted, so that feathers doesn't want to update
-                multiple database objects (or none in this case). We still need the rest of
-                the requestParams to authenticate as Admin
-                */
-				...this.requestParams,
-				query: undefined,
-				payload: undefined,
-			};
-			userObject = await this.app.service('users').patch(userId, patch, params);
-			this.stats.users.updated += 1;
-			this.stats.users.successful += 1;
-		} catch (err) {
-			this.logError('Cannot update user', record, JSON.stringify(err));
-			this.handleUserError(err, record);
-		}
 		return userObject;
 	}
 
