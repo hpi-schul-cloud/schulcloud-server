@@ -7,26 +7,23 @@ const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@schul-cloud/commons');
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
-const {
-	hasSchoolPermission,
-	blockDisposableEmail,
-} = require('../../../hooks');
+const { hasSchoolPermission, blockDisposableEmail } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { validateParams } = require('../hooks/adminUsers.hooks');
 const { sendRegistrationLink } = require('../hooks/userService');
+const { updateAccountUsername } = require('../hooks/userService');
 
 const { userModel } = require('../model');
 
-const getCurrentUserInfo = (id) => userModel.findById(id)
-	.select('schoolId')
-	.lean()
-	.exec();
+const getCurrentUserInfo = (id) => userModel.findById(id).select('schoolId').lean().exec();
 
-const getCurrentYear = (ref, schoolId) => ref.app.service('schools')
-	.get(schoolId, {
-		query: { $select: ['currentYear'] },
-	})
-	.then(({ currentYear }) => currentYear.toString());
+const getCurrentYear = (ref, schoolId) =>
+	ref.app
+		.service('schools')
+		.get(schoolId, {
+			query: { $select: ['currentYear'] },
+		})
+		.then(({ currentYear }) => currentYear.toString());
 
 class AdminUsers {
 	constructor(roleName) {
@@ -46,9 +43,11 @@ class AdminUsers {
 		// integration test did not get the role in the setup
 		// so here is a workaround set it at first call
 		if (!this.role) {
-			this.role = (await this.app.service('roles').find({
-				query: { name: this.roleName },
-			})).data[0];
+			this.role = (
+				await this.app.service('roles').find({
+					query: { name: this.roleName },
+				})
+			).data[0];
 		}
 
 		try {
@@ -83,6 +82,11 @@ class AdminUsers {
 				query._id = _id;
 			} else if (clientQuery.users) {
 				query._id = clientQuery.users;
+				// If the number of users exceeds 20, the underlying parsing library
+				// will convert the array to an object with the index as the key.
+				// To continue working with it, we convert it here back to the array form.
+				// See the documentation for further infos: https://github.com/ljharb/qs#parsing-arrays
+				if (typeof query._id === 'object') query._id = Object.values(query._id);
 			}
 			if (clientQuery.consentStatus) query.consentStatus = clientQuery.consentStatus;
 			if (clientQuery.classes) query.classes = clientQuery.classes;
@@ -113,12 +117,17 @@ class AdminUsers {
 				}
 			}
 
-			return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
-				collation: { locale: 'de', caseLevel: true },
-			}).exec((err, res) => {
-				if (err) reject(err);
-				else resolve(res[0] || {});
-			}));
+			return new Promise((resolve, reject) =>
+				userModel
+					.aggregate(createMultiDocumentAggregation(query))
+					.option({
+						collation: { locale: 'de', caseLevel: true },
+					})
+					.exec((err, res) => {
+						if (err) reject(err);
+						else resolve(res[0] || {});
+					})
+			);
 		} catch (err) {
 			if ((err || {}).code === 403) {
 				throw new Forbidden('You have not the permission to execute this.', err);
@@ -126,7 +135,9 @@ class AdminUsers {
 			if (err && err.code >= 500) {
 				const uuid = uuidv4();
 				logger.error(uuid, err);
-				if (Configuration.get('NODE_ENV') !== 'production') { throw err; }
+				if (Configuration.get('NODE_ENV') !== 'production') {
+					throw err;
+				}
 				throw new GeneralError(uuid);
 			}
 			throw err;
@@ -187,9 +198,11 @@ class AdminUsers {
 
 	async setup(app) {
 		this.app = app;
-		this.role = (await this.app.service('roles').find({
-			query: { name: this.roleName },
-		})).data[0];
+		this.role = (
+			await this.app.service('roles').find({
+				query: { name: this.roleName },
+			})
+		).data[0];
 	}
 }
 
@@ -215,9 +228,9 @@ const adminHookGenerator = (kind) => ({
 	after: {
 		find: [formatBirthdayOfUsers],
 		create: [sendRegistrationLink],
+		patch: [updateAccountUsername],
 	},
 });
-
 
 module.exports = {
 	AdminUsers,

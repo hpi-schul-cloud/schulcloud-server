@@ -3,13 +3,16 @@ const logger = require('../../../../src/logger/index');
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 
+const accountService = app.service('/accounts');
+const userService = app.service('/users');
+
 const adminStudentsService = app.service('/users/admin/students');
 const adminTeachersService = app.service('/users/admin/teachers');
 const consentService = app.service('consents');
 
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
-const testGenericErrorMessage = 'You don\'t have one of the permissions: STUDENT_LIST.';
+const testGenericErrorMessage = "You don't have one of the permissions: STUDENT_LIST.";
 
 describe('AdminUsersService', () => {
 	let server;
@@ -47,15 +50,17 @@ describe('AdminUsersService', () => {
 		});
 		expect(testClass).to.not.be.undefined;
 
-		const gradeLevelClass = await testObjects.createTestClass({
-			name: 'A',
-			userIds: [student._id],
-			teacherIds: [teacher._id],
-			nameFormat: 'gradeLevel+name',
-			gradeLevel: 2,
-		}).catch((err) => {
-			logger.warning('Can not create test class.', err);
-		});
+		const gradeLevelClass = await testObjects
+			.createTestClass({
+				name: 'A',
+				userIds: [student._id],
+				teacherIds: [teacher._id],
+				nameFormat: 'gradeLevel+name',
+				gradeLevel: 2,
+			})
+			.catch((err) => {
+				logger.warning('Can not create test class.', err);
+			});
 		expect(gradeLevelClass).to.not.be.undefined;
 
 		const params = {
@@ -69,9 +74,8 @@ describe('AdminUsersService', () => {
 			logger.warning('Can not execute adminStudentsService.find.', err);
 		});
 
-		const searchClass = (users, name) => users.some(
-			(user) => (equalIds(student._id, user._id) && user.classes.includes(name)),
-		);
+		const searchClass = (users, name) =>
+			users.some((user) => equalIds(student._id, user._id) && user.classes.includes(name));
 		expect(result.data).to.not.be.undefined;
 		expect(searchClass(result.data, 'staticName')).to.be.true;
 		expect(searchClass(result.data, '2A')).to.be.true;
@@ -109,23 +113,29 @@ describe('AdminUsersService', () => {
 		const lastYear = currentSchool.years.lastYear._id;
 
 		const classPromises = [];
-		classPromises.push(testObjects.createTestClass({
-			name: 'classFromThisYear',
-			userIds: [student._id],
-			teacherIds: [teacher._id],
-			year: currentYear,
-		}));
-		classPromises.push(testObjects.createTestClass({
-			name: 'classFromLastYear',
-			userIds: [student._id],
-			teacherIds: [teacher._id],
-			year: lastYear,
-		}));
-		classPromises.push(testObjects.createTestClass({
-			name: 'classWithoutYear',
-			userIds: [student._id],
-			teacherIds: [teacher._id],
-		}));
+		classPromises.push(
+			testObjects.createTestClass({
+				name: 'classFromThisYear',
+				userIds: [student._id],
+				teacherIds: [teacher._id],
+				year: currentYear,
+			})
+		);
+		classPromises.push(
+			testObjects.createTestClass({
+				name: 'classFromLastYear',
+				userIds: [student._id],
+				teacherIds: [teacher._id],
+				year: lastYear,
+			})
+		);
+		classPromises.push(
+			testObjects.createTestClass({
+				name: 'classWithoutYear',
+				userIds: [student._id],
+				teacherIds: [teacher._id],
+			})
+		);
 
 		await Promise.all(classPromises);
 
@@ -149,30 +159,36 @@ describe('AdminUsersService', () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] }).catch((err) => {
 			logger.warning('Can not create teacher', err);
 		});
-		const student1 = await testObjects.createTestUser({
-			firstName: 'Max',
-			roles: ['student'],
-			consent: {
-				userConsent: {
-					form: 'digital',
-					privacyConsent: true,
-					termsOfUseConsent: true,
+		const student1 = await testObjects
+			.createTestUser({
+				firstName: 'Max',
+				roles: ['student'],
+				consent: {
+					userConsent: {
+						form: 'digital',
+						privacyConsent: true,
+						termsOfUseConsent: true,
+					},
+					parentConsents: [
+						{
+							form: 'digital',
+							privacyConsent: true,
+							termsOfUseConsent: true,
+						},
+					],
 				},
-				parentConsents: [{
-					form: 'digital',
-					privacyConsent: true,
-					termsOfUseConsent: true,
-				}],
-			},
-		}).catch((err) => {
-			logger.warning('Can not create student', err);
-		});
-		const student2 = await testObjects.createTestUser({
-			firstName: 'Moritz',
-			roles: ['student'],
-		}).catch((err) => {
-			logger.warning('Can not create student', err);
-		});
+			})
+			.catch((err) => {
+				logger.warning('Can not create student', err);
+			});
+		const student2 = await testObjects
+			.createTestUser({
+				firstName: 'Moritz',
+				roles: ['student'],
+			})
+			.catch((err) => {
+				logger.warning('Can not create student', err);
+			});
 
 		expect(teacher).to.not.be.undefined;
 		expect(student1).to.not.be.undefined;
@@ -231,14 +247,15 @@ describe('AdminUsersService', () => {
 			roles: ['student'],
 			birthday,
 			consent: {
-				parentConsents: [{
-					form: 'digital',
-					privacyConsent: true,
-					termsOfUseConsent: true,
-				}],
+				parentConsents: [
+					{
+						form: 'digital',
+						privacyConsent: true,
+						termsOfUseConsent: true,
+					},
+				],
 			},
 		});
-
 
 		const studentWithConsents = await testObjects.createTestUser({
 			roles: ['student'],
@@ -248,11 +265,13 @@ describe('AdminUsersService', () => {
 					privacyConsent: true,
 					termsOfUseConsent: true,
 				},
-				parentConsents: [{
-					form: 'digital',
-					privacyConsent: true,
-					termsOfUseConsent: true,
-				}],
+				parentConsents: [
+					{
+						form: 'digital',
+						privacyConsent: true,
+						termsOfUseConsent: true,
+					},
+				],
 			},
 		});
 
@@ -275,10 +294,7 @@ describe('AdminUsersService', () => {
 		const resultParentsAgreed = (await adminStudentsService.find(createParams('parentsAgreed'))).data;
 		const idsParentsAgreed = resultParentsAgreed.map((e) => e._id.toString());
 		expect(idsParentsAgreed).to.include(studentWithParentConsent._id.toString());
-		expect(idsParentsAgreed).to.not.include(
-			studentWithoutConsents._id.toString(),
-			studentWithConsents._id.toString(),
-		);
+		expect(idsParentsAgreed).to.not.include(studentWithoutConsents._id.toString(), studentWithConsents._id.toString());
 
 		const resultOk = (await adminStudentsService.find(createParams('ok'))).data;
 		const idsOk = resultOk.map((e) => e._id.toString());
@@ -387,9 +403,7 @@ describe('AdminUsersService', () => {
 
 	it('does not allow student user creation if school is external', async () => {
 		const schoolService = app.service('/schools');
-		const serviceCreatedSchool = await schoolService.create(
-			{ name: 'test', ldapSchoolIdentifier: 'testId' },
-		);
+		const serviceCreatedSchool = await schoolService.create({ name: 'test', ldapSchoolIdentifier: 'testId' });
 		const { _id: schoolId } = serviceCreatedSchool;
 		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
 		const params = await testObjects.generateRequestParamsFromUser(admin);
@@ -452,7 +466,8 @@ describe('AdminUsersService', () => {
 
 	it('users with STUDENT_LIST permission can access the FIND method', async () => {
 		await testObjects.createTestRole({
-			name: 'studentListPerm', permissions: ['STUDENT_LIST'],
+			name: 'studentListPerm',
+			permissions: ['STUDENT_LIST'],
 		});
 		const testUser = await testObjects.createTestUser({
 			firstName: 'testUser',
@@ -465,7 +480,8 @@ describe('AdminUsersService', () => {
 
 	it('users without STUDENT_LIST permission cannot access the FIND method', async () => {
 		await testObjects.createTestRole({
-			name: 'noStudentListPerm', permissions: [],
+			name: 'noStudentListPerm',
+			permissions: [],
 		});
 		const testUser = await testObjects.createTestUser({
 			firstName: 'testUser',
@@ -484,7 +500,8 @@ describe('AdminUsersService', () => {
 
 	it('users with STUDENT_LIST permission can access the GET method', async () => {
 		await testObjects.createTestRole({
-			name: 'studentListPerm', permissions: ['STUDENT_LIST'],
+			name: 'studentListPerm',
+			permissions: ['STUDENT_LIST'],
 		});
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
@@ -503,7 +520,8 @@ describe('AdminUsersService', () => {
 
 	it('users without STUDENT_LIST permission cannot access the GET method', async () => {
 		await testObjects.createTestRole({
-			name: 'noStudentListPerm', permissions: [],
+			name: 'noStudentListPerm',
+			permissions: [],
 		});
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
@@ -527,7 +545,8 @@ describe('AdminUsersService', () => {
 
 	it('users cannot GET students from foreign schools', async () => {
 		await testObjects.createTestRole({
-			name: 'studentListPerm', permissions: ['STUDENT_LIST'],
+			name: 'studentListPerm',
+			permissions: ['STUDENT_LIST'],
 		});
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool1',
@@ -544,7 +563,8 @@ describe('AdminUsersService', () => {
 
 	it('users with STUDENT_CREATE permission can access the CREATE method', async () => {
 		await testObjects.createTestRole({
-			name: 'studentCreatePerm', permissions: ['STUDENT_CREATE'],
+			name: 'studentCreatePerm',
+			permissions: ['STUDENT_CREATE'],
 		});
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
@@ -570,7 +590,8 @@ describe('AdminUsersService', () => {
 
 	it('users without STUDENT_CREATE permission cannot access the CREATE method', async () => {
 		await testObjects.createTestRole({
-			name: 'noStudentCreatePerm', permissions: [],
+			name: 'noStudentCreatePerm',
+			permissions: [],
 		});
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
@@ -597,7 +618,8 @@ describe('AdminUsersService', () => {
 
 	it('users with STUDENT_DELETE permission can access the REMOVE method', async () => {
 		await testObjects.createTestRole({
-			name: 'studentDeletePerm', permissions: ['STUDENT_CREATE', 'STUDENT_DELETE'],
+			name: 'studentDeletePerm',
+			permissions: ['STUDENT_CREATE', 'STUDENT_DELETE'],
 		});
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
@@ -627,7 +649,8 @@ describe('AdminUsersService', () => {
 
 	it('users without STUDENT_DELETE permission cannnot access the REMOVE method', async () => {
 		await testObjects.createTestRole({
-			name: 'noStudentDeletePerm', permissions: ['STUDENT_CREATE'],
+			name: 'noStudentDeletePerm',
+			permissions: ['STUDENT_CREATE'],
 		});
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
@@ -845,6 +868,31 @@ describe('AdminUsersService', () => {
 		expect(deletedeStringType).to.not.be.undefined;
 		expect(deletedeStringType.firstName).to.equals('testDeleteStudent');
 	});
+
+	it('updates account username if user email is updated', async () => {
+		// given
+		const user = await testObjects.createTestUser({ roles: ['student'] });
+		const accountDetails = {
+			username: user.email,
+			password: 'password',
+			userId: user._id,
+		};
+		const account = await accountService.create(accountDetails);
+		expect(user.email).equals(account.username);
+
+		// when
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		params.query = {};
+		await adminStudentsService.patch(user._id, { email: 'foo@bar.baz' }, params);
+
+		// then
+		const updatedAccount = await accountService.get(account._id);
+		expect(updatedAccount.username).equals('foo@bar.baz');
+
+		await accountService.remove(account._id);
+		await userService.remove(user._id);
+	});
 });
 
 describe('AdminTeachersService', () => {
@@ -893,16 +941,18 @@ describe('AdminTeachersService', () => {
 		const otherTeacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: otherSchool._id });
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = {};
-		const resultOk = (await adminTeachersService.find({
-			account: {
-				userId: teacher._id,
-			},
-			query: {
+		const resultOk = (
+			await adminTeachersService.find({
 				account: {
-					userId: otherTeacher._id,
+					userId: teacher._id,
 				},
-			},
-		})).data;
+				query: {
+					account: {
+						userId: otherTeacher._id,
+					},
+				},
+			})
+		).data;
 		const idsOk = resultOk.map((e) => e._id.toString());
 		expect(idsOk).not.to.include(otherTeacher._id.toString());
 	});
@@ -952,9 +1002,7 @@ describe('AdminTeachersService', () => {
 
 	it('does not allow teacher user creation if school is external', async () => {
 		const schoolService = app.service('/schools');
-		const serviceCreatedSchool = await schoolService.create(
-			{ name: 'test', ldapSchoolIdentifier: 'testId' },
-		);
+		const serviceCreatedSchool = await schoolService.create({ name: 'test', ldapSchoolIdentifier: 'testId' });
 		const { _id: schoolId } = serviceCreatedSchool;
 		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
 		const params = await testObjects.generateRequestParamsFromUser(admin);
@@ -1017,7 +1065,8 @@ describe('AdminTeachersService', () => {
 
 	it('users with TEACHER_LIST permission can access the FIND method', async () => {
 		await testObjects.createTestRole({
-			name: 'teacherListPerm', permissions: ['TEACHER_LIST'],
+			name: 'teacherListPerm',
+			permissions: ['TEACHER_LIST'],
 		});
 		const testUser = await testObjects.createTestUser({
 			firstName: 'testUser',
@@ -1030,7 +1079,8 @@ describe('AdminTeachersService', () => {
 
 	it('users without TEACHER_LIST permission cannot access the FIND method', async () => {
 		await testObjects.createTestRole({
-			name: 'noTeacherListPerm', permissions: [],
+			name: 'noTeacherListPerm',
+			permissions: [],
 		});
 		const testUser = await testObjects.createTestUser({
 			firstName: 'testUser',
@@ -1049,7 +1099,8 @@ describe('AdminTeachersService', () => {
 
 	it('users with TEACHER_LIST permission can access the GET method', async () => {
 		await testObjects.createTestRole({
-			name: 'teacherListPerm', permissions: ['TEACHER_LIST'],
+			name: 'teacherListPerm',
+			permissions: ['TEACHER_LIST'],
 		});
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
@@ -1068,7 +1119,8 @@ describe('AdminTeachersService', () => {
 
 	it('users without TEACHER_LIST permission cannot access the GET method', async () => {
 		await testObjects.createTestRole({
-			name: 'noTeacherListPerm', permissions: [],
+			name: 'noTeacherListPerm',
+			permissions: [],
 		});
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
@@ -1092,7 +1144,8 @@ describe('AdminTeachersService', () => {
 
 	it('users cannot GET teachers from foreign schools', async () => {
 		await testObjects.createTestRole({
-			name: 'teacherListPerm', permissions: ['TEACHER_LIST'],
+			name: 'teacherListPerm',
+			permissions: ['TEACHER_LIST'],
 		});
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool1',
@@ -1109,7 +1162,8 @@ describe('AdminTeachersService', () => {
 
 	it('users with TEACHER_CREATE permission can access the CREATE method', async () => {
 		await testObjects.createTestRole({
-			name: 'teacherCreatePerm', permissions: ['TEACHER_CREATE'],
+			name: 'teacherCreatePerm',
+			permissions: ['TEACHER_CREATE'],
 		});
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
@@ -1135,7 +1189,8 @@ describe('AdminTeachersService', () => {
 
 	it('users without TEACHER_CREATE permission cannot access the CREATE method', async () => {
 		await testObjects.createTestRole({
-			name: 'noTeacherCreatePerm', permissions: [],
+			name: 'noTeacherCreatePerm',
+			permissions: [],
 		});
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
@@ -1162,7 +1217,8 @@ describe('AdminTeachersService', () => {
 
 	it('users with TEACHER_DELETE permission can access the REMOVE method', async () => {
 		await testObjects.createTestRole({
-			name: 'teacherDeletePerm', permissions: ['TEACHER_CREATE', 'TEACHER_DELETE'],
+			name: 'teacherDeletePerm',
+			permissions: ['TEACHER_CREATE', 'TEACHER_DELETE'],
 		});
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
@@ -1192,7 +1248,8 @@ describe('AdminTeachersService', () => {
 
 	it('users without TEACHER_DELETE permission cannnot access the REMOVE method', async () => {
 		await testObjects.createTestRole({
-			name: 'noTeacherDeletePerm', permissions: ['TEACHER_CREATE'],
+			name: 'noTeacherDeletePerm',
+			permissions: ['TEACHER_CREATE'],
 		});
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',

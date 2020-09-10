@@ -32,7 +32,6 @@ switch (NODE_ENV) {
 		defaultDbUrl = 'mongodb://127.0.0.1:27017/schulcloud';
 }
 
-
 const globals = {
 	BODYPARSER_JSON_LIMIT: process.env.BODYPARSER_JSON_LIMIT || '20mb',
 	DATABASE_AUDIT: process.env.DATABASE_AUDIT || 'false',
@@ -40,7 +39,7 @@ const globals = {
 	DB_USERNAME: process.env.DB_USERNAME,
 	DB_PASSWORD: process.env.DB_PASSWORD,
 	DOCUMENT_BASE_DIR: process.env.DOCUMENT_BASE_DIR || 'https://s3.hidrive.strato.com/schul-cloud-hpi/',
-	MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE: (5 * 1024 * 1024), // 5MB
+	MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE: 5 * 1024 * 1024, // 5MB
 	REQUEST_TIMEOUT: process.env.REQUEST_TIMEOUT || 8000,
 	METRICS_PATH: process.env.METRICS_PATH || '/metrics',
 	MONGOOSE_CONNECTION_POOL_SIZE: parseInt(process.env.MONGOOSE_CONNECTION_POOL_SIZE || '10', 10),
@@ -84,18 +83,15 @@ const globals = {
 
 	// files
 	FILE_PREVIEW_SERVICE_URI: process.env.FILE_PREVIEW_SERVICE_URI || 'http://localhost:3000/filepreview',
-	FILE_PREVIEW_CALLBACK_URI: process.env.FILE_PREVIEW_CALLBACK_URI
-		|| 'http://localhost:3030/fileStorage/thumbnail/',
+	FILE_PREVIEW_CALLBACK_URI: process.env.FILE_PREVIEW_CALLBACK_URI || 'http://localhost:3030/fileStorage/thumbnail/',
 	ENABLE_THUMBNAIL_GENERATION: process.env.ENABLE_THUMBNAIL_GENERATION || false,
-	FILE_SECURITY_CHECK_SERVICE_URI: process.env.FILE_SECURITY_CHECK_SERVICE_URI
-		|| 'http://localhost:8081/scan/file',
+	FILE_SECURITY_CHECK_SERVICE_URI: process.env.FILE_SECURITY_CHECK_SERVICE_URI || 'http://localhost:8081/scan/file',
 	/** path must start and end with a slash */
 	SECURITY_CHECK_SERVICE_PATH: '/fileStorage/securityCheck/',
 	/** url must not end with slash */
 	API_HOST: process.env.API_HOST || 'http://localhost:3030',
 	FILE_SECURITY_CHECK_MAX_FILE_SIZE:
-		parseInt(process.env.FILE_SECURITY_CHECK_MAX_FILE_SIZE || '', 10)
-		|| 512 * 1024 * 1024,
+		parseInt(process.env.FILE_SECURITY_CHECK_MAX_FILE_SIZE || '', 10) || 512 * 1024 * 1024,
 	FILE_SECURITY_SERVICE_USERNAME: process.env.FILE_SECURITY_SERVICE_USERNAME || '',
 	FILE_SECURITY_SERVICE_PASSWORD: process.env.FILE_SECURITY_SERVICE_PASSWORD || '',
 	ENABLE_FILE_SECURITY_CHECK: process.env.ENABLE_FILE_SECURITY_CHECK || 'false',
@@ -114,10 +110,9 @@ const globals = {
 	ETHERPAD_ETHERPAD_COOKIE_RELEASE_THRESHOLD: process.env.ETHERPAD_COOKIE_RELEASE_THRESHOLD,
 };
 
-
 // validation /////////////////////////////////////////////////
 const ENVIRONMENT_VALUES = Object.values(ENVIRONMENTS);
-if (!(ENVIRONMENT_VALUES.includes(globals.NODE_ENV))) {
+if (!ENVIRONMENT_VALUES.includes(globals.NODE_ENV)) {
 	throw new Error('NODE_ENV must match one of valid environments', { ENVIRONMENT_VALUES, NODE_ENV });
 }
 

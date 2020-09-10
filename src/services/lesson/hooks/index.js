@@ -1,9 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { BadRequest, NotFound } = require('@feathersjs/errors');
 const nanoid = require('nanoid');
-const {
-	iff, isProvider,
-} = require('feathers-hooks-common');
+const { iff, isProvider } = require('feathers-hooks-common');
 const { equal } = require('../../../helper/compare').ObjectId;
 const {
 	injectUserId,
@@ -36,8 +34,7 @@ const addShareTokenIfCourseShareable = async (context) => {
 		return context;
 	}
 
-	return lessonModel.findByIdAndUpdate(_id, { shareToken: nanoid(12) })
-		.then(() => context);
+	return lessonModel.findByIdAndUpdate(_id, { shareToken: nanoid(12) }).then(() => context);
 };
 
 const setPosition = async (context) => {
@@ -90,11 +87,9 @@ const getCourseAndCourseGroup = async (courseId, courseGroupId, app) => {
  */
 const restrictToUsersCoursesLessons = async (context) => {
 	const { userId, schoolId } = context.params.account;
-	const user = await context.app.service('users').get(
-		context.params.account.userId, { query: { $populate: 'roles' } },
-	);
-	const userIsSuperhero = user.roles.filter((u) => (u.name === 'superhero')).length > 0;
-	const userIsAdmin = user.roles.filter((u) => (u.name === 'administrator')).length > 0;
+	const user = await context.app.service('users').get(context.params.account.userId, { query: { $populate: 'roles' } });
+	const userIsSuperhero = user.roles.filter((u) => u.name === 'superhero').length > 0;
+	const userIsAdmin = user.roles.filter((u) => u.name === 'administrator').length > 0;
 
 	let courseId;
 	let courseGroupId;
@@ -111,9 +106,10 @@ const restrictToUsersCoursesLessons = async (context) => {
 	if (courseGroup) studentsWithAccess = courseGroup.userIds;
 
 	const hasAdminAccess = userIsSuperhero || (userIsAdmin && equal(course.schoolId, schoolId));
-	const userInCourse = studentsWithAccess.some((id) => equal(id, userId))
-		|| course.teacherIds.some((id) => equal(id, userId))
-		|| course.substitutionIds.some((id) => equal(id, userId));
+	const userInCourse =
+		studentsWithAccess.some((id) => equal(id, userId)) ||
+		course.teacherIds.some((id) => equal(id, userId)) ||
+		course.substitutionIds.some((id) => equal(id, userId));
 
 	if (!(userInCourse || hasAdminAccess)) {
 		throw new NotFound(`no record found for id '${context.id || courseGroupId || courseId}'`);
@@ -123,10 +119,25 @@ const restrictToUsersCoursesLessons = async (context) => {
 
 const populateWhitelist = {
 	materialIds: [
-		'_id', 'originId', 'title', 'client', 'url', 'license', 'description',
-		'contentType', 'lastModified', 'language', 'subjects', 'targetGroups',
-		'target', 'tags', 'relatedResources', 'popularity', 'thumbnailUrl',
-		'editorsPick', 'createdAt',
+		'_id',
+		'originId',
+		'title',
+		'client',
+		'url',
+		'license',
+		'description',
+		'contentType',
+		'lastModified',
+		'language',
+		'subjects',
+		'targetGroups',
+		'target',
+		'tags',
+		'relatedResources',
+		'popularity',
+		'thumbnailUrl',
+		'editorsPick',
+		'createdAt',
 	],
 };
 
