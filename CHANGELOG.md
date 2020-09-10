@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-5287 Fixed OAuth2 rostering
 - SC-5612 - Adding search feature to the admintables for nuxt-client.
 
 ## [24.4.1] - 2020-08-31
