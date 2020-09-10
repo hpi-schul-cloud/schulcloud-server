@@ -1,8 +1,5 @@
 const testListObjectsReturn = {
-	Contents: [
-		{ Key: 'testFile' },
-		{ Key: '.scfake' },
-	],
+	Contents: [{ Key: 'testFile' }, { Key: '.scfake' }],
 };
 
 const testHeadObjectReturn = {

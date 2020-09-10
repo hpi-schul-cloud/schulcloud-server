@@ -12,18 +12,18 @@ const otherSchool = {
 let authenticator;
 
 const testAccess = (endpoint) => () => {
-	const request = chai.request(app)
+	const request = chai
+		.request(app)
 		.get(endpoint)
 		.set('Accept', 'application/json')
 		.set('content-type', 'application/x-www-form-urlencoded');
-	return authenticator.authenticate(request)
-		.then((response) => {
-			const { data } = response.body;
-			expect(data).to.have.lengthOf(1);
+	return authenticator.authenticate(request).then((response) => {
+		const { data } = response.body;
+		expect(data).to.have.lengthOf(1);
 
-			const schoolIds = data.map((d) => d.schoolId);
-			expect(schoolIds).to.not.contain(otherSchool.id);
-		});
+		const schoolIds = data.map((d) => d.schoolId);
+		expect(schoolIds).to.not.contain(otherSchool.id);
+	});
 };
 
 describe('access control', () => {

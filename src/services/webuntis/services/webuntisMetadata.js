@@ -1,9 +1,7 @@
 const service = require('feathers-mongoose');
 // const Ajv = require('ajv');
 const auth = require('@feathersjs/authentication');
-const {
-	iff, isProvider, /* validateSchema, */ disallow,
-} = require('feathers-hooks-common');
+const { iff, isProvider, /* validateSchema, */ disallow } = require('feathers-hooks-common');
 const { hasPermission } = require('../../../hooks');
 const { requireDatasourceId } = require('../hooks');
 // const { createSchema, patchSchema } = require('../schemas');
@@ -28,31 +26,13 @@ const webuntisMetadataService = service({
  */
 const webuntisMetadataServiceHooks = {
 	before: {
-		all: [
-			auth.hooks.authenticate('jwt'),
-		],
-		find: [
-			iff(isProvider('external'), [hasPermission('DATASOURCES_VIEW'), requireDatasourceId]),
-		],
-		get: [
-			iff(isProvider('external'), disallow()),
-		],
-		create: [
-			iff(isProvider('external'), [
-				disallow(),
-			]),
-		],
-		update: [
-			disallow(),
-		],
-		patch: [
-			iff(isProvider('external'), disallow()),
-		],
-		remove: [
-			iff(isProvider('external'), [
-				disallow(),
-			]),
-		],
+		all: [auth.hooks.authenticate('jwt')],
+		find: [iff(isProvider('external'), [hasPermission('DATASOURCES_VIEW'), requireDatasourceId])],
+		get: [iff(isProvider('external'), disallow())],
+		create: [iff(isProvider('external'), [disallow()])],
+		update: [disallow()],
+		patch: [iff(isProvider('external'), disallow())],
+		remove: [iff(isProvider('external'), [disallow()])],
 	},
 	after: {
 		all: [],
