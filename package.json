@@ -21,7 +21,8 @@
 		"lint": "eslint . --fix --ignore-path .gitignore",
 		"seed": "node ./backup.js -p setup/ -D schulcloud-test import",
 		"test": "cross-env NODE_ENV=test npm run seed && npm run coverage",
-		"backup": "node ./backup.js -b export",
+		"backup": "node ./backup.js -b export --sort \"{ createdAt: 1, _id: 1 }\"",
+		"backup-setup": "node ./backup.js -b export -p setup/ --sort \"{ createdAt: 1, _id: 1 }\"",
 		"setup": "node ./backup.js -p setup/ import",
 		"start": "node src/",
 		"startd": "nodemon src/",
@@ -36,7 +37,7 @@
 		"migration-sync": "migrate list --autosync --config ./config/migrate.js",
 		"migration-list": "migrate list --config ./config/migrate.js",
 		"migration-prune": "migrate prune --config ./config/migrate.js",
-		"migration-persist": "node ./backup.js -b export -p setup/ -c migrations --sort \"{ createdAt: 1 }\"",
+		"migration-persist": "node ./backup.js -b export -p setup/ -c migrations --sort \"{ createdAt: 1, _id: 1 }\"",
 		"migrate-etherpads": "node ./migrate-etherpads.js"
 	},
 	"dependencies": {
