@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added - Unreleased
 
+- SC-6640 - Fixed email check within registration (case insensitive
 - Test changelog has been updated for feature or hotfix branches
 - SC-5612 - Adding search feature to the admintables for nuxt-client.
 

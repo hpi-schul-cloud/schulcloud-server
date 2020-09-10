@@ -186,7 +186,7 @@ const registerUser = function register(data, params, app) {
 			}
 
 			// identical emails?
-			if (data.parent_email && data.parent_email === data.email) {
+			if (data.parent_email && data.parent_email.toLowerCase() === data.email.toLowerCase()) {
 				return Promise.reject(
 					new errors.BadRequest('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.')
 				);
