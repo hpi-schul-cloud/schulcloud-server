@@ -9,7 +9,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-- SC-SC-6674 Added to ensure unique emails
+- SC-SC-6674 Added checks to ensure unique emails
 
 ### Added
 
