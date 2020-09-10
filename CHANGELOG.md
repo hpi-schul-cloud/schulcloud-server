@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- SC-SC-6674 Added to ensure unique emails
+
 ### Added
 
 - Test changelog has been updated for feature or hotfix branches
@@ -17,7 +19,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [24.4.4] - 2020-09-08
 
 ### Fixed
-- SC-6697: updates/sync account username when user is updated  
+- SC-6697: updates/sync account username when user is updated
 
 ## [24.4.3] - 2020-09-09
 
