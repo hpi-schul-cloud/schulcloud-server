@@ -13,6 +13,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- Test database seed formatting and order by createdAt and \_id
 - Test changelog has been updated for feature or hotfix branches
 - SC-5612 - Adding search feature to the admintables for nuxt-client.
 
