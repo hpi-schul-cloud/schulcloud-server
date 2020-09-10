@@ -19,42 +19,45 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [24.4.5] - 2020-09-10
 
-### Fixed
+### Fixed in 24.4.5
+
 - SC-6637: generate QR codes for consent print sheets if group size exceeds 20
 
 ## [24.4.4] - 2020-09-08
 
-### Fixed
-- SC-6697: updates/sync account username when user is updated  
+### Fixed in 24.4.4
+
+- SC-6697: updates/sync account username when user is updated
 
 ## [24.4.3] - 2020-09-09
 
-### Fixed
+### Fixed in 24.4.3
+
 - SC-6533 - Login not possible if admin reset password
 
 ## [24.4.2] - 2020-08-31
 
-### Fixed
+### Fixed in 24.4.2
 
 - SC-6554: CSV-Importer no longer allows patching users with different roles
 
 ## [24.4.1] - 2020-08-31
 
-### Fixed
+### Fixed in 24.4.1
 
 - SC-6511 - LDAP edit button missing.
 
-### Changed
+### Changed in 24.4.1
 
 - SC-5987 Internationalisation: extend user and school model with default language
 
-### Added
+### Added 24.4.1
 
 - SC-6172: added hooks and checks to look for unique and not disposable emails in adminUsers service
 
 ## [24.4.0] - 2020-8-31
 
-### Fixed
+### Fixed in 24.4.0
 
 - SC-6122 - Edusharing preload thumbnails in parallel. Edusharing authentication stabilisation.
 
@@ -82,110 +85,91 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [24.2.2] - 2020-08-20
 
-### Added
+### Added in 24.2.2
 
 - SC-5280: the LDAP service will try to reconnect up to three times if the connection was lost or could not be established
 - SC-5280: the LDAP service and LDAP syncers now report more errors to the stats object
+- SC-5808: added an isExternal check to the create method of AdminUsers service, only users from not external schools can create users
 
-### Fixed
+### Fixed in 24.2.2
 
 - SC-5280: the LDAP sync now handles (timeout/firewall) errors much more gracefully
 - SC-5280: LDAP bind operations will only be issued if the connection was established successfully
 - SC-5280: aggregated LDAP statistics will now show the number of succesful and failed sub-syncs instead of just 1 or 0
 
-### Changed
+### Changed in 24.2.2
 
 - SC-5280: if disconnected prematurely, the LDAP service will not try to connect again just to unbind from the server
 
-### Added
-
-- SC-5808: added an isExternal check to the create method of AdminUsers service, only users from not external schools can create users
-
 ## [24.0.2] - 2020-08-05
 
-### Fixed - 24.0.2
+### Fixed in 24.0.2
 
 - SC-5835: Starting the new school year automatically - Cluster 4
 
 ## [24.0.1] - 2020-07-31
 
-### Fixed - 24.0.1
+### Fixed in 24.0.1
 
 - SC-5917 Fix activation of LDAP system
 
+## [23.6.4] - 2020-07-29
+
+### Fixed in 23.6.4
+
+- SC-5883: Choose current schoolyear based on the school instead of the date for creating classes.
+
 ## [23.6.3] - 2020-07-28
 
-### Added
+### Added in 23.6.3
 
 - SC-5754 Added isExternal attribute to school model. If ldapSchoolIdentifier or source is defined, isExternal will be set to true
   otherwise, if none of them are defined it wil be set to false.
-
-### Added
-
 - SC-4520 created a new Service called Activation Service; with which jobs can be defined and are
   only executed when an activation link (activation code) is confirmed (e.g.: change of e-mail address/username)
   Also added a sub-service for changing email/username in Activation Service
 - SC-5280: the LDAP service will try to reconnect up to three times if the connection was lost or could not be established
 - SC-5280: the LDAP service and LDAP syncers now report more errors to the stats object
 
-### Fixed
+### Fixed in 23.6.3
 
 - SC-5250: Fixes the CSV-Import, if there are whitespaces in the columnnames
 - SC-5686: only users with the team permission "RENAME_TEAM" can execute the patch method in teams route
 - SC-5280: the LDAP sync now handles (timeout/firewall) errors much more gracefully
 - SC-5280: LDAP bind operations will only be issued if the connection was established successfully
 - SC-5280: aggregated LDAP statistics will now show the number of succesful and failed sub-syncs instead of just 1 or 0
+- SC-5416: Enable maintenance Mode for LDAP Schools and change the currentSchoolYear for non-LDAP Schools
 
-### Changed
+### Changed in 23.6.3
 
 - SC-5542: Added an after hook for AdminUsers find method which formats birthday date to DD.MM.YYYY format.
 - SC-4289 Changed aggregations in admin tables, classes are now taken only from current year or max grade level, and are sorted
   by numeric ordering.
 - SC-5280: if disconnected prematurely, the LDAP service will not try to connect again just to unbind from the server
 
-### Security
-
-## [23.6.3] - 2020-07-28
-
-### Fixed - 23.6.3
-
-- SC-5416: Enable maintenance Mode for LDAP Schools and change the currentSchoolYear for non-LDAP Schools
-
-## [23.6.4] - 2020-07-29
-
-### Fixed - 23.6.4
-
-- SC-5883: Choose current schoolyear based on the school instead of the date for creating classes.
-
-## [23.6.3] - 2020-07-28
-
-### Fixed - 23.6.3
-
-- SC-5416: Enable maintenance Mode for LDAP Schools and change the currentSchoolYear for non-LDAP Schools
-
 ## [23.6.2] - 2020-07-22
 
-### Fixed - 23.6.2
+### Fixed in 23.6.2
 
 - SC-5773: LDAPSchoolSyncer now correctly populates classes synced from an LDAP server, even if only students or only teachers are assigned to the class.
 - SC-5250: Fixes the CSV-Import, if there are whitespaces in the columnnames
 
 ## [23.6.1] - 2020-07-22
 
-### Fixed - 23.6.1
+### Fixed in 23.6.1
 
 - SC-5733: LDAPSchoolSyncer now uses the Users model service to avoid ignoring indexes due to automatic collation
 
 ## [23.6.0] - 2020-07-21
 
-### Added - 23.6.0
+### Added in 23.6.0
 
 - SC-4142: Added indexes on TSP sync related attributes in user and school schema.
 - SC-4142: Adds info about unchanged entities to TSP sync statistics
 
 ## [23.5.4] - 2020-07-08
 
-### Added - 23.5.4
+### Added in 23.5.4
 
 - SC-2714 Added the federal state "Internationale Schule"
 
@@ -221,13 +205,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [23.4.0-nbc] - 2020-06-11
 
-### Added - 23.4.0-nbc
+### Added in 23.4.0-nbc
 
 - SC-4577 extend consentversions with school specific privacy policy, which can be added by the school admin
 
 ## [23.2.4] - 2020-06-05
 
-### Fixed - 23.2.4
+### Fixed in 23.2.4
 
 - SC-4876 soften sanitization to allow editor actions to be persisted correctly
 
@@ -309,17 +293,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [22.9.20]
 
-### Added
+### Added in 22.9.20
 
 - SC-4042: Added support for a central IServ-Connector
 
-### Changed
+### Changed in 22.9.20
 
 - LDAP syncs on servers with multiple schools now only sync one school at a time to avoid issues when paging search requests
 - LDAP syncs use less memory (because they do a lot less in parallel)
 - LDAPSchoolSyncer now returns user and class statistics
 
-### Fixed
+### Fixed in 22.9.20
 
 - Fixed LDAP-Service disconnect method
 - LDAPSystemSyncers now properly close their connections after syncing
@@ -328,87 +312,85 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [22.9.18]
 
-### Fixed
+### Fixed in 22.9.18
 
 - SC-4215: Do not allow unprivileged users to find users with non-school roles (expert, parent, etc.)
 
 ## [22.9.17]
 
-### Fixed
+### Fixed in 22.9.17
 
 - SC-4121: File uploads no longer fail if the security scan is misconfigured or errors during enqueuing
 
 ## [22.9.10]
 
-### Added
+### Added in 22.9.10
 
 - enable API key for /mails route
 
-## [22.9.10]
-
-### Fixed
+### Fixed in 22.9.10
 
 - fixed an issue that prevented api-key authenticated calls to function with query.
 
 ## [22.9.9]
 
-### Added
+### Added in 22.9.9
 
 - Sync can now be authenticated with an api-key.
 
 ## [22.9.8]
 
-### Fixed
+### Fixed in 22.9.8
 
 - Fixed an error where ldap users without proper uuid where not filtered correctly.
 
 ## [22.9.7]
 
-### Security
+### Security in 22.9.7
 
 - the /ldap route can now only be triggered for the users own school.
 
 ## [22.9.6]
 
-### Added
+### Added in 22.9.6
 
 - users without `SCHOOL_EDIT` permission, but with `SCHOOL_STUDENT_TEAM_MANAGE` permission can now toggle the school feature `disableStudentTeamCreation`.
 
-### Fixed
+### Fixed in 22.9.6
 
 - Admins in Thuringia can now prevent students from creating teams
 
 ## [22.9.5]
 
-### Security
+### Security in 22.9.5
 
 - increased security for the publicTeachers route.
 
 ## [22.9.4]
 
-### Fixed
+### Fixed in 22.9.4
 
 - fixes an issue with LDAP account updates if more than one account exists for the user (migration from local login to LDAP)
 
 ## [22.9.3]
 
-### Fixed
+### Fixed in 22.9.3
 
 - fixes regression in LDAP sync, that caused incomplete user updates
 
 ## [22.9.2]
 
-### Security
+### Security in 22.9.2
 
 - increased security for user PUT operation
 
 ## [22.9.1]
 
-### Fixed
+### Fixed in 22.9.1
 
 - SC-3994: remove unnecessary bucket creation call that caused school administration and LDAP Sync to throw errors
 
-### Changed
+### Changed in 22.9.1
 
 - use collation for /homeworks, /users, /publicTeachers, /users/admin/teachers, /users/admin/students, /classes, and /courses.
 
@@ -418,11 +400,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [22.8.0]
 
-### Added
+### Added in 22.8.0
 
 - This changelog has been added
 
-### Removed
+### Removed in 22.8.0
 
 - Clipboard sockets
 - This changelog has been added
@@ -436,20 +418,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
     - FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true will activate the feature
     - S3_KEY, used for symmetric encryption, already required for the migration because of the secret access key encryption
 
-### Changed
+### Changed in 22.8.0
 
 - SC-3767: moved env variables to globals.js, NODE_ENV required to equal 'test' for test execution and right database selection
-
-### Changed
-
 - migrated backup.sh script to node, so it can run platform independant and works on windows.
 
-### Fixed
+### Fixed in 22.8.0
 
 - SC-3821: Fix Co-Teachers and Substitution teachers not being able to Grade Homeworks
 
 ## 22.7.1
 
-### Fixed
+### Fixed in 22.7.1
 
 - Admin and teacher user could change other users without changing them self
