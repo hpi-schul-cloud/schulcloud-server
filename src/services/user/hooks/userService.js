@@ -75,8 +75,9 @@ const checkUniqueEmail = async (hook) => {
 	const userService = hook.app.service('/users/');
 
 	const { email } = hook.data;
-	if (email === undefined) {
-		return Promise.reject(new BadRequest('Fehler beim Auslesen der E-Mail-Adresse bei der Nutzererstellung.'));
+	if (!email) {
+		// there is no email address given. Nothing to check...
+		return Promise.resolve(hook);
 	}
 
 	// get userId of user entry to edit
