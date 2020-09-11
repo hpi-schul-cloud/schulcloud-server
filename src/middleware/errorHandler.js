@@ -4,27 +4,27 @@ const { Configuration } = require('@schul-cloud/commons');
 const jwt = require('jsonwebtoken');
 const { GeneralError } = require('../utils/errors');
 
-const { requestError } = require('../logger/systemLogger');
 const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 const logger = require('../logger');
 const { SilentError } = require('./errors');
 
 const MAX_LEVEL_FILTER = 12;
 
+const getRequestInfo = (req) => {
+	const info = {
+		url: req.originalUrl,
+		data: req.body,
+		method: req.method,
+	};
 
-// TODO replace system logger and error logging and combine it to own log
-const logRequestInfosInErrorCase = (error, req, res, next) => {
-	if (error) {
-		let decodedJWT;
-		try {
-			decodedJWT = jwt.decode(req.headers.authorization.replace('Bearer ', ''));
-		} catch (err) {
-			decodedJWT = {};
-		}
-
-		requestError(req, (decodedJWT || {}).userId, error);
+	try {
+		decodedJWT = jwt.decode(req.headers.authorization.replace('Bearer ', ''));
+		info.userId = 'TODO';
+	} catch (err) {
+		// nothing
 	}
-	next(error);
+
+	return info;
 };
 
 const formatAndLogErrors = (isTestRun) => (error, req, res, next) => {
@@ -42,10 +42,12 @@ const formatAndLogErrors = (isTestRun) => (error, req, res, next) => {
 		// but for find out what is going wrong with an test it need a breakpoint to debug it
 		// maybe error message without stacktrace is a solution or other debug level 
 		// info for error and ci is set to warning by testruns
+		let loggingErrorMessage = { ...error };	
 		if (isTestRun === false) {
-			logger.error({...error});
+			loggingErrorMessage.request = getRequestInfo(req);
+			logger.error(loggingErrorMessage);
 		} else {
-			logger.info({...error});
+			logger.info(loggingErrorMessage);
 		}
 	}
 	next(error);
@@ -165,10 +167,6 @@ const filterSecrets = (error, req, res, next) => {
 
 const errorHandler = (app) => {
 	app.use(filterSecrets);
-	if (NODE_ENV !== ENVIRONMENTS.TEST) {
-		app.use(logRequestInfosInErrorCase);
-	}
-
 	app.use(Sentry.Handlers.errorHandler());
 	app.use(handleSilentError);
 	app.use(formatAndLogErrors(NODE_ENV === ENVIRONMENTS.TEST));
