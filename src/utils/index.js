@@ -3,6 +3,7 @@ const sanitizeHtml = require('./sanitizeHtml');
 const getAge = require('./getAge');
 const modelServices = require('./modelServices');
 const prepareErrorParam = require('./prepareErrorParam');
+const errors = require('./errors');
 
 module.exports = {
 	modelServices,
@@ -10,4 +11,5 @@ module.exports = {
 	deepObject,
 	getAge,
 	prepareErrorParam,
+	errors,
 };

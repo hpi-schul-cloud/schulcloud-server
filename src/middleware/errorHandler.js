@@ -2,7 +2,7 @@ const Sentry = require('@sentry/node');
 const express = require('@feathersjs/express');
 const { Configuration } = require('@schul-cloud/commons');
 const jwt = require('jsonwebtoken');
-const { GeneralError } = require('@feathersjs/errors');
+const { GeneralError } = require('../utils/errors');
 
 const { requestError } = require('../logger/systemLogger');
 const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
@@ -11,6 +11,8 @@ const { SilentError } = require('./errors');
 
 const MAX_LEVEL_FILTER = 12;
 
+
+// TODO replace system logger and error logging and combine it to own log
 const logRequestInfosInErrorCase = (error, req, res, next) => {
 	if (error) {
 		let decodedJWT;
@@ -27,43 +29,48 @@ const logRequestInfosInErrorCase = (error, req, res, next) => {
 
 const formatAndLogErrors = (isTestRun) => (error, req, res, next) => {
 	if (error) {
+		if (error.className !== 'FeathersError') {
+			// eslint-disable-next-line no-param-reassign
+			error = new GeneralError(error);
+		}
+
+		// too much for logging...
+		delete error.hook;
 		// delete response informations for extern express applications
 		delete error.response;
-		if (error.options) {
-			// can include jwts if error it throw by extern micro services
-			delete error.options.headers;
-		}
 		// TODO discuss ..most of this errors are valid in testrun and should not logged
 		// but for find out what is going wrong with an test it need a breakpoint to debug it
 		// maybe error message without stacktrace is a solution or other debug level 
 		// info for error and ci is set to warning by testruns
 		if (isTestRun === false) {
-			logger.error({ ...error });
+			logger.error({...error});
+		} else {
+			logger.info({...error});
 		}
-		if (error.code === 500) { // TODO and no feather error
-			// eslint-disable-next-line no-param-reassign
-			error = new GeneralError(error);
-		};
-		// if exist delete it
-		delete error.stack;
-
-		// clear data and add requestId
-		error.data = isTestRun === false ? {
-			requestId: req.headers.requestId,
-		} : {};
 	}
 	next(error);
 };
 
+saveResponseFilter = (error) => ({
+	name: error.name,
+	message: error.message instanceof Error && error.message.message ? error.message.message : error.message,
+	code: error.code,
+	traceId: error.traceId,
+});
+
 const returnAsJson = express.errorHandler({
 	html: (error, req, res) => {
-		res.json(error);
+		res.json(saveResponseFilter(error));
 	},
+	json: (error, req, res) => {
+		res.json(saveResponseFilter(error));
+	}
 });
 
 // map to lower case and test as lower case
 const secretDataKeys = (() =>
 	[
+		'headers',
 		'password',
 		'passwort',
 		'new_password',
