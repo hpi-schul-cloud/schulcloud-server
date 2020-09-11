@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [24.5.0] - 2020-09-14
+
 - SC-6674 Added checks to ensure unique emails
 - Ignore database seed data with prettier, eslint, and codacy
 - SC-6640 - Fixed email check within registration (case insensitive)
@@ -31,12 +33,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [24.4.4] - 2020-09-08
 
-<<<<<<< HEAD
-### Fixed in 24.4.4
-
-=======
 ### Fixed
->>>>>>> hotfix/3/SC-6733
+
 - SC-6697: updates/sync account username when user is updated
 
 ## [24.4.3] - 2020-09-09
