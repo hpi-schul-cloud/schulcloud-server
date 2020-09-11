@@ -47,7 +47,7 @@ const checkUnique = (hook) => {
 		const { asTask } = hook.params._additional || {};
 
 		if (isLoggedIn || asTask === undefined || asTask === 'student') {
-			return Promise.reject(new BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
+			return Promise.reject(new BadRequest(`Email already exists.`));
 		}
 		if (asTask === 'parent') {
 			userService.update(

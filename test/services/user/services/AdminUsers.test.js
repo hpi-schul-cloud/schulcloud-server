@@ -440,7 +440,7 @@ describe('AdminUsersService', () => {
 			expect.fail('The previous call should have failed');
 		} catch (err) {
 			expect(err.code).to.equal(400);
-			expect(err.message).to.equal('Email already exists.');
+			expect(err.message).to.equal('Die E-Mail Adresse');
 		}
 	});
 
