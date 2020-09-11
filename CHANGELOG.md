@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## Unreleased
+
 ## [24.5.0] - 2020-09-14
 
 - SC-6674 Added checks to ensure unique emails
