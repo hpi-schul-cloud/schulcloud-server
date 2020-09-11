@@ -1,10 +1,9 @@
 // Global hooks that run for every service
-const { GeneralError, NotAuthenticated } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const {
 	sanitizeHtml: { sanitizeDeep },
-	prepareErrorParam,
+	errors: { GeneralError, NotAuthenticated },
 } = require('./utils');
 const { getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData } = require('./utils/redis');
 
@@ -102,11 +101,7 @@ const errorHandler = (context) => {
 		context.error.code = context.error.code || context.error.statusCode || 500;
 		return context;
 	}
-	// TODO error.hook data are not removed
-	throw new GeneralError(
-		'Server error!',
-		prepareErrorParam('Error with no context.error is throw. Error logic can not handle it.'),
-	);
+	throw new GeneralError('Error with no context.error is throw. Error logic can not handle it.');
 };
 
 function setupAppHooks(app) {

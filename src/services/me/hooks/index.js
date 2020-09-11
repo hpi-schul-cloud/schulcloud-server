@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const hooks = require('feathers-hooks-common');
 const errors = require('@feathersjs/errors');
-const { errors: { BadRequest, NotAuthenticated }, prepareErrorParam } = require('../../../utils');
+const { errors: { BadRequest, NotAuthenticated } } = require('../../../utils');
 
 const test = (context) => {
 	try {
