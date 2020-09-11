@@ -387,7 +387,6 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			if (!importIds.includes(user._id.toString())) {
 				const patchData = {};
 				patchData[collection] = [...importIds, user._id.toString()];
-				this.stats.users.updated += 1;
 				await this.app.service('/classes').patch(classObject._id, patchData);
 			}
 		});
