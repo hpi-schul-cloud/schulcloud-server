@@ -1052,7 +1052,7 @@ describe('CSVSyncer Integration', () => {
 			expect(stats2.success).to.equal(true);
 			expect(stats2.users.successful).to.equal(5);
 			expect(stats2.users.created).to.equal(0);
-			expect(stats2.users.updated).to.equal(5);
+			expect(stats2.users.updated).to.equal(0);
 			expect(stats2.users.failed).to.equal(0);
 			expect(stats2.invitations.successful).to.equal(0);
 			expect(stats2.invitations.failed).to.equal(0);
@@ -1198,7 +1198,7 @@ describe('CSVSyncer Integration', () => {
 				ec.teacherIds.map(teacherLastNames),
 			);
 			expect(ecTeachers).to.include('Winters');
-			expect(ecTeachers).to.include('Nixx0n'); // lastName was updated
+			expect(ecTeachers).to.not.include('Nixx0n'); // lastName was not updated
 			expect(ecTeachers).to.include('Lipton');
 			expect(ecTeachers).to.include('Malarkey');
 		});
