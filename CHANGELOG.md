@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-## Unreleased
+## [24.5.0] - 2020-09-14
 
 ### Added
 - SC-5612 - Adding search feature to the admintables for nuxt-client.
