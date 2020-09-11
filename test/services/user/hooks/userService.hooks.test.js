@@ -12,6 +12,20 @@ const {
 } = require('../../../../src/services/user/hooks/userService');
 
 describe('removeStudentFromCourses', () => {
+	let server;
+
+	before((done) => {
+		server = app.listen(0, done);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
+	afterEach(async () => {
+		await testObjects.cleanup();
+	});
+
 	it('removes single student from all his courses', async () => {
 		const user = await testObjects.createTestUser({ roles: ['student'] });
 		const courses = await Promise.all([

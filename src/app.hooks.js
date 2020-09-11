@@ -105,6 +105,7 @@ const errorHandler = (context) => {
 				// too much for logging...
 				delete catchedError.hook;
 			}
+			console.error(context.error.stack);
 			context.error = new GeneralError(context.error.message || 'Server Error', context.error.stack);
 			context.error.catchedError = catchedError;
 		}
