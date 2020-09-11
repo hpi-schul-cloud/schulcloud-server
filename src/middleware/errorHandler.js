@@ -2,6 +2,7 @@ const Sentry = require('@sentry/node');
 const express = require('@feathersjs/express');
 const { Configuration } = require('@schul-cloud/commons');
 const jwt = require('jsonwebtoken');
+const { GeneralError } = require('@feathersjs/errors');
 
 const { requestError } = require('../logger/systemLogger');
 const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
@@ -24,26 +25,28 @@ const logRequestInfosInErrorCase = (error, req, res, next) => {
 	next(error);
 };
 
-const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
+const formatAndLogErrors = (isTestRun) => (error, req, res, next) => {
 	if (error) {
-		// clear data and add requestId
-		error.data = showRequestId
-			? {
-					requestId: req.headers.requestId,
-			  }
-			: {};
-
 		// delete response informations for extern express applications
 		delete error.response;
 		if (error.options) {
 			// can include jwts if error it throw by extern micro services
 			delete error.options.headers;
 		}
-		logger.error({ ...error });
-
+		if (isTestRun === false) {
+			logger.error({ ...error });
+		}
+		if (error.code === 500) { // TODO and no feather error
+			// eslint-disable-next-line no-param-reassign
+			error = new GeneralError(error);
+		};
 		// if exist delete it
 		delete error.stack;
-		delete error.catchedError;
+
+		// clear data and add requestId
+		error.data = isTestRun === false ? {
+			requestId: req.headers.requestId,
+		} : {};
 	}
 	next(error);
 };
