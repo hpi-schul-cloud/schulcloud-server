@@ -14,7 +14,6 @@ const { updateAccountUsername, sendRegistrationLink, checkUniqueEmail } = requir
 
 const { userModel } = require('../model');
 
-
 const getCurrentUserInfo = (id) => userModel.findById(id).select('schoolId').lean().exec();
 
 const getCurrentYear = (ref, schoolId) =>
