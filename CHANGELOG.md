@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [24.4.6] - 2020-09-11
+
+### Changed
+- SC-6733: central personal data does not get updated via CSV import
+
 ## [24.4.5] - 2020-09-09
 
 ### Fixed
