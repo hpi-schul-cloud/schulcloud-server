@@ -3,8 +3,7 @@ const { keep } = require('feathers-hooks-common');
 const { BadRequest, Forbidden, GeneralError, NotFound } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
-const { hasRole, hasRoleNoHook, hasPermissionNoHook, hasPermission } = require('../../../hooks');
-const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { hasRoleNoHook, hasPermissionNoHook, hasPermission } = require('../../../hooks');
 
 const { getAge } = require('../../../utils');
 
@@ -80,13 +79,16 @@ const checkUniqueEmail = async (hook) => {
 		return Promise.reject(new BadRequest('Fehler beim Auslesen der E-Mail-Adresse bei der Nutzererstellung.'));
 	}
 
-	// Check if it is own account
-	const editsOwnAccount = equalIds(hook.id, hook.params.account._id);
+	// get userId of user entry to edit
+	const editUserId = hook.id;
 
-	const query = {
-		_id: { $ne: editsOwnAccount ? hook.params.account._id : hook.id },
-		email: email.toLowerCase(),
-	};
+	const query = { email: email.toLowerCase() };
+
+	// check if new user or update of existing entry
+	if (editUserId) {
+		// exclude existing user entry
+		query._id = { $ne: editUserId };
+	}
 
 	return userService.find({ query }).then((result) => {
 		const users = (result || {}).data || [];
