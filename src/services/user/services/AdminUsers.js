@@ -13,6 +13,7 @@ const {
 } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { validateParams } = require('../hooks/adminUsers.hooks');
+const { updateAccountUsername } = require('../hooks/userService');
 
 const { userModel } = require('../model');
 
@@ -82,6 +83,11 @@ class AdminUsers {
 				query._id = _id;
 			} else if (clientQuery.users) {
 				query._id = clientQuery.users;
+				// If the number of users exceeds 20, the underlying parsing library
+				// will convert the array to an object with the index as the key.
+				// To continue working with it, we convert it here back to the array form.
+				// See the documentation for further infos: https://github.com/ljharb/qs#parsing-arrays
+				if (typeof query._id === 'object') query._id = Object.values(query._id);
 			}
 			if (clientQuery.consentStatus) query.consentStatus = clientQuery.consentStatus;
 			if (clientQuery.classes) query.classes = clientQuery.classes;
@@ -213,6 +219,7 @@ const adminHookGenerator = (kind) => ({
 	},
 	after: {
 		find: [formatBirthdayOfUsers],
+		patch: [updateAccountUsername],
 	},
 });
 
