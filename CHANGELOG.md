@@ -17,6 +17,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Test changelog has been updated for feature or hotfix branches
 - SC-5612 - Adding search feature to the admintables for nuxt-client.
 
+## [24.4.6] - 2020-09-11
+
+### Changed
+- SC-6733: central personal data does not get updated via CSV import
+
 ## [24.4.5] - 2020-09-10
 
 ### Fixed in 24.4.5
@@ -25,8 +30,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [24.4.4] - 2020-09-08
 
+<<<<<<< HEAD
 ### Fixed in 24.4.4
 
+=======
+### Fixed
+>>>>>>> hotfix/3/SC-6733
 - SC-6697: updates/sync account username when user is updated
 
 ## [24.4.3] - 2020-09-09
