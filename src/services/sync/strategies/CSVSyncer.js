@@ -117,9 +117,10 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		const actions = Object.values(clusteredRecords).map((record) => async () => {
 			try {
 				const enrichedRecord = await this.enrichUserData(record);
-				const user = await this.createOrUpdateUser(enrichedRecord);
+				const [user, isUserCreated] = await this.createOrUpdateUser(enrichedRecord);
 				if (importClasses) {
-					await this.createClasses(enrichedRecord, user);
+					const isNewClassAssigned = await this.createClasses(enrichedRecord, user);
+					if (!isUserCreated && isNewClassAssigned) this.stats.users.updated += 1;
 				}
 			} catch (err) {
 				this.logError('Cannot create user', record, JSON.stringify(err));
@@ -280,10 +281,10 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	async createOrUpdateUser(record) {
 		const userId = await this.findUserIdForRecord(record);
 		if (userId === null) {
-			return this.createUser(record);
+			return [await this.createUser(record), true];
 		}
 		this.stats.users.successful += 1;
-		return this.app.service('users').get(userId);
+		return [await this.app.service('users').get(userId), false];
 	}
 
 	async findUserIdForRecord(record) {
@@ -371,7 +372,8 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	}
 
 	async createClasses(record, user) {
-		if (user === undefined) return;
+		if (user === undefined) return false;
+		let newClassAssigned = false;
 		const classes = CSVSyncer.splitClasses(record.class);
 		const classMapping = await this.buildClassMapping(classes, {
 			schoolId: this.options.schoolId,
@@ -387,10 +389,12 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			if (!importIds.includes(user._id.toString())) {
 				const patchData = {};
 				patchData[collection] = [...importIds, user._id.toString()];
+				newClassAssigned = true;
 				await this.app.service('/classes').patch(classObject._id, patchData);
 			}
 		});
 		await Promise.all(actions);
+		return newClassAssigned;
 	}
 
 	static splitClasses(classes) {
