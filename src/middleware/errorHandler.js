@@ -33,6 +33,10 @@ const formatAndLogErrors = (isTestRun) => (error, req, res, next) => {
 			// can include jwts if error it throw by extern micro services
 			delete error.options.headers;
 		}
+		// TODO discuss ..most of this errors are valid in testrun and should not logged
+		// but for find out what is going wrong with an test it need a breakpoint to debug it
+		// maybe error message without stacktrace is a solution or other debug level 
+		// info for error and ci is set to warning by testruns
 		if (isTestRun === false) {
 			logger.error({ ...error });
 		}
