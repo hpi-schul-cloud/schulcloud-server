@@ -165,7 +165,7 @@ const errorHandler = (app) => {
 
 	app.use(Sentry.Handlers.errorHandler());
 	app.use(handleSilentError);
-	app.use(formatAndLogErrors(NODE_ENV !== ENVIRONMENTS.TEST));
+	app.use(formatAndLogErrors(NODE_ENV === ENVIRONMENTS.TEST));
 	app.use(returnAsJson);
 };
 
