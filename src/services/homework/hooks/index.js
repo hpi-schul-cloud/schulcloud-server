@@ -1,9 +1,12 @@
 const { authenticate } = require('@feathersjs/authentication');
 const errors = require('@feathersjs/errors');
+
 const { iff, isProvider } = require('feathers-hooks-common');
+
 const logger = require('../../../logger');
 
 const globalHooks = require('../../../hooks');
+const { isOAuth2, authenticateOAuth2 } = require('../../../hooks/authentication');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const getAverageRating = function getAverageRating(submissions) {
@@ -237,7 +240,7 @@ const hasPatchPermission = (hook) => {
 };
 
 exports.before = () => ({
-	all: [authenticate('jwt')],
+	all: [ iff(isOAuth2, authenticateOAuth2('homework')).else(authenticate('jwt')) ],
 	find: [
 		iff(isProvider('external'), [
 			globalHooks.hasPermission('HOMEWORK_VIEW'),
