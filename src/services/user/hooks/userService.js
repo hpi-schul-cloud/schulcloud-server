@@ -29,7 +29,7 @@ const checkUnique = (hook) => {
 	const userService = hook.service;
 	const { email } = hook.data;
 	if (email === undefined) {
-		return Promise.resolve();
+		return Promise.reject(new BadRequest('Fehler beim Auslesen der E-Mail-Adresse bei der Nutzererstellung.'));
 	}
 	return userService.find({ query: { email: email.toLowerCase() } }).then((result) => {
 		const { length } = result.data;
@@ -47,7 +47,7 @@ const checkUnique = (hook) => {
 		const { asTask } = hook.params._additional || {};
 
 		if (isLoggedIn || asTask === undefined || asTask === 'student') {
-			return Promise.reject(new BadRequest(`Email already exists.`));
+			return Promise.reject(new BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
 		}
 		if (asTask === 'parent') {
 			userService.update(
@@ -97,7 +97,7 @@ const checkUniqueEmail = async (hook) => {
 			return Promise.resolve(hook);
 		}
 
-		return Promise.reject(new BadRequest(`Email already exists.`));
+		return Promise.reject(new BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
 	});
 };
 
