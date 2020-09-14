@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Added - Unreleased
+
+### Changed - Unreleased
+
+- Extend JWT payload by schoolId and roleIds
+
 ## [24.5.0] - 2020-09-14
 
 - Ignore database seed data with prettier, eslint, and codacy
@@ -16,7 +22,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-2710 - Adding time zones, default for school and theme
 
 
-### Added
+### Added - 24.5.0
 
 - Test changelog has been updated for feature or hotfix branches
 - SC-5612 - Adding search feature to the admintables for nuxt-client.
