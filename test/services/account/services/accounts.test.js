@@ -376,7 +376,7 @@ describe('Account Service', () => {
 			}
 		});
 
-		it('should return an error if an username specified in the request body already exists', async () => {
+		it('should NOT return an error if user edits own username', async () => {
 			const user = await testObjects.createTestUser();
 			const accountDetails = {
 				username: 'some_good@email.adderss',
@@ -385,8 +385,32 @@ describe('Account Service', () => {
 			};
 			const account = await accountService.create(accountDetails);
 			try {
-				await accountService.patch(account._id, {
+				const result = await accountService.patch(account._id, {
 					username: 'some_good@email.adderss',
+				});
+				expect(result.username).to.equal('some_good@email.adderss');
+			} finally {
+				await accountService.remove(account._id);
+			}
+		});
+
+		it('should return an error if an username specified in the request body already exists', async () => {
+			const user = await testObjects.createTestUser();
+			const accountDetails = {
+				username: 'some_good@email.adderss',
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+			const accountDetails2 = {
+				username: 'some_good_another@email.adderss',
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+			const account = await accountService.create(accountDetails);
+			const account2 = await accountService.create(accountDetails2);
+			try {
+				await accountService.patch(account._id, {
+					username: 'some_good_another@email.adderss',
 				});
 				throw new Error('should have failed.');
 			} catch (err) {
@@ -395,6 +419,7 @@ describe('Account Service', () => {
 				expect(err.code).to.equal(400);
 			} finally {
 				await accountService.remove(account._id);
+				await accountService.remove(account2._id);
 			}
 		});
 
