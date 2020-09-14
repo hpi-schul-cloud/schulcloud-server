@@ -11,6 +11,8 @@ const {
 	hasSchoolPermission,
 	blockDisposableEmail,
 } = require('../../../hooks');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { validateParams } = require('../hooks/adminUsers.hooks');
 const { updateAccountUsername } = require('../hooks/userService');
 
 const { userModel } = require('../model');
@@ -90,9 +92,32 @@ class AdminUsers {
 			}
 			if (clientQuery.consentStatus) query.consentStatus = clientQuery.consentStatus;
 			if (clientQuery.classes) query.classes = clientQuery.classes;
-			if (clientQuery.createdAt) query.createdAt = clientQuery.createdAt;
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
+			if (clientQuery.usersForConsent) query._id = clientQuery.usersForConsent;
+			if (clientQuery.searchQuery) {
+				query.$or = [
+					{ firstName: { $regex: clientQuery.searchQuery, $options: 'i' } },
+					{ lastName: { $regex: clientQuery.searchQuery, $options: 'i' } },
+					{ email: { $regex: clientQuery.searchQuery, $options: 'i' } },
+				];
+			}
+
+			const dateQueries = ['createdAt'];
+			for (const dateQuery of dateQueries) {
+				if (clientQuery[dateQuery]) {
+					if (typeof clientQuery[dateQuery] === 'object') {
+						for (const [key, value] of Object.entries(clientQuery[dateQuery])) {
+							if (['$gt', '$gte', '$lt', '$lte'].includes(key)) {
+								clientQuery[dateQuery][key] = new Date(value);
+							}
+						}
+						query[dateQuery] = clientQuery[dateQuery];
+					} else {
+						query[dateQuery] = new Date(clientQuery[dateQuery]);
+					}
+				}
+			}
 
 			return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
 				collation: { locale: 'de', caseLevel: true },
@@ -238,9 +263,23 @@ class AdminUsers {
 
 	async remove(id, params) {
 		const { _ids } = params.query;
+		const currentUser = await getCurrentUserInfo(params.account.userId);
+
 		if (id) {
+			const userToRemove = await getCurrentUserInfo(id);
+			if (!equalIds(currentUser.schoolId, userToRemove.schoolId)) {
+				throw new Forbidden('You cannot remove users from other schools.');
+			}
+			await this.app.service('accountModel').remove(null, { query: { userId: id } });
 			return this.app.service('usersModel').remove(id);
 		}
+
+		const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
+		if (usersIds.some((user) => !equalIds(currentUser.schoolId, user.schoolId))) {
+			throw new Forbidden('You cannot remove users from other schools.');
+		}
+
+		await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
 		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
 	}
 
@@ -253,7 +292,12 @@ class AdminUsers {
 }
 
 const formatBirthdayOfUsers = ({ result: { data: users } }) => {
-	users.forEach((user) => { user.birthday = moment(user.birthday).format('DD.MM.YYYY'); });
+	users.forEach((user) => {
+		if (user.birthday) user.birthday = moment(user.birthday).format('DD.MM.YYYY');
+		if (user.birthday) {
+			user.birthday = moment(user.birthday).format('DD.MM.YYYY');
+		}
+	});
 };
 
 const adminHookGenerator = (kind) => ({
@@ -262,9 +306,15 @@ const adminHookGenerator = (kind) => ({
 		find: [hasSchoolPermission(`${kind}_LIST`)],
 		get: [hasSchoolPermission(`${kind}_LIST`)],
 		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
+<<<<<<< HEAD
 		update: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
 		patch: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
 		remove: [hasSchoolPermission(`${kind}_DELETE`)],
+=======
+		update: [hasSchoolPermission(`${kind}_EDIT`)],
+		patch: [hasSchoolPermission(`${kind}_EDIT`)],
+		remove: [hasSchoolPermission(`${kind}_DELETE`), validateParams],
+>>>>>>> master
 	},
 	after: {
 		find: [formatBirthdayOfUsers],
