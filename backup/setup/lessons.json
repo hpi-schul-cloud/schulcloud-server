@@ -1,5 +1,58 @@
 [{
 	"_id": {
+		"$oid": "59a3c755a2049554a93fec52"
+	},
+	"updatedAt": {
+		"$date": "2017-09-21T14:28:56.651Z"
+	},
+	"createdAt": {
+		"$date": "2017-06-07T09:51:29.861Z"
+	},
+	"courseId": {
+		"$oid": "59a3c657a2049554a93fec3a"
+	},
+	"name": "Das (menschliche) Auge",
+	"time": {
+		"$date": "2017-09-20T22:00:00Z"
+	},
+	"date": {
+		"$date": "1999-12-31T23:00:00Z"
+	},
+	"__v": 0,
+	"isCopyFrom": {
+		"$oid": "5937cca1a5896d0515fbf2b2"
+	},
+	"position": 0,
+	"materialIds": [],
+	"contents": [
+		{
+			"_id": {
+				"$oid": "59c39e88d69d413e2ff0bcce"
+			},
+			"content": {
+				"text": "<p><img alt=\"\" src=\"https://schul-cloud.org/files/file?file=courses/59a3c948a2049554a93fec5f/auge.png\"></p>\r\n\r\n<p>(Quelle:&#xA0;https://de.serlo.org/biologie/biologie-menschen/sinne-menschen/bau-funktion-auges)</p>\r\n\r\n<p><a href=\"http://de.wikipedia.org/wiki/Reduziertes_Auge\">Wikipedia</a>: Das&#xA0;<strong>Reduzierte Auge</strong>, auch&#xA0;<em>Normalauge</em>&#xA0;genannt, ist ein schematisch vereinfachtes Modell des durchschnittlichen menschlichen&#xA0;<a href=\"https://de.wikipedia.org/wiki/Wirbeltierauge\" title=\"Wirbeltierauge\">Auges</a>&#xA0;in der physiologischen&#xA0;<a href=\"https://de.wikipedia.org/wiki/Optik\" title=\"Optik\">Optik</a>&#xA0;(engl.&#xA0;<em>reduced schematic eye</em>&#xA0;oder auch&#xA0;<em>collapsed dioptric system of the eye</em>). Es wurde von dem schwedischen Mediziner&#xA0;<a href=\"https://de.wikipedia.org/wiki/Allvar_Gullstrand\" title=\"Allvar Gullstrand\">Allvar Gullstrand</a>&#xA0;entwickelt.</p>\r\n"
+			},
+			"component": "text",
+			"hidden": false,
+			"title": "Aufbau des Auges (reduzierte Form)"
+		},
+		{
+			"_id": {
+				"$oid": "59c39e88d69d413e2ff0bccd"
+			},
+			"content": {
+				"text": "<p><strong>Grundlagen der Augenbewegung&#xA0;</strong>(<a href=\"http://de.wikipedia.org/wiki/Augenbewegung\">Wikipedia</a>)</p>\r\n\r\n<p>Drei Drehachsen sind bei Augenbewegungen besonders hervorzuheben: die&#xA0;<em>z-Achse</em>, die senkrecht durch das Auge verl&#xE4;uft, die&#xA0;<em>x-Achse</em>, die waagerecht verl&#xE4;uft &#x2013; beide liegen frontoparallel in der&#xA0;<em>Ebene von Listing</em>&#xA0;(benannt nach dem deutschen Mathematiker&#xA0;<a href=\"https://de.wikipedia.org/wiki/Johann_Benedict_Listing\" title=\"Johann Benedict Listing\">Johann Benedict Listing</a>) &#x2013;, und die&#xA0;<em>y-Achse</em>&#xA0;(auch&#xA0;<em><a href=\"https://de.wikipedia.org/wiki/Anthropometrie\" title=\"Anthropometrie\">Sagittalachse</a></em>), die im Drehpunkt die Lotrechte auf diese Ebene bildet.</p>\r\n\r\n<ul>\r\n\t<li>Drehbewegungen eines&#xA0;<em>einzelnen</em>&#xA0;Auges nennt man&#xA0;<em>Duktionen</em>. Hierbei unterscheidet man&#xA0;<em>Adduktion</em>&#xA0;(Bewegung zur Nase hin),&#xA0;<em>Abduktion</em>&#xA0;(Bewegung zur Schl&#xE4;fe),&#xA0;<em>Supraduktion</em>&#xA0;oder&#xA0;<em>Elevation</em>&#xA0;(Bewegung nach oben) und&#xA0;<em>Infraduktion</em>&#xA0;oder&#xA0;<em>Depression</em>&#xA0;(Bewegung nach unten). Eine Verrollung, also eine Drehung um die y-Achse, wird&#xA0;<em>Inzykloduktion</em>&#xA0;genannt, wenn sie mit dem oberen Umfang der Hornhaut zur Nase hin erfolgt, hingegen&#xA0;<em>Exzykloduktion</em>, wenn diese Bewegung zur Schl&#xE4;fe hin vollzogen wird. Die sechs &#xE4;u&#xDF;eren Augenmuskeln erf&#xFC;llen hierbei neben ihren Hauptfunktionen in Abh&#xE4;ngigkeit von der momentanen Blickrichtung weitere, mehr oder weniger ausgepr&#xE4;gte Teilfunktionen.</li>\r\n</ul>\r\n\r\n<ul>\r\n\t<li>Anatomische Darstellung der Muskelbeteiligungen w&#xE4;hrend der jeweiligen Drehbewegung aus der Prim&#xE4;rposition heraus</li>\r\n</ul>\r\n\r\n<table align=\"left\" border=\"0\" cellpadding=\"2\" cellspacing=\"6\" style=\"width:500px\">\r\n\t<tbody>\r\n\t\t<tr>\r\n\t\t\t<td colspan=\"3\">\r\n\t\t\t<p><strong>Bewegungstypen des menschlichen Auges</strong></p>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_abductors_arrow.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Eye_movements_abductors_arrow.jpg/131px-Eye_movements_abductors_arrow.jpg\"></a></p>\r\n\r\n\t\t\t<p>Abduktion</p>\r\n\t\t\t</td>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_adductors.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Eye_movements_adductors.jpg/131px-Eye_movements_adductors.jpg\"></a></p>\r\n\r\n\t\t\t<p>Adduktion</p>\r\n\t\t\t</td>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_depressors.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Eye_movements_depressors.jpg/131px-Eye_movements_depressors.jpg\"></a></p>\r\n\r\n\t\t\t<p>Senkung</p>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_elevators.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Eye_movements_elevators.jpg/131px-Eye_movements_elevators.jpg\"></a></p>\r\n\r\n\t\t\t<p>Hebung</p>\r\n\t\t\t</td>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_medial_rot.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Eye_movements_medial_rot.jpg/131px-Eye_movements_medial_rot.jpg\"></a></p>\r\n\r\n\t\t\t<p>Au&#xDF;enrollung</p>\r\n\t\t\t</td>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_lateral_rot.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Eye_movements_lateral_rot.jpg/131px-Eye_movements_lateral_rot.jpg\"></a></p>\r\n\r\n\t\t\t<p>Innenrollung</p>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td colspan=\"3\">\r\n\t\t\t<div style=\"background:#eeeeee; border:1px solid #cccccc; padding:5px 10px\"><a href=\"/files/file?path=courses/59a3c657a2049554a93fec3a/3D Ansicht Auge.html\" target=\"_blank\">Bewegungen des Auges (3D) interaktiv</a>&#xA0;(Sketchfap free model)</div>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td colspan=\"3\">\r\n\t\t\t<table align=\"left\" border=\"0\" cellpadding=\"2\" cellspacing=\"6\" style=\"width:500px\">\r\n\t\t\t\t<tbody>\r\n\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t<td colspan=\"3\">&#xA0;</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t</tbody>\r\n\t\t\t</table>\r\n\r\n\t\t\t<p>&#xA0;</p>\r\n\r\n\t\t\t<p>Durch Augenbewegungen ist eine vergleichsweise schnelle &#xC4;nderung des Einfallswinkels betrachteter Objekte m&#xF6;glich. <a href=\"/courses/5937c029a5896d0515fbf270/topics/5937ccc7a5896d0515fbf2b7\">Siehe dazu den Abschnitt in Physik.</a></p>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t</tbody>\r\n</table>\r\n\r\n<p>&#xA0;</p>\r\n\r\n<p>&#xA0;</p>\r\n"
+			},
+			"component": "text",
+			"hidden": false,
+			"title": "Bewegung des menschlichen Auges (3D-Modell)"
+		}
+	],
+	"shareToken": "Hkm6HluqW",
+	"hidden": false
+},
+{
+	"_id": {
 		"$oid": "59a3cad2a2049554a93fec64"
 	},
 	"updatedAt": {
@@ -101,260 +154,6 @@
 			"component": "geoGebra",
 			"hidden": false,
 			"title": ""
-		}
-	]
-},
-{
-	"_id": {
-		"$oid": "59a3e47ba2049554a93fec8f"
-	},
-	"updatedAt": {
-		"$date": "2017-11-16T19:52:24.173Z"
-	},
-	"createdAt": {
-		"$date": "2017-06-07T09:34:51.795Z"
-	},
-	"courseId": {
-		"$oid": "59a3cabaa2049554a93fec60"
-	},
-	"name": "Strecken- und Winkelsymmetralen",
-	"time": {
-		"$date": "2017-11-15T23:00:00Z"
-	},
-	"date": {
-		"$date": "1999-12-31T23:00:00Z"
-	},
-	"__v": 0,
-	"hidden": false,
-	"isCopyFrom": {
-		"$oid": "59a3c69aa2049554a93fec41"
-	},
-	"position": 2,
-	"materialIds": [],
-	"contents": [
-		{
-			"_id": {
-				"$oid": "59a40809a2049554a93fecc3"
-			},
-			"content": {
-				"text": "<p><img alt=\"\" src=\"/files/file?path=courses/59a3cabaa2049554a93fec60/Achsen-Symmetrie.jpg\" style=\"height:200px; width:500px\"></p>\r\n\r\n<p>Quelle: Bettermarks.com</p>\r\n"
-			},
-			"component": "text",
-			"hidden": false,
-			"title": "Einführung"
-		},
-		{
-			"_id": {
-				"$oid": "59a40809a2049554a93fecc2"
-			},
-			"content": {
-				"resources": [
-					{
-						"url": "https://de.serlo.org/mathe/geometrie/grundbegriffe/symmetrie/achsensymmetrie",
-						"title": "Achsensymmetrie",
-						"description": "Eine Figur heißt achsensymmetrisch, wenn sie durch die Achsenspiegelung an ihrer/n Symmetrieachse(n) auf sich selbst abgebildet wird. Die Symmetrieachse kann dabei auch als Faltkante gesehen werden, durch die die Figur in zwei deckungsgleiche Stücke aufgeteilt wird. Anstelle von ...",
-						"client": "serlo"
-					}
-				]
-			},
-			"component": "resources",
-			"hidden": false,
-			"title": "Achsensymmetrie"
-		},
-		{
-			"_id": {
-				"$oid": "59a40809a2049554a93fecc1"
-			},
-			"content": {
-				"resources": [
-					{
-						"url": "https://de.serlo.org/mathe/geometrie/grundbegriffe/symmetrie/punktsymmetrie",
-						"title": "Punktsymmetrie",
-						"description": "Eine Figur heißt punktsymmetrisch, wenn sie durch die Spiegelung an einem Punkt, dem sogenannten Symmetriepunkt oder Symmetriezentrum, auf sich selbst abgebiildet wird. Es handelt sich um eine Drehung der Figur um 180°.punktsymmetrische Figuren Die jeweils rot gekennzeichneten Punkte sind ...",
-						"client": "serlo"
-					}
-				]
-			},
-			"component": "resources",
-			"hidden": false,
-			"title": "Punktsymmetrie"
-		},
-		{
-			"_id": {
-				"$oid": "59a40809a2049554a93fecc0"
-			},
-			"content": {
-				"materialId": "xGeXaeqE"
-			},
-			"component": "geoGebra",
-			"hidden": false,
-			"title": "Hausaufgabe"
-		}
-	]
-},
-{
-	"_id": {
-		"$oid": "59a3c755a2049554a93fec52"
-	},
-	"updatedAt": {
-		"$date": "2017-09-21T14:28:56.651Z"
-	},
-	"createdAt": {
-		"$date": "2017-06-07T09:51:29.861Z"
-	},
-	"courseId": {
-		"$oid": "59a3c657a2049554a93fec3a"
-	},
-	"name": "Das (menschliche) Auge",
-	"time": {
-		"$date": "2017-09-20T22:00:00Z"
-	},
-	"date": {
-		"$date": "1999-12-31T23:00:00Z"
-	},
-	"__v": 0,
-	"isCopyFrom": {
-		"$oid": "5937cca1a5896d0515fbf2b2"
-	},
-	"position": 0,
-	"materialIds": [],
-	"contents": [
-		{
-			"_id": {
-				"$oid": "59c39e88d69d413e2ff0bcce"
-			},
-			"content": {
-				"text": "<p><img alt=\"\" src=\"https://schul-cloud.org/files/file?file=courses/59a3c948a2049554a93fec5f/auge.png\"></p>\r\n\r\n<p>(Quelle:&#xA0;https://de.serlo.org/biologie/biologie-menschen/sinne-menschen/bau-funktion-auges)</p>\r\n\r\n<p><a href=\"http://de.wikipedia.org/wiki/Reduziertes_Auge\">Wikipedia</a>: Das&#xA0;<strong>Reduzierte Auge</strong>, auch&#xA0;<em>Normalauge</em>&#xA0;genannt, ist ein schematisch vereinfachtes Modell des durchschnittlichen menschlichen&#xA0;<a href=\"https://de.wikipedia.org/wiki/Wirbeltierauge\" title=\"Wirbeltierauge\">Auges</a>&#xA0;in der physiologischen&#xA0;<a href=\"https://de.wikipedia.org/wiki/Optik\" title=\"Optik\">Optik</a>&#xA0;(engl.&#xA0;<em>reduced schematic eye</em>&#xA0;oder auch&#xA0;<em>collapsed dioptric system of the eye</em>). Es wurde von dem schwedischen Mediziner&#xA0;<a href=\"https://de.wikipedia.org/wiki/Allvar_Gullstrand\" title=\"Allvar Gullstrand\">Allvar Gullstrand</a>&#xA0;entwickelt.</p>\r\n"
-			},
-			"component": "text",
-			"hidden": false,
-			"title": "Aufbau des Auges (reduzierte Form)"
-		},
-		{
-			"_id": {
-				"$oid": "59c39e88d69d413e2ff0bccd"
-			},
-			"content": {
-				"text": "<p><strong>Grundlagen der Augenbewegung&#xA0;</strong>(<a href=\"http://de.wikipedia.org/wiki/Augenbewegung\">Wikipedia</a>)</p>\r\n\r\n<p>Drei Drehachsen sind bei Augenbewegungen besonders hervorzuheben: die&#xA0;<em>z-Achse</em>, die senkrecht durch das Auge verl&#xE4;uft, die&#xA0;<em>x-Achse</em>, die waagerecht verl&#xE4;uft &#x2013; beide liegen frontoparallel in der&#xA0;<em>Ebene von Listing</em>&#xA0;(benannt nach dem deutschen Mathematiker&#xA0;<a href=\"https://de.wikipedia.org/wiki/Johann_Benedict_Listing\" title=\"Johann Benedict Listing\">Johann Benedict Listing</a>) &#x2013;, und die&#xA0;<em>y-Achse</em>&#xA0;(auch&#xA0;<em><a href=\"https://de.wikipedia.org/wiki/Anthropometrie\" title=\"Anthropometrie\">Sagittalachse</a></em>), die im Drehpunkt die Lotrechte auf diese Ebene bildet.</p>\r\n\r\n<ul>\r\n\t<li>Drehbewegungen eines&#xA0;<em>einzelnen</em>&#xA0;Auges nennt man&#xA0;<em>Duktionen</em>. Hierbei unterscheidet man&#xA0;<em>Adduktion</em>&#xA0;(Bewegung zur Nase hin),&#xA0;<em>Abduktion</em>&#xA0;(Bewegung zur Schl&#xE4;fe),&#xA0;<em>Supraduktion</em>&#xA0;oder&#xA0;<em>Elevation</em>&#xA0;(Bewegung nach oben) und&#xA0;<em>Infraduktion</em>&#xA0;oder&#xA0;<em>Depression</em>&#xA0;(Bewegung nach unten). Eine Verrollung, also eine Drehung um die y-Achse, wird&#xA0;<em>Inzykloduktion</em>&#xA0;genannt, wenn sie mit dem oberen Umfang der Hornhaut zur Nase hin erfolgt, hingegen&#xA0;<em>Exzykloduktion</em>, wenn diese Bewegung zur Schl&#xE4;fe hin vollzogen wird. Die sechs &#xE4;u&#xDF;eren Augenmuskeln erf&#xFC;llen hierbei neben ihren Hauptfunktionen in Abh&#xE4;ngigkeit von der momentanen Blickrichtung weitere, mehr oder weniger ausgepr&#xE4;gte Teilfunktionen.</li>\r\n</ul>\r\n\r\n<ul>\r\n\t<li>Anatomische Darstellung der Muskelbeteiligungen w&#xE4;hrend der jeweiligen Drehbewegung aus der Prim&#xE4;rposition heraus</li>\r\n</ul>\r\n\r\n<table align=\"left\" border=\"0\" cellpadding=\"2\" cellspacing=\"6\" style=\"width:500px\">\r\n\t<tbody>\r\n\t\t<tr>\r\n\t\t\t<td colspan=\"3\">\r\n\t\t\t<p><strong>Bewegungstypen des menschlichen Auges</strong></p>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_abductors_arrow.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Eye_movements_abductors_arrow.jpg/131px-Eye_movements_abductors_arrow.jpg\"></a></p>\r\n\r\n\t\t\t<p>Abduktion</p>\r\n\t\t\t</td>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_adductors.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Eye_movements_adductors.jpg/131px-Eye_movements_adductors.jpg\"></a></p>\r\n\r\n\t\t\t<p>Adduktion</p>\r\n\t\t\t</td>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_depressors.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Eye_movements_depressors.jpg/131px-Eye_movements_depressors.jpg\"></a></p>\r\n\r\n\t\t\t<p>Senkung</p>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_elevators.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Eye_movements_elevators.jpg/131px-Eye_movements_elevators.jpg\"></a></p>\r\n\r\n\t\t\t<p>Hebung</p>\r\n\t\t\t</td>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_medial_rot.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Eye_movements_medial_rot.jpg/131px-Eye_movements_medial_rot.jpg\"></a></p>\r\n\r\n\t\t\t<p>Au&#xDF;enrollung</p>\r\n\t\t\t</td>\r\n\t\t\t<td>\r\n\t\t\t<p><a href=\"https://de.wikipedia.org/wiki/Datei:Eye_movements_lateral_rot.jpg\"><img alt=\"\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Eye_movements_lateral_rot.jpg/131px-Eye_movements_lateral_rot.jpg\"></a></p>\r\n\r\n\t\t\t<p>Innenrollung</p>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td colspan=\"3\">\r\n\t\t\t<div style=\"background:#eeeeee; border:1px solid #cccccc; padding:5px 10px\"><a href=\"/files/file?path=courses/59a3c657a2049554a93fec3a/3D Ansicht Auge.html\" target=\"_blank\">Bewegungen des Auges (3D) interaktiv</a>&#xA0;(Sketchfap free model)</div>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t\t<tr>\r\n\t\t\t<td colspan=\"3\">\r\n\t\t\t<table align=\"left\" border=\"0\" cellpadding=\"2\" cellspacing=\"6\" style=\"width:500px\">\r\n\t\t\t\t<tbody>\r\n\t\t\t\t\t<tr>\r\n\t\t\t\t\t\t<td colspan=\"3\">&#xA0;</td>\r\n\t\t\t\t\t</tr>\r\n\t\t\t\t</tbody>\r\n\t\t\t</table>\r\n\r\n\t\t\t<p>&#xA0;</p>\r\n\r\n\t\t\t<p>Durch Augenbewegungen ist eine vergleichsweise schnelle &#xC4;nderung des Einfallswinkels betrachteter Objekte m&#xF6;glich. <a href=\"/courses/5937c029a5896d0515fbf270/topics/5937ccc7a5896d0515fbf2b7\">Siehe dazu den Abschnitt in Physik.</a></p>\r\n\t\t\t</td>\r\n\t\t</tr>\r\n\t</tbody>\r\n</table>\r\n\r\n<p>&#xA0;</p>\r\n\r\n<p>&#xA0;</p>\r\n"
-			},
-			"component": "text",
-			"hidden": false,
-			"title": "Bewegung des menschlichen Auges (3D-Modell)"
-		}
-	],
-	"shareToken": "Hkm6HluqW",
-	"hidden": false
-},
-{
-	"_id": {
-		"$oid": "59a3e4bba2049554a93fec94"
-	},
-	"updatedAt": {
-		"$date": "2017-08-28T12:49:29.178Z"
-	},
-	"createdAt": {
-		"$date": "2017-06-08T07:47:47.137Z"
-	},
-	"courseId": {
-		"$oid": "59a3ce58a2049554a93fec6e"
-	},
-	"name": "Nachbarstaaten Deutschlands",
-	"time": {
-		"$date": "2017-08-27T22:00:00Z"
-	},
-	"date": {
-		"$date": "1999-12-31T23:00:00Z"
-	},
-	"__v": 0,
-	"isCopyFrom": {
-		"$oid": "59a3c6dba2049554a93fec44"
-	},
-	"position": 4,
-	"materialIds": [],
-	"contents": [
-		{
-			"_id": {
-				"$oid": "59a41159a2049554a93fecdd"
-			},
-			"content": {
-				"text": "<div class=\"ckeditor-html5-video\" style=\"text-align: center;\">\r\n<video autoplay=\"autoplay\" controls=\"controls\" src=\"/files/file?path=courses/59a3ce58a2049554a93fec6e/Nachbarstaaten Deutschlands.mp4\">&#xA0;</video>\r\n</div>\r\n\r\n<p>&#xA0;</p>\r\n"
-			},
-			"component": "text",
-			"hidden": false,
-			"title": "Einführung in das Thema"
-		},
-		{
-			"_id": {
-				"$oid": "59a41159a2049554a93fecdc"
-			},
-			"content": {
-				"text": "<p>1. Benennt alle Nachbarstaaten Deutschlands und deren Hauptst&#xE4;dte.</p>\r\n\r\n<p>2. Sucht heraus, wie viele Einwohner die Nachbaarstaaten Deutschlands haben.</p>\r\n"
-			},
-			"component": "text",
-			"hidden": false,
-			"title": "Aufgabe "
-		}
-	]
-},
-{
-	"_id": {
-		"$oid": "59a3e4a4a2049554a93fec93"
-	},
-	"updatedAt": {
-		"$date": "2017-09-18T10:00:01.877Z"
-	},
-	"createdAt": {
-		"$date": "2017-06-08T07:52:47.496Z"
-	},
-	"courseId": {
-		"$oid": "59a3cd61a2049554a93fec68"
-	},
-	"name": "Gedichtanalyse: Theodor Storm - Die Stadt",
-	"time": {
-		"$date": "2017-09-17T22:00:00Z"
-	},
-	"date": {
-		"$date": "1999-12-31T23:00:00Z"
-	},
-	"__v": 0,
-	"isCopyFrom": {
-		"$oid": "59a3c6c5a2049554a93fec43"
-	},
-	"position": 0,
-	"materialIds": [],
-	"contents": [
-		{
-			"_id": {
-				"$oid": "59bf9921899d66316cf49492"
-			},
-			"content": {
-				"text": "<p><img alt=\"Bildergebnis f&#xFC;r Theodor Storm\" src=\"https://www.welt.de/img/kultur/literarischewelt/mobile117690761/8542506557-ci102l-w1024/Hans-Theodor-Woldsen-Storm-3.jpg\" style=\"height:560px; margin-top:0px; width:573px\"></p>\r\n\r\n<p>&#xA0;</p>\r\n\r\n<p>&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0; &#xA9; WeltN24 GmbH, 2017</p>\r\n"
-			},
-			"component": "text",
-			"hidden": false,
-			"title": ""
-		},
-		{
-			"_id": {
-				"$oid": "59bf9921899d66316cf49491"
-			},
-			"content": {
-				"text": "<p><strong>Am grauen Strand, am grauen Meer<br>\r\nUnd seitab liegt die Stadt;<br>\r\nDer Nebel dr&#xFC;ckt die D&#xE4;cher schwer,<br>\r\nUnd durch die Stille braust das Meer<br>\r\nEint&#xF6;nig um die Stadt.</strong></p>\r\n\r\n<p><strong>Es rauscht kein Wald, es schl&#xE4;gt im Mai<br>\r\nKein Vogel ohn Unterla&#xDF;;<br>\r\nDie Wandergans mit hartem Schrei<br>\r\nNur fliegt in Herbstesnacht vorbei,<br>\r\nAm Strande weht das Gras.</strong></p>\r\n\r\n<p><strong>Doch h&#xE4;ngt mein ganzes Herz an dir,<br>\r\nDu graue Stadt am Meer;<br>\r\nDer Jugend Zauber f&#xFC;r und f&#xFC;r<br>\r\nRuht l&#xE4;chelnd doch auf dir, auf dir,<br>\r\nDu graue Stadt am Meer.</strong></p>\r\n"
-			},
-			"component": "text",
-			"hidden": false,
-			"title": "Theodor Storm - Die Stadt"
-		},
-		{
-			"_id": {
-				"$oid": "59bf9921899d66316cf49490"
-			},
-			"content": {
-				"text": "<p>1. Beschreibt die &#xE4;u&#xDF;ere Form des Gedichts.</p>\r\n\r\n<p>2. Suche treffende &#xDC;berschriften f&#xFC;r die einzelnen Strophen.</p>\r\n\r\n<p>3. Wie unterscheiden sich die Strophen inhaltlich voneinander?</p>\r\n\r\n<p>4. Worin liegt der H&#xF6;hepunkt des Gedichts?</p>\r\n"
-			},
-			"component": "text",
-			"hidden": false,
-			"title": "Aufgabe"
 		}
 	]
 },
@@ -497,6 +296,207 @@
 			"component": "geoGebra",
 			"hidden": false,
 			"title": ""
+		}
+	]
+},
+{
+	"_id": {
+		"$oid": "59a3e47ba2049554a93fec8f"
+	},
+	"updatedAt": {
+		"$date": "2017-11-16T19:52:24.173Z"
+	},
+	"createdAt": {
+		"$date": "2017-06-07T09:34:51.795Z"
+	},
+	"courseId": {
+		"$oid": "59a3cabaa2049554a93fec60"
+	},
+	"name": "Strecken- und Winkelsymmetralen",
+	"time": {
+		"$date": "2017-11-15T23:00:00Z"
+	},
+	"date": {
+		"$date": "1999-12-31T23:00:00Z"
+	},
+	"__v": 0,
+	"hidden": false,
+	"isCopyFrom": {
+		"$oid": "59a3c69aa2049554a93fec41"
+	},
+	"position": 2,
+	"materialIds": [],
+	"contents": [
+		{
+			"_id": {
+				"$oid": "59a40809a2049554a93fecc3"
+			},
+			"content": {
+				"text": "<p><img alt=\"\" src=\"/files/file?path=courses/59a3cabaa2049554a93fec60/Achsen-Symmetrie.jpg\" style=\"height:200px; width:500px\"></p>\r\n\r\n<p>Quelle: Bettermarks.com</p>\r\n"
+			},
+			"component": "text",
+			"hidden": false,
+			"title": "Einführung"
+		},
+		{
+			"_id": {
+				"$oid": "59a40809a2049554a93fecc2"
+			},
+			"content": {
+				"resources": [
+					{
+						"url": "https://de.serlo.org/mathe/geometrie/grundbegriffe/symmetrie/achsensymmetrie",
+						"title": "Achsensymmetrie",
+						"description": "Eine Figur heißt achsensymmetrisch, wenn sie durch die Achsenspiegelung an ihrer/n Symmetrieachse(n) auf sich selbst abgebildet wird. Die Symmetrieachse kann dabei auch als Faltkante gesehen werden, durch die die Figur in zwei deckungsgleiche Stücke aufgeteilt wird. Anstelle von ...",
+						"client": "serlo"
+					}
+				]
+			},
+			"component": "resources",
+			"hidden": false,
+			"title": "Achsensymmetrie"
+		},
+		{
+			"_id": {
+				"$oid": "59a40809a2049554a93fecc1"
+			},
+			"content": {
+				"resources": [
+					{
+						"url": "https://de.serlo.org/mathe/geometrie/grundbegriffe/symmetrie/punktsymmetrie",
+						"title": "Punktsymmetrie",
+						"description": "Eine Figur heißt punktsymmetrisch, wenn sie durch die Spiegelung an einem Punkt, dem sogenannten Symmetriepunkt oder Symmetriezentrum, auf sich selbst abgebiildet wird. Es handelt sich um eine Drehung der Figur um 180°.punktsymmetrische Figuren Die jeweils rot gekennzeichneten Punkte sind ...",
+						"client": "serlo"
+					}
+				]
+			},
+			"component": "resources",
+			"hidden": false,
+			"title": "Punktsymmetrie"
+		},
+		{
+			"_id": {
+				"$oid": "59a40809a2049554a93fecc0"
+			},
+			"content": {
+				"materialId": "xGeXaeqE"
+			},
+			"component": "geoGebra",
+			"hidden": false,
+			"title": "Hausaufgabe"
+		}
+	]
+},
+{
+	"_id": {
+		"$oid": "59a3e4a4a2049554a93fec93"
+	},
+	"updatedAt": {
+		"$date": "2017-09-18T10:00:01.877Z"
+	},
+	"createdAt": {
+		"$date": "2017-06-08T07:52:47.496Z"
+	},
+	"courseId": {
+		"$oid": "59a3cd61a2049554a93fec68"
+	},
+	"name": "Gedichtanalyse: Theodor Storm - Die Stadt",
+	"time": {
+		"$date": "2017-09-17T22:00:00Z"
+	},
+	"date": {
+		"$date": "1999-12-31T23:00:00Z"
+	},
+	"__v": 0,
+	"isCopyFrom": {
+		"$oid": "59a3c6c5a2049554a93fec43"
+	},
+	"position": 0,
+	"materialIds": [],
+	"contents": [
+		{
+			"_id": {
+				"$oid": "59bf9921899d66316cf49492"
+			},
+			"content": {
+				"text": "<p><img alt=\"Bildergebnis f&#xFC;r Theodor Storm\" src=\"https://www.welt.de/img/kultur/literarischewelt/mobile117690761/8542506557-ci102l-w1024/Hans-Theodor-Woldsen-Storm-3.jpg\" style=\"height:560px; margin-top:0px; width:573px\"></p>\r\n\r\n<p>&#xA0;</p>\r\n\r\n<p>&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0; &#xA9; WeltN24 GmbH, 2017</p>\r\n"
+			},
+			"component": "text",
+			"hidden": false,
+			"title": ""
+		},
+		{
+			"_id": {
+				"$oid": "59bf9921899d66316cf49491"
+			},
+			"content": {
+				"text": "<p><strong>Am grauen Strand, am grauen Meer<br>\r\nUnd seitab liegt die Stadt;<br>\r\nDer Nebel dr&#xFC;ckt die D&#xE4;cher schwer,<br>\r\nUnd durch die Stille braust das Meer<br>\r\nEint&#xF6;nig um die Stadt.</strong></p>\r\n\r\n<p><strong>Es rauscht kein Wald, es schl&#xE4;gt im Mai<br>\r\nKein Vogel ohn Unterla&#xDF;;<br>\r\nDie Wandergans mit hartem Schrei<br>\r\nNur fliegt in Herbstesnacht vorbei,<br>\r\nAm Strande weht das Gras.</strong></p>\r\n\r\n<p><strong>Doch h&#xE4;ngt mein ganzes Herz an dir,<br>\r\nDu graue Stadt am Meer;<br>\r\nDer Jugend Zauber f&#xFC;r und f&#xFC;r<br>\r\nRuht l&#xE4;chelnd doch auf dir, auf dir,<br>\r\nDu graue Stadt am Meer.</strong></p>\r\n"
+			},
+			"component": "text",
+			"hidden": false,
+			"title": "Theodor Storm - Die Stadt"
+		},
+		{
+			"_id": {
+				"$oid": "59bf9921899d66316cf49490"
+			},
+			"content": {
+				"text": "<p>1. Beschreibt die &#xE4;u&#xDF;ere Form des Gedichts.</p>\r\n\r\n<p>2. Suche treffende &#xDC;berschriften f&#xFC;r die einzelnen Strophen.</p>\r\n\r\n<p>3. Wie unterscheiden sich die Strophen inhaltlich voneinander?</p>\r\n\r\n<p>4. Worin liegt der H&#xF6;hepunkt des Gedichts?</p>\r\n"
+			},
+			"component": "text",
+			"hidden": false,
+			"title": "Aufgabe"
+		}
+	]
+},
+{
+	"_id": {
+		"$oid": "59a3e4bba2049554a93fec94"
+	},
+	"updatedAt": {
+		"$date": "2017-08-28T12:49:29.178Z"
+	},
+	"createdAt": {
+		"$date": "2017-06-08T07:47:47.137Z"
+	},
+	"courseId": {
+		"$oid": "59a3ce58a2049554a93fec6e"
+	},
+	"name": "Nachbarstaaten Deutschlands",
+	"time": {
+		"$date": "2017-08-27T22:00:00Z"
+	},
+	"date": {
+		"$date": "1999-12-31T23:00:00Z"
+	},
+	"__v": 0,
+	"isCopyFrom": {
+		"$oid": "59a3c6dba2049554a93fec44"
+	},
+	"position": 4,
+	"materialIds": [],
+	"contents": [
+		{
+			"_id": {
+				"$oid": "59a41159a2049554a93fecdd"
+			},
+			"content": {
+				"text": "<div class=\"ckeditor-html5-video\" style=\"text-align: center;\">\r\n<video autoplay=\"autoplay\" controls=\"controls\" src=\"/files/file?path=courses/59a3ce58a2049554a93fec6e/Nachbarstaaten Deutschlands.mp4\">&#xA0;</video>\r\n</div>\r\n\r\n<p>&#xA0;</p>\r\n"
+			},
+			"component": "text",
+			"hidden": false,
+			"title": "Einführung in das Thema"
+		},
+		{
+			"_id": {
+				"$oid": "59a41159a2049554a93fecdc"
+			},
+			"content": {
+				"text": "<p>1. Benennt alle Nachbarstaaten Deutschlands und deren Hauptst&#xE4;dte.</p>\r\n\r\n<p>2. Sucht heraus, wie viele Einwohner die Nachbaarstaaten Deutschlands haben.</p>\r\n"
+			},
+			"component": "text",
+			"hidden": false,
+			"title": "Aufgabe "
 		}
 	]
 },
