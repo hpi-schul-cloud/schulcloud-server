@@ -13,7 +13,7 @@ const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const testGenericErrorMessage = 'You don\'t have one of the permissions: STUDENT_LIST.';
 
-describe('AdminUsersService', () => {
+describe.only('AdminUsersService', () => {
 	let server;
 
 	before((done) => {

@@ -13,7 +13,6 @@ const {
 } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { validateParams } = require('../hooks/adminUsers.hooks');
-const { updateAccountUsername } = require('../hooks/userService');
 
 const { userModel } = require('../model');
 
@@ -140,11 +139,16 @@ class AdminUsers {
 	}
 
 	async create(_data, _params) {
-		const params = await this.prepareParams(_params);
-		await this.checkExternal(params.query.schoolId);
+		const currentUserId = _params.account.userId.toString();
+		const { schoolId } = await getCurrentUserInfo(currentUserId);
+		await this.checkExternal(schoolId);
 		const { email } = _data;
 		await this.checkMail(email);
-		return this.app.service('usersModel').create(_data, params);
+		return this.app.service('usersModel').create({
+			..._data,
+			schoolId,
+			roles: [this.role._id],
+		}, _params);
 	}
 
 	async update(_id, _data, _params) {
@@ -312,7 +316,7 @@ const adminHookGenerator = (kind) => ({
 	},
 	after: {
 		find: [formatBirthdayOfUsers],
-		patch: [updateAccountUsername],
+		patch: [],
 	},
 });
 
