@@ -13,18 +13,20 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
-- Test database seed formatting and order by createdAt and \_id
+- Test database seed (migrations.json for now) formatting and order by \_id
 - Test changelog has been updated for feature or hotfix branches
 - SC-5612 - Adding search feature to the admintables for nuxt-client.
 
 ## [24.4.4] - 2020-09-08
 
 ### Fixed
-- SC-6697: updates/sync account username when user is updated  
+
+- SC-6697: updates/sync account username when user is updated
 
 ## [24.4.3] - 2020-09-09
 
 ### Fixed
+
 - SC-6533 - Login not possible if admin reset password
 
 ## [24.4.2] - 2020-08-31
