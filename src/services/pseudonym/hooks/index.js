@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
+const { NotAuthenticated } = require('@feathersjs/errors');
+const { iff } = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
@@ -82,8 +84,25 @@ const populateUsername = (context) => {
 		});
 };
 
+const isOAuth2 = (context) => {
+	return (context.params.query && typeof(context.params.query.token) !== 'undefined');
+};
+
+const authenticateOAuth2 = (context) => context.app.service('/oauth2/introspect')
+.create({ token: context.params.query.token })
+.then((introspection) => {
+	if (introspection.active && introspection.scope.indexOf('openid') !== -1) {
+		context.params.account = { userId: introspection.sub };
+		context.params.query.token = undefined;
+		return context;
+	}
+	throw new NotAuthenticated('Invalid access token!');
+}).catch((error) => {
+	throw new Error(error);
+});
+
 exports.before = {
-	all: [authenticate('jwt')],
+	all: [iff(isOAuth2, authenticateOAuth2).else(authenticate('jwt'))],
 	find: [replaceToolWithOrigin],
 	get: [disallow()],
 	create: [globalHooks.ifNotLocal(disallow())],
