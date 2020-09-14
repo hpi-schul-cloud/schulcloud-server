@@ -357,33 +357,148 @@ describe('AdminUsersService', () => {
 		expect(testStudent.birthday).equals('01.01.2000');
 	});
 
-	it('updates account username if user email is updated', async () => {
-		// given
-		const user = await testObjects.createTestUser({ roles: ['student'] });
-		const accountDetails = {
-			username: user.email,
-			password: 'password',
-			userId: user._id,
+
+	describe('patch and update', () => {
+		afterEach(async () => {
+			await testObjects.cleanup();
+		});
+
+		it('updates account username if user email is updated', async () => {
+			const school = await testObjects.createTestSchool({
+				name: 'testSchool1',
+			});
+			// given
+			const user = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
+			const accountDetails = {
+				username: user.email,
+				password: 'password',
+				userId: user._id,
+			};
+			const account = await testObjects.createTestAccount(accountDetails, false, user);
+			expect(user.email).equals(account.username);
+
+			// when
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = {};
+			await adminStudentsService.patch(
+				user._id.toString(),
+				{ email: 'foo@bar.baz' },
+				params,
+			);
+
+			// then
+			const updatedAccount = await accountService.get(account._id);
+			expect(updatedAccount.username).equals('foo@bar.baz');
+		});
+
+
+		const updateFromDifferentSchool = (role, type, service) => async () => {
+			const school = await testObjects.createTestSchool({
+				name: 'testSchool1',
+			});
+			const otherSchool = await testObjects.createTestSchool({
+				name: 'testSchool2',
+			});
+
+			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+			const student = await testObjects.createTestUser({ roles: [role], schoolId: otherSchool._id });
+
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+			params.query = {};
+
+
+			try {
+				const result = await service[type](
+					student._id.toString(),
+					{
+						email: 'affe@tarzan.de',
+						firstName: 'Anne',
+						lastName: 'Monkey',
+					},
+					params,
+				);
+				expect(result).to.be.undefined;
+			} catch (err) {
+				expect(err.code).to.be.equal(400);
+			}
 		};
-		const account = await accountService.create(accountDetails);
-		expect(user.email).equals(account.username);
 
-		// when
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-		const params = await testObjects.generateRequestParamsFromUser(teacher);
-		params.query = {};
-		await adminStudentsService.patch(
-			user._id,
-			{ email: 'foo@bar.baz' },
-			params,
-		);
+		it('do not allow patch students from other schools',
+			updateFromDifferentSchool('student', 'patch', adminStudentsService));
+		it('do not allow update students from other schools',
+			updateFromDifferentSchool('student', 'update', adminStudentsService));
+		it('do not allow patch teacher from other schools',
+			updateFromDifferentSchool('teacher', 'patch', adminTeachersService));
+		it('do not allow update teacher from other schools',
+			updateFromDifferentSchool('teacher', 'update', adminTeachersService));
 
-		// then
-		const updatedAccount = await accountService.get(account._id);
-		expect(updatedAccount.username).equals('foo@bar.baz');
+		const useEmailTwice = (role, type, service) => async () => {
+			const school = await testObjects.createTestSchool({
+				name: 'testSchool1',
+			});
 
-		await accountService.remove(account._id);
-		await userService.remove(user._id);
+			const userMail = 'test@affe.de';
+			const newUserName = 'Monkey';
+
+			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+			const user = await testObjects.createTestUser({
+				roles: [role],
+				email: userMail,
+				schoolId: school._id,
+			});
+			const account = await testObjects.createTestAccount({
+				username: user.email,
+				password: 'password',
+				userId: user._id,
+			}, false, user);
+			expect(user.email).equals(account.username);
+			const otherUser = await testObjects.createTestUser({
+				roles: ['teacher'],
+				email: 'cool@affe.de',
+				schoolId: school._id,
+			});
+			const otherAccount = await testObjects.createTestAccount({
+				username: otherUser.email,
+				password: 'password',
+				userId: otherUser._id,
+			}, false, otherUser);
+			expect(otherUser.email).equals(otherAccount.username);
+
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+			params.query = {};
+
+
+			try {
+				const result = await service[type](
+					user._id.toString(),
+					{
+						email: otherUser.eamil,
+						firstName: 'Anne',
+						lastName: newUserName,
+					},
+					params,
+				);
+				expect(result).to.be.undefined;
+			} catch (err) {
+				expect(err.code).to.be.equal(400);
+			}
+
+			const notUpdatedAccount = await accountService.get(account._id);
+			const notUpdatedUser = await service.get(user._id, params);
+			expect(notUpdatedAccount.username).equal(userMail);
+			expect(notUpdatedUser.email).to.be.equal(userMail);
+			expect(notUpdatedUser.lastName).to.be.not.equal(newUserName);
+		};
+
+		it('block changes student patch if email already use',
+			useEmailTwice('student', 'patch', adminStudentsService));
+		it('block changes student update if email already in use',
+			useEmailTwice('student', 'update', adminStudentsService));
+		it('block changes teacher patch if email already in use',
+			useEmailTwice('teacher', 'patch', adminTeachersService));
+		it('block changes teacher update if email already in use',
+			useEmailTwice('teacher', 'update', adminTeachersService));
 	});
 });
 

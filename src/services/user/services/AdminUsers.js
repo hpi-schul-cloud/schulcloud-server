@@ -14,7 +14,6 @@ const {
 const { updateAccountUsername } = require('../hooks/userService');
 
 const { userModel } = require('../model');
-const account = require('../../account');
 
 const getCurrentUserInfo = (id) => userModel.findById(id)
 	.select('schoolId')
@@ -125,22 +124,36 @@ class AdminUsers {
 
 	async update(_id, _data, _params) {
 		if (!_id) throw new BadRequest('id is required');
-		const params = await this.prepareParams(_params);
+		const params = await this.prepareParams(_id, _params);
 		await this.checkExternal(params.query.schoolId);
 		const { email } = _data;
 		await this.checkMail(email, _id);
 		await this.updateAccount(email, _id);
-		return this.prepareRoleback(email, _id, () => this.app.service('usersModel').update(_id, _data, params));
+		// _id is part of params and will be combined with the schoolId
+		const user = await this.prepareRoleback(
+			email, _id, () => this.app.service('usersModel').update(null, _data, params),
+		);
+
+		if (user.length === 0) throw BadRequest('User could not be edit');
+
+		return user;
 	}
 
 	async patch(_id, _data, _params) {
 		if (!_id) throw new BadRequest('id is required');
-		const params = await this.prepareParams(_params);
+		const params = await this.prepareParams(_id, _params);
 		await this.checkExternal(params.query.schoolId);
 		const { email } = _data;
 		await this.checkMail(email, _id);
 		await this.updateAccount(email, _id);
-		return this.prepareRoleback(email, _id, () => this.app.service('usersModel').patch(_id, _data, params));
+		// _id is part of params and will be combined with the schoolId
+		const user = await this.prepareRoleback(
+			email, _id, () => this.app.service('usersModel').patch(null, _data, params),
+		);
+
+		if (user.length === 0) throw new BadRequest('user could not be edit');
+
+		return user;
 	}
 
 	/**
@@ -160,12 +173,14 @@ class AdminUsers {
 	 * - admins only allowed to change user on own school
 	 * @param {Object} params - Feathersjs params
 	 */
-	async prepareParams(params) {
+	async prepareParams(_id, params) {
 		const currentUserId = params.account.userId.toString();
 		const { schoolId } = await getCurrentUserInfo(currentUserId);
 
 		return {
 			query: {
+				_id,
+				roles: this.role._id,
 				schoolId: schoolId.toString(),
 			},
 		};
@@ -189,7 +204,7 @@ class AdminUsers {
 
 	/**
 	 * Update the account email if eamil will be changed on user.
-	 * IMPORTANT: Keep in min to do a roleback if saving the user failed
+	 * IMPORTANT: Keep in mind to do a roleback if saving the user failed
 	 * @param {*} email
 	 * @param {*} userId
 	 */
