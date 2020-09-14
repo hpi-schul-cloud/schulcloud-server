@@ -306,15 +306,9 @@ const adminHookGenerator = (kind) => ({
 		find: [hasSchoolPermission(`${kind}_LIST`)],
 		get: [hasSchoolPermission(`${kind}_LIST`)],
 		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
-<<<<<<< HEAD
 		update: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
 		patch: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
-		remove: [hasSchoolPermission(`${kind}_DELETE`)],
-=======
-		update: [hasSchoolPermission(`${kind}_EDIT`)],
-		patch: [hasSchoolPermission(`${kind}_EDIT`)],
 		remove: [hasSchoolPermission(`${kind}_DELETE`), validateParams],
->>>>>>> master
 	},
 	after: {
 		find: [formatBirthdayOfUsers],
