@@ -146,7 +146,7 @@ class GeneralError extends featherErrors.GeneralError {
 		super(message, additional, ...params);
 		prepare(this, additional, params);
 		solvedTraceId(this, message, additional);
-
+		// keep original error location by re throwing errors
 		if (Error.captureStackTrace) {
 			Error.captureStackTrace(this, GeneralError);
 		}
