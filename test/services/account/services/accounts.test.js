@@ -396,6 +396,7 @@ describe('Account Service', () => {
 
 		it('should return an error if an username specified in the request body already exists', async () => {
 			const user = await testObjects.createTestUser();
+			const user2 = await testObjects.createTestUser();
 			const accountDetails = {
 				username: 'some_good@email.adderss',
 				password: 'ca4t9fsfr3dsd',
@@ -404,7 +405,7 @@ describe('Account Service', () => {
 			const accountDetails2 = {
 				username: 'some_good_another@email.adderss',
 				password: 'ca4t9fsfr3dsd',
-				userId: user._id,
+				userId: user2._id,
 			};
 			const account = await accountService.create(accountDetails);
 			const account2 = await accountService.create(accountDetails2);
