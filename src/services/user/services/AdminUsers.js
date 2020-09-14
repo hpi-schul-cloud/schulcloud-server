@@ -159,7 +159,7 @@ class AdminUsers {
 		const userService = this.app.service('/users');
 		const accounts = await userService.find({ query: { email: email.toLowerCase() } });
 		if (accounts.total > 0) {
-			throw new BadRequest('Email already exists.');
+			throw new BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`);
 		}
 
 		return this.app.service('usersModel').create(data);
