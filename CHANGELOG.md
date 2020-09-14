@@ -9,16 +9,20 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-### Changed
+### Added - Unreleased
 
-- rename statistic mails route, secure it over sync api key now
+### Changed - Unreleased
+
+- Extend JWT payload by schoolId and roleIds
+- Rename statistic mails route, secure it over sync api key now
+
 
 ## [24.5.0] - 2020-09-14
 
 - Ignore database seed data with prettier, eslint, and codacy
 - SC-6640 - Fixed email check within registration (case insensitive)
 
-### Added
+### Added - 24.5.0
 
 - Test changelog has been updated for feature or hotfix branches
 - SC-5612 - Adding search feature to the admintables for nuxt-client.
