@@ -18,10 +18,27 @@ const getRequestInfo = (req) => {
 	};
 
 	try {
-		decodedJWT = jwt.decode(req.headers.authorization.replace('Bearer ', ''));
-		info.userId = 'TODO';
+		const decodedJWT = jwt.decode(req.headers.authorization.replace('Bearer ', ''));
+		if (decodedJWT && decodedJWT.accountId) {
+			info.user = {
+				accountId: decodedJWT.accountId,
+				aud: decodedJWT.aud,
+				userId: decodedJWT.userId,
+			};
+			if (decodedJWT.support === true) {
+				info.support = {
+					supportJWT: true,
+					supportUserId: decodedJWT.supportUserId,
+				};
+			}
+		} else if (req.headers.authorization) {
+			info.user = 'Can not decode jwt.';
+		} else {
+			info.user = 'No jwt is set.';
+		}
 	} catch (err) {
-		// nothing
+		// Maybe we found a better solution, but we can not display the full error message with stack trace
+		info.user = err.message;
 	}
 
 	return info;
@@ -40,9 +57,9 @@ const formatAndLogErrors = (isTestRun) => (error, req, res, next) => {
 		delete error.response;
 		// TODO discuss ..most of this errors are valid in testrun and should not logged
 		// but for find out what is going wrong with an test it need a breakpoint to debug it
-		// maybe error message without stacktrace is a solution or other debug level 
+		// maybe error message without stacktrace is a solution or other debug level
 		// info for error and ci is set to warning by testruns
-		let loggingErrorMessage = { ...error };	
+		const loggingErrorMessage = { ...error };
 		if (isTestRun === false) {
 			loggingErrorMessage.request = getRequestInfo(req);
 			logger.error(loggingErrorMessage);
@@ -53,7 +70,7 @@ const formatAndLogErrors = (isTestRun) => (error, req, res, next) => {
 	next(error);
 };
 
-saveResponseFilter = (error) => ({
+const saveResponseFilter = (error) => ({
 	name: error.name,
 	message: error.message instanceof Error && error.message.message ? error.message.message : error.message,
 	code: error.code,
@@ -66,7 +83,7 @@ const returnAsJson = express.errorHandler({
 	},
 	json: (error, req, res) => {
 		res.json(saveResponseFilter(error));
-	}
+	},
 });
 
 // map to lower case and test as lower case
@@ -97,6 +114,7 @@ const secretDataKeys = (() =>
 		'birthday',
 		'description',
 		'gradeComment',
+		'_csrf',
 	].map((k) => k.toLocaleLowerCase()))();
 
 const filterSecretValue = (key, value) => {

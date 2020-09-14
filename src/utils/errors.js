@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 const featherErrors = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
 /*
@@ -29,22 +30,20 @@ const prepare = (ref, additional, params) => {
 	ref.className = 'FeathersError';
 	ref.data = Object.freeze({ ...params });
 	ref.errors = Object.freeze(additional || {});
-}
+};
 
 const solvedTraceId = (ref, message, additional) => {
 	if (message instanceof Error && message.traceId) {
-		ref.traceId = message.traceId
+		ref.traceId = message.traceId;
 		delete message.traceId;
 	} else if (additional instanceof Error && additional.traceId) {
-		ref.traceId = additional.traceId
+		ref.traceId = additional.traceId;
 		delete message.traceId;
 	} else {
 		const uid = ObjectId();
 		ref.traceId = uid.toString();
 	}
-}
-
-
+};
 
 class BadRequest extends featherErrors.BadRequest {
 	constructor(message, additional, ...params) {
@@ -110,7 +109,6 @@ class Timeout extends featherErrors.Timeout {
 	}
 }
 
-
 class Conflict extends featherErrors.Conflict {
 	constructor(message, additional, ...params) {
 		super(message, additional, ...params);
@@ -118,7 +116,6 @@ class Conflict extends featherErrors.Conflict {
 		solvedTraceId(this, message, additional);
 	}
 }
-
 
 class LengthRequired extends featherErrors.LengthRequired {
 	constructor(message, additional, ...params) {
@@ -128,7 +125,6 @@ class LengthRequired extends featherErrors.LengthRequired {
 	}
 }
 
-
 class Unprocessable extends featherErrors.Unprocessable {
 	constructor(message, additional, ...params) {
 		super(message, additional, ...params);
@@ -137,7 +133,6 @@ class Unprocessable extends featherErrors.Unprocessable {
 	}
 }
 
-
 class TooManyRequests extends featherErrors.TooManyRequests {
 	constructor(message, additional, ...params) {
 		super(message, additional, ...params);
@@ -145,7 +140,6 @@ class TooManyRequests extends featherErrors.TooManyRequests {
 		solvedTraceId(this, message, additional);
 	}
 }
-
 
 class GeneralError extends featherErrors.GeneralError {
 	constructor(message, additional, ...params) {
@@ -159,7 +153,6 @@ class GeneralError extends featherErrors.GeneralError {
 	}
 }
 
-
 class NotImplemented extends featherErrors.NotImplemented {
 	constructor(message, additional, ...params) {
 		super(message, additional, ...params);
@@ -168,7 +161,6 @@ class NotImplemented extends featherErrors.NotImplemented {
 	}
 }
 
-
 class BadGateway extends featherErrors.BadGateway {
 	constructor(message, additional, ...params) {
 		super(message, additional, ...params);
@@ -176,7 +168,6 @@ class BadGateway extends featherErrors.BadGateway {
 		solvedTraceId(this, message, additional);
 	}
 }
-
 
 class Unavailable extends featherErrors.Unavailable {
 	constructor(message, additional, ...params) {
@@ -203,4 +194,4 @@ module.exports = {
 	NotImplemented,
 	BadGateway,
 	Unavailable,
-}
+};
