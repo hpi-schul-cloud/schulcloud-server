@@ -1,30 +1,6 @@
 [{
 	"_id": {
-		"$oid": "5f59e72fc078e9512f1d9989"
-	},
-	"theme": "open",
-	"data": [
-		{
-			"title": "Begleitmaterial",
-			"content": "<a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/Begleitmaterial/Broschuere_Die-Schul-Cloud-im-Unterricht-Fachuebergreifende-Unterrichtsszenarien-und-Methoden.pdf'>Broschüre: Die Schul-Cloud im Unterricht: Fachübergreifende Unterrichtsszenarien und Methoden [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/Begleitmaterial/Broschuere_Die-Schul-Cloud-im-Unterricht-und-Schulalltag-Mehrwert-und-Voraussetzungen.pdf'>Broschüre: Die Schul-Cloud im Unterricht und Schulalltag: Mehrwert und Voraussetzungen [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/global/Willkommensordner/Begleitmaterial/Broschuere_HPI-Schul-Cloud-und-Lernen-4.0.pdf'>Broschüre: HPI Schul-Cloud und Lernen 4.0 [.pdf]</a><br>"
-		},
-		{
-			"title": "Datenschutz",
-			"content": "Folgt demnächst..."
-		},
-		{
-			"title": "Datenschutz-Merkblätter",
-			"content": "<a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Datenschutz-Tipps-fuer-SuS.pdf'>Datenschutz-Tipps für SuS [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Merkblatt-Email-Adressen.pdf'>Merkblatt E-Mail-Adressen [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Merkblatt-Urheberrecht.pdf'>Merkblatt Urheberrecht [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Merkblatt-fuer-Lehrkraefte.pdf'>Merkblatt für Lehrkräfte [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Merkblatt-zur-Nutzung-schuleigener-Geraete.pdf'>Merkblatt zur Nutzung schuleigener Geräte [.pdf]</a>"
-		},
-		{
-			"title": "Vorlagen",
-			"content": "Folgt demnächst..."
-		}
-	]
-},
-{
-	"_id": {
-		"$oid": "5f59e72fc078e9512f1d998a"
+		"$oid": "5f5f57cf37f9af7de1f94088"
 	},
 	"theme": "default",
 	"data": [
@@ -52,7 +28,31 @@
 },
 {
 	"_id": {
-		"$oid": "5f59e72fc078e9512f1d998b"
+		"$oid": "5f5f57cf37f9af7de1f94089"
+	},
+	"theme": "open",
+	"data": [
+		{
+			"title": "Begleitmaterial",
+			"content": "<a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/Begleitmaterial/Broschuere_Die-Schul-Cloud-im-Unterricht-Fachuebergreifende-Unterrichtsszenarien-und-Methoden.pdf'>Broschüre: Die Schul-Cloud im Unterricht: Fachübergreifende Unterrichtsszenarien und Methoden [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/Begleitmaterial/Broschuere_Die-Schul-Cloud-im-Unterricht-und-Schulalltag-Mehrwert-und-Voraussetzungen.pdf'>Broschüre: Die Schul-Cloud im Unterricht und Schulalltag: Mehrwert und Voraussetzungen [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/global/Willkommensordner/Begleitmaterial/Broschuere_HPI-Schul-Cloud-und-Lernen-4.0.pdf'>Broschüre: HPI Schul-Cloud und Lernen 4.0 [.pdf]</a><br>"
+		},
+		{
+			"title": "Datenschutz",
+			"content": "Folgt demnächst..."
+		},
+		{
+			"title": "Datenschutz-Merkblätter",
+			"content": "<a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Datenschutz-Tipps-fuer-SuS.pdf'>Datenschutz-Tipps für SuS [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Merkblatt-Email-Adressen.pdf'>Merkblatt E-Mail-Adressen [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Merkblatt-Urheberrecht.pdf'>Merkblatt Urheberrecht [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Merkblatt-fuer-Lehrkraefte.pdf'>Merkblatt für Lehrkräfte [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Merkblatt-zur-Nutzung-schuleigener-Geraete.pdf'>Merkblatt zur Nutzung schuleigener Geräte [.pdf]</a>"
+		},
+		{
+			"title": "Vorlagen",
+			"content": "Folgt demnächst..."
+		}
+	]
+},
+{
+	"_id": {
+		"$oid": "5f5f57cf37f9af7de1f9408a"
 	},
 	"theme": "brb",
 	"data": [
@@ -80,34 +80,7 @@
 },
 {
 	"_id": {
-		"$oid": "5f59e72fc078e9512f1d998c"
-	},
-	"theme": "open",
-	"schoolId": {
-		"$oid": "5cbf0d9e7883770010ff920d"
-	},
-	"data": [
-		{
-			"title": "Begleitmaterial",
-			"content": "<a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/Begleitmaterial/Broschuere_Die-Schul-Cloud-im-Unterricht-Fachuebergreifende-Unterrichtsszenarien-und-Methoden.pdf'>Broschüre: Die Schul-Cloud im Unterricht: Fachübergreifende Unterrichtsszenarien und Methoden [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/Begleitmaterial/Broschuere_Die-Schul-Cloud-im-Unterricht-und-Schulalltag-Mehrwert-und-Voraussetzungen.pdf'>Broschüre: Die Schul-Cloud im Unterricht und Schulalltag: Mehrwert und Voraussetzungen [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/global/Willkommensordner/Begleitmaterial/Broschuere_HPI-Schul-Cloud-und-Lernen-4.0.pdf'>Broschüre: HPI Schul-Cloud und Lernen 4.0 [.pdf]</a><br>"
-		},
-		{
-			"title": "Datenschutz",
-			"content": "Folgt demnächst..."
-		},
-		{
-			"title": "Datenschutz-Merkblätter",
-			"content": "<a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Datenschutz-Tipps-fuer-SuS.pdf'>Datenschutz-Tipps für SuS [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Merkblatt-Email-Adressen.pdf'>Merkblatt E-Mail-Adressen [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Merkblatt-Urheberrecht.pdf'>Merkblatt Urheberrecht [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Merkblatt-fuer-Lehrkraefte.pdf'>Merkblatt für Lehrkräfte [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Merkblatt-zur-Nutzung-schuleigener-Geraete.pdf'>Merkblatt zur Nutzung schuleigener Geräte [.pdf]</a>"
-		},
-		{
-			"title": "Vorlagen",
-			"content": "Folgt demnächst..."
-		}
-	]
-},
-{
-	"_id": {
-		"$oid": "5f59e72fc078e9512f1d998d"
+		"$oid": "5f5f57cf37f9af7de1f9408b"
 	},
 	"theme": "open",
 	"schoolId": {
@@ -133,6 +106,33 @@
 		{
 			"title": "Vorlagen (Paul-Gerhardt-Gymnasium Test)",
 			"content": "Testinhalt"
+		}
+	]
+},
+{
+	"_id": {
+		"$oid": "5f5f57cf37f9af7de1f9408c"
+	},
+	"theme": "open",
+	"schoolId": {
+		"$oid": "5cbf0d9e7883770010ff920d"
+	},
+	"data": [
+		{
+			"title": "Begleitmaterial",
+			"content": "<a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/Begleitmaterial/Broschuere_Die-Schul-Cloud-im-Unterricht-Fachuebergreifende-Unterrichtsszenarien-und-Methoden.pdf'>Broschüre: Die Schul-Cloud im Unterricht: Fachübergreifende Unterrichtsszenarien und Methoden [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/Begleitmaterial/Broschuere_Die-Schul-Cloud-im-Unterricht-und-Schulalltag-Mehrwert-und-Voraussetzungen.pdf'>Broschüre: Die Schul-Cloud im Unterricht und Schulalltag: Mehrwert und Voraussetzungen [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/global/Willkommensordner/Begleitmaterial/Broschuere_HPI-Schul-Cloud-und-Lernen-4.0.pdf'>Broschüre: HPI Schul-Cloud und Lernen 4.0 [.pdf]</a><br>"
+		},
+		{
+			"title": "Datenschutz",
+			"content": "Folgt demnächst..."
+		},
+		{
+			"title": "Datenschutz-Merkblätter",
+			"content": "<a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Datenschutz-Tipps-fuer-SuS.pdf'>Datenschutz-Tipps für SuS [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Merkblatt-Email-Adressen.pdf'>Merkblatt E-Mail-Adressen [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Merkblatt-Urheberrecht.pdf'>Merkblatt Urheberrecht [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Merkblatt-fuer-Lehrkraefte.pdf'>Merkblatt für Lehrkräfte [.pdf]</a><br>  <a target='_blank' rel='noopener' href='https://schul-cloud-hpi.s3.hidrive.strato.com/open/Willkommensordner/DS-Merkblaetter/Merkblatt-zur-Nutzung-schuleigener-Geraete.pdf'>Merkblatt zur Nutzung schuleigener Geräte [.pdf]</a>"
+		},
+		{
+			"title": "Vorlagen",
+			"content": "Folgt demnächst..."
 		}
 	]
 }]
