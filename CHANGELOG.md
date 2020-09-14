@@ -13,6 +13,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed - Unreleased
 
+- SC-6774 remove no-await-in-loop from eslint exceptions
 - Extend JWT payload by schoolId and roleIds
 
 ## [24.5.0] - 2020-09-14
