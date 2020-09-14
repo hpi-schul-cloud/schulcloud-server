@@ -47,6 +47,7 @@ const globals = {
 	SC_DOMAIN: process.env.SC_DOMAIN || 'localhost',
 	SC_THEME: process.env.SC_THEME || 'default',
 	SC_TITLE: process.env.SC_TITLE || 'HPI Schul-Cloud',
+	SC_TIME_ZONE: process.env.SC_TIME_ZONE || 'CEST',
 	SC_SHORT_TITLE: process.env.SC_SHORT_TITLE || 'HPI Schul-Cloud',
 	SMTP_SENDER: process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
 
