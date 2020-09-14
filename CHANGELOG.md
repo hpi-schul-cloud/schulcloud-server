@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Changed
+
+- rename statistic mails route, secure it over sync api key now
+
 ## [24.5.0] - 2020-09-14
 
 - Ignore database seed data with prettier, eslint, and codacy
