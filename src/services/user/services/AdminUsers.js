@@ -148,7 +148,7 @@ class AdminUsers {
 			..._data,
 			schoolId,
 			roles: [this.role._id],
-		}, _params);
+		});
 	}
 
 	async update(_id, _data, _params) {
