@@ -848,18 +848,6 @@ describe('AdminUsersService', () => {
 		expect(deletedeStringType.firstName).to.equals('testDeleteStudent');
 	});
 
-	it('updates account username if user email is updated', async () => {
-		// given
-		const user = await testObjects.createTestUser({ roles: ['student'] });
-		const accountDetails = {
-			username: user.email,
-			password: 'password',
-			userId: user._id,
-		};
-		const account = await accountService.create(accountDetails);
-		expect(user.email).equals(account.username);
-	});
-
 	describe('patch and update', () => {
 		afterEach(async () => {
 			await testObjects.cleanup();
