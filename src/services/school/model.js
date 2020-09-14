@@ -72,6 +72,7 @@ const schoolSchema = new Schema(
 		purpose: { type: String },
 		rssFeeds: [{ type: rssFeedSchema }],
 		language: { type: String },
+		timezone: { type: String },
 		features: {
 			type: [String],
 			default: defaultFeatures,
