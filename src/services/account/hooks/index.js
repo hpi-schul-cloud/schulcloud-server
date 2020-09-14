@@ -126,6 +126,12 @@ const checkUnique = (hook) => {
 	return accountService.find({ query: { username, systemId } }).then((result) => {
 		// systemId might be null. In that case, accounts with any systemId will be returned
 		const filtered = result.filter((a) => a.systemId === systemId);
+		if (filtered.length === 1) {
+			const editsOwnAccount = equalIds(hook.id, filtered[0]._id);
+			if (editsOwnAccount) {
+				return Promise.resolve(hook);
+			}
+		}
 		if (filtered.length > 0) {
 			return Promise.reject(new BadRequest('Der Benutzername ist bereits vergeben!'));
 		}
