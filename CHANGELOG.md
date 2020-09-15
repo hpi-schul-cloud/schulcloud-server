@@ -9,13 +9,30 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Added - Unreleased
+
+### Removed
+
+- SC-6784 - Removed duplicated birth date formatting code in adminUsers service, which was causing an "Invalid date" output
+
+### Changed - Unreleased
+
+- Extend JWT payload by schoolId and roleIds
+
+## [24.5.0] - 2020-09-14
+
 - Ignore database seed data with prettier, eslint, and codacy
 - SC-6640 - Fixed email check within registration (case insensitive)
 
-### Added
+### Added - 24.5.0
 
 - Test changelog has been updated for feature or hotfix branches
 - SC-5612 - Adding search feature to the admintables for nuxt-client.
+
+## [24.4.6] - 2020-09-11
+
+### Changed
+- SC-6733: central personal data does not get updated via CSV import
 
 ## [24.4.5] - 2020-09-10
 
@@ -25,7 +42,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [24.4.4] - 2020-09-08
 
-### Fixed in 24.4.4
+### Fixed
 
 - SC-6697: updates/sync account username when user is updated
 
