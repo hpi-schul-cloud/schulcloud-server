@@ -180,7 +180,7 @@ class AdminUsers {
 			email, _id, () => this.app.service('usersModel').patch(null, _data, params),
 		);
 
-		if (user.length === 0) throw new BadRequest('user could not be edit');
+		if (user.length === 0) throw new BadRequest('user could not be edited');
 
 		return user;
 	}
