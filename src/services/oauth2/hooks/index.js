@@ -4,7 +4,7 @@ const globalHooks = require('../../../hooks');
 const Hydra = require('../hydra.js');
 
 const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
-const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/${pseudonym}" ${properties}></iframe>`;
+const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/${pseudonym}?token={TOKEN}" ${properties}></iframe>`;
 
 exports.getSubject = iframeSubject;
 
