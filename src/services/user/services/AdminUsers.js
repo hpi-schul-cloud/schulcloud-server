@@ -11,6 +11,7 @@ const { hasSchoolPermission, blockDisposableEmail } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { validateParams } = require('../hooks/adminUsers.hooks');
 const { sendRegistrationLink } = require('../hooks/userService');
+const { updateAccountUsername } = require('../hooks/userService');
 
 const { userModel } = require('../model');
 
@@ -81,6 +82,11 @@ class AdminUsers {
 				query._id = _id;
 			} else if (clientQuery.users) {
 				query._id = clientQuery.users;
+				// If the number of users exceeds 20, the underlying parsing library
+				// will convert the array to an object with the index as the key.
+				// To continue working with it, we convert it here back to the array form.
+				// See the documentation for further infos: https://github.com/ljharb/qs#parsing-arrays
+				if (typeof query._id === 'object') query._id = Object.values(query._id);
 			}
 			if (clientQuery.consentStatus) query.consentStatus = clientQuery.consentStatus;
 			if (clientQuery.classes) query.classes = clientQuery.classes;
@@ -202,7 +208,6 @@ class AdminUsers {
 
 const formatBirthdayOfUsers = ({ result: { data: users } }) => {
 	users.forEach((user) => {
-		if (user.birthday) user.birthday = moment(user.birthday).format('DD.MM.YYYY');
 		if (user.birthday) {
 			user.birthday = moment(user.birthday).format('DD.MM.YYYY');
 		}
@@ -222,6 +227,7 @@ const adminHookGenerator = (kind) => ({
 	after: {
 		find: [formatBirthdayOfUsers],
 		create: [sendRegistrationLink],
+		patch: [updateAccountUsername],
 	},
 });
 
