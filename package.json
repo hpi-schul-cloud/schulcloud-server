@@ -43,6 +43,7 @@
 	},
 	"_moduleAliases": {
 		"~root": ".",
+		"~src": "./src",
 		"errors": "./src/utils/errors.js",
 		"utils": "./src/utils/",
 		"~test": "./test",
