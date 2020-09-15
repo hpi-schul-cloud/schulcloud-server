@@ -59,6 +59,8 @@ const formatAndLogErrors = (error, req, res, next) => {
 		delete error.hook;
 		// delete response informations for extern express applications
 		delete error.response;
+		// add request response
+		error.request = getRequestInfo(req);
 		// for tests level is set to emerg, set LOG_LEVEL=debug for see it
 		logger.error({ ...error });
 	}
