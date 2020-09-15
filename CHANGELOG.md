@@ -11,6 +11,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added - Unreleased
 
+### Removed
+
+- SC-6784 - Removed duplicated birth date formatting code in adminUsers service, which was causing an "Invalid date" output
+
 ### Changed - Unreleased
 
 - Extend JWT payload by schoolId and roleIds
