@@ -43,6 +43,7 @@ const prepare = (ref, message, additional, params, className) => {
 	ref.errors = Object.freeze(additional || {});
 	ref.className = className;
 	solvedTraceId(ref, message, additional);
+	// Error.captureStackTrace(ref, ref.constructor);
 };
 
 class BadRequest extends featherErrors.BadRequest {

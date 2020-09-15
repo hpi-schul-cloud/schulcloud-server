@@ -12,15 +12,15 @@ const { NODE_ENV = ENVIRONMENTS.DEVELOPMENT } = process.env;
 let defaultLogLevel = null;
 switch (NODE_ENV) {
 	case ENVIRONMENTS.PRODUCTION:
-		defaultLogLevel = 'error';
+		defaultLogLevel = 'error'; // level 3
 		break;
 	case ENVIRONMENTS.TEST:
-		defaultLogLevel = 'emerg';
+		defaultLogLevel = 'emerg'; // level 0
 		break;
 	case ENVIRONMENTS.DEVELOPMENT:
 	case ENVIRONMENTS.MIGRATION:
 	default:
-		defaultLogLevel = 'debug';
+		defaultLogLevel = 'debug'; // level 7
 }
 
 let defaultDbUrl = null;

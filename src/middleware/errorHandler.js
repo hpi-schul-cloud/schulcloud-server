@@ -48,28 +48,19 @@ const getRequestInfo = (req) => {
 	return info;
 };
 
-const formatAndLogErrors = (isTestRun) => (error, req, res, next) => {
+const formatAndLogErrors = (error, req, res, next) => {
 	if (error) {
 		if (error.type !== 'FeathersError') {
+			// sanitize all logs
 			// eslint-disable-next-line no-param-reassign
 			error = new GeneralError(error);
 		}
-
 		// too much for logging...
 		delete error.hook;
 		// delete response informations for extern express applications
 		delete error.response;
-		// TODO discuss ..most of this errors are valid in testrun and should not logged
-		// but for find out what is going wrong with an test it need a breakpoint to debug it
-		// maybe error message without stacktrace is a solution or other debug level
-		// info for error and ci is set to warning by testruns
-		const loggingErrorMessage = { ...error };
-		if (isTestRun === false) {
-			loggingErrorMessage.request = getRequestInfo(req);
-			logger.error(loggingErrorMessage);
-		} else {
-			logger.info(loggingErrorMessage);
-		}
+		// for tests level is set to emerg, set LOG_LEVEL=debug for see it
+		logger.error({ ...error });
 	}
 	next(error);
 };
@@ -178,8 +169,8 @@ const handleSilentError = (error, req, res, next) => {
 	}
 };
 
-const skipPageNotFoundError = (error, req, res, next) => {
-	if (error instanceof PageNotFound) {
+const skipDoubleErrorMessage = (error, req, res, next) => {
+	if (error instanceof PageNotFound || error.code === 405) {
 		res.status(error.code).json(saveResponseFilter(error));
 	} else {
 		next(error);
@@ -199,8 +190,8 @@ const errorHandler = (app) => {
 	app.use(filterSecrets);
 	app.use(Sentry.Handlers.errorHandler());
 	app.use(handleSilentError);
-	app.use(formatAndLogErrors(NODE_ENV === ENVIRONMENTS.TEST));
-	app.use(skipPageNotFoundError);
+	app.use(formatAndLogErrors);
+	app.use(skipDoubleErrorMessage);
 	app.use(returnAsJson);
 };
 
