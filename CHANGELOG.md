@@ -9,14 +9,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-### Added - Unreleased
+### Added
+
+- SC-6567 - add new application errros
 
 ### Removed
 
 - SC-6784 - Removed duplicated birth date formatting code in adminUsers service, which was causing an "Invalid date" output
 
-### Changed - Unreleased
+### Changed
 
+- SC-6567 - clean up error pipline 
 - Extend JWT payload by schoolId and roleIds
 
 ## [24.5.0] - 2020-09-14
