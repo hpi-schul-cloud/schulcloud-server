@@ -52,8 +52,7 @@ describe('Feathers application tests', () => {
 					.end((err, res) => {
 						assert.equal(res.statusCode, 404);
 						assert.equal(res.body.code, 404);
-						assert.equal(res.body.message, 'Page not found');
-						assert.equal(res.body.name, 'NotFound');
+						assert.equal(res.body.message, 'Page not found.');
 						resolve();
 					});
 			}));

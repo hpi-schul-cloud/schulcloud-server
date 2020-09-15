@@ -2,11 +2,10 @@ const Sentry = require('@sentry/node');
 const express = require('@feathersjs/express');
 const { Configuration } = require('@schul-cloud/commons');
 const jwt = require('jsonwebtoken');
-const { GeneralError } = require('../utils/errors');
+const { GeneralError, SilentError, PageNotFound } = require('../utils/errors');
 
 const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 const logger = require('../logger');
-const { SilentError } = require('./errors');
 
 const MAX_LEVEL_FILTER = 12;
 
@@ -18,7 +17,11 @@ const getRequestInfo = (req) => {
 	};
 
 	try {
-		const decodedJWT = jwt.decode(req.headers.authorization.replace('Bearer ', ''));
+		let decodedJWT;
+		if (req.headers.authorization) {
+			decodedJWT = jwt.decode(req.headers.authorization.replace('Bearer ', ''));
+		}
+
 		if (decodedJWT && decodedJWT.accountId) {
 			info.user = {
 				accountId: decodedJWT.accountId,
@@ -38,6 +41,7 @@ const getRequestInfo = (req) => {
 		}
 	} catch (err) {
 		// Maybe we found a better solution, but we can not display the full error message with stack trace
+		// it can contain jwt informations
 		info.user = err.message;
 	}
 
@@ -46,7 +50,7 @@ const getRequestInfo = (req) => {
 
 const formatAndLogErrors = (isTestRun) => (error, req, res, next) => {
 	if (error) {
-		if (error.className !== 'FeathersError') {
+		if (error.type !== 'FeathersError') {
 			// eslint-disable-next-line no-param-reassign
 			error = new GeneralError(error);
 		}
@@ -69,22 +73,6 @@ const formatAndLogErrors = (isTestRun) => (error, req, res, next) => {
 	}
 	next(error);
 };
-
-const saveResponseFilter = (error) => ({
-	name: error.name,
-	message: error.message instanceof Error && error.message.message ? error.message.message : error.message,
-	code: error.code,
-	traceId: error.traceId,
-});
-
-const returnAsJson = express.errorHandler({
-	html: (error, req, res) => {
-		res.json(saveResponseFilter(error));
-	},
-	json: (error, req, res) => {
-		res.json(saveResponseFilter(error));
-	},
-});
 
 // map to lower case and test as lower case
 const secretDataKeys = (() =>
@@ -159,17 +147,6 @@ const filterQuery = (url) => {
 	return newUrl;
 };
 
-const handleSilentError = (error, req, res, next) => {
-	if (error.name === SilentError.name || error.data.name === SilentError.name) {
-		if (Configuration.get('SILENT_ERROR_ENABLED')) {
-			res.append('x-silent-error', true);
-		}
-		res.status(200).json({ success: 'success' });
-	} else {
-		next(error);
-	}
-};
-
 // important that it is not send to sentry, or add it to logs
 const filterSecrets = (error, req, res, next) => {
 	if (error) {
@@ -183,11 +160,47 @@ const filterSecrets = (error, req, res, next) => {
 	next(error);
 };
 
+const saveResponseFilter = (error) => ({
+	name: error.name,
+	message: error.message instanceof Error && error.message.message ? error.message.message : error.message,
+	code: error.code,
+	traceId: error.traceId,
+});
+
+const handleSilentError = (error, req, res, next) => {
+	if (error instanceof SilentError || (error && error.error instanceof SilentError)) {
+		if (Configuration.get('SILENT_ERROR_ENABLED')) {
+			res.append('x-silent-error', true);
+		}
+		res.status(200).json({ success: 'success' });
+	} else {
+		next(error);
+	}
+};
+
+const skipPageNotFoundError = (error, req, res, next) => {
+	if (error instanceof PageNotFound) {
+		res.status(error.code).json(saveResponseFilter(error));
+	} else {
+		next(error);
+	}
+};
+
+const returnAsJson = express.errorHandler({
+	html: (error, req, res) => {
+		res.status(error.code).json(saveResponseFilter(error));
+	},
+	json: (error, req, res) => {
+		res.status(error.code).json(saveResponseFilter(error));
+	},
+});
+
 const errorHandler = (app) => {
 	app.use(filterSecrets);
 	app.use(Sentry.Handlers.errorHandler());
 	app.use(handleSilentError);
 	app.use(formatAndLogErrors(NODE_ENV === ENVIRONMENTS.TEST));
+	app.use(skipPageNotFoundError);
 	app.use(returnAsJson);
 };
 
