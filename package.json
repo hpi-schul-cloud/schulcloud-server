@@ -37,7 +37,16 @@
 		"migration-list": "migrate list --config ./config/migrate.js",
 		"migration-prune": "migrate prune --config ./config/migrate.js",
 		"migration-persist": "node ./backup.js -b export -p setup/ -c migrations --sort \"{ createdAt: 1 }\"",
-		"migrate-etherpads": "node ./migrate-etherpads.js"
+		"migrate-etherpads": "node ./migrate-etherpads.js",
+		"postinstall": "link-module-alias",
+		"preinstall": "npm list link-module-alias && link-module-alias clean"
+	},
+	"_moduleAliases": {
+		"~root": ".",
+		"errors": "./src/utils/errors.js",
+		"utils": "./src/utils/",
+		"~test": "./test",
+		"~services": "./src/services"
 	},
 	"dependencies": {
 		"@feathersjs/authentication": "^4.5.3",
@@ -74,6 +83,7 @@
 		"jose": "^1.22.2",
 		"jsonwebtoken": "8.5.1",
 		"ldapjs": "git+https://github.com/schul-cloud/node-ldapjs.git",
+		"link-module-alias": "^1.2.0",
 		"lodash": "^4.17.19",
 		"migrate-mongoose": "^4.0.0",
 		"mixwith": "^0.1.1",

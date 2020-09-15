@@ -2,7 +2,7 @@ const Sentry = require('@sentry/node');
 const express = require('@feathersjs/express');
 const { Configuration } = require('@schul-cloud/commons');
 const jwt = require('jsonwebtoken');
-const { GeneralError, SilentError, PageNotFound } = require('../utils/errors');
+const { GeneralError, SilentError, PageNotFound } = require('errors');
 
 const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 const logger = require('../logger');
