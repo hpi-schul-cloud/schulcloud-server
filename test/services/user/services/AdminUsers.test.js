@@ -497,10 +497,14 @@ describe.only('AdminUsersService', () => {
 			schoolId: school._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
-		const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
+		const student = await testObjects.createTestUser({
+			firstName: 'Hans',
+			roles: ['student'],
+			schoolId: school._id,
+		});
 
-		const { data } = await adminStudentsService.get(student._id, params);
-		expect(data).to.have.lengthOf(1);
+		const user = await adminStudentsService.get(student._id.toString(), params);
+		expect(user.firstName).to.be.equal(student.firstName);
 	});
 
 	it('users without STUDENT_LIST permission cannot access the GET method', async () => {
@@ -540,8 +544,8 @@ describe.only('AdminUsersService', () => {
 		const testUSer = await testObjects.createTestUser({ roles: ['studentListPerm'], schoolId: school._id });
 		const params = await testObjects.generateRequestParamsFromUser(testUSer);
 		const student = await testObjects.createTestUser({ roles: ['student'], schoolId: otherSchool._id });
-		const { data } = await adminStudentsService.get(student._id, params);
-		expect(data).to.have.lengthOf(0);
+		const user = await adminStudentsService.get(student._id, params);
+		expect(user).to.be.empty;
 	});
 
 	it('users with STUDENT_CREATE permission can access the CREATE method', async () => {
