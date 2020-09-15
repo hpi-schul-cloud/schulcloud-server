@@ -409,7 +409,7 @@ const createMultiDocumentAggregation = ({
 	stageSimpleProject(aggregation, select);
 	// }
 
-	if (!match._id || Array.isArray(match._id)) stageFormatWithTotal(aggregation, limit, skip);
+	if (!match._id || Array.isArray(match._id.$in)) stageFormatWithTotal(aggregation, limit, skip);
 	return aggregation;
 };
 

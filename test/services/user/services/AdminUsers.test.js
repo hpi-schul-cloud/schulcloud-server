@@ -13,7 +13,7 @@ const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const testGenericErrorMessage = 'You don\'t have one of the permissions: STUDENT_LIST.';
 
-describe.only('AdminUsersService', () => {
+describe('AdminUsersService', () => {
 	let server;
 
 	before((done) => {
@@ -77,6 +77,39 @@ describe.only('AdminUsersService', () => {
 		expect(result.data).to.not.be.undefined;
 		expect(searchClass(result.data, 'staticName')).to.be.true;
 		expect(searchClass(result.data, '2A')).to.be.true;
+	});
+
+	it('request muliple users by id', async () => {
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] }).catch((err) => {
+			logger.warning('Can not create admin', err);
+		});
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+
+		const student1 = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
+			logger.warning('Can not create student', err);
+		});
+
+		const student2 = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
+			logger.warning('Can not create student', err);
+		});
+
+		const student3 = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
+			logger.warning('Can not create student', err);
+		});
+
+		params.query = {
+			users: [
+				student1._id.toString(),
+				student2._id.toString(),
+				student3._id.toString(),
+			],
+		};
+
+		const result = await adminStudentsService.find(params).catch((err) => {
+			logger.warning('Can not execute adminStudentsService.find.', err);
+		});
+
+		expect(result.total).to.equal(3);
 	});
 
 	// https://ticketsystem.schul-cloud.org/browse/SC-5076
