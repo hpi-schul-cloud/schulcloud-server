@@ -15,7 +15,7 @@ jobs:
       FEATURE_OR_HOTFIX: false
     steps:
       - name: continue only iff this is a feature or hotfix pr
-        if: startsWith(${{ github.head_ref }}, 'feature') == false && startsWith(${{ github.head_ref }}, 'hotfix') == false
+        if: startsWith(${{ github.head_ref }}, 'feature') || startsWith(${{ github.head_ref }}, 'hotfix')
         env:
           FEATURE_OR_HOTFIX: true
         run: |
