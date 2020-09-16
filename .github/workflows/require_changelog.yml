@@ -17,7 +17,7 @@ jobs:
         id: changed
         uses: foodee/pr-includes-file-change@master
         with:
-        paths: ^CHANGELOG.md
+          paths: ^CHANGELOG.md
       - name: continue only iff this is a feature or hotfix pr
         if: startsWith(${{ github.head_ref }}, 'feature') || startsWith(${{ github.head_ref }}, 'hotfix')
         run: |
