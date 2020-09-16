@@ -2,18 +2,26 @@ name: Require CHANGELOG.md update
 
 on:
   pull_request:
-    branches: # filter target branch of pr
+    branches:
+      # filter target branch of pr
       - develop
       - master
 
 jobs:
   FeatureOrHotfix:
     runs-on: ubuntu-latest
-    # filter current branch name to be a feature or a hotfix branch
-    if: startsWith(${{ github.head_ref }}, 'feature') || startsWith(${{ github.head_ref }}, 'hotfix')
     env:
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      FEATURE_OR_HOTFIX: false
     steps:
+      - name: continue only iff this is a feature or hotfix pr
+        if: startsWith(${{ github.head_ref }}, 'feature') == false && startsWith(${{ github.head_ref }}, 'hotfix') == false
+        env:
+          FEATURE_OR_HOTFIX: true
+        run: |
+          echo "This check is required for merging into develop and master but takes in action only for pr's from feature or hotfix branches."
+      - name: current branch will be checked (otherwise ignored)
+        run: echo ${{ env.FEATURE_OR_HOTFIX }}
       - name: Get Changed Files
         id: changed
         uses: foodee/pr-includes-file-change@master
@@ -22,13 +30,13 @@ jobs:
       - name: current head branch name
         run: echo ${{ github.head_ref }}
       - name: Changelog has been updated
-        if: steps.changed.outputs.matched == 'true'
+        if: steps.changed.outputs.matched == 'true' && env.FEATURE_OR_HOTFIX == 'true'
         run: |
           echo ${{ steps.changed.outputs.matched }}
           echo "Changes in CHANGELOG.md have been found"
           exit 0
       - name: Changelog updates missing
-        if: steps.changed.outputs.matched != 'true'
+        if: steps.changed.outputs.matched != 'true' && env.FEATURE_OR_HOTFIX == 'true'
         run: |
           echo ${{ steps.changed.outputs.matched }}
           echo "Features and Hotfixes must contain a changelog entry."
