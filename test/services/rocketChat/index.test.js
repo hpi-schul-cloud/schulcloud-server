@@ -1,5 +1,6 @@
 /* eslint-disable global-require */
 /* eslint-disable no-unused-expressions */
+const { Configuration } = require('@schul-cloud/commons');
 const assert = require('assert');
 const chai = require('chai');
 const mockery = require('mockery');
@@ -22,8 +23,9 @@ describe('rocket.chat user service', () => {
 			warnOnUnregistered: false,
 		});
 
+		configBefore = Configuration.toObject(); // deep copy current config
+		Configuration.set('ROCKET_CHAT_URI', rcMock.url);
 		// ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID
-		mockery.registerMock('../../../config/globals', { ROCKET_CHAT_URI: rcMock.url });
 
 		delete require.cache[require.resolve('../../../src/services/rocketChat/services/rocketChatUser.js')];
 		delete require.cache[require.resolve('../../../src/services/rocketChat/helpers.js')];
@@ -37,6 +39,7 @@ describe('rocket.chat user service', () => {
 	});
 
 	after((done) => {
+		Configuration.reset(configBefore);
 		server.close(done);
 	});
 

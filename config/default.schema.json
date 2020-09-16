@@ -375,6 +375,21 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Brute force flag during recovery password process"
+		},
+		"ROCKET_CHAT_URI": {
+			"type": "string",
+			"format": "uri",
+			"default": "http://localhost:15000",
+			"pattern": ".*(?<!/)$",
+			"description": "uri of the rocketchat server."
+		},
+		"ROCKET_CHAT_ADMIN_ID": {
+			"type": "string",
+			"description": "the rocketchat-id of the admin user account"
+		},
+		"ROCKET_CHAT_ADMIN_TOKEN": {
+			"type": "string",
+			"description": "secret used for authentication of the admin user account"
 		}
 	},
 	"required": [

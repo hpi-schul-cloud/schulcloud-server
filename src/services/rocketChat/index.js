@@ -1,11 +1,15 @@
+const { Configuration } = require('@schul-cloud/commons');
 const logger = require('../../logger');
-const { ROCKET_CHAT_URI, ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID } = require('../../../config/globals');
 const { rocketChatUserHooks, rocketChatLoginHooks, rocketChatLogoutHooks, rocketChatChannelHooks } = require('./hooks');
 
 const RocketChatUser = require('./services/rocketChatUser');
 const RocketChatLogin = require('./services/rocketChatLogin');
 const RocketChatLogout = require('./services/rocketChatLogout');
 const RocketChatChannel = require('./services/rocketChatChannel');
+
+const ROCKET_CHAT_URI = Configuration.get('ROCKET_CHAT_URI');
+const ROCKET_CHAT_ADMIN_TOKEN = Configuration.get('ROCKET_CHAT_ADMIN_TOKEN');
+const ROCKET_CHAT_ADMIN_ID = Configuration.get('ROCKET_CHAT_ADMIN_ID');
 
 if (ROCKET_CHAT_URI === undefined) {
 	logger.warning('please set the environment variable ROCKET_CHAT_URI');

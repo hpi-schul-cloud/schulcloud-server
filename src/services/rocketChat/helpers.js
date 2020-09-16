@@ -1,9 +1,11 @@
+const { Configuration } = require('@schul-cloud/commons');
 const {
 	REQUEST_TIMEOUT,
-	ROCKET_CHAT_URI,
-	ROCKET_CHAT_ADMIN_TOKEN,
-	ROCKET_CHAT_ADMIN_ID,
 } = require('../../../config/globals');
+
+const ROCKET_CHAT_URI = Configuration.get('ROCKET_CHAT_URI');
+const ROCKET_CHAT_ADMIN_TOKEN = Configuration.get('ROCKET_CHAT_ADMIN_TOKEN');
+const ROCKET_CHAT_ADMIN_ID = Configuration.get('ROCKET_CHAT_ADMIN_ID');
 
 /**
  * create a valid options object to call a rocketChat request.
