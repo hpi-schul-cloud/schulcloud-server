@@ -99,6 +99,8 @@ const handleAutoLogout = async (context) => {
 const errorHandler = (context) => {
 	if (context.error) {
 		context.error.code = context.error.code || context.error.statusCode || 500;
+		// too much for logging...
+		delete context.error.hook;
 		return context;
 	}
 	throw new GeneralError('Error with no context.error is throw. Error logic can not handle it.');

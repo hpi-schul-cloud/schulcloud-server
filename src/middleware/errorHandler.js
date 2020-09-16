@@ -2,9 +2,10 @@ const Sentry = require('@sentry/node');
 const express = require('@feathersjs/express');
 const { Configuration } = require('@schul-cloud/commons');
 const jwt = require('jsonwebtoken');
-const { GeneralError, SilentError, PageNotFound } = require('../utils/errors');
+const reqlib = require('app-root-path').require;
 
-const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
+const { GeneralError, SilentError, PageNotFound } = reqlib('src/utils/errors');
+
 const logger = require('../logger');
 
 const MAX_LEVEL_FILTER = 12;
@@ -60,9 +61,9 @@ const formatAndLogErrors = (error, req, res, next) => {
 		// delete response informations for extern express applications
 		delete error.response;
 		// add request response
-		error.request = getRequestInfo(req);
+		const requestInfo = getRequestInfo(req);
 		// for tests level is set to emerg, set LOG_LEVEL=debug for see it
-		logger.error({ ...error });
+		logger.error({ ...error, ...requestInfo });
 	}
 	next(error);
 };
