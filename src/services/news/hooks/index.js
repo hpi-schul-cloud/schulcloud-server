@@ -3,13 +3,8 @@ const { preparePagination, deleteNewsHistory } = require('./news.hooks');
 const { lookupSchool } = require('../../../hooks');
 
 exports.before = {
-	all: [
-		authenticate('jwt'),
-		lookupSchool,
-	],
-	find: [
-		preparePagination,
-	],
+	all: [authenticate('jwt'), lookupSchool],
+	find: [preparePagination],
 	get: [],
 	create: [],
 	update: [],
@@ -24,7 +19,5 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
-	remove: [
-		deleteNewsHistory,
-	],
+	remove: [deleteNewsHistory],
 };

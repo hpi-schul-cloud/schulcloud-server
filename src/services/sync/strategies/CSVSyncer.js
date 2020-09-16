@@ -37,10 +37,11 @@ const buildMappingFunction = (sourceSchema, targetSchema = ATTRIBUTES) => {
 			mapping[key] = attribute.name;
 		}
 	});
-	return (record) => Object.keys(mapping).reduce((res, key) => {
-		res[mapping[key]] = record[key];
-		return res;
-	}, {});
+	return (record) =>
+		Object.keys(mapping).reduce((res, key) => {
+			res[mapping[key]] = record[key];
+			return res;
+		}, {});
 };
 
 /**
@@ -75,15 +76,15 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	}
 
 	/**
-     * @see {Syncer#respondsTo}
-     */
+	 * @see {Syncer#respondsTo}
+	 */
 	static respondsTo(target) {
 		return target === 'csv';
 	}
 
 	/**
-     * @see {Syncer#params}
-     */
+	 * @see {Syncer#params}
+	 */
 	static params(params, data = {}) {
 		const query = (params || {}).query || {};
 		if (query.school && data.data) {
@@ -104,8 +105,8 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	}
 
 	/**
-     * @see {Syncer#steps}
-     */
+	 * @see {Syncer#steps}
+	 */
 	async steps() {
 		await super.steps();
 		this.options.schoolYear = await this.determineSchoolYear();
@@ -156,8 +157,8 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		try {
 			const strippedData = stripBOM(this.options.csvData);
 			const parseResult = parse(strippedData, {
-				delimiter: '',	// auto-detect
-				newline: '',	// auto-detect
+				delimiter: '', // auto-detect
+				newline: '', // auto-detect
 				header: true,
 				skipEmptyLines: true,
 				fastMode: true,
@@ -247,8 +248,9 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 				this.stats.errors.push({
 					type: 'user',
 					entity: `${record.firstName},${record.lastName},${record.email}`,
-					message: `Mehrfachnutzung der E-Mail-Adresse "${record.email}". `
-						+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
+					message:
+						`Mehrfachnutzung der E-Mail-Adresse "${record.email}". ` +
+						'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 				});
 				this.stats.users.failed += 1;
 			} else {
@@ -288,14 +290,17 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	}
 
 	async findUserIdForRecord(record) {
-		const users = await this.app.service('users').find({
-			query: {
-				email: record.email,
-				$populate: 'roles',
+		const users = await this.app.service('users').find(
+			{
+				query: {
+					email: record.email,
+					$populate: 'roles',
+				},
+				paginate: false,
+				lean: true,
 			},
-			paginate: false,
-			lean: true,
-		}, this.requestParams);
+			this.requestParams
+		);
 		if (users.length >= 1) {
 			const existingUser = users[0];
 			if (record.roles && !existingUser.roles.some((r) => r.name === record.roles[0])) {
@@ -347,13 +352,14 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 					subject: `Einladung für die Nutzung der ${SC_TITLE}!`,
 					headers: {},
 					content: {
-						text: `Einladung in die ${SC_TITLE}\n`
-							+ `Hallo ${user.firstName} ${user.lastName}!\n\n`
-							+ `Du wurdest eingeladen, der ${SC_TITLE} beizutreten, `
-							+ 'bitte vervollständige deine Registrierung unter folgendem Link: '
-							+ `${user.shortLink}\n\n`
-							+ 'Viel Spaß und einen guten Start wünscht dir dein '
-							+ `${SC_SHORT_TITLE}-Team`,
+						text:
+							`Einladung in die ${SC_TITLE}\n` +
+							`Hallo ${user.firstName} ${user.lastName}!\n\n` +
+							`Du wurdest eingeladen, der ${SC_TITLE} beizutreten, ` +
+							'bitte vervollständige deine Registrierung unter folgendem Link: ' +
+							`${user.shortLink}\n\n` +
+							'Viel Spaß und einen guten Start wünscht dir dein ' +
+							`${SC_SHORT_TITLE}-Team`,
 					},
 				});
 				this.stats.invitations.successful += 1;
@@ -410,13 +416,15 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	static isValidBirthday(dateString) {
 		// Adapted from https://stackoverflow.com/questions/15491894/regex-to-validate-date-format-dd-mm-yyyy
-		const dateValidationRegex = new RegExp([
-			'^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|',
-			'(?:(?:29|30)(\\/|-|\\.)(?:0?[13-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|',
-			'^(?:29(\\/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|',
-			'(?:(?:16|[2468][048]|[3579][26])00))))$|',
-			'^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$',
-		].join(''));
+		const dateValidationRegex = new RegExp(
+			[
+				'^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|',
+				'(?:(?:29|30)(\\/|-|\\.)(?:0?[13-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|',
+				'^(?:29(\\/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|',
+				'(?:(?:16|[2468][048]|[3579][26])00))))$|',
+				'^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$',
+			].join('')
+		);
 		return dateValidationRegex.test(dateString);
 	}
 
@@ -437,6 +445,5 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		return date;
 	}
 }
-
 
 module.exports = CSVSyncer;

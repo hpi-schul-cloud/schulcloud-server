@@ -7,26 +7,24 @@ const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@schul-cloud/commons');
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
-const {
-	hasSchoolPermission,
-	blockDisposableEmail,
-} = require('../../../hooks');
+const { hasSchoolPermission, blockDisposableEmail } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { validateParams } = require('../hooks/adminUsers.hooks');
+const { sendRegistrationLink } = require('../hooks/userService');
 const { updateAccountUsername } = require('../hooks/userService');
 
 const { userModel } = require('../model');
 
-const getCurrentUserInfo = (id) => userModel.findById(id)
-	.select('schoolId')
-	.lean()
-	.exec();
+const getCurrentUserInfo = (id) => userModel.findById(id).select('schoolId').lean().exec();
 
-const getCurrentYear = (ref, schoolId) => ref.app.service('schools')
-	.get(schoolId, {
-		query: { $select: ['currentYear'] },
-	})
-	.then(({ currentYear }) => currentYear.toString());
+const getCurrentYear = (ref, schoolId) =>
+	ref.app
+		.service('schools')
+		.get(schoolId, {
+			query: { $select: ['currentYear'] },
+		})
+		.then(({ currentYear }) => currentYear.toString());
+
 
 class AdminUsers {
 	constructor(roleName) {
@@ -46,9 +44,11 @@ class AdminUsers {
 		// integration test did not get the role in the setup
 		// so here is a workaround set it at first call
 		if (!this.role) {
-			this.role = (await this.app.service('roles').find({
-				query: { name: this.roleName },
-			})).data[0];
+			this.role = (
+				await this.app.service('roles').find({
+					query: { name: this.roleName },
+				})
+			).data[0];
 		}
 
 		try {
@@ -118,12 +118,17 @@ class AdminUsers {
 				}
 			}
 
-			return new Promise((resolve, reject) => userModel.aggregate(createMultiDocumentAggregation(query)).option({
-				collation: { locale: 'de', caseLevel: true },
-			}).exec((err, res) => {
-				if (err) reject(err);
-				else resolve(res[0] || {});
-			}));
+			return new Promise((resolve, reject) =>
+				userModel
+					.aggregate(createMultiDocumentAggregation(query))
+					.option({
+						collation: { locale: 'de', caseLevel: true },
+					})
+					.exec((err, res) => {
+						if (err) reject(err);
+						else resolve(res[0] || {});
+					})
+			);
 		} catch (err) {
 			if ((err || {}).code === 403) {
 				throw new Forbidden('You have not the permission to execute this.', err);
@@ -131,41 +136,129 @@ class AdminUsers {
 			if (err && err.code >= 500) {
 				const uuid = uuidv4();
 				logger.error(uuid, err);
-				if (Configuration.get('NODE_ENV') !== 'production') { throw err; }
+				if (Configuration.get('NODE_ENV') !== 'production') {
+					throw err;
+				}
 				throw new GeneralError(uuid);
 			}
 			throw err;
 		}
 	}
 
-	async create(data, params) {
-		const { account } = params;
-		const currentUserId = account.userId.toString();
-
-		// checks if school isExternal, throws forbidden if it is
+	async create(_data, _params) {
+		const currentUserId = _params.account.userId.toString();
 		const { schoolId } = await getCurrentUserInfo(currentUserId);
+		await this.checkExternal(schoolId);
+		const { email } = _data;
+		await this.checkMail(email);
+		return this.app.service('usersModel').create({
+			..._data,
+			schoolId,
+			roles: [this.role._id],
+		});
+	}
+
+	async update(_id, _data, _params) {
+		// route should be blocked
+		return this.patch(_id, _data, _params);
+	}
+
+	async patch(_id, _data, _params) {
+		if (!_id) throw new BadRequest('id is required');
+		const params = await this.prepareParams(_id, _params);
+		const { email } = _data;
+		await this.checkMail(email, _id);
+		await this.updateAccount(email, _id);
+		// _id is part of params and will be combined with the schoolId
+		const users = await this.prepareRoleback(
+			email, _id, () => this.app.service('usersModel').patch(null, _data, params),
+		);
+
+		if (users.length === 0) throw new BadRequest('user could not be edit');
+
+		return users[0];
+	}
+
+	/**
+	 * Should be used only in create in future, t
+	 * he user itself should get a flag to define if it is from a external system
+	 * @param {*} schoolId
+	 */
+	async checkExternal(schoolId) {
 		const { isExternal } = await this.app.service('schools').get(schoolId);
 		if (isExternal) {
 			throw new Forbidden('Creating new students or teachers is only possible in the source system.');
 		}
+	}
 
-		// checks for unique email accounts, throws bad request if it already exists
-		const { email } = data;
-		const userService = this.app.service('/users');
-		const accounts = await userService.find({ query: { email: email.toLowerCase() } });
-		if (accounts.total > 0) {
-			throw new BadRequest('Email already exists.');
+	/**
+	 * Create a params value for following request to filter and secure request
+	 * - admins only allowed to change user on own school
+	 * @param {Object} params - Feathersjs params
+	 */
+	async prepareParams(_id, params) {
+		const currentUserId = params.account.userId.toString();
+		const { schoolId } = await getCurrentUserInfo(currentUserId);
+
+		return {
+			query: {
+				_id,
+				roles: this.role._id,
+				schoolId: schoolId.toString(),
+			},
+		};
+	}
+
+	/**
+	 * request user and compare the email address.
+	 * if possible it should be solved via unique index on database
+	 * @param {string} email
+	 * @param {string} userId
+	 */
+	async checkMail(email, userId) {
+		if (email) {
+			const user = await this.app.service('usersModel').find({ query: { email: email.toLowerCase() } });
+			if (userId && user.total === 1 && equalIds(user.data[0]._id, userId)) return;
+			if (user.total !== 0) {
+				throw new BadRequest('Email already exists.');
+			}
 		}
-
-		return this.app.service('usersModel').create(data);
 	}
 
-	async update(id, data, params) {
-		return this.app.service('usersModel').update(id, data);
+	/**
+	 * Update the account email if eamil will be changed on user.
+	 * IMPORTANT: Keep in mind to do a roleback if saving the user failed
+	 * @param {*} email
+	 * @param {*} userId
+	 */
+	async updateAccount(email, userId) {
+		if (email) {
+			email = email.toLowerCase();
+			await this.app.service('accountModel').patch(null, { username: email }, {
+				query: {
+					userId,
+					username: { $ne: email },
+					systemId: { $exists: false },
+				},
+			});
+		}
 	}
 
-	async patch(id, data, params) {
-		return this.app.service('usersModel').patch(id, data);
+	async prepareRoleback(email, userId, fu) {
+		try {
+			return await fu();
+		} catch (err) {
+			if (email) {
+				const { email: oldMail } = await this.app.service('usersModel').get(userId);
+				await this.app.service('accountModel').patch(null, { username: oldMail }, {
+					query: {
+						userId,
+						systemId: { $exists: false },
+					},
+				});
+			}
+			throw err;
+		}
 	}
 
 	async remove(id, params) {
@@ -192,15 +285,16 @@ class AdminUsers {
 
 	async setup(app) {
 		this.app = app;
-		this.role = (await this.app.service('roles').find({
-			query: { name: this.roleName },
-		})).data[0];
+		this.role = (
+			await this.app.service('roles').find({
+				query: { name: this.roleName },
+			})
+		).data[0];
 	}
 }
 
 const formatBirthdayOfUsers = ({ result: { data: users } }) => {
 	users.forEach((user) => {
-		if (user.birthday) user.birthday = moment(user.birthday).format('DD.MM.YYYY');
 		if (user.birthday) {
 			user.birthday = moment(user.birthday).format('DD.MM.YYYY');
 		}
@@ -213,16 +307,16 @@ const adminHookGenerator = (kind) => ({
 		find: [hasSchoolPermission(`${kind}_LIST`)],
 		get: [hasSchoolPermission(`${kind}_LIST`)],
 		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
-		update: [hasSchoolPermission(`${kind}_EDIT`)],
-		patch: [hasSchoolPermission(`${kind}_EDIT`)],
+		update: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
+		patch: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
 		remove: [hasSchoolPermission(`${kind}_DELETE`), validateParams],
 	},
 	after: {
 		find: [formatBirthdayOfUsers],
+		create: [sendRegistrationLink],
 		patch: [updateAccountUsername],
 	},
 });
-
 
 module.exports = {
 	AdminUsers,

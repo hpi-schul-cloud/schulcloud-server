@@ -7,15 +7,18 @@ const { connect, close } = require('../src/utils/database');
 
 const { Schema } = mongoose;
 
-const roleSchema = new Schema({
-	name: { type: String, required: true },
-	permissions: [{ type: String }],
+const roleSchema = new Schema(
+	{
+		name: { type: String, required: true },
+		permissions: [{ type: String }],
 
-	// inheritance
-	roles: [{ type: Schema.Types.ObjectId }],
-}, {
-	timestamps: true,
-});
+		// inheritance
+		roles: [{ type: Schema.Types.ObjectId }],
+	},
+	{
+		timestamps: true,
+	}
+);
 
 const Role = mongoose.model('role323323', roleSchema, 'roles');
 
