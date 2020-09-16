@@ -37,10 +37,11 @@ module.exports = function setup() {
 	const permissionService = app.service('/roles/:roleName/permissions');
 	permissionService.hooks(permissionHooks);
 
+
 	definePermissions(
 		'ADMIN_TOGGLE_STUDENT_VISIBILITY',
 		ROLES.TEACHER,
-		PERMISSIONS.STUDENT_LIST
+		PERMISSIONS.STUDENT_LIST,
 		// TODO: importent add this again, after school permission service can handle multiple permissions
 		// PERMISSIONS.STUDENT_EDIT,
 		// PERMISSIONS.STUDENT_CREATE,

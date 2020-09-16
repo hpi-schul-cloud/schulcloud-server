@@ -12,8 +12,9 @@ module.exports = async (context) => {
 	}
 	const { schoolId } = context.params.route;
 	try {
-		context.params.school = await School.findById(schoolId)
-			.select(['name', 'currentYear', 'inMaintenanceSince', 'inMaintenance', 'enableStudentTeamCreation', 'language'])
+		context.params.school = await School
+			.findById(schoolId)
+			.select(['name', 'currentYear', 'inMaintenanceSince', 'inMaintenance', 'enableStudentTeamCreation'])
 			.populate(['currentYear', 'systems'])
 			.lean({ virtuals: true })
 			.exec();

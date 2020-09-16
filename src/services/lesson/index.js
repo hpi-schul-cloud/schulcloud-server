@@ -26,14 +26,12 @@ module.exports = function setup() {
 	// Return all lesson.contets which have component = query.type And User = query.user or null
 	app.use('/lessons/contents/:type/', {
 		find(params) {
-			return lessonModel
-				.aggregate([
-					{ $unwind: '$contents' },
-					{ $match: { 'contents.component': params.query.type } },
-					{ $match: { 'contents.user_id': { $in: [params.query.user, null] } } },
-					{ $project: { _id: '$contents._id', content: '$contents.content' } },
-				])
-				.exec();
+			return lessonModel.aggregate([
+				{ $unwind: '$contents' },
+				{ $match: { 'contents.component': params.query.type } },
+				{ $match: { 'contents.user_id': { $in: [params.query.user, null] } } },
+				{ $project: { _id: '$contents._id', content: '$contents.content' } },
+			]).exec();
 		},
 	});
 

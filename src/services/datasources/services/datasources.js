@@ -1,9 +1,13 @@
 const Ajv = require('ajv');
 const service = require('feathers-mongoose');
 const { authenticate } = require('@feathersjs/authentication');
-const { iff, isProvider, validateSchema, disallow } = require('feathers-hooks-common');
+const {
+	iff, isProvider, validateSchema, disallow,
+} = require('feathers-hooks-common');
 const { datasourceModel } = require('../model');
-const { updatedBy, createdBy, protectFields, validateParams } = require('../hooks');
+const {
+	updatedBy, createdBy, protectFields, validateParams,
+} = require('../hooks');
 
 const { restrictToCurrentSchool, hasPermission, denyIfNotCurrentSchool } = require('../../../hooks');
 const { datasourcesCreateSchema, datasourcesPatchSchema } = require('../schemas');
@@ -21,8 +25,18 @@ const datasourceService = service({
 
 const datasourceHooks = {
 	before: {
-		all: [authenticate('jwt'), iff(isProvider('external'), [validateParams])],
-		find: [iff(isProvider('external'), [restrictToCurrentSchool, hasPermission('DATASOURCES_VIEW')])],
+		all: [
+			authenticate('jwt'),
+			iff(isProvider('external'), [
+				validateParams,
+			]),
+		],
+		find: [
+			iff(isProvider('external'), [
+				restrictToCurrentSchool,
+				hasPermission('DATASOURCES_VIEW'),
+			]),
+		],
 		get: [iff(isProvider('external'), hasPermission('DATASOURCES_VIEW'))],
 		create: [
 			iff(isProvider('external'), [
@@ -41,7 +55,12 @@ const datasourceHooks = {
 				updatedBy,
 			]),
 		],
-		remove: [iff(isProvider('external'), [restrictToCurrentSchool, hasPermission('DATASOURCES_DELETE')])],
+		remove: [
+			iff(isProvider('external'), [
+				restrictToCurrentSchool,
+				hasPermission('DATASOURCES_DELETE'),
+			]),
+		],
 	},
 	after: {
 		all: [iff(isProvider('external'), protectFields)],

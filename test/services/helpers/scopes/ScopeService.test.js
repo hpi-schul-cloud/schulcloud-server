@@ -1,9 +1,6 @@
 const { expect } = require('chai');
 const {
-	ScopeService,
-	ScopePermissionService,
-	ScopeListService,
-	ScopeMembersService,
+	ScopeService, ScopePermissionService, ScopeListService, ScopeMembersService,
 } = require('../../../../src/services/helpers/scopePermissions');
 
 describe('ScopeService', () => {

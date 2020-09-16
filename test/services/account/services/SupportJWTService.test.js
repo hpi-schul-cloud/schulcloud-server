@@ -30,11 +30,13 @@ describe('supportJWTService', () => {
 			testObjects.setupUser({ roles: 'student' }),
 		]);
 
-		const { roles } = await app.service('users').get(superhero.userId, { query: { $populate: 'roles' } });
+		const { roles } = await app.service('users')
+			.get(superhero.userId, { query: { $populate: 'roles' } });
 
 		expect(roles[0].permissions).to.include(testedPermission);
 
-		const jwt = await supportJWTService.create({ userId: student.userId }, superhero.requestParams);
+		const jwt = await supportJWTService
+			.create({ userId: student.userId }, superhero.requestParams);
 
 		const decodedJWT = decode(jwt);
 
@@ -53,7 +55,8 @@ describe('supportJWTService', () => {
 			testObjects.setupUser({ roles: 'student' }),
 		]);
 
-		const { roles } = await app.service('users').get(teacher.user._id, { query: { $populate: 'roles' } });
+		const { roles } = await app.service('users')
+			.get(teacher.user._id, { query: { $populate: 'roles' } });
 
 		try {
 			await supportJWTService.create({ userId: student.userId }, teacher.requestParams);

@@ -9,12 +9,10 @@ const prepareGradeLevelUnset = (context) => {
 
 const sortByGradeAndOrName = (context) => {
 	const defaultQuery = { year: 1, gradeLevel: 1, name: 1 };
-	if (
-		!context.params ||
-		!context.params.query ||
-		!context.params.query.$sort ||
-		Object.keys(context.params.query.$sort).length === 0
-	) {
+	if (!context.params
+	|| !context.params.query
+	|| !context.params.query.$sort
+	|| Object.keys(context.params.query.$sort).length === 0) {
 		context.params = context.params || {};
 		context.params.query = context.params.query || {};
 

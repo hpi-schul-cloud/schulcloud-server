@@ -1,6 +1,8 @@
 const errors = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
-const { iff, isProvider } = require('feathers-hooks-common');
+const {
+	iff, isProvider,
+} = require('feathers-hooks-common');
 const { hasPermission } = require('../../hooks');
 
 const Syncer = require('./strategies/Syncer');
@@ -52,12 +54,10 @@ module.exports = function setup() {
 	const syncService = app.service('/sync');
 	syncService.hooks({
 		before: {
-			all: [
-				iff(isProvider('external'), [
-					authenticate('jwt', 'api-key'),
-					iff((context) => context.account, hasPermission('SYNC_START')),
-				]),
-			],
+			all: [iff(isProvider('external'), [
+				authenticate('jwt', 'api-key'),
+				iff(((context) => context.account), hasPermission('SYNC_START')),
+			])],
 		},
 	});
 };

@@ -6,15 +6,12 @@ const { connect, close } = require('../src/utils/database');
 
 // use your own name for your model, otherwise other migrations may fail.
 // The third parameter is the actually relevent one for what collection to write to.
-const roleSchema = new mongoose.Schema(
-	{
-		name: { type: String, required: true },
-		permissions: [{ type: String }],
-	},
-	{
-		timestamps: true,
-	}
-);
+const roleSchema = new mongoose.Schema({
+	name: { type: String, required: true },
+	permissions: [{ type: String }],
+}, {
+	timestamps: true,
+});
 
 const Role = mongoose.model('role16042020', roleSchema, 'roles');
 
@@ -31,42 +28,38 @@ module.exports = {
 		await Role.findOneAndUpdate(
 			{
 				name: 'administrator',
-			},
-			{
+			}, {
 				$addToSet: {
 					permissions: 'STUDENT_EDIT',
 				},
-			}
+			},
 		).exec();
 		await Role.findOneAndUpdate(
 			{
 				name: 'teacher',
-			},
-			{
+			}, {
 				$addToSet: {
 					permissions: 'STUDENT_EDIT',
 				},
-			}
+			},
 		).exec();
 		await Role.findOneAndUpdate(
 			{
 				name: 'superhero',
-			},
-			{
+			}, {
 				$addToSet: {
 					permissions: 'STUDENT_EDIT',
 				},
-			}
+			},
 		).exec();
 		await Role.findOneAndUpdate(
 			{
 				name: 'user',
-			},
-			{
+			}, {
 				$pull: {
 					permissions: 'STUDENT_EDIT',
 				},
-			}
+			},
 		).exec();
 		// ////////////////////////////////////////////////////
 		await close();
@@ -79,42 +72,38 @@ module.exports = {
 		await Role.findOneAndUpdate(
 			{
 				name: 'administrator',
-			},
-			{
+			}, {
 				$pull: {
 					permissions: 'STUDENT_EDIT',
 				},
-			}
+			},
 		).exec();
 		await Role.findOneAndUpdate(
 			{
 				name: 'teacher',
-			},
-			{
+			}, {
 				$pull: {
 					permissions: 'STUDENT_EDIT',
 				},
-			}
+			},
 		).exec();
 		await Role.findOneAndUpdate(
 			{
 				name: 'superhero',
-			},
-			{
+			}, {
 				$pull: {
 					permissions: 'STUDENT_EDIT',
 				},
-			}
+			},
 		).exec();
 		await Role.findOneAndUpdate(
 			{
 				name: 'user',
-			},
-			{
+			}, {
 				$addToSet: {
 					permissions: 'STUDENT_EDIT',
 				},
-			}
+			},
 		).exec();
 		// ////////////////////////////////////////////////////
 		await close();

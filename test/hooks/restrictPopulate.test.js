@@ -1,10 +1,7 @@
 const { expect } = require('chai');
 
 const {
-	preventPopulate,
-	getRestrictPopulatesHook,
-	populateSelectHelper,
-	errorMessage,
+	preventPopulate, getRestrictPopulatesHook, populateSelectHelper, errorMessage,
 } = require('../../src/hooks/restrictPopulate');
 
 describe('restrictPopulate Hook', () => {

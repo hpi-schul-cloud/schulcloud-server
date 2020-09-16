@@ -4,7 +4,9 @@ const { ObjectId } = require('mongoose').Types;
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const logger = require('../../logger/index');
 const newsDocs = require('./docs');
-const { newsModel, targetModels, newsHistoryModel, newsPermissions } = require('./model');
+const {
+	newsModel, targetModels, newsHistoryModel, newsPermissions,
+} = require('./model');
 const hooks = require('./hooks');
 const newsModelHooks = require('./hooks/newsModel.hooks');
 const { flatten, paginate, convertToSortOrderObject } = require('../../utils/array');
@@ -19,23 +21,22 @@ class AbstractService {
 	}
 
 	/**
-	 * Returns school query if the user is allowed to see.
-	 * @param userId The user's Id
-	 * @param schoolId The schoolId
-	 * @returns Query
-	 */
+	* Returns school query if the user is allowed to see.
+	* @param userId The user's Id
+	* @param schoolId The schoolId
+	* @returns Query
+	*/
 	createSchoolQuery(userId, schoolId, permission) {
-		return this.hasSchoolPermission(userId, schoolId, permission).then((hasPermission) => {
-			if (!hasPermission) {
-				return null;
-			}
-			return [
-				{
+		return this.hasSchoolPermission(userId, schoolId, permission)
+			.then((hasPermission) => {
+				if (!hasPermission) {
+					return null;
+				}
+				return [{
 					schoolId,
 					target: { $exists: false },
-				},
-			];
-		});
+				}];
+			});
 	}
 
 	/**
@@ -52,12 +53,12 @@ class AbstractService {
 		}
 		// only one target requested
 		if (target && targetModel) {
-			return this.hasPermission(userId, permission, { target, targetModel }).then(() => [
-				{
-					targetModel,
-					target,
-				},
-			]);
+			return this.hasPermission(userId, permission, { target, targetModel })
+				.then(() => (
+					[{
+						targetModel,
+						target,
+					}]));
 		}
 		// return data of all user scopes
 		const ops = targetModels.map(async (scope) => {
@@ -207,8 +208,7 @@ class NewsService extends AbstractService {
 		if (result instanceof Array) {
 			return result.map(decorate);
 		}
-		if (result.data) {
-			// paginated result set
+		if (result.data) { // paginated result set
 			const dataIdsFixed = result.data.map(decorate);
 			return { ...result, data: dataIdsFixed };
 		}
@@ -235,8 +235,7 @@ class NewsService extends AbstractService {
 		if (result instanceof Array) {
 			return Promise.all(result.map(decorate));
 		}
-		if (result.data) {
-			// paginated result set
+		if (result.data) { // paginated result set
 			const decoratedData = await Promise.all(result.data.map(decorate));
 			return { ...result, data: decoratedData };
 		}
@@ -275,20 +274,19 @@ class NewsService extends AbstractService {
 		const scoped = !!(params.query && (params.query.target || params.query.targetModel));
 		if (scoped) {
 			// add selected scope news
-			query.push(
-				await super.createScopedQuery(
-					params.account.userId,
-					baseFilter.permission,
-					params.query.target,
-					params.query.targetModel
-				)
-			);
+			query.push(await super.createScopedQuery(
+				params.account.userId, baseFilter.permission, params.query.target, params.query.targetModel,
+			));
 		} else {
 			// add school news
-			query.push(await super.createSchoolQuery(params.account.userId, params.account.schoolId, baseFilter.permission));
+			query.push(await super.createSchoolQuery(
+				params.account.userId, params.account.schoolId, baseFilter.permission,
+			));
 			if ((params.query || {}).target !== 'school') {
 				// add all scope news if more than the current school is requested
-				query.push(await super.createScopedQuery(params.account.userId, baseFilter.permission));
+				query.push(await super.createScopedQuery(
+					params.account.userId, baseFilter.permission,
+				));
 			}
 		}
 		return flatten(query.filter((q) => q !== null));
@@ -357,8 +355,7 @@ class NewsService extends AbstractService {
 			},
 			paginate: query.$paginate,
 		};
-		return this.app
-			.service('newsModel')
+		return this.app.service('newsModel')
 			.find(internalRequestParams)
 			.then(NewsService.decorateResults)
 			.then((result) => this.decoratePermissions(result, params.account.userId));
@@ -420,7 +417,8 @@ class NewsService extends AbstractService {
 			...data,
 			updaterId: params.account.userId,
 		};
-		const updatedNews = await this.app.service('newsModel').update(id, updatedNewsData, NewsService.populateParams());
+		const updatedNews = await this.app.service('newsModel')
+			.update(id, updatedNewsData, NewsService.populateParams());
 		await NewsService.createHistoryEntry(news);
 		return NewsService.decorateResults(updatedNews);
 	}
@@ -444,7 +442,8 @@ class NewsService extends AbstractService {
 			...data,
 			updaterId: params.account.userId,
 		};
-		const patchedNews = await this.app.service('newsModel').patch(id, patchedNewsData, NewsService.populateParams());
+		const patchedNews = await this.app.service('newsModel')
+			.patch(id, patchedNewsData, NewsService.populateParams());
 		await NewsService.createHistoryEntry(news);
 		return NewsService.decorateResults(patchedNews);
 	}
@@ -461,13 +460,10 @@ module.exports = function news() {
 
 	// use /newsModel to directly access the model from other services
 	// (external requests are blocked)
-	app.use(
-		'/newsModel',
-		service({
-			Model: newsModel,
-			lean: true,
-			paginate: DEFAULT_PAGINATION_OPTIONS,
-		})
-	);
+	app.use('/newsModel', service({
+		Model: newsModel,
+		lean: true,
+		paginate: DEFAULT_PAGINATION_OPTIONS,
+	}));
 	app.service('/newsModel').hooks(newsModelHooks);
 };

@@ -15,18 +15,16 @@ describe('classes service', () => {
 		await server.close();
 	});
 
+
 	it('CREATE a class', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
-		const result = await app.service('classes').create(
-			{
-				name: 'testclass',
-				schoolId: schoolId.toString(),
-				teacherIds: [teacher._id],
-			},
-			params
-		);
+		const result = await app.service('classes').create({
+			name: 'testclass',
+			schoolId: schoolId.toString(),
+			teacherIds: [teacher._id],
+		}, params);
 		expect(result).to.not.be.undefined;
 		expect(result).to.haveOwnProperty('_id');
 		expect(result.name).to.eq('testclass');
@@ -72,7 +70,9 @@ describe('classes service', () => {
 		const klass = await testObjects.createTestClass({ schoolId, teacherIds: [teacher._id] });
 		const student = await testObjects.createTestUser({ schoolId, roles: ['student'] });
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
-		const result = await app.service('classes').patch(klass._id, { $push: { userIds: [student._id] } }, params);
+		const result = await app.service('classes').patch(
+			klass._id, { $push: { userIds: [student._id] } }, params,
+		);
 		expect(result).to.not.be.undefined;
 		const classUserIds = result.userIds.map((id) => id.toString());
 		expect(classUserIds).to.include(student._id.toString());

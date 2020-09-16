@@ -1,19 +1,28 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { BadRequest } = require('@feathersjs/errors');
-const { iff, isProvider, disallow } = require('feathers-hooks-common');
-
-const { restrictToCurrentSchool, denyIfNotCurrentSchoolOrEmpty, hasPermission } = require('../../../hooks');
+const {
+	iff,
+	isProvider,
+	disallow,
+} = require('feathers-hooks-common');
 
 const {
-	modelServices: { prepareInternalParams },
-} = require('../../../utils');
+	restrictToCurrentSchool,
+	denyIfNotCurrentSchoolOrEmpty,
+	hasPermission,
+} = require('../../../hooks');
+
+const { modelServices: { prepareInternalParams } } = require('../../../utils');
 
 const ConsentVersionServiceHooks = {
 	before: {
 		all: [authenticate('jwt')],
 		find: [],
 		get: [],
-		create: [iff(isProvider('external'), [hasPermission('SCHOOL_EDIT'), restrictToCurrentSchool])],
+		create: [iff(isProvider('external'), [
+			hasPermission('SCHOOL_EDIT'),
+			restrictToCurrentSchool,
+		])],
 		update: [disallow()],
 		patch: [disallow()],
 		remove: [disallow()],
@@ -22,12 +31,10 @@ const ConsentVersionServiceHooks = {
 		all: [],
 		find: [],
 		get: [
-			iff(
-				isProvider('external'),
+			iff(isProvider('external'),
 				denyIfNotCurrentSchoolOrEmpty({
 					errorMessage: 'The current user is not allowed to list other users!',
-				})
-			),
+				})),
 		],
 		create: [],
 		update: [],
@@ -90,6 +97,7 @@ class ConsentVersionService {
 		this.app = app;
 	}
 }
+
 
 module.exports = {
 	ConsentVersionService,

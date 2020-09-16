@@ -23,22 +23,18 @@ const getUserGroupSchema = (additional = {}) => {
 	});
 };
 
-const teamInvitedUserSchema = new Schema(
-	{
-		email: { type: String, required: true },
-		role: { type: String, required: true, enum: ['teamexpert', 'teamadministrator'] },
-	},
-	{ _id: false, timestamps: true }
-);
+const teamInvitedUserSchema = new Schema({
+	email: { type: String, required: true },
+	role: { type: String, required: true, enum: ['teamexpert', 'teamadministrator'] },
+}, { _id: false, timestamps: true });
 
-const teamUserSchema = new Schema(
-	{
-		userId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
-		role: { type: Schema.Types.ObjectId, ref: 'role', required: true },
-		schoolId: { type: Schema.Types.ObjectId, ref: 'school', required: true },
-	},
-	{ _id: false, timestamps: true }
-);
+
+const teamUserSchema = new Schema({
+	userId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
+	role: { type: Schema.Types.ObjectId, ref: 'role', required: true },
+	schoolId: { type: Schema.Types.ObjectId, ref: 'school', required: true },
+}, { _id: false, timestamps: true });
+
 
 const teamsSchema = getUserGroupSchema({
 	schoolIds: {

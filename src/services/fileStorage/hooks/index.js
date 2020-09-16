@@ -13,7 +13,13 @@ const resolveUserId = (hook) => {
 };
 
 exports.before = {
-	all: [authenticate('jwt'), mapPayload, injectUserId, resolveUserId, resolveStorageType],
+	all: [
+		authenticate('jwt'),
+		mapPayload,
+		injectUserId,
+		resolveUserId,
+		resolveStorageType,
+	],
 	find: [hasPermission('FILESTORAGE_VIEW')],
 	get: [hasPermission('FILESTORAGE_VIEW')],
 	create: [hasPermission('FILESTORAGE_CREATE')],
@@ -26,7 +32,9 @@ const signedUrlPath = 'fileStorage/signedUrl';
 
 exports.after = {
 	all: [],
-	find: [excludeAttributesFromSanitization(signedUrlPath, ['url'])],
+	find: [
+		excludeAttributesFromSanitization(signedUrlPath, ['url']),
+	],
 	get: [],
 	create: [],
 	update: [],

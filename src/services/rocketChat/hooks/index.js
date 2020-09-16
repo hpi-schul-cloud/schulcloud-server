@@ -6,7 +6,7 @@ const { TEAM_FEATURES } = require('../../teams/model');
 
 const userIsInTeam = (userId, team) => {
 	const user = team.userIds.find((el) => equalIds(el.userId, userId));
-	return user !== undefined;
+	return (user !== undefined);
 };
 
 const checkTeam = async (hook) => {
@@ -14,7 +14,7 @@ const checkTeam = async (hook) => {
 	if (!team.features.includes(TEAM_FEATURES.ROCKET_CHAT)) {
 		throw new BadRequest('rocket.chat is disabled for this team');
 	}
-	if (typeof hook.params.provider !== 'undefined' && !userIsInTeam(hook.params.account.userId, team)) {
+	if (typeof (hook.params.provider) !== 'undefined' && !userIsInTeam(hook.params.account.userId, team)) {
 		throw new Forbidden('you are not in this team');
 	}
 	return hook;

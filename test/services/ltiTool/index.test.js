@@ -18,15 +18,18 @@ describe('ltiTool service', () => {
 
 	before(function (done) {
 		this.timeout(10000);
-		ltiToolService.create(testTool).then((result) => {
-			done();
-		});
+		ltiToolService.create(testTool)
+			.then((result) => {
+				done();
+			});
 	});
 
+
 	after((done) => {
-		ltiToolService.remove(testTool).then((result) => {
-			done();
-		});
+		ltiToolService.remove(testTool)
+			.then((result) => {
+				done();
+			});
 	});
 
 	it('registered the ltiTools service', () => {

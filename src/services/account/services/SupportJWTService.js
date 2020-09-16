@@ -8,7 +8,9 @@ const { authenticationSecret, audience: audienceName } = require('../../authenti
 const accountModel = require('../model');
 const logger = require('../../../logger');
 
-const { getRedisClient, redisSetAsync, extractDataFromJwt, getRedisData } = require('../../../utils/redis');
+const {
+	getRedisClient, redisSetAsync, extractDataFromJwt, getRedisData,
+} = require('../../../utils/redis');
 
 const DEFAULT_EXPIRED = 60 * 60 * 1000; // in ms => 1h
 const DEFAULT_AUDIENCE = 'https://schul-cloud.org'; // The organisation that create this jwt.
@@ -123,16 +125,16 @@ class SupportJWTService {
 	executeInfo(currentUserId, userId) {
 		const minutes = this.expiredOffset / (60 * 1000);
 		// eslint-disable-next-line max-len
-		logger.info(
-			`[support][jwt] The support employee with the Id ${currentUserId} has created  a short live JWT for the user with the Id ${userId}. The JWT expires expires in ${minutes} minutes`
-		);
+		logger.info(`[support][jwt] The support employee with the Id ${currentUserId} has created  a short live JWT for the user with the Id ${userId}. The JWT expires expires in ${minutes} minutes`);
 	}
 
 	async addToWhitelist(jwt) {
 		if (getRedisClient()) {
 			const { redisIdentifier, privateDevice } = extractDataFromJwt(jwt);
 			const redisData = getRedisData({ privateDevice });
-			await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', this.expiredOffset);
+			await redisSetAsync(
+				redisIdentifier, JSON.stringify(redisData), 'EX', this.expiredOffset,
+			);
 		}
 	}
 

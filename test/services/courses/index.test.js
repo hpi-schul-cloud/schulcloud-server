@@ -38,37 +38,37 @@ describe('courseGroup service', () => {
 	it('creates a courseGroup in a course', async () => {
 		const course = await testObjects.createTestCourse({});
 		testCourseGroup.courseId = course._id;
-		return courseGroupService.create(testCourseGroup).then((courseGroup) => {
-			courseGroupId = courseGroup._id;
-			chai.expect(courseGroup.name).to.equal('testCourseGroup');
-		});
+		return courseGroupService.create(testCourseGroup)
+			.then((courseGroup) => {
+				courseGroupId = courseGroup._id;
+				chai.expect(courseGroup.name).to.equal('testCourseGroup');
+			});
 	});
 
-	it('patches a courseGroup', () =>
-		courseGroupService
-			.patch(courseGroupId, {
-				name: 'new testCourseGroup',
-			})
-			.then((courseGroup) => {
-				chai.expect(courseGroup.name).to.equal('new testCourseGroup');
-			}));
+	it('patches a courseGroup', () => courseGroupService.patch(courseGroupId, {
+		name: 'new testCourseGroup',
+	})
+		.then((courseGroup) => {
+			chai.expect(courseGroup.name).to.equal('new testCourseGroup');
+		}));
 
 	it('create a lesson inside a courseGroup', () => {
 		testLesson.courseGroupId = courseGroupId;
 		testLesson.courseId = testCourseExample;
-		return lessonsService.create(testLesson).then((lesson) => {
-			lessonId = lesson._id;
-			chai.expect(lesson.name).to.equal('testLesson');
-		});
+		return lessonsService.create(testLesson)
+			.then((lesson) => {
+				lessonId = lesson._id;
+				chai.expect(lesson.name).to.equal('testLesson');
+			});
 	});
 
-	it('removes a lesson of a courseGroup', () =>
-		lessonsService.remove(lessonId).then((lesson) => {
+	it('removes a lesson of a courseGroup', () => lessonsService.remove(lessonId)
+		.then((lesson) => {
 			chai.expect(lesson._id.toString()).to.equal(lessonId.toString());
 		}));
 
-	it('removes a courseGroup', () =>
-		courseGroupService.remove(courseGroupId).then((courseGroup) => {
+	it('removes a courseGroup', () => courseGroupService.remove(courseGroupId)
+		.then((courseGroup) => {
 			chai.expect(courseGroup.name).to.equal('new testCourseGroup');
 			chai.expect(courseGroup._id.toString()).to.equal(courseGroupId.toString());
 		}));

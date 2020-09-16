@@ -5,7 +5,9 @@ const mongoose = require('mongoose');
 
 const MigrationModel = migrationFactory(undefined, mongoose.connection);
 const { version } = require('../../../package.json');
-const { sha, branch, message, stat } = require('../../helper/version');
+const {
+	sha, branch, message, stat,
+} = require('../../helper/version');
 
 const router = express.Router();
 const startTime = Date.now();
@@ -16,7 +18,10 @@ router.get('/version', async (req, res, next) => {
 		return res.sendStatus(403);
 	}
 
-	const migrations = await MigrationModel.find().lean().exec();
+	const migrations = await MigrationModel
+		.find()
+		.lean()
+		.exec();
 
 	const { birthtime } = stat;
 	return res.json({

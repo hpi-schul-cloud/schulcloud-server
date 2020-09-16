@@ -2,7 +2,12 @@ const request = require('request-promise-native');
 const { GeneralError, MethodNotAllowed } = require('@feathersjs/errors');
 const logger = require('../../logger');
 
-const { REQUEST_TIMEOUT, SMTP_SENDER, NODE_ENV, ENVIRONMENTS } = require('../../../config/globals');
+const {
+	REQUEST_TIMEOUT,
+	SMTP_SENDER,
+	NODE_ENV,
+	ENVIRONMENTS,
+} = require('../../../config/globals');
 
 const checkForToken = (params, app) => {
 	if ((params.headers || {}).token) {

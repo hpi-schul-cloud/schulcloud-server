@@ -19,10 +19,7 @@ const cleanup = (app) => () => {
 	}
 	const ids = entryIds;
 	entryIds = [];
-	return activationModel
-		.deleteMany({ _id: { $in: ids } })
-		.lean()
-		.exec();
+	return activationModel.deleteMany({ _id: { $in: ids } }).lean().exec();
 };
 
 module.exports = (app, opt) => ({

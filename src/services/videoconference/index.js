@@ -1,4 +1,10 @@
-const { BadRequest, Forbidden, NotFound, GeneralError, FeathersError } = require('@feathersjs/errors');
+const {
+	BadRequest,
+	Forbidden,
+	NotFound,
+	GeneralError,
+	FeathersError,
+} = require('@feathersjs/errors');
 const lodash = require('lodash');
 const { Configuration } = require('@schul-cloud/commons');
 
@@ -8,7 +14,10 @@ const videoconferenceHooks = require('./hooks');
 
 const { getUser } = require('../../hooks');
 
-const { joinMeeting, getMeetingInfo } = require('./logic');
+const {
+	joinMeeting,
+	getMeetingInfo,
+} = require('./logic');
 
 const {
 	copyPropertyNameIfIncludedInValuesFromSourceToTarget,
@@ -39,10 +48,8 @@ function scopeIdMatchesEventId(id) {
 }
 
 function idAndScopeNameAreValid(params) {
-	return (
-		(ObjectId.isValid(params.scopeId) || scopeIdMatchesEventId(params.scopeId)) &&
-		Object.values(SCOPE_NAMES).includes(params.scopeName)
-	);
+	return (ObjectId.isValid(params.scopeId) || scopeIdMatchesEventId(params.scopeId))
+		&& Object.values(SCOPE_NAMES).includes(params.scopeName);
 }
 
 /**
@@ -84,12 +91,9 @@ function throwOnValidationErrors(scopeId, scopeName, options = null) {
  */
 async function isSchoolFeatureEnabled(schoolId) {
 	const school = await Schools.findById(schoolId).lean().exec();
-	if (
-		school &&
-		school.features &&
-		Array.isArray(school.features) &&
-		school.features.includes(SCHOOL_FEATURES.VIDEOCONFERENCE)
-	) {
+	if (school && school.features
+		&& Array.isArray(school.features)
+		&& school.features.includes(SCHOOL_FEATURES.VIDEOCONFERENCE)) {
 		return true;
 	}
 	return false;
@@ -153,19 +157,19 @@ async function getScopeInfo(app, user, scopeName, scopeId) {
 	let permissionScopeName;
 	// retrieve scope information, set roomName AND scopePermissionService OR throw
 	switch (scopeName) {
-		case SCOPE_NAMES.COURSE:
+		case (SCOPE_NAMES.COURSE):
 			// fetch course metadata
 			// eslint-disable-next-line prefer-destructuring
 			permissionScopeId = scopeId;
 			permissionScopeName = 'courses';
 			scopeTitle = (await app.service(permissionScopeName).get(scopeId)).name;
 			break;
-		case SCOPE_NAMES.EVENT:
+		case (SCOPE_NAMES.EVENT):
 			// eslint-disable-next-line no-case-declarations
-			const events = await app.service('calendar').find({
+			const events = (await app.service('calendar').find({
 				query: { 'event-id': scopeId },
 				payload: { userId: user.id },
-			});
+			}));
 			if (Array.isArray(events) && events.length >= 1) {
 				event = events[0];
 			} else {
@@ -210,11 +214,7 @@ function getHighestVideoconferencePermission(permissions) {
 function createResponse(status, state, permissions, options = null, url) {
 	const permission = getHighestVideoconferencePermission(permissions);
 	return {
-		status,
-		state,
-		permission,
-		options,
-		url,
+		status, state, permission, options, url,
 	};
 }
 
@@ -238,7 +238,8 @@ function getDefaultModel(scopeName, scopeId) {
  */
 async function getVideoconferenceMetadata(scopeName, scopeId, returnAsObject = false) {
 	const modelDefaults = getDefaultModel(scopeName, scopeId);
-	const videoconferenceMetadata = await VideoconferenceModel.findOne(modelDefaults).exec();
+	const videoconferenceMetadata = await VideoconferenceModel
+		.findOne(modelDefaults).exec();
 	if (returnAsObject && videoconferenceMetadata !== null) {
 		return videoconferenceMetadata.toObject();
 	}
@@ -258,15 +259,14 @@ async function getVideoconferenceMetadata(scopeName, scopeId, returnAsObject = f
 */
 function getSettings(
 	userID,
-	userPermissions,
-	{
+	userPermissions, {
 		options: {
 			moderatorMustApproveJoinRequests = false,
 			everybodyJoinsAsModerator = false,
 			everyAttendeJoinsMuted = false,
 		},
 	},
-	logoutURL = undefined
+	logoutURL = undefined,
 ) {
 	let role = getUserRole(userPermissions);
 	const settings = {
@@ -290,6 +290,7 @@ function getSettings(
 
 	return { role, settings };
 }
+
 
 /**
  * @typedef {Object} VideoConference
@@ -360,10 +361,12 @@ class GetVideoconferenceService {
 
 		// CHECK PERMISSIONS //////////////////////////////////////////////////////
 		await throwOnFeaturesDisabled(authenticatedUser);
-		throwOnPermissionMissingInScope(PERMISSIONS.JOIN_MEETING, userPermissionsInScope);
+		throwOnPermissionMissingInScope(
+			PERMISSIONS.JOIN_MEETING, userPermissionsInScope,
+		);
 
 		// check video conference metadata have been already defined locally and video conference is running
-		const videoconferenceMetadata = await getVideoconferenceMetadata(scopeName, scopeId, true);
+		const videoconferenceMetadata = (await getVideoconferenceMetadata(scopeName, scopeId, true));
 		const meetingInfo = await getMeetingInfo(server, scopeId);
 
 		const hasStartPermission = userPermissionsInScope.includes(PERMISSIONS.START_MEETING);
@@ -376,7 +379,7 @@ class GetVideoconferenceService {
 				RESPONSE_STATUS.SUCCESS,
 				wasRunning ? STATES.FINISHED : STATES.NOT_STARTED,
 				userPermissionsInScope,
-				hasStartPermission && hasOptions ? videoconferenceMetadata.options : {}
+				hasStartPermission && hasOptions ? videoconferenceMetadata.options : {},
 			);
 		}
 
@@ -385,7 +388,7 @@ class GetVideoconferenceService {
 				RESPONSE_STATUS.SUCCESS,
 				STATES.RUNNING,
 				userPermissionsInScope,
-				hasStartPermission && hasOptions ? videoconferenceMetadata.options : {}
+				hasStartPermission && hasOptions ? videoconferenceMetadata.options : {},
 			);
 		}
 
@@ -424,12 +427,14 @@ class CreateVideoconferenceService {
 			app,
 			authenticatedUser,
 			scopeName,
-			scopeId
+			scopeId,
 		);
 
 		// CHECK PERMISSIONS //////////////////////////////////////////////////////
 		await throwOnFeaturesDisabled(authenticatedUser);
-		throwOnNotAnyPermissionInScope([PERMISSIONS.START_MEETING, PERMISSIONS.JOIN_MEETING], userPermissionsInScope);
+		throwOnNotAnyPermissionInScope([
+			PERMISSIONS.START_MEETING, PERMISSIONS.JOIN_MEETING,
+		], userPermissionsInScope);
 
 		// TODO if event... check team feature flag, ignore for courses
 
@@ -441,50 +446,74 @@ class CreateVideoconferenceService {
 			const hasStartPermission = userPermissionsInScope.includes(PERMISSIONS.START_MEETING);
 
 			if (hasStartPermission) {
-				videoconferenceMetadata = (await updateAndGetVideoconferenceMetadata(scopeName, scopeId, options)).toObject();
+				videoconferenceMetadata = (await updateAndGetVideoconferenceMetadata(scopeName, scopeId, options))
+					.toObject();
 
 				// todo extend options based on metadata created before
 				const { role, settings } = getSettings(
 					authenticatedUser.id,
 					userPermissionsInScope,
 					videoconferenceMetadata,
-					logoutURL
+					logoutURL,
 				);
-				joinUrl = await joinMeeting(server, scopeTitle, scopeId, authenticatedUser.fullName, role, settings, true);
+				joinUrl = await joinMeeting(
+					server,
+					scopeTitle,
+					scopeId,
+					authenticatedUser.fullName,
+					role,
+					settings,
+					true,
+				);
 			} else {
 				// (hasJoinPermission)
-				videoconferenceMetadata = await getVideoconferenceMetadata(scopeName, scopeId, true);
+				videoconferenceMetadata = (await getVideoconferenceMetadata(scopeName, scopeId, true));
 				if (videoconferenceMetadata === null) {
-					return new NotFound("ask a moderator to start the videoconference, it's not started yet");
+					return new NotFound('ask a moderator to start the videoconference, it\'s not started yet');
 				}
 				const { role, settings } = getSettings(
 					authenticatedUser.id,
 					userPermissionsInScope,
 					videoconferenceMetadata,
-					logoutURL
+					logoutURL,
 				);
 				// joinMeeting throws, if video conference has not started yet
-				joinUrl = await joinMeeting(server, scopeTitle, scopeId, authenticatedUser.fullName, role, settings, false);
+				joinUrl = await joinMeeting(
+					server,
+					scopeTitle,
+					scopeId,
+					authenticatedUser.fullName,
+					role,
+					settings,
+					false,
+				);
 			}
 			return createResponse(
 				RESPONSE_STATUS.SUCCESS,
 				STATES.RUNNING,
 				userPermissionsInScope,
 				hasStartPermission ? videoconferenceMetadata.options : {},
-				joinUrl
+				joinUrl,
 			);
 		} catch (error) {
 			if (error instanceof FeathersError) {
 				throw error;
 			}
-			throw new GeneralError('join meeting link generation failed', { errors: error });
+			throw new GeneralError(
+				'join meeting link generation failed',
+				{ errors: error },
+			);
 		}
 	}
 }
 
+
 module.exports = function setup(app) {
 	app.use('/videoconference', new CreateVideoconferenceService(app));
 	app.use('/videoconference/:scopeName', new GetVideoconferenceService(app));
-	const videoConferenceServices = [app.service('/videoconference'), app.service('/videoconference/:scopeName')];
+	const videoConferenceServices = [
+		app.service('/videoconference'),
+		app.service('/videoconference/:scopeName'),
+	];
 	videoConferenceServices.forEach((service) => service.hooks(videoconferenceHooks));
 };

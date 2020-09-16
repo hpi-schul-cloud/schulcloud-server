@@ -4,16 +4,13 @@ const logger = require('../../../src/logger/index');
 
 const app = require('../../../src/app');
 const {
-	createTestUser,
-	cleanup,
-	teams: teamsHelper,
-	generateRequestParams,
-	createTestAccount,
+	createTestUser, cleanup, teams: teamsHelper, generateRequestParams, createTestAccount,
 } = require('../helpers/testObjects')(app);
 const testHelper = require('../helpers/testObjects')(app);
 
 const teamService = app.service('/teams');
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
+
 
 describe('Test team basic methods', () => {
 	describe('teams create', () => {
@@ -35,18 +32,13 @@ describe('Test team basic methods', () => {
 				query: {},
 			};
 
-			team = await teamService
-				.create(
-					{
-						name: 'TestTeam',
-						schoolId,
-						userIds: [userId],
-					},
-					fakeLoginParams
-				)
-				.catch((err) => {
-					logger.warning('Can not create test team', err);
-				});
+			team = await teamService.create({
+				name: 'TestTeam',
+				schoolId,
+				userIds: [userId],
+			}, fakeLoginParams).catch((err) => {
+				logger.warning('Can not create test team', err);
+			});
 
 			teamId = team._id.toString();
 
@@ -54,6 +46,7 @@ describe('Test team basic methods', () => {
 		});
 
 		after(() => Promise.all([cleanup(), teamsHelper.removeOne(teamId)]));
+
 
 		it('should for extern request only return the _id', () => {
 			expect(Object.keys(team)).to.be.an('array').to.has.lengthOf(1);

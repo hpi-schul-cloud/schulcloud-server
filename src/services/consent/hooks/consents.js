@@ -1,10 +1,8 @@
 const { Forbidden } = require('@feathersjs/errors');
 
 exports.restrictToCurrentUser = (context) => {
-	if (
-		context.id === context.params.authentication.payload.userId ||
-		(context.params.query || {}).userId === context.params.authentication.payload.userId
-	) {
+	if (context.id === context.params.authentication.payload.userId
+		|| (context.params.query || {}).userId === context.params.authentication.payload.userId) {
 		return context;
 	}
 

@@ -90,7 +90,12 @@ module.exports = {
 		await connect();
 		await Roles.deleteMany({
 			name: {
-				$in: ['courseStudent', 'courseTeacher', 'courseSubstitutionTeacher', 'courseAdministrator'],
+				$in: [
+					'courseStudent',
+					'courseTeacher',
+					'courseSubstitutionTeacher',
+					'courseAdministrator',
+				],
 			},
 		});
 		await close();

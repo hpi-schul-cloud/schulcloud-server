@@ -1,5 +1,10 @@
-const { NotFound, BadRequest } = require('@feathersjs/errors');
-const { hasRoleNoHook } = require('../../../hooks');
+const {
+	NotFound,
+	BadRequest,
+} = require('@feathersjs/errors');
+const {
+	hasRoleNoHook,
+} = require('../../../hooks');
 const { equal } = require('../../../helper/compare').ObjectId;
 
 const restrictToUsersCourses = async (context) => {
@@ -9,7 +14,11 @@ const restrictToUsersCourses = async (context) => {
 	const { userId } = context.params.account;
 	const usersCourses = await context.app.service('courses').find({
 		query: {
-			$or: [{ userIds: userId }, { teacherIds: userId }, { substitutionIds: userId }],
+			$or: [
+				{ userIds: userId },
+				{ teacherIds: userId },
+				{ substitutionIds: userId },
+			],
 		},
 	});
 	const usersCoursesIds = usersCourses.data.map((c) => c._id);
@@ -27,7 +36,7 @@ const restrictToUsersCourses = async (context) => {
 	}
 
 	if (['find', 'patch', 'update', 'remove'].includes(context.method)) {
-		context.params.query.$and = context.params.query.$and || [];
+		context.params.query.$and = (context.params.query.$and || []);
 		context.params.query.$and.push({
 			courseId: { $in: usersCoursesIds },
 		});
@@ -38,10 +47,9 @@ const restrictToUsersCourses = async (context) => {
 const denyIfNotInCourse = async (context) => {
 	const { userId } = context.params.account;
 	const course = await context.app.service('courses').get(context.result.courseId);
-	const userInCourse =
-		course.userIds.some((id) => equal(id, userId)) ||
-		course.teacherIds.some((id) => equal(id, userId)) ||
-		course.substitutionIds.some((id) => equal(id, userId));
+	const userInCourse = course.userIds.some((id) => equal(id, userId))
+		|| course.teacherIds.some((id) => equal(id, userId))
+		|| course.substitutionIds.some((id) => equal(id, userId));
 	if (!userInCourse) throw new NotFound(`no record found for id '${context.id}'`);
 	return context;
 };

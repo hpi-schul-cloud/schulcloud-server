@@ -37,8 +37,7 @@ describe('course service', () => {
 		try {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 			const course = await testObjects.createTestCourse({
-				name: 'courseNotChanged',
-				substitutionIds: [teacher._id],
+				name: 'courseNotChanged', substitutionIds: [teacher._id],
 			});
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			await courseService.patch(course._id, { name: 'courseChanged' }, params);

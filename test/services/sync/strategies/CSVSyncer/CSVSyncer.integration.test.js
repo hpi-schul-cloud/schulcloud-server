@@ -6,9 +6,13 @@ const { userModel } = require('../../../../../src/services/user/model');
 const MailService = require('../../../../../src/services/helpers/service.js');
 
 const testObjects = require('../../../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../../../helpers/services/login')(app);
+const {
+	generateRequestParamsFromUser,
+} = require('../../../helpers/services/login')(app);
 const { create: createUser } = require('../../../helpers/services/users')(app);
-const { create: createSchool } = require('../../../helpers/services/schools')(app);
+const { create: createSchool } = require('../../../helpers/services/schools')(
+	app,
+);
 const { create: createYear } = require('../../../helpers/services/years');
 const {
 	createByName: createClass,
@@ -47,7 +51,9 @@ describe('CSVSyncer Integration', () => {
 		};
 
 		it('should be accepted for execution', () => {
-			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
 		});
 
 		it('should initialize without errors', () => {
@@ -91,7 +97,9 @@ describe('CSVSyncer Integration', () => {
 		after(testObjects.cleanup);
 
 		it('should be accepted for execution', () => {
-			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
 		});
 
 		it('should initialize without errors', () => {
@@ -101,7 +109,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should import a single student without a class', async () => {
-			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(true);
 			expect(stats.users.successful).to.equal(1);
@@ -142,10 +152,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email\n' +
-					`Peter,Pan,${TEACHER_EMAILS[0]}\n` +
-					`Peter,Lustig,${TEACHER_EMAILS[1]}\n` +
-					`Test,Testington,${TEACHER_EMAILS[2]}\n`,
+					'firstName,lastName,email\n'
+					+ `Peter,Pan,${TEACHER_EMAILS[0]}\n`
+					+ `Peter,Lustig,${TEACHER_EMAILS[1]}\n`
+					+ `Test,Testington,${TEACHER_EMAILS[2]}\n`,
 			};
 		});
 
@@ -157,7 +167,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should be accepted for execution', () => {
-			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
 		});
 
 		it('should initialize without errors', () => {
@@ -167,7 +179,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should import three teachers without a class', async () => {
-			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(true);
 			expect(stats.users.successful).to.equal(3);
@@ -193,7 +207,13 @@ describe('CSVSyncer Integration', () => {
 		let scenarioData;
 
 		const SCHOOL_ID = testObjects.options.schoolId;
-		const STUDENT_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de', 'e@f.de'];
+		const STUDENT_EMAILS = [
+			'a@b.de',
+			'b@c.de',
+			'c@d.de',
+			'd@e.de',
+			'e@f.de',
+		];
 
 		before(async () => {
 			const user = await createUser({
@@ -208,12 +228,12 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email,class\n' +
-					`Turanga,Leela,${STUDENT_EMAILS[0]},\n` +
-					`Dr. John A.,Zoidberg,${STUDENT_EMAILS[1]},1a+1a\n` +
-					`Amy,Wong,${STUDENT_EMAILS[2]},1a\n` +
-					`Philip J.,Fry,${STUDENT_EMAILS[3]},1b+2b\n` +
-					`Bender Bending,Rodriguez,${STUDENT_EMAILS[4]},2b+2c\n`,
+					'firstName,lastName,email,class\n'
+					+ `Turanga,Leela,${STUDENT_EMAILS[0]},\n`
+					+ `Dr. John A.,Zoidberg,${STUDENT_EMAILS[1]},1a+1a\n`
+					+ `Amy,Wong,${STUDENT_EMAILS[2]},1a\n`
+					+ `Philip J.,Fry,${STUDENT_EMAILS[3]},1b+2b\n`
+					+ `Bender Bending,Rodriguez,${STUDENT_EMAILS[4]},2b+2c\n`,
 			};
 		});
 
@@ -225,13 +245,15 @@ describe('CSVSyncer Integration', () => {
 					['1', 'b'],
 					['2', 'b'],
 					['2', 'c'],
-				].map((klass) => deleteClass(klass))
+				].map((klass) => deleteClass(klass)),
 			);
 			await testObjects.cleanup();
 		});
 
 		it('should be accepted for execution', () => {
-			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
 		});
 
 		it('should initialize without errors', () => {
@@ -241,7 +263,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should import five students in different classes', async () => {
-			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(true);
 			expect(stats.users.successful).to.equal(5);
@@ -262,7 +286,7 @@ describe('CSVSyncer Integration', () => {
 						query: { userIds: user._id },
 						paginate: false,
 					});
-				})
+				}),
 			);
 
 			expect(classes[0].length).to.equal(0);
@@ -273,7 +297,9 @@ describe('CSVSyncer Integration', () => {
 			expect(classes[2][0].gradeLevel).to.equal(1);
 			expect(classes[2][0].name).to.equal('a');
 			expect(classes[1][0]._id).not.to.equal(undefined);
-			expect(classes[1][0]._id.toString()).to.equal(classes[2][0]._id.toString());
+			expect(classes[1][0]._id.toString()).to.equal(
+				classes[2][0]._id.toString(),
+			);
 			expect(classes[3].length).to.equal(2);
 			expect(classes[4].length).to.equal(2);
 
@@ -288,12 +314,16 @@ describe('CSVSyncer Integration', () => {
 			};
 
 			const class1a = await findClass(['1', 'a']);
-			const class1astudents = await Promise.all(class1a.userIds.map(studentLastNames));
+			const class1astudents = await Promise.all(
+				class1a.userIds.map(studentLastNames),
+			);
 			expect(class1astudents).to.include('Wong');
 			expect(class1astudents).to.include('Zoidberg');
 
 			const class2b = await findClass(['2', 'b']);
-			const class2bstudents = await Promise.all(class2b.userIds.map(studentLastNames));
+			const class2bstudents = await Promise.all(
+				class2b.userIds.map(studentLastNames),
+			);
 			expect(class2bstudents).to.include('Fry');
 			expect(class2bstudents).to.include('Rodriguez');
 		});
@@ -309,11 +339,19 @@ describe('CSVSyncer Integration', () => {
 			[undefined, 'SG1'],
 			['12', '/3'],
 		];
-		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de', 'e@f.de'];
+		const TEACHER_EMAILS = [
+			'a@b.de',
+			'b@c.de',
+			'c@d.de',
+			'd@e.de',
+			'e@f.de',
+		];
 
 		before(async function before() {
 			this.timeout(5000);
-			await Promise.all(EXISTING_CLASSES.map((klass) => createClass([...klass, SCHOOL_ID])));
+			await Promise.all(
+				EXISTING_CLASSES.map((klass) => createClass([...klass, SCHOOL_ID])),
+			);
 
 			const user = await createUser({
 				roles: 'administrator',
@@ -327,24 +365,28 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email,class\n' +
-					`Jonathan 'Jack',O'Neill,${TEACHER_EMAILS[0]},1a\n` +
-					`Dr. Samantha 'Sam',Carter,${TEACHER_EMAILS[1]},1a+SG1\n` +
-					`Daniel,Jackson,${TEACHER_EMAILS[2]},Archeology\n` +
-					`Teal'c,of Chulak,${TEACHER_EMAILS[3]},SG1\n` +
-					`George,Hammond,${TEACHER_EMAILS[4]},12/3\n`,
+					'firstName,lastName,email,class\n'
+					+ `Jonathan 'Jack',O'Neill,${TEACHER_EMAILS[0]},1a\n`
+					+ `Dr. Samantha 'Sam',Carter,${TEACHER_EMAILS[1]},1a+SG1\n`
+					+ `Daniel,Jackson,${TEACHER_EMAILS[2]},Archeology\n`
+					+ `Teal'c,of Chulak,${TEACHER_EMAILS[3]},SG1\n`
+					+ `George,Hammond,${TEACHER_EMAILS[4]},12/3\n`,
 			};
 		});
 
 		after(async () => {
 			await Promise.all(TEACHER_EMAILS.map((email) => deleteUser(email)));
-			await Promise.all(EXISTING_CLASSES.map((klass) => deleteClass(klass)));
+			await Promise.all(
+				EXISTING_CLASSES.map((klass) => deleteClass(klass)),
+			);
 			await deleteClass([undefined, 'Archeology']);
 			await testObjects.cleanup();
 		});
 
 		it('should be accepted for execution', () => {
-			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
 		});
 
 		it('should initialize without errors', () => {
@@ -354,7 +396,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should import five teachers into three existing classes', async () => {
-			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(true);
 			expect(stats.users.successful).to.equal(5);
@@ -371,7 +415,7 @@ describe('CSVSyncer Integration', () => {
 					const [user] = await userModel.find({ email });
 					const [role] = await roleModel.find({ _id: user.roles[0] });
 					expect(role.name).to.equal('teacher');
-				})
+				}),
 			);
 
 			const teacherLastNames = async (teacher) => {
@@ -386,24 +430,32 @@ describe('CSVSyncer Integration', () => {
 
 			const sg1 = await findClass([undefined, 'SG1']);
 			expect(sg1.teacherIds.length).to.equal(2);
-			const sg1teachers = await Promise.all(sg1.teacherIds.map(teacherLastNames));
+			const sg1teachers = await Promise.all(
+				sg1.teacherIds.map(teacherLastNames),
+			);
 			expect(sg1teachers).to.include('Carter');
 			expect(sg1teachers).to.include('of Chulak');
 
 			const class1a = await findClass(['1', 'a']);
 			expect(class1a.teacherIds.length).to.equal(2);
-			const class1ateachers = await Promise.all(class1a.teacherIds.map(teacherLastNames));
+			const class1ateachers = await Promise.all(
+				class1a.teacherIds.map(teacherLastNames),
+			);
 			expect(class1ateachers).to.include('Carter');
 			expect(class1ateachers).to.include("O'Neill");
 
 			const archeology = await findClass([undefined, 'Archeology']);
 			expect(archeology.teacherIds.length).to.equal(1);
-			const archeologyteachers = await Promise.all(archeology.teacherIds.map(teacherLastNames));
+			const archeologyteachers = await Promise.all(
+				archeology.teacherIds.map(teacherLastNames),
+			);
 			expect(archeologyteachers).to.include('Jackson');
 
 			const class12 = await findClass(['12', '/3']);
 			expect(class12.teacherIds.length).to.equal(1);
-			const class12teachers = await Promise.all(class12.teacherIds.map(teacherLastNames));
+			const class12teachers = await Promise.all(
+				class12.teacherIds.map(teacherLastNames),
+			);
 			expect(class12teachers).to.include('Hammond');
 		});
 	});
@@ -421,7 +473,9 @@ describe('CSVSyncer Integration', () => {
 		];
 
 		before(async () => {
-			await Promise.all(CLASSES.map((klass) => createClass([...klass, SCHOOL_ID])));
+			await Promise.all(
+				CLASSES.map((klass) => createClass([...klass, SCHOOL_ID])),
+			);
 
 			const user = await createUser({
 				roles: 'administrator',
@@ -436,10 +490,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email,class\n' +
-					`Chuck,Bartowski,${TEACHER_EMAILS[0]},BuyMore\n` +
-					`Sarah,Walker,${TEACHER_EMAILS[1]},NSA\n` +
-					`Colonel John,Casey,${TEACHER_EMAILS[2]},CIA\n`,
+					'firstName,lastName,email,class\n'
+					+ `Chuck,Bartowski,${TEACHER_EMAILS[0]},BuyMore\n`
+					+ `Sarah,Walker,${TEACHER_EMAILS[1]},NSA\n`
+					+ `Colonel John,Casey,${TEACHER_EMAILS[2]},CIA\n`,
 			};
 		});
 
@@ -451,7 +505,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should be accepted for execution', () => {
-			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
 		});
 
 		it('should initialize without errors', () => {
@@ -466,10 +522,12 @@ describe('CSVSyncer Integration', () => {
 				'/mails',
 				new MockEmailService((email) => {
 					emails.push(email);
-				})
+				}),
 			);
 
-			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(true);
 			expect(stats.users.successful).to.equal(3);
@@ -488,7 +546,7 @@ describe('CSVSyncer Integration', () => {
 					const [user] = await userModel.find({ email });
 					const [role] = await roleModel.find({ _id: user.roles[0] });
 					expect(role.name).to.equal('teacher');
-				})
+				}),
 			);
 		});
 	});
@@ -505,7 +563,9 @@ describe('CSVSyncer Integration', () => {
 		const STUDENT_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de'];
 
 		before(async () => {
-			await Promise.all(EXISTING_CLASSES.map((klass) => createClass([...klass, SCHOOL_ID])));
+			await Promise.all(
+				EXISTING_CLASSES.map((klass) => createClass([...klass, SCHOOL_ID])),
+			);
 
 			const user = await createUser({
 				roles: 'administrator',
@@ -519,21 +579,25 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email,class\n' +
-					`工藤,新,${STUDENT_EMAILS[0]},1a\n` +
-					`毛利,蘭,${STUDENT_EMAILS[1]},1a\n` +
-					`毛利,小五郎,${STUDENT_EMAILS[2]},2b\n`,
+					'firstName,lastName,email,class\n'
+					+ `工藤,新,${STUDENT_EMAILS[0]},1a\n`
+					+ `毛利,蘭,${STUDENT_EMAILS[1]},1a\n`
+					+ `毛利,小五郎,${STUDENT_EMAILS[2]},2b\n`,
 			};
 		});
 
 		after(async () => {
 			await Promise.all(STUDENT_EMAILS.map((email) => deleteUser(email)));
-			await Promise.all(EXISTING_CLASSES.map((klass) => deleteClass(klass)));
+			await Promise.all(
+				EXISTING_CLASSES.map((klass) => deleteClass(klass)),
+			);
 			await testObjects.cleanup();
 		});
 
 		it('should be accepted for execution', () => {
-			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
 		});
 
 		it('should initialize without errors', () => {
@@ -543,7 +607,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should import three exchange students into existing classes', async () => {
-			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(true);
 			expect(stats.users.successful).to.equal(3);
@@ -560,7 +626,7 @@ describe('CSVSyncer Integration', () => {
 					const [user] = await userModel.find({ email });
 					const [role] = await roleModel.find({ _id: user.roles[0] });
 					expect(role.name).to.equal('student');
-				})
+				}),
 			);
 
 			const studentLastNames = async (student) => {
@@ -575,13 +641,17 @@ describe('CSVSyncer Integration', () => {
 
 			const class1a = await findClass(['1', 'a']);
 			expect(class1a.userIds.length).to.equal(2);
-			const class1astudents = await Promise.all(class1a.userIds.map(studentLastNames));
+			const class1astudents = await Promise.all(
+				class1a.userIds.map(studentLastNames),
+			);
 			expect(class1astudents).to.include('新');
 			expect(class1astudents).to.include('蘭');
 
 			const class2b = await findClass(['2', 'b']);
 			expect(class2b.userIds.length).to.equal(1);
-			const class2bstudents = await Promise.all(class2b.userIds.map(studentLastNames));
+			const class2bstudents = await Promise.all(
+				class2b.userIds.map(studentLastNames),
+			);
 			expect(class2bstudents).to.include('小五郎');
 		});
 	});
@@ -606,10 +676,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email\n' +
-					`Peter,Pan,${TEACHER_EMAILS[0]}\n` +
-					`Peter,Lustig,${TEACHER_EMAILS[0]}\n` +
-					`Test,Testington,${TEACHER_EMAILS[0]}\n`,
+					'firstName,lastName,email\n'
+					+ `Peter,Pan,${TEACHER_EMAILS[0]}\n`
+					+ `Peter,Lustig,${TEACHER_EMAILS[0]}\n`
+					+ `Test,Testington,${TEACHER_EMAILS[0]}\n`,
 			};
 		});
 
@@ -619,7 +689,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should be accepted for execution', () => {
-			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
 		});
 
 		it('should initialize without errors', () => {
@@ -629,7 +701,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should import one user and report two failures', async () => {
-			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(false);
 			expect(stats.users.successful).to.equal(1);
@@ -650,15 +724,15 @@ describe('CSVSyncer Integration', () => {
 				type: 'user',
 				entity: `Peter,Lustig,${TEACHER_EMAILS[0]}`,
 				message:
-					`Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". ` +
-					'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
+					`Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
+					+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 			});
 			expect(stats.errors).to.deep.include({
 				type: 'user',
 				entity: `Test,Testington,${TEACHER_EMAILS[0]}`,
 				message:
-					`Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". ` +
-					'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
+					`Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
+					+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 			});
 		});
 	});
@@ -676,7 +750,9 @@ describe('CSVSyncer Integration', () => {
 		];
 
 		before(async () => {
-			await Promise.all(CLASSES.map((klass) => createClass([...klass, SCHOOL_ID])));
+			await Promise.all(
+				CLASSES.map((klass) => createClass([...klass, SCHOOL_ID])),
+			);
 
 			const user = await createUser({
 				roles: 'administrator',
@@ -691,10 +767,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email,class\n' +
-					`Chuck,Bartowski,${TEACHER_EMAILS[0]},BuyMore\n` +
-					`Sarah,Walker,${TEACHER_EMAILS[1]},NSA\n` +
-					`Colonel John,Casey,${TEACHER_EMAILS[2]},CIA\n`,
+					'firstName,lastName,email,class\n'
+					+ `Chuck,Bartowski,${TEACHER_EMAILS[0]},BuyMore\n`
+					+ `Sarah,Walker,${TEACHER_EMAILS[1]},NSA\n`
+					+ `Colonel John,Casey,${TEACHER_EMAILS[2]},CIA\n`,
 			};
 		});
 
@@ -706,7 +782,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should be accepted for execution', () => {
-			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
 		});
 
 		it('should initialize without errors', () => {
@@ -720,10 +798,12 @@ describe('CSVSyncer Integration', () => {
 				'/mails',
 				new MockEmailService(() => {
 					throw new Error('Some Email error...');
-				})
+				}),
 			);
 
-			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(false);
 			expect(stats.users.successful).to.equal(3);
@@ -731,7 +811,9 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.invitations.successful).to.equal(0);
 			expect(stats.invitations.failed).to.equal(3);
 
-			expect(stats.errors.filter((e) => e.type === 'invitation').length).to.equal(3);
+			expect(
+				stats.errors.filter((e) => e.type === 'invitation').length,
+			).to.equal(3);
 		});
 	});
 
@@ -756,10 +838,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email\n' +
-					`Peter,Pan,${TEACHER_EMAILS[0]}\n` +
-					`Peter,Lustig,${TEACHER_EMAILS[0]}\n` +
-					`Test,Testington,${TEACHER_EMAILS[0]}\n`,
+					'firstName,lastName,email\n'
+					+ `Peter,Pan,${TEACHER_EMAILS[0]}\n`
+					+ `Peter,Lustig,${TEACHER_EMAILS[0]}\n`
+					+ `Test,Testington,${TEACHER_EMAILS[0]}\n`,
 			};
 		});
 
@@ -770,7 +852,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should be accepted for execution', () => {
-			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
 		});
 
 		it('should initialize without errors', () => {
@@ -785,10 +869,12 @@ describe('CSVSyncer Integration', () => {
 				'/mails',
 				new MockEmailService((email) => {
 					emails.push(email);
-				})
+				}),
 			);
 
-			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(false);
 			expect(stats.users.successful).to.equal(1);
@@ -800,21 +886,23 @@ describe('CSVSyncer Integration', () => {
 				type: 'user',
 				entity: `Peter,Lustig,${TEACHER_EMAILS[0]}`,
 				message:
-					`Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". ` +
-					'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
+					`Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
+					+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 			});
 			expect(stats.errors).to.deep.include({
 				type: 'user',
 				entity: `Test,Testington,${TEACHER_EMAILS[0]}`,
 				message:
-					`Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". ` +
-					'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
+					`Mehrfachnutzung der E-Mail-Adresse "${TEACHER_EMAILS[0]}". `
+					+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 			});
 
 			// only one email should ever be sent, as the second and third user are never
 			// created in the first place
 			expect(emails.length).to.equal(1);
-			expect(stats.errors.filter((e) => e.type === 'invitation').length).to.equal(0);
+			expect(
+				stats.errors.filter((e) => e.type === 'invitation').length,
+			).to.equal(0);
 		});
 	});
 
@@ -847,7 +935,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should be accepted for execution', () => {
-			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
 		});
 
 		it('should initialize without errors', () => {
@@ -857,7 +947,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should import a single student without a class', async () => {
-			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(false);
 			expect(stats.users.successful).to.equal(0);
@@ -877,7 +969,13 @@ describe('CSVSyncer Integration', () => {
 		let scenarioData;
 
 		const SCHOOL_ID = testObjects.options.schoolId;
-		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de', 'e@f.de'];
+		const TEACHER_EMAILS = [
+			'a@b.de',
+			'b@c.de',
+			'c@d.de',
+			'd@e.de',
+			'e@f.de',
+		];
 
 		before(async () => {
 			const user = await createUser({
@@ -892,12 +990,12 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email,class\n' +
-					`Dr. Temperance,Brennan,${TEACHER_EMAILS[0]},Jeffersonian Institute\n` +
-					`Seeley,Booth,${TEACHER_EMAILS[1]},FBI\n` +
-					`Lance,Sweets,${TEACHER_EMAILS[2]},FBI\n` +
-					`Camille,Saroyan,${TEACHER_EMAILS[3]},Jeffersonian Institute\n` +
-					`Zack,Addy,${TEACHER_EMAILS[4]},\n`,
+					'firstName,lastName,email,class\n'
+					+ `Dr. Temperance,Brennan,${TEACHER_EMAILS[0]},Jeffersonian Institute\n`
+					+ `Seeley,Booth,${TEACHER_EMAILS[1]},FBI\n`
+					+ `Lance,Sweets,${TEACHER_EMAILS[2]},FBI\n`
+					+ `Camille,Saroyan,${TEACHER_EMAILS[3]},Jeffersonian Institute\n`
+					+ `Zack,Addy,${TEACHER_EMAILS[4]},\n`,
 			};
 		});
 
@@ -909,7 +1007,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should be accepted for execution', () => {
-			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
 		});
 
 		it('should initialize without errors', () => {
@@ -919,7 +1019,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should import five teachers into three existing classes', async () => {
-			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(true);
 			expect(stats.users.successful).to.equal(5);
@@ -938,11 +1040,13 @@ describe('CSVSyncer Integration', () => {
 					const [user] = await userModel.find({ email });
 					const [role] = await roleModel.find({ _id: user.roles[0] });
 					expect(role.name).to.equal('teacher');
-				})
+				}),
 			);
 
 			// Now import the same data again:
-			const [stats2] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats2] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			// all 5 users are updated (with the same data, so nothing changes)
 			expect(stats2.success).to.equal(true);
@@ -967,13 +1071,17 @@ describe('CSVSyncer Integration', () => {
 
 			const fbi = await findClass([undefined, 'FBI']);
 			expect(fbi.teacherIds.length).to.equal(2);
-			const fbiteachers = await Promise.all(fbi.teacherIds.map(teacherLastNames));
+			const fbiteachers = await Promise.all(
+				fbi.teacherIds.map(teacherLastNames),
+			);
 			expect(fbiteachers).to.include('Booth');
 			expect(fbiteachers).to.include('Sweets');
 
 			const ji = await findClass([undefined, 'Jeffersonian Institute']);
 			expect(ji.teacherIds.length).to.equal(2);
-			const jiteachers = await Promise.all(ji.teacherIds.map(teacherLastNames));
+			const jiteachers = await Promise.all(
+				ji.teacherIds.map(teacherLastNames),
+			);
 			expect(jiteachers).to.include('Brennan');
 			expect(jiteachers).to.include('Saroyan');
 		});
@@ -1000,17 +1108,17 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData1 = {
 				data:
-					'firstName,lastName,email,class\n' +
-					`Richard,Winters,${TEACHER_EMAILS[0]},Easy Company\n` +
-					`Lewis,Nixon,${TEACHER_EMAILS[1]},Easy Company\n` +
-					`Carwood,Lipton,${TEACHER_EMAILS[2]},Easy Company\n`,
+					'firstName,lastName,email,class\n'
+					+ `Richard,Winters,${TEACHER_EMAILS[0]},Easy Company\n`
+					+ `Lewis,Nixon,${TEACHER_EMAILS[1]},Easy Company\n`
+					+ `Carwood,Lipton,${TEACHER_EMAILS[2]},Easy Company\n`,
 			};
 			scenarioData2 = {
 				data:
-					'firstName,lastName,email,class\n' +
-					`Richard,Winters,${TEACHER_EMAILS[0]},Easy Company\n` +
-					`LeW1s,Nixx0n,${TEACHER_EMAILS[1]},Best Company\n` +
-					`Donald,Malarkey,${TEACHER_EMAILS[3]},Easy Company\n`,
+					'firstName,lastName,email,class\n'
+					+ `Richard,Winters,${TEACHER_EMAILS[0]},Easy Company\n`
+					+ `LeW1s,Nixx0n,${TEACHER_EMAILS[1]},Best Company\n`
+					+ `Donald,Malarkey,${TEACHER_EMAILS[3]},Easy Company\n`,
 			};
 		});
 
@@ -1022,8 +1130,12 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should be accepted for execution', () => {
-			expect(CSVSyncer.params(scenarioParams, scenarioData1)).to.not.equal(false);
-			expect(CSVSyncer.params(scenarioParams, scenarioData2)).to.not.equal(false);
+			expect(
+				CSVSyncer.params(scenarioParams, scenarioData1),
+			).to.not.equal(false);
+			expect(
+				CSVSyncer.params(scenarioParams, scenarioData2),
+			).to.not.equal(false);
 		});
 
 		it('should initialize without errors', () => {
@@ -1037,7 +1149,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should import five teachers into three existing classes', async () => {
-			const [stats] = await app.service('sync').create(scenarioData1, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData1, scenarioParams);
 
 			expect(stats.success).to.equal(true);
 			expect(stats.users.successful).to.equal(3);
@@ -1050,7 +1164,9 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.classes.failed).to.equal(0);
 
 			// Now import the second data set:
-			const [stats2] = await app.service('sync').create(scenarioData2, scenarioParams);
+			const [stats2] = await app
+				.service('sync')
+				.create(scenarioData2, scenarioParams);
 
 			// two users are updated and one is added
 			expect(stats2.success).to.equal(true);
@@ -1078,7 +1194,9 @@ describe('CSVSyncer Integration', () => {
 
 			const ec = await findClass([undefined, 'Easy Company']);
 			expect(ec.teacherIds.length).to.equal(4);
-			const ecTeachers = await Promise.all(ec.teacherIds.map(teacherLastNames));
+			const ecTeachers = await Promise.all(
+				ec.teacherIds.map(teacherLastNames),
+			);
 			expect(ecTeachers).to.include('Winters');
 			expect(ecTeachers).to.not.include('Nixx0n'); // lastName was not updated
 			expect(ecTeachers).to.include('Lipton');
@@ -1122,9 +1240,9 @@ describe('CSVSyncer Integration', () => {
 				},
 				data: {
 					data:
-						'firstName,lastName,email,class\n' +
-						`Dr. John W.,Thackery,${STUDENT_EMAILS[0]},1a\n` +
-						`Dr. Algernon C.,Edwards,${STUDENT_EMAILS[1]},1b\n`,
+						'firstName,lastName,email,class\n'
+						+ `Dr. John W.,Thackery,${STUDENT_EMAILS[0]},1a\n`
+						+ `Dr. Algernon C.,Edwards,${STUDENT_EMAILS[1]},1b\n`,
 				},
 			};
 			scenario2 = {
@@ -1139,9 +1257,9 @@ describe('CSVSyncer Integration', () => {
 				},
 				data: {
 					data:
-						'firstName,lastName,email,class\n' +
-						`Herman,Barrow,${STUDENT_EMAILS[2]},2a\n` +
-						`Cornelia,Robertson,${STUDENT_EMAILS[3]},2b\n`,
+						'firstName,lastName,email,class\n'
+						+ `Herman,Barrow,${STUDENT_EMAILS[2]},2a\n`
+						+ `Cornelia,Robertson,${STUDENT_EMAILS[3]},2b\n`,
 				},
 			};
 		});
@@ -1154,17 +1272,21 @@ describe('CSVSyncer Integration', () => {
 					['1', 'b'],
 					['2', 'a'],
 					['2', 'b'],
-				].map((klass) => deleteClass(klass))
+				].map((klass) => deleteClass(klass)),
 			);
 		});
 
 		after(testObjects.cleanup);
 
 		it('should create classes based on the current school year by default', async () => {
-			expect(scenario1.school.currentYear._id.toString()).to.not.equal(scenario2.school.currentYear._id.toString());
+			expect(scenario1.school.currentYear._id.toString()).to.not.equal(
+				scenario2.school.currentYear._id.toString(),
+			);
 
 			// scenario 1
-			const [stats] = await app.service('sync').create(scenario1.data, scenario1.params);
+			const [stats] = await app
+				.service('sync')
+				.create(scenario1.data, scenario1.params);
 
 			expect(stats.success).to.equal(true);
 			expect(stats.users.successful).to.equal(2);
@@ -1176,13 +1298,19 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.classes.failed).to.equal(0);
 
 			const class1a = await findClass(['1', 'a']);
-			expect(class1a.year.toString()).to.equal(scenario1.school.currentYear._id.toString());
+			expect(class1a.year.toString()).to.equal(
+				scenario1.school.currentYear._id.toString(),
+			);
 
 			const class1b = await findClass(['1', 'b']);
-			expect(class1b.year.toString()).to.equal(scenario1.school.currentYear._id.toString());
+			expect(class1b.year.toString()).to.equal(
+				scenario1.school.currentYear._id.toString(),
+			);
 
 			// scenario 2
-			const [stats2] = await app.service('sync').create(scenario2.data, scenario2.params);
+			const [stats2] = await app
+				.service('sync')
+				.create(scenario2.data, scenario2.params);
 
 			expect(stats2.success).to.equal(true);
 			expect(stats2.users.successful).to.equal(2);
@@ -1194,10 +1322,14 @@ describe('CSVSyncer Integration', () => {
 			expect(stats2.classes.failed).to.equal(0);
 
 			const class2a = await findClass(['2', 'a']);
-			expect(class2a.year.toString()).to.equal(scenario2.school.currentYear._id.toString());
+			expect(class2a.year.toString()).to.equal(
+				scenario2.school.currentYear._id.toString(),
+			);
 
 			const class2b = await findClass(['2', 'b']);
-			expect(class2b.year.toString()).to.equal(scenario2.school.currentYear._id.toString());
+			expect(class2b.year.toString()).to.equal(
+				scenario2.school.currentYear._id.toString(),
+			);
 		});
 
 		it('should assign a created class to a school year if specified in the request', async () => {
@@ -1217,11 +1349,15 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.classes.failed).to.equal(0);
 
 			const class1a = await findClass(['1', 'a']);
-			expect(class1a.year.toString()).not.to.equal(scenario1.school.currentYear._id.toString());
+			expect(class1a.year.toString()).not.to.equal(
+				scenario1.school.currentYear._id.toString(),
+			);
 			expect(class1a.year.toString()).to.equal(year._id.toString());
 
 			const class1b = await findClass(['1', 'b']);
-			expect(class1b.year.toString()).not.to.equal(scenario1.school.currentYear._id.toString());
+			expect(class1b.year.toString()).not.to.equal(
+				scenario1.school.currentYear._id.toString(),
+			);
 			expect(class1b.year.toString()).to.equal(year._id.toString());
 		});
 
@@ -1231,7 +1367,9 @@ describe('CSVSyncer Integration', () => {
 				year: oldYear._id,
 			});
 
-			const [stats] = await app.service('sync').create(scenario1.data, scenario1.params);
+			const [stats] = await app
+				.service('sync')
+				.create(scenario1.data, scenario1.params);
 
 			expect(stats.success).to.equal(true);
 			expect(stats.users.successful).to.equal(2);
@@ -1244,12 +1382,23 @@ describe('CSVSyncer Integration', () => {
 
 			const classes1a = await findClasses(['1', 'a']);
 			expect(classes1a.length).to.equal(2);
-			expect(classes1a.some((c) => c.year.toString() === oldYear._id.toString())).to.equal(true);
-			expect(classes1a.some((c) => c.year.toString() === scenario1.school.currentYear._id.toString())).to.equal(true);
+			expect(
+				classes1a.some(
+					(c) => c.year.toString() === oldYear._id.toString(),
+				),
+			).to.equal(true);
+			expect(
+				classes1a.some(
+					(c) => c.year.toString()
+						=== scenario1.school.currentYear._id.toString(),
+				),
+			).to.equal(true);
 
 			// there is no existing class 1b:
 			const class1b = await findClass(['1', 'b']);
-			expect(class1b.year.toString()).to.equal(scenario1.school.currentYear._id.toString());
+			expect(class1b.year.toString()).to.equal(
+				scenario1.school.currentYear._id.toString(),
+			);
 		});
 	});
 
@@ -1273,10 +1422,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'affix,first,middle,last,eMail\n' +
-					`Dr.,Peter,F.,Pan,${TEACHER_EMAILS[0]}\n` +
-					`Mr.,Peter,,Lustig,${TEACHER_EMAILS[1]}\n` +
-					`HM,Test,T.,Testington,${TEACHER_EMAILS[2]}\n`,
+					'affix,first,middle,last,eMail\n'
+					+ `Dr.,Peter,F.,Pan,${TEACHER_EMAILS[0]}\n`
+					+ `Mr.,Peter,,Lustig,${TEACHER_EMAILS[1]}\n`
+					+ `HM,Test,T.,Testington,${TEACHER_EMAILS[2]}\n`,
 			};
 		});
 
@@ -1288,7 +1437,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should be accepted for execution', () => {
-			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
 		});
 
 		it('should initialize without errors', () => {
@@ -1298,7 +1449,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should import three teachers without a class', async () => {
-			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(true);
 			expect(stats.users.successful).to.equal(3);
@@ -1312,9 +1465,15 @@ describe('CSVSyncer Integration', () => {
 				email: { $in: TEACHER_EMAILS },
 			});
 			expect(users.length).to.equal(3);
-			expect(users.some((u) => u.fullName === 'Dr. Peter F. Pan')).to.equal(true);
-			expect(users.some((u) => u.fullName === 'Mr. Peter Lustig')).to.equal(true);
-			expect(users.some((u) => u.fullName === 'HM Test T. Testington')).to.equal(true);
+			expect(users.some((u) => u.fullName === 'Dr. Peter F. Pan')).to.equal(
+				true,
+			);
+			expect(users.some((u) => u.fullName === 'Mr. Peter Lustig')).to.equal(
+				true,
+			);
+			expect(
+				users.some((u) => u.fullName === 'HM Test T. Testington'),
+			).to.equal(true);
 		});
 	});
 
@@ -1339,10 +1498,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email\n' +
-					`Chester,Bennington,${TEACHER_EMAILS[0]}\n` +
-					`Mike,Shinoda,${TEACHER_EMAILS[1]}\n` +
-					`Dave "Phoenix,Pharell${TEACHER_EMAILS[2]}\n`, // should produce a parsing error
+					'firstName,lastName,email\n'
+					+ `Chester,Bennington,${TEACHER_EMAILS[0]}\n`
+					+ `Mike,Shinoda,${TEACHER_EMAILS[1]}\n`
+					+ `Dave "Phoenix,Pharell${TEACHER_EMAILS[2]}\n`, // should produce a parsing error
 			};
 		});
 
@@ -1352,7 +1511,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should detect and skip Syntax errors', async () => {
-			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(false);
 			expect(stats.users.successful).to.equal(2);
@@ -1361,6 +1522,7 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.errors.filter((e) => e.type === 'file').length).to.equal(1);
 		});
 	});
+
 
 	describe('Scenario 16 - Importing students with birthdays', () => {
 		let scenarioParams;
@@ -1391,8 +1553,7 @@ describe('CSVSyncer Integration', () => {
 			},
 		];
 
-		before(async () => {
-			// this user does the csv importing
+		before(async () => { // this user does the csv importing
 			const user = await createUser({
 				roles: 'administrator',
 				schoolId: SCHOOL_ID,
@@ -1404,11 +1565,12 @@ describe('CSVSyncer Integration', () => {
 				role: 'student',
 			};
 			scenarioData = {
-				data: `firstName,lastName,email,birthday\n${PEOPLE.map(
-					(p) => `${p.firstName},${p.lastName},${p.email},${p.birthday}`
-				).join('\n')}`,
+				data:
+					`firstName,lastName,email,birthday\n${
+						PEOPLE.map((p) => `${p.firstName},${p.lastName},${p.email},${p.birthday}`).join('\n')}`,
 			};
 		});
+
 
 		after(async () => {
 			await Promise.all(PEOPLE.map((person) => deleteUser(person.email)));
@@ -1416,7 +1578,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should be accepted for execution', () => {
-			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
 		});
 
 		it('should initialize without errors', () => {
@@ -1426,7 +1590,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should have new users with new birthday values', async () => {
-			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(false);
 			expect(stats.users.successful).to.equal(3);
@@ -1475,7 +1641,9 @@ describe('CSVSyncer Integration', () => {
 		after(testObjects.cleanup);
 
 		it('should be accepted for execution', () => {
-			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
 		});
 
 		it('should initialize without errors', () => {
@@ -1485,7 +1653,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should import a single student without a class', async () => {
-			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(true);
 			expect(stats.users.successful).to.equal(1);
@@ -1526,10 +1696,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					' firstName,lastName , email\n' +
-					`Peter,Pan,${TEACHER_EMAILS[0]}\n` +
-					`Peter,Lustig,${TEACHER_EMAILS[1]}\n` +
-					`Test,Testington,${TEACHER_EMAILS[2]}\n`,
+					' firstName,lastName , email\n'
+					+ `Peter,Pan,${TEACHER_EMAILS[0]}\n`
+					+ `Peter,Lustig,${TEACHER_EMAILS[1]}\n`
+					+ `Test,Testington,${TEACHER_EMAILS[2]}\n`,
 			};
 		});
 
@@ -1541,7 +1711,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should be accepted for execution', () => {
-			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(
+				false,
+			);
 		});
 
 		it('should initialize without errors', () => {
@@ -1551,7 +1723,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should import three teachers without a class', async () => {
-			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(true);
 			expect(stats.users.successful).to.equal(3);
@@ -1572,7 +1746,7 @@ describe('CSVSyncer Integration', () => {
 		});
 	});
 
-	describe("Scenario 19 - don't allow updating roles", () => {
+	describe('Scenario 19 - don\'t allow updating roles', () => {
 		let scenarioParams;
 		let scenarioData;
 
@@ -1599,10 +1773,10 @@ describe('CSVSyncer Integration', () => {
 			};
 			scenarioData = {
 				data:
-					'firstName,lastName,email\n' +
-					`Peter,Pan,${user.email}\n` +
-					`Peter,Lustig,${parent.email}\n` +
-					`Test,Testington,${student.email}\n`,
+					'firstName,lastName,email\n'
+					+ `Peter,Pan,${user.email}\n`
+					+ `Peter,Lustig,${parent.email}\n`
+					+ `Test,Testington,${student.email}\n`,
 			};
 		});
 
@@ -1611,7 +1785,9 @@ describe('CSVSyncer Integration', () => {
 		});
 
 		it('should not change any data and report three errors', async () => {
-			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+			const [stats] = await app
+				.service('sync')
+				.create(scenarioData, scenarioParams);
 
 			expect(stats.success).to.equal(false);
 			expect(stats.users.successful).to.equal(0);
@@ -1619,9 +1795,8 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.users.updated).to.equal(0);
 			expect(stats.users.failed).to.equal(3);
 			expect(stats.errors.length).to.equal(3);
-			expect(stats.errors[0].message).to.equal(
-				'Es existiert bereits ein Nutzer mit dieser E-Mail-Adresse, jedoch mit einer anderen Rolle.'
-			);
+			expect(stats.errors[0].message).to
+				.equal('Es existiert bereits ein Nutzer mit dieser E-Mail-Adresse, jedoch mit einer anderen Rolle.');
 		});
 	});
 });

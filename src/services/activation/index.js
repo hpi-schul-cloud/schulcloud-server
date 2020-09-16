@@ -1,4 +1,8 @@
-const { ActivationModelService, Activation, EMailAddressActivation } = require('./services');
+const {
+	ActivationModelService,
+	Activation,
+	EMailAddressActivation,
+} = require('./services');
 
 const { KEYWORDS } = require('./utils/customStrategyUtils');
 

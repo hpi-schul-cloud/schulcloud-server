@@ -33,9 +33,7 @@ const protectSecrets = (context) => {
 
 const addSecret = (context) => {
 	if (context.data.originTool) {
-		return context.app
-			.service('/ltiTools/')
-			.get(context.data.originTool)
+		return context.app.service('/ltiTools/').get(context.data.originTool)
 			.then((tool) => {
 				context.data.secret = tool.secret;
 				return context;

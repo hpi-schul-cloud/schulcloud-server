@@ -19,12 +19,8 @@ class StatisticMailService {
 			htmlMailContent += `<tr><td>Kurse</td><td>${statData.courses}</td></tr>`;
 			htmlMailContent += '</table>';
 
-			if (!Configuration.has('ADMIN_MAIL_RECEIVERS')) {
-				throw new Error('ADMIN_MAIL_RECEIVERS not set');
-			}
-			if (!Configuration.get('ADMIN_MAIL_RECEIVERS')) {
-				throw new Error('ADMIN_MAIL_RECEIVERS is empty');
-			}
+			if (!(Configuration.has('ADMIN_MAIL_RECEIVERS'))) { throw new Error('ADMIN_MAIL_RECEIVERS not set'); }
+			if (!(Configuration.get('ADMIN_MAIL_RECEIVERS'))) { throw new Error('ADMIN_MAIL_RECEIVERS is empty'); }
 			await this.app.service('mails').create({
 				email: Configuration.get('ADMIN_MAIL_RECEIVERS'),
 				subject: `Statistik für ${SC_SHORT_TITLE}`,

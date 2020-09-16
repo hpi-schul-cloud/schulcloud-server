@@ -9,6 +9,7 @@ const Tool = require('../src/services/ltiTool/model');
 // this migration creates a new ltitool template for bigbluebutton
 // check the url is correct.
 
+
 // How to use more than one schema per collection on mongodb
 // https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
 const name = 'Video-Konferenz mit BigBlueButton';
@@ -28,9 +29,7 @@ module.exports = {
 		const existingBbbTool = await Tool.findOne({
 			name,
 			isTemplate: true,
-		})
-			.lean()
-			.exec();
+		}).lean().exec();
 		if (existingBbbTool !== null) {
 			error('there is already a bbb tool in collection ltitools, exit', { existingBbbTool });
 			Promise.reject();
@@ -61,9 +60,7 @@ module.exports = {
 		await Tool.deleteOne({
 			name,
 			isTemplate: true,
-		})
-			.lean()
-			.exec();
+		}).lean().exec();
 		// ////////////////////////////////////////////////////
 		await close();
 	},

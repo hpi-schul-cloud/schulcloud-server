@@ -40,7 +40,8 @@ module.exports = {
 		const fileAmount = await File.countDocuments();
 
 		// find files with missing names
-		const brokenFiles = await File.find({ name: { $exists: false } }).exec();
+		const brokenFiles = await File
+			.find({ name: { $exists: false } }).exec();
 		if (brokenFiles) {
 			info(`found ${brokenFiles.length} files without filename...`);
 			for (const file of brokenFiles) {
@@ -51,14 +52,11 @@ module.exports = {
 		}
 
 		// find files with undefined storageFileName and not directory
-		const undefinedStorageFileNameNotDirectory = await File.find({
-			storageFileName: 'undefined',
-			isDirectory: false,
-		}).exec();
+		const undefinedStorageFileNameNotDirectory = await File
+			.find({ storageFileName: 'undefined', isDirectory: false }).exec();
 		if (undefinedStorageFileNameNotDirectory) {
-			info(
-				`found ${undefinedStorageFileNameNotDirectory.length}` + ' files with undefinedStorageFileNameNotDirectory...'
-			);
+			info(`found ${undefinedStorageFileNameNotDirectory.length}`
+				+ ' files with undefinedStorageFileNameNotDirectory...');
 			for (const file of undefinedStorageFileNameNotDirectory) {
 				await copyAndRemove(file);
 			}
@@ -73,17 +71,11 @@ module.exports = {
 
 		if (movedFiles === newFileAmount && newFileAmount + brokenFileAmount !== fileAmount) {
 			error('file amount do not match!', {
-				movedFiles,
-				newFileAmount,
-				fileAmount,
-				brokenFileAmount,
+				movedFiles, newFileAmount, fileAmount, brokenFileAmount,
 			});
 		} else {
 			info('stats', {
-				movedFiles,
-				newFileAmount,
-				fileAmount,
-				brokenFileAmount,
+				movedFiles, newFileAmount, fileAmount, brokenFileAmount,
 			});
 		}
 

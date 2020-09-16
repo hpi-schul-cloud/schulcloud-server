@@ -6,43 +6,9 @@ const maxDeep = 12;
 const keys = ['content', 'text', 'comment', 'gradeComment', 'description'];
 const paths = ['lessons', 'news', 'newsModel', 'homework', 'submissions'];
 const saveKeys = ['password', 'secret'];
-const allowedTags = [
-	'h1',
-	'h2',
-	'h3',
-	'blockquote',
-	'p',
-	'a',
-	'ul',
-	'ol',
-	's',
-	'u',
-	'span',
-	'del',
-	'li',
-	'b',
-	'i',
-	'img',
-	'strong',
-	'em',
-	'strike',
-	'code',
-	'hr',
-	'br',
-	'div',
-	'table',
-	'thead',
-	'caption',
-	'tbody',
-	'tr',
-	'th',
-	'td',
-	'pre',
-	'audio',
-	'video',
-	'sub',
-	'sup',
-];
+const allowedTags = ['h1', 'h2', 'h3', 'blockquote', 'p', 'a', 'ul', 'ol', 's', 'u', 'span', 'del',
+	'li', 'b', 'i', 'img', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
+	'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'audio', 'video', 'sub', 'sup'];
 const allowedSchemes = ['http', 'https', 'ftp', 'mailto'];
 
 // const allowedSchemesByTag = {

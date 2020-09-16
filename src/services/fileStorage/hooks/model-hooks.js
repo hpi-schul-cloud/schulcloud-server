@@ -4,23 +4,18 @@ const { discard } = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 const { canRead } = require('../utils/filePermissionHelper');
 
-const restrictToCurrentUser = (hook) => {
-	const {
-		params: {
-			account: { userId },
-		},
-		result: { data: files },
-	} = hook;
-	const permissionPromises = files.map((f) =>
-		canRead(userId, f)
-			.then(() => f)
-			.catch(() => undefined)
-	);
 
-	return Promise.all(permissionPromises).then((allowedFiles) => {
-		hook.result.data = allowedFiles;
-		return hook;
-	});
+const restrictToCurrentUser = (hook) => {
+	const { params: { account: { userId } }, result: { data: files } } = hook;
+	const permissionPromises = files.map((f) => canRead(userId, f)
+		.then(() => f)
+		.catch(() => undefined));
+
+	return Promise.all(permissionPromises)
+		.then((allowedFiles) => {
+			hook.result.data = allowedFiles;
+			return hook;
+		});
 };
 
 exports.before = {

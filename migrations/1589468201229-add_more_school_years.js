@@ -14,12 +14,11 @@ const yearSchema = new mongoose.Schema({
 
 const YearModel = mongoose.model('year3244382362348795', yearSchema, 'years');
 
-const createYear = (year) =>
-	new YearModel({
-		name: year,
-		startDate: yearLogic.getDefaultStartDate(year),
-		endDate: yearLogic.getDefaultEndDate(year),
-	});
+const createYear = (year) => new YearModel({
+	name: year,
+	startDate: yearLogic.getDefaultStartDate(year),
+	endDate: yearLogic.getDefaultEndDate(year),
+});
 
 module.exports = {
 	up: async function up() {
@@ -52,4 +51,5 @@ module.exports = {
 		});
 		await close();
 	},
+
 };

@@ -6,11 +6,7 @@ const app = require('../../../src/app');
 const Material = require('../../../src/services/content/material-model');
 
 const {
-	cleanup,
-	createTestCourse,
-	createTestUser,
-	createTestLesson,
-	generateRequestParamsFromUser,
+	cleanup, createTestCourse, createTestUser, createTestLesson, generateRequestParamsFromUser,
 } = require('../helpers/testObjects')(app);
 
 describe('material service', () => {

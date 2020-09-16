@@ -15,13 +15,15 @@ const addType = format.printf((log) => {
 const colorize = NODE_ENV !== ENVIRONMENTS.PRODUCTION;
 let formater;
 if (NODE_ENV === ENVIRONMENTS.TEST) {
-	formater = format.combine(format.prettyPrint({ depth: 1, colorize }));
+	formater = format.combine(
+		format.prettyPrint({ depth: 1, colorize }),
+	);
 } else {
 	formater = format.combine(
 		format.errors({ stack: true }),
 		format.timestamp(),
 		addType,
-		format.prettyPrint({ depth: 3, colorize })
+		format.prettyPrint({ depth: 3, colorize }),
 	);
 }
 
@@ -37,5 +39,6 @@ const logger = createLogger({
 	],
 	exitOnError: false,
 });
+
 
 module.exports = logger;

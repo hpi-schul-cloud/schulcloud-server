@@ -1,9 +1,10 @@
-const { GeneralError, BadRequest } = require('@feathersjs/errors');
+const {	GeneralError, BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const request = require('request-promise-native');
 const hmacSHA512 = require('crypto-js/hmac-sha512');
+
 
 function obtainAccessToken(userId, homeserverApiUri, secret) {
 	const loginApiUrl = `${homeserverApiUri}/_matrix/client/r0/login`;
@@ -22,16 +23,17 @@ function obtainAccessToken(userId, homeserverApiUri, secret) {
 		body: payload,
 		json: true,
 	};
-	return request(options).then((response) => {
-		const session = {
-			userId,
-			homeserverUrl: homeserverApiUri,
-			accessToken: response.access_token,
-			deviceId: response.device_id,
-			servername: response.home_server,
-		};
-		return session;
-	});
+	return request(options)
+		.then((response) => {
+			const session = {
+				userId,
+				homeserverUrl: homeserverApiUri,
+				accessToken: response.access_token,
+				deviceId: response.device_id,
+				servername: response.home_server,
+			};
+			return session;
+		});
 }
 
 class MessengerTokenService {
@@ -69,13 +71,25 @@ const messengerTokenService = new MessengerTokenService({});
 
 const messengerTokenHooks = {
 	before: {
-		all: [authenticate('jwt')],
-		find: [disallow()],
-		get: [disallow()],
+		all: [
+			authenticate('jwt'),
+		],
+		find: [
+			disallow(),
+		],
+		get: [
+			disallow(),
+		],
 		create: [],
-		update: [disallow()],
-		patch: [disallow()],
-		remove: [disallow()],
+		update: [
+			disallow(),
+		],
+		patch: [
+			disallow(),
+		],
+		remove: [
+			disallow(),
+		],
 	},
 	after: {},
 };

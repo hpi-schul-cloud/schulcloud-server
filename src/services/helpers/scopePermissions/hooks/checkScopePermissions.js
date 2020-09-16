@@ -69,10 +69,7 @@ const checkScopePermissions = (requiredPermissions) => async (context) => {
 		return context;
 	}
 	throw new Forbidden(`Missing one of the required permissions ${requiredPermissions}.`, {
-		userId,
-		scopeName,
-		scopeId,
-		requiredPermissions,
+		userId, scopeName, scopeId, requiredPermissions,
 	});
 };
 

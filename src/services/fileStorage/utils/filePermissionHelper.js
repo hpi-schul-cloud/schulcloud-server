@@ -7,7 +7,11 @@ const { sortRoles } = require('../../role/utils/rolesHelper');
 const { submissionModel: Submission, homeworkModel: Homework } = require('../../homework/model');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
-const getFile = (id) => FileModel.findOne({ _id: id }).populate('owner').lean().exec();
+const getFile = (id) => FileModel
+	.findOne({ _id: id })
+	.populate('owner')
+	.lean()
+	.exec();
 
 const checkTeamPermission = async ({ user, file, permission }) => {
 	let teamRoles;
@@ -16,9 +20,7 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 
 	try {
 		teamRoles = await RoleModel.find({ name: /^team/ }).lean().exec();
-		teamRoles.forEach((role) => {
-			roleIndex[role._id] = role;
-		});
+		teamRoles.forEach((role) => { roleIndex[role._id] = role; });
 		sortedTeamRoles = sortRoles(teamRoles);
 	} catch (error) {
 		logger.error(error);
@@ -38,11 +40,11 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 		}
 
 		// deprecated: author check via file.permissions[0].refId is deprecated and will be removed in the next release
-		const { role: creatorRole } = file.owner.userIds.find((_) =>
-			equalIds(_.userId, file.creator || file.permissions[0].refId)
-		);
+		const { role: creatorRole } = file.owner.userIds
+			.find((_) => equalIds(_.userId, file.creator || file.permissions[0].refId));
 
-		const findRole = (roleId) => (roles) => roles.findIndex((r) => equalIds(r._id, roleId)) > -1;
+		const findRole = (roleId) => (roles) => roles
+			.findIndex((r) => equalIds(r._id, roleId)) > -1;
 
 		const userPos = sortedTeamRoles.findIndex(findRole(role));
 		const creatorPos = sortedTeamRoles.findIndex(findRole(creatorRole));
@@ -55,12 +57,11 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 };
 
 const checkMemberStatus = ({ file, user }) => {
-	const {
-		owner: { userIds, teacherIds, substitutionIds },
-	} = file;
-	const finder = (obj) => user.toString() === (obj.userId || obj).toString();
+	const { owner: { userIds, teacherIds, substitutionIds } } = file;
+	const finder = (obj) => user.toString() === ((obj.userId || obj).toString());
 
-	return [userIds, teacherIds, substitutionIds].reduce((result, list) => result || (list && list.find(finder)), false);
+	return [userIds, teacherIds, substitutionIds]
+		.reduce((result, list) => result || (list && list.find(finder)), false);
 };
 
 const checkPermissions = (permission) => async (user, file) => {
@@ -79,17 +80,19 @@ const checkPermissions = (permission) => async (user, file) => {
 		return Promise.resolve(true);
 	}
 
-	const userPermissions = permissions.find((perm) => perm.refId && perm.refId.toString() === user.toString());
+	const userPermissions = permissions
+		.find((perm) => perm.refId && perm.refId.toString() === user.toString());
 
 	if (userPermissions && userPermissions[permission]) {
 		return Promise.resolve(true);
 	}
 
 	const submissionPromise = Submission.findOne({
-		$or: [{ fileIds: fileObject._id }, { gradeFileIds: fileObject._id }],
-	})
-		.lean()
-		.exec();
+		$or: [
+			{ fileIds: fileObject._id },
+			{ gradeFileIds: fileObject._id },
+		],
+	}).lean().exec();
 	const homeworkPromise = Homework.findOne({ fileIds: fileObject._id }).populate('courseId').lean().exec();
 
 	const [submission, homework] = await Promise.all([submissionPromise, homeworkPromise]);
@@ -100,7 +103,8 @@ const checkPermissions = (permission) => async (user, file) => {
 		let courseFile = fileObject;
 		let submissionHomework;
 		if (submission) {
-			submissionHomework = await Homework.findOne({ _id: submission.homeworkId }).populate('courseId').lean().exec();
+			submissionHomework = await Homework.findOne({ _id: submission.homeworkId })
+				.populate('courseId').lean().exec();
 			courseFile = { ...fileObject, owner: submissionHomework.courseId || {} };
 		}
 		const isMember = checkMemberStatus({ file: courseFile, user });
@@ -109,7 +113,9 @@ const checkPermissions = (permission) => async (user, file) => {
 				return Promise.resolve(true);
 			}
 			if (isStudent) {
-				const rolePermissions = permissions.find((perm) => perm.refId && equalIds(perm.refId, isStudent._id));
+				const rolePermissions = permissions.find(
+					(perm) => perm.refId && equalIds(perm.refId, isStudent._id),
+				);
 				return rolePermissions[permission] ? Promise.resolve(true) : Promise.reject();
 			}
 			return Promise.resolve(true);
@@ -122,9 +128,7 @@ const checkPermissions = (permission) => async (user, file) => {
 			const courseFile = { ...fileObject, owner: homework.courseId || {} };
 			const isMember = checkMemberStatus({ file: courseFile, user });
 			if (isMember) return Promise.resolve(true);
-		} else {
-			return Promise.reject();
-		}
+		} else { return Promise.reject(); }
 	}
 
 	const isMember = checkMemberStatus({ file: fileObject, user });

@@ -15,6 +15,7 @@ describe('course model service', () => {
 		await server.close();
 	});
 
+
 	it('CREATE a course on internal call', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
 		const { _id: teacherId } = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
@@ -72,7 +73,7 @@ describe('course model service', () => {
 		} catch (err) {
 			expect(err.message).to.not.eq('should have failed');
 			expect(err.code).to.eq(405);
-			expect(err.message).to.eq("Provider 'rest' can not call 'get'. (disallow)");
+			expect(err.message).to.eq('Provider \'rest\' can not call \'get\'. (disallow)');
 		}
 	});
 });

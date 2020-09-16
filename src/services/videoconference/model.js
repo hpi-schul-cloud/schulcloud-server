@@ -8,45 +8,42 @@ const targetModels = ['courses', 'events'];
 
 // todo create index on targetModel and target
 
-const videoconferenceSchema = new Schema(
-	{
-		target: {
-			type: String,
-			// target and targetModel must both be defined or not
-			required: function requiredTarget() {
-				return !!this.targetModel;
-			},
-		},
-		targetModel: {
-			type: String,
-			enum: targetModels,
-			// target and targetModel must both be defined or not
-			required: function requiredTargetModel() {
-				return !!this.target;
-			},
-		},
-		options: {
-			moderatorMustApproveJoinRequests: {
-				type: Boolean,
-				default: false,
-				required: true,
-			},
-			everybodyJoinsAsModerator: {
-				type: Boolean,
-				default: false,
-				required: true,
-			},
-			everyAttendeJoinsMuted: {
-				type: Boolean,
-				default: false,
-				required: true,
-			},
+const videoconferenceSchema = new Schema({
+	target: {
+		type: String,
+		// target and targetModel must both be defined or not
+		required: function requiredTarget() {
+			return !!this.targetModel;
 		},
 	},
-	{
-		timestamps: true,
-	}
-);
+	targetModel: {
+		type: String,
+		enum: targetModels,
+		// target and targetModel must both be defined or not
+		required: function requiredTargetModel() {
+			return !!this.target;
+		},
+	},
+	options: {
+		moderatorMustApproveJoinRequests: {
+			type: Boolean,
+			default: false,
+			required: true,
+		},
+		everybodyJoinsAsModerator: {
+			type: Boolean,
+			default: false,
+			required: true,
+		},
+		everyAttendeJoinsMuted: {
+			type: Boolean,
+			default: false,
+			required: true,
+		},
+	},
+}, {
+	timestamps: true,
+});
 
 enableAuditLog(videoconferenceSchema);
 

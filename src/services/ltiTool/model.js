@@ -18,12 +18,10 @@ const ltiToolSchema = new Schema({
 	lti_version: { type: String },
 	resource_link_id: { type: String },
 	roles: {
-		type: [
-			{
-				type: String,
-				enum: ['Learner', 'Instructor', 'ContentDeveloper', 'Administrator', 'Mentor', 'TeachingAssistant'],
-			},
-		],
+		type: [{
+			type: String,
+			enum: ['Learner', 'Instructor', 'ContentDeveloper', 'Administrator', 'Mentor', 'TeachingAssistant'],
+		}],
 	},
 	privacy_permission: {
 		type: String,

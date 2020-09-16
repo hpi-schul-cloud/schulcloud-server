@@ -1,16 +1,14 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider } = require('feathers-hooks-common');
 const {
-	restrictToCurrentSchool,
-	hasPermission,
-	denyIfNotCurrentSchool,
-	permitGroupOperation,
+	restrictToCurrentSchool, hasPermission, denyIfNotCurrentSchool, permitGroupOperation,
 } = require('../../../hooks');
-const {
-	modelServices: { prepareInternalParams },
-} = require('../../../utils');
+const { modelServices: { prepareInternalParams } } = require('../../../utils');
 
-const { restrictToUsersCourses, denyIfNotInCourse } = require('../hooks/courseGroups');
+const {
+	restrictToUsersCourses,
+	denyIfNotInCourse,
+} = require('../hooks/courseGroups');
 
 class CourseGroups {
 	constructor(options) {
@@ -58,9 +56,9 @@ const courseGroupService = new CourseGroups({
 const courseGroupHooks = {
 	before: {
 		all: [authenticate('jwt')],
-		find: [
-			iff(isProvider('external'), [hasPermission('COURSE_VIEW'), restrictToCurrentSchool, restrictToUsersCourses]),
-		],
+		find: [iff(isProvider('external'), [
+			hasPermission('COURSE_VIEW'), restrictToCurrentSchool, restrictToUsersCourses,
+		])],
 		get: [hasPermission('COURSE_VIEW')],
 		create: [
 			iff(isProvider('external'), [
@@ -69,25 +67,21 @@ const courseGroupHooks = {
 				restrictToUsersCourses,
 			]),
 		],
-		update: [
-			iff(isProvider('external'), [hasPermission('COURSEGROUP_EDIT'), restrictToCurrentSchool, restrictToUsersCourses]),
-		],
-		patch: [
-			iff(isProvider('external'), [
-				hasPermission('COURSEGROUP_EDIT'),
-				restrictToCurrentSchool,
-				restrictToUsersCourses,
-				permitGroupOperation,
-			]),
-		],
-		remove: [
-			iff(isProvider('external'), [
-				hasPermission('COURSEGROUP_CREATE'),
-				restrictToCurrentSchool,
-				restrictToUsersCourses,
-				permitGroupOperation,
-			]),
-		],
+		update: [iff(isProvider('external'), [
+			hasPermission('COURSEGROUP_EDIT'), restrictToCurrentSchool, restrictToUsersCourses,
+		])],
+		patch: [iff(isProvider('external'), [
+			hasPermission('COURSEGROUP_EDIT'),
+			restrictToCurrentSchool,
+			restrictToUsersCourses,
+			permitGroupOperation,
+		])],
+		remove: [iff(isProvider('external'), [
+			hasPermission('COURSEGROUP_CREATE'),
+			restrictToCurrentSchool,
+			restrictToUsersCourses,
+			permitGroupOperation,
+		])],
 	},
 	after: {
 		all: [],
@@ -106,5 +100,6 @@ const courseGroupHooks = {
 		remove: [],
 	},
 };
+
 
 module.exports = { courseGroupService, courseGroupHooks };

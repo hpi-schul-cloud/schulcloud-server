@@ -1,6 +1,8 @@
 const { expect } = require('chai');
 
-const { sortByGradeAndOrName } = require('../../../../src/services/user-group/hooks/helpers/classHooks');
+const {
+	sortByGradeAndOrName,
+} = require('../../../../src/services/user-group/hooks/helpers/classHooks');
 
 describe('sorting method', () => {
 	const defaultQuery = { year: 1, gradeLevel: 1, name: 1 };

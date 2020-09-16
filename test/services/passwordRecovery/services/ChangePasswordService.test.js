@@ -17,21 +17,18 @@ describe('ChangePasswordService should', () => {
 
 	it('should throw SilentError if password has been already changed', async () => {
 		// given
-		const passwordRecoveryModelMock = sinon.mock(passwordRecovery).expects('findOne').once().returns({
-			changed: true,
-		});
+		const passwordRecoveryModelMock = sinon.mock(passwordRecovery)
+			.expects('findOne').once().returns({
+				changed: true,
+			});
 		changePasswordService = new ChangePasswordService(passwordRecovery);
 
 		// then
-		await chai
-			.expect(
-				changePasswordService.create({
-					accountId: 123,
-					password: 'schulcloud',
-					resetId: 'fake_token',
-				})
-			)
-			.to.be.rejectedWith(SilentError, 'Invalid token!');
+		await chai.expect(changePasswordService.create({
+			accountId: 123,
+			password: 'schulcloud',
+			resetId: 'fake_token',
+		})).to.be.rejectedWith(SilentError, 'Invalid token!');
 		passwordRecoveryModelMock.verify();
 	});
 
@@ -39,23 +36,20 @@ describe('ChangePasswordService should', () => {
 		// given
 		const tokenDate = new Date();
 		tokenDate.setHours(tokenDate.getHours() - 7);
-		const passwordRecoveryModelMock = sinon.mock(passwordRecovery).expects('findOne').once().returns({
-			changed: false,
-			createdAt: tokenDate,
-		});
+		const passwordRecoveryModelMock = sinon.mock(passwordRecovery)
+			.expects('findOne').once().returns({
+				changed: false,
+				createdAt: tokenDate,
+			});
 
 		changePasswordService = new ChangePasswordService(passwordRecovery);
 
 		// then
-		await chai
-			.expect(
-				changePasswordService.create({
-					accountId: 123,
-					password: 'schulcloud',
-					resetId: 'fake_token',
-				})
-			)
-			.to.be.rejectedWith(SilentError, 'Token expired!');
+		await chai.expect(changePasswordService.create({
+			accountId: 123,
+			password: 'schulcloud',
+			resetId: 'fake_token',
+		})).to.be.rejectedWith(SilentError, 'Token expired!');
 		passwordRecoveryModelMock.verify();
 	});
 
@@ -63,23 +57,20 @@ describe('ChangePasswordService should', () => {
 		// given
 		const tokenDate = new Date();
 		tokenDate.setHours(tokenDate.getHours() - 5);
-		const passwordRecoveryModelMock = sinon.mock(passwordRecovery).expects('findOne').once().returns({
-			changed: false,
-			createdAt: tokenDate,
-		});
+		const passwordRecoveryModelMock = sinon.mock(passwordRecovery)
+			.expects('findOne').once().returns({
+				changed: false,
+				createdAt: tokenDate,
+			});
 
 		changePasswordService = new ChangePasswordService(passwordRecovery);
 
 		// then
-		await chai
-			.expect(
-				changePasswordService.create({
-					accountId: 123,
-					password: 'schulcloud',
-					resetId: 'fake_token',
-				})
-			)
-			.not.to.be.rejectedWith(SilentError, 'Token expired!');
+		await chai.expect(changePasswordService.create({
+			accountId: 123,
+			password: 'schulcloud',
+			resetId: 'fake_token',
+		})).not.to.be.rejectedWith(SilentError, 'Token expired!');
 		passwordRecoveryModelMock.verify();
 	});
 });

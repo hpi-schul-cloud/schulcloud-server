@@ -29,4 +29,5 @@ module.exports = {
 		warning(`Can not rollback data. '${disableStudentTeamCreation}' is not available in school features anymore`);
 		throw new Error('down is not supported for this migration');
 	},
+
 };

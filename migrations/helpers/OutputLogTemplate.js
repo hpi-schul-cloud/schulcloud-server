@@ -1,7 +1,14 @@
 const logger = require('../../src/logger');
 
+
 class OutputLogTempalte {
-	constructor({ total, name, _logger, _detailInformations = false, _lineBreak = '\n' }) {
+	constructor({
+		total,
+		name,
+		_logger,
+		_detailInformations = false,
+		_lineBreak = '\n',
+	}) {
 		this.modified = [];
 		this.fail = [];
 		this.LF = _lineBreak;

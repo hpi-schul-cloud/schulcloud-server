@@ -80,7 +80,9 @@ const checkAssociatedCoursePermissionForSearchResult = (...permissions) => async
 };
 
 exports.before = {
-	all: [authenticate('jwt')],
+	all: [
+		authenticate('jwt'),
+	],
 	find: [
 		// filtered in after-hook
 	],

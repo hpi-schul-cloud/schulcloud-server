@@ -3,7 +3,10 @@ const { ObjectId } = require('mongoose').Types;
 const app = require('../../../../src/app');
 const { cleanup } = require('../../helpers/testObjects')(app);
 const { newsHistoryModel } = require('../../../../src/services/news/model');
-const { preparePagination, deleteNewsHistory } = require('../../../../src/services/news/hooks/news.hooks');
+const {
+	preparePagination,
+	deleteNewsHistory,
+} = require('../../../../src/services/news/hooks/news.hooks');
 
 describe('news hooks', () => {
 	describe('#preparePagination', () => {

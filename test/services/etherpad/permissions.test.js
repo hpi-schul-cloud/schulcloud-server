@@ -11,11 +11,15 @@ const { expect } = chai;
 
 chai.use(chaiHttp);
 
-function request({ server, method = 'get', endpoint, data, accessToken }) {
-	return new Promise((resolve, reject) =>
-		chai
-			.request(server)
-			[method](endpoint)
+function request({
+	server,
+	method = 'get',
+	endpoint,
+	data,
+	accessToken,
+}) {
+	return new Promise((resolve, reject) => (
+		chai.request(server)[method](endpoint)
 			.set({
 				Accept: 'application/json',
 				Authorization: accessToken,
@@ -29,7 +33,7 @@ function request({ server, method = 'get', endpoint, data, accessToken }) {
 				}
 				resolve(res);
 			})
-	);
+	));
 }
 
 describe('Etherpad Permission Check: Teacher', () => {
@@ -72,9 +76,7 @@ describe('Etherpad Permission Check: Teacher', () => {
 
 	it('should have access to my pad', async () => {
 		const {
-			requestParams: {
-				authentication: { accessToken },
-			},
+			requestParams: { authentication: { accessToken } },
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const jwt = decode(accessToken);
@@ -95,11 +97,10 @@ describe('Etherpad Permission Check: Teacher', () => {
 		expect(body.code).to.equal(0);
 	});
 
+
 	it('should not be able to create pad in foreign course', async () => {
 		const {
-			requestParams: {
-				authentication: { accessToken },
-			},
+			requestParams: { authentication: { accessToken } },
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const { body } = await request({
@@ -115,9 +116,7 @@ describe('Etherpad Permission Check: Teacher', () => {
 
 	it('should not be able to create session for foreign course', async () => {
 		const {
-			requestParams: {
-				authentication: { accessToken },
-			},
+			requestParams: { authentication: { accessToken } },
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const { body } = await request({

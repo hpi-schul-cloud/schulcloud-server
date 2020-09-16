@@ -4,15 +4,21 @@ const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
 const { createDateFromAge, createParentConsent, createUserConsent } = require('../utils/helper');
 
-const createUserWithConsent = ({ age, userConsent, parentConsent, ...others }) =>
-	testObjects.createTestUser({
-		birthday: createDateFromAge(age),
-		consent: {
-			userConsent,
-			parentConsents: [parentConsent],
-		},
-		...others,
-	});
+
+const createUserWithConsent = ({
+	age,
+	userConsent,
+	parentConsent,
+	...others
+}) => testObjects.createTestUser({
+	birthday: createDateFromAge(age),
+	consent: {
+		userConsent,
+		parentConsents: [parentConsent],
+	},
+	...others,
+});
+
 
 describe('consentCheck tests', () => {
 	let server;
@@ -52,7 +58,7 @@ describe('consentCheck tests', () => {
 	});
 
 	it('need update for privacy consent', async () => {
-		const parentConsent = createParentConsent(true, true, new Date().setFullYear('1990'));
+		const parentConsent = createParentConsent(true, true, (new Date()).setFullYear('1990'));
 		const age = Configuration.get('CONSENT_AGE_FIRST') - 1;
 
 		const testUser = await createUserWithConsent({ age, parentConsent });

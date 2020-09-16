@@ -11,9 +11,18 @@ describe('userPermissions', async () => {
 		OTHER: 'other',
 		NOTHING: 'nothing spezial',
 	};
-	const testPermissions = ['SINGING', 'DANCE_RAIN', 'WALK_LINES', 'RUN_FLOOR'];
+	const testPermissions = [
+		'SINGING',
+		'DANCE_RAIN',
+		'WALK_LINES',
+		'RUN_FLOOR',
+	];
 
-	const otherPermissions = ['SITTING', 'SITTING_ON_CHAIR', 'SITTING_ON_DESK'];
+	const otherPermissions = [
+		'SITTING',
+		'SITTING_ON_CHAIR',
+		'SITTING_ON_DESK',
+	];
 
 	let testRole;
 	let otherRole;

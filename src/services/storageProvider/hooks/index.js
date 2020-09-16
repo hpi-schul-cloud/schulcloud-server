@@ -7,10 +7,9 @@ const { isSuperHero } = require('../../../hooks');
 
 const encryptSecret = (context) => {
 	if (context.data.secretAccessKey) {
-		context.data.secretAccessKey = CryptoJS.AES.encrypt(
-			context.data.secretAccessKey,
-			Configuration.get('S3_KEY')
-		).toString();
+		context.data.secretAccessKey = CryptoJS.AES
+			.encrypt(context.data.secretAccessKey, Configuration.get('S3_KEY'))
+			.toString();
 	}
 	return context;
 };

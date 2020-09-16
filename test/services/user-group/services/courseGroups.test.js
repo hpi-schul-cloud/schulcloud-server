@@ -21,15 +21,12 @@ describe('courseGroup service', () => {
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
 			const course = await testObjects.createTestCourse({ userIds: [student._id] });
 			const params = await testObjects.generateRequestParamsFromUser(student);
-			const result = await app.service('courseGroups').create(
-				{
-					name: 'testcoursegroup',
-					schoolId: schoolId.toString(),
-					userIds: [student._id],
-					courseId: course._id,
-				},
-				params
-			);
+			const result = await app.service('courseGroups').create({
+				name: 'testcoursegroup',
+				schoolId: schoolId.toString(),
+				userIds: [student._id],
+				courseId: course._id,
+			}, params);
 			expect(result).to.not.be.undefined;
 			expect(result).to.haveOwnProperty('_id');
 			expect(result.name).to.eq('testcoursegroup');
@@ -79,9 +76,9 @@ describe('courseGroup service', () => {
 			const courseGroup = await testObjects.createTestCourseGroup({ schoolId, courseId, userIds: [student._id] });
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {};
-			const result = await app
-				.service('courseGroups')
-				.patch(courseGroup._id, { $push: { userIds: studentToAdd._id } }, params);
+			const result = await app.service('courseGroups').patch(
+				courseGroup._id, { $push: { userIds: studentToAdd._id } }, params,
+			);
 			expect(result).to.not.be.undefined;
 			expect(result.userIds.length).to.eq(2);
 		});
@@ -94,14 +91,9 @@ describe('courseGroup service', () => {
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {};
 			const result = await app.service('courseGroups').update(
-				courseGroup._id,
-				{
-					name: 'A-Team',
-					schoolId: schoolId.toString(),
-					courseId,
-					userIds: [student._id],
-				},
-				params
+				courseGroup._id, {
+					name: 'A-Team', schoolId: schoolId.toString(), courseId, userIds: [student._id],
+				}, params,
 			);
 			expect(result).to.not.be.undefined;
 			expect(result.name).to.eq('A-Team');
@@ -114,7 +106,9 @@ describe('courseGroup service', () => {
 			const courseGroup = await testObjects.createTestCourseGroup({ schoolId, courseId, userIds: student._id });
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {};
-			const result = await app.service('courseGroups').remove(courseGroup._id, params);
+			const result = await app.service('courseGroups').remove(
+				courseGroup._id, params,
+			);
 			expect(result).to.not.be.undefined;
 			expect(result).to.haveOwnProperty('_id');
 		});
@@ -127,15 +121,12 @@ describe('courseGroup service', () => {
 			const course = await testObjects.createTestCourse({ userIds: [] });
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			try {
-				await app.service('courseGroups').create(
-					{
-						name: 'testcoursegroup',
-						schoolId: schoolId.toString(),
-						userIds: [student._id],
-						courseId: course._id,
-					},
-					params
-				);
+				await app.service('courseGroups').create({
+					name: 'testcoursegroup',
+					schoolId: schoolId.toString(),
+					userIds: [student._id],
+					courseId: course._id,
+				}, params);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
@@ -180,7 +171,9 @@ describe('courseGroup service', () => {
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {};
 			try {
-				await app.service('courseGroups').patch(courseGroup._id, { $push: { userIds: student._id } }, params);
+				await app.service('courseGroups').patch(
+					courseGroup._id, { $push: { userIds: student._id } }, params,
+				);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
@@ -203,14 +196,9 @@ describe('courseGroup service', () => {
 			params.query = {};
 			try {
 				await app.service('courseGroups').update(
-					courseGroup._id,
-					{
-						name: 'A-Team',
-						schoolId: schoolId.toString(),
-						courseId: otherCourseId,
-						userIds: [student._id],
-					},
-					params
+					courseGroup._id, {
+						name: 'A-Team', schoolId: schoolId.toString(), courseId: otherCourseId, userIds: [student._id],
+					}, params,
 				);
 				throw new Error('should have failed');
 			} catch (err) {
@@ -232,7 +220,9 @@ describe('courseGroup service', () => {
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {};
 			try {
-				await app.service('courseGroups').remove(courseGroup._id, params);
+				await app.service('courseGroups').remove(
+					courseGroup._id, params,
+				);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');

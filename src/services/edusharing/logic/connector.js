@@ -38,13 +38,15 @@ class EduSharingConnector {
 	static get authorization() {
 		const headers = {
 			...EduSharingConnector.headers,
-			Authorization: `Basic ${Buffer.from(
-				`${Configuration.get('ES_USER')}:${Configuration.get('ES_PASSWORD')}`
-			).toString('base64')}`,
+			Authorization: `Basic ${Buffer.from(`${Configuration.get('ES_USER')
+			}:${Configuration.get('ES_PASSWORD')}`).toString(
+				'base64',
+			)}`,
 		};
 
 		return headers;
 	}
+
 
 	// gets cookie (JSESSION) and attach it to header
 	getCookie() {
@@ -57,7 +59,10 @@ class EduSharingConnector {
 		};
 		return request(cookieOptions)
 			.then((result) => {
-				if (result.statusCode !== 200 || result.body.isValidLogin !== true) {
+				if (
+					result.statusCode !== 200
+					|| result.body.isValidLogin !== true
+				) {
 					throw Error('authentication error with edu sharing');
 				}
 				return result.headers['set-cookie'][0];
@@ -74,11 +79,11 @@ class EduSharingConnector {
 			url: `${Configuration.get('ES_DOMAIN')}${ES_PATH.TOKEN}`,
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 
-			body: `grant_type=${Configuration.get('ES_GRANT_TYPE')}&client_id=${Configuration.get(
-				'ES_CLIENT_ID'
-			)}&client_secret=${Configuration.get('ES_OAUTH_SECRET')}&username=${Configuration.get(
-				'ES_USER'
-			)}&password=${Configuration.get('ES_PASSWORD')}`,
+			body: `grant_type=${Configuration.get('ES_GRANT_TYPE')}&client_id=${
+				Configuration.get('ES_CLIENT_ID')
+			}&client_secret=${Configuration.get('ES_OAUTH_SECRET')}&username=${
+				Configuration.get('ES_USER')
+			}&password=${Configuration.get('ES_PASSWORD')}`,
 			timeout: REQUEST_TIMEOUT,
 		};
 		return request(oauthoptions).then((result) => {
@@ -114,6 +119,7 @@ class EduSharingConnector {
 		throw new GeneralError('Edu Sharing Retry failed', errors);
 	}
 
+
 	async login() {
 		logger.info('Renewal of Edusharing credentials');
 		this.authorization = await this.getCookie();
@@ -125,7 +131,7 @@ class EduSharingConnector {
 			? new Date(lastCookieRenewalTime.getTime() + COOKIE_RENEWAL_PERIOD_MS)
 			: new Date();
 		// should relogin if cookie expired or cookie or access token is empty
-		const shouldRelogin = new Date() >= nextCookieRenewalTime || !this.authorization || !this.accessToken;
+		const shouldRelogin = (new Date() >= nextCookieRenewalTime) || !this.authorization || !this.accessToken;
 		if (shouldRelogin) {
 			lastCookieRenewalTime = new Date();
 		}
@@ -178,7 +184,9 @@ class EduSharingConnector {
 		const options = {
 			method: 'GET',
 			// eslint-disable-next-line max-len
-			url: `${Configuration.get('ES_DOMAIN')}${ES_PATH.NODE}${id}/metadata?propertyFilter=${propertyFilter}`,
+			url: `${Configuration.get('ES_DOMAIN')
+			}${ES_PATH.NODE}${id
+			}/metadata?propertyFilter=${propertyFilter}`,
 			headers: {
 				...EduSharingConnector.headers,
 				cookie: this.authorization,
@@ -190,14 +198,20 @@ class EduSharingConnector {
 		const { node } = eduResponse;
 		if (node && node.preview && node.preview.url) {
 			// eslint-disable-next-line max-len
-			node.preview.url = await this.getImage(
-				`${node.preview.url}&accessToken=${this.accessToken}&crop=true&maxWidth=1200&maxHeight=800`
-			);
+			node.preview.url = await this.getImage(`${node.preview.url}&accessToken=${this.accessToken}&crop=true&maxWidth=1200&maxHeight=800`);
 		}
 		return node;
 	}
 
-	async FIND({ query: { searchQuery = '', contentType = 'FILES', $skip, $limit, sortProperties = 'score' } }) {
+	async FIND({
+		query: {
+			searchQuery = '',
+			contentType = 'FILES',
+			$skip,
+			$limit,
+			sortProperties = 'score',
+		},
+	}) {
 		const skipCount = parseInt($skip, 10) || 0;
 		const maxItems = parseInt($limit, 10) || 9;
 		const sortAscending = false;
@@ -211,9 +225,8 @@ class EduSharingConnector {
 		}
 
 		const urlBase = `${Configuration.get('ES_DOMAIN')}${ES_PATH.SEARCH}?`;
-		const url =
-			urlBase +
-			[
+		const url = urlBase
+			+ [
 				`contentType=${contentType}`,
 				`skipCount=${skipCount}`,
 				`maxItems=${maxItems}`,
@@ -232,7 +245,9 @@ class EduSharingConnector {
 				cookie: this.authorization,
 			},
 			body: JSON.stringify({
-				criterias: [{ property: 'ngsearchword', values: [`${searchQuery.toLowerCase()}`] }],
+				criterias: [
+					{ property: 'ngsearchword', values: [`${searchQuery.toLowerCase()}`] },
+				],
 				facettes: ['cclom:general_keyword'],
 			}),
 			timeout: REQUEST_TIMEOUT,
@@ -254,6 +269,7 @@ class EduSharingConnector {
 
 		return new EduSearchResponse(parsed);
 	}
+
 
 	static get Instance() {
 		if (!EduSharingConnector.instance) {

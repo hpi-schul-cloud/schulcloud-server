@@ -15,6 +15,7 @@ describe('handleAutoLogout hook', function test() {
 	let server;
 	let testObjects;
 
+
 	before(async () => {
 		configBefore = Configuration.toObject(); // deep copy current config
 		Configuration.set('REDIS_URI', '//validHost:3333');

@@ -14,7 +14,10 @@ const SIGNATURE_KEY = Configuration.get('TSP_API_SIGNATURE_KEY');
 const BASE_URL = Configuration.get('TSP_API_BASE_URL');
 const CLIENT_ID = Configuration.get('TSP_API_CLIENT_ID');
 const CLIENT_SECRET = Configuration.get('TSP_API_CLIENT_SECRET');
-const { HOST, SC_DOMAIN } = require('../../../../../config/globals');
+const {
+	HOST,
+	SC_DOMAIN,
+} = require('../../../../../config/globals');
 
 const ENCRYPTION_OPTIONS = { alg: 'dir', enc: 'A128CBC-HS256' };
 const SIGNATURE_OPTIONS = { alg: 'HS512' };
@@ -24,8 +27,11 @@ const SIGNATURE_OPTIONS = { alg: 'HS512' };
  * @param {String} string a string
  * @returns {String} the converted string
  */
-const toBase64Url = (string) =>
-	Buffer.from(string, 'utf-8').toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+const toBase64Url = (string) => Buffer.from(string, 'utf-8')
+	.toString('base64')
+	.replace(/=/g, '')
+	.replace(/\+/g, '-')
+	.replace(/\//g, '_');
 
 /**
  * Generates a username for a given user-like object
@@ -149,26 +155,18 @@ const findSchool = async (app, tspIdentifier) => {
 	return null;
 };
 
-const getEncryptionKey = () =>
-	JWK.asKey({
-		kty: 'oct',
-		k: ENCRYPTION_KEY,
-		alg: ENCRYPTION_OPTIONS.enc,
-		use: 'enc',
-	});
+const getEncryptionKey = () => JWK.asKey({
+	kty: 'oct', k: ENCRYPTION_KEY, alg: ENCRYPTION_OPTIONS.enc, use: 'enc',
+});
 const encryptToken = (payload) => JWE.encrypt(payload, getEncryptionKey(), ENCRYPTION_OPTIONS);
 const decryptToken = (payload) => {
 	const decryptedPayload = JWE.decrypt(payload, getEncryptionKey(), ENCRYPTION_OPTIONS);
 	return JSON.parse(decryptedPayload.toString());
 };
 
-const getSignKey = () =>
-	JWK.asKey({
-		kty: 'oct',
-		k: toBase64Url(SIGNATURE_KEY),
-		alg: SIGNATURE_OPTIONS.alg,
-		use: 'sig',
-	});
+const getSignKey = () => JWK.asKey({
+	kty: 'oct', k: toBase64Url(SIGNATURE_KEY), alg: SIGNATURE_OPTIONS.alg, use: 'sig',
+});
 const signToken = (token) => JWS.sign(token, getSignKey(), SIGNATURE_OPTIONS);
 const verifyToken = (token) => JWS.verify(token, getSignKey(), SIGNATURE_OPTIONS);
 

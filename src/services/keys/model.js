@@ -9,17 +9,14 @@ const { enableAuditLog } = require('../../utils/database');
 
 const { Schema } = mongoose;
 
-const keySchema = new Schema(
-	{
-		name: { type: String, required: true },
-		key: { type: String, required: true },
-		createdAt: { type: Date, default: Date.now },
-		updatedAt: { type: Date, default: Date.now },
-	},
-	{
-		timestamps: true,
-	}
-);
+const keySchema = new Schema({
+	name: { type: String, required: true },
+	key: { type: String, required: true },
+	createdAt: { type: Date, default: Date.now },
+	updatedAt: { type: Date, default: Date.now },
+}, {
+	timestamps: true,
+});
 
 enableAuditLog(keySchema);
 

@@ -21,9 +21,9 @@ describe('storageProvider service', () => {
 	it('encrypts the secret correctly', async () => {
 		const secret = '123456789';
 		const provider = await testObjects.createTestStorageProvider({ secretAccessKey: secret });
-		const decrypted = CryptoJS.AES.decrypt(provider.secretAccessKey, Configuration.get('S3_KEY')).toString(
-			CryptoJS.enc.Utf8
-		);
+		const decrypted = CryptoJS.AES
+			.decrypt(provider.secretAccessKey, Configuration.get('S3_KEY'))
+			.toString(CryptoJS.enc.Utf8);
 		expect(decrypted).to.equal(secret);
 	});
 

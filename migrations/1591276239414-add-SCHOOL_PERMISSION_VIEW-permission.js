@@ -4,19 +4,12 @@ const { info, error } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
-const RoleModel = mongoose.model(
-	'role20200603',
-	new mongoose.Schema(
-		{
-			name: { type: String, required: true },
-			permissions: [{ type: String }],
-		},
-		{
-			timestamps: true,
-		}
-	),
-	'roles'
-);
+const RoleModel = mongoose.model('role20200603', new mongoose.Schema({
+	name: { type: String, required: true },
+	permissions: [{ type: String }],
+}, {
+	timestamps: true,
+}), 'roles');
 
 const permissions = ['SCHOOL_PERMISSION_VIEW', 'SCHOOL_PERMISSION_CHANGE'];
 
@@ -34,13 +27,10 @@ module.exports = {
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'administrator',
-			},
-			{
+			}, {
 				$addToSet: { permissions: { $each: permissions } },
-			}
-		)
-			.lean()
-			.exec();
+			},
+		).lean().exec();
 		// ////////////////////////////////////////////////////
 		await close();
 	},
@@ -53,13 +43,10 @@ module.exports = {
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'administrator',
-			},
-			{
+			}, {
 				$pull: { permissions: { $in: permissions } },
-			}
-		)
-			.lean()
-			.exec();
+			},
+		).lean().exec();
 		// ////////////////////////////////////////////////////
 		await close();
 	},

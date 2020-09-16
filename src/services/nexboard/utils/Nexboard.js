@@ -18,6 +18,7 @@ class Nexboard {
 			logger.info('Nextboard url or uri is not defined');
 		}
 
+
 		this.err = {
 			getProject: 'Could not retrieve this Project.',
 			projectIds: 'Could not retrieve ProjectIds.',
@@ -47,9 +48,10 @@ class Nexboard {
 	}
 
 	getProject(projectId) {
-		return rp(this.createSettings({ endpoint: `projects/${projectId}` })).catch((err) => {
-			throw new BadRequest(this.err.getProject, err);
-		});
+		return rp(this.createSettings({ endpoint: `projects/${projectId}` }))
+			.catch((err) => {
+				throw new BadRequest(this.err.getProject, err);
+			});
 	}
 
 	getProjectsIds() {
@@ -61,58 +63,54 @@ class Nexboard {
 	}
 
 	createProject(title, description) {
-		return rp(
-			this.createSettings({
-				method: 'POST',
-				endpoint: 'projects',
-				body: {
-					title,
-					description,
-				},
-			})
-		).catch((err) => {
-			throw new BadRequest(this.err.createProject, err);
-		});
+		return rp(this.createSettings({
+			method: 'POST',
+			endpoint: 'projects',
+			body: {
+				title,
+				description,
+			},
+		}))
+			.catch((err) => {
+				throw new BadRequest(this.err.createProject, err);
+			});
 	}
 
 	getBoardsByProject(project) {
-		return rp(
-			this.createSettings({
-				endpoint: `projects/${project}/boards`,
-			})
-		).catch((err) => {
-			throw new BadRequest(this.err.retrieveBoardsFromProject, err);
-		});
+		return rp(this.createSettings({
+			endpoint: `projects/${project}/boards`,
+		}))
+			.catch((err) => {
+				throw new BadRequest(this.err.retrieveBoardsFromProject, err);
+			});
 	}
 
 	getBoard(boardId) {
-		return rp(
-			this.createSettings({
-				endpoint: `boards/${boardId}`,
-			})
-		).catch((err) => {
-			throw new BadRequest(this.err.retrieveBoards, err);
-		});
+		return rp(this.createSettings({
+			endpoint: `boards/${boardId}`,
+		}))
+			.catch((err) => {
+				throw new BadRequest(this.err.retrieveBoards, err);
+			});
 	}
 
 	createBoard(title, description, project, email = 'schulcloud') {
-		return rp(
-			this.createSettings({
-				method: 'POST',
-				endpoint: 'boards',
-				qs: {
-					token: Configuration.get('NEXBOARD_API_KEY'),
-				},
-				body: {
-					title,
-					description,
-					email,
-					projectId: project,
-				},
-			})
-		).catch((err) => {
-			throw new BadRequest(this.err.createBoard, err);
-		});
+		return rp(this.createSettings({
+			method: 'POST',
+			endpoint: 'boards',
+			qs: {
+				token: Configuration.get('NEXBOARD_API_KEY'),
+			},
+			body: {
+				title,
+				description,
+				email,
+				projectId: project,
+			},
+		}))
+			.catch((err) => {
+				throw new BadRequest(this.err.createBoard, err);
+			});
 	}
 }
 

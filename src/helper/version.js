@@ -19,9 +19,7 @@ const getLines = (stringArr, start, end) => {
 	const retValue = [];
 	for (let i = start; i <= end; i += 1) {
 		const line = getLine(stringArr, i);
-		if (line) {
-			retValue.push(line);
-		}
+		if (line) { retValue.push(line); }
 	}
 	return retValue.join('\n');
 };
@@ -43,8 +41,5 @@ try {
 }
 
 module.exports = {
-	sha,
-	branch,
-	message,
-	stat,
+	sha, branch, message, stat,
 };

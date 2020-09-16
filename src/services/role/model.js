@@ -17,18 +17,15 @@ const rolesDisplayName = {
 	expert: 'Experte',
 };
 
-const roleSchema = new Schema(
-	{
-		name: { type: String, required: true },
-		permissions: [{ type: String }],
+const roleSchema = new Schema({
+	name: { type: String, required: true },
+	permissions: [{ type: String }],
 
-		// inheritance
-		roles: [{ type: Schema.Types.ObjectId }],
-	},
-	{
-		timestamps: true,
-	}
-);
+	// inheritance
+	roles: [{ type: Schema.Types.ObjectId }],
+}, {
+	timestamps: true,
+});
 
 roleSchema.methods.getPermissions = function getPermissions() {
 	return roleModel.resolvePermissions([this._id]); // fixme
@@ -39,8 +36,7 @@ roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
 	const permissions = new Set();
 
 	function resolveSubRoles(roleId) {
-		return roleModel
-			.findById(roleId) // fixme
+		return roleModel.findById(roleId) // fixme
 			.then((role) => {
 				if (typeof role !== 'object') {
 					role = {};
@@ -59,7 +55,8 @@ roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
 			});
 	}
 
-	return Promise.all(roleIds.map((id) => resolveSubRoles(id))).then(() => permissions);
+	return Promise.all(roleIds.map((id) => resolveSubRoles(id)))
+		.then(() => permissions);
 };
 
 roleSchema.virtual('displayName').get(function get() {

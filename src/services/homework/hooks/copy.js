@@ -1,7 +1,9 @@
 const { disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('@feathersjs/errors');
-const { iff, isProvider } = require('feathers-hooks-common');
+const {
+	iff, isProvider,
+} = require('feathers-hooks-common');
 const { hasPermission, mapPayload, injectUserId } = require('../../../hooks');
 const HomeworkModel = require('../model').homeworkModel;
 const resolveStorageType = require('../../fileStorage/hooks/resolveStorageType');
@@ -10,9 +12,7 @@ const hasViewPermissionBefore = (context) => {
 	const currentUser = context.params.account.userId.toString();
 	const _id = context.id || context.data._id;
 
-	return HomeworkModel.findOne({ _id })
-		.lean()
-		.exec()
+	return HomeworkModel.findOne({ _id }).lean().exec()
 		.then((homework) => {
 			if (homework.teacherId.equals(currentUser)) {
 				return context;

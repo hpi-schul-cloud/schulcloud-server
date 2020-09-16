@@ -10,6 +10,7 @@ const { courseModel } = require('../src/services/user-group/model');
 require('../src/services/account/model');
 require('../src/services/homework/model');
 
+
 module.exports = {
 	up: async function up() {
 		await connect();

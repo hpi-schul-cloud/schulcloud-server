@@ -22,17 +22,14 @@ module.exports = function () {
 	app.service(checkUrl).hooks(consentCheckHooks);
 
 	/* ConsentVersion Model */
-	app.use(
-		'consentVersionsModel',
-		service({
-			Model: ConsentVersionModel,
-			paginate: {
-				default: 100,
-				max: 200,
-			},
-			lean: true,
-		})
-	);
+	app.use('consentVersionsModel', service({
+		Model: ConsentVersionModel,
+		paginate: {
+			default: 100,
+			max: 200,
+		},
+		lean: true,
+	}));
 	app.service('consentVersionsModel').hooks(consentVersionModelHooks);
 
 	app.use('/consentVersions', new ConsentVersionService());

@@ -6,22 +6,16 @@ const { connect, close } = require('../src/utils/database');
 
 // use your own name for your model, otherwise other migrations may fail.
 // The third parameter is the actually relevent one for what collection to write to.
-const Roles = mongoose.model(
-	'messengersyncroles',
-	new mongoose.Schema(
-		{
-			name: { type: String, required: true },
-			permissions: [{ type: String }],
-		},
-		{
-			timestamps: true,
-		}
-	),
-	'roles'
-);
+const Roles = mongoose.model('messengersyncroles', new mongoose.Schema({
+	name: { type: String, required: true },
+	permissions: [{ type: String }],
+}, {
+	timestamps: true,
+}), 'roles');
 
 // How to use more than one schema per collection on mongodb
 // https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
+
 
 // TODO npm run migration-persist and remove this line
 // TODO update seed data and remove this line
@@ -37,7 +31,7 @@ module.exports = {
 						$each: ['MESSENGER_SYNC'],
 					},
 				},
-			}
+			},
 		).exec();
 		await Roles.updateOne(
 			{ name: 'administrator' },
@@ -47,7 +41,7 @@ module.exports = {
 						$each: ['MESSENGER_SYNC'],
 					},
 				},
-			}
+			},
 		).exec();
 		await close();
 	},
@@ -62,7 +56,7 @@ module.exports = {
 						$in: ['MESSENGER_SYNC'],
 					},
 				},
-			}
+			},
 		).exec();
 		await Roles.updateOne(
 			{ name: 'administrator' },
@@ -72,7 +66,7 @@ module.exports = {
 						$in: ['MESSENGER_SYNC'],
 					},
 				},
-			}
+			},
 		).exec();
 		await close();
 	},

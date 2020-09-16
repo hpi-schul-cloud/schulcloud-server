@@ -2,18 +2,12 @@ const mongoose = require('mongoose');
 
 const { connect, close } = require('../src/utils/database');
 
-const RoleModel = mongoose.model(
-	'role',
-	new mongoose.Schema(
-		{
-			name: { type: String, required: true },
-			permissions: [{ type: String }],
-		},
-		{
-			timestamps: true,
-		}
-	)
-);
+const RoleModel = mongoose.model('role', new mongoose.Schema({
+	name: { type: String, required: true },
+	permissions: [{ type: String }],
+}, {
+	timestamps: true,
+}));
 
 module.exports = {
 	up: async function up() {
@@ -22,13 +16,10 @@ module.exports = {
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'superhero',
-			},
-			{
+			}, {
 				$addToSet: { permissions: 'CREATE_SUPPORT_JWT' },
-			}
-		)
-			.lean()
-			.exec();
+			},
+		).lean().exec();
 		await close();
 	},
 
@@ -38,13 +29,10 @@ module.exports = {
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'superhero',
-			},
-			{
+			}, {
 				$pull: { permissions: 'CREATE_SUPPORT_JWT' },
-			}
-		)
-			.lean()
-			.exec();
+			},
+		).lean().exec();
 		await close();
 	},
 };

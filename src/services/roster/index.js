@@ -13,37 +13,32 @@ module.exports = function roster() {
 
 	const metadataHandler = {
 		find(params) {
-			return app
-				.service('pseudonym')
-				.find({
+			return app.service('pseudonym').find({
+				query: {
+					pseudonym: params.pseudonym,
+				},
+			}).then((pseudonym) => {
+				if (!pseudonym.total) {
+					return { errors: { description: 'User not found by token' } };
+				}
+				const { userId } = pseudonym.data[0];
+				return app.service('users').find({
 					query: {
-						pseudonym: params.pseudonym,
+						_id: userId,
+						$populate: ['roles'],
 					},
-				})
-				.then((pseudonym) => {
-					if (!pseudonym.total) {
-						return { errors: { description: 'User not found by token' } };
-					}
-					const { userId } = pseudonym.data[0];
-					return app
-						.service('users')
-						.find({
-							query: {
-								_id: userId,
-								$populate: ['roles'],
-							},
-						})
-						.then((users) => {
-							const user = users.data[0];
-							return {
-								data: {
-									user_id: params.route.user,
-									username: oauth2.getSubject(params.pseudonym, app.settings.services.web),
-									type: user.roles[0].name,
-								},
-							};
-						});
+				}).then((users) => {
+					const user = users.data[0];
+					return {
+						data: {
+							user_id: params.route.user,
+							username: oauth2.getSubject(params.pseudonym, app.settings.services.web),
+							type: user.roles[0].name,
+						},
+
+					};
 				});
+			});
 		},
 	};
 
@@ -62,37 +57,34 @@ module.exports = function roster() {
 
 	const userGroupsHandler = {
 		find(params) {
-			return app
-				.service('pseudonym')
-				.find({
-					query: {
-						pseudonym: params.pseudonym,
-					},
-				})
-				.then((pseudonym) => {
-					if (!pseudonym.data[0]) {
-						return Promise.reject(new Error('User not found by token'));
-					}
+			return app.service('pseudonym').find({
+				query: {
+					pseudonym: params.pseudonym,
+				},
+			}).then((pseudonym) => {
+				if (!pseudonym.data[0]) {
+					return Promise.reject(new Error('User not found by token'));
+				}
 
-					const { userId } = pseudonym.data[0];
-					return app
-						.service('courses')
-						.find({
-							query: {
-								ltiToolIds: { $in: params.toolIds },
-								$or: [{ userIds: userId }, { teacherIds: userId }],
-							},
-						})
-						.then((courses) => ({
-							data: {
-								groups: courses.data.map((course) => ({
-									group_id: course._id.toString(),
-									name: course.name,
-									student_count: course.userIds.length,
-								})),
-							},
-						}));
-				});
+				const { userId } = pseudonym.data[0];
+				return app.service('courses').find({
+					query: {
+						ltiToolIds: { $in: params.toolIds },
+						$or: [
+							{ userIds: userId },
+							{ teacherIds: userId },
+						],
+					},
+				}).then((courses) => ({
+					data: {
+						groups: courses.data.map((course) => ({
+							group_id: course._id.toString(),
+							name: course.name,
+							student_count: course.userIds.length,
+						})),
+					},
+				}));
+			});
 		},
 	};
 
@@ -113,50 +105,51 @@ module.exports = function roster() {
 	const groupsHandler = {
 		get(id, params) {
 			const courseService = app.service('courses');
-			return courseService
-				.find({
-					query: {
-						_id: id,
-						ltiToolIds: { $in: params.toolIds },
-					},
-				})
-				.then((courses) => {
-					if (!courses.data[0]) {
-						return { errors: { description: 'Group not found' } };
-					}
-					const course = courses.data[0];
-					const pseudoService = app.service('pseudonym');
-					return Promise.all([
-						pseudoService.find({
-							query: {
-								userId: course.userIds,
-								toolId: params.toolIds[0],
-							},
-						}),
-						pseudoService.find({
-							query: {
-								userId: course.teacherIds,
-								toolId: params.toolIds[0],
-							},
-						}),
-					]).then(([users, teachers]) => ({
-						data: {
-							students: users.data.map((user) => ({
-								user_id: user.pseudonym,
-								username: encodeURI(oauth2.getSubject(user.pseudonym, app.settings.services.web)),
-							})),
-							teachers: teachers.data.map((user) => ({
-								user_id: user.pseudonym,
-								username: encodeURI(oauth2.getSubject(user.pseudonym, app.settings.services.web)),
-							})),
+			return courseService.find({
+				query: {
+					_id: id,
+					ltiToolIds: { $in: params.toolIds },
+				},
+			}).then((courses) => {
+				if (!courses.data[0]) {
+					return { errors: { description: 'Group not found' } };
+				}
+				const course = courses.data[0];
+				const pseudoService = app.service('pseudonym');
+				return Promise.all([
+					pseudoService.find({
+						query: {
+							userId: course.userIds,
+							toolId: params.toolIds[0],
 						},
-					}));
-				});
+					}),
+					pseudoService.find({
+						query: {
+							userId: course.teacherIds,
+							toolId: params.toolIds[0],
+						},
+					}),
+				]).then(([users, teachers]) => ({
+					data: {
+						students: users.data.map((user) => ({
+							user_id: user.pseudonym,
+							username: encodeURI(oauth2.getSubject(user.pseudonym, app.settings.services.web)),
+						})),
+						teachers: teachers.data.map((user) => ({
+							user_id: user.pseudonym,
+							username: encodeURI(oauth2.getSubject(user.pseudonym, app.settings.services.web)),
+						})),
+					},
+				}));
+			});
 		},
 	};
 	const groupsHooks = {
 		before: {
-			get: [globalHooks.ifNotLocal(hooks.tokenIsActive), hooks.injectOriginToolIds],
+			get: [
+				globalHooks.ifNotLocal(hooks.tokenIsActive),
+				hooks.injectOriginToolIds,
+			],
 		},
 		after: {
 			get: hooks.groupContainsUser,

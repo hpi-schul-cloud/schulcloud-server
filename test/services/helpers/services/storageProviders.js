@@ -2,10 +2,7 @@ const { StorageProviderModel } = require('../../../../src/services/storageProvid
 
 let createdProviderIds = [];
 
-const removeManyProviders = (ids) =>
-	StorageProviderModel.deleteMany({ _id: { $in: ids } })
-		.lean()
-		.exec();
+const removeManyProviders = (ids) => StorageProviderModel.deleteMany({ _id: { $in: ids } }).lean().exec();
 
 const createTestProvider = (app) => ({
 	// required fields for base group
@@ -17,24 +14,20 @@ const createTestProvider = (app) => ({
 	region = 'eu-de',
 	maxBuckets = 200,
 	freeBuckets = 200,
-} = {}) =>
-	app
-		.service('storageProvider')
-		.create({
-			// required fields for user
-			type,
-			isShared,
-			accessKeyId,
-			secretAccessKey,
-			endpointUrl,
-			region,
-			maxBuckets,
-			freeBuckets,
-		})
-		.then((provider) => {
-			createdProviderIds.push(provider._id.toString());
-			return provider;
-		});
+} = {}) => app.service('storageProvider').create({
+	// required fields for user
+	type,
+	isShared,
+	accessKeyId,
+	secretAccessKey,
+	endpointUrl,
+	region,
+	maxBuckets,
+	freeBuckets,
+}).then((provider) => {
+	createdProviderIds.push(provider._id.toString());
+	return provider;
+});
 
 const cleanup = () => {
 	if (createdProviderIds.length === 0) {

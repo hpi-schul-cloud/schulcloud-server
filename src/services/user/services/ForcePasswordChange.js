@@ -55,14 +55,16 @@ class ForcePasswordChangeService {
 			password: newPassword,
 		};
 
-		const accountPromise = this.app.service('/accounts').patch(params.account._id, accountUpdate, params);
+		const accountPromise = this.app.service('/accounts')
+			.patch(params.account._id, accountUpdate, params);
 		await accountPromise
 			.then((result) => Promise.resolve(result))
 			.catch((err) => {
 				throw new BadRequest(this.err.failed, err);
 			});
 
-		const userPromise = this.app.service('/users').patch(params.account.userId, { forcePasswordChange: false });
+		const userPromise = this.app.service('/users')
+			.patch(params.account.userId, { forcePasswordChange: false });
 		return userPromise
 			.then((result) => Promise.resolve(result))
 			.catch((err) => {

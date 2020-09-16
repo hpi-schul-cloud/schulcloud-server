@@ -56,6 +56,7 @@ describe('MessengerTokenService', function test() {
 				});
 		});
 
+
 		describe('with config', () => {
 			let configBefore;
 
@@ -70,7 +71,9 @@ describe('MessengerTokenService', function test() {
 			});
 
 			it('can fail', async () => {
-				nock(Configuration.get('MATRIX_URI')).post('/_matrix/client/r0/login').reply(403, 'Invalid Password');
+				nock(Configuration.get('MATRIX_URI'))
+					.post('/_matrix/client/r0/login')
+					.reply(403, 'Invalid Password');
 				const school = await testObjects.createTestSchool({ features: ['messenger'] });
 				const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
 
@@ -87,23 +90,27 @@ describe('MessengerTokenService', function test() {
 			});
 
 			it('should succeed', async () => {
-				nock(Configuration.get('MATRIX_URI')).post('/_matrix/client/r0/login').reply(200, {
-					access_token: 'token',
-					device_id: 'DEVICE',
-					home_server: 'messenger.schule',
-				});
+				nock(Configuration.get('MATRIX_URI'))
+					.post('/_matrix/client/r0/login')
+					.reply(200, {
+						access_token: 'token',
+						device_id: 'DEVICE',
+						home_server: 'messenger.schule',
+					});
 				const school = await testObjects.createTestSchool({ features: ['messenger'] });
 				const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
 
 				const params = await testObjects.generateRequestParamsFromUser(student);
-				return service.create({}, params).then((response) => {
-					expect(response).not.to.be.undefined;
-					expect(response.userId).to.equals(`@sso_${student._id}:messenger.schule`);
-					expect(response.homeserverUrl).to.equals(Configuration.get('MATRIX_URI'));
-					expect(response.accessToken).to.equals('token');
-					expect(response.deviceId).to.equals('DEVICE');
-					expect(response.servername).to.equals('messenger.schule');
-				});
+				return service
+					.create({}, params)
+					.then((response) => {
+						expect(response).not.to.be.undefined;
+						expect(response.userId).to.equals(`@sso_${student._id}:messenger.schule`);
+						expect(response.homeserverUrl).to.equals(Configuration.get('MATRIX_URI'));
+						expect(response.accessToken).to.equals('token');
+						expect(response.deviceId).to.equals('DEVICE');
+						expect(response.servername).to.equals('messenger.schule');
+					});
 			});
 		});
 	});

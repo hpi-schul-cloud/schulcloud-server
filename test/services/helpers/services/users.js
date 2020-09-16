@@ -51,7 +51,9 @@ const cleanup = (app) => () => {
 	const ids = createdUserIds;
 	createdUserIds = [];
 	const promises = ids.map((id) => app.service('users').remove(id));
-	promises.push(registrationPinModel.deleteMany({ _id: { $in: tempPinIds.map((p) => p._id) } }));
+	promises.push(
+		registrationPinModel.deleteMany({ _id: { $in: tempPinIds.map((p) => p._id) } }),
+	);
 	return Promise.all(promises);
 };
 

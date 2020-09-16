@@ -9,6 +9,7 @@ const {
 	modifyDataForUserSchema,
 } = require('../../../../src/services/consent/utils/consent');
 
+
 describe('test consent utils', () => {
 	describe('test defineConsentStatus', () => {
 		it('test missing between, user without parent', () => {
@@ -42,6 +43,7 @@ describe('test consent utils', () => {
 				userConsent: createUserConsent(true, true),
 			});
 
+
 			expect(consentStatus).to.equal('ok');
 		});
 
@@ -52,6 +54,7 @@ describe('test consent utils', () => {
 			const consentStatus = defineConsentStatus(birthday, {
 				parentConsents: [createParentConsent(true, true)],
 			});
+
 
 			expect(consentStatus).to.equal('missing');
 		});
@@ -64,6 +67,7 @@ describe('test consent utils', () => {
 				userConsent: createUserConsent(true, true),
 			});
 
+
 			expect(consentStatus).to.equal('ok');
 		});
 
@@ -75,6 +79,7 @@ describe('test consent utils', () => {
 				parentConsents: [createParentConsent(true, true)],
 			});
 
+
 			expect(consentStatus).to.equal('ok');
 		});
 
@@ -85,6 +90,7 @@ describe('test consent utils', () => {
 			const consentStatus = defineConsentStatus(birthday, {
 				userConsent: createUserConsent(true, true),
 			});
+
 
 			expect(consentStatus).to.equal('missing');
 		});

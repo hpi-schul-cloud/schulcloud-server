@@ -7,6 +7,7 @@ const homeworkService = app.service('homework');
 const homeworkCopyService = app.service('homework/copy');
 const { expect } = chai;
 
+
 describe('homework service', function test() {
 	this.timeout(10000);
 
@@ -30,9 +31,10 @@ describe('homework service', function test() {
 		createdAt: '2017-09-28T11:47:46.648Z',
 	};
 	it('CREATE task', () => {
-		homeworkService.create(testAufgabe).then((result) => {
-			expect(result.name).to.equal('Testaufgabe');
-		});
+		homeworkService.create(testAufgabe)
+			.then((result) => {
+				expect(result.name).to.equal('Testaufgabe');
+			});
 	});
 
 	it('DELETE task', async () => {
@@ -111,8 +113,7 @@ describe('homework service', function test() {
 			testObjects.createTestUser({ roles: ['student'] }),
 		]);
 		const course = await testObjects.createTestCourse({
-			teacherIds: [teacher._id],
-			userIds: [studentOne._id, studentTwo._id],
+			teacherIds: [teacher._id], userIds: [studentOne._id, studentTwo._id],
 		});
 		const homework = await testObjects.createTestHomework({
 			teacherId: teacher._id,
@@ -134,11 +135,7 @@ describe('homework service', function test() {
 			grade: 67,
 		});
 		return {
-			teacher,
-			students: [studentOne, studentTwo],
-			course,
-			homework,
-			submission,
+			teacher, students: [studentOne, studentTwo], course, homework, submission,
 		};
 	};
 
@@ -180,10 +177,11 @@ describe('homework service', function test() {
 	});
 
 	it('teacher can PATCH his own homework', async () => {
-		const [teacher] = await Promise.all([testObjects.createTestUser({ roles: ['teacher'] })]);
+		const [teacher] = await Promise.all([
+			testObjects.createTestUser({ roles: ['teacher'] }),
+		]);
 		const course = await testObjects.createTestCourse({
-			teacherIds: [teacher._id],
-			userIds: [],
+			teacherIds: [teacher._id], userIds: [],
 		});
 		const homework = await testObjects.createTestHomework({
 			teacherId: teacher._id,
@@ -197,9 +195,9 @@ describe('homework service', function test() {
 			courseId: course._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
-		const result = await app
-			.service('homework')
-			.patch(homework._id, { description: 'bringe mir 12 Wolfspelze!' }, params);
+		const result = await app.service('homework').patch(
+			homework._id, { description: 'bringe mir 12 Wolfspelze!' }, params,
+		);
 		expect(result).to.not.be.undefined;
 		expect(result.description).to.equal('bringe mir 12 Wolfspelze!');
 	});
@@ -210,8 +208,7 @@ describe('homework service', function test() {
 			testObjects.createTestUser({ roles: ['teacher'] }),
 		]);
 		const course = await testObjects.createTestCourse({
-			teacherIds: [teacher._id, actingTeacher._id],
-			userIds: [],
+			teacherIds: [teacher._id, actingTeacher._id], userIds: [],
 		});
 		const homework = await testObjects.createTestHomework({
 			teacherId: teacher._id,
@@ -225,9 +222,9 @@ describe('homework service', function test() {
 			courseId: course._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(actingTeacher);
-		const result = await app
-			.service('homework')
-			.patch(homework._id, { description: 'wirf den Ring ins Feuer!' }, params);
+		const result = await app.service('homework').patch(
+			homework._id, { description: 'wirf den Ring ins Feuer!' }, params,
+		);
 		expect(result).to.not.be.undefined;
 		expect(result.description).to.equal('wirf den Ring ins Feuer!');
 	});
@@ -238,8 +235,7 @@ describe('homework service', function test() {
 			testObjects.createTestUser({ roles: ['teacher'] }),
 		]);
 		const course = await testObjects.createTestCourse({
-			teacherIds: [teacher._id],
-			substitutionIds: [actingTeacher._id],
+			teacherIds: [teacher._id], substitutionIds: [actingTeacher._id],
 		});
 		const homework = await testObjects.createTestHomework({
 			teacherId: teacher._id,
@@ -253,7 +249,9 @@ describe('homework service', function test() {
 			courseId: course._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(actingTeacher);
-		const result = await app.service('homework').patch(homework._id, { description: 'zeichne mir ein Schaf!' }, params);
+		const result = await app.service('homework').patch(
+			homework._id, { description: 'zeichne mir ein Schaf!' }, params,
+		);
 		expect(result).to.not.be.undefined;
 		expect(result.description).to.equal('zeichne mir ein Schaf!');
 	});

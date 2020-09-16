@@ -32,41 +32,36 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		users,
 	} = serviceHelpers(app, opt);
 
-	const cleanup = () =>
-		Promise.all(
-			[
-				accounts,
-				activation,
-				users,
-				consents,
-				consentVersion,
-				testSystem,
-				classes,
-				courses,
-				courseGroups,
-				teams,
-				roles,
-				schools,
-				schoolGroups,
-				years,
-				datasources,
-				submissions,
-				lessons,
-				homeworks,
-				storageProviders,
-				files,
-			]
-				.reverse()
-				.map((factory) => factory.cleanup())
-		)
-			.then((res) => {
-				logger.info('[TestObjects] cleanup data.');
-				return res;
-			})
-			.catch((err) => {
-				logger.warning('[TestObjects] Can not cleanup.', err);
-				return err;
-			});
+	const cleanup = () => Promise.all([
+		accounts,
+		activation,
+		users,
+		consents,
+		consentVersion,
+		testSystem,
+		classes,
+		courses,
+		courseGroups,
+		teams,
+		roles,
+		schools,
+		schoolGroups,
+		years,
+		datasources,
+		submissions,
+		lessons,
+		homeworks,
+		storageProviders,
+		files,
+	].reverse().map((factory) => factory.cleanup()))
+		.then((res) => {
+			logger.info('[TestObjects] cleanup data.');
+			return res;
+		})
+		.catch((err) => {
+			logger.warning('[TestObjects] Can not cleanup.', err);
+			return err;
+		});
 
 	const info = () => ({
 		accounts: accounts.info,

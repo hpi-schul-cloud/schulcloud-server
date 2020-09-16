@@ -4,18 +4,15 @@ const { connect, close } = require('../src/utils/database');
 
 const { Schema } = mongoose;
 
-const roleSchema = new Schema(
-	{
-		name: { type: String, required: true },
-		permissions: [{ type: String }],
+const roleSchema = new Schema({
+	name: { type: String, required: true },
+	permissions: [{ type: String }],
 
-		// inheritance
-		roles: [{ type: Schema.Types.ObjectId }],
-	},
-	{
-		timestamps: true,
-	}
-);
+	// inheritance
+	roles: [{ type: Schema.Types.ObjectId }],
+}, {
+	timestamps: true,
+});
 
 const Role = mongoose.model('role3243', roleSchema, 'roles');
 
@@ -49,18 +46,10 @@ module.exports = {
 
 		const roles = ['user', 'student', 'teacher', 'administrator'];
 		const permissions = [
-			'STUDENT_CREATE',
-			'STUDENT_EDIT',
-			'STUDENT_DELETE',
-			'TEACHER_CREATE',
-			'TEACHER_EDIT',
-			'TEACHER_DELETE',
-			'CLASS_CREATE',
-			'CLASS_EDIT',
-			'CLASS_REMOVE',
-			'STUDENT_SKIP_REGISTRATION',
-			'SYSTEM_CREATE',
-			'SYSTEM_EDIT',
+			'STUDENT_CREATE', 'STUDENT_EDIT', 'STUDENT_DELETE',
+			'TEACHER_CREATE', 'TEACHER_EDIT', 'TEACHER_DELETE',
+			'CLASS_CREATE', 'CLASS_EDIT', 'CLASS_REMOVE',
+			'STUDENT_SKIP_REGISTRATION', 'SYSTEM_CREATE', 'SYSTEM_EDIT',
 		];
 
 		info('remove permissions from users iff existing...', { roles, permissions });
@@ -82,10 +71,8 @@ module.exports = {
 				}
 			}
 			if (updated !== 0) {
-				info(
-					`updating role '${role}' finished with ${updated} modifications. ` + 'Removed permissions:',
-					removedPersmissions
-				);
+				info(`updating role '${role}' finished with ${updated} modifications. `
+				+ 'Removed permissions:', removedPersmissions);
 				await currentRole.save();
 				info('role updated successfully...');
 			} else {
@@ -93,7 +80,7 @@ module.exports = {
 			}
 		}
 
-		info("add 'SYSTEM_CREATE', 'SYSTEM_EDIT', to superhero in SC_THEME=thr");
+		info('add \'SYSTEM_CREATE\', \'SYSTEM_EDIT\', to superhero in SC_THEME=thr');
 
 		const superHero = await Role.findOne({ name: 'superhero' }).exec();
 		info('current superhero permissions are', superHero.permissions);

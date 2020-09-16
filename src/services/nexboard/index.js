@@ -1,4 +1,7 @@
-const { Project, Board } = require('./services');
+const {
+	Project,
+	Board,
+} = require('./services');
 
 const hooks = require('./hooks');
 

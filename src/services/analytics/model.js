@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const AnalyticsSchema = new Schema({
+
 	createdAt: { type: Date, default: Date.now },
 
 	firstPaint: { type: Number, default: 0 },
@@ -26,6 +27,7 @@ const AnalyticsSchema = new Schema({
 	swOffline: { type: Boolean, default: false },
 	school: { type: String, required: false },
 	networkProtocol: { type: String, required: false },
+
 });
 
 module.exports = mongoose.model('Analytics', AnalyticsSchema);

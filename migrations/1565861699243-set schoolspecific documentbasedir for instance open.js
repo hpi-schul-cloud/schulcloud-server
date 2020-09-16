@@ -12,14 +12,9 @@ module.exports = {
 		}
 
 		await connect();
-		await School.updateMany(
-			{},
-			{
-				documentBaseDirType: 'school',
-			}
-		)
-			.lean()
-			.exec();
+		await School.updateMany({}, {
+			documentBaseDirType: 'school',
+		}).lean().exec();
 
 		await close();
 

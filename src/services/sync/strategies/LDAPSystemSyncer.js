@@ -15,8 +15,8 @@ class LDAPSystemSyncer extends Syncer {
 	}
 
 	/**
-	 * @see {Syncer#respondsTo}
-	 */
+     * @see {Syncer#respondsTo}
+     */
 	static respondsTo(target) {
 		return target === 'ldap';
 	}
@@ -26,8 +26,8 @@ class LDAPSystemSyncer extends Syncer {
 	}
 
 	/**
-	 * @see {Syncer#steps}
-	 */
+     * @see {Syncer#steps}
+     */
 	async steps() {
 		await super.steps();
 		const systems = await this.getSystems();
@@ -39,18 +39,14 @@ class LDAPSystemSyncer extends Syncer {
 			this.stats.systems[system.alias] = stats;
 
 			// don't let unbind errors stop the sync
-			this.app
-				.service('ldap')
-				.disconnect(system.ldapConfig)
+			this.app.service('ldap').disconnect(system.ldapConfig)
 				.catch((error) => this.logger.error('Could not unbind from LDAP server', { error }));
 		}
 		return this.stats;
 	}
 
 	getSystems() {
-		return this.app
-			.service('systems')
-			.find({ query: { type: 'ldap', 'ldapConfig.active': true }, paginate: false })
+		return this.app.service('systems').find({ query: { type: 'ldap', 'ldapConfig.active': true }, paginate: false })
 			.then((systems) => {
 				this.logInfo(`Found ${systems.length} LDAP configurations.`);
 				return systems;

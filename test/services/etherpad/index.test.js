@@ -11,11 +11,15 @@ const { expect } = chai;
 
 chai.use(chaiHttp);
 
-function request({ server, method = 'get', endpoint, data, accessToken }) {
-	return new Promise((resolve, reject) =>
-		chai
-			.request(server)
-			[method](endpoint)
+function request({
+	server,
+	method = 'get',
+	endpoint,
+	data,
+	accessToken,
+}) {
+	return new Promise((resolve, reject) => (
+		chai.request(server)[method](endpoint)
 			.set({
 				Accept: 'application/json',
 				Authorization: accessToken,
@@ -29,7 +33,7 @@ function request({ server, method = 'get', endpoint, data, accessToken }) {
 				}
 				resolve(res);
 			})
-	);
+	));
 }
 
 describe('Etherpad services', () => {
@@ -69,9 +73,7 @@ describe('Etherpad services', () => {
 
 	it('should create a new etherpad author', async () => {
 		const {
-			requestParams: {
-				authentication: { accessToken },
-			},
+			requestParams: { authentication: { accessToken } },
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const data = {};
@@ -86,11 +88,10 @@ describe('Etherpad services', () => {
 		expect(!!body.data.authorID).to.equal(true);
 	});
 
+
 	it('should create a new etherpad group', async () => {
 		const {
-			requestParams: {
-				authentication: { accessToken },
-			},
+			requestParams: { authentication: { accessToken } },
 		} = await testHelpers.setupUser({
 			roles: ['teacher'],
 			permissions: ['COURSE_VIEW'],
@@ -114,9 +115,7 @@ describe('Etherpad services', () => {
 
 	it('should create a new pad', async () => {
 		const {
-			requestParams: {
-				authentication: { accessToken },
-			},
+			requestParams: { authentication: { accessToken } },
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const jwt = decode(accessToken);
@@ -141,9 +140,7 @@ describe('Etherpad services', () => {
 
 	it('should create a new session', async () => {
 		const {
-			requestParams: {
-				authentication: { accessToken },
-			},
+			requestParams: { authentication: { accessToken } },
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const jwt = decode(accessToken);

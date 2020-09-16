@@ -1,8 +1,5 @@
 const {
-	requestFullSchoolSync,
-	requestSyncForEachCourseUser,
-	requestSyncForEachTeamUser,
-	requestFullSyncForUser,
+	requestFullSchoolSync, requestSyncForEachCourseUser, requestSyncForEachTeamUser, requestFullSyncForUser,
 } = require('./producer');
 
 const setup = async (app) => {

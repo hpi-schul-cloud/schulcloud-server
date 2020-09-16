@@ -14,7 +14,10 @@ const {
 	MailRegistrationLink,
 	RegistrationConsentService,
 	registrationConsentServiceHooks,
-	ForcePasswordChange: { ForcePasswordChangeService, ForcePasswordChangeServiceHooks },
+	ForcePasswordChange: {
+		ForcePasswordChangeService,
+		ForcePasswordChangeServiceHooks,
+	},
 	QrRegistrationLinks: { QrRegistrationLinks, qrRegistrationLinksHooks },
 } = require('./services');
 
@@ -29,33 +32,28 @@ module.exports = (app) => {
 	app.use('users/linkImport', new UserLinkImportService(userService)); // do not use hooks
 
 	/* publicTeachers Service */
-	app.use(
-		'/publicTeachers',
-		service({
-			Model: userModel,
-			paginate: {
-				default: 25,
-				max: 1000,
-			},
-			lean: true,
-		})
-	);
+	app.use('/publicTeachers', service({
+		Model: userModel,
+		paginate: {
+			default: 25,
+			max: 1000,
+		},
+		lean: true,
+	}));
 
 	const publicTeachersService = app.service('/publicTeachers');
 	publicTeachersService.hooks(publicTeachersHooks);
 
+
 	/* registrationPin Service */
-	app.use(
-		'/registrationPins',
-		service({
-			Model: registrationPinModel,
-			paginate: {
-				default: 500,
-				max: 5000,
-			},
-			lean: true,
-		})
-	);
+	app.use('/registrationPins', service({
+		Model: registrationPinModel,
+		paginate: {
+			default: 500,
+			max: 5000,
+		},
+		lean: true,
+	}));
 	const registrationPinService = app.service('/registrationPins');
 	registrationPinService.hooks(registrationPinsHooks);
 

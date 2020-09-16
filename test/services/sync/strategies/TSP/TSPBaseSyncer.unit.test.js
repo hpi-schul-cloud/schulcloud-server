@@ -1,6 +1,9 @@
 const { expect } = require('chai');
 
-const { TSPBaseSyncer, SYNCER_TARGET } = require('../../../../../src/services/sync/strategies/TSP/TSPBaseSyncer');
+const {
+	TSPBaseSyncer,
+	SYNCER_TARGET,
+} = require('../../../../../src/services/sync/strategies/TSP/TSPBaseSyncer');
 
 describe('TSPBaseSyncer', () => {
 	it('implements the Syncer interface', () => {

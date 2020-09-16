@@ -15,21 +15,19 @@ describe('course service', () => {
 		await server.close();
 	});
 
+
 	it('CREATE a course', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
-		const result = await app.service('courses').create(
-			{
-				name: 'testcourse',
-				schoolId: schoolId.toString(),
-				teacherIds: [teacher._id],
-				substitutionIds: [],
-				classIds: [],
-				userIds: [],
-			},
-			params
-		);
+		const result = await app.service('courses').create({
+			name: 'testcourse',
+			schoolId: schoolId.toString(),
+			teacherIds: [teacher._id],
+			substitutionIds: [],
+			classIds: [],
+			userIds: [],
+		}, params);
 		expect(result).to.not.be.undefined;
 		expect(result).to.haveOwnProperty('_id');
 		expect(result.name).to.eq('testcourse');
@@ -73,9 +71,9 @@ describe('course service', () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
-		const result = await app
-			.service('courses')
-			.patch(course._id, { description: 'this description has been changed' }, params);
+		const result = await app.service('courses').patch(
+			course._id, { description: 'this description has been changed' }, params,
+		);
 		expect(result).to.not.be.undefined;
 		expect(result.description).to.eq('this description has been changed');
 	});
@@ -87,17 +85,14 @@ describe('course service', () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			try {
-				await app.service('courses').create(
-					{
-						name: 'testcourse',
-						schoolId: otherSchoolId.toString(),
-						teacherIds: [teacher._id],
-						substitutionIds: [],
-						classIds: [],
-						userIds: [],
-					},
-					params
-				);
+				await app.service('courses').create({
+					name: 'testcourse',
+					schoolId: otherSchoolId.toString(),
+					teacherIds: [teacher._id],
+					substitutionIds: [],
+					classIds: [],
+					userIds: [],
+				}, params);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
@@ -168,7 +163,9 @@ describe('course service', () => {
 			const course = await testObjects.createTestCourse({ schoolId });
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			try {
-				await app.service('courses').patch(course._id, { description: 'this description has been changed' }, params);
+				await app.service('courses').patch(
+					course._id, { description: 'this description has been changed' }, params,
+				);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
@@ -184,16 +181,14 @@ describe('course service', () => {
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			try {
 				await app.service('courses').update(
-					course._id,
-					{
+					course._id, {
 						name: 'changedName',
 						schoolId: schoolId.toString(),
 						teacherIds: [teacher._id],
 						substitutionIds: [],
 						classIds: [],
 						userIds: [],
-					},
-					params
+					}, params,
 				);
 				throw new Error('should have failed');
 			} catch (err) {
@@ -210,9 +205,7 @@ describe('course service', () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
 			const course = await testObjects.createTestCourse({
-				schoolId,
-				teacherIds: [teacher._id],
-				userIds: [student._id],
+				schoolId, teacherIds: [teacher._id], userIds: [student._id],
 			});
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			params.query = { $populate: ['userIds'] };
@@ -230,9 +223,7 @@ describe('course service', () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
 			const course = await testObjects.createTestCourse({
-				schoolId,
-				teacherIds: [teacher._id],
-				userIds: [student._id],
+				schoolId, teacherIds: [teacher._id], userIds: [student._id],
 			});
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			params.query = { $populate: ['teacherIds'] };
@@ -251,9 +242,7 @@ describe('course service', () => {
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
 			const klass = await testObjects.createTestClass({ userIds: [student.userId], schoolId });
 			const course = await testObjects.createTestCourse({
-				schoolId,
-				teacherIds: [teacher._id],
-				classIds: [klass._id],
+				schoolId, teacherIds: [teacher._id], classIds: [klass._id],
 			});
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			params.query = { $populate: ['classIds'] };
@@ -270,8 +259,7 @@ describe('course service', () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 			const course = await testObjects.createTestCourse({
-				schoolId,
-				teacherIds: [teacher._id],
+				schoolId, teacherIds: [teacher._id],
 			});
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			params.query = { $populate: ['schoolId'] };
@@ -291,17 +279,14 @@ describe('course service', () => {
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			params.query = { $populate: ['schoolId'] };
 			try {
-				await app.service('courses').create(
-					{
-						name: 'testcourse',
-						schoolId: schoolId.toString(),
-						teacherIds: [teacher._id],
-						substitutionIds: [],
-						classIds: [],
-						userIds: [],
-					},
-					params
-				);
+				await app.service('courses').create({
+					name: 'testcourse',
+					schoolId: schoolId.toString(),
+					teacherIds: [teacher._id],
+					substitutionIds: [],
+					classIds: [],
+					userIds: [],
+				}, params);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should not have failed');
@@ -317,7 +302,9 @@ describe('course service', () => {
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			params.query = { $populate: ['schoolId'] };
 			try {
-				await app.service('courses').patch(course._id, { description: 'this description has been changed' }, params);
+				await app.service('courses').patch(
+					course._id, { description: 'this description has been changed' }, params,
+				);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should not have failed');
@@ -333,7 +320,9 @@ describe('course service', () => {
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			params.query = { $populate: ['schoolId'] };
 			try {
-				await app.service('courses').update(course._id, { description: 'this description has been changed' }, params);
+				await app.service('courses').update(
+					course._id, { description: 'this description has been changed' }, params,
+				);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should not have failed');
@@ -349,7 +338,9 @@ describe('course service', () => {
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			params.query = { $populate: ['schoolId'] };
 			try {
-				await app.service('courses').remove(course._id, params);
+				await app.service('courses').remove(
+					course._id, params,
+				);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should not have failed');

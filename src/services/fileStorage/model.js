@@ -20,7 +20,7 @@ const permissionSchema = new Schema(
 		create: { type: Boolean, default: true },
 		delete: { type: Boolean, default: true },
 	},
-	{ _id: false }
+	{ _id: false },
 );
 
 enableAuditLog(permissionSchema);
@@ -56,19 +56,9 @@ const SecurityCheckStatusTypes = Object.freeze({
 const fileSchema = new Schema({
 	isDirectory: { type: Boolean, default: false }, // should be required
 	name: { type: String, required: true },
-	size: {
-		type: Number,
-		required() {
-			return !this.isDirectory;
-		},
-	},
+	size: { type: Number, required() { return !this.isDirectory; } },
 	type: { type: String }, // todo add required but then wopi fails
-	storageFileName: {
-		type: String,
-		required() {
-			return !this.isDirectory;
-		},
-	},
+	storageFileName: { type: String, required() { return !this.isDirectory; } },
 	thumbnail: { type: String },
 	thumbnailRequestToken: { type: String, default: uuid },
 	securityCheck: {

@@ -11,7 +11,9 @@ const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
-const { KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH } = require('../config/globals');
+const {
+	KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH,
+} = require('../config/globals');
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
@@ -53,8 +55,7 @@ if (KEEP_ALIVE) {
 	});
 }
 
-app
-	.use(compress())
+app.use(compress())
 	.options('*', cors())
 	.use(cors())
 	.use(favicon(path.join(app.get('public'), 'favicon.ico')))
@@ -66,12 +67,8 @@ app
 	.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 	.use(versionService)
 	.use(defaultHeaders)
-	.get('/system_info/haproxy', (req, res) => {
-		res.send({ timestamp: new Date().getTime() });
-	})
-	.get('/ping', (req, res) => {
-		res.send({ message: 'pong', timestamp: new Date().getTime() });
-	})
+	.get('/system_info/haproxy', (req, res) => { res.send({ timestamp: new Date().getTime() }); })
+	.get('/ping', (req, res) => { res.send({ message: 'pong', timestamp: new Date().getTime() }); })
 	.configure(rest(handleResponseType))
 	.configure(socketio())
 	.configure(requestLogger)

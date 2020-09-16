@@ -1,14 +1,12 @@
 const _ = require('lodash');
 const logger = require('../logger');
 
-const validateKeys = (newKeys) =>
-	newKeys.reduce((validatedKeys, key) => {
-		if (key && key !== '') {
-			// remove invalid pathes
-			validatedKeys.push(key);
-		}
-		return validatedKeys;
-	}, []);
+const validateKeys = (newKeys) => newKeys.reduce((validatedKeys, key) => {
+	if (key && key !== '') {	// remove invalid pathes
+		validatedKeys.push(key);
+	}
+	return validatedKeys;
+}, []);
 
 /**
  * @param  {...String||Array} paths
@@ -17,8 +15,7 @@ const pathsToArray = (...paths) => {
 	try {
 		let keys = [];
 		(paths || []).forEach((path) => {
-			if (path) {
-				// avoid null and undefined
+			if (path) {	// avoid null and undefined
 				let newKeys = [];
 				if (typeof path === 'string') {
 					// for dot notation y.asd.asdasd.sdada and array notations like a[0]

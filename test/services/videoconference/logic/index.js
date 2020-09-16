@@ -14,11 +14,23 @@ describe('videoconference logic', () => {
 		});
 
 		it('constants have not been modified', () => {
-			expect(Object.values(ROLES)).to.be.deep.equal(['moderator', 'attendee']);
-			expect(Object.values(RESPONSE_STATUS)).to.be.deep.equal(['SUCCESS', 'ERROR']);
-			expect(Object.values(MESSAGE_KEYS)).to.be.deep.equal(['notFound']);
+			expect(Object.values(ROLES))
+				.to.be.deep.equal([
+					'moderator',
+					'attendee',
+				]);
+			expect(Object.values(RESPONSE_STATUS))
+				.to.be.deep.equal([
+					'SUCCESS',
+					'ERROR',
+				]);
+			expect(Object.values(MESSAGE_KEYS))
+				.to.be.deep.equal([
+					'notFound',
+				]);
 		});
 	});
+
 
 	it('get meeting information for not existing meeting', async () => {
 		const otherRandomId = String(new mongoose.Types.ObjectId());
@@ -41,7 +53,7 @@ describe('videoconference logic', () => {
 				'Test Moderator',
 				ROLES.MODERATOR,
 				{},
-				true
+				true,
 			);
 			expect(moderatorUrl).to.be.not.empty;
 			expect(url.parse(moderatorUrl)).to.be.ok;
@@ -64,7 +76,7 @@ describe('videoconference logic', () => {
 				'Test Attendee',
 				ROLES.ATTENDEE,
 				{},
-				true
+				true,
 			);
 			expect(attendeeUrl).to.be.not.empty;
 			expect(url.parse(attendeeUrl)).to.be.ok;

@@ -38,14 +38,16 @@ class MoodleStrategy extends AuthenticationBaseStrategy {
 	}
 
 	async findEntity(username, systemId, params) {
-		const { entityUsernameField, entitySystemIdField, service, errorMessage } = this.configuration;
-		const query = await this.getEntityQuery(
-			{
-				[entityUsernameField]: username,
-				[entitySystemIdField]: systemId,
-			},
-			params
-		);
+		const {
+			entityUsernameField,
+			entitySystemIdField,
+			service,
+			errorMessage,
+		} = this.configuration;
+		const query = await this.getEntityQuery({
+			[entityUsernameField]: username,
+			[entitySystemIdField]: systemId,
+		}, params);
 
 		const findParams = { ...params, query };
 		const entityService = this.app.service(service);
@@ -117,7 +119,7 @@ class MoodleStrategy extends AuthenticationBaseStrategy {
 				const result = await this.findEntity(
 					authentication.username,
 					authentication.systemId,
-					omit(params, 'provider')
+					omit(params, 'provider'),
 				);
 
 				return {

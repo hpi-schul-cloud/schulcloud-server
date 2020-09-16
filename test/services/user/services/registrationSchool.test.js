@@ -1,8 +1,11 @@
 const { expect } = require('chai');
 const app = require('../../../../src/app');
-const { createTestSchool, createTestClass, createTestTeamWithOwner, cleanup } = require('../../helpers/testObjects')(
-	app
-);
+const {
+	createTestSchool,
+	createTestClass,
+	createTestTeamWithOwner,
+	cleanup,
+} = require('../../helpers/testObjects')(app);
 
 const registrationSchoolService = app.service('/registrationSchool');
 

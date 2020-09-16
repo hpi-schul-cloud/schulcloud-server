@@ -7,7 +7,7 @@ const testObjects = require('../../helpers/testObjects')(app);
 const {
 	hasEditPermissionForUser,
 	hasReadPermissionForUser,
-} = require('../../../../src/services/user/hooks/index.hooks');
+} =	require('../../../../src/services/user/hooks/index.hooks');
 
 const userService = app.service('users');
 
@@ -17,10 +17,11 @@ const userService = app.service('users');
  * @returns the hasEditPermissionForUser hook with mocked dependencies
  */
 const hasPermissionHookMockGenerator = (loggedinUserPermissions = []) => {
-	const globalHookMock = {
-		hasPermission: (permissions) => () =>
-			permissions.some((permission) => loggedinUserPermissions.includes(permission)),
-	};
+	const globalHookMock = ({
+		hasPermission: (permissions) => () => permissions.some(
+			(permission) => loggedinUserPermissions.includes(permission),
+		),
+	});
 	mockery.enable({
 		warnOnReplace: false,
 		warnOnUnregistered: false,
@@ -39,16 +40,13 @@ const hasPermissionHookMockGenerator = (loggedinUserPermissions = []) => {
  * @param sucess {Promise} - should the promise succeed?
  * @returns the promise
  */
-const assertPromiseStatus = (promise, success) =>
-	promise
-		.then((result) => {
-			expect(success).to.be.ok;
-			return result;
-		})
-		.catch((error) => {
-			expect(success).to.not.be.ok;
-			return error;
-		});
+const assertPromiseStatus = (promise, success) => promise.then((result) => {
+	expect(success).to.be.ok;
+	return result;
+}).catch((error) => {
+	expect(success).to.not.be.ok;
+	return error;
+});
 
 describe('hasEditPermissionForUser', () => {
 	let server;
@@ -108,6 +106,7 @@ describe('hasEditPermissionForUser', () => {
 		assertPromiseStatus(testHook(context), true);
 		mockery.disable();
 	});
+
 
 	it('can not edit a teacher when current user has not the TEACHER_EDIT permission', async () => {
 		const testHook = hasPermissionHookMockGenerator([]);
@@ -201,6 +200,7 @@ describe('hasReadPermissionForUser', () => {
 		assertPromiseStatus(testHook(context), true);
 		mockery.disable();
 	});
+
 
 	it('can not read a teacher when current user has not the TEACHER_LIST permission', async () => {
 		const testHook = hasPermissionHookMockGenerator([]);

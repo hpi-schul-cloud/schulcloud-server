@@ -1,21 +1,14 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { iff, isProvider } = require('feathers-hooks-common');
 const {
-	ifNotLocal,
-	restrictToCurrentSchool,
-	restrictToUsersOwnCourses,
-	hasPermission,
-	getRestrictPopulatesHook,
-	mapPaginationQuery,
-	permitGroupOperation,
-	addCollation,
-	preventPopulate,
-	injectUserId,
-	denyIfNotCurrentSchool,
+	iff, isProvider,
+} = require('feathers-hooks-common');
+const {
+	ifNotLocal, restrictToCurrentSchool, restrictToUsersOwnCourses, hasPermission,
+	getRestrictPopulatesHook, mapPaginationQuery, permitGroupOperation,
+	addCollation, preventPopulate, injectUserId, denyIfNotCurrentSchool,
 } = require('../../../hooks');
-const {
-	modelServices: { prepareInternalParams },
-} = require('../../../utils');
+const { modelServices: { prepareInternalParams } } = require('../../../utils');
+
 
 const restrictToCurrentSchoolIfNotLocal = ifNotLocal(restrictToCurrentSchool);
 const restrictToUsersOwnCoursesIfNotLocal = ifNotLocal(restrictToUsersOwnCourses);
@@ -80,7 +73,9 @@ const populateWhitelist = {
 
 const courseHooks = {
 	before: {
-		all: [authenticate('jwt')],
+		all: [
+			authenticate('jwt'),
+		],
 		find: [
 			hasPermission('COURSE_VIEW'),
 			restrictToCurrentSchoolIfNotLocal,
@@ -89,7 +84,10 @@ const courseHooks = {
 			mapPaginationQuery,
 			addCollation,
 		],
-		get: [courseInviteHook, iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist))],
+		get: [
+			courseInviteHook,
+			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
+		],
 		create: [
 			injectUserId,
 			hasPermission('COURSE_CREATE'),
@@ -128,7 +126,7 @@ const courseHooks = {
 			ifNotLocal(
 				denyIfNotCurrentSchool({
 					errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
-				})
+				}),
 			),
 		],
 		create: [addWholeClassToCourse],

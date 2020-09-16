@@ -19,7 +19,10 @@ const before = {
 	all: [authenticate('jwt')],
 	find: [disallow()],
 	get: [disallow()],
-	create: [injectUserId, getUserData],
+	create: [
+		injectUserId,
+		getUserData,
+	],
 	update: [disallow()],
 	patch: [disallow()],
 	remove: [disallow()],

@@ -11,7 +11,8 @@ const { hasPermission } = require('../../../hooks');
  * @throws {Forbidden} if user does not have correct permissions.
  */
 const checkPermissions = async (hook) => {
-	const targetUser = await hook.app.service('users').get(hook.params.route.userId, { query: { $populate: 'roles' } });
+	const targetUser = await hook.app.service('users').get(hook.params.route.userId,
+		{ query: { $populate: 'roles' } });
 	const actingUser = await hook.app.service('users').get(hook.params.account.userId);
 
 	const targetIsStudent = targetUser.roles[0].name === 'student';
