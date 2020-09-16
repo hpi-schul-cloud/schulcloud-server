@@ -12,13 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      FEATURE_OR_HOTFIX: false
     steps:
       - name: continue only iff this is a feature or hotfix pr
         if: startsWith(${{ github.head_ref }}, 'feature') == false && startsWith(${{ github.head_ref }}, 'hotfix') == false
-        id: enabled
+        env:
+          FEATURE_OR_HOTFIX: true
         run: |
           echo "This check is required for merging into develop and master but takes in action only for pr's from feature or hotfix branches."
-          echo "::set-output name=enabled::true"
       - name: current branch will be checked (otherwise ignored)
         run: ${{ steps.enabled.outputs.enabled }}
       - name: Get Changed Files
@@ -29,13 +30,13 @@ jobs:
       - name: current head branch name
         run: echo ${{ github.head_ref }}
       - name: Changelog has been updated
-        if: steps.changed.outputs.matched == 'true'
+        if: steps.changed.outputs.matched == 'true' && $FEATURE_OR_HOTFIX == 'true'
         run: |
           echo ${{ steps.changed.outputs.matched }}
           echo "Changes in CHANGELOG.md have been found"
           exit 0
       - name: Changelog updates missing
-        if: steps.changed.outputs.matched != 'true' && steps.enabled.outputs.enabled == 'true'
+        if: steps.changed.outputs.matched != 'true' && $FEATURE_OR_HOTFIX == 'true'
         run: |
           echo ${{ steps.changed.outputs.matched }}
           echo "Features and Hotfixes must contain a changelog entry."
