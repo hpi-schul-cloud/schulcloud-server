@@ -2,6 +2,7 @@ const { expect } = require('chai');
 const logger = require('../../../../src/logger/index');
 const app = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(app);
+const accountModel = require('../../../../src/services/account/model');
 
 const accountService = app.service('/accounts');
 
@@ -939,6 +940,53 @@ describe('AdminUsersService', () => {
 			expect(updatedAccount.username).equals('foo@bar.baz');
 		});
 
+		const doNotUpdateAccountIfSystemIdIsSet = (role, type, service) => async () => {
+			const school = await testObjects.createTestSchool({
+				name: 'testSchool1',
+			});
+			const system = await testObjects
+				.createTestSystem();
+			const username = 'hans-kunz';
+			// given
+			const user = await testObjects.createTestUser({ roles: [role], schoolId: school._id });
+			const accountDetails = {
+				username,
+				password: 'password',
+				userId: user._id,
+				systemId: system._id,
+			};
+			const account = await accountModel.create(accountDetails);
+
+			try {
+				// when
+				const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+				const params = await testObjects.generateRequestParamsFromUser(admin);
+				params.query = {};
+				await service[type](
+					user._id.toString(),
+					{
+						firstName: 'golf',
+						lastName: 'monk',
+						email: 'foo@bar.baz',
+					},
+					params,
+				);
+
+				// then
+				const notUpdatedAccount = await accountService.get(account._id);
+				expect(notUpdatedAccount.username).equals(username);
+				await accountModel.remove({ _id: account._id });
+			} catch (err) {
+				await accountModel.remove({ _id: account._id });
+				throw err;
+			}
+		};
+
+		it('do not update account if from external system (student, patch)',
+			doNotUpdateAccountIfSystemIdIsSet('student', 'patch', adminStudentsService));
+		it('do not update account if from external system (teacher, patch)',
+			doNotUpdateAccountIfSystemIdIsSet('teacher', 'patch', adminTeachersService));
+
 
 		const updateFromDifferentSchool = (role, type, service) => async () => {
 			const school = await testObjects.createTestSchool({
@@ -973,12 +1021,8 @@ describe('AdminUsersService', () => {
 
 		it('do not allow patch students from other schools',
 			updateFromDifferentSchool('student', 'patch', adminStudentsService));
-		it('do not allow update students from other schools',
-			updateFromDifferentSchool('student', 'update', adminStudentsService));
 		it('do not allow patch teacher from other schools',
 			updateFromDifferentSchool('teacher', 'patch', adminTeachersService));
-		it('do not allow update teacher from other schools',
-			updateFromDifferentSchool('teacher', 'update', adminTeachersService));
 
 		const useEmailTwice = (role, type, service) => async () => {
 			const school = await testObjects.createTestSchool({
@@ -1040,12 +1084,8 @@ describe('AdminUsersService', () => {
 
 		it('block changes student patch if email already use',
 			useEmailTwice('student', 'patch', adminStudentsService));
-		it('block changes student update if email already in use',
-			useEmailTwice('student', 'update', adminStudentsService));
 		it('block changes teacher patch if email already in use',
 			useEmailTwice('teacher', 'patch', adminTeachersService));
-		it('block changes teacher update if email already in use',
-			useEmailTwice('teacher', 'update', adminTeachersService));
 	});
 });
 
