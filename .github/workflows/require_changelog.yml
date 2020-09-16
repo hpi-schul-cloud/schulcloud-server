@@ -18,7 +18,7 @@ jobs:
         if: startsWith(${{ github.head_ref }}, 'feature') || startsWith(${{ github.head_ref }}, 'hotfix')
         run: |
           echo "This check is required for merging into develop and master but takes in action only for pr's from feature or hotfix branches."
-          echo ::set-env name=FEATURE_OR_HOTFIX::true
+          echo "::set-env name=FEATURE_OR_HOTFIX::true"
       - name: Get Changed Files
         id: changed
         uses: foodee/pr-includes-file-change@master
