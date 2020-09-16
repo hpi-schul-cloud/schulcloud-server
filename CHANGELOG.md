@@ -20,6 +20,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - Extend JWT payload by schoolId and roleIds
 
+## [24.5.1] - 2020-09-16
+
+### Secrutiy - 24.5.1
+
+- Secure admin routes (update, patch, create)
+
 ## [24.5.0] - 2020-09-14
 
 - Ignore database seed data with prettier, eslint, and codacy
