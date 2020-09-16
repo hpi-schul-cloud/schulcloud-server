@@ -29,16 +29,11 @@ jobs:
         if: startsWith(github.head_ref, 'hotfix')
         run: |
           echo "::set-env name=FEATURE_OR_HOTFIX::true"
-      - name: Changelog has been updated
-        if: steps.changed.outputs.matched == 'true' && env.FEATURE_OR_HOTFIX == 'true'
-        run: |
-          echo ${{ steps.changed.outputs.matched }}
-          echo "Changes in CHANGELOG.md luckily have been found. Go on!"
-          exit 0
-      - name: Changelog updates missing
+      - name: Changelog updates have been found
         if: steps.changed.outputs.matched != 'true' && env.FEATURE_OR_HOTFIX == 'true'
         run: |
           echo ${{ steps.changed.outputs.matched }}
           echo "Features and Hotfixes must contain a changelog entry."
           echo "Add meaningful information into CHANGELOG.md about this PR."
+          echo "Use a branch name not matching feature/** or hotfix/** will not require a changelog update."
           exit 1
