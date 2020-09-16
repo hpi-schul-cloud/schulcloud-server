@@ -152,37 +152,24 @@ class AdminUsers {
 	}
 
 	async update(_id, _data, _params) {
-		if (!_id) throw new BadRequest('id is required');
-		const params = await this.prepareParams(_id, _params);
-		await this.checkExternal(params.query.schoolId);
-		const { email } = _data;
-		await this.checkMail(email, _id);
-		await this.updateAccount(email, _id);
-		// _id is part of params and will be combined with the schoolId
-		const user = await this.prepareRoleback(
-			email, _id, () => this.app.service('usersModel').update(null, _data, params),
-		);
-
-		if (user.length === 0) throw BadRequest('User could not be edit');
-
-		return user;
+		// route should be blocked
+		return this.patch(_id, _data, _params);
 	}
 
 	async patch(_id, _data, _params) {
 		if (!_id) throw new BadRequest('id is required');
 		const params = await this.prepareParams(_id, _params);
-		await this.checkExternal(params.query.schoolId);
 		const { email } = _data;
 		await this.checkMail(email, _id);
 		await this.updateAccount(email, _id);
 		// _id is part of params and will be combined with the schoolId
-		const user = await this.prepareRoleback(
+		const users = await this.prepareRoleback(
 			email, _id, () => this.app.service('usersModel').patch(null, _data, params),
 		);
 
-		if (user.length === 0) throw new BadRequest('user could not be edited');
+		if (users.length === 0) throw new BadRequest('user could not be edit');
 
-		return user;
+		return users[0];
 	}
 
 	/**
@@ -224,7 +211,7 @@ class AdminUsers {
 	async checkMail(email, userId) {
 		if (email) {
 			const user = await this.app.service('usersModel').find({ query: { email: email.toLowerCase() } });
-			if (userId && user.total === 1 && user.data[0]._id.toString() === userId.toString()) return;
+			if (userId && user.total === 1 && equalIds(user.data[0]._id, userId)) return;
 			if (user.total !== 0) {
 				throw new BadRequest('Email already exists.');
 			}
@@ -244,6 +231,7 @@ class AdminUsers {
 				query: {
 					userId,
 					username: { $ne: email },
+					systemId: { $exists: false },
 				},
 			});
 		}
@@ -251,13 +239,14 @@ class AdminUsers {
 
 	async prepareRoleback(email, userId, fu) {
 		try {
-			return fu();
+			return await fu();
 		} catch (err) {
 			if (email) {
 				const { email: oldMail } = await this.app.service('usersModel').get(userId);
 				await this.app.service('accountModel').patch(null, { username: oldMail }, {
 					query: {
 						userId,
+						systemId: { $exists: false },
 					},
 				});
 			}
