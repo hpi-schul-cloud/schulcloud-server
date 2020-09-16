@@ -20,15 +20,15 @@ jobs:
           FEATURE_OR_HOTFIX: true
         run: |
           echo "This check is required for merging into develop and master but takes in action only for pr's from feature or hotfix branches."
-      - name: current branch will be checked (otherwise ignored)
-        run: echo ${{ env.FEATURE_OR_HOTFIX }}
       - name: Get Changed Files
         id: changed
         uses: foodee/pr-includes-file-change@master
         with:
           paths: ^CHANGELOG.md
       - name: current head branch name
-        run: echo ${{ github.head_ref }}
+        run: |
+          echo ${{ github.head_ref }}
+          echo ${{ env.FEATURE_OR_HOTFIX }}
       - name: Changelog has been updated
         if: steps.changed.outputs.matched == 'true' && env.FEATURE_OR_HOTFIX == 'true'
         run: |
