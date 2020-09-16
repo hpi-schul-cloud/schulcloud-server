@@ -23,7 +23,7 @@ jobs:
         run: |
           echo "This check is required for merging into develop and master but takes in action only for pr's from feature or hotfix branches."
           echo "::set-env name=FEATURE_OR_HOTFIX::true"
-      - name: current head branch name
+      - name: current values
         run: |
           echo ${{ github.head_ref }}
           echo ${{ env.FEATURE_OR_HOTFIX }}
