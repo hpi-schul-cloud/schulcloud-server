@@ -1,5 +1,6 @@
 const { BadRequest } = require('@feathersjs/errors');
 const request = require('request-promise-native');
+const { Configuration } = require('@schul-cloud/commons');
 
 const { getRequestOptions } = require('../helpers');
 const { userModel } = require('../model');
@@ -17,6 +18,9 @@ class RocketChatLogout {
 	 * @param {*} params
 	 */
 	async get(userId, params) {
+		if (!Configuration.get('FEATURE_ROCKET_CHAT_ENABLED')) {
+			throw new BadRequest('method not supported')
+		}
 		try {
 			const rcUser = await this.app.service('/rocketChat/user').getOrCreateRocketChatAccount(userId, params);
 			if (rcUser.authToken && rcUser.authToken !== '') {

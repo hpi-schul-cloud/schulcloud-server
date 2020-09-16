@@ -3,10 +3,6 @@ const {
 	REQUEST_TIMEOUT,
 } = require('../../../config/globals');
 
-const ROCKET_CHAT_URI = Configuration.get('ROCKET_CHAT_URI');
-const ROCKET_CHAT_ADMIN_TOKEN = Configuration.get('ROCKET_CHAT_ADMIN_TOKEN');
-const ROCKET_CHAT_ADMIN_ID = Configuration.get('ROCKET_CHAT_ADMIN_ID');
-
 /**
  * create a valid options object to call a rocketChat request.
  * @param {String} shortUri Uri of the Rocket.Chat endpoint. Example: '/api/v1/users.register'
@@ -20,8 +16,8 @@ exports.getRequestOptions = (shortUri, body, asAdmin, auth, method) => {
 	let headers;
 	if (asAdmin) {
 		headers = {
-			'X-Auth-Token': ROCKET_CHAT_ADMIN_TOKEN,
-			'X-User-ID': ROCKET_CHAT_ADMIN_ID,
+			'X-Auth-Token': Configuration.get('ROCKET_CHAT_ADMIN_TOKEN'),
+			'X-User-ID': Configuration.get('ROCKET_CHAT_ADMIN_ID'),
 		};
 	} else if (auth) {
 		headers = {
@@ -30,7 +26,7 @@ exports.getRequestOptions = (shortUri, body, asAdmin, auth, method) => {
 		};
 	}
 	return {
-		uri: ROCKET_CHAT_URI + shortUri,
+		uri: Configuration.get('ROCKET_CHAT_URI') + shortUri,
 		method: method || 'POST',
 		body,
 		headers,

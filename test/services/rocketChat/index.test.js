@@ -11,11 +11,11 @@ const { expect } = chai;
 
 describe('rocket.chat user service', () => {
 	delete require.cache[require.resolve('../../../src/app')];
-	const app = require('../../../src/app');
-	const testObjects = require('../helpers/testObjects')(app);
 
 	let server;
 	let rocketChatUserService;
+	let app;
+	let testObjects
 
 	before(async () => {
 		const rcMock = await rcMockServer({});
@@ -24,12 +24,16 @@ describe('rocket.chat user service', () => {
 		});
 
 		configBefore = Configuration.toObject(); // deep copy current config
+		Configuration.set('FEATURE_ROCKET_CHAT_ENABLED', true);
 		Configuration.set('ROCKET_CHAT_URI', rcMock.url);
-		// ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID
+		Configuration.set('ROCKET_CHAT_ADMIN_ID', "fakeid");
+		Configuration.set('ROCKET_CHAT_ADMIN_TOKEN', "supersecret");
 
 		delete require.cache[require.resolve('../../../src/services/rocketChat/services/rocketChatUser.js')];
 		delete require.cache[require.resolve('../../../src/services/rocketChat/helpers.js')];
 		delete require.cache[require.resolve('../../../src/services/rocketChat/index.js')];
+		app = require('../../../src/app');
+		testObjects = require('../helpers/testObjects')(app);
 		const rocketChat = require('../../../src/services/rocketChat');
 		app.configure(rocketChat);
 		rocketChatUserService = app.service('/rocketChat/user');

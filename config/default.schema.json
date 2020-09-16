@@ -376,6 +376,11 @@
 			"default": false,
 			"description": "Brute force flag during recovery password process"
 		},
+		"FEATURE_ROCKET_CHAT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "feature flag to enable the rocketchat backend."
+		},
 		"ROCKET_CHAT_URI": {
 			"type": "string",
 			"format": "uri",

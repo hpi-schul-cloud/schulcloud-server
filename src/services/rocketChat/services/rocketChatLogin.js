@@ -1,5 +1,6 @@
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const request = require('request-promise-native');
+const { Configuration } = require('@schul-cloud/commons');
 
 const { getRequestOptions } = require('../helpers');
 const { userModel } = require('../model');
@@ -18,6 +19,9 @@ class RocketChatLogin {
 	 * @param {*} params
 	 */
 	async get(userId, params) {
+		if (!Configuration.get('FEATURE_ROCKET_CHAT_ENABLED')) {
+			throw new BadRequest('method not supported')
+		}
 		if (userId.toString() !== params.account.userId.toString()) {
 			return Promise.reject(new Forbidden('you may only log into your own rocketChat account'));
 		}

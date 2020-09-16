@@ -1,5 +1,6 @@
-const { BadRequest } = require('@feathersjs/errors');
+const { BadRequest, NotFound } = require('@feathersjs/errors');
 const request = require('request-promise-native');
+const { Configuration } = require('@schul-cloud/commons');
 
 const { getRequestOptions, makeStringRCConform } = require('../helpers');
 const { TEAM_FEATURES } = require('../../teams/model');
@@ -290,6 +291,9 @@ class RocketChatChannel {
 	 * @param {*} params
 	 */
 	async get(teamId, params) {
+		if (!Configuration.get('FEATURE_ROCKET_CHAT_ENABLED')) {
+			throw new BadRequest('method not supported')
+		}
 		const result = await this.getOrCreateRocketChatChannel(teamId, params);
 		this.synchronizeModerators(teamId);
 		return result;

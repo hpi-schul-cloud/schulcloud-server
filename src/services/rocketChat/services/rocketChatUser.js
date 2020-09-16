@@ -1,5 +1,6 @@
 const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const request = require('request-promise-native');
+const { Configuration } = require('@schul-cloud/commons');
 
 const { getRequestOptions, makeStringRCConform } = require('../helpers');
 const { SCHOOL_FEATURES } = require('../../school/model');
@@ -149,6 +150,9 @@ class RocketChatUser {
 	 * @param {} params
 	 */
 	get(userId) {
+		if (!Configuration.get('FEATURE_ROCKET_CHAT_ENABLED')) {
+			throw new BadRequest('method not supported')
+		}
 		return this.getOrCreateRocketChatAccount(userId)
 			.then((login) => {
 				const result = login;
@@ -166,6 +170,9 @@ class RocketChatUser {
 	 * @param {object} params an object containing an array `userIds`
 	 */
 	find({ userIds }) {
+		if (!Configuration.get('FEATURE_ROCKET_CHAT_ENABLED')) {
+			throw new BadRequest('method not supported')
+		}
 		// toDo: optimize to generate less requests
 		if (!Array.isArray(userIds || {})) {
 			return Promise.reject(new Forbidden('requires an array of userIds'));
