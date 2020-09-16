@@ -38,16 +38,10 @@
 		"migration-prune": "migrate prune --config ./config/migrate.js",
 		"migration-persist": "node ./backup.js -b export -p setup/ -c migrations --sort \"{ createdAt: 1 }\"",
 		"migrate-etherpads": "node ./migrate-etherpads.js",
-		"postinstall": "link-module-alias",
-		"preinstall": "npm list link-module-alias && link-module-alias clean"
+		"prepare": "npx link-module-alias"
 	},
 	"_moduleAliases": {
-		"~root": ".",
-		"~src": "./src",
-		"errors": "./src/utils/errors.js",
-		"utils": "./src/utils/",
-		"~test": "./test",
-		"~services": "./src/services"
+		"@src": "./src"
 	},
 	"dependencies": {
 		"@feathersjs/authentication": "^4.5.3",
