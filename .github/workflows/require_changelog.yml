@@ -19,6 +19,8 @@ jobs:
         run: |
           echo "This check is required for merging into develop and master but takes in action only for pr's from feature or hotfix branches."
           echo "::set-output name=enabled::true"
+      - name: current branch will be checked (otherwise ignored)
+        run: ${{ steps.enabled.outputs.enabled }}
       - name: Get Changed Files
         id: changed
         uses: foodee/pr-includes-file-change@master
