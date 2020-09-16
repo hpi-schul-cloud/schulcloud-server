@@ -91,7 +91,6 @@ class AdminUsers {
 			if (clientQuery.classes) query.classes = clientQuery.classes;
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
-			if (clientQuery.usersForConsent) query._id = clientQuery.usersForConsent;
 			if (clientQuery.searchQuery) {
 				query.$or = [
 					{ firstName: { $regex: clientQuery.searchQuery, $options: 'i' } },
