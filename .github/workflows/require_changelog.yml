@@ -19,8 +19,8 @@ jobs:
         with:
           paths: ^CHANGELOG.md
       - name: set defaults
-          run: |
-            echo "::set-env name=FEATURE_OR_HOTFIX::false"
+        run: |
+          echo "::set-env name=FEATURE_OR_HOTFIX::false"
       - name: continue only iff this is a feature or hotfix pr
         if: startsWith(${{ github.head_ref }}, 'feature') == 'true' || startsWith(${{ github.head_ref }}, 'hotfix') == 'true'
         run: |
