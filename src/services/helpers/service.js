@@ -1,5 +1,7 @@
 const request = require('request-promise-native');
-const { GeneralError, MethodNotAllowed } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { GeneralError } = reqlib('src/utils/errors');
 const logger = require('../../logger');
 
 const { REQUEST_TIMEOUT, SMTP_SENDER, NODE_ENV, ENVIRONMENTS } = require('../../../config/globals');

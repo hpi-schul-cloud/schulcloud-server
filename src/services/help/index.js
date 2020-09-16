@@ -1,6 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
 const hooks = require('feathers-hooks-common');
-const errors = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { NotFound, BadRequest } = reqlib('src/utils/errors');
 const { helpDocumentsModel } = require('./model');
 const logger = require('../../logger');
 const { excludeAttributesFromSanitization } = require('../../hooks/sanitizationExceptions');
@@ -21,7 +23,7 @@ const findDocuments = async (app, userId, theme) => {
 	}
 	const result = await helpDocumentsModel.find(query).lean().exec();
 
-	if (result.length < 1) throw new errors.NotFound('could not find help documents for this user or theme.');
+	if (result.length < 1) throw new NotFound('could not find help documents for this user or theme.');
 	return result[0].data;
 };
 
@@ -37,7 +39,7 @@ class HelpDocumentsService {
 	async find(params) {
 		try {
 			if (!(params.query || {}).theme) {
-				throw new errors.BadRequest('this method requires querying for a theme - query:{theme:"themename"}');
+				throw new BadRequest('this method requires querying for a theme - query:{theme:"themename"}');
 			}
 			const { userId } = params.account || params.query || {};
 			const { theme } = params.query || {};

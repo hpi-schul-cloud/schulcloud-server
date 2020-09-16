@@ -1,6 +1,8 @@
 /* eslint-disable max-classes-per-file */
 const CryptoJS = require('crypto-js');
-const { BadRequest } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const {BadRequest } = reqlib('src/utils/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const { ObjectId } = require('mongoose').Types;
 

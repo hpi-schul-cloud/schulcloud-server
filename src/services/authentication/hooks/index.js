@@ -1,4 +1,6 @@
-const { TooManyRequests } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { TooManyRequests } = reqlib('src/utils/errors');
 const { discard } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const {
