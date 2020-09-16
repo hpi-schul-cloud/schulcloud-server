@@ -360,9 +360,7 @@ const createMultiDocumentAggregation = ({
 	limit = Number(limit);
 	// eslint-disable-next-line no-param-reassign
 	skip = Number(skip);
-	let isSingleResult = false;
 	if (typeof match._id === 'string') {
-		isSingleResult = true;
 		match._id = ObjectId(match._id);
 	} else if (Array.isArray(match._id)) {
 		// build "$in" Query
@@ -404,7 +402,7 @@ const createMultiDocumentAggregation = ({
 	stageSimpleProject(aggregation, select);
 	// }
 
-	if (!isSingleResult) stageFormatWithTotal(aggregation, limit, skip);
+	if (!match._id || Array.isArray(match._id.$in)) stageFormatWithTotal(aggregation, limit, skip);
 	return aggregation;
 };
 
