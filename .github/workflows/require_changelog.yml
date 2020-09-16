@@ -12,16 +12,17 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      FEATURE_OR_HOTFIX: false
     steps:
-      - name: continue only iff this is a feature or hotfix pr
-        if: startsWith(${{ github.head_ref }}, 'feature') || startsWith(${{ github.head_ref }}, 'hotfix')
-        run: echo "::set-env name=FEATURE_OR_HOTFIX::true"
       - name: Get Changed Files
         id: changed
         uses: foodee/pr-includes-file-change@master
         with:
-          paths: ^CHANGELOG.md
+        paths: ^CHANGELOG.md
+      - name: continue only iff this is a feature or hotfix pr
+        if: startsWith(${{ github.head_ref }}, 'feature') || startsWith(${{ github.head_ref }}, 'hotfix')
+        run: |
+          echo "This check is required for merging into develop and master but takes in action only for pr's from feature or hotfix branches."
+          echo "::set-env name=FEATURE_OR_HOTFIX::true"
       - name: current head branch name
         run: |
           echo ${{ github.head_ref }}
