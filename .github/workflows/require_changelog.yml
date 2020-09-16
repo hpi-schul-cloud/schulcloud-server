@@ -22,11 +22,11 @@ jobs:
         run: |
           echo "::set-env name=FEATURE_OR_HOTFIX::false"
       - name: enable check if this is a feature pr
-        if: startsWith(github.head_ref, 'feature') == 'true'
+        if: startsWith(${{github.head_ref}}, 'feature') == 'true'
         run: |
           echo "::set-env name=FEATURE_OR_HOTFIX::true"
       - name: enable check if this is a hotfix pr
-        if: startsWith(github.head_ref, 'hotfix') == 'true'
+        if: startsWith(${{github.head_ref}}, 'hotfix') == 'true'
         run: |
           echo "::set-env name=FEATURE_OR_HOTFIX::true"
       - name: Changelog has been updated
