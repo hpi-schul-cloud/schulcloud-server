@@ -62,8 +62,13 @@ describe('Account Service', () => {
 			};
 
 			const account = await accountService.create(accountObject);
-			expect(account).to.not.equal(undefined);
-			expect(account.username).to.equal(accountObject.username.toLowerCase());
+			expect(account)
+				.to
+				.not
+				.equal(undefined);
+			expect(account.username)
+				.to
+				.equal(accountObject.username.toLowerCase());
 
 			await accountService.remove(account._id);
 			await userService.remove(user._id);
@@ -85,7 +90,9 @@ describe('Account Service', () => {
 							reject(new Error('This call should fail because the user already exists'));
 						})
 						.catch((err) => {
-							expect(err.message).to.equal('Der Account existiert bereits!');
+							expect(err.message)
+								.to
+								.equal('Der Account existiert bereits!');
 							resolve();
 						});
 				});
@@ -115,7 +122,9 @@ describe('Account Service', () => {
 						reject(new Error('This call should fail because ' + 'of an already existing user with the same username'));
 					})
 					.catch((err) => {
-						expect(err.message).to.equal('Der Benutzername ist bereits vergeben!');
+						expect(err.message)
+							.to
+							.equal('Der Benutzername ist bereits vergeben!');
 						resolve();
 					});
 			});
@@ -130,7 +139,10 @@ describe('Account Service', () => {
 				userId: new ObjectId(),
 			};
 			const account = await accountService.create(accountDetails);
-			expect(account.username).to.equal(accountDetails.username.trim().toLowerCase());
+			expect(account.username)
+				.to
+				.equal(accountDetails.username.trim()
+					.toLowerCase());
 
 			try {
 				await new Promise((resolve, reject) => {
@@ -141,13 +153,46 @@ describe('Account Service', () => {
 							reject(new Error('This call should fail because the user already exists'));
 						})
 						.catch((err) => {
-							expect(err.message).to.equal('Der Benutzername ist bereits vergeben!');
+							expect(err.message)
+								.to
+								.equal('Der Benutzername ist bereits vergeben!');
 							resolve();
 						});
 				});
 			} finally {
 				await accountService.remove(account._id);
 			}
+		});
+
+		it('should return an error if invalid email format was provided', async () => {
+
+			const accountDetails = {
+				username: 'invalid_user_name',
+				password: 'ca4t9fsfr3dsd',
+				userId: new ObjectId(),
+			};
+
+			await new Promise((resolve, reject) => {
+				accountDetails.userId = new ObjectId();
+				accountService
+					.create(accountDetails)
+					.then(() => {
+						reject(new Error('This call should fail because the user already exists'));
+					})
+					.catch((err) => {
+						expect(err.message)
+							.to
+							.not
+							.equal('should have failed.');
+						expect(err.code)
+							.to
+							.equal(400);
+						expect(err.message)
+							.to
+							.equal('Invalid username. Username should be a valid email format');
+						resolve();
+					});
+			});
 		});
 	});
 
@@ -515,32 +560,6 @@ describe('Account Service', () => {
 					expect(err).to.have.status(401);
 					done();
 				});
-		});
-
-		it.skip('should return an error if populate is specified in query params for a FIND method', async () => {
-			// populate param is overrided in restrictAccess method - src/services/account/hooks/index.js
-			const user = await testObjects.createTestUser({ roles: ['student'] });
-			const accountDetails = {
-				username: user.email,
-				password: 'ca4t9fsfr3dsd',
-				userId: user._id,
-			};
-
-			const account = await accountService.create(accountDetails);
-			try {
-				const params = await generateRequestParams(accountDetails);
-				params.query = {
-					$populate: 'userId',
-					username: user.email,
-				};
-				params.provider = 'rest';
-				await accountService.find(params);
-			} catch (err) {
-				expect(err.message).equal('populate not supported');
-				expect(err.code).to.equal(400);
-			} finally {
-				await accountService.remove(account._id);
-			}
 		});
 
 		// todo extern request with superhero

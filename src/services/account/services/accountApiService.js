@@ -82,6 +82,7 @@ const accountServiceHooks = {
 		get: [disallow('external')],
 		create: [
 			sanitizeUsername,
+			validateUserName,
 			checkExistence,
 			validateCredentials,
 			trimPassword,

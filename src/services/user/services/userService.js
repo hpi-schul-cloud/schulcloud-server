@@ -163,7 +163,7 @@ const userHooks = {
 			iff(isProvider('external'), [
 				hasReadPermissionForUser,
 				denyIfNotCurrentSchool({
-					errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
+					errorMessage: 'Der angefragte Nutzer ist unbekannt!',
 				}),
 			]),
 			iff(isProvider('external'), filterResult),
