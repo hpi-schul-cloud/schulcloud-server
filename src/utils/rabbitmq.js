@@ -120,4 +120,6 @@ const setup = async () => {
 	}
 };
 
-module.exports = { setup, sendToQueueRaw, sendToQueue, consumeQueue, ackMessage, rejectMessage };
+module.exports = {
+	setup, sendToQueueRaw, sendToQueue, consumeQueue, ackMessage, rejectMessage,
+};
