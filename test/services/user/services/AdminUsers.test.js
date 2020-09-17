@@ -1309,8 +1309,8 @@ describe('AdminTeachersService', () => {
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 
-		const { data } = await adminTeachersService.get(teacher._id, params);
-		expect(data).to.have.lengthOf(1);
+		const user = await adminTeachersService.get(teacher._id, params);
+		expect(user.firstName).to.be.equal(testUser.firstName);
 	});
 
 	it('users without TEACHER_LIST permission cannot access the GET method', async () => {
@@ -1352,8 +1352,8 @@ describe('AdminTeachersService', () => {
 		const testUSer = await testObjects.createTestUser({ roles: ['teacherListPerm'], schoolId: school._id });
 		const params = await testObjects.generateRequestParamsFromUser(testUSer);
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: otherSchool._id });
-		const { data } = await adminTeachersService.get(teacher._id, params);
-		expect(data).to.have.lengthOf(0);
+		const user = await adminTeachersService.get(teacher._id, params);
+		expect(user).to.be.empty;
 	});
 
 	it('users with TEACHER_CREATE permission can access the CREATE method', async () => {
