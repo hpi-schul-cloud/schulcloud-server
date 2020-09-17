@@ -281,6 +281,11 @@ const restrictToUsersSchool = async (context) => {
 };
 
 const validateUserName = async (context) => {
+	const accountService = context.app.service('accounts');
+	const { systemId } = context.method === 'create' ? context.data: await accountService.get(context.id);
+	if (systemId) {
+		return context;
+	}
 	if (context.data && context.data.username && !constants.expressions.email.test(context.data.username)) {
 		throw new BadRequest('Invalid username. Username should be a valid email format');
 	}
