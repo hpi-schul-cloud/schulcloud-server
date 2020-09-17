@@ -11,7 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added - Unreleased
 
-- SC-8630 - Added handling to object parser to remove method in adminUsers service
+- SC-6830 - Added handling to object parser to remove method in adminUsers service
 
 ### Removed
 
