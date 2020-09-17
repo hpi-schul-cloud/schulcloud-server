@@ -20,6 +20,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - Extend JWT payload by schoolId and roleIds
 
+### Security - Unreleased
+
+- Added hotfix merges
+
 ## [24.5.1] - 2020-09-16
 
 ### Secrutiy - 24.5.1
