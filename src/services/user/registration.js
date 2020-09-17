@@ -152,10 +152,11 @@ const registerUser = function register(data, params, app) {
 		)
 		.then(() => {
 			const consentSkipCondition = Configuration.get('SKIP_CONDITIONS_CONSENT');
-			if ((user.roles || [])
-				.filter((role) => {
+			if (
+				(user.roles || []).filter((role) => {
 					return ['student', 'employee', 'expert', 'administrator', 'teacher'].includes(role);
-				}).length === 0) {
+				}).length === 0
+			) {
 				return Promise.reject(new errors.BadRequest('You are not allowed to register!'));
 			}
 			if ((user.roles || []).includes('student')) {

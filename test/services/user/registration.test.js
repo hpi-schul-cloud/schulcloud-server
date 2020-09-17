@@ -42,7 +42,6 @@ const createPin = (pin = 6716, email) =>
 	});
 
 describe('registration service', () => {
-
 	let server;
 
 	before((done) => {
@@ -66,7 +65,7 @@ describe('registration service', () => {
 			email,
 			firstName: 'Max',
 			lastName: 'Mustermann',
-			roles: 'student'
+			roles: 'student',
 		});
 		return registrationPinService
 			.create({ email, silent: true })
@@ -104,7 +103,7 @@ describe('registration service', () => {
 			email: parentEmail,
 			firstName: 'Max',
 			lastName: 'Mustermann',
-			roles: 'student'
+			roles: 'student',
 		});
 		return registrationPinService
 			.create({ email: parentEmail, silent: true })
@@ -146,7 +145,7 @@ describe('registration service', () => {
 			email,
 			firstName: 'Max',
 			lastName: 'Mustermann',
-			roles: 'student'
+			roles: 'student',
 		});
 		return registrationPinService
 			.create({ email, silent: true })
@@ -259,7 +258,8 @@ describe('registration service', () => {
 					privacyConsent: true,
 					termsOfUseConsent: true,
 				};
-				return registrationService.create(registrationInput)
+				return registrationService
+					.create(registrationInput)
 					.then(() => {
 						throw new Error('should have failed');
 					})
@@ -267,8 +267,7 @@ describe('registration service', () => {
 						expect(err.message).to.not.equal('should have failed');
 						expect(err.message).to.equal('You are not allowed to register!');
 					});
-			})
-
+			});
 	});
 
 	it('succeed if user is trying to register with admin role', async () => {
@@ -311,14 +310,13 @@ describe('registration service', () => {
 					privacyConsent: true,
 					termsOfUseConsent: true,
 				};
-				return registrationService.create(registrationInput)
-					.then((response) => {
-						expect(response.user).to.have.property('_id');
-						expect(response.account).to.have.property('_id');
-						expect(response.consent).to.have.property('_id');
-						expect(response.consent).to.have.property('userConsent');
-						expect(response.parent).to.equal(null);
-					});
+				return registrationService.create(registrationInput).then((response) => {
+					expect(response.user).to.have.property('_id');
+					expect(response.account).to.have.property('_id');
+					expect(response.consent).to.have.property('_id');
+					expect(response.consent).to.have.property('userConsent');
+					expect(response.parent).to.equal(null);
+				});
 			});
 	});
 
@@ -330,7 +328,7 @@ describe('registration service', () => {
 			email,
 			firstName: 'Max',
 			lastName: 'Mustermann',
-			roles: 'student'
+			roles: 'student',
 		});
 		const registrationPin = await registrationPinService.create({ email, silent: true });
 		const registrationInput = {
