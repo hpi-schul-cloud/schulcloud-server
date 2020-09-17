@@ -1307,7 +1307,11 @@ describe('AdminTeachersService', () => {
 			schoolId: school._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
+		const teacher = await testObjects.createTestUser({
+			firstName: 'Affenmesserkamppf',
+			roles: ['teacher'],
+			schoolId: school._id,
+		});
 
 		const user = await adminTeachersService.get(teacher._id, params);
 		expect(user.firstName).to.be.equal(teacher.firstName);
