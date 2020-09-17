@@ -1310,7 +1310,7 @@ describe('AdminTeachersService', () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 
 		const user = await adminTeachersService.get(teacher._id, params);
-		expect(user.firstName).to.be.equal(testUser.firstName);
+		expect(user.firstName).to.be.equal(teacher.firstName);
 	});
 
 	it('users without TEACHER_LIST permission cannot access the GET method', async () => {
