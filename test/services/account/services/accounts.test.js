@@ -62,13 +62,8 @@ describe('Account Service', () => {
 			};
 
 			const account = await accountService.create(accountObject);
-			expect(account)
-				.to
-				.not
-				.equal(undefined);
-			expect(account.username)
-				.to
-				.equal(accountObject.username.toLowerCase());
+			expect(account).to.not.equal(undefined);
+			expect(account.username).to.equal(accountObject.username.toLowerCase());
 
 			await accountService.remove(account._id);
 			await userService.remove(user._id);
@@ -90,9 +85,7 @@ describe('Account Service', () => {
 							reject(new Error('This call should fail because the user already exists'));
 						})
 						.catch((err) => {
-							expect(err.message)
-								.to
-								.equal('Der Account existiert bereits!');
+							expect(err.message).to.equal('Der Account existiert bereits!');
 							resolve();
 						});
 				});
@@ -122,9 +115,7 @@ describe('Account Service', () => {
 						reject(new Error('This call should fail because ' + 'of an already existing user with the same username'));
 					})
 					.catch((err) => {
-						expect(err.message)
-							.to
-							.equal('Der Benutzername ist bereits vergeben!');
+						expect(err.message).to.equal('Der Benutzername ist bereits vergeben!');
 						resolve();
 					});
 			});
@@ -139,10 +130,7 @@ describe('Account Service', () => {
 				userId: new ObjectId(),
 			};
 			const account = await accountService.create(accountDetails);
-			expect(account.username)
-				.to
-				.equal(accountDetails.username.trim()
-					.toLowerCase());
+			expect(account.username).to.equal(accountDetails.username.trim().toLowerCase());
 
 			try {
 				await new Promise((resolve, reject) => {
@@ -153,9 +141,7 @@ describe('Account Service', () => {
 							reject(new Error('This call should fail because the user already exists'));
 						})
 						.catch((err) => {
-							expect(err.message)
-								.to
-								.equal('Der Benutzername ist bereits vergeben!');
+							expect(err.message).to.equal('Der Benutzername ist bereits vergeben!');
 							resolve();
 						});
 				});
@@ -165,7 +151,6 @@ describe('Account Service', () => {
 		});
 
 		it('should return an error if invalid email format was provided', async () => {
-
 			const accountDetails = {
 				username: 'invalid_user_name',
 				password: 'ca4t9fsfr3dsd',
@@ -180,16 +165,9 @@ describe('Account Service', () => {
 						reject(new Error('This call should fail because the user already exists'));
 					})
 					.catch((err) => {
-						expect(err.message)
-							.to
-							.not
-							.equal('should have failed.');
-						expect(err.code)
-							.to
-							.equal(400);
-						expect(err.message)
-							.to
-							.equal('Invalid username. Username should be a valid email format');
+						expect(err.message).to.not.equal('should have failed.');
+						expect(err.code).to.equal(400);
+						expect(err.message).to.equal('Invalid username. Username should be a valid email format');
 						resolve();
 					});
 			});
