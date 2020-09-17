@@ -12,11 +12,13 @@ const validateParams = async (context) => {
 		throw new BadRequest('The type for id is incorrect.');
 	}
 
-	if (_ids && !Array.isArray(_ids)) {
+	if (_ids && !(Array.isArray(_ids) || typeof _ids === 'object' )) {
 		throw new BadRequest('The type for ids is incorrect.');
 	}
 
-	if (_ids.some((id) => !isValidObjectId(id))) {
+	if (Array.isArray(_ids) && _ids.some((id) => !isValidObjectId(id))) {
+		throw new BadRequest('The type for either one or several ids is incorrect.');
+	} else if (typeof _ids === 'object' && Object.values(_ids).some((id) => !isValidObjectId(id))) {
 		throw new BadRequest('The type for either one or several ids is incorrect.');
 	}
 
