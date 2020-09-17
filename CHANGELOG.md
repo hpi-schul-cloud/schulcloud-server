@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [24.5.1] - 2020-09-16
+
+### Secrutiy - 24.5.1
+
+- Secure admin routes (update, patch, create)
+
 ## [24.5.0] - 2020-09-14
 
 ### Added
