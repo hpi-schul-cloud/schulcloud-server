@@ -10,9 +10,17 @@ const reset = () => {
 	});
 };
 
-const consumeQueue = async (queue, callback, options) => {
+const consume = async (queue, callback, options) => {
 	callbacks[queue] = callback;
 };
+
+const assertQueue = async () => {};
+
+const prefetch = () => {};
+
+const reject = () => {};
+
+const ack = () => {};
 
 const triggerConsume = (queue, message) => {
 	if (callbacks[queue]) {
@@ -24,23 +32,22 @@ const triggerConsume = (queue, message) => {
 	return undefined;
 };
 
-const sendToQueue = (queue, queueOptions, msgJson, _) => {
+const sendToQueue = (queue, messageBuffer, options) => {
 	if (!queues[queue]) queues[queue] = [];
-	queues[queue].push(msgJson);
+	queues[queue].push(messageBuffer);
 };
 
-const empty = () => {
-	// empty
-};
+const createChannel = async () => ({
+	sendToQueue,
+	assertQueue,
+	prefetch,
+	consume,
+	reject,
+	ack,
+});
+
+const setup = async (app) => {};
 
 module.exports = {
-	setup: empty,
-	ackMessage: empty,
-	rejectMessage: empty,
-	sendToQueue,
-	consumeQueue,
-
-	queues,
-	reset,
-	triggerConsume,
+	setup, createChannel, queues, reset, triggerConsume,
 };
