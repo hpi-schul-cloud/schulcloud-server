@@ -1,3 +1,6 @@
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const hooks = require('./hooks');
 const EduSharingConnector = require('./logic/connector');
 
@@ -18,4 +21,6 @@ module.exports = (app) => {
 	});
 	const eduService = app.service(eduRoute);
 	eduService.hooks(hooks);
+
+	app.use(`${eduRoute}/api`, staticContent(path.join(__dirname, '/docs')));
 };

@@ -1,6 +1,11 @@
 const errors = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
+
 const { iff, isProvider } = require('feathers-hooks-common');
+
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const { hasPermission } = require('../../hooks');
 
 const Syncer = require('./strategies/Syncer');
@@ -48,6 +53,7 @@ module.exports = function setup() {
 	}
 
 	app.use('/sync', new SyncService());
+	app.use('/sync/api', staticContent(path.join(__dirname, '/docs')));
 
 	const syncService = app.service('/sync');
 	syncService.hooks({
