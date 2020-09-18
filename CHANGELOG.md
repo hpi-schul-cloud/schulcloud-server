@@ -14,10 +14,21 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Removed
 
 - SC-6784 - Removed duplicated birth date formatting code in adminUsers service, which was causing an "Invalid date" output
+- SC-6743 - Removed usersForConsent related things in adminUsers service because the client does not send that parameter anymore
 
 ### Changed - Unreleased
 
 - Extend JWT payload by schoolId and roleIds
+
+### Security - Unreleased
+
+- Added hotfix merges
+
+## [24.5.1] - 2020-09-16
+
+### Secrutiy - 24.5.1
+
+- Secure admin routes (update, patch, create)
 
 ## [24.5.0] - 2020-09-14
 
