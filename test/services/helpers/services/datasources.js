@@ -28,7 +28,10 @@ const cleanup = () => {
 	}
 	const ids = createdDatasourceIds;
 	createdDatasourceIds = [];
-	return datasourceModel.deleteMany({ _id: { $in: ids } }).lean().exec();
+	return datasourceModel
+		.deleteMany({ _id: { $in: ids } })
+		.lean()
+		.exec();
 };
 
 module.exports = (app, opt) => ({

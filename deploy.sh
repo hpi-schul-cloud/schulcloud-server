@@ -48,6 +48,13 @@ function buildandpush {
 	# take those images and push them up to docker hub
 	docker push schulcloud/schulcloud-server:$DOCKERTAG
 	docker push schulcloud/schulcloud-server:$GIT_SHA
+
+	# If branch is develop, add and push additional docker tags
+	if [[ "$TRAVIS_BRANCH" = "develop" ]]
+	then
+		docker tag schulcloud/schulcloud-server:$DOCKERTAG schulcloud/schulcloud-server:develop_latest
+		docker push schulcloud/schulcloud-server:develop_latest
+	fi
 }
 
 function deploytotest {
@@ -139,9 +146,10 @@ then
 elif [[ "$TRAVIS_BRANCH" = "develop" ]]
 then
 	# If an event occurs on branch develop deploy to test
-	echo "Event detected on branch develop. Attempting to deploy to development (test) environment..."
+	echo "Event detected on branch develop. Building docker image..."
 	buildandpush
-	deploytotest
+	# ops-1109: Deployment now in sc-app-ci
+	# deploytotest
 elif [[ $TRAVIS_BRANCH = release* ]]
 then
 	# If an event occurs on branch release* deploy to staging

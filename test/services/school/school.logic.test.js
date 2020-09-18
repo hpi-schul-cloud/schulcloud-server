@@ -3,10 +3,7 @@ const { URL } = require('url');
 const logger = require('../../../src/logger');
 
 const app = require('../../../src/app');
-const {
-	schoolModel: School,
-	schoolGroupModel: SchoolGroup,
-} = require('../../../src/services/school/model');
+const { schoolModel: School, schoolGroupModel: SchoolGroup } = require('../../../src/services/school/model');
 const globals = require('../../../config/globals');
 
 const { cleanup } = require('../helpers/testObjects')(app);
@@ -29,7 +26,6 @@ describe('school logic', async () => {
 		expect(school.documentBaseDir).equals(baseDir);
 		logger.info('school basedir', school.documentBaseDir);
 	});
-
 
 	it('get school documentBaseDir', async () => {
 		const school = await School.findById(defaultSchool._id);

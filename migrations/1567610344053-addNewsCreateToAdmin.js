@@ -16,7 +16,7 @@ module.exports = {
 				$addToSet: {
 					permissions: { $each: ['NEWS_CREATE', 'NEWS_EDIT', 'SCHOOL_NEWS_EDIT'] },
 				},
-			},
+			}
 		)
 			.lean()
 			.exec();
@@ -35,7 +35,7 @@ module.exports = {
 						$in: ['NEWS_CREATE', 'NEWS_EDIT', 'SCHOOL_NEWS_EDIT'],
 					},
 				},
-			},
+			}
 		)
 			.lean()
 			.exec();
