@@ -1,5 +1,7 @@
 const request = require('request-promise-native');
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 const material = require('./material-model');
 
 const resourcesHooks = require('./hooks/resources');
@@ -111,6 +113,8 @@ module.exports = function () {
 	app.use('/content/search', new SearchService());
 	app.use('/content/redirect', new RedirectService(), RedirectService.redirect);
 	app.use('/materials', service(options));
+
+	app.use('/content/api', staticContent(path.join(__dirname, '/docs')));
 
 	const resourcesService = app.service('/content/resources');
 	const searchService = app.service('/content/search');
