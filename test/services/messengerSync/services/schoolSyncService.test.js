@@ -58,8 +58,8 @@ describe('service', function test() {
 
 		expect(testingQueue.length, '4 + 1 request school sync').to.equal(5);
 
-		const lastMessage = JSON.parse(testingQueue[4]);
-		expect(lastMessage.schoolId).to.equal(school._id.toString());
+		const lastMessage = testingQueue[4];
+		expect(lastMessage.schoolId.toString()).to.equal(school._id.toString());
 		expect(lastMessage.fullSync).to.be.true;
 		rabbitmqMock.reset();
 	});
