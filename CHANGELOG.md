@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+
 ## Unreleased
 
 ### Added - Unreleased
@@ -14,6 +15,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed - Unreleased
 
 - Extend JWT payload by schoolId and roleIds
+
+## [24.5.3] - 2020-09-18
+
+### Fixed
+
+- SC-6809 - Reconnect RabbitMQ connection
 
 ## [24.5.1] - 2020-09-16
 
