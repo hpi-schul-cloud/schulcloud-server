@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+
 ## Unreleased
 
 ### Added - Unreleased
@@ -15,6 +16,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-6784 - Removed duplicated birth date formatting code in adminUsers service, which was causing an "Invalid date" output
 - SC-6743 - Removed usersForConsent related things in adminUsers service because the client does not send that parameter anymore
+- SC-6506 - Remove dependecy to feathers-swagger in routes.test.js
 
 ### Changed - Unreleased
 
@@ -23,6 +25,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Security - Unreleased
 
 - Added hotfix merges
+
+## [24.5.3] - 2020-09-18
+
+### Fixed
+
+- SC-6809 - Reconnect RabbitMQ connection
 
 ## [24.5.1] - 2020-09-16
 
