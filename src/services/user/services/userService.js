@@ -106,7 +106,6 @@ const userHooks = {
 			iff(isProvider('external'), restrictToCurrentSchool),
 			iff(isProvider('external'), enforceRoleHierarchyOnCreate),
 			sanitizeData,
-			checkUniqueEmail,
 			checkUnique,
 			checkUniqueAccount,
 			blockDisposableEmail('email'),
