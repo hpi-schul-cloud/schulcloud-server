@@ -1,11 +1,11 @@
 const { Configuration } = require('@schul-cloud/commons');
-const { createChannel } = require('../../utils/rabbitmq');
+const {
+	sendToQueue, consumeQueue, ackMessage, rejectMessage,
+} = require('../../utils/rabbitmq');
 const { ACTIONS, requestSyncForEachSchoolUser } = require('./producer');
 const { buildAddUserMessage, messengerIsActivatedForSchool } = require('./utils');
 const logger = require('../../logger');
 const { ObjectId } = require('../../helper/compare');
-
-let channel;
 
 const validateMessage = (content) => {
 	const errorMsg = `MESSENGER SYNC: invalid message in queue ${Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL')}`;
@@ -63,9 +63,7 @@ const validateMessage = (content) => {
 };
 
 const sendToExternalQueue = (message) => {
-	const msgJson = JSON.stringify(message);
-	const msgBuffer = Buffer.from(msgJson);
-	channel.sendToQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), msgBuffer, { persistent: true });
+	sendToQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), { durable: false }, message, { persistent: true });
 };
 
 const executeMessage = async (incomingMessage) => {
@@ -99,32 +97,28 @@ const executeMessage = async (incomingMessage) => {
 	}
 };
 
-const handleMessage = (incomingMessage) =>
+const handleMessage = (incomingMessage) => 
 	executeMessage(incomingMessage)
 		.then((success) => {
 			if (success) {
-				channel.ack(incomingMessage);
+				ackMessage(incomingMessage);
 			} else {
-				channel.reject(incomingMessage, false);
+				rejectMessage(incomingMessage, false);
 			}
 		})
 		.catch((err) => {
 			logger.error('MESSENGER SYNC: error while handling message', err);
 			// retry message once (the second time it is redelivered)
-			return channel.reject(incomingMessage, !incomingMessage.fields.redelivered);
+			rejectMessage(incomingMessage, !incomingMessage.fields.redelivered);
 		});
 
-const setup = async (app) => {
-	channel = await createChannel();
-
-	await Promise.all([
-		channel.assertQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true }),
-		channel.assertQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), { durable: false }),
-	]);
-	channel.prefetch(Configuration.get('RABBITMQ_MATRIX_CONSUME_CONCURRENCY'));
-	channel.consume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), handleMessage, {
-		noAck: false,
-	});
+const setup = () => {
+	consumeQueue(
+		Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'),
+		{ durable: true },
+		handleMessage,
+		{ noAck: false },
+	);
 };
 
 module.exports = setup;
