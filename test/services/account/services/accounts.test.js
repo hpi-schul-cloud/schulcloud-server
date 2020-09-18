@@ -608,13 +608,13 @@ describe('Account Service', () => {
 			const account = await accountService.create(accountObject);
 			const fakeContext = {
 				app,
-				data: Object.assign(
-					{ ...accountObject },
-					{
+				data: {
+					...accountObject,
+					...{
 						username: 'dc=schul-cloud,dc=org/fake.ldap',
 						systemId: 'fake_system_id',
-					}
-				),
+					},
+				},
 				id: account._id,
 				method: 'create',
 			};
@@ -658,12 +658,12 @@ describe('Account Service', () => {
 			const account = await accountService.create(accountObject);
 			const fakeContext = {
 				app,
-				data: Object.assign(
-					{ ...accountObject },
-					{
+				data: {
+					...accountObject,
+					...{
 						username: 'dc=schul-cloud,dc=org/fake.ldap',
-					}
-				),
+					},
+				},
 				id: account._id,
 				method: 'create',
 			};
