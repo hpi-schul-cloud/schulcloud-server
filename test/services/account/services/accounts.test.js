@@ -608,18 +608,19 @@ describe('Account Service', () => {
 			const account = await accountService.create(accountObject);
 			const fakeContext = {
 				app,
-				data: Object.assign({ ...accountObject }, {
-					username: 'dc=schul-cloud,dc=org/fake.ldap',
-					systemId: 'fake_system_id'
-				}),
+				data: Object.assign(
+					{ ...accountObject },
+					{
+						username: 'dc=schul-cloud,dc=org/fake.ldap',
+						systemId: 'fake_system_id',
+					}
+				),
 				id: account._id,
 				method: 'create',
 			};
 			try {
 				const contextFromHook = await validateUserName(fakeContext);
-				expect(contextFromHook.data.username)
-					.to
-					.equal(fakeContext.data.username);
+				expect(contextFromHook.data.username).to.equal(fakeContext.data.username);
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed.');
 			} finally {
@@ -657,9 +658,12 @@ describe('Account Service', () => {
 			const account = await accountService.create(accountObject);
 			const fakeContext = {
 				app,
-				data: Object.assign({ ...accountObject }, {
-					username: 'dc=schul-cloud,dc=org/fake.ldap',
-				}),
+				data: Object.assign(
+					{ ...accountObject },
+					{
+						username: 'dc=schul-cloud,dc=org/fake.ldap',
+					}
+				),
 				id: account._id,
 				method: 'create',
 			};
