@@ -14,16 +14,16 @@ module.exports = function swaggerSetup(app) {
 				security: [{ jwtBearer: [] }],
 				schemes: ['http', 'https'],
 				info: {
-					title: 'Schul-Cloud API',
-					description: 'This is the Schul-Cloud API.',
-					termsOfServiceUrl: 'https://github.com/schul-cloud/schulcloud-server/blob/master/LICENSE',
+					title: 'HPI Schul-Cloud API',
+					description: 'This is the HPI Schul-Cloud API.',
+					termsOfServiceUrl: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE',
 					contact: {
 						name: 'support',
-						email: 'info@schul-cloud.org',
+						email: 'info@hpi-schul-cloud.de',
 					},
 					license: {
 						name: 'GPL-3.0',
-						url: 'https://github.com/schul-cloud/schulcloud-server/blob/master/LICENSE',
+						url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE',
 					},
 					version: '0.0.1',
 				},
