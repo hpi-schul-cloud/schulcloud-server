@@ -10,6 +10,7 @@ const { generateRequestParams, generateRequestParamsFromUser } = require('../../
 const accountService = app.service('/accounts');
 const userService = app.service('/users');
 const registrationPinsService = app.service('/registrationPins');
+const { validateUserName } = require('../../../../src/services/account/hooks');
 
 chai.use(chaiHttp);
 
@@ -574,6 +575,104 @@ describe('Account Service', () => {
 					expect(err).to.have.status(200);
 					done();
 				});
+		});
+	});
+
+	describe('testing accounts hooks directly', () => {
+		it('should validateUserName NOT throws an error when username is not email format and systemId is specified', async () => {
+			const userObject = {
+				firstName: 'Max',
+				lastName: 'Mustermann',
+				email: `max${Date.now()}@mustermann.de`,
+				schoolId: '5f2987e020834114b8efd6f8',
+			};
+
+			const registrationPin = await registrationPinsService.create({
+				email: userObject.email,
+				silent: true,
+			});
+			// verify registration pin:
+			await registrationPinsService.find({
+				query: {
+					pin: registrationPin.pin,
+					email: registrationPin.email,
+					verified: false,
+				},
+			});
+			const user = await userService.create(userObject);
+			const accountObject = {
+				username: 'valid2@email.com',
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+			const account = await accountService.create(accountObject);
+			const fakeContext = {
+				app,
+				data: Object.assign({ ...accountObject }, {
+					username: 'dc=schul-cloud,dc=org/fake.ldap',
+					systemId: 'fake_system_id'
+				}),
+				id: account._id,
+				method: 'create',
+			};
+			try {
+				const contextFromHook = await validateUserName(fakeContext);
+				expect(contextFromHook.data.username)
+					.to
+					.equal(fakeContext.data.username);
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
+			} finally {
+				await accountService.remove(account._id);
+				await userService.remove(user._id);
+			}
+		});
+
+		it('should validateUserName throws an error when username is NOT email format and systemId is NOT specified', async () => {
+			const userObject = {
+				firstName: 'Max',
+				lastName: 'Mustermann',
+				email: `max${Date.now()}@mustermann.de`,
+				schoolId: '5f2987e020834114b8efd6f8',
+			};
+
+			const registrationPin = await registrationPinsService.create({
+				email: userObject.email,
+				silent: true,
+			});
+			// verify registration pin:
+			await registrationPinsService.find({
+				query: {
+					pin: registrationPin.pin,
+					email: registrationPin.email,
+					verified: false,
+				},
+			});
+			const user = await userService.create(userObject);
+			const accountObject = {
+				username: 'valid2@email.com',
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+			const account = await accountService.create(accountObject);
+			const fakeContext = {
+				app,
+				data: Object.assign({ ...accountObject }, {
+					username: 'dc=schul-cloud,dc=org/fake.ldap',
+				}),
+				id: account._id,
+				method: 'create',
+			};
+			try {
+				await validateUserName(fakeContext);
+				throw new Error('should have failed.');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
+				expect(err.message).to.equal('Invalid username. Username should be a valid email format');
+			} finally {
+				await accountService.remove(account._id);
+				await userService.remove(user._id);
+			}
 		});
 	});
 });
