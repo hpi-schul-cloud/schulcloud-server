@@ -2,9 +2,7 @@ const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
-const {
-	gradeModel,
-} = require('./model');
+const { gradeModel } = require('./model');
 const hooks = require('./hooks');
 const courseCopyService = require('./services/course-copy-service');
 const courseScopelistService = require('./services/courseScopeLists');
@@ -49,14 +47,17 @@ module.exports = function () {
 	app.service('/classes').hooks(classesHooks);
 
 	/* Grade model */
-	app.use('/grades', service({
-		Model: gradeModel,
-		paginate: {
-			default: 25,
-			max: 100,
-		},
-		lean: true,
-	}));
+	app.use(
+		'/grades',
+		service({
+			Model: gradeModel,
+			paginate: {
+				default: 25,
+				max: 100,
+			},
+			lean: true,
+		})
+	);
 	const gradeService = app.service('/grades');
 	gradeService.hooks(hooks);
 

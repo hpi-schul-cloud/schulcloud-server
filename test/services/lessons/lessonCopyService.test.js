@@ -74,10 +74,12 @@ describe('lesson copy service', () => {
 		const originalTeacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: originalSchool._id });
 		const targetTeacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: targetSchool._id });
 		const originalCourse = await testObjects.createTestCourse({
-			teacherIds: [originalTeacher._id], schoolId: originalSchool._id,
+			teacherIds: [originalTeacher._id],
+			schoolId: originalSchool._id,
 		});
 		const targetCourse = await testObjects.createTestCourse({
-			teacherIds: [originalTeacher._id], schoolId: targetSchool._id,
+			teacherIds: [originalTeacher._id],
+			schoolId: targetSchool._id,
 		});
 		const shareToken = `sharetoken${Date.now()}`;
 		const lesson = await testObjects.createTestLesson({ courseId: originalCourse._id, shareToken });

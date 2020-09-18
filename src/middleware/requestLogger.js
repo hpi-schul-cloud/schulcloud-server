@@ -26,7 +26,7 @@ module.exports = function requstLogger(_app) {
 				console.log('_____ request _____');
 				counter = -1;
 			} else {
-				console.log(`<<<-extern req-${counter += 1}-|||`);
+				console.log(`<<<-extern req-${(counter += 1)}-|||`);
 			}
 			lastRequestTime = time;
 			const query = req.query || queryString.parse(url[1] || '');

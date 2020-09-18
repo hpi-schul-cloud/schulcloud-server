@@ -18,7 +18,10 @@ class Cache {
 
 		for (let i = 0; i < MessageProvider.length; i += 1) {
 			const data = await MessageProvider[i].getMessage(SC_THEME);
-			if (!data.success) { success = false; return; }
+			if (!data.success) {
+				success = false;
+				return;
+			}
 			newMessages = newMessages.concat(data.messages);
 			success = true;
 		}

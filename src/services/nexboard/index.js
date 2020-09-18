@@ -6,6 +6,8 @@ const {
 	Board,
 } = require('./services');
 
+const { Project, Board } = require('./services');
+
 const hooks = require('./hooks');
 
 module.exports = (app) => {

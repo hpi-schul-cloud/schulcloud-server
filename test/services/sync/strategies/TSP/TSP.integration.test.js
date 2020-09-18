@@ -13,10 +13,7 @@ const { users: createdTestUsers, accounts: createdAccounts } = info();
 
 const { equal: equalIds } = require('../../../../../src/helper/compare').ObjectId;
 
-const {
-	findSchool,
-	createUserAndAccount,
-} = require('../../../../../src/services/sync/strategies/TSP/TSP');
+const { findSchool, createUserAndAccount } = require('../../../../../src/services/sync/strategies/TSP/TSP');
 
 describe('TSP API integration tests', () => {
 	let server;

@@ -3,10 +3,7 @@ const path = require('path');
 
 const passwordRecovery = require('./model');
 const AccountModel = require('../account/model');
-const {
-	ChangePasswordService,
-	hooks: changePasswordServiceHooks,
-} = require('./services/ChangePasswordService');
+const { ChangePasswordService, hooks: changePasswordServiceHooks } = require('./services/ChangePasswordService');
 const {
 	GenerateRecoveryPasswordTokenService,
 	hooks: generateRecoveryPasswordHooks,

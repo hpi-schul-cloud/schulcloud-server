@@ -27,9 +27,11 @@ const logRequestInfosInErrorCase = (error, req, res, next) => {
 const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
 	if (error) {
 		// clear data and add requestId
-		error.data = showRequestId ? {
-			requestId: req.headers.requestId,
-		} : {};
+		error.data = showRequestId
+			? {
+					requestId: req.headers.requestId,
+			  }
+			: {};
 
 		// delete response informations for extern express applications
 		delete error.response;
@@ -53,33 +55,33 @@ const returnAsJson = express.errorHandler({
 });
 
 // map to lower case and test as lower case
-const secretDataKeys = (() => [
-	'password',
-	'passwort',
-	'new_password',
-	'new-password',
-	'oauth-password',
-	'current-password',
-	'passwort_1',
-	'passwort_2',
-	'password_1',
-	'password_2',
-	'password-1',
-	'password-2',
-	'password_verification',
-	'password_control',
-	'PASSWORD_HASH',
-	'password_new',
-	'accessToken',
-	'ticket',
-	'firstName',
-	'lastName',
-	'email',
-	'birthday',
-	'description',
-	'gradeComment',
-].map((k) => k.toLocaleLowerCase())
-)();
+const secretDataKeys = (() =>
+	[
+		'password',
+		'passwort',
+		'new_password',
+		'new-password',
+		'oauth-password',
+		'current-password',
+		'passwort_1',
+		'passwort_2',
+		'password_1',
+		'password_2',
+		'password-1',
+		'password-2',
+		'password_verification',
+		'password_control',
+		'PASSWORD_HASH',
+		'password_new',
+		'accessToken',
+		'ticket',
+		'firstName',
+		'lastName',
+		'email',
+		'birthday',
+		'description',
+		'gradeComment',
+	].map((k) => k.toLocaleLowerCase()))();
 
 const filterSecretValue = (key, value) => {
 	if (secretDataKeys.includes(key.toLocaleLowerCase())) {
@@ -108,11 +110,7 @@ const filterDeep = (newData, level = 0) => {
 
 const filter = (data) => filterDeep({ ...data });
 
-const secretQueryKeys = (() => [
-	'accessToken',
-	'access_token',
-].map((k) => k.toLocaleLowerCase())
-)();
+const secretQueryKeys = (() => ['accessToken', 'access_token'].map((k) => k.toLocaleLowerCase()))();
 const filterQuery = (url) => {
 	let newUrl = url;
 	secretQueryKeys.forEach((key) => {

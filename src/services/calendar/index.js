@@ -6,8 +6,7 @@ const hooks = require('./hooks');
 const { REQUEST_TIMEOUT } = require('../../../config/globals');
 
 function toQueryString(paramsObject) {
-	return Object
-		.keys(paramsObject)
+	return Object.keys(paramsObject)
 		.map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
 		.join('&');
 }
@@ -60,9 +59,7 @@ const convertEventToJsonApi = (body) => ({
 				'x-sc-courseTimeId': body.courseTimeId,
 			},
 			relationships: {
-				'scope-ids': [
-					body.scopeId,
-				],
+				'scope-ids': [body.scopeId],
 				'separate-users': false,
 			},
 		},
@@ -136,7 +133,6 @@ class Service {
 						name: 'scopeId',
 						type: 'string',
 					},
-
 				],
 				summary: 'Creates a new event for the given scope',
 			},
@@ -194,13 +190,15 @@ class Service {
 		};
 
 		return request(options).then((events) => {
-			events = (events.data || []).map((event) => Object.assign(event, {
-				title: event.summary,
-				allDay: false, // TODO: find correct value
-				start: Date.parse(event.dtstart),
-				end: Date.parse(event.dtend),
-				url: '', // TODO: add x-sc-field
-			}));
+			events = (events.data || []).map((event) =>
+				Object.assign(event, {
+					title: event.summary,
+					allDay: false, // TODO: find correct value
+					start: Date.parse(event.dtstart),
+					end: Date.parse(event.dtend),
+					url: '', // TODO: add x-sc-field
+				})
+			);
 			return events.map(convertJsonApiToEvent);
 		});
 	}
@@ -218,12 +216,16 @@ class Service {
 		};
 
 		return request(options).then((events) => {
-			events = (params.query || {}).userId || (events.data || events || []).map((event) => Object.assign(event, {
-				title: event.summary,
-				allDay: false, // TODO: find correct value
-				start: Date.parse(event.dtstart),
-				end: Date.parse(event.dtend),
-			}));
+			events =
+				(params.query || {}).userId ||
+				(events.data || events || []).map((event) =>
+					Object.assign(event, {
+						title: event.summary,
+						allDay: false, // TODO: find correct value
+						start: Date.parse(event.dtstart),
+						end: Date.parse(event.dtend),
+					})
+				);
 
 			return events.map(convertJsonApiToEvent);
 		});
@@ -267,7 +269,7 @@ class Service {
 		};
 
 		return request(options).then((events) => {
-			events = (events.data || events || []);
+			events = events.data || events || [];
 			return events.map(convertJsonApiToEvent);
 		});
 	}
