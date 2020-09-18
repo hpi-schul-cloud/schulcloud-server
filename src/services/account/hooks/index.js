@@ -282,7 +282,7 @@ const restrictToUsersSchool = async (context) => {
 
 const validateUserName = async (context) => {
 	const accountService = context.app.service('accounts');
-	const { systemId } = context.method === 'create' ? context.data: await accountService.get(context.id);
+	const { systemId } = context.method === 'create' ? context.data : await accountService.get(context.id);
 	if (systemId) {
 		return context;
 	}
