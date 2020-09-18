@@ -2,6 +2,9 @@ const { BadRequest, Forbidden, NotFound, GeneralError, FeathersError } = require
 const lodash = require('lodash');
 const { Configuration } = require('@schul-cloud/commons');
 
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const { SCHOOL_FEATURES } = require('../school/model');
 
 const videoconferenceHooks = require('./hooks');
@@ -487,4 +490,6 @@ module.exports = function setup(app) {
 	app.use('/videoconference/:scopeName', new GetVideoconferenceService(app));
 	const videoConferenceServices = [app.service('/videoconference'), app.service('/videoconference/:scopeName')];
 	videoConferenceServices.forEach((service) => service.hooks(videoconferenceHooks));
+
+	app.use('/videoconference/api', staticContent(path.join(__dirname, '/docs')));
 };
