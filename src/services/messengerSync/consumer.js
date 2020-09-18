@@ -1,5 +1,7 @@
 const { Configuration } = require('@schul-cloud/commons');
-const { sendToQueue, consumeQueue, ackMessage, rejectMessage } = require('../../utils/rabbitmq');
+const {
+	sendToQueue, consumeQueue, ackMessage, rejectMessage,
+} = require('../../utils/rabbitmq');
 const { ACTIONS, requestSyncForEachSchoolUser } = require('./producer');
 const { buildAddUserMessage, messengerIsActivatedForSchool } = require('./utils');
 const logger = require('../../logger');
@@ -95,23 +97,27 @@ const executeMessage = async (incomingMessage) => {
 	}
 };
 
-const handleMessage = (incomingMessage) =>
-	executeMessage(incomingMessage)
-		.then((success) => {
-			if (success) {
-				ackMessage(incomingMessage);
-			} else {
-				rejectMessage(incomingMessage, false);
-			}
-		})
-		.catch((err) => {
-			logger.error('MESSENGER SYNC: error while handling message', err);
-			// retry message once (the second time it is redelivered)
-			rejectMessage(incomingMessage, !incomingMessage.fields.redelivered);
-		});
+const handleMessage = (incomingMessage) => executeMessage(incomingMessage)
+	.then((success) => {
+		if (success) {
+			ackMessage(incomingMessage);
+		} else {
+			rejectMessage(incomingMessage, false);
+		}
+	})
+	.catch((err) => {
+		logger.error('MESSENGER SYNC: error while handling message', err);
+		// retry message once (the second time it is redelivered)
+		rejectMessage(incomingMessage, !incomingMessage.fields.redelivered);
+	});
 
 const setup = () => {
-	consumeQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true }, handleMessage, { noAck: false });
+	consumeQueue(
+		Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'),
+		{ durable: true },
+		handleMessage,
+		{ noAck: false },
+	);
 };
 
 module.exports = setup;
