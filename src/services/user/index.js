@@ -1,4 +1,7 @@
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const { userModel, registrationPinModel } = require('./model');
 const registrationPinsHooks = require('./hooks/registrationPins');
 const publicTeachersHooks = require('./hooks/publicTeachers');
@@ -101,4 +104,6 @@ module.exports = (app) => {
 	app.service('/users/skipregistration').hooks(skipRegistrationBulkHooks);
 
 	app.use('/registrationSchool', new RegistrationSchoolService());
+
+	app.use('/users/api', staticContent(path.join(__dirname, '/docs')));
 };

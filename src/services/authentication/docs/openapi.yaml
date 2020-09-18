@@ -1,0 +1,83 @@
+security:
+  - jwtBearer: []
+info:
+  title: Schul-Cloud Authentication Service API
+  description:
+    This is the API specification for the Schul-Cloud Authentication service.
+    
+  contact:
+    name: support
+    email: info@schul-cloud.org
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+components:
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    authentication:
+      description: TODO
+
+paths:
+  /authentication:
+    post:
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authentication'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Creates a new resource with data.
+      summary: ''
+      tags:
+        - authentication
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/authentication'
+  '/authentication/{id}':
+    delete:
+      parameters:
+        - in: path
+          name: id
+          description: ID of authentication to remove
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authentication'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Removes the resource with id.
+      summary: ''
+      tags:
+        - authentication
+      security: []
+openapi: 3.0.2
+tags:
+  - name: authentication
+    description: A authentication service.
+
+
