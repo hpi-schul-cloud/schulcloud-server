@@ -1,3 +1,6 @@
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const logger = require('../../logger');
 const { ROCKET_CHAT_URI, ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID } = require('../../../config/globals');
 const { rocketChatUserHooks, rocketChatLoginHooks, rocketChatLogoutHooks, rocketChatChannelHooks } = require('./hooks');
@@ -24,6 +27,7 @@ module.exports = function Setup() {
 	app.use('/rocketChat/user', new RocketChatUser());
 	app.use('/rocketChat/login', new RocketChatLogin());
 	app.use('/rocketChat/logout', new RocketChatLogout());
+	app.use('/rocketChat/api', staticContent(path.join(__dirname, '/docs')));
 
 	const rocketChatUserService = app.service('/rocketChat/user');
 	const rocketChatLoginService = app.service('/rocketChat/login');

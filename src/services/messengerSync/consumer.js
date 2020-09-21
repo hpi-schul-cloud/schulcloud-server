@@ -99,20 +99,19 @@ const executeMessage = async (incomingMessage) => {
 	}
 };
 
-const handleMessage = (incomingMessage) =>
-	executeMessage(incomingMessage)
-		.then((success) => {
-			if (success) {
-				channel.ack(incomingMessage);
-			} else {
-				channel.reject(incomingMessage, false);
-			}
-		})
-		.catch((err) => {
-			logger.error('MESSENGER SYNC: error while handling message', err);
-			// retry message once (the second time it is redelivered)
-			return channel.reject(incomingMessage, !incomingMessage.fields.redelivered);
-		});
+const handleMessage = (incomingMessage) => executeMessage(incomingMessage)
+	.then((success) => {
+		if (success) {
+			channel.ack(incomingMessage);
+		} else {
+			channel.reject(incomingMessage, false);
+		}
+	})
+	.catch((err) => {
+		logger.error('MESSENGER SYNC: error while handling message', err);
+		// retry message once (the second time it is redelivered)
+		return channel.reject(incomingMessage, !incomingMessage.fields.redelivered);
+	});
 
 const setup = async (app) => {
 	channel = await createChannel();

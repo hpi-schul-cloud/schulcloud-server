@@ -82,10 +82,11 @@ const requestSyncForEachSchoolUser = async (schoolId) => {
 
 const setup = (app_) => {
 	app = app_;
-	return createChannel().then((createdChannel) => {
-		channel = createdChannel;
-		return channel.assertQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true });
-	});
+	return createChannel()
+		.then((createdChannel) => {
+			channel = createdChannel;
+			return channel.assertQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true });
+		});
 };
 
 module.exports = {

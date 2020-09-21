@@ -17,6 +17,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-6784 - Removed duplicated birth date formatting code in adminUsers service, which was causing an "Invalid date" output
 - SC-6743 - Removed usersForConsent related things in adminUsers service because the client does not send that parameter anymore
+- SC-6506 - Remove dependecy to feathers-swagger in routes.test.js
 
 ### Changed - Unreleased
 
