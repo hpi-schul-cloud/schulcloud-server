@@ -24,6 +24,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed - Unreleased
 
 - Extend JWT payload by schoolId and roleIds
+- Rename statistic mails route, secure it over sync api key now
+
 
 ### Security - Unreleased
 
