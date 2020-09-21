@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 const { BadRequest } = require('@feathersjs/errors');
 const { isValidObjectId } = require('mongoose');
 
