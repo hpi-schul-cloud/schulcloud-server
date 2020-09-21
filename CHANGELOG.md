@@ -25,7 +25,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - Extend JWT payload by schoolId and roleIds
 - Rename statistic mails route, secure it over sync api key now
-
+- SC-6809 - Maintain RabbitMQ connection and channels
 
 ### Security - Unreleased
 
