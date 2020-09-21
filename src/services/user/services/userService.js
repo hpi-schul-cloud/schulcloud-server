@@ -18,6 +18,8 @@ const {
 	computeProperty,
 	addCollation,
 	blockDisposableEmail,
+	getRestrictPopulatesHook,
+	preventPopulate,
 } = require('../../../hooks');
 const {
 	mapRoleFilterQuery,
@@ -85,6 +87,10 @@ const userService = new UserService({
 	},
 });
 
+const populateWhitelist = {
+	roles: ['_id', 'name', 'permissions', 'roles'],
+};
+
 const userHooks = {
 	before: {
 		all: [],
@@ -94,13 +100,15 @@ const userHooks = {
 			resolveToIds('/roles', 'params.query.roles', 'name'),
 			authenticate('jwt'),
 			iff(isProvider('external'), restrictToCurrentSchool),
+			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
 			mapRoleFilterQuery,
 			addCollation,
 			iff(isProvider('external'), includeOnlySchoolRoles),
 		],
-		get: [authenticate('jwt')],
+		get: [authenticate('jwt'), iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist))],
 		create: [
 			checkJwt(),
+			iff(isProvider('external'), preventPopulate),
 			pinIsVerified,
 			iff(isProvider('external'), restrictToCurrentSchool),
 			iff(isProvider('external'), enforceRoleHierarchyOnCreate),
@@ -114,12 +122,14 @@ const userHooks = {
 		],
 		update: [
 			iff(isProvider('external'), disallow()),
+			iff(isProvider('external'), preventPopulate),
 			authenticate('jwt'),
 			sanitizeData,
 			resolveToIds('/roles', 'data.$set.roles', 'name'),
 		],
 		patch: [
 			authenticate('jwt'),
+			iff(isProvider('external'), preventPopulate),
 			iff(isProvider('external'), securePatching),
 			permitGroupOperation,
 			sanitizeData,
@@ -128,7 +138,11 @@ const userHooks = {
 			resolveToIds('/roles', 'data.roles', 'name'),
 			updateAccountUsername,
 		],
-		remove: [authenticate('jwt'), iff(isProvider('external'), [restrictToCurrentSchool, enforceRoleHierarchyOnDelete])],
+		remove: [
+			authenticate('jwt'),
+			iff(isProvider('external'), preventPopulate),
+			iff(isProvider('external'), [restrictToCurrentSchool, enforceRoleHierarchyOnDelete]),
+		],
 	},
 	after: {
 		all: [],
@@ -149,7 +163,7 @@ const userHooks = {
 			iff(isProvider('external'), [
 				hasReadPermissionForUser,
 				denyIfNotCurrentSchool({
-					errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
+					errorMessage: 'Der angefragte Nutzer ist unbekannt!',
 				}),
 			]),
 			iff(isProvider('external'), filterResult),
