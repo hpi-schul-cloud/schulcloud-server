@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Changed
+
+- SC-5230 - Unblock Account-Page in Nuxt (securing /accounts and /users routes)
+
 ### Added - Unreleased
 
 - SC-6830 - Added hook to parse request to arrays when > 20 users are requested in adminUsers service
@@ -22,6 +26,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed - Unreleased
 
 - Extend JWT payload by schoolId and roleIds
+- Rename statistic mails route, secure it over sync api key now
+
 
 ### Security - Unreleased
 
