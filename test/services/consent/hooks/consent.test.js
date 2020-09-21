@@ -1,7 +1,6 @@
 const { expect } = require('chai');
 const { restrictToCurrentUser } = require('../../../../src/services/consent/hooks/consents');
 
-
 describe('test consent hooks', () => {
 	it('restict to current user find', () => {
 		const someUserId = 'Affen tanzen tango';

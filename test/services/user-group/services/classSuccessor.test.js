@@ -39,7 +39,9 @@ describe('classSuccessor service', () => {
 		const yearAfter = await schoolYears.getNextYearAfter(classYear);
 
 		const newClass = await testObjects.createTestClass({
-			name: 'mondklasse', schoolId: school._id, year: classYear,
+			name: 'mondklasse',
+			schoolId: school._id,
+			year: classYear,
 		});
 		const successor = await classSuccessorService.get(newClass._id);
 
@@ -113,7 +115,7 @@ describe('classSuccessor service', () => {
 		const yearAfter = await schoolYears.getNextYearAfter(classYear);
 
 		const name = `klasse ${Date.now()}`;
-		const classThisYear	= await testObjects.createTestClass({ name, schoolId: school._id, year: classYear });
+		const classThisYear = await testObjects.createTestClass({ name, schoolId: school._id, year: classYear });
 		const classYearAfter = await testObjects.createTestClass({ name, schoolId: school._id, year: yearAfter });
 		const newClass = await testObjects.createTestClass({ name, schoolId: school._id, year: classYear });
 		const successor = await classSuccessorService.get(newClass._id);

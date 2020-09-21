@@ -1,4 +1,7 @@
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const Role = require('./model');
 const hooks = require('./hooks');
 const { PermissionService, permissionHooks } = require('./services/permissions');
@@ -37,11 +40,12 @@ module.exports = function setup() {
 	const permissionService = app.service('/roles/:roleName/permissions');
 	permissionService.hooks(permissionHooks);
 
+	app.use('/roles/api', staticContent(path.join(__dirname, '/docs')));
 
 	definePermissions(
 		'ADMIN_TOGGLE_STUDENT_VISIBILITY',
 		ROLES.TEACHER,
-		PERMISSIONS.STUDENT_LIST,
+		PERMISSIONS.STUDENT_LIST
 		// TODO: importent add this again, after school permission service can handle multiple permissions
 		// PERMISSIONS.STUDENT_EDIT,
 		// PERMISSIONS.STUDENT_CREATE,

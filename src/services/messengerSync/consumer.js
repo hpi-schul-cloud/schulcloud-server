@@ -75,7 +75,7 @@ const executeMessage = async (incomingMessage) => {
 		return false;
 	}
 
-	if (!await messengerIsActivatedForSchool(content)) {
+	if (!(await messengerIsActivatedForSchool(content))) {
 		// school should not be synced
 		return false;
 	}

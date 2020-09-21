@@ -223,14 +223,17 @@ describe('webuntis metadata service', () => {
 		});
 		const params = await testObjects.generateRequestParamsFromUser(admin);
 		try {
-			const metadata = await webuntisMetadataService.create({
-				datasourceId: datasource._id,
-				teacher: 'Renz',
-				class: '2a',
-				room: '0-23',
-				subject: 'Verteidigung gegen die dunklen Künste',
-				state: 'new',
-			}, params);
+			const metadata = await webuntisMetadataService.create(
+				{
+					datasourceId: datasource._id,
+					teacher: 'Renz',
+					class: '2a',
+					room: '0-23',
+					subject: 'Verteidigung gegen die dunklen Künste',
+					state: 'new',
+				},
+				params
+			);
 			await webuntisMetadataModel.deleteOne({ _id: metadata._id }).lean().exec();
 			throw new Error('should have failed');
 		} catch (err) {

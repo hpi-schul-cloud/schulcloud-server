@@ -1,4 +1,7 @@
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const problemModel = require('./model');
 const hooks = require('./hooks');
 const logger = require('../../logger');
@@ -24,4 +27,6 @@ module.exports = function () {
 	app.use('/helpdesk', service(options));
 	const helpdeskService = app.service('/helpdesk');
 	helpdeskService.hooks(hooks);
+
+	app.use('/helpdesk/api', staticContent(path.join(__dirname, '/docs')));
 };

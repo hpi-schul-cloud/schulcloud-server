@@ -73,7 +73,7 @@ describe('course hooks', () => {
 						otherField: 'this is set',
 					},
 				});
-				throw (new Error('should have failed'));
+				throw new Error('should have failed');
 			} catch (err) {
 				expect(err).to.not.equal(undefined);
 				expect(err.message).to.not.equal('should have failed');

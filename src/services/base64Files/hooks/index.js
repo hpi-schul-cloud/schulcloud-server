@@ -18,15 +18,9 @@ exports.before = {
 	all: [], // keep it public
 	find: [iff(isProvider('external'), disallow())],
 	get: [], // no scope restiction is needed
-	create: [
-		iff(isProvider('external'), disallow()),
-		isBase64,
-	],
+	create: [iff(isProvider('external'), disallow()), isBase64],
 	update: [disallow()],
-	patch: [
-		iff(isProvider('external'), disallow()),
-		isBase64,
-	],
+	patch: [iff(isProvider('external'), disallow()), isBase64],
 	remove: [iff(isProvider('external'), disallow())],
 };
 

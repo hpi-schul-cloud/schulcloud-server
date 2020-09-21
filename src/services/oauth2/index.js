@@ -1,3 +1,6 @@
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const hooks = require('./hooks');
 const Hydra = require('./hydra.js');
 
@@ -47,10 +50,9 @@ module.exports = function oauth2() {
 			return hydra.getLoginRequest(challenge);
 		},
 		patch(challenge, body, params) {
-			return (params.query.accept
+			return params.query.accept
 				? hydra.acceptLoginRequest(challenge, body)
-				: hydra.rejectLoginRequest(challenge, body)
-			);
+				: hydra.rejectLoginRequest(challenge, body);
 		},
 	});
 	app.service('/oauth2/loginRequest').hooks(hooks.hooks.loginRequest);
@@ -60,10 +62,9 @@ module.exports = function oauth2() {
 			return hydra.getConsentRequest(challenge);
 		},
 		patch(challenge, body, params) {
-			return (params.query.accept
+			return params.query.accept
 				? hydra.acceptConsentRequest(challenge, body)
-				: hydra.rejectConsentRequest(challenge, body)
-			);
+				: hydra.rejectConsentRequest(challenge, body);
 		},
 	});
 	app.service('/oauth2/consentRequest').hooks(hooks.hooks.consentRequest);
@@ -84,4 +85,6 @@ module.exports = function oauth2() {
 		},
 	});
 	app.service('/oauth2/auth/sessions/consent').hooks(hooks.hooks.consentSessions);
+
+	app.use('/oauth2/api', staticContent(path.join(__dirname, '/docs')));
 };
