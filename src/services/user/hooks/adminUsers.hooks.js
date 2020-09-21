@@ -27,7 +27,7 @@ const validateParams = async (context) => {
 const parseRequestQuery = (context) => {
 	const { query } = context.params;
 
-	if (!Array.isArray(query._ids)) {
+	if (query._ids && typeof query._ids === 'object') {
 		// If the number of users exceeds 20, the underlying parsing library
 		// will convert the array to an object with the index as the key.
 		// To continue working with it, we convert it here back to the array form.
