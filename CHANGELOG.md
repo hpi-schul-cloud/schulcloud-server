@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- SC-5230 - Unblock Account-Page in Nuxt
+
 ### Added - Unreleased
 
 ### Removed
