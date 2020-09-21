@@ -40,7 +40,7 @@ class StatisticMailService {
 }
 // eslint-disable-next-line func-names
 module.exports = function (app) {
-	app.use('/statistics/mails', new StatisticMailService(app));
-	const statisticsMailService = app.service('/statistics/mails');
+	app.use('/statisticmails', new StatisticMailService(app));
+	const statisticsMailService = app.service('/statisticmails');
 	statisticsMailService.hooks(hooks);
 };
