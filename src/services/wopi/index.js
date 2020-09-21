@@ -3,6 +3,9 @@
  */
 const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 const rp = require('request-promise-native');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const logger = require('../../logger');
 const hooks = require('./hooks');
 const { FileModel } = require('../fileStorage/model');
@@ -216,6 +219,7 @@ module.exports = function setup() {
 
 	app.use(`${wopiPrefix}:fileId/contents`, new WopiFilesContentsService(app), handleResponseHeaders);
 	app.use(`${wopiPrefix}:fileId`, new WopiFilesInfoService(app), handleResponseHeaders);
+	app.use('/wopi/api', staticContent(path.join(__dirname, '/docs')));
 
 	const filesService = app.service(`${wopiPrefix}:fileId`);
 	const filesContentService = app.service(`${wopiPrefix}:fileId/contents`);
