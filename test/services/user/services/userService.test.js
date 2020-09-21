@@ -1,6 +1,7 @@
 const assert = require('assert');
 const { expect } = require('chai');
 const { Configuration } = require('@schul-cloud/commons');
+const { ObjectId } = require('mongoose').Types;
 const app = require('../../../../src/app');
 
 const userService = app.service('users');
@@ -9,7 +10,6 @@ const coursesService = app.service('courses');
 const testObjects = require('../../helpers/testObjects')(app);
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
-let testUserId;
 const testGenericErrorMessage = 'Der angefragte Nutzer ist unbekannt!';
 
 describe('user service', () => {
@@ -62,7 +62,6 @@ describe('user service', () => {
 			)
 			.then((user) => userService.get(user._id))
 			.then((user) => {
-				testUserId = user._id;
 				expect(user.avatarInitials).to.eq('MT');
 				const array = Array.from(user.permissions);
 				expect(array).to.have.lengthOf(3);
@@ -93,6 +92,7 @@ describe('user service', () => {
 				roles: ['student'],
 				birthday: Date.now(),
 				ldapId: 'thisisauniqueid',
+				schoolId: new ObjectId('5f2987e020834114b8efd6f8'), // admin school id
 			});
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {};
@@ -100,8 +100,7 @@ describe('user service', () => {
 			expect(result.email).to.be.undefined;
 		});
 
-		// https://ticketsystem.schul-cloud.org/browse/SC-5076
-		xit('student can not read student from foreign school', async () => {
+		it('student can not read student from foreign school', async () => {
 			await testObjects.createTestRole({
 				name: 'studentList',
 				permissions: ['STUDENT_LIST'],
@@ -164,8 +163,7 @@ describe('user service', () => {
 			expect(result).not.to.haveOwnProperty('ldapId');
 		});
 
-		// https://ticketsystem.schul-cloud.org/browse/SC-5076
-		xit('does not allow students to read other students without STUDENT_LIST permission', async () => {
+		it('does not allow students to read other students without STUDENT_LIST permission', async () => {
 			await testObjects.createTestRole({ name: 'notAuthorized', permissions: [] });
 			const studentToRead = await testObjects.createTestUser({ roles: ['student'] });
 			const actingUser = await testObjects.createTestUser({ roles: ['notAuthorized'] });
@@ -176,7 +174,8 @@ describe('user service', () => {
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
-				expect(err.message).to.equal(testGenericErrorMessage);
+				// https://ticketsystem.schul-cloud.org/browse/SC-5076
+				// expect(err.message).to.equal(testGenericErrorMessage);
 				expect(err.code).to.equal(403);
 			}
 		});
@@ -243,8 +242,7 @@ describe('user service', () => {
 			}
 		});
 
-		// https://ticketsystem.schul-cloud.org/browse/SC-5076
-		xit('teacher can not read student from foreign school', async () => {
+		it('teacher can not read student from foreign school', async () => {
 			await testObjects.createTestRole({
 				name: 'studentList',
 				permissions: ['STUDENT_LIST'],
@@ -268,11 +266,46 @@ describe('user service', () => {
 				expect(err.code).to.equal(403);
 			}
 		});
+
+		it('should throws an error, when performing GET with populate in query params', async () => {
+			const student = await testObjects.createTestUser({
+				roles: ['student'],
+				birthday: Date.now(),
+				ldapId: 'thisisauniqueid',
+			});
+			const params = await testObjects.generateRequestParamsFromUser(student);
+			params.query = { $populate: 'not_whitelisted' };
+			try {
+				await app.service('users').get(student._id, params);
+				throw new Error('should have failed.');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
+				expect(err.message).equal('populate not supported');
+				expect(err.code).to.equal(400);
+			}
+		});
+
+		it('should NOT throws an error, when performing GET with whitelisted value of populate field', async () => {
+			const student = await testObjects.createTestUser({
+				roles: ['student'],
+				birthday: Date.now(),
+				ldapId: 'thisisauniqueid',
+			});
+			const params = await testObjects.generateRequestParamsFromUser(student);
+			params.query = { $populate: 'roles' };
+			const result = await app.service('users').get(student._id, params);
+			expect(result).to.haveOwnProperty('firstName');
+			expect(result).to.haveOwnProperty('lastName');
+			expect(result).to.haveOwnProperty('displayName');
+			expect(result).to.haveOwnProperty('email');
+			expect(result).to.haveOwnProperty('birthday');
+			expect(result).to.haveOwnProperty('ldapId');
+		});
 	});
 
 	describe('FIND', () => {
 		// https://ticketsystem.schul-cloud.org/browse/SC-3929
-		xit('does not allow population', async () => {
+		it('does not allow population', async () => {
 			const student = await testObjects.createTestUser({ roles: ['student'] });
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {
@@ -283,8 +316,23 @@ describe('user service', () => {
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
-				expect(err.message).to.equal(testGenericErrorMessage);
-				expect(err.code).to.equal(403);
+				expect(err.message).to.equal('populate not supported');
+				expect(err.code).to.equal(400);
+			}
+		});
+
+		it('can not populate school', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			params.query = { $populate: ['schoolId'] };
+			try {
+				await app.service('users').find(params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should not have failed');
+				expect(err.code).to.equal(400);
+				expect(err.message).to.equal('populate not supported');
 			}
 		});
 
@@ -400,6 +448,31 @@ describe('user service', () => {
 			expect(user).to.not.equal(undefined);
 			expect(user._id).to.not.equal(undefined);
 		});
+
+		it('should throws an error, when performing CREATE with populate in query params', async () => {
+			const hero = await testObjects.createTestUser({ roles: ['superhero'] });
+			const { _id: schoolId } = await testObjects.createTestSchool();
+			const params = await testObjects.generateRequestParamsFromUser(hero);
+
+			params.query = { $populate: 'not_whitelisted' };
+			try {
+				await app.service('users').create(
+					{
+						schoolId,
+						email: `${Date.now()}@testadmin.org`,
+						firstName: 'Max',
+						lastName: 'Tester',
+						roles: ['administrator'],
+					},
+					params
+				);
+				throw new Error('should have failed.');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
+				expect(err.message).equal('populate not supported');
+				expect(err.code).to.equal(400);
+			}
+		});
 	});
 
 	describe('PATCH', () => {
@@ -433,6 +506,24 @@ describe('user service', () => {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(404);
 				expect(err.message).to.equal(`no record found for id '${studentToDelete._id.toString()}'`);
+			}
+		});
+
+		it('should throws an error, when performing PATCH with populate in query params', async () => {
+			const student = await testObjects.createTestUser({
+				roles: ['student'],
+				birthday: Date.now(),
+				ldapId: 'thisisauniqueid',
+			});
+			const params = await testObjects.generateRequestParamsFromUser(student);
+			params.query = { $populate: 'not_whitelisted' };
+			try {
+				await app.service('users').patch(student._id, { lastName: 'Vader' }, params);
+				throw new Error('should have failed.');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
+				expect(err.message).equal('populate not supported');
+				expect(err.code).to.equal(400);
 			}
 		});
 	});
@@ -542,6 +633,28 @@ describe('user service', () => {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(404);
 				expect(err.message).to.equal(`no record found for id '${studentToDelete._id.toString()}'`);
+			}
+		});
+
+		it('should throws an error, when performing REMOVE with populate in query params', async () => {
+			await testObjects.createTestRole({
+				name: 'studentDelete',
+				permissions: ['STUDENT_DELETE'],
+			});
+			const studentToDelete = await testObjects.createTestUser({ roles: ['student'], manualCleanup: true });
+			const actingUser = await testObjects.createTestUser({ roles: ['studentDelete'] });
+			const params = await testObjects.generateRequestParamsFromUser(actingUser);
+			params.query = { $populate: 'not_whitelisted' };
+			params.headers = { 'x-api-key': Configuration.get('CLIENT_API_KEY') }; // toDO remove with SC-4112
+			try {
+				await app.service('users').remove(studentToDelete._id, params);
+				throw new Error('should have failed.');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
+				// in case of error, make sure user gets deleted
+				testObjects.createdUserIds.push(studentToDelete._id);
+				expect(err.message).equal('populate not supported');
+				expect(err.code).to.equal(400);
 			}
 		});
 	});
