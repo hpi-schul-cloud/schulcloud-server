@@ -10,6 +10,7 @@ const { generateRequestParams, generateRequestParamsFromUser } = require('../../
 const accountService = app.service('/accounts');
 const userService = app.service('/users');
 const registrationPinsService = app.service('/registrationPins');
+const { validateUserName } = require('../../../../src/services/account/hooks');
 
 chai.use(chaiHttp);
 
@@ -149,6 +150,29 @@ describe('Account Service', () => {
 				await accountService.remove(account._id);
 			}
 		});
+
+		it('should return an error if invalid email format was provided', async () => {
+			const accountDetails = {
+				username: 'invalid_user_name',
+				password: 'ca4t9fsfr3dsd',
+				userId: new ObjectId(),
+			};
+
+			await new Promise((resolve, reject) => {
+				accountDetails.userId = new ObjectId();
+				accountService
+					.create(accountDetails)
+					.then(() => {
+						reject(new Error('This call should fail because the user already exists'));
+					})
+					.catch((err) => {
+						expect(err.message).to.not.equal('should have failed.');
+						expect(err.code).to.equal(400);
+						expect(err.message).to.equal('Invalid username. Username should be a valid email format');
+						resolve();
+					});
+			});
+		});
 	});
 
 	describe('UPDATE route', () => {
@@ -251,7 +275,6 @@ describe('Account Service', () => {
 		});
 
 		it('should successfully patch activated to true', async () => {
-			let user = await testObjects.createTestUser();
 			user = await testObjects.createTestUser();
 			const accountDetails = {
 				username: user.email,
@@ -338,6 +361,148 @@ describe('Account Service', () => {
 				await userService.remove(user._id);
 			}
 		});
+
+		it('should return an error if invalid email format was provided', async () => {
+			const user = await testObjects.createTestUser();
+			const accountDetails = {
+				username: user.email,
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+			const account = await accountService.create(accountDetails);
+			try {
+				await accountService.patch(account._id, {
+					username: 'some_bad_email_address',
+				});
+			} catch (err) {
+				expect(err.message).equal('Invalid username. Username should be a valid email format');
+				expect(err.code).to.equal(400);
+			} finally {
+				await accountService.remove(account._id);
+			}
+		});
+
+		it('should return account object with changed email address', async () => {
+			const user = await testObjects.createTestUser();
+			const accountDetails = {
+				username: user.email,
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+			const account = await accountService.create(accountDetails);
+			try {
+				const result = await accountService.patch(account._id, {
+					username: 'some_good@email.adderss',
+				});
+				expect(result.username).to.equal('some_good@email.adderss');
+			} finally {
+				await accountService.remove(account._id);
+			}
+		});
+
+		it('should NOT return an error if user edits own username', async () => {
+			const user = await testObjects.createTestUser();
+			const accountDetails = {
+				username: 'some_good@email.adderss',
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+			const account = await accountService.create(accountDetails);
+			try {
+				const result = await accountService.patch(account._id, {
+					username: 'some_good@email.adderss',
+				});
+				expect(result.username).to.equal('some_good@email.adderss');
+			} finally {
+				await accountService.remove(account._id);
+			}
+		});
+
+		it('should return an error if an username specified in the request body already exists', async () => {
+			const user = await testObjects.createTestUser();
+			const user2 = await testObjects.createTestUser();
+			const accountDetails = {
+				username: 'some_good@email.adderss',
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+			const accountDetails2 = {
+				username: 'some_good_another@email.adderss',
+				password: 'ca4t9fsfr3dsd',
+				userId: user2._id,
+			};
+			const account = await accountService.create(accountDetails);
+			const account2 = await accountService.create(accountDetails2);
+			try {
+				await accountService.patch(account._id, {
+					username: 'some_good_another@email.adderss',
+				});
+				throw new Error('should have failed.');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
+				expect(err.message).equal('Der Benutzername ist bereits vergeben!');
+				expect(err.code).to.equal(400);
+			} finally {
+				await accountService.remove(account._id);
+				await accountService.remove(account2._id);
+			}
+		});
+
+		it('should return an error if populate is specified in query params for a PATCH method', async () => {
+			const user = await testObjects.createTestUser();
+			const accountDetails = {
+				username: user.email,
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+
+			const account = await accountService.create(accountDetails);
+			try {
+				const params = await generateRequestParams(accountDetails);
+				params.query = { $populate: 'userId' };
+				params.provider = 'rest';
+				// params.username = 'some_goo@google.com';
+				await accountService.patch(
+					account._id,
+					{
+						password: 'Schulcloud1!',
+					},
+					params
+				);
+				throw new Error('should have failed.');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
+				expect(err.message).equal('populate not supported');
+				expect(err.code).to.equal(400);
+			} finally {
+				await accountService.remove(account._id);
+			}
+		});
+	});
+
+	describe('REMOVE route', () => {
+		it('should return an error if populate is specified in query params for a REMOVE method', async () => {
+			const user = await testObjects.createTestUser({ roles: ['teacher'] });
+			const accountDetails = {
+				username: user.email,
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+
+			const account = await accountService.create(accountDetails);
+			try {
+				const params = await generateRequestParams(accountDetails);
+				params.query = { $populate: 'userId' };
+				params.provider = 'rest';
+				// params.username = 'some_goo@google.com';
+				await accountService.remove(account._id, params);
+				throw new Error('should have failed.');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
+				expect(err.message).equal('populate not supported');
+				expect(err.code).to.equal(400);
+			}
+		});
 	});
 
 	describe('FIND route', () => {
@@ -371,7 +536,7 @@ describe('Account Service', () => {
 				.get('/accounts')
 				.query({ username: { $gte: 0 } })
 				.end((response, err) => {
-					expect(err).to.have.status(400);
+					expect(err).to.have.status(401);
 					done();
 				});
 		});
@@ -410,6 +575,108 @@ describe('Account Service', () => {
 					expect(err).to.have.status(200);
 					done();
 				});
+		});
+	});
+
+	describe('testing accounts hooks directly', () => {
+		it('should validateUserName NOT throws an error when username is not email format and systemId is specified', async () => {
+			const userObject = {
+				firstName: 'Max',
+				lastName: 'Mustermann',
+				email: `max${Date.now()}@mustermann.de`,
+				schoolId: '5f2987e020834114b8efd6f8',
+			};
+
+			const registrationPin = await registrationPinsService.create({
+				email: userObject.email,
+				silent: true,
+			});
+			// verify registration pin:
+			await registrationPinsService.find({
+				query: {
+					pin: registrationPin.pin,
+					email: registrationPin.email,
+					verified: false,
+				},
+			});
+			const user = await userService.create(userObject);
+			const accountObject = {
+				username: 'valid2@email.com',
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+			const account = await accountService.create(accountObject);
+			const fakeContext = {
+				app,
+				data: {
+					...accountObject,
+					...{
+						username: 'dc=schul-cloud,dc=org/fake.ldap',
+						systemId: 'fake_system_id',
+					},
+				},
+				id: account._id,
+				method: 'create',
+			};
+			try {
+				const contextFromHook = await validateUserName(fakeContext);
+				expect(contextFromHook.data.username).to.equal(fakeContext.data.username);
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
+			} finally {
+				await accountService.remove(account._id);
+				await userService.remove(user._id);
+			}
+		});
+
+		it('should validateUserName throws an error when username is NOT email format and systemId is NOT specified', async () => {
+			const userObject = {
+				firstName: 'Max',
+				lastName: 'Mustermann',
+				email: `max${Date.now()}@mustermann.de`,
+				schoolId: '5f2987e020834114b8efd6f8',
+			};
+
+			const registrationPin = await registrationPinsService.create({
+				email: userObject.email,
+				silent: true,
+			});
+			// verify registration pin:
+			await registrationPinsService.find({
+				query: {
+					pin: registrationPin.pin,
+					email: registrationPin.email,
+					verified: false,
+				},
+			});
+			const user = await userService.create(userObject);
+			const accountObject = {
+				username: 'valid2@email.com',
+				password: 'ca4t9fsfr3dsd',
+				userId: user._id,
+			};
+			const account = await accountService.create(accountObject);
+			const fakeContext = {
+				app,
+				data: {
+					...accountObject,
+					...{
+						username: 'dc=schul-cloud,dc=org/fake.ldap',
+					},
+				},
+				id: account._id,
+				method: 'create',
+			};
+			try {
+				await validateUserName(fakeContext);
+				throw new Error('should have failed.');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed.');
+				expect(err.message).to.equal('Invalid username. Username should be a valid email format');
+			} finally {
+				await accountService.remove(account._id);
+				await userService.remove(user._id);
+			}
 		});
 	});
 });
