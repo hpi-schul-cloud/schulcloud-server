@@ -10,7 +10,7 @@ const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const { hasSchoolPermission, blockDisposableEmail } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
-const { validateParams } = require('../hooks/adminUsers.hooks');
+const { validateParams, parseRequestQuery } = require('../hooks/adminUsers.hooks');
 const { sendRegistrationLink } = require('../hooks/userService');
 
 const { userModel } = require('../model');
@@ -268,9 +268,8 @@ class AdminUsers {
 	}
 
 	async remove(id, params) {
-		const { query: clientQuery = {}, account } = params;
-		const currentUser = await getCurrentUserInfo(account.userId);
-		const query = {};
+		const { _ids } = params.query;
+		const currentUser = await getCurrentUserInfo(params.account.userId);
 
 		if (id) {
 			const userToRemove = await getCurrentUserInfo(id);
@@ -281,23 +280,13 @@ class AdminUsers {
 			return this.app.service('usersModel').remove(id);
 		}
 
-		if (!Array.isArray(clientQuery._ids)) {
-			// If the number of users exceeds 20, the underlying parsing library
-			// will convert the array to an object with the index as the key.
-			// To continue working with it, we convert it here back to the array form.
-			// See the documentation for further infos: https://github.com/ljharb/qs#parsing-arrays
-			query._ids = Object.values(clientQuery._ids);
-		} else {
-			query._ids = clientQuery._ids;
-		}
-
-		const usersIds = await Promise.all(query._ids.map((userId) => getCurrentUserInfo(userId)));
+		const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
 		if (usersIds.some((user) => !equalIds(currentUser.schoolId, user.schoolId))) {
 			throw new Forbidden('You cannot remove users from other schools.');
 		}
 
-		await this.app.service('accountModel').remove(null, { query: { userId: { $in: query._ids } } });
-		return this.app.service('usersModel').remove(null, { query: { _id: { $in: query._ids } } });
+		await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
+		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
 	}
 
 	async setup(app) {
@@ -327,7 +316,7 @@ const adminHookGenerator = (kind) => ({
 		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
 		update: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
 		patch: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
-		remove: [hasSchoolPermission(`${kind}_DELETE`), validateParams],
+		remove: [hasSchoolPermission(`${kind}_DELETE`), parseRequestQuery, validateParams],
 	},
 	after: {
 		find: [formatBirthdayOfUsers],

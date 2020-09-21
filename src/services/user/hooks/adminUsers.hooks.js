@@ -13,19 +13,32 @@ const validateParams = async (context) => {
 		throw new BadRequest('The type for id is incorrect.');
 	}
 
-	if (_ids && !(Array.isArray(_ids) || typeof _ids === 'object')) {
+	if (_ids && !Array.isArray(_ids)) {
 		throw new BadRequest('The type for ids is incorrect.');
 	}
 
-	if (
-		(Array.isArray(_ids) && _ids.some((id) => !isValidObjectId(id))) ||
-		(typeof _ids === 'object' && Object.values(_ids).some((id) => !isValidObjectId(id)))
-	) {
+	if (_ids.some((id) => !isValidObjectId(id))) {
 		throw new BadRequest('The type for either one or several ids is incorrect.');
 	}
+
+	return context;
+};
+
+const parseRequestQuery = (context) => {
+	const { query } = context.params;
+
+	if (!Array.isArray(query._ids)) {
+		// If the number of users exceeds 20, the underlying parsing library
+		// will convert the array to an object with the index as the key.
+		// To continue working with it, we convert it here back to the array form.
+		// See the documentation for further infos: https://github.com/ljharb/qs#parsing-arrays
+		query._ids = Object.values(query._ids);
+	}
+
 	return context;
 };
 
 module.exports = {
 	validateParams,
+	parseRequestQuery,
 };
