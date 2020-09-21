@@ -34,17 +34,17 @@ describe('userRoles', async () => {
 	};
 
 	const dataTestUser1 = {
-		username: 'testuser1',
+		username: 'testuser1@email.com',
 		...commonAccountData,
 	};
 
 	const dataTestUser2 = {
-		username: 'testuser2',
+		username: 'testuser2@email.com',
 		...commonAccountData,
 	};
 
 	const dataTestUserOther = {
-		username: 'testuserother2',
+		username: 'testuserother2@email.com',
 		...commonAccountData,
 	};
 
