@@ -280,14 +280,14 @@ class AdminUsers {
 			return this.app.service('usersModel').remove(id);
 		}
 
-		if  (!Array.isArray(clientQuery._ids)) {
+		if (!Array.isArray(clientQuery._ids)) {
 			// If the number of users exceeds 20, the underlying parsing library
 			// will convert the array to an object with the index as the key.
 			// To continue working with it, we convert it here back to the array form.
 			// See the documentation for further infos: https://github.com/ljharb/qs#parsing-arrays
 			query._ids = Object.values(clientQuery._ids);
 		} else {
-			query._ids = clientQuery._ids
+			query._ids = clientQuery._ids;
 		}
 
 		const usersIds = await Promise.all(query._ids.map((userId) => getCurrentUserInfo(userId)));
