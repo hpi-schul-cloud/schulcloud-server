@@ -23,6 +23,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed - Unreleased
 
+- SC-6774 remove no-await-in-loop from eslint exceptions
 - Extend JWT payload by schoolId and roleIds
 - Rename statistic mails route, secure it over sync api key now
 
@@ -49,7 +50,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [24.4.6] - 2020-09-11
 
-### Changed
+### Changed in 24.4.6
+
 - SC-6733: central personal data does not get updated via CSV import
 
 ## [24.4.5] - 2020-09-10
@@ -60,7 +62,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [24.4.4] - 2020-09-08
 
-### Fixed
+### Fixed in 24.4.4]
 
 - SC-6697: updates/sync account username when user is updated
 
