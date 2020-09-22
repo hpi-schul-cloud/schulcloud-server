@@ -7,14 +7,17 @@ module.exports = function setup() {
 	const app = this;
 
 	/* Homework model */
-	app.use('/homework', service({
-		Model: homeworkModel,
-		paginate: {
-			default: 100000,
-			max: 100000,
-		},
-		lean: true,
-	}));
+	app.use(
+		'/homework',
+		service({
+			Model: homeworkModel,
+			paginate: {
+				default: 100000,
+				max: 100000,
+			},
+			lean: true,
+		})
+	);
 	const hwService = app.service('/homework');
 	hwService.hooks({
 		before: hooks.before(),
@@ -22,14 +25,17 @@ module.exports = function setup() {
 	});
 
 	/* Submission model */
-	app.use('/submissions', service({
-		Model: submissionModel,
-		paginate: {
-			default: 500,
-			max: 5000,
-		},
-		lean: true,
-	}));
+	app.use(
+		'/submissions',
+		service({
+			Model: submissionModel,
+			paginate: {
+				default: 500,
+				max: 5000,
+			},
+			lean: true,
+		})
+	);
 	const submissionService = app.service('/submissions');
 	submissionService.hooks({
 		before: submissionHooks.before(),

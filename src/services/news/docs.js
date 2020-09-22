@@ -46,14 +46,13 @@ module.exports = {
 				target: {
 					type: 'string',
 					pattern: '[a-f0-9]{24}',
-					description: 'id of the scope the news belongs to.'
-					+ 'If no target is given, the news will belong to the school.',
+					description:
+						'id of the scope the news belongs to.' + 'If no target is given, the news will belong to the school.',
 				},
 				targetModel: {
 					type: 'string',
 					enum: ['courses', 'teams', 'class'],
-					description: 'the type of the scope the news belongs to.'
-					+ 'required if a target is given',
+					description: 'the type of the scope the news belongs to.' + 'required if a target is given',
 				},
 				source: {
 					type: 'string',

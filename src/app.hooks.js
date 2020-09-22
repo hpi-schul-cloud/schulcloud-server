@@ -2,20 +2,14 @@
 const { GeneralError, NotAuthenticated } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
-const { sanitizeHtml: { sanitizeDeep } } = require('./utils');
 const {
-	getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData,
-} = require('./utils/redis');
-
+	sanitizeHtml: { sanitizeDeep },
+} = require('./utils');
+const { getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData } = require('./utils/redis');
 
 const sanitizeDataHook = (context) => {
 	if ((context.data || context.result) && context.path && context.path !== 'authentication') {
-		sanitizeDeep(
-			context.type === 'before' ? context.data : context.result,
-			context.path,
-			0,
-			context.safeAttributes,
-		);
+		sanitizeDeep(context.type === 'before' ? context.data : context.result, context.path, 0, context.safeAttributes);
 	}
 	return context;
 };
@@ -31,9 +25,7 @@ const displayInternRequests = (level) => (context) => {
 	if (context.params.provider === 'rest') {
 		return context;
 	}
-	const {
-		id, params, path, data, method,
-	} = context;
+	const { id, params, path, data, method } = context;
 
 	if (['accounts'].includes(path) && level < 4) {
 		return context;
@@ -42,11 +34,17 @@ const displayInternRequests = (level) => (context) => {
 		path,
 		method,
 	};
-	if (id) { out.id = id; }
+	if (id) {
+		out.id = id;
+	}
 	Object.keys(params).forEach((key) => {
-		if (params.key) { out[key] = params.key; }
+		if (params.key) {
+			out[key] = params.key;
+		}
 	});
-	if (data) { out.data = data; }
+	if (data) {
+		out.data = data;
+	}
 
 	// eslint-disable-next-line no-console
 	console.log('[intern]');
@@ -61,12 +59,7 @@ const displayInternRequests = (level) => (context) => {
 /**
  * Routes as (regular expressions) which should be ignored for the auto-logout feature.
  */
-const AUTO_LOGOUT_BLACKLIST = [
-	/^accounts\/jwtTimer$/,
-	/^authentication$/,
-	/wopi\//,
-	/roster\//,
-];
+const AUTO_LOGOUT_BLACKLIST = [/^accounts\/jwtTimer$/, /^authentication$/, /wopi\//, /roster\//];
 
 /**
  * for authenticated requests, if a redis connection is defined, check if the users jwt is whitelisted.
@@ -74,8 +67,8 @@ const AUTO_LOGOUT_BLACKLIST = [
  * @param {Object} context feathers context
  */
 const handleAutoLogout = async (context) => {
-	const ignoreRoute = typeof context.path === 'string'
-		&& AUTO_LOGOUT_BLACKLIST.some((entry) => context.path.match(entry));
+	const ignoreRoute =
+		typeof context.path === 'string' && AUTO_LOGOUT_BLACKLIST.some((entry) => context.path.match(entry));
 	const redisClientExists = !!getRedisClient();
 	const authorizedRequest = ((context.params || {}).authentication || {}).accessToken;
 	if (!ignoreRoute && redisClientExists && authorizedRequest) {
@@ -84,16 +77,12 @@ const handleAutoLogout = async (context) => {
 		const redisData = getRedisData({ privateDevice });
 		const { expirationInSeconds } = redisData;
 		if (redisResponse) {
-			await redisSetAsync(
-				redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds,
-			);
+			await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
 		} else {
 			// ------------------------------------------------------------------------
 			// this is so we can ensure a fluid release without booting out all users.
 			if (Configuration.get('JWT_WHITELIST_ACCEPT_ALL')) {
-				await redisSetAsync(
-					redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds,
-				);
+				await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
 				return context;
 			}
 			// ------------------------------------------------------------------------
@@ -137,36 +126,16 @@ function setupAppHooks(app) {
 		all: [iff(isProvider('external'), handleAutoLogout)],
 		find: [],
 		get: [],
-		create: [
-			iff(isProvider('external'), [
-				sanitizeDataHook, removeObjectIdInData,
-			]),
-		],
-		update: [
-			iff(isProvider('external'), [
-				sanitizeDataHook,
-			]),
-		],
-		patch: [
-			iff(isProvider('external'), [
-				sanitizeDataHook,
-			]),
-		],
+		create: [iff(isProvider('external'), [sanitizeDataHook, removeObjectIdInData])],
+		update: [iff(isProvider('external'), [sanitizeDataHook])],
+		patch: [iff(isProvider('external'), [sanitizeDataHook])],
 		remove: [],
 	};
 
 	const after = {
 		all: [],
-		find: [
-			iff(isProvider('external'), [
-				sanitizeDataHook,
-			]),
-		],
-		get: [
-			iff(isProvider('external'), [
-				sanitizeDataHook,
-			]),
-		],
+		find: [iff(isProvider('external'), [sanitizeDataHook])],
+		get: [iff(isProvider('external'), [sanitizeDataHook])],
 		create: [],
 		update: [],
 		patch: [],

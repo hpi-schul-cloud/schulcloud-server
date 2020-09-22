@@ -24,7 +24,9 @@ describe('me service', () => {
 	describe('GET', () => {
 		it('should return own user', async () => {
 			const student = await testObjects.createTestUser({
-				roles: ['student'], birthday: Date.now(), ldapId: 'thisisauniqueid',
+				roles: ['student'],
+				birthday: Date.now(),
+				ldapId: 'thisisauniqueid',
 			});
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {};

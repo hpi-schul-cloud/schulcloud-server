@@ -1,31 +1,34 @@
 const { Configuration } = require('@schul-cloud/commons');
 const constants = require('../../utils/constants');
-const { passwordsMatch } = require('../../utils/passwordHelpers');
+const { passwordsMatch } = require('../../utils/passwordHelpers'); // fixmer this should be removed
 
-/* eslint-disable prefer-promise-reject-errors */ // fixmer this should be removed
-const createParent = (data, params, user, app) => app.service('/registrationPins/')
-	.find({ query: { pin: data.pin, email: data.parent_email, verified: false } })
-	.then((check) => {
-		if (!(check.data && check.data.length > 0 && check.data[0].pin === data.pin)) {
-			return Promise.reject('Ungültige Pin, bitte überprüfe die Eingabe.');
-		}
-		const parentData = {
-			firstName: data.parent_firstName,
-			lastName: data.parent_lastName,
-			email: data.parent_email,
-			// eslint-disable-next-line no-underscore-dangle
-			children: [user._Id],
-			schoolId: user.schoolId,
-			roles: ['parent'],
-		};
-		return app.service('users').create(parentData, { _additional: { asTask: 'parent' } })
-			.catch((err) => {
-				if (err.message.startsWith('parentCreatePatch')) {
-					return Promise.resolve(err.data);
-				}
-				return Promise.reject(new Error('Fehler beim Erstellen des Elternaccounts.'));
-			});
-	});
+/* eslint-disable prefer-promise-reject-errors */ const createParent = (data, params, user, app) =>
+	app
+		.service('/registrationPins/')
+		.find({ query: { pin: data.pin, email: data.parent_email, verified: false } })
+		.then((check) => {
+			if (!(check.data && check.data.length > 0 && check.data[0].pin === data.pin)) {
+				return Promise.reject('Ungültige Pin, bitte überprüfe die Eingabe.');
+			}
+			const parentData = {
+				firstName: data.parent_firstName,
+				lastName: data.parent_lastName,
+				email: data.parent_email,
+				// eslint-disable-next-line no-underscore-dangle
+				children: [user._Id],
+				schoolId: user.schoolId,
+				roles: ['parent'],
+			};
+			return app
+				.service('users')
+				.create(parentData, { _additional: { asTask: 'parent' } })
+				.catch((err) => {
+					if (err.message.startsWith('parentCreatePatch')) {
+						return Promise.resolve(err.data);
+					}
+					return Promise.reject(new Error('Fehler beim Erstellen des Elternaccounts.'));
+				});
+		});
 
 const getAutomaticConsent = () => ({
 	form: 'digital',
@@ -56,11 +59,10 @@ const firstLogin = async (data, params, app) => {
 	}
 
 	if (data.parent_email) {
-		await createParent(data, params, user, app)
-			.then((parent) => {
-				// toDo: keep old parents?
-				userUpdate.parents = [parent._id];
-			});
+		await createParent(data, params, user, app).then((parent) => {
+			// toDo: keep old parents?
+			userUpdate.parents = [parent._id];
+		});
 	}
 
 	// wrong birthday object?
@@ -141,37 +143,42 @@ const firstLogin = async (data, params, app) => {
 			return consent;
 		};
 
-		updateConsentUsingVersions = app.service('consents').find({ query: { userId: user._id } }).then((consents) => {
-			if (consents.total !== 1) {
-				throw new Error('user consent not found!');
-			}
-			const consent = consents.data[0];
-			// update userConsent if exist otherwise the parentConsent should be updated
-			let updatedConsent = {
-				form: 'update',
-			};
-			const updateConsentType = consent.userConsent ? 'userConsent' : 'parentConsents';
-			if (updateConsentType === 'userConsent') {
-				updatedConsent = { ...updatedConsent, ...consent[updateConsentType] };
+		updateConsentUsingVersions = app
+			.service('consents')
+			.find({ query: { userId: user._id } })
+			.then((consents) => {
+				if (consents.total !== 1) {
+					throw new Error('user consent not found!');
+				}
+				const consent = consents.data[0];
+				// update userConsent if exist otherwise the parentConsent should be updated
+				let updatedConsent = {
+					form: 'update',
+				};
+				const updateConsentType = consent.userConsent ? 'userConsent' : 'parentConsents';
+				if (updateConsentType === 'userConsent') {
+					updatedConsent = { ...updatedConsent, ...consent[updateConsentType] };
+					updatedConsent = updateConsentDates(updatedConsent);
+					return app.service('consents').patch(consent._id, { userConsent: updatedConsent });
+				}
+				if (updateConsentType === 'parentConsents' && (!consent.parentConsents || !consent.parentConsents.length)) {
+					throw new Error('no parent or user consent found');
+				}
+				updatedConsent = { ...updatedConsent, ...consent.parentConsents[0] };
 				updatedConsent = updateConsentDates(updatedConsent);
-				return app.service('consents').patch(consent._id, { userConsent: updatedConsent });
-			}
-			if (updateConsentType === 'parentConsents' && (!consent.parentConsents || !consent.parentConsents.length)) {
-				throw new Error('no parent or user consent found');
-			}
-			updatedConsent = { ...updatedConsent, ...consent.parentConsents[0] };
-			updatedConsent = updateConsentDates(updatedConsent);
-			return app.service('consents').patch(consent._id, { parentConsents: [updatedConsent] });
-		});
+				return app.service('consents').patch(consent._id, { parentConsents: [updatedConsent] });
+			});
 	}
 
 	if (data.parent_privacyConsent || data.parent_termsOfUseConsent) {
 		consentUpdate.userId = user._id;
-		consentUpdate.parentConsents = [{
-			form: 'digital',
-			privacyConsent: data.parent_privacyConsent,
-			termsOfUseConsent: data.parent_termsOfUseConsent,
-		}];
+		consentUpdate.parentConsents = [
+			{
+				form: 'digital',
+				privacyConsent: data.parent_privacyConsent,
+				termsOfUseConsent: data.parent_termsOfUseConsent,
+			},
+		];
 	}
 	if (consentUpdate.userId) consentPromise = app.service('consents').create(consentUpdate);
 

@@ -46,8 +46,11 @@ const requestSyncForEachTeamUser = async (team) => {
 		fullTeam = await teamsModel.findOne(
 			{ _id: team._id },
 			{
-				_id: 1, name: 1, userIds: 1, features: 1,
-			},
+				_id: 1,
+				name: 1,
+				userIds: 1,
+				features: 1,
+			}
 		);
 	}
 

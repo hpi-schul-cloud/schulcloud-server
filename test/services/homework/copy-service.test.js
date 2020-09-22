@@ -6,7 +6,6 @@ const { homeworkModel } = require('../../../src/services/homework/model');
 const homeworkCopyService = app.service('homework/copy');
 const { expect } = chai;
 
-
 describe('homework copy service', () => {
 	const homeworkIdsToDelete = [];
 
@@ -73,7 +72,9 @@ describe('homework copy service', () => {
 		});
 
 		const copy = await homeworkCopyService.create({
-			_id: homework._id, userId: otherUser._id, newTeacher: otherUser._id,
+			_id: homework._id,
+			userId: otherUser._id,
+			newTeacher: otherUser._id,
 		});
 		expect(copy.courseId).to.equal(null);
 		expect(copy.lessonId).to.equal(null);
@@ -101,7 +102,10 @@ describe('homework copy service', () => {
 		});
 
 		const copyForCourse = await homeworkCopyService.create({
-			_id: homework._id, userId: otherUser._id, newTeacher: otherUser._id, courseId: course._id,
+			_id: homework._id,
+			userId: otherUser._id,
+			newTeacher: otherUser._id,
+			courseId: course._id,
 		});
 		expect(copyForCourse.courseId).to.equal(course._id);
 		expect(copyForCourse.lessonId).to.equal(null);
@@ -132,7 +136,10 @@ describe('homework copy service', () => {
 		});
 
 		const copy = await homeworkCopyService.create({
-			_id: homework._id, userId: destUser._id, newTeacher: destUser._id, courseId: destCourse._id,
+			_id: homework._id,
+			userId: destUser._id,
+			newTeacher: destUser._id,
+			courseId: destCourse._id,
 		});
 		expect(copy.courseId).to.equal(destCourse._id);
 		expect(copy.lessonId).to.equal(null);

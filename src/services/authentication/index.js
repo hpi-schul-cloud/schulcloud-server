@@ -2,9 +2,7 @@ const { AuthenticationService, JWTStrategy } = require('@feathersjs/authenticati
 const { LocalStrategy } = require('@feathersjs/authentication-local');
 const { Configuration } = require('@schul-cloud/commons');
 
-const {
-	LdapStrategy, MoodleStrategy, IservStrategy, TSPStrategy, ApiKeyStrategy,
-} = require('./strategies');
+const { LdapStrategy, MoodleStrategy, IservStrategy, TSPStrategy, ApiKeyStrategy } = require('./strategies');
 const { hooks } = require('./hooks');
 const { authenticationSecret, audience } = require('./logic');
 
@@ -41,10 +39,11 @@ const authConfig = {
 
 class SCAuthenticationService extends AuthenticationService {
 	async getPayload(authResult, params) {
-		return super.getPayload(authResult, {
-			...params,
-			payload: authResult.payload || params.payload,
-		});
+		const payload = await super.getPayload(authResult, params);
+		const user = await this.app.service('usersModel').get(authResult.account.userId);
+		payload.schoolId = user.schoolId;
+		payload.roles = user.roles;
+		return payload;
 	}
 }
 

@@ -59,14 +59,14 @@ const grantAccessToSharedFiles = async (app, oldUser, newUser) => {
 				'permissions.refId': oldUser._id,
 				owner: {
 					$ne: oldUser._id,
-				}
+				},
 			},
 			{
-				$set:
-					{
-						'permissions.$.refId': newUser._id
-					}
-			});
+				$set: {
+					'permissions.$.refId': newUser._id,
+				},
+			}
+		);
 		logInfo(`Amount of the files, in which refId has been changed: ${filesToUpdate.n}`);
 	} catch (err) {
 		logError(`Something went wrong during assigning new user id to refId in permissions array: ${err}`);
