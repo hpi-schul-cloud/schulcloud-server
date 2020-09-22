@@ -73,6 +73,7 @@ const checkUnique = (hook) => {
 const checkUniqueEmail = async (hook) => {
 	// const userService = hook.service;
 	const userService = hook.app.service('users');
+	const accountService = hook.app.service('/accounts');
 
 	const { email } = hook.data;
 	if (!email) {
@@ -83,22 +84,28 @@ const checkUniqueEmail = async (hook) => {
 	// get userId of user entry to edit
 	const editUserId = hook.id;
 
-	const query = { email: email.toLowerCase() };
+	const queryUsers = { email: email.toLowerCase() };
+	const queryAccounts = { username: email.toLowerCase() };
 
 	// check if new user or update of existing entry
 	if (editUserId) {
 		// exclude existing user entry
-		query._id = { $ne: editUserId };
+		queryUsers._id = { $ne: editUserId };
+		// exclude existing account entry
+		queryAccounts.userId = { $ne: editUserId };
 	}
 
-	return userService.find({ query }).then((result) => {
-		const users = (result || {}).data || [];
-		if (users.length === 0) {
-			return Promise.resolve(hook);
-		}
+	// check for users with same email
+	const users = ((await userService.find({ query: queryUsers })) || {}).data || [];
 
-		return Promise.reject(new BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
-	});
+	// check for account with same username (=email)
+	const accounts = await accountService.find({ query: queryAccounts });
+
+	if (users.length === 0 && accounts.length === 0) {
+		return Promise.resolve(hook);
+	}
+
+	return Promise.reject(new BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
 };
 
 const checkUniqueAccount = (hook) => {
