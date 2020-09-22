@@ -734,7 +734,7 @@ describe('user service', () => {
 					})
 					.catch((err) => {
 						// eslint-disable-next-line max-len
-						expect(err.message).to.equal(`Die E-Mail Adresse ${newUser.email} ist bereits in Verwendung!`);
+						expect(err.message).to.equal(`Die E-Mail Adresse ist bereits in Verwendung!`);
 						resolve();
 					});
 			});

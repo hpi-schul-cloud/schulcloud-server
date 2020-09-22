@@ -400,7 +400,7 @@ describe('checkUniqueEmail', () => {
 	};
 
 	it('fails because of duplicate email', async () => {
-		const expectedErrorMessage = `Die E-Mail Adresse ${updatedEmail} ist bereits in Verwendung!`;
+		const expectedErrorMessage = `Die E-Mail Adresse ist bereits in Verwendung!`;
 
 		await testObjects.createTestUser({ email: currentEmail });
 

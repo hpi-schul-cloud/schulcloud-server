@@ -47,7 +47,7 @@ const checkUnique = (hook) => {
 		const { asTask } = hook.params._additional || {};
 
 		if (isLoggedIn || asTask === undefined || asTask === 'student') {
-			return Promise.reject(new BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
+			return Promise.reject(new BadRequest(`Die E-Mail Adresse ist bereits in Verwendung!`));
 		}
 		if (asTask === 'parent') {
 			userService.update(
@@ -105,7 +105,7 @@ const checkUniqueEmail = async (hook) => {
 		return Promise.resolve(hook);
 	}
 
-	return Promise.reject(new BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
+	return Promise.reject(new BadRequest(`Die E-Mail Adresse ist bereits in Verwendung!`));
 };
 
 const checkUniqueAccount = (hook) => {
