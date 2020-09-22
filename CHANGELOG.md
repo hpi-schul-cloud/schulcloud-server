@@ -7,11 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-## Unreleased
+## 25.0.0
 
-### Added - Unreleased
+### Added - 25.0.0
 
-### Changed - Unreleased
+### Changed - 25.0.0
 
 - Extend JWT payload by schoolId and roleIds
 
