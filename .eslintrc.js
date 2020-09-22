@@ -13,7 +13,6 @@ module.exports = {
 		],
 		'no-tabs': 'off',
 		'no-restricted-syntax': 'off',
-		'no-await-in-loop': 'off',
 		'class-methods-use-this': 'off',
 		'no-underscore-dangle': [
 			'error',

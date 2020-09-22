@@ -42,7 +42,14 @@ const createPin = (pin = 6716, email) =>
 	});
 
 describe('registration service', () => {
+	let server;
+
+	before((done) => {
+		server = app.listen(0, done);
+	});
+
 	after(async () => {
+		await server.close();
 		await testObjects.cleanup();
 	});
 
@@ -58,6 +65,7 @@ describe('registration service', () => {
 			email,
 			firstName: 'Max',
 			lastName: 'Mustermann',
+			roles: 'student',
 		});
 		return registrationPinService
 			.create({ email, silent: true })
@@ -95,6 +103,7 @@ describe('registration service', () => {
 			email: parentEmail,
 			firstName: 'Max',
 			lastName: 'Mustermann',
+			roles: 'student',
 		});
 		return registrationPinService
 			.create({ email: parentEmail, silent: true })
@@ -136,6 +145,7 @@ describe('registration service', () => {
 			email,
 			firstName: 'Max',
 			lastName: 'Mustermann',
+			roles: 'student',
 		});
 		return registrationPinService
 			.create({ email, silent: true })
@@ -208,6 +218,108 @@ describe('registration service', () => {
 			});
 	});
 
+	it('fails if user is trying to register with roles other than student/employee/expert', async () => {
+		const email = `max${Date.now()}@mustermann.de`;
+		let hash;
+		let user;
+		const hashData = {
+			toHash: email,
+			save: true,
+		};
+		return app
+			.service('hash')
+			.create(hashData)
+			.then((newHash) => {
+				hash = newHash;
+				return userModel.create({
+					email,
+					firstName: 'Max',
+					lastName: 'Mustermann',
+					schoolId: '5f2987e020834114b8efd6f8',
+					roles: ['5b45f8d28c8dba65f8871e19'], // parent
+					importHash: hash,
+				});
+			})
+			.then((newUser) => {
+				user = newUser;
+				return registrationPinService.create({ email, silent: true });
+			})
+			.then((registrationPin) => {
+				const registrationInput = {
+					classOrSchoolId: '5f2987e020834114b8efd6f8',
+					pin: registrationPin.pin,
+					password_1: 'Test123!',
+					password_2: 'Test123!',
+					email,
+					firstName: 'Max',
+					lastName: 'Mustermann',
+					importHash: hash,
+					userId: user._id,
+					privacyConsent: true,
+					termsOfUseConsent: true,
+				};
+				return registrationService
+					.create(registrationInput)
+					.then(() => {
+						throw new Error('should have failed');
+					})
+					.catch((err) => {
+						expect(err.message).to.not.equal('should have failed');
+						expect(err.message).to.equal('You are not allowed to register!');
+					});
+			});
+	});
+
+	it('succeed if user is trying to register with admin role', async () => {
+		const email = `max${Date.now()}@mustermann.de`;
+		let hash;
+		let user;
+		const hashData = {
+			toHash: email,
+			save: true,
+		};
+		return app
+			.service('hash')
+			.create(hashData)
+			.then((newHash) => {
+				hash = newHash;
+				return userModel.create({
+					email,
+					firstName: 'Max',
+					lastName: 'Mustermann',
+					schoolId: '5f2987e020834114b8efd6f8',
+					roles: ['0000d186816abba584714c96'], // admin
+					importHash: hash,
+				});
+			})
+			.then((newUser) => {
+				user = newUser;
+				return registrationPinService.create({ email, silent: true });
+			})
+			.then((registrationPin) => {
+				const registrationInput = {
+					classOrSchoolId: '5f2987e020834114b8efd6f8',
+					pin: registrationPin.pin,
+					password_1: 'Test123!',
+					password_2: 'Test123!',
+					email,
+					firstName: 'Max',
+					lastName: 'Mustermann',
+					importHash: hash,
+					userId: user._id,
+					privacyConsent: true,
+					termsOfUseConsent: true,
+				};
+				return registrationService.create(registrationInput).then((response) => {
+					expect(response.user).to.have.property('_id');
+					expect(response.account).to.have.property('_id');
+					expect(response.consent).to.have.property('_id');
+					expect(response.consent).to.have.property('userConsent');
+					expect(response.parent).to.equal(null);
+				});
+			});
+	});
+
 	it('undoes changes on fail', async () => {
 		const email = `max${Date.now()}@mustermann.de`;
 		const importHash = `${Date.now()}`;
@@ -216,6 +328,7 @@ describe('registration service', () => {
 			email,
 			firstName: 'Max',
 			lastName: 'Mustermann',
+			roles: 'student',
 		});
 		const registrationPin = await registrationPinService.create({ email, silent: true });
 		const registrationInput = {
