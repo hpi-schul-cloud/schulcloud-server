@@ -94,11 +94,24 @@ class AdminUsers {
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 			if (clientQuery.usersForConsent) query._id = clientQuery.usersForConsent;
 			if (clientQuery.searchQuery) {
-				query.$or = [
-					{ firstName: { $regex: clientQuery.searchQuery, $options: 'i' } },
-					{ lastName: { $regex: clientQuery.searchQuery, $options: 'i' } },
-					{ email: { $regex: clientQuery.searchQuery, $options: 'i' } },
-				];
+				const searchText = clientQuery.searchQuery;
+				// Converts the searchQuery to an array and
+				// removes double or more space between the lastName and firstName
+				const querySplit = searchText.split(' ').filter(s => s !== '');
+
+				if( querySplit.length > 1  )
+				{
+					query.$and = [
+						{ lastName: { $regex: querySplit[0], $options: 'i' } },
+						{ firstName: { $regex: querySplit[1], $options: 'i' } },
+					];
+				} else {
+					query.$or = [
+						{ firstName: { $regex: searchText, $options: 'i' } },
+						{ lastName: { $regex: searchText, $options: 'i' } },
+						{ email: { $regex: searchText, $options: 'i' } },
+					];
+				}
 			}
 
 			const dateQueries = ['createdAt'];
