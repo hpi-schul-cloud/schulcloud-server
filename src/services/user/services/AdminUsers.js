@@ -93,7 +93,6 @@ class AdminUsers {
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 			if (clientQuery.searchQuery) {
 				const searchText = clientQuery.searchQuery;
-				
 				const querySplit = searchText.split(' ').filter((text) => text !== '');
 				// searchCaseOne: user may has only one firstName or one lastName, the rest may more
 				// searchCaseTwo: user may has two firstName or two lastName
@@ -102,36 +101,36 @@ class AdminUsers {
 
 				query.$or = [
 					{
-						$and : [
+						$and: [
 							{ lastName: { $regex: searchCaseOne[0], $options: 'i' } },
 							{ firstName: { $regex: searchCaseOne[1], $options: 'i' } },
-						]
+						],
 					},
 					{
-						$and : [
+						$and: [
 							{ lastName: { $regex: searchCaseOne[1], $options: 'i' } },
 							{ firstName: { $regex: searchCaseOne[0], $options: 'i' } },
-						]
+						],
 					},
 					{
-						$and : [
+						$and: [
 							{ lastName: { $regex: searchCaseTwo[0], $options: 'i' } },
 							{ firstName: { $regex: searchCaseTwo[1], $options: 'i' } },
-						]
+						],
 					},
 					{
-						$and : [
+						$and: [
 							{ lastName: { $regex: searchCaseTwo[1], $options: 'i' } },
 							{ firstName: { $regex: searchCaseTwo[0], $options: 'i' } },
-						]
+						],
 					},
 					{
-						$or : [
+						$or: [
 							{ lastName: { $regex: searchText, $options: 'i' } },
 							{ firstName: { $regex: searchText, $options: 'i' } },
 							{ email: { $regex: searchText, $options: 'i' } },
-						]
-					}
+						],
+					},
 				];
 			}
 
