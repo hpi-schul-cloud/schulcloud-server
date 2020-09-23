@@ -1,5 +1,8 @@
 const moment = require('moment');
 const _ = require('lodash');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const hooks = require('./hooks/index');
 const swaggerDocs = require('./docs');
 const schoolModel = require('../school/model');
@@ -156,4 +159,6 @@ module.exports = function () {
 	app.use('/statistics', new StatisticsService());
 	const statisticsService = app.service('/statistics');
 	statisticsService.hooks(hooks);
+
+	app.use('/statistics/api', staticContent(path.join(__dirname, '/docs')));
 };

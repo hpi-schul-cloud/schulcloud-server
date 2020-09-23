@@ -1,4 +1,7 @@
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const { ConsentVersionModel } = require('./model');
 const consentVersionModelHooks = require('./hooks/consentversionsModelHooks');
 const consentDocs = require('./docs');
@@ -13,6 +16,8 @@ module.exports = function () {
 	// REPLACEMENT FOR CURRENT consent ROUTE
 	app.use('/consents', new deprecated.ConsentService());
 	app.service('/consents').hooks(deprecated.consentHooks);
+
+	app.use('/consents/api', staticContent(path.join(__dirname, '/docs')));
 
 	// app.use('/consents/:type/users', new ConsentStatusService());
 

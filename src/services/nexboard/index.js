@@ -1,3 +1,6 @@
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const { Project, Board } = require('./services');
 
 const hooks = require('./hooks');
@@ -8,6 +11,8 @@ module.exports = (app) => {
 
 	app.use(projectRoute, new Project());
 	app.use(boardRoute, new Board());
+
+	app.use('/nexboard/api', staticContent(path.join(__dirname, '/docs')));
 
 	const projects = app.service(projectRoute);
 	projects.hooks(hooks);

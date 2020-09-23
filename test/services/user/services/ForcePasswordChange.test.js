@@ -58,7 +58,7 @@ describe('forcePasswordChange service tests', () => {
 			const userRequestAuthentication = await generateRequestParamsFromUser(testUser);
 
 			const newAccount = {
-				username: 'someutestsername22',
+				username: 'someutestsername22@email.com',
 				password: '$2a$10$wMuk7hpjULOEJrTW/CKtU.lIETKa.nEs8fncqLJ74SMeX.fzJACla',
 				activated: true,
 				createdAt: '2017-09-04T12:51:58.49Z',

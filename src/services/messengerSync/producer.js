@@ -1,5 +1,5 @@
 const { Configuration } = require('@schul-cloud/commons');
-const { createChannel } = require('../../utils/rabbitmq');
+const { getChannel } = require('../../utils/rabbitmq');
 const { getAllCourseUserIds } = require('../user-group/logic/courses');
 const { teamsModel } = require('../teams/model');
 
@@ -9,12 +9,10 @@ const ACTIONS = {
 };
 
 let app;
-let channel;
+let channelSendInternal;
 
-const sendToQueue = (message) => {
-	const msgJson = JSON.stringify(message);
-	const msgBuffer = Buffer.from(msgJson);
-	channel.sendToQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msgBuffer, { persistent: true });
+const sendMessage = (message) => {
+	channelSendInternal.sendToQueue(message, { persistent: true });
 };
 
 const requestFullSchoolSync = (school) => {
@@ -23,7 +21,7 @@ const requestFullSchoolSync = (school) => {
 		schoolId: school._id,
 		fullSync: true,
 	};
-	sendToQueue(message);
+	sendMessage(message);
 };
 
 const requestSyncForEachCourseUser = async (course) => {
@@ -33,7 +31,7 @@ const requestSyncForEachCourseUser = async (course) => {
 			userId,
 			courses: [course],
 		};
-		sendToQueue(message);
+		sendMessage(message);
 	});
 };
 
@@ -62,7 +60,7 @@ const requestSyncForEachTeamUser = async (team) => {
 			userId,
 			teams: [fullTeam],
 		};
-		sendToQueue(message);
+		sendMessage(message);
 	});
 };
 
@@ -72,7 +70,7 @@ const requestFullSyncForUser = async (user) => {
 		userId: user._id,
 		fullSync: true,
 	};
-	sendToQueue(message);
+	sendMessage(message);
 };
 
 const requestSyncForEachSchoolUser = async (schoolId) => {
@@ -82,10 +80,7 @@ const requestSyncForEachSchoolUser = async (schoolId) => {
 
 const setup = (app_) => {
 	app = app_;
-	return createChannel().then((createdChannel) => {
-		channel = createdChannel;
-		return channel.assertQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true });
-	});
+	channelSendInternal = getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true });
 };
 
 module.exports = {
