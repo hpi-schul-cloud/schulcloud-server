@@ -4,6 +4,8 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const CryptoJS = require('crypto-js');
 const OAuth = require('oauth-1.0a');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 const ltiTool = require('./model');
 const hooks = require('./hooks');
@@ -23,6 +25,8 @@ module.exports = function () {
 	app.use('/ltiTools', service(options));
 	const ltiToolService = app.service('/ltiTools');
 	ltiToolService.hooks(hooks);
+
+	app.use('/ltiTools/api', staticContent(path.join(__dirname, '/docs')));
 
 	app.use('/tools/:id/link', {
 		create(data, params) {

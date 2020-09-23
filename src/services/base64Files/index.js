@@ -1,4 +1,7 @@
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const hooks = require('./hooks');
 const { base64FileModel } = require('./models');
 const seDownloadHeaders = require('./hooks/setDownloadHeaders');
@@ -17,4 +20,6 @@ module.exports = (app) => {
 	app.use(name, base64FileService, seDownloadHeaders);
 	const base64Files = app.service(name);
 	base64Files.hooks(hooks);
+
+	app.use(`/${name}/api`, staticContent(path.join(__dirname, '/docs')));
 };

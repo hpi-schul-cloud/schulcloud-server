@@ -22,8 +22,7 @@ describe('service', function test() {
 			useCleanCache: true,
 		});
 		mockery.registerMock('@schul-cloud/commons', commons);
-		mockery.registerMock('../../../utils/rabbitmq', rabbitmqMock);
-		mockery.registerMock('../../utils/rabbitmq', rabbitmqMock);
+		mockery.registerMock('amqplib', rabbitmqMock.amqplib);
 
 		// eslint-disable-next-line global-require
 		app = require('../../../../src/app');
@@ -58,7 +57,7 @@ describe('service', function test() {
 
 		expect(testingQueue.length, '4 + 1 request school sync').to.equal(5);
 
-		const lastMessage = JSON.parse(testingQueue[4]);
+		const lastMessage = testingQueue[4];
 		expect(lastMessage.schoolId).to.equal(school._id.toString());
 		expect(lastMessage.fullSync).to.be.true;
 		rabbitmqMock.reset();
