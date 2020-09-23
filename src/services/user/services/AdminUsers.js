@@ -97,7 +97,7 @@ class AdminUsers {
 				const searchText = clientQuery.searchQuery;
 				// Converts the searchQuery to an array and
 				// removes double or more space between the lastName and firstName
-				const querySplit = searchText.split(' ').filter(text => text !== '');
+				const querySplit = searchText.split(' ').filter((text) => text !== '');
 
 				if(querySplit.length > 1)
 				{
