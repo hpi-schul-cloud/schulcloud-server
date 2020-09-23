@@ -99,7 +99,7 @@ class AdminUsers {
 				// removes double or more space between the lastName and firstName
 				const querySplit = searchText.split(' ').filter(text => text !== '');
 
-				if( querySplit.length > 1  )
+				if(querySplit.length > 1)
 				{
 					query.$and = [
 						{ lastName: { $regex: querySplit[0], $options: 'i' } },
