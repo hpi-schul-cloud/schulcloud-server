@@ -1,0 +1,22 @@
+{
+	"compileOnSave": true,
+	"compilerOptions": {
+		"allowJs": true,
+		"baseUrl": ".",
+		"declaration": true,
+		"declarationMap": true,
+		"esModuleInterop": true,
+		"lib": ["es2018"],
+		"module": "ESNext",
+		"moduleResolution": "node",
+		"outDir": "build",
+		"paths": { "@src/*": ["src/*", "build/src/*"] },
+		"preserveConstEnums": true,
+		"resolveJsonModule": true,
+		"sourceMap": true,
+		"strict": true,
+		"target": "es2018"
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "test/**/*", "config/*", "package.json"]
+}

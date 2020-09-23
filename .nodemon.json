@@ -1,0 +1,6 @@
+{
+	"ignore": ["**/*.test.js", "**/*.test.ts", "**/*.spec.ts", ".git", "node_modules"],
+	"watch": ["build", "config", "public"],
+	"exec": "node --inspect=5959 -r tsconfig-paths/register -r ts-node/register build/src/app.js",
+	"delay": "2500"
+}

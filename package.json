@@ -23,15 +23,25 @@
 		"test": "cross-env NODE_ENV=test npm run seed && npm run coverage",
 		"backup": "node ./backup.js -b export",
 		"setup": "node ./backup.js -p setup/ import",
+		"ts:build": "tsc",
+		"ts:build:clean": "rm -rf build",
+		"ts:start": "node -r ts-node/register -r tsconfig-paths/register build/src",
+		"ts:debug": "concurrently \"tsc -w\" \"nodemon\"",
+		"ts:debug:container": "nodemon --inspect=0.0.0.0:5959",
+		"ts:mocha": "cross-env NODE_ENV=test mocha --exit",
+		"ts:mocha:watch": "cross-env NODE_ENV=test mocha",
+		"ts:mocha:inspect": "cross-env NODE_ENV=test mocha --inspect-brk --inspect --timeout 60000 --exit",
+		"ts:test": "cross-env NODE_ENV=test npm run seed && npm run ts:coverage",
+		"ts:coverage": "cross-env NODE_ENV=test nyc mocha --exit",
 		"start": "node src/",
 		"startd": "nodemon src/",
 		"debug": "nodemon --inspect=5959 src/",
 		"debug:container": "nodemon --inspect=0.0.0.0:5959 src/",
-		"coverage": "cross-env NODE_ENV=test nyc --reporter=text-summary mocha --exit './test/**/*.test.js'",
+		"coverage": "cross-env NODE_ENV=test nyc mocha --exit",
 		"coverage-codecov": "cross-env NODE_ENV=test nyc report --reporter=text-lcov | codecov --pipe",
-		"mocha": "cross-env NODE_ENV=test mocha --exit './test/**/*.test.js'",
+		"mocha": "cross-env NODE_ENV=test mocha --exit",
 		"mocha-single": "cross-env NODE_ENV=test mocha --exit",
-		"mocha-inspect": "cross-env NODE_ENV=test mocha --inspect-brk --inspect --timeout 60000 --exit './test/**/*.test.js'",
+		"mocha-inspect": "cross-env NODE_ENV=test mocha --inspect-brk --inspect --timeout 60000 --exit",
 		"migration": "migrate --config ./config/migrate.js",
 		"migration-sync": "migrate list --autosync --config ./config/migrate.js",
 		"migration-list": "migrate list --config ./config/migrate.js",
@@ -61,6 +71,7 @@
 		"chalk": "^4.0.0",
 		"client-oauth2": "^4.2.5",
 		"compression": "^1.6.2",
+		"concurrently": "^5.3.0",
 		"cors": "^2.8.1",
 		"cross-env": "^7.0.0",
 		"crypto-js": "^4.0.0",
@@ -113,6 +124,7 @@
 		"xml2js-es6-promise": "^1.1.1"
 	},
 	"devDependencies": {
+		"@istanbuljs/nyc-config-typescript": "^1.0.1",
 		"chai": "^4.2.0",
 		"chai-as-promised": "^7.1.1",
 		"chai-http": "^4.2.0",
@@ -133,6 +145,7 @@
 		"prettier-eslint": "^11.0.0",
 		"proxyquire": "^2.1.3",
 		"simple-oauth2": "^3.0.0",
-		"sinon": "^9.0.0"
+		"sinon": "^9.0.0",
+		"source-map-support": "^0.5.19"
 	}
 }
