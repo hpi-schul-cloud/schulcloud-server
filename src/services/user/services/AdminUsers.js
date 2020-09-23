@@ -95,13 +95,10 @@ class AdminUsers {
 				const searchText = clientQuery.searchQuery;
 				
 				const querySplit = searchText.split(' ').filter((text) => text !== '');
-				// searchCaseOne = user may has only one firstName or one lastName, the rest may more
-				// searchCaseTwo = user may has two firstName or two lastName
-				const searchCaseOne = [].concat(querySplit[0], querySplit.slice(1).join(' '));
-				const searchCaseTwo = [].concat(querySplit.slice(0, 2).join(' '), querySplit.slice(2).join(' '));
-
-				console.log(searchCaseOne)
-				console.log(searchCaseTwo)
+				// searchCaseOne: user may has only one firstName or one lastName, the rest may more
+				// searchCaseTwo: user may has two firstName or two lastName
+				const searchCaseOne = [].concat(querySplit[0], querySplit.slice(1).join(' ')); // Ex. 'Wilhelm', 'von Humboldt'
+				const searchCaseTwo = [].concat(querySplit.slice(0, 2).join(' '), querySplit.slice(2).join(' ')); // Ex. 'Wilhelm von', 'Humboldt'
 
 				query.$or = [
 					{
