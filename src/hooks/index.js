@@ -316,7 +316,10 @@ exports.checkCorrectCourseOrTeamId = async (context) => {
 		let validatedCourseId = (courseId || '').toString() || (context.id || '').toString();
 		let query = {
 			_id: validatedCourseId,
-			teacherIds: userId,
+			$or: [
+				{ teacherIds: userId }, 
+				{ substitutionIds: userId }, 
+			],
 			$select: ['_id'],
 		};
 
@@ -326,7 +329,10 @@ exports.checkCorrectCourseOrTeamId = async (context) => {
 			validatedCourseId = courseGroup.courseId;
 			query = {
 				_id: validatedCourseId,
-				$or: [{ teacherIds: userId }, { userIds: userId }],
+				$or: [
+					{ teacherIds: userId }, 
+					{ substitutionIds: userId }, 
+					{ userIds: userId }],
 				$select: ['_id'],
 			};
 		}
