@@ -124,7 +124,7 @@ describe('lessons service', () => {
 				userIds: [student._id],
 			});
 			// create a second course to be sure the course selection works
-			await testObjects.createTestCourse({schoolId, teacherIds: [teacher._id]});
+			await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
 			const { _id: courseGroupId } = await testObjects.createTestCourseGroup({
 				userIds: [student._id],
 				schoolId,
