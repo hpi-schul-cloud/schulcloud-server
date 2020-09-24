@@ -316,19 +316,17 @@ exports.checkCorrectCourseOrTeamId = async (context) => {
 		let validatedCourseId = (courseId || '').toString() || (context.id || '').toString();
 		let query = {
 			_id: validatedCourseId,
-			teacherIds: {
-				$in: [userId],
-			},
+			$or: [{ teacherIds: userId }, { substitutionIds: userId }],
 			$select: ['_id'],
 		};
 
 		if (courseGroupId) {
 			delete context.data.courseId;
-			const courseGroup = context.app.service('courseGroups').get(courseGroupId);
+			const courseGroup = await context.app.service('courseGroups').get(courseGroupId);
 			validatedCourseId = courseGroup.courseId;
 			query = {
 				_id: validatedCourseId,
-				$or: [{ teacherIds: { $in: [userId] } }, { userIds: { $in: [userId] } }],
+				$or: [{ teacherIds: userId }, { substitutionIds: userId }, { userIds: userId }],
 				$select: ['_id'],
 			};
 		}
