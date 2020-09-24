@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## 25.0.1
+
+### Fixed - 25.0.1
+
+- SC-6696 - Fixed query used to determine course membership when checking permissions for course group lessons
+
 ## 25.0.0
 
 ### Added - 25.0.0
