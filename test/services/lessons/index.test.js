@@ -113,6 +113,29 @@ describe('lessons service', () => {
 			expect(result).to.haveOwnProperty('_id');
 			expect(result.name).to.equal('students always use cool names');
 		});
+
+		it('the teacher can create courseGroup lessons', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const { _id: courseId } = await testObjects.createTestCourse({
+				schoolId,
+				teacherIds: [teacher._id],
+				userIds: [student._id],
+			});
+			// create a second course to be sure the course selection works
+			await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+			const { _id: courseGroupId } = await testObjects.createTestCourseGroup({
+				userIds: [student._id],
+				schoolId,
+				courseId,
+			});
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			const data = { name: 'Here we go...', courseGroupId };
+			const result = await app.service('lessons').create(data, params);
+			expect(result).to.haveOwnProperty('_id');
+			expect(result.name).to.equal('Here we go...');
+		});
 	});
 
 	describe('security features', () => {
