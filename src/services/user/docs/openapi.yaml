@@ -47,6 +47,12 @@ components:
       description: TODO
     admin:
       description: TODO
+      type: object
+      required:
+        - thisfails
+      properties:
+        thisfails:
+          type: string
     admin_list:
       description: TODO
     mail:
@@ -61,6 +67,12 @@ components:
       description: TODO
 
 paths:
+  /users/api:
+    get:
+      summary: ''
+      responses:
+        '200':
+          description: success
   /usersModel:
     get:
       parameters:
