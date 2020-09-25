@@ -25,10 +25,10 @@ class MerlinToken {
 module.exports = (app) => {
 	const merlinRoute = 'edu-sharing/merlinToken';
 	app.use(merlinRoute, new MerlinToken(), (req, res) => {
-		res.send(res.data)
+		res.send(res.data);
 	})
-	const merlinService = app.service(merlinRoute)
-	merlinService.hooks(merlinHooks)
+	const merlinService = app.service(merlinRoute);
+	merlinService.hooks(merlinHooks);
 
 	const eduRoute = '/edu-sharing';
 	app.use(eduRoute, new EduSearch(), (req, res) => {
