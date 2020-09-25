@@ -1,12 +1,13 @@
 const { expect } = require('chai');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 const { restrictChangesToArchivedCourse } = require('../../../../src/services/user-group/hooks/courses');
 
 const oneHour = 600000;
 const twoDays = 172800000;
 
-describe('course hooks', () => {
+describe('course hooks', async () => {
+	const app = await appPromise;
 	let server;
 	before(() => {
 		server = app.listen(0);

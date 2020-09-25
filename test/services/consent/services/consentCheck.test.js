@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const { Configuration } = require('@schul-cloud/commons');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 const { createDateFromAge, createParentConsent, createUserConsent } = require('../utils/helper');
 
 const createUserWithConsent = ({ age, userConsent, parentConsent, ...others }) =>
@@ -14,7 +14,8 @@ const createUserWithConsent = ({ age, userConsent, parentConsent, ...others }) =
 		...others,
 	});
 
-describe('consentCheck tests', () => {
+describe('consentCheck tests', async () => {
+	const app = await appPromise;
 	let server;
 	let consentCheckService;
 	let schoolSerivce;

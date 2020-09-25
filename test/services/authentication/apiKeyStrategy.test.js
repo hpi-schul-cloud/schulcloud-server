@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const { authenticate } = require('@feathersjs/authentication');
 const { Configuration } = require('@schul-cloud/commons');
 
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
 class TestService {
 	find(params) {
@@ -18,7 +18,8 @@ const testServiceHooks = {
 	before: { all: [authenticate('api-key')] },
 };
 
-describe('api-key authentication strategy', () => {
+describe('api-key authentication strategy', async () => {
+	const app = await appPromise;
 	let server;
 	const testRoute = `/foo${Date.now}`;
 	let configBefore = null;

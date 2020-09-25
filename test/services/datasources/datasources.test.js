@@ -1,13 +1,14 @@
 const { expect } = require('chai');
 
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
 const { datasourceModel } = require('../../../src/services/datasources/model');
 
-const datasourcesService = app.service('datasources');
 
-describe('datasources service', () => {
+describe('datasources service', async () => {
+	const app = await appPromise;
+	const datasourcesService = app.service('datasources');
 	let server;
 	before((done) => {
 		server = app.listen(0, done);

@@ -1,15 +1,18 @@
 const assert = require('assert');
 const chai = require('chai');
-const app = require('../../../src/app');
-const { createTestSchoolGroup, createTestSchool, createTestUser, cleanup } = require('../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const appPromise = require('../../../src/app');
+const { createTestSchoolGroup, createTestSchool, createTestUser, cleanup } = require('../helpers/testObjects')(
+	appPromise
+);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
 const { helpDocumentsModel } = require('../../../src/services/help/model');
 
 const { expect } = chai;
 
-const helpDocumentService = app.service('/help/documents');
 
-describe('help documents service', () => {
+describe('help documents service', async () => {
+	const app = await appPromise;
+	const helpDocumentService = app.service('/help/documents');
 	let server;
 
 	before((done) => {

@@ -1,11 +1,8 @@
 const chai = require('chai');
 
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
-const courseGroupService = app.service('courseGroups');
-const lessonsService = app.service('lessons');
-
-const testObjects = require('../helpers/testObjects')(app);
+const testObjects = require('../helpers/testObjects')(appPromise);
 
 const testUserId = '0000d231816abba584714c9e';
 const testCourseExample = '0000dcfbfb5c7a3f00bf21ab';
@@ -34,7 +31,10 @@ const testLesson = {
 	userId: testUserId,
 };
 
-describe('courseGroup service', () => {
+describe('courseGroup service', async () => {
+	const app = await appPromise;
+	const courseGroupService = app.service('courseGroups');
+	const lessonsService = app.service('lessons');
 	it('creates a courseGroup in a course', async () => {
 		const course = await testObjects.createTestCourse({});
 		testCourseGroup.courseId = course._id;

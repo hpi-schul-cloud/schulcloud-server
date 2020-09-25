@@ -1,14 +1,16 @@
 const { expect } = require('chai');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
 
-const courseScopeListService = app.service('/users/:scopeId/courses');
 
 const oneHour = 600000;
 const twoDays = 172800000;
 
-describe('courses scopelist service', () => {
+describe('courses scopelist service', async () => {
+	const app = await appPromise;
+	const courseScopeListService = app.service('/users/:scopeId/courses');
+
 	it('is properly registered', () => {
 		expect(courseScopeListService).to.not.equal(undefined);
 	});

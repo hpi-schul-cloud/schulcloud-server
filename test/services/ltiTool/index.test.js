@@ -1,9 +1,11 @@
 const assert = require('assert');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
-const ltiToolService = app.service('ltiTools');
 
-describe('ltiTool service', () => {
+describe('ltiTool service', async () => {
+	const app = await appPromise;
+	const ltiToolService = app.service('ltiTools');
+
 	const testTool = {
 		_id: '5836bb5664582c35df3bc215',
 		name: 'LTI Tools',

@@ -1,6 +1,6 @@
 const chai = require('chai');
 const request = require('request-promise-native');
-const app = require('../../src/app');
+const appPromise = require('../../src/app');
 const getAllRoutes = require('../services/helpers/getAllRoutes');
 const { whitelistNoJwt, whitelistInvalidJwt, ignorelistNoJwt, ignorelistInvalidJwt } = require('./whitelist');
 const { API_HOST } = require('../../config/globals');
@@ -30,7 +30,8 @@ const isOnIgnorelist = (endpoint, method, ignorelist) => {
 	return false;
 };
 
-const serverSetup = () => {
+const serverSetup = async () => {
+	const app = await appPromise;
 	let server;
 
 	before((done) => {

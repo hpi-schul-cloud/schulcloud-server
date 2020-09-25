@@ -10,8 +10,8 @@ const { Configuration } = require('@schul-cloud/commons');
 
 const HOST = Configuration.get('HOST');
 
-const app = require('../../../../src/app');
-const { createTestUser, createTestActivation, cleanup } = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const { createTestUser, createTestActivation, cleanup } = require('../../helpers/testObjects')(appPromise);
 
 const util = require('../../../../src/services/activation/utils/generalUtils');
 const customUtils = require('../../../../src/services/activation/utils/customStrategyUtils');
@@ -30,7 +30,8 @@ const createEntry = async () => {
 	return { entry, user };
 };
 
-describe('activation/utils utils', () => {
+describe('activation/utils utils', async () => {
+	const app = await appPromise;
 	let server;
 
 	before((done) => {

@@ -1,6 +1,6 @@
 const chai = require('chai');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 
 const { expect } = chai;
 
@@ -49,7 +49,8 @@ async function createSubmission(
 	});
 }
 
-describe('submission service', function test() {
+describe('submission service', async function test() {
+	const app = await appPromise;
 	this.timeout(4000);
 	let server;
 

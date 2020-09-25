@@ -16,14 +16,15 @@ describe('content service', function () {
 	let resourcesService = null;
 	let searchService = null;
 
-	before((done) => {
+	before(async (done) => {
 		mockery.enable({
 			warnOnReplace: false,
 			warnOnUnregistered: false,
 			useCleanCache: true,
 		});
 		mockery.registerMock('request-promise-native', requestMock);
-		app = require('../../../src/app');
+		// eslint-disable-next-line global-require
+		app = await require('../../../src/app');
 
 		app.setup();
 		resourcesService = app.service('content/resources');

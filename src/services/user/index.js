@@ -23,20 +23,12 @@ const {
 } = require('./services');
 
 module.exports = (app) => {
-	console.log("I want to register the api validator.")
-
-	/* const start = new Date().getTime();
-	const timeout = start + (10000);
-	while (new Date().getTime() < timeout) {}; */
-
-	new OpenApiValidator({
+	/* new OpenApiValidator({
 		apiSpec: path.join(__dirname, '/docs/openapi.yaml'),
 		// ignorePaths: /.*\/pets$/
 		// validateResponses: true, // <-- to validate responses
 		// unknownFormats: ['my-format'] // <-- to provide custom formats
-	}).installSync(app);
-
-	console.log("and so I did.")
+	}).installSync(app); */
 
 	app.use('/users/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 

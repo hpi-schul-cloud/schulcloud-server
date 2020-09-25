@@ -1,11 +1,12 @@
 const assert = require('assert');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
 chai.use(chaiHttp);
 
-describe('link service', () => {
+describe('link service', async () => {
+	const app = await appPromise;
 	let server;
 
 	before((done) => {

@@ -12,14 +12,15 @@ describe('calendar service', function () {
 	let app = null;
 	let calendarService = null;
 
-	before((done) => {
+	before(async (done) => {
 		mockery.enable({
 			warnOnReplace: false,
 			warnOnUnregistered: false,
 			useCleanCache: true,
 		});
 		mockery.registerMock('request-promise-native', requestMock);
-		app = require('../../../src/app');
+		// eslint-disable-next-line global-require
+		app = await require('../../../src/app');
 		app.setup();
 		calendarService = app.service('calendar');
 		done();

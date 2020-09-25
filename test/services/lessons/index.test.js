@@ -1,10 +1,8 @@
 const assert = require('assert');
 const { expect } = require('chai');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
-const lessonService = app.service('lessons');
-const lessonCopyService = app.service('lessons/copy');
-const testObjects = require('../helpers/testObjects')(app);
+const testObjects = require('../helpers/testObjects')(appPromise);
 
 const testLesson = {
 	name: 'testLesson',
@@ -13,7 +11,10 @@ const testLesson = {
 	userId: '0000d231816abba584714c9e',
 };
 
-describe('lessons service', () => {
+describe('lessons service', async () => {
+	const app = await appPromise;
+	const lessonService = app.service('lessons');
+	const lessonCopyService = app.service('lessons/copy');
 	let server;
 
 	before((done) => {

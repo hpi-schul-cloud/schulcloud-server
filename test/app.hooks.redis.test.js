@@ -34,7 +34,7 @@ describe('handleAutoLogout hook', function test() {
 		delete require.cache[require.resolve('../src/app.hooks')];
 		/* eslint-disable global-require */
 		redisHelper = require('../src/utils/redis');
-		app = require('../src/app');
+		app = await require('../src/app');
 		testObjects = require('./services/helpers/testObjects')(app);
 		fut = require('../src/app.hooks').handleAutoLogout;
 		/* eslint-enable global-require */

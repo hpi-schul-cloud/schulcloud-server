@@ -1,13 +1,14 @@
 const assert = require('assert');
 const chai = require('chai');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 
-const homeworkService = app.service('homework');
-const homeworkCopyService = app.service('homework/copy');
 const { expect } = chai;
 
-describe('homework service', function test() {
+describe('homework service', async function test() {
+	const app = await appPromise;
+	const homeworkService = app.service('homework');
+	const homeworkCopyService = app.service('homework/copy');
 	this.timeout(10000);
 
 	it('registered the homework service', () => {

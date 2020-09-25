@@ -7,8 +7,10 @@ const nock = require('nock');
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-const app = require('../../../../src/app');
-const { createTestUser, createTestAccount, createTestActivation, cleanup } = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const { createTestUser, createTestAccount, createTestActivation, cleanup } = require('../../helpers/testObjects')(
+	appPromise
+);
 
 const util = require('../../../../src/services/activation/utils/generalUtils');
 const customUtils = require('../../../../src/services/activation/utils/customStrategyUtils');
@@ -42,7 +44,8 @@ const getNotificationMock = (expectedData = {}) =>
 			});
 	});
 
-describe('activation/services activationService', () => {
+describe('activation/services activationService', async () => {
+	const app = await appPromise;
 	let server;
 	let activationService;
 

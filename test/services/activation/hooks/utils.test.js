@@ -5,8 +5,10 @@ const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-const app = require('../../../../src/app');
-const { createTestUser, createTestAccount, createTestSystem, cleanup } = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const { createTestUser, createTestAccount, createTestSystem, cleanup } = require('../../helpers/testObjects')(
+	appPromise
+);
 
 const hookUtils = require('../../../../src/services/activation/hooks/utils');
 const moodleMockServer = require('../../account/moodle/moodleMockServer');
@@ -19,7 +21,8 @@ const existingTestAccountParameters = {
 	password: existingTestAccount.password,
 };
 
-describe('activation/hooks utils', () => {
+describe('activation/hooks utils', async () => {
+	const app = await appPromise;
 	let server;
 
 	before((done) => {

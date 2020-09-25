@@ -1,8 +1,9 @@
 const { expect } = require('chai');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 
-describe('account model service', () => {
+describe('account model service', async () => {
+	const app = await appPromise;
 	let server;
 
 	before((done) => {

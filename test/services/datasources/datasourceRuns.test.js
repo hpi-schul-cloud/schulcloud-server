@@ -1,14 +1,13 @@
+/* eslint-disable max-classes-per-file */
 const { expect } = require('chai');
 const mockery = require('mockery');
 const sleep = require('util').promisify(setTimeout);
 
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
 const { datasourceRunModel } = require('../../../src/services/datasources/model');
 const Syncer = require('../../../src/services/sync/strategies/Syncer');
-
-const datasourceRunsService = app.service('datasourceRuns');
 
 /**
  * will always run successfully
@@ -38,7 +37,9 @@ class MockSyncerWithData extends Syncer {
 	}
 }
 
-describe('datasourceRuns service', () => {
+describe('datasourceRuns service', async () => {
+	const app = await appPromise;
+	const datasourceRunsService = app.service('datasourceRuns');
 	let server;
 	before((done) => {
 		mockery.enable({

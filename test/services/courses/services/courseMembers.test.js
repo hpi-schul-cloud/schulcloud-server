@@ -1,13 +1,14 @@
 const { expect } = require('chai');
 const { Forbidden } = require('@feathersjs/errors');
 
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
 
-const courseMembersService = app.service('/courses/:scopeId/members');
 
-describe('course scope members service', () => {
+describe('course scope members service', async () => {
+	const app = await appPromise;
+	const courseMembersService = app.service('/courses/:scopeId/members');
 	let server;
 
 	before((done) => {

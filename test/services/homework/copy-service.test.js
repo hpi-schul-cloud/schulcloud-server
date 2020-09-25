@@ -1,12 +1,13 @@
 const chai = require('chai');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 const { homeworkModel } = require('../../../src/services/homework/model');
 
-const homeworkCopyService = app.service('homework/copy');
 const { expect } = chai;
 
-describe('homework copy service', () => {
+describe('homework copy service', async () => {
+	const app = await appPromise;
+	const homeworkCopyService = app.service('homework/copy');
 	const homeworkIdsToDelete = [];
 
 	after(async () => {

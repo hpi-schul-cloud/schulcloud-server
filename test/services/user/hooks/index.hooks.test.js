@@ -9,8 +9,6 @@ const {
 	hasReadPermissionForUser,
 } = require('../../../../src/services/user/hooks/index.hooks');
 
-const userService = app.service('users');
-
 /**
  * Warning: Role Changes are not handled yet.
  * @param loggedinUserPermissions {array} - an array of permissions that the requesting user has
@@ -51,8 +49,10 @@ const assertPromiseStatus = (promise, success) =>
 		});
 
 describe('hasEditPermissionForUser', () => {
+	const userService = app.service('users');
 	let server;
-	before((done) => {
+	before(async (done) => {
+		await app;
 		server = app.listen(0, done);
 	});
 

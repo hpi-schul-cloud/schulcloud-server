@@ -1,12 +1,13 @@
 const assert = require('assert');
 const { expect } = require('chai');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
-const helpdeskService = app.service('helpdesk');
 
-const { logger } = app;
 
-describe('helpdesk service', () => {
+describe('helpdesk service', async () => {
+	const app = await appPromise;
+	const helpdeskService = app.service('helpdesk');
+	const { logger } = app;
 	const testProblem = {
 		type: 'contactAdmin',
 		_id: '5836bb5664582c35df3bc214',

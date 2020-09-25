@@ -2,10 +2,11 @@ const { expect } = require('chai');
 const { BadRequest } = require('@feathersjs/errors');
 const { lookupSchool } = require('../../src/hooks');
 
-const app = require('../../src/app');
-const { createTestUser, cleanup } = require('../services/helpers/testObjects')(app);
+const appPromise = require('../../src/app');
+const { createTestUser, cleanup } = require('../services/helpers/testObjects')(appPromise);
 
-describe('#lookupSchool', () => {
+describe('#lookupSchool', async () => {
+	const app = await appPromise;
 	it('should require authentication to provide a user', async () => {
 		try {
 			await lookupSchool({});

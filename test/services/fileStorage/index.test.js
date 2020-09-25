@@ -54,7 +54,7 @@ describe('fileStorage services', () => {
 		mockery.registerMock('../strategies/awsS3', AWSStrategy);
 
 		// eslint-disable-next-line global-require
-		app = require('../../../src/app');
+		app = await require('../../../src/app');
 		server = await app.listen(0);
 
 		fileStorageService = app.service('/fileStorage/');

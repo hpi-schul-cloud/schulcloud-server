@@ -2,7 +2,7 @@ const assert = require('assert');
 const { expect } = require('chai');
 const { Forbidden } = require('@feathersjs/errors');
 
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 const Material = require('../../../src/services/content/material-model');
 
 const {
@@ -11,9 +11,10 @@ const {
 	createTestUser,
 	createTestLesson,
 	generateRequestParamsFromUser,
-} = require('../helpers/testObjects')(app);
+} = require('../helpers/testObjects')(appPromise);
 
-describe('material service', () => {
+describe('material service', async () => {
+	const app = await appPromise;
 	it('registered the material service', () => {
 		assert.ok(app.service('materials'));
 	});
