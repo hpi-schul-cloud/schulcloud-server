@@ -1,4 +1,7 @@
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const Pseudonym = require('./model');
 const hooks = require('./hooks');
 
@@ -14,6 +17,7 @@ module.exports = function () {
 	};
 
 	app.use('/pseudonym', service(options));
+	app.use('/pseudonym/api', staticContent(path.join(__dirname, '/docs')));
 
 	const pseudonymService = app.service('/pseudonym');
 	pseudonymService.hooks(hooks);
