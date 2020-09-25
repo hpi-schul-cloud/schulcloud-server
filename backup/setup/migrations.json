@@ -773,5 +773,16 @@
 		"$date": "2020-08-24T10:57:52.663Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f735acf026e67ed1ca47e97"
+	},
+	"state": "up",
+	"name": "copy-parents-data-into-children-entities-and-delete-parent-users",
+	"createdAt": {
+		"$date": "2020-09-25T08:29:24.938Z"
+	},
+	"__v": 0
 }]
 
