@@ -1,10 +1,9 @@
-const { Configuration } = require('@schul-cloud/commons');
 const { authenticate } = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
 const { NotFound } = require('@feathersjs/errors');
 
 const validateReference = (hook) => {
-    if (!hook || !hook.params || !hook.params.query || !hook.params.query['merlinReference']) {
+    if (!hook || !hook.params || !hook.params.query || !hook.params.query.merlinReference.) {
         throw new NotFound(`Missing query params: {merlinReference: fooBar}`)
     }
     return hook
