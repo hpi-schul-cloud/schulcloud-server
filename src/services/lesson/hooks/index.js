@@ -41,7 +41,7 @@ const addShareTokenIfCourseShareable = async (context) => {
 // The url expires after 2 hours
 const convertMerlinUrl = async (context) => {
 	if (context.result && context.result.materialIds && context.result.materialIds.some(material => material.merlinReference)) {
-		const { materialIds } = context.result
+		const { materialIds } = context.result;
 		await Promise.all(materialIds.map(async (material) => {
 			if (material.merlinReference) {
 				material.url = await context.app
@@ -51,7 +51,7 @@ const convertMerlinUrl = async (context) => {
 		})
 		)
 	}
-	return context
+	return context;
 }
 
 const setPosition = async (context) => {

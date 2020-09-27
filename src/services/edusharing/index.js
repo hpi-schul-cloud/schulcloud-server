@@ -2,7 +2,7 @@ const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
 const hooks = require('./hooks');
-const merlinHooks = require('./hooks/merlin.hooks')
+const merlinHooks = require('./hooks/merlin.hooks');
 const EduSharingConnector = require('./logic/connector');
 const MerlinTokenGenerator = require('./logic/MerlinTokenGenerator');
 
@@ -18,7 +18,7 @@ class EduSearch {
 
 class MerlinToken {
 	find(data) {
-		return MerlinTokenGenerator.FIND(data)
+		return MerlinTokenGenerator.FIND(data);
 	}
 }
 
@@ -26,7 +26,7 @@ module.exports = (app) => {
 	const merlinRoute = 'edu-sharing/merlinToken';
 	app.use(merlinRoute, new MerlinToken(), (req, res) => {
 		res.send(res.data);
-	})
+	});
 	const merlinService = app.service(merlinRoute);
 	merlinService.hooks(merlinHooks);
 
