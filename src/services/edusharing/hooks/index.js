@@ -1,7 +1,8 @@
 const { Configuration } = require('@schul-cloud/commons');
 const { authenticate } = require('@feathersjs/authentication');
-const { disallow } = require('feathers-hooks-common');
+const { disallow, iff } = require('feathers-hooks-common');
 const { NotFound } = require('@feathersjs/errors');
+const { isOAuth2, authenticateOAuth2 } = require('../../../hooks/authentication');
 
 const isEdusharing = (context) => {
 	if (Configuration.get('LERNSTORE_MODE') !== 'EDUSHARING') {
@@ -12,7 +13,10 @@ const isEdusharing = (context) => {
 };
 
 exports.before = {
-	all: [authenticate('jwt'), isEdusharing],
+	all: [
+		iff(isOAuth2, authenticateOAuth2('edusharing')).else(authenticate('jwt')),
+		isEdusharing
+	],
 	find: [],
 	get: [],
 	create: [disallow()],
