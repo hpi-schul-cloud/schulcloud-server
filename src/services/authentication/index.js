@@ -1,6 +1,8 @@
 const { AuthenticationService, JWTStrategy } = require('@feathersjs/authentication');
 const { LocalStrategy } = require('@feathersjs/authentication-local');
 const { Configuration } = require('@schul-cloud/commons');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 const { LdapStrategy, MoodleStrategy, IservStrategy, TSPStrategy, ApiKeyStrategy } = require('./strategies');
 const { hooks } = require('./hooks');
@@ -39,10 +41,11 @@ const authConfig = {
 
 class SCAuthenticationService extends AuthenticationService {
 	async getPayload(authResult, params) {
-		return super.getPayload(authResult, {
-			...params,
-			payload: authResult.payload || params.payload,
-		});
+		const payload = await super.getPayload(authResult, params);
+		const user = await this.app.service('usersModel').get(authResult.account.userId);
+		payload.schoolId = user.schoolId;
+		payload.roles = user.roles;
+		return payload;
 	}
 }
 
@@ -63,4 +66,6 @@ module.exports = (app) => {
 
 	const authenticationService = app.service('authentication');
 	authenticationService.hooks(hooks);
+
+	app.use('/authentication/api', staticContent(path.join(__dirname, '/docs')));
 };

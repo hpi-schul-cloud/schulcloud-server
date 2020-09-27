@@ -2,6 +2,9 @@
 const ldap = require('ldapjs');
 const errors = require('@feathersjs/errors');
 const mongoose = require('mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const hooks = require('./hooks');
 
 const { NoClientInstanceError } = require('./errors');
@@ -312,4 +315,6 @@ module.exports = function LDAPService() {
 	app.use('/ldap', new LdapService());
 	const systemService = app.service('/ldap');
 	systemService.hooks(hooks);
+
+	app.use('/ldap/api', staticContent(path.join(__dirname, '/docs')));
 };

@@ -152,6 +152,13 @@ const registerUser = function register(data, params, app) {
 		)
 		.then(() => {
 			const consentSkipCondition = Configuration.get('SKIP_CONDITIONS_CONSENT');
+			if (
+				(user.roles || []).filter((role) => {
+					return ['student', 'employee', 'expert', 'administrator', 'teacher'].includes(role);
+				}).length === 0
+			) {
+				return Promise.reject(new errors.BadRequest('You are not allowed to register!'));
+			}
 			if ((user.roles || []).includes('student')) {
 				// wrong birthday object?
 				if (user.birthday instanceof Date && Number.isNaN(user.birthday)) {
@@ -186,7 +193,7 @@ const registerUser = function register(data, params, app) {
 			}
 
 			// identical emails?
-			if (data.parent_email && data.parent_email === data.email) {
+			if (data.parent_email && data.parent_email.toLowerCase() === data.email.toLowerCase()) {
 				return Promise.reject(
 					new errors.BadRequest('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.')
 				);
