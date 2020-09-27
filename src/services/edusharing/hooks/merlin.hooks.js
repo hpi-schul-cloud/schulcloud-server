@@ -4,10 +4,10 @@ const { NotFound } = require('@feathersjs/errors');
 
 const validateReference = (hook) => {
 	if (!hook || !hook.params || !hook.params.query || !hook.params.query.merlinReference) {
-		throw new NotFound(`Missing query params: {merlinReference: fooBar}`)
+		throw new NotFound(`Missing query params: {merlinReference: fooBar}`);
 	}
-	return hook
-}
+	return hook;
+};
 
 exports.before = {
 	all: [authenticate('jwt')],

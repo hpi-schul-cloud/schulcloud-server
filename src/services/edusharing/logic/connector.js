@@ -95,11 +95,13 @@ class EduSharingConnector {
 		const errors = [];
 		do {
 			try {
+				// eslint-disable-next-line no-await-in-loop
 				const eduResponse = await request(options);
 				return JSON.parse(eduResponse);
 			} catch (e) {
 				if (RETRY_ERROR_CODES.indexOf(e.statusCode) >= 0) {
 					logger.info(`Trying to renew Edu Sharing connection. Attempt ${retry}`);
+					// eslint-disable-next-line no-await-in-loop
 					await this.login();
 				} else if (e.statusCode === 404) {
 					return null;
