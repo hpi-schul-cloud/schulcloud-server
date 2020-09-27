@@ -13,10 +13,7 @@ const isEdusharing = (context) => {
 };
 
 exports.before = {
-	all: [
-		iff(isOAuth2, authenticateOAuth2('edusharing')).else(authenticate('jwt')),
-		isEdusharing
-	],
+	all: [iff(isOAuth2, authenticateOAuth2('edusharing')).else(authenticate('jwt')), isEdusharing],
 	find: [],
 	get: [],
 	create: [disallow()],

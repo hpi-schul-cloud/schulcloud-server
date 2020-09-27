@@ -27,18 +27,20 @@ const verifyApiKeyIfProviderIsExternal = (context) => iff(isProvider('external')
 
 const isOAuth2 = (context) => context.params.query.auth === 'oauth2';
 
-const authenticateOAuth2 = (scope) => (context) =>
-	context.app.service('/oauth2/introspect')
-		.create({ token: context.params.headers.authorization.replace('Bearer ', '') })
-		.then((introspection) => {
-			if (introspection.active && introspection.scope.indexOf(scope) !== -1) {
-				context.params.account = { userId: introspection.sub };
-				return context;
-			}
-			throw new NotAuthenticated('Invalid access token!');
-		}).catch((error) => {
-			throw new Error(error);
-		});
+const authenticateOAuth2 = (scope) =>
+	(context) =>
+		context.app.service('/oauth2/introspect')
+			.create({ token: context.params.headers.authorization.replace('Bearer ', '') })
+			.then((introspection) => {
+				if (introspection.active && introspection.scope.indexOf(scope) !== -1) {
+					context.params.account = { userId: introspection.sub };
+					return context;
+				}
+				throw new NotAuthenticated('Invalid access token!');
+			})
+			.catch((error) => {
+				throw new Error(error);
+			});
 
 module.exports = {
 	verifyApiKey,
