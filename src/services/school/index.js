@@ -16,7 +16,7 @@ module.exports = function schoolServices() {
 		Model: schoolModels.schoolModel,
 		paginate: {
 			default: 5,
-			max: 25,
+			max: 100, // this is the max currently used in the SHD
 		},
 		lean: {
 			virtuals: true,

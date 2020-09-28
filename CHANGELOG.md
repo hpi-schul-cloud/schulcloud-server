@@ -12,10 +12,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added - Unreleased
 
 - SC-6738 Extend search input field in new admin tables to search for full name
+- SC-6830 - Added hook to parse request to arrays when > 20 users are requested in adminUsers service
 
 ### Removed
-
-### Removed - Unreleased
 
 - SC-6784 - Removed duplicated birth date formatting code in adminUsers service, which was causing an "Invalid date" output
 - SC-6743 - Removed usersForConsent related things in adminUsers service because the client does not send that parameter anymore
@@ -31,6 +30,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Security - Unreleased
 
 - Added hotfix merges
+
+## 25.0.1
+
+### Fixed - 25.0.1
+
+- SC-6696 - Fixed query used to determine course membership when checking permissions for course group lessons
 
 ## 25.0.0
 
