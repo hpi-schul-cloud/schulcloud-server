@@ -180,11 +180,6 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		return {
 			authentication: { strategy: this.name },
 			[entity]: account,
-			payload: {
-				accountId: account._id,
-				userId: user._id,
-				systemId: account.systemId,
-			},
 		};
 	}
 }
