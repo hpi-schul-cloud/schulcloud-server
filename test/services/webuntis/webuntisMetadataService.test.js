@@ -1,12 +1,14 @@
 const { expect } = require('chai');
 
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 
-const webuntisMetadataService = app.service('webuntisMetadata');
 const { webuntisMetadataModel } = require('../../../src/services/webuntis/model');
 
-describe('webuntis metadata service', () => {
+describe('webuntis metadata service', async () => {
+	const app = await appPromise;
+	const webuntisMetadataService = app.service('webuntisMetadata');
+
 	let server;
 	before((done) => {
 		server = app.listen(0, done);

@@ -1,9 +1,10 @@
 const { expect } = require('chai');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 const { courseModel } = require('../../../../src/services/user-group/model');
 
-describe('course model service', () => {
+describe('course model service', async () => {
+	const app = await appPromise;
 	let server;
 
 	before((done) => {

@@ -3,16 +3,16 @@ const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 
 const { Configuration } = require('@schul-cloud/commons');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
-const userService = app.service('users');
-const registrationPinService = app.service('registrationPins');
 const { registrationPinModel } = require('../../../src/services/user/model');
 
-const publicTeachersService = app.service('publicTeachers');
-const testObjects = require('../helpers/testObjects')(app);
+const testObjects = require('../helpers/testObjects')(appPromise);
 
-describe('registrationPin Service', () => {
+describe('registrationPin Service', async () => {
+	const app = await appPromise;
+	const registrationPinService = app.service('registrationPins');
+
 	let pin = null;
 	const email = 'test.adresse@schul-cloud.org';
 	it('registered the registrationPin Service', () => {
@@ -58,7 +58,11 @@ describe('registrationPin Service', () => {
 			.catch((err) => expect(err.message.length).to.be.greaterThan(5)));
 });
 
-describe('publicTeachers service', () => {
+describe('publicTeachers service', async () => {
+	const app = await appPromise;
+	const userService = app.service('users');
+	const publicTeachersService = app.service('publicTeachers');
+
 	let testStudent = {};
 	let testTeacher = {};
 	let testTeacherDisabled = {};

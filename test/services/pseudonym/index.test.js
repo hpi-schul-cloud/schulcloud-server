@@ -1,14 +1,15 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
-const pseudonymService = app.service('pseudonym');
 const Pseudonym = require('../../../src/services/pseudonym/model');
 
-const toolService = app.service('ltiTools');
-const { cleanup, createTestUser, generateRequestParamsFromUser } = require('../helpers/testObjects')(app);
+const { cleanup, createTestUser, generateRequestParamsFromUser } = require('../helpers/testObjects')(appPromise);
 
-describe('pseudonym service', function pseudonymTest() {
+describe('pseudonym service', async function pseudonymTest() {
+	const app = await appPromise;
+	const pseudonymService = app.service('pseudonym');
+	const toolService = app.service('ltiTools');
 	this.timeout(10000);
 
 	const testTool1 = {

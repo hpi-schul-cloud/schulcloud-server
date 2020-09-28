@@ -1,20 +1,18 @@
 const { expect } = require('chai');
 const logger = require('../../../../src/logger/index');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 const accountModel = require('../../../../src/services/account/model');
-
-const accountService = app.service('/accounts');
-
-const adminStudentsService = app.service('/users/admin/students');
-const adminTeachersService = app.service('/users/admin/teachers');
-const consentService = app.service('consents');
 
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const testGenericErrorMessage = "You don't have one of the permissions: STUDENT_LIST.";
 
-describe('AdminUsersService', () => {
+describe('AdminUsersService', async () => {
+	const app = await appPromise;
+	const accountService = app.service('/accounts');
+	const adminStudentsService = app.service('/users/admin/students');
+	const adminTeachersService = app.service('/users/admin/teachers');
 	let server;
 
 	before((done) => {
@@ -1091,7 +1089,10 @@ describe('AdminUsersService', () => {
 	});
 });
 
-describe('AdminTeachersService', () => {
+describe('AdminTeachersService', async () => {
+	const app = await appPromise;
+	const adminTeachersService = app.service('/users/admin/teachers');
+	const consentService = app.service('consents');
 	let server;
 
 	before((done) => {

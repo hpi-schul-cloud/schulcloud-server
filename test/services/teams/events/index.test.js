@@ -4,13 +4,14 @@
 const { expect } = require('chai');
 const sleep = require('util').promisify(setTimeout);
 
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const DELAY_TIME = 250;
 
-describe('Test user remove events for teams.', () => {
+describe('Test user remove events for teams.', async () => {
+	const app = await appPromise;
 	describe('Test if own of the users is removed.', () => {
 		let team;
 

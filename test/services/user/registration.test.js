@@ -1,47 +1,15 @@
 const { expect } = require('chai');
 const assert = require('assert');
 
-const app = require('../../../src/app');
-const accountModel = require('../../../src/services/account/model');
-const { consentModel } = require('../../../src/services/consent/model');
-const { userModel, registrationPinModel } = require('../../../src/services/user/model');
-const { schoolModel } = require('../../../src/services/school/model');
+const appPromise = require('../../../src/app');
+const { userModel } = require('../../../src/services/user/model');
 
-const registrationService = app.service('registration');
-const registrationPinService = app.service('registrationPins');
-const testObjects = require('../helpers/testObjects')(app);
+const testObjects = require('../helpers/testObjects')(appPromise);
 
-const patchSchool = (system, schoolId) =>
-	schoolModel
-		.findOneAndUpdate(
-			{ _id: schoolId },
-			{
-				$push: {
-					systems: system._id,
-				},
-			},
-			{ new: true }
-		)
-		.lean()
-		.exec();
-
-const createAccount = (system) =>
-	accountModel.create({
-		lasttriedFailedLogin: '1970-01-01T00:00:00.000+0000',
-		activated: false,
-		username: 'fritz',
-		password: '',
-		systemId: system._id,
-	});
-
-const createPin = (pin = 6716, email) =>
-	registrationPinModel.create({
-		verified: false,
-		email: email || `${Date.now()}@test.de`,
-		pin,
-	});
-
-describe('registration service', () => {
+describe('registration service', async () => {
+	const app = await appPromise;
+	const registrationService = app.service('registration');
+	const registrationPinService = app.service('registrationPins');
 	let server;
 
 	before((done) => {

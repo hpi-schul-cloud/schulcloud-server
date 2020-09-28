@@ -8,9 +8,9 @@ const rcMockServer = require('./rocketChatMockServer');
 
 const { expect } = chai;
 
-describe('rocket.chat user service', () => {
+describe('rocket.chat user service', async () => {
 	delete require.cache[require.resolve('../../../src/app')];
-	const app = require('../../../src/app');
+	const app = await require('../../../src/app');
 	const testObjects = require('../helpers/testObjects')(app);
 
 	let server;
@@ -73,27 +73,27 @@ describe('rocket.chat user service', () => {
 	});
 });
 
-describe('rocket.chat login service', () => {
+describe('rocket.chat login service', async () => {
 	delete require.cache[require.resolve('../../../src/app')];
-	const app = require('../../../src/app');
+	const app = await require('../../../src/app');
 	const rocketChatLoginService = app.service('/rocketChat/login');
 	it('registered the RC login service', () => {
 		assert.ok(rocketChatLoginService);
 	});
 });
 
-describe('rocket.chat logout service', () => {
+describe('rocket.chat logout service', async () => {
 	delete require.cache[require.resolve('../../../src/app')];
-	const app = require('../../../src/app');
+	const app = await require('../../../src/app');
 	const rocketChatLogoutService = app.service('rocketChat/logout');
 	it('registered the RC logout service', () => {
 		assert.ok(rocketChatLogoutService);
 	});
 });
 
-describe('rocket.chat channel service', () => {
+describe('rocket.chat channel service', async () => {
 	delete require.cache[require.resolve('../../../src/app')];
-	const app = require('../../../src/app');
+	const app = await require('../../../src/app');
 	const rocketChatChannelService = app.service('/rocketChat/channel');
 	it('registered the RC channel service', () => {
 		assert.ok(rocketChatChannelService);

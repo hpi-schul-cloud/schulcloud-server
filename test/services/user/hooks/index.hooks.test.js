@@ -1,8 +1,8 @@
 const mockery = require('mockery');
 const { expect } = require('chai');
 
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 
 const {
 	hasEditPermissionForUser,
@@ -48,7 +48,8 @@ const assertPromiseStatus = (promise, success) =>
 			return error;
 		});
 
-describe('hasEditPermissionForUser', () => {
+describe('hasEditPermissionForUser', async () => {
+	const app = await appPromise;
 	const userService = app.service('users');
 	let server;
 	before(async (done) => {
@@ -143,7 +144,8 @@ describe('hasEditPermissionForUser', () => {
 	});
 });
 
-describe('hasReadPermissionForUser', () => {
+describe('hasReadPermissionForUser', async () => {
+	const app = await appPromise;
 	let server;
 	before((done) => {
 		server = app.listen(0, done);

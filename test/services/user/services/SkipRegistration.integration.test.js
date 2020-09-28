@@ -1,11 +1,12 @@
 const { expect } = require('chai');
 
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 
-const testObjects = require('../../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
+const testObjects = require('../../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
 
-describe('SkipRegistration integration', () => {
+describe('SkipRegistration integration', async () => {
+	const app = await appPromise;
 	let server;
 
 	before((done) => {

@@ -1,10 +1,11 @@
 const { expect } = require('chai');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 
-const userRoles = app.service('/roles/user');
 
 describe('userRoles', async () => {
+	const app = await appPromise;
+	const userRoles = app.service('/roles/user');
 	let server;
 	const ROLES = {
 		TEST: 'test',
@@ -34,17 +35,17 @@ describe('userRoles', async () => {
 	};
 
 	const dataTestUser1 = {
-		username: 'testuser1@email.com',
+		username: `${Date.now()}1@email.com`,
 		...commonAccountData,
 	};
 
 	const dataTestUser2 = {
-		username: 'testuser2@email.com',
+		username: `${Date.now()}2@email.com`,
 		...commonAccountData,
 	};
 
 	const dataTestUserOther = {
-		username: 'testuserother2@email.com',
+		username: `${Date.now()}3@email.com`,
 		...commonAccountData,
 	};
 

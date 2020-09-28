@@ -6,12 +6,13 @@ const {
 	filterToRelated,
 	rejectDefaultFilePermissionUpdatesIfNotPermitted,
 } = require('../../../../src/services/teams/hooks/index.js');
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 const { createHook } = require('../helper/helper.hook');
-const { createTestAccount, createTestUser, generateRequestParams } = require('../../helpers/testObjects')(app);
+const { createTestAccount, createTestUser, generateRequestParams } = require('../../helpers/testObjects')(appPromise);
 const teamHelper = require('../../helpers/services/teams');
 
-describe('Team service hook tests.', () => {
+describe('Team service hook tests.', async () => {
+	const app = await appPromise;
 	let server;
 
 	before((done) => {

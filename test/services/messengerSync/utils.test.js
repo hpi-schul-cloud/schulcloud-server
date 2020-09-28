@@ -1,9 +1,10 @@
 const { expect } = require('chai');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 const { buildAddUserMessage, messengerIsActivatedForSchool } = require('../../../src/services/messengerSync/utils');
 
-describe('messenger synchronizer utils', () => {
+describe('messenger synchronizer utils', async () => {
+	const app = await appPromise;
 	let server;
 	before((done) => {
 		server = app.listen(0, done);

@@ -3,14 +3,15 @@ const commons = require('@schul-cloud/commons');
 
 const { Configuration } = commons;
 const nock = require('nock');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 const {
 	messengerTokenService,
 	messengerTokenHooks,
 } = require('../../../../src/services/messengerSync/services/messengerTokenService');
 
-describe('MessengerTokenService', function test() {
+describe('MessengerTokenService', async function test() {
+	const app = await appPromise;
 	this.timeout(10000);
 	let server;
 

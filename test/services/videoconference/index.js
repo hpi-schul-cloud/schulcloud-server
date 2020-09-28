@@ -1,17 +1,17 @@
 /* eslint-disable no-unused-expressions */
 const { expect } = require('chai');
 const rp = require('request-promise-native');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
-
-const createService = app.service('videoconference');
-const getService = app.service('videoconference/:scopeName');
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
 
 const { VIDEOCONFERENCE } = require('../../../src/services/school/model').SCHOOL_FEATURES;
 
-const getServiceRespondsDependingOnUserPermissions = (testData) => {
+const getServiceRespondsDependingOnUserPermissions = async (testData) => {
+	const app = await appPromise;
+	const getService = app.service('videoconference/:scopeName');
+
 	it('test get with start or join permission works after creation', async () => {
 		// expect creation finished like above...
 		const teacherResponse = getService.get(testData.serviceParams.scopeId, {
@@ -43,7 +43,9 @@ const getServiceRespondsDependingOnUserPermissions = (testData) => {
 	});
 };
 
-const expectNoCreatePermission = (testData) => {
+const expectNoCreatePermission = async (testData) => {
+	const app = await appPromise;
+	const createService = app.service('videoconference');
 	expect(() => createService.create(testData.serviceParams), 'no authentication should fail').to.throw;
 	expect(
 		() => createService.create(testData.serviceParams, testData.someUserAuth),
@@ -51,7 +53,9 @@ const expectNoCreatePermission = (testData) => {
 	).to.throw;
 };
 
-const expectNoGetPermission = (testData) => {
+const expectNoGetPermission = async (testData) => {
+	const app = await appPromise;
+	const getService = app.service('videoconference/:scopeName');
 	expect(() =>
 		getService.get(testData.serviceParams.scopeId, {
 			route: { scopeName: testData.serviceParams.scopeName },
@@ -66,7 +70,10 @@ const expectNoGetPermission = (testData) => {
 	).to.throw;
 };
 
-describe('videoconference service', function slowServiceTests() {
+describe('videoconference service', async function slowServiceTests() {
+	const app = await appPromise;
+	const createService = app.service('videoconference');
+	const getService = app.service('videoconference/:scopeName');
 	this.timeout(30000);
 
 	let testData = null;

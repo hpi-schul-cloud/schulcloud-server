@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
 const assert = require('assert').strict;
 
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 
 const AdminOverview = require('../../../../src/services/teams/services/admin');
 
-describe("'/teams/manage/admin' service", () => {
+describe("'/teams/manage/admin' service", async () => {
+	const app = await appPromise;
+
 	it('registered the service', () => {
 		const service = app.service('/teams/manage/admin');
 

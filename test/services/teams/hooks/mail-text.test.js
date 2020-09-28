@@ -1,9 +1,10 @@
 const { expect } = require('chai');
 const { createHook } = require('../helper/helper.hook');
 const createEmailText = require('../../../../src/services/teams/hooks/mail-text.js');
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 
-describe('Team mail-text helper', () => {
+describe('Team mail-text helper', async () => {
+	const app = await appPromise;
 	let server;
 
 	before((done) => {

@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const { BadRequest, NotFound } = require('@feathersjs/errors');
 const { setupUser, deleteUser } = require('../helper/helper.user');
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 const {
 	ifSuperhero,
 	getSessionUser,
@@ -13,7 +13,8 @@ const {
 
 const { teamUserModel } = require('../../../../src/services/teams/model');
 
-describe('hook helpers', () => {
+describe('hook helpers', async () => {
+	const app = await appPromise;
 	let server;
 
 	before((done) => {

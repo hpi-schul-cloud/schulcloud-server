@@ -2,18 +2,20 @@ const assert = require('assert');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
-const metadataService = app.service('roster/users/:user/metadata');
-const userGroupsService = app.service('roster/users/:user/groups');
-const groupsService = app.service('roster/groups');
-const pseudonymService = app.service('pseudonym');
-const toolService = app.service('ltiTools');
-const courseService = app.service('courseModel');
 
 chai.use(chaiHttp);
 
-describe('roster service', function oauth() {
+describe('roster service', async function oauth() {
+	const app = await appPromise;
+	const metadataService = app.service('roster/users/:user/metadata');
+	const userGroupsService = app.service('roster/users/:user/groups');
+	const groupsService = app.service('roster/groups');
+	const pseudonymService = app.service('pseudonym');
+	const toolService = app.service('ltiTools');
+	const courseService = app.service('courseModel');
+
 	this.timeout(10000);
 	let server;
 

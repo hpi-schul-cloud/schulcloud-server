@@ -2,20 +2,21 @@ const { ObjectId } = require('mongoose').Types;
 const { expect } = require('chai');
 const logger = require('../../../src/logger/index');
 
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 const {
 	createTestUser,
 	cleanup,
 	teams: teamsHelper,
 	generateRequestParams,
 	createTestAccount,
-} = require('../helpers/testObjects')(app);
-const testHelper = require('../helpers/testObjects')(app);
+} = require('../helpers/testObjects')(appPromise);
+const testHelper = require('../helpers/testObjects')(appPromise);
 
-const teamService = app.service('/teams');
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
-describe('Test team basic methods', () => {
+describe('Test team basic methods', async () => {
+	const app = await appPromise;
+	const teamService = app.service('/teams');
 	describe('teams create', () => {
 		let team;
 		let teamId;
@@ -126,7 +127,9 @@ describe('Test team basic methods', () => {
 	});
 });
 
-describe('Test team extern add services', () => {
+describe('Test team extern add services', async () => {
+	const app = await appPromise;
+
 	let teacher;
 	let params;
 	let owner;

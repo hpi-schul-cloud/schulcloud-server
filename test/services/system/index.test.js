@@ -1,9 +1,11 @@
 const assert = require('assert');
 const { expect } = require('chai');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 
-describe('systemId service', () => {
+describe('systemId service', async () => {
+	const app = await appPromise;
+
 	it('registered the systems service', () => {
 		assert.ok(app.service('systems'));
 	});

@@ -1,10 +1,11 @@
 const { expect } = require('chai');
 
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 const { requireDatasourceId } = require('../../../src/services/webuntis/hooks');
 
-describe('webuntis metadata hooks', () => {
+describe('webuntis metadata hooks', async () => {
+	const app = await appPromise;
 	after(testObjects.cleanup);
 
 	describe('requireDatasourceId', () => {

@@ -1,8 +1,8 @@
 const { expect } = require('chai');
-const app = require('../../../src/app');
-const { cleanup } = require('../helpers/testObjects')(app);
-const { create: createSchool } = require('../helpers/services/schools')(app);
-const { create: createSystem } = require('../helpers/services/testSystem')(app);
+const appPromise = require('../../../src/app');
+const { cleanup } = require('../helpers/testObjects')(appPromise);
+const { create: createSchool } = require('../helpers/services/schools')(appPromise);
+const { create: createSystem } = require('../helpers/services/testSystem')(appPromise);
 
 const { schoolUsesLdap } = require('../../../src/services/school/maintenance');
 

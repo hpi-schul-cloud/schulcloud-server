@@ -4,15 +4,17 @@ const { Configuration } = require('@schul-cloud/commons');
 
 const { expect } = chai;
 
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
 const { schoolModel: School, yearModel: YearModel } = require('../../../src/services/school/model');
 
-const testObjects = require('../helpers/testObjects')(app);
-const { create: createSchool, info: createdSchoolIds } = require('../helpers/services/schools')(app);
+const testObjects = require('../helpers/testObjects')(appPromise);
+const { create: createSchool, info: createdSchoolIds } = require('../helpers/services/schools')(appPromise);
 
-describe('school service', () => {
+describe('school service', async () => {
+	const app = await appPromise;
+
 	it('registered the schools services', () => {
 		assert.ok(app.service('schools'));
 	});

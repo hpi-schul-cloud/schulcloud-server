@@ -1,13 +1,15 @@
 const assert = require('assert');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 const passwordRecovery = require('../../../src/services/passwordRecovery/model');
 
-const passwordRecoveryService = app.service('passwordRecovery');
 
 const PORT = 0;
 
-describe('passwordRecovery service', () => {
+describe('passwordRecovery service', async () => {
+	const app = await appPromise;
+	const passwordRecoveryService = app.service('passwordRecovery');
+
 	let server;
 	let savedUser;
 	let savedAccount;

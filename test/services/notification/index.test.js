@@ -11,18 +11,17 @@ describe('notification service', function () {
 	let app = null;
 	let notificationService = null;
 
-	before((done) => {
+	before(async () => {
 		mockery.enable({
 			warnOnReplace: false,
 			warnOnUnregistered: false,
 			useCleanCache: true,
 		});
 		mockery.registerMock('request-promise-native', requestMock);
-		app = require('../../../src/app');
+		// eslint-disable-next-line global-require
+		app = await require('../../../src/app');
 		app.setup();
 		notificationService = app.service('notification');
-
-		done();
 	});
 
 	after((done) => {

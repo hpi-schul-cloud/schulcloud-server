@@ -1,13 +1,13 @@
 const { expect } = require('chai');
 
-const app = require('../../../../../src/app');
+const appPromise = require('../../../../../src/app');
 
 const {
 	cleanup,
 	createTestSchool: createSchool,
 	createTestSystem: createSystem,
 	info,
-} = require('../../../helpers/testObjects')(app);
+} = require('../../../helpers/testObjects')(appPromise);
 
 const { users: createdTestUsers, accounts: createdAccounts } = info();
 
@@ -15,7 +15,8 @@ const { equal: equalIds } = require('../../../../../src/helper/compare').ObjectI
 
 const { findSchool, createUserAndAccount } = require('../../../../../src/services/sync/strategies/TSP/TSP');
 
-describe('TSP API integration tests', () => {
+describe('TSP API integration tests', async () => {
+	const app = await appPromise;
 	let server;
 
 	before((done) => {

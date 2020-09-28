@@ -363,7 +363,7 @@ describe('Sanitization Hook', () => {
 describe('removeObjectIdInData hook', async () => {
 	let server;
 	let user;
-	const app = await appPromise();
+	const app = await appPromise;
 
 	before(async () => {
 		server = await app.listen(0);

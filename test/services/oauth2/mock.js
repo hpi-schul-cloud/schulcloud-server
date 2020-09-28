@@ -6,19 +6,18 @@ const chaiHttp = require('chai-http');
 const oauth2Server = require('./oauth2MockServer');
 const oauth2 = require('../../../src/services/oauth2');
 
-const app = require('../../../src/app');
-
-const baseUrlService = app.service('oauth2/baseUrl');
-const clientsService = app.service('oauth2/clients');
-const loginService = app.service('oauth2/loginRequest');
-const introspectService = app.service('oauth2/introspect');
-const consentService = app.service('oauth2/auth/sessions/consent');
-
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 
 chai.use(chaiHttp);
 
-describe('oauth2 service', function oauthTest() {
+describe('oauth2 service', async function oauthTest() {
+	const app = await appPromise;
+	const baseUrlService = app.service('oauth2/baseUrl');
+	const clientsService = app.service('oauth2/clients');
+	const loginService = app.service('oauth2/loginRequest');
+	const introspectService = app.service('oauth2/introspect');
+	const consentService = app.service('oauth2/auth/sessions/consent');
 	this.timeout(10000);
 
 	const testUser2 = {

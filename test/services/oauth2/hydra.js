@@ -4,19 +4,20 @@ const chaiHttp = require('chai-http');
 const oauth2 = require('simple-oauth2');
 const request = require('request-promise-native');
 
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 const logger = require('../../../src/logger');
 
-const baseUrlService = app.service('oauth2/baseUrl');
-const clientsService = app.service('oauth2/clients');
-const loginService = app.service('oauth2/loginRequest');
-const introspectService = app.service('oauth2/introspect');
-const consentService = app.service('oauth2/auth/sessions/consent');
-const toolService = app.service('ltiTools');
 
 chai.use(chaiHttp);
 
-describe('oauth2 service', function oauthTest() {
+describe('oauth2 service', async function oauthTest() {
+	const app = await appPromise;
+	const baseUrlService = app.service('oauth2/baseUrl');
+	const clientsService = app.service('oauth2/clients');
+	const loginService = app.service('oauth2/loginRequest');
+	const introspectService = app.service('oauth2/introspect');
+	const consentService = app.service('oauth2/auth/sessions/consent');
+	const toolService = app.service('ltiTools');
 	this.timeout(10000);
 
 	const testUser2 = {

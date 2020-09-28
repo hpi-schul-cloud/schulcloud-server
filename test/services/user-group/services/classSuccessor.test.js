@@ -1,13 +1,13 @@
 const { expect } = require('chai');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
 const SchoolYearFacade = require('../../../../src/services/school/logic/year');
 const classSuccessorServiceClass = require('../../../../src/services/user-group/services/classSuccessor');
 
-const classSuccessorService = app.service('classes/successor');
-
-describe('classSuccessor service', () => {
+describe('classSuccessor service', async () => {
+	const app = await appPromise;
+	const classSuccessorService = app.service('classes/successor');
 	let server;
 
 	before((done) => {

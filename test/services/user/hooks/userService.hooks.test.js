@@ -1,8 +1,8 @@
 const { expect } = require('chai');
 const assert = require('assert');
 
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 const { enforceRoleHierarchyOnCreate } = require('../../../../src/services/user/hooks/userService');
 
 const {
@@ -11,7 +11,9 @@ const {
 	generateRegistrationLink,
 } = require('../../../../src/services/user/hooks/userService');
 
-describe('removeStudentFromCourses', () => {
+describe('removeStudentFromCourses', async () => {
+	const app = await appPromise;
+
 	it('removes single student from all his courses', async () => {
 		const user = await testObjects.createTestUser({ roles: ['student'] });
 		const courses = await Promise.all([

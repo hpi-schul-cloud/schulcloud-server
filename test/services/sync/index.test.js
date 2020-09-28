@@ -3,11 +3,13 @@ const chai = require('chai');
 
 const { expect } = chai;
 
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
-const syncService = app.service('sync');
 
-describe('sync service', () => {
+describe('sync service', async () => {
+	const app = await appPromise;
+	const syncService = app.service('sync');
+
 	it('registered the sync service', () => {
 		assert.ok(syncService);
 	});

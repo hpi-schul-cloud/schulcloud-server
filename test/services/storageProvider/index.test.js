@@ -1,12 +1,14 @@
 const { expect } = require('chai');
 const CryptoJS = require('crypto-js');
 const { Configuration } = require('@schul-cloud/commons');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 
-const storageProviderService = app.service('storageProvider');
 
-describe('storageProvider service', () => {
+describe('storageProvider service', async () => {
+	const app = await appPromise;
+	const storageProviderService = app.service('storageProvider');
+
 	let configBefore = {};
 
 	before(() => {
