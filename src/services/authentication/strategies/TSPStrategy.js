@@ -78,6 +78,15 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 
 	verifyConfiguration() {}
 
+	parse(req, res) {
+		if (req.body && req.body.strategy === 'tsp') {
+			return {
+				strategy: this.name,
+			};
+		}
+		return null;
+	}
+
 	async authenticate(authentication, params) {
 		const { ticket } = authentication;
 		delete authentication.ticket;
