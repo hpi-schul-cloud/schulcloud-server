@@ -340,6 +340,45 @@ const stageFormatWithTotal = (aggregation, limit, skip) => {
 	});
 };
 
+
+/**
+ * Search the users by firstName, lastName, email, "firstName + lastName" or "lastName + firstName"
+ *
+ * @param {Array} aggregation
+ * @param {String} searchQuery
+ */
+const stageSearch = (aggregation, searchQuery) => {
+	const querySplit = searchQuery.split(' ').filter((text) => text !== '');
+	const searchCaseOne = [].concat(querySplit[0], querySplit.slice(1).join(' ')); // Ex. 'Wilhelm', 'von Humboldt'
+	const searchCaseTwo = [].concat(querySplit.slice(0, 2).join(' '), querySplit.slice(2).join(' ')); // Ex. 'Wilhelm von', 'Humboldt'
+
+	aggregation.push({
+		$match: {
+			$or: [
+				{
+					lastName: { $regex: searchCaseOne[0], $options: 'i' },
+					firstName: { $regex: searchCaseOne[1], $options: 'i' },
+				},
+				{
+					lastName: { $regex: searchCaseOne[1], $options: 'i' },
+					firstName: { $regex: searchCaseOne[0], $options: 'i' },
+				},
+				{
+					lastName: { $regex: searchCaseTwo[0], $options: 'i' },
+					firstName: { $regex: searchCaseTwo[1], $options: 'i' },
+				},
+				{
+					lastName: { $regex: searchCaseTwo[1], $options: 'i' },
+					firstName: { $regex: searchCaseTwo[0], $options: 'i' },
+				},
+				{ lastName: { $regex: searchQuery, $options: 'i' } },
+				{ firstName: { $regex: searchQuery, $options: 'i' } },
+				{ email: { $regex: searchQuery, $options: 'i' } },
+			],
+		},
+	});
+};
+
 /**
  * Creates an Array for an Aggregation pipeline and can handle, select, sort, limit, skip and matches.
  * To filter or sort by consentStatus, it have also to be seleceted first.
@@ -354,6 +393,7 @@ const createMultiDocumentAggregation = ({
 	consentStatus,
 	classes,
 	schoolYearId,
+	searchQuery,
 	...match
 }) => {
 	// eslint-disable-next-line no-param-reassign
@@ -395,6 +435,10 @@ const createMultiDocumentAggregation = ({
 
 	if (sort) {
 		stageSort(aggregation, sort);
+	}
+
+	if (searchQuery) {
+		stageSearch(aggregation, searchQuery);
 	}
 
 	// if (selectSortDiff.length !== 0) {

@@ -91,48 +91,8 @@ class AdminUsers {
 			if (clientQuery.classes) query.classes = clientQuery.classes;
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
-			if (clientQuery.searchQuery) {
-				const searchText = clientQuery.searchQuery;
-				const querySplit = searchText.split(' ').filter((text) => text !== '');
-				// searchCaseOne: user may has only one firstName or one lastName, the rest may more
-				// searchCaseTwo: user may has two firstName or two lastName
-				const searchCaseOne = [].concat(querySplit[0], querySplit.slice(1).join(' ')); // Ex. 'Wilhelm', 'von Humboldt'
-				const searchCaseTwo = [].concat(querySplit.slice(0, 2).join(' '), querySplit.slice(2).join(' ')); // Ex. 'Wilhelm von', 'Humboldt'
+			if (clientQuery.searchQuery) query.searchQuery = clientQuery.searchQuery;
 
-				query.$or = [
-					{
-						$and: [
-							{ lastName: { $regex: searchCaseOne[0], $options: 'i' } },
-							{ firstName: { $regex: searchCaseOne[1], $options: 'i' } },
-						],
-					},
-					{
-						$and: [
-							{ lastName: { $regex: searchCaseOne[1], $options: 'i' } },
-							{ firstName: { $regex: searchCaseOne[0], $options: 'i' } },
-						],
-					},
-					{
-						$and: [
-							{ lastName: { $regex: searchCaseTwo[0], $options: 'i' } },
-							{ firstName: { $regex: searchCaseTwo[1], $options: 'i' } },
-						],
-					},
-					{
-						$and: [
-							{ lastName: { $regex: searchCaseTwo[1], $options: 'i' } },
-							{ firstName: { $regex: searchCaseTwo[0], $options: 'i' } },
-						],
-					},
-					{
-						$or: [
-							{ lastName: { $regex: searchText, $options: 'i' } },
-							{ firstName: { $regex: searchText, $options: 'i' } },
-							{ email: { $regex: searchText, $options: 'i' } },
-						],
-					},
-				];
-			}
 
 			const dateQueries = ['createdAt'];
 			for (const dateQuery of dateQueries) {
