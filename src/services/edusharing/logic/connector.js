@@ -16,6 +16,10 @@ const ES_PATH = {
 	TOKEN: '/edu-sharing/oauth2/token',
 };
 
+// file deepcode ignore StaticAccessThis: <Deepcode confuses values and methods>
+// file deepcode ignore PromiseNotCaughtNode: <Catch exists on line 90>
+// file deepcode ignore AttrAccessOnNull: <Accessing attr nodes on line 248>
+
 let lastCookieRenewalTime = null;
 
 class EduSharingConnector {
@@ -23,7 +27,6 @@ class EduSharingConnector {
 		if (EduSharingConnector.instance) {
 			return EduSharingConnector.instance;
 		}
-		//  deepcode ignore StaticAccessThis: <Deepcode confuses values and methods>
 		this.authorization = null; /* JSESSION COOKIE */
 		this.accessToken = null; /* ACCESSTOKEN */
 		EduSharingConnector.instance = this;
@@ -82,7 +85,6 @@ class EduSharingConnector {
 			)}&password=${Configuration.get('ES_PASSWORD')}`,
 			timeout: REQUEST_TIMEOUT,
 		};
-		//  deepcode ignore PromiseNotCaughtNode: <Catch exists on line 90>
 		return request(oauthoptions)
 			.then((result) => {
 				const parsedResult = JSON.parse(result);
