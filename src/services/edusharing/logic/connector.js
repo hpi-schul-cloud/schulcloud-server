@@ -81,13 +81,14 @@ class EduSharingConnector {
 			)}&password=${Configuration.get('ES_PASSWORD')}`,
 			timeout: REQUEST_TIMEOUT,
 		};
-		return request(oauthoptions).then((result) => {
-			if (result) {
+		return request(oauthoptions)
+			.then((result) => {
 				const parsedResult = JSON.parse(result);
 				return Promise.resolve(parsedResult.access_token);
-			}
-			return Promise.reject(new GeneralError('Oauth failed'));
-		});
+			})
+			.catch((error) => {
+				return Promise.reject(new GeneralError('Oauth failed', error));
+			});
 	}
 
 	async requestRepeater(options) {
