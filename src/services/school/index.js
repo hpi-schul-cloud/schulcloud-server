@@ -1,5 +1,8 @@
 const service = require('feathers-mongoose');
 const { Configuration } = require('@schul-cloud/commons');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const schoolModels = require('./model');
 const hooks = require('./hooks');
 const schoolGroupHooks = require('./hooks/schoolGroup.hooks');
@@ -13,7 +16,7 @@ module.exports = function schoolServices() {
 		Model: schoolModels.schoolModel,
 		paginate: {
 			default: 5,
-			max: 25,
+			max: 100, // this is the max currently used in the SHD
 		},
 		lean: {
 			virtuals: true,
@@ -23,6 +26,8 @@ module.exports = function schoolServices() {
 	app.use('/schools', service(options));
 	const schoolService = app.service('/schools');
 	schoolService.hooks(hooks);
+
+	app.use('/schools/api', staticContent(path.join(__dirname, '/docs')));
 
 	app.use('/schools/:schoolId/maintenance', new SchoolMaintenanceService());
 

@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
+/* eslint-disable no-underscore-dangle */
 const { Forbidden, GeneralError, BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
@@ -9,7 +10,7 @@ const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const { hasSchoolPermission, blockDisposableEmail } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
-const { validateParams } = require('../hooks/adminUsers.hooks');
+const { validateParams, parseRequestQuery } = require('../hooks/adminUsers.hooks');
 const { sendRegistrationLink } = require('../hooks/userService');
 
 const { userModel } = require('../model');
@@ -314,7 +315,7 @@ const adminHookGenerator = (kind) => ({
 		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
 		update: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
 		patch: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
-		remove: [hasSchoolPermission(`${kind}_DELETE`), validateParams],
+		remove: [hasSchoolPermission(`${kind}_DELETE`), parseRequestQuery, validateParams],
 	},
 	after: {
 		find: [formatBirthdayOfUsers],
