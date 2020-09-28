@@ -1667,4 +1667,58 @@ describe('AdminTeachersService', () => {
 		expect(deletedeStringType).to.not.be.undefined;
 		expect(deletedeStringType.firstName).to.equals('testDeleteTeacher');
 	});
+
+	it('can search the user data by firstName', async () => {
+		const student = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
+			logger.warning('Can not create student', err);
+		});
+
+		params.query = {
+			searchQuery: student.firstName,
+		};
+
+		const result = await adminStudentsService.find(params).catch((err) => {
+			logger.warning('Can not execute adminStudentsService.find.', err);
+		});
+
+		expect(result.data).to.not.be.undefined;
+		expect(result.data[0].firstName).to.equal(student.firstName);
+		expect(result.data[0].lastName).to.equal(student.lastName);
+	});
+
+	it('can search the user data by lastName', async () => {
+		const student = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
+			logger.warning('Can not create student', err);
+		});
+
+		params.query = {
+			searchQuery: student.lastName,
+		};
+
+		const result = await adminStudentsService.find(params).catch((err) => {
+			logger.warning('Can not execute adminStudentsService.find.', err);
+		});
+
+		expect(result.data).to.not.be.undefined;
+		expect(result.data[0].firstName).to.equal(student.firstName);
+		expect(result.data[0].lastName).to.equal(student.lastName);
+	});
+
+	it('can search the user data by firstName + lastName', async () => {
+		const student = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
+			logger.warning('Can not create student', err);
+		});
+
+		params.query = {
+			searchQuery: student.firstname + ' ' + student.lastName,
+		};
+
+		const result = await adminStudentsService.find(params).catch((err) => {
+			logger.warning('Can not execute adminStudentsService.find.', err);
+		});
+
+		expect(result.data).to.not.be.undefined;
+		expect(result.data[0].firstName).to.equal(student.firstName);
+		expect(result.data[0].lastName).to.equal(student.lastName);
+	});
 });
