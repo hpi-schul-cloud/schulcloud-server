@@ -340,7 +340,6 @@ const stageFormatWithTotal = (aggregation, limit, skip) => {
 	});
 };
 
-
 /**
  * Search the users by firstName, lastName, email, "firstName + lastName" or "lastName + firstName"
  *

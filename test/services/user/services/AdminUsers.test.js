@@ -1673,8 +1673,10 @@ describe('AdminTeachersService', () => {
 			logger.warning('Can not create student', err);
 		});
 
-		params.query = {
-			searchQuery: student.firstName,
+		const params = {
+			query: {
+				searchQuery: student.firstName,
+			}
 		};
 
 		const result = await adminStudentsService.find(params).catch((err) => {
@@ -1691,8 +1693,10 @@ describe('AdminTeachersService', () => {
 			logger.warning('Can not create student', err);
 		});
 
-		params.query = {
-			searchQuery: student.lastName,
+		const params = {
+			query: {
+				searchQuery: student.lastName,
+			}
 		};
 
 		const result = await adminStudentsService.find(params).catch((err) => {
@@ -1709,8 +1713,10 @@ describe('AdminTeachersService', () => {
 			logger.warning('Can not create student', err);
 		});
 
-		params.query = {
-			searchQuery: student.firstname + ' ' + student.lastName,
+		const params = {
+			query: {
+				searchQuery: student.firstname + ' ' + student.lastName,
+			}
 		};
 
 		const result = await adminStudentsService.find(params).catch((err) => {
