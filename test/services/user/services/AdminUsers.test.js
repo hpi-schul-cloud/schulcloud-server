@@ -1676,7 +1676,7 @@ describe('AdminTeachersService', () => {
 		const params = {
 			query: {
 				searchQuery: student.firstName,
-			}
+			},
 		};
 
 		const result = await adminStudentsService.find(params).catch((err) => {
@@ -1696,7 +1696,7 @@ describe('AdminTeachersService', () => {
 		const params = {
 			query: {
 				searchQuery: student.lastName,
-			}
+			},
 		};
 
 		const result = await adminStudentsService.find(params).catch((err) => {
@@ -1716,7 +1716,7 @@ describe('AdminTeachersService', () => {
 		const params = {
 			query: {
 				searchQuery: student.firstname + ' ' + student.lastName,
-			}
+			},
 		};
 
 		const result = await adminStudentsService.find(params).catch((err) => {
