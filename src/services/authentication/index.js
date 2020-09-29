@@ -41,10 +41,18 @@ const authConfig = {
 
 class SCAuthenticationService extends AuthenticationService {
 	async getPayload(authResult, params) {
-		const payload = await super.getPayload(authResult, params);
-		const user = await this.app.service('usersModel').get(authResult.account.userId);
-		payload.schoolId = user.schoolId;
-		payload.roles = user.roles;
+		let payload = await super.getPayload(authResult, params);
+		if (authResult.account && authResult.account.userId) {
+			const user = await this.app.service('usersModel').get(authResult.account.userId);
+			payload = {
+				...payload,
+				accountId: authResult.account._id,
+				systemId: authResult.account.systemId,
+				userId: user._id,
+				schoolId: user.schoolId,
+				roles: user.roles,
+			};
+		}
 		return payload;
 	}
 }
