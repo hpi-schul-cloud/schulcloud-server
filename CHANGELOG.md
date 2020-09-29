@@ -19,6 +19,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed - Unreleased
 
+- SC-6586 - Remove parents from users collection to improve maintainability
 - SC-6774 remove no-await-in-loop from eslint exceptions
 - Rename statistic mails route, secure it over sync api key now
 - SC-6809 - Maintain RabbitMQ connection and channels
