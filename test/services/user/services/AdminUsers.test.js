@@ -1669,11 +1669,17 @@ describe('AdminTeachersService', () => {
 	});
 
 	it('can search the user data by firstName', async () => {
-		const student = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
-			logger.warning('Can not create student', err);
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
 		});
+		const student = await testObjects.createTestUser({
+			roles: ['student'],
+			schoolId: school._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUSer);
 
-		const params = {
+		params.query = {
+			...params.query,
 			searchQuery: student.firstName,
 		};
 
@@ -1687,11 +1693,17 @@ describe('AdminTeachersService', () => {
 	});
 
 	it('can search the user data by lastName', async () => {
-		const student = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
-			logger.warning('Can not create student', err);
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
 		});
+		const student = await testObjects.createTestUser({
+			roles: ['student'],
+			schoolId: school._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUSer);
 
-		const params = {
+		params.query = {
+			...params.query,
 			searchQuery: student.lastName,
 		};
 
@@ -1705,11 +1717,17 @@ describe('AdminTeachersService', () => {
 	});
 
 	it('can search the user data by firstName + lastName', async () => {
-		const student = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
-			logger.warning('Can not create student', err);
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
 		});
+		const student = await testObjects.createTestUser({
+			roles: ['student'],
+			schoolId: school._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUSer);
 
-		const params = {
+		params.query = {
+			...params.query,
 			searchQuery: student.firstname + ' ' + student.lastName,
 		};
 
