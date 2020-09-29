@@ -49,6 +49,7 @@ describe('registration service', () => {
 	});
 
 	after(async () => {
+		await server.close();
 		await testObjects.cleanup();
 	});
 
