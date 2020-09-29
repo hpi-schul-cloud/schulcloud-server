@@ -1747,7 +1747,7 @@ describe('AdminTeachersService', () => {
 		const params = await testObjects.generateRequestParamsFromUser(testUSer);
 		params.query = {
 			...params.query,
-			searchQuery: student.firstname + ' ' + student.lastName,
+			searchQuery: student.firstName + ' ' + student.lastName,
 		};
 
 		const result = await adminStudentsService.find(params);
