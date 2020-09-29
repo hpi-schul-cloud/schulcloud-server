@@ -271,7 +271,6 @@ const registerUser = function register(data, params, app) {
 			if (data.parent_email) {
 				consent = {
 					form: 'digital',
-					// parentId: parent._id,
 					privacyConsent: data.parent_privacyConsent === 'true',
 					termsOfUseConsent: data.parent_termsOfUseConsent === 'true',
 				};

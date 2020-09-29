@@ -58,13 +58,6 @@ const firstLogin = async (data, params, app) => {
 		accountPromise = await app.service('accounts').patch(accountId, accountUpdate, params);
 	}
 
-	// if (data.parent_email) {
-	// 	await createParent(data, params, user, app).then((parent) => {
-	// 		// toDo: keep old parents?
-	// 		userUpdate.parents = [parent._id];
-	// 	});
-	// }
-
 	// wrong birthday object?
 	if (data.studentBirthdate) {
 		const dateArr = data.studentBirthdate.split('.');
