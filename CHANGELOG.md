@@ -13,13 +13,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Removed - Unreleased
 
+- SC-6586 - Remove parents from users collection to improve maintainability
 - SC-6784 - Removed duplicated birth date formatting code in adminUsers service, which was causing an "Invalid date" output
 - SC-6743 - Removed usersForConsent related things in adminUsers service because the client does not send that parameter anymore
 - SC-6506 - Remove dependecy to feathers-swagger in routes.test.js
 
 ### Changed - Unreleased
 
-- SC-6586 - Remove parents from users collection to improve maintainability
 - SC-6774 remove no-await-in-loop from eslint exceptions
 - Rename statistic mails route, secure it over sync api key now
 - SC-6809 - Maintain RabbitMQ connection and channels
