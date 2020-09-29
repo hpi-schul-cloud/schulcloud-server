@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## 25.0.4
+
+### Changed - 25.0.4
+
+- SC-6676 - Registration: User with role parent should not be able to log-in
 
 ## 25.0.3
 
@@ -20,7 +25,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-6942 - don't override payload defined by authentication method
 - SC-6942 - don't search for account to populate if no username is given in `injectUsername`
-
 
 ## 25.0.2
 
