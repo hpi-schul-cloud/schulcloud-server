@@ -1669,15 +1669,19 @@ describe('AdminTeachersService', () => {
 	});
 
 	it('can search the user data by firstName', async () => {
+		await testObjects.createTestRole({
+			name: 'studentListPerm',
+			permissions: ['STUDENT_LIST'],
+		});
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
 		});
 		const student = await testObjects.createTestUser({
 			roles: ['student'],
 			schoolId: school._id,
+			permissions: ['STUDENT_LIST'],
 		});
 		const params = await testObjects.generateRequestParamsFromUser(student);
-
 		params.query = {
 			...params.query,
 			searchQuery: student.firstName,
@@ -1691,20 +1695,23 @@ describe('AdminTeachersService', () => {
 	});
 
 	it('can search the user data by lastName', async () => {
+		await testObjects.createTestRole({
+			name: 'studentListPerm',
+			permissions: ['STUDENT_LIST'],
+		});
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
 		});
 		const student = await testObjects.createTestUser({
 			roles: ['student'],
 			schoolId: school._id,
+			permissions: ['STUDENT_LIST'],
 		});
 		const params = await testObjects.generateRequestParamsFromUser(student);
-
 		params.query = {
 			...params.query,
 			searchQuery: student.lastName,
 		};
-
 		const result = await adminStudentsService.find(params);
 
 		expect(result.data).to.not.be.undefined;
@@ -1713,12 +1720,17 @@ describe('AdminTeachersService', () => {
 	});
 
 	it('can search the user data by firstName + lastName', async () => {
+		await testObjects.createTestRole({
+			name: 'studentListPerm',
+			permissions: ['STUDENT_LIST'],
+		});
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
 		});
 		const student = await testObjects.createTestUser({
 			roles: ['student'],
 			schoolId: school._id,
+			permissions: ['STUDENT_LIST'],
 		});
 		const params = await testObjects.generateRequestParamsFromUser(student);
 
