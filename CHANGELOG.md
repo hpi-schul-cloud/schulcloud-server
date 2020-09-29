@@ -375,6 +375,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 - Rename statistic mails route, secure it over sync api key now
 - SC-6809 - Maintain RabbitMQ connection and channels
 - SC-5230 - Unblock Account-Page in Nuxt (securing /accounts and /users routes)
+- SC-5287 -  Fixed OAuth2 rostering
 
 ### Security
 
