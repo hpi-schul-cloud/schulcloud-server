@@ -1683,9 +1683,7 @@ describe('AdminTeachersService', () => {
 			searchQuery: student.firstName,
 		};
 
-		const result = await adminStudentsService.find(params).catch((err) => {
-			logger.warning('Can not execute adminStudentsService.find.', err);
-		});
+		const result = await adminStudentsService.find(params);
 
 		expect(result.data).to.not.be.undefined;
 		expect(result.data[0].firstName).to.equal(student.firstName);
@@ -1707,9 +1705,7 @@ describe('AdminTeachersService', () => {
 			searchQuery: student.lastName,
 		};
 
-		const result = await adminStudentsService.find(params).catch((err) => {
-			logger.warning('Can not execute adminStudentsService.find.', err);
-		});
+		const result = await adminStudentsService.find(params);
 
 		expect(result.data).to.not.be.undefined;
 		expect(result.data[0].firstName).to.equal(student.firstName);
@@ -1731,9 +1727,7 @@ describe('AdminTeachersService', () => {
 			searchQuery: student.firstname + ' ' + student.lastName,
 		};
 
-		const result = await adminStudentsService.find(params).catch((err) => {
-			logger.warning('Can not execute adminStudentsService.find.', err);
-		});
+		const result = await adminStudentsService.find(params);
 
 		expect(result.data).to.not.be.undefined;
 		expect(result.data[0].firstName).to.equal(student.firstName);
