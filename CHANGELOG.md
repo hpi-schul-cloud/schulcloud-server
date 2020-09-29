@@ -11,7 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## 25.0.4
 
-### Changed - 25.0.4
+### Fixed - 25.0.4
 
 - SC-6676 - Registration: User with role parent should not be able to log-in
 
