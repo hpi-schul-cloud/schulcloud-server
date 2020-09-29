@@ -1676,12 +1676,16 @@ describe('AdminTeachersService', () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
 		});
-		const student = await testObjects.createTestUser({
-			roles: ['student'],
+		const testUSer = await testObjects.createTestUser({
+			roles: ['administrator'],
 			schoolId: school._id,
 			permissions: ['STUDENT_LIST'],
 		});
-		const params = await testObjects.generateRequestParamsFromUser(student);
+		const student = await testObjects.createTestUser({
+			roles: ['student'],
+			schoolId: school._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUSer);
 		params.query = {
 			...params.query,
 			searchQuery: student.firstName,
@@ -1702,12 +1706,16 @@ describe('AdminTeachersService', () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
 		});
-		const student = await testObjects.createTestUser({
-			roles: ['student'],
+		const testUSer = await testObjects.createTestUser({
+			roles: ['administrator'],
 			schoolId: school._id,
 			permissions: ['STUDENT_LIST'],
 		});
-		const params = await testObjects.generateRequestParamsFromUser(student);
+		const student = await testObjects.createTestUser({
+			roles: ['student'],
+			schoolId: school._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUSer);
 		params.query = {
 			...params.query,
 			searchQuery: student.lastName,
@@ -1727,13 +1735,16 @@ describe('AdminTeachersService', () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool',
 		});
-		const student = await testObjects.createTestUser({
-			roles: ['student'],
+		const testUSer = await testObjects.createTestUser({
+			roles: ['administrator'],
 			schoolId: school._id,
 			permissions: ['STUDENT_LIST'],
 		});
-		const params = await testObjects.generateRequestParamsFromUser(student);
-
+		const student = await testObjects.createTestUser({
+			roles: ['student'],
+			schoolId: school._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUSer);
 		params.query = {
 			...params.query,
 			searchQuery: student.firstname + ' ' + student.lastName,
