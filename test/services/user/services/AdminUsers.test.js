@@ -1676,7 +1676,7 @@ describe('AdminTeachersService', () => {
 			roles: ['student'],
 			schoolId: school._id,
 		});
-		const params = await testObjects.generateRequestParamsFromUser(testUSer);
+		const params = await testObjects.generateRequestParamsFromUser(student);
 
 		params.query = {
 			...params.query,
@@ -1700,7 +1700,7 @@ describe('AdminTeachersService', () => {
 			roles: ['student'],
 			schoolId: school._id,
 		});
-		const params = await testObjects.generateRequestParamsFromUser(testUSer);
+		const params = await testObjects.generateRequestParamsFromUser(student);
 
 		params.query = {
 			...params.query,
@@ -1724,7 +1724,7 @@ describe('AdminTeachersService', () => {
 			roles: ['student'],
 			schoolId: school._id,
 		});
-		const params = await testObjects.generateRequestParamsFromUser(testUSer);
+		const params = await testObjects.generateRequestParamsFromUser(student);
 
 		params.query = {
 			...params.query,
