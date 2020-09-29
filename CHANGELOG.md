@@ -31,6 +31,25 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - Added hotfix merges
 
+
+## 25.0.3
+
+### Added - 25.0.3
+
+- SC-6942 - add parse method to TSP strategy to declare it can handle the request and to keep authentication params clean
+
+### Fixed - 25.0.3
+
+- SC-6942 - don't override payload defined by authentication method
+- SC-6942 - don't search for account to populate if no username is given in `injectUsername`
+
+
+## 25.0.2
+
+### Changed - 25.0.2
+
+- send mail for registration pin after add pin to db
+
 ## 25.0.1
 
 ### Fixed - 25.0.1
