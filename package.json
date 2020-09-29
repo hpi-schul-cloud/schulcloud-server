@@ -59,6 +59,7 @@
 		"chalk": "^4.0.0",
 		"client-oauth2": "^4.2.5",
 		"compression": "^1.6.2",
+		"continuation-local-storage": "^3.2.1",
 		"cors": "^2.8.1",
 		"cross-env": "^7.0.0",
 		"crypto-js": "^4.0.0",

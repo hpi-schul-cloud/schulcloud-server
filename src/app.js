@@ -11,6 +11,9 @@ const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
+var createNamespace = require('continuation-local-storage').createNamespace;
+var context = createNamespace('request_context');
+
 const { KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH } = require('../config/globals');
 
 const middleware = require('./middleware');
