@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## 25.0.4
+
+### Added - 25.0.4
+
+- SC-6973 - add time window for pin creation
+
 
 ## 25.0.3
 
