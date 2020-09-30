@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.0.4] - 2020-09-30
+
+### Added
+
+- Added lead time detection
 
 ## 25.0.3
 
