@@ -2,6 +2,7 @@
 const { GeneralError, NotAuthenticated, Timeout } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
+const logger = require('./logger');
 const {
 	sanitizeHtml: { sanitizeDeep },
 } = require('./utils');
@@ -132,7 +133,7 @@ const leadTimeDetection = (context) => {
 	if (context.params.leadTime) {
 		const delta = Date.now() - context.params.leadTime;
 		if (delta >= LEAD_TIME) {
-			throw new Timeout(`Route ${context.path}`);
+			logger.error(new Timeout(`Route ${context.path}`));
 		}
 	}
 };
