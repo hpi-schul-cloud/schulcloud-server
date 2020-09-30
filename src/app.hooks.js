@@ -7,6 +7,7 @@ const {
 	sanitizeHtml: { sanitizeDeep },
 } = require('./utils');
 const { getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData } = require('./utils/redis');
+const { LEAD_TIME } = require('../config/globals');
 
 const sanitizeDataHook = (context) => {
 	if ((context.data || context.result) && context.path && context.path !== 'authentication') {
@@ -122,21 +123,38 @@ const errorHandler = (context) => {
 	throw new GeneralError('server error');
 };
 
-let LEAD_TIME;
-// eslint-disable-next-line no-process-env
-if (process.env.LEAD_TIME) {
-	// eslint-disable-next-line no-process-env
-	LEAD_TIME = parseInt(process.env.LEAD_TIME, 10);
-}
-
+// adding in this position will detect intern request to
 const leadTimeDetection = (context) => {
 	if (context.params.leadTime) {
-		const delta = Date.now() - context.params.leadTime;
-		if (delta >= LEAD_TIME) {
-			const error = new Timeout(`Route ${context.path}`, {
-				path: context.path,
-				delta,
-			});
+		const timeDelta = Date.now() - context.params.leadTime;
+		if (timeDelta >= LEAD_TIME) {
+			// TODO: can replaced if we throw an error slow Query after merging new error pipline
+			const {
+				path,
+				id,
+				method,
+				params: { query, headers, originalUrl },
+			} = context;
+
+			const error = {
+				name: 'SlowQuery',
+				message: `Slow query warning at route ${context.path}`,
+				code: 408,
+				path,
+				method,
+				query,
+				timeDelta,
+				originalUrl,
+			};
+
+			if (id) {
+				error.id = id;
+			}
+
+			if (headers) {
+				//	error.connection = headers.connection;
+				error.requestId = headers.requestId;
+			}
 			logger.error(error);
 		}
 	}
@@ -154,7 +172,7 @@ function setupAppHooks(app) {
 	};
 
 	const after = {
-		all: [leadTimeDetection],
+		all: [],
 		find: [iff(isProvider('external'), [sanitizeDataHook])],
 		get: [iff(isProvider('external'), [sanitizeDataHook])],
 		create: [],
@@ -177,6 +195,13 @@ function setupAppHooks(app) {
 	// level 2+ adding intern request
 	if (app.get('DISPLAY_REQUEST_LEVEL') > 1) {
 		before.all.unshift(displayInternRequests(app.get('DISPLAY_REQUEST_LEVEL')));
+	}
+	if (LEAD_TIME) {
+		['find', 'get', 'create', 'update', 'patch', 'remove'].forEach((m) => {
+			if (Array.isArray(after[m])) {
+				after[m].push(leadTimeDetection);
+			}
+		});
 	}
 	app.hooks({ before, after, error });
 }

@@ -11,7 +11,7 @@ const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
-const { KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH } = require('../config/globals');
+const { KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH, LEAD_TIME } = require('../config/globals');
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
@@ -35,8 +35,7 @@ app.disable('x-powered-by');
 const config = configuration();
 app.configure(config);
 
-// eslint-disable-next-line no-process-env
-if (process.env.LEAD_TIME) {
+if (LEAD_TIME) {
 	app.use((req, res, next) => {
 		req.leadTime = Date.now();
 		next();
@@ -91,6 +90,7 @@ app
 		req.headers.requestId = uid.toString();
 		req.feathers.leadTime = req.leadTime;
 		req.feathers.headers = req.headers;
+		req.feathers.originalUrl = req.originalUrl;
 		next();
 	})
 	.configure(services)
