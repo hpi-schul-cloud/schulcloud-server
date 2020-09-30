@@ -1,5 +1,5 @@
 // Global hooks that run for every service
-const { GeneralError, NotAuthenticated } = require('@feathersjs/errors');
+const { GeneralError, NotAuthenticated, Timeout } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const {
@@ -121,6 +121,22 @@ const errorHandler = (context) => {
 	throw new GeneralError('server error');
 };
 
+let LEAD_TIME;
+// eslint-disable-next-line no-process-env
+if (process.env.LEAD_TIME) {
+	// eslint-disable-next-line no-process-env
+	LEAD_TIME = parseInt(process.env.LEAD_TIME, 10);
+}
+
+const leadTimeDetection = (context) => {
+	if (context.params.leadTime) {
+		const delta = Date.now() - context.params.leadTime;
+		if (delta >= LEAD_TIME) {
+			throw new Timeout(context.path);
+		}
+	}
+};
+
 function setupAppHooks(app) {
 	const before = {
 		all: [iff(isProvider('external'), handleAutoLogout)],
@@ -133,7 +149,7 @@ function setupAppHooks(app) {
 	};
 
 	const after = {
-		all: [],
+		all: [leadTimeDetection],
 		find: [iff(isProvider('external'), [sanitizeDataHook])],
 		get: [iff(isProvider('external'), [sanitizeDataHook])],
 		create: [],

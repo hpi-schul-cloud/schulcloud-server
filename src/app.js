@@ -35,6 +35,14 @@ app.disable('x-powered-by');
 const config = configuration();
 app.configure(config);
 
+// eslint-disable-next-line no-process-env
+if (process.env.LEAD_TIME) {
+	app.use((req, res, next) => {
+		req.leadTime = Date.now();
+		next();
+	});
+}
+
 const metricsOptions = {};
 if (METRICS_PATH) {
 	metricsOptions.metricsPath = METRICS_PATH;
@@ -81,7 +89,7 @@ app
 		// it MUST be removed after the API gateway is established
 		const uid = ObjectId();
 		req.headers.requestId = uid.toString();
-
+		req.feathers.leadTime = req.leadTime;
 		req.feathers.headers = req.headers;
 		next();
 	})
