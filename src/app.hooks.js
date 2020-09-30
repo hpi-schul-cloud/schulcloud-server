@@ -132,7 +132,7 @@ const leadTimeDetection = (context) => {
 	if (context.params.leadTime) {
 		const delta = Date.now() - context.params.leadTime;
 		if (delta >= LEAD_TIME) {
-			throw new Timeout(context.path);
+			throw new Timeout(`Route ${context.path}`);
 		}
 	}
 };
