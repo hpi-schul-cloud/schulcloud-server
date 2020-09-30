@@ -11,12 +11,65 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added - Unreleased
 
+- SC-6830 - Added hook to parse request to arrays when > 20 users are requested in adminUsers service
+
+### Removed
+
+- SC-6784 - Removed duplicated birth date formatting code in adminUsers service, which was causing an "Invalid date" output
+- SC-6743 - Removed usersForConsent related things in adminUsers service because the client does not send that parameter anymore
+- SC-6506 - Remove dependecy to feathers-swagger in routes.test.js
+
 ### Changed - Unreleased
+
+- SC-6774 remove no-await-in-loop from eslint exceptions
+- Rename statistic mails route, secure it over sync api key now
+- SC-6809 - Maintain RabbitMQ connection and channels
+- SC-5230 - Unblock Account-Page in Nuxt (securing /accounts and /users routes)
+
+### Security - Unreleased
+
+- Added hotfix merges
+
+
+## 25.0.3
+
+### Added - 25.0.3
+
+- SC-6942 - add parse method to TSP strategy to declare it can handle the request and to keep authentication params clean
+
+### Fixed - 25.0.3
+
+- SC-6942 - don't override payload defined by authentication method
+- SC-6942 - don't search for account to populate if no username is given in `injectUsername`
+
+
+## 25.0.2
+
+### Changed - 25.0.2
+
+- send mail for registration pin after add pin to db
+
+## 25.0.1
+
+### Fixed - 25.0.1
+
+- SC-6696 - Fixed query used to determine course membership when checking permissions for course group lessons
+
+## 25.0.0
+
+### Changed - 25.0.0
 
 - Extend JWT payload by schoolId and roleIds
 
+## [24.5.1] - 2020-09-16
+
+### Secrutiy - 24.5.1
+
+- Secure admin routes (update, patch, create)
+
 ## [24.5.0] - 2020-09-14
 
+- SC-6674 Added checks to ensure unique emails
 - Ignore database seed data with prettier, eslint, and codacy
 - SC-6640 - Fixed email check within registration (case insensitive)
 - SC-2710 - Adding time zones, default for school and theme
@@ -29,7 +82,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [24.4.6] - 2020-09-11
 
-### Changed
+### Changed in 24.4.6
+
 - SC-6733: central personal data does not get updated via CSV import
 
 ## [24.4.5] - 2020-09-10
@@ -40,7 +94,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [24.4.4] - 2020-09-08
 
-### Fixed
+### Fixed in 24.4.4]
 
 - SC-6697: updates/sync account username when user is updated
 

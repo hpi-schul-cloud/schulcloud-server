@@ -30,7 +30,7 @@
 		"SYNC_API_KEY": {
 			"type": "string",
 			"default": "example",
-			"description": "The API Key that the Sync Cron-Job uses to authenticate itself.This should be removed with SC-3387"
+			"description": "The API Key that the Sync and Mail Cron-Job uses to authenticate itself.This should be removed with SC-3387"
 		},
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": {
 			"type": "string",
