@@ -29,6 +29,141 @@ describe('AdminUsersService', () => {
 		await testObjects.cleanup();
 	});
 
+	it('can search the user data by firstName', async () => {
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
+		});
+		const testUser = await testObjects.createTestUser({
+			roles: ['administrator'],
+			schoolId: school._id,
+			permissions: ['STUDENT_LIST'],
+		});
+		const student0 = await testObjects.createTestUser({
+			roles: ['student'],
+			schoolId: school._id,
+		});
+		const student1 = await testObjects.createTestUser({
+			roles: ['student'],
+			schoolId: school._id,
+		});
+		const student2 = await testObjects.createTestUser({
+			roles: ['student'],
+			firstName: 'Lars',
+			lastName: 'Ulrich',
+			schoolId: school._id,
+		});
+		const student3 = await testObjects.createTestUser({
+			roles: ['student'],
+			firstName: 'James',
+			lastName: 'Hetfield',
+			schoolId: school._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUser);
+		params.query = {
+			...params.query,
+			searchQuery: student1.firstName,
+		};
+		const result = await adminStudentsService.find(params);
+
+		const resultIds = [];
+		result.data.forEach((user) => {
+			resultIds.push(user._id.toString());
+		});
+
+		console.log(resultIds);
+
+		expect(result.data).to.not.be.undefined;
+		expect(result.data[0].firstName).to.equal(student1.firstName);
+		expect(resultIds).to.include.members([student0._id.toString(), student1._id.toString()]);
+		expect(result.data[0].lastName).to.equal(student1.lastName);
+		expect(result.data[0].firstName).to.not.equal(student2.firstName);
+		expect(result.data[0].lastName).to.not.equal(student2.lastName);
+		expect(result.data[0].firstName).to.not.equal(student3.firstName);
+		expect(result.data[0].lastName).to.not.equal(student3.lastName);
+	});
+
+	it('can search the user data by lastName', async () => {
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
+		});
+		const testUser = await testObjects.createTestUser({
+			roles: ['administrator'],
+			schoolId: school._id,
+			permissions: ['STUDENT_LIST'],
+		});	
+		const student1 = await testObjects.createTestUser({
+			roles: ['student'],
+			schoolId: school._id,
+		});
+		const student2 = await testObjects.createTestUser({
+			roles: ['student'],
+			firstName: 'Lars',
+			lastName: 'Ulrich',
+			schoolId: school._id,
+		});
+		const student3 = await testObjects.createTestUser({
+			roles: ['student'],
+			firstName: 'James',
+			lastName: 'Hetfield',
+			schoolId: school._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUser);
+		params.query = {
+			...params.query,
+			searchQuery: student1.lastName,
+		};
+		const result = await adminStudentsService.find(params);
+
+		expect(result.data).to.not.be.undefined;
+		expect(result.data[0].firstName).to.equal(student1.firstName);
+		expect(result.data[0].lastName).to.equal(student1.lastName);
+		expect(result.data[0].firstName).to.not.equal(student2.firstName);
+		expect(result.data[0].lastName).to.not.equal(student2.lastName);
+		expect(result.data[0].firstName).to.not.equal(student3.firstName);
+		expect(result.data[0].lastName).to.not.equal(student3.lastName);
+	});
+
+	it('can search the user data by firstName + lastName', async () => {
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
+		});
+		const testUser = await testObjects.createTestUser({
+			roles: ['administrator'],
+			schoolId: school._id,
+			permissions: ['STUDENT_LIST'],
+		});
+		const student1 = await testObjects.createTestUser({
+			roles: ['student'],
+			schoolId: school._id,
+		});
+		const student2 = await testObjects.createTestUser({
+			roles: ['student'],
+			firstName: 'Lars',
+			lastName: 'Ulrich',
+			schoolId: school._id,
+		});
+		const student3 = await testObjects.createTestUser({
+			roles: ['student'],
+			firstName: 'James',
+			lastName: 'Hetfield',
+			schoolId: school._id,
+		});
+		const params = await testObjects.generateRequestParamsFromUser(testUser);
+		params.query = {
+			...params.query,
+			searchQuery: `${student1.firstName} ${student1.lastName}`,
+		};
+		const result = await adminStudentsService.find(params);
+
+		expect(result.data).to.not.be.undefined;
+		expect(result.data[0].firstName).to.equal(student1.firstName);
+		expect(result.data[0].lastName).to.equal(student1.lastName);
+		expect(result.data[0].firstName).to.not.equal(student2.firstName);
+		expect(result.data[0].lastName).to.not.equal(student2.lastName);
+		expect(result.data[0].firstName).to.not.equal(student3.firstName);
+		expect(result.data[0].lastName).to.not.equal(student3.lastName);
+	});
+
 	it('is properly registered', () => {
 		expect(adminStudentsService).to.not.equal(undefined);
 	});
@@ -1668,92 +1803,6 @@ describe('AdminTeachersService', () => {
 		expect(deletedeStringType.firstName).to.equals('testDeleteTeacher');
 	});
 
-	it('can search the user data by firstName', async () => {
-		await testObjects.createTestRole({
-			name: 'studentListPerm',
-			permissions: ['STUDENT_LIST'],
-		});
-		const school = await testObjects.createTestSchool({
-			name: 'testSchool',
-		});
-		const testUSer = await testObjects.createTestUser({
-			roles: ['administrator'],
-			schoolId: school._id,
-			permissions: ['STUDENT_LIST'],
-		});
-		const student = await testObjects.createTestUser({
-			roles: ['student'],
-			schoolId: school._id,
-		});
-		const params = await testObjects.generateRequestParamsFromUser(testUSer);
-		params.query = {
-			...params.query,
-			searchQuery: student.firstName,
-		};
+	
 
-		const result = await adminStudentsService.find(params);
-
-		expect(result.data).to.not.be.undefined;
-		expect(result.data[0].firstName).to.equal(student.firstName);
-		expect(result.data[0].lastName).to.equal(student.lastName);
-	});
-
-	it('can search the user data by lastName', async () => {
-		await testObjects.createTestRole({
-			name: 'studentListPerm',
-			permissions: ['STUDENT_LIST'],
-		});
-		const school = await testObjects.createTestSchool({
-			name: 'testSchool',
-		});
-		const testUSer = await testObjects.createTestUser({
-			roles: ['administrator'],
-			schoolId: school._id,
-			permissions: ['STUDENT_LIST'],
-		});
-		const student = await testObjects.createTestUser({
-			roles: ['student'],
-			schoolId: school._id,
-		});
-		const params = await testObjects.generateRequestParamsFromUser(testUSer);
-		params.query = {
-			...params.query,
-			searchQuery: student.lastName,
-		};
-		const result = await adminStudentsService.find(params);
-
-		expect(result.data).to.not.be.undefined;
-		expect(result.data[0].firstName).to.equal(student.firstName);
-		expect(result.data[0].lastName).to.equal(student.lastName);
-	});
-
-	it('can search the user data by firstName + lastName', async () => {
-		await testObjects.createTestRole({
-			name: 'studentListPerm',
-			permissions: ['STUDENT_LIST'],
-		});
-		const school = await testObjects.createTestSchool({
-			name: 'testSchool',
-		});
-		const testUSer = await testObjects.createTestUser({
-			roles: ['administrator'],
-			schoolId: school._id,
-			permissions: ['STUDENT_LIST'],
-		});
-		const student = await testObjects.createTestUser({
-			roles: ['student'],
-			schoolId: school._id,
-		});
-		const params = await testObjects.generateRequestParamsFromUser(testUSer);
-		params.query = {
-			...params.query,
-			searchQuery: `${student.firstName} ${student.lastName}`,
-		};
-
-		const result = await adminStudentsService.find(params);
-
-		expect(result.data).to.not.be.undefined;
-		expect(result.data[0].firstName).to.equal(student.firstName);
-		expect(result.data[0].lastName).to.equal(student.lastName);
-	});
 });
