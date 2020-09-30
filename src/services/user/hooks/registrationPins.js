@@ -1,6 +1,6 @@
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const { BadRequest, Forbidden, TooManyRequests } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
 const moment = require('moment');
 const { NODE_ENV, ENVIRONMENTS, SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
@@ -154,8 +154,11 @@ const checkTimeWindow = async (hook) => {
 		return Promise.resolve(hook);
 	}
 	const registrationPin = result.data[0];
-	if (new Date() - registrationPin.updatedAt < minimalTimeDifference) {
-		return Promise.reject(new Error('you have to wait some time before you can request a pin again'));
+	const timeDifference = new Date() - registrationPin.updatedAt;
+	if (timeDifference < minimalTimeDifference) {
+		throw new TooManyRequests('too many pin creation requests', {
+			timeToWait: Math.ceil((minimalTimeDifference - timeDifference) / 1000),
+		});
 	}
 	return Promise.resolve(hook);
 };
