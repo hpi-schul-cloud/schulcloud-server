@@ -69,6 +69,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [24.5.0] - 2020-09-14
 
+- SC-6674 Added checks to ensure unique emails
 - Ignore database seed data with prettier, eslint, and codacy
 - SC-6640 - Fixed email check within registration (case insensitive)
 
