@@ -1,5 +1,5 @@
 // Global hooks that run for every service
-const { GeneralError, NotAuthenticated, Timeout } = require('@feathersjs/errors');
+const { GeneralError, NotAuthenticated } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const logger = require('./logger');
