@@ -37,20 +37,22 @@ class MockSyncerWithData extends Syncer {
 	}
 }
 
-describe('datasourceRuns service', async () => {
-	const app = await appPromise;
-	const datasourceRunsService = app.service('datasourceRuns');
+describe('datasourceRuns service', () => {
+	let app;
+	let datasourceRunsService;
 	let server;
-	before((done) => {
+	before(async () => {
 		mockery.enable({
 			useCleanCache: true,
 			warnOnUnregistered: false,
 		});
 		mockery.registerMock('./strategies', [MockSyncer, MockSyncerWithData]);
+		app = await appPromise;
+		datasourceRunsService = app.service('datasourceRuns');
 		// eslint-disable-next-line global-require
 		const sync = require('../../../src/services/sync');
 		app.configure(sync);
-		server = app.listen(0, done);
+		server = await app.listen(0);
 	});
 
 	after((done) => {

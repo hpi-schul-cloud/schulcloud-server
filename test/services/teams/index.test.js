@@ -14,9 +14,21 @@ const testHelper = require('../helpers/testObjects')(appPromise);
 
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
-describe('Test team basic methods', async () => {
-	const app = await appPromise;
-	const teamService = app.service('/teams');
+describe('Test team basic methods', () => {
+	let app;
+	let server;
+	let teamService;
+
+	before(async () => {
+		app = await appPromise;
+		teamService = app.service('/teams');
+		server = await app.listen(0);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
 	describe('teams create', () => {
 		let team;
 		let teamId;
@@ -127,8 +139,9 @@ describe('Test team basic methods', async () => {
 	});
 });
 
-describe('Test team extern add services', async () => {
-	const app = await appPromise;
+describe('Test team extern add services', () => {
+	let app;
+	let server;
 
 	let teacher;
 	let params;
@@ -137,8 +150,10 @@ describe('Test team extern add services', async () => {
 	let addService;
 
 	before(async () => {
+		app = await appPromise;
 		addService = app.service('/teams/extern/add');
 		addService.setup(app);
+		server = await app.listen();
 
 		[owner, teacher, expert] = await Promise.all([
 			createTestUser({ roles: ['teacher'] }),
@@ -153,7 +168,10 @@ describe('Test team extern add services', async () => {
 		params = await generateRequestParams({ username, password });
 	});
 
-	after(testHelper.cleanup);
+	after(async () => {
+		await testHelper.cleanup;
+		await server.close();
+	});
 
 	it('add new teamadministrator with userId', async () => {
 		const { _id: teamId } = await teamsHelper.create(owner);

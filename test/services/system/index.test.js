@@ -3,8 +3,18 @@ const { expect } = require('chai');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise);
 
-describe('systemId service', async () => {
-	const app = await appPromise;
+describe('systemId service', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen();
+	});
+
+	after(async () => {
+		await server.close();
+	});
 
 	it('registered the systems service', () => {
 		assert.ok(app.service('systems'));

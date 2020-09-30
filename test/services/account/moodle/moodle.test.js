@@ -5,15 +5,16 @@ const moodleMockServer = require('./moodleMockServer');
 
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
+const { expect } = chai;
 chai.use(chaiHttp);
 
-describe('Moodle single-sign-on', async () => {
-	const app = await appPromise;
+describe('Moodle single-sign-on', () => {
+	let app;
 	let testSystem = null;
 
-	const newTestAccount = { username: 'testMoodleLoginUser', password: 'testPassword' };
+	const newTestAccount = { username: 'testMoodleLoginUser1', password: 'testPassword' };
 
-	const existingTestAccount = { username: 'testMoodleLoginExisting', password: 'testPasswordExisting' };
+	const existingTestAccount = { username: 'testMoodleLoginExisting1', password: 'testPasswordExisting' };
 	const existingTestAccountParameters = {
 		username: existingTestAccount.username,
 		password: existingTestAccount.password,
@@ -29,6 +30,7 @@ describe('Moodle single-sign-on', async () => {
 	let server;
 
 	before(async () => {
+		app = await appPromise;
 		server = app.listen(0);
 		const moodle = await createMoodleTestServer();
 		const [system, testUser] = await Promise.all([
@@ -36,7 +38,8 @@ describe('Moodle single-sign-on', async () => {
 			testObjects.createTestUser(),
 		]);
 		testSystem = system;
-		return testObjects.createTestAccount(existingTestAccountParameters, system, testUser);
+		const account = await testObjects.createTestAccount(existingTestAccountParameters, system, testUser);
+		return account;
 	});
 
 	after(async () => {
@@ -65,13 +68,12 @@ describe('Moodle single-sign-on', async () => {
 
 					const account = res.body;
 
-					account.should.have.property('_id');
-					account.username.should.equal(newTestAccount.username.toLowerCase());
-					account.should.include({
+					expect(account).to.have.property('_id');
+					expect(account.username).to.equal(newTestAccount.username.toLowerCase());
+					expect(account).to.include({
 						systemId: testSystem._id.toString(),
 						activated: false,
 					});
-
 					resolve();
 				});
 		}));

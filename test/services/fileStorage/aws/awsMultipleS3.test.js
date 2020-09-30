@@ -10,7 +10,7 @@ const testObjects = require('../../helpers/testObjects')(appPromise);
 
 chai.use(chaiHttp);
 
-describe('multple S3 AWS file storage strategy', async () => {
+describe('multple S3 AWS file storage strategy', () => {
 	let aws;
 
 	const options = {

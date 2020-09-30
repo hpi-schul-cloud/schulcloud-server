@@ -6,10 +6,11 @@ const { restrictChangesToArchivedCourse } = require('../../../../src/services/us
 const oneHour = 600000;
 const twoDays = 172800000;
 
-describe('course hooks', async () => {
-	const app = await appPromise;
+describe('course hooks', () => {
+	let app;
 	let server;
-	before(() => {
+	before(async () => {
+		app = await appPromise;
 		server = app.listen(0);
 	});
 

@@ -3,18 +3,21 @@ const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 const { generateRequestParamsFromUser, generateRequestParams } = require('../../helpers/services/login')(appPromise);
 
-describe('forcePasswordChange service tests', async () => {
-	const app = await appPromise;
-	const accountService = app.service('accounts');
-	const forcePasswordChangeService = app.service('forcePasswordChange');
+describe('forcePasswordChange service tests', () => {
+	let app;
+	let accountService;
+	let forcePasswordChangeService;
 	let server;
 	const newPassword = 'SomePassword1!';
 	const newPasswordConfirmation = 'SomePassword1!';
 	const newPasswordThatDoesNotMatch = 'SomePassword2!';
 	const newPasswordThatIsToWeak = 'SomePassword1';
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		accountService = app.service('accounts');
+		forcePasswordChangeService = app.service('forcePasswordChange');
+		server = await app.listen(0);
 	});
 
 	after((done) => {

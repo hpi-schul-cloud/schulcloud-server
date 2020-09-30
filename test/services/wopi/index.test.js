@@ -6,8 +6,9 @@ const mockAws = require('../fileStorage/aws/s3.mock');
 const testObjects = require('../helpers/testObjects')(appPromise);
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
 
-describe('wopi service', async () => {
-	const app = await appPromise;
+describe('wopi service', function test() {
+	this.timeout(10000);
+	let app;
 	const testUserId = '599ec14d8e4e364ec18ff46d';
 	let server;
 
@@ -41,8 +42,8 @@ describe('wopi service', async () => {
 		schoolId: '5f2987e020834114b8efd6f6',
 	};
 
-	before(async function execute() {
-		this.timeout(10000);
+	before(async () => {
+		app = await appPromise;
 		// Enable mockery to mock objects
 		mockery.enable({
 			warnOnUnregistered: false,
@@ -55,8 +56,7 @@ describe('wopi service', async () => {
 		await app.service('files').create(testFile);
 	});
 
-	after(async function execute() {
-		await this.timeout(10000);
+	after(async () => {
 		await app.service('files').remove(testFile._id);
 		await server.close();
 		mockery.deregisterAll();

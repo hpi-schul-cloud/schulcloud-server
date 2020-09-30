@@ -46,7 +46,8 @@ const cleanup = () => {
 	return removeManyClasses(ids);
 };
 
-const createByName = (app) => async ([gradeLevel, className, schoolId], overrides = {}) => {
+const createByName = (appPromise) => async ([gradeLevel, className, schoolId], overrides = {}) => {
+	const app = await appPromise;
 	const school = await app.service('schools').get(schoolId);
 	const year = await app.service('years').get(school.currentYear);
 

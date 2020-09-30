@@ -43,7 +43,7 @@ describe('fileStorage services', () => {
 	let directoryService;
 
 	before(async function before() {
-		this.timeout(10000);
+		this.timeout(20000);
 
 		mockery.enable({
 			warnOnUnregistered: false,

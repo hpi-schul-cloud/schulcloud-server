@@ -7,6 +7,18 @@ const { create: createSystem } = require('../helpers/services/testSystem')(appPr
 const { schoolUsesLdap } = require('../../../src/services/school/maintenance');
 
 describe('schoolUsesLdap', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await server.close();
+	});
+
 	it('should return false for normal schools', async () => {
 		const school = await createSchool();
 		expect(() => schoolUsesLdap(school)).not.to.throw();

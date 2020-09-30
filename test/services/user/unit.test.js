@@ -9,9 +9,21 @@ const { registrationPinModel } = require('../../../src/services/user/model');
 
 const testObjects = require('../helpers/testObjects')(appPromise);
 
-describe('registrationPin Service', async () => {
-	const app = await appPromise;
-	const registrationPinService = app.service('registrationPins');
+describe('registrationPin Service', () => {
+	let app;
+	let registrationPinService;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		registrationPinService = app.service('registrationPins');
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await server.close();
+		await testObjects.cleanup();
+	});
 
 	let pin = null;
 	const email = 'test.adresse@schul-cloud.org';
@@ -58,10 +70,10 @@ describe('registrationPin Service', async () => {
 			.catch((err) => expect(err.message.length).to.be.greaterThan(5)));
 });
 
-describe('publicTeachers service', async () => {
-	const app = await appPromise;
-	const userService = app.service('users');
-	const publicTeachersService = app.service('publicTeachers');
+describe('publicTeachers service', () => {
+	let app;
+	let userService;
+	let publicTeachersService;
 
 	let testStudent = {};
 	let testTeacher = {};
@@ -73,6 +85,9 @@ describe('publicTeachers service', async () => {
 	const schoolId = new ObjectId().toString();
 
 	before(async () => {
+		app = await appPromise;
+		userService = app.service('users');
+		publicTeachersService = app.service('publicTeachers');
 		server = await app.listen(0);
 
 		testStudent = await testObjects.createTestUser({

@@ -9,14 +9,14 @@ const readFile = promisify(fs.readFile);
 const path = require('path');
 
 describe('content service', function () {
-	this.timeout(10000); // for slow require(app) call
+	this.timeout(20000); // for slow require(app) call
 	const requestMock = (options) => readFile(requestToFilename(options)).then((data) => JSON.parse(data));
 
 	let app = null;
 	let resourcesService = null;
 	let searchService = null;
 
-	before(async (done) => {
+	before(async () => {
 		mockery.enable({
 			warnOnReplace: false,
 			warnOnUnregistered: false,
@@ -29,7 +29,6 @@ describe('content service', function () {
 		app.setup();
 		resourcesService = app.service('content/resources');
 		searchService = app.service('content/search');
-		done();
 	});
 
 	after((done) => {

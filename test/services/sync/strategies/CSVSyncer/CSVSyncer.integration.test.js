@@ -22,12 +22,13 @@ const { SC_TITLE } = require('../../../../../config/globals');
 
 const { deleteUser, MockEmailService } = require('./helper');
 
-describe('CSVSyncer Integration', async () => {
-	const app = await appPromise;
+describe('CSVSyncer Integration', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {

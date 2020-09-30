@@ -31,10 +31,23 @@ const testLesson = {
 	userId: testUserId,
 };
 
-describe('courseGroup service', async () => {
-	const app = await appPromise;
-	const courseGroupService = app.service('courseGroups');
-	const lessonsService = app.service('lessons');
+describe('courseGroup service', () => {
+	let app;
+	let courseGroupService;
+	let lessonsService;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		courseGroupService = app.service('courseGroups');
+		lessonsService = app.service('lessons');
+		server = await app.listen(0);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
 	it('creates a courseGroup in a course', async () => {
 		const course = await testObjects.createTestCourse({});
 		testCourseGroup.courseId = course._id;

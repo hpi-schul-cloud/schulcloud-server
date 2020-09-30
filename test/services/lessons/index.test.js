@@ -11,14 +11,17 @@ const testLesson = {
 	userId: '0000d231816abba584714c9e',
 };
 
-describe('lessons service', async () => {
-	const app = await appPromise;
-	const lessonService = app.service('lessons');
-	const lessonCopyService = app.service('lessons/copy');
+describe('lessons service', () => {
+	let app;
+	let lessonService;
+	let lessonCopyService;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		lessonService = app.service('lessons');
+		lessonCopyService = app.service('lessons/copy');
+		server = await app.listen(0);
 	});
 
 	after(async () => {

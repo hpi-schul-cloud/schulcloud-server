@@ -3,9 +3,9 @@ const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
 
-describe('PermissionService', async () => {
-	const app = await appPromise;
-	const permissionService = app.service('roles/:roleName/permissions');
+describe('PermissionService', () => {
+	let app;
+	let permissionService;
 	const ROLES = {
 		TEST: 'test',
 		OTHER: 'other',
@@ -26,6 +26,9 @@ describe('PermissionService', async () => {
 	const xxPermissions = ['GO_TO_TOILET'];
 
 	before(async () => {
+		app = await appPromise;
+		permissionService = app.service('roles/:roleName/permissions');
+
 		const testRole = await testObjects.createTestRole({
 			name: ROLES.TEST,
 			permissions: testPermissions,

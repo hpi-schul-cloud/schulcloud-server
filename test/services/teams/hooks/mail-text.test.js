@@ -4,11 +4,12 @@ const createEmailText = require('../../../../src/services/teams/hooks/mail-text.
 const appPromise = require('../../../../src/app');
 
 describe('Team mail-text helper', async () => {
-	const app = await appPromise;
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {

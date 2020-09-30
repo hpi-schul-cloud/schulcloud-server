@@ -49,13 +49,14 @@ async function createSubmission(
 	});
 }
 
-describe('submission service', async function test() {
-	const app = await appPromise;
+describe('submission service', function test() {
+	let app;
 	this.timeout(4000);
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after(async () => {

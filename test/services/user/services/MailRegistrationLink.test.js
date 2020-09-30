@@ -2,16 +2,17 @@ const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
-
 const testGenericErrorMessage = 'Can not send mail(s) with registration link';
 
-describe('MailRegistrationLinkService', async () => {
-	const app = await appPromise;
-	const mailRegistrationLinkService = app.service('/users/mail/registrationLink');
+describe('MailRegistrationLinkService', () => {
+	let app;
+	let mailRegistrationLinkService;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		mailRegistrationLinkService = app.service('/users/mail/registrationLink');
+		server = app.listen(0);
 	});
 
 	after((done) => {

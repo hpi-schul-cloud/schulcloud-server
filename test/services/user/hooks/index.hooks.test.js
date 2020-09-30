@@ -48,13 +48,14 @@ const assertPromiseStatus = (promise, success) =>
 			return error;
 		});
 
-describe('hasEditPermissionForUser', async () => {
-	const app = await appPromise;
-	const userService = app.service('users');
+describe('hasEditPermissionForUser', () => {
+	let app;
+	let userService;
 	let server;
-	before(async (done) => {
-		await app;
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		userService = app.service('users');
+		server = await app.listen(0);
 	});
 
 	afterEach(async () => {
@@ -144,11 +145,14 @@ describe('hasEditPermissionForUser', async () => {
 	});
 });
 
-describe('hasReadPermissionForUser', async () => {
-	const app = await appPromise;
+describe('hasReadPermissionForUser', () => {
+	let app;
+	let userService;
 	let server;
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		userService = app.service('users');
+		server = await app.listen(0);
 	});
 
 	afterEach(async () => {

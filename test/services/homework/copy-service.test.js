@@ -5,14 +5,22 @@ const { homeworkModel } = require('../../../src/services/homework/model');
 
 const { expect } = chai;
 
-describe('homework copy service', async () => {
-	const app = await appPromise;
-	const homeworkCopyService = app.service('homework/copy');
+describe('homework copy service', () => {
+	let app;
+	let homeworkCopyService;
 	const homeworkIdsToDelete = [];
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		homeworkCopyService = app.service('homework/copy');
+		server = await app.listen(0);
+	})
 
 	after(async () => {
 		await homeworkModel.deleteMany({ id: { $in: homeworkIdsToDelete } });
-		testObjects.cleanup();
+		await testObjects.cleanup();
+		await server.close()
 	});
 
 	it('internal call can copy a homework via POST', async () => {

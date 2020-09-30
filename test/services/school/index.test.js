@@ -12,8 +12,19 @@ const { schoolModel: School, yearModel: YearModel } = require('../../../src/serv
 const testObjects = require('../helpers/testObjects')(appPromise);
 const { create: createSchool, info: createdSchoolIds } = require('../helpers/services/schools')(appPromise);
 
-describe('school service', async () => {
-	const app = await appPromise;
+describe('school service', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
+	});
 
 	it('registered the schools services', () => {
 		assert.ok(app.service('schools'));
@@ -30,9 +41,10 @@ describe('school service', async () => {
 		let defaultYears = null;
 		let sampleYear;
 		let sampleSchoolData;
-		const schoolService = app.service('/schools');
+		let schoolService;
 
 		before('load data and set samples', async () => {
+			schoolService = app.service('/schools');
 			defaultYears = await YearModel.find().sort('name').lean().exec();
 			sampleYear = defaultYears[0];
 			const school = await createSchool();
@@ -163,17 +175,6 @@ describe('school service', async () => {
 	});
 
 	describe('patch schools', () => {
-		let server;
-
-		before((done) => {
-			server = app.listen(0, done); // required to initialize all services used for testObjects
-		});
-
-		after((done) => {
-			server.close(done);
-			testObjects.cleanup();
-		});
-
 		it('administrator can patch his own school', async () => {
 			const school = await testObjects.createTestSchool({});
 			const admin = await testObjects.createTestUser({
@@ -344,6 +345,18 @@ describe('school service', async () => {
 });
 
 describe('years service', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen();
+	});
+
+	after(async () => {
+		await server.close();
+	});
+
 	it('registered the years services', () => {
 		assert.ok(app.service('years'));
 		assert.ok(app.service('gradeLevels'));

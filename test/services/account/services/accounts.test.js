@@ -12,16 +12,20 @@ chai.use(chaiHttp);
 
 const { expect } = chai;
 
-describe('Account Service', async () => {
-	const app = await appPromise;
-	const accountService = app.service('/accounts');
-	const userService = app.service('/users');
-	const registrationPinsService = app.service('/registrationPins');
+describe('Account Service', () => {
+	let app;
+	let userService;
+	let registrationPinsService;
+	let accountService;
 
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		accountService = app.service('/accounts');
+		userService = app.service('/users');
+		registrationPinsService = app.service('/registrationPins');
+		server = await app.listen(0);
 	});
 
 	after(async () => {

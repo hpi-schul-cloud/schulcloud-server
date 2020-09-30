@@ -2,13 +2,15 @@ const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
-describe('skipRegistration service', async () => {
-	const app = await appPromise;
-	const skipRegistrationService = app.service('/users/:userId/skipregistration');
+describe('skipRegistration service', () => {
+	let skipRegistrationService;
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		skipRegistrationService = app.service('/users/:userId/skipregistration');
+		server = await app.listen(0);
 	});
 
 	after((done) => {

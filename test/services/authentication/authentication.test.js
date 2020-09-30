@@ -9,19 +9,22 @@ const should = chai.should();
 
 chai.use(chaiHttp);
 
-describe('start server', async () => {
-	const app = await appPromise;
-	const accountService = app.service('accounts');
-	const { logger } = app;
+describe('start server', () => {
+	let app;
+	let accountService;
+	let logger;
 
 	let server;
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		({ logger } = app);
+		accountService = app.service('accounts');
+		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
-		testObjects.cleanup();
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
 	});
 
 	describe('General login service', () => {

@@ -6,7 +6,7 @@ const rabbitmqMock = require('../rabbitmqMock');
 const { Configuration } = commons;
 
 describe('service', function test() {
-	this.timeout(10000); // give require app enough time
+	this.timeout(20000); // give require app enough time
 	let configBefore;
 	let server;
 	let app;

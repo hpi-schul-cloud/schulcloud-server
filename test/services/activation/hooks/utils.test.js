@@ -21,12 +21,13 @@ const existingTestAccountParameters = {
 	password: existingTestAccount.password,
 };
 
-describe('activation/hooks utils', async () => {
-	const app = await appPromise;
+describe('activation/hooks utils', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after(async () => {

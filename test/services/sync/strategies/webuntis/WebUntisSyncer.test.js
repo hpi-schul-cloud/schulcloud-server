@@ -6,11 +6,12 @@ const testObjects = require('../../../helpers/testObjects')(appPromise);
 const WebUntisSyncer = require('../../../../../src/services/sync/strategies/WebUntisSyncer');
 
 // These tests should use a mock once the webuntis sync actually does something!
-describe('webuntis Syncer', async () => {
-	const app = await appPromise;
+describe('webuntis Syncer', () => {
+	let app;
 	let server;
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after(async () => {

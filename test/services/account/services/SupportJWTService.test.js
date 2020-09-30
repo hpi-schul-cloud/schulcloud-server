@@ -8,15 +8,17 @@ const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
 
-describe('supportJWTService', async () => {
-	const app = await appPromise;
-	const supportJWTService = app.service('accounts/supportJWT');
+describe('supportJWTService', () => {
+	let app;
+	let supportJWTService;
 	const testedPermission = 'CREATE_SUPPORT_JWT';
 
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		supportJWTService = app.service('accounts/supportJWT');
+		server = await app.listen(0);
 	});
 
 	after(async () => {

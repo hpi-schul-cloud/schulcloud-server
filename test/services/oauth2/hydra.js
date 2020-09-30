@@ -7,17 +7,17 @@ const request = require('request-promise-native');
 const appPromise = require('../../../src/app');
 const logger = require('../../../src/logger');
 
-
 chai.use(chaiHttp);
 
-describe('oauth2 service', async function oauthTest() {
-	const app = await appPromise;
-	const baseUrlService = app.service('oauth2/baseUrl');
-	const clientsService = app.service('oauth2/clients');
-	const loginService = app.service('oauth2/loginRequest');
-	const introspectService = app.service('oauth2/introspect');
-	const consentService = app.service('oauth2/auth/sessions/consent');
-	const toolService = app.service('ltiTools');
+describe('oauth2 service', function oauthTest() {
+	let app;
+	let baseUrlService;
+	let clientsService;
+	let loginService;
+	let introspectService;
+	let consentService;
+	let toolService;
+	let server;
 	this.timeout(10000);
 
 	const testUser2 = {
@@ -72,9 +72,16 @@ describe('oauth2 service', async function oauthTest() {
 	let loginRequest1 = null;
 	let loginRequest2 = null;
 
-	before((done) => {
+	before(async () => {
+		app = await appPromise;
+		baseUrlService = app.service('oauth2/baseUrl');
+		clientsService = app.service('oauth2/clients');
+		loginService = app.service('oauth2/loginRequest');
+		introspectService = app.service('oauth2/introspect');
+		consentService = app.service('oauth2/auth/sessions/consent');
+		toolService = app.service('ltiTools');
 		this.timeout(10000);
-		toolService.create(testTool1).then(() => {
+		await toolService.create(testTool1).then(() => {
 			toolService.create(testTool2).then(() => {
 				clientsService
 					.create(testClient2)
@@ -109,31 +116,24 @@ describe('oauth2 service', async function oauthTest() {
 							}).catch((res2) => {
 								const position2 = res2.error.indexOf('login_challenge=') + 'login_challenge'.length + 1;
 								loginRequest2 = res2.error.substr(position2, 32);
-								done();
 							});
 						});
 					})
 					.catch((err) => {
 						logger.warning('Can not execute oauth2 before all hook.', err);
-						done();
 					});
 			});
 		});
+		server = await app.listen();
 	});
 
-	after((done) => {
-		Promise.all([
+	after(async () => {
+		await Promise.all([
 			toolService.remove(testTool1._id),
 			toolService.remove(testTool2._id),
 			clientsService.remove(testClient2.client_id),
-		])
-			.then(() => {
-				done();
-			})
-			.catch((err) => {
-				logger.warning('Can not execute oauth2 after all hook.', err);
-				done();
-			});
+		]);
+		await server.close();
 	});
 
 	it('is registered', () => {

@@ -4,26 +4,31 @@ const testObjects = require('../helpers/testObjects')(appPromise);
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
+describe('classes service', () => {
+	let app;
+	let classesService;
+	let server;
 
-describe('classes service', async () => {
-	const app = await appPromise;
-	const classesService = app.service('/classes');
+	before(async () => {
+		app = await appPromise;
+		classesService = app.service('/classes');
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
+	});
 
 	it('is properly registered', () => {
 		expect(classesService).to.not.equal(undefined);
 	});
 
 	describe('find route', () => {
-		let server;
 		const createdIds = [];
-
-		before((done) => {
-			server = app.listen(0, done);
-		});
 
 		after(async () => {
 			await testObjects.classes.removeMany(createdIds);
-			await server.close();
 		});
 
 		afterEach(testObjects.cleanup);

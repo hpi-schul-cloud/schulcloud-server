@@ -6,7 +6,7 @@ const requestMock = require('./mock/mockResponses');
 const { expect } = chai;
 
 describe('notification service', function () {
-	this.timeout(10000); // for slow require(app) call
+	this.timeout(20000); // for slow require(app) call
 
 	let app = null;
 	let notificationService = null;

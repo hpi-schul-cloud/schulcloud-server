@@ -6,14 +6,17 @@ const { userModel } = require('../../../src/services/user/model');
 
 const testObjects = require('../helpers/testObjects')(appPromise);
 
-describe('registration service', async () => {
-	const app = await appPromise;
-	const registrationService = app.service('registration');
-	const registrationPinService = app.service('registrationPins');
+describe('registration service', () => {
+	let registrationService;
+	let registrationPinService;
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		registrationService = app.service('registration');
+		registrationPinService = app.service('registrationPins');
+		server = await app.listen(0);
 	});
 
 	after(async () => {

@@ -11,12 +11,13 @@ const { createHook } = require('../helper/helper.hook');
 const { createTestAccount, createTestUser, generateRequestParams } = require('../../helpers/testObjects')(appPromise);
 const teamHelper = require('../../helpers/services/teams');
 
-describe('Team service hook tests.', async () => {
-	const app = await appPromise;
+describe('Team service hook tests.', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {

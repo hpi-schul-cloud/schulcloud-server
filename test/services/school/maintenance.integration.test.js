@@ -14,18 +14,20 @@ const { create: createYear } = require('../helpers/services/years');
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-describe('school maintenance mode', async () => {
-	const app = await appPromise;
-	const maintenanceService = app.service('schools/:schoolId/maintenance');
+describe('school maintenance mode', () => {
+	let app;
+	let maintenanceService;
 
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		maintenanceService = app.service('schools/:schoolId/maintenance');
+		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	describe('status route', () => {

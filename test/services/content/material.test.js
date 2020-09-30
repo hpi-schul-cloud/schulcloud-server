@@ -13,8 +13,17 @@ const {
 	generateRequestParamsFromUser,
 } = require('../helpers/testObjects')(appPromise);
 
-describe('material service', async () => {
-	const app = await appPromise;
+describe('material service', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after(() => server.close());
+
 	it('registered the material service', () => {
 		assert.ok(app.service('materials'));
 	});
@@ -33,7 +42,7 @@ describe('material service', async () => {
 		let materialA;
 		let materialB;
 
-		let server;
+		
 		before((done) => {
 			server = app.listen(0, done);
 		});
@@ -156,7 +165,5 @@ describe('material service', async () => {
 		});
 
 		after(cleanup);
-
-		after(() => server.close());
 	});
 });

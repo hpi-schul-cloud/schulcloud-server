@@ -5,13 +5,15 @@ const { generateRequestParamsFromUser } = require('../../helpers/services/login'
 const SchoolYearFacade = require('../../../../src/services/school/logic/year');
 const classSuccessorServiceClass = require('../../../../src/services/user-group/services/classSuccessor');
 
-describe('classSuccessor service', async () => {
-	const app = await appPromise;
-	const classSuccessorService = app.service('classes/successor');
+describe('classSuccessor service', () => {
+	let app;
+	let classSuccessorService;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		classSuccessorService = app.service('classes/successor');
+		server = await app.listen(0);
 	});
 
 	after((done) => {

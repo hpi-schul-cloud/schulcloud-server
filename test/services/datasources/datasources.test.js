@@ -6,12 +6,14 @@ const { generateRequestParamsFromUser } = require('../helpers/services/login')(a
 const { datasourceModel } = require('../../../src/services/datasources/model');
 
 
-describe('datasources service', async () => {
-	const app = await appPromise;
-	const datasourcesService = app.service('datasources');
+describe('datasources service', () => {
+	let app;
+	let datasourcesService;
 	let server;
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		datasourcesService = app.service('datasources');
+		server = await app.listen(0);
 	});
 
 	after(async () => {

@@ -3,9 +3,14 @@ const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise);
 
 
-describe('lesson copy service', async () => {
-	const app = await appPromise;
-	const lessonCopyService = app.service('lessons/copy');
+describe('lesson copy service', () => {
+	let app;
+	let lessonCopyService;
+
+	before(async () => {
+		app = await appPromise;
+		lessonCopyService = app.service('lessons/copy');
+	});
 
 	after(async () => {
 		testObjects.cleanup();

@@ -9,15 +9,19 @@ const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const testGenericErrorMessage = 'Der angefragte Nutzer ist unbekannt!';
 
-describe('user service', async () => {
-	const app = await appPromise;
-	const userService = app.service('users');
-	const classesService = app.service('classes');
-	const coursesService = app.service('courses');
+describe('user service', () => {
+	let userService;
+	let classesService;
+	let coursesService;
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		userService = app.service('users');
+		classesService = app.service('classes');
+		coursesService = app.service('courses');
+		server = await app.listen(0);
 	});
 
 	after((done) => {

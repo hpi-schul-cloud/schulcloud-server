@@ -44,13 +44,14 @@ const getNotificationMock = (expectedData = {}) =>
 			});
 	});
 
-describe('activation/services activationService', async () => {
-	const app = await appPromise;
+describe('activation/services activationService', () => {
+	let app;
 	let server;
 	let activationService;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 		activationService = app.service('activation');
 	});
 

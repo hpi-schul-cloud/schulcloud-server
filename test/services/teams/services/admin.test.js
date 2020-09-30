@@ -5,8 +5,18 @@ const appPromise = require('../../../../src/app');
 
 const AdminOverview = require('../../../../src/services/teams/services/admin');
 
-describe("'/teams/manage/admin' service", async () => {
-	const app = await appPromise;
+describe("'/teams/manage/admin' service", () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
 
 	it('registered the service', () => {
 		const service = app.service('/teams/manage/admin');

@@ -5,12 +5,13 @@ const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
 
-describe('SkipRegistration integration', async () => {
-	const app = await appPromise;
+describe('SkipRegistration integration', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {

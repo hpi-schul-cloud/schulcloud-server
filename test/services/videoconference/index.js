@@ -70,20 +70,21 @@ const expectNoGetPermission = async (testData) => {
 	).to.throw;
 };
 
-describe('videoconference service', async function slowServiceTests() {
-	const app = await appPromise;
-	const createService = app.service('videoconference');
-	const getService = app.service('videoconference/:scopeName');
+describe('videoconference service', function slowServiceTests() {
 	this.timeout(30000);
+	let app;
+	let createService;
+	let getService;
 
 	let testData = null;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
-	});
-
 	before('create test objects', async () => {
+		app = await appPromise;
+		createService = app.service('videoconference');
+		getService = app.service('videoconference/:scopeName');
+		server = await app.listen();
+
 		const school = await testObjects.createTestSchool();
 		const { id: schoolId } = school;
 		const courseTeacher = await testObjects.createTestUser({

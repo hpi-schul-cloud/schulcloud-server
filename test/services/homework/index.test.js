@@ -5,11 +5,23 @@ const testObjects = require('../helpers/testObjects')(appPromise);
 
 const { expect } = chai;
 
-describe('homework service', async function test() {
-	const app = await appPromise;
-	const homeworkService = app.service('homework');
-	const homeworkCopyService = app.service('homework/copy');
+describe('homework service', function test() {
+	let app;
+	let homeworkService;
+	let homeworkCopyService;
+	let server;
 	this.timeout(10000);
+
+	before(async () => {
+		app = await appPromise;
+		homeworkService = app.service('homework');
+		homeworkCopyService = app.service('homework/copy');
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await server.close();
+	});
 
 	it('registered the homework service', () => {
 		assert.ok(homeworkService);

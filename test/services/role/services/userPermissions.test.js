@@ -3,9 +3,9 @@ const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
 
-describe('userPermissions', async () => {
-	const app = await appPromise;
-	const userPermissions = app.service('/permissions/user');
+describe('userPermissions', () => {
+	let app;
+	let userPermissions;
 	let server;
 	const ROLES = {
 		TEST: 'test',
@@ -48,47 +48,46 @@ describe('userPermissions', async () => {
 		...commonAccountData,
 	};
 
-	before((done) => {
-		server = app.listen(0, async () => {
-			testRole = await testObjects.createTestRole({
-				name: ROLES.TEST,
-				permissions: testPermissions,
-			});
-
-			otherRole = await testObjects.createTestRole({
-				name: ROLES.OTHER,
-				permissions: otherPermissions,
-			});
-
-			testSchool = await testObjects.createTestSchool({
-				permissions: { test: { SITTING: true } },
-			});
-
-			testSchool2 = await testObjects.createTestSchool({
-				permissions: { other: { SITTING: true } },
-			});
-
-			testUser = await testObjects.createTestUser({
-				schoolId: testSchool._id,
-				roles: [testRole._id],
-			});
-
-			testUser2 = await testObjects.createTestUser({
-				schoolId: testSchool2._id,
-				roles: [otherRole._id],
-			});
-
-			otherUser = await testObjects.createTestUser({
-				schoolId: testSchool._id,
-				roles: [otherRole._id],
-			});
-
-			accountTestUser = await testObjects.createTestAccount(dataTestUser1, null, testUser);
-			accountTestUser2 = await testObjects.createTestAccount(dataTestUser2, null, testUser2);
-			accountTestUserOther = await testObjects.createTestAccount(dataTestUserOther, null, otherUser);
-
-			done();
+	before(async () => {
+		app = await appPromise;
+		userPermissions = app.service('/permissions/user');
+		server = await app.listen(0);
+		testRole = await testObjects.createTestRole({
+			name: ROLES.TEST,
+			permissions: testPermissions,
 		});
+
+		otherRole = await testObjects.createTestRole({
+			name: ROLES.OTHER,
+			permissions: otherPermissions,
+		});
+
+		testSchool = await testObjects.createTestSchool({
+			permissions: { test: { SITTING: true } },
+		});
+
+		testSchool2 = await testObjects.createTestSchool({
+			permissions: { other: { SITTING: true } },
+		});
+
+		testUser = await testObjects.createTestUser({
+			schoolId: testSchool._id,
+			roles: [testRole._id],
+		});
+
+		testUser2 = await testObjects.createTestUser({
+			schoolId: testSchool2._id,
+			roles: [otherRole._id],
+		});
+
+		otherUser = await testObjects.createTestUser({
+			schoolId: testSchool._id,
+			roles: [otherRole._id],
+		});
+
+		accountTestUser = await testObjects.createTestAccount(dataTestUser1, null, testUser);
+		accountTestUser2 = await testObjects.createTestAccount(dataTestUser2, null, testUser2);
+		accountTestUserOther = await testObjects.createTestAccount(dataTestUserOther, null, otherUser);
 	});
 
 	after((done) => {

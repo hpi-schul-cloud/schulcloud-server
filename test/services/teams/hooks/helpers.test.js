@@ -13,12 +13,13 @@ const {
 
 const { teamUserModel } = require('../../../../src/services/teams/model');
 
-describe('hook helpers', async () => {
-	const app = await appPromise;
+describe('hook helpers', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {

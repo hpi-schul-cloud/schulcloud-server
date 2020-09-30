@@ -2,9 +2,14 @@ const assert = require('assert');
 const _ = require('lodash');
 const appPromise = require('../../../src/app');
 
-describe('resolve/users service', async () => {
-	const app = await appPromise;
-	const service = app.service('resolve/users');
+describe('resolve/users service', () => {
+	let app;
+	let service;
+
+	before(async () => {
+		app = await appPromise;
+		service = app.service('resolve/users');
+	});
 
 	it('registered the resolve/users service', () => {
 		assert.ok(service);

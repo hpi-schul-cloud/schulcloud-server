@@ -4,9 +4,19 @@ const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise);
 const { requireDatasourceId } = require('../../../src/services/webuntis/hooks');
 
-describe('webuntis metadata hooks', async () => {
-	const app = await appPromise;
-	after(testObjects.cleanup);
+describe('webuntis metadata hooks', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
+	});
 
 	describe('requireDatasourceId', () => {
 		it('returns if datasource belongs to users school', async () => {

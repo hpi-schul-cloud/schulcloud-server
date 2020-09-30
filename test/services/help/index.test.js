@@ -10,13 +10,15 @@ const { helpDocumentsModel } = require('../../../src/services/help/model');
 const { expect } = chai;
 
 
-describe('help documents service', async () => {
-	const app = await appPromise;
-	const helpDocumentService = app.service('/help/documents');
+describe('help documents service', () => {
+	let app;
+	let helpDocumentService;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		helpDocumentService = app.service('/help/documents');
+		server = await app.listen(0);
 	});
 
 	after(async () => {

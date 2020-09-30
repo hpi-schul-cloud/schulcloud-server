@@ -3,7 +3,6 @@ const chai = require('chai');
 
 const appPromise = require('../../../../src/app');
 
-
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
 const testUserId = '0000d231816abba584714c9e';
@@ -11,10 +10,23 @@ const testCourseExample = '0000dcfbfb5c7a3f00bf21ab';
 
 let shareToken;
 
-describe('courses copy service', async () => {
-	const app = await appPromise;
-	const copyCourseService = app.service('courses/copy');
-	const shareCourseService = app.service('courses/share');
+describe('courses copy service', () => {
+	let app;
+	let copyCourseService;
+	let shareCourseService;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		copyCourseService = app.service('courses/copy');
+		shareCourseService = app.service('courses/share');
+		server = await app.listen();
+	});
+
+	after(async () => {
+		await server.close();
+	});
+
 	it('registered the course copy service', () => {
 		assert.ok(copyCourseService);
 	});

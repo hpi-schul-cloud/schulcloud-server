@@ -5,8 +5,13 @@ const { cleanup } = require('../../helpers/testObjects')(appPromise);
 const { newsHistoryModel } = require('../../../../src/services/news/model');
 const { preparePagination, deleteNewsHistory } = require('../../../../src/services/news/hooks/news.hooks');
 
-describe('news hooks', async () => {
-	const app = await appPromise;
+describe('news hooks', () => {
+	let app;
+
+	before(async () => {
+		app = await appPromise;
+	})
+
 	describe('#preparePagination', () => {
 		it('should convert the $paginate query parameter from a string to boolean', () => {
 			const context = {

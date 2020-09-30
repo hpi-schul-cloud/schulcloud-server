@@ -11,8 +11,18 @@ const {
 	generateRegistrationLink,
 } = require('../../../../src/services/user/hooks/userService');
 
-describe('removeStudentFromCourses', async () => {
-	const app = await appPromise;
+describe('removeStudentFromCourses', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
 
 	it('removes single student from all his courses', async () => {
 		const user = await testObjects.createTestUser({ roles: ['student'] });
@@ -53,10 +63,12 @@ describe('removeStudentFromCourses', async () => {
 });
 
 describe('removeStudentFromClasses', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -106,14 +118,16 @@ describe('removeStudentFromClasses', () => {
 });
 
 describe('generateRegistrationLink', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	afterEach(async () => {
@@ -218,13 +232,16 @@ describe('generateRegistrationLink', () => {
 });
 
 describe('enforceRoleHierarchyOnCreate', () => {
+	let app;
 	let server;
-	before((done) => {
-		server = app.listen(0, done);
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	afterEach(async () => {

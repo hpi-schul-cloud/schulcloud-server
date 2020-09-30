@@ -10,8 +10,19 @@ const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const DELAY_TIME = 250;
 
-describe('Test user remove events for teams.', async () => {
-	const app = await appPromise;
+describe('Test user remove events for teams.', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
 	describe('Test if own of the users is removed.', () => {
 		let team;
 

@@ -2,9 +2,9 @@ const assert = require('assert');
 const appPromise = require('../../../src/app');
 
 
-describe('ltiTool service', async () => {
-	const app = await appPromise;
-	const ltiToolService = app.service('ltiTools');
+describe('ltiTool service', () => {
+	let app;
+	let ltiToolService;
 
 	const testTool = {
 		_id: '5836bb5664582c35df3bc215',
@@ -18,11 +18,11 @@ describe('ltiTool service', async () => {
 		resource_link_id: '0',
 	};
 
-	before(function (done) {
+	before(async function before() {
+		app = await appPromise;
+		ltiToolService = app.service('ltiTools');
 		this.timeout(10000);
-		ltiToolService.create(testTool).then((result) => {
-			done();
-		});
+		await ltiToolService.create(testTool)
 	});
 
 	after((done) => {

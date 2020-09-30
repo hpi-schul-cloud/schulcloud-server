@@ -7,8 +7,8 @@ const appPromise = require('../../../../../src/app');
 const { createTestSchool, createTestClass, cleanup } = require('../../../helpers/testObjects')(appPromise);
 
 describe('Syncer Mixins', () => {
-	describe('ClassImporter', async () => {
-		const app = await appPromise;
+	describe('ClassImporter', () => {
+		let app;
 
 		const MIXIN_METHODS = ['buildClassMapping', 'createOrUpdateClass', 'findClass', 'createClass', 'updateClass'];
 		const SampleSyncer = class extends Syncer {};
@@ -16,8 +16,9 @@ describe('Syncer Mixins', () => {
 
 		let server;
 
-		before((done) => {
-			server = app.listen(0, done);
+		before(async () => {
+			app = await appPromise;
+			server = await app.listen(0);
 		});
 
 		after((done) => {

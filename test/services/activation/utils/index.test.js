@@ -30,12 +30,13 @@ const createEntry = async () => {
 	return { entry, user };
 };
 
-describe('activation/utils utils', async () => {
-	const app = await appPromise;
+describe('activation/utils utils', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after(async () => {

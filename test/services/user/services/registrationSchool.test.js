@@ -4,13 +4,15 @@ const { createTestSchool, createTestClass, createTestTeamWithOwner, cleanup } = 
 	appPromise
 );
 
-describe('registrationSchool service', async () => {
-	const app = await appPromise;
-	const registrationSchoolService = app.service('/registrationSchool');
+describe('registrationSchool service', () => {
+	let app;
+	let registrationSchoolService;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		registrationSchoolService = app.service('/registrationSchool');
+		server = await app.listen();
 	});
 
 	after((done) => {

@@ -1,9 +1,18 @@
 const assert = require('assert');
 const appPromise = require('../../../src/app');
 
-describe('resolve/scopes service', async () => {
-	const app = await appPromise;
-	const service = app.service('resolve/scopes');
+describe('resolve/scopes service', () => {
+	let app;
+	let service;
+
+	before(async () => {
+		app = await appPromise;
+		service = app.service('resolve/scopes');
+	});
+
+	after(async () => {
+
+	});
 
 	it('registered the resolve/scopes service', () => {
 		assert.ok(service);

@@ -15,12 +15,13 @@ const { equal: equalIds } = require('../../../../../src/helper/compare').ObjectI
 
 const { findSchool, createUserAndAccount } = require('../../../../../src/services/sync/strategies/TSP/TSP');
 
-describe('TSP API integration tests', async () => {
-	const app = await appPromise;
+describe('TSP API integration tests', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = app.listen(0);
 	});
 
 	after((done) => {

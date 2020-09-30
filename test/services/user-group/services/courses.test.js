@@ -3,12 +3,13 @@ const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 const { courseModel } = require('../../../../src/services/user-group/model');
 
-describe('course service', async () => {
-	const app = await appPromise;
+describe('course service', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after(async () => {

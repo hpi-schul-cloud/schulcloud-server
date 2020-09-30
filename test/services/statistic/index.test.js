@@ -1,8 +1,13 @@
 const assert = require('assert');
 const appPromise = require('../../../src/app');
 
-describe('statistic service', async () => {
-	const app = await appPromise;
+describe('statistic service', () => {
+	let app;
+
+	before(async () => {
+		app = await appPromise;
+	});
+
 	it('registered the statistics service', () => {
 		assert.ok(app.service('statistics'));
 	});

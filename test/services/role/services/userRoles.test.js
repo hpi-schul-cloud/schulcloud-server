@@ -3,9 +3,9 @@ const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
 
-describe('userRoles', async () => {
-	const app = await appPromise;
-	const userRoles = app.service('/roles/user');
+describe('userRoles', () => {
+	let app;
+	let userRoles;
 	let server;
 	const ROLES = {
 		TEST: 'test',
@@ -49,50 +49,49 @@ describe('userRoles', async () => {
 		...commonAccountData,
 	};
 
-	before((done) => {
-		server = app.listen(0, async () => {
-			testRole = await testObjects.createTestRole({
-				name: ROLES.TEST,
-				permissions: testPermissions,
-			});
-
-			testRoleWithDiffrentPermissons = await testObjects.createTestRole({
-				name: ROLES.TEST,
-				permissions: otherPermissions,
-			});
-
-			otherRole = await testObjects.createTestRole({
-				name: ROLES.OTHER,
-				permissions: otherPermissions,
-			});
-
-			testSchool = await testObjects.createTestSchool({
-				permissions: { test: { SINGING: true } },
-			});
-
-			testSchool2 = await testObjects.createTestSchool({});
-
-			testUser = await testObjects.createTestUser({
-				schoolId: testSchool._id,
-				roles: [testRole._id],
-			});
-
-			testUser2 = await testObjects.createTestUser({
-				schoolId: testSchool._id,
-				roles: [testRoleWithDiffrentPermissons._id],
-			});
-
-			otherUser = await testObjects.createTestUser({
-				schoolId: testSchool2._id,
-				roles: [otherRole._id],
-			});
-
-			accountTestUser = await testObjects.createTestAccount(dataTestUser1, null, testUser);
-			accountTestUser2 = await testObjects.createTestAccount(dataTestUser2, null, testUser2);
-			accountTestUserOther = await testObjects.createTestAccount(dataTestUserOther, null, otherUser);
-
-			done();
+	before(async () => {
+		app = await appPromise;
+		userRoles = app.service('/roles/user');
+		server = await app.listen(0)
+		testRole = await testObjects.createTestRole({
+			name: ROLES.TEST,
+			permissions: testPermissions,
 		});
+
+		testRoleWithDiffrentPermissons = await testObjects.createTestRole({
+			name: ROLES.TEST,
+			permissions: otherPermissions,
+		});
+
+		otherRole = await testObjects.createTestRole({
+			name: ROLES.OTHER,
+			permissions: otherPermissions,
+		});
+
+		testSchool = await testObjects.createTestSchool({
+			permissions: { test: { SINGING: true } },
+		});
+
+		testSchool2 = await testObjects.createTestSchool({});
+
+		testUser = await testObjects.createTestUser({
+			schoolId: testSchool._id,
+			roles: [testRole._id],
+		});
+
+		testUser2 = await testObjects.createTestUser({
+			schoolId: testSchool._id,
+			roles: [testRoleWithDiffrentPermissons._id],
+		});
+
+		otherUser = await testObjects.createTestUser({
+			schoolId: testSchool2._id,
+			roles: [otherRole._id],
+		});
+
+		accountTestUser = await testObjects.createTestAccount(dataTestUser1, null, testUser);
+		accountTestUser2 = await testObjects.createTestAccount(dataTestUser2, null, testUser2);
+		accountTestUserOther = await testObjects.createTestAccount(dataTestUserOther, null, otherUser);
 	});
 
 	after((done) => {

@@ -5,13 +5,15 @@ const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
-describe('me service', async () => {
-	const app = await appPromise;
-	const meService = app.service('/me');
+describe('me service', () => {
+	let app;
+	let meService;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		meService = app.service('/me');
+		server = await app.listen(0);
 	});
 
 	after((done) => {

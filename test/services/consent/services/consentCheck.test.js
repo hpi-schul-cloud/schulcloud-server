@@ -14,16 +14,17 @@ const createUserWithConsent = ({ age, userConsent, parentConsent, ...others }) =
 		...others,
 	});
 
-describe('consentCheck tests', async () => {
-	const app = await appPromise;
+describe('consentCheck tests', () => {
+	let app;
 	let server;
 	let consentCheckService;
 	let schoolSerivce;
 
-	before((done) => {
+	before(async () => {
+		app = await appPromise;
 		schoolSerivce = app.service('/schools');
 		consentCheckService = app.service('/consents/:userId/check');
-		server = app.listen(0, done);
+		server = await app.listen(0);
 	});
 
 	after((done) => {

@@ -10,9 +10,15 @@ const teamHelper = require('../helpers/services/teams');
 const { newsModel: News, newsHistoryModel: NewsHistory } = require('../../../src/services/news/model');
 
 
-describe('news service', async () => {
-	const app = await appPromise;
-	const newsService = app.service('news');
+describe('news service', () => {
+	let app;
+	let newsService;
+
+	before(async () => {
+		app = await appPromise;
+		newsService = app.service('news');
+	})
+
 	it('registers correctly', () => {
 		expect(app.service('news')).to.not.equal(undefined);
 	});

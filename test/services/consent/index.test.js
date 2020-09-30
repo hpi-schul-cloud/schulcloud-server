@@ -5,9 +5,10 @@ const appPromise = require('../../../src/app');
 let consentService;
 let consentVersionService;
 
-describe('consent service', async () => {
-	const app = await appPromise;
-	before(() => {
+describe('consent service', () => {
+	let app;
+	before(async () => {
+		app = await appPromise;
 		consentService = app.service('/consents');
 		consentService.setup(app);
 		consentVersionService = app.service('consentVersions');
