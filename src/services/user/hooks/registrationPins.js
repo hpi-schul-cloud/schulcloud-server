@@ -1,4 +1,4 @@
-const hooks = require('feathers-hooks-common');
+const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
@@ -137,9 +137,15 @@ const validateEmailAndPin = (hook) => {
 const checkTimeWindow = async (hook) => {
 	const minimalTimeDifference = moment.duration(5, 'minutes').asMilliseconds();
 	const { importHash } = hook.data;
+
 	if (!importHash) {
 		throw new BadRequest('importHash missing');
 	}
+	const user = await hook.app.service('users/linkImport').get(importHash);
+	if (!user.userId) {
+		throw new BadRequest('invalid importHash');
+	}
+
 	const result = await hook.app.service('registrationPinsModel').find({ query: { importHash } });
 	if (result.data.length > 1) {
 		throw new BadRequest('registration pin is ambiguous');
@@ -156,12 +162,17 @@ const checkTimeWindow = async (hook) => {
 
 exports.before = {
 	all: [globalHooks.forceHookResolve(authenticate('jwt'))],
-	find: [hooks.disallow('external'), validateEmailAndPin],
-	get: hooks.disallow('external'),
-	create: [globalHooks.blockDisposableEmail('email'), checkTimeWindow, removeOldPins, generatePin],
-	update: hooks.disallow('external'),
-	patch: hooks.disallow('external'),
-	remove: hooks.disallow('external'),
+	find: [disallow('external'), validateEmailAndPin],
+	get: disallow('external'),
+	create: [
+		globalHooks.blockDisposableEmail('email'),
+		iff(isProvider('external'), checkTimeWindow),
+		removeOldPins,
+		generatePin,
+	],
+	update: disallow('external'),
+	patch: disallow('external'),
+	remove: disallow('external'),
 };
 
 exports.after = {
