@@ -24,6 +24,7 @@ const {
 const {
 	mapRoleFilterQuery,
 	checkUnique,
+	checkUniqueEmail,
 	checkJwt,
 	checkUniqueAccount,
 	updateAccountUsername,
@@ -125,6 +126,7 @@ const userHooks = {
 			iff(isProvider('external'), preventPopulate),
 			authenticate('jwt'),
 			sanitizeData,
+			checkUniqueEmail,
 			resolveToIds('/roles', 'data.$set.roles', 'name'),
 		],
 		patch: [
@@ -133,6 +135,7 @@ const userHooks = {
 			iff(isProvider('external'), securePatching),
 			permitGroupOperation,
 			sanitizeData,
+			checkUniqueEmail,
 			iff(isProvider('external'), hasEditPermissionForUser),
 			iff(isProvider('external'), restrictToCurrentSchool),
 			resolveToIds('/roles', 'data.roles', 'name'),
