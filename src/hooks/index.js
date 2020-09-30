@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = require('@feathersjs/errors');
+const { Forbidden, GeneralError, NotFound, BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
 
 const { v4: uuidv4 } = require('uuid');
@@ -112,7 +112,7 @@ exports.hasSchoolPermission = (inputPermission) => async (context) => {
 		params: { account },
 		app,
 	} = context;
-	if (!account && !account.userId) {
+	if (!account || !account.userId) {
 		throw new Forbidden('Cannot read account data');
 	}
 	try {
