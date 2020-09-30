@@ -410,6 +410,10 @@ const createMultiDocumentAggregation = ({
 	const selectSortDiff = Object.getOwnPropertyNames(sort || {}).filter((s) => !select.includes(s));
 	const aggregation = [];
 
+	if (searchQuery) {
+		stageSearch(aggregation, searchQuery);
+	}
+
 	if (match) {
 		aggregation.push({
 			$match: match,
@@ -434,10 +438,6 @@ const createMultiDocumentAggregation = ({
 
 	if (sort) {
 		stageSort(aggregation, sort);
-	}
-
-	if (searchQuery) {
-		stageSearch(aggregation, searchQuery);
 	}
 
 	// if (selectSortDiff.length !== 0) {
