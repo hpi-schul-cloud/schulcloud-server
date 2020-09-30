@@ -40,7 +40,7 @@
 				"opt-in",
 				"opt-out",
 				"enabled"
-				],
+			],
 			"description": "defines wheter external team invitation shows teachers from different schools or not. if enabled system wide there are options general enabled or opt-in/-out by user required."
 		},
 		"STUDENT_TEAM_CREATION": {
@@ -51,12 +51,12 @@
 				"opt-in",
 				"opt-out",
 				"enabled"
-				],
+			],
 			"description": "defines wheter students may create teams or not. if enabled system wide there are options general enabled or opt-in/-out by school admin required."
 		},
 		"REDIS_URI": {
 			"type": "string",
-			"pattern": "(rediss?:)?\/\/((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(\/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",	
+			"pattern": "(rediss?:)?\/\/((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(\/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
 			"description": "URL of a Redis server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
 		},
 		"PIN_MAX_AGE_SECONDS": {
@@ -261,7 +261,7 @@
 				"opt-in",
 				"opt-out",
 				"enabled"
-				],
+			],
 			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
 		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
@@ -341,7 +341,7 @@
 				"DISABLED",
 				"LEGACY",
 				"EDUSHARING"
-				],
+			],
 			"default": "DISABLED",
 			"description": "Defines the backend for the lernstore, the client just may be enabled or disabled only, if this is not disabled in the server."
 		},
