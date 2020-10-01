@@ -39,7 +39,7 @@ const addShareTokenIfCourseShareable = async (context) => {
 
 // Generate a new url for material that have merlin as source.
 // The url expires after 2 hours
-const convertMerlinUrl = async (context) => {
+/* const convertMerlinUrl = async (context) => {
 	if (
 		context.result &&
 		context.result.materialIds &&
@@ -57,7 +57,7 @@ const convertMerlinUrl = async (context) => {
 		);
 	}
 	return context;
-};
+}; */
 
 const setPosition = async (context) => {
 	const { courseId, courseGroupId } = context.data;
@@ -209,7 +209,7 @@ exports.before = () => ({
 exports.after = {
 	all: [],
 	find: [],
-	get: [convertMerlinUrl],
+	get: [], // convertMerlinUrl
 	create: [addShareTokenIfCourseShareable],
 	update: [],
 	patch: [],
