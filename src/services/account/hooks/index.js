@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const { ObjectId } = require('mongoose').Types;
 const { checkPasswordStrength } = require('../../../utils/passwordHelpers');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const constants = require('../../../utils/constants');
 
 const globalHooks = require('../../../hooks');
 
@@ -119,9 +120,18 @@ const validatePassword = (hook) => {
 const checkUnique = (hook) => {
 	const accountService = hook.service;
 	const { username, systemId } = hook.data;
+	if (!username) {
+		return Promise.resolve(hook);
+	}
 	return accountService.find({ query: { username, systemId } }).then((result) => {
 		// systemId might be null. In that case, accounts with any systemId will be returned
 		const filtered = result.filter((a) => a.systemId === systemId);
+		if (filtered.length === 1) {
+			const editsOwnAccount = equalIds(hook.id, filtered[0]._id);
+			if (editsOwnAccount) {
+				return Promise.resolve(hook);
+			}
+		}
 		if (filtered.length > 0) {
 			return Promise.reject(new BadRequest('Der Benutzername ist bereits vergeben!'));
 		}
@@ -143,14 +153,20 @@ const NotAllowed = new BadRequest('Not allowed');
 const restrictAccess = async (context) => {
 	// superhero can pass it
 	const user = (context.params.account || {}).userId;
+	let isStudent = false;
 	if (user) {
 		const { roles } = await context.app.service('users').get(user, {
 			query: {
 				$populate: { path: 'roles' },
 			},
 		});
+
 		if (roles.some((role) => role.name === 'superhero')) {
 			return context;
+		}
+
+		if (roles.some((role) => role.name === 'student')) {
+			isStudent = true;
 		}
 	}
 
@@ -160,6 +176,9 @@ const restrictAccess = async (context) => {
 		throw NotAllowed;
 	}
 	const query = {};
+	if (isStudent) {
+		query._id = context.params.account._id;
+	}
 	if (userId) {
 		if (!ObjectId.isValid(userId)) {
 			throw NotAllowed;
@@ -172,6 +191,7 @@ const restrictAccess = async (context) => {
 		}
 		query.username = username;
 	}
+
 	// @override
 	context.params.query = query;
 	return context;
@@ -260,8 +280,21 @@ const restrictToUsersSchool = async (context) => {
 	return context;
 };
 
+const validateUserName = async (context) => {
+	const accountService = context.app.service('accounts');
+	const { systemId } = context.method === 'create' ? context.data : await accountService.get(context.id);
+	if (systemId) {
+		return context;
+	}
+	if (context.data && context.data.username && !constants.expressions.email.test(context.data.username)) {
+		throw new BadRequest('Invalid username. Username should be a valid email format');
+	}
+	return context;
+};
+
 module.exports = {
 	sanitizeUsername,
+	validateUserName,
 	validateCredentials,
 	trimPassword,
 	validatePassword,

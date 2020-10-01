@@ -9,8 +9,9 @@ const cors = require('cors');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
+const { ObjectId } = require('mongoose');
 
-const { KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH } = require('../config/globals');
+const { BODYPARSER_JSON_LIMIT, METRICS_PATH, LEAD_TIME } = require('../config/globals');
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
@@ -34,6 +35,13 @@ app.disable('x-powered-by');
 const config = configuration();
 app.configure(config);
 
+if (LEAD_TIME) {
+	app.use((req, res, next) => {
+		req.leadTime = Date.now();
+		next();
+	});
+}
+
 const metricsOptions = {};
 if (METRICS_PATH) {
 	metricsOptions.metricsPath = METRICS_PATH;
@@ -43,14 +51,6 @@ app.use(apiMetrics(metricsOptions));
 setupSwagger(app);
 initializeRedisClient();
 rabbitMq.setup(app);
-
-// set custom response header for ha proxy
-if (KEEP_ALIVE) {
-	app.use((req, res, next) => {
-		res.setHeader('Connection', 'Keep-Alive');
-		next();
-	});
-}
 
 app
 	.use(compress())
@@ -74,6 +74,17 @@ app
 	.configure(rest(handleResponseType))
 	.configure(socketio())
 	.configure(requestLogger)
+	.use((req, res, next) => {
+		// pass header into hooks.params
+		// todo: To create a fake requestId on this place is a temporary solution
+		// it MUST be removed after the API gateway is established
+		const uid = ObjectId();
+		req.headers.requestId = uid.toString();
+		req.feathers.leadTime = req.leadTime;
+		req.feathers.headers = req.headers;
+		req.feathers.originalUrl = req.originalUrl;
+		next();
+	})
 	.configure(services)
 	.configure(sockets)
 	.configure(middleware)

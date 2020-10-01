@@ -33,17 +33,17 @@ describe('userPermissions', async () => {
 	};
 
 	const dataTestUser1 = {
-		username: 'testuser1',
+		username: 'testuser1@email.com',
 		...commonAccountData,
 	};
 
 	const dataTestUser2 = {
-		username: 'testuser2',
+		username: 'testuser2@email.com',
 		...commonAccountData,
 	};
 
 	const dataTestUserOther = {
-		username: 'testuserother',
+		username: 'testuserother@email.com',
 		...commonAccountData,
 	};
 
