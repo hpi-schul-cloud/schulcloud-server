@@ -72,7 +72,7 @@ class EduSharingConnector {
 	}
 
 	// gets access_token and refresh_token
-	async getAuth() {
+	getAuth() {
 		const oauthoptions = {
 			method: 'POST',
 			url: `${Configuration.get('ES_DOMAIN')}${ES_PATH.TOKEN}`,
@@ -85,13 +85,13 @@ class EduSharingConnector {
 			)}&password=${Configuration.get('ES_PASSWORD')}`,
 			timeout: REQUEST_TIMEOUT,
 		};
-		try {
-			const result = await request(oauthoptions);
-			const parsedResult = JSON.parse(result);
-			return parsedResult.access_token;
-		} catch (e) {
-			return new GeneralError('Oauth failed', e);
-		}
+		return request(oauthoptions).then((result) => {
+			if (result) {
+				const parsedResult = JSON.parse(result);
+				return Promise.resolve(parsedResult.access_token);
+			}
+			return Promise.reject(new GeneralError('Oauth failed'));
+		});
 	}
 
 	async requestRepeater(options) {
