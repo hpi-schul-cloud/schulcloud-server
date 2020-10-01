@@ -2,9 +2,8 @@ const Sentry = require('@sentry/node');
 const express = require('@feathersjs/express');
 const { Configuration } = require('@schul-cloud/commons');
 const jwt = require('jsonwebtoken');
-const { GeneralError, SilentError, PageNotFound } = require('../utils/errors');
 
-const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
+const { GeneralError, SilentError, PageNotFound, AutoLogout } = require('../utils/errors');
 const logger = require('../logger');
 
 const MAX_LEVEL_FILTER = 12;
@@ -171,8 +170,8 @@ const handleSilentError = (error, req, res, next) => {
 	}
 };
 
-const skipDoubleErrorMessage = (error, req, res, next) => {
-	if (error instanceof PageNotFound || error.code === 405) {
+const skipErrorMessage = (error, req, res, next) => {
+	if (error instanceof PageNotFound || error.code === 405 || error instanceof AutoLogout) {
 		res.status(error.code).json(saveResponseFilter(error));
 	} else {
 		next(error);
@@ -192,8 +191,8 @@ const errorHandler = (app) => {
 	app.use(filterSecrets);
 	app.use(Sentry.Handlers.errorHandler());
 	app.use(handleSilentError);
+	app.use(skipErrorMessage);
 	app.use(formatAndLogErrors);
-	app.use(skipDoubleErrorMessage);
 	app.use(returnAsJson);
 };
 
