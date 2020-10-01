@@ -73,7 +73,7 @@ const injectUserId = async (context) => {
 	const { strategy } = context.data;
 	const systemId = strategy === 'local' ? undefined : context.data.systemId;
 
-	if (strategy !== 'jwt') {
+	if (strategy !== 'jwt' && context.data.username) {
 		return context.app
 			.service('/accounts')
 			.find({
