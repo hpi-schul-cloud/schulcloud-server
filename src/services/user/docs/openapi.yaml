@@ -1023,6 +1023,18 @@ paths:
           name: searchQuery
           schema:
             type: string
+        - description: Filter for Consent status
+          in: query
+          name: consentStatus
+          style: deepObject
+          schema:
+            type: object
+        - description: Filter for creation date
+          in: query
+          name: createdAt
+          style: deepObject
+          schema:
+            type: object
       responses:
         '200':
           description: success
@@ -1204,6 +1216,18 @@ paths:
           name: searchQuery
           schema:
             type: string
+        - description: Filter for Consent status
+          in: query
+          name: consentStatus
+          style: deepObject
+          schema:
+            type: object
+        - description: Filter for creation date
+          in: query
+          name: createdAt
+          style: deepObject
+          schema:
+            type: object
       responses:
         '200':
           description: success
