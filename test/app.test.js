@@ -5,7 +5,6 @@ const { expect } = chai;
 const chaiHttp = require('chai-http');
 
 chai.use(chaiHttp);
-const logger = require('../src/logger');
 const appPromise = require('../src/app');
 
 describe('Feathers application tests', () => {
@@ -15,7 +14,6 @@ describe('Feathers application tests', () => {
 	before(async function setup() {
 		app = await appPromise;
 		server = await app.listen(0);
-		// logger.level = 'error';
 	});
 
 	after(function cleanup(done) {

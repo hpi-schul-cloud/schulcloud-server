@@ -1,7 +1,6 @@
 const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-const { OpenApiValidator } = require('express-openapi-validator');
 
 const { userModel, registrationPinModel } = require('./model');
 const registrationPinsHooks = require('./hooks/registrationPins');
@@ -23,15 +22,6 @@ const {
 } = require('./services');
 
 module.exports = (app) => {
-	/* new OpenApiValidator({
-		apiSpec: path.join(__dirname, '/docs/openapi.yaml'),
-		// ignorePaths: /.*\/pets$/
-		// validateResponses: true, // <-- to validate responses
-		// unknownFormats: ['my-format'] // <-- to provide custom formats
-	}).installSync(app); */
-
-	app.use('/users/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
-
 	app.use('usersModel', UsersModelService.userModelService);
 	app.service('usersModel').hooks(UsersModelService.userModelHooks);
 
@@ -114,4 +104,6 @@ module.exports = (app) => {
 	app.service('/users/skipregistration').hooks(skipRegistrationBulkHooks);
 
 	app.use('/registrationSchool', new RegistrationSchoolService());
+
+	app.use('/users/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 };

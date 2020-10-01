@@ -9,7 +9,6 @@ const cors = require('cors');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
-const { OpenApiValidator } = require('express-openapi-validator');
 const { ObjectId } = require('mongoose').Types;
 
 const { KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH } = require('../config/globals');
@@ -67,13 +66,7 @@ const setupApp = async () => {
 		.use(bodyParser.urlencoded({ extended: true }))
 		.use(bodyParser.raw({ type: () => true, limit: '10mb' }));
 
-	/* await new OpenApiValidator({
-		apiSpec: './src/services/user/docs/openapi.yaml',
-		// ignorePaths: /.*\/pets$/
-		// validateResponses: true, // <-- to validate responses
-		// unknownFormats: ['my-format'] // <-- to provide custom formats
-	}).install(app); */
-	await Promise.resolve();
+	await Promise.resolve(); // placeholder for initializing API validation
 
 	app
 		.use(versionService)
