@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-## Unreleased
+## [Unreleased]
 
-### Added - Unreleased
+### Added
 
 - SC-6830 - Added hook to parse request to arrays when > 20 users are requested in adminUsers service
 
@@ -19,50 +19,54 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6743 - Removed usersForConsent related things in adminUsers service because the client does not send that parameter anymore
 - SC-6506 - Remove dependecy to feathers-swagger in routes.test.js
 
-### Changed - Unreleased
+### Changed
 
+- Update commons to 1.2.7: print configuration on startup, introduce hierarchical configuration file setup
 - SC-6774 remove no-await-in-loop from eslint exceptions
 - Rename statistic mails route, secure it over sync api key now
 - SC-6809 - Maintain RabbitMQ connection and channels
 - SC-5230 - Unblock Account-Page in Nuxt (securing /accounts and /users routes)
 
-### Security - Unreleased
+### Security
 
 - Added hotfix merges
 
+<<<<<<< HEAD
 ## [25.0.5] - 2020-10-01
 
 ### Added
 
 - SC-6973 - add time window for pin creation
 
+=======
+>>>>>>> e132a8d93e52285aa98b3fa0f693923ac69d95fe
 ## [25.0.4] - 2020-09-30
 
 ### Added
 
 - Added lead time detection
 
-## 25.0.3
+## [25.0.3]
 
-### Added - 25.0.3
+### Added
 
 - SC-6942 - add parse method to TSP strategy to declare it can handle the request and to keep authentication params clean
 
-### Fixed - 25.0.3
+### Fixed
 
 - SC-6942 - don't override payload defined by authentication method
 - SC-6942 - don't search for account to populate if no username is given in `injectUsername`
 
 
-## 25.0.2
+## [25.0.2]
 
-### Changed - 25.0.2
+### Changed
 
 - send mail for registration pin after add pin to db
 
-## 25.0.1
+## [25.0.1]
 
-### Fixed - 25.0.1
+### Fixed
 
 - SC-6696 - Fixed query used to determine course membership when checking permissions for course group lessons
 
@@ -80,6 +84,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [24.5.0] - 2020-09-14
 
+- SC-6674 Added checks to ensure unique emails
 - Ignore database seed data with prettier, eslint, and codacy
 - SC-6640 - Fixed email check within registration (case insensitive)
 
