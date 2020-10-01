@@ -9,9 +9,6 @@ class MerlinTokenGenerator {
 		this.username = Configuration.get('ES_MERLIN_USERNAME');
 		this.password = Configuration.get('ES_MERLIN_PW');
 		MerlinTokenGenerator.instance = this;
-		if (!this.username || !this.password) {
-			throw Error(`Missing env variables: \n ES_MERLIN_USERNAME:${this.username} \n ES_MERLIN_PW: ${this.password}`);
-		}
 	}
 
 	async FIND(data) {
