@@ -1,14 +1,9 @@
-/* const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@schul-cloud/commons');
 const request = require('request-promise-native');
 
 class MerlinTokenGenerator {
-	constructor() {
-		if (MerlinTokenGenerator.instance) {
-			return MerlinTokenGenerator.instance;
-		}
-		this.username = Configuration.get('ES_MERLIN_USERNAME');
-		this.password = Configuration.get('ES_MERLIN_PW');
-		MerlinTokenGenerator.instance = this;
+    setup(app) {
+		this.app = app;
 	}
 
 	async FIND(data) {
@@ -25,8 +20,8 @@ class MerlinTokenGenerator {
 				'Content-Type': 'application/x-www-form-urlencoded',
 			},
 			form: {
-				username: this.username,
-				password: this.password,
+				username: Configuration.get('ES_MERLIN_USERNAME'),
+				password: Configuration.get('ES_MERLIN_PW'),
 			},
 		};
 		try {
@@ -36,14 +31,6 @@ class MerlinTokenGenerator {
 			throw Error(`Failed to obtain merlin url. Error: ${e}`);
 		}
 	}
-
-	static get Instance() {
-		if (!MerlinTokenGenerator.instance) {
-			return new MerlinTokenGenerator();
-		}
-		return MerlinTokenGenerator.instance;
-	}
 }
 
-module.exports = MerlinTokenGenerator.Instance;
- */
+module.exports = MerlinTokenGenerator;
