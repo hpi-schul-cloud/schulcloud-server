@@ -81,11 +81,6 @@
 			"default": false,
 			"description": "JWTs that are not in the whitelist are added to it, instead of invalidated. To be used for the first 2 hours after release."
 		},
-		"SC_TIME_ZONE": {
-			"type": "string",
-			"default": "CEST",
-			"description": "default time zone of theme"
-		},
 		"TSP_API_BASE_URL": {
 			"type": "string",
 			"default": "https://www.schulportal-thueringen.de",
