@@ -129,7 +129,6 @@ const insertUserToDB = async (app, data, user) => {
 };
 
 const registerUser = function register(data, params, app) {
-	let parent = null;
 	let user = null;
 	let oldUser = null;
 	let account = null;
@@ -297,7 +296,6 @@ const registerUser = function register(data, params, app) {
 		.then(() =>
 			Promise.resolve({
 				user,
-				parent,
 				account,
 				consent,
 			})
@@ -316,9 +314,6 @@ const registerUser = function register(data, params, app) {
 							return Promise.resolve();
 						})
 				);
-			}
-			if (parent && parent._id) {
-				rollbackPromises.push(userModel.userModel.findOneAndRemove({ _id: parent._id }).exec());
 			}
 			if (account && account._id) {
 				rollbackPromises.push(accountModel.findOneAndRemove({ _id: account._id }).exec());

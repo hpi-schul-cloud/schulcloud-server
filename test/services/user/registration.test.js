@@ -90,7 +90,6 @@ describe('registration service', () => {
 				expect(response.account).to.have.property('_id');
 				expect(response.consent).to.have.property('_id');
 				expect(response.consent).to.have.property('userConsent');
-				expect(response.parent).to.equal(null);
 			});
 	});
 
@@ -130,9 +129,7 @@ describe('registration service', () => {
 				expect(response.user).to.have.property('_id');
 				expect(response.consent).to.have.property('_id');
 				expect(response.consent.parentConsents.length).to.be.at.least(1);
-				expect(response.parent).to.have.property('_id');
-				expect(response.user.parents[0].toString()).to.equal(response.parent._id.toString());
-				expect(response.parent.children[0].toString()).to.include(response.user._id.toString());
+				expect(response.user.parents[0]).to.not.be.null;
 				expect(response.account).to.have.property('_id');
 			});
 	});
@@ -315,7 +312,6 @@ describe('registration service', () => {
 					expect(response.account).to.have.property('_id');
 					expect(response.consent).to.have.property('_id');
 					expect(response.consent).to.have.property('userConsent');
-					expect(response.parent).to.equal(null);
 				});
 			});
 	});
@@ -401,7 +397,6 @@ describe('registration service', () => {
 					expect(response.account).to.have.property('_id');
 					expect(response.consent).to.have.property('_id');
 					expect(response.consent).to.have.property('userConsent');
-					expect(response.parent).to.equal(null);
 				});
 			});
 	});
