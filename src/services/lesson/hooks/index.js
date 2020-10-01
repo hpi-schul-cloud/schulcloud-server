@@ -146,7 +146,7 @@ const populateWhitelist = {
 		'title',
 		'client',
 		'url',
-		'merlinReference',
+		// 'merlinReference',
 		'license',
 		'description',
 		'contentType',
