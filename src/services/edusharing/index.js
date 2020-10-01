@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
