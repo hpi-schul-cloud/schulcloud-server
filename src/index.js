@@ -9,3 +9,7 @@ appPromise.then((app) => {
 		logger.log('info', `Schul-Cloud application started on http://${app.get('host')}:${port}`);
 	});
 });
+
+appPromise.catch((err) => {
+	logger.error('server startup failed', err);
+});

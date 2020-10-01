@@ -1,5 +1,4 @@
 const chai = require('chai');
-const { expect } = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
 const { FileModel } = require('../../../../src/services/fileStorage/model');
@@ -18,6 +17,7 @@ const {
 
 const fixtures = require('../fixtures');
 
+const { expect } = chai;
 chai.use(chaiAsPromised);
 
 describe('filePermissionHelper', () => {

@@ -26,20 +26,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Rename statistic mails route, secure it over sync api key now
 - SC-6809 - Maintain RabbitMQ connection and channels
 - SC-5230 - Unblock Account-Page in Nuxt (securing /accounts and /users routes)
+- Support asynchronous calls during server startup
 
 ### Security
 
 - Added hotfix merges
 
-<<<<<<< HEAD
 ## [25.0.5] - 2020-10-01
 
 ### Added
 
 - SC-6973 - add time window for pin creation
 
-=======
->>>>>>> e132a8d93e52285aa98b3fa0f693923ac69d95fe
 ## [25.0.4] - 2020-09-30
 
 ### Added
