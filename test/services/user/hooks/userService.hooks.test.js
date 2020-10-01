@@ -3,7 +3,7 @@ const assert = require('assert');
 
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
-const { enforceRoleHierarchyOnCreate } = require('../../../../src/services/user/hooks/userService');
+const { enforceRoleHierarchyOnCreate, checkUniqueEmail } = require('../../../../src/services/user/hooks/userService');
 
 const {
 	removeStudentFromCourses,
@@ -22,6 +22,10 @@ describe('removeStudentFromCourses', () => {
 
 	after((done) => {
 		server.close(done);
+	});
+
+	afterEach(async () => {
+		await testObjects.cleanup();
 	});
 
 	it('removes single student from all his courses', async () => {
@@ -373,6 +377,91 @@ describe('enforceRoleHierarchyOnCreate', () => {
 		const context = createContext([], ['STUDENT_CREATE'], ['student', 'parent']);
 		try {
 			await enforceRoleHierarchyOnCreate(context);
+		} catch (error) {
+			assert.fail(`expected promise resolved, but error was '${error.message}'`);
+		}
+	});
+});
+
+describe('checkUniqueEmail', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
+	afterEach(async () => {
+		await testObjects.cleanup();
+	});
+
+	const currentTs = Date.now();
+	const currentEmail = `current.${currentTs}@account.de`;
+	const updatedEmail = `Current.${currentTs}@Account.DE`;
+	const changedEmail = `Changed.${currentTs}@Account.DE`;
+	const mockUser = {
+		firstName: 'Test',
+		lastName: 'Testington',
+		schoolId: '5f2987e020834114b8efd6f8',
+	};
+
+	it('fails because of duplicate email', async () => {
+		const expectedErrorMessage = `Die E-Mail Adresse ist bereits in Verwendung!`;
+
+		await testObjects.createTestUser({ email: currentEmail });
+
+		const context = {
+			app,
+			data: {
+				...mockUser,
+				email: updatedEmail,
+			},
+		};
+
+		try {
+			await checkUniqueEmail(context);
+			assert.fail('should have failed');
+		} catch (error) {
+			expect(error.message).to.equal(expectedErrorMessage);
+			expect(error.code).to.equal(400);
+		}
+	});
+
+	it('succeeds because of unique email', async () => {
+		await testObjects.createTestUser({ email: currentEmail });
+
+		const context = {
+			app,
+			data: {
+				...mockUser,
+				email: changedEmail,
+			},
+		};
+
+		try {
+			await checkUniqueEmail(context);
+		} catch (error) {
+			assert.fail(`expected promise resolved, but error was '${error.message}'`);
+		}
+	});
+
+	it('succeeds because nothing to do (no email)', async () => {
+		await testObjects.createTestUser({ email: currentEmail });
+
+		const context = {
+			app,
+			data: {
+				...mockUser,
+			},
+		};
+
+		try {
+			await checkUniqueEmail(context);
 		} catch (error) {
 			assert.fail(`expected promise resolved, but error was '${error.message}'`);
 		}
