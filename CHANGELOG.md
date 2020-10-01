@@ -21,6 +21,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- Update commons to 1.2.7: print configuration on startup, introduce hierarchical configuration file setup
 - SC-6774 remove no-await-in-loop from eslint exceptions
 - Rename statistic mails route, secure it over sync api key now
 - SC-6809 - Maintain RabbitMQ connection and channels
