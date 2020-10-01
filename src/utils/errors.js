@@ -60,6 +60,13 @@ class NotAuthenticated extends featherErrors.NotAuthenticated {
 	}
 }
 
+class AutoLogout extends featherErrors.NotAuthenticated {
+	constructor(message, additional, ...params) {
+		super(message, additional, ...params);
+		prepare(this, message, additional, params, 'auto-logout');
+	}
+}
+
 class PaymentError extends featherErrors.PaymentError {
 	constructor(message, additional, ...params) {
 		super(message, additional, ...params);
@@ -99,6 +106,13 @@ class Timeout extends featherErrors.Timeout {
 	constructor(message, additional, ...params) {
 		super(message, additional, ...params);
 		prepare(this, message, additional, params, 'timeout');
+	}
+}
+
+class SlowQuery extends featherErrors.Timeout {
+	constructor(message, additional, ...params) {
+		super(message, additional, ...params);
+		prepare(this, message, additional, params, 'slow-query');
 	}
 }
 
@@ -190,12 +204,14 @@ class SilentError extends ApplicationError {
 module.exports = {
 	BadRequest,
 	NotAuthenticated,
+	AutoLogout,
 	PaymentError,
 	Forbidden,
 	NotFound,
 	MethodNotAllowed,
 	NotAcceptable,
 	Timeout,
+	SlowQuery,
 	Conflict,
 	LengthRequired,
 	Unprocessable,

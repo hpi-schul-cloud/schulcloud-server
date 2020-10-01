@@ -4,7 +4,7 @@ const { Configuration } = require('@schul-cloud/commons');
 const logger = require('./logger');
 const {
 	sanitizeHtml: { sanitizeDeep },
-	errors: { GeneralError, NotAuthenticated },
+	errors: { GeneralError, AutoLogout, SlowQuery },
 } = require('./utils');
 const { getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData } = require('./utils/redis');
 const { LEAD_TIME } = require('../config/globals');
@@ -88,7 +88,7 @@ const handleAutoLogout = async (context) => {
 				return context;
 			}
 			// ------------------------------------------------------------------------
-			throw new NotAuthenticated('Session was expired due to inactivity - autologout.');
+			throw new AutoLogout('Session was expired due to inactivity - autologout.');
 		}
 	}
 	return context;
@@ -111,7 +111,6 @@ const leadTimeDetection = (context) => {
 	if (context.params.leadTime) {
 		const timeDelta = Date.now() - context.params.leadTime;
 		if (timeDelta >= LEAD_TIME) {
-			// TODO: can replaced if we throw an error slow Query after merging new error pipline
 			const {
 				path,
 				id,
@@ -119,10 +118,7 @@ const leadTimeDetection = (context) => {
 				params: { query, headers, originalUrl },
 			} = context;
 
-			const error = {
-				name: 'SlowQuery',
-				message: `Slow query warning at route ${context.path}`,
-				code: 408,
+			const info = {
 				path,
 				method,
 				query,
@@ -131,14 +127,14 @@ const leadTimeDetection = (context) => {
 			};
 
 			if (id) {
-				error.id = id;
+				info.id = id;
 			}
 
 			if (headers) {
-				//	error.connection = headers.connection;
-				error.requestId = headers.requestId;
+				info.connection = headers.connection;
+				info.requestId = headers.requestId;
 			}
-			logger.error(error);
+			logger.error(new SlowQuery(`Slow query warning at route ${context.path}`, info));
 		}
 	}
 };
