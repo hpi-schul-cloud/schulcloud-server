@@ -8,16 +8,18 @@ chai.use(chaiHttp);
 const logger = require('../src/logger');
 const appPromise = require('../src/app');
 
-describe('Feathers application tests', async () => {
-	const app = await appPromise;
-	before(function setup(done) {
-		this.server = app.listen(3031);
-		logger.level = 'error';
-		this.server.once('listening', () => done());
+describe('Feathers application tests', () => {
+	let app;
+	let server;
+
+	before(async function setup() {
+		app = await appPromise;
+		server = await app.listen(0);
+		// logger.level = 'error';
 	});
 
 	after(function cleanup(done) {
-		this.server.close(done);
+		server.close(done);
 	});
 
 	it('starts and shows the index page', () =>

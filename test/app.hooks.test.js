@@ -360,12 +360,13 @@ describe('Sanitization Hook', () => {
 	});
 });
 
-describe('removeObjectIdInData hook', async () => {
+describe('removeObjectIdInData hook', () => {
 	let server;
 	let user;
-	const app = await appPromise;
+	let app;
 
 	before(async () => {
+		app = await appPromise;
 		server = await app.listen(0);
 		user = await createTestUser();
 	});

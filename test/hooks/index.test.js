@@ -5,8 +5,13 @@ const { lookupSchool } = require('../../src/hooks');
 const appPromise = require('../../src/app');
 const { createTestUser, cleanup } = require('../services/helpers/testObjects')(appPromise);
 
-describe('#lookupSchool', async () => {
-	const app = await appPromise;
+describe('#lookupSchool', () => {
+	let app;
+
+	before(async () => {
+		app = await appPromise;
+	});
+
 	it('should require authentication to provide a user', async () => {
 		try {
 			await lookupSchool({});
