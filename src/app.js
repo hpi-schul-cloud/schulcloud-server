@@ -52,14 +52,6 @@ setupSwagger(app);
 initializeRedisClient();
 rabbitMq.setup(app);
 
-// set custom response header for ha proxy
-if (KEEP_ALIVE) {
-	app.use((req, res, next) => {
-		res.setHeader('Connection', 'Keep-Alive');
-		next();
-	});
-}
-
 app
 	.use(compress())
 	.options('*', cors())
