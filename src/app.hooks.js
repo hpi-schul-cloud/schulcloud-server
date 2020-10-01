@@ -6,7 +6,7 @@ const {
 	sanitizeHtml: { sanitizeDeep },
 } = require('./utils');
 const { getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData } = require('./utils/redis');
-
+const { checkContext } = require('./utils/requestContext');
 const sanitizeDataHook = (context) => {
 	if ((context.data || context.result) && context.path && context.path !== 'authentication') {
 		sanitizeDeep(context.type === 'before' ? context.data : context.result, context.path, 0, context.safeAttributes);
@@ -123,7 +123,7 @@ const errorHandler = (context) => {
 
 function setupAppHooks(app) {
 	const before = {
-		all: [iff(isProvider('external'), handleAutoLogout)],
+		all: [checkContext('globalBeforeHook'), iff(isProvider('external'), handleAutoLogout)],
 		find: [],
 		get: [],
 		create: [iff(isProvider('external'), [sanitizeDataHook, removeObjectIdInData])],

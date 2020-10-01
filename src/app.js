@@ -11,8 +11,7 @@ const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
-var createNamespace = require('continuation-local-storage').createNamespace;
-var context = createNamespace('request_context');
+const { requestContext } = require('./utils/requestContext');
 
 const { KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH } = require('../config/globals');
 
@@ -33,6 +32,8 @@ const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
 
 const app = express(feathers());
+app.configure(requestContext);
+
 app.disable('x-powered-by');
 
 const config = configuration();

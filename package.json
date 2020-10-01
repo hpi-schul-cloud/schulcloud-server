@@ -58,8 +58,8 @@
 		"body-parser": "^1.15.2",
 		"chalk": "^4.0.0",
 		"client-oauth2": "^4.2.5",
+		"cls-hooked": "^4.2.2",
 		"compression": "^1.6.2",
-		"continuation-local-storage": "^3.2.1",
 		"cors": "^2.8.1",
 		"cross-env": "^7.0.0",
 		"crypto-js": "^4.0.0",
@@ -87,7 +87,6 @@
 		"mongoose-lean-virtuals": "^0.6.2",
 		"mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
 		"moodle-client": "^0.5.2",
-		"nanoid": "^2.0.3",
 		"oauth-1.0a": "^2.2.6",
 		"papaparse": "^5.1.1",
 		"prom-client": "^11.5.3",
@@ -99,6 +98,7 @@
 		"rss-parser": "^3.6.2",
 		"sanitize-html": "^1.18.2",
 		"serve-favicon": "^2.3.2",
+		"shortid": "^2.2.15",
 		"socketio-file-upload": "^0.7.0",
 		"strip-bom": "^4.0.0",
 		"universal-analytics": "^0.4.17",
@@ -109,6 +109,7 @@
 		"xml2js-es6-promise": "^1.1.1"
 	},
 	"devDependencies": {
+		"benchmark": "^2.1.4",
 		"chai": "^4.2.0",
 		"chai-as-promised": "^7.1.1",
 		"chai-http": "^4.2.0",
