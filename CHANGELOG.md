@@ -22,6 +22,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-6567 - clean up error pipline 
 - Update commons to 1.2.7: print configuration on startup, introduce hierarchical configuration file setup
 - SC-6774 remove no-await-in-loop from eslint exceptions
 - Rename statistic mails route, secure it over sync api key now
@@ -85,7 +86,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed - 25.0.0
 
-- SC-6567 - clean up error pipline 
 - Extend JWT payload by schoolId and roleIds
 
 ## [24.5.1] - 2020-09-16

@@ -9,7 +9,7 @@ const cors = require('cors');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
-const { ObjectId } = require('mongoose');
+const { ObjectId } = require('mongoose').Types;
 
 const { BODYPARSER_JSON_LIMIT, METRICS_PATH, LEAD_TIME } = require('../config/globals');
 
