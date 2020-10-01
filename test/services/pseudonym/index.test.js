@@ -44,7 +44,7 @@ describe('pseudonym service', function pseudonymTest() {
 
 	before(async () => {
 		app = await appPromise;
-		server = await app.listen();
+		server = await app.listen(0);
 		pseudonymService = app.service('pseudonym');
 		toolService = app.service('ltiTools');
 
