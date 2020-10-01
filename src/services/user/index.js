@@ -1,3 +1,4 @@
+const hooks = require('feathers-hooks-common');
 const service = require('feathers-mongoose');
 const { userModel, registrationPinModel } = require('./model');
 const registrationPinsHooks = require('./hooks/registrationPins');
@@ -45,6 +46,23 @@ module.exports = (app) => {
 	publicTeachersService.hooks(publicTeachersHooks);
 
 	/* registrationPin Service */
+	app.use(
+		'/registrationPinsModel',
+		service({
+			Model: registrationPinModel,
+			paginate: {
+				default: 500,
+				max: 5000,
+			},
+			lean: true,
+		})
+	);
+	const registrationPinModelService = app.service('/registrationPinsModel');
+	registrationPinModelService.hooks({
+		before: { all: hooks.disallow('external') },
+		after: {},
+	});
+
 	app.use(
 		'/registrationPins',
 		service({
