@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.0.6] - 2020-10-01
+
+### Added
+
+- OPS-1316 - add indexes for slow files and submission queries
+
 ## [25.0.5] - 2020-10-01
 
 ### Added
