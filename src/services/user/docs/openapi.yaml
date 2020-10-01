@@ -45,10 +45,87 @@ components:
       description: TODO
     firstLogin:
       description: TODO
+    userAdminBase:
+      description: Data Transfer Object containing userdata
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: 'email'
+        birthday:
+          type: string
+          format: 'date'
+        roles:
+          type: array
+          items:
+            type: string
+        schoolId:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        sendRegistration:
+          type: boolean
+        generateRegistrationLink:
+          type: boolean
+    userAdmin:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/userAdminBase'
+        - required:
+          - firstName
+          - lastName
+          - email
     admin:
-      description: TODO
+      description: Data Transfer Object containing userdata
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: 'email'
+        birthday:
+          type: string
+          format: 'date'
+        roles:
+          type: array
+          items:
+            type: string
+        schoolId:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        sendRegistration:
+          type: boolean
+        generateRegistrationLink:
+          type: boolean
     admin_list:
       description: TODO
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/userAdmin'
+        total:
+          type: integer
+        limit:
+          type: integer
+        skip:
+          type: integer
+
     mail:
       description: TODO
     qrRegistrationLink:
@@ -134,7 +211,7 @@ paths:
           name: _id
           description: ID of usersModel to return
           schema:
-            type: integer
+            type: string
           required: true
       responses:
         '200':
@@ -943,11 +1020,9 @@ paths:
             type: object
         - description: Query parameters to filter
           in: query
-          name: filter
-          style: form
-          explode: true
+          name: searchQuery
           schema:
-            $ref: '#/components/schemas/admin'
+            type: string
       responses:
         '200':
           description: success
@@ -972,7 +1047,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '500':
@@ -987,7 +1062,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/admin'
+              $ref: '#/components/schemas/userAdmin'
   '/users/admin/students/{id}':
     get:
       parameters:
@@ -1003,7 +1078,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '404':
@@ -1029,7 +1104,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '404':
@@ -1046,7 +1121,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/admin'
+              $ref: '#/components/schemas/userAdmin'
     patch:
       parameters:
         - in: path
@@ -1061,7 +1136,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '404':
@@ -1078,7 +1153,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/admin'
+              $ref: '#/components/schemas/userAdminBase'
     delete:
       parameters:
         - in: path
@@ -1093,7 +1168,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '404':
@@ -1126,11 +1201,9 @@ paths:
             type: object
         - description: Query parameters to filter
           in: query
-          name: filter
-          style: form
-          explode: true
+          name: searchQuery
           schema:
-            $ref: '#/components/schemas/admin'
+            type: string
       responses:
         '200':
           description: success
@@ -1155,7 +1228,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '500':
@@ -1170,7 +1243,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/admin'
+              $ref: '#/components/schemas/userAdmin'
   '/users/admin/teachers/{id}':
     get:
       parameters:
@@ -1186,7 +1259,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '404':
@@ -1212,7 +1285,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '404':
@@ -1229,7 +1302,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/admin'
+              $ref: '#/components/schemas/userAdmin'
     patch:
       parameters:
         - in: path
@@ -1244,7 +1317,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '404':
@@ -1261,7 +1334,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/admin'
+              $ref: '#/components/schemas/userAdminBase'
     delete:
       parameters:
         - in: path
@@ -1276,7 +1349,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '404':
