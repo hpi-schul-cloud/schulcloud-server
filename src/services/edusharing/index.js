@@ -19,7 +19,8 @@ class EduSearch {
 
 class MerlinToken {
 	find(data) {
-		return MerlinTokenGenerator.FIND(data);
+		return 'MerlinToken Find';
+		// return MerlinTokenGenerator.FIND(data);
 	}
 }
 

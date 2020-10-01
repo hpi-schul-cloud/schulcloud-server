@@ -16,10 +16,6 @@ const ES_PATH = {
 	TOKEN: '/edu-sharing/oauth2/token',
 };
 
-// file deepcode ignore StaticAccessThis: <Deepcode confuses values and methods>
-// file deepcode ignore PromiseNotCaughtNode: <Catch exists on line 90>
-// file deepcode ignore AttrAccessOnNull: <Accessing attr nodes on line 248>
-
 let lastCookieRenewalTime = null;
 
 class EduSharingConnector {

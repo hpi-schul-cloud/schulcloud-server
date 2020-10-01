@@ -1,4 +1,4 @@
-const { Configuration } = require('@schul-cloud/commons');
+/* const { Configuration } = require('@schul-cloud/commons');
 const request = require('request-promise-native');
 
 class MerlinTokenGenerator {
@@ -48,4 +48,4 @@ class MerlinTokenGenerator {
 	}
 }
 
-module.exports = MerlinTokenGenerator.Instance;
+module.exports = MerlinTokenGenerator.Instance; */
