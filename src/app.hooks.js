@@ -100,7 +100,8 @@ const handleAutoLogout = async (context) => {
  */
 const errorHandler = (context) => {
 	if (context.error) {
-		context.error.code = context.error.code || context.error.statusCode || 500;
+		// in test it log too much
+		delete context.error.hook;
 	}
 	return context;
 };
