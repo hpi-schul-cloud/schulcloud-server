@@ -7,7 +7,7 @@ const removeManyProviders = (ids) =>
 		.lean()
 		.exec();
 
-const createTestProvider = (app) => ({
+const createTestProvider = (appPromise) => async ({
 	// required fields for base group
 	type = 'S3',
 	isShared = true,
@@ -17,24 +17,22 @@ const createTestProvider = (app) => ({
 	region = 'eu-de',
 	maxBuckets = 200,
 	freeBuckets = 200,
-} = {}) =>
-	app
-		.service('storageProvider')
-		.create({
-			// required fields for user
-			type,
-			isShared,
-			accessKeyId,
-			secretAccessKey,
-			endpointUrl,
-			region,
-			maxBuckets,
-			freeBuckets,
-		})
-		.then((provider) => {
-			createdProviderIds.push(provider._id.toString());
-			return provider;
-		});
+} = {}) => {
+	const app = await appPromise;
+	const provider = await app.service('storageProvider').create({
+		// required fields for user
+		type,
+		isShared,
+		accessKeyId,
+		secretAccessKey,
+		endpointUrl,
+		region,
+		maxBuckets,
+		freeBuckets,
+	});
+	createdProviderIds.push(provider._id.toString());
+	return provider;
+};
 
 const cleanup = () => {
 	if (createdProviderIds.length === 0) {

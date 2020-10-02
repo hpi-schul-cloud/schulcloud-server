@@ -3,15 +3,22 @@ const { ObjectId } = require('mongoose').Types;
 const sleep = require('util').promisify(setTimeout);
 const { NotAuthenticated, BadRequest, Forbidden } = require('@feathersjs/errors');
 
-const app = require('../../../src/app');
-const { cleanup, createTestUser, createTestRole, createTestSchool } = require('../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const appPromise = require('../../../src/app');
+const { cleanup, createTestUser, createTestRole, createTestSchool } = require('../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
 const teamHelper = require('../helpers/services/teams');
 const { newsModel: News, newsHistoryModel: NewsHistory } = require('../../../src/services/news/model');
 
-const newsService = app.service('news');
 
 describe('news service', () => {
+	let app;
+	let newsService;
+
+	before(async () => {
+		app = await appPromise;
+		newsService = app.service('news');
+	});
+
 	it('registers correctly', () => {
 		expect(app.service('news')).to.not.equal(undefined);
 	});

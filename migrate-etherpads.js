@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const arg = require('arg');
 
-const app = require('./src/app');
+const appPromise = require('./src/app');
 const { Configuration } = require('@schul-cloud/commons');
 const etherpadClient = require('./src/services/etherpad/utils/EtherpadClient.js');
 const { randomBytes } = require('crypto');
@@ -130,6 +130,7 @@ function chunkArray(myArray, chunk_size){
  * MAIN
  ****************************************** */
 const run = async (oldPadDomain) => {
+	const app = await appPromise;
 	let searchRegex = new RegExp(`https://${oldPadDomain.replace(/\./g, '\\.')}.*`);
 
 	const lessonsService = app.service('/lessons');
