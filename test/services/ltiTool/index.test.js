@@ -22,7 +22,7 @@ describe('ltiTool service', () => {
 		app = await appPromise;
 		ltiToolService = app.service('ltiTools');
 		this.timeout(10000);
-		await ltiToolService.create(testTool)
+		await ltiToolService.create(testTool);
 	});
 
 	after((done) => {

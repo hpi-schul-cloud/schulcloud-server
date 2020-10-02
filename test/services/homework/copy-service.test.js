@@ -15,12 +15,12 @@ describe('homework copy service', () => {
 		app = await appPromise;
 		homeworkCopyService = app.service('homework/copy');
 		server = await app.listen(0);
-	})
+	});
 
 	after(async () => {
 		await homeworkModel.deleteMany({ id: { $in: homeworkIdsToDelete } });
 		await testObjects.cleanup();
-		await server.close()
+		await server.close();
 	});
 
 	it('internal call can copy a homework via POST', async () => {

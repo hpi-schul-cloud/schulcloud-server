@@ -17,7 +17,7 @@ describe('news service', () => {
 	before(async () => {
 		app = await appPromise;
 		newsService = app.service('news');
-	})
+	});
 
 	it('registers correctly', () => {
 		expect(app.service('news')).to.not.equal(undefined);

@@ -42,7 +42,6 @@ describe('material service', () => {
 		let materialA;
 		let materialB;
 
-		
 		before((done) => {
 			server = app.listen(0, done);
 		});
