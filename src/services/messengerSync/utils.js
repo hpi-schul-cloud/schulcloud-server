@@ -106,28 +106,30 @@ const getRoles = async () => {
 	return roles;
 };
 
-/* {
-	method: 'adduser',
-    school:{
-		id: 1223435,
-		has_allhands_channel : true,
-		name: "Peanuts High"
-    },
-    user: {
-        id: 1234566@matrix.schul-cloud.org,
-        name: "Joe Cool"",
-		is_school_admin: true,
-		is_school_teacher: true,
-    },
-    room: {
-		id: 1234566,
-		name: 'Mathe 6b',
-		description: 'Kurs',
-		type: 'course',
-		is_moderator: false,
-		bidirectional: true
+/*
+{
+  "method": "adduser",
+  "welcome": {
+    "text": "Welcome to messenger"
+  },
+  "user": {
+    "id": "@sso_0000d224816abba584714c9c:matrix.server.com",
+    "name": "Marla Mathe",
+    "email": "(optional)",
+    "password": "(optional)"
+  },
+  "rooms": [
+    {
+      "type": "(optional, default: room)",
+      "id": "0000dcfbfb5c7a3f00bf21ab",
+      "name": "Mathe",
+      "description": "Kurs",
+      "bidirectional": false,
+      "is_moderator": false
     }
-} */
+  ]
+}
+*/
 
 const buildCourseObject = (course, userId) => ({
 	id: course._id.toString(),
@@ -162,6 +164,12 @@ const buildMessageObject = async (data) => {
 	const user = data.user || (await getUserData(data.userId));
 	const school = data.school || (await getSchoolData(user.schoolId));
 	const moderatorRoles = await getRoles();
+	const schoolRoomEnabled = (school.features || []).includes(SCHOOL_FEATURES.MESSENGER_SCHOOL_ROOM);
+	const teachersRoomEnabled = true;
+	const isTeacher = user.roles.some((roleId) => ObjectId.equal(roleId, moderatorRoles.teacherRoleId));
+	const isAdmin = user.roles.some((roleId) => ObjectId.equal(roleId, moderatorRoles.adminRoleId));
+	const isTeacheOrAdmin = isTeacher || isAdmin;
+
 	const rooms = [];
 	if (data.courses) {
 		data.courses.forEach((course) => {
@@ -176,21 +184,34 @@ const buildMessageObject = async (data) => {
 			})
 		);
 	}
+	if (schoolRoomEnabled) {
+		rooms.push({
+			type: 'news',
+			id: school._id.toString(),
+			name: 'Ankündigungen',
+			description: school.name,
+			bidirectional: false,
+			is_moderator: isTeacheOrAdmin,
+		});
+	}
+	if (teachersRoomEnabled && isTeacheOrAdmin) {
+		rooms.push({
+			type: 'teachers',
+			id: school._id.toString(),
+			name: 'Lehrerzimmer',
+			description: school.name,
+			bidirectional: true,
+			is_moderator: isAdmin,
+		});
+	}
+
 	const servername = Configuration.get('MATRIX_SERVERNAME');
 
 	return {
 		method: 'adduser',
-		school: {
-			id: school._id.toString(),
-			has_allhands_channel: (school.features || []).includes(SCHOOL_FEATURES.MESSENGER_SCHOOL_ROOM),
-			name: school.name,
-		},
 		user: {
 			id: `@sso_${user._id.toString()}:${servername}`,
 			name: displayName(user),
-			email: user.email,
-			is_school_admin: user.roles.some((roleId) => ObjectId.equal(roleId, moderatorRoles.adminRoleId)),
-			is_school_teacher: user.roles.some((roleId) => ObjectId.equal(roleId, moderatorRoles.teacherRoleId)),
 		},
 		rooms,
 	};
