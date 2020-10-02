@@ -3,7 +3,7 @@ const express = require('@feathersjs/express');
 const { Configuration } = require('@schul-cloud/commons');
 const jwt = require('jsonwebtoken');
 
-const { GeneralError, SilentError, PageNotFound, AutoLogout } = require('../utils/errors');
+const { GeneralError, SilentError, PageNotFound, AutoLogout, BruteForcePrevention } = require('../utils/errors');
 const logger = require('../logger');
 
 const MAX_LEVEL_FILTER = 12;
@@ -13,6 +13,7 @@ const getRequestInfo = (req) => {
 		url: req.originalUrl,
 		data: req.body,
 		method: req.method,
+		requestId: req.headers.requestId,
 	};
 
 	try {
@@ -170,8 +171,13 @@ const handleSilentError = (error, req, res, next) => {
 	}
 };
 
-const skipErrorMessage = (error, req, res, next) => {
-	if (error instanceof PageNotFound || error.code === 405 || error instanceof AutoLogout) {
+const skipErrorLogging = (error, req, res, next) => {
+	if (
+		error instanceof PageNotFound ||
+		error.code === 405 ||
+		error instanceof AutoLogout ||
+		error instanceof BruteForcePrevention
+	) {
 		res.status(error.code).json(saveResponseFilter(error));
 	} else {
 		next(error);
@@ -190,9 +196,9 @@ const returnAsJson = express.errorHandler({
 const errorHandler = (app) => {
 	app.use(filterSecrets);
 	app.use(Sentry.Handlers.errorHandler());
-	app.use(handleSilentError);
-	app.use(skipErrorMessage);
+	app.use(skipErrorLogging);
 	app.use(formatAndLogErrors);
+	app.use(handleSilentError);
 	app.use(returnAsJson);
 };
 

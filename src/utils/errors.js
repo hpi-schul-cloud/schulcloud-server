@@ -144,6 +144,13 @@ class TooManyRequests extends featherErrors.TooManyRequests {
 	}
 }
 
+class BruteForcePrevention extends featherErrors.TooManyRequests {
+	constructor(message, additional, ...params) {
+		super(message, additional, ...params);
+		prepare(this, message, additional, params, 'brute-force-prevention');
+	}
+}
+
 class GeneralError extends featherErrors.GeneralError {
 	constructor(message, additional, ...params) {
 		super(message, additional, ...params);
@@ -216,6 +223,7 @@ module.exports = {
 	LengthRequired,
 	Unprocessable,
 	TooManyRequests,
+	BruteForcePrevention,
 	GeneralError,
 	NotImplemented,
 	BadGateway,
