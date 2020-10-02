@@ -1,4 +1,7 @@
 const request = require('request-promise-native');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const hooks = require('./hooks/index');
 
 const { REQUEST_TIMEOUT } = require('../../../config/globals');
@@ -13,10 +16,10 @@ const mapResponseProps = (response) => {
 	return response;
 };
 
-const toQueryString = (paramsObject) => Object
-	.keys(paramsObject)
-	.map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
-	.join('&');
+const toQueryString = (paramsObject) =>
+	Object.keys(paramsObject)
+		.map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
+		.join('&');
 
 class MessageService {
 	constructor(options) {
@@ -176,8 +179,7 @@ class NotificationService {
 		const userId = (params.account || {}).userId || params.payload.userId;
 
 		const options = {
-			uri: `${serviceUrls.notification}/notifications/`
-                + `?user=${userId}&${toQueryString(params.query)}`,
+			uri: `${serviceUrls.notification}/notifications/` + `?user=${userId}&${toQueryString(params.query)}`,
 			headers: {
 				token: userId,
 			},
@@ -201,6 +203,7 @@ module.exports = function () {
 	app.use('/notification/devices', new DeviceService());
 	app.use('/notification/callback', new CallbackService());
 	app.use('/notification', new NotificationService());
+	app.use('/notification/api', staticContent(path.join(__dirname, '/docs')));
 
 	const messageService = app.service('/notification/messages');
 	const deviceService = app.service('/notification/devices');

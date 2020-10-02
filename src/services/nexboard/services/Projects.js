@@ -14,10 +14,10 @@ class Project {
 		return nexboardClient.getProjectsIds();
 	}
 
-	create({
-		title = 'Neues Nexboard Projekt',
-		description = 'Hier werden alle Nexboards für diese Lerneinheit gesammelt',
-	}, params) {
+	create(
+		{ title = 'Neues Nexboard Projekt', description = 'Hier werden alle Nexboards für diese Lerneinheit gesammelt' },
+		params
+	) {
 		return nexboardClient.createProject(title, description);
 	}
 

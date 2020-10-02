@@ -20,7 +20,7 @@ const permissionSchema = new Schema(
 		create: { type: Boolean, default: true },
 		delete: { type: Boolean, default: true },
 	},
-	{ _id: false },
+	{ _id: false }
 );
 
 enableAuditLog(permissionSchema);
@@ -56,9 +56,19 @@ const SecurityCheckStatusTypes = Object.freeze({
 const fileSchema = new Schema({
 	isDirectory: { type: Boolean, default: false }, // should be required
 	name: { type: String, required: true },
-	size: { type: Number, required() { return !this.isDirectory; } },
+	size: {
+		type: Number,
+		required() {
+			return !this.isDirectory;
+		},
+	},
 	type: { type: String }, // todo add required but then wopi fails
-	storageFileName: { type: String, required() { return !this.isDirectory; } },
+	storageFileName: {
+		type: String,
+		required() {
+			return !this.isDirectory;
+		},
+	},
 	thumbnail: { type: String },
 	thumbnailRequestToken: { type: String, default: uuid },
 	securityCheck: {
@@ -103,11 +113,15 @@ fileSchema.index({ name: 'text' });
 // Index on permissions to speed up shared-files queries
 fileSchema.index({ 'permissions.refId': 1, 'permissions.refPermModel': 1 });
 
+// Speed up directory listings
+fileSchema.index({ owner: 1, parent: 1 });
+
 const FileModel = mongoose.model('file', fileSchema);
 const FilePermissionModel = mongoose.model('filePermissionModel', permissionSchema);
 
 module.exports = {
 	FileModel,
+	FileSchema: fileSchema,
 	SecurityCheckStatusTypes,
 	permissionSchema,
 	FilePermissionModel,

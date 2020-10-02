@@ -23,32 +23,20 @@ const restrictToCurrentSchool = (context) => {
 };
 
 exports.before = {
-	all: [iff(isProvider('external'), [
-		authenticate('jwt'),
-		globalHooks.populateCurrentSchool,
-		restrictToCurrentSchool,
-	])],
+	all: [iff(isProvider('external'), [authenticate('jwt'), globalHooks.populateCurrentSchool, restrictToCurrentSchool])],
 	find: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_EDIT'))],
 	get: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_EDIT'))],
 	create: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_CREATE')), encryptSecret],
 	update: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_EDIT')), encryptSecret],
 	patch: [
-		iff(isProvider('external'), [
-			globalHooks.hasPermission('SYSTEM_EDIT'),
-			permitGroupOperation,
-			verifyPayload,
-		]),
+		iff(isProvider('external'), [globalHooks.hasPermission('SYSTEM_EDIT'), permitGroupOperation, verifyPayload]),
 		encryptSecret,
 	],
 	remove: [iff(isProvider('external'), [globalHooks.hasPermission('SYSTEM_CREATE'), permitGroupOperation])],
 };
 
 exports.after = {
-	all: [
-		iff(isProvider('external'), [
-			discard('ldapConfig.searchUserPassword'),
-		]),
-	],
+	all: [iff(isProvider('external'), [discard('ldapConfig.searchUserPassword')])],
 	find: [decryptSecret],
 	get: [decryptSecret],
 	create: [],

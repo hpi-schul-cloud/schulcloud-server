@@ -19,38 +19,43 @@ describe('registrationPin Service', () => {
 		assert.ok(registrationPinService);
 	});
 
-	it('creates pins correctly', () => registrationPinService
-		.create({ email, silent: true })
-		.then(async () => {
-			({ pin } = (await registrationPinModel.findOne({ email }).exec()));
-		})
-		.then(() => registrationPinService.find({ query: { email, pin } }))
-		.then((pinObjects) => expect(pinObjects.data[0]).to.have.property('pin')));
+	it('creates pins correctly', () =>
+		registrationPinService
+			.create({ email, silent: true })
+			.then(async () => {
+				({ pin } = await registrationPinModel.findOne({ email }).exec());
+			})
+			.then(() => registrationPinService.find({ query: { email, pin } }))
+			.then((pinObjects) => expect(pinObjects.data[0]).to.have.property('pin')));
 
-	it('overwrites old pins', () => registrationPinService
-		.create({ email, silent: true })
-		.then(async () => {
-			const newPin = (await registrationPinModel.findOne({ email }).exec()).pin;
-			expect(newPin).to.be.ok;
-			expect(pin).to.be.not.equal(newPin);
-			pin = newPin;
-		})
-		.then(() => registrationPinService.create({ email, silent: true }))
-		.then(async () => {
-			const newPin = (await registrationPinModel.findOne({ email }).exec()).pin;
-			expect(newPin).to.be.ok;
-			expect(pin).to.be.not.equal(newPin);
-			pin = newPin;
-		})
-		.then(() => registrationPinService.find({ query: { email, pin } }))
-		.then((pinObjects) => expect(pinObjects.data).to.have.lengthOf(1)));
+	it('overwrites old pins', () =>
+		registrationPinService
+			.create({ email, silent: true })
+			.then(async () => {
+				const newPin = (await registrationPinModel.findOne({ email }).exec()).pin;
+				expect(newPin).to.be.ok;
+				expect(pin).to.be.not.equal(newPin);
+				pin = newPin;
+			})
+			.then(() => registrationPinService.create({ email, silent: true }))
+			.then(async () => {
+				const newPin = (await registrationPinModel.findOne({ email }).exec()).pin;
+				expect(newPin).to.be.ok;
+				expect(pin).to.be.not.equal(newPin);
+				pin = newPin;
+			})
+			.then(() => registrationPinService.find({ query: { email, pin } }))
+			.then((pinObjects) => expect(pinObjects.data).to.have.lengthOf(1)));
 
-	it('find without pin fails', () => registrationPinService
-		.create({ email, silent: true })
-		.then(() => registrationPinService.create({ email, silent: true }))
-		.then(() => registrationPinService.find({ query: { email } }))
-		.then(() => { throw new Error('pin should be given'); })
-		.catch((err) => expect(err.message.length).to.be.greaterThan(5)));
+	it('find without pin fails', () =>
+		registrationPinService
+			.create({ email, silent: true })
+			.then(() => registrationPinService.create({ email, silent: true }))
+			.then(() => registrationPinService.find({ query: { email } }))
+			.then(() => {
+				throw new Error('pin should be given');
+			})
+			.catch((err) => expect(err.message.length).to.be.greaterThan(5)));
 });
 
 describe('publicTeachers service', () => {
@@ -112,7 +117,9 @@ describe('publicTeachers service', () => {
 	describe('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', () => {
 		// save TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION value
 		// eslint-disable-next-line max-len
-		const ORIGINAL_TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION = Configuration.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
+		const ORIGINAL_TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION = Configuration.get(
+			'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION'
+		);
 		let result;
 
 		it('set to opt-in: find 1 discoverable teacher (testTeacherEnabled) but not find other teachers', async () => {
@@ -160,7 +167,10 @@ describe('publicTeachers service', () => {
 		});
 		// reset TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION back to original value
 		// eslint-disable-next-line max-len
-		Configuration.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', ORIGINAL_TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION);
+		Configuration.set(
+			'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION',
+			ORIGINAL_TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION
+		);
 	});
 
 	after(async () => {

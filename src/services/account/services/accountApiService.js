@@ -2,7 +2,11 @@ const { authenticate } = require('@feathersjs/authentication');
 const local = require('@feathersjs/authentication-local');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const {
-	hasPermission, permitGroupOperation, authenticateWhenJWTExist
+	hasPermission,
+	permitGroupOperation,
+	restrictToCurrentSchool,
+	preventPopulate,
+	getRestrictPopulatesHook,
 } = require('../../../hooks');
 const {
 	sanitizeUsername,
@@ -17,8 +21,11 @@ const {
 	securePatching,
 	filterToRelated,
 	restrictToUsersSchool,
+	validateUserName,
 } = require('../hooks');
-const { modelServices: { prepareInternalParams } } = require('../../../utils');
+const {
+	modelServices: { prepareInternalParams },
+} = require('../../../utils');
 
 class Accounts {
 	constructor(options) {
@@ -58,17 +65,24 @@ const accountService = new Accounts({
 	paginate: false,
 });
 
+const populateWhitelist = {
+	userId: ['_id', 'firstName', 'lastName', 'email'],
+};
+
 const accountServiceHooks = {
 	before: {
 		// find, get and create cannot be protected by authenticate('jwt')
-		// otherwise we cannot get the accounts required for login
+		// the route is used internally by login and admin services
 		find: [
-			authenticateWhenJWTExist,
+			authenticate('jwt'),
 			iff(isProvider('external'), restrictAccess),
+			iff(isProvider('external'), restrictToCurrentSchool),
+			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
 		],
 		get: [disallow('external')],
 		create: [
 			sanitizeUsername,
+			validateUserName,
 			checkExistence,
 			validateCredentials,
 			trimPassword,
@@ -76,12 +90,13 @@ const accountServiceHooks = {
 			checkUnique,
 			removePassword,
 		],
-		update: [
-			disallow('external'),
-		],
+		update: [disallow('external')],
 		patch: [
 			authenticate('jwt'),
+			iff(isProvider('external'), preventPopulate),
 			sanitizeUsername,
+			validateUserName,
+			checkUnique,
 			iff(isProvider('external'), restrictToUsersSchool),
 			iff(isProvider('external'), securePatching),
 			protectUserId,
@@ -94,6 +109,7 @@ const accountServiceHooks = {
 			authenticate('jwt'),
 			hasPermission('ACCOUNT_CREATE'),
 			iff(isProvider('external'), restrictToUsersSchool),
+			iff(isProvider('external'), preventPopulate),
 			permitGroupOperation,
 		],
 	},

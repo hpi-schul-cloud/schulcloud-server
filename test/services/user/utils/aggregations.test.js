@@ -24,7 +24,6 @@ describe('consent aggregation', () => {
 				input: '$consent.parentConsents',
 				initialValue: false,
 				in: { $or: ['$$value', `$$this.${variable}`] },
-
 			},
 		});
 	});
@@ -43,10 +42,10 @@ describe('consent aggregation', () => {
 		let selectAggregation;
 
 		aggregation.forEach((agg) => {
-			if (({}).hasOwnProperty.call(agg, '$project')) {
+			if ({}.hasOwnProperty.call(agg, '$project')) {
 				if (!statusAggregation) statusAggregation = agg;
 				else if (!selectAggregation) selectAggregation = agg;
-			} else if (({}).hasOwnProperty.call(agg, '$sort')) {
+			} else if ({}.hasOwnProperty.call(agg, '$sort')) {
 				sortAggregation = agg;
 			}
 		});

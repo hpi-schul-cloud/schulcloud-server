@@ -8,7 +8,8 @@ const {
 	createUserAndAccount,
 	shortenedRegistrationProcess,
 	findSchool,
-	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
+	ENTITY_SOURCE,
+	SOURCE_ID_ATTRIBUTE,
 	config: TSP_CONFIG,
 } = require('../../sync/strategies/TSP/TSP');
 const { SYNCER_TARGET } = require('../../sync/strategies/TSP/TSPSchoolSyncer');
@@ -77,6 +78,15 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 
 	verifyConfiguration() {}
 
+	parse(req, res) {
+		if (req.body && req.body.strategy === 'tsp') {
+			return {
+				strategy: this.name,
+			};
+		}
+		return null;
+	}
+
 	async authenticate(authentication, params) {
 		const { ticket } = authentication;
 		delete authentication.ticket;
@@ -86,11 +96,14 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		// translate TSP roles into SC roles
 		const roleList = decryptedTicket.ptscListRolle.split(',');
 		const roles = roleList
-			.map((tspRole) => ({
-				schueler: 'student',
-				lehrer: 'teacher',
-				admin: 'administrator',
-			}[tspRole.toLowerCase()]))
+			.map(
+				(tspRole) =>
+					({
+						schueler: 'student',
+						lehrer: 'teacher',
+						admin: 'administrator',
+					}[tspRole.toLowerCase()])
+			)
 			.filter((role) => {
 				const validRole = role !== undefined;
 				if (!validRole) {
@@ -126,7 +139,7 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 					sourceOptions,
 				},
 				roles,
-				systemId,
+				systemId
 			);
 
 			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
@@ -176,14 +189,8 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		return {
 			authentication: { strategy: this.name },
 			[entity]: account,
-			payload: {
-				accountId: account._id,
-				userId: user._id,
-				systemId: account.systemId,
-			},
 		};
 	}
 }
-
 
 module.exports = TSPStrategy;

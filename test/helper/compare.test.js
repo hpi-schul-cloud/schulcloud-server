@@ -6,25 +6,26 @@ const { assert } = chai;
 const compare = require('../../src/helper/compare');
 
 describe('Comparator Library for', () => {
-	describe('ObjectId\'s', () => {
+	describe("ObjectId's", () => {
 		const sampleId = new Types.ObjectId();
 		it('requires at least two parameters given', () => {
-			assert.throws(compare.ObjectId.equal.bind(), 'could not compare less than two id\'s');
-			assert.throws(compare.ObjectId.equal.bind(new Types.ObjectId()), 'could not compare less than two id\'s');
-			assert.isFalse(compare.ObjectId.equal(new Types.ObjectId(), new Types.ObjectId()),
-				'new ids should not be euqual');
-			assert.isFalse(compare.ObjectId.equal(new Types.ObjectId(), new Types.ObjectId(), new Types.ObjectId()),
-				'new ids should not be euqual');
+			assert.throws(compare.ObjectId.equal.bind(), "could not compare less than two id's");
+			assert.throws(compare.ObjectId.equal.bind(new Types.ObjectId()), "could not compare less than two id's");
+			assert.isFalse(
+				compare.ObjectId.equal(new Types.ObjectId(), new Types.ObjectId()),
+				'new ids should not be euqual'
+			);
+			assert.isFalse(
+				compare.ObjectId.equal(new Types.ObjectId(), new Types.ObjectId(), new Types.ObjectId()),
+				'new ids should not be euqual'
+			);
 		});
 		it('returns false for different ids', () => {
 			assert.isFalse(compare.ObjectId.equal(new Types.ObjectId(), new Types.ObjectId()));
 			assert.isFalse(compare.ObjectId.equal(new Types.ObjectId(), new Types.ObjectId(), new Types.ObjectId()));
-			assert.isFalse(compare.ObjectId.equal(
-				new Types.ObjectId(),
-				new Types.ObjectId(),
-				new Types.ObjectId(),
-				new Types.ObjectId(),
-			));
+			assert.isFalse(
+				compare.ObjectId.equal(new Types.ObjectId(), new Types.ObjectId(), new Types.ObjectId(), new Types.ObjectId())
+			);
 		});
 		it('returns true for same ids', () => {
 			assert.isTrue(compare.ObjectId.equal(sampleId, sampleId));

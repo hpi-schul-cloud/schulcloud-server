@@ -30,8 +30,8 @@ describe('lessons service', () => {
 		assert.ok(lessonCopyService);
 	});
 
-	it('creates a lesson', () => lessonService.create(testLesson)
-		.then((lesson) => {
+	it('creates a lesson', () =>
+		lessonService.create(testLesson).then((lesson) => {
 			expect(lesson.name).to.equal(testLesson.name);
 			expect(lesson.description).to.equal(testLesson.description);
 			expect(lesson.courseId.toString()).to.equal(testLesson.courseId);
@@ -55,11 +55,15 @@ describe('lessons service', () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
-			const { _id: courseId } = await testObjects.createTestCourse(
-				{ schoolId, teacherIds: [teacher._id], userIds: [student._id] },
-			);
+			const { _id: courseId } = await testObjects.createTestCourse({
+				schoolId,
+				teacherIds: [teacher._id],
+				userIds: [student._id],
+			});
 			const { _id: courseGroupId } = await testObjects.createTestCourseGroup({
-				userIds: [student._id], schoolId, courseId,
+				userIds: [student._id],
+				schoolId,
+				courseId,
 			});
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			const data = { name: 'students always use cool names', courseGroupId };
@@ -72,11 +76,15 @@ describe('lessons service', () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
-			const { _id: courseId } = await testObjects.createTestCourse(
-				{ schoolId, teacherIds: [teacher._id], userIds: [student._id] },
-			);
+			const { _id: courseId } = await testObjects.createTestCourse({
+				schoolId,
+				teacherIds: [teacher._id],
+				userIds: [student._id],
+			});
 			const { _id: courseGroupId } = await testObjects.createTestCourseGroup({
-				userIds: [student._id], schoolId, courseId,
+				userIds: [student._id],
+				schoolId,
+				courseId,
 			});
 			const { _id: lessonId } = await testObjects.createTestLesson({ name: 'testlesson', courseGroupId });
 			const params = await testObjects.generateRequestParamsFromUser(student);
@@ -88,11 +96,15 @@ describe('lessons service', () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
-			const { _id: courseId } = await testObjects.createTestCourse(
-				{ schoolId, teacherIds: [teacher._id], userIds: [student._id] },
-			);
+			const { _id: courseId } = await testObjects.createTestCourse({
+				schoolId,
+				teacherIds: [teacher._id],
+				userIds: [student._id],
+			});
 			const { _id: courseGroupId } = await testObjects.createTestCourseGroup({
-				userIds: [student._id], schoolId, courseId,
+				userIds: [student._id],
+				schoolId,
+				courseId,
 			});
 			const { _id: lessonId } = await testObjects.createTestLesson({ name: 'testlesson', courseGroupId });
 			const params = await testObjects.generateRequestParamsFromUser(student);
@@ -100,6 +112,29 @@ describe('lessons service', () => {
 			const result = await app.service('lessons').patch(lessonId, data, params);
 			expect(result).to.haveOwnProperty('_id');
 			expect(result.name).to.equal('students always use cool names');
+		});
+
+		it('the teacher can create courseGroup lessons', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const { _id: courseId } = await testObjects.createTestCourse({
+				schoolId,
+				teacherIds: [teacher._id],
+				userIds: [student._id],
+			});
+			// create a second course to be sure the course selection works
+			await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+			const { _id: courseGroupId } = await testObjects.createTestCourseGroup({
+				userIds: [student._id],
+				schoolId,
+				courseId,
+			});
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			const data = { name: 'Here we go...', courseGroupId };
+			const result = await app.service('lessons').create(data, params);
+			expect(result).to.haveOwnProperty('_id');
+			expect(result.name).to.equal('Here we go...');
 		});
 	});
 
@@ -128,9 +163,7 @@ describe('lessons service', () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
 			const { _id: otherschoolId } = await testObjects.createTestSchool({});
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-			const foreignteacher = await testObjects.createTestUser(
-				{ roles: ['administrator'], schoolId: otherschoolId },
-			);
+			const foreignteacher = await testObjects.createTestUser({ roles: ['administrator'], schoolId: otherschoolId });
 			const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
 			const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId: course._id });
 			const params = await testObjects.generateRequestParamsFromUser(foreignteacher);
@@ -207,10 +240,14 @@ describe('lessons service', () => {
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
 			const otherStudent = await testObjects.createTestUser({ roles: ['student'], schoolId });
 			const { _id: courseId } = await testObjects.createTestCourse({
-				schoolId, teacherIds: [teacher._id], userIds: [student._id, otherStudent._id],
+				schoolId,
+				teacherIds: [teacher._id],
+				userIds: [student._id, otherStudent._id],
 			});
 			const { _id: courseGroupId } = await testObjects.createTestCourseGroup({
-				userIds: [student._id], schoolId, courseId,
+				userIds: [student._id],
+				schoolId,
+				courseId,
 			});
 			const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId, courseGroupId });
 			const params = await testObjects.generateRequestParamsFromUser(otherStudent);
@@ -329,10 +366,14 @@ describe('lessons service', () => {
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
 			const otherStudent = await testObjects.createTestUser({ roles: ['student'], schoolId });
 			const { _id: courseId } = await testObjects.createTestCourse({
-				schoolId, teacherIds: [teacher._id], userIds: [student._id, otherStudent._id],
+				schoolId,
+				teacherIds: [teacher._id],
+				userIds: [student._id, otherStudent._id],
 			});
 			const { _id: courseGroupId } = await testObjects.createTestCourseGroup({
-				userIds: [student._id], schoolId, courseId,
+				userIds: [student._id],
+				schoolId,
+				courseId,
 			});
 			const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId, courseGroupId });
 			const params = await testObjects.generateRequestParamsFromUser(otherStudent);
@@ -352,14 +393,18 @@ describe('lessons service', () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 			const { _id: courseId } = await testObjects.createTestCourse({
-				schoolId, teacherIds: [teacher._id],
+				schoolId,
+				teacherIds: [teacher._id],
 			});
 			const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId });
-			await app.service('/lessons/:lessonId/material').create({
-				title: 'testTitle',
-				client: 'someclient',
-				url: 'hpi.schul-cloud.org',
-			}, { route: { lessonId: lesson._id } });
+			await app.service('/lessons/:lessonId/material').create(
+				{
+					title: 'testTitle',
+					client: 'someclient',
+					url: 'hpi.schul-cloud.org',
+				},
+				{ route: { lessonId: lesson._id } }
+			);
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			params.query = { $populate: ['materialIds'] };
 			const result = await app.service('lessons').get(lesson._id, params);
