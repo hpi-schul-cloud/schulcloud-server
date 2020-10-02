@@ -2,7 +2,7 @@ const { Configuration } = require('@schul-cloud/commons');
 const request = require('request-promise-native');
 
 class MerlinTokenGenerator {
-    setup(app) {
+	setup(app) {
 		this.app = app;
 	}
 
