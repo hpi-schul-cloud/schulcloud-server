@@ -4,7 +4,9 @@ const { Configuration } = require('@schul-cloud/commons');
 const jwt = require('jsonwebtoken');
 const reqlib = require('app-root-path').require;
 
-const { GeneralError, SilentError, PageNotFound, AutoLogout, BruteForcePrevention } = reqlib('src/utils/errors');
+const { GeneralError, SilentError, PageNotFound, AutoLogout, BruteForcePrevention, isFeatherError } = reqlib(
+	'src/utils/errors'
+);
 
 const logger = require('../logger');
 
@@ -15,7 +17,7 @@ const getRequestInfo = (req) => {
 		url: req.originalUrl,
 		data: req.body,
 		method: req.method,
-		requestId: req.headers.requestId,
+		requestId: (req.headers || {}).requestId,
 	};
 
 	try {
@@ -52,19 +54,20 @@ const getRequestInfo = (req) => {
 
 const formatAndLogErrors = (error, req, res, next) => {
 	if (error) {
-		if (error.type !== 'FeathersError') {
+		let err = error;
+		if (isFeatherError(err)) {
 			// sanitize all logs
 			// eslint-disable-next-line no-param-reassign
-			error = new GeneralError(error);
+			err = new GeneralError(err);
 		}
 		// too much for logging...
-		delete error.hook;
+		delete err.hook;
 		// delete response informations for extern express applications
-		delete error.response;
+		delete err.response;
 		// add request response
 		const requestInfo = getRequestInfo(req);
 		// for tests level is set to emerg, set LOG_LEVEL=debug for see it
-		logger.error({ ...error, ...requestInfo });
+		logger.error({ ...err, ...requestInfo });
 	}
 	next(error);
 };
