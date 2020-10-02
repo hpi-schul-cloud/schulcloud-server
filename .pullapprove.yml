@@ -33,22 +33,6 @@ groups:
       teams:
         - server-core
 
-  privacy:
-    conditions:
-      - "'*model.js' in files or 'backup/setup/*.json' in files or '.pullapprove.yml' in files"
-    # only review if "*model.js", "backup/setup/*.json" files or ".pullapprove.yml" have been touched
-    reviewers:
-      teams:
-        - data-protection
-    reviews:
-      required: 1 # number of approvals required from this group
-      request: -1 # request from all members a review
-      author_value: 1
-    labels:
-      pending: 'needs data protection review'
-      approved: 'data protection review approved'
-      rejected: 'data protection review rejected'
-
   devops:
     conditions:
       - "'*deploy.sh' in files or '.build/*' in files" # only review specific, deployment relevant files
