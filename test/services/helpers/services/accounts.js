@@ -1,7 +1,8 @@
 let createdaccountsIds = [];
 
 // should rewrite
-const createTestAccount = (app) => (accountParameters, system, user) => {
+const createTestAccount = (appPromise) => async (accountParameters, system, user) => {
+	const app = await appPromise;
 	if (system) {
 		accountParameters.systemId = system._id;
 	}
@@ -15,7 +16,8 @@ const createTestAccount = (app) => (accountParameters, system, user) => {
 		});
 };
 
-const cleanup = (app) => () => {
+const cleanup = (appPromise) => async () => {
+	const app = await appPromise;
 	if (createdaccountsIds.length === 0) {
 		return Promise.resolve();
 	}

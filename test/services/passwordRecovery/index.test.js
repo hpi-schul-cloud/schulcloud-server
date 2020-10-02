@@ -1,13 +1,15 @@
 const assert = require('assert');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 const passwordRecovery = require('../../../src/services/passwordRecovery/model');
 
-const passwordRecoveryService = app.service('passwordRecovery');
 
 const PORT = 0;
 
 describe('passwordRecovery service', () => {
+	let app;
+	let passwordRecoveryService;
+
 	let server;
 	let savedUser;
 	let savedAccount;
@@ -20,13 +22,13 @@ describe('passwordRecovery service', () => {
 		createdAt: '2017-09-04T12:51:58.49Z',
 	};
 
-	before((done) => {
-		server = app.listen(PORT, async () => {
-			savedUser = await testObjects.createTestUser();
-			savedAccount = await testObjects.createTestAccount(newAccount, null, savedUser);
-			await passwordRecoveryService.create({ username: recoveryUsername });
-			done();
-		});
+	before(async () => {
+		app = await appPromise;
+		passwordRecoveryService = app.service('passwordRecovery');
+		server = await app.listen(0);
+		savedUser = await testObjects.createTestUser();
+		savedAccount = await testObjects.createTestAccount(newAccount, null, savedUser);
+		await passwordRecoveryService.create({ username: recoveryUsername });
 	});
 
 	after((done) => {

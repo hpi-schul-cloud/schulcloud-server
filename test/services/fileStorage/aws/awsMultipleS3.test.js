@@ -4,9 +4,9 @@ const { expect } = require('chai');
 const mockery = require('mockery');
 const { Configuration } = require('@schul-cloud/commons');
 const mockAws = require('./s3.mock');
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 
-const testObjects = require('../../helpers/testObjects')(app);
+const testObjects = require('../../helpers/testObjects')(appPromise);
 
 chai.use(chaiHttp);
 
