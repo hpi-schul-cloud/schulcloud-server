@@ -160,6 +160,10 @@ const saveResponseFilter = (error) => ({
 	traceId: error.traceId,
 });
 
+const sendError = (res, error) => {
+	res.status(error.code).json(saveResponseFilter(error));
+};
+
 const handleSilentError = (error, req, res, next) => {
 	if (error instanceof SilentError || (error && error.error instanceof SilentError)) {
 		if (Configuration.get('SILENT_ERROR_ENABLED')) {
@@ -178,7 +182,7 @@ const skipErrorLogging = (error, req, res, next) => {
 		error instanceof AutoLogout ||
 		error instanceof BruteForcePrevention
 	) {
-		res.status(error.code).json(saveResponseFilter(error));
+		sendError(res, error);
 	} else {
 		next(error);
 	}
@@ -186,18 +190,21 @@ const skipErrorLogging = (error, req, res, next) => {
 
 const returnAsJson = express.errorHandler({
 	html: (error, req, res) => {
-		res.status(error.code).json(saveResponseFilter(error));
+		sendError(res, error);
 	},
 	json: (error, req, res) => {
-		res.status(error.code).json(saveResponseFilter(error));
+		sendError(res, error);
 	},
 });
 
 const errorHandler = (app) => {
 	app.use(filterSecrets);
 	app.use(Sentry.Handlers.errorHandler());
+	// TODO make skipErrorLogging configruable if middleware is added
 	app.use(skipErrorLogging);
 	app.use(formatAndLogErrors);
+	// TODO make handleSilentError configruable if middleware is added
+	// Configuration.get('SILENT_ERROR_ENABLED')
 	app.use(handleSilentError);
 	app.use(returnAsJson);
 };
