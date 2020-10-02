@@ -39,9 +39,9 @@ describe('Etherpad services', () => {
 	let testHelpers;
 	let configBefore;
 
-	before((done) => {
+	before(() => {
 		configBefore = Configuration.toObject();
-		freeport((err, port) => {
+		freeport(async (err, port) => {
 			if (err) {
 				logger.warning('freeport:', err);
 			}
@@ -52,11 +52,11 @@ describe('Etherpad services', () => {
 			Configuration.set('ETHERPAD_API_KEY', 'someapikey');
 
 			// eslint-disable-next-line global-require
-			app = require('../../../src/app');
+			app = await require('../../../src/app');
 			server = app.listen(0);
 			testHelpers = testObjects(app);
 
-			const mock = MockServer(mockUrl, Configuration.get('ETHERPAD_API_PATH'), done);
+			const mock = await MockServer(mockUrl, Configuration.get('ETHERPAD_API_PATH'));
 			mockServer = mock.server;
 		});
 	});
