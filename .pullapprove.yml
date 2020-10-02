@@ -24,31 +24,7 @@ notifications:
       our Review-Guidelines https://docs.schul-cloud.org/display/SCDOK/Review-Guidelines
 
 groups:
-  integrathors:
-    conditions:
-      - "'IntegraTHORs' in labels"
-    reviews:
-      required: 1 # 1 approval from this group are required
-      request: 2 # 2 reviews requests will be sent at a time
-      request_order: shuffle # reviewers will be chosen in a random order
-    reviewers:
-      teams:
-        - integrathors
-
-  loki:
-    conditions:
-      - "'Loki' in labels"
-    reviews:
-      required: 1 # 1 approval from this group are required
-      request: 2 # 2 reviews requests will be sent at a time
-      request_order: shuffle # reviewers will be chosen in a random order
-    reviewers:
-      teams:
-        - loki
-
   server-core:
-    conditions:
-      - "'Loki' not in labels and 'IntegraTHORs' not in labels"
     reviews:
       required: 1 # 1 approval from this group are required
       request: 2 # 2 reviews requests will be sent at a time
