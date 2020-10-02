@@ -1,21 +1,21 @@
 const { expect } = require('chai');
 
-const app = require('../../../../../src/app');
+const appPromise = require('../../../../../src/app');
 const roleModel = require('../../../../../src/services/role/model.js');
 const { userModel } = require('../../../../../src/services/user/model');
 const MailService = require('../../../../../src/services/helpers/service.js');
 
-const testObjects = require('../../../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../../../helpers/services/login')(app);
-const { create: createUser } = require('../../../helpers/services/users')(app);
-const { create: createSchool } = require('../../../helpers/services/schools')(app);
+const testObjects = require('../../../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../../../helpers/services/login')(appPromise);
+const { create: createUser } = require('../../../helpers/services/users')(appPromise);
+const { create: createSchool } = require('../../../helpers/services/schools')(appPromise);
 const { create: createYear } = require('../../../helpers/services/years');
 const {
 	createByName: createClass,
 	findOneByName: findClass,
 	findByName: findClasses,
 	deleteByName: deleteClass,
-} = require('../../../helpers/services/classes')(app);
+} = require('../../../helpers/services/classes')(appPromise);
 
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
 const { SC_TITLE } = require('../../../../../config/globals');
@@ -23,10 +23,12 @@ const { SC_TITLE } = require('../../../../../config/globals');
 const { deleteUser, MockEmailService } = require('./helper');
 
 describe('CSVSyncer Integration', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {

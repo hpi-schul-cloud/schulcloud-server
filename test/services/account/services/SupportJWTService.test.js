@@ -4,13 +4,28 @@ const { decode } = require('jsonwebtoken');
 
 const { expect } = chai;
 
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 
-const supportJWTService = app.service('accounts/supportJWT');
-const testedPermission = 'CREATE_SUPPORT_JWT';
 
 describe('supportJWTService', () => {
+	let app;
+	let supportJWTService;
+	const testedPermission = 'CREATE_SUPPORT_JWT';
+
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		supportJWTService = app.service('accounts/supportJWT');
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
+	});
+
 	it('registered the supportJWT service', () => {
 		assert.ok(supportJWTService);
 	});
@@ -62,6 +77,4 @@ describe('supportJWTService', () => {
 			expect(err.code).to.be.equal(403);
 		}
 	});
-
-	after(testObjects.cleanup);
 });

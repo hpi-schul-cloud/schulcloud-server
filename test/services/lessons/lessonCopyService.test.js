@@ -1,10 +1,17 @@
 const { expect } = require('chai');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 
-const lessonCopyService = app.service('lessons/copy');
 
 describe('lesson copy service', () => {
+	let app;
+	let lessonCopyService;
+
+	before(async () => {
+		app = await appPromise;
+		lessonCopyService = app.service('lessons/copy');
+	});
+
 	after(async () => {
 		testObjects.cleanup();
 	});

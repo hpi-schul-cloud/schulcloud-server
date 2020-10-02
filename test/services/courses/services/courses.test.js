@@ -1,12 +1,19 @@
 const { expect } = require('chai');
 
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 
-const courseService = app.service('courses');
 
-const testObjects = require('../../helpers/testObjects')(app);
+const testObjects = require('../../helpers/testObjects')(appPromise);
 
 describe('course service', () => {
+	let app;
+	let courseService;
+
+	before(async () => {
+		app = await appPromise;
+		courseService = app.service('courses');
+	});
+
 	it('registered the courses service', () => {
 		expect(courseService).to.not.be.undefined;
 	});

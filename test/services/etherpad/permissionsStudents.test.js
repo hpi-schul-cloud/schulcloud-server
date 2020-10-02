@@ -41,7 +41,7 @@ describe('Etherpad Permission Check: Students', () => {
 
 	before((done) => {
 		configBefore = Configuration.toObject();
-		freeport((err, port) => {
+		freeport(async (err, port) => {
 			if (err) {
 				logger.warning('freeport:', err);
 			}
@@ -52,7 +52,7 @@ describe('Etherpad Permission Check: Students', () => {
 			Configuration.set('ETHERPAD_API_KEY', 'someapikey');
 
 			// eslint-disable-next-line global-require
-			app = require('../../../src/app');
+			app = await require('../../../src/app');
 			server = app.listen(0);
 			testHelpers = testObjects(app);
 

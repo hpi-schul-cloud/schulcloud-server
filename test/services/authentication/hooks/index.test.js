@@ -6,7 +6,7 @@ const { Configuration } = commons;
 const redisMock = require('../../../utils/redis/redisMock');
 
 describe('authentication hooks', function test() {
-	this.timeout(10000);
+	this.timeout(20000);
 	let redisHelper;
 	let addJwtToWhitelist;
 	let removeJwtFromWhitelist;
@@ -34,7 +34,7 @@ describe('authentication hooks', function test() {
 		/* eslint-disable global-require */
 
 		redisHelper = require('../../../../src/utils/redis');
-		app = require('../../../../src/app');
+		app = await require('../../../../src/app');
 		server = await app.listen(0);
 		testObjects = require('../../helpers/testObjects')(app);
 		({ addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/services/authentication/hooks'));
