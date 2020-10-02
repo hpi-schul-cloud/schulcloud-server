@@ -29,22 +29,22 @@ const requestContext = (app) => {
 			if (traceId in outerContext) {
 				// internal recursive service call
 				// TODO never occurs, debug
-				console.log('use outer context id:', context._set.length, outerContext.traceId, req.originalUrl);
+				// console.log('use outer context id:', context._set.length, outerContext.traceId, req.originalUrl);
 			} else if (context.get(traceId)) {
 				// TODO never occurs, debug
-				console.log('use context id:', context._set.length, context.get(traceId), req.originalUrl);
+				// console.log('use context id:', context._set.length, context.get(traceId), req.originalUrl);
 			} else if (req.get(traceId)) {
 				// take valid external trace id only
 				if (isValidTraceId(req.get(traceId))) {
 					context.set(traceId, req.get(traceId));
-					console.log('req context id:', context._set.length, context.get(traceId), req.originalUrl);
+					// console.log('req context id:', context._set.length, context.get(traceId), req.originalUrl);
 				} else {
 					throw new Error('bad request: header.trace-id');
 				}
 			} else {
 				// external/new service call
 				context.set(traceId, id);
-				console.log('new context id:', context._set.length, context.get(traceId), req.originalUrl);
+				// console.log('new context id:', context._set.length, context.get(traceId), req.originalUrl);
 			}
 			res.set(traceId, id);
 			next();
@@ -54,14 +54,14 @@ const requestContext = (app) => {
 
 const checkContext = (location) => (feathersContext) => {
 	const context = cls.getNamespace('ctx');
-	console.log(
-		location,
-		'hook context',
-		context._set.length,
-		context.get('trace-id'),
-		feathersContext.method,
-		feathersContext.path
-	);
+	// console.log(
+	// 	location,
+	// 	'hook context',
+	// 	context._set.length,
+	// 	context.get('trace-id'),
+	// 	feathersContext.method,
+	// 	feathersContext.path
+	// );
 };
 
 const getContext = () => {
