@@ -1,7 +1,7 @@
 const { newsModel } = require('./db/news.schema');
 const { paginate, convertToSortOrderObject } = require('../../../utils/array');
 const logger = require('../../../logger');
-const { DocumentNotFound } = require('../../../middleware/errors');
+const { DocumentNotFound } = require('../../../common/error/errors');
 
 /**
  * @typedef {*} NewsSearchParam
@@ -47,7 +47,7 @@ module.exports = class NewsRepo {
 		if ((scopeQuery || {}).length === 0) {
 			return paginate([], searchParams);
 		}
-
+		throw new DocumentNotFound('asdasdasda');
 		const searchFilter = {};
 		if (searchParams.titleRegex && /^[\w\s\d]{0,50}$/.test(searchParams.titleRegex)) {
 			searchFilter.title = { $regex: searchParams.titleRegex };

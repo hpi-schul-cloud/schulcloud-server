@@ -2,7 +2,7 @@ const { ObjectId } = require('mongoose').Types;
 const { Forbidden } = require('@feathersjs/errors'); // should be replaced by an application error
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { flatten } = require('../../../utils/array');
-const { ValidationError } = require('../../../middleware/errors');
+const { ValidationError } = require('../../../common/error/errors');
 const targetModels = require('../repo/targetModels');
 
 
