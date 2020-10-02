@@ -1,4 +1,6 @@
-const { BadRequest, NotFound } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { NotFound, BadRequest } = reqlib('src/utils/errors');
 const { schoolModel: School } = require('../model');
 
 /**

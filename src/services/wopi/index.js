@@ -1,11 +1,13 @@
+/* eslint-disable max-classes-per-file */
 /**
  * Provides a basic wopi - endpoint, https://wopirest.readthedocs.io/en/latest/index.html
  */
-const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 const rp = require('request-promise-native');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+const reqlib = require('app-root-path').require;
 
+const { Forbidden, NotFound, BadRequest } = reqlib('src/utils/errors');
 const logger = require('../../logger');
 const hooks = require('./hooks');
 const { FileModel } = require('../fileStorage/model');

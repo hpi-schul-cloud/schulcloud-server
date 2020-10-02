@@ -1,10 +1,11 @@
+// eslint-disable-next-line max-classes-per-file
 const service = require('feathers-mongoose');
-
-const { BadRequest, GeneralError, NotFound } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+const reqlib = require('app-root-path').require;
 
+const { NotFound, BadRequest, GeneralError } = reqlib('src/utils/errors');
 const hooks = require('./hooks');
 const { warning } = require('../../logger/index');
 const { teamsModel } = require('./model');

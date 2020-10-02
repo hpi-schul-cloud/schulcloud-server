@@ -1,8 +1,11 @@
+// eslint-disable-next-line max-classes-per-file
 const service = require('feathers-mongoose');
-const { Forbidden, NotFound, BadRequest } = require('@feathersjs/errors');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 const { ObjectId } = require('mongoose').Types;
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, NotFound, BadRequest } = reqlib('src/utils/errors');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const logger = require('../../logger/index');
 const newsDocs = require('./docs');

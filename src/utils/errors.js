@@ -210,6 +210,8 @@ class SilentError extends ApplicationError {
 // take from ldap
 class NoClientInstanceError extends Error {}
 
+const isFeatherError = (error) => error instanceof featherErrors.FeathersError;
+
 module.exports = {
 	BadRequest,
 	NotAuthenticated,
@@ -233,4 +235,5 @@ module.exports = {
 	SilentError,
 	PageNotFound,
 	NoClientInstanceError,
+	isFeatherError,
 };
