@@ -4,7 +4,7 @@ const { Configuration } = require('@schul-cloud/commons');
 const logger = require('./logger');
 const {
 	sanitizeHtml: { sanitizeDeep },
-	errors: { GeneralError, AutoLogout, SlowQuery },
+	errors: { AutoLogout, SlowQuery },
 } = require('./utils');
 const { getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData } = require('./utils/redis');
 const { LEAD_TIME } = require('../config/globals');
@@ -101,11 +101,8 @@ const handleAutoLogout = async (context) => {
 const errorHandler = (context) => {
 	if (context.error) {
 		context.error.code = context.error.code || context.error.statusCode || 500;
-		// too much for logging...
-		delete context.error.hook;
-		return context;
 	}
-	throw new GeneralError('Error with no context.error is throw. Error logic can not handle it.');
+	return context;
 };
 
 // adding in this position will detect intern request to

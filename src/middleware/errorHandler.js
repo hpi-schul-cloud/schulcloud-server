@@ -4,7 +4,7 @@ const { Configuration } = require('@schul-cloud/commons');
 const jwt = require('jsonwebtoken');
 const reqlib = require('app-root-path').require;
 
-const { GeneralError, SilentError, PageNotFound, AutoLogout, BruteForcePrevention, isFeatherError } = reqlib(
+const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention, convertToFeathersError } = reqlib(
 	'src/utils/errors'
 );
 
@@ -17,7 +17,6 @@ const getRequestInfo = (req) => {
 		url: req.originalUrl,
 		data: req.body,
 		method: req.method,
-		requestId: (req.headers || {}).requestId,
 	};
 
 	try {
@@ -54,12 +53,7 @@ const getRequestInfo = (req) => {
 
 const formatAndLogErrors = (error, req, res, next) => {
 	if (error) {
-		let err = error;
-		if (isFeatherError(err)) {
-			// sanitize all logs
-			// eslint-disable-next-line no-param-reassign
-			err = new GeneralError(err);
-		}
+		const err = convertToFeathersError(error);
 		// too much for logging...
 		delete err.hook;
 		// delete response informations for extern express applications
@@ -202,7 +196,13 @@ const returnAsJson = express.errorHandler({
 	},
 });
 
+const addTraceId = (error, req, res, next) => {
+	error.traceId = (req.headers || {}).requestId || error.traceId;
+	next(error);
+};
+
 const errorHandler = (app) => {
+	app.use(addTraceId);
 	app.use(filterSecrets);
 	app.use(Sentry.Handlers.errorHandler());
 	// TODO make skipErrorLogging configruable if middleware is added

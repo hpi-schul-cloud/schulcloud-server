@@ -1,29 +1,7 @@
 /* eslint-disable max-classes-per-file */
 const featherErrors = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
-/*
-	console.log(featherErrors);
-	https://docs.feathersjs.com/api/errors.html#examples
-		convert:	[Function:	convert],
-		FeathersError:	[Function:	FeathersError],
-		BadRequest:	[Function:	BadRequest], x
-		NotAuthenticated:	[Function:	NotAuthenticated], x
-		PaymentError:	[Function:	PaymentError], x
-		Forbidden:	[Function:	Forbidden], x
-		NotFound:	[Function:	NotFound], x
-		MethodNotAllowed:	[Function:	MethodNotAllowed], x
-		NotAcceptable:	[Function:	NotAcceptable], x
-		Timeout:	[Function:	Timeout], x
-		Conflict:	[Function:	Conflict], x
-		Gone:	[Function:	Gone],
-		LengthRequired:	[Function:	LengthRequired], x
-		Unprocessable:	[Function:	Unprocessable], x
-		TooManyRequests:	[Function:	TooManyRequests], x
-		GeneralError:	[Function:	GeneralError], x
-		NotImplemented:	[Function:	NotImplemented], x
-		BadGateway:	[Function:	BadGateway], x
-		Unavailable:	[Function:	Unavailable] x
-*/
+
 const solvedTraceId = (ref, message, additional) => {
 	if (message instanceof Error && message.traceId) {
 		ref.traceId = message.traceId;
@@ -183,6 +161,13 @@ class Unavailable extends featherErrors.Unavailable {
 	}
 }
 
+class Gone extends featherErrors.Gone {
+	constructor(message, additional, ...params) {
+		super(message, additional, ...params);
+		prepare(this, message, additional, params, 'gone');
+	}
+}
+
 class PageNotFound extends NotFound {
 	constructor() {
 		const overrideMessage = 'Page not found.';
@@ -210,7 +195,35 @@ class SilentError extends ApplicationError {
 // take from ldap
 class NoClientInstanceError extends Error {}
 
-const isFeatherError = (error) => error instanceof featherErrors.FeathersError;
+const isFeatherError = (error) => error.type === 'FeathersError';
+
+const errorsByCode = {
+	'400': BadRequest,
+	'401': NotAuthenticated,
+	'402': PaymentError,
+	'403': Forbidden,
+	'404': NotFound,
+	'405': MethodNotAllowed,
+	'406': NotAcceptable,
+	'408': Timeout,
+	'409': Conflict,
+	'410': Gone,
+	'411': LengthRequired,
+	'422': Unprocessable,
+	'429': TooManyRequests,
+	'500': GeneralError,
+	'501': NotImplemented,
+	'502': BadGateway,
+	'503': Unavailable,
+};
+
+const convertToFeathersError = (error) => {
+	if (isFeatherError(error)) {
+		return error;
+	}
+	const code = error.code || error.statusCode || 500;
+	return new errorsByCode[code](error);
+};
 
 module.exports = {
 	BadRequest,
@@ -234,6 +247,9 @@ module.exports = {
 	Unavailable,
 	SilentError,
 	PageNotFound,
+	Gone,
 	NoClientInstanceError,
 	isFeatherError,
+	convertToFeathersError,
+	errorsByCode,
 };
