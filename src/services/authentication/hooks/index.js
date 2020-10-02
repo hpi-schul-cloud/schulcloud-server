@@ -1,6 +1,8 @@
+const reqlib = require('app-root-path').require;
+
+const { BruteForcePrevention } = reqlib('src/utils/errors');
 const { discard } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
-const { BruteForcePrevention } = require('../../../utils/errors');
 const {
 	getRedisClient,
 	redisSetAsync,

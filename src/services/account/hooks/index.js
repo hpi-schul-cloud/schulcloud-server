@@ -1,4 +1,6 @@
-const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, BadRequest, NotFound } = reqlib('src/utils/errors');
 const bcrypt = require('bcryptjs');
 const { ObjectId } = require('mongoose').Types;
 const { checkPasswordStrength } = require('../../../utils/passwordHelpers');

@@ -1,7 +1,9 @@
 const REQUEST_TIMEOUT = 8000; // ms
 const request = require('request-promise-native');
 const { Configuration } = require('@schul-cloud/commons');
-const { GeneralError } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { GeneralError } = reqlib('src/utils/errors');
 const logger = require('../../../logger');
 const EduSearchResponse = require('./EduSearchResponse');
 

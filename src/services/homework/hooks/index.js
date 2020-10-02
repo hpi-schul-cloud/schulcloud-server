@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
-const errors = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, GeneralError } = reqlib('src/utils/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const logger = require('../../../logger');
 
@@ -226,12 +228,12 @@ const hasPatchPermission = (hook) => {
 			if (isTeacher(hook.params.account.userId, homework)) {
 				return Promise.resolve(hook);
 			}
-			return Promise.reject(new errors.Forbidden());
+			return Promise.reject(new Forbidden());
 		})
 		.catch((err) => {
 			logger.warning(err);
 			return Promise.reject(
-				new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach homework service @isTeacher function" })
+				new GeneralError({ message: "[500 INTERNAL ERROR] - can't reach homework service @isTeacher function" })
 			);
 		});
 };
