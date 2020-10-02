@@ -773,5 +773,16 @@
 		"$date": "2020-08-24T10:57:52.663Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f75eaf7f46a125480ba2d12"
+	},
+	"state": "up",
+	"name": "addIndexesForSlowQueries",
+	"createdAt": {
+		"$date": "2020-10-01T14:43:03.652Z"
+	},
+	"__v": 0
 }]
 
