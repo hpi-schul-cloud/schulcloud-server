@@ -32,15 +32,25 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - Added hotfix merges
 
-<<<<<<< HEAD
+## [25.0.7] - 2020-10-01
+
+### Removed
+
+- OPS-1316 - removed custom keep-alive header creation in express middleware
+
+## [25.0.6] - 2020-10-01
+
+### Added
+
+- OPS-1316 - add indexes for slow files and submission queries
+
 ## [25.0.5] - 2020-10-01
 
 ### Added
 
 - SC-6973 - add time window for pin creation
 
-=======
->>>>>>> e132a8d93e52285aa98b3fa0f693923ac69d95fe
+
 ## [25.0.4] - 2020-09-30
 
 ### Added
