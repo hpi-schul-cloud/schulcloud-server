@@ -95,6 +95,7 @@
 		"querystring": "^0.2.0",
 		"read-chunk": "^3.0.0",
 		"redis": "^3.0.0",
+		"request-promise-core": "^1.1.4",
 		"request-promise-native": "^1.0.3",
 		"rss-parser": "^3.6.2",
 		"sanitize-html": "^1.18.2",

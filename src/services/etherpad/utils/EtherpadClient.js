@@ -1,6 +1,8 @@
 const rp = require('request-promise-native');
 const rpErrors = require('request-promise-core/errors');
-const { BadRequest, Conflict } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest, Conflict } = reqlib('src/utils/errors');
 const { Configuration } = require('@schul-cloud/commons');
 
 const logger = require('../../../logger');
@@ -36,7 +38,6 @@ class EtherpadClient {
 			createOrGetGroup: 'Could not create/get this group.',
 			createOrGetAuthor: 'Could not create/get this author.',
 			getActiveSessions: 'Could not get active sessions for this author/group combination.',
-			createSession: 'Could not create a session for this author/group combination.',
 		};
 	}
 
@@ -183,7 +184,7 @@ class EtherpadClient {
 						},
 					};
 				}
-				this.handleEtherpadError(err, this.err.createOrGetGroupPad);
+				return this.handleEtherpadError(err, this.err.createOrGetGroupPad);
 			});
 	}
 }

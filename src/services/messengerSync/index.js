@@ -1,5 +1,7 @@
 const { Configuration } = require('@schul-cloud/commons');
-const { GeneralError } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { GeneralError } = reqlib('src/utils/errors');
 const eventListener = require('./eventListener');
 const producer = require('./producer');
 const consumer = require('./consumer');

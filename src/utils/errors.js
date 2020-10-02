@@ -207,6 +207,8 @@ class SilentError extends ApplicationError {
 		this.className = 'silent-error';
 	}
 }
+// take from ldap
+class NoClientInstanceError extends Error {}
 
 module.exports = {
 	BadRequest,
@@ -230,4 +232,5 @@ module.exports = {
 	Unavailable,
 	SilentError,
 	PageNotFound,
+	NoClientInstanceError,
 };

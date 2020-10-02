@@ -1,7 +1,8 @@
-const { Forbidden, GeneralError } = require('@feathersjs/errors');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+const reqlib = require('app-root-path').require;
 
+const { Forbidden, GeneralError } = reqlib('src/utils/errors');
 const logger = require('../../logger');
 const hooks = require('./hooks');
 const { externallyManaged } = require('../helpers/utils');

@@ -1,7 +1,9 @@
 const fs = require('fs');
 const url = require('url');
 const rp = require('request-promise-native');
-const { Forbidden, BadRequest, NotFound, GeneralError } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, NotFound, BadRequest, GeneralError } = reqlib('src/utils/errors');
 
 const hooks = require('./hooks');
 const swaggerDocs = require('./docs');

@@ -1,13 +1,16 @@
 /* eslint-disable no-underscore-dangle */
 const ldap = require('ldapjs');
-const errors = require('@feathersjs/errors');
 const mongoose = require('mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, NotFound, BadRequest, GeneralError, NotAuthenticated, NoClientInstanceError } = reqlib(
+	'src/utils/errors'
+);
 
 const hooks = require('./hooks');
 
-const { NoClientInstanceError } = require('./errors');
 const getLDAPStrategy = require('./strategies');
 const logger = require('../../logger');
 
@@ -39,10 +42,10 @@ module.exports = function LDAPService() {
 				.find({ query: { _id: id, type: 'ldap' }, paginate: false })
 				.then(([system]) => {
 					if (!system) {
-						throw new errors.NotFound();
+						throw new NotFound();
 					}
 					if (system.ldapConfig.provider !== 'general') {
-						throw new errors.Forbidden('You are not allowed to access this provider.');
+						throw new Forbidden('You are not allowed to access this provider.');
 					}
 					if (system.ldapConfig.providerOptions.classPathAdditions === '') {
 						return this.getUsers(system.ldapConfig, '').then((userData) => ({
@@ -128,7 +131,7 @@ module.exports = function LDAPService() {
 		_connect(config, username, password) {
 			return new Promise((resolve, reject) => {
 				if (!(config && config.url)) {
-					reject(new errors.BadRequest('Invalid URL in config object.'));
+					reject(new BadRequest('Invalid URL in config object.'));
 				}
 				logger.debug(`[LDAP] Connecting to "${config.url}"`);
 				const client = ldap.createClient({
@@ -142,7 +145,7 @@ module.exports = function LDAPService() {
 
 				client.on('error', (e) => {
 					logger.error('Error during LDAP operation', { error: e });
-					reject(new errors.GeneralError('LDAP error', e));
+					reject(new GeneralError('LDAP error', e));
 				});
 
 				client.on('connect', () => {
@@ -152,7 +155,7 @@ module.exports = function LDAPService() {
 
 					client.bind(bindUser, bindPasword, (err) => {
 						if (err) {
-							reject(new errors.NotAuthenticated('Wrong credentials'));
+							reject(new NotAuthenticated('Wrong credentials'));
 						} else {
 							logger.debug('[LDAP] Bind successful');
 							resolve(client);
@@ -201,7 +204,7 @@ module.exports = function LDAPService() {
 					connection.unbind();
 					return Promise.resolve(true);
 				}
-				return Promise.reject(new errors.NotAuthenticated('User could not authenticate'));
+				return Promise.reject(new NotAuthenticated('User could not authenticate'));
 			});
 		}
 
