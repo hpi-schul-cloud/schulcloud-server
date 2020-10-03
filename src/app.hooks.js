@@ -1,6 +1,7 @@
 // Global hooks that run for every service
 const { iff, isProvider } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
+const Sentry = require('@sentry/node');
 const logger = require('./logger');
 const {
 	sanitizeHtml: { sanitizeDeep },
@@ -134,7 +135,9 @@ const leadTimeDetection = (context) => {
 				info.connection = headers.connection;
 				info.requestId = headers.requestId;
 			}
-			logger.error(new SlowQuery(`Slow query warning at route ${context.path}`, info));
+			const error = new SlowQuery(`Slow query warning at route ${context.path}`, info);
+			logger.error(error);
+			Sentry.captureException(error);
 		}
 	}
 };

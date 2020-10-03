@@ -4,9 +4,8 @@ const { Configuration } = require('@schul-cloud/commons');
 const jwt = require('jsonwebtoken');
 const reqlib = require('app-root-path').require;
 
-const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention, convertToFeathersError } = reqlib(
-	'src/utils/errors'
-);
+const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention } = reqlib('src/utils/errors');
+const { convertToFeathersError } = reqlib('src/utils/errorUtils');
 
 const logger = require('../logger');
 
@@ -53,15 +52,12 @@ const getRequestInfo = (req) => {
 
 const formatAndLogErrors = (error, req, res, next) => {
 	if (error) {
+		// sanitize
 		const err = convertToFeathersError(error);
-		// too much for logging...
-		delete err.hook;
-		// delete response informations for extern express applications
-		delete err.response;
-		// add request response
 		const requestInfo = getRequestInfo(req);
+		err.request = requestInfo;
 		// for tests level is set to emerg, set LOG_LEVEL=debug for see it
-		logger.error({ ...err, ...requestInfo });
+		logger.error({ ...err });
 	}
 	next(error);
 };

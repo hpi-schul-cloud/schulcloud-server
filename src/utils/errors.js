@@ -195,8 +195,6 @@ class SilentError extends ApplicationError {
 // take from ldap
 class NoClientInstanceError extends Error {}
 
-const isFeatherError = (error) => error.type === 'FeathersError';
-
 const errorsByCode = {
 	'400': BadRequest,
 	'401': NotAuthenticated,
@@ -215,14 +213,6 @@ const errorsByCode = {
 	'501': NotImplemented,
 	'502': BadGateway,
 	'503': Unavailable,
-};
-
-const convertToFeathersError = (error) => {
-	if (isFeatherError(error)) {
-		return error;
-	}
-	const code = error.code || error.statusCode || 500;
-	return new errorsByCode[code](error);
 };
 
 module.exports = {
@@ -249,7 +239,5 @@ module.exports = {
 	PageNotFound,
 	Gone,
 	NoClientInstanceError,
-	isFeatherError,
-	convertToFeathersError,
 	errorsByCode,
 };
