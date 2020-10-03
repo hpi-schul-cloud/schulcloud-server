@@ -6,6 +6,8 @@ const { teamsModel } = require('../teams/model');
 const ACTIONS = {
 	SYNC_USER: 'syncUser',
 	SYNC_SCHOOL: 'syncSchool',
+	DELETE_TEAM: 'deleteTeam',
+	DELETE_COURSE: 'deleteCourse',
 };
 
 let app;
@@ -13,6 +15,34 @@ let channelSendInternal;
 
 const sendMessage = (message) => {
 	channelSendInternal.sendToQueue(message, { persistent: true });
+};
+
+const requestUserRemoval = async (_) => {
+	// not implemented yet
+};
+
+const requestTeamRemoval = async (team) => {
+	const message = {
+		action: ACTIONS.DELETE_TEAM,
+		teamId: team._id,
+		schoolId: team.schoolId,
+	};
+	sendMessage(message);
+};
+
+const requestCourseRemoval = async (course) => {
+	const message = {
+		action: ACTIONS.DELETE_COURSE,
+		courseId: course._id,
+		schoolId: course.schoolId,
+	};
+	sendMessage(message);
+};
+
+const requestRemovalOfRemovedRooms = async (schoolId) => {
+	const courses = await app.service('courses').find({ query: { schoolId } });
+	const archivedCourses = courses.data.filter((course) => course.isArchived);
+	archivedCourses.forEach((course) => requestCourseRemoval(course));
 };
 
 const requestFullSchoolSync = (school) => {
@@ -25,14 +55,18 @@ const requestFullSchoolSync = (school) => {
 };
 
 const requestSyncForEachCourseUser = async (course) => {
-	getAllCourseUserIds(course).forEach((userId) => {
-		const message = {
-			action: ACTIONS.SYNC_USER,
-			userId,
-			courses: [course],
-		};
-		sendMessage(message);
-	});
+	if (course.isArchived) {
+		requestCourseRemoval(course);
+	} else {
+		getAllCourseUserIds(course).forEach((userId) => {
+			const message = {
+				action: ACTIONS.SYNC_USER,
+				userId,
+				courses: [course],
+			};
+			sendMessage(message);
+		});
+	}
 };
 
 const requestSyncForEachTeamUser = async (team) => {
@@ -91,4 +125,8 @@ module.exports = {
 	requestSyncForEachSchoolUser,
 	requestSyncForEachCourseUser,
 	requestSyncForEachTeamUser,
+	requestRemovalOfRemovedRooms,
+	requestTeamRemoval,
+	requestCourseRemoval,
+	requestUserRemoval,
 };

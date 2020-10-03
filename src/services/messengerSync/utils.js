@@ -22,6 +22,30 @@ const getUserData = (userId) =>
 		.lean()
 		.exec();
 
+const getCourseData = (courseId) =>
+	courseModel
+		.findOne(
+			{ _id: courseId },
+			{
+				_id: 1,
+				schoolId: 1,
+			}
+		)
+		.lean()
+		.exec();
+
+const getTeamData = (teamId) =>
+	teamsModel
+		.findOne(
+			{ _id: teamId },
+			{
+				_id: 1,
+				schoolId: 1,
+			}
+		)
+		.lean()
+		.exec();
+
 const getSchoolData = (schoolId) =>
 	schoolModel
 		.findOne(
@@ -225,17 +249,52 @@ const buildAddUserMessage = async (data) => {
 	return buildMessageObject(data);
 };
 
+const buildDeleteCourseMessage = async (data) => {
+	return {
+		method: 'removeRoom',
+		room: {
+			type: 'course',
+			id: data.courseId,
+		},
+	};
+};
+
+const buildDeleteTeamMessage = async (data) => {
+	return {
+		method: 'removeRoom',
+		room: {
+			type: 'team',
+			id: data.teamId,
+		},
+	};
+};
+
 const messengerIsActivatedForSchool = async (data) => {
-	if (data.userId) {
+	if (!data.user && data.userId) {
 		data.user = await getUserData(data.userId);
-		data.school = await getSchoolData(data.user.schoolId);
+		data.schoolId = data.user.schoolId;
 	}
 
-	if (data.schoolId) {
+	if (!data.course && data.courseId) {
+		data.course = await getCourseData(data.courseId);
+		data.schoolId = data.course.schoolId;
+	}
+
+	if (!data.team && data.teamId) {
+		data.team = await getTeamData(data.teamId);
+		data.schoolId = data.team.schoolId;
+	}
+
+	if (!data.school && data.schoolId) {
 		data.school = await getSchoolData(data.schoolId);
 	}
 
 	return data.school && Array.isArray(data.school.features) && data.school.features.includes(SCHOOL_FEATURES.MESSENGER);
 };
 
-module.exports = { buildAddUserMessage, messengerIsActivatedForSchool };
+module.exports = {
+	buildAddUserMessage,
+	buildDeleteCourseMessage,
+	buildDeleteTeamMessage,
+	messengerIsActivatedForSchool,
+};

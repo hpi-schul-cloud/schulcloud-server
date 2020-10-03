@@ -1,7 +1,12 @@
 const { Configuration } = require('@schul-cloud/commons');
 const { getChannel } = require('../../utils/rabbitmq');
-const { ACTIONS, requestSyncForEachSchoolUser } = require('./producer');
-const { buildAddUserMessage, messengerIsActivatedForSchool } = require('./utils');
+const { ACTIONS, requestSyncForEachSchoolUser, requestRemovalOfRemovedRooms } = require('./producer');
+const {
+	buildAddUserMessage,
+	buildDeleteCourseMessage,
+	buildDeleteTeamMessage,
+	messengerIsActivatedForSchool,
+} = require('./utils');
 const logger = require('../../logger');
 const { ObjectId } = require('../../helper/compare');
 
@@ -32,7 +37,7 @@ const validateMessage = (content) => {
 				logger.error(`${errorMsg}, fullSync flag has to be set for ${ACTIONS.SYNC_SCHOOL}.`, content);
 				return false;
 			}
-			break;
+			return true;
 		}
 
 		case ACTIONS.SYNC_USER: {
@@ -50,7 +55,33 @@ const validateMessage = (content) => {
 				logger.error(`${errorMsg}, one of fullSync/courses/teams has to be provided to sync a user.`, content);
 				return false;
 			}
-			break;
+			return true;
+		}
+
+		case ACTIONS.DELETE_COURSE: {
+			if (!content.courseId) {
+				logger.error(`${errorMsg}, courseId is required for ${ACTIONS.DELETE_COURSE}.`, content);
+				return false;
+			}
+
+			if (!ObjectId.isValid(content.courseId)) {
+				logger.error(`${errorMsg}, invalid courseId.`, content);
+				return false;
+			}
+			return true;
+		}
+
+		case ACTIONS.DELETE_TEAM: {
+			if (!content.teamId) {
+				logger.error(`${errorMsg}, teamId is required for ${ACTIONS.DELETE_TEAM}.`, content);
+				return false;
+			}
+
+			if (!ObjectId.isValid(content.teamId)) {
+				logger.error(`${errorMsg}, invalid teamId.`, content);
+				return false;
+			}
+			return true;
 		}
 
 		default: {
@@ -59,8 +90,6 @@ const validateMessage = (content) => {
 			return false;
 		}
 	}
-
-	return true;
 };
 
 const sendToExternalQueue = (message) => {
@@ -69,6 +98,7 @@ const sendToExternalQueue = (message) => {
 
 const executeMessage = async (incomingMessage) => {
 	const content = JSON.parse(incomingMessage.content.toString());
+
 	if (!validateMessage(content)) {
 		// message is invalid an can not be retried
 		return false;
@@ -82,11 +112,24 @@ const executeMessage = async (incomingMessage) => {
 	switch (content.action) {
 		case ACTIONS.SYNC_SCHOOL: {
 			await requestSyncForEachSchoolUser(content.schoolId);
+			await requestRemovalOfRemovedRooms(content.schoolId);
 			return true;
 		}
 
 		case ACTIONS.SYNC_USER: {
 			const outgoingMessage = await buildAddUserMessage(content);
+			sendToExternalQueue(outgoingMessage);
+			return true;
+		}
+
+		case ACTIONS.DELETE_COURSE: {
+			const outgoingMessage = await buildDeleteCourseMessage(content);
+			sendToExternalQueue(outgoingMessage);
+			return true;
+		}
+
+		case ACTIONS.DELETE_TEAM: {
+			const outgoingMessage = await buildDeleteTeamMessage(content);
 			sendToExternalQueue(outgoingMessage);
 			return true;
 		}
@@ -106,11 +149,13 @@ const handleMessage = (incomingMessage) =>
 			} else {
 				channelReadInternal.rejectMessage(incomingMessage, false);
 			}
+			return success;
 		})
 		.catch((err) => {
 			logger.error('MESSENGER SYNC: error while handling message', err);
 			// retry message once (the second time it is redelivered)
 			channelReadInternal.rejectMessage(incomingMessage, !incomingMessage.fields.redelivered);
+			return false;
 		});
 
 const setup = () => {
