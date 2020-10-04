@@ -9,11 +9,35 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-## 25.0.4
+## 25.0.8
 
-### Fixed - 25.0.4
+### Fixed - 25.0.8
 
 - SC-6676 - Registration: User with role parent should not be able to log-in
+
+## [25.0.7] - 2020-10-01
+
+### Removed
+
+- OPS-1316 - removed custom keep-alive header creation in express middleware
+
+## [25.0.6] - 2020-10-01
+
+### Added
+
+- OPS-1316 - add indexes for slow files and submission queries
+
+## [25.0.5] - 2020-10-01
+
+### Added
+
+- SC-6973 - add time window for pin creation
+
+## [25.0.4] - 2020-09-30
+
+### Added
+
+- Added lead time detection
 
 ## 25.0.3
 
