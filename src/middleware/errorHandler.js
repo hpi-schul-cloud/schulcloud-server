@@ -4,7 +4,9 @@ const { Configuration } = require('@schul-cloud/commons');
 const jwt = require('jsonwebtoken');
 const reqlib = require('app-root-path').require;
 
-const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention, UnhandledRejection } = reqlib('src/utils/errors');
+const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention, UnhandledRejection, UnhandledException } = reqlib(
+	'src/utils/errors'
+);
 const { convertToFeathersError } = reqlib('src/utils/errorUtils');
 
 const logger = require('../logger');
@@ -227,7 +229,7 @@ process.on('unhandledRejection', async (reason, promise) => {
 });
 
 process.on('unhandledException', (err) => {
-	logger.error(new UnhandledRejection(err));
+	logger.error(new UnhandledException(err));
 });
 
 module.exports = errorHandler;

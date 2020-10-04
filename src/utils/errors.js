@@ -186,6 +186,16 @@ class UnhandledRejection extends featherErrors.GeneralError {
 	}
 }
 
+class UnhandledException extends featherErrors.GeneralError {
+	constructor(message, additional, ...params) {
+		super(message, additional, ...params);
+		prepare(this, message, additional, params, 'unhandled-exception');
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, UnhandledException);
+		}
+	}
+}
+
 // TODO we should look into it in context of new architecture
 // ..at the moment it is only copy paste to this place.
 class ApplicationError extends Error {
@@ -206,23 +216,23 @@ class SilentError extends ApplicationError {
 class NoClientInstanceError extends Error {}
 
 const errorsByCode = {
-	'400': BadRequest,
-	'401': NotAuthenticated,
-	'402': PaymentError,
-	'403': Forbidden,
-	'404': NotFound,
-	'405': MethodNotAllowed,
-	'406': NotAcceptable,
-	'408': Timeout,
-	'409': Conflict,
-	'410': Gone,
-	'411': LengthRequired,
-	'422': Unprocessable,
-	'429': TooManyRequests,
-	'500': GeneralError,
-	'501': NotImplemented,
-	'502': BadGateway,
-	'503': Unavailable,
+	400: BadRequest,
+	401: NotAuthenticated,
+	402: PaymentError,
+	403: Forbidden,
+	404: NotFound,
+	405: MethodNotAllowed,
+	406: NotAcceptable,
+	408: Timeout,
+	409: Conflict,
+	410: Gone,
+	411: LengthRequired,
+	422: Unprocessable,
+	429: TooManyRequests,
+	500: GeneralError,
+	501: NotImplemented,
+	502: BadGateway,
+	503: Unavailable,
 };
 
 module.exports = {
@@ -250,5 +260,6 @@ module.exports = {
 	Gone,
 	NoClientInstanceError,
 	UnhandledRejection,
+	UnhandledException,
 	errorsByCode,
 };
