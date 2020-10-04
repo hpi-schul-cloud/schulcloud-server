@@ -8,7 +8,7 @@ const logger = require('../../logger');
 
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../../config/globals');
 
-const permissionsAllowedToLogin = ['student', 'employee', 'expert', 'administrator', 'teacher'];
+const permissionsAllowedToLogin = ['student', 'expert', 'administrator', 'teacher'];
 
 const formatBirthdate1 = (datestamp) => {
 	if (datestamp == undefined) return false;

@@ -231,12 +231,12 @@ describe('registration service', () => {
 			.create(hashData)
 			.then((newHash) => {
 				hash = newHash;
-				return userModel.create({
+				return testObjects.createTestUser({
 					email,
 					firstName: 'Max',
 					lastName: 'Mustermann',
 					schoolId: '5f2987e020834114b8efd6f8',
-					roles: ['5b45f8d28c8dba65f8871e19'], // parent
+					roles: ['5b45f8d28c8dba65f8871e19'],
 					importHash: hash,
 				});
 			})
@@ -283,7 +283,7 @@ describe('registration service', () => {
 			.create(hashData)
 			.then((newHash) => {
 				hash = newHash;
-				return userModel.create({
+				return testObjects.createTestUser({
 					email,
 					firstName: 'Max',
 					lastName: 'Mustermann',
@@ -369,7 +369,7 @@ describe('registration service', () => {
 			.create(hashData)
 			.then((newHash) => {
 				hash = newHash;
-				return userModel.create({
+				return testObjects.createTestUser({
 					email,
 					firstName: 'Max',
 					lastName: 'Mustermann',
