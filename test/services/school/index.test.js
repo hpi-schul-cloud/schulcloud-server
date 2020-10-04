@@ -4,15 +4,28 @@ const { Configuration } = require('@schul-cloud/commons');
 
 const { expect } = chai;
 
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
 const { schoolModel: School, yearModel: YearModel } = require('../../../src/services/school/model');
 
-const testObjects = require('../helpers/testObjects')(app);
-const { create: createSchool, info: createdSchoolIds } = require('../helpers/services/schools')(app);
+const testObjects = require('../helpers/testObjects')(appPromise);
+const { create: createSchool, info: createdSchoolIds } = require('../helpers/services/schools')(appPromise);
 
 describe('school service', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
+	});
+
 	it('registered the schools services', () => {
 		assert.ok(app.service('schools'));
 	});
@@ -28,9 +41,10 @@ describe('school service', () => {
 		let defaultYears = null;
 		let sampleYear;
 		let sampleSchoolData;
-		const schoolService = app.service('/schools');
+		let schoolService;
 
 		before('load data and set samples', async () => {
+			schoolService = app.service('/schools');
 			defaultYears = await YearModel.find().sort('name').lean().exec();
 			sampleYear = defaultYears[0];
 			const school = await createSchool();
@@ -161,17 +175,6 @@ describe('school service', () => {
 	});
 
 	describe('patch schools', () => {
-		let server;
-
-		before((done) => {
-			server = app.listen(0, done); // required to initialize all services used for testObjects
-		});
-
-		after((done) => {
-			server.close(done);
-			testObjects.cleanup();
-		});
-
 		it('administrator can patch his own school', async () => {
 			const school = await testObjects.createTestSchool({});
 			const admin = await testObjects.createTestUser({
@@ -342,6 +345,18 @@ describe('school service', () => {
 });
 
 describe('years service', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen();
+	});
+
+	after(async () => {
+		await server.close();
+	});
+
 	it('registered the years services', () => {
 		assert.ok(app.service('years'));
 		assert.ok(app.service('gradeLevels'));

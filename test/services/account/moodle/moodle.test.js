@@ -1,20 +1,20 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 const moodleMockServer = require('./moodleMockServer');
 
-const testObjects = require('../../helpers/testObjects')(app);
+const testObjects = require('../../helpers/testObjects')(appPromise);
 
-const { logger } = app;
-
+const { expect } = chai;
 chai.use(chaiHttp);
 
 describe('Moodle single-sign-on', () => {
+	let app;
 	let testSystem = null;
 
-	const newTestAccount = { username: 'testMoodleLoginUser', password: 'testPassword' };
+	const newTestAccount = { username: 'testMoodleLoginUser1', password: 'testPassword' };
 
-	const existingTestAccount = { username: 'testMoodleLoginExisting', password: 'testPasswordExisting' };
+	const existingTestAccount = { username: 'testMoodleLoginExisting1', password: 'testPasswordExisting' };
 	const existingTestAccountParameters = {
 		username: existingTestAccount.username,
 		password: existingTestAccount.password,
@@ -27,20 +27,25 @@ describe('Moodle single-sign-on', () => {
 		});
 	}
 
-	before(() =>
-		createMoodleTestServer()
-			.then((moodle) => {
-				mockMoodle = moodle;
-				return Promise.all([
-					testObjects.createTestSystem({ url: moodle.url, type: 'moodle' }),
-					testObjects.createTestUser(),
-				]);
-			})
-			.then(([system, testUser]) => {
-				testSystem = system;
-				return testObjects.createTestAccount(existingTestAccountParameters, system, testUser);
-			})
-	);
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = app.listen(0);
+		const moodle = await createMoodleTestServer();
+		const [system, testUser] = await Promise.all([
+			testObjects.createTestSystem({ url: moodle.url, type: 'moodle' }),
+			testObjects.createTestUser(),
+		]);
+		testSystem = system;
+		const account = await testObjects.createTestAccount(existingTestAccountParameters, system, testUser);
+		return account;
+	});
+
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
+	});
 
 	it('should create an account for a new user who logs in with moodle', () =>
 		new Promise((resolve, reject) => {
@@ -63,26 +68,13 @@ describe('Moodle single-sign-on', () => {
 
 					const account = res.body;
 
-					account.should.have.property('_id');
-					account.username.should.equal(newTestAccount.username.toLowerCase());
-					account.should.include({
+					expect(account).to.have.property('_id');
+					expect(account.username).to.equal(newTestAccount.username.toLowerCase());
+					expect(account).to.include({
 						systemId: testSystem._id.toString(),
 						activated: false,
 					});
-
 					resolve();
 				});
 		}));
-
-	after((done) => {
-		testObjects
-			.cleanup()
-			.then(() => {
-				done();
-			})
-			.catch((error) => {
-				logger.error(`Could not remove test account(s): ${error}`);
-				done();
-			});
-	});
 });

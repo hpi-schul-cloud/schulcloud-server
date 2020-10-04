@@ -2,7 +2,7 @@ const School = require('../../../../src/services/school/model').schoolModel;
 
 let createdSchoolIds = [];
 
-const create = (app) => async ({
+const create = (appPromise) => async ({
 	name = `HPI-Testschule-${new Date().getTime()}`,
 	address = {},
 	fileStorageType,
@@ -28,6 +28,7 @@ const create = (app) => async ({
 	enableStudentTeamCreation = undefined,
 	permissions = undefined,
 } = {}) => {
+	const app = await appPromise;
 	const school = await app.service('schools').create({
 		name,
 		address,

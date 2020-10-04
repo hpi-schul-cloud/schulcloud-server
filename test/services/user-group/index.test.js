@@ -1,27 +1,34 @@
 const { expect } = require('chai');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
-const classesService = app.service('/classes');
-
 describe('classes service', () => {
+	let app;
+	let classesService;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		classesService = app.service('/classes');
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
+	});
+
 	it('is properly registered', () => {
 		expect(classesService).to.not.equal(undefined);
 	});
 
 	describe('find route', () => {
-		let server;
 		const createdIds = [];
-
-		before((done) => {
-			server = app.listen(0, done);
-		});
 
 		after(async () => {
 			await testObjects.classes.removeMany(createdIds);
-			await server.close();
 		});
 
 		afterEach(testObjects.cleanup);

@@ -1,28 +1,30 @@
 const { expect } = require('chai');
 const logger = require('../../../../src/logger/index');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 const accountModel = require('../../../../src/services/account/model');
-
-const accountService = app.service('/accounts');
-
-const adminStudentsService = app.service('/users/admin/students');
-const adminTeachersService = app.service('/users/admin/teachers');
-const consentService = app.service('consents');
 
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const testGenericErrorMessage = "You don't have one of the permissions: STUDENT_LIST.";
 
 describe('AdminUsersService', () => {
+	let app;
 	let server;
+	let accountService;
+	let adminStudentsService;
+	let adminTeachersService;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		accountService = app.service('/accounts');
+		adminStudentsService = app.service('/users/admin/students');
+		adminTeachersService = app.service('/users/admin/teachers');
+		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	afterEach(async () => {
@@ -973,14 +975,10 @@ describe('AdminUsersService', () => {
 			}
 		};
 
-		it(
-			'do not update account if from external system (student, patch)',
-			doNotUpdateAccountIfSystemIdIsSet('student', 'patch', adminStudentsService)
-		);
-		it(
-			'do not update account if from external system (teacher, patch)',
-			doNotUpdateAccountIfSystemIdIsSet('teacher', 'patch', adminTeachersService)
-		);
+		it('do not update account if from external system (student, patch)', () =>
+			doNotUpdateAccountIfSystemIdIsSet('student', 'patch', adminStudentsService));
+		it('do not update account if from external system (teacher, patch)', () =>
+			doNotUpdateAccountIfSystemIdIsSet('teacher', 'patch', adminTeachersService));
 
 		const updateFromDifferentSchool = (role, type, service) => async () => {
 			const school = await testObjects.createTestSchool({
@@ -1012,14 +1010,10 @@ describe('AdminUsersService', () => {
 			}
 		};
 
-		it(
-			'do not allow patch students from other schools',
-			updateFromDifferentSchool('student', 'patch', adminStudentsService)
-		);
-		it(
-			'do not allow patch teacher from other schools',
-			updateFromDifferentSchool('teacher', 'patch', adminTeachersService)
-		);
+		it('do not allow patch students from other schools', () =>
+			updateFromDifferentSchool('student', 'patch', adminStudentsService));
+		it('do not allow patch teacher from other schools', () =>
+			updateFromDifferentSchool('teacher', 'patch', adminTeachersService));
 
 		const useEmailTwice = (role, type, service) => async () => {
 			const school = await testObjects.createTestSchool({
@@ -1086,16 +1080,24 @@ describe('AdminUsersService', () => {
 			expect(notUpdatedUser.lastName).to.be.not.equal(newUserName);
 		};
 
-		it('block changes student patch if email already use', useEmailTwice('student', 'patch', adminStudentsService));
-		it('block changes teacher patch if email already in use', useEmailTwice('teacher', 'patch', adminTeachersService));
+		it('block changes student patch if email already use', () =>
+			useEmailTwice('student', 'patch', adminStudentsService));
+		it('block changes teacher patch if email already in use', () =>
+			useEmailTwice('teacher', 'patch', adminTeachersService));
 	});
 });
 
 describe('AdminTeachersService', () => {
+	let app;
+	let adminTeachersService;
+	let consentService;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		adminTeachersService = app.service('/users/admin/teachers');
+		consentService = app.service('consents');
+		server = await app.listen(0);
 	});
 
 	after((done) => {
