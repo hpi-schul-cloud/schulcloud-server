@@ -41,6 +41,7 @@ class Courses {
 	}
 
 	get(id, params) {
+		return Promise.reject(new Error());
 		return this.app.service('courseModel').get(id, prepareInternalParams(params));
 	}
 

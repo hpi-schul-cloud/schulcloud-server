@@ -43,7 +43,7 @@ const validateCredentials = async (hook) => {
 	if (client) {
 		return hook;
 	}
-	return Promise.reject();
+	return Promise.reject(new Error());
 };
 
 const trimPassword = (hook) => {

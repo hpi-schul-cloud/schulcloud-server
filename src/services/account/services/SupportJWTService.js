@@ -2,7 +2,7 @@
 const CryptoJS = require('crypto-js');
 const reqlib = require('app-root-path').require;
 
-const {BadRequest } = reqlib('src/utils/errors');
+const { BadRequest } = reqlib('src/utils/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const { ObjectId } = require('mongoose').Types;
 
@@ -54,7 +54,7 @@ class JWT {
 		return CryptoJS.HmacSHA256(signature, secret);
 	}
 
-	async create(userId, currentUserId, secret) {
+	async create(userId, supportUserId, secret) {
 		const account = await accountModel.findOne({ userId }).select('_id').lean().exec();
 
 		if (!account && !account._id) {
@@ -72,7 +72,7 @@ class JWT {
 
 		const jwtData = {
 			support: true, // mark for support jwts
-			supportUserId: currentUserId,
+			supportUserId,
 			accountId,
 			userId,
 			iat,
@@ -156,7 +156,7 @@ class SupportJWTService {
 			this.executeInfo(currentUserId, requestedUserId);
 			return jwt;
 		} catch (err) {
-			logger.warning(this.err.canNotCreateJWT, err);
+			logger.error(this.err.canNotCreateJWT, err);
 			return err;
 		}
 	}

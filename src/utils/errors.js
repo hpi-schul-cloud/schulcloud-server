@@ -176,6 +176,16 @@ class PageNotFound extends NotFound {
 	}
 }
 
+class UnhandledRejection extends featherErrors.GeneralError {
+	constructor(message, additional, ...params) {
+		super(message, additional, ...params);
+		prepare(this, message, additional, params, 'unhandled-rejection');
+		if (Error.captureStackTrace) {
+			Error.captureStackTrace(this, UnhandledRejection);
+		}
+	}
+}
+
 // TODO we should look into it in context of new architecture
 // ..at the moment it is only copy paste to this place.
 class ApplicationError extends Error {
@@ -239,5 +249,6 @@ module.exports = {
 	PageNotFound,
 	Gone,
 	NoClientInstanceError,
+	UnhandledRejection,
 	errorsByCode,
 };

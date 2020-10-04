@@ -304,7 +304,7 @@ const fileStorageService = {
 					if (teamMember) {
 						return resolve();
 					}
-					return reject();
+					return reject(new Error());
 				});
 			}
 

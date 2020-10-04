@@ -4,7 +4,7 @@ const { Configuration } = require('@schul-cloud/commons');
 const jwt = require('jsonwebtoken');
 const reqlib = require('app-root-path').require;
 
-const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention } = reqlib('src/utils/errors');
+const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention, UnhandledRejection } = reqlib('src/utils/errors');
 const { convertToFeathersError } = reqlib('src/utils/errorUtils');
 
 const logger = require('../logger');
@@ -56,7 +56,10 @@ const formatAndLogErrors = (error, req, res, next) => {
 		const err = convertToFeathersError(error);
 		const requestInfo = getRequestInfo(req);
 		err.request = requestInfo;
+		// type is override by logger for logging type
+		err.errorType = err.type;
 		// for tests level is set to emerg, set LOG_LEVEL=debug for see it
+		// Logging the error object won't print error's stack trace. You need to ask for it specifically
 		logger.error({ ...err });
 	}
 	next(error);
@@ -209,5 +212,22 @@ const errorHandler = (app) => {
 	app.use(handleSilentError);
 	app.use(returnAsJson);
 };
+
+// no stacktrace for Promise.reject(); and Promise.resject('someText'); missing return is also a case
+// or throw no errors
+// get() { return Promise.reject()} produce wrong stack trace in client
+process.on('unhandledRejection', async (reason, promise) => {
+	let result;
+	try {
+		result = await promise.catch((err) => err);
+	} catch (err) {
+		result = err;
+	}
+	logger.error(new UnhandledRejection({ result, reason }));
+});
+
+process.on('unhandledException', (err) => {
+	logger.error(new UnhandledRejection(err));
+});
 
 module.exports = errorHandler;

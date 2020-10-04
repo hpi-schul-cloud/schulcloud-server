@@ -112,7 +112,7 @@ module.exports = (app) => {
 			release,
 			//	debug: true,
 			sampleRate: Configuration.get('SENTRY_SAMPLE_RATE'),
-			//	captureUnhandledRejections: true,
+			captureUnhandledRejections: true,
 			beforeSend(event, hint) {
 				const modifiedEvent = runMiddlewares(event, hint);
 				return modifiedEvent;

@@ -33,8 +33,7 @@ module.exports = {
 			.exec();
 		if (existingBbbTool !== null) {
 			error('there is already a bbb tool in collection ltitools, exit', { existingBbbTool });
-			Promise.reject();
-			return;
+			return Promise.reject(new Error());
 		}
 		const bbbTool = new Tool({
 			name,

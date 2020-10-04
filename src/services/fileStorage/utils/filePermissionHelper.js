@@ -21,8 +21,7 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 		});
 		sortedTeamRoles = sortRoles(teamRoles);
 	} catch (error) {
-		logger.error(error);
-		return Promise.reject();
+		return Promise.reject(error);
 	}
 
 	return new Promise((resolve, reject) => {
@@ -50,7 +49,7 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 		if (userPos > creatorPos || rolePermissions[permission]) {
 			resolve(true);
 		}
-		reject();
+		reject(new Error());
 	});
 };
 
@@ -110,11 +109,11 @@ const checkPermissions = (permission) => async (user, file) => {
 			}
 			if (isStudent) {
 				const rolePermissions = permissions.find((perm) => perm.refId && equalIds(perm.refId, isStudent._id));
-				return rolePermissions[permission] ? Promise.resolve(true) : Promise.reject();
+				return rolePermissions[permission] ? Promise.resolve(true) : Promise.reject(new Error());
 			}
 			return Promise.resolve(true);
 		}
-		return Promise.reject();
+		return Promise.reject(new Error());
 	}
 
 	if (homework) {
@@ -123,7 +122,7 @@ const checkPermissions = (permission) => async (user, file) => {
 			const isMember = checkMemberStatus({ file: courseFile, user });
 			if (isMember) return Promise.resolve(true);
 		} else {
-			return Promise.reject();
+			return Promise.reject(new Error());
 		}
 	}
 
@@ -132,7 +131,7 @@ const checkPermissions = (permission) => async (user, file) => {
 	// User is no member of team or course
 	// and file has no explicit user permissions (sharednetz files)
 	if (!isMember && !userPermissions) {
-		return Promise.reject();
+		return Promise.reject(new Error());
 	}
 
 	return checkTeamPermission({
