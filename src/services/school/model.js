@@ -18,7 +18,7 @@ const SCHOOL_FEATURES = {
 	MESSENGER: 'messenger',
 	STUDENTVISIBILITY: 'studentVisibility', // deprecated
 	MESSENGER_SCHOOL_ROOM: 'messengerSchoolRoom',
-	MATRIX: 'matrix',
+	MATRIX_MESSENGER: 'matrixMessenger',
 };
 
 const defaultFeatures = [];
