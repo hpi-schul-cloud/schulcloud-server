@@ -2,7 +2,7 @@
 // eslint-disable-next-line no-unused-vars
 const mongoose = require('mongoose');
 
-const { info } = require('../src/logger');
+const { info, error } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
@@ -13,6 +13,14 @@ const parentSchema = new mongoose.Schema({
 });
 
 const consentForm = ['analog', 'digital', 'update'];
+
+const RoleModel = mongoose.model(
+	'myRoleModel',
+	new mongoose.Schema({
+		name: { type: String, required: true },
+	}),
+	'roles'
+);
 
 const OldUser = mongoose.model(
 	'oldUser',
@@ -61,29 +69,17 @@ const getIds = (doc) =>
 		return prev;
 	}, []);
 
-const findAllParents = async () =>
-	User.aggregate([
-		{
-			$lookup: {
-				from: 'roles',
-				localField: 'roles',
-				foreignField: '_id',
-				as: 'rolesLookup',
-			},
-		},
-		{ $match: { 'rolesLookup.name': 'parent' } },
-	]);
+const getParentRole = async () => RoleModel.findOne({ name: 'parent' }).lean().exec();
 
-const deleteParentUsers = (parents) => {
-	const idsToDelete = getIds(parents);
-	info(`${idsToDelete.length} parent users will be deleted!`);
-	return User.deleteMany({ _id: { $in: [idsToDelete] } });
+const findAllParents = async (parentRole) => User.find({ roles: parentRole._id }).lean().exec();
+
+const deleteParentUsers = async (parentRole) => {
+	const result = await User.deleteMany({ roles: parentRole._id }).exec();
+	info(`${result.deletedCount} users deleted.`);
 };
 
 const getStudentsForParent = async (parent) => {
-	const students = await OldUser.find({
-		parents: parent._id,
-	});
+	const students = await OldUser.find({ parents: parent._id });
 	info(`${students.length} students for parent with id=${parent._id} will be updated!`);
 	return students;
 };
@@ -107,28 +103,23 @@ const updateStudentsParentData = async (studentIds, parent) => {
 	return updatedStudents;
 };
 
-// How to use more than one schema per collection on mongodb
-// https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
-
-// TODO npm run migration-persist and remove this line
-// TODO update seed data and remove this line
-
 module.exports = {
 	up: async function up() {
 		await connect();
 		// ////////////////////////////////////////////////////
-		const parents = await findAllParents();
+		const parentRole = await getParentRole();
+		const parents = await findAllParents(parentRole);
 		for (const parent of parents) {
 			const students = await getStudentsForParent(parent);
 			const studentIds = getIds(students);
 			await updateStudentsParentData(studentIds, parent);
 		}
-		await deleteParentUsers(parents);
+		await deleteParentUsers(parentRole);
 		// ////////////////////////////////////////////////////
 		await close();
 	},
 
 	down: async function down() {
-		Promise.reject(Error);
+		error('This migration cannot be rolled back and data needs to be restored from backups.');
 	},
 };
