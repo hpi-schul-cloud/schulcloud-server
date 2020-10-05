@@ -13,6 +13,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-6567 - add new application errros
 - SC-6830 - Added hook to parse request to arrays when > 20 users are requested in adminUsers service
+- SC-6510 - Added Merlin Url Generator for Lern Store / Edu-sharing
 
 ### Removed
 
@@ -28,6 +29,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Rename statistic mails route, secure it over sync api key now
 - SC-6809 - Maintain RabbitMQ connection and channels
 - SC-5230 - Unblock Account-Page in Nuxt (securing /accounts and /users routes)
+- Support asynchronous calls during server startup
 
 ### Security
 
@@ -50,7 +52,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - SC-6973 - add time window for pin creation
-
 
 ## [25.0.4] - 2020-09-30
 

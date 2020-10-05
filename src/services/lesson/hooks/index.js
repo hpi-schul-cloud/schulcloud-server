@@ -39,6 +39,28 @@ const addShareTokenIfCourseShareable = async (context) => {
 	return lessonModel.findByIdAndUpdate(_id, { shareToken: nanoid(12) }).then(() => context);
 };
 
+// Generate a new url for material that have merlin as source.
+// The url expires after 2 hours
+const convertMerlinUrl = async (context) => {
+	if (
+		context.result &&
+		context.result.materialIds &&
+		context.result.materialIds.some((material) => material.merlinReference)
+	) {
+		const { materialIds } = context.result;
+		await Promise.all(
+			materialIds.map(async (material) => {
+				if (material.merlinReference) {
+					material.url = await context.app
+						.service('edu-sharing/merlinToken')
+						.find({ query: { merlinReference: material.merlinReference } });
+				}
+			})
+		);
+	}
+	return context;
+};
+
 const setPosition = async (context) => {
 	const { courseId, courseGroupId } = context.data;
 	if (courseId || courseGroupId) {
@@ -126,6 +148,7 @@ const populateWhitelist = {
 		'title',
 		'client',
 		'url',
+		'merlinReference',
 		'license',
 		'description',
 		'contentType',
@@ -188,7 +211,7 @@ exports.before = () => ({
 exports.after = {
 	all: [],
 	find: [],
-	get: [],
+	get: [convertMerlinUrl],
 	create: [addShareTokenIfCourseShareable],
 	update: [],
 	patch: [],

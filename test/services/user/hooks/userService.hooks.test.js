@@ -1,8 +1,8 @@
 const { expect } = require('chai');
 const assert = require('assert');
 
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 const { enforceRoleHierarchyOnCreate, checkUniqueEmail } = require('../../../../src/services/user/hooks/userService');
 
 const {
@@ -12,10 +12,12 @@ const {
 } = require('../../../../src/services/user/hooks/userService');
 
 describe('removeStudentFromCourses', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -65,10 +67,12 @@ describe('removeStudentFromCourses', () => {
 });
 
 describe('removeStudentFromClasses', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -118,14 +122,16 @@ describe('removeStudentFromClasses', () => {
 });
 
 describe('generateRegistrationLink', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	afterEach(async () => {
@@ -230,13 +236,16 @@ describe('generateRegistrationLink', () => {
 });
 
 describe('enforceRoleHierarchyOnCreate', () => {
+	let app;
 	let server;
-	before((done) => {
-		server = app.listen(0, done);
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	afterEach(async () => {
@@ -375,10 +384,12 @@ describe('enforceRoleHierarchyOnCreate', () => {
 });
 
 describe('checkUniqueEmail', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {

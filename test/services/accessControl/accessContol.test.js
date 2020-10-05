@@ -1,7 +1,7 @@
 const chai = require('chai');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
-const testObjects = require('../helpers/testObjects')(app);
+const testObjects = require('../helpers/testObjects')(appPromise);
 
 const { expect } = chai;
 
@@ -11,7 +11,8 @@ const otherSchool = {
 
 let authenticator;
 
-const testAccess = (endpoint) => () => {
+const testAccess = (endpoint) => async () => {
+	const app = await appPromise;
 	const request = chai
 		.request(app)
 		.get(endpoint)
