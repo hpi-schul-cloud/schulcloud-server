@@ -5,6 +5,50 @@ const roleModel = require('../role/model');
 const { courseModel, COURSE_FEATURES } = require('../user-group/model');
 const { teamsModel, TEAM_FEATURES } = require('../teams/model');
 const { ObjectId } = require('../../helper/compare');
+const { asyncFilter } = require('../../utils/array');
+const { getAllCourseUserIds } = require('../user-group/logic/courses');
+
+let roles;
+
+const getRoles = async () => {
+	if (!roles) {
+		const [teacherRoleId, adminRoleId, teamOwnerId, teamAdminId, teamLeaderId] = await Promise.all([
+			roleModel
+				.findOne({ name: 'teacher' }, { _id: 1 })
+				.lean()
+				.exec()
+				.then((r) => r._id),
+			roleModel
+				.findOne({ name: 'administrator' }, { _id: 1 })
+				.lean()
+				.exec()
+				.then((r) => r._id),
+			roleModel
+				.findOne({ name: 'teamowner' }, { _id: 1 })
+				.lean()
+				.exec()
+				.then((r) => r._id.toString()),
+			roleModel
+				.findOne({ name: 'teamadministrator' }, { _id: 1 })
+				.lean()
+				.exec()
+				.then((r) => r._id.toString()),
+			roleModel
+				.findOne({ name: 'teamleader' }, { _id: 1 })
+				.lean()
+				.exec()
+				.then((r) => r._id.toString()),
+		]);
+		roles = {
+			teacherRoleId,
+			adminRoleId,
+			teamOwnerId,
+			teamAdminId,
+			teamLeaderId,
+		};
+	}
+	return roles;
+};
 
 const getUserData = (userId) =>
 	userModel
@@ -29,6 +73,11 @@ const getCourseData = (courseId) =>
 			{
 				_id: 1,
 				schoolId: 1,
+				name: 1,
+				userIds: 1,
+				teacherIds: 1,
+				substitutionIds: 1,
+				features: 1,
 			}
 		)
 		.lean()
@@ -41,6 +90,9 @@ const getTeamData = (teamId) =>
 			{
 				_id: 1,
 				schoolId: 1,
+				name: 1,
+				userIds: 1,
+				features: 1,
 			}
 		)
 		.lean()
@@ -88,46 +140,58 @@ const getAllTeamsDataForUser = (userId) =>
 		}
 	);
 
-let roles;
-
-const getRoles = async () => {
-	if (!roles) {
-		const [teacherRoleId, adminRoleId, teamOwnerId, teamAdminId, teamLeaderId] = await Promise.all([
-			roleModel
-				.findOne({ name: 'teacher' }, { _id: 1 })
-				.lean()
-				.exec()
-				.then((r) => r._id),
-			roleModel
-				.findOne({ name: 'administrator' }, { _id: 1 })
-				.lean()
-				.exec()
-				.then((r) => r._id),
-			roleModel
-				.findOne({ name: 'teamowner' }, { _id: 1 })
-				.lean()
-				.exec()
-				.then((r) => r._id.toString()),
-			roleModel
-				.findOne({ name: 'teamadministrator' }, { _id: 1 })
-				.lean()
-				.exec()
-				.then((r) => r._id.toString()),
-			roleModel
-				.findOne({ name: 'teamleader' }, { _id: 1 })
-				.lean()
-				.exec()
-				.then((r) => r._id.toString()),
-		]);
-		roles = {
-			teacherRoleId,
-			adminRoleId,
-			teamOwnerId,
-			teamAdminId,
-			teamLeaderId,
-		};
+const expandContentIds = async (data) => {
+	if (!data.user && data.userId) {
+		data.user = await getUserData(data.userId);
+		data.schoolId = data.schoolId || (data.user && data.user.schoolId);
 	}
-	return roles;
+
+	if (!data.course && data.courseId) {
+		data.course = await getCourseData(data.courseId);
+		data.schoolId = data.schoolId || (data.course && data.course.schoolId);
+	}
+
+	if (!data.team && data.teamId) {
+		data.team = await getTeamData(data.teamId);
+		data.schoolId = data.schoolId || (data.team && data.team.schoolId);
+	}
+
+	if (!data.school && data.schoolId) {
+		data.school = await getSchoolData(data.schoolId);
+	}
+
+	return data;
+};
+
+const messengerIsActivatedForSchool = (school) => {
+	return school && Array.isArray(school.features) && school.features.includes(SCHOOL_FEATURES.MESSENGER);
+};
+
+const isTeamModerator = (team, userId, moderatorRoles) => {
+	if (!userId || !moderatorRoles) {
+		return false;
+	}
+
+	const { teamAdminId, teamLeaderId, teamOwnerId } = moderatorRoles;
+	return team.userIds.some((user) => {
+		if (!ObjectId.equal(user.userId, userId)) {
+			return false; // other user
+		}
+		return [teamAdminId, teamLeaderId, teamOwnerId].includes(user.role.toString());
+	});
+};
+
+const isCourseModerator = (course, userId) => {
+	if (!userId) {
+		return false;
+	}
+
+	return course.teacherIds.concat(course.substitutionIds).some((moderatorId) => ObjectId.equal(moderatorId, userId));
+};
+
+const buildMatrixUserId = (userId) => {
+	const servername = Configuration.get('MATRIX_SERVERNAME');
+	return `@sso_${userId.toString()}:${servername}`;
 };
 
 /*
@@ -155,32 +219,25 @@ const getRoles = async () => {
 }
 */
 
-const buildCourseObject = (course, userId) => ({
-	id: course._id.toString(),
-	name: course.name,
-	description: 'Kurs',
-	type: 'course',
-	bidirectional: (course.features || []).includes(COURSE_FEATURES.MESSENGER),
-	is_moderator: course.teacherIds
-		.concat(course.substitutionIds)
-		.some((moderatorId) => ObjectId.equal(moderatorId, userId)),
-});
+const buildCourseObject = (course, userId = null) => {
+	return {
+		id: course._id.toString(),
+		name: course.name,
+		description: 'Kurs',
+		type: 'course',
+		bidirectional: (course.features || []).includes(COURSE_FEATURES.MESSENGER),
+		is_moderator: isCourseModerator(course, userId),
+	};
+};
 
-const buildTeamObject = async (team, userId, moderatorRoles) => {
-	const { teamAdminId, teamLeaderId, teamOwnerId } = moderatorRoles;
-	const isModerator = team.userIds.some((user) => {
-		if (!ObjectId.equal(user.userId, userId)) {
-			return false; // other user
-		}
-		return [teamAdminId, teamLeaderId, teamOwnerId].includes(user.role.toString());
-	});
+const buildTeamObject = (team, userId = null, moderatorRoles = null) => {
 	return {
 		id: team._id.toString(),
 		name: team.name,
 		description: 'Team',
 		type: 'team',
 		bidirectional: (team.features || []).includes(TEAM_FEATURES.MESSENGER),
-		is_moderator: isModerator,
+		is_moderator: isTeamModerator(team, userId, moderatorRoles),
 	};
 };
 
@@ -229,12 +286,10 @@ const buildMessageObject = async (data) => {
 		});
 	}
 
-	const servername = Configuration.get('MATRIX_SERVERNAME');
-
 	return {
 		method: 'adduser',
 		user: {
-			id: `@sso_${user._id.toString()}:${servername}`,
+			id: buildMatrixUserId(user._id),
 			name: displayName(user),
 		},
 		rooms,
@@ -249,13 +304,30 @@ const buildAddUserMessage = async (data) => {
 	return buildMessageObject(data);
 };
 
-const buildDeleteCourseMessage = async (data) => {
+const buildAddTeamMessage = async (data) => {
+	// room
+	const room = buildTeamObject(data.team);
+
+	// members
+	const moderatorRoles = await getRoles();
+	const membersWithMessengerActivated = await asyncFilter(data.team.userIds, async (teamUser) => {
+		if (ObjectId.equal(teamUser.schoolId, data.team.schoolId)) {
+			return true;
+		}
+		const school = await getSchoolData(teamUser.schoolId);
+		return messengerIsActivatedForSchool(school);
+	});
+	const members = membersWithMessengerActivated.map((teamUser) => {
+		return {
+			id: buildMatrixUserId(teamUser.userId),
+			is_moderator: isTeamModerator(data.team, teamUser.userId, moderatorRoles),
+		};
+	});
+
 	return {
-		method: 'removeRoom',
-		room: {
-			type: 'course',
-			id: data.courseId,
-		},
+		method: 'addRoom',
+		room,
+		members,
 	};
 };
 
@@ -269,32 +341,41 @@ const buildDeleteTeamMessage = async (data) => {
 	};
 };
 
-const messengerIsActivatedForSchool = async (data) => {
-	if (!data.user && data.userId) {
-		data.user = await getUserData(data.userId);
-		data.schoolId = data.user.schoolId;
-	}
+const buildAddCourseMessage = async (data) => {
+	// room
+	const room = buildCourseObject(data.course);
 
-	if (!data.course && data.courseId) {
-		data.course = await getCourseData(data.courseId);
-		data.schoolId = data.course.schoolId;
-	}
+	// members
+	const members = getAllCourseUserIds(data.course).map((userId) => {
+		return {
+			id: buildMatrixUserId(userId),
+			is_moderator: isCourseModerator(data.course, userId),
+		};
+	});
 
-	if (!data.team && data.teamId) {
-		data.team = await getTeamData(data.teamId);
-		data.schoolId = data.team.schoolId;
-	}
+	return {
+		method: 'addRoom',
+		room,
+		members,
+	};
+};
 
-	if (!data.school && data.schoolId) {
-		data.school = await getSchoolData(data.schoolId);
-	}
-
-	return data.school && Array.isArray(data.school.features) && data.school.features.includes(SCHOOL_FEATURES.MESSENGER);
+const buildDeleteCourseMessage = async (data) => {
+	return {
+		method: 'removeRoom',
+		room: {
+			type: 'course',
+			id: data.courseId,
+		},
+	};
 };
 
 module.exports = {
-	buildAddUserMessage,
-	buildDeleteCourseMessage,
-	buildDeleteTeamMessage,
+	expandContentIds,
 	messengerIsActivatedForSchool,
+	buildAddUserMessage,
+	buildAddTeamMessage,
+	buildDeleteTeamMessage,
+	buildAddCourseMessage,
+	buildDeleteCourseMessage,
 };

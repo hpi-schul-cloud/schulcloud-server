@@ -3,8 +3,11 @@ const { getChannel } = require('../../utils/rabbitmq');
 const { ACTIONS, requestSyncForEachSchoolUser, requestRemovalOfRemovedRooms } = require('./producer');
 const {
 	buildAddUserMessage,
+	buildAddCourseMessage,
 	buildDeleteCourseMessage,
+	buildAddTeamMessage,
 	buildDeleteTeamMessage,
+	expandContentIds,
 	messengerIsActivatedForSchool,
 } = require('./utils');
 const logger = require('../../logger');
@@ -58,9 +61,10 @@ const validateMessage = (content) => {
 			return true;
 		}
 
+		case ACTIONS.SYNC_COURSE:
 		case ACTIONS.DELETE_COURSE: {
 			if (!content.courseId) {
-				logger.error(`${errorMsg}, courseId is required for ${ACTIONS.DELETE_COURSE}.`, content);
+				logger.error(`${errorMsg}, courseId is required for:`, content);
 				return false;
 			}
 
@@ -71,9 +75,10 @@ const validateMessage = (content) => {
 			return true;
 		}
 
+		case ACTIONS.SYNC_TEAM:
 		case ACTIONS.DELETE_TEAM: {
 			if (!content.teamId) {
-				logger.error(`${errorMsg}, teamId is required for ${ACTIONS.DELETE_TEAM}.`, content);
+				logger.error(`${errorMsg}, teamId is required for:`, content);
 				return false;
 			}
 
@@ -104,7 +109,8 @@ const executeMessage = async (incomingMessage) => {
 		return false;
 	}
 
-	if (!(await messengerIsActivatedForSchool(content))) {
+	await expandContentIds(content);
+	if (!messengerIsActivatedForSchool(content.school)) {
 		// school should not be synced
 		return false;
 	}
@@ -122,8 +128,20 @@ const executeMessage = async (incomingMessage) => {
 			return true;
 		}
 
+		case ACTIONS.SYNC_COURSE: {
+			const outgoingMessage = await buildAddCourseMessage(content);
+			sendToExternalQueue(outgoingMessage);
+			return true;
+		}
+
 		case ACTIONS.DELETE_COURSE: {
 			const outgoingMessage = await buildDeleteCourseMessage(content);
+			sendToExternalQueue(outgoingMessage);
+			return true;
+		}
+
+		case ACTIONS.SYNC_TEAM: {
+			const outgoingMessage = await buildAddTeamMessage(content);
 			sendToExternalQueue(outgoingMessage);
 			return true;
 		}

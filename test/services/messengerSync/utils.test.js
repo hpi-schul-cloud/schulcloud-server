@@ -5,6 +5,7 @@ const {
 	buildAddUserMessage,
 	buildDeleteCourseMessage,
 	buildDeleteTeamMessage,
+	expandContentIds,
 	messengerIsActivatedForSchool,
 } = require('../../../src/services/messengerSync/utils');
 
@@ -246,7 +247,8 @@ describe('messenger synchronizer utils', () => {
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 
 			// act
-			const result = await messengerIsActivatedForSchool({ userId: user._id });
+			const data = await expandContentIds({ userId: user._id });
+			const result = messengerIsActivatedForSchool(data.school);
 
 			// assert
 			expect(result).to.equal(true);
@@ -259,7 +261,8 @@ describe('messenger synchronizer utils', () => {
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 
 			// act
-			const result = await messengerIsActivatedForSchool({ userId: user._id });
+			const data = await expandContentIds({ userId: user._id });
+			const result = messengerIsActivatedForSchool(data.school);
 
 			// assert
 			expect(result).to.equal(false);
@@ -271,7 +274,8 @@ describe('messenger synchronizer utils', () => {
 			const school = await testObjects.createTestSchool({ features: ['messenger'] });
 
 			// act
-			const result = await messengerIsActivatedForSchool({ schoolId: school._id });
+			const data = await expandContentIds({ schoolId: school._id });
+			const result = messengerIsActivatedForSchool(data.school);
 
 			// assert
 			expect(result).to.equal(true);
@@ -283,7 +287,8 @@ describe('messenger synchronizer utils', () => {
 			const school = await testObjects.createTestSchool({ features: [] });
 
 			// act
-			const result = await messengerIsActivatedForSchool({ schoolId: school._id });
+			const data = await expandContentIds({ schoolId: school._id });
+			const result = messengerIsActivatedForSchool(data.school);
 
 			// assert
 			expect(result).to.equal(false);
