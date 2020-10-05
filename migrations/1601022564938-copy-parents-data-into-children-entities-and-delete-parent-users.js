@@ -15,7 +15,7 @@ const parentSchema = new mongoose.Schema({
 const consentForm = ['analog', 'digital', 'update'];
 
 const RoleModel = mongoose.model(
-	'myRoleModel',
+	'myRoleModel_05102020',
 	new mongoose.Schema({
 		name: { type: String, required: true },
 	}),
@@ -23,7 +23,7 @@ const RoleModel = mongoose.model(
 );
 
 const OldUser = mongoose.model(
-	'oldUser',
+	'oldUser_05102020',
 	new mongoose.Schema({
 		parents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
 		consent: {
@@ -43,7 +43,7 @@ const OldUser = mongoose.model(
 );
 
 const User = mongoose.model(
-	'myUserModel',
+	'myUserModel_05102020',
 	new mongoose.Schema({
 		roles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'role' }],
 		parents: [parentSchema],
