@@ -10,6 +10,7 @@ const ACTIONS = {
 	SYNC_COURSE: 'syncCourse',
 	DELETE_TEAM: 'deleteTeam',
 	DELETE_COURSE: 'deleteCourse',
+	DELETE_USER: 'deleteUser',
 };
 
 let app;
@@ -29,8 +30,13 @@ const requestFullSyncForUser = async (user) => {
 	sendMessage(message);
 };
 
-const requestUserRemoval = async (_) => {
-	// not implemented yet
+const requestUserRemoval = async (user) => {
+	const message = {
+		action: ACTIONS.DELETE_USER,
+		userId: user._id,
+		schoolId: user.schoolId,
+	};
+	sendMessage(message);
 };
 
 // TEAM

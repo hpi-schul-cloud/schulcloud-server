@@ -196,7 +196,7 @@ const buildMatrixUserId = (userId) => {
 
 /*
 {
-  "method": "adduser",
+  "method": "addUser",
   "welcome": {
     "text": "Welcome to messenger"
   },
@@ -287,7 +287,7 @@ const buildMessageObject = async (data) => {
 	}
 
 	return {
-		method: 'adduser',
+		method: 'addUser',
 		user: {
 			id: buildMatrixUserId(user._id),
 			name: displayName(user),
@@ -302,6 +302,15 @@ const buildAddUserMessage = async (data) => {
 		data.teams = await getAllTeamsDataForUser(data.userId);
 	}
 	return buildMessageObject(data);
+};
+
+const buildDeleteUserMessage = async (data) => {
+	return {
+		method: 'removeUser',
+		user: {
+			id: buildMatrixUserId(data.userId),
+		},
+	};
 };
 
 const buildAddTeamMessage = async (data) => {
@@ -374,6 +383,7 @@ module.exports = {
 	expandContentIds,
 	messengerIsActivatedForSchool,
 	buildAddUserMessage,
+	buildDeleteUserMessage,
 	buildAddTeamMessage,
 	buildDeleteTeamMessage,
 	buildAddCourseMessage,

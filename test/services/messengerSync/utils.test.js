@@ -60,7 +60,7 @@ describe('messenger synchronizer utils', () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 			const course = await testObjects.createTestCourse({ teacherIds: [teacher._id], schoolId: school._id });
 			const result = await buildAddUserMessage({ userId: teacher._id, courses: [course] });
-			expect(result.method).to.equal('adduser');
+			expect(result.method).to.equal('addUser');
 
 			expect(result.user).to.haveOwnProperty('name');
 			expect(result.user).to.haveOwnProperty('id');
@@ -94,7 +94,7 @@ describe('messenger synchronizer utils', () => {
 			const school = await testObjects.createTestSchool({ features: ['messenger', 'messengerSchoolRoom'] });
 			const { user, team } = await testObjects.createTestTeamWithOwner({ roles: ['teacher'], schoolId: school._id });
 			const result = await buildAddUserMessage({ userId: user._id, teams: [team] });
-			expect(result.method).to.equal('adduser');
+			expect(result.method).to.equal('addUser');
 
 			expect(result.user).to.haveOwnProperty('name');
 			expect(result.user).to.haveOwnProperty('id');
@@ -132,7 +132,7 @@ describe('messenger synchronizer utils', () => {
 				testObjects.createTestCourse({ teacherIds: [user._id], schoolId: school._id }),
 			]);
 			const result = await buildAddUserMessage({ userId: user._id, fullSync: true });
-			expect(result.method).to.equal('adduser');
+			expect(result.method).to.equal('addUser');
 
 			expect(result.user).to.haveOwnProperty('name');
 			expect(result.user).to.haveOwnProperty('id');
@@ -157,7 +157,7 @@ describe('messenger synchronizer utils', () => {
 			const school = await testObjects.createTestSchool({ features: ['messenger'] });
 			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
 			const result = await buildAddUserMessage({ userId: admin._id, fullSync: true });
-			expect(result.method).to.equal('adduser');
+			expect(result.method).to.equal('addUser');
 
 			expect(result.user).to.haveOwnProperty('name');
 			expect(result.user).to.haveOwnProperty('id');
@@ -184,7 +184,7 @@ describe('messenger synchronizer utils', () => {
 			]);
 
 			const result = await buildAddUserMessage({ userId: student._id, fullSync: true });
-			expect(result.method).to.equal('adduser');
+			expect(result.method).to.equal('addUser');
 
 			expect(result.user).to.haveOwnProperty('name');
 			expect(result.user).to.haveOwnProperty('id');
@@ -205,7 +205,7 @@ describe('messenger synchronizer utils', () => {
 			const course = await testObjects.createTestCourse(courseProps);
 
 			const result = await buildAddUserMessage({ userId: student._id, fullSync: true });
-			expect(result.method).to.equal('adduser');
+			expect(result.method).to.equal('addUser');
 
 			expect(result.user).to.haveOwnProperty('name');
 			expect(result.user).to.haveOwnProperty('id');

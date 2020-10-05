@@ -3,6 +3,7 @@ const { getChannel } = require('../../utils/rabbitmq');
 const { ACTIONS, requestSyncForEachSchoolUser, requestRemovalOfRemovedRooms } = require('./producer');
 const {
 	buildAddUserMessage,
+	buildDeleteUserMessage,
 	buildAddCourseMessage,
 	buildDeleteCourseMessage,
 	buildAddTeamMessage,
@@ -56,6 +57,19 @@ const validateMessage = (content) => {
 
 			if (!content.courses && !content.teams && !content.fullSync) {
 				logger.error(`${errorMsg}, one of fullSync/courses/teams has to be provided to sync a user.`, content);
+				return false;
+			}
+			return true;
+		}
+
+		case ACTIONS.DELETE_USER: {
+			if (!content.userId) {
+				logger.error(`${errorMsg}, userId is required for ${ACTIONS.DELETE_USER}.`, content);
+				return false;
+			}
+
+			if (!ObjectId.isValid(content.userId)) {
+				logger.error(`${errorMsg}, invalid userId.`, content);
 				return false;
 			}
 			return true;
@@ -124,6 +138,12 @@ const executeMessage = async (incomingMessage) => {
 
 		case ACTIONS.SYNC_USER: {
 			const outgoingMessage = await buildAddUserMessage(content);
+			sendToExternalQueue(outgoingMessage);
+			return true;
+		}
+
+		case ACTIONS.DELETE_USER: {
+			const outgoingMessage = await buildDeleteUserMessage(content);
 			sendToExternalQueue(outgoingMessage);
 			return true;
 		}
