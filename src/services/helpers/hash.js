@@ -1,6 +1,6 @@
 const reqlib = require('app-root-path').require;
 
-const { BadRequest } = reqlib('src/utils/errors');
+const { BadRequest } = reqlib('src/errors');
 const bcrypt = require('bcryptjs');
 const { userModel } = require('../user/model');
 const { getRandomInt } = require('../../utils/randomNumberGenerator');

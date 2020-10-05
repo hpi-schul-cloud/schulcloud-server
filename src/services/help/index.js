@@ -5,7 +5,7 @@ const path = require('path');
 
 const reqlib = require('app-root-path').require;
 
-const { NotFound, BadRequest } = reqlib('src/utils/errors');
+const { NotFound, BadRequest } = reqlib('src/errors');
 const { helpDocumentsModel } = require('./model');
 const logger = require('../../logger');
 const { excludeAttributesFromSanitization } = require('../../hooks/sanitizationExceptions');

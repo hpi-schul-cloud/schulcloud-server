@@ -3,7 +3,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider } = require('feathers-hooks-common');
 const reqlib = require('app-root-path').require;
 
-const { Forbidden } = reqlib('src/utils/errors');
+const { Forbidden } = reqlib('src/errors');
 const { hasPermission, mapPayload, injectUserId } = require('../../../hooks');
 const HomeworkModel = require('../model').homeworkModel;
 const resolveStorageType = require('../../fileStorage/hooks/resolveStorageType');

@@ -7,7 +7,7 @@ const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 const reqlib = require('app-root-path').require;
 
-const { Forbidden, NotFound, BadRequest } = reqlib('src/utils/errors');
+const { Forbidden, NotFound, BadRequest } = reqlib('src/errors');
 const logger = require('../../logger');
 const hooks = require('./hooks');
 const { FileModel } = require('../fileStorage/model');

@@ -1,6 +1,6 @@
 const reqlib = require('app-root-path').require;
 
-const { BadRequest } = reqlib('src/utils/errors');
+const { BadRequest } = reqlib('src/errors');
 const oauth2 = require('../../oauth2/hooks');
 
 module.exports = {

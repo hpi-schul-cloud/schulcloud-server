@@ -1,7 +1,7 @@
 const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
 const reqlib = require('app-root-path').require;
 
-const { NotAuthenticated, BadRequest } = reqlib('src/utils/errors');
+const { NotAuthenticated, BadRequest } = reqlib('src/errors');
 
 const logger = require('../../../logger');
 const {

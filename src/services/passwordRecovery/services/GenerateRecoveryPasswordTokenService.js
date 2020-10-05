@@ -3,7 +3,7 @@ const local = require('@feathersjs/authentication-local');
 const { Configuration } = require('@schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
-const { NotFound, BadRequest } = reqlib('src/utils/errors');
+const { NotFound, BadRequest } = reqlib('src/errors');
 const PasswordRecoveryModel = require('../model');
 const { randomStringAsBase64Url } = require('../../../utils/randomNumberGenerator');
 const globalHooks = require('../../../hooks');

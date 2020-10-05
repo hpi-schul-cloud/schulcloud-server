@@ -1,6 +1,6 @@
 const reqlib = require('app-root-path').require;
 
-const { Forbidden } = reqlib('src/utils/errors');
+const { Forbidden } = reqlib('src/errors');
 const { ObjectId } = require('../../../helper/compare');
 
 exports.restrictGetToCurrentUser = (context) => {

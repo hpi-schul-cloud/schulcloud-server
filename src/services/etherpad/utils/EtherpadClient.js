@@ -2,7 +2,7 @@ const rp = require('request-promise-native');
 const rpErrors = require('request-promise-core/errors');
 const reqlib = require('app-root-path').require;
 
-const { BadRequest, Conflict } = reqlib('src/utils/errors');
+const { BadRequest, Conflict } = reqlib('src/errors');
 const { Configuration } = require('@schul-cloud/commons');
 
 const logger = require('../../../logger');

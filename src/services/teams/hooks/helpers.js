@@ -1,6 +1,6 @@
 const reqlib = require('app-root-path').require;
 
-const { NotFound, BadRequest, NotImplemented, NotAcceptable } = reqlib('src/utils/errors');
+const { NotFound, BadRequest, NotImplemented, NotAcceptable } = reqlib('src/errors');
 const logger = require('../../../logger');
 const { TEAM_FEATURES } = require('../model');
 const { set, get } = require('./scope');

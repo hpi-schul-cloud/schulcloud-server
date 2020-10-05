@@ -1,7 +1,7 @@
 const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
 const reqlib = require('app-root-path').require;
 
-const { NotAuthenticated } = reqlib('src/utils/errors');
+const { NotAuthenticated } = reqlib('src/errors');
 const { omit } = require('lodash');
 
 class LdapStrategy extends AuthenticationBaseStrategy {

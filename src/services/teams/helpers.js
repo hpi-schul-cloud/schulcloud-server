@@ -1,6 +1,6 @@
 const reqlib = require('app-root-path').require;
 
-const { Forbidden, BadRequest } = reqlib('src/utils/errors');
+const { Forbidden, BadRequest } = reqlib('src/errors');
 const { warning } = require('../../logger/index');
 const { teamRolesToHook } = require('./hooks');
 const { isArrayWithElement, isDefined, bsonIdToString } = require('./hooks/collection');

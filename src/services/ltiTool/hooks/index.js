@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const reqlib = require('app-root-path').require;
 
-const { Forbidden } = reqlib('src/utils/errors');
+const { Forbidden } = reqlib('src/errors');
 const { SCHOOL_FEATURES } = require('../../school/model');
 const globalHooks = require('../../../hooks');
 const { isValid } = require('../../../helper/compare').ObjectId;

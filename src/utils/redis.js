@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const { Configuration } = require('@schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
-const { BadRequest, GeneralError } = reqlib('src/utils/errors');
+const { BadRequest, GeneralError } = reqlib('src/errors');
 
 let redisClient = false;
 

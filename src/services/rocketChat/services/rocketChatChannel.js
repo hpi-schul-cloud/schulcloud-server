@@ -1,7 +1,7 @@
 const request = require('request-promise-native');
 const reqlib = require('app-root-path').require;
 
-const { BadRequest } = reqlib('src/utils/errors');
+const { BadRequest } = reqlib('src/errors');
 const { getRequestOptions, makeStringRCConform } = require('../helpers');
 const { TEAM_FEATURES } = require('../../teams/model');
 const { randomSuffix } = require('../randomPass');

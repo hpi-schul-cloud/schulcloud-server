@@ -1,7 +1,7 @@
 const { Configuration } = require('@schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
-const { NotAuthenticated } = reqlib('src/utils/errors');
+const { NotAuthenticated } = reqlib('src/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const { error } = require('../logger');
 

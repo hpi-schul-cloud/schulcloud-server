@@ -1,7 +1,7 @@
 const { Configuration } = require('@schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
-const { BadRequest } = reqlib('src/utils/errors');
+const { BadRequest } = reqlib('src/errors');
 const userModel = require('./model');
 const accountModel = require('../account/model');
 const consentModel = require('../consent/model');

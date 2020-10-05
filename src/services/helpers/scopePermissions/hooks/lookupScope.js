@@ -1,6 +1,6 @@
 const reqlib = require('app-root-path').require;
 
-const { BadRequest } = reqlib('src/utils/errors');
+const { BadRequest } = reqlib('src/errors');
 const { resolveScope } = require('./util/resolveScope');
 
 const lookupScope = async (context) => {

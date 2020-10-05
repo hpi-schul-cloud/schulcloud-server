@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 const reqlib = require('app-root-path').require;
 
-const { BadRequest } = reqlib('src/utils/errors');
+const { BadRequest } = reqlib('src/errors');
 const { isValidObjectId } = require('mongoose');
 
 const validateParams = async (context) => {

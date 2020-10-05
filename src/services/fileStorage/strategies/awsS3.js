@@ -2,7 +2,7 @@ const { promisify } = require('es6-promisify');
 const CryptoJS = require('crypto-js');
 const reqlib = require('app-root-path').require;
 
-const { NotFound, BadRequest, GeneralError } = reqlib('src/utils/errors');
+const { NotFound, BadRequest, GeneralError } = reqlib('src/errors');
 const { Configuration } = require('@schul-cloud/commons');
 const aws = require('aws-sdk');
 const pathUtil = require('path');

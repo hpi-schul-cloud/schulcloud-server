@@ -1,6 +1,6 @@
 const reqlib = require('app-root-path').require;
 
-const { Forbidden, BadRequest } = reqlib('src/utils/errors');
+const { Forbidden, BadRequest } = reqlib('src/errors');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 /**

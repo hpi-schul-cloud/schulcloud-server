@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
 const reqlib = require('app-root-path').require;
 
-const { Forbidden, NotFound } = reqlib('src/utils/errors');
+const { Forbidden, NotFound } = reqlib('src/errors');
 const logger = require('../../../logger');
 const { injectUserId, mapPayload } = require('../../../hooks');
 const lesson = require('../model');

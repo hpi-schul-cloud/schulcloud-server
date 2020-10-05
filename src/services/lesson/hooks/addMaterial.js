@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider } = require('feathers-hooks-common');
 const reqlib = require('app-root-path').require;
 
-const { NotFound, BadRequest } = reqlib('src/utils/errors');
+const { NotFound, BadRequest } = reqlib('src/errors');
 const { ObjectId } = require('../../../helper/compare');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
 const { equal } = require('../../../helper/compare').ObjectId;

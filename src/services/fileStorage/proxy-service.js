@@ -3,7 +3,7 @@ const url = require('url');
 const rp = require('request-promise-native');
 const reqlib = require('app-root-path').require;
 
-const { Forbidden, NotFound, BadRequest, GeneralError } = reqlib('src/utils/errors');
+const { Forbidden, NotFound, BadRequest, GeneralError } = reqlib('src/errors');
 
 const hooks = require('./hooks');
 const swaggerDocs = require('./docs');

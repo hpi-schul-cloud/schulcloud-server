@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 const reqlib = require('app-root-path').require;
 
-const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = reqlib('src/utils/errors');
+const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = reqlib('src/errors');
 const { authenticate } = require('@feathersjs/authentication');
 
 const { v4: uuidv4 } = require('uuid');

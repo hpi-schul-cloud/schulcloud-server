@@ -1,6 +1,6 @@
 const reqlib = require('app-root-path').require;
 
-const { BadRequest } = reqlib('src/utils/errors');
+const { BadRequest } = reqlib('src/errors');
 
 /**
  * validate that request data is complete and valid.

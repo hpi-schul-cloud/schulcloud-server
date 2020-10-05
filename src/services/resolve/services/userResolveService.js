@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const reqlib = require('app-root-path').require;
 
-const { NotFound } = reqlib('src/utils/errors');
+const { NotFound } = reqlib('src/errors');
 
 // get an json api conform entry
 const getDataEntry = ({ type, id, name, authorities = ['can-read'], attributes = {} }) => ({

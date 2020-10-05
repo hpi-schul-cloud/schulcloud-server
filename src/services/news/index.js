@@ -5,7 +5,7 @@ const path = require('path');
 const { ObjectId } = require('mongoose').Types;
 const reqlib = require('app-root-path').require;
 
-const { Forbidden, NotFound, BadRequest } = reqlib('src/utils/errors');
+const { Forbidden, NotFound, BadRequest } = reqlib('src/errors');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const logger = require('../../logger/index');
 const newsDocs = require('./docs');

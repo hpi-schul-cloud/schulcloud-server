@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const reqlib = require('app-root-path').require;
 
-const { Forbidden, MethodNotAllowed } = reqlib('src/utils/errors');
+const { Forbidden, MethodNotAllowed } = reqlib('src/errors');
 const globalHooks = require('../../../hooks');
 const Hydra = require('../hydra.js');
 

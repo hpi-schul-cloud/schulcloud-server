@@ -5,9 +5,9 @@ const jwt = require('jsonwebtoken');
 const reqlib = require('app-root-path').require;
 
 const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention, UnhandledRejection, UnhandledException } = reqlib(
-	'src/utils/errors'
+	'src/errors'
 );
-const { convertToFeathersError } = reqlib('src/utils/errorUtils');
+const { convertToFeathersError } = reqlib('src/errors/utils');
 
 const logger = require('../logger');
 

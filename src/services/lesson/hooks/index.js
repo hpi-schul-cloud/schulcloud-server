@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const reqlib = require('app-root-path').require;
 
-const { NotFound, BadRequest } = reqlib('src/utils/errors');
+const { NotFound, BadRequest } = reqlib('src/errors');
 const nanoid = require('nanoid');
 const { iff, isProvider } = require('feathers-hooks-common');
 const { equal } = require('../../../helper/compare').ObjectId;

@@ -1,6 +1,6 @@
 const reqlib = require('app-root-path').require;
 
-const { NotFound, BadRequest, NotAcceptable } = reqlib('src/utils/errors');
+const { NotFound, BadRequest, NotAcceptable } = reqlib('src/errors');
 const { FileModel } = require('../model');
 const createCorrectStrategy = require('./createCorrectStrategy');
 const { generateFileNameSuffix } = require('./filePathHelper');

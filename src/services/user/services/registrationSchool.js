@@ -1,6 +1,6 @@
 const reqlib = require('app-root-path').require;
 
-const { NotFound, GeneralError } = reqlib('src/utils/errors');
+const { NotFound, GeneralError } = reqlib('src/errors');
 
 /**
  * Service to find a school belonging an id of unknown type, like from a registration link.

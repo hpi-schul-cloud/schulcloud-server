@@ -2,7 +2,7 @@ const { Configuration } = require('@schul-cloud/commons');
 const { authenticate } = require('@feathersjs/authentication');
 const reqlib = require('app-root-path').require;
 
-const { Forbidden } = reqlib('src/utils/errors');
+const { Forbidden } = reqlib('src/errors');
 const { hasRole } = require('../../hooks');
 
 const superheroAccess = async (context) => {

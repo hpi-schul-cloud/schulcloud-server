@@ -5,8 +5,8 @@ const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 const reqlib = require('app-root-path').require;
 
-const { Forbidden, NotFound, BadRequest, GeneralError } = reqlib('src/utils/errors');
-const { isFeatherError } = reqlib('src/utils/errorUtils');
+const { Forbidden, NotFound, BadRequest, GeneralError } = reqlib('src/errors');
+const { isFeatherError } = reqlib('src/errors/utils');
 const { SCHOOL_FEATURES } = require('../school/model');
 const videoconferenceHooks = require('./hooks');
 const { getUser } = require('../../hooks');

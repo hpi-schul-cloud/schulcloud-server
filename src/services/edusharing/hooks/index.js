@@ -3,7 +3,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
 const reqlib = require('app-root-path').require;
 
-const { NotFound } = reqlib('src/utils/errors');
+const { NotFound } = reqlib('src/errors');
 
 const isEdusharing = (context) => {
 	if (Configuration.get('LERNSTORE_MODE') !== 'EDUSHARING') {
