@@ -1,6 +1,9 @@
 /* eslint-disable max-classes-per-file */
 const featherErrors = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
+const logger = require('../logger');
+
+const setDefaultMessage = (className) => `Error of type ${className}`;
 
 const solvedTraceId = (ref, message, additional) => {
 	if (message instanceof Error && message.traceId) {
@@ -18,11 +21,14 @@ const solvedTraceId = (ref, message, additional) => {
 const prepare = (ref, message, additional, params, className) => {
 	ref.name = ref.constructor.name;
 	ref.data = Object.freeze({ ...params });
+	if (!message) {
+		logger.warning(`First parameter should set by errors of type ${className}`);
+	}
 	// for the case that only a error is pass
 	if (message instanceof Error && !additional) {
 		const err = message;
 		// eslint-disable-next-line no-param-reassign
-		message = `Error of type ${className}`;
+		message = setDefaultMessage(className);
 		// eslint-disable-next-line no-param-reassign
 		additional = err;
 	}
@@ -217,7 +223,13 @@ class ApplicationError extends Error {
 class SilentError extends ApplicationError {
 	constructor(message) {
 		super(message);
+		this.code = 600;
+		this.type = 'ApplicationError';
 		this.className = 'silent-error';
+		this.data = {};
+		this.errors = {};
+		const uid = ObjectId();
+		this.traceId = uid.toString();
 	}
 }
 // take from ldap
@@ -244,6 +256,7 @@ const errorsByCode = {
 };
 
 module.exports = {
+	ApplicationError,
 	BadRequest,
 	NotAuthenticated,
 	AutoLogout,
@@ -263,11 +276,12 @@ module.exports = {
 	NotImplemented,
 	BadGateway,
 	Unavailable,
-	SilentError,
 	PageNotFound,
 	Gone,
-	NoClientInstanceError,
 	UnhandledRejection,
 	UnhandledException,
+	NoClientInstanceError,
+	SilentError,
 	errorsByCode,
+	setDefaultMessage,
 };
