@@ -6,12 +6,6 @@ const { info, error } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
-const parentSchema = new mongoose.Schema({
-	firstName: { type: String, required: true },
-	lastName: { type: String, required: true },
-	email: { type: String, required: true, lowercase: true },
-});
-
 const consentForm = ['analog', 'digital', 'update'];
 
 const RoleModel = mongoose.model(
@@ -41,12 +35,17 @@ const OldUser = mongoose.model(
 	}),
 	'users'
 );
-
 const User = mongoose.model(
 	'myUserModel_05102020',
 	new mongoose.Schema({
 		roles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'role' }],
-		parents: [parentSchema],
+		parents: [
+			{
+				firstName: { type: String, required: true },
+				lastName: { type: String, required: true },
+				email: { type: String, required: true, lowercase: true },
+			},
+		],
 		consent: {
 			parentConsents: [
 				{

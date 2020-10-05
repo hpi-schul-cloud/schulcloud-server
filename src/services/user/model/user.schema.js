@@ -19,12 +19,6 @@ const consentTypes = {
 	TERMS_OF_USE: 'termsOfUse',
 };
 
-const parentSchema = new Schema({
-	firstName: { type: String, required: true },
-	lastName: { type: String, required: true },
-	email: { type: String, required: true, lowercase: true },
-});
-
 const userSchema = new Schema(
 	{
 		roles: [{ type: Schema.Types.ObjectId, ref: 'role' }],
@@ -48,7 +42,13 @@ const userSchema = new Schema(
 
 		importHash: { type: String, index: true },
 		// inviteHash:{type:String},
-		parents: [parentSchema],
+		parents: [
+			{
+				firstName: { type: String, required: true },
+				lastName: { type: String, required: true },
+				email: { type: String, required: true, lowercase: true },
+			},
+		],
 		language: { type: String },
 		preferences: { type: Object }, // blackbox for frontend stuff like "cookies accepted"
 		features: {
