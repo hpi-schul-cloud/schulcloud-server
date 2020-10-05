@@ -129,6 +129,6 @@ module.exports = {
 	},
 
 	down: async function down() {
-		Promise.reject(Error);
+		error('This migration cannot be rolled back and data needs to be restored from backups.');
 	},
 };
