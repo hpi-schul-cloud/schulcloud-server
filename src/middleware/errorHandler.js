@@ -57,12 +57,11 @@ const formatAndLogErrors = (error, req, res, next) => {
 		// sanitize
 		const err = convertToFeathersError(error);
 		const requestInfo = getRequestInfo(req);
-		err.request = requestInfo;
 		// type is override by logger for logging type
 		err.errorType = err.type;
 		// for tests level is set to emerg, set LOG_LEVEL=debug for see it
 		// Logging the error object won't print error's stack trace. You need to ask for it specifically
-		logger.error({ ...err });
+		logger.error({ ...err, ...requestInfo });
 	}
 	next(error);
 };

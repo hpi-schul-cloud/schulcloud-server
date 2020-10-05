@@ -6,7 +6,6 @@ const { Forbidden } = reqlib('src/errors');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
-
 describe('CoursePermissionService', () => {
 	let app;
 	let coursePermissionService;

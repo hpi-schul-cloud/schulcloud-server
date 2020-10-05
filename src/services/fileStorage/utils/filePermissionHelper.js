@@ -1,5 +1,6 @@
-const logger = require('../../../logger');
+const reqlib = require('app-root-path').require;
 
+const { Forbidden, NotFound } = reqlib('src/errors');
 const { FileModel } = require('../model');
 const { userModel } = require('../../user/model');
 const RoleModel = require('../../role/model');
@@ -49,7 +50,7 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 		if (userPos > creatorPos || rolePermissions[permission]) {
 			resolve(true);
 		}
-		reject(new Error());
+		reject();
 	});
 };
 
@@ -65,7 +66,7 @@ const checkMemberStatus = ({ file, user }) => {
 const checkPermissions = (permission) => async (user, file) => {
 	const fileObject = await getFile(file);
 	if (fileObject === undefined || fileObject === null) {
-		throw new Error('File does not exist.', { user, file, permission });
+		throw new NotFound('File does not exist.', { user, file, permission });
 	}
 	const {
 		permissions,
@@ -109,11 +110,11 @@ const checkPermissions = (permission) => async (user, file) => {
 			}
 			if (isStudent) {
 				const rolePermissions = permissions.find((perm) => perm.refId && equalIds(perm.refId, isStudent._id));
-				return rolePermissions[permission] ? Promise.resolve(true) : Promise.reject(new Error());
+				return rolePermissions[permission] ? Promise.resolve(true) : Promise.reject();
 			}
 			return Promise.resolve(true);
 		}
-		return Promise.reject(new Error());
+		return Promise.reject();
 	}
 
 	if (homework) {
@@ -122,7 +123,7 @@ const checkPermissions = (permission) => async (user, file) => {
 			const isMember = checkMemberStatus({ file: courseFile, user });
 			if (isMember) return Promise.resolve(true);
 		} else {
-			return Promise.reject(new Error());
+			return Promise.reject();
 		}
 	}
 
@@ -131,7 +132,7 @@ const checkPermissions = (permission) => async (user, file) => {
 	// User is no member of team or course
 	// and file has no explicit user permissions (sharednetz files)
 	if (!isMember && !userPermissions) {
-		return Promise.reject(new Error());
+		return Promise.reject();
 	}
 
 	return checkTeamPermission({
