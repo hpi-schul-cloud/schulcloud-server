@@ -283,5 +283,4 @@ module.exports = {
 	NoClientInstanceError,
 	SilentError,
 	errorsByCode,
-	setDefaultMessage,
 };
