@@ -12,6 +12,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - SC-6830 - Added hook to parse request to arrays when > 20 users are requested in adminUsers service
+- SC-6870 - Added school feature flag for Matrix messenger
 
 ### Removed
 
@@ -31,15 +32,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - Added hotfix merges
 
-<<<<<<< HEAD
 ## [25.0.5] - 2020-10-01
 
 ### Added
 
 - SC-6973 - add time window for pin creation
 
-=======
->>>>>>> e132a8d93e52285aa98b3fa0f693923ac69d95fe
 ## [25.0.4] - 2020-09-30
 
 ### Added
