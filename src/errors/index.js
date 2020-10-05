@@ -258,6 +258,7 @@ const errorsByCode = {
 module.exports = {
 	ApplicationError,
 	FeathersError: featherErrors.FeathersError,
+	FeathersNotAuthenticated: featherErrors.NotAuthenticated,
 	BadRequest,
 	NotAuthenticated,
 	AutoLogout,
