@@ -498,4 +498,28 @@ describe('parameter for feathers errors', () => {
 			expect(err.stack).to.not.undefined;
 		}
 	});
+
+	it('work with additional parameter', () => {
+		const err = new BadRequest(
+			'something go wrong',
+			new Error('Test Error'),
+			{ k1: 'a', k2: 'b' },
+			{ k3: 'c', k2: 'd' }
+		);
+		logger.info(err);
+		expect(err instanceof Error).to.be.true;
+		expect(err instanceof FeathersError).to.be.true;
+		expect(err.message, 'Use parameter one').to.equal('something go wrong');
+		expect(err.code).to.equal(400);
+		expect(err.type).to.equal('FeathersError');
+		expect(err.className, 'should the name of constructor as lower case notation').to.equal('bad-request');
+		expect(err.name, 'should the name of constructor').to.equal('BadRequest');
+		expect(err.data, 'should include of array with parameters').to.eql({
+			0: { k1: 'a', k2: 'b' },
+			1: { k3: 'c', k2: 'd' },
+		});
+		expect(err.errors instanceof Error, 'errors should empty object').to.be.true;
+		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.stack).to.not.undefined;
+	});
 });
