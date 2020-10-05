@@ -33,4 +33,4 @@ class MerlinTokenGenerator {
 	}
 }
 
-module.exports = MerlinTokenGenerator;
+module.exports = new MerlinTokenGenerator();
