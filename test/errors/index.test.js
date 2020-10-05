@@ -1,4 +1,3 @@
-const { FeathersError } = require('@feathersjs/errors');
 const { expect } = require('chai');
 const reqlib = require('app-root-path').require;
 
@@ -29,6 +28,7 @@ const {
 	UnhandledRejection,
 	UnhandledException,
 	ApplicationError,
+	FeathersError,
 } = reqlib('src/errors');
 const logger = reqlib('src/logger');
 

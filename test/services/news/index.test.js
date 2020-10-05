@@ -1,7 +1,9 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const sleep = require('util').promisify(setTimeout);
-const { NotAuthenticated, BadRequest, Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest, Forbidden, NotAuthenticated } = reqlib('src/errors');
 
 const appPromise = require('../../../src/app');
 const { cleanup, createTestUser, createTestRole, createTestSchool } = require('../helpers/testObjects')(appPromise);

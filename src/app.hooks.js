@@ -2,10 +2,12 @@
 const { iff, isProvider } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const Sentry = require('@sentry/node');
+const reqlib = require('app-root-path').require;
+
+const { AutoLogout, SlowQuery } = reqlib('src/errors');
 const logger = require('./logger');
 const {
 	sanitizeHtml: { sanitizeDeep },
-	errors: { AutoLogout, SlowQuery },
 } = require('./utils');
 const { getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData } = require('./utils/redis');
 const { LEAD_TIME } = require('../config/globals');
