@@ -77,7 +77,7 @@ const findAllParents = (parentRole) => User.find({ roles: parentRole._id });
 
 const deleteParentUsersByIds = async (ids) => {
 	const result = await User.deleteMany({
-		_id: { $in: [ids] },
+		_id: { $in: ids },
 	}).exec();
 	info(`${result.deletedCount} users deleted.`);
 };
@@ -122,7 +122,7 @@ const migrateParentsToStudents = async () => {
 	const limit = 500;
 	while (amountOfParentsLeftToDelete !== 0) {
 		const parentsToDelete = amountOfParentsLeftToDelete < limit ? amountOfParentsLeftToDelete : limit;
-		// await deleteParentUsersByIds(parentIdsToDelete.splice(0, parentsToDelete));
+		await deleteParentUsersByIds(parentIdsToDelete.splice(0, parentsToDelete));
 		amountOfParentsLeftToDelete -= parentsToDelete;
 	}
 };
