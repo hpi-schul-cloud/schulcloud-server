@@ -122,9 +122,7 @@ const registerUser = function register(data, params, app) {
 	let consent = null;
 	let consentPromise = null;
 
-	return new Promise((resolve) => {
-		resolve();
-	})
+	return Promise.resolve()
 		.then(() => {
 			let classPromise = null;
 			let schoolPromise = null;
