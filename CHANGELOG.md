@@ -34,6 +34,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - Added hotfix merges
 
+## [25.0.8] - 2020-10-06
+
+## Fixed
+
+- SC-6960 - instead of deleting and recreating users during the rollback of a failed registration, use replace if necessary
+- SC-6960 - properly raise exceptions during the registration process
+
 ## [25.0.7] - 2020-10-01
 
 ### Removed
