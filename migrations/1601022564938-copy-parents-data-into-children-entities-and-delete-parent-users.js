@@ -106,10 +106,11 @@ const updateStudentsParentData = async (studentIds, parent) => {
 	);
 };
 
-const performCursorBasedMigration = async () => {
+const migrateParentsToStudents = async () => {
 	const parentIdsToDelete = [];
 	const parentRole = await getParentRole();
-	for await (const parent of findAllParents(parentRole).cursor()) {
+	const cursor = findAllParents(parentRole).cursor();
+	for (let parent = await cursor.next(); parent != null; parent = await cursor.next()) {
 		const students = await getStudentsForParent(parent);
 		const studentIds = getIds(students);
 		await updateStudentsParentData(studentIds, parent);
@@ -121,19 +122,23 @@ const performCursorBasedMigration = async () => {
 	const limit = 500;
 	while (amountOfParentsLeftToDelete !== 0) {
 		const parentsToDelete = amountOfParentsLeftToDelete < limit ? amountOfParentsLeftToDelete : limit;
-		await deleteParentUsersByIds(parentIdsToDelete.splice(0, parentsToDelete));
+		// await deleteParentUsersByIds(parentIdsToDelete.splice(0, parentsToDelete));
 		amountOfParentsLeftToDelete -= parentsToDelete;
 	}
 };
 
+const migrateParentsFromStudetns = async () => {};
+
 module.exports = {
 	up: async function up() {
 		await connect();
-		await performCursorBasedMigration();
+		await migrateParentsToStudents();
 		await close();
 	},
 
 	down: async function down() {
-		error('This migration cannot be rolled back and data needs to be restored from backups.');
+		await connect();
+		await migrateParentsFromStudetns();
+		await close();
 	},
 };
