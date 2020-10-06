@@ -2,7 +2,7 @@
 // eslint-disable-next-line no-unused-vars
 const mongoose = require('mongoose');
 
-const { info, error } = require('../src/logger');
+const { info } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
@@ -72,11 +72,7 @@ const User = mongoose.model(
 	'users'
 );
 
-const getIds = (doc) =>
-	doc.reduce((prev, curr) => {
-		prev.push(curr._id);
-		return prev;
-	}, []);
+const getIds = (docs) => docs.map((doc) => doc._id);
 
 const getParentRole = async () => RoleModel.findOne({ name: 'parent' }).lean().exec();
 
