@@ -140,7 +140,6 @@ const migrateParentsFromStudents = async () => {
 	const parentRole = await getParentRole();
 	const cursor = findAllStudentsWithParentData().cursor();
 	for (let student = await cursor.next(); student != null; student = await cursor.next()) {
-		// dodaj starego do userów z takimi danymi
 		const parent = await User.create({
 			firstName: student.parents[0].firstName,
 			lastName: student.parents[0].lastName,
