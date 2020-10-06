@@ -42,6 +42,12 @@ const User = mongoose.model(
 		firstName: { type: String, required: true },
 		lastName: { type: String, required: true },
 		email: { type: String, required: true, lowercase: true },
+		schoolId: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'school',
+			required: true,
+			index: true,
+		},
 		parents: [
 			{
 				firstName: { type: String, required: true },
@@ -49,6 +55,7 @@ const User = mongoose.model(
 				email: { type: String, required: true, lowercase: true },
 			},
 		],
+		childrens: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
 		consent: {
 			parentConsents: [
 				{
@@ -127,7 +134,27 @@ const migrateParentsToStudents = async () => {
 	}
 };
 
-const migrateParentsFromStudetns = async () => {};
+const findAllStudentsWithParentData = () => User.find({ parents: { $elemMatch: { email: { $ne: null } } } });
+
+const migrateParentsFromStudents = async () => {
+	const parentRole = await getParentRole();
+	const cursor = findAllStudentsWithParentData().cursor();
+	for (let student = await cursor.next(); student != null; student = await cursor.next()) {
+		// dodaj starego do userów z takimi danymi
+		const parent = await User.create({
+			firstName: student.parents[0].firstName,
+			lastName: student.parents[0].lastName,
+			email: student.parents[0].email,
+			schoolId: student.schoolId,
+			childrens: [student._id],
+			roles: [parentRole._id],
+		});
+		await OldUser.updateOne(
+			{ _id: student._id },
+			{ $set: { parents: [parent._id], 'consent.parentConsents.$[].parentId': parent._id } }
+		);
+	}
+};
 
 module.exports = {
 	up: async function up() {
@@ -138,7 +165,7 @@ module.exports = {
 
 	down: async function down() {
 		await connect();
-		await migrateParentsFromStudetns();
+		await migrateParentsFromStudents();
 		await close();
 	},
 };
