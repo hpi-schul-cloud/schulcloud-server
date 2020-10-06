@@ -146,8 +146,8 @@ const registerUser = function register(data, params, app) {
 		})
 		.then(() =>
 			populateUser(app, data).then((response) => {
-				user = { response };
-				oldUser = { response };
+				user = response.user;
+				oldUser = response.oldUser;
 			})
 		)
 		.then(() => {
