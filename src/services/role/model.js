@@ -28,7 +28,7 @@ const clearCache = () => {
 
 const updateCache = (id, data) => {
 	// validate?
-	logger.info(`Update role cache${id}`, data);
+	logger.info(`Update role cache ${id}`, data);
 	cache[id] = data;
 };
 
