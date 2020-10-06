@@ -19,7 +19,7 @@ const rolesDisplayName = {
 };
 
 let cache = {};
-let count = 0;
+// let count = 0;
 
 const clearCache = () => {
 	logger.info('Clear role cache');
@@ -33,8 +33,15 @@ const updateCache = (id, data) => {
 };
 
 const getFromCache = (id) => {
-	logger.info(`getFromCache${id}`);
 	return cache[id];
+};
+
+const createCacheIndex = (coreMongooseArray) => {
+	let index = '';
+	coreMongooseArray.forEach((id) => {
+		index += id;
+	});
+	return index;
 };
 
 const roleSchema = new Schema(
@@ -50,17 +57,23 @@ const roleSchema = new Schema(
 	}
 );
 
+// TODO: clearCache() for every update, patch, findOneAndUpdate and so on mongoose operations
+
 roleSchema.methods.getPermissions = function getPermissions() {
 	return roleModel.resolvePermissions([this._id]); // fixme
 };
 
+/**
+ * @param {CoreMongooseArray} roleIds
+ */
 roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
 	const processedRoleIds = [];
 	const permissions = new Set();
+	const cacheIndex = createCacheIndex(roleIds);
 
 	function resolveSubRoles(roleId) {
-		count += 1;
-		console.log(count, roleId);
+		// count += 1;
+		// logger.info(count, roleId);
 		return roleModel
 			.findById(roleId) // fixme
 			.then((role) => {
@@ -80,8 +93,14 @@ roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
 				return Promise.all(promises);
 			});
 	}
-
-	return Promise.all(roleIds.map((id) => resolveSubRoles(id))).then(() => permissions);
+	if (getFromCache(cacheIndex)) {
+		return Promise.resolve(getFromCache(cacheIndex));
+	}
+	const promises = roleIds.map((id) => resolveSubRoles(id));
+	return Promise.all(promises).then(() => {
+		updateCache(cacheIndex, permissions);
+		return permissions;
+	});
 };
 
 roleSchema.virtual('displayName').get(function get() {
