@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
 const { enableAuditLog } = require('../../utils/database');
+const logger = require('../../logger');
 
 const { Schema } = mongoose;
 
@@ -15,6 +16,25 @@ const rolesDisplayName = {
 	helpdesk: 'Helpdesk',
 	betaTeacher: 'Beta',
 	expert: 'Experte',
+};
+
+let cache = {};
+let count = 0;
+
+const clearCache = () => {
+	logger.info('Clear role cache');
+	cache = {};
+};
+
+const updateCache = (id, data) => {
+	// validate?
+	logger.info(`Update role cache${id}`, data);
+	cache[id] = data;
+};
+
+const getFromCache = (id) => {
+	logger.info(`getFromCache${id}`);
+	return cache[id];
 };
 
 const roleSchema = new Schema(
@@ -39,6 +59,8 @@ roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
 	const permissions = new Set();
 
 	function resolveSubRoles(roleId) {
+		count += 1;
+		console.log(count, roleId);
 		return roleModel
 			.findById(roleId) // fixme
 			.then((role) => {
