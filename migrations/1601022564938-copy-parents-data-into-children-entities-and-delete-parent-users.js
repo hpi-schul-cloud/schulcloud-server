@@ -39,6 +39,9 @@ const User = mongoose.model(
 	'myUserModel_05102020',
 	new mongoose.Schema({
 		roles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'role' }],
+		firstName: { type: String, required: true },
+		lastName: { type: String, required: true },
+		email: { type: String, required: true, lowercase: true },
 		parents: [
 			{
 				firstName: { type: String, required: true },
@@ -70,21 +73,23 @@ const getIds = (doc) =>
 
 const getParentRole = async () => RoleModel.findOne({ name: 'parent' }).lean().exec();
 
-const findAllParents = async (parentRole) => User.find({ roles: parentRole._id }).lean().exec();
+const findAllParents = (parentRole) => User.find({ roles: parentRole._id });
 
-const deleteParentUsers = async (parentRole) => {
-	const result = await User.deleteMany({ roles: parentRole._id }).exec();
+const deleteParentUsersByIds = async (ids) => {
+	const result = await User.deleteMany({
+		_id: { $in: [ids] },
+	}).exec();
 	info(`${result.deletedCount} users deleted.`);
 };
 
 const getStudentsForParent = async (parent) => {
-	const students = await OldUser.find({ parents: parent._id });
+	const students = await OldUser.find({ parents: parent._id }).lean().exec();
 	info(`${students.length} students for parent with id=${parent._id} will be updated!`);
 	return students;
 };
 
 const updateStudentsParentData = async (studentIds, parent) => {
-	const updatedStudents = await User.updateMany(
+	return User.updateMany(
 		{ _id: { $in: [studentIds] } },
 		{
 			$set: {
@@ -99,22 +104,32 @@ const updateStudentsParentData = async (studentIds, parent) => {
 			$unset: { 'consent.parentConsents.$[].parentId': '' },
 		}
 	);
-	return updatedStudents;
+};
+
+const performCursorBasedMigration = async () => {
+	const parentIdsToDelete = [];
+	const parentRole = await getParentRole();
+	for await (const parent of findAllParents(parentRole).cursor()) {
+		const students = await getStudentsForParent(parent);
+		const studentIds = getIds(students);
+		await updateStudentsParentData(studentIds, parent);
+		parentIdsToDelete.push(parent._id);
+	}
+
+	let amountOfParentsLeftToDelete = parentIdsToDelete.length;
+
+	const limit = 500;
+	while (amountOfParentsLeftToDelete !== 0) {
+		const parentsToDelete = amountOfParentsLeftToDelete < limit ? amountOfParentsLeftToDelete : limit;
+		await deleteParentUsersByIds(parentIdsToDelete.splice(0, parentsToDelete));
+		amountOfParentsLeftToDelete -= parentsToDelete;
+	}
 };
 
 module.exports = {
 	up: async function up() {
 		await connect();
-		// ////////////////////////////////////////////////////
-		const parentRole = await getParentRole();
-		const parents = await findAllParents(parentRole);
-		for (const parent of parents) {
-			const students = await getStudentsForParent(parent);
-			const studentIds = getIds(students);
-			await updateStudentsParentData(studentIds, parent);
-		}
-		await deleteParentUsers(parentRole);
-		// ////////////////////////////////////////////////////
+		await performCursorBasedMigration();
 		await close();
 	},
 
