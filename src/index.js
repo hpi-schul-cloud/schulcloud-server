@@ -1,5 +1,8 @@
 const app = require('./app');
 const logger = require('./logger');
+const registerProcessEvents = require('./utils/processEvents');
+
+registerProcessEvents(logger);
 
 const port = app.get('port');
 const server = app.listen(port);
