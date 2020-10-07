@@ -67,8 +67,6 @@ roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
 	const cacheIndex = cache.createMongooseCacheIndex(roleIds);
 
 	function resolveSubRoles(roleId) {
-		// count += 1;
-		// logger.info(count, roleId);
 		return roleModel
 			.findById(roleId) // fixme
 			.then((role) => {
