@@ -3,8 +3,7 @@ const { ObjectId } = require('mongoose').Types;
 const rolesModel = require('../../../../src/services/role/model.js');
 const { userModel } = require('../../../../src/services/user/model');
 const accountModel = require('../../../../src/services/account/model.js');
-// const app = require(SRC + 'app');
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 
 const { TEST_PW, TEST_HASH } = require('../../../../config/globals');
 
@@ -21,6 +20,7 @@ const REQUEST_PARAMS = {
 };
 
 const getToken = async ({ userId }) => {
+	const app = await appPromise;
 	const result = app.service('authentication').create(
 		{
 			strategy: 'local',

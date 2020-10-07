@@ -3,7 +3,7 @@ const { keep } = require('feathers-hooks-common');
 const { BadRequest, Forbidden, GeneralError, NotFound } = require('@feathersjs/errors');
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
-const { hasRole, hasRoleNoHook, hasPermissionNoHook, hasPermission } = require('../../../hooks');
+const { hasRoleNoHook, hasPermissionNoHook, hasPermission } = require('../../../hooks');
 
 const { getAge } = require('../../../utils');
 
@@ -47,7 +47,7 @@ const checkUnique = (hook) => {
 		const { asTask } = hook.params._additional || {};
 
 		if (isLoggedIn || asTask === undefined || asTask === 'student') {
-			return Promise.reject(new BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
+			return Promise.reject(new BadRequest(`Die E-Mail Adresse ist bereits in Verwendung!`));
 		}
 		if (asTask === 'parent') {
 			userService.update(
@@ -68,6 +68,44 @@ const checkUnique = (hook) => {
 
 		return Promise.resolve(hook);
 	});
+};
+
+const checkUniqueEmail = async (hook) => {
+	// const userService = hook.service;
+	const userService = hook.app.service('users');
+	const accountService = hook.app.service('/accounts');
+
+	const { email } = hook.data;
+	if (!email) {
+		// there is no email address given. Nothing to check...
+		return Promise.resolve(hook);
+	}
+
+	// get userId of user entry to edit
+	const editUserId = hook.id;
+
+	const queryUsers = { email: email.toLowerCase() };
+	const queryAccounts = { username: email.toLowerCase() };
+
+	// check if new user or update of existing entry
+	if (editUserId) {
+		// exclude existing user entry
+		queryUsers._id = { $ne: editUserId };
+		// exclude existing account entry
+		queryAccounts.userId = { $ne: editUserId };
+	}
+
+	// check for users with same email
+	const users = ((await userService.find({ query: queryUsers })) || {}).data || [];
+
+	// check for account with same username (=email)
+	const accounts = await accountService.find({ query: queryAccounts });
+
+	if (users.length === 0 && accounts.length === 0) {
+		return Promise.resolve(hook);
+	}
+
+	return Promise.reject(new BadRequest(`Die E-Mail Adresse ist bereits in Verwendung!`));
 };
 
 const checkUniqueAccount = (hook) => {
@@ -607,6 +645,7 @@ const includeOnlySchoolRoles = async (context) => {
 module.exports = {
 	mapRoleFilterQuery,
 	checkUnique,
+	checkUniqueEmail,
 	checkJwt,
 	checkUniqueAccount,
 	updateAccountUsername,

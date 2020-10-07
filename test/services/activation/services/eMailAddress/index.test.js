@@ -7,8 +7,8 @@ const nock = require('nock');
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-const app = require('../../../../../src/app');
-const { createTestUser, createTestAccount, cleanup } = require('../../../helpers/testObjects')(app);
+const appPromise = require('../../../../../src/app');
+const { createTestUser, createTestAccount, cleanup } = require('../../../helpers/testObjects')(appPromise);
 
 const util = require('../../../../../src/services/activation/utils/generalUtils');
 const customUtils = require('../../../../../src/services/activation/utils/customStrategyUtils');
@@ -33,11 +33,13 @@ const getNotificationMock = (expectedData = {}) =>
 	});
 
 describe('activation/services/eMailAddress EMailAdresseActivationService', () => {
+	let app;
 	let server;
 	let activationService;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 		activationService = app.service(`activation/${mockData.keyword}`);
 	});
 

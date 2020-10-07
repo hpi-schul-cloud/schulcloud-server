@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const nock = require('nock');
 
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 const { NODE_ENV, SMTP_SENDER } = require('../../../config/globals');
 
 // eslint-disable-next-line import/no-dynamic-require
@@ -30,7 +30,8 @@ const getNotificationMock = (expectedData = {}) =>
 			});
 	});
 
-describe('Mail Service', () => {
+describe('Mail Service', async () => {
+	const app = await appPromise;
 	const mailService = app.service('/mails');
 
 	afterEach(() => {

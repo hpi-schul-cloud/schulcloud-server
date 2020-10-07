@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "25.0.3",
+	"version": "25.0.8",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -47,7 +47,7 @@
 		"@feathersjs/express": "^4.5.4",
 		"@feathersjs/feathers": "^4.5.3",
 		"@feathersjs/socketio": "^4.5.4",
-		"@schul-cloud/commons": "^1.0.20",
+		"@schul-cloud/commons": "^1.2.7",
 		"@sentry/node": "^5.9.0",
 		"ajv": "^6.10.2",
 		"amqplib": "^0.6.0",

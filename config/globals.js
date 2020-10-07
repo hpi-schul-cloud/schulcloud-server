@@ -51,6 +51,8 @@ const globals = {
 	SMTP_SENDER: process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
 
 	KEEP_ALIVE: process.env.KEEP_ALIVE || false,
+	LEAD_TIME: process.env.LEAD_TIME ? parseInt(process.env.LEAD_TIME, 10) : undefined,
+	SHOW_VERSION: process.env.SHOW_VERSION,
 	/**
 	 * default value 'development' matches default of app.get('env'), but use globals
 	 */

@@ -1,12 +1,12 @@
 const assert = require('assert');
 const { expect } = require('chai');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
-const helpdeskService = app.service('helpdesk');
-
-const { logger } = app;
-
-describe('helpdesk service', () => {
+describe('helpdesk service', function test() {
+	this.timeout(10000);
+	let app;
+	let helpdeskService;
+	let logger;
 	const testProblem = {
 		type: 'contactAdmin',
 		_id: '5836bb5664582c35df3bc214',
@@ -16,11 +16,11 @@ describe('helpdesk service', () => {
 		schoolId: '5836bb5664582c35df3bc000',
 	};
 
-	before(function (done) {
-		this.timeout(10000);
-		helpdeskService.create(testProblem).then((result) => {
-			done();
-		});
+	before(async () => {
+		app = await appPromise;
+		helpdeskService = app.service('helpdesk');
+		({ logger } = app);
+		await helpdeskService.create(testProblem);
 	});
 
 	after((done) => {
