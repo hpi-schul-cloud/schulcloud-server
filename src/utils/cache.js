@@ -6,7 +6,7 @@ class Cache {
 		this.name = name || '';
 	}
 
-	createMongooseCacheIndex(coreMongooseArray) {
+	createMongooseIndex(coreMongooseArray) {
 		let index = '';
 		coreMongooseArray.forEach((id) => {
 			index += id;
@@ -14,17 +14,17 @@ class Cache {
 		return index;
 	}
 
-	clearCache() {
+	clear() {
 		this.cache = {};
 		logger.info(`Clear ${this.name} cache`);
 	}
 
-	updateCache(id, data) {
+	update(id, data) {
 		this.cache[id] = data;
 		logger.info(`Update ${this.name} cache ${id}`, data);
 	}
 
-	getFromCache(id) {
+	get(id) {
 		return this.cache[id];
 	}
 }

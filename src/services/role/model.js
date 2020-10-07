@@ -63,7 +63,7 @@ roleSchema.methods.getPermissions = function getPermissions() {
 roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
 	const processedRoleIds = [];
 	const permissions = new Set();
-	const cacheIndex = cache.createMongooseCacheIndex(roleIds);
+	const cacheIndex = cache.createMongooseIndex(roleIds);
 
 	function resolveSubRoles(roleId) {
 		return roleModel
@@ -85,12 +85,12 @@ roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
 				return Promise.all(promises);
 			});
 	}
-	if (cache.getFromCache(cacheIndex)) {
-		return Promise.resolve(cache.getFromCache(cacheIndex));
+	if (cache.get(cacheIndex)) {
+		return Promise.resolve(cache.get(cacheIndex));
 	}
 	const promises = roleIds.map((id) => resolveSubRoles(id));
 	return Promise.all(promises).then(() => {
-		cache.updateCache(cacheIndex, permissions);
+		cache.update(cacheIndex, permissions);
 		return permissions;
 	});
 };
