@@ -16,12 +16,12 @@ class Cache {
 
 	clear() {
 		this.cache = {};
-		logger.info(`Clear ${this.name} cache`);
+		logger.debug(`Clear ${this.name} cache`);
 	}
 
 	update(id, data) {
 		this.cache[id] = data;
-		logger.info(`Update ${this.name} cache ${id}`, data);
+		logger.debug(`Update ${this.name} cache ${id}`, data);
 	}
 
 	get(id) {

@@ -11,7 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [25.0.9] - 2020-10-07
 
-## Fixed
+## Added
 
 - SC-7115 - Reduce mongoose DB role request by enabling minor caching
 
