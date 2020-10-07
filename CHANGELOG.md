@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.0.10] - 2020-10-07
+
+- SC-6766 log unhandledRejection and unhandledException
+
 ## [25.0.8] - 2020-10-06
 
 ## Fixed
@@ -51,7 +55,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6942 - don't override payload defined by authentication method
 - SC-6942 - don't search for account to populate if no username is given in `injectUsername`
 
-
 ## 25.0.2
 
 ### Changed - 25.0.2
@@ -91,6 +94,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [24.4.6] - 2020-09-11
 
 ### Changed
+
 - SC-6733: central personal data does not get updated via CSV import
 
 ## [24.4.5] - 2020-09-10
