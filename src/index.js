@@ -1,5 +1,8 @@
+const { Configuration } = require('@schul-cloud/commons');
 const appPromise = require('./app');
 const logger = require('./logger');
+
+Configuration.printHierarchy();
 
 appPromise
 	.then((app) => {
