@@ -123,5 +123,8 @@ module.exports = (app) => {
 
 	app.use('/registrationSchool', new RegistrationSchoolService());
 
+	app.use('/users/skipregistration', new MarkUserAsDeleted());
+	app.service('/users/skipregistration').hooks(MarkUserAsDeleted);
+
 	app.use('/users/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 };
