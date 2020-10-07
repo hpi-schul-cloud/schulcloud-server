@@ -20,7 +20,8 @@ const rolesDisplayName = {
 	expert: 'Experte',
 };
 
-const cache = new Cache({ name: 'roles' });
+const oneHour = 60 * 60 * 1000;
+const cache = new Cache({ name: 'roles', clearInterval: oneHour });
 
 const roleSchema = new Schema(
 	{
