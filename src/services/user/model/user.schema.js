@@ -36,6 +36,7 @@ const userSchema = new Schema(
 		lastName: { type: String, required: true },
 		namePrefix: { type: String },
 		nameSuffix: { type: String },
+		searchIndexes: { type: Schema.Types.Array },
 		forcePasswordChange: { type: Boolean, default: false },
 
 		birthday: { type: Date },
@@ -99,6 +100,7 @@ const userSchema = new Schema(
 );
 
 userSchema.index({ schoolId: 1, roles: -1 });
+userSchema.index({ firstName: 'text', lastName: 'text', email: 'text', searchIndexes: 'text' });
 // maybe the schoolId index is enough ?
 // https://ticketsystem.schul-cloud.org/browse/SC-3724
 
@@ -106,6 +108,23 @@ if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
 	// to speed up lookups during TSP sync
 	userSchema.index({ 'sourceOptions.$**': 1 });
 }
+
+// This 'pre-save' method slices the firstName, lastName and email
+// To allow searching the users
+userSchema.pre('save', function() {
+	const arr = [];
+	const firstName = this.firstName.replace(/\s/g,'');
+	const lastName = this.lastName.replace(/\s/g,'');
+	const email = this.email.replace(/\s/g,'');
+	
+	for (i = 0; i < firstName.length - 2; i++) arr.push(firstName.slice(i, i + 3));
+	for (i = 0; i < lastName.length - 2; i++) arr.push(lastName.slice(i, i + 3));
+	for (i = 0; i < email.length - 2; i++) arr.push(email.slice(i, i + 3));
+
+	this.searchIndexes = arr;
+});
+
+  
 
 userSchema.virtual('fullName').get(function get() {
 	return [this.namePrefix, this.firstName, this.middleName, this.lastName, this.nameSuffix]

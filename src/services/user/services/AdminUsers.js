@@ -93,8 +93,7 @@ class AdminUsers {
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 			if (clientQuery.searchQuery) query.searchQuery = clientQuery.searchQuery;
-
-
+			
 			const dateQueries = ['createdAt'];
 			for (const dateQuery of dateQueries) {
 				if (clientQuery[dateQuery]) {

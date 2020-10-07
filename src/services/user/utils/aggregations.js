@@ -347,35 +347,10 @@ const stageFormatWithTotal = (aggregation, limit, skip) => {
  * @param {String} searchQuery
  */
 const stageSearch = (aggregation, searchQuery) => {
-	const querySplit = searchQuery.split(' ').filter((text) => text !== '');
-	const searchCaseOne = [].concat(querySplit[0], querySplit.slice(1).join(' ')); // Ex. 'Wilhelm', 'von Humboldt'
-	const searchCaseTwo = [].concat(querySplit.slice(0, 2).join(' '), querySplit.slice(2).join(' ')); // Ex. 'Wilhelm von', 'Humboldt'
-
-	aggregation.push({
-		$match: {
-			$or: [
-				{
-					lastName: { $regex: searchCaseOne[0], $options: 'i' },
-					firstName: { $regex: searchCaseOne[1], $options: 'i' },
-				},
-				{
-					lastName: { $regex: searchCaseOne[1], $options: 'i' },
-					firstName: { $regex: searchCaseOne[0], $options: 'i' },
-				},
-				{
-					lastName: { $regex: searchCaseTwo[0], $options: 'i' },
-					firstName: { $regex: searchCaseTwo[1], $options: 'i' },
-				},
-				{
-					lastName: { $regex: searchCaseTwo[1], $options: 'i' },
-					firstName: { $regex: searchCaseTwo[0], $options: 'i' },
-				},
-				{ lastName: { $regex: searchQuery, $options: 'i' } },
-				{ firstName: { $regex: searchQuery, $options: 'i' } },
-				{ email: { $regex: searchQuery, $options: 'i' } },
-			],
-		},
-	});
+	aggregation.push(
+		{ $match: { $text: { $search: searchQuery } } },
+		{ $sort: { score: { $meta: "textScore" } } },
+	);
 };
 
 /**
