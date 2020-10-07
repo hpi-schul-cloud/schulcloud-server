@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-6766 - Added ESLint rules with Promise rules
 - SC-6830 - Added hook to parse request to arrays when > 20 users are requested in adminUsers service
 - SC-6510 - Added Merlin Url Generator for Lern Store / Edu-sharing
 
@@ -29,6 +30,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6809 - Maintain RabbitMQ connection and channels
 - SC-5230 - Unblock Account-Page in Nuxt (securing /accounts and /users routes)
 - Support asynchronous calls during server startup
+
+### Fixed
+
+- fixed README badges
 
 ### Security
 
