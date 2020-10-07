@@ -380,7 +380,8 @@
 					"default": [0.01, 0.05, 0.1, 0.2, 0.5, 0.75, 1.0, 3.0, 5.0, 8.0],
 					"description": "Times to separate buckets in seconds. Must be in ascending order."
 				}
-			}
+			},
+			"required": ["METRICS_PATH", "DURATION_BUCKETS_SECONDS"]
 		}
 	},
 	"required": [
