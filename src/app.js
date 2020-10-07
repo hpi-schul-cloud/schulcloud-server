@@ -11,7 +11,8 @@ const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
-const { KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH, LEAD_TIME } = require('../config/globals');
+const { Configuration } = require('@schul-cloud/commons');
+const { BODYPARSER_JSON_LIMIT, LEAD_TIME } = require('../config/globals');
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
@@ -43,9 +44,10 @@ if (LEAD_TIME) {
 }
 
 const metricsOptions = {};
-if (METRICS_PATH) {
-	metricsOptions.metricsPath = METRICS_PATH;
+if (Configuration.has('PROMETHEUS__METRICS_PATH')) {
+	metricsOptions.metricsPath = Configuration.get('PROMETHEUS__METRICS_PATH');
 }
+metricsOptions.durationBuckets = Configuration.data.PROMETHEUS.DURATION_BUCKETS_SECONDS;
 app.use(apiMetrics(metricsOptions));
 
 setupSwagger(app);
