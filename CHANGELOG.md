@@ -9,11 +9,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-## 25.0.8
+## [25.0.8] - 2020-10-06
 
-### Fixed - 25.0.8
+## Fixed
 
 - SC-6676 - Registration: User with role parent should not be able to log-in
+- SC-6960 - instead of deleting and recreating users during the rollback of a failed registration, use replace if necessary
+- SC-6960 - properly raise exceptions during the registration process
 
 ## [25.0.7] - 2020-10-01
 
