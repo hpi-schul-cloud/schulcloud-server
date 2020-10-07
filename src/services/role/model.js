@@ -35,7 +35,6 @@ const roleSchema = new Schema(
 	}
 );
 // https://mongoosejs.com/docs/middleware.html
-// TODO: clearCache() for every update, patch, findOneAndUpdate and so on mongoose operations
 const mongooseOperationsForClearCache = [
 	'findOneAndDelete',
 	'findOneAndRemove',
