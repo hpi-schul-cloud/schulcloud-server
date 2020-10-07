@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
-const { enableAuditLog } = require('../../utils/database');
-const logger = require('../../logger');
+const {
+	database: { enableAuditLog },
+	Cache,
+} = require('../../utils');
 
 const { Schema } = mongoose;
 
@@ -18,31 +20,7 @@ const rolesDisplayName = {
 	expert: 'Experte',
 };
 
-let cache = {};
-// let count = 0;
-
-const clearCache = () => {
-	logger.info('Clear role cache');
-	cache = {};
-};
-
-const updateCache = (id, data) => {
-	// validate?
-	logger.info(`Update role cache ${id}`, data);
-	cache[id] = data;
-};
-
-const getFromCache = (id) => {
-	return cache[id];
-};
-
-const createCacheIndex = (coreMongooseArray) => {
-	let index = '';
-	coreMongooseArray.forEach((id) => {
-		index += id;
-	});
-	return index;
-};
+const cache = new Cache({ name: 'roles' });
 
 const roleSchema = new Schema(
 	{
@@ -56,8 +34,25 @@ const roleSchema = new Schema(
 		timestamps: true,
 	}
 );
-
+// https://mongoosejs.com/docs/middleware.html
 // TODO: clearCache() for every update, patch, findOneAndUpdate and so on mongoose operations
+const mongooseOperationsForClearCache = [
+	'findOneAndDelete',
+	'findOneAndRemove',
+	'findOneAndUpdate',
+	'deleteMany',
+	'deleteOne',
+	'remove',
+	'updateOne',
+	'updateMany',
+];
+
+mongooseOperationsForClearCache.forEach((operation) => {
+	roleSchema.post(operation, (next) => {
+		cache.clearCache();
+		next();
+	});
+});
 
 roleSchema.methods.getPermissions = function getPermissions() {
 	return roleModel.resolvePermissions([this._id]); // fixme
@@ -69,7 +64,7 @@ roleSchema.methods.getPermissions = function getPermissions() {
 roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
 	const processedRoleIds = [];
 	const permissions = new Set();
-	const cacheIndex = createCacheIndex(roleIds);
+	const cacheIndex = cache.createMongooseCacheIndex(roleIds);
 
 	function resolveSubRoles(roleId) {
 		// count += 1;
@@ -93,12 +88,12 @@ roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
 				return Promise.all(promises);
 			});
 	}
-	if (getFromCache(cacheIndex)) {
-		return Promise.resolve(getFromCache(cacheIndex));
+	if (cache.getFromCache(cacheIndex)) {
+		return Promise.resolve(cache.getFromCache(cacheIndex));
 	}
 	const promises = roleIds.map((id) => resolveSubRoles(id));
 	return Promise.all(promises).then(() => {
-		updateCache(cacheIndex, permissions);
+		cache.updateCache(cacheIndex, permissions);
 		return permissions;
 	});
 };
