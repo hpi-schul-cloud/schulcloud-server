@@ -28,6 +28,37 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - Added hotfix merges
 
+## [25.0.9] - 2020-10-07
+
+## Added
+
+- SC-7115 - Reduce mongoose DB role request by enabling minor caching
+
+## [25.0.8] - 2020-10-06
+
+## Fixed
+
+- SC-6960 - instead of deleting and recreating users during the rollback of a failed registration, use replace if necessary
+- SC-6960 - properly raise exceptions during the registration process
+
+## [25.0.7] - 2020-10-01
+
+### Removed
+
+- OPS-1316 - removed custom keep-alive header creation in express middleware
+
+## [25.0.6] - 2020-10-01
+
+### Added
+
+- OPS-1316 - add indexes for slow files and submission queries
+
+## [25.0.5] - 2020-10-01
+
+### Added
+
+- SC-6973 - add time window for pin creation
+
 ## [25.0.4] - 2020-09-30
 
 ### Added
