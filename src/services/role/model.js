@@ -47,9 +47,8 @@ const mongooseOperationsForClearCache = [
 ];
 
 mongooseOperationsForClearCache.forEach((operation) => {
-	roleSchema.post(operation, (next) => {
+	roleSchema.post(operation, () => {
 		cache.clear();
-		next();
 	});
 });
 
