@@ -13,6 +13,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-6766 log unhandledRejection and unhandledException
 
+## [25.0.9] - 2020-10-07
+
+## Added
+
+- SC-7115 - Reduce mongoose DB role request by enabling minor caching
+
 ## [25.0.8] - 2020-10-06
 
 ## Fixed
