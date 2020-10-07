@@ -1,12 +1,13 @@
 const logger = require('../logger');
 
+const oneHour = 60 * 60 * 1000;
+
 class Cache {
-	constructor({ name, clearInterval } = {}) {
+	// TODO: Use Redis for sync and for more the role service
+	constructor({ name, clearInterval = oneHour } = {}) {
 		this.cache = {};
 		this.name = name || '';
-		if (typeof clearInterval === 'number') {
-			setInterval(this.clear.bind(this), clearInterval);
-		}
+		this.clearInterval = clearInterval;
 	}
 
 	clear() {
@@ -22,13 +23,18 @@ class Cache {
 		return index;
 	}
 
-	update(id, data) {
-		this.cache[id] = data;
-		logger.debug(`Update ${this.name} cache ${id}`, data);
+	update(key, value) {
+		this.cache[key] = {
+			value,
+			validUntil: Date.now() + this.clearInterval,
+		};
+		logger.debug(`Update ${this.name} cache ${key}`, value);
 	}
 
-	get(id) {
-		return this.cache[id];
+	get(key) {
+		const entry = this.cache[key];
+		if (!entry || entry.validUntil < Date.now()) return undefined;
+		return entry.value;
 	}
 }
 
