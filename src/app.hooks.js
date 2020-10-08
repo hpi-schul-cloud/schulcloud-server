@@ -103,7 +103,7 @@ const handleAutoLogout = async (context) => {
  */
 const errorHandler = (context) => {
 	if (context.error) {
-		// in test it log too much
+		// By executing test over services and logging or using expect() the complet hook with all keys are printed
 		delete context.error.hook;
 	}
 	return context;

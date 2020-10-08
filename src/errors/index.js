@@ -5,7 +5,7 @@ const logger = require('../logger');
 
 const setDefaultMessage = (className) => `Error of type ${className}`;
 
-const solvedTraceId = (ref, message, additional) => {
+const resolvedTraceId = (ref, message, additional) => {
 	if (message instanceof Error && message.traceId) {
 		ref.traceId = message.traceId;
 		delete message.traceId;
@@ -24,7 +24,7 @@ const prepare = (ref, message, additional, params, className) => {
 	if (!message) {
 		logger.warning(`First parameter should set by errors of type ${className}`);
 	}
-	// for the case that only a error is pass
+	// for the case that only a error is passed
 	if (message instanceof Error && !additional) {
 		const err = message;
 		// eslint-disable-next-line no-param-reassign
@@ -34,7 +34,7 @@ const prepare = (ref, message, additional, params, className) => {
 	}
 	ref.errors = Object.freeze(additional || {});
 	ref.className = className;
-	solvedTraceId(ref, message, additional);
+	resolvedTraceId(ref, message, additional);
 	// Error.captureStackTrace(ref, ref.constructor);
 };
 

@@ -4,9 +4,7 @@ const { Configuration } = require('@schul-cloud/commons');
 const jwt = require('jsonwebtoken');
 const reqlib = require('app-root-path').require;
 
-const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention, UnhandledRejection, UnhandledException } = reqlib(
-	'src/errors'
-);
+const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention } = reqlib('src/errors');
 const { convertToFeathersError } = reqlib('src/errors/utils');
 
 const logger = require('../logger');
@@ -139,7 +137,7 @@ const filterQuery = (url) => {
 	return newUrl;
 };
 
-// important that it is not send to sentry, or add it to logs
+// important that it is not sent to sentry, or added it to logs
 const filterSecrets = (error, req, res, next) => {
 	if (error) {
 		// req.url = filterQuery(req.url);

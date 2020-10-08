@@ -98,7 +98,7 @@ const hasViewPermissionAfter = (hook) => {
 	} else {
 		// check if it is a single homework AND user has view permission
 		if (data.schoolId != undefined && !hasPermission(data)) {
-			return Promise.reject(new errors.Forbidden("You don't have permissions!"));
+			return Promise.reject(new Forbidden("You don't have permissions!"));
 		}
 	}
 	hook.result.data ? (hook.result.data = data) : (hook.result = data);
