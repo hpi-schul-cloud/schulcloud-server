@@ -200,9 +200,9 @@ module.exports = function LDAPService() {
 			return this._connect(config, qualifiedUsername, password).then((connection) => {
 				if (connection.connected) {
 					connection.unbind();
-					return Promise.resolve(true);
+					return true;
 				}
-				return Promise.reject(new NotAuthenticated('User could not authenticate'));
+				throw new NotAuthenticated('User could not authenticate');
 			});
 		}
 

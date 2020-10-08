@@ -219,21 +219,21 @@ const hasPatchPermission = (hook) => {
 				const addsOnlySelf = addedStudents.length === 1 && equalIds(addedStudents[0], hook.params.account.userId);
 
 				if (removesOnlySelf || addsOnlySelf) {
-					return Promise.resolve(hook);
+					return hook;
 				}
 			}
 
 			// if user is a student of that course and the only
 			// difference of in the archived array is the current student it, let it pass.
 			if (isTeacher(hook.params.account.userId, homework)) {
-				return Promise.resolve(hook);
+				return hook;
 			}
-			return Promise.reject(new Forbidden());
+			throw new Forbidden();
 		})
 		.catch((err) => {
-			logger.warning(err);
-			return Promise.reject(
-				new GeneralError({ message: "[500 INTERNAL ERROR] - can't reach homework service @isTeacher function" })
+			throw new GeneralError(
+				{ message: "[500 INTERNAL ERROR] - can't reach homework service @isTeacher function" },
+				err
 			);
 		});
 };
