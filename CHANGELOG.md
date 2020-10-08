@@ -12,6 +12,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - SC-6830 - Added hook to parse request to arrays when > 20 users are requested in adminUsers service
+- SC-6769 - Introduce API validation module
+- SC-6769 - API validation for users/admin routes
 
 ### Removed
 
