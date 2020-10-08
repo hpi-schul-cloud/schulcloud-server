@@ -5,9 +5,7 @@ const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 const reqlib = require('app-root-path').require;
 
-const { Forbidden, NotFound, BadRequest, GeneralError, NotAuthenticated, NoClientInstanceError } = reqlib(
-	'src/errors'
-);
+const { Forbidden, NotFound, BadRequest, GeneralError, NotAuthenticated, NoClientInstanceError } = reqlib('src/errors');
 
 const hooks = require('./hooks');
 
