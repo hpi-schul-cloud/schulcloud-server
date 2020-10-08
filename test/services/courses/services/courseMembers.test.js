@@ -25,7 +25,7 @@ describe('course scope members service', () => {
 		expect(courseMembersService).to.not.equal(undefined);
 	});
 
-	describe.skip('in a course without substitution teacher', () => {
+	describe('in a course without substitution teacher', () => {
 		let teacher;
 		let student;
 		let course;
@@ -87,7 +87,7 @@ describe('course scope members service', () => {
 		});
 	});
 
-	describe.skip('in a course with substitution teacher', () => {
+	describe('in a course with substitution teacher', () => {
 		let teachers;
 		let substitutionTeachers;
 		let students;

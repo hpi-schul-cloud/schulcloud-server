@@ -353,6 +353,14 @@
 			"type": "string",
 			"description": "The client id for edu-sharing api access"
 		},
+		"ES_MERLIN_USERNAME": {
+			"type": "string",
+			"description": "The username for Merlin login, used for edusharing"
+		},
+		"ES_MERLIN_PW": {
+			"type": "string",
+			"description": "The password for Merlin login, used for edusharing"
+		},
 		"SILENT_ERROR_ENABLED": {
 			"type": "boolean",
 			"default": false,

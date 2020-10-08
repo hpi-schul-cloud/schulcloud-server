@@ -52,7 +52,7 @@ describe('userRoles', () => {
 	before(async () => {
 		app = await appPromise;
 		userRoles = app.service('/roles/user');
-		server = await app.listen(0)
+		server = await app.listen(0);
 		testRole = await testObjects.createTestRole({
 			name: ROLES.TEST,
 			permissions: testPermissions,

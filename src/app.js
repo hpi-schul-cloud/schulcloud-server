@@ -54,14 +54,6 @@ const setupApp = async () => {
 	initializeRedisClient();
 	rabbitMq.setup(app);
 
-	// set custom response header for ha proxy
-	if (KEEP_ALIVE) {
-		app.use((req, res, next) => {
-			res.setHeader('Connection', 'Keep-Alive');
-			next();
-		});
-	}
-
 	app
 		.use(compress())
 		.options('*', cors())
@@ -72,7 +64,7 @@ const setupApp = async () => {
 		.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
 		.use('/', bodyParser.json({ limit: '10mb' }))
 		.use(bodyParser.urlencoded({ extended: true }))
-		.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
+		.use(bodyParser.raw({ type: () => true, limit: '10mb' }));
 
 	await registerApiValidation(app);
 

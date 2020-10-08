@@ -15,7 +15,7 @@ describe('jwtTimer service', () => {
 		assert.ok(defaultApp.service('accounts/jwtTimer'));
 	});
 	describe('redis mocked', function test() {
-		this.timeout(30000);
+		this.timeout(20000);
 		let testObjects;
 		let app;
 		let redisHelper;

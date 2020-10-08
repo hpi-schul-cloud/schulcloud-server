@@ -10,10 +10,6 @@ describe('resolve/scopes service', () => {
 		service = app.service('resolve/scopes');
 	});
 
-	after(async () => {
-
-	});
-
 	it('registered the resolve/scopes service', () => {
 		assert.ok(service);
 	});
