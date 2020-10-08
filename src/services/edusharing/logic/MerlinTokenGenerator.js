@@ -20,8 +20,8 @@ class MerlinTokenGenerator {
 				'Content-Type': 'application/x-www-form-urlencoded',
 			},
 			form: {
-				username: Configuration.get('ES_MERLIN_USERNAME'),
-				password: Configuration.get('ES_MERLIN_PW'),
+				username: Configuration.get('SECRET_ES_MERLIN_USERNAME'),
+				password: Configuration.get('SECRET_ES_MERLIN_PW'),
 			},
 		};
 		try {
