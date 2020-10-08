@@ -1,32 +1,43 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const appPromise = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(appPromise);
+const commons = require('@schul-cloud/commons');
+
+const { Configuration } = commons;
 
 chai.use(chaiHttp);
 const { expect } = chai;
 
-const getAdminToken = async (schoolId = undefined) => {
-	const adminUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
-	const credentials = { username: adminUser.email, password: `${Date.now()}` };
-	await testObjects.createTestAccount(credentials, 'local', adminUser);
-	const token = await testObjects.generateJWT(credentials);
-	return token;
-};
-
 describe('admin users integration tests', function test() {
 	let app;
 	let server;
-	this.timeout(10000);
+	let configBefore;
+	let testObjects;
+	this.timeout(15000);
 
 	before(async () => {
+		delete require.cache[require.resolve('../../../../src/app')];
+		configBefore = Configuration.toObject();
+		Configuration.set('FEATURE_API_VALIDATION_ENABLED', true);
+		// eslint-disable-next-line global-require
+		const appPromise = require('../../../../src/app');
+		// eslint-disable-next-line global-require
+		testObjects = require('../../helpers/testObjects')(appPromise);
 		app = await appPromise;
 		server = await app.listen(0);
 	});
 
 	after(async () => {
 		await server.close();
+		Configuration.reset(configBefore);
 	});
+
+	const getAdminToken = async (schoolId = undefined) => {
+		const adminUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+		const credentials = { username: adminUser.email, password: `${Date.now()}` };
+		await testObjects.createTestAccount(credentials, 'local', adminUser);
+		const token = await testObjects.generateJWT(credentials);
+		return token;
+	};
 
 	it('POST succeeds valid request', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
