@@ -100,7 +100,7 @@ describe('admin users integration tests', function test() {
 
 	it('FIND basic request', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
-		const users = await Promise.all([
+		await Promise.all([
 			testObjects.createTestUser({ roles: ['student'], schoolId }),
 			testObjects.createTestUser({ roles: ['student'], schoolId }),
 			testObjects.createTestUser({ roles: ['student'], schoolId }),
@@ -127,7 +127,7 @@ describe('admin users integration tests', function test() {
 
 	it('FIND request with searchQuery', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
-		const users = await Promise.all([
+		await Promise.all([
 			testObjects.createTestUser({ roles: ['student'], firstName: 'Hannes', schoolId }),
 			testObjects.createTestUser({ roles: ['student'], firstName: 'Hannelore', schoolId }),
 			testObjects.createTestUser({ roles: ['student'], firstName: 'Max', schoolId }),
@@ -155,7 +155,7 @@ describe('admin users integration tests', function test() {
 
 	it('FIND request with various query params', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
-		const users = await Promise.all([
+		await Promise.all([
 			testObjects.createTestUser({ roles: ['student'], firstName: 'Bruce', lastName: 'Wayne', schoolId }),
 			testObjects.createTestUser({ roles: ['student'], schoolId }),
 			testObjects.createTestUser({ roles: ['student'], schoolId }),
