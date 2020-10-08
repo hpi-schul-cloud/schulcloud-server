@@ -12,6 +12,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - SC-6567 - add new application errros
+- SC-6766 - Added ESLint rules with Promise rules
 - SC-6830 - Added hook to parse request to arrays when > 20 users are requested in adminUsers service
 - SC-6510 - Added Merlin Url Generator for Lern Store / Edu-sharing
 
@@ -32,9 +33,26 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-5230 - Unblock Account-Page in Nuxt (securing /accounts and /users routes)
 - Support asynchronous calls during server startup
 
+### Fixed
+
+- fixed README badges
+
 ### Security
 
 - Added hotfix merges
+
+## [25.0.9] - 2020-10-07
+
+## Added
+
+- SC-7115 - Reduce mongoose DB role request by enabling minor caching
+
+## [25.0.8] - 2020-10-06
+
+## Fixed
+
+- SC-6960 - instead of deleting and recreating users during the rollback of a failed registration, use replace if necessary
+- SC-6960 - properly raise exceptions during the registration process
 
 ## [25.0.7] - 2020-10-01
 

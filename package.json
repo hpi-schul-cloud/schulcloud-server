@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "25.0.7",
+	"version": "25.0.9",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -47,7 +47,7 @@
 		"@feathersjs/express": "^4.5.4",
 		"@feathersjs/feathers": "^4.5.3",
 		"@feathersjs/socketio": "^4.5.4",
-		"@schul-cloud/commons": "^1.2.7",
+		"@schul-cloud/commons": "^1.2.8",
 		"@sentry/node": "^5.9.0",
 		"ajv": "^6.10.2",
 		"amqplib": "^0.6.0",
@@ -119,6 +119,7 @@
 		"eslint-config-prettier": "^6.11.0",
 		"eslint-plugin-import": "^2.18.2",
 		"eslint-plugin-prettier": "^3.1.4",
+		"eslint-plugin-promise": "^4.2.1",
 		"jwt-decode": "^2.2.0",
 		"mocha": "^8.0.1",
 		"mockery": "^2.0.0",

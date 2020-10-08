@@ -1,5 +1,5 @@
 module.exports = {
-	extends: ['airbnb-base', 'prettier'],
+	extends: ['airbnb-base', 'prettier', 'plugin:promise/recommended'],
 	rules: {
 		'prettier/prettier': ['error'],
 		'no-process-env': 'error',
@@ -48,7 +48,7 @@ module.exports = {
 		],
 		'arrow-parens': ['error', 'always'],
 	},
-	plugins: ['import', 'prettier'],
+	plugins: ['import', 'prettier', 'promise'],
 	env: {
 		node: true,
 		mocha: true,
