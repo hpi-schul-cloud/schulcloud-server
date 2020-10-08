@@ -84,7 +84,9 @@ describe('MessengerTokenService', function test() {
 					})
 					.catch((err) => {
 						expect(err).to.not.be.undefined;
-						expect(err.code).to.equals(403);
+						// TODO: it toggle from time to time between code and statusCode, why i do not know..
+						const status = err.code || err.statusCode;
+						expect(status).to.equals(403);
 					});
 			});
 
