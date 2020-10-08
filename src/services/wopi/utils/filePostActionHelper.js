@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
-const { NotImplemented } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { NotImplemented } = reqlib('src/errors');
 const { FileModel } = require('../../fileStorage/model');
 
 /**
