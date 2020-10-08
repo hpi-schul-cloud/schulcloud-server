@@ -9,15 +9,22 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.0.10] - 2020-10-07
+
+### Added
+
+- configured prometheus metrics - bucket sizes
+- SC-6766 log unhandledRejection and unhandledException
+
 ## [25.0.9] - 2020-10-07
 
-## Added
+### Added
 
 - SC-7115 - Reduce mongoose DB role request by enabling minor caching
 
 ## [25.0.8] - 2020-10-06
 
-## Fixed
+### Fixed
 
 - SC-6960 - instead of deleting and recreating users during the rollback of a failed registration, use replace if necessary
 - SC-6960 - properly raise exceptions during the registration process
@@ -56,7 +63,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-6942 - don't override payload defined by authentication method
 - SC-6942 - don't search for account to populate if no username is given in `injectUsername`
-
 
 ## 25.0.2
 
@@ -97,6 +103,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [24.4.6] - 2020-09-11
 
 ### Changed
+
 - SC-6733: central personal data does not get updated via CSV import
 
 ## [24.4.5] - 2020-09-10
