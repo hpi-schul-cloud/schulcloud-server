@@ -91,7 +91,7 @@ describe('admin users integration tests', function test() {
 			lastName: 'moritz',
 			firstName: 'mustermann',
 			schoolId,
-			email: `${Date.now()}missingat.de`,
+			email: `${Date.now()}missingat.de`, // should fail
 		});
 		expect(response).to.not.be.undefined;
 		expect(response.error).to.not.be.undefined;

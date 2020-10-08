@@ -1,4 +1,4 @@
-const { OpenApiValidator } = require('express-openapi-validator');
+const OpenApiValidator = require('express-openapi-validator');
 const commons = require('@schul-cloud/commons');
 
 const { Configuration } = commons;
@@ -280,12 +280,14 @@ if (Configuration.has('API_VALIDATION_WHITELIST_EXTENSION')) {
 // todo: fetch all the api docs of all services
 const registerApiValidation = async (app) => {
 	if (Configuration.get('FEATURE_API_VALIDATION_ENABLED')) {
-		await new OpenApiValidator({
-			apiSpec: './src/services/user/docs/openapi.yaml',
-			ignorePaths,
-			// validateResponses: true, // <-- to validate responses
-			// unknownFormats: ['my-format'] // <-- to provide custom formats
-		}).install(app);
+		app.use(
+			OpenApiValidator.middleware({
+				apiSpec: './src/services/user/docs/openapi.yaml',
+				ignorePaths,
+				validateRequests: true,
+				// validateResponses: true, // <-- to validate responses
+			})
+		);
 	}
 };
 
