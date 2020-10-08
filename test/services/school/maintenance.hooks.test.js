@@ -1,6 +1,8 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const { BadRequest, NotFound } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest, NotFound } = reqlib('src/errors');
 const appPromise = require('../../../src/app');
 const { cleanup } = require('../helpers/testObjects')(appPromise);
 const { create: createSchool } = require('../helpers/services/schools')(appPromise);

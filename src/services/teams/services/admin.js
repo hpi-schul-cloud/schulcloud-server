@@ -1,4 +1,6 @@
-const { BadRequest, Forbidden, NotFound } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, NotFound, BadRequest } = reqlib('src/errors');
 const hooks = require('../hooks');
 const { TEAM_FEATURES } = require('../model');
 const { warning } = require('../../../logger/index');

@@ -1,6 +1,8 @@
 const assert = require('assert');
 const { expect } = require('chai');
-const { Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden } = reqlib('src/errors');
 
 const appPromise = require('../../../src/app');
 const Material = require('../../../src/services/content/material-model');

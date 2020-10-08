@@ -1,6 +1,8 @@
 const { disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
-const { Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden } = reqlib('src/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 
 const { hasPermission } = require('../../../hooks');
