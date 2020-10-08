@@ -3,19 +3,22 @@ const { mix } = require('mixwith');
 
 const ClassImporter = require('../../../../../src/services/sync/strategies/mixins/ClassImporter');
 const Syncer = require('../../../../../src/services/sync/strategies/Syncer');
-const app = require('../../../../../src/app');
-const { createTestSchool, createTestClass, cleanup } = require('../../../helpers/testObjects')(app);
+const appPromise = require('../../../../../src/app');
+const { createTestSchool, createTestClass, cleanup } = require('../../../helpers/testObjects')(appPromise);
 
 describe('Syncer Mixins', () => {
 	describe('ClassImporter', () => {
+		let app;
+
 		const MIXIN_METHODS = ['buildClassMapping', 'createOrUpdateClass', 'findClass', 'createClass', 'updateClass'];
 		const SampleSyncer = class extends Syncer {};
 		const MixedClass = mix(Syncer).with(ClassImporter);
 
 		let server;
 
-		before((done) => {
-			server = app.listen(0, done);
+		before(async () => {
+			app = await appPromise;
+			server = await app.listen(0);
 		});
 
 		after((done) => {

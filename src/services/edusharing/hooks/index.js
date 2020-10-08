@@ -1,7 +1,9 @@
 const { Configuration } = require('@schul-cloud/commons');
 const { authenticate } = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
-const { NotFound } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { NotFound } = reqlib('src/errors');
 
 const isEdusharing = (context) => {
 	if (Configuration.get('LERNSTORE_MODE') !== 'EDUSHARING') {

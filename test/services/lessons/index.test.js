@@ -1,10 +1,8 @@
 const assert = require('assert');
 const { expect } = require('chai');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
-const lessonService = app.service('lessons');
-const lessonCopyService = app.service('lessons/copy');
-const testObjects = require('../helpers/testObjects')(app);
+const testObjects = require('../helpers/testObjects')(appPromise);
 
 const testLesson = {
 	name: 'testLesson',
@@ -14,10 +12,16 @@ const testLesson = {
 };
 
 describe('lessons service', () => {
+	let app;
+	let lessonService;
+	let lessonCopyService;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		lessonService = app.service('lessons');
+		lessonCopyService = app.service('lessons/copy');
+		server = await app.listen(0);
 	});
 
 	after(async () => {

@@ -123,5 +123,5 @@ module.exports = (app) => {
 
 	app.use('/registrationSchool', new RegistrationSchoolService());
 
-	app.use('/users/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/users/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 };

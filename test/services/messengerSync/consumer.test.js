@@ -6,13 +6,13 @@ const { ACTIONS } = require('../../../src/services/messengerSync/producer');
 const { Configuration } = commons;
 
 describe('service', function test() {
-	this.timeout(10000); // give require app enough time
+	this.timeout(20000); // give require app enough time
 	let configBefore;
 	let server;
 	let app;
 	let testObjects;
 
-	before((done) => {
+	before(async () => {
 		configBefore = Configuration.toObject(); // deep copy current config
 		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 		Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
@@ -25,10 +25,10 @@ describe('service', function test() {
 		mockery.registerMock('amqplib', rabbitmqMock.amqplib);
 
 		// eslint-disable-next-line global-require
-		app = require('../../../src/app');
+		app = await require('../../../src/app');
 		// eslint-disable-next-line global-require
 		testObjects = require('../helpers/testObjects')(app);
-		server = app.listen(0, done);
+		server = await app.listen(0);
 	});
 
 	after((done) => {
