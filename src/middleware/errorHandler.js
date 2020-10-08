@@ -181,6 +181,8 @@ const skipErrorLogging = (error, req, res, next) => {
 		error instanceof AutoLogout ||
 		error instanceof BruteForcePrevention
 	) {
+		logger.debug(error);
+		logger.warning(error.name);
 		sendError(res, error);
 	} else {
 		next(error);
@@ -213,22 +215,4 @@ const errorHandler = (app) => {
 	app.use(handleSilentError);
 	app.use(returnAsJson);
 };
-
-// no stacktrace for Promise.reject(); and Promise.resject('someText'); missing return is also a case
-// or throw no errors
-// get() { return Promise.reject()} produce wrong stack trace in client
-process.on('unhandledRejection', async (reason, promise) => {
-	let result;
-	try {
-		result = await promise.catch((err) => err);
-	} catch (err) {
-		result = err;
-	}
-	logger.error(new UnhandledRejection({ result, reason }));
-});
-
-process.on('unhandledException', (err) => {
-	logger.error(new UnhandledException(err));
-});
-
 module.exports = errorHandler;

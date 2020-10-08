@@ -1,3 +1,7 @@
+const reqlib = require('app-root-path').require;
+
+const { UnhandledRejection, UnhandledException } = reqlib('src/errors');
+
 module.exports = (logger) => {
 	process
 		.on('unhandledRejection', async (reason, promise) => {
@@ -7,9 +11,9 @@ module.exports = (logger) => {
 			} catch (err) {
 				result = err;
 			}
-			logger.error('Unhandled Rejection at: Promise', promise, 'reason:', reason, 'result:', result);
+			logger.error(new UnhandledRejection('Unhandled Rejection.', { promise, result, reason }));
 		})
 		.on('unhandledException', (e) => {
-			logger.error('Unhandled Exception', e);
+			logger.error(new UnhandledException('Unhandled Exception', e));
 		});
 };
