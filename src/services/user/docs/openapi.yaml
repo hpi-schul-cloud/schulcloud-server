@@ -62,7 +62,6 @@ components:
           format: 'email'
         birthday:
           type: string
-          format: 'date'
         roles:
           type: array
           items:
