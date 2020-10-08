@@ -1,6 +1,8 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest, Forbidden } = reqlib('src/errors');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);

@@ -1,6 +1,9 @@
 const { Configuration } = require('@schul-cloud/commons');
-const { BadRequest } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 const { userModel: User } = require('./model');
+
 const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const { getAge } = require('../../utils');
@@ -144,8 +147,7 @@ const registerUser = function register(data, params, app) {
 		})
 		.then(() =>
 			populateUser(app, data).then((response) => {
-				user = response.user;
-				oldUser = response.oldUser;
+				({ user, oldUser } = response);
 			})
 		)
 		.then(() => {
