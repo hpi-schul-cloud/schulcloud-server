@@ -2,7 +2,8 @@ const { Configuration } = require('@schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
 const { BadRequest } = reqlib('src/errors');
-const userModel = require('./model');
+const { userModel: User } = require('./model');
+
 const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const { getAge } = require('../../utils');
@@ -36,7 +37,6 @@ const populateUser = (app, data) => {
 	if (data.classId) user.classId = data.classId;
 
 	if (!data.importHash) {
-		// TODO create real error
 		return Promise.reject(new BadRequest('Ungültiger Link'));
 	}
 
@@ -125,9 +125,7 @@ const registerUser = function register(data, params, app) {
 	let consent = null;
 	let consentPromise = null;
 
-	return new Promise((resolve) => {
-		resolve();
-	})
+	return Promise.resolve()
 		.then(() => {
 			let classPromise = null;
 			let schoolPromise = null;
@@ -144,7 +142,7 @@ const registerUser = function register(data, params, app) {
 					data.schoolId = data.classOrSchoolId;
 					return Promise.resolve();
 				}
-				throw new BadRequest('Ungültiger Link');
+				return Promise.reject(new BadRequest('Ungültiger Link'));
 			});
 		})
 		.then(() =>
@@ -252,7 +250,7 @@ const registerUser = function register(data, params, app) {
 					return Promise.reject(new Error(msg));
 				});
 		})
-		.then(async (res) => {
+		.then(async () => {
 			// add parent if necessary
 			if (data.parent_email) {
 				parent = {
@@ -265,9 +263,7 @@ const registerUser = function register(data, params, app) {
 				};
 				try {
 					parent = await app.service('usersModel').create(parent);
-					user = await userModel.userModel
-						.findByIdAndUpdate(user._id, { $push: { parents: [parent._id] } }, { new: true })
-						.exec();
+					user = await User.findByIdAndUpdate(user._id, { $push: { parents: [parent._id] } }, { new: true }).exec();
 				} catch (err) {
 					logger.log('warn', `Fehler beim Verknüpfen der Eltern. ${err}`);
 					return Promise.reject(new Error('Fehler beim Verknüpfen der Eltern.', err));
@@ -315,20 +311,14 @@ const registerUser = function register(data, params, app) {
 		.catch((err) => {
 			const rollbackPromises = [];
 			if (user && user._id) {
-				rollbackPromises.push(
-					userModel.userModel
-						.findOneAndRemove({ _id: user._id })
-						.exec()
-						.then((_) => {
-							if (oldUser) {
-								return userModel.userModel.create(oldUser);
-							}
-							return Promise.resolve();
-						})
-				);
+				if (oldUser) {
+					rollbackPromises.push(User.replaceOne({ _id: user._id }, oldUser).exec());
+				} else {
+					rollbackPromises.push(User.findOneAndRemove({ _id: user._id }).exec());
+				}
 			}
 			if (parent && parent._id) {
-				rollbackPromises.push(userModel.userModel.findOneAndRemove({ _id: parent._id }).exec());
+				rollbackPromises.push(User.findOneAndRemove({ _id: parent._id }).exec());
 			}
 			if (account && account._id) {
 				rollbackPromises.push(accountModel.findOneAndRemove({ _id: account._id }).exec());
