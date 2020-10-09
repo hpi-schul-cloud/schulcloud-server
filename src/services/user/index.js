@@ -8,7 +8,6 @@ const registrationPinsHooks = require('./hooks/registrationPins');
 const publicTeachersHooks = require('./hooks/publicTeachers');
 const firstLoginHooks = require('./hooks/firstLogin');
 const { skipRegistrationSingleHooks, skipRegistrationBulkHooks } = require('./hooks/skipRegistration');
-const { MarkUserAsDeleted } = require('./hooks/MarkUserAsDeleted');
 
 const {
 	AdminUsers,
@@ -124,9 +123,6 @@ module.exports = (app) => {
 	app.service('/users/skipregistration').hooks(skipRegistrationBulkHooks);
 
 	app.use('/registrationSchool', new RegistrationSchoolService());
-
-	app.use('/users/skipregistration', new MarkUserAsDeleted());
-	app.service('/users/skipregistration').hooks(MarkUserAsDeleted);
 
 	app.use('/users/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 };
