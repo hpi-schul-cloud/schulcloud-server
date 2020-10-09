@@ -13,7 +13,7 @@ const getAutomaticConsent = () => ({
 
 const firstLogin = async (data, params, app) => {
 	if (!passwordsMatch(data['password-1'], data['password-2'])) {
-		return Promise.reject('Die neuen Passwörter stimmen nicht überein.');
+		return Promise.reject(new Error('Die neuen Passwörter stimmen nicht überein.'));
 	}
 
 	const { accountId } = params.authentication.payload;
@@ -36,14 +36,14 @@ const firstLogin = async (data, params, app) => {
 		const userBirthday = new Date(`${dateArr[1]}.${dateArr[0]}.${dateArr[2]}`);
 		// eslint-disable-next-line no-restricted-globals
 		if (userBirthday instanceof Date && isNaN(userBirthday)) {
-			return Promise.reject('Bitte einen validen Geburtstag auswählen.');
+			return Promise.reject(new Error('Bitte einen validen Geburtstag auswählen.'));
 		}
 		userUpdate.birthday = userBirthday;
 	}
 	// malformed email?
 	if (data['student-email']) {
 		if (!constants.expressions.email.test(data['student-email'])) {
-			return Promise.reject('Bitte eine valide E-Mail-Adresse eingeben.');
+			return Promise.reject(new Error('Bitte eine valide E-Mail-Adresse eingeben.'));
 		}
 		userUpdate.email = data['student-email'];
 	}

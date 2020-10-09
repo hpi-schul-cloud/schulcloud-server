@@ -1,7 +1,9 @@
+// eslint-disable-next-line max-classes-per-file
 const _ = require('lodash');
 const nanoid = require('nanoid');
-const { GeneralError } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
 
+const { GeneralError } = reqlib('src/errors');
 const logger = require('../../../logger');
 const hooks = require('../hooks/copyCourseHook');
 const { courseModel } = require('../model');
