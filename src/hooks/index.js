@@ -1,5 +1,7 @@
 /* eslint-disable no-param-reassign */
-const { Forbidden, GeneralError, NotFound, BadRequest } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = reqlib('src/errors');
 const { authenticate } = require('@feathersjs/authentication');
 
 const { v4: uuidv4 } = require('uuid');
@@ -714,8 +716,7 @@ exports.sendEmail = (context, maildata) => {
 								attachments,
 							})
 							.catch((err) => {
-								logger.warning(err);
-								throw new BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error');
+								throw new BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error', err);
 							});
 					}
 				});

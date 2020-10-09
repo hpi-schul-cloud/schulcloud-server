@@ -270,7 +270,7 @@ describe('enforceRoleHierarchyOnCreate', () => {
 									return Promise.resolve(createdRole);
 								}
 								// eslint-disable-next-line prefer-promise-reject-errors
-								return Promise.reject('not found');
+								return Promise.reject(new Error('not found'));
 							},
 						};
 					}
