@@ -3,7 +3,6 @@ const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 const reqlib = require('app-root-path').require;
-const { registerApiValidation } = reqlib('src/utils/apiValidation');
 
 const { userModel, registrationPinModel } = require('./model');
 const registrationPinsHooks = require('./hooks/registrationPins');
@@ -23,6 +22,8 @@ const {
 	ForcePasswordChange: { ForcePasswordChangeService, ForcePasswordChangeServiceHooks },
 	QrRegistrationLinks: { QrRegistrationLinks, qrRegistrationLinksHooks },
 } = require('./services');
+
+const { registerApiValidation } = reqlib('src/utils/apiValidation');
 
 module.exports = (app) => {
 	registerApiValidation(app, path.join(__dirname, '/docs/adminusers.openapi.yaml'));
