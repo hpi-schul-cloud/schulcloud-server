@@ -1,7 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
-// const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
-// const logger = require('../../../logger');
 const {
 	modelServices: { prepareInternalParams },
 } = require('../../../utils');
@@ -24,6 +22,7 @@ const {
 const {
 	mapRoleFilterQuery,
 	checkUnique,
+	checkUniqueEmail,
 	checkJwt,
 	checkUniqueAccount,
 	updateAccountUsername,
@@ -125,6 +124,7 @@ const userHooks = {
 			iff(isProvider('external'), preventPopulate),
 			authenticate('jwt'),
 			sanitizeData,
+			checkUniqueEmail,
 			resolveToIds('/roles', 'data.$set.roles', 'name'),
 		],
 		patch: [
@@ -133,6 +133,7 @@ const userHooks = {
 			iff(isProvider('external'), securePatching),
 			permitGroupOperation,
 			sanitizeData,
+			checkUniqueEmail,
 			iff(isProvider('external'), hasEditPermissionForUser),
 			iff(isProvider('external'), restrictToCurrentSchool),
 			resolveToIds('/roles', 'data.roles', 'name'),

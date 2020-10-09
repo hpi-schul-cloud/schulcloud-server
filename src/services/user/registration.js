@@ -1,6 +1,9 @@
 const { Configuration } = require('@schul-cloud/commons');
-const errors = require('@feathersjs/errors');
-const userModel = require('./model');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
+const { userModel: User } = require('./model');
+
 const accountModel = require('../account/model');
 const consentModel = require('../consent/model');
 const { getAge } = require('../../utils');
@@ -9,7 +12,7 @@ const logger = require('../../logger');
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../../config/globals');
 
 const formatBirthdate1 = (datestamp) => {
-	if (datestamp == undefined) return false;
+	if (datestamp === undefined) return false;
 
 	const d = datestamp.split('.');
 	return `${d[1]}.${d[0]}.${d[2]}`;
@@ -34,7 +37,7 @@ const populateUser = (app, data) => {
 	if (data.classId) user.classId = data.classId;
 
 	if (!data.importHash) {
-		return Promise.reject('Ungültiger Link');
+		return Promise.reject(new BadRequest('Ungültiger Link'));
 	}
 
 	if (data.userId) {
@@ -52,7 +55,7 @@ const populateUser = (app, data) => {
 		})
 		.then((users) => {
 			if (users.data.length <= 0 || users.data.length > 1) {
-				throw new errors.BadRequest('Kein Nutzer für die eingegebenen Daten gefunden.');
+				throw new BadRequest('Kein Nutzer für die eingegebenen Daten gefunden.');
 			}
 			oldUser = users.data[0];
 
@@ -87,7 +90,7 @@ const insertUserToDB = async (app, data, user) => {
 			.update(user._id, user)
 			.catch((err) => {
 				logger.warning(err);
-				throw new errors.BadRequest('Fehler beim Updaten der Nutzerdaten.');
+				throw new BadRequest('Fehler beim Updaten der Nutzerdaten.');
 			});
 	}
 	return app
@@ -110,7 +113,7 @@ const insertUserToDB = async (app, data, user) => {
 						'Nutze dazu den Login. Dort kannst du dir auch ein neues Passwort zusenden lassen.';
 				}
 			}
-			throw new errors.BadRequest(msg);
+			throw new BadRequest(msg);
 		});
 };
 
@@ -122,9 +125,7 @@ const registerUser = function register(data, params, app) {
 	let consent = null;
 	let consentPromise = null;
 
-	return new Promise((resolve) => {
-		resolve();
-	})
+	return Promise.resolve()
 		.then(() => {
 			let classPromise = null;
 			let schoolPromise = null;
@@ -141,13 +142,12 @@ const registerUser = function register(data, params, app) {
 					data.schoolId = data.classOrSchoolId;
 					return Promise.resolve();
 				}
-				return Promise.reject('Ungültiger Link');
+				return Promise.reject(new BadRequest('Ungültiger Link'));
 			});
 		})
 		.then(() =>
 			populateUser(app, data).then((response) => {
-				user = response.user;
-				oldUser = response.oldUser;
+				({ user, oldUser } = response);
 			})
 		)
 		.then(() => {
@@ -157,14 +157,14 @@ const registerUser = function register(data, params, app) {
 					return ['student', 'employee', 'expert', 'administrator', 'teacher'].includes(role);
 				}).length === 0
 			) {
-				return Promise.reject(new errors.BadRequest('You are not allowed to register!'));
+				return Promise.reject(new BadRequest('You are not allowed to register!'));
 			}
 			if ((user.roles || []).includes('student')) {
 				// wrong birthday object?
 				if (user.birthday instanceof Date && Number.isNaN(user.birthday)) {
 					return Promise.reject(
-						new errors.BadRequest(
-							'Fehler bei der Erkennung des ausgewählten Geburtstages.' + ' Bitte lade die Seite neu und starte erneut.'
+						new BadRequest(
+							'Fehler bei der Erkennung des ausgewählten Geburtstages. Bitte lade die Seite neu und starte erneut.'
 						)
 					);
 				}
@@ -172,7 +172,7 @@ const registerUser = function register(data, params, app) {
 				const age = getAge(user.birthday);
 				if (data.parent_email && age >= CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
 					return Promise.reject(
-						new errors.BadRequest(
+						new BadRequest(
 							`Schüleralter: ${age} Im Elternregistrierungs-Prozess darf der Schüler` +
 								`nicht ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre oder älter sein.`
 						)
@@ -184,7 +184,7 @@ const registerUser = function register(data, params, app) {
 					!consentSkipCondition.includes('student')
 				) {
 					return Promise.reject(
-						new errors.BadRequest(
+						new BadRequest(
 							`Schüleralter: ${age} Im Schülerregistrierungs-Prozess darf der Schüler` +
 								` nicht jünger als ${CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} Jahre sein.`
 						)
@@ -194,13 +194,11 @@ const registerUser = function register(data, params, app) {
 
 			// identical emails?
 			if (data.parent_email && data.parent_email.toLowerCase() === data.email.toLowerCase()) {
-				return Promise.reject(
-					new errors.BadRequest('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.')
-				);
+				return Promise.reject(new BadRequest('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.'));
 			}
 
 			if (data.password_1 && data.passwort_1 !== data.passwort_2) {
-				return new errors.BadRequest('Die Passwörter stimmen nicht überein');
+				return new BadRequest('Die Passwörter stimmen nicht überein');
 			}
 			return Promise.resolve();
 		})
@@ -252,7 +250,7 @@ const registerUser = function register(data, params, app) {
 					return Promise.reject(new Error(msg));
 				});
 		})
-		.then(async (res) => {
+		.then(async () => {
 			// add parent if necessary
 			if (data.parent_email) {
 				parent = {
@@ -265,9 +263,7 @@ const registerUser = function register(data, params, app) {
 				};
 				try {
 					parent = await app.service('usersModel').create(parent);
-					user = await userModel.userModel
-						.findByIdAndUpdate(user._id, { $push: { parents: [parent._id] } }, { new: true })
-						.exec();
+					user = await User.findByIdAndUpdate(user._id, { $push: { parents: [parent._id] } }, { new: true }).exec();
 				} catch (err) {
 					logger.log('warn', `Fehler beim Verknüpfen der Eltern. ${err}`);
 					return Promise.reject(new Error('Fehler beim Verknüpfen der Eltern.', err));
@@ -315,20 +311,14 @@ const registerUser = function register(data, params, app) {
 		.catch((err) => {
 			const rollbackPromises = [];
 			if (user && user._id) {
-				rollbackPromises.push(
-					userModel.userModel
-						.findOneAndRemove({ _id: user._id })
-						.exec()
-						.then((_) => {
-							if (oldUser) {
-								return userModel.userModel.create(oldUser);
-							}
-							return Promise.resolve();
-						})
-				);
+				if (oldUser) {
+					rollbackPromises.push(User.replaceOne({ _id: user._id }, oldUser).exec());
+				} else {
+					rollbackPromises.push(User.findOneAndRemove({ _id: user._id }).exec());
+				}
 			}
 			if (parent && parent._id) {
-				rollbackPromises.push(userModel.userModel.findOneAndRemove({ _id: parent._id }).exec());
+				rollbackPromises.push(User.findOneAndRemove({ _id: parent._id }).exec());
 			}
 			if (account && account._id) {
 				rollbackPromises.push(accountModel.findOneAndRemove({ _id: account._id }).exec());
@@ -344,11 +334,11 @@ const registerUser = function register(data, params, app) {
 						err.message ||
 						err ||
 						'Kritischer Fehler bei der Registrierung. Bitte wenden sie sich an den Administrator.';
-					return Promise.reject(new errors.BadRequest(msg));
+					return Promise.reject(new BadRequest(msg));
 				})
 				.then(() => {
 					const msg = (err.error || {}).message || err.message || err || 'Fehler bei der Registrierung.';
-					return Promise.reject(new errors.BadRequest(msg));
+					return Promise.reject(new BadRequest(msg));
 				});
 		});
 };

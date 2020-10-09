@@ -1,21 +1,25 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const { authenticate } = require('@feathersjs/authentication');
-const { Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden } = reqlib('src/errors');
 const {
 	filterToRelated,
 	rejectDefaultFilePermissionUpdatesIfNotPermitted,
 } = require('../../../../src/services/teams/hooks/index.js');
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 const { createHook } = require('../helper/helper.hook');
-const { createTestAccount, createTestUser, generateRequestParams } = require('../../helpers/testObjects')(app);
+const { createTestAccount, createTestUser, generateRequestParams } = require('../../helpers/testObjects')(appPromise);
 const teamHelper = require('../../helpers/services/teams');
 
 describe('Team service hook tests.', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {

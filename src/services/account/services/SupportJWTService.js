@@ -1,5 +1,8 @@
+/* eslint-disable max-classes-per-file */
 const CryptoJS = require('crypto-js');
-const { BadRequest } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const { ObjectId } = require('mongoose').Types;
 
@@ -51,7 +54,7 @@ class JWT {
 		return CryptoJS.HmacSHA256(signature, secret);
 	}
 
-	async create(userId, secret) {
+	async create(userId, supportUserId, secret) {
 		const account = await accountModel.findOne({ userId }).select('_id').lean().exec();
 
 		if (!account && !account._id) {
@@ -69,6 +72,7 @@ class JWT {
 
 		const jwtData = {
 			support: true, // mark for support jwts
+			supportUserId,
 			accountId,
 			userId,
 			iat,
@@ -145,14 +149,14 @@ class SupportJWTService {
 			const requestedUserId = userId.toString();
 			const currentUserId = params.account.userId.toString();
 
-			const jwt = await this.jwt.create(userId);
+			const jwt = await this.jwt.create(userId, currentUserId);
 
 			await this.addToWhitelist(jwt);
 
 			this.executeInfo(currentUserId, requestedUserId);
 			return jwt;
 		} catch (err) {
-			logger.warning(this.err.canNotCreateJWT, err);
+			logger.error(this.err.canNotCreateJWT, err);
 			return err;
 		}
 	}

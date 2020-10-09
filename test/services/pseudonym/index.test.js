@@ -1,14 +1,16 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
-const pseudonymService = app.service('pseudonym');
 const Pseudonym = require('../../../src/services/pseudonym/model');
 
-const toolService = app.service('ltiTools');
-const { cleanup, createTestUser, generateRequestParamsFromUser } = require('../helpers/testObjects')(app);
+const { cleanup, createTestUser, generateRequestParamsFromUser } = require('../helpers/testObjects')(appPromise);
 
 describe('pseudonym service', function pseudonymTest() {
+	let app;
+	let pseudonymService;
+	let toolService;
+	let server;
 	this.timeout(10000);
 
 	const testTool1 = {
@@ -41,6 +43,11 @@ describe('pseudonym service', function pseudonymTest() {
 	let testUser3;
 
 	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+		pseudonymService = app.service('pseudonym');
+		toolService = app.service('ltiTools');
+
 		testUser1 = await createTestUser();
 		testUser2 = await createTestUser();
 		testUser3 = await createTestUser();
@@ -54,6 +61,7 @@ describe('pseudonym service', function pseudonymTest() {
 		await toolService.remove(testTool1);
 		await toolService.remove(testTool2);
 		await cleanup();
+		await server.close();
 	});
 
 	it('is registered', () => {

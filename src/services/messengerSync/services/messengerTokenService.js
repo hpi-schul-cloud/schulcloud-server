@@ -1,9 +1,11 @@
-const { GeneralError, BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const request = require('request-promise-native');
 const hmacSHA512 = require('crypto-js/hmac-sha512');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest, GeneralError } = reqlib('src/errors');
 
 function obtainAccessToken(userId, homeserverApiUri, secret) {
 	const loginApiUrl = `${homeserverApiUri}/_matrix/client/r0/login`;

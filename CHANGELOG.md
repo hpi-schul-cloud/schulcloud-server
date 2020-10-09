@@ -7,11 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-## Unreleased
+## [Unreleased]
 
-### Added - Unreleased
+### Added
 
+- SC-6567 - add new application errros
+- SC-6766 - Added ESLint rules with Promise rules
 - SC-6830 - Added hook to parse request to arrays when > 20 users are requested in adminUsers service
+- SC-6510 - Added Merlin Url Generator for Lern Store / Edu-sharing
 
 ### Removed
 
@@ -19,24 +22,93 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6743 - Removed usersForConsent related things in adminUsers service because the client does not send that parameter anymore
 - SC-6506 - Remove dependecy to feathers-swagger in routes.test.js
 
-### Changed - Unreleased
+### Changed
 
+- SC-6567 - clean up error pipline 
+- SC-6510, fix a minor syntax error when exporting module
+- Update commons to 1.2.7: print configuration on startup, introduce hierarchical configuration file setup
 - SC-6774 remove no-await-in-loop from eslint exceptions
 - Rename statistic mails route, secure it over sync api key now
 - SC-6809 - Maintain RabbitMQ connection and channels
 - SC-5230 - Unblock Account-Page in Nuxt (securing /accounts and /users routes)
+- Support asynchronous calls during server startup
 
-### Security - Unreleased
+### Fixed
+
+- fixed README badges
+
+### Security
 
 - Added hotfix merges
 
-## 25.0.1
+## [25.0.10] - 2020-10-07
 
-### Fixed - 25.0.1
+### Added
+
+- configured prometheus metrics - bucket sizes
+- SC-6766 log unhandledRejection and unhandledException
+
+## [25.0.9] - 2020-10-07
+
+### Added
+
+- SC-7115 - Reduce mongoose DB role request by enabling minor caching
+
+## [25.0.8] - 2020-10-06
+
+### Fixed
+
+- SC-6960 - instead of deleting and recreating users during the rollback of a failed registration, use replace if necessary
+- SC-6960 - properly raise exceptions during the registration process
+
+## [25.0.7] - 2020-10-01
+
+### Removed
+
+- OPS-1316 - removed custom keep-alive header creation in express middleware
+
+## [25.0.6] - 2020-10-01
+
+### Added
+
+- OPS-1316 - add indexes for slow files and submission queries
+
+## [25.0.5] - 2020-10-01
+
+### Added
+
+- SC-6973 - add time window for pin creation
+
+## [25.0.4] - 2020-09-30
+
+### Added
+
+- Added lead time detection
+
+## [25.0.3]
+
+### Added
+
+- SC-6942 - add parse method to TSP strategy to declare it can handle the request and to keep authentication params clean
+
+### Fixed
+
+- SC-6942 - don't override payload defined by authentication method
+- SC-6942 - don't search for account to populate if no username is given in `injectUsername`
+
+## [25.0.2]
+
+### Changed
+
+- send mail for registration pin after add pin to db
+
+## [25.0.1]
+
+### Fixed
 
 - SC-6696 - Fixed query used to determine course membership when checking permissions for course group lessons
 
-## 25.0.0
+## [25.0.0]
 
 ### Changed - 25.0.0
 
@@ -50,6 +122,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [24.5.0] - 2020-09-14
 
+- SC-6674 Added checks to ensure unique emails
 - Ignore database seed data with prettier, eslint, and codacy
 - SC-6640 - Fixed email check within registration (case insensitive)
 
@@ -60,7 +133,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [24.4.6] - 2020-09-11
 
-### Changed in 24.4.6
+### Changed
 
 - SC-6733: central personal data does not get updated via CSV import
 

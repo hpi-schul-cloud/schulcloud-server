@@ -1,11 +1,16 @@
 // Global hooks that run for every service
-const { GeneralError, NotAuthenticated } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
+const Sentry = require('@sentry/node');
+const reqlib = require('app-root-path').require;
+
+const { AutoLogout, SlowQuery } = reqlib('src/errors');
+const logger = require('./logger');
 const {
 	sanitizeHtml: { sanitizeDeep },
 } = require('./utils');
 const { getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData } = require('./utils/redis');
+const { LEAD_TIME } = require('../config/globals');
 
 const sanitizeDataHook = (context) => {
 	if ((context.data || context.result) && context.path && context.path !== 'authentication') {
@@ -86,7 +91,7 @@ const handleAutoLogout = async (context) => {
 				return context;
 			}
 			// ------------------------------------------------------------------------
-			throw new NotAuthenticated('Session was expired due to inactivity - autologout.');
+			throw new AutoLogout('Session was expired due to inactivity - autologout.');
 		}
 	}
 	return context;
@@ -98,27 +103,45 @@ const handleAutoLogout = async (context) => {
  */
 const errorHandler = (context) => {
 	if (context.error) {
-		context.error.code = context.error.code || context.error.statusCode;
-		if (!context.error.code && !context.error.type) {
-			const catchedError = context.error;
-			if (catchedError.hook) {
-				// too much for logging...
-				delete catchedError.hook;
-			}
-			context.error = new GeneralError(context.error.message || 'Server Error', context.error.stack);
-			context.error.catchedError = catchedError;
-		}
-		context.error.code = context.error.code || 500;
-
-		if (context.error.hook) {
-			// too much for logging...
-			delete context.error.hook;
-		}
-		return context;
+		// By executing test over services and logging or using expect() the complet hook with all keys are printed
+		delete context.error.hook;
 	}
-	context.app.logger.warning('Error with no error key is throw. Error logic can not handle it.');
+	return context;
+};
 
-	throw new GeneralError('server error');
+// adding in this position will detect intern request to
+const leadTimeDetection = (context) => {
+	if (context.params.leadTime) {
+		const timeDelta = Date.now() - context.params.leadTime;
+		if (timeDelta >= LEAD_TIME) {
+			const {
+				path,
+				id,
+				method,
+				params: { query, headers, originalUrl },
+			} = context;
+
+			const info = {
+				path,
+				method,
+				query,
+				timeDelta,
+				originalUrl,
+			};
+
+			if (id) {
+				info.id = id;
+			}
+
+			if (headers) {
+				info.connection = headers.connection;
+				info.requestId = headers.requestId;
+			}
+			const error = new SlowQuery(`Slow query warning at route ${context.path}`, info);
+			logger.error(error);
+			Sentry.captureException(error);
+		}
+	}
 };
 
 function setupAppHooks(app) {
@@ -156,6 +179,13 @@ function setupAppHooks(app) {
 	// level 2+ adding intern request
 	if (app.get('DISPLAY_REQUEST_LEVEL') > 1) {
 		before.all.unshift(displayInternRequests(app.get('DISPLAY_REQUEST_LEVEL')));
+	}
+	if (LEAD_TIME) {
+		['find', 'get', 'create', 'update', 'patch', 'remove'].forEach((m) => {
+			if (Array.isArray(after[m])) {
+				after[m].push(leadTimeDetection);
+			}
+		});
 	}
 	app.hooks({ before, after, error });
 }

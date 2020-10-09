@@ -1,4 +1,6 @@
-const { Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden } = reqlib('src/errors');
 const { ObjectId } = require('../../../helper/compare');
 
 exports.restrictGetToCurrentUser = (context) => {
