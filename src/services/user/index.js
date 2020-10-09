@@ -2,10 +2,7 @@ const hooks = require('feathers-hooks-common');
 const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-const OpenApiValidator = require('express-openapi-validator');
-const commons = require('@schul-cloud/commons');
-const { registerApiValidation } = require('../../apiValidation')
-const { Configuration } = commons;
+const { registerApiValidation } = require('src/utils/apiValidation');
 
 const { userModel, registrationPinModel } = require('./model');
 const registrationPinsHooks = require('./hooks/registrationPins');
