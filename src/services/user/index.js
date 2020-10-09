@@ -2,7 +2,8 @@ const hooks = require('feathers-hooks-common');
 const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-const { registerApiValidation } = require('src/utils/apiValidation');
+const reqlib = require('app-root-path').require;
+const { registerApiValidation } = reqlib('src/utils/apiValidation');
 
 const { userModel, registrationPinModel } = require('./model');
 const registrationPinsHooks = require('./hooks/registrationPins');
