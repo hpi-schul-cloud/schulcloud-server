@@ -9,7 +9,6 @@ const cors = require('cors');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
-const { registerApiValidation } = require('./apiValidation');
 const { ObjectId } = require('mongoose').Types;
 
 const { KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH, LEAD_TIME } = require('../config/globals');
@@ -64,11 +63,7 @@ const setupApp = async () => {
 		.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
 		.use('/', bodyParser.json({ limit: '10mb' }))
 		.use(bodyParser.urlencoded({ extended: true }))
-		.use(bodyParser.raw({ type: () => true, limit: '10mb' }));
-
-	await registerApiValidation(app);
-
-	app
+		.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 		.use(versionService)
 		.use(defaultHeaders)
 		.get('/system_info/haproxy', (req, res) => {

@@ -277,12 +277,11 @@ if (Configuration.has('API_VALIDATION_WHITELIST_EXTENSION')) {
 	ignorePathsList.push(new RegExp(`|(${Configuration.get('API_VALIDATION_WHITELIST_EXTENSION')})`));
 }
 
-// todo: fetch all the api docs of all services
-const registerApiValidation = async (app) => {
+const registerApiValidation = async (app, apiSpec) => {
 	if (Configuration.get('FEATURE_API_VALIDATION_ENABLED')) {
 		app.use(
 			OpenApiValidator.middleware({
-				apiSpec: './src/services/user/docs/openapi.yaml',
+				apiSpec,
 				ignorePaths,
 				validateRequests: true,
 				// validateResponses: true, // <-- to validate responses
