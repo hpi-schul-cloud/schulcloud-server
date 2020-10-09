@@ -9,7 +9,6 @@ const { isSuperHero } = require('../../../hooks');
  * @throws {Forbidden} if user does not have correct permissions.
  */
 
-
 const MarkUserAsDeleted = {
 	before: {
 		all: [authenticate('jwt')],

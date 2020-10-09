@@ -281,7 +281,7 @@ class AdminUsers {
 			await this.app.service('accountModel').patch(null, { query: { userId: id } });
 			return this.app.service('usersModel').patch(null, { query: { userId: id } });
 		}
-		return new Forbidden('You cannot remove users with invalid id.');
+		return new Forbidden('You cannot remove user with invalid id.');
 	}
 
 	async remove(id, params) {
