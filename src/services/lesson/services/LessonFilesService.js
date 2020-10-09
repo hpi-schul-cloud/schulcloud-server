@@ -1,6 +1,7 @@
-const { NotFound, BadRequest } = require('@feathersjs/errors');
 const _ = require('lodash');
+const reqlib = require('app-root-path').require;
 
+const { NotFound, BadRequest } = reqlib('src/errors');
 const { FileModel } = require('../../fileStorage/model');
 const lessonModel = require('../model');
 

@@ -1,11 +1,13 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-underscore-dangle */
-const { Forbidden, GeneralError, BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@schul-cloud/commons');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, BadRequest, GeneralError } = reqlib('src/errors');
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const { hasSchoolPermission, blockDisposableEmail } = require('../../../hooks');

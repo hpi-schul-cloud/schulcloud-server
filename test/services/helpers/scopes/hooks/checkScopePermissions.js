@@ -1,7 +1,8 @@
 const { expect } = require('chai');
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
+const reqlib = require('app-root-path').require;
 
+const { BadRequest, Forbidden } = reqlib('src/errors');
 const {
 	getScopePermissions,
 	checkScopePermissions,
