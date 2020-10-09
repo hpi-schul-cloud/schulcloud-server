@@ -48,7 +48,7 @@ class Service {
 			.then((_) => Promise.resolve())
 			.catch((err) => {
 				logger.error(err);
-				return Promise.reject();
+				return Promise.reject(new Error());
 			});
 	}
 

@@ -1,14 +1,15 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const sleep = require('util').promisify(setTimeout);
-const { NotAuthenticated, BadRequest, Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest, Forbidden, FeathersNotAuthenticated } = reqlib('src/errors');
 
 const appPromise = require('../../../src/app');
 const { cleanup, createTestUser, createTestRole, createTestSchool } = require('../helpers/testObjects')(appPromise);
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
 const teamHelper = require('../helpers/services/teams');
 const { newsModel: News, newsHistoryModel: NewsHistory } = require('../../../src/services/news/model');
-
 
 describe('news service', () => {
 	let app;
@@ -42,7 +43,7 @@ describe('news service', () => {
 					await newsService.get(new ObjectId(), { provider: 'rest' });
 					expect.fail('The previous call should have failed');
 				} catch (err) {
-					expect(err).to.be.instanceOf(NotAuthenticated);
+					expect(err).to.be.instanceOf(FeathersNotAuthenticated);
 				}
 
 				// internal request
@@ -198,7 +199,7 @@ describe('news service', () => {
 					await newsService.find({ provider: 'rest' });
 					expect.fail('The previous call should have failed');
 				} catch (err) {
-					expect(err).to.be.instanceOf(NotAuthenticated);
+					expect(err).to.be.instanceOf(FeathersNotAuthenticated);
 				}
 
 				// internal request
@@ -820,7 +821,7 @@ describe('news service', () => {
 					await newsService.create({ foo: 'bar' }, { provider: 'rest' });
 					expect.fail('The previous call should have failed');
 				} catch (err) {
-					expect(err).to.be.instanceOf(NotAuthenticated);
+					expect(err).to.be.instanceOf(FeathersNotAuthenticated);
 				}
 
 				// internal request
@@ -990,7 +991,7 @@ describe('news service', () => {
 					await newsService.remove(new ObjectId(), { provider: 'rest' });
 					expect.fail('The previous call should have failed');
 				} catch (err) {
-					expect(err).to.be.instanceOf(NotAuthenticated);
+					expect(err).to.be.instanceOf(FeathersNotAuthenticated);
 				}
 
 				// internal request
@@ -1124,7 +1125,7 @@ describe('news service', () => {
 					await newsService.patch(new ObjectId(), { foo: 'bar' }, { provider: 'rest' });
 					expect.fail('The previous call should have failed');
 				} catch (err) {
-					expect(err).to.be.instanceOf(NotAuthenticated);
+					expect(err).to.be.instanceOf(FeathersNotAuthenticated);
 				}
 
 				// internal request
@@ -1297,7 +1298,7 @@ describe('news service', () => {
 					await newsService.update(new ObjectId(), { foo: 'bar' }, { provider: 'rest' });
 					expect.fail('The previous call should have failed');
 				} catch (err) {
-					expect(err).to.be.instanceOf(NotAuthenticated);
+					expect(err).to.be.instanceOf(FeathersNotAuthenticated);
 				}
 
 				// internal request
