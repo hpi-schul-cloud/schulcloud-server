@@ -130,13 +130,13 @@ const migrateParentsToStudents = async () => {
 	}
 
 	info(`Removing role: ${parentRole.name}`);
-	await RoleModel.deleteOne({_id: parentRole._id});
+	await RoleModel.deleteOne({ _id: parentRole._id });
 };
 
 const findAllStudentsWithParentData = () => User.find({ parents: { $elemMatch: { email: { $ne: null } } } });
 
 const migrateParentsFromStudents = async () => {
-	const parentRole = await RoleModel.create({name: 'parent'});
+	const parentRole = await RoleModel.create({ name: 'parent' });
 	const cursor = findAllStudentsWithParentData().cursor();
 	for (let student = await cursor.next(); student != null; student = await cursor.next()) {
 		const parent = await User.create({
