@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [Unreleased]
 
+- SC-6060 - Updated error handling
+
 ### Added
 
 - SC-6567 - add new application errros
