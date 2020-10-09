@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
-const errors = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, GeneralError } = reqlib('src/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const logger = require('../../../logger');
 
@@ -96,7 +98,7 @@ const hasViewPermissionAfter = (hook) => {
 	} else {
 		// check if it is a single homework AND user has view permission
 		if (data.schoolId != undefined && !hasPermission(data)) {
-			return Promise.reject(new errors.Forbidden("You don't have permissions!"));
+			return Promise.reject(new Forbidden("You don't have permissions!"));
 		}
 	}
 	hook.result.data ? (hook.result.data = data) : (hook.result = data);
@@ -217,21 +219,21 @@ const hasPatchPermission = (hook) => {
 				const addsOnlySelf = addedStudents.length === 1 && equalIds(addedStudents[0], hook.params.account.userId);
 
 				if (removesOnlySelf || addsOnlySelf) {
-					return Promise.resolve(hook);
+					return hook;
 				}
 			}
 
 			// if user is a student of that course and the only
 			// difference of in the archived array is the current student it, let it pass.
 			if (isTeacher(hook.params.account.userId, homework)) {
-				return Promise.resolve(hook);
+				return hook;
 			}
-			return Promise.reject(new errors.Forbidden());
+			throw new Forbidden();
 		})
 		.catch((err) => {
-			logger.warning(err);
-			return Promise.reject(
-				new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach homework service @isTeacher function" })
+			throw new GeneralError(
+				{ message: "[500 INTERNAL ERROR] - can't reach homework service @isTeacher function" },
+				err
 			);
 		});
 };

@@ -1,10 +1,11 @@
 const { expect } = require('chai');
-const { Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden } = reqlib('src/errors');
 
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
-
 
 describe('course scope members service', () => {
 	let app;

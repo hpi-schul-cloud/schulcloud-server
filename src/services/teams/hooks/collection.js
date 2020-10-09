@@ -1,5 +1,7 @@
-const { BadRequest } = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 
 /**
  * If Array use it.
