@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise);
+const { Configuration } = require('@schul-cloud/commons');
 const {
 	buildAddUserMessage,
 	buildDeleteCourseMessage,
@@ -12,14 +13,18 @@ const {
 describe('messenger synchronizer utils', () => {
 	let app;
 	let server;
+	let configBefore;
+
 	before(async () => {
 		app = await appPromise;
 		server = await app.listen(0);
+		configBefore = Configuration.toObject();
 	});
 
 	after((done) => {
 		server.close(done);
 		testObjects.cleanup();
+		Configuration.parse(configBefore);
 	});
 
 	/*
@@ -62,11 +67,18 @@ describe('messenger synchronizer utils', () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 			const course = await testObjects.createTestCourse({ teacherIds: [teacher._id], schoolId: school._id });
 			const result = await buildAddUserMessage({ userId: teacher._id, courses: [course] });
+
+			// method
 			expect(result.method).to.equal('addUser');
 
+			// user
 			expect(result.user).to.haveOwnProperty('name');
 			expect(result.user).to.haveOwnProperty('id');
 
+			// message
+			expect(result).not.to.haveOwnProperty('welcome');
+
+			// rooms
 			expect(Array.isArray(result.rooms)).to.equal(true);
 			expect(result.rooms.length).to.eq(3);
 			const room = result.rooms[0];
@@ -100,6 +112,8 @@ describe('messenger synchronizer utils', () => {
 
 			expect(result.user).to.haveOwnProperty('name');
 			expect(result.user).to.haveOwnProperty('id');
+
+			expect(result).not.to.haveOwnProperty('welcome');
 
 			expect(Array.isArray(result.rooms)).to.equal(true);
 			expect(result.rooms.length).to.eq(3);
@@ -164,6 +178,8 @@ describe('messenger synchronizer utils', () => {
 			expect(result.user).to.haveOwnProperty('name');
 			expect(result.user).to.haveOwnProperty('id');
 
+			expect(result).not.to.haveOwnProperty('welcome');
+
 			expect(Array.isArray(result.rooms)).to.equal(true);
 			expect(result.rooms.length).to.eq(1);
 
@@ -220,6 +236,65 @@ describe('messenger synchronizer utils', () => {
 			expect(room.bidirectional).to.equal(true);
 			expect(room.is_moderator).to.equal(false);
 			expect(room).to.haveOwnProperty('name');
+		});
+
+		it('builds correct welcome messages', async () => {
+			const school = await testObjects.createTestSchool({ features: ['messenger'] });
+			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
+			const { user } = await testObjects.createTestTeamWithOwner({ roles: ['teacher'], schoolId: school._id });
+
+			// only student message
+			const studentWelcomeMessage = 'Welcome Student';
+			Configuration.set('MATRIX_WELCOME_MESSAGE_STUDENT', studentWelcomeMessage);
+
+			const resultStudent1 = await buildAddUserMessage({ userId: student._id, fullSync: true });
+			expect(resultStudent1.welcome.text).to.equal(studentWelcomeMessage);
+
+			const resultTeacher1 = await buildAddUserMessage({ userId: user._id, fullSync: true });
+			expect(resultTeacher1.welcome.text).to.equal(studentWelcomeMessage);
+
+			const resultAdmin1 = await buildAddUserMessage({ userId: admin._id, fullSync: true });
+			expect(resultAdmin1.welcome.text).to.equal(studentWelcomeMessage);
+
+			// with teacher message
+			const teacherWelcomeMessage = 'Welcome Teacher';
+			Configuration.set('MATRIX_WELCOME_MESSAGE_TEACHER', teacherWelcomeMessage);
+
+			const resultStudent2 = await buildAddUserMessage({ userId: student._id, fullSync: true });
+			expect(resultStudent2.welcome.text).to.equal(studentWelcomeMessage);
+
+			const resultTeacher2 = await buildAddUserMessage({ userId: user._id, fullSync: true });
+			expect(resultTeacher2.welcome.text).to.equal(teacherWelcomeMessage);
+
+			const resultAdmin2 = await buildAddUserMessage({ userId: admin._id, fullSync: true });
+			expect(resultAdmin2.welcome.text).to.equal(studentWelcomeMessage);
+
+			// with admin message
+			const adminWelcomeMessage = 'Welcome Admin';
+			Configuration.set('MATRIX_WELCOME_MESSAGE_ADMIN', adminWelcomeMessage);
+
+			const resultStudent3 = await buildAddUserMessage({ userId: student._id, fullSync: true });
+			expect(resultStudent3.welcome.text).to.equal(studentWelcomeMessage);
+
+			const resultTeacher3 = await buildAddUserMessage({ userId: user._id, fullSync: true });
+			expect(resultTeacher3.welcome.text).to.equal(teacherWelcomeMessage);
+
+			const resultAdmin3 = await buildAddUserMessage({ userId: admin._id, fullSync: true });
+			expect(resultAdmin3.welcome.text).to.equal(adminWelcomeMessage);
+
+			// only admin message
+			Configuration.remove('MATRIX_WELCOME_MESSAGE_STUDENT');
+			Configuration.remove('MATRIX_WELCOME_MESSAGE_TEACHER');
+
+			const resultStudent4 = await buildAddUserMessage({ userId: student._id, fullSync: true });
+			expect(resultStudent4).not.to.haveOwnProperty('welcome');
+
+			const resultTeacher4 = await buildAddUserMessage({ userId: user._id, fullSync: true });
+			expect(resultTeacher4).not.to.haveOwnProperty('welcome');
+
+			const resultAdmin4 = await buildAddUserMessage({ userId: admin._id, fullSync: true });
+			expect(resultAdmin4.welcome.text).to.equal(adminWelcomeMessage);
 		});
 	});
 

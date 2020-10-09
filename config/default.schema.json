@@ -165,6 +165,18 @@
 			"type": "string",
 			"description": "Shared secret for the Matrix server."
 		},
+		"MATRIX_WELCOME_MESSAGE_ADMIN": {
+			"type": "string",
+			"description": "Greet new admin users with a personal message from the sync bot"
+		},
+		"MATRIX_WELCOME_MESSAGE_TEACHER": {
+			"type": "string",
+			"description": "Greet new teacher users with a personal message from the sync bot"
+		},
+		"MATRIX_WELCOME_MESSAGE_STUDENT": {
+			"type": "string",
+			"description": "Greet new student users with a personal message from the sync bot"
+		},
 		"FEATURE_RABBITMQ_ENABLED": {
 			"type": "boolean",
 			"default": false,

@@ -198,23 +198,23 @@ const buildMatrixUserId = (userId) => {
 {
   "method": "addUser",
   "welcome": {
-    "text": "Welcome to messenger"
+	"text": "Welcome to messenger"
   },
   "user": {
-    "id": "@sso_0000d224816abba584714c9c:matrix.server.com",
-    "name": "Marla Mathe",
-    "email": "(optional)",
-    "password": "(optional)"
+	"id": "@sso_0000d224816abba584714c9c:matrix.server.com",
+	"name": "Marla Mathe",
+	"email": "(optional)",
+	"password": "(optional)"
   },
   "rooms": [
-    {
-      "type": "(optional, default: room)",
-      "id": "0000dcfbfb5c7a3f00bf21ab",
-      "name": "Mathe",
-      "description": "Kurs",
-      "bidirectional": false,
-      "is_moderator": false
-    }
+	{
+	  "type": "(optional, default: room)",
+	  "id": "0000dcfbfb5c7a3f00bf21ab",
+	  "name": "Mathe",
+	  "description": "Kurs",
+	  "bidirectional": false,
+	  "is_moderator": false
+	}
   ]
 }
 */
@@ -250,6 +250,27 @@ const buildMessageObject = async (data) => {
 	const isTeacher = user.roles.some((roleId) => ObjectId.equal(roleId, moderatorRoles.teacherRoleId));
 	const isAdmin = user.roles.some((roleId) => ObjectId.equal(roleId, moderatorRoles.adminRoleId));
 	const isTeacheOrAdmin = isTeacher || isAdmin;
+	const result = {
+		method: 'addUser',
+		user: {
+			id: buildMatrixUserId(user._id),
+			name: displayName(user),
+		},
+	};
+
+	if (isAdmin && Configuration.has('MATRIX_WELCOME_MESSAGE_ADMIN')) {
+		result.welcome = {
+			text: Configuration.get('MATRIX_WELCOME_MESSAGE_ADMIN'),
+		};
+	} else if (isTeacher && Configuration.has('MATRIX_WELCOME_MESSAGE_TEACHER')) {
+		result.welcome = {
+			text: Configuration.get('MATRIX_WELCOME_MESSAGE_TEACHER'),
+		};
+	} else if (Configuration.has('MATRIX_WELCOME_MESSAGE_STUDENT')) {
+		result.welcome = {
+			text: Configuration.get('MATRIX_WELCOME_MESSAGE_STUDENT'),
+		};
+	}
 
 	const rooms = [];
 	if (data.courses) {
@@ -285,15 +306,9 @@ const buildMessageObject = async (data) => {
 			is_moderator: isAdmin,
 		});
 	}
+	result.rooms = rooms;
 
-	return {
-		method: 'addUser',
-		user: {
-			id: buildMatrixUserId(user._id),
-			name: displayName(user),
-		},
-		rooms,
-	};
+	return result;
 };
 
 const buildAddUserMessage = async (data) => {
