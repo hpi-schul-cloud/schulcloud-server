@@ -25,7 +25,7 @@ describe('Merlin Token Generator', () => {
 
 	it('should thrown an error when not giving the correct query', async () => {
 		try {
-			const response = await MerlinTokenGeneratorService.find({ query: { foo: 'baz' } });
+			await MerlinTokenGeneratorService.find({ query: { foo: 'baz' } });
 		} catch (err) {
 			chai.expect(err.type).to.be.equal('FeathersError');
 		}
