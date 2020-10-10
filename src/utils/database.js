@@ -58,6 +58,26 @@ function getConnectionOptions() {
 }
 
 /**
+ * Splitting the inputs into 3 letters for search indexing.
+ *
+ * @param {*} string
+ * @returns [Array]
+ */
+const splitForSearchIndexes = (...searchTexts) => {
+	const arr = [];
+	searchTexts.forEach((item) => {
+		item
+			.split(' ')
+			.filter((text) => text !== '')
+			.forEach((it) => {
+				// eslint-disable-next-line no-plusplus
+				for (let i = 0; i < it.length - 2; i++) arr.push(it.slice(i, i + 3));
+			});
+	});
+	return arr;
+};
+
+/**
  * creates the initial connection to a mongodb.
  * see https://mongoosejs.com/docs/connections.html#error-handling for error handling
  *
@@ -104,4 +124,5 @@ module.exports = {
 	close,
 	getConnectionOptions,
 	enableAuditLog,
+	splitForSearchIndexes,
 };

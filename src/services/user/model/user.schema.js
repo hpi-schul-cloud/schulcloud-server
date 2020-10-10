@@ -3,7 +3,7 @@ const leanVirtuals = require('mongoose-lean-virtuals');
 const { Configuration } = require('@schul-cloud/commons');
 const mongooseHistory = require('mongoose-history');
 const roleModel = require('../../role/model');
-const { enableAuditLog } = require('../../../utils/database');
+const { enableAuditLog, splitForSearchIndexes } = require('../../../utils/database');
 const externalSourceSchema = require('../../../helper/externalSourceSchema');
 
 const { Schema } = mongoose;
@@ -112,19 +112,8 @@ if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
 // This 'pre-save' method slices the firstName, lastName and email
 // To allow searching the users
 userSchema.pre('save', function() {
-	const arr = [];
-	const firstName = this.firstName.replace(/\s/g,'');
-	const lastName = this.lastName.replace(/\s/g,'');
-	const email = this.email.replace(/\s/g,'');
-	
-	for (i = 0; i < firstName.length - 2; i++) arr.push(firstName.slice(i, i + 3));
-	for (i = 0; i < lastName.length - 2; i++) arr.push(lastName.slice(i, i + 3));
-	for (i = 0; i < email.length - 2; i++) arr.push(email.slice(i, i + 3));
-
-	this.searchIndexes = arr;
+	this.searchIndexes = splitForSearchIndexes(this.firstName, this.lastName, this.email);
 });
-
-  
 
 userSchema.virtual('fullName').get(function get() {
 	return [this.namePrefix, this.firstName, this.middleName, this.lastName, this.nameSuffix]
