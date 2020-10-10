@@ -14,6 +14,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6567 - add new application errros
 - SC-6766 - Added ESLint rules with Promise rules
 - SC-6830 - Added hook to parse request to arrays when > 20 users are requested in adminUsers service
+- SC-6769 - Introduce API validation module
+- SC-6769 - API validation for users/admin routes
 - SC-6510 - Added Merlin Url Generator for Lern Store / Edu-sharing
 
 ### Removed
