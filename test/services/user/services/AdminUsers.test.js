@@ -1143,7 +1143,7 @@ describe('AdminUsersService', () => {
 		const testUser = await testObjects.createTestUser({
 			roles: ['administrator'],
 			schoolId: school._id,
-		});	
+		});
 		const student0 = await testObjects.createTestUser({
 			roles: ['student'],
 			schoolId: school._id,

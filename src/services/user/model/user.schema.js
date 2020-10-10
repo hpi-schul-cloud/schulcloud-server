@@ -111,7 +111,8 @@ if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
 
 // This 'pre-save' method slices the firstName, lastName and email
 // To allow searching the users
-userSchema.pre('save', function() {
+// eslint-disable-next-line func-names
+userSchema.pre('save', function () {
 	this.searchIndexes = splitForSearchIndexes(this.firstName, this.lastName, this.email);
 });
 

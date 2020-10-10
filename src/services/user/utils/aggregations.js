@@ -347,10 +347,7 @@ const stageFormatWithTotal = (aggregation, limit, skip) => {
  * @param {String} searchQuery
  */
 const stageSearch = (aggregation, searchQuery) => {
-	aggregation.push(
-		{ $match: { $text: { $search: searchQuery } } },
-		{ $sort: { score: { $meta: "textScore" } } },
-	);
+	aggregation.push({ $match: { $text: { $search: searchQuery } } }, { $sort: { score: { $meta: 'textScore' } } });
 };
 
 /**
