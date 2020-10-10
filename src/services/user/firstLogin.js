@@ -8,7 +8,7 @@ const { passwordsMatch } = require('../../utils/passwordHelpers'); // fixmer thi
 		.find({ query: { pin: data.pin, email: data.parent_email, verified: false } })
 		.then((check) => {
 			if (!(check.data && check.data.length > 0 && check.data[0].pin === data.pin)) {
-				return Promise.reject('Ungültige Pin, bitte überprüfe die Eingabe.');
+				return Promise.reject(new Error('Ungültige Pin, bitte überprüfe die Eingabe.'));
 			}
 			const parentData = {
 				firstName: data.parent_firstName,
@@ -41,7 +41,7 @@ const getAutomaticConsent = () => ({
 
 const firstLogin = async (data, params, app) => {
 	if (!passwordsMatch(data['password-1'], data['password-2'])) {
-		return Promise.reject('Die neuen Passwörter stimmen nicht überein.');
+		return Promise.reject(new Error('Die neuen Passwörter stimmen nicht überein.'));
 	}
 
 	const { accountId } = params.authentication.payload;
@@ -71,14 +71,14 @@ const firstLogin = async (data, params, app) => {
 		const userBirthday = new Date(`${dateArr[1]}.${dateArr[0]}.${dateArr[2]}`);
 		// eslint-disable-next-line no-restricted-globals
 		if (userBirthday instanceof Date && isNaN(userBirthday)) {
-			return Promise.reject('Bitte einen validen Geburtstag auswählen.');
+			return Promise.reject(new Error('Bitte einen validen Geburtstag auswählen.'));
 		}
 		userUpdate.birthday = userBirthday;
 	}
 	// malformed email?
 	if (data['student-email']) {
 		if (!constants.expressions.email.test(data['student-email'])) {
-			return Promise.reject('Bitte eine valide E-Mail-Adresse eingeben.');
+			return Promise.reject(new Error('Bitte eine valide E-Mail-Adresse eingeben.'));
 		}
 		userUpdate.email = data['student-email'];
 	}
