@@ -2,7 +2,8 @@ const { expect } = require('chai');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise);
 
-describe('addMaterial Service', () => {
+describe('addMaterial Service', function test() {
+	this.timeout(5000);
 	let app;
 	let server;
 
