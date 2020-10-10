@@ -68,11 +68,7 @@ const setupApp = async () => {
 		.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
 		.use('/', bodyParser.json({ limit: '10mb' }))
 		.use(bodyParser.urlencoded({ extended: true }))
-		.use(bodyParser.raw({ type: () => true, limit: '10mb' }));
-
-	await Promise.resolve(); // placeholder for initializing API validation
-
-	app
+		.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 		.use(versionService)
 		.use(defaultHeaders)
 		.get('/system_info/haproxy', (req, res) => {
