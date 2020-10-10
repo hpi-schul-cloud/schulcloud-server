@@ -11,8 +11,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
-- SC-6738 Extend search input field in new admin tables to search for full name
+- SC-6738 - Extend search input field in new admin tables to search for full name
+- SC-6567 - add new application errros
+- SC-6766 - Added ESLint rules with Promise rules
 - SC-6830 - Added hook to parse request to arrays when > 20 users are requested in adminUsers service
+- SC-6769 - Introduce API validation module
+- SC-6769 - API validation for users/admin routes
 - SC-6510 - Added Merlin Url Generator for Lern Store / Edu-sharing
 
 ### Removed
@@ -23,6 +27,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-6567 - clean up error pipline 
 - SC-6510, fix a minor syntax error when exporting module
 - Update commons to 1.2.7: print configuration on startup, introduce hierarchical configuration file setup
 - SC-6774 remove no-await-in-loop from eslint exceptions
@@ -31,13 +36,30 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-5230 - Unblock Account-Page in Nuxt (securing /accounts and /users routes)
 - Support asynchronous calls during server startup
 
+### Fixed
+
+- fixed README badges
+
 ### Security
 
 - Added hotfix merges
 
+## [25.0.10] - 2020-10-07
+
+### Added
+
+- configured prometheus metrics - bucket sizes
+- SC-6766 log unhandledRejection and unhandledException
+
+## [25.0.9] - 2020-10-07
+
+### Added
+
+- SC-7115 - Reduce mongoose DB role request by enabling minor caching
+
 ## [25.0.8] - 2020-10-06
 
-## Fixed
+### Fixed
 
 - SC-6960 - instead of deleting and recreating users during the rollback of a failed registration, use replace if necessary
 - SC-6960 - properly raise exceptions during the registration process
@@ -89,7 +111,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-6696 - Fixed query used to determine course membership when checking permissions for course group lessons
 
-## 25.0.0
+## [25.0.0]
 
 ### Changed - 25.0.0
 
@@ -114,7 +136,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [24.4.6] - 2020-09-11
 
-### Changed in 24.4.6
+### Changed
 
 - SC-6733: central personal data does not get updated via CSV import
 

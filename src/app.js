@@ -11,7 +11,8 @@ const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
-const { KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH, LEAD_TIME } = require('../config/globals');
+const { Configuration } = require('@schul-cloud/commons');
+const { BODYPARSER_JSON_LIMIT, LEAD_TIME } = require('../config/globals');
 
 const middleware = require('./middleware');
 const sockets = require('./sockets');
@@ -44,8 +45,12 @@ const setupApp = async () => {
 	}
 
 	const metricsOptions = {};
-	if (METRICS_PATH) {
-		metricsOptions.metricsPath = METRICS_PATH;
+	if (Configuration.has('PROMETHEUS__METRICS_PATH')) {
+		metricsOptions.metricsPath = Configuration.get('PROMETHEUS__METRICS_PATH');
+	}
+	if (Configuration.has('PROMETHEUS__DURATION_BUCKETS_SECONDS[0]')) {
+		// TODO rewrite configuration to support arrays via get()
+		metricsOptions.durationBuckets = Configuration.data.PROMETHEUS.DURATION_BUCKETS_SECONDS;
 	}
 	app.use(apiMetrics(metricsOptions));
 
@@ -63,11 +68,7 @@ const setupApp = async () => {
 		.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
 		.use('/', bodyParser.json({ limit: '10mb' }))
 		.use(bodyParser.urlencoded({ extended: true }))
-		.use(bodyParser.raw({ type: () => true, limit: '10mb' }));
-
-	await Promise.resolve(); // placeholder for initializing API validation
-
-	app
+		.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
 		.use(versionService)
 		.use(defaultHeaders)
 		.get('/system_info/haproxy', (req, res) => {

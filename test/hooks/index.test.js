@@ -1,5 +1,7 @@
 const { expect } = require('chai');
-const { BadRequest } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 const { lookupSchool } = require('../../src/hooks');
 
 const appPromise = require('../../src/app');
