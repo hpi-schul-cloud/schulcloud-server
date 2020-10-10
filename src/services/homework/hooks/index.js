@@ -279,7 +279,7 @@ exports.before = () => ({
 		globalHooks.addCollation,
 	],
 	get: [iff(isProvider('external'), [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore])],
-	create: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_CREATE')), hasCreatePermission],
+	create: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_CREATE'), hasCreatePermission)],
 	update: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_EDIT'))],
 	patch: [
 		iff(isProvider('external'), [
