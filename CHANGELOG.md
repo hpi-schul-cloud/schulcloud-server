@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-7157 - add feature flag for Merlin feature
 - SC-6567 - add new application errros
 - SC-6766 - Added ESLint rules with Promise rules
 - SC-6830 - Added hook to parse request to arrays when > 20 users are requested in adminUsers service
@@ -26,7 +27,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
-- SC-6567 - clean up error pipline 
+- SC-6567 - clean up error pipline
 - SC-6510, fix a minor syntax error when exporting module
 - Update commons to 1.2.7: print configuration on startup, introduce hierarchical configuration file setup
 - SC-6774 remove no-await-in-loop from eslint exceptions
@@ -46,6 +47,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [25.0.11] - 2020-10-07
 
 ### Fixed
+
 - SC-7180 homework create now validates data properly
 
 ## [25.0.10] - 2020-10-07

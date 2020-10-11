@@ -364,7 +364,7 @@
 			"type": "string",
 			"description": "The password for Merlin login, used for edusharing"
 		},
-		"ES_MERLIN_FEATURE": {
+		"ES_MERLIN_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "When enabled, the merlin referene will generate a valid url"
