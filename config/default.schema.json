@@ -364,6 +364,11 @@
 			"type": "string",
 			"description": "The password for Merlin login, used for edusharing"
 		},
+		"ES_MERLIN_FEATURE": {
+			"type": "boolean",
+			"default": false,
+			"description": "When enabled, the merlin referene will generate a valid url"
+		},
 		"SILENT_ERROR_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -377,7 +382,7 @@
 		"API_VALIDATION_WHITELIST_EXTENSION": {
 			"type": "string",
 			"description": "when set, this is interpreted as a regex to extend the ignorelist for the API validation with any routes matching the regex.",
-			"examples": [".*\/courses\/[0-9a-f]{24}($|\/$)"]
+			"examples": [".*/courses/[0-9a-f]{24}($|/$)"]
 		},
 		"PROMETHEUS": {
 			"type": "object",
