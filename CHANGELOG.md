@@ -43,9 +43,16 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - Added hotfix merges
 
+## [25.0.12] - 2020-10-12
+
+### Fixed
+
+- SC-6676 allows only following roles for registration: teacher/student…
+
 ## [25.0.11] - 2020-10-07
 
 ### Fixed
+
 - SC-7180 homework create now validates data properly
 
 ## [25.0.10] - 2020-10-07
@@ -65,6 +72,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-6676 - Registration: User with role parent should not be able to log-in
 - SC-6960 - instead of deleting and recreating users during the rollback of a failed registration, use replace if necessary
 - SC-6960 - properly raise exceptions during the registration process
 
