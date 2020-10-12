@@ -9,9 +9,16 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.0.12] - 2020-10-12
+
+### Fixed
+
+- SC-6676 allows only following roles for registration: teacher/student…
+
 ## [25.0.11] - 2020-10-07
 
 ### Fixed
+
 - SC-7180 homework create now validates data properly
 
 ## [25.0.10] - 2020-10-07
