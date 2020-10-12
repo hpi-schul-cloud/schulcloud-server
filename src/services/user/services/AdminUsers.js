@@ -2,11 +2,14 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-underscore-dangle */
 const { authenticate } = require('@feathersjs/authentication').hooks;
+const { disallow } = require('feathers-hooks-common');
+const { iff, isProvider } = require('feathers-hooks-common');
 const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
+const { isSuperHero } = require('../../../hooks');
 const { Forbidden, BadRequest, GeneralError } = reqlib('src/errors');
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
@@ -323,6 +326,17 @@ const formatBirthdayOfUsers = ({ result: { data: users } }) => {
 		}
 	});
 };
+const markUserAsDeletedHooks = () => ({
+	before: {
+		all: [authenticate('jwt')],
+		find: [disallow()],
+		get: [disallow()],
+		create: [disallow()],
+		update: [authenticate('jwt'), iff(isProvider('external'), isSuperHero())],
+		patch: [disallow()],
+		remove: [disallow()],
+	},
+});
 
 const adminHookGenerator = (kind) => ({
 	before: {
@@ -342,5 +356,6 @@ const adminHookGenerator = (kind) => ({
 
 module.exports = {
 	AdminUsers,
+	markUserAsDeletedHooks,
 	adminHookGenerator,
 };
