@@ -4,7 +4,7 @@ const { NotFound } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
 
 const checkMerlinConfiguration = (hook) => {
-	if (!Configuration.get('ES_MERLIN_ENABLED')) {
+	if (!Configuration.get('FEATURE_ES_MERLIN_ENABLED')) {
 		throw new Error('Merlin is not enabled');
 	}
 	return hook;
