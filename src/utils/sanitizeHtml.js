@@ -101,13 +101,18 @@ const normalize = (data) => {
 	return data;
 };
 
+const replaceOnload = (data) => {
+	return data.replace('onload', 'onload ');
+};
+
 /**
  * sanitizes data
  * https://www.npmjs.com/package/sanitize-html
  * @param {*} data
  * @param {*} param
  */
-const sanitize = (data, isHTML = false) => sanitizeHtml(normalize(data), isHTML ? htmlTrueOptions : htmlFalseOptions);
+const sanitize = (data, isHTML = false) =>
+	replaceOnload(sanitizeHtml(normalize(data), isHTML ? htmlTrueOptions : htmlFalseOptions));
 
 /**
  * disables sanitization for defined keys if a path is matching
@@ -115,10 +120,6 @@ const sanitize = (data, isHTML = false) => sanitizeHtml(normalize(data), isHTML 
  * @param {*} key
  */
 const allowedHtmlByPathAndKeys = (path, key) => paths.includes(path) && keys.includes(key);
-
-const replaceOnload = (data) => {
-	return data.replace('onload', 'onload ');
-};
 
 /**
  * Strips JS/HTML Code from data and returns clean version of it
@@ -141,7 +142,7 @@ const sanitizeDeep = (data, path, depth = 0, safeAttributes = []) => {
 				if (saveKeys.includes(key) || safeAttributes.includes(key)) {
 					return data; // TODO:  why not over keys in allowedHtmlByPathAndKeys
 				}
-				data[key] = replaceOnload(sanitize(value, allowedHtmlByPathAndKeys(path, key)));
+				data[key] = sanitize(value, allowedHtmlByPathAndKeys(path, key));
 			} else {
 				sanitizeDeep(value, path, depth + 1, safeAttributes);
 			}
@@ -153,7 +154,7 @@ const sanitizeDeep = (data, path, depth = 0, safeAttributes = []) => {
 		// here we have to check all array elements and sanitize strings or do recursion
 		for (let i = 0; i < data.length; i += 1) {
 			if (typeof data[i] === 'string') {
-				data[i] = replaceOnload(sanitize(data[i]));
+				data[i] = sanitize(data[i]);
 			} else {
 				sanitizeDeep(data[i], path, depth + 1, safeAttributes);
 			}
