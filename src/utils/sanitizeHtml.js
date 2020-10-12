@@ -116,6 +116,10 @@ const sanitize = (data, isHTML = false) => sanitizeHtml(normalize(data), isHTML 
  */
 const allowedHtmlByPathAndKeys = (path, key) => paths.includes(path) && keys.includes(key);
 
+const replaceOnload = (data) => {
+	return data.replace('onload', 'onload ');
+};
+
 /**
  * Strips JS/HTML Code from data and returns clean version of it
  * @param data {object/array/string}
@@ -137,7 +141,7 @@ const sanitizeDeep = (data, path, depth = 0, safeAttributes = []) => {
 				if (saveKeys.includes(key) || safeAttributes.includes(key)) {
 					return data; // TODO:  why not over keys in allowedHtmlByPathAndKeys
 				}
-				data[key] = sanitize(value, allowedHtmlByPathAndKeys(path, key));
+				data[key] = replaceOnload(sanitize(value, allowedHtmlByPathAndKeys(path, key)));
 			} else {
 				sanitizeDeep(value, path, depth + 1, safeAttributes);
 			}
@@ -149,7 +153,7 @@ const sanitizeDeep = (data, path, depth = 0, safeAttributes = []) => {
 		// here we have to check all array elements and sanitize strings or do recursion
 		for (let i = 0; i < data.length; i += 1) {
 			if (typeof data[i] === 'string') {
-				data[i] = sanitize(data[i]);
+				data[i] = replaceOnload(sanitize(data[i]));
 			} else {
 				sanitizeDeep(data[i], path, depth + 1, safeAttributes);
 			}
