@@ -1,4 +1,7 @@
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const { gradeModel } = require('./model');
 const hooks = require('./hooks');
 const courseCopyService = require('./services/course-copy-service');
@@ -19,6 +22,8 @@ module.exports = function () {
 	const app = this;
 
 	app.configure(courseCopyService);
+
+	app.use('/courses/api', staticContent(path.join(__dirname, '/docs')));
 
 	/* Course model */
 	app.use('/courseModel', courseModelService);

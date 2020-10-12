@@ -1,5 +1,7 @@
 const service = require('feathers-mongoose');
 const { Forbidden, NotFound, BadRequest } = require('@feathersjs/errors');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 const { ObjectId } = require('mongoose').Types;
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const logger = require('../../logger/index');
@@ -458,6 +460,7 @@ module.exports = function news() {
 	// use /news to access a user's news
 	app.use('/news', newsService);
 	app.service('news').hooks(hooks);
+	app.use('/news/api', staticContent(path.join(__dirname, '/docs')));
 
 	// use /newsModel to directly access the model from other services
 	// (external requests are blocked)
