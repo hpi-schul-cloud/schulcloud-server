@@ -40,8 +40,8 @@ to copy the contents of the old pad to a new grouppad for given course.
 Finally it saves the changes to the given lesson.
 
 Example:
-node ./migrate-etherpads.js etherpad.schul-cloud.org
-npm run migrate-etherpads -- etherpad.schul-cloud.org
+node ./migrate-etherpads.js etherpad.hpi-schul-cloud.org
+npm run migrate-etherpads -- etherpad.hpi-schul-cloud.org
 
 OPTIONS:
 --help (-h)        Show this help.

@@ -5,7 +5,7 @@
 	"public": "../public/",
 	"services": {
 		"calendar": "http://localhost:3000",
-		"content": "https://content.schul-cloud.org",
+		"content": "https://content.hpi-schul-cloud.org",
 		"notification": "http://localhost:3031",
 		"hydra": "http://localhost:9001",
 		"web": "http://localhost:3100"

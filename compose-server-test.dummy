@@ -3,7 +3,7 @@ version: \"3.7\"
 
 services:
 
-  ### Schul-Cloud Server
+  ### HPI Schul-Cloud Server
   ###
   server-mongodb:
     image: mongo:3.4
@@ -43,7 +43,7 @@ services:
       # URIs and Port
       - MONGO_URI=mongodb://server-mongodb:27017/schulcloud
       - CALENDAR_URI=http://calendar:3000
-      - CONTENT_URI=https://content.schul-cloud.org
+      - CONTENT_URI=https://content.hpi-schul-cloud.org
       - NOTIFICATION_URI=http://notification:3030
       - PORT=3030
       # AUTH Secret

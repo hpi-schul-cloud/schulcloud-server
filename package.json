@@ -2,7 +2,7 @@
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
 	"version": "25.1.0",
-	"homepage": "https://schul-cloud.org",
+	"homepage": "https://hpi-schul-cloud.org",
 	"main": "src/",
 	"keywords": [
 		"feathers"
@@ -10,7 +10,7 @@
 	"license": "AGPL-3.0",
 	"repository": {},
 	"author": {
-		"name": "Schul-Cloud Team"
+		"name": "HPI Schul-Cloud Team"
 	},
 	"contributors": [],
 	"bugs": {},
