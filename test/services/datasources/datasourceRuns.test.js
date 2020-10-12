@@ -37,7 +37,8 @@ class MockSyncerWithData extends Syncer {
 	}
 }
 
-describe('datasourceRuns service', () => {
+describe('datasourceRuns service', function test() {
+	this.timeout(10000);
 	let app;
 	let datasourceRunsService;
 	let server;
