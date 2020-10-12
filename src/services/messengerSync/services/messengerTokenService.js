@@ -5,7 +5,7 @@ const request = require('request-promise-native');
 const hmacSHA512 = require('crypto-js/hmac-sha512');
 const reqlib = require('app-root-path').require;
 
-const { BadRequest } = reqlib('src/errors');
+const { BadRequest, GeneralError } = reqlib('src/errors');
 
 function obtainAccessToken(userId, homeserverApiUri, secret) {
 	const loginApiUrl = `${homeserverApiUri}/_matrix/client/r0/login`;

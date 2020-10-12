@@ -136,8 +136,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [25.0.0]
 
-<<<<<<< HEAD
-
 ### Changed - 25.0.0
 
 =======
