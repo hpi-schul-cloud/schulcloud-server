@@ -55,7 +55,7 @@ const User = mongoose.model(
 				email: { type: String, required: true, lowercase: true },
 			},
 		],
-		childrens: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
+		children: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
 		consent: {
 			parentConsents: [
 				{
