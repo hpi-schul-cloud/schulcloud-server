@@ -144,7 +144,7 @@ const migrateParentsFromStudents = async () => {
 			lastName: student.parents[0].lastName,
 			email: student.parents[0].email,
 			schoolId: student.schoolId,
-			childrens: [student._id],
+			children: [student._id],
 			roles: [parentRole._id],
 		});
 		await OldUser.updateOne(
