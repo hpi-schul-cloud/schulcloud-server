@@ -5,23 +5,19 @@ const mongoose = require('mongoose');
 
 const MigrationModel = migrationFactory(undefined, mongoose.connection);
 const { version } = require('../../../package.json');
-const {
-	sha, branch, message, stat,
-} = require('../../helper/version');
+const { sha, branch, message, stat } = require('../../helper/version');
+const { SHOW_VERSION } = require('../../../config/globals');
 
 const router = express.Router();
 const startTime = Date.now();
 const startedAt = new Date();
 
 router.get('/version', async (req, res, next) => {
-	if (!process.env.SHOW_VERSION) {
+	if (!SHOW_VERSION) {
 		return res.sendStatus(403);
 	}
 
-	const migrations = await MigrationModel
-		.find()
-		.lean()
-		.exec();
+	const migrations = await MigrationModel.find().lean().exec();
 
 	const { birthtime } = stat;
 	return res.json({

@@ -4,9 +4,9 @@ const { expect } = require('chai');
 const mockery = require('mockery');
 const { Configuration } = require('@schul-cloud/commons');
 const mockAws = require('./s3.mock');
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 
-const testObjects = require('../../helpers/testObjects')(app);
+const testObjects = require('../../helpers/testObjects')(appPromise);
 
 chai.use(chaiHttp);
 
@@ -84,10 +84,7 @@ describe('multple S3 AWS file storage strategy', () => {
 
 	describe('delete file', () => {
 		it('deletes a file correctly', async () => {
-			const res = await aws.deleteFile(
-				'0000d213816abba584714c0a',
-				'users/0000d213816abba584714c0a/example.jpg',
-			);
+			const res = await aws.deleteFile('0000d213816abba584714c0a', 'users/0000d213816abba584714c0a/example.jpg');
 			expect(res).to.not.be.undefined;
 			expect(res.Deleted).to.have.lengthOf(1);
 			expect(res.Deleted[0].Key).to.equal('users/0000d213816abba584714c0a/example.jpg');

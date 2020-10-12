@@ -6,13 +6,13 @@ const rabbitmqMock = require('../rabbitmqMock');
 const { Configuration } = commons;
 
 describe('service', function test() {
-	this.timeout(10000); // give require app enough time
+	this.timeout(20000); // give require app enough time
 	let configBefore;
 	let server;
 	let app;
 	let testObjects;
 
-	before((done) => {
+	before(async () => {
 		configBefore = Configuration.toObject(); // deep copy current config
 		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 		Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
@@ -22,14 +22,13 @@ describe('service', function test() {
 			useCleanCache: true,
 		});
 		mockery.registerMock('@schul-cloud/commons', commons);
-		mockery.registerMock('../../../utils/rabbitmq', rabbitmqMock);
-		mockery.registerMock('../../utils/rabbitmq', rabbitmqMock);
+		mockery.registerMock('amqplib', rabbitmqMock.amqplib);
 
 		// eslint-disable-next-line global-require
-		app = require('../../../../src/app');
+		app = await require('../../../../src/app');
 		// eslint-disable-next-line global-require
 		testObjects = require('../../helpers/testObjects')(app);
-		server = app.listen(0, done);
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -58,7 +57,7 @@ describe('service', function test() {
 
 		expect(testingQueue.length, '4 + 1 request school sync').to.equal(5);
 
-		const lastMessage = JSON.parse(testingQueue[4]);
+		const lastMessage = testingQueue[4];
 		expect(lastMessage.schoolId).to.equal(school._id.toString());
 		expect(lastMessage.fullSync).to.be.true;
 		rabbitmqMock.reset();
@@ -77,7 +76,8 @@ describe('service', function test() {
 
 		const params = await testObjects.generateRequestParamsFromUser(users[0]);
 		params.route = { schoolId: school._id.toString() };
-		await app.service('schools/:schoolId/messengerSync')
+		await app
+			.service('schools/:schoolId/messengerSync')
 			.create({}, params)
 			.catch((err) => {
 				expect(err.code).to.be.equal(400);

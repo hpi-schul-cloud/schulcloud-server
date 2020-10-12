@@ -1,7 +1,11 @@
 {
 	"title": "HPI Schul-Cloud Configuration",
 	"type": "object",
+	"additionalProperties": false,
 	"properties": {
+		"$schema": {
+			"type": "string"
+		},
 		"CLIENT_API_KEY": {
 			"type": "string",
 			"default": "example",
@@ -30,33 +34,23 @@
 		"SYNC_API_KEY": {
 			"type": "string",
 			"default": "example",
-			"description": "The API Key that the Sync Cron-Job uses to authenticate itself.This should be removed with SC-3387"
+			"description": "The API Key that the Sync and Mail Cron-Job uses to authenticate itself.This should be removed with SC-3387"
 		},
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": {
 			"type": "string",
 			"default": "enabled",
-			"enum": [
-				"disabled",
-				"opt-in",
-				"opt-out",
-				"enabled"
-			],
+			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "defines wheter external team invitation shows teachers from different schools or not. if enabled system wide there are options general enabled or opt-in/-out by user required."
 		},
 		"STUDENT_TEAM_CREATION": {
 			"type": "string",
 			"default": "opt-out",
-			"enum": [
-				"disabled",
-				"opt-in",
-				"opt-out",
-				"enabled"
-			],
+			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "defines wheter students may create teams or not. if enabled system wide there are options general enabled or opt-in/-out by school admin required."
 		},
 		"REDIS_URI": {
 			"type": "string",
-			"pattern": "(rediss?:)?\/\/((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(\/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
+			"pattern": "(rediss?:)?//((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
 			"description": "URL of a Redis server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
 		},
 		"PIN_MAX_AGE_SECONDS": {
@@ -213,14 +207,14 @@
 			"type": "string",
 			"format": "uri",
 			"pattern": ".*(?<!/)$",
-			"default": "https://status.schul-cloud.org",
+			"default": "https://status.hpi-schul-cloud.org",
 			"description": "The url of status message provider (should end without a slash)."
 		},
 		"ALERT_STATUS_API_URL": {
 			"type": "string",
 			"format": "uri",
 			"pattern": ".*(?<!/)$",
-			"default": "https://status.schul-cloud.org/api/v1",
+			"default": "https://status.hpi-schul-cloud.org/api/v1",
 			"description": "The api of status message provider (should end without a slash)."
 		},
 		"NEXBOARD_URL": {
@@ -256,12 +250,7 @@
 		"ADMIN_TOGGLE_STUDENT_VISIBILITY": {
 			"type": "string",
 			"default": "enabled",
-			"enum": [
-				"disabled",
-				"opt-in",
-				"opt-out",
-				"enabled"
-			],
+			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
 		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
@@ -337,11 +326,7 @@
 		},
 		"LERNSTORE_MODE": {
 			"type": "string",
-			"enum": [
-				"DISABLED",
-				"LEGACY",
-				"EDUSHARING"
-			],
+			"enum": ["DISABLED", "LEGACY", "EDUSHARING"],
 			"default": "DISABLED",
 			"description": "Defines the backend for the lernstore, the client just may be enabled or disabled only, if this is not disabled in the server."
 		},
@@ -371,10 +356,50 @@
 			"type": "string",
 			"description": "The client id for edu-sharing api access"
 		},
+		"ES_MERLIN_USERNAME": {
+			"type": "string",
+			"description": "The username for Merlin login, used for edusharing"
+		},
+		"ES_MERLIN_PW": {
+			"type": "string",
+			"description": "The password for Merlin login, used for edusharing"
+		},
 		"SILENT_ERROR_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Brute force flag during recovery password process"
+		},
+		"FEATURE_API_VALIDATION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "when enabled, all incoming requests are validated against the openapi schemata, unless the route is whitelisted."
+		},
+		"API_VALIDATION_WHITELIST_EXTENSION": {
+			"type": "string",
+			"description": "when set, this is interpreted as a regex to extend the ignorelist for the API validation with any routes matching the regex.",
+			"examples": [".*\/courses\/[0-9a-f]{24}($|\/$)"]
+		},
+		"PROMETHEUS": {
+			"type": "object",
+			"description": "Prometheus metrics options used by prometheus-api-metrics",
+			"properties": {
+				"METRICS_PATH": {
+					"type": "string",
+					"default": "/metrics",
+					"description": "public metrics route",
+					"pattern": ".*(?<!/)$"
+				},
+				"DURATION_BUCKETS_SECONDS": {
+					"type": "array",
+					"items": {
+						"type": "number",
+						"minimum": 0
+					},
+					"default": [0.01, 0.05, 0.1, 0.2, 0.5, 0.75, 1, 3, 5, 8, 15, 30, 60, 120],
+					"description": "Times to define buckets by seconds which contain all requests with max. the given amount of time. Must be in ascending order. "
+				}
+			},
+			"required": ["METRICS_PATH", "DURATION_BUCKETS_SECONDS"]
 		}
 	},
 	"required": [
@@ -383,6 +408,7 @@
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
 		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
-		"LERNSTORE_MODE"
+		"LERNSTORE_MODE",
+		"PROMETHEUS"
 	]
 }

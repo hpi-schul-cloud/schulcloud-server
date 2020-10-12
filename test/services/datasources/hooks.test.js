@@ -1,10 +1,8 @@
 const { expect } = require('chai');
 
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
-const {
-	updatedBy, createdBy, protectFields, validateParams,
-} = require('../../../src/services/datasources/hooks');
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
+const { updatedBy, createdBy, protectFields, validateParams } = require('../../../src/services/datasources/hooks');
 
 describe('datasources hooks', () => {
 	after(testObjects.cleanup);
@@ -66,7 +64,10 @@ describe('datasources hooks', () => {
 			const context = await fut({
 				result: {
 					config: {
-						type: 'csv', password: 'password123', secret: '1234556678', public: 'lorem ipsum',
+						type: 'csv',
+						password: 'password123',
+						secret: '1234556678',
+						public: 'lorem ipsum',
 					},
 					name: `somename${Date.now()}`,
 					schoolId: admin.schoolId,

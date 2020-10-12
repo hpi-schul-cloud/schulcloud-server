@@ -16,7 +16,7 @@ Deine ${data.cloud}
 
 async function generateSystemInformation(hook) {
 	const { userId, username } = hook.params.account;
-	const userInformation = await hook.app.service('users').get((userId), {
+	const userInformation = await hook.app.service('users').get(userId, {
 		query: {
 			$populate: { path: 'roles' },
 		},
@@ -31,7 +31,7 @@ async function generateSystemInformation(hook) {
 	return systemInformation;
 }
 
-function createFeedbackText(user, data) {
+function createFeedbackText(user, data = {}) {
 	const device = data.deviceUserAgent ? `${data.device} [auto-detection: ${data.deviceUserAgent}]` : data.device;
 	let text = `
 SystemInformation: ${data.systemInformation}
@@ -87,9 +87,7 @@ const feedback = () => async (hook) => {
 			subject: 'Ein Problem wurde gemeldet.',
 			roles: ['helpdesk', 'administrator'],
 			content: {
-				text: createInfoText(
-					(hook.params.account || {}).username || 'nouser', data,
-				),
+				text: createInfoText((hook.params.account || {}).username || 'nouser', data),
 			},
 			attachments: data.files,
 		});
@@ -101,10 +99,7 @@ const feedback = () => async (hook) => {
 			emails: ['ticketsystem@schul-cloud.org'],
 			replyEmail: data.replyEmail,
 			content: {
-				text: createFeedbackText(
-					(hook.params.account || {}).username || 'nouser',
-					data,
-				),
+				text: createFeedbackText((hook.params.account || {}).username || 'nouser', data),
 			},
 			attachments: data.files,
 		});

@@ -44,6 +44,8 @@ jobs:
       cache: npm
       install:
         - echo "skipping install"
+      after_failure:
+        - cat /home/travis/.npm/_logs/*debug.log
     - stage: deploy
       if: NOT fork
       script:

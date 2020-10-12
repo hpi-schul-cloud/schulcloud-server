@@ -1,4 +1,6 @@
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, BadRequest } = reqlib('src/errors');
 const { resolveScope } = require('./util/resolveScope');
 
 /**
@@ -69,7 +71,10 @@ const checkScopePermissions = (requiredPermissions) => async (context) => {
 		return context;
 	}
 	throw new Forbidden(`Missing one of the required permissions ${requiredPermissions}.`, {
-		userId, scopeName, scopeId, requiredPermissions,
+		userId,
+		scopeName,
+		scopeId,
+		requiredPermissions,
 	});
 };
 

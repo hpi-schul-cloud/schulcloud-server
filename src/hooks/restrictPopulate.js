@@ -1,9 +1,11 @@
-const { BadRequest } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 
 const errorMessage = 'populate not supported';
 
 const populateSelectHelper = (input, whitelist) => {
-	const path = (typeof input === 'string') ? input : input.path;
+	const path = typeof input === 'string' ? input : input.path;
 	if (!whitelist[path]) throw new BadRequest(errorMessage);
 	return { path, select: whitelist[path] };
 };

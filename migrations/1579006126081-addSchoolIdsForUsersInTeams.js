@@ -2,15 +2,13 @@ const { info, error } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
-
 const { userModel: UserModel } = require('../src/services/user/model'); // mongoose.model('user');
 const { teamsModel: TeamsModel } = require('../src/services/teams/model'); // mongoose.model('team');
 
 const equal = (id1, id2) => id1.toString() === id2.toString();
 
-const filterTeamWithMissingSchoolIds = (teams = []) => teams.filter(
-	(team) => team.userIds.some((user) => !user.schoolId),
-);
+const filterTeamWithMissingSchoolIds = (teams = []) =>
+	teams.filter((team) => team.userIds.some((user) => !user.schoolId));
 
 const selectTeamUserWithoutSchoolIds = (teams = []) => {
 	const usersIds = [];
@@ -65,7 +63,8 @@ const getReducer = (users = []) => (array, teamUser) => {
 module.exports = {
 	up: async function up() {
 		await connect();
-		let teamsForFixing; let users;
+		let teamsForFixing;
+		let users;
 		let fixTeamUsersReducer;
 		// pre conditions and data selects
 		try {
@@ -81,7 +80,10 @@ module.exports = {
 		}
 
 		// pre fix team data
-		info(`Found ${teamsForFixing.length} teams for fixing.`, teamsForFixing.map((team) => team._id));
+		info(
+			`Found ${teamsForFixing.length} teams for fixing.`,
+			teamsForFixing.map((team) => team._id)
+		);
 		teamsForFixing.forEach((team) => {
 			team.userIds = team.userIds.reduce(fixTeamUsersReducer, []);
 		});

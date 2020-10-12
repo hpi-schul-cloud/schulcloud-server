@@ -1,10 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { Forbidden } = require('@feathersjs/errors');
-const {
-	iff, isProvider, discard, disallow, keepInArray, keep,
-} = require('feathers-hooks-common');
+const { iff, isProvider, discard, disallow, keepInArray, keep } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
+const reqlib = require('app-root-path').require;
 
+const { Forbidden } = reqlib('src/errors');
 const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
@@ -25,7 +24,7 @@ let years = null;
  * @param context
  * @returns {*}
  */
-const getResultDataFromContext = (context) => ((context.result) ? (context.result.data || context.result) : []);
+const getResultDataFromContext = (context) => (context.result ? context.result.data || context.result : []);
 
 const isTeamCreationByStudentsEnabled = (currentSchool) => {
 	const { enableStudentTeamCreation } = currentSchool;
@@ -115,7 +114,8 @@ const createDefaultStorageOptions = (hook) => {
 	const storageType = getDefaultFileStorageType();
 	const schoolId = hook.result._id;
 	const fileStorageStrategy = getFileStorageStrategy(storageType);
-	return fileStorageStrategy.create(schoolId)
+	return fileStorageStrategy
+		.create(schoolId)
 		.then(() => Promise.resolve(hook))
 		.catch((err) => {
 			if (err && err.code === 'BucketAlreadyOwnedByYou') {
@@ -149,7 +149,7 @@ const decorateYears = async (context) => {
 	return context;
 };
 
-const updatesArray = (key) => (key === '$push' || key === '$pull');
+const updatesArray = (key) => key === '$push' || key === '$pull';
 const updatesChat = (key, data) => {
 	const chatFeatures = [
 		SCHOOL_FEATURES.ROCKET_CHAT,
@@ -159,8 +159,7 @@ const updatesChat = (key, data) => {
 	];
 	return updatesArray(key) && chatFeatures.indexOf(data[key].features) !== -1;
 };
-const updatesTeamCreation = (key, data) => updatesArray(key)
-	&& !isTeamCreationByStudentsEnabled(data[key]);
+const updatesTeamCreation = (key, data) => updatesArray(key) && !isTeamCreationByStudentsEnabled(data[key]);
 
 const hasEditPermissions = async (context) => {
 	try {
@@ -174,9 +173,9 @@ const hasEditPermissions = async (context) => {
 		const patch = {};
 		for (const key of Object.keys(context.data)) {
 			if (
-				(user.permissions.includes('SCHOOL_CHAT_MANAGE') && updatesChat(key, context.data))
-				|| (user.permissions.includes('SCHOOL_STUDENT_TEAM_MANAGE') && updatesTeamCreation(key, context.data))
-				|| (user.permissions.includes('SCHOOL_LOGO_MANAGE') && key === 'logo_dataUrl')
+				(user.permissions.includes('SCHOOL_CHAT_MANAGE') && updatesChat(key, context.data)) ||
+				(user.permissions.includes('SCHOOL_STUDENT_TEAM_MANAGE') && updatesTeamCreation(key, context.data)) ||
+				(user.permissions.includes('SCHOOL_LOGO_MANAGE') && key === 'logo_dataUrl')
 			) {
 				patch[key] = context.data[key];
 			}
@@ -185,7 +184,7 @@ const hasEditPermissions = async (context) => {
 		return context;
 	} catch (err) {
 		logger.error('Failed to check school edit permissions', err);
-		throw new Forbidden('You don\'t have the necessary permissions to patch these fields');
+		throw new Forbidden("You don't have the necessary permissions to patch these fields");
 	}
 };
 
@@ -200,17 +199,14 @@ const restrictToUserSchool = async (context) => {
 const populateInQuery = (context) => (context.params.query || {}).$populate;
 
 const isNotAuthenticated = async (context) => {
-	if (typeof (context.params.provider) === 'undefined') {
+	if (typeof context.params.provider === 'undefined') {
 		return false;
-	} else {
-		return !((context.params.headers || {}).authorization || context.params.account && context.params.account.userId);
 	}
-}
+	return !((context.params.headers || {}).authorization || (context.params.account && context.params.account.userId));
+};
 
 exports.before = {
-	all: [
-		globalHooks.authenticateWhenJWTExist,
-	],
+	all: [globalHooks.authenticateWhenJWTExist],
 	find: [],
 	get: [],
 	create: [
@@ -240,9 +236,18 @@ exports.before = {
 exports.after = {
 	all: [
 		// todo: remove id if possible (shouldnt exist)
-		iff(isNotAuthenticated, keep('name', 'purpose', 'systems', '_id', 'id')),
-		iff(populateInQuery,
-			keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active', 'ldapConfig.rootPath'])),
+		iff(isNotAuthenticated, keep('name', 'purpose', 'systems', '_id', 'id', 'language')),
+		iff(
+			populateInQuery,
+			keepInArray('systems', [
+				'_id',
+				'type',
+				'alias',
+				'ldapConfig.active',
+				'ldapConfig.provider',
+				'ldapConfig.rootPath',
+			])
+		),
 		iff(isProvider('external') && !globalHooks.isSuperHero(), discard('storageProvider')),
 	],
 	find: [decorateYears, setStudentsCanCreateTeams],

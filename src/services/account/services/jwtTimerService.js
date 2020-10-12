@@ -1,12 +1,17 @@
 const auth = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
-const { MethodNotAllowed, NotAuthenticated } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { MethodNotAllowed, NotAuthenticated } = reqlib('src/errors');
 const docs = require('./jwtTimerDocs');
 
 const {
-	getRedisClient, redisSetAsync, redisTtlAsync, extractDataFromJwt, getRedisData,
+	getRedisClient,
+	redisSetAsync,
+	redisTtlAsync,
+	extractDataFromJwt,
+	getRedisData,
 } = require('../../../utils/redis');
-
 
 class JwtTimerService {
 	constructor(options) {
@@ -39,9 +44,7 @@ class JwtTimerService {
 			if (redisResponse < 0) throw new NotAuthenticated('Session was expired due to inactivity - autologout.');
 			const redisData = getRedisData({ privateDevice });
 			const { expirationInSeconds } = redisData;
-			await redisSetAsync(
-				redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds,
-			);
+			await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
 			return Promise.resolve({ ttl: expirationInSeconds });
 		}
 		throw new MethodNotAllowed('This feature is disabled on this instance!');
@@ -56,9 +59,7 @@ const jwtTimerService = new JwtTimerService();
 
 const jwtTimerHooks = {
 	before: {
-		all: [
-			auth.hooks.authenticate('jwt'),
-		],
+		all: [auth.hooks.authenticate('jwt')],
 		find: [],
 		get: [disallow()],
 		create: [],

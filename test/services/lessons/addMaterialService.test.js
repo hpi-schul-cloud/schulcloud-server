@@ -1,12 +1,15 @@
 const { expect } = require('chai');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 
-describe('addMaterial Service', () => {
+describe('addMaterial Service', function test() {
+	this.timeout(5000);
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after(async () => {
@@ -22,11 +25,14 @@ describe('addMaterial Service', () => {
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = {};
 		params.route = { lessonId: lesson._id };
-		const result = await app.service('/lessons/:lessonId/material').create({
-			title: 'testTitle',
-			client: 'someclient',
-			url: 'hpi.schul-cloud.org',
-		}, params);
+		const result = await app.service('/lessons/:lessonId/material').create(
+			{
+				title: 'testTitle',
+				client: 'someclient',
+				url: 'hpi.schul-cloud.org',
+			},
+			params
+		);
 		expect(result).to.not.be.undefined;
 		expect(result).to.haveOwnProperty('_id');
 		expect(result).to.haveOwnProperty('title');
@@ -42,11 +48,14 @@ describe('addMaterial Service', () => {
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = {};
 		params.route = { lessonId: lesson._id };
-		const { _id: materialId } = await app.service('/lessons/:lessonId/material').create({
-			title: 'testTitle',
-			client: 'someclient',
-			url: 'hpi.schul-cloud.org',
-		}, params);
+		const { _id: materialId } = await app.service('/lessons/:lessonId/material').create(
+			{
+				title: 'testTitle',
+				client: 'someclient',
+				url: 'hpi.schul-cloud.org',
+			},
+			params
+		);
 		const result = await app.service('lessons').get(lesson._id);
 		expect(result).to.not.be.undefined;
 		expect(result).to.haveOwnProperty('materialIds');
@@ -62,11 +71,14 @@ describe('addMaterial Service', () => {
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = {};
 		params.route = { lessonId: lesson._id };
-		const { _id: materialId } = await app.service('/lessons/:lessonId/material').create({
-			title: 'testTitle',
-			client: 'someclient',
-			url: 'hpi.schul-cloud.org',
-		}, params);
+		const { _id: materialId } = await app.service('/lessons/:lessonId/material').create(
+			{
+				title: 'testTitle',
+				client: 'someclient',
+				url: 'hpi.schul-cloud.org',
+			},
+			params
+		);
 		const result = await app.service('lessons').get(lesson._id);
 		expect(result).to.not.be.undefined;
 		expect(result).to.haveOwnProperty('materialIds');
@@ -84,11 +96,14 @@ describe('addMaterial Service', () => {
 		params.route = { lessonId: lesson._id };
 
 		try {
-			await app.service('/lessons/:lessonId/material').create({
-				title: 'testTitle',
-				client: 'someclient',
-				url: 'hpi.schul-cloud.org',
-			}, params);
+			await app.service('/lessons/:lessonId/material').create(
+				{
+					title: 'testTitle',
+					client: 'someclient',
+					url: 'hpi.schul-cloud.org',
+				},
+				params
+			);
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');

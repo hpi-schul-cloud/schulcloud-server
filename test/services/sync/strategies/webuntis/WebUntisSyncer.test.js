@@ -1,15 +1,17 @@
 const { expect } = require('chai');
 const sleep = require('util').promisify(setTimeout);
 
-const app = require('../../../../../src/app');
-const testObjects = require('../../../helpers/testObjects')(app);
+const appPromise = require('../../../../../src/app');
+const testObjects = require('../../../helpers/testObjects')(appPromise);
 const WebUntisSyncer = require('../../../../../src/services/sync/strategies/WebUntisSyncer');
 
 // These tests should use a mock once the webuntis sync actually does something!
 describe('webuntis Syncer', () => {
+	let app;
 	let server;
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after(async () => {
@@ -37,16 +39,19 @@ describe('webuntis Syncer', () => {
 		});
 		expect(minimalParams).to.not.be.false;
 
-		const paramsWithData = WebUntisSyncer.params({
-			query: {
-				username: 'webuntisusername',
-				password: 'secret123',
-				url: 'url.com',
+		const paramsWithData = WebUntisSyncer.params(
+			{
+				query: {
+					username: 'webuntisusername',
+					password: 'secret123',
+					url: 'url.com',
+				},
 			},
-		}, {
-			datatype: 'inclusive',
-			courseMetadataIds: [],
-		});
+			{
+				datatype: 'inclusive',
+				courseMetadataIds: [],
+			}
+		);
 		expect(paramsWithData).to.not.be.false;
 
 		const dryrunParams = WebUntisSyncer.params({
@@ -87,30 +92,34 @@ describe('webuntis Syncer', () => {
 		const { _id: datasourceId } = await testObjects.createTestDatasource({
 			config: { target: 'webuntis' },
 		});
-		await Promise.all(new Array(20).fill('').map(
-			() => app.service('webuntisMetadata').create({
-				datasourceId,
-				teacher: 'Renz',
-				class: '2a',
-				room: '0-23',
-				subject: 'mathe',
-				state: 'new',
-			}),
-		));
-		const metadata = await app.service('webuntisMetadata')
-			.find({ query: { datasourceId, $limit: 5 } });
+		await Promise.all(
+			new Array(20).fill('').map(() =>
+				app.service('webuntisMetadata').create({
+					datasourceId,
+					teacher: 'Renz',
+					class: '2a',
+					room: '0-23',
+					subject: 'mathe',
+					state: 'new',
+				})
+			)
+		);
+		const metadata = await app.service('webuntisMetadata').find({ query: { datasourceId, $limit: 5 } });
 		const toImport = metadata.data.map((md) => md._id);
-		const args = WebUntisSyncer.params({
-			datasourceId,
-			query: {
-				username: 'webuntisusername',
-				password: 'secret123',
-				url: 'url.com',
+		const args = WebUntisSyncer.params(
+			{
+				datasourceId,
+				query: {
+					username: 'webuntisusername',
+					password: 'secret123',
+					url: 'url.com',
+				},
 			},
-		}, {
-			datatype: 'inclusive',
-			courseMetadataIds: toImport,
-		});
+			{
+				datatype: 'inclusive',
+				courseMetadataIds: toImport,
+			}
+		);
 		const syncer = new WebUntisSyncer(app, {}, undefined, ...args);
 		const result = await syncer.sync();
 		expect(result.success).to.eq(true);
@@ -129,30 +138,34 @@ describe('webuntis Syncer', () => {
 		const { _id: datasourceId } = await testObjects.createTestDatasource({
 			config: { target: 'webuntis' },
 		});
-		await Promise.all(new Array(20).fill('').map(
-			() => app.service('webuntisMetadata').create({
-				datasourceId,
-				teacher: 'Renz',
-				class: '2a',
-				room: '0-23',
-				subject: 'mathe',
-				state: 'new',
-			}),
-		));
-		const metadata = await app.service('webuntisMetadata')
-			.find({ query: { datasourceId, $limit: 5 } });
+		await Promise.all(
+			new Array(20).fill('').map(() =>
+				app.service('webuntisMetadata').create({
+					datasourceId,
+					teacher: 'Renz',
+					class: '2a',
+					room: '0-23',
+					subject: 'mathe',
+					state: 'new',
+				})
+			)
+		);
+		const metadata = await app.service('webuntisMetadata').find({ query: { datasourceId, $limit: 5 } });
 		const toDiscard = metadata.data.map((md) => md._id);
-		const args = WebUntisSyncer.params({
-			datasourceId,
-			query: {
-				username: 'webuntisusername',
-				password: 'secret123',
-				url: 'url.com',
+		const args = WebUntisSyncer.params(
+			{
+				datasourceId,
+				query: {
+					username: 'webuntisusername',
+					password: 'secret123',
+					url: 'url.com',
+				},
 			},
-		}, {
-			datatype: 'exclusive',
-			courseMetadataIds: toDiscard,
-		});
+			{
+				datatype: 'exclusive',
+				courseMetadataIds: toDiscard,
+			}
+		);
 		const syncer = new WebUntisSyncer(app, {}, undefined, ...args);
 		const result = await syncer.sync();
 		expect(result.success).to.eq(true);

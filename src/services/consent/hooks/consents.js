@@ -1,8 +1,12 @@
-const { Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden } = reqlib('src/errors');
 
 exports.restrictToCurrentUser = (context) => {
-	if (context.id === context.params.authentication.payload.userId
-		|| (context.params.query || {}).userId === context.params.authentication.payload.userId) {
+	if (
+		context.id === context.params.authentication.payload.userId ||
+		(context.params.query || {}).userId === context.params.authentication.payload.userId
+	) {
 		return context;
 	}
 

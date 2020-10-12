@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { BadRequest } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 const { hasPermission } = require('../../../hooks');
 
 class QrRegistrationLinks {
@@ -22,7 +24,7 @@ class QrRegistrationLinks {
 			throw new BadRequest(this.err.failed, err);
 		}
 	}
-
+	// TODO: remove awaits inside the loop
 	async generateQrRegistrationLinks(userIds) {
 		const qrRegistrationLinks = [];
 		for (const userId of userIds) {
