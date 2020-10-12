@@ -8,6 +8,8 @@ const logger = require('../../logger');
 
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../../config/globals');
 
+const permissionsAllowedToLogin = ['student', 'expert', 'administrator', 'teacher'];
+
 const formatBirthdate1 = (datestamp) => {
 	if (datestamp === undefined) return false;
 
@@ -150,6 +152,9 @@ const registerUser = function register(data, params, app) {
 		)
 		.then(() => {
 			const consentSkipCondition = Configuration.get('SKIP_CONDITIONS_CONSENT');
+			if (!(user.roles || []).some((role) => permissionsAllowedToLogin.includes(role))) {
+				return Promise.reject(new BadRequest('You are not allowed to register!'));
+			}
 			if ((user.roles || []).includes('student')) {
 				// wrong birthday object?
 				if (user.birthday instanceof Date && Number.isNaN(user.birthday)) {
