@@ -139,14 +139,26 @@ const migrateParentsFromStudents = async () => {
 	const parentRole = await RoleModel.create({ name: 'parent' });
 	const cursor = findAllStudentsWithParentData().cursor();
 	for (let student = await cursor.next(); student != null; student = await cursor.next()) {
-		const parent = await User.create({
-			firstName: student.parents[0].firstName,
-			lastName: student.parents[0].lastName,
-			email: student.parents[0].email,
-			schoolId: student.schoolId,
-			childrens: [student._id],
-			roles: [parentRole._id],
-		});
+		const parent = await User.findOneAndUpdate(
+			{
+				email: student.parents[0].email,
+				roles: parentRole._id,
+			},
+			{
+				$set: {
+					firstName: student.parents[0].firstName,
+					lastName: student.parents[0].lastName,
+					email: student.parents[0].email,
+					schoolId: student.schoolId,
+					childrens: [student._id],
+					roles: [parentRole._id],
+				},
+			},
+			{
+				upsert: true,
+				new: true,
+			}
+		);
 		await OldUser.updateOne(
 			{ _id: student._id },
 			{ $set: { parents: [parent._id], 'consent.parentConsents.$[].parentId': parent._id } }
