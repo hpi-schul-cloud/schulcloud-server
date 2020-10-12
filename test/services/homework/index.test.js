@@ -6,12 +6,11 @@ const testObjects = require('../helpers/testObjects')(appPromise);
 const { expect } = chai;
 
 describe('homework service', function test() {
-	let app;
+	let app = appPromise;
 	let homeworkService;
 	let homeworkCopyService;
 	let server;
 	this.timeout(10000);
-	let server;
 
 	before((done) => {
 		server = app.listen(0, done);
@@ -23,7 +22,7 @@ describe('homework service', function test() {
 	});
 
 	before(async () => {
-		app = await appPromise;
+		app = appPromise;
 		homeworkService = app.service('homework');
 		homeworkCopyService = app.service('homework/copy');
 		server = await app.listen(0);
