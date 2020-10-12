@@ -258,7 +258,6 @@ describe('registration service', () => {
 					privacyConsent: true,
 					termsOfUseConsent: true,
 				};
-
 				return registrationService
 					.create(registrationInput)
 					.then(() => {
