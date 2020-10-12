@@ -55,7 +55,7 @@ const User = mongoose.model(
 				email: { type: String, required: true, lowercase: true },
 			},
 		],
-		childrens: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
+		children: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
 		consent: {
 			parentConsents: [
 				{
@@ -139,6 +139,7 @@ const migrateParentsFromStudents = async () => {
 	const parentRole = await RoleModel.create({ name: 'parent' });
 	const cursor = findAllStudentsWithParentData().cursor();
 	for (let student = await cursor.next(); student != null; student = await cursor.next()) {
+<<<<<<< HEAD
 		const parent = await User.findOneAndUpdate(
 			{
 				email: student.parents[0].email,
@@ -159,6 +160,16 @@ const migrateParentsFromStudents = async () => {
 				new: true,
 			}
 		);
+=======
+		const parent = await User.create({
+			firstName: student.parents[0].firstName,
+			lastName: student.parents[0].lastName,
+			email: student.parents[0].email,
+			schoolId: student.schoolId,
+			children: [student._id],
+			roles: [parentRole._id],
+		});
+>>>>>>> 05c4d9fb07539390fa83b0c1ca8bf8b1618cc0ca
 		await OldUser.updateOne(
 			{ _id: student._id },
 			{ $set: { parents: [parent._id], 'consent.parentConsents.$[].parentId': parent._id } }
