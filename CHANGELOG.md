@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [25.1.1] - 2020-10-12
+
+### Added
+
+- SC-7165 package update for sanitization and add onload handler
+
 ## [25.1.0] - 2020-10-12
 
 ### Added
@@ -27,12 +33,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Security
 
 - Added hotfix merges
-
-## [25.0.13] - 2020-10-12
-
-### Added
-
-- SC-7165 package update for sanitization and add onload handler
 
 ## [25.0.12] - 2020-10-12
 
