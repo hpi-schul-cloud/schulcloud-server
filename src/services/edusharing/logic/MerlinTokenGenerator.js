@@ -14,7 +14,6 @@ class MerlinTokenGenerator {
 
 	async getMerlinUrl(ref) {
 		const options = {
-			method: 'POST',
 			url: `http://merlin.nibis.de/auth.php?nbc&identifier=${ref}`,
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
@@ -25,7 +24,7 @@ class MerlinTokenGenerator {
 			},
 		};
 		try {
-			const merlinUrl = await request(options);
+			const merlinUrl = await request.post(options);
 			return merlinUrl;
 		} catch (e) {
 			throw Error(`Failed to obtain merlin url. Error: ${e}`);
