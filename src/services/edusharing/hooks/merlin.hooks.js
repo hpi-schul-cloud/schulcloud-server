@@ -7,6 +7,7 @@ const checkMerlinConfiguration = (hook) => {
 	if (!Configuration.get('ES_MERLIN_ENABLED')) {
 		throw new Error('Merlin is not enabled');
 	}
+	return hook;
 };
 
 const validateReference = (hook) => {
