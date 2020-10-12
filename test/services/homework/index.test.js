@@ -11,6 +11,7 @@ describe('homework service', function test() {
 	let homeworkCopyService;
 	let server;
 	this.timeout(10000);
+	let server;
 
 	before((done) => {
 		server = app.listen(0, done);
