@@ -13,15 +13,18 @@ class MerlinTokenGenerator {
 	}
 
 	async getMerlinUrl(ref) {
+		const merlinUri = Configuration.get('ES_MERLIN_AUTH_URL');
+		const query = `?nbc&identifier=${ref}`;
+		const url = merlinUri + query;
 		const options = {
 			method: 'POST',
-			url: `http://merlin.nibis.de/auth.php?nbc&identifier=${ref}`,
+			url,
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
 			},
 			form: {
-				username: Configuration.get('ES_MERLIN_USERNAME'),
-				password: Configuration.get('ES_MERLIN_PW'),
+				username: Configuration.get('SECRET_ES_MERLIN_USERNAME'),
+				password: Configuration.get('SECRET_ES_MERLIN_PW'),
 			},
 		};
 		try {
