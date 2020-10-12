@@ -247,15 +247,19 @@ class AdminUsers {
 			);
 		}
 	}
-	//
-	// async markUserAsDeleted() {
-	// 	await this.app.service('accountModel').patch(null, {
-	// 		query: {
-	// 			userDeleted: true,
-	// 			deletionDate: new Date()
-	// 		},
-	// 	});
-	// }
+
+	async markUserAsDeleted(userId) {
+		if (userId) {
+			await this.app.service('accountModel').patch(null, {
+				query: {
+					userDeleted: true,
+					deletionDate: new Date()
+				},
+			});
+			return 'User Marked to deletion';
+		}
+		return new Forbidden('You cannot remove user with invalid id.');
+	}
 
 	async prepareRoleback(email, userId, fu) {
 		try {
@@ -278,13 +282,6 @@ class AdminUsers {
 		}
 	}
 
-	async markUserAsDeleted(id) {
-		if (id) {
-			await this.app.service('accountModel').patch(null, { query: { userId: id } });
-			return this.app.service('usersModel').patch(null, { query: { userId: id } });
-		}
-		return new Forbidden('You cannot remove user with invalid id.');
-	}
 
 	async remove(id, params) {
 		const { _ids } = params.query;
