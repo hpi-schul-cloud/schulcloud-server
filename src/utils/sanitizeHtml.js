@@ -102,7 +102,7 @@ const normalize = (data) => {
 };
 
 const replaceOnload = (data) => {
-	return data.replace('onload', 'onload ');
+	return data.replace('onload', 'onload ').replace('onreload', 'onreload ');
 };
 
 /**
