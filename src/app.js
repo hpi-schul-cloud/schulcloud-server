@@ -30,7 +30,7 @@ const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
 
-const setupApp = () => {
+const setupApp = async () => {
 	const app = express(feathers());
 	app.disable('x-powered-by');
 
