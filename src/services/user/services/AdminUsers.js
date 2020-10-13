@@ -9,8 +9,8 @@ const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
-const { isSuperHero } = require('../../../hooks');
 const { Forbidden, BadRequest, GeneralError } = reqlib('src/errors');
+const { isSuperHero } = require('../../../hooks');
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const { hasSchoolPermission, blockDisposableEmail } = require('../../../hooks');
@@ -176,6 +176,8 @@ class AdminUsers {
 		const users = await this.prepareRoleback(email, _id, () =>
 			this.app.service('usersModel').patch(null, _data, params)
 		);
+		await this.markUserAsDeleted(email, _id);
+
 
 		if (users.length === 0) throw new BadRequest('user could not be edit');
 
@@ -251,15 +253,15 @@ class AdminUsers {
 		}
 	}
 
-	async markUserAsDeleted(userId) {
-		if (userId) {
+	async markUserAsDeleted(email, userId) {
+		if (email && userId) {
 			await this.app.service('accountModel').patch(null, {
 				query: {
 					userDeleted: true,
 					deletionDate: new Date()
 				},
 			});
-			return 'User Marked to deletion';
+			return `User ${userId} Marked to deletion`;
 		}
 		return new Forbidden('You cannot remove user with invalid id.');
 	}
@@ -284,7 +286,6 @@ class AdminUsers {
 			throw err;
 		}
 	}
-
 
 	async remove(id, params) {
 		const { _ids } = params.query;
