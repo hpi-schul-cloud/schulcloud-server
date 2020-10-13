@@ -71,7 +71,7 @@ const setStudentsCanCreateTeams = async (context) => {
 				throw new Error('method not supported');
 		}
 	} catch (error) {
-		logger.error(error);
+		throw new Error('error while determing school settings for team creation by user');
 	}
 	return context;
 };
