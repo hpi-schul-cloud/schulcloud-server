@@ -1,14 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
 const { NotFound } = require('@feathersjs/errors');
-const { Configuration } = require('@schul-cloud/commons');
-
-const checkMerlinConfiguration = (hook) => {
-	if (!Configuration.get('FEATURE_ES_MERLIN_ENABLED')) {
-		throw new Error('Merlin is not enabled');
-	}
-	return hook;
-};
 
 const validateReference = (hook) => {
 	if (!hook || !hook.params || !hook.params.query || !hook.params.query.merlinReference) {
@@ -18,7 +10,7 @@ const validateReference = (hook) => {
 };
 
 exports.before = {
-	all: [authenticate('jwt'), checkMerlinConfiguration],
+	all: [authenticate('jwt')],
 	find: [validateReference],
 	get: [disallow()],
 	create: [disallow()],

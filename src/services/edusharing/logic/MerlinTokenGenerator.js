@@ -8,6 +8,9 @@ class MerlinTokenGenerator {
 
 	async FIND(data) {
 		const { merlinReference } = data.query;
+		if (!Configuration.get('FEATURE_ES_MERLIN_ENABLED')) {
+			return Configuration.get('ES_MERLIN_AUTH_URL');
+		}
 		const url = await this.getMerlinUrl(merlinReference);
 		return url;
 	}
