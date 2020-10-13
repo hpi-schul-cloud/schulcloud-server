@@ -42,9 +42,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed - 25.1.0
 
-- SC-6567 - clean up error pipline
-- SC-6510, fix a minor syntax error when exporting module
-- Update commons to 1.2.7: print configuration on startup, introduce hierarchical configuration file setup
 - SC-6774 remove no-await-in-loop from eslint exceptions
 - Rename statistic mails route, secure it over sync api key now
 - SC-6809 - Maintain RabbitMQ connection and channels
@@ -136,11 +133,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [25.0.0]
 
-### Changed - 25.0.0
-
-=======
-
-### Changed - 25.1.0
+### Changed
 
 - Extend JWT payload by schoolId and roleIds
 
