@@ -1,15 +1,13 @@
 const { expect } = require('chai');
 const assert = require('assert');
 
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 const accountModel = require('../../../src/services/account/model');
 const { consentModel } = require('../../../src/services/consent/model');
 const { userModel, registrationPinModel } = require('../../../src/services/user/model');
 const { schoolModel } = require('../../../src/services/school/model');
 
-const registrationService = app.service('registration');
-const registrationPinService = app.service('registrationPins');
-const testObjects = require('../helpers/testObjects')(app);
+const testObjects = require('../helpers/testObjects')(appPromise);
 
 const patchSchool = (system, schoolId) =>
 	schoolModel
@@ -43,9 +41,17 @@ const createPin = (pin = 6716, email) =>
 
 describe('registration service', () => {
 	let server;
+	let registrationService;
+	let registrationPinService;
+	let hashService;
 
 	before((done) => {
-		server = app.listen(0, done);
+		appPromise.then((app) => {
+			registrationService = app.service('registration');
+			registrationPinService = app.service('registrationPins');
+			hashService = app.service('hash');
+			server = app.listen(0, done);
+		});
 	});
 
 	after(async () => {
@@ -226,8 +232,7 @@ describe('registration service', () => {
 			toHash: email,
 			save: true,
 		};
-		return app
-			.service('hash')
+		return hashService
 			.create(hashData)
 			.then((newHash) => {
 				hash = newHash;
@@ -278,8 +283,7 @@ describe('registration service', () => {
 			toHash: email,
 			save: true,
 		};
-		return app
-			.service('hash')
+		return hashService
 			.create(hashData)
 			.then((newHash) => {
 				hash = newHash;
@@ -364,8 +368,7 @@ describe('registration service', () => {
 			toHash: email,
 			save: true,
 		};
-		return app
-			.service('hash')
+		return hashService
 			.create(hashData)
 			.then((newHash) => {
 				hash = newHash;
