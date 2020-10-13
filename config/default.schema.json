@@ -367,7 +367,7 @@
 		"ES_MERLIN_AUTH_URL": {
 			"type": "string",
 			"description": "Connection url for Merlin content",
-			"default": "merlin.nibis.de/auth.php"
+			"default": "http://merlin.nibis.de/auth.php"
 		},
 		"FEATURE_ES_MERLIN_ENABLED": {
 			"type": "boolean",
