@@ -140,9 +140,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 =======
 
-### Changed
-
-> > > > > > > 25.1.0
+### Changed - 25.1.0
 
 - Extend JWT payload by schoolId and roleIds
 
