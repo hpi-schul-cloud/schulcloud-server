@@ -11,8 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
-- SC-6239 - added lern-store permission
-- SC-6239 - added SH and NI states roles for students to deny lern-store access
+- SC-7049 - Added unit tests for Merlin Service
 - SC-7157 - add feature flag for Merlin feature with fallback
 - SC-6567 - add new application errros
 - SC-6766 - Added ESLint rules with Promise rules
@@ -20,6 +19,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6769 - Introduce API validation module
 - SC-6769 - API validation for users/admin routes
 - SC-6510 - Added Merlin Url Generator for Lern Store / Edu-sharing
+- SC-6239 - added lern-store permission
+- SC-6239 - added SH and NI states roles for students to deny lern-store access
 
 ### Removed
 
