@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const reqlib = require('app-root-path').require;
 
-const { Forbidden, GeneralError } = reqlib('src/errors');
+const { Forbidden, GeneralError, NotFound } = reqlib('src/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const logger = require('../../../logger');
 
@@ -258,13 +258,13 @@ const hasCreatePermission = async (context) => {
 			course.userIds.some((id) => equalIds(id, userId)) ||
 			course.teacherIds.some((id) => equalIds(id, userId)) ||
 			course.substitutionIds.some((id) => equalIds(id, userId));
-		if (!userInCourse) throw new errors.NotFound('course not found');
+		if (!userInCourse) throw new NotFound('course not found');
 	}
 
 	if (data.lessonId) {
 		const lesson = context.app.service('lessons').get(data.lessonId);
 		if (!(data.courseId && equalIds(lesson.courseId, data.courseId))) {
-			throw new errors.NotFound('lesson not found. did you forget to pass the correct course?');
+			throw new NotFound('lesson not found. did you forget to pass the correct course?');
 		}
 	}
 	context.data = data;
