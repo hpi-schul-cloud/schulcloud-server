@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-7157 - add feature flag for Merlin feature with fallback
 - SC-6567 - add new application errros
 - SC-6766 - Added ESLint rules with Promise rules
 - SC-6830 - Added hook to parse request to arrays when > 20 users are requested in adminUsers service
@@ -34,7 +35,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [25.1.0] - 2020-10-12
 
 ### Removed - 25.1.0
-
 
 - SC-6784 - Removed duplicated birth date formatting code in adminUsers service, which was causing an "Invalid date" output
 - SC-6743 - Removed usersForConsent related things in adminUsers service because the client does not send that parameter anymore
@@ -133,11 +133,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [25.0.0]
 
-<<<<<<< HEAD
-### Changed - 25.0.0
-=======
 ### Changed
->>>>>>> 25.1.0
 
 - Extend JWT payload by schoolId and roleIds
 
