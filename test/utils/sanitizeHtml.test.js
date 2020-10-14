@@ -152,4 +152,24 @@ describe('[utils] sanitizeDeep', () => {
 		};
 		expect(sanitizeDeep(input)).to.eql(output);
 	});
+
+	it('onload as text should NOT destructor', () => {
+		const input = {
+			key: '" onload alert(document.cookie)       //;&gt;/',
+		};
+		const output = {
+			key: '" onload alert(document.cookie)       //;&gt;/',
+		};
+		expect(sanitizeDeep(input)).to.eql(output);
+	});
+
+	it('onload with == is destructor too', () => {
+		const input = {
+			key: '" onload==alert(document.cookie)       //;&gt;/',
+		};
+		const output = {
+			key: '" on load= = alert(document.cookie)       //;&gt;/',
+		};
+		expect(sanitizeDeep(input)).to.eql(output);
+	});
 });
