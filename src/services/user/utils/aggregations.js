@@ -266,19 +266,16 @@ const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 const stageSort = (aggregation, sort) => {
 	const mSort = {};
 	for (const k in sort) {
-		if ({}.hasOwnProperty.call(sort, k)) mSort[k] = Number(sort[k]);
-	}
-
-	if (typeof sort === 'object' && {}.hasOwnProperty.call(sort, 'consentStatus')) {
-		mSort.consentSortParam = mSort.consentStatus;
-		delete mSort.consentStatus;
-		stageAddConsentSortParam(aggregation);
-	}
-
-	if (typeof sort === 'object' && {}.hasOwnProperty.call(sort, 'classes')) {
-		mSort['classesSort.gradeLevel'] = mSort.classes;
-		mSort['classesSort.name'] = mSort.classes;
-		delete mSort.classes;
+		if (k === 'searchQuery') {
+			mSort.score = { $meta: 'textScore' };
+		} else if (k === 'consentStatus') {
+			mSort.consentSortParam = Number(sort[k]);
+			stageAddConsentSortParam(aggregation);
+		} else if (k === 'classes') {
+			const order = Number(sort[k]);
+			mSort['classesSort.gradeLevel'] = order;
+			mSort['classesSort.name'] = order;
+		} else if ({}.hasOwnProperty.call(sort, k)) mSort[k] = Number(sort[k]);
 	}
 
 	aggregation.push({
@@ -358,7 +355,7 @@ const stageSearch = (aggregation, searchQuery) => {
  */
 const createMultiDocumentAggregation = ({
 	select,
-	sort,
+	sort = {},
 	limit = 25,
 	skip = 0,
 	consentStatus,
@@ -383,7 +380,10 @@ const createMultiDocumentAggregation = ({
 	const aggregation = [];
 
 	if (searchQuery) {
-		stageSearch(aggregation, searchQuery);
+		// to sort by this value, add 'searchQuery' to sort value
+		match.$text = {
+			$search: searchQuery,
+		};
 	}
 
 	if (match) {

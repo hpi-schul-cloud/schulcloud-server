@@ -94,7 +94,14 @@ class AdminUsers {
 			if (clientQuery.classes) query.classes = clientQuery.classes;
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
-			if (clientQuery.searchQuery) query.searchQuery = clientQuery.searchQuery;
+			if (clientQuery.searchQuery) {
+				query.searchQuery = clientQuery.searchQuery;
+				// recreating sort here, to set searchQuery as first (main) parameter of sorting
+				query.sort = {
+					searchQuery: 1,
+					...query.sort,
+				};
+			}
 
 			const dateQueries = ['createdAt'];
 			for (const dateQuery of dateQueries) {
