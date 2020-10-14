@@ -9,7 +9,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [25.1.1] - 2020-10-12
 
-### Added
+### Security
 
 - SC-7165 package update for sanitization and add onload handler
 
