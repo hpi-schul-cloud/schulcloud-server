@@ -581,6 +581,39 @@ describe('Account Service', () => {
 					done();
 				});
 		});
+
+		it('should not allow external request when the requester and the requested user are not from the same school', async () => {
+			const school = await testObjects.createTestSchool({
+				name: 'testSchool1',
+			});
+			const otherSchool = await testObjects.createTestSchool({
+				name: 'testSchool2',
+			});
+
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
+			const studentAccount = await testObjects.createTestAccount(
+				{ username: student.email, password: student.email },
+				undefined,
+				student
+			);
+
+			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: otherSchool._id });
+			const params = await generateRequestParamsFromUser(user);
+
+			expect(student.schoolId).to.not.equal(user.schoolId);
+
+			try {
+				await accountService.find({ query: { userId: studentAccount.userId } }, params);
+				expect.fail('The previous call should have failed');
+			} catch (err) {
+				expect(err.code).to.equal(403);
+				expect(err.message).to.equal('You are not allowed to request this information');
+			} finally {
+				await accountService.remove(studentAccount._id);
+				await userService.remove(student._id);
+				await userService.remove(user._id);
+			}
+		});
 	});
 
 	describe('testing accounts hooks directly', () => {

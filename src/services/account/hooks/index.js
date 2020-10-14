@@ -304,7 +304,7 @@ const restrictToSameSchool = async (context) => {
 		const { schoolId: requestedUserSchoolId } = await context.app.service('users').get(query.userId);
 
 		if (!equalIds(currentUserSchoolId, requestedUserSchoolId)) {
-			throw new Forbidden('You are not allowed to request this information')
+			throw new Forbidden('You are not allowed to request this information');
 		}
 	}
 	return context;
