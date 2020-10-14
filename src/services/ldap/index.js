@@ -313,9 +313,9 @@ module.exports = function LDAPService() {
 		}
 	}
 
+	app.use('/ldap/api', staticContent(path.join(__dirname, '/docs')));
+
 	app.use('/ldap', new LdapService());
 	const systemService = app.service('/ldap');
 	systemService.hooks(hooks);
-
-	app.use('/ldap/api', staticContent(path.join(__dirname, '/docs')));
 };
