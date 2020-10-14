@@ -483,10 +483,9 @@ class CreateVideoconferenceService {
 }
 
 module.exports = function setup(app) {
+	app.use('/videoconference/api', staticContent(path.join(__dirname, '/docs')));
 	app.use('/videoconference', new CreateVideoconferenceService(app));
 	app.use('/videoconference/:scopeName', new GetVideoconferenceService(app));
 	const videoConferenceServices = [app.service('/videoconference'), app.service('/videoconference/:scopeName')];
 	videoConferenceServices.forEach((service) => service.hooks(videoconferenceHooks));
-
-	app.use('/videoconference/api', staticContent(path.join(__dirname, '/docs')));
 };
