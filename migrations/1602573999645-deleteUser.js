@@ -4,10 +4,10 @@ const { info, error } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
-// use your own name for your model, otherwise other migrations may fail.
+require('../src/services/user/model');
 // The third parameter is the actually relevent one for what collection to write to.
 const User = mongoose.model(
-	'makeMeUnique',
+	'userDeletion',
 	new mongoose.Schema(
 		{
 			firstName: { type: String, required: true },
@@ -17,14 +17,8 @@ const User = mongoose.model(
 			timestamps: true,
 		}
 	),
-	'users'
+	'user'
 );
-
-// How to use more than one schema per collection on mongodb
-// https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
-
-// TODO npm run migration-persist and remove this line
-// TODO update seed data and remove this line
 
 module.exports = {
 	up: async function up() {
@@ -39,12 +33,12 @@ module.exports = {
 				lastName: 'Mathe',
 			},
 			{
-				firstName: 'Max',
+				userDeleted: true,
+				deletionDate: new Date(),
 			}
 		)
 			.lean()
 			.exec();
-		// ////////////////////////////////////////////////////
 		await close();
 	},
 
@@ -58,12 +52,12 @@ module.exports = {
 				lastName: 'Mathe',
 			},
 			{
-				firstName: 'Marla',
+				userDeleted: false,
+				deletionDate: null,
 			}
 		)
 			.lean()
 			.exec();
-		// ////////////////////////////////////////////////////
 		await close();
 	},
 };
