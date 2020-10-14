@@ -60,11 +60,11 @@ class HelpDocumentsService {
 
 module.exports = function news() {
 	const app = this;
+	app.use('/help/api', staticContent(path.join(__dirname, '/docs')));
+
 	const docPath = 'help/documents';
 	app.use(docPath, new HelpDocumentsService());
 	const service = app.service(docPath);
-
-	app.use('/help/api', staticContent(path.join(__dirname, '/docs')));
 
 	service.hooks({
 		before: {
