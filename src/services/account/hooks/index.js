@@ -306,10 +306,11 @@ const restrictToSameSchool = async (context) => {
 		if (!equalIds(currentUserSchoolId, requestedUserSchoolId)) {
 			throw new Forbidden('You are not allowed to request this information');
 		}
-	} else if (!query.userId) {
-		throw new BadRequest('The request query should include an userId');
+
+		return context;
 	}
-	return context;
+
+	throw new BadRequest('The request query should include a valid userId');
 };
 
 module.exports = {
