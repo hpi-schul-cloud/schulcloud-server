@@ -172,4 +172,14 @@ describe('[utils] sanitizeDeep', () => {
 		};
 		expect(sanitizeDeep(input)).to.eql(output);
 	});
+
+	it('controlslist should not sanitize ', () => {
+		const input = {
+			key: ' controlslist="do stuff"',
+		};
+		const output = {
+			key: ' controlslist="do stuff"',
+		};
+		expect(sanitizeDeep(input)).to.eql(output);
+	});
 });

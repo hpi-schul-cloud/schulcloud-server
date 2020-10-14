@@ -107,7 +107,7 @@ const normalize = (data) => {
  * @example onload, onreload, onmouseover and so on
  */
 const replaceOnload = (str) => {
-	return str.replace(/(on)(.*)=/gi, '$1 $2 = ');
+	return str.replace(/ (on)(.*)=/gi, ' $1 $2 = ');
 };
 
 /**
