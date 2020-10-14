@@ -59,8 +59,8 @@ class Service {
 module.exports = function () {
 	const app = this;
 
-	app.use('/me', new Service());
 	app.use('/me/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/me', new Service());
 
 	const me = app.service('/me');
 	me.hooks(hooks);
