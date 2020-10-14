@@ -22,6 +22,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Removed
 
+- SC-6586- Remove parents from users collection to improve maintainability
+
 ### Changed
 
 - SC-6567 - clean up error pipline
