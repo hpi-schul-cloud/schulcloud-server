@@ -582,7 +582,7 @@ describe('Account Service', () => {
 				});
 		});
 
-		it('should not allow external request when the requester and the requested user are not from the same school', async () => {
+		it.only('should not allow external request when the requester and the requested user are not from the same school', async () => {
 			const school = await testObjects.createTestSchool({
 				name: 'testSchool1',
 			});
@@ -608,10 +608,6 @@ describe('Account Service', () => {
 			} catch (err) {
 				expect(err.code).to.equal(403);
 				expect(err.message).to.equal('You are not allowed to request this information');
-			} finally {
-				await accountService.remove(studentAccount._id);
-				await userService.remove(student._id);
-				await userService.remove(user._id);
 			}
 		});
 	});
