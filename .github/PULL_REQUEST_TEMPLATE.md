@@ -15,7 +15,7 @@
 ## Links to Tickets or other pull requests
 <!--
 Base links to copy
-- https://github.com/schul-cloud/schulcloud-client/pull/????
+- https://github.com/hpi-schul-cloud/schulcloud-client/pull/????
 - https://ticketsystem.hpi-schul-cloud.org/browse/SC-????
 -->
 
