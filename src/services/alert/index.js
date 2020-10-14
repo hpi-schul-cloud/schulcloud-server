@@ -24,10 +24,10 @@ class AlertService {
 module.exports = function alert() {
 	const app = this;
 
+	app.use('/alert/api', staticContent(path.join(__dirname, '/docs')));
+
 	app.use('/alert', new AlertService());
 	const service = app.service('/alert');
-
-	app.use('/alert/api', staticContent(path.join(__dirname, '/docs')));
 
 	service.hooks({
 		before: {

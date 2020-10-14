@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-7049 - Added unit tests for Merlin Service
 - SC-7157 - add feature flag for Merlin feature with fallback
 - SC-6567 - add new application errros
 - SC-6766 - Added ESLint rules with Promise rules
@@ -31,6 +32,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 - fixed README badges
+- SC-6151 fixed a bug that prevented api docu from being accessible
 
 ## [25.1.0] - 2020-10-12
 
