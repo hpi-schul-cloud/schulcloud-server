@@ -282,11 +282,11 @@ class Service {
 module.exports = function () {
 	const app = this;
 
+	app.use('/calendar/api', staticContent(path.join(__dirname, '/docs')));
+
 	app.use('/calendar', new Service());
 	const contentService = app.service('/calendar');
 	contentService.hooks(hooks);
-
-	app.use('/calendar/api', staticContent(path.join(__dirname, '/docs')));
 };
 
 module.exports.Service = Service;

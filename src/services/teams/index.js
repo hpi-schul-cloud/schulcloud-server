@@ -467,6 +467,8 @@ module.exports = function setup() {
 		lean: { virtuals: true },
 	};
 
+	app.use('/teams/api', staticContent(path.join(__dirname, '/docs')));
+
 	app.use('/teams', service(options));
 	app.use('/teams/extern/get', new Get());
 	app.use('/teams/extern/add', new Add());
@@ -480,8 +482,6 @@ module.exports = function setup() {
 		accept: app.service('/teams/extern/accept'),
 		remove: app.service('/teams/extern/remove'),
 	};
-
-	app.use('/teams/api', staticContent(path.join(__dirname, '/docs')));
 
 	teamsServices.hooks({
 		before: hooks.before,

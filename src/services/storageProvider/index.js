@@ -15,8 +15,8 @@ module.exports = (app) => {
 		lean: true,
 	};
 
-	app.use('/storageProvider', service(options));
 	app.use('/storageProvider/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/storageProvider', service(options));
 
 	const storageProviderService = app.service('/storageProvider');
 	storageProviderService.hooks(hooks);
