@@ -178,7 +178,6 @@ class AdminUsers {
 		);
 		await this.markUserAsDeleted(email, _id);
 
-
 		if (users.length === 0) throw new BadRequest('user could not be edit');
 
 		return users[0];
@@ -258,7 +257,7 @@ class AdminUsers {
 			await this.app.service('accountModel').patch(null, {
 				query: {
 					userDeleted: true,
-					deletionDate: new Date()
+					deletionDate: new Date(),
 				},
 			});
 			return `User ${userId} Marked to deletion`;

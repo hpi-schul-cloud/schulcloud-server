@@ -23,7 +23,6 @@ const User = mongoose.model(
 module.exports = {
 	up: async function up() {
 		await connect();
-		// ////////////////////////////////////////////////////
 		// Make changes to the database here.
 		// Hint: Access models via this('modelName'), not an imported model to have
 		// access to the correct database connection. Otherwise Mongoose calls never return.
@@ -39,16 +38,18 @@ module.exports = {
 		)
 			.lean()
 			.exec();
+
+		// after one week
+		await User.collection.createIndex({ modified: 1 }, { expireAfterSeconds: 604800 });
 		await close();
 	},
 
 	down: async function down() {
 		await connect();
-		// ////////////////////////////////////////////////////
 		// Implement the necessary steps to roll back the migration here.
 		await User.findOneAndUpdate(
 			{
-				firstName: 'Max',
+				firstName: 'Marla',
 				lastName: 'Mathe',
 			},
 			{
@@ -58,6 +59,7 @@ module.exports = {
 		)
 			.lean()
 			.exec();
+		await User.collection.dropIndex({ modified: -1 }, { expireAfterSeconds: -1 });
 		await close();
 	},
 };
