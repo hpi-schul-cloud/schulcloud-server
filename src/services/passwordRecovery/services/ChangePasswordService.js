@@ -1,6 +1,6 @@
 const { BadRequest, GeneralError } = require('@feathersjs/errors');
 const local = require('@feathersjs/authentication-local');
-const { SilentError } = require('../../../middleware/errors');
+const { SilentError } = require('../../../common/error/errors');
 const logger = require('../../../logger/index');
 const globalHooks = require('../../../hooks');
 

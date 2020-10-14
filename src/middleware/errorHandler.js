@@ -1,12 +1,13 @@
 const Sentry = require('@sentry/node');
-const express = require('@feathersjs/express');
 const { Configuration } = require('@schul-cloud/commons');
 const jwt = require('jsonwebtoken');
 
 const { requestError } = require('../logger/systemLogger');
 const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 const logger = require('../logger');
-const { SilentError } = require('./errors');
+const { SilentError, ValidationError, DocumentNotFound, InternalServerError } = require('../common/error/errors');
+const { isApplicationError, isFeathersError } = require('../common/error/errorUtils');
+
 
 const MAX_LEVEL_FILTER = 12;
 
@@ -46,11 +47,32 @@ const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
 	next(error);
 };
 
-const returnAsJson = express.errorHandler({
-	html: (error, req, res) => {
-		res.json(error);
-	},
-});
+const getErrorResponse = (error, req, res, next) => {
+	let status = 500;
+	let errorDetail;
+	if (isApplicationError(error)) { // Application Errors
+		const { message: type, title, defaultMessage: detail } = error;
+		if (error instanceof ValidationError) {
+			status = 400;
+		} else if (error instanceof DocumentNotFound) {
+			status = 404;
+		}
+		errorDetail = { type, title, detail };
+	} else if (isFeathersError(error)) { // Framework Errors
+		const { code, className: type, name: title, message: detail } = error;
+		status = code;
+		errorDetail = { type, title, detail };
+	} else { // Unhandled Errors
+		const unhandledError = new InternalServerError(error);
+		const { message: type, title, defaultMessage: detail } = unhandledError;
+		errorDetail = { type, title, detail };
+	}
+
+	const { type, title, detail } = errorDetail;
+	res.status(status).json({
+		status, type, title, detail,
+	});
+};
 
 // map to lower case and test as lower case
 const secretDataKeys = (() => [
@@ -161,7 +183,7 @@ const errorHandler = (app) => {
 	app.use(Sentry.Handlers.errorHandler());
 	app.use(handleSilentError);
 	app.use(formatAndLogErrors(NODE_ENV !== ENVIRONMENTS.TEST));
-	app.use(returnAsJson);
+	app.use(getErrorResponse);
 };
 
 module.exports = errorHandler;

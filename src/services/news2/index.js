@@ -8,6 +8,5 @@ module.exports = function news2() {
 
 	setupNewsRepo(app);
 	setupNewsUc(app);
-	// setupNewsFacade(app);
 	setupNewsSerivce(app);
 };

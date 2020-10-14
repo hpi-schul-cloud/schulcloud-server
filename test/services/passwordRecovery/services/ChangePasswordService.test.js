@@ -2,7 +2,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const sinon = require('sinon');
 
-const { SilentError } = require('../../../../src/middleware/errors');
+const { SilentError } = require('../../../../src/common/error/errors');
 const passwordRecovery = require('../../../../src/services/passwordRecovery/model');
 const { ChangePasswordService } = require('../../../../src/services/passwordRecovery/services/ChangePasswordService');
 

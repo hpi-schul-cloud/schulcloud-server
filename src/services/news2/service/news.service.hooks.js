@@ -19,8 +19,6 @@ const preparePagination = (context) => {
 
 exports.before = {
 	all: [
-		authenticate('jwt'),
-		lookupSchool,
 	],
 	find: [
 		preparePagination,

@@ -1,4 +1,6 @@
 const { newsPermissions } = require('../repo/db/news.schema');
+const { ValidationError } = require('../../../common/error/errors');
+const { INVALID_NEWS_SOURCE } = require('../newsErrors');
 
 module.exports = class NewsUc {
 	setup(app) {
@@ -88,6 +90,8 @@ module.exports = class NewsUc {
 	}
 
 	async findNews(searchParams, account) {
+		//throw new ValidationError(INVALID_NEWS_SOURCE);
+
 		const permission = searchParams.unpublished ? newsPermissions.EDIT : newsPermissions.VIEW;
 		const scopeParams = await this.scopeUc.buildScopeParams(searchParams, account, permission);
 
