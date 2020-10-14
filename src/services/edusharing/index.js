@@ -32,11 +32,10 @@ module.exports = (app) => {
 	merlinService.hooks(merlinHooks);
 
 	const eduRoute = '/edu-sharing';
+	app.use(`${eduRoute}/api`, staticContent(path.join(__dirname, '/docs')));
 	app.use(eduRoute, new EduSearch(), (req, res) => {
 		res.send(res.data);
 	});
 	const eduService = app.service(eduRoute);
 	eduService.hooks(hooks);
-
-	app.use(`${eduRoute}/api`, staticContent(path.join(__dirname, '/docs')));
 };

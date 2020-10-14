@@ -461,9 +461,9 @@ module.exports = function news() {
 	const newsService = new NewsService();
 	newsService.docs = newsDocs;
 	// use /news to access a user's news
+	app.use('/news/api', staticContent(path.join(__dirname, '/docs')));
 	app.use('/news', newsService);
 	app.service('news').hooks(hooks);
-	app.use('/news/api', staticContent(path.join(__dirname, '/docs')));
 
 	// use /newsModel to directly access the model from other services
 	// (external requests are blocked)
