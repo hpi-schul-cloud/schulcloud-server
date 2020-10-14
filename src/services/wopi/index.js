@@ -219,9 +219,9 @@ class WopiFilesContentsService {
 module.exports = function setup() {
 	const app = this;
 
+	app.use('/wopi/api', staticContent(path.join(__dirname, '/docs')));
 	app.use(`${wopiPrefix}:fileId/contents`, new WopiFilesContentsService(app), handleResponseHeaders);
 	app.use(`${wopiPrefix}:fileId`, new WopiFilesInfoService(app), handleResponseHeaders);
-	app.use('/wopi/api', staticContent(path.join(__dirname, '/docs')));
 
 	const filesService = app.service(`${wopiPrefix}:fileId`);
 	const filesContentService = app.service(`${wopiPrefix}:fileId/contents`);

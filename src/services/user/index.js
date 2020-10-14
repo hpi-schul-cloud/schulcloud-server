@@ -27,6 +27,7 @@ const { registerApiValidation } = reqlib('src/utils/apiValidation');
 
 module.exports = (app) => {
 	registerApiValidation(app, path.join(__dirname, '/docs/adminusers.openapi.yaml'));
+	app.use('/users/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('usersModel', UsersModelService.userModelService);
 	app.service('usersModel').hooks(UsersModelService.userModelHooks);
@@ -127,6 +128,4 @@ module.exports = (app) => {
 	app.service('/users/skipregistration').hooks(skipRegistrationBulkHooks);
 
 	app.use('/registrationSchool', new RegistrationSchoolService());
-
-	app.use('/users/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 };
