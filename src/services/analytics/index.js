@@ -60,11 +60,11 @@ class Service {
 module.exports = function () {
 	const app = this;
 
+	app.use('/analytics/api', staticContent(path.join(__dirname, '/docs')));
+
 	app.use('/analytics', new Service());
 	const contentService = app.service('/analytics');
 	contentService.hooks(hooks);
-
-	app.use('/analytics/api', staticContent(path.join(__dirname, '/docs')));
 };
 
 module.exports.Service = Service;
