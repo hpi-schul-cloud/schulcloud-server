@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const reqlib = require('app-root-path').require;
 
-const { Forbidden, GeneralError } = reqlib('src/errors');
+const { Forbidden, GeneralError, NotFound } = reqlib('src/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const logger = require('../../../logger');
 
@@ -238,6 +238,38 @@ const hasPatchPermission = (hook) => {
 		});
 };
 
+const hasCreatePermission = async (context) => {
+	const { data } = context;
+	const { userId } = context.params.account;
+	const { schoolId, roles } = await context.app.service('users').get(userId, { query: { $populate: 'roles' } });
+	const isStudent = roles.find((r) => r.name === 'student');
+	data.schoolId = schoolId;
+	data.teacherId = userId;
+
+	if (isStudent) {
+		data.private = true;
+		delete data.lessonId;
+		delete data.courseId;
+	}
+
+	if (data.courseId) {
+		const course = await context.app.service('courses').get(data.courseId);
+		const userInCourse =
+			course.userIds.some((id) => equalIds(id, userId)) ||
+			course.teacherIds.some((id) => equalIds(id, userId)) ||
+			course.substitutionIds.some((id) => equalIds(id, userId));
+		if (!userInCourse) throw new NotFound('course not found');
+	}
+
+	if (data.lessonId) {
+		const lesson = context.app.service('lessons').get(data.lessonId);
+		if (!(data.courseId && equalIds(lesson.courseId, data.courseId))) {
+			throw new NotFound('lesson not found. did you forget to pass the correct course?');
+		}
+	}
+	context.data = data;
+};
+
 exports.before = () => ({
 	all: [authenticate('jwt')],
 	find: [
@@ -249,7 +281,7 @@ exports.before = () => ({
 		globalHooks.addCollation,
 	],
 	get: [iff(isProvider('external'), [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore])],
-	create: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_CREATE'))],
+	create: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_CREATE'), hasCreatePermission)],
 	update: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_EDIT'))],
 	patch: [
 		iff(isProvider('external'), [
