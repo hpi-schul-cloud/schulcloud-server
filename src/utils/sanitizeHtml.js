@@ -101,8 +101,13 @@ const normalize = (data) => {
 	return data;
 };
 
-const replaceOnload = (data) => {
-	return data.replace('onload', 'onload ').replace('onreload', 'onreload ');
+/**
+ * Should split for example "onload=" to on "load =", "ONLOAD=" should also split
+ * @param {String} str The string that should validate.
+ * @example onload, onreload, onmouseover and so on
+ */
+const replaceOnload = (str) => {
+	return str.replace(/on(.*)=/g, 'on $1 =');
 };
 
 /**
