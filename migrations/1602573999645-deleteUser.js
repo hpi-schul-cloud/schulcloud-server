@@ -32,7 +32,6 @@ module.exports = {
 				lastName: 'Mathe',
 			},
 			{
-				userDeleted: true,
 				deletionDate: new Date(),
 			}
 		)
@@ -53,7 +52,6 @@ module.exports = {
 				lastName: 'Mathe',
 			},
 			{
-				userDeleted: false,
 				deletionDate: null,
 			}
 		)

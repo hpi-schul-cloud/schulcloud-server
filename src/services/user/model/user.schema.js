@@ -38,7 +38,6 @@ const userSchema = new Schema(
 		nameSuffix: { type: String },
 		forcePasswordChange: { type: Boolean, default: false },
 
-		userDeleted: { type: Boolean },
 		deletionDate: { type: Date },
 
 		birthday: { type: Date },

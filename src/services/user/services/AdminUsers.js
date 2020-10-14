@@ -2,18 +2,16 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-underscore-dangle */
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { disallow } = require('feathers-hooks-common');
-const { iff, isProvider } = require('feathers-hooks-common');
+const { disallow, iff, isProvider } = require('feathers-hooks-common');
 const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
 const { Forbidden, BadRequest, GeneralError } = reqlib('src/errors');
-const { isSuperHero } = require('../../../hooks');
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
-const { hasSchoolPermission, blockDisposableEmail } = require('../../../hooks');
+const { hasSchoolPermission, blockDisposableEmail, isSuperHero } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { validateParams, parseRequestQuery } = require('../hooks/adminUsers.hooks');
 const { sendRegistrationLink } = require('../hooks/userService');
@@ -176,7 +174,6 @@ class AdminUsers {
 		const users = await this.prepareRoleback(email, _id, () =>
 			this.app.service('usersModel').patch(null, _data, params)
 		);
-		await this.markUserAsDeleted(email, _id);
 
 		if (users.length === 0) throw new BadRequest('user could not be edit');
 
@@ -252,11 +249,10 @@ class AdminUsers {
 		}
 	}
 
-	async markUserAsDeleted(email, userId) {
-		if (email && userId) {
-			await this.app.service('accountModel').patch(null, {
+	async markUserAsDeleted(userId) {
+		if (userId) {
+			await this.app.service('users').remove(null, {
 				query: {
-					userDeleted: true,
 					deletionDate: new Date(),
 				},
 			});
@@ -303,6 +299,7 @@ class AdminUsers {
 		if (usersIds.some((user) => !equalIds(currentUser.schoolId, user.schoolId))) {
 			throw new Forbidden('You cannot remove users from other schools.');
 		}
+		await this.markUserAsDeleted(id);
 
 		await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
 		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
@@ -332,9 +329,9 @@ const markUserAsDeletedHooks = () => ({
 		find: [disallow()],
 		get: [disallow()],
 		create: [disallow()],
-		update: [authenticate('jwt'), iff(isProvider('external'), isSuperHero())],
+		update: [disallow()],
 		patch: [disallow()],
-		remove: [disallow()],
+		remove: [iff(isProvider('external'), isSuperHero())],
 	},
 });
 
