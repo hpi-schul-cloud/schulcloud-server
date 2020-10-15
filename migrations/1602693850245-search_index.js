@@ -48,7 +48,7 @@ module.exports = {
 		await connect();
 
 		const amount = await User.countDocuments();
-		info(`${amount} consent will be moved`);
+		info(`${amount} users will be udated`);
 		const limit = 500;
 		let skip = 0;
 		let looped = 0;
@@ -66,7 +66,6 @@ module.exports = {
 				})
 				.skip(skip)
 				.limit(limit)
-				.lean()
 				.exec();
 			looped += users.length;
 			skip = looped;
@@ -96,17 +95,18 @@ module.exports = {
 		await connect();
 		// ////////////////////////////////////////////////////
 		// Implement the necessary steps to roll back the migration here.
-		await User.findOneAndUpdate(
+		User.update(
 			{
-				firstName: 'Max',
-				lastName: 'Mathe',
+				searchIndexes: {
+					$exist: true,
+				},
 			},
 			{
-				firstName: 'Marla',
+				$unset: {
+					searchIndexes: 1,
+				},
 			}
-		)
-			.lean()
-			.exec();
+		);
 		// ////////////////////////////////////////////////////
 		await close();
 	},
