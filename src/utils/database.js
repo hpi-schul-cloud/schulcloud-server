@@ -66,13 +66,10 @@ function getConnectionOptions() {
 const splitForSearchIndexes = (...searchTexts) => {
 	const arr = [];
 	searchTexts.forEach((item) => {
-		item
-			.split(' ')
-			.filter((text) => text !== '')
-			.forEach((it) => {
-				// eslint-disable-next-line no-plusplus
-				for (let i = 0; i < it.length - 2; i++) arr.push(it.slice(i, i + 3));
-			});
+		item.split(' ').forEach((it) => {
+			// eslint-disable-next-line no-plusplus
+			for (let i = 0; i < it.length - 2; i++) arr.push(it.slice(i, i + 3));
+		});
 	});
 	return arr;
 };

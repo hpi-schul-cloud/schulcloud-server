@@ -10,6 +10,7 @@ const reqlib = require('app-root-path').require;
 const { Forbidden, BadRequest, GeneralError } = reqlib('src/errors');
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
+const { splitForSearchIndexes } = require('../../../utils/database');
 const { hasSchoolPermission, blockDisposableEmail } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { validateParams, parseRequestQuery } = require('../hooks/adminUsers.hooks');
@@ -95,7 +96,7 @@ class AdminUsers {
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 			if (clientQuery.searchQuery) {
-				query.searchQuery = clientQuery.searchQuery;
+				query.searchQuery = splitForSearchIndexes(clientQuery.searchQuery).join(' ');
 				// recreating sort here, to set searchQuery as first (main) parameter of sorting
 				query.sort = {
 					searchQuery: 1,
