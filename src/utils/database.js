@@ -59,6 +59,9 @@ function getConnectionOptions() {
 
 /**
  * Splitting the inputs into 3 letters for search indexing.
+ * + first letter
+ * + first two letters combination
+ * to increase the quality
  *
  * @param {*} string
  * @returns [Array]
