@@ -207,6 +207,28 @@ describe('skipRegistration service', () => {
 		expect(user.importHash).to.equal(undefined);
 	});
 
+	it('keeps importHash if parent consent not given', async () => {
+		let user = await testObjects.createTestUser({
+			roles: ['student'],
+		});
+		user = await app.service('users').patch(user._id, { importHash: 'someHash' });
+		await skipRegistrationService.create(
+			{
+				parent_privacyConsent: false,
+				parent_termsOfUseConsent: false,
+				privacyConsent: true,
+				termsOfUseConsent: true,
+				birthday: '2014-12-19T00:00:00Z',
+				password: 'password1',
+			},
+			{ route: { userId: user._id } }
+		);
+		user = await app.service('users').get(user._id);
+		expect(user).to.not.equal(undefined);
+
+		expect(user.importHash).to.equal('someHash');
+	});
+
 	it('accepts multiple users at once', async () => {
 		let [firstStudent, secondStudent] = await Promise.all([
 			testObjects.createTestUser({ roles: ['student'] }),
