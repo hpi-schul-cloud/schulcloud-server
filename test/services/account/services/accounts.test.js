@@ -625,7 +625,7 @@ describe('Account Service', () => {
 			expect(student.schoolId.toString()).to.equal(user.schoolId.toString());
 
 			const requestedAccount = await accountService.find({ ...params, query: { userId: studentAccount.userId } });
-			expect(requestedAccount).to.not.have.lengthOf(0);
+			expect(requestedAccount[0].username).to.equal(student.email);
 		});
 
 		it('should not allow request when a userId is not included in the query', async () => {
@@ -675,7 +675,7 @@ describe('Account Service', () => {
 			expect(student.schoolId).to.not.equal(user.schoolId);
 
 			const requestedAccount = await accountService.find({ ...params, query: { userId: studentAccount.userId } });
-			expect(requestedAccount).to.not.have.lengthOf(0);
+			expect(requestedAccount[0].username).to.equal(student.email);
 		});
 	});
 
