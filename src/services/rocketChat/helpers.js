@@ -1,10 +1,5 @@
-const {
-	REQUEST_TIMEOUT,
-	ROCKET_CHAT_URI,
-	ROCKET_CHAT_ADMIN_TOKEN,
-	ROCKET_CHAT_ADMIN_ID,
-} = require('../../../config/globals');
-
+const { Configuration } = require('@schul-cloud/commons');
+const { ROCKET_CHAT_URI, ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID } = require('../../../config/globals');
 /**
  * create a valid options object to call a rocketChat request.
  * @param {String} shortUri Uri of the Rocket.Chat endpoint. Example: '/api/v1/users.register'
@@ -33,7 +28,7 @@ exports.getRequestOptions = (shortUri, body, asAdmin, auth, method) => {
 		body,
 		headers,
 		json: true,
-		timeout: REQUEST_TIMEOUT,
+		timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 	};
 };
 

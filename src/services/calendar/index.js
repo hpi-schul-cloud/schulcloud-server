@@ -1,9 +1,8 @@
 const request = require('request-promise-native');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-
+const { Configuration } = require('@schul-cloud/commons');
 const hooks = require('./hooks');
-const { REQUEST_TIMEOUT } = require('../../../config/globals');
 
 function toQueryString(paramsObject) {
 	return Object.keys(paramsObject)
@@ -186,7 +185,7 @@ class Service {
 			},
 			body: convertEventToJsonApi(data),
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 
 		return request(options).then((events) => {
@@ -212,7 +211,7 @@ class Service {
 				Authorization: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 
 		return request(options).then((events) => {
@@ -242,7 +241,7 @@ class Service {
 			},
 			json: true,
 			method: 'DELETE',
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 			body: { data: [{ type: 'event' }] },
 		};
 
@@ -265,7 +264,7 @@ class Service {
 			},
 			body: convertEventToJsonApi(data),
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 
 		return request(options).then((events) => {

@@ -1,4 +1,3 @@
-const REQUEST_TIMEOUT = 8000; // ms
 const request = require('request-promise-native');
 const { Configuration } = require('@schul-cloud/commons');
 const reqlib = require('app-root-path').require;
@@ -85,7 +84,7 @@ class EduSharingConnector {
 			)}&client_secret=${Configuration.get('ES_OAUTH_SECRET')}&username=${Configuration.get(
 				'ES_USER'
 			)}&password=${Configuration.get('ES_PASSWORD')}`,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 		try {
 			const result = await request(oauthoptions);
@@ -191,7 +190,7 @@ class EduSharingConnector {
 				...EduSharingConnector.headers,
 				cookie: this.authorization,
 			},
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 
 		const eduResponse = await this.requestRepeater(options);
@@ -243,7 +242,7 @@ class EduSharingConnector {
 				criterias: [{ property: 'ngsearchword', values: [`${searchQuery.toLowerCase()}`] }],
 				facettes: ['cclom:general_keyword'],
 			}),
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 
 		const parsed = await this.requestRepeater(options);

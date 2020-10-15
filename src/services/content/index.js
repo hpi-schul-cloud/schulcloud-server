@@ -1,5 +1,7 @@
+/* eslint-disable max-classes-per-file */
 const request = require('request-promise-native');
 const service = require('feathers-mongoose');
+const { Configuration } = require('@schul-cloud/commons');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 const material = require('./material-model');
@@ -8,8 +10,6 @@ const resourcesHooks = require('./hooks/resources');
 const redirectHooks = require('./hooks/redirect');
 const searchHooks = require('./hooks/search');
 const materialsHooks = require('./hooks/materials');
-
-const { REQUEST_TIMEOUT } = require('../../../config/globals');
 
 class ResourcesService {
 	constructor(options) {
@@ -22,7 +22,7 @@ class ResourcesService {
 			uri: `${serviceUrls.content}/resources/`,
 			qs: params.query,
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 		return request(options).then((message) => message);
 	}
@@ -32,7 +32,7 @@ class ResourcesService {
 		const options = {
 			uri: `${serviceUrls.content}/resources/${id}`,
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 		return request(options).then((message) => message);
 	}
@@ -53,7 +53,7 @@ class SearchService {
 			uri: `${serviceUrls.content}/search/`,
 			qs: params.query,
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 		return request(options).then((message) => message);
 	}
@@ -73,7 +73,7 @@ class RedirectService {
 		const options = {
 			uri: `${serviceUrls.content}/resources/${id}`,
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 		return request(options).then((resource) => {
 			// Increase Click Counter
