@@ -1,11 +1,7 @@
 const mongoose = require('mongoose');
-// eslint-disable-next-line no-unused-vars
-const { info, error } = require('../src/logger');
-
 const { connect, close } = require('../src/utils/database');
-
 require('../src/services/user/model');
-// The third parameter is the actually relevent one for what collection to write to.
+
 const User = mongoose.model(
 	'userDeletion',
 	new mongoose.Schema(
@@ -32,14 +28,15 @@ module.exports = {
 				lastName: 'Mathe',
 			},
 			{
-				deletionDate: new Date(),
+				createdAt: {
+					default: new Date(),
+					// after one week
+					expireAfterSeconds: 604800,
+				},
 			}
 		)
 			.lean()
 			.exec();
-
-		// after one week
-		await User.collection.createIndex({ modified: 1 }, { expireAfterSeconds: 604800 });
 		await close();
 	},
 
@@ -51,13 +48,11 @@ module.exports = {
 				firstName: 'Marla',
 				lastName: 'Mathe',
 			},
-			{
-				deletionDate: null,
-			}
+			{}
 		)
 			.lean()
 			.exec();
-		await User.collection.dropIndex({ modified: -1 }, { expireAfterSeconds: -1 });
+		await User.collection.dropIndex('createdAt')
 		await close();
 	},
 };
