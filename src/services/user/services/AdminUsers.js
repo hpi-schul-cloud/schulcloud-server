@@ -96,8 +96,10 @@ class AdminUsers {
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 			if (clientQuery.searchQuery) {
-				query.searchQuery = splitForSearchIndexes(clientQuery.searchQuery).join(' ');
+				const seachQueryElements = splitForSearchIndexes(clientQuery.searchQuery);
+				query.searchQuery = seachQueryElements.join(' ');
 				// recreating sort here, to set searchQuery as first (main) parameter of sorting
+				query.searchFilterGate = seachQueryElements.length * 0.8;
 				query.sort = {
 					searchQuery: 1,
 					...query.sort,

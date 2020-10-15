@@ -26,13 +26,14 @@ const User = mongoose.model(
 const splitForSearchIndexes = (...searchTexts) => {
 	const arr = [];
 	searchTexts.forEach((item) => {
-		item
-			.split(' ')
-			.filter((text) => text !== '')
-			.forEach((it) => {
-				// eslint-disable-next-line no-plusplus
-				for (let i = 0; i < it.length - 2; i++) arr.push(it.slice(i, i + 3));
-			});
+		item.split(' ').forEach((it) => {
+			// eslint-disable-next-line no-plusplus
+			if (it.length === 0) return;
+
+			arr.push(it.slice(0, 1));
+			if (it.length > 1) arr.push(it.slice(0, 2));
+			for (let i = 0; i < it.length - 2; i += 1) arr.push(it.slice(i, i + 3));
+		});
 	});
 	return arr;
 };

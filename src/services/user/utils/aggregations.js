@@ -338,13 +338,14 @@ const stageFormatWithTotal = (aggregation, limit, skip) => {
 };
 
 /**
- * Search the users by firstName, lastName, email, "firstName + lastName" or "lastName + firstName"
+ * require a amount of quality which reduce the result
  *
  * @param {Array} aggregation
- * @param {String} searchQuery
+ * @param {Number} amount
  */
-const stageSearch = (aggregation, searchQuery) => {
-	aggregation.push({ $match: { $text: { $search: searchQuery } } }, { $sort: { score: { $meta: 'textScore' } } });
+const stageFilterSearch = (aggregation, amount) => {
+	aggregation.push({ $addFields: { score: { $meta: 'textScore' } } });
+	aggregation.push({ $match: { score: { $gte: amount } } });
 };
 
 /**
@@ -362,6 +363,7 @@ const createMultiDocumentAggregation = ({
 	classes,
 	schoolYearId,
 	searchQuery,
+	searchFilterGate,
 	...match
 }) => {
 	// eslint-disable-next-line no-param-reassign
@@ -390,6 +392,10 @@ const createMultiDocumentAggregation = ({
 		aggregation.push({
 			$match: match,
 		});
+	}
+
+	if (searchQuery && searchFilterGate) {
+		stageFilterSearch(aggregation, searchFilterGate);
 	}
 
 	if (select) {
