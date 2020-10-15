@@ -356,7 +356,7 @@ const stageFilterSearch = (aggregation, amount) => {
  */
 const createMultiDocumentAggregation = ({
 	select,
-	sort = {},
+	sort,
 	limit = 25,
 	skip = 0,
 	consentStatus,
