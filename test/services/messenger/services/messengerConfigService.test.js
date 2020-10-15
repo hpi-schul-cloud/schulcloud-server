@@ -2,21 +2,21 @@ const { expect } = require('chai');
 const commons = require('@schul-cloud/commons');
 
 const { Configuration } = commons;
-const appPromise = require('../../../../src/app');
 
 describe('MessengerConfigService', function test() {
-	this.timeout(10000);
+	this.timeout(30000);
 	let configBefore;
 	let app;
 	let server;
-	let testObjects;
 	let schoolServiceListeners;
+	let testObjects;
 
 	before(async () => {
 		configBefore = Configuration.toObject(); // deep copy current config
 		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 		Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
-		app = await appPromise;
+		// eslint-disable-next-line global-require
+		app = await require('../../../../src/app');
 		// eslint-disable-next-line global-require
 		testObjects = require('../../helpers/testObjects')(app);
 		server = await app.listen(0);
