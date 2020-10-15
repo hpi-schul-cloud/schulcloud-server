@@ -31,7 +31,7 @@ describe('MessengerConfigService', function test() {
 		await server.close();
 	});
 
-	it('administrator can get messenger config', async () => {
+	it('administrators can get messenger config', async () => {
 		const school = await testObjects.createTestSchool({ features: ['messenger'] });
 		const adminUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
 
@@ -43,7 +43,7 @@ describe('MessengerConfigService', function test() {
 		expect(result.messengerSchoolRoom).to.be.false;
 	});
 
-	it('administrator can activate messenger', async () => {
+	it('administrators can activate messenger', async () => {
 		const school = await testObjects.createTestSchool();
 		const adminUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
 
@@ -55,7 +55,7 @@ describe('MessengerConfigService', function test() {
 		expect(result.messengerSchoolRoom).to.be.false;
 	});
 
-	it('administrator can deactivate messenger', async () => {
+	it('administrators can deactivate messenger', async () => {
 		const school = await testObjects.createTestSchool({ features: ['messenger'] });
 		const adminUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
 
@@ -67,7 +67,7 @@ describe('MessengerConfigService', function test() {
 		expect(result.messengerSchoolRoom).to.be.false;
 	});
 
-	it('administrator can patch messenger with same values', async () => {
+	it('administrators can patch messenger with same values', async () => {
 		const school = await testObjects.createTestSchool({ features: ['messenger'] });
 		const adminUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
 
@@ -79,7 +79,7 @@ describe('MessengerConfigService', function test() {
 		expect(result.messengerSchoolRoom).to.be.false;
 	});
 
-	it('administrator can activate messenger with options', async () => {
+	it('administrators can activate messenger with options', async () => {
 		const school = await testObjects.createTestSchool();
 		const adminUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
 
@@ -93,7 +93,7 @@ describe('MessengerConfigService', function test() {
 		expect(result.messengerSchoolRoom).to.be.true;
 	});
 
-	it('administrator can activate and deactivate messenger options simultaneous', async () => {
+	it('administrators can activate and deactivate messenger options simultaneous', async () => {
 		const school = await testObjects.createTestSchool({ features: ['messengerSchoolRoom'] });
 		const adminUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
 
@@ -109,9 +109,9 @@ describe('MessengerConfigService', function test() {
 
 	it('students can not activate messenger', async () => {
 		const school = await testObjects.createTestSchool();
-		const adminUser = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
+		const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
 
-		const params = await testObjects.generateRequestParamsFromUser(adminUser);
+		const params = await testObjects.generateRequestParamsFromUser(student);
 		params.route = { schoolId: school._id.toString() };
 
 		try {
@@ -123,7 +123,7 @@ describe('MessengerConfigService', function test() {
 		}
 	});
 
-	it('administrator from other schools can not activate messenger', async () => {
+	it('administrators from other schools can not activate messenger', async () => {
 		const school = await testObjects.createTestSchool();
 		const otherSchool = await testObjects.createTestSchool();
 		const adminUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId: otherSchool._id });
