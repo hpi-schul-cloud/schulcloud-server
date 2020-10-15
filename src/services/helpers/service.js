@@ -1,6 +1,10 @@
 const request = require('request-promise-native');
 const { GeneralError, MethodNotAllowed } = require('@feathersjs/errors');
 const logger = require('../../logger');
+const { Configuration } = require('@schul-cloud/commons');
+
+const FORCE_SEND_EMAIL = Configuration.get('FORCE_SEND_EMAIL');
+const notificationPlatform = Configuration.get('NOTIFICATION_PLATFORM');
 
 const { REQUEST_TIMEOUT, SMTP_SENDER, NODE_ENV, ENVIRONMENTS } = require('../../../config/globals');
 
@@ -24,8 +28,8 @@ module.exports = function setup(app) {
 
 		// POST
 		async create(data, params) {
-			const FORCE_SEND_EMAIL = app.get('FORCE_SEND_EMAIL');
-			const notificationPlatform = app.get('NOTIFICATION_PLATFORM');
+			//const FORCE_SEND_EMAIL = app.get('FORCE_SEND_EMAIL');    					
+			//const notificationPlatform = app.get('NOTIFICATION_PLATFORM');
 
 			if (!notificationPlatform) {
 				logger.warning('Required Env NOTIFICATION_PLATFORM is not defined');

@@ -11,8 +11,13 @@ const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
-const { KEEP_ALIVE, BODYPARSER_JSON_LIMIT, METRICS_PATH, LEAD_TIME } = require('../config/globals');
+const { Configuration } = require('@schul-cloud/commons');
 
+const KEEP_ALIVE = Configuration.get('KEEP_ALIVE');
+const BODYPARSER_JSON_LIMIT = Configuration.get('BODYPARSER_JSON_LIMIT');
+
+const { METRICS_PATH, LEAD_TIME } = require('../config/globals'); 	// was: KEEP_ALIVE, BODYPARSER_JSON_LIMIT 
+																 	//global.js is deprecated; later global.js will be completely removed. 					
 const middleware = require('./middleware');
 const sockets = require('./sockets');
 const services = require('./services');
@@ -29,7 +34,7 @@ const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/version');
 
-const setupApp = async () => {
+const setupApp = async () => {	
 	const app = express(feathers());
 	app.disable('x-powered-by');
 
