@@ -410,6 +410,29 @@
 				}
 			},
 			"required": ["METRICS_PATH", "DURATION_BUCKETS_SECONDS"]
+		},
+		"BODYPARSER_JSON_LIMIT": {
+			"type": "string",
+			"default": "20mb",
+			"description": "Max. of Bodyparser."
+		},
+		"DATABASE_AUDIT": {
+			"type": "boolean",
+			"default": false,
+			"description": "tbd"
+		},
+		"FORCE_SEND_EMAIL": {
+			"type": "boolean",
+			"default": false,
+			"description": "tbd"
+		},"NOTIFICATION_PLATFORM": {
+			"type": "boolean",
+			"default": false,
+			"description": "tbd"
+		},"KEEP_ALIVE": {
+			"type": "boolean",
+			"default": false,
+			"description": "tbd"
 		}
 	},
 	"required": [

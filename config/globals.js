@@ -1,5 +1,8 @@
 /* eslint-disable no-process-env */
 
+/* this config is ===== deprecated =====
+please use the default config; you can find the documentation here: https://docs.hpi-schul-cloud.org/display/TSC/Configuration+management  */
+
 const ENVIRONMENTS = {
 	DEVELOPMENT: 'development',
 	TEST: 'test',
@@ -33,8 +36,8 @@ switch (NODE_ENV) {
 }
 
 const globals = {
-	BODYPARSER_JSON_LIMIT: process.env.BODYPARSER_JSON_LIMIT || '20mb',
-	DATABASE_AUDIT: process.env.DATABASE_AUDIT || 'false',
+	//BODYPARSER_JSON_LIMIT: process.env.BODYPARSER_JSON_LIMIT || '20mb',  				// will be removed if new config is released
+	//DATABASE_AUDIT: process.env.DATABASE_AUDIT || 'false',
 	DB_URL: process.env.DB_URL || defaultDbUrl,
 	DB_USERNAME: process.env.DB_USERNAME,
 	DB_PASSWORD: process.env.DB_PASSWORD,
@@ -49,7 +52,7 @@ const globals = {
 	SC_SHORT_TITLE: process.env.SC_SHORT_TITLE || 'HPI Schul-Cloud',
 	SMTP_SENDER: process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
 
-	KEEP_ALIVE: process.env.KEEP_ALIVE || false,
+	//KEEP_ALIVE: process.env.KEEP_ALIVE || false,									// will be removed if new config is released
 	LEAD_TIME: process.env.LEAD_TIME ? parseInt(process.env.LEAD_TIME, 10) : undefined,
 	SHOW_VERSION: process.env.SHOW_VERSION,
 	/**
