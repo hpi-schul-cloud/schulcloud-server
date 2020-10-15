@@ -79,11 +79,11 @@ const updateConsent = (data, targetUserId, app) => {
 const updateUser = (data, targetUserId, app) => {
 	const needsParentConsent = !data.parent_privacyConsent || !data.parent_termsOfUseConsent;
 	if (needsParentConsent) {
-		app.service('users').patch(targetUserId, {birthday: data.birthday});
+		app.service('users').patch(targetUserId, { birthday: data.birthday });
 	} else {
-		app.service('users').patch(targetUserId, {birthday: data.birthday, $unset: {importHash: ''}});
+		app.service('users').patch(targetUserId, { birthday: data.birthday, $unset: { importHash: '' } });
 	}
-}
+};
 
 class SkipRegistrationService {
 	constructor() {
