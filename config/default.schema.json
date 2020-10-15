@@ -389,6 +389,11 @@
 			"description": "when set, this is interpreted as a regex to extend the ignorelist for the API validation with any routes matching the regex.",
 			"examples": [".*\/courses\/[0-9a-f]{24}($|\/$)"]
 		},
+		"PROMETHEUS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable prometheus api metrics, if enabled, PROMETHEUS must be defined."
+		},
 		"PROMETHEUS": {
 			"type": "object",
 			"description": "Prometheus metrics options used by prometheus-api-metrics",
