@@ -373,7 +373,7 @@ describe('school service', () => {
 					.service('/schools')
 					.patch(school._id, { officialSchoolNumber: mockOfficialSchoolNumber }, params);
 			} catch (err) {
-				console.error(err);
+				throw new Error('should not have failed', err);
 			}
 			expect(result.officialSchoolNumber).to.be.equal(mockOfficialSchoolNumber);
 
@@ -385,7 +385,7 @@ describe('school service', () => {
 					.service('/schools')
 					.patch(school._id, { officialSchoolNumber: mockOfficialSchoolNumber2 }, params);
 			} catch (err) {
-				console.error(err);
+				throw new Error('should not have failed', err);
 			}
 			expect(result2.officialSchoolNumber).to.be.equal(mockOfficialSchoolNumber2);
 		});
