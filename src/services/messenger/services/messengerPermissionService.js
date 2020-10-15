@@ -11,7 +11,7 @@ class MessengerPermissionService {
 
 	async setup(app) {
 		this.app = app;
-    }
+	}
 
 	/**
 	 * returns messenger permission for the given user
@@ -19,9 +19,6 @@ class MessengerPermissionService {
 	 * @param {Object} params feathers params object
 	 */
 	async get(id, params) {
-		if (!Configuration.get('FEATURE_MATRIX_MESSENGER_ENABLED')) {
-			throw new GeneralError('messenger not supported on this instance');
-		}
 		const [user, school] = await Promise.all([
 			this.app.service('users').get(id),
 			this.app.service('schools').get(params.route.schoolId),
@@ -55,4 +52,7 @@ const messengerPermissionHooks = {
 	after: {},
 };
 
-module.exports = { messengerPermissionService: messengerPermissionService, messengerPermissionHooks: messengerPermissionHooks };
+module.exports = {
+	messengerPermissionService,
+	messengerPermissionHooks,
+};

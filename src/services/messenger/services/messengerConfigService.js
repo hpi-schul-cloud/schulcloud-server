@@ -1,6 +1,4 @@
-const { Configuration } = require('@schul-cloud/commons');
 const { disallow } = require('feathers-hooks-common');
-const globalHooks = require('../../../hooks');
 const { hasPermission } = require('../../../hooks');
 
 const schoolMessengerOptions = ['messenger', 'messengerOneToOne', 'messengerSchoolRoom'];
