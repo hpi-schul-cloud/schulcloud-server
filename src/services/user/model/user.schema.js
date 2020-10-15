@@ -38,7 +38,7 @@ const userSchema = new Schema(
 		nameSuffix: { type: String },
 		forcePasswordChange: { type: Boolean, default: false },
 
-		createdAt: { type: Date, default: null, expireAfterSeconds: null },
+		deletedAt: { type: Date, default: null, expireAfterSeconds: null },
 
 		birthday: { type: Date },
 

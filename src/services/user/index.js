@@ -112,12 +112,6 @@ module.exports = (app) => {
 	const adminTeachersService = app.service(adminTeachersRoute);
 	adminTeachersService.hooks(AdminUsers.adminHookGenerator('TEACHER'));
 
-	app.use(adminStudentsRoute, new AdminUsers.AdminUsers('student'));
-	adminStudentsService.hooks(AdminUsers.markUserAsDeletedHooks('STUDENT'));
-
-	app.use(adminTeachersRoute, new AdminUsers.AdminUsers('teacher'));
-	adminTeachersService.hooks(AdminUsers.markUserAsDeletedHooks('TEACHER'));
-
 	const RegistrationLinkRoute = '/users/mail/registrationLink';
 	app.use(RegistrationLinkRoute, new MailRegistrationLink.Service());
 	const RegistrationLinkService = app.service(RegistrationLinkRoute);

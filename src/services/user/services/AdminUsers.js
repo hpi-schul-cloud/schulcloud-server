@@ -253,12 +253,29 @@ class AdminUsers {
 		if (userId) {
 			await this.app.service('users').remove(null, {
 				query: {
-					deletionDate: new Date(),
+					userId,
+					deletedAt: {
+						default: new Date(),
+						// after one week
+						expireAfterSeconds: 30,
+					},
 				},
 			});
 			return `User ${userId} Marked to deletion`;
 		}
 		return new Forbidden('You cannot remove user with invalid id.');
+	}
+
+	async unMarkUserAsDeleted(userId) {
+		if (userId) {
+			await this.app.service('users').patch(null, {
+				query: {
+					deletedAt: null,
+				},
+			});
+			return `User ${userId} unMarked from deletion`;
+		}
+		return new Forbidden('Error - User has invalid id.');
 	}
 
 	async prepareRoleback(email, userId, fu) {
@@ -291,18 +308,19 @@ class AdminUsers {
 			if (!equalIds(currentUser.schoolId, userToRemove.schoolId)) {
 				throw new Forbidden('You cannot remove users from other schools.');
 			}
-			await this.app.service('accountModel').remove(null, { query: { userId: id } });
-			return this.app.service('usersModel').remove(id);
+			// await this.app.service('accountModel').remove(null, { query: { userId: id } });
+			// return this.app.service('usersModel').remove(id);
+			await this.markUserAsDeleted(id);
 		}
 
 		const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
 		if (usersIds.some((user) => !equalIds(currentUser.schoolId, user.schoolId))) {
 			throw new Forbidden('You cannot remove users from other schools.');
 		}
-		await this.markUserAsDeleted(id);
+		// await this.markUserAsDeleted(id);
 
-		await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
-		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
+		// await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
+		// return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
 	}
 
 	async setup(app) {
@@ -323,17 +341,6 @@ const formatBirthdayOfUsers = ({ result: { data: users } }) => {
 		}
 	});
 };
-const markUserAsDeletedHooks = () => ({
-	before: {
-		all: [authenticate('jwt')],
-		find: [disallow()],
-		get: [disallow()],
-		create: [disallow()],
-		update: [disallow()],
-		patch: [disallow()],
-		remove: [iff(isProvider('external'), isSuperHero())],
-	},
-});
 
 const adminHookGenerator = (kind) => ({
 	before: {
@@ -353,6 +360,5 @@ const adminHookGenerator = (kind) => ({
 
 module.exports = {
 	AdminUsers,
-	markUserAsDeletedHooks,
 	adminHookGenerator,
 };
