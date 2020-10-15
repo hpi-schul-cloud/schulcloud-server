@@ -22,6 +22,7 @@ const {
 	filterToRelated,
 	restrictToUsersSchool,
 	validateUserName,
+	restrictToSameSchool,
 } = require('../hooks');
 const {
 	modelServices: { prepareInternalParams },
@@ -76,7 +77,7 @@ const accountServiceHooks = {
 		find: [
 			authenticate('jwt'),
 			iff(isProvider('external'), restrictAccess),
-			iff(isProvider('external'), restrictToCurrentSchool),
+			iff(isProvider('external'), restrictToSameSchool),
 			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
 		],
 		get: [disallow('external')],
