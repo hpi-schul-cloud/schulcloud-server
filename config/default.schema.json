@@ -145,26 +145,41 @@
 			"default": "",
 			"description": "The BBB Salt for api call checksum creation."
 		},
+		"FEATURE_MATRIX_MESSENGER_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "If enabled, adds support for Matrix Messenger."
+		},
 		"MATRIX_MESSENGER": {
-			"ENABLED": {
-				"type": "boolean",
-				"default": false,
-				"description": "If enabled, adds support for Matrix Messenger."
-			},
-			"URI": {
-				"type": "string",
-				"format": "uri",
-				"default": "https://matrix.messenger.schule",
-				"description": "The URI of the Matrix Messenger server."
-			},
-			"SERVERNAME": {
-				"type": "string",
-				"default": "messenger.schule",
-				"description": "Servername of the Matrix Messenger server."
-			},
-			"SECRET": {
-				"type": "string",
-				"description": "Shared secret for the Matrix server."
+			"type": "object",
+			"description": "Matrix messenger properties, required always to be defined",
+			"required": [
+				"URI",
+				"SERVERNAME",
+				"SECRET",
+				"STUDENT_ROOM_CREATION"
+			],
+			"properties": {
+				"URI": {
+					"type": "string",
+					"format": "uri",
+					"default": "https://matrix.messenger.schule",
+					"description": "The URI of the Matrix Messenger server."
+				},
+				"SERVERNAME": {
+					"type": "string",
+					"default": "messenger.schule",
+					"description": "Servername of the Matrix Messenger server."
+				},
+				"SECRET": {
+					"type": "string",
+					"description": "Shared secret for the Matrix server."
+				},
+				"STUDENT_ROOM_CREATION": {
+					"type": "boolean",
+					"default": false,
+					"description": "If enabled, school admins can allow students to create additional chat rooms"
+				}
 			}
 		},
 		"FEATURE_RABBITMQ_ENABLED": {

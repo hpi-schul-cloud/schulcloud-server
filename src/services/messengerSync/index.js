@@ -9,7 +9,7 @@ const { messengerSchoolSyncService, messengerSchoolSyncHooks } = require('./serv
 const { messengerTokenService, messengerTokenHooks } = require('./services/messengerTokenService');
 
 module.exports = (app) => {
-	if (Configuration.get('MATRIX_MESSENGER__ENABLED')) {
+	if (Configuration.get('FEATURE_MATRIX_MESSENGER_ENABLED')) {
 		if (!Configuration.get('FEATURE_RABBITMQ_ENABLED')) throw new GeneralError('messenger requires rabbitMQ');
 
 		app.use('schools/:schoolId/messengerSync', messengerSchoolSyncService);

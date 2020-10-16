@@ -51,7 +51,7 @@ class MessengerTokenService {
 	 * @param {Object} params feathers params object.
 	 */
 	async create(data, params) {
-		if (!Configuration.get('MATRIX_MESSENGER__ENABLED')) {
+		if (!Configuration.get('FEATURE_MATRIX_MESSENGER_ENABLED')) {
 			throw new GeneralError('messenger not supported on this instance');
 		}
 

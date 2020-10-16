@@ -15,7 +15,7 @@ describe('service', function test() {
 	before(async () => {
 		configBefore = Configuration.toObject(); // deep copy current config
 		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
-		Configuration.set('MATRIX_MESSENGER__ENABLED', true);
+		Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
 		mockery.enable({
 			warnOnReplace: false,
 			warnOnUnregistered: false,

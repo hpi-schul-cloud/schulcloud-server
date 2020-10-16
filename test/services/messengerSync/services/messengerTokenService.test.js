@@ -63,7 +63,7 @@ describe('MessengerTokenService', function test() {
 
 			before(() => {
 				configBefore = Configuration.toObject(); // deep copy current config
-				Configuration.set('MATRIX_MESSENGER__ENABLED', true);
+				Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
 				Configuration.set('MATRIX_MESSENGER__SECRET', 'secret');
 			});
 
