@@ -1,5 +1,6 @@
 const { expect } = require('chai');
 const assert = require('assert');
+const moment = require('moment');
 
 const appPromise = require('../../../src/app');
 const accountModel = require('../../../src/services/account/model');
@@ -82,7 +83,7 @@ describe('registration service', () => {
 					importHash,
 					password_1: 'Test123!',
 					password_2: 'Test123!',
-					birthDate: '15.10.1999',
+					birthDate: moment('15.10.1999', 'DD.MM.YYYY'),
 					email,
 					firstName: 'Max',
 					lastName: 'Mustermann',
@@ -120,7 +121,7 @@ describe('registration service', () => {
 					importHash,
 					password_1: 'Test123!',
 					password_2: 'Test123!',
-					birthDate: '15.10.2014',
+					birthDate: moment('15.10.2014', 'DD.MM.YYYY'),
 					email,
 					firstName: 'Max',
 					lastName: 'Mustermann',
@@ -163,7 +164,7 @@ describe('registration service', () => {
 					classOrSchoolId: '5f2987e020834114b8efd6f8',
 					pin: String(pin),
 					importHash,
-					birthDate: '15.10.1999',
+					birthDate: moment('15.10.1999', 'DD.MM.YYYY'),
 					email,
 					firstName: 'Max',
 					lastName: 'Mustermann',
@@ -193,7 +194,7 @@ describe('registration service', () => {
 				classOrSchoolId: '5f2987e020834114b8efd6f8',
 				email,
 				parent_email: email,
-				birthDate: '18.02.2015',
+				birthDate: moment('18.02.2015', 'DD.MM.YYYY'),
 			})
 			.catch((err) => {
 				expect(err.message).to.equal('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.');
@@ -217,7 +218,7 @@ describe('registration service', () => {
 				classOrSchoolId: '5f2987e020834114b8efd6f8',
 				email,
 				parent_email: parentEmail,
-				birthDate: '18.02.2015',
+				birthDate: moment('18.02.2015', 'DD.MM.YYYY'),
 			})
 			.catch((err) => {
 				expect(err.message).to.equal('Bitte gib eine unterschiedliche E-Mail-Adresse für dein Kind an.');
@@ -339,7 +340,7 @@ describe('registration service', () => {
 			importHash,
 			classOrSchoolId: '5f2987e020834114b8efd6f8',
 			pin: registrationPin.pin,
-			birthDate: '15.10.1999',
+			birthDate: moment('15.10.1999', 'DD.MM.YYYY'),
 			email,
 			firstName: 'Max',
 			lastName: 'Mustermann',

@@ -24,7 +24,9 @@ const populateUser = (app, data) => {
 		language: data.language,
 	};
 
-	user.birthday = new Date(data.birthDate);
+	if (data.birthDate) {
+		user.birthday = new Date(data.birthDate);
+	}
 
 	if (data.classId) user.classId = data.classId;
 
