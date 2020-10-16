@@ -13,13 +13,6 @@ const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../../config/globa
 
 const permissionsAllowedToLogin = ['student', 'expert', 'administrator', 'teacher'];
 
-const formatBirthdate1 = (datestamp) => {
-	if (datestamp === undefined) return false;
-
-	const d = datestamp.split('.');
-	return `${d[1]}.${d[0]}.${d[2]}`;
-};
-
 const populateUser = (app, data) => {
 	let oldUser;
 	const user = {
