@@ -1,7 +1,7 @@
 const http = require('http');
 const reqlib = require('app-root-path').require;
 
-const { convertIncomingMessageToJson } = reqlib('src/utils');
+const { incomingMessageToJson } = reqlib('src/utils');
 
 const { errorsByCode } = require('./index.js');
 
@@ -17,7 +17,7 @@ const convertToFeathersError = (error) => {
 
 const cleanupIncomingMessage = (error = {}) => {
 	if (error.response instanceof http.IncomingMessage) {
-		error.response = convertIncomingMessageToJson(error.response);
+		error.response = incomingMessageToJson(error.response);
 	}
 	if (typeof error.options === 'object') {
 		if (Buffer.isBuffer(error.options.body)) {
