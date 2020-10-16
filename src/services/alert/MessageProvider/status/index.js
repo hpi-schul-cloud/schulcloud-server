@@ -1,5 +1,5 @@
 const { Configuration } = require('@schul-cloud/commons');
-const api = require('../../../../helper/externalApiRequest');
+const { get } = require('../../../../utils/request');
 const logger = require('../../../../logger');
 
 const dict = {
@@ -24,7 +24,7 @@ const importance = {
 async function getInstance(instance, componentId) {
 	if (componentId !== 0) {
 		try {
-			const response = await api(Configuration.get('ALERT_STATUS_API_URL')).get(`/components/${componentId}`);
+			const response = await get(`/components/${componentId}`, { baseURL: Configuration.get('ALERT_STATUS_API_URL') });
 			if (dict[instance] && response.data.group_id === dict[instance]) {
 				return importance.CURRENT_INSTANCE;
 			}
@@ -42,7 +42,7 @@ async function getInstance(instance, componentId) {
  * @returns {Promise}
  */
 async function getIncidents() {
-	const response = await api(Configuration.get('ALERT_STATUS_API_URL')).get('/incidents?sort=id');
+	const response = await get('/incidents?sort=id', { baseURL: Configuration.get('ALERT_STATUS_API_URL') });
 	return response;
 }
 
@@ -64,10 +64,10 @@ module.exports = {
 	async getData(instance) {
 		if (Configuration.has('ALERT_STATUS_API_URL') && Configuration.has('ALERT_STATUS_URL')) {
 			try {
-				const rawData = await getIncidents();
+				const { data } = await getIncidents();
 				const instanceSpecific = [];
 				const noneSpecific = [];
-				for (const element of rawData.data) {
+				for (const element of data.data) {
 					// only mind incidents not older than 2 days
 					if (Date.parse(element.updated_at) + 1000 * 60 * 60 * 24 * 2 >= Date.now()) {
 						// only mind messages for own instance (including none instance specific messages)
@@ -91,7 +91,9 @@ module.exports = {
 			}
 		} else {
 			/* eslint-disable-next-line */
-			logger.error('Alert-MessageProvider: status: ALERT_STATUS_API_URL or ALERT_STATUS_URL is not defined, while FEATURE_ALERTS_STATUS_ENABLED has been enabled!');
+			logger.error(
+				'Alert-MessageProvider: status: ALERT_STATUS_API_URL or ALERT_STATUS_URL is not defined, while FEATURE_ALERTS_STATUS_ENABLED has been enabled!'
+			);
 			return null;
 		}
 	},
