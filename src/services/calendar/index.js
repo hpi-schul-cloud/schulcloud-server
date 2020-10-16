@@ -1,7 +1,6 @@
-const request = require('request-promise-native');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-const { Configuration } = require('@schul-cloud/commons');
+const request = require('../../utils/request');
 const hooks = require('./hooks');
 
 function toQueryString(paramsObject) {
@@ -175,46 +174,40 @@ class Service {
 
 	create(data, params) {
 		const serviceUrls = this.app.get('services') || {};
-
+		const url = `${serviceUrls.calendar}/events/`;
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
-		const options = {
-			uri: `${serviceUrls.calendar}/events/`,
-			method: 'POST',
-			headers: {
-				Authorization: userId,
-			},
-			body: convertEventToJsonApi(data),
-			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
-		};
-
-		return request(options).then((events) => {
-			events = (events.data || []).map((event) =>
-				Object.assign(event, {
-					title: event.summary,
-					allDay: false, // TODO: find correct value
-					start: Date.parse(event.dtstart),
-					end: Date.parse(event.dtend),
-					url: '', // TODO: add x-sc-field
-				})
-			);
-			return events.map(convertJsonApiToEvent);
-		});
+		return request
+			.post(url, convertEventToJsonApi(data), {
+				headers: {
+					Authorization: userId,
+				},
+			})
+			.then((response) => {
+				let events = response.data;
+				events = (events.data || []).map((event) =>
+					Object.assign(event, {
+						title: event.summary,
+						allDay: false, // TODO: find correct value
+						start: Date.parse(event.dtstart),
+						end: Date.parse(event.dtend),
+						url: '', // TODO: add x-sc-field
+					})
+				);
+				return events.map(convertJsonApiToEvent);
+			});
 	}
 
 	find(params) {
 		const serviceUrls = this.app.get('services') || {};
+		const url = `${serviceUrls.calendar}/events?${toQueryString(params.query)}`;
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${serviceUrls.calendar}/events?${toQueryString(params.query)}`,
 			headers: {
 				Authorization: userId,
 			},
-			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
-
-		return request(options).then((events) => {
+		return request.get(url, options).then((response) => {
+			let events = response.data;
 			events =
 				(params.query || {}).userId ||
 				(events.data || events || []).map((event) =>
@@ -233,41 +226,36 @@ class Service {
 	remove(id, params) {
 		const serviceUrls = this.app.get('services') || {};
 
+		const url = `${serviceUrls.calendar}/events/${id}`;
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${serviceUrls.calendar}/events/${id}`,
 			headers: {
 				Authorization: userId,
 			},
-			json: true,
-			method: 'DELETE',
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
-			body: { data: [{ type: 'event' }] },
+			data: { data: [{ type: 'event' }] },
 		};
-
-		return request(options).then((res) => {
-			// calendar returns nothing if event was successfully deleted
-			if (!res) return { message: 'Successful deleted event' };
-			return res;
-		});
+		return request
+			.delete(url, options)
+			.then((res) => {
+				// calendar returns nothing if event was successfully deleted
+				if (!res.data) return { message: 'Successful deleted event' };
+				return res.data;
+			})
+			.catch((err) => err);
 	}
 
 	update(id, data, params) {
 		const serviceUrls = this.app.get('services') || {};
 
+		const url = `${serviceUrls.calendar}/events/${id}`;
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${serviceUrls.calendar}/events/${id}`,
-			method: 'PUT',
 			headers: {
 				Authorization: userId,
 			},
-			body: convertEventToJsonApi(data),
-			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
-
-		return request(options).then((events) => {
+		return request.put(url, convertEventToJsonApi(data), options).then((response) => {
+			let events = response.data;
 			events = events.data || events || [];
 			return events.map(convertJsonApiToEvent);
 		});

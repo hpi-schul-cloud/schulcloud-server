@@ -76,7 +76,8 @@ module.exports = {
 	 * @returns {Promise<axios.AxiosResponse<T>>}
 	 */
 	delete: (url, options) => {
-		return requestWrapper('post', url, options);
+		// axios.delete does not support data to be added into options, use request instead
+		return requestWrapper('request', undefined, undefined, { ...options, url, method: 'DELETE' });
 	},
 
 	/**
