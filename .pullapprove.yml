@@ -21,7 +21,7 @@ notifications:
       the tests, CI checks and PR requirements (see checklist in your PR) have passed.
   - when: pullapprove.approved
     comment: The review is completed. @{{ author }}, please follow further instructions from
-      our Review-Guidelines https://docs.schul-cloud.org/display/SCDOK/Review-Guidelines
+      our Review-Guidelines https://docs.hpi-schul-cloud.org/display/SCDOK/Review-Guidelines
 
 groups:
   server-core:

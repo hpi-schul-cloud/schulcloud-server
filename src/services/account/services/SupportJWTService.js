@@ -14,7 +14,7 @@ const logger = require('../../../logger');
 const { getRedisClient, redisSetAsync, extractDataFromJwt, getRedisData } = require('../../../utils/redis');
 
 const DEFAULT_EXPIRED = 60 * 60 * 1000; // in ms => 1h
-const DEFAULT_AUDIENCE = 'https://schul-cloud.org'; // The organisation that create this jwt.
+const DEFAULT_AUDIENCE = 'https://hpi-schul-cloud.de'; // The organisation that create this jwt.
 
 class JWT {
 	/**
