@@ -1,0 +1,24 @@
+const { mode } = require("crypto-js");
+
+const http = require('http');
+const reqlib = require('app-root-path').require;
+
+const logger = reqlib('src/logger');
+
+const incomingMessageToJson = (incomingMessage) => {
+	if (!(incomingMessage instanceof http.IncomingMessage)) { 
+		logger.error('Input is not a instance of http.IncomingMessage', incomingMessage);
+	}
+
+	const { statusMessage, statusCode, method, httpVersion, headers, url } = incomingMessage;
+	return {
+		statusMessage,
+		statusCode,
+		method,
+		httpVersion,
+		headers,
+		url,
+	};
+};
+
+module.exports = incomingMessageToJson;
