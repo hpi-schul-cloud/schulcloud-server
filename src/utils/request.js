@@ -1,9 +1,10 @@
 const axios = require('axios');
 const { Configuration } = require('@schul-cloud/commons');
 
+/**
+ * @type {axios.AxiosRequestConfig}
+ */
 const defaultOptions = {
-	// baseURL:
-	// headers:
 	timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 };
 
@@ -34,35 +35,56 @@ const requestWrapper = (method, url, data = undefined, options = undefined) => {
 	throw new Error('unsupported method', { method });
 };
 
-/**
- * Get request wrapper
- * @param {string} url
- * @param {axios.AxiosRequestConfig} options
- * @returns {Promise<axios.AxiosResponse<T>>}
- */
-const get = (url, options) => {
-	return requestWrapper('get', url, undefined, options);
-};
+module.exports = {
+	/**
+	 * Get request wrapper
+	 * @param {string} url
+	 * @param {axios.AxiosRequestConfig} options
+	 * @returns {Promise<axios.AxiosResponse<T>>}
+	 */
+	get: (url, options) => {
+		return requestWrapper('get', url, undefined, options);
+	},
 
-/**
- * Post request wrapper
- * @param {string} url
- * @param {any} data
- * @param {axios.AxiosRequestConfig} options
- * @returns {Promise<axios.AxiosResponse<T>>}
- */
-const post = (url, data, options) => {
-	return requestWrapper('post', url, data, options);
-};
+	/**
+	 * Post request wrapper
+	 * @param {string} url
+	 * @param {any} data
+	 * @param {axios.AxiosRequestConfig} options
+	 * @returns {Promise<axios.AxiosResponse<T>>}
+	 */
+	post: (url, data, options) => {
+		return requestWrapper('post', url, data, options);
+	},
 
-/**
- * Request wrapper
- * @param {axios.AxiosRequestConfig} options
- * @returns {Promise<axios.AxiosResponse<T>>}
- */
-const request = (options) => {
-	return requestWrapper('request', undefined, undefined, options);
-};
+	/**
+	 * Post request wrapper
+	 * @param {string} url
+	 * @param {any} data
+	 * @param {axios.AxiosRequestConfig} options
+	 * @returns {Promise<axios.AxiosResponse<T>>}
+	 */
+	put: (url, data, options) => {
+		return requestWrapper('put', url, data, options);
+	},
 
-// TODO check usage
-module.exports = { get, post, request };
+	/**
+	 * Delete request wrapper
+	 * @param {string} url
+	 * @param {any} data
+	 * @param {axios.AxiosRequestConfig} options
+	 * @returns {Promise<axios.AxiosResponse<T>>}
+	 */
+	delete: (url, options) => {
+		return requestWrapper('post', url, options);
+	},
+
+	/**
+	 * Generic request wrapper
+	 * @param {axios.AxiosRequestConfig} options
+	 * @returns {Promise<axios.AxiosResponse<T>>}
+	 */
+	request: (options) => {
+		return requestWrapper('request', undefined, undefined, options);
+	},
+};
