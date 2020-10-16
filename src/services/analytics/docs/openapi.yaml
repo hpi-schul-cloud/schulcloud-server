@@ -1,16 +1,16 @@
 security:
   - jwtBearer: []
 info:
-  title: Schul-Cloud Analytics Service API
+  title: HPI Schul-Cloud Analytics Service API
   description:
-    This is the API specification for the Schul-Cloud Analytics service.
+    This is the API specification for the HPI Schul-Cloud Analytics service.
     
   contact:
     name: support
-    email: info@schul-cloud.org
+    email: info@hpi-schul-cloud.de
   license:
     name: GPL-3.0
-    url: 'https://github.com/schul-cloud/schulcloud-server/blob/master/LICENSE'
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
   version: 1.0.0
 components:
   securitySchemes:
