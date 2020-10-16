@@ -12,7 +12,7 @@ const { HandlePermissions, handlePermissionsHooks } = require('./services/permis
 module.exports = function schoolServices() {
 	const app = this;
 
-	app.use('/schools/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/schools/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	const options = {
 		Model: schoolModels.schoolModel,

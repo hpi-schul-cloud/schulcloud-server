@@ -313,7 +313,7 @@ module.exports = function LDAPService() {
 		}
 	}
 
-	app.use('/ldap/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/ldap/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/ldap', new LdapService());
 	const systemService = app.service('/ldap');

@@ -8,7 +8,7 @@ const hooks = require('./hooks');
 module.exports = function () {
 	const app = this;
 
-	app.use('/systems/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/systems/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	const options = {
 		Model: system,
