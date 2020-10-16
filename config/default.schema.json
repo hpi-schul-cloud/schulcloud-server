@@ -145,25 +145,27 @@
 			"default": "",
 			"description": "The BBB Salt for api call checksum creation."
 		},
-		"FEATURE_MATRIX_MESSENGER_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "If enabled, adds support for Matrix Messenger."
-		},
-		"MATRIX_URI": {
-			"type": "string",
-			"format": "uri",
-			"default": "https://matrix.messenger.schule",
-			"description": "The URI of the Matrix Messenger server."
-		},
-		"MATRIX_SERVERNAME": {
-			"type": "string",
-			"default": "messenger.schule",
-			"description": "Servername of the Matrix Messenger server."
-		},
-		"MATRIX_SECRET": {
-			"type": "string",
-			"description": "Shared secret for the Matrix server."
+		"MATRIX_MESSENGER": {
+			"ENABLED": {
+				"type": "boolean",
+				"default": false,
+				"description": "If enabled, adds support for Matrix Messenger."
+			},
+			"URI": {
+				"type": "string",
+				"format": "uri",
+				"default": "https://matrix.messenger.schule",
+				"description": "The URI of the Matrix Messenger server."
+			},
+			"SERVERNAME": {
+				"type": "string",
+				"default": "messenger.schule",
+				"description": "Servername of the Matrix Messenger server."
+			},
+			"SECRET": {
+				"type": "string",
+				"description": "Shared secret for the Matrix server."
+			}
 		},
 		"FEATURE_RABBITMQ_ENABLED": {
 			"type": "boolean",

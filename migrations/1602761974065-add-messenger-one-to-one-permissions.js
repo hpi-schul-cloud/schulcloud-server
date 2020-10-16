@@ -5,7 +5,7 @@ const { info, error } = require('../src/logger');
 const { connect, close } = require('../src/utils/database');
 
 const Roles = mongoose.model(
-	'messengerOneToOnePermissions',
+	'messengerRoomCreatePermissions',
 	new mongoose.Schema(
 		{
 			name: { type: String, required: true },
@@ -26,7 +26,7 @@ module.exports = {
 			{
 				$addToSet: {
 					permissions: {
-						$each: ['MESSENGER_ONE_TO_ONE'],
+						$each: ['MESSENGER_ROOM_CREATE'],
 					},
 				},
 			}
@@ -36,7 +36,7 @@ module.exports = {
 			{
 				$addToSet: {
 					permissions: {
-						$each: ['MESSENGER_ONE_TO_ONE'],
+						$each: ['MESSENGER_ROOM_CREATE'],
 					},
 				},
 			}
@@ -46,7 +46,7 @@ module.exports = {
 			{
 				$addToSet: {
 					permissions: {
-						$each: ['MESSENGER_ONE_TO_ONE'],
+						$each: ['MESSENGER_ROOM_CREATE'],
 					},
 				},
 			}
@@ -61,7 +61,7 @@ module.exports = {
 			{
 				$pull: {
 					permissions: {
-						$in: ['MESSENGER_ONE_TO_ONE'],
+						$in: ['MESSENGER_ROOM_CREATE'],
 					},
 				},
 			}
@@ -71,7 +71,7 @@ module.exports = {
 			{
 				$pull: {
 					permissions: {
-						$in: ['MESSENGER_ONE_TO_ONE'],
+						$in: ['MESSENGER_ROOM_CREATE'],
 					},
 				},
 			}
@@ -81,7 +81,7 @@ module.exports = {
 			{
 				$pull: {
 					permissions: {
-						$in: ['MESSENGER_ONE_TO_ONE'],
+						$in: ['MESSENGER_ROOM_CREATE'],
 					},
 				},
 			}

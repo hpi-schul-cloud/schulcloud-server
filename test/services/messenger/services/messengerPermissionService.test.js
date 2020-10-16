@@ -1,10 +1,8 @@
 const { expect } = require('chai');
-const commons = require('@schul-cloud/commons');
-
-const { Configuration } = commons;
+const { Configuration } = require('@schul-cloud/commons');
 
 describe('MessengerPermissionService', function test() {
-	this.timeout(30000);
+	this.timeout(300000);
 	let configBefore;
 	let app;
 	let server;
@@ -13,7 +11,7 @@ describe('MessengerPermissionService', function test() {
 	before(async () => {
 		configBefore = Configuration.toObject(); // deep copy current config
 		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
-		Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
+		Configuration.set('MATRIX_MESSENGER__ENABLED', true);
 		// eslint-disable-next-line global-require
 		app = await require('../../../../src/app');
 		// eslint-disable-next-line global-require
@@ -35,7 +33,7 @@ describe('MessengerPermissionService', function test() {
 		params.route = { schoolId: school._id.toString() };
 
 		const result = await app.service('schools/:schoolId/messengerPermissions').get(adminUser._id, params);
-		expect(result.messengerOneToOne).to.be.true;
+		expect(result.studentsMessengerRoomCreate).to.be.true;
 	});
 
 	it('teachers have messenger permission to open one to one chats', async () => {
@@ -46,7 +44,7 @@ describe('MessengerPermissionService', function test() {
 		params.route = { schoolId: school._id.toString() };
 
 		const result = await app.service('schools/:schoolId/messengerPermissions').get(teacher._id, params);
-		expect(result.messengerOneToOne).to.be.true;
+		expect(result.studentsMessengerRoomCreate).to.be.true;
 	});
 
 	it('students do not have messenger permission to open one to one chats by default', async () => {
@@ -57,18 +55,18 @@ describe('MessengerPermissionService', function test() {
 		params.route = { schoolId: school._id.toString() };
 
 		const result = await app.service('schools/:schoolId/messengerPermissions').get(student._id, params);
-		expect(result.messengerOneToOne).to.be.false;
+		expect(result.studentsMessengerRoomCreate).to.be.false;
 	});
 
 	it('students have messenger permission to open one to one chats if school setting is set', async () => {
-		const school = await testObjects.createTestSchool({ features: ['messengerOneToOne'] });
+		const school = await testObjects.createTestSchool({ features: ['studentsMessengerRoomCreate'] });
 		const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
 
 		const params = {};
 		params.route = { schoolId: school._id.toString() };
 
 		const result = await app.service('schools/:schoolId/messengerPermissions').get(student._id, params);
-		expect(result.messengerOneToOne).to.be.true;
+		expect(result.studentsMessengerRoomCreate).to.be.true;
 	});
 
 	it('administrators from other school do not have messenger permission to open one to one chats', async () => {
@@ -80,11 +78,11 @@ describe('MessengerPermissionService', function test() {
 		params.route = { schoolId: school._id.toString() };
 
 		const result = await app.service('schools/:schoolId/messengerPermissions').get(adminUser._id, params);
-		expect(result.messengerOneToOne).to.be.false;
+		expect(result.studentsMessengerRoomCreate).to.be.false;
 	});
 
 	it('administrators from other school do not have messenger permission to open one to one chats even if school setting is set', async () => {
-		const school = await testObjects.createTestSchool({ features: ['messengerOneToOne'] });
+		const school = await testObjects.createTestSchool({ features: ['studentsMessengerRoomCreate'] });
 		const otherSchool = await testObjects.createTestSchool();
 		const adminUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId: otherSchool._id });
 
@@ -92,6 +90,6 @@ describe('MessengerPermissionService', function test() {
 		params.route = { schoolId: school._id.toString() };
 
 		const result = await app.service('schools/:schoolId/messengerPermissions').get(adminUser._id, params);
-		expect(result.messengerOneToOne).to.be.false;
+		expect(result.studentsMessengerRoomCreate).to.be.false;
 	});
 });

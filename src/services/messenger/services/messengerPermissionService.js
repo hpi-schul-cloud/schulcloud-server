@@ -1,8 +1,4 @@
-const { Configuration } = require('@schul-cloud/commons');
 const { disallow } = require('feathers-hooks-common');
-const reqlib = require('app-root-path').require;
-
-const { GeneralError } = reqlib('src/errors');
 
 class MessengerPermissionService {
 	constructor(options) {
@@ -28,11 +24,9 @@ class MessengerPermissionService {
 		const userPermissions = roles.data.map((role) => role.permissions).flat();
 
 		const messengerPermissions = {};
-		if (!user.schoolId.equals(school._id)) {
-			messengerPermissions.messengerOneToOne = false;
-		} else if (school.features.includes('messengerOneToOne') || userPermissions.includes('MESSENGER_ONE_TO_ONE')) {
-			messengerPermissions.messengerOneToOne = true;
-		}
+		messengerPermissions.createRoom =
+			user.schoolId.equals(school._id) &&
+			(school.features.includes('studentsMessengerRoomCreate') || userPermissions.includes('MESSENGER_ROOM_CREATE'));
 		return messengerPermissions;
 	}
 }

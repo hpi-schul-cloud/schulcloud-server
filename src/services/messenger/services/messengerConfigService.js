@@ -1,7 +1,7 @@
 const { disallow } = require('feathers-hooks-common');
 const { hasPermission } = require('../../../hooks');
 
-const schoolMessengerOptions = ['messenger', 'messengerOneToOne', 'messengerSchoolRoom'];
+const schoolMessengerOptions = ['messenger', 'studentsCanCreateMessengerRoom', 'messengerSchoolRoom'];
 
 class MessengerConfigService {
 	constructor(options) {

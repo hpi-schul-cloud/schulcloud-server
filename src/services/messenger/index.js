@@ -3,7 +3,7 @@ const { messengerConfigService, messengerConfigHooks } = require('./services/mes
 const { messengerPermissionService, messengerPermissionHooks } = require('./services/messengerPermissionService');
 
 module.exports = (app) => {
-	if (Configuration.get('FEATURE_MATRIX_MESSENGER_ENABLED')) {
+	if (Configuration.get('MATRIX_MESSENGER__ENABLED')) {
 		app.use('schools/:schoolId/messenger', messengerConfigService);
 		app.service('schools/:schoolId/messenger').hooks(messengerConfigHooks);
 
