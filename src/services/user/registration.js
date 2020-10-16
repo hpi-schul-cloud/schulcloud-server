@@ -31,10 +31,7 @@ const populateUser = (app, data) => {
 		language: data.language,
 	};
 
-	const formatedBirthday = formatBirthdate1(data.birthDate);
-	if (formatedBirthday) {
-		user.birthday = new Date(formatedBirthday);
-	}
+	user.birthday = new Date(data.birthDate);
 
 	if (data.classId) user.classId = data.classId;
 
