@@ -10,8 +10,8 @@ Master: [![codecov](https://codecov.io/gh/hpi-schul-cloud/schulcloud-server/bran
 
 Codacy: [![Codacy Badge](https://app.codacy.com/project/badge/Grade/c1d53a69d04346fb867f9360b1679422)](https://www.codacy.com/gh/hpi-schul-cloud/schulcloud-server/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=hpi-schul-cloud/schulcloud-server&amp;utm_campaign=Badge_Grade)
 
-[![Version](https://img.shields.io/github/release/schul-cloud/schulcloud-server.svg)](https://github.com/schulcloud/schulcloud-server/releases)
-[![Greenkeeper badge](https://badges.greenkeeper.io/schul-cloud/schulcloud-server.svg)](https://greenkeeper.io/)
+[![Version](https://img.shields.io/github/release/hpi-schul-cloud/schulcloud-server.svg)](https://github.com/schulcloud/schulcloud-server/releases)
+[![Greenkeeper badge](https://badges.greenkeeper.io/hpi-schul-cloud/schulcloud-server.svg)](https://greenkeeper.io/)
 
 Swagger UI documentation when running the server locally, it is served at [http://localhost:3030/docs/](http://localhost:3030/docs/).
 
@@ -37,7 +37,7 @@ For more details how to set up Visual Studio Code, read [this document](https://
 
 ## How to name your branch and create a pull request (PR)
 
-1. Take the Ticket Number from JIRA (ticketsystem.schul-cloud.org), e.g. SC-999
+1. Take the Ticket Number from JIRA (ticketsystem.hpi-schul-cloud.org), e.g. SC-999
 2. Name the feature branch beginning with Ticket Number, all words separated by dash "-", e.g. `feature/SC-999-fantasy-problem`
 3. Create a PR on branch develop containing the Ticket Number in PR title
 4. Keep the `WIP` label as long as this PR is in development, complete PR checklist (is automatically added), keep or increase code test coverage, and pass all tests before you remove the `WIP` label. Reviewers will be added automatically. For more information check our Definition of Done [here](https://docs.hpi-schul-cloud.org/pages/viewpage.action?pageId=92831762).
