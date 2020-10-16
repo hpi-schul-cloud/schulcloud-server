@@ -32,7 +32,7 @@ const prepare = (ref, message, additional, params, className) => {
 		// eslint-disable-next-line no-param-reassign
 		additional = err;
 	}
-	ref.errors = Object.freeze(additional || {});
+	ref.errors = additional || {};
 	ref.className = className;
 	resolvedTraceId(ref, message, additional);
 	// Error.captureStackTrace(ref, ref.constructor);

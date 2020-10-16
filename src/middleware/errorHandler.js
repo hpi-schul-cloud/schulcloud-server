@@ -59,6 +59,7 @@ const formatAndLogErrors = (error, req, res, next) => {
 		// type is override by logger for logging type
 		err.errorType = err.type;
 
+		// nested in errors
 		cleanupIncomingMessage(err.errors);
 		// for tests level is set to emerg, set LOG_LEVEL=debug for see it
 		// Logging the error object won't print error's stack trace. You need to ask for it specifically

@@ -23,8 +23,8 @@ const cleanupIncomingMessage = (error = {}) => {
 		if (Buffer.isBuffer(error.options.body)) {
 			delete error.options.body;
 		}
-		// filter undefined keys and functions like callback
-		error.options = JSON.stringify(error.options);
+		// Possible to pass secret Filter for headers and querys in uri
+		// Possible to move out all functions keys like callback
 	}
 };
 
