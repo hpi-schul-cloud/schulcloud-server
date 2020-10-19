@@ -11,6 +11,8 @@ const testObjects = require('../helpers/testObjects')(appPromise);
 
 chai.use(chaiHttp);
 
+const { expect } = chai;
+
 describe('oauth2 service', function oauthTest() {
 	let app;
 	let baseUrlService;
@@ -141,20 +143,18 @@ describe('oauth2 service', function oauthTest() {
 		app.service('ltiTools').remove(ltiTool._id);
 	});
 
-	it('PATCH Login Request Reject', () =>
-		app
-			.service('oauth2/loginRequest')
-			.patch(
-				null,
-				{},
-				{
-					query: { accept: 0 },
-					account: { userId: '0000d224816abba584714c9c' },
-				}
-			)
-			.then(() => {
-				assert.ok(true);
-			}));
+	/* fix this test, but not sure if the expect result what we want */
+	it('PATCH Login Request Reject', async () => {
+		const id = null;
+		const data = {};
+		const params = {
+			query: { accept: 0 },
+			account: { userId: '0000d224816abba584714c9c' },
+		};
+
+		const result = await app.service('oauth2/loginRequest').patch(id, data, params);
+		expect(result).to.eql({ client_id: null });
+	});
 
 	it('Introspect Inactive Token', () =>
 		app
