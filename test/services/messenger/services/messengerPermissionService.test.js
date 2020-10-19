@@ -13,6 +13,7 @@ describe('MessengerPermissionService', function test() {
 		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 		Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
 		Configuration.set('MATRIX_MESSENGER__STUDENT_ROOM_CREATION', true);
+		delete require.cache[require.resolve('../../../../src/app')];
 		// eslint-disable-next-line global-require
 		app = await require('../../../../src/app');
 		// eslint-disable-next-line global-require
