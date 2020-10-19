@@ -12,7 +12,6 @@ const defaultOptions = {
 		const serializedParams = qs.stringify(params);
 		return serializedParams;
 	},
-	// transformResponse: (data) => JSON.parse(data),
 };
 const instance = axios.create(defaultOptions);
 
