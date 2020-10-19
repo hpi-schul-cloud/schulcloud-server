@@ -1,6 +1,6 @@
-const request = require('request-promise-native');
 const { Configuration } = require('@schul-cloud/commons');
 const reqlib = require('app-root-path').require;
+const { request } = require('../../../utils/request');
 
 const { GeneralError } = reqlib('src/errors');
 const logger = require('../../../logger');
@@ -54,15 +54,12 @@ class EduSharingConnector {
 	// gets cookie (JSESSION) and attach it to header
 	getCookie() {
 		const cookieOptions = {
-			uri: `${Configuration.get('ES_DOMAIN')}${ES_PATH.AUTH}`,
-			method: 'GET',
+			url: `${Configuration.get('ES_DOMAIN')}${ES_PATH.AUTH}`,
 			headers: EduSharingConnector.authorization,
-			resolveWithFullResponse: true,
-			json: true,
 		};
 		return request(cookieOptions)
 			.then((result) => {
-				if (result.statusCode !== 200 || result.body.isValidLogin !== true) {
+				if (result.status !== 200 || result.data.isValidLogin !== true) {
 					throw Error('authentication error with edu sharing');
 				}
 				return result.headers['set-cookie'][0];
@@ -79,17 +76,15 @@ class EduSharingConnector {
 			url: `${Configuration.get('ES_DOMAIN')}${ES_PATH.TOKEN}`,
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 
-			body: `grant_type=${Configuration.get('ES_GRANT_TYPE')}&client_id=${Configuration.get(
+			data: `grant_type=${Configuration.get('ES_GRANT_TYPE')}&client_id=${Configuration.get(
 				'ES_CLIENT_ID'
 			)}&client_secret=${Configuration.get('ES_OAUTH_SECRET')}&username=${Configuration.get(
 				'ES_USER'
 			)}&password=${Configuration.get('ES_PASSWORD')}`,
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 		try {
-			const result = await request(oauthoptions);
-			const parsedResult = JSON.parse(result);
-			return parsedResult.access_token;
+			const { data } = await request(oauthoptions);
+			return data.access_token;
 		} catch (e) {
 			return new GeneralError('Oauth failed', e);
 		}
@@ -101,8 +96,8 @@ class EduSharingConnector {
 		do {
 			try {
 				// eslint-disable-next-line no-await-in-loop
-				const eduResponse = await request(options);
-				return JSON.parse(eduResponse);
+				const { data } = await request(options);
+				return data; // returns response.data as json
 			} catch (e) {
 				if (RETRY_ERROR_CODES.indexOf(e.statusCode) >= 0) {
 					logger.info(`Trying to renew Edu Sharing connection. Attempt ${retry}`);
@@ -141,30 +136,30 @@ class EduSharingConnector {
 
 	async getImage(url, retry = true) {
 		const reqOptions = {
-			uri: url,
-			method: 'GET',
+			url,
 			headers: {},
+
 			// necessary to get the image as binary value
-			encoding: null,
-			resolveWithFullResponse: true,
+			responseType: 'arraybuffer',
 		};
 		return request(reqOptions)
-			.then(async (result) => {
+			.then((response) => {
 				// edusharing sometimes doesn't return error code if access token is expired
 				// but redirect to no permission image
-				if (retry && result.req.path === NO_PERMISSIONS_IMG) {
+				if (retry && response.request.path === NO_PERMISSIONS_IMG) {
 					return this.tryToGetImageWithNewAccessToken(url);
 				}
-				const encodedData = `data:image;base64,${result.body.toString('base64')}`;
-				return Promise.resolve(encodedData);
+				const encodedData = `data:image;base64,${response.data.toString('base64')}`;
+				return encodedData;
 			})
-			.catch(async (err) => {
-				if (retry && RETRY_ERROR_CODES.indexOf(err.statusCode) >= 0) {
+			.catch((err) => {
+				// todo check statusCode exists
+				if (retry && RETRY_ERROR_CODES.indexOf(err.status) >= 0) {
 					return this.tryToGetImageWithNewAccessToken(url);
 				}
 				logger.error(`Couldn't fetch image for ${url}:
 				Edusharing responded with ${err.statusCode} ${err.message}`);
-				return Promise.reject(err);
+				throw err;
 			});
 	}
 
@@ -183,14 +178,11 @@ class EduSharingConnector {
 		const propertyFilter = '-all-';
 
 		const options = {
-			method: 'GET',
-			// eslint-disable-next-line max-len
 			url: `${Configuration.get('ES_DOMAIN')}${ES_PATH.NODE}${id}/metadata?propertyFilter=${propertyFilter}`,
 			headers: {
 				...EduSharingConnector.headers,
 				cookie: this.authorization,
 			},
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 
 		const eduResponse = await this.requestRepeater(options);
@@ -238,11 +230,10 @@ class EduSharingConnector {
 				...EduSharingConnector.headers,
 				cookie: this.authorization,
 			},
-			body: JSON.stringify({
+			data: JSON.stringify({
 				criterias: [{ property: 'ngsearchword', values: [`${searchQuery.toLowerCase()}`] }],
 				facettes: ['cclom:general_keyword'],
 			}),
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
 		};
 
 		const parsed = await this.requestRepeater(options);
