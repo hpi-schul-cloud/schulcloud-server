@@ -182,8 +182,7 @@ class Service {
 					Authorization: userId,
 				},
 			})
-			.then((response) => {
-				let events = response.data;
+			.then((events) => {
 				events = (events.data || []).map((event) =>
 					Object.assign(event, {
 						title: event.summary,
@@ -206,8 +205,7 @@ class Service {
 				Authorization: userId,
 			},
 		};
-		return request.get(url, options).then((response) => {
-			let events = response.data;
+		return request.get(url, options).then((events) => {
 			events =
 				(params.query || {}).userId ||
 				(events.data || events || []).map((event) =>
@@ -234,10 +232,10 @@ class Service {
 			},
 			data: { data: [{ type: 'event' }] },
 		};
-		return request.delete(url, options).then((res) => {
+		return request.delete(url, options).then((data) => {
 			// calendar returns nothing if event was successfully deleted
-			if (res && !res.data) return { message: 'Successful deleted event' };
-			return res.data;
+			if (!data) return { message: 'Successful deleted event' };
+			return data;
 		});
 	}
 
@@ -251,8 +249,7 @@ class Service {
 				Authorization: userId,
 			},
 		};
-		return request.put(url, convertEventToJsonApi(data), options).then((response) => {
-			let events = response.data;
+		return request.put(url, convertEventToJsonApi(data), options).then((events) => {
 			events = events.data || events || [];
 			return events.map(convertJsonApiToEvent);
 		});

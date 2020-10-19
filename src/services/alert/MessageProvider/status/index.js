@@ -67,7 +67,7 @@ module.exports = {
 				const { data } = await getIncidents();
 				const instanceSpecific = [];
 				const noneSpecific = [];
-				for (const element of data.data) {
+				for (const element of data) {
 					// only mind incidents not older than 2 days
 					if (Date.parse(element.updated_at) + 1000 * 60 * 60 * 24 * 2 >= Date.now()) {
 						// only mind messages for own instance (including none instance specific messages)

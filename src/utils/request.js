@@ -14,6 +14,8 @@ const defaultMethods = ['get', 'delete', 'head', 'options'];
 const mutatingMethods = ['post', 'put', 'patch'];
 const otherMethods = ['request'];
 
+const getResponseData = (response) => response.data;
+
 /**
  * Request wrapper
  * @param {axios.Method} method
@@ -37,51 +39,51 @@ const requestWrapper = (method, url, data = undefined, options = undefined) => {
 
 module.exports = {
 	/**
-	 * Get request wrapper
+	 * Get request wrapper, returning json response data
 	 * @param {string} url
 	 * @param {axios.AxiosRequestConfig} options
-	 * @returns {Promise<axios.AxiosResponse<T>>}
+	 * @returns {Promise<any>}
 	 */
 	get: (url, options) => {
-		return requestWrapper('get', url, undefined, options);
+		return requestWrapper('get', url, undefined, options).then(getResponseData);
 	},
 
 	/**
-	 * Post request wrapper
+	 * Post request wrapper, returning json response data
 	 * @param {string} url
 	 * @param {any} data
 	 * @param {axios.AxiosRequestConfig} options
-	 * @returns {Promise<axios.AxiosResponse<T>>}
+	 * @returns {Promise<any>}
 	 */
 	post: (url, data, options) => {
-		return requestWrapper('post', url, data, options);
+		return requestWrapper('post', url, data, options).then(getResponseData);
 	},
 
 	/**
-	 * Post request wrapper
+	 * Post request wrapper, returning json response data
 	 * @param {string} url
 	 * @param {any} data
 	 * @param {axios.AxiosRequestConfig} options
-	 * @returns {Promise<axios.AxiosResponse<T>>}
+	 * @returns {Promise<any>}
 	 */
 	put: (url, data, options) => {
-		return requestWrapper('put', url, data, options);
+		return requestWrapper('put', url, data, options).then(getResponseData);
 	},
 
 	/**
-	 * Delete request wrapper
+	 * Delete request wrapper, returning json response data
 	 * @param {string} url
 	 * @param {any} data
 	 * @param {axios.AxiosRequestConfig} options
-	 * @returns {Promise<axios.AxiosResponse<T>>}
+	 * @returns {Promise<any>}
 	 */
 	delete: (url, options) => {
 		// axios.delete does not support data to be added into options, use request instead
-		return requestWrapper('request', undefined, undefined, { ...options, url, method: 'DELETE' });
+		return requestWrapper('request', undefined, undefined, { ...options, url, method: 'DELETE' }).then(getResponseData);
 	},
 
 	/**
-	 * Generic request wrapper
+	 * Generic request wrapper, returning plain response
 	 * @param {axios.AxiosRequestConfig} options
 	 * @returns {Promise<axios.AxiosResponse<T>>}
 	 */
