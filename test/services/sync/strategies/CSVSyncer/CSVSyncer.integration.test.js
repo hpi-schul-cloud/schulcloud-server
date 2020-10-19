@@ -1596,7 +1596,7 @@ describe('CSVSyncer Integration', () => {
 				role: 'teacher',
 			};
 			scenarioData = {
-				data: 'firstName,lastName,email\n' + `Peter,Pan,${user.email}\n` + `Test,Testington,${student.email}\n`,
+				data: `firstName,lastName,email\n Peter,Pan,${user.email}\n Test,Testington,${student.email}\n`,
 			};
 		});
 
