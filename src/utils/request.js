@@ -1,4 +1,5 @@
 const axios = require('axios');
+const qs = require('qs');
 const { Configuration } = require('@schul-cloud/commons');
 
 /**
@@ -6,8 +7,13 @@ const { Configuration } = require('@schul-cloud/commons');
  */
 const defaultOptions = {
 	timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
+	paramsSerializer: (params) => {
+		// use custom params serializer based on qs as it supports nested objects
+		const serializedParams = qs.stringify(params);
+		return serializedParams;
+	},
+	// transformResponse: (data) => JSON.parse(data),
 };
-
 const instance = axios.create(defaultOptions);
 
 const defaultMethods = ['get', 'delete', 'head', 'options'];

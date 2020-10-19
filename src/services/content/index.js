@@ -20,7 +20,7 @@ class ResourcesService {
 		const serviceUrls = this.app.get('services') || {};
 		const url = `${serviceUrls.content}/resources/`;
 		const options = {
-			data: params.query,
+			params: params.query,
 		};
 		return get(url, options).then((message) => message);
 	}
@@ -45,7 +45,7 @@ class SearchService {
 		const serviceUrls = this.app.get('services') || {};
 		const url = `${serviceUrls.content}/search/`;
 		const options = {
-			data: params.query,
+			params: params.query,
 		};
 		return get(url, options).then((message) => message);
 	}
