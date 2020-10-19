@@ -21,7 +21,7 @@ describe('oauth2 service', function oauthTest() {
 	let introspectService;
 	let consentService;
 	let server;
-	this.timeout(10000);
+	this.timeout(15000);
 
 	const testUser2 = {
 		_id: '0000d224816abba584714c9c',
@@ -46,9 +46,9 @@ describe('oauth2 service', function oauthTest() {
 	};
 
 	let beforeHydraUri;
-	before(async () => {
-		app = await appPromise;
+	before(async function before() {
 		this.timeout(10000);
+		app = await appPromise;
 
 		baseUrlService = app.service('oauth2/baseUrl');
 		clientsService = app.service('oauth2/clients');
