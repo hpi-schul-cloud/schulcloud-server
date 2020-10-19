@@ -35,6 +35,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - fixed README badges
 - SC-6151 fixed a bug that prevented api docu from being accessible
 
+
+## [25.1.2] - 2020-10-15
+
+### Fixed
+
+- SC-7085 - fixed importHash error when asking parent consent
+
+### Added
+
+### Removed
+
 ## [25.1.1] - 2020-10-12
 
 ### Security
@@ -168,7 +179,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [24.5.0] - 2020-09-14
 
-- SC-6674 Added checks to ensure unique emails
 - Ignore database seed data with prettier, eslint, and codacy
 - SC-6640 - Fixed email check within registration (case insensitive)
 

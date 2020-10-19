@@ -1,8 +1,8 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "25.1.1",
-	"homepage": "https://hpi-schul-cloud.de",
+	"version": "25.1.2",
+	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
 		"feathers"
