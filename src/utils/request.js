@@ -60,7 +60,7 @@ module.exports = {
 	},
 
 	/**
-	 * Post request wrapper, returning json response data
+	 * Put request wrapper, returning json response data
 	 * @param {string} url
 	 * @param {any} data
 	 * @param {axios.AxiosRequestConfig} options
@@ -68,6 +68,17 @@ module.exports = {
 	 */
 	put: (url, data, options) => {
 		return requestWrapper('put', url, data, options).then(getResponseData);
+	},
+
+	/**
+	 * Patch request wrapper, returning json response data
+	 * @param {string} url
+	 * @param {any} data
+	 * @param {axios.AxiosRequestConfig} options
+	 * @returns {Promise<any>}
+	 */
+	patch: (url, data, options) => {
+		return requestWrapper('patch', url, data, options).then(getResponseData);
 	},
 
 	/**
