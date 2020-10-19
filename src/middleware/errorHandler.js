@@ -2,10 +2,11 @@ const Sentry = require('@sentry/node');
 const express = require('@feathersjs/express');
 const { Configuration } = require('@schul-cloud/commons');
 const jwt = require('jsonwebtoken');
+
 const reqlib = require('app-root-path').require;
 
 const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention } = reqlib('src/errors');
-const { convertToFeathersError } = reqlib('src/errors/utils');
+const { convertToFeathersError, cleanupIncomingMessage } = reqlib('src/errors/utils');
 
 const logger = require('../logger');
 
@@ -57,6 +58,9 @@ const formatAndLogErrors = (error, req, res, next) => {
 		const requestInfo = getRequestInfo(req);
 		// type is override by logger for logging type
 		err.errorType = err.type;
+
+		// nested in errors
+		cleanupIncomingMessage(err.errors);
 		// for tests level is set to emerg, set LOG_LEVEL=debug for see it
 		// Logging the error object won't print error's stack trace. You need to ask for it specifically
 		logger.error({ ...err, ...requestInfo });
