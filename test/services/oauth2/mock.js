@@ -108,13 +108,11 @@ describe('oauth2 service', function oauthTest() {
 				assert(true);
 			}));
 
-	it('GET Login Request', () =>
-		app
-			.service('oauth2/loginRequest')
-			.get(null)
-			.then((result) => {
-				assert.strictEqual(result.challenge, null);
-			}));
+	it('GET Login Request', async () => {
+		const id = null;
+		const result = await app.service('oauth2/loginRequest').get(id);
+		expect(result).to.eql({ challenge: null, client: { client_id: 'thethingwearelookingfor' } });
+	});
 
 	it('PATCH Login Request Accept', async () => {
 		const user = await testObjects.createTestUser();
