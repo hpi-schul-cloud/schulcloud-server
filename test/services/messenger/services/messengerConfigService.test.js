@@ -15,6 +15,7 @@ describe('MessengerConfigService', function test() {
 		configBefore = Configuration.toObject(); // deep copy current config
 		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 		Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
+		delete require.cache[require.resolve('../../../../src/app')];
 		// eslint-disable-next-line global-require
 		app = await require('../../../../src/app');
 		// eslint-disable-next-line global-require
