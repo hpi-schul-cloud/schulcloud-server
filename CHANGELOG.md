@@ -20,6 +20,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6769 - Introduce API validation module
 - SC-6769 - API validation for users/admin routes
 - SC-6510 - Added Merlin Url Generator for Lern Store / Edu-sharing
+- SC-6567 - Add utils to cleanup incomingMessage stacks by logging errors
 
 ### Removed
 
