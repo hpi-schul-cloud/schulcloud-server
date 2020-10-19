@@ -1,13 +1,8 @@
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+const queryString = require('qs');
 const request = require('../../utils/request');
 const hooks = require('./hooks');
-
-function toQueryString(paramsObject) {
-	return Object.keys(paramsObject)
-		.map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
-		.join('&');
-}
 
 /**
  * converts a jsonApi-event to a plain event
@@ -198,7 +193,7 @@ class Service {
 
 	find(params) {
 		const serviceUrls = this.app.get('services') || {};
-		const url = `${serviceUrls.calendar}/events?${toQueryString(params.query)}`;
+		const url = `${serviceUrls.calendar}/events?${queryString.stringify(params.query)}`;
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
 			headers: {
