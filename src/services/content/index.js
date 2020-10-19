@@ -1,15 +1,15 @@
 /* eslint-disable max-classes-per-file */
-const request = require('request-promise-native');
 const service = require('feathers-mongoose');
-const { Configuration } = require('@schul-cloud/commons');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+const { get, patch } = require('../../utils/request');
 const material = require('./material-model');
 
 const resourcesHooks = require('./hooks/resources');
 const redirectHooks = require('./hooks/redirect');
 const searchHooks = require('./hooks/search');
 const materialsHooks = require('./hooks/materials');
+const logger = require('../../logger');
 
 class ResourcesService {
 	constructor(options) {
@@ -18,23 +18,17 @@ class ResourcesService {
 
 	find(params) {
 		const serviceUrls = this.app.get('services') || {};
+		const url = `${serviceUrls.content}/resources/`;
 		const options = {
-			uri: `${serviceUrls.content}/resources/`,
-			qs: params.query,
-			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
+			data: params.query,
 		};
-		return request(options).then((message) => message);
+		return get(url, options).then((message) => message);
 	}
 
 	get(id) {
 		const serviceUrls = this.app.get('services') || {};
-		const options = {
-			uri: `${serviceUrls.content}/resources/${id}`,
-			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
-		};
-		return request(options).then((message) => message);
+		const url = `${serviceUrls.content}/resources/${id}`;
+		return get(url).then((message) => message);
 	}
 
 	setup(app) {
@@ -49,13 +43,11 @@ class SearchService {
 
 	find(params) {
 		const serviceUrls = this.app.get('services') || {};
+		const url = `${serviceUrls.content}/search/`;
 		const options = {
-			uri: `${serviceUrls.content}/search/`,
-			qs: params.query,
-			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
+			data: params.query,
 		};
-		return request(options).then((message) => message);
+		return get(url, options).then((message) => message);
 	}
 
 	setup(app) {
@@ -70,20 +62,14 @@ class RedirectService {
 
 	get(id) {
 		const serviceUrls = this.app.get('services') || {};
-		const options = {
-			uri: `${serviceUrls.content}/resources/${id}`,
-			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
-		};
-		return request(options).then((resource) => {
-			// Increase Click Counter
-			request.patch(`${serviceUrls.content}/resources/${id}`, {
-				json: {
-					$inc: {
-						clickCount: 1,
-					},
-				},
-			});
+		const url = `${serviceUrls.content}/resources/${id}`;
+		// Async Increase Click Counter
+		patch(`${serviceUrls.content}/resources/${id}`, {
+			$inc: {
+				clickCount: 1,
+			},
+		}).catch((err) => logger.error('failed to increase click counter', err));
+		return get(url).then((resource) => {
 			return resource.url;
 		});
 	}
