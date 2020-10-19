@@ -1,4 +1,5 @@
 const { disallow } = require('feathers-hooks-common');
+const { Configuration } = require('@schul-cloud/commons');
 
 class MessengerPermissionService {
 	constructor(options) {
@@ -26,7 +27,9 @@ class MessengerPermissionService {
 		const messengerPermissions = {};
 		messengerPermissions.createRoom =
 			user.schoolId.equals(school._id) &&
-			(school.features.includes('studentsMessengerRoomCreate') || userPermissions.includes('MESSENGER_ROOM_CREATE'));
+			(userPermissions.includes('MESSENGER_ROOM_CREATE') ||
+				(Configuration.get('MATRIX_MESSENGER__STUDENT_ROOM_CREATION') &&
+					school.features.includes('studentsMessengerRoomCreate')));
 		return messengerPermissions;
 	}
 }
