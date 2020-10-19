@@ -13,10 +13,39 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-7049 - Added unit tests for Merlin Service
+- SC-7157 - add feature flag for Merlin feature with fallback
 - SC-6567 - add new application errros
 - SC-6766 - Added ESLint rules with Promise rules
 - SC-6830 - Added hook to parse request to arrays when > 20 users are requested in adminUsers service
+- SC-6769 - Introduce API validation module
+- SC-6769 - API validation for users/admin routes
 - SC-6510 - Added Merlin Url Generator for Lern Store / Edu-sharing
+
+### Removed
+
+### Changed
+
+- SC-6986 - Changed a hook in the accounts service that restricts get requests to the same school, it expects a valid userID and matching schoolIds for both the requester and requested users
+- SC-6567 - clean up error pipline
+- SC-6510, fix a minor syntax error when exporting module
+- Update commons to 1.2.7: print configuration on startup, introduce hierarchical configuration file setup
+- Support asynchronous calls during server startup
+
+### Fixed
+
+- fixed README badges
+- SC-6151 fixed a bug that prevented api docu from being accessible
+
+## [25.1.1] - 2020-10-12
+
+### Security
+
+- SC-7165 package update for sanitization and add onload handler
+
+## [25.1.0] - 2020-10-12
+
+### Added
 
 ### Removed
 
@@ -26,22 +55,38 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
-- SC-6567 - clean up error pipline 
-- SC-6510, fix a minor syntax error when exporting module
-- Update commons to 1.2.7: print configuration on startup, introduce hierarchical configuration file setup
 - SC-6774 remove no-await-in-loop from eslint exceptions
 - Rename statistic mails route, secure it over sync api key now
 - SC-6809 - Maintain RabbitMQ connection and channels
 - SC-5230 - Unblock Account-Page in Nuxt (securing /accounts and /users routes)
-- Support asynchronous calls during server startup
-
-### Fixed
-
-- fixed README badges
 
 ### Security
 
 - Added hotfix merges
+
+## [25.0.12] - 2020-10-12
+
+### Fixed
+
+- SC-6676 allows only following roles for registration: teacher/student…
+
+## [25.0.11] - 2020-10-07
+
+### Fixed
+
+- SC-7180 homework create now validates data properly
+
+## [25.0.12] - 2020-10-12
+
+### Fixed
+
+- SC-6676 allows only following roles for registration: teacher/student…
+
+## [25.0.11] - 2020-10-07
+
+### Fixed
+
+- SC-7180 homework create now validates data properly
 
 ## [25.0.10] - 2020-10-07
 
@@ -60,6 +105,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-6676 - Registration: User with role parent should not be able to log-in
 - SC-6960 - instead of deleting and recreating users during the rollback of a failed registration, use replace if necessary
 - SC-6960 - properly raise exceptions during the registration process
 
@@ -112,13 +158,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [25.0.0]
 
-### Changed - 25.0.0
+### Changed
 
 - Extend JWT payload by schoolId and roleIds
 
 ## [24.5.1] - 2020-09-16
 
-### Secrutiy - 24.5.1
+### Secrutiy
 
 - Secure admin routes (update, patch, create)
 

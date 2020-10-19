@@ -2,21 +2,56 @@ const { expect } = require('chai');
 const assert = require('assert');
 
 const appPromise = require('../../../src/app');
-const { userModel } = require('../../../src/services/user/model');
+const accountModel = require('../../../src/services/account/model');
+const { consentModel } = require('../../../src/services/consent/model');
+const { userModel, registrationPinModel } = require('../../../src/services/user/model');
+const { schoolModel } = require('../../../src/services/school/model');
 
 const testObjects = require('../helpers/testObjects')(appPromise);
 
+const patchSchool = (system, schoolId) =>
+	schoolModel
+		.findOneAndUpdate(
+			{ _id: schoolId },
+			{
+				$push: {
+					systems: system._id,
+				},
+			},
+			{ new: true }
+		)
+		.lean()
+		.exec();
+
+const createAccount = (system) =>
+	accountModel.create({
+		lasttriedFailedLogin: '1970-01-01T00:00:00.000+0000',
+		activated: false,
+		username: 'fritz',
+		password: '',
+		systemId: system._id,
+	});
+
+const createPin = (pin = 6716, email) =>
+	registrationPinModel.create({
+		verified: false,
+		email: email || `${Date.now()}@test.de`,
+		pin,
+	});
+
 describe('registration service', () => {
+	let server;
 	let registrationService;
 	let registrationPinService;
-	let app;
-	let server;
+	let hashService;
 
-	before(async () => {
-		app = await appPromise;
-		registrationService = app.service('registration');
-		registrationPinService = app.service('registrationPins');
-		server = await app.listen(0);
+	before((done) => {
+		appPromise.then((app) => {
+			registrationService = app.service('registration');
+			registrationPinService = app.service('registrationPins');
+			hashService = app.service('hash');
+			server = app.listen(0, done);
+		});
 	});
 
 	after(async () => {
@@ -197,17 +232,16 @@ describe('registration service', () => {
 			toHash: email,
 			save: true,
 		};
-		return app
-			.service('hash')
+		return hashService
 			.create(hashData)
 			.then((newHash) => {
 				hash = newHash;
-				return userModel.create({
+				return testObjects.createTestUser({
 					email,
 					firstName: 'Max',
 					lastName: 'Mustermann',
 					schoolId: '5f2987e020834114b8efd6f8',
-					roles: ['5b45f8d28c8dba65f8871e19'], // parent
+					roles: ['5b45f8d28c8dba65f8871e19'],
 					importHash: hash,
 				});
 			})
@@ -249,12 +283,11 @@ describe('registration service', () => {
 			toHash: email,
 			save: true,
 		};
-		return app
-			.service('hash')
+		return hashService
 			.create(hashData)
 			.then((newHash) => {
 				hash = newHash;
-				return userModel.create({
+				return testObjects.createTestUser({
 					email,
 					firstName: 'Max',
 					lastName: 'Mustermann',
@@ -335,12 +368,11 @@ describe('registration service', () => {
 			toHash: email,
 			save: true,
 		};
-		return app
-			.service('hash')
+		return hashService
 			.create(hashData)
 			.then((newHash) => {
 				hash = newHash;
-				return userModel.create({
+				return testObjects.createTestUser({
 					email,
 					firstName: 'Max',
 					lastName: 'Mustermann',

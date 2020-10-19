@@ -3,7 +3,7 @@ version: \"3.7\"
 
 services:
 
-  ### Schul-Cloud Server
+  ### HPI Schul-Cloud Server
   ###
   server-mongodb:
     image: mongo:3.4
