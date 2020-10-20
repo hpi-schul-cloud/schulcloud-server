@@ -292,6 +292,25 @@ const validateUserName = async (context) => {
 	return context;
 };
 
+const restrictToSameSchool = async (context) => {
+	const { query } = context.params;
+	const userIsSuperhero = await globalHooks.hasRoleNoHook(context, context.params.account.userId, 'superhero');
+	if (userIsSuperhero) return context;
+
+	if (query.userId) {
+		const { schoolId: currentUserSchoolId } = await globalHooks.getUser(context);
+		const { schoolId: requestedUserSchoolId } = await context.app.service('users').get(query.userId);
+
+		if (!equalIds(currentUserSchoolId, requestedUserSchoolId)) {
+			throw new Forbidden('You are not allowed to request this information');
+		}
+
+		return context;
+	}
+
+	throw new BadRequest('The request query should include a valid userId');
+};
+
 module.exports = {
 	sanitizeUsername,
 	validateUserName,
@@ -306,4 +325,5 @@ module.exports = {
 	securePatching,
 	filterToRelated,
 	restrictToUsersSchool,
+	restrictToSameSchool,
 };
