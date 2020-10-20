@@ -1,5 +1,6 @@
 const axios = require('axios');
 const qs = require('qs');
+const lodash = require('lodash');
 const { Configuration } = require('@schul-cloud/commons');
 
 module.exports = class RequestWrapper {
@@ -8,9 +9,9 @@ module.exports = class RequestWrapper {
 	 * @param {axios.RequestMethod} method
 	 * @param {string} url the request url
 	 * @param {string?} baseURL will be prefixed in front of url, if defined
-	 * @param {Object} data
+	 * @param {Object} data request body
 	 * @param {Object} params query params
-	 * @param {Object?} headers
+	 * @param {Object?} headers request headers
 	 * @param {boolean} resolveWithFullResponse by default returns response.data, set true to retrieve full response
 	 * @param {string} contentType will set header contentType, 'x-www-form-urlencoded' will transform data from json to form urlencoded
 	 */
@@ -19,7 +20,7 @@ module.exports = class RequestWrapper {
 	 * Create a request wrapper with default options to be applied on every instance request
 	 * @param {RequestOptions} options
 	 */
-	constructor(options) {
+	constructor(options = {}) {
 		this.instanceOptions = options;
 	}
 
@@ -90,20 +91,26 @@ module.exports = class RequestWrapper {
 	 * @private
 	 */
 	requestWrapper(requestOptions) {
-		const axiosOptions = RequestWrapper.transformOptions({ ...this.instanceOptions, ...requestOptions });
-		return axios.request(axiosOptions).then(({ config, data, headers, request, status, statusText }) => {
-			if (config.resolveWithFullResponse === true) {
-				return {
-					options: config,
-					data,
-					headers,
-					request,
-					status,
-					statusText,
-				};
-			}
-			return data;
-		}); // TODO handle and trasform error
+		const mergedOptions = lodash.merge({}, this.instanceOptions, requestOptions);
+		const axiosOptions = RequestWrapper.transformOptions(mergedOptions);
+		return axios
+			.request(axiosOptions)
+			.then(({ config, data, headers, request, status, statusText }) => {
+				if (config.resolveWithFullResponse === true) {
+					return {
+						options: config,
+						data,
+						headers,
+						request,
+						status,
+						statusText,
+					};
+				}
+				return data;
+			})
+			.catch((err) => {
+				console.log(err);
+			}); // TODO handle and trasform error
 	}
 
 	/**
