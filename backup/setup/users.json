@@ -7,7 +7,7 @@
 	"lastName": "Test",
 	"email": "admin@schul-cloud.org",
 	"updatedAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
+		"$date": "2020-10-20T13:04:58.749Z"
 	},
 	"birthday": {
 		"$date": "1977-01-01T11:25:43.556Z"
@@ -25,6 +25,41 @@
 		{
 			"$oid": "0000d186816abba584714c96"
 		}
+	],
+	"searchIndexes": [
+		"T",
+		"Th",
+		"Tho",
+		"hor",
+		"ors",
+		"rst",
+		"ste",
+		"ten",
+		"T",
+		"Te",
+		"Tes",
+		"est",
+		"a",
+		"ad",
+		"adm",
+		"dmi",
+		"min",
+		"in@",
+		"n@s",
+		"@sc",
+		"sch",
+		"chu",
+		"hul",
+		"ul-",
+		"l-c",
+		"-cl",
+		"clo",
+		"lou",
+		"oud",
+		"ud.",
+		"d.o",
+		".or",
+		"org"
 	]
 },
 {
@@ -36,7 +71,7 @@
 	"lastName": "Jura",
 	"email": "janno.jura@schul-cloud.org",
 	"updatedAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
+		"$date": "2020-10-20T13:04:58.749Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -54,6 +89,43 @@
 		{
 			"$oid": "0000d186816abba584714c96"
 		}
+	],
+	"searchIndexes": [
+		"J",
+		"Ja",
+		"Jan",
+		"ann",
+		"nno",
+		"J",
+		"Ju",
+		"Jur",
+		"ura",
+		"j",
+		"ja",
+		"jan",
+		"ann",
+		"nno",
+		"no.",
+		"o.j",
+		".ju",
+		"jur",
+		"ura",
+		"ra@",
+		"a@s",
+		"@sc",
+		"sch",
+		"chu",
+		"hul",
+		"ul-",
+		"l-c",
+		"-cl",
+		"clo",
+		"lou",
+		"oud",
+		"ud.",
+		"d.o",
+		".or",
+		"org"
 	]
 },
 {
@@ -65,7 +137,7 @@
 	"lastName": "Mathe",
 	"email": "schueler@schul-cloud.org",
 	"updatedAt": {
-		"$date": "2020-05-27T14:49:08.845Z"
+		"$date": "2020-10-20T13:04:58.749Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -115,7 +187,43 @@
 				}
 			}
 		]
-	}
+	},
+	"searchIndexes": [
+		"M",
+		"Ma",
+		"Mar",
+		"arl",
+		"rla",
+		"M",
+		"Ma",
+		"Mat",
+		"ath",
+		"the",
+		"s",
+		"sc",
+		"sch",
+		"chu",
+		"hue",
+		"uel",
+		"ele",
+		"ler",
+		"er@",
+		"r@s",
+		"@sc",
+		"sch",
+		"chu",
+		"hul",
+		"ul-",
+		"l-c",
+		"-cl",
+		"clo",
+		"lou",
+		"oud",
+		"ud.",
+		"d.o",
+		".or",
+		"org"
+	]
 },
 {
 	"_id": {
@@ -126,7 +234,7 @@
 	"firstName": "Super",
 	"lastName": "Hero",
 	"updatedAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
+		"$date": "2020-10-20T13:04:58.749Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -144,6 +252,42 @@
 		{
 			"$oid": "0000d186816abba584714c97"
 		}
+	],
+	"searchIndexes": [
+		"S",
+		"Su",
+		"Sup",
+		"upe",
+		"per",
+		"H",
+		"He",
+		"Her",
+		"ero",
+		"s",
+		"su",
+		"sup",
+		"upe",
+		"per",
+		"erh",
+		"rhe",
+		"her",
+		"ero",
+		"ro@",
+		"o@s",
+		"@sc",
+		"sch",
+		"chu",
+		"hul",
+		"ul-",
+		"l-c",
+		"-cl",
+		"clo",
+		"lou",
+		"oud",
+		"ud.",
+		"d.o",
+		".or",
+		"org"
 	]
 },
 {
@@ -155,7 +299,7 @@
 	"lastName": "Carl",
 	"email": "lehrer@schul-cloud.org",
 	"updatedAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
+		"$date": "2020-10-20T13:04:58.749Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -176,6 +320,38 @@
 	],
 	"features": [
 		"edtr"
+	],
+	"searchIndexes": [
+		"C",
+		"Co",
+		"Cor",
+		"ord",
+		"C",
+		"Ca",
+		"Car",
+		"arl",
+		"l",
+		"le",
+		"leh",
+		"ehr",
+		"hre",
+		"rer",
+		"er@",
+		"r@s",
+		"@sc",
+		"sch",
+		"chu",
+		"hul",
+		"ul-",
+		"l-c",
+		"-cl",
+		"clo",
+		"lou",
+		"oud",
+		"ud.",
+		"d.o",
+		".or",
+		"org"
 	]
 },
 {
@@ -188,7 +364,7 @@
 	"firstName": "Waldemar",
 	"lastName": "Wunderlich",
 	"updatedAt": {
-		"$date": "2020-05-27T14:49:08.844Z"
+		"$date": "2020-10-20T13:04:58.749Z"
 	},
 	"createdAt": {
 		"$date": "2017-01-01T00:06:37.148Z"
@@ -223,14 +399,69 @@
 				}
 			}
 		]
-	}
+	},
+	"searchIndexes": [
+		"W",
+		"Wa",
+		"Wal",
+		"ald",
+		"lde",
+		"dem",
+		"ema",
+		"mar",
+		"W",
+		"Wu",
+		"Wun",
+		"und",
+		"nde",
+		"der",
+		"erl",
+		"rli",
+		"lic",
+		"ich",
+		"w",
+		"wa",
+		"wal",
+		"ald",
+		"lde",
+		"dem",
+		"ema",
+		"mar",
+		"ar.",
+		"r.w",
+		".wu",
+		"wun",
+		"und",
+		"nde",
+		"der",
+		"erl",
+		"rli",
+		"lic",
+		"ich",
+		"ch@",
+		"h@s",
+		"@sc",
+		"sch",
+		"chu",
+		"hul",
+		"ul-",
+		"l-c",
+		"-cl",
+		"clo",
+		"lou",
+		"oud",
+		"ud.",
+		"d.o",
+		".or",
+		"org"
+	]
 },
 {
 	"_id": {
 		"$oid": "599ec14d8e4e364ec18ff46d"
 	},
 	"updatedAt": {
-		"$date": "2017-08-24T12:06:37.148Z"
+		"$date": "2020-10-20T13:04:58.749Z"
 	},
 	"createdAt": {
 		"$date": "2017-08-24T12:06:37.148Z"
@@ -252,14 +483,57 @@
 			"$oid": "0000d186816abba584714d02"
 		}
 	],
-	"__v": 0
+	"__v": 0,
+	"searchIndexes": [
+		"F",
+		"Fr",
+		"Fri",
+		"rit",
+		"itz",
+		"S",
+		"Sc",
+		"Sch",
+		"chm",
+		"hmi",
+		"mid",
+		"idt",
+		"d",
+		"de",
+		"dem",
+		"emo",
+		"mo-",
+		"o-s",
+		"-sc",
+		"sch",
+		"chu",
+		"hue",
+		"uel",
+		"ele",
+		"ler",
+		"er@",
+		"r@s",
+		"@sc",
+		"sch",
+		"chu",
+		"hul",
+		"ul-",
+		"l-c",
+		"-cl",
+		"clo",
+		"lou",
+		"oud",
+		"ud.",
+		"d.o",
+		".or",
+		"org"
+	]
 },
 {
 	"_id": {
 		"$oid": "599ec1688e4e364ec18ff46e"
 	},
 	"updatedAt": {
-		"$date": "2017-10-26T15:20:37.310Z"
+		"$date": "2020-10-20T13:04:58.749Z"
 	},
 	"createdAt": {
 		"$date": "2017-08-24T12:07:04.416Z"
@@ -281,14 +555,53 @@
 			"$oid": "0000d186816abba584714d03"
 		}
 	],
-	"__v": 0
+	"__v": 0,
+	"searchIndexes": [
+		"E",
+		"Er",
+		"Eri",
+		"rik",
+		"ika",
+		"M",
+		"Me",
+		"Mei",
+		"eie",
+		"ier",
+		"d",
+		"de",
+		"dem",
+		"emo",
+		"mo-",
+		"o-l",
+		"-le",
+		"leh",
+		"ehr",
+		"hre",
+		"rer",
+		"er@",
+		"r@s",
+		"@sc",
+		"sch",
+		"chu",
+		"hul",
+		"ul-",
+		"l-c",
+		"-cl",
+		"clo",
+		"lou",
+		"oud",
+		"ud.",
+		"d.o",
+		".or",
+		"org"
+	]
 },
 {
 	"_id": {
 		"$oid": "59ad4c412b442b7f81810285"
 	},
 	"updatedAt": {
-		"$date": "2017-09-04T12:51:13.952Z"
+		"$date": "2020-10-20T13:04:58.749Z"
 	},
 	"createdAt": {
 		"$date": "2017-09-04T12:51:13.952Z"
@@ -313,14 +626,51 @@
 			"$oid": "0000d186816abba584714c98"
 		}
 	],
-	"__v": 0
+	"__v": 0,
+	"searchIndexes": [
+		"K",
+		"Kl",
+		"Kla",
+		"lar",
+		"ara",
+		"F",
+		"Fa",
+		"Fal",
+		"all",
+		"k",
+		"kl",
+		"kla",
+		"lar",
+		"ara",
+		"ra.",
+		"a.f",
+		".fa",
+		"fal",
+		"all",
+		"ll@",
+		"l@s",
+		"@sc",
+		"sch",
+		"chu",
+		"hul",
+		"ul-",
+		"l-c",
+		"-cl",
+		"clo",
+		"lou",
+		"oud",
+		"ud.",
+		"d.o",
+		".or",
+		"org"
+	]
 },
 {
 	"_id": {
 		"$oid": "59ae89b71f513506904e1cc9"
 	},
 	"updatedAt": {
-		"$date": "2017-09-05T11:25:43.556Z"
+		"$date": "2020-10-20T13:04:58.749Z"
 	},
 	"createdAt": {
 		"$date": "2017-09-05T11:25:43.556Z"
@@ -340,6 +690,44 @@
 			"$oid": "0000d186816abba584714c99"
 		}
 	],
-	"__v": 0
+	"__v": 0,
+	"searchIndexes": [
+		"P",
+		"Pa",
+		"Pau",
+		"aul",
+		"ula",
+		"M",
+		"Me",
+		"Mey",
+		"eye",
+		"yer",
+		"p",
+		"pa",
+		"pau",
+		"aul",
+		"ula",
+		"la.",
+		"a.m",
+		".me",
+		"mey",
+		"eye",
+		"yer",
+		"er@",
+		"r@s",
+		"@sc",
+		"sch",
+		"chu",
+		"hul",
+		"ul-",
+		"l-c",
+		"-cl",
+		"clo",
+		"lou",
+		"oud",
+		"ud.",
+		"d.o",
+		".or",
+		"org"
+	]
 }]
-
