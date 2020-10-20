@@ -31,7 +31,7 @@ async function generateSystemInformation(hook) {
 	return systemInformation;
 }
 
-function createFeedbackText(user, data) {
+function createFeedbackText(user, data = {}) {
 	const device = data.deviceUserAgent ? `${data.device} [auto-detection: ${data.deviceUserAgent}]` : data.device;
 	let text = `
 SystemInformation: ${data.systemInformation}

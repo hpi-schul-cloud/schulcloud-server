@@ -1,12 +1,16 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest, Forbidden } = reqlib('src/errors');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-const app = require('../../../../src/app');
-const { createTestUser, createTestAccount, createTestSystem, cleanup } = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const { createTestUser, createTestAccount, createTestSystem, cleanup } = require('../../helpers/testObjects')(
+	appPromise
+);
 
 const hookUtils = require('../../../../src/services/activation/hooks/utils');
 const moodleMockServer = require('../../account/moodle/moodleMockServer');
@@ -20,10 +24,12 @@ const existingTestAccountParameters = {
 };
 
 describe('activation/hooks utils', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after(async () => {

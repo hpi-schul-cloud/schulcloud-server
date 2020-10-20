@@ -1,16 +1,16 @@
 const chai = require('chai');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 const SchoolYearFacade = require('../../../src/services/school/logic/year');
 const { schoolModel: School, yearModel: YearModel } = require('../../../src/services/school/model');
 
-const { cleanup } = require('../helpers/testObjects')(app);
-const { create: createSchool } = require('../helpers/services/schools')(app);
+const { cleanup } = require('../helpers/testObjects')(appPromise);
+const { create: createSchool } = require('../helpers/services/schools')(appPromise);
 
 const { expect } = chai;
 
 let defaultYears;
 
-describe('school year logic', async () => {
+describe('school year logic', () => {
 	before('load data', async () => {
 		defaultYears = await YearModel.find().lean().exec();
 	});

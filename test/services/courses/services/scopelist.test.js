@@ -1,14 +1,20 @@
 const { expect } = require('chai');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
 
-const courseScopeListService = app.service('/users/:scopeId/courses');
 
 const oneHour = 600000;
 const twoDays = 172800000;
 
 describe('courses scopelist service', () => {
+	let app;
+	let courseScopeListService;
+	before(async () => {
+		app = await appPromise;
+		courseScopeListService = app.service('/users/:scopeId/courses');
+	});
+
 	it('is properly registered', () => {
 		expect(courseScopeListService).to.not.equal(undefined);
 	});
@@ -276,14 +282,18 @@ describe('courses scopelist service', () => {
 		});
 	});
 
-	afterEach(testObjects.cleanup);
+	// afterEach(testObjects.cleanup);
 });
 
 describe('courses scopelist service integration', () => {
+	let app;
+	let courseScopeListService;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		courseScopeListService = app.service('/users/:scopeId/courses');
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -338,5 +348,5 @@ describe('courses scopelist service integration', () => {
 		expect(response.data[0]._id.toString()).to.equal(course._id.toString());
 	}).timeout(4000);
 
-	afterEach(testObjects.cleanup);
+	// afterEach(testObjects.cleanup);
 });

@@ -3,13 +3,9 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const { ObjectId } = require('mongoose').Types;
 
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
-const { generateRequestParams, generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
-
-const accountService = app.service('/accounts');
-const userService = app.service('/users');
-const registrationPinsService = app.service('/registrationPins');
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
+const { generateRequestParams, generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
 const { validateUserName } = require('../../../../src/services/account/hooks');
 
 chai.use(chaiHttp);
@@ -17,10 +13,19 @@ chai.use(chaiHttp);
 const { expect } = chai;
 
 describe('Account Service', () => {
+	let app;
+	let userService;
+	let registrationPinsService;
+	let accountService;
+
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		accountService = app.service('/accounts');
+		userService = app.service('/users');
+		registrationPinsService = app.service('/registrationPins');
+		server = await app.listen(0);
 	});
 
 	after(async () => {
@@ -575,6 +580,102 @@ describe('Account Service', () => {
 					expect(err).to.have.status(200);
 					done();
 				});
+		});
+
+		it('should not allow external request when the requester and the requested user are not from the same school', async () => {
+			const school = await testObjects.createTestSchool({
+				name: 'testSchool1',
+			});
+			const otherSchool = await testObjects.createTestSchool({
+				name: 'testSchool2',
+			});
+
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
+			const studentAccount = await testObjects.createTestAccount(
+				{ username: student.email, password: student.email },
+				undefined,
+				student
+			);
+
+			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: otherSchool._id });
+			const params = await generateRequestParamsFromUser(user);
+
+			expect(student.schoolId).to.not.equal(user.schoolId);
+
+			try {
+				await accountService.find({ ...params, query: { userId: studentAccount.userId } });
+				expect.fail('The previous call should have failed');
+			} catch (err) {
+				expect(err.code).to.equal(403);
+				expect(err.message).to.equal('You are not allowed to request this information');
+			}
+		});
+
+		it('should allow external request when the requester and the requested user are from the same school', async () => {
+			const student = await testObjects.createTestUser({ roles: ['student'] });
+			const studentAccount = await testObjects.createTestAccount(
+				{ username: student.email, password: student.email },
+				undefined,
+				student
+			);
+
+			const user = await testObjects.createTestUser({ roles: ['teacher'] });
+			const params = await generateRequestParamsFromUser(user);
+
+			expect(student.schoolId.toString()).to.equal(user.schoolId.toString());
+
+			const requestedAccount = await accountService.find({ ...params, query: { userId: studentAccount.userId } });
+			expect(requestedAccount[0].username).to.equal(student.email);
+		});
+
+		it('should not allow request when a userId is not included in the query', async () => {
+			const user = await testObjects.createTestUser({ roles: ['teacher'] });
+			const params = await generateRequestParamsFromUser(user);
+
+			try {
+				await accountService.find(params);
+				expect.fail('The previous call should have failed');
+			} catch (err) {
+				expect(err.code).to.equal(400);
+				expect(err.message).to.equal('Not allowed');
+			}
+		});
+
+		it('should not allow request when a userId is not a valid objectId', async () => {
+			const user = await testObjects.createTestUser({ roles: ['teacher'] });
+			const params = await generateRequestParamsFromUser(user);
+
+			try {
+				await accountService.find({ ...params, query: { userId: 'not a valid object id' } });
+				expect.fail('The previous call should have failed');
+			} catch (err) {
+				expect(err.code).to.equal(400);
+				expect(err.message).to.equal('Not allowed');
+			}
+		});
+
+		it('should allow external request when the requester is superhero and the requested user and superhero are not from the same school', async () => {
+			const school = await testObjects.createTestSchool({
+				name: 'testSchool1',
+			});
+			const otherSchool = await testObjects.createTestSchool({
+				name: 'testSchool2',
+			});
+
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
+			const studentAccount = await testObjects.createTestAccount(
+				{ username: student.email, password: student.email },
+				undefined,
+				student
+			);
+
+			const user = await testObjects.createTestUser({ roles: ['superhero'], schoolId: otherSchool._id });
+			const params = await generateRequestParamsFromUser(user);
+
+			expect(student.schoolId).to.not.equal(user.schoolId);
+
+			const requestedAccount = await accountService.find({ ...params, query: { userId: studentAccount.userId } });
+			expect(requestedAccount[0].username).to.equal(student.email);
 		});
 	});
 

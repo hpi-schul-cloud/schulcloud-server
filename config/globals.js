@@ -12,15 +12,15 @@ const { NODE_ENV = ENVIRONMENTS.DEVELOPMENT } = process.env;
 let defaultLogLevel = null;
 switch (NODE_ENV) {
 	case ENVIRONMENTS.PRODUCTION:
-		defaultLogLevel = 'error';
+		defaultLogLevel = 'error'; // level 3
 		break;
 	case ENVIRONMENTS.TEST:
-		defaultLogLevel = 'emerg';
+		defaultLogLevel = 'emerg'; // level 0
 		break;
 	case ENVIRONMENTS.DEVELOPMENT:
 	case ENVIRONMENTS.MIGRATION:
 	default:
-		defaultLogLevel = 'debug';
+		defaultLogLevel = 'debug'; // level 7
 }
 
 let defaultDbUrl = null;
@@ -41,7 +41,6 @@ const globals = {
 	DOCUMENT_BASE_DIR: process.env.DOCUMENT_BASE_DIR || 'https://s3.hidrive.strato.com/schul-cloud-hpi/',
 	MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE: 5 * 1024 * 1024, // 5MB
 	REQUEST_TIMEOUT: process.env.REQUEST_TIMEOUT || 8000,
-	METRICS_PATH: process.env.METRICS_PATH || '/metrics',
 	MONGOOSE_CONNECTION_POOL_SIZE: parseInt(process.env.MONGOOSE_CONNECTION_POOL_SIZE || '10', 10),
 
 	SC_DOMAIN: process.env.SC_DOMAIN || 'localhost',
@@ -51,6 +50,8 @@ const globals = {
 	SMTP_SENDER: process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
 
 	KEEP_ALIVE: process.env.KEEP_ALIVE || false,
+	LEAD_TIME: process.env.LEAD_TIME ? parseInt(process.env.LEAD_TIME, 10) : undefined,
+	SHOW_VERSION: process.env.SHOW_VERSION,
 	/**
 	 * default value 'development' matches default of app.get('env'), but use globals
 	 */
