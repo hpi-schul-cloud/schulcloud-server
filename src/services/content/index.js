@@ -2,7 +2,9 @@
 const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-const { get, patch } = require('../../utils/request');
+const Api = require('../../utils/request');
+
+const api = new Api();
 const material = require('./material-model');
 
 const resourcesHooks = require('./hooks/resources');
@@ -22,13 +24,13 @@ class ResourcesService {
 		const options = {
 			params: params.query,
 		};
-		return get(url, options).then((message) => message);
+		return api.get(url, options).then((message) => message);
 	}
 
 	get(id) {
 		const serviceUrls = this.app.get('services') || {};
 		const url = `${serviceUrls.content}/resources/${id}`;
-		return get(url).then((message) => message);
+		return api.get(url).then((message) => message);
 	}
 
 	setup(app) {
@@ -47,7 +49,7 @@ class SearchService {
 		const options = {
 			params: params.query,
 		};
-		return get(url, options).then((message) => message);
+		return api.get(url, options).then((message) => message);
 	}
 
 	setup(app) {
@@ -64,12 +66,14 @@ class RedirectService {
 		const serviceUrls = this.app.get('services') || {};
 		const url = `${serviceUrls.content}/resources/${id}`;
 		// Async Increase Click Counter
-		patch(`${serviceUrls.content}/resources/${id}`, {
-			$inc: {
-				clickCount: 1,
-			},
-		}).catch((err) => logger.error('failed to increase click counter', err));
-		return get(url).then((resource) => {
+		api
+			.patch(`${serviceUrls.content}/resources/${id}`, {
+				$inc: {
+					clickCount: 1,
+				},
+			})
+			.catch((err) => logger.error('failed to increase click counter', err));
+		return api.get(url).then((resource) => {
 			return resource.url;
 		});
 	}

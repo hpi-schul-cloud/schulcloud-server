@@ -1,7 +1,8 @@
 const { Configuration } = require('@schul-cloud/commons');
 const reqlib = require('app-root-path').require;
-const { request } = require('../../../utils/request');
+const Api = require('../../../utils/request');
 
+const api = new Api();
 const { GeneralError } = reqlib('src/errors');
 const logger = require('../../../logger');
 const EduSearchResponse = require('./EduSearchResponse');
@@ -54,11 +55,13 @@ class EduSharingConnector {
 	// gets cookie (JSESSION) and attach it to header
 	getCookie() {
 		const cookieOptions = {
-			url: `${Configuration.get('ES_DOMAIN')}${ES_PATH.AUTH}`,
+			url: ES_PATH.AUTH,
+			baseURL: Configuration.get('ES_DOMAIN'),
 			headers: EduSharingConnector.authorization,
 			resolveWithFullResponse: true,
 		};
-		return request(cookieOptions)
+		return api
+			.request(cookieOptions)
 			.then((result) => {
 				if (result.status !== 200 || result.data.isValidLogin !== true) {
 					throw Error('authentication error with edu sharing');
@@ -74,7 +77,8 @@ class EduSharingConnector {
 	async getAuth() {
 		const oauthoptions = {
 			method: 'POST',
-			url: `${Configuration.get('ES_DOMAIN')}${ES_PATH.TOKEN}`,
+			url: ES_PATH.TOKEN,
+			baseURL: Configuration.get('ES_DOMAIN'),
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 
 			data: `grant_type=${Configuration.get('ES_GRANT_TYPE')}&client_id=${Configuration.get(
@@ -84,7 +88,7 @@ class EduSharingConnector {
 			)}&password=${Configuration.get('ES_PASSWORD')}`,
 		};
 		try {
-			const data = await request(oauthoptions);
+			const data = await api.request(oauthoptions);
 			return data.access_token;
 		} catch (e) {
 			return new GeneralError('Oauth failed', e);
@@ -97,7 +101,7 @@ class EduSharingConnector {
 		do {
 			try {
 				// eslint-disable-next-line no-await-in-loop
-				return await request(options);
+				return await api.request(options);
 			} catch (e) {
 				if (RETRY_ERROR_CODES.indexOf(e.status) >= 0) {
 					logger.info(`Trying to renew Edu Sharing connection. Attempt ${retry}`);
@@ -142,7 +146,8 @@ class EduSharingConnector {
 			responseType: 'arraybuffer',
 			resolveWithFullResponse: true,
 		};
-		return request(reqOptions)
+		return api
+			.request(reqOptions)
 			.then((response) => {
 				// edusharing sometimes doesn't return error code if access token is expired
 				// but redirect to no permission image

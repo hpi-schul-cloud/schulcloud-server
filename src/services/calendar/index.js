@@ -1,7 +1,9 @@
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 const queryString = require('qs');
-const request = require('../../utils/request');
+const Api = require('../../utils/request');
+
+const api = new Api();
 const hooks = require('./hooks');
 
 /**
@@ -171,7 +173,7 @@ class Service {
 		const serviceUrls = this.app.get('services') || {};
 		const url = `${serviceUrls.calendar}/events/`;
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
-		return request
+		return api
 			.post(url, convertEventToJsonApi(data), {
 				headers: {
 					Authorization: userId,
@@ -200,7 +202,7 @@ class Service {
 				Authorization: userId,
 			},
 		};
-		return request.get(url, options).then((events) => {
+		return api.get(url, options).then((events) => {
 			events =
 				(params.query || {}).userId ||
 				(events.data || events || []).map((event) =>
@@ -227,7 +229,7 @@ class Service {
 			},
 			data: { data: [{ type: 'event' }] },
 		};
-		return request.delete(url, options).then((data) => {
+		return api.delete(url, options).then((data) => {
 			// calendar returns nothing if event was successfully deleted
 			if (!data) return { message: 'Successful deleted event' };
 			return data;
@@ -244,7 +246,7 @@ class Service {
 				Authorization: userId,
 			},
 		};
-		return request.put(url, convertEventToJsonApi(data), options).then((events) => {
+		return api.put(url, convertEventToJsonApi(data), options).then((events) => {
 			events = events.data || events || [];
 			return events.map(convertJsonApiToEvent);
 		});

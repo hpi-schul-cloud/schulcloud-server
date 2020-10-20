@@ -1,5 +1,5 @@
 const { Configuration } = require('@schul-cloud/commons');
-const { get } = require('../../../../utils/request');
+const Api = require('../../../../utils/request');
 const logger = require('../../../../logger');
 
 const dict = {
@@ -15,6 +15,9 @@ const importance = {
 	ALL_INSTANCES: 0,
 	CURRENT_INSTANCE: 1,
 };
+
+const api = new Api({ baseURL: Configuration.get('ALERT_STATUS_API_URL') });
+
 /**
  * Check if Message is instance specific
  * @param {string} instance
@@ -24,7 +27,7 @@ const importance = {
 async function getInstance(instance, componentId) {
 	if (componentId !== 0) {
 		try {
-			const response = await get(`/components/${componentId}`, { baseURL: Configuration.get('ALERT_STATUS_API_URL') });
+			const response = await api.get(`/components/${componentId}`);
 			if (dict[instance] && response.data.group_id === dict[instance]) {
 				return importance.CURRENT_INSTANCE;
 			}
@@ -42,7 +45,7 @@ async function getInstance(instance, componentId) {
  * @returns {Promise}
  */
 async function getIncidents() {
-	const response = await get('/incidents?sort=id', { baseURL: Configuration.get('ALERT_STATUS_API_URL') });
+	const response = await api.get('/incidents?sort=id');
 	return response;
 }
 
