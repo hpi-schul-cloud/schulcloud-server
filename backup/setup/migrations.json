@@ -795,5 +795,27 @@
 		"$date": "2020-10-01T14:43:03.652Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f8ee07aa2842a35cdd6b326"
+	},
+	"state": "up",
+	"name": "search_index",
+	"createdAt": {
+		"$date": "2020-10-14T16:44:10.245Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f8ee07aa2842a35cdd6b327"
+	},
+	"state": "up",
+	"name": "syncUserIndex",
+	"createdAt": {
+		"$date": "2020-10-15T11:46:01.840Z"
+	},
+	"__v": 0
 }]
 
