@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-## [Unreleased]
+## [25.2.0]
+
+- SC-6060 - Updated error handling
 
 ### Added
 
@@ -20,6 +22,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6769 - Introduce API validation module
 - SC-6769 - API validation for users/admin routes
 - SC-6510 - Added Merlin Url Generator for Lern Store / Edu-sharing
+- SC-6567 - Add utils to cleanup incomingMessage stacks by logging errors
 
 ### Removed
 
@@ -33,8 +36,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
-- fixed README badges
-- SC-6151 fixed a bug that prevented api docu from being accessible
+-         - fixed README badges
+- SC-6151 - fixed a bug that prevented api docu from being accessible
+-         - Fix mocha tests
 
 
 ## [25.1.2] - 2020-10-15
