@@ -56,6 +56,7 @@ class EduSharingConnector {
 		const cookieOptions = {
 			url: `${Configuration.get('ES_DOMAIN')}${ES_PATH.AUTH}`,
 			headers: EduSharingConnector.authorization,
+			resolveWithFullResponse: true,
 		};
 		return request(cookieOptions)
 			.then((result) => {
@@ -65,7 +66,7 @@ class EduSharingConnector {
 				return result.headers['set-cookie'][0];
 			})
 			.catch((err) => {
-				logger.error(`Couldn't get edusharing cookie: ${err.statusCode} ${err.message}`);
+				logger.error(`Couldn't get edusharing cookie: ${err.status} ${err.message}`);
 			});
 	}
 
@@ -83,7 +84,7 @@ class EduSharingConnector {
 			)}&password=${Configuration.get('ES_PASSWORD')}`,
 		};
 		try {
-			const { data } = await request(oauthoptions);
+			const data = await request(oauthoptions);
 			return data.access_token;
 		} catch (e) {
 			return new GeneralError('Oauth failed', e);
@@ -96,17 +97,16 @@ class EduSharingConnector {
 		do {
 			try {
 				// eslint-disable-next-line no-await-in-loop
-				const { data } = await request(options);
-				return data; // returns response.data as json
+				return await request(options);
 			} catch (e) {
-				if (RETRY_ERROR_CODES.indexOf(e.statusCode) >= 0) {
+				if (RETRY_ERROR_CODES.indexOf(e.status) >= 0) {
 					logger.info(`Trying to renew Edu Sharing connection. Attempt ${retry}`);
 					// eslint-disable-next-line no-await-in-loop
 					await this.login();
-				} else if (e.statusCode === 404) {
+				} else if (e.status === 404) {
 					return null;
 				} else {
-					logger.error(`Edusharing error occurred ${e.statusCode} ${e.message}`);
+					logger.error(`Edusharing error occurred ${e.status} ${e.message}`);
 					errors.push(e);
 				}
 			}
@@ -138,9 +138,9 @@ class EduSharingConnector {
 		const reqOptions = {
 			url,
 			headers: {},
-
 			// necessary to get the image as binary value
 			responseType: 'arraybuffer',
+			resolveWithFullResponse: true,
 		};
 		return request(reqOptions)
 			.then((response) => {
@@ -158,7 +158,7 @@ class EduSharingConnector {
 					return this.tryToGetImageWithNewAccessToken(url);
 				}
 				logger.error(`Couldn't fetch image for ${url}:
-				Edusharing responded with ${err.statusCode} ${err.message}`);
+				Edusharing responded with ${err.status} ${err.message}`);
 				throw err;
 			});
 	}
