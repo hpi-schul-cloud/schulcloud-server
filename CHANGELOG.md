@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [25.2.0]
 
+- SC-6060 - Updated error handling
+
 ### Added
 
 - SC-7083 - Added officialSchoolNumber to school-model
@@ -34,8 +36,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
-- fixed README badges
-- SC-6151 fixed a bug that prevented api docu from being accessible
+-         - fixed README badges
+- SC-6151 - fixed a bug that prevented api docu from being accessible
+-         - Fix mocha tests
 
 
 ## [25.1.2] - 2020-10-15
