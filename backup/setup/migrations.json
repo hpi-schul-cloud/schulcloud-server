@@ -814,7 +814,7 @@
 	"state": "up",
 	"name": "syncUserIndex",
 	"createdAt": {
-		"$date": "2020-10-15T11:46:01.840Z"
+		"$date": "2020-10-15T11:46:01.84Z"
 	},
 	"__v": 0
 }]
