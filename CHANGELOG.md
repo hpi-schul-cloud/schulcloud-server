@@ -21,6 +21,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [25.2.0]
 
+- SC-6060 - Updated error handling
+
 ### Added
 
 - SC-7049 - Added unit tests for Merlin Service
