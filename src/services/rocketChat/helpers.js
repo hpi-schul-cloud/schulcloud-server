@@ -28,7 +28,7 @@ exports.getRequestOptions = (shortUri, body, asAdmin, auth, method) => {
 		body,
 		headers,
 		json: true,
-		timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
+		timeout: Configuration.get('REQUEST_TIMEOUT_MS'),
 	};
 };
 

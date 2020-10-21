@@ -38,7 +38,7 @@ module.exports = class RequestWrapper {
 		responseType = 'json', // or 'arraybuffer'
 		contentType = undefined, // or 'x-www-form-urlencoded'
 		resolveWithFullResponse = false, // prefer not to set this true
-		timeout = Configuration.get('REQUEST_TIMEOUT_MILLIS'),
+		timeout = Configuration.get('REQUEST_TIMEOUT_MS'),
 		paramsSerializer = (paramsObj) => {
 			// use custom params serializer based on qs as it supports nested objects
 			const serializedParams = qs.stringify(paramsObj);

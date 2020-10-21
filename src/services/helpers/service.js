@@ -73,7 +73,7 @@ module.exports = function setup(app) {
 					...Mail,
 				},
 				json: true,
-				timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
+				timeout: Configuration.get('REQUEST_TIMEOUT_MS'),
 			};
 
 			// send mail with defined transport object in production mode

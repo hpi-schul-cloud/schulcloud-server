@@ -33,7 +33,7 @@ class MessageService {
 			},
 			body: Object.assign(data, { serviceUrl: serviceUrls.notification }),
 			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
+			timeout: Configuration.get('REQUEST_TIMEOUT_MS'),
 		};
 
 		return request(options).then((response) => response);
@@ -49,7 +49,7 @@ class MessageService {
 				token: userId,
 			},
 			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
+			timeout: Configuration.get('REQUEST_TIMEOUT_MS'),
 		};
 
 		return request(options).then((message) => message);
@@ -75,7 +75,7 @@ class DeviceService {
 				token: userId,
 			},
 			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
+			timeout: Configuration.get('REQUEST_TIMEOUT_MS'),
 		};
 
 		return request(options).then((devices) => devices);
@@ -94,7 +94,7 @@ class DeviceService {
 			},
 			body: data,
 			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
+			timeout: Configuration.get('REQUEST_TIMEOUT_MS'),
 		};
 
 		return request(options).then((response) => mapResponseProps(response));
@@ -108,7 +108,7 @@ class DeviceService {
 			uri: `${serviceUrls.notification}/devices/${id}?token=${userId}`,
 			method: 'DELETE',
 			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
+			timeout: Configuration.get('REQUEST_TIMEOUT_MS'),
 		};
 
 		return request(options).then((message) => message);
@@ -136,7 +136,7 @@ class CallbackService {
 			},
 			body: data,
 			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
+			timeout: Configuration.get('REQUEST_TIMEOUT_MS'),
 		};
 
 		return request(options).then((response) => response);
@@ -162,7 +162,7 @@ class NotificationService {
 				token: userId,
 			},
 			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
+			timeout: Configuration.get('REQUEST_TIMEOUT_MS'),
 		};
 
 		return request(options).then((message) => message);
@@ -179,7 +179,7 @@ class NotificationService {
 				token: userId,
 			},
 			json: true,
-			timeout: Configuration.get('REQUEST_TIMEOUT_MILLIS'),
+			timeout: Configuration.get('REQUEST_TIMEOUT_MS'),
 		};
 
 		return request(options).then((message) => message);
