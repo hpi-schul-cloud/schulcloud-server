@@ -14,14 +14,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7357 - Add config service
 - SC-7083 - Added officialSchoolNumber to school-model
 
+
+## Changed
+
+- SC-6060 - Updated error handling
+
 ### Fixed
 
 -         - Fix mocha tests
 
 
 ## [25.2.0]
-
-- SC-6060 - Updated error handling
 
 ### Added
 
