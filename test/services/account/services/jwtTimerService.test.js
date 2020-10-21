@@ -24,7 +24,7 @@ describe('jwtTimer service', () => {
 		describe('with redis instance', () => {
 			let server;
 			before(async () => {
-				configBefore = Configuration.toObject();
+				configBefore = Configuration.toObject({ plainSecrets: true });
 				mockery.enable({
 					warnOnReplace: false,
 					warnOnUnregistered: false,
