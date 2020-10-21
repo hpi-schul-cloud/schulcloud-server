@@ -369,8 +369,7 @@ describe('school service', () => {
 			let result;
 
 			try {
-				result = await app.service('/schools')
-					.patch(school._id, { officialSchoolNumber: schoolNumber }, params);
+				result = await app.service('/schools').patch(school._id, { officialSchoolNumber: schoolNumber }, params);
 			} catch (err) {
 				throw new Error('should not have failed', err);
 			}
@@ -380,8 +379,7 @@ describe('school service', () => {
 			let result2;
 
 			try {
-				result2 = await app.service('/schools')
-					.patch(school._id, { officialSchoolNumber: schoolNumber2 }, params);
+				result2 = await app.service('/schools').patch(school._id, { officialSchoolNumber: schoolNumber2 }, params);
 			} catch (err) {
 				throw new Error('should not have failed', err);
 			}
