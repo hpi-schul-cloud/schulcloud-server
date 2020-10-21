@@ -59,6 +59,7 @@ const schoolSchema = new Schema(
 			default: '',
 			enum: ['', 'school', 'schoolGroup'],
 		},
+		officialSchoolNumber: { type: String },
 		systems: [{ type: Schema.Types.ObjectId, ref: 'system' }],
 		federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },
 		createdAt: { type: Date, default: Date.now },
