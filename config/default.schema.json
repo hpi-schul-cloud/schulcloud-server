@@ -387,9 +387,9 @@
 		"API_VALIDATION_WHITELIST_EXTENSION": {
 			"type": "string",
 			"description": "when set, this is interpreted as a regex to extend the ignorelist for the API validation with any routes matching the regex.",
-			"examples": [".*\/courses\/[0-9a-f]{24}($|\/$)"]
+			"examples": [".*/courses/[0-9a-f]{24}($|/$)"]
 		},
-		"PROMETHEUS_ENABLED": {
+		"FEATURE_PROMETHEUS_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Enable prometheus api metrics, if enabled, PROMETHEUS must be defined."
@@ -427,14 +427,14 @@
 	],
 	"allOf": [
 		{
-			"$ref": "#/definitions/PROMETHEUS_ENABLED"
+			"$ref": "#/definitions/FEATURE_PROMETHEUS_ENABLED"
 		}
 	],
 	"definitions": {
-		"PROMETHEUS_ENABLED": {
+		"FEATURE_PROMETHEUS_ENABLED": {
 			"if": {
 				"properties": {
-					"PROMETHEUS_ENABLED": {
+					"FEATURE_PROMETHEUS_ENABLED": {
 						"const": true
 					}
 				}
