@@ -143,7 +143,7 @@ function buildSearchIndexOnSave() {
 	this.emailSearchValues = splitForSearchIndexes(this.email);
 }
 function buildSearchIndexOnUpdate() {
-	const data = this.getUpdate();
+	const data = this.getUpdate() || {};
 	if (data.firstName && !data.firstNameSearchValues)
 		this.set('firstNameSearchValues', splitForSearchIndexes(data.firstName));
 	if (data.lastName && !data.lastNameSearchValues)
