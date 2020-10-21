@@ -114,7 +114,18 @@ userSchema.index(
 		lastNameSearchValues: 'text',
 		emailSearchValues: 'text',
 	},
-	{ default_language: 'none' } // no stop words and no stemming
+	{
+		weights: {
+			firstName: 5,
+			lastName: 5,
+			email: 5,
+			firstNameSearchValues: 2,
+			lastNameSearchValues: 2,
+			emailSearchValues: 1,
+		},
+		name: 'userSearchIndex',
+		default_language: 'none', // no stop words and no stemming
+	}
 );
 // maybe the schoolId index is enough ?
 // https://ticketsystem.schul-cloud.org/browse/SC-3724
