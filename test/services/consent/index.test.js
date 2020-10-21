@@ -1,12 +1,14 @@
 const assert = require('assert');
 const chai = require('chai');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
 let consentService;
 let consentVersionService;
 
 describe('consent service', () => {
-	before(() => {
+	let app;
+	before(async () => {
+		app = await appPromise;
 		consentService = app.service('/consents');
 		consentService.setup(app);
 		consentVersionService = app.service('consentVersions');

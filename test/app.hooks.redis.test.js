@@ -6,7 +6,7 @@ const redisMock = require('./utils/redis/redisMock');
 const { Configuration } = commons; // separated from require, mocked in tests
 
 describe('handleAutoLogout hook', function test() {
-	this.timeout(10000);
+	this.timeout(20000);
 
 	let fut;
 	let redisHelper;
@@ -34,7 +34,7 @@ describe('handleAutoLogout hook', function test() {
 		delete require.cache[require.resolve('../src/app.hooks')];
 		/* eslint-disable global-require */
 		redisHelper = require('../src/utils/redis');
-		app = require('../src/app');
+		app = await require('../src/app');
 		testObjects = require('./services/helpers/testObjects')(app);
 		fut = require('../src/app.hooks').handleAutoLogout;
 		/* eslint-enable global-require */

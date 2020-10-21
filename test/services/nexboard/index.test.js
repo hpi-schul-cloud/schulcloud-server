@@ -38,9 +38,9 @@ describe('Nexboard services', () => {
 	let testHelpers;
 	let configBefore;
 
-	before((done) => {
+	before(() => {
 		configBefore = Configuration.toObject();
-		freeport((err, port) => {
+		freeport(async (err, port) => {
 			if (err) {
 				logger.warning('freeport:', err);
 			}
@@ -51,11 +51,11 @@ describe('Nexboard services', () => {
 			Configuration.set('NEXBOARD_USER_ID', 'someuserid');
 
 			// eslint-disable-next-line global-require
-			app = require('../../../src/app');
+			app = await require('../../../src/app');
 			server = app.listen(0);
 			testHelpers = testObjects(app);
 
-			const mock = MockServer(mockUrl, Configuration.get('NEXBOARD_URI'), done);
+			const mock = await MockServer(mockUrl, Configuration.get('NEXBOARD_URI'));
 			mockServer = mock.server;
 		});
 	});

@@ -2,6 +2,7 @@ const express = require('express');
 const { promisify } = require('es6-promisify');
 const bodyParser = require('body-parser');
 const freeport = promisify(require('freeport'));
+const logger = require('../../../src/logger');
 
 module.exports = function oauth2MockServer({ port = null }) {
 	const findFreePort = port ? Promise.resolve(port) : freeport();
@@ -71,6 +72,7 @@ module.exports = function oauth2MockServer({ port = null }) {
 				});
 
 				mockOauth.listen(mockOauth.port, () => {
+					logger.debug('oauth mock is is started! Settings=', mockOauth);
 					resolve(mockOauth);
 				});
 			})

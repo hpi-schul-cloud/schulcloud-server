@@ -5,7 +5,7 @@ const tempPinIds = [];
 
 const rnd = () => Math.round(Math.random() * 10000);
 
-const createTestUser = (app, opt) => async ({
+const createTestUser = (appPromise, opt) => async ({
 	// required fields for user
 	firstName = 'Max',
 	lastName = 'Mustermann',
@@ -20,6 +20,7 @@ const createTestUser = (app, opt) => async ({
 	manualCleanup = false,
 	...otherParams
 } = {}) => {
+	const app = await appPromise;
 	const registrationPin = await app.service('registrationPins').create({ email, verified: true, silent: true });
 	tempPinIds.push(registrationPin);
 
@@ -44,7 +45,8 @@ const createTestUser = (app, opt) => async ({
 	return user;
 };
 
-const cleanup = (app) => () => {
+const cleanup = (appPromise) => async () => {
+	const app = await appPromise;
 	if (createdUserIds.length === 0) {
 		return Promise.resolve();
 	}

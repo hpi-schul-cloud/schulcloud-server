@@ -21,8 +21,6 @@ const { courseGroupHooks, courseGroupService } = require('./services/courseGroup
 module.exports = function () {
 	const app = this;
 
-	app.configure(courseCopyService);
-
 	app.use('/courses/api', staticContent(path.join(__dirname, '/docs')));
 
 	/* Course model */
@@ -65,6 +63,7 @@ module.exports = function () {
 	const classSuccessorService = app.service('/classes/successor');
 	classSuccessorService.hooks(classSuccessorHooks);
 
+	app.configure(courseCopyService);
 	app.configure(courseScopelistService);
 	app.configure(coursePermissionService);
 	app.configure(courseMembersService);

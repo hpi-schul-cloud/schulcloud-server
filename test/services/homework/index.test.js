@@ -1,23 +1,27 @@
 const assert = require('assert');
 const chai = require('chai');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 
-const homeworkService = app.service('homework');
-const homeworkCopyService = app.service('homework/copy');
 const { expect } = chai;
 
 describe('homework service', function test() {
-	this.timeout(10000);
+	let homeworkService;
+	let homeworkCopyService;
 	let server;
-
-	before((done) => {
-		server = app.listen(0, done);
-	});
+	this.timeout(10000);
 
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+	});
+
+	before((done) => {
+		appPromise.then((app) => {
+			homeworkService = app.service('homework');
+			homeworkCopyService = app.service('homework/copy');
+			server = app.listen(0, done);
+		});
 	});
 
 	it('registered the homework service', () => {
@@ -264,7 +268,7 @@ describe('homework service', function test() {
 
 	it('contains statistics as students when publicSubmissions:true', async () => {
 		const { students, homework } = await setupHomeworkWithGrades();
-		await app.service('homework').patch(homework._id, { publicSubmissions: true });
+		await homeworkService.patch(homework._id, { publicSubmissions: true });
 		const params = await testObjects.generateRequestParamsFromUser(students[0]);
 		params.query = { _id: homework._id };
 		const result = await homeworkService.find(params);
@@ -291,9 +295,7 @@ describe('homework service', function test() {
 			courseId: course._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
-		const result = await app
-			.service('homework')
-			.patch(homework._id, { description: 'bringe mir 12 Wolfspelze!' }, params);
+		const result = await homeworkService.patch(homework._id, { description: 'bringe mir 12 Wolfspelze!' }, params);
 		expect(result).to.not.be.undefined;
 		expect(result.description).to.equal('bringe mir 12 Wolfspelze!');
 	});
@@ -319,9 +321,7 @@ describe('homework service', function test() {
 			courseId: course._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(actingTeacher);
-		const result = await app
-			.service('homework')
-			.patch(homework._id, { description: 'wirf den Ring ins Feuer!' }, params);
+		const result = await homeworkService.patch(homework._id, { description: 'wirf den Ring ins Feuer!' }, params);
 		expect(result).to.not.be.undefined;
 		expect(result.description).to.equal('wirf den Ring ins Feuer!');
 	});
@@ -347,7 +347,7 @@ describe('homework service', function test() {
 			courseId: course._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(actingTeacher);
-		const result = await app.service('homework').patch(homework._id, { description: 'zeichne mir ein Schaf!' }, params);
+		const result = await homeworkService.patch(homework._id, { description: 'zeichne mir ein Schaf!' }, params);
 		expect(result).to.not.be.undefined;
 		expect(result.description).to.equal('zeichne mir ein Schaf!');
 	});

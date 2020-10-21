@@ -1,12 +1,21 @@
-const app = require('./app');
+const { Configuration } = require('@schul-cloud/commons');
+const appPromise = require('./app');
 const logger = require('./logger');
 const registerProcessEvents = require('./utils/processEvents');
 
 registerProcessEvents(logger);
 
-const port = app.get('port');
-const server = app.listen(port);
+Configuration.printHierarchy();
 
-server.on('listening', () => {
-	logger.log('info', `Schul-Cloud application started on http://${app.get('host')}:${port}`);
-});
+appPromise
+	.then((app) => {
+		const port = app.get('port');
+		const server = app.listen(port);
+
+		server.on('listening', () => {
+			logger.log('info', `Schul-Cloud application started on http://${app.get('host')}:${port}`);
+		});
+	})
+	.catch((err) => {
+		logger.error('server startup failed', err);
+	});

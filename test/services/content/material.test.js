@@ -1,8 +1,10 @@
 const assert = require('assert');
 const { expect } = require('chai');
-const { Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
 
-const app = require('../../../src/app');
+const { Forbidden } = reqlib('src/errors');
+
+const appPromise = require('../../../src/app');
 const Material = require('../../../src/services/content/material-model');
 
 const {
@@ -11,9 +13,19 @@ const {
 	createTestUser,
 	createTestLesson,
 	generateRequestParamsFromUser,
-} = require('../helpers/testObjects')(app);
+} = require('../helpers/testObjects')(appPromise);
 
 describe('material service', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after(() => server.close());
+
 	it('registered the material service', () => {
 		assert.ok(app.service('materials'));
 	});
@@ -32,7 +44,6 @@ describe('material service', () => {
 		let materialA;
 		let materialB;
 
-		let server;
 		before((done) => {
 			server = app.listen(0, done);
 		});
@@ -155,7 +166,5 @@ describe('material service', () => {
 		});
 
 		after(cleanup);
-
-		after(() => server.close());
 	});
 });
