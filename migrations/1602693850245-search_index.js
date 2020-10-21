@@ -8,7 +8,7 @@ const { connect, close } = require('../src/utils/database');
 // use your own name for your model, otherwise other migrations may fail.
 // The third parameter is the actually relevent one for what collection to write to.
 const User = mongoose.model(
-	'makeMeUnique',
+	'addSearchValuesToUserNameAndEmail',
 	new mongoose.Schema(
 		{
 			firstName: { type: String, required: true },
@@ -29,7 +29,6 @@ const splitForSearchIndexes = (...searchTexts) => {
 	const arr = [];
 	searchTexts.forEach((item) => {
 		item.split(' ').forEach((it) => {
-			// eslint-disable-next-line no-plusplus
 			if (it.length === 0) return;
 
 			arr.push(it.slice(0, 1));
@@ -40,15 +39,11 @@ const splitForSearchIndexes = (...searchTexts) => {
 	return arr;
 };
 
-// How to use more than one schema per collection on mongodb
-// https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
-
-// TODO npm run migration-persist and remove this line
-// TODO update seed data and remove this line
-
 module.exports = {
 	up: async function up() {
 		await connect();
+		/// ///////////////////
+		/// Impelementation
 
 		const amount = await User.countDocuments();
 		info(`${amount} users will be udated`);
@@ -57,10 +52,6 @@ module.exports = {
 		let looped = 0;
 
 		while (looped < amount) {
-			// ////////////////////////////////////////////////////
-			// Make changes to the database here.
-			// Hint: Access models via this('modelName'), not an imported model to have
-			// access to the correct database connection. Otherwise Mongoose calls never return.
 			info('load current amount users');
 			const users = await User.find()
 				.select(['firstName', 'lastName', 'email'])
