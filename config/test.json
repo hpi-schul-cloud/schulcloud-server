@@ -11,5 +11,8 @@
 	"FORCE_SEND_EMAIL": true,
 	"NOTIFICATION_PLATFORM": "testplatform",
 	"LDAP_PASSWORD_ENCRYPTION_KEY": "1234567890123456",
-	"ADMIN_TOGGLE_STUDENT_VISIBILITY": "opt-out"
+	"ADMIN_TOGGLE_STUDENT_VISIBILITY": "opt-out",
+	"defaultLogLevel": "emerg",
+	"defaultDbUrl": "mongodb://127.0.0.1:27017/schulcloud-test",
+	"ENVIRONMENTS": "TEST"
 }

@@ -411,6 +411,61 @@
 			},
 			"required": ["METRICS_PATH", "DURATION_BUCKETS_SECONDS"]
 		},
+		"DATABASE": {
+			"type": "object",
+			"description": "Database options",
+			"properties": {
+				"URL": {
+					"type": "string",
+					"default": "mongodb://127.0.0.1:27017/schulcloud",
+					"description": "ConnectionString for DB.",
+					"pattern": ".*(?<!/)$"
+				},
+				"USERNAME": {
+					"type": "string",
+					"default": "admin",
+					"description": "User for DB."
+				},
+				"PASSWORD": {
+					"type": "string",
+					"default": "",
+					"description": "Password for DB."
+				}
+			},
+			"required": ["DB_URL"]
+		},
+		"MONGOOSE_CONNECTION_POOL_SIZE": {
+			"type": "number",
+			"default": "10",
+			"description": "Max. of Bodyparser."
+		},
+		"SC": {
+			"type": "object",
+			"description": "Schul-cloud general options",
+			"properties": {
+				"DOMAIN": {
+					"type": "string",
+					"default": "localhost",
+					"description": "SC_Domain for default"
+				},
+				"THEME": {
+					"type": "string",
+					"default": "default",
+					"description": "User for DB."
+				},
+				"TITLE": {
+					"type": "string",
+					"default": "HPI Schul-Cloud",
+					"description": "Password for DB."
+				},
+				"SHORT_TITLE": {
+					"type": "string",
+					"default": "HPI Schul-Cloud",
+					"description": "Password for DB."
+				}
+			},
+			"required": ["TITLE"]
+		},
 		"BODYPARSER_JSON_LIMIT": {
 			"type": "string",
 			"default": "20mb",
@@ -425,14 +480,79 @@
 			"type": "boolean",
 			"default": false,
 			"description": "tbd"
-		},"NOTIFICATION_PLATFORM": {
+		},
+		"NOTIFICATION_PLATFORM": {
 			"type": "boolean",
 			"default": false,
 			"description": "tbd"
-		},"KEEP_ALIVE": {
+		},
+		"KEEP_ALIVE": {
 			"type": "boolean",
 			"default": false,
 			"description": "tbd"
+		},
+		"LEAD_TIME": {
+			"type": "string",
+			"default": "undefined",
+			"description": "tbd"
+		},
+		"SHOW_VERSION": {
+			"type": "boolean",
+			"default": false,
+			"description": "tbd"
+		},
+		"defaultLogLevel":{
+			"type": "string",
+			"default": "debug",
+			"description": "Set the Loglevel for the environment"
+		}, 
+		"NODE_ENV":{
+			"type": "string",
+			"enum": ["development", "production", "migration migration", "test"],
+			"default": "DEVELOPMENT",
+			"description": "Set the Loglevel for the environment"
+		}, 
+		"DOCUMENT_BASE_DIR":{
+			"type": "string",
+			"default": "https://s3.hidrive.strato.com/schul-cloud-hpi/",
+			"description": "Set the "
+		}, 
+		"MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE":{
+			"type": "number",
+			"default": "5242880",
+			"description": "Set the max. Filesize of Attachments"
+		}, 
+		"REQUEST_TIMEOUT":{
+			"type": "number",
+			"default": "8000",
+			"description": "Set the max. Filesize of Attachments"
+		},
+		"SMTP":{
+			"type": "object",
+			"description": "Schul-cloud general options",
+			"properties": {
+				"SMTP": {
+					"type": "string",
+					"default": "localhost",
+					"description": "SC_Domain for default"
+				},
+				"SENDER": {
+					"type": "string",
+					"default": "default",
+					"description": "Sender for SMTP."
+				},
+				"HOST": {
+					"type": "string",
+					"default": "",
+					"description": "Host for SMTP."
+				},
+				"PORT": {
+					"type": "number",
+					"default": 25,
+					"description": "Port for SMTP."
+				}
+			},
+			"required": ["SENDER"]
 		}
 	},
 	"required": [

@@ -76,7 +76,7 @@ function connect() {
 	);
 
 	const mongooseOptions = {
-		autoIndex: NODE_ENV !== ENVIRONMENTS.PRODUCTION,
+		autoIndex: NODE_ENV !== "production",
 		poolSize: MONGOOSE_CONNECTION_POOL_SIZE,
 		useNewUrlParser: true,
 		useFindAndModify: false,

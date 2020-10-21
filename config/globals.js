@@ -3,16 +3,16 @@
 /* this config is ===== deprecated =====
 please use the default config; you can find the documentation here: https://docs.hpi-schul-cloud.org/display/TSC/Configuration+management  */
 
-const ENVIRONMENTS = {
+/*const ENVIRONMENTS = {
 	DEVELOPMENT: 'development',
 	TEST: 'test',
 	PRODUCTION: 'production',
 	MIGRATION: 'migration',
-};
+};*/
 
-const { NODE_ENV = ENVIRONMENTS.DEVELOPMENT } = process.env;
+//const { NODE_ENV = ENVIRONMENTS.DEVELOPMENT } = process.env;
 
-let defaultLogLevel = null;
+/*let defaultLogLevel = null;
 switch (NODE_ENV) {
 	case ENVIRONMENTS.PRODUCTION:
 		defaultLogLevel = 'error'; // level 3
@@ -24,11 +24,11 @@ switch (NODE_ENV) {
 	case ENVIRONMENTS.MIGRATION:
 	default:
 		defaultLogLevel = 'debug'; // level 7
-}
+}*/
 
 let defaultDbUrl = null;
-switch (NODE_ENV) {
-	case ENVIRONMENTS.TEST:
+switch (process.env) {
+	case "test":
 		defaultDbUrl = 'mongodb://127.0.0.1:27017/schulcloud-test';
 		break;
 	default:
@@ -37,20 +37,21 @@ switch (NODE_ENV) {
 
 const globals = {
 	//BODYPARSER_JSON_LIMIT: process.env.BODYPARSER_JSON_LIMIT || '20mb',  				// will be removed if new config is released
-	//DATABASE_AUDIT: process.env.DATABASE_AUDIT || 'false',
+	DATABASE_AUDIT: process.env.DATABASE_AUDIT || 'false',
 	DB_URL: process.env.DB_URL || defaultDbUrl,
 	DB_USERNAME: process.env.DB_USERNAME,
 	DB_PASSWORD: process.env.DB_PASSWORD,
 	DOCUMENT_BASE_DIR: process.env.DOCUMENT_BASE_DIR || 'https://s3.hidrive.strato.com/schul-cloud-hpi/',
 	MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE: 5 * 1024 * 1024, // 5MB
 	REQUEST_TIMEOUT: process.env.REQUEST_TIMEOUT || 8000,
-	MONGOOSE_CONNECTION_POOL_SIZE: parseInt(process.env.MONGOOSE_CONNECTION_POOL_SIZE || '10', 10),
+	MONGOOSE_CONNECTION_POOL_SIZE: parseInt(process.env.MONGOOSE_CONNECTION_POOL_SIZE || '10', 10),				//made a number out of string!!!!!  ATENTI
 
+	//new Domain SC
 	SC_DOMAIN: process.env.SC_DOMAIN || 'localhost',
 	SC_THEME: process.env.SC_THEME || 'default',
 	SC_TITLE: process.env.SC_TITLE || 'HPI Schul-Cloud',
 	SC_SHORT_TITLE: process.env.SC_SHORT_TITLE || 'HPI Schul-Cloud',
-	SMTP_SENDER: process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
+	
 
 	//KEEP_ALIVE: process.env.KEEP_ALIVE || false,									// will be removed if new config is released
 	LEAD_TIME: process.env.LEAD_TIME ? parseInt(process.env.LEAD_TIME, 10) : undefined,
@@ -58,11 +59,12 @@ const globals = {
 	/**
 	 * default value 'development' matches default of app.get('env'), but use globals
 	 */
-	NODE_ENV,
-	ENVIRONMENTS,
-	LOG_LEVEL: process.env.LOG_LEVEL || defaultLogLevel,
+	//NODE_ENV,																									//!!!!! ATENTI
+	//ENVIRONMENTS,																								//!!!!! ATENTI
+	//LOG_LEVEL: process.env.LOG_LEVEL || defaultLogLevel,
 	SYSTEM_LOG_LEVEL: process.env.SYSTEM_LOG_LEVEL || 'sendRequests',
 	// secrets smtp
+	SMTP_SENDER: process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
 	SMTP: process.env.SMTP,
 	SMTP_HOST: process.env.SMTP_HOST,
 	SMTP_PORT: process.env.SMTP_PORT,
@@ -115,9 +117,9 @@ const globals = {
 };
 
 // validation /////////////////////////////////////////////////
-const ENVIRONMENT_VALUES = Object.values(ENVIRONMENTS);
+/*const ENVIRONMENT_VALUES = Object.values(ENVIRONMENTS);
 if (!ENVIRONMENT_VALUES.includes(globals.NODE_ENV)) {
 	throw new Error('NODE_ENV must match one of valid environments', { ENVIRONMENT_VALUES, NODE_ENV });
-}
+}*/
 
 module.exports = globals;

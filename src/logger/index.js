@@ -12,9 +12,9 @@ const addType = format.printf((log) => {
 	return log;
 });
 
-const colorize = NODE_ENV !== ENVIRONMENTS.PRODUCTION;
+const colorize = NODE_ENV !== "production";
 let formater;
-if (NODE_ENV === ENVIRONMENTS.TEST) {
+if (NODE_ENV === "test") {
 	formater = format.combine(format.prettyPrint({ depth: 1, colorize }));
 } else {
 	formater = format.combine(

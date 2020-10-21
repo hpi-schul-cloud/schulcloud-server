@@ -44,7 +44,7 @@ try {
 }
 
 const authenticationSecret = secrets.authentication ? secrets.authentication : 'secrets';
-if (NODE_ENV === ENVIRONMENTS.PRODUCTION && !secrets.authentication) {
+if (NODE_ENV === "production" && !secrets.authentication) {
 	logger.error('use default authentication secret');
 }
 

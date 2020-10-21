@@ -10,5 +10,23 @@
 		"hydra": "HYDRA_URI",
 		"web": "HOST"
 	},
-	"NOTIFICATION_PLATFORM":"NOTIFICATION_PLATFORM"
+	"NOTIFICATION_PLATFORM":"NOTIFICATION_PLATFORM",
+	"defaultLogLevel": "error",
+	"DATABASE":{
+		"DB_URL": "process.env.DB_URL",
+		"DB_USERNAME": "process.env.DB_USERNAME",
+		"DB_PASSWORD": "process.env.DB_PASSWORD"
+	},
+	"SHOW_VERSION": "process.env.SHOW_VERSION",
+	"LEAD_TIME": "process.env.LEAD_TIME",
+	"ENVIRONMENTS": "process.env.DOCUMENT_BASE_DIR",
+	"NODE_ENV": "production",
+	"REQUEST_TIMEOUT": "process.env.REQUEST_TIMEOUT",
+	"MONGOOSE_CONNECTION_POOL_SIZE": "process.env.MONGOOSE_CONNECTION_POOL_SIZE",
+	"SC":{
+		"DOMAIN": "process.env.SC_DOMAIN",
+		"SC_THEME": "process.env.SC_THEME",
+		"SC_TITLE": "process.env.SC_TITLE",
+		"SC_SHORT_TITLE": "process.env.SC_SHORT_TITLE"
+	}
 }

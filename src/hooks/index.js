@@ -487,7 +487,7 @@ exports.restrictToUsersOwnCourses = (context) =>
 		return context;
 	});
 
-const isProductionMode = NODE_ENV === ENVIRONMENTS.PRODUCTION;
+const isProductionMode = NODE_ENV === "production";
 exports.mapPayload = (context) => {
 	if (!isProductionMode) {
 		logger.info(

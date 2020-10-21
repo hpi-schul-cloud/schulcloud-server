@@ -12,12 +12,7 @@ const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
 const { Configuration } = require('@schul-cloud/commons');
-
-const KEEP_ALIVE = Configuration.get('KEEP_ALIVE');
-const BODYPARSER_JSON_LIMIT = Configuration.get('BODYPARSER_JSON_LIMIT');
-
-const { METRICS_PATH, LEAD_TIME } = require('../config/globals'); 	// was: KEEP_ALIVE, BODYPARSER_JSON_LIMIT 
-																 	//global.js is deprecated; later global.js will be completely removed. 					
+			
 const middleware = require('./middleware');
 const sockets = require('./sockets');
 const services = require('./services');
@@ -41,7 +36,7 @@ const setupApp = async () => {
 	const config = configuration();
 	app.configure(config);
 
-	if (LEAD_TIME) {
+	if (Configuration.has('LEAD_TIME') && Configuration.get('LEAD_TIME')) {
 		app.use((req, res, next) => {
 			req.leadTime = Date.now();
 			next();
@@ -69,7 +64,7 @@ const setupApp = async () => {
 		.use(favicon(path.join(app.get('public'), 'favicon.ico')))
 		.use('/', express.static('public'))
 		.configure(sentry)
-		.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
+		.use('/helpdesk', bodyParser.json({ limit: Configuration.get('BODYPARSER_JSON_LIMIT') }))
 		.use('/', bodyParser.json({ limit: '10mb' }))
 		.use(bodyParser.urlencoded({ extended: true }))
 		.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
