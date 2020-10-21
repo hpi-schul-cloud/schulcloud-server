@@ -205,6 +205,20 @@ const isNotAuthenticated = async (context) => {
 	return !((context.params.headers || {}).authorization || (context.params.account && context.params.account.userId));
 };
 
+const validateSchoolNumber = (context) => {
+	if (context && context.data && context.data.officialSchoolNumber) {
+		const { officialSchoolNumber } = context.data;
+		// eg: 'BE-16593' or '16593'
+		const officialSchoolNumberFormat = RegExp('\\D{0,2}-*\\d{5}$');
+		if (!officialSchoolNumberFormat.test(officialSchoolNumber)) {
+			throw new Error(`
+			School number is incorrect.\n The format should be 'AB-12345' or '12345' (without the quotations)
+			`);
+		}
+	}
+	return context;
+};
+
 exports.before = {
 	all: [globalHooks.authenticateWhenJWTExist],
 	find: [],
@@ -226,6 +240,7 @@ exports.before = {
 		globalHooks.ifNotLocal(hasEditPermissions),
 		globalHooks.ifNotLocal(globalHooks.lookupSchool),
 		globalHooks.ifNotLocal(restrictToUserSchool),
+		validateSchoolNumber,
 	],
 	/* It is disabled for the moment, is added with new "Löschkonzept"
     remove: [authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
