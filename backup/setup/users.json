@@ -130,331 +130,6 @@
 },
 {
 	"_id": {
-		"$oid": "0000d224816abba584714c9c"
-	},
-	"__v": 0,
-	"firstName": "Marla",
-	"lastName": "Mathe",
-	"email": "schueler@schul-cloud.org",
-	"updatedAt": {
-		"$date": "2020-10-20T13:04:58.749Z"
-	},
-	"createdAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
-	},
-	"birthday": {
-		"$date": "2000-01-01T11:25:43.556Z"
-	},
-	"preferences": {
-		"firstLogin": true
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c99"
-		}
-	],
-	"consent": {
-		"userConsent": {
-			"form": "digital",
-			"privacyConsent": true,
-			"termsOfUseConsent": true,
-			"dateOfPrivacyConsent": {
-				"$date": "2017-01-01T00:06:37.148Z"
-			},
-			"dateOfTermsOfUseConsent": {
-				"$date": "2017-01-01T00:06:37.148Z"
-			}
-		},
-		"parentConsents": [
-			{
-				"_id": {
-					"$oid": "5ece7de4a194604c6e31f434"
-				},
-				"form": "digital",
-				"privacyConsent": true,
-				"termsOfUseConsent": true,
-				"dateOfPrivacyConsent": {
-					"$date": "2017-01-01T00:06:37.148Z"
-				},
-				"dateOfTermsOfUseConsent": {
-					"$date": "2017-01-01T00:06:37.148Z"
-				}
-			}
-		]
-	},
-	"searchIndexes": [
-		"M",
-		"Ma",
-		"Mar",
-		"arl",
-		"rla",
-		"M",
-		"Ma",
-		"Mat",
-		"ath",
-		"the",
-		"s",
-		"sc",
-		"sch",
-		"chu",
-		"hue",
-		"uel",
-		"ele",
-		"ler",
-		"er@",
-		"r@s",
-		"@sc",
-		"sch",
-		"chu",
-		"hul",
-		"ul-",
-		"l-c",
-		"-cl",
-		"clo",
-		"lou",
-		"oud",
-		"ud.",
-		"d.o",
-		".or",
-		"org"
-	]
-},
-{
-	"_id": {
-		"$oid": "0000d231816abba584714c9c"
-	},
-	"__v": 0,
-	"email": "superhero@schul-cloud.org",
-	"firstName": "Super",
-	"lastName": "Hero",
-	"updatedAt": {
-		"$date": "2020-10-20T13:04:58.749Z"
-	},
-	"createdAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
-	},
-	"birthday": {
-		"$date": "1977-01-01T11:25:43.556Z"
-	},
-	"preferences": {
-		"firstLogin": true
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c97"
-		}
-	],
-	"searchIndexes": [
-		"S",
-		"Su",
-		"Sup",
-		"upe",
-		"per",
-		"H",
-		"He",
-		"Her",
-		"ero",
-		"s",
-		"su",
-		"sup",
-		"upe",
-		"per",
-		"erh",
-		"rhe",
-		"her",
-		"ero",
-		"ro@",
-		"o@s",
-		"@sc",
-		"sch",
-		"chu",
-		"hul",
-		"ul-",
-		"l-c",
-		"-cl",
-		"clo",
-		"lou",
-		"oud",
-		"ud.",
-		"d.o",
-		".or",
-		"org"
-	]
-},
-{
-	"_id": {
-		"$oid": "0000d231816abba584714c9e"
-	},
-	"__v": 0,
-	"firstName": "Cord",
-	"lastName": "Carl",
-	"email": "lehrer@schul-cloud.org",
-	"updatedAt": {
-		"$date": "2020-10-20T13:04:58.749Z"
-	},
-	"createdAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
-	},
-	"birthday": {
-		"$date": "1977-01-01T11:25:43.556Z"
-	},
-	"preferences": {
-		"firstLogin": true
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c98"
-		}
-	],
-	"features": [
-		"edtr"
-	],
-	"searchIndexes": [
-		"C",
-		"Co",
-		"Cor",
-		"ord",
-		"C",
-		"Ca",
-		"Car",
-		"arl",
-		"l",
-		"le",
-		"leh",
-		"ehr",
-		"hre",
-		"rer",
-		"er@",
-		"r@s",
-		"@sc",
-		"sch",
-		"chu",
-		"hul",
-		"ul-",
-		"l-c",
-		"-cl",
-		"clo",
-		"lou",
-		"oud",
-		"ud.",
-		"d.o",
-		".or",
-		"org"
-	]
-},
-{
-	"_id": {
-		"$oid": "58b40278dac20e0645353e3a"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"firstName": "Waldemar",
-	"lastName": "Wunderlich",
-	"updatedAt": {
-		"$date": "2020-10-20T13:04:58.749Z"
-	},
-	"createdAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
-	},
-	"birthday": {
-		"$date": "1989-01-01T11:25:43.556Z"
-	},
-	"preferences": {
-		"firstLogin": true
-	},
-	"email": "waldemar.wunderlich@schul-cloud.org",
-	"roles": [
-		{
-			"$oid": "0000d186816abba584714c99"
-		}
-	],
-	"__v": 0,
-	"consent": {
-		"parentConsents": [
-			{
-				"_id": {
-					"$oid": "5ece7de4a194604c6e31f433"
-				},
-				"form": "analog",
-				"privacyConsent": true,
-				"termsOfUseConsent": true,
-				"dateOfPrivacyConsent": {
-					"$date": "2017-01-01T00:06:37.148Z"
-				},
-				"dateOfTermsOfUseConsent": {
-					"$date": "2017-01-01T00:06:37.148Z"
-				}
-			}
-		]
-	},
-	"searchIndexes": [
-		"W",
-		"Wa",
-		"Wal",
-		"ald",
-		"lde",
-		"dem",
-		"ema",
-		"mar",
-		"W",
-		"Wu",
-		"Wun",
-		"und",
-		"nde",
-		"der",
-		"erl",
-		"rli",
-		"lic",
-		"ich",
-		"w",
-		"wa",
-		"wal",
-		"ald",
-		"lde",
-		"dem",
-		"ema",
-		"mar",
-		"ar.",
-		"r.w",
-		".wu",
-		"wun",
-		"und",
-		"nde",
-		"der",
-		"erl",
-		"rli",
-		"lic",
-		"ich",
-		"ch@",
-		"h@s",
-		"@sc",
-		"sch",
-		"chu",
-		"hul",
-		"ul-",
-		"l-c",
-		"-cl",
-		"clo",
-		"lou",
-		"oud",
-		"ud.",
-		"d.o",
-		".or",
-		"org"
-	]
-},
-{
-	"_id": {
 		"$oid": "599ec14d8e4e364ec18ff46d"
 	},
 	"updatedAt": {
@@ -595,57 +270,82 @@
 },
 {
 	"_id": {
-		"$oid": "59ad4c412b442b7f81810285"
+		"$oid": "0000d224816abba584714c9c"
 	},
+	"__v": 0,
+	"firstName": "Marla",
+	"lastName": "Mathe",
+	"email": "schueler@schul-cloud.org",
 	"updatedAt": {
 		"$date": "2020-10-20T13:04:58.749Z"
 	},
 	"createdAt": {
-		"$date": "2017-09-04T12:51:13.952Z"
+		"$date": "2017-01-01T00:06:37.148Z"
 	},
-	"email": "klara.fall@schul-cloud.org",
 	"birthday": {
-		"$date": "1977-01-01T11:25:43.556Z"
-	},
-	"schoolId": {
-		"$oid": "5f2987e020834114b8efd6f6"
+		"$date": "2000-01-01T11:25:43.556Z"
 	},
 	"preferences": {
 		"firstLogin": true
 	},
-	"firstName": "Klara",
-	"lastName": "Fall",
-	"features": [
-		"edtr"
-	],
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
 	"roles": [
 		{
-			"$oid": "0000d186816abba584714c98"
+			"$oid": "0000d186816abba584714c99"
 		}
 	],
-	"__v": 0,
+	"consent": {
+		"userConsent": {
+			"form": "digital",
+			"privacyConsent": true,
+			"termsOfUseConsent": true,
+			"dateOfPrivacyConsent": {
+				"$date": "2017-01-01T00:06:37.148Z"
+			},
+			"dateOfTermsOfUseConsent": {
+				"$date": "2017-01-01T00:06:37.148Z"
+			}
+		},
+		"parentConsents": [
+			{
+				"_id": {
+					"$oid": "5ece7de4a194604c6e31f434"
+				},
+				"form": "digital",
+				"privacyConsent": true,
+				"termsOfUseConsent": true,
+				"dateOfPrivacyConsent": {
+					"$date": "2017-01-01T00:06:37.148Z"
+				},
+				"dateOfTermsOfUseConsent": {
+					"$date": "2017-01-01T00:06:37.148Z"
+				}
+			}
+		]
+	},
 	"searchIndexes": [
-		"K",
-		"Kl",
-		"Kla",
-		"lar",
-		"ara",
-		"F",
-		"Fa",
-		"Fal",
-		"all",
-		"k",
-		"kl",
-		"kla",
-		"lar",
-		"ara",
-		"ra.",
-		"a.f",
-		".fa",
-		"fal",
-		"all",
-		"ll@",
-		"l@s",
+		"M",
+		"Ma",
+		"Mar",
+		"arl",
+		"rla",
+		"M",
+		"Ma",
+		"Mat",
+		"ath",
+		"the",
+		"s",
+		"sc",
+		"sch",
+		"chu",
+		"hue",
+		"uel",
+		"ele",
+		"ler",
+		"er@",
+		"r@s",
 		"@sc",
 		"sch",
 		"chu",
@@ -727,4 +427,305 @@
 		".or",
 		"org"
 	]
+},
+{
+	"_id": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"__v": 0,
+	"firstName": "Cord",
+	"lastName": "Carl",
+	"email": "lehrer@schul-cloud.org",
+	"updatedAt": {
+		"$date": "2020-10-20T13:04:58.749Z"
+	},
+	"createdAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
+	},
+	"birthday": {
+		"$date": "1977-01-01T11:25:43.556Z"
+	},
+	"preferences": {
+		"firstLogin": true
+	},
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714c98"
+		}
+	],
+	"features": [
+		"edtr"
+	],
+	"searchIndexes": [
+		"C",
+		"Co",
+		"Cor",
+		"ord",
+		"C",
+		"Ca",
+		"Car",
+		"arl",
+		"l",
+		"le",
+		"leh",
+		"ehr",
+		"hre",
+		"rer",
+		"er@",
+		"r@s",
+		"@sc",
+		"sch",
+		"chu",
+		"hul",
+		"ul-",
+		"l-c",
+		"-cl",
+		"clo",
+		"lou",
+		"oud",
+		"ud.",
+		"d.o",
+		".or",
+		"org"
+	]
+},
+{
+	"_id": {
+		"$oid": "0000d231816abba584714c9c"
+	},
+	"__v": 0,
+	"email": "superhero@schul-cloud.org",
+	"firstName": "Super",
+	"lastName": "Hero",
+	"updatedAt": {
+		"$date": "2020-10-20T13:04:58.749Z"
+	},
+	"createdAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
+	},
+	"birthday": {
+		"$date": "1977-01-01T11:25:43.556Z"
+	},
+	"preferences": {
+		"firstLogin": true
+	},
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714c97"
+		}
+	],
+	"searchIndexes": [
+		"S",
+		"Su",
+		"Sup",
+		"upe",
+		"per",
+		"H",
+		"He",
+		"Her",
+		"ero",
+		"s",
+		"su",
+		"sup",
+		"upe",
+		"per",
+		"erh",
+		"rhe",
+		"her",
+		"ero",
+		"ro@",
+		"o@s",
+		"@sc",
+		"sch",
+		"chu",
+		"hul",
+		"ul-",
+		"l-c",
+		"-cl",
+		"clo",
+		"lou",
+		"oud",
+		"ud.",
+		"d.o",
+		".or",
+		"org"
+	]
+},
+{
+	"_id": {
+		"$oid": "59ad4c412b442b7f81810285"
+	},
+	"updatedAt": {
+		"$date": "2020-10-20T13:04:58.749Z"
+	},
+	"createdAt": {
+		"$date": "2017-09-04T12:51:13.952Z"
+	},
+	"email": "klara.fall@schul-cloud.org",
+	"birthday": {
+		"$date": "1977-01-01T11:25:43.556Z"
+	},
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f6"
+	},
+	"preferences": {
+		"firstLogin": true
+	},
+	"firstName": "Klara",
+	"lastName": "Fall",
+	"features": [
+		"edtr"
+	],
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714c98"
+		}
+	],
+	"__v": 0,
+	"searchIndexes": [
+		"K",
+		"Kl",
+		"Kla",
+		"lar",
+		"ara",
+		"F",
+		"Fa",
+		"Fal",
+		"all",
+		"k",
+		"kl",
+		"kla",
+		"lar",
+		"ara",
+		"ra.",
+		"a.f",
+		".fa",
+		"fal",
+		"all",
+		"ll@",
+		"l@s",
+		"@sc",
+		"sch",
+		"chu",
+		"hul",
+		"ul-",
+		"l-c",
+		"-cl",
+		"clo",
+		"lou",
+		"oud",
+		"ud.",
+		"d.o",
+		".or",
+		"org"
+	]
+},
+{
+	"_id": {
+		"$oid": "58b40278dac20e0645353e3a"
+	},
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"firstName": "Waldemar",
+	"lastName": "Wunderlich",
+	"updatedAt": {
+		"$date": "2020-10-20T13:04:58.749Z"
+	},
+	"createdAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
+	},
+	"birthday": {
+		"$date": "1989-01-01T11:25:43.556Z"
+	},
+	"preferences": {
+		"firstLogin": true
+	},
+	"email": "waldemar.wunderlich@schul-cloud.org",
+	"roles": [
+		{
+			"$oid": "0000d186816abba584714c99"
+		}
+	],
+	"__v": 0,
+	"consent": {
+		"parentConsents": [
+			{
+				"_id": {
+					"$oid": "5ece7de4a194604c6e31f433"
+				},
+				"form": "analog",
+				"privacyConsent": true,
+				"termsOfUseConsent": true,
+				"dateOfPrivacyConsent": {
+					"$date": "2017-01-01T00:06:37.148Z"
+				},
+				"dateOfTermsOfUseConsent": {
+					"$date": "2017-01-01T00:06:37.148Z"
+				}
+			}
+		]
+	},
+	"searchIndexes": [
+		"W",
+		"Wa",
+		"Wal",
+		"ald",
+		"lde",
+		"dem",
+		"ema",
+		"mar",
+		"W",
+		"Wu",
+		"Wun",
+		"und",
+		"nde",
+		"der",
+		"erl",
+		"rli",
+		"lic",
+		"ich",
+		"w",
+		"wa",
+		"wal",
+		"ald",
+		"lde",
+		"dem",
+		"ema",
+		"mar",
+		"ar.",
+		"r.w",
+		".wu",
+		"wun",
+		"und",
+		"nde",
+		"der",
+		"erl",
+		"rli",
+		"lic",
+		"ich",
+		"ch@",
+		"h@s",
+		"@sc",
+		"sch",
+		"chu",
+		"hul",
+		"ul-",
+		"l-c",
+		"-cl",
+		"clo",
+		"lou",
+		"oud",
+		"ud.",
+		"d.o",
+		".or",
+		"org"
+	]
 }]
+

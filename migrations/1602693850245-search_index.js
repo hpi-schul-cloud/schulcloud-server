@@ -12,9 +12,11 @@ const User = mongoose.model(
 	new mongoose.Schema(
 		{
 			firstName: { type: String, required: true },
+			firstNameSearchValues: { type: mongoose.Schema.Types.Array },
 			lastName: { type: String, required: true },
+			lastNameSearchValues: { type: mongoose.Schema.Types.Array },
 			email: { type: String, required: true, lowercase: true },
-			searchIndexes: { type: mongoose.Schema.Types.Array },
+			emailSearchValues: { type: mongoose.Schema.Types.Array },
 		},
 		{
 			timestamps: true,
@@ -50,7 +52,7 @@ module.exports = {
 
 		const amount = await User.countDocuments();
 		info(`${amount} users will be udated`);
-		const limit = 500;
+		const limit = 250;
 		let skip = 0;
 		let looped = 0;
 
@@ -74,7 +76,9 @@ module.exports = {
 			try {
 				await Promise.all(
 					users.map((user) => {
-						user.searchIndexes = splitForSearchIndexes(user.firstName, user.lastName, user.email);
+						user.firstNameSearchValues = splitForSearchIndexes(user.firstName);
+						user.lastNameSearchValues = splitForSearchIndexes(user.lastName);
+						user.emailSearchValues = splitForSearchIndexes(user.email);
 						return user.save();
 					})
 				);
@@ -96,18 +100,17 @@ module.exports = {
 		await connect();
 		// ////////////////////////////////////////////////////
 		// Implement the necessary steps to roll back the migration here.
-		User.update(
-			{
-				searchIndexes: {
-					$exist: true,
-				},
-			},
+		info('removing search indexes from user');
+		await User.updateMany(
+			{},
 			{
 				$unset: {
-					searchIndexes: 1,
+					firstNameSearchValues: '',
+					lastNameSearchValues: '',
+					emailSearchValues: '',
 				},
 			}
-		);
+		).exec();
 		// ////////////////////////////////////////////////////
 		await close();
 	},

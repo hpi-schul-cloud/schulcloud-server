@@ -13,4 +13,9 @@ module.exports = {
 		// ////////////////////////////////////////////////////
 		await close();
 	},
+
+	down: (done) => {
+		info('syncUserIndex down do nothing');
+		done();
+	},
 };

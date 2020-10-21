@@ -23,6 +23,7 @@ const userSchema = new Schema(
 	{
 		roles: [{ type: Schema.Types.ObjectId, ref: 'role' }],
 		email: { type: String, required: true, lowercase: true },
+		emailSearchValues: { type: Schema.Types.Array },
 
 		schoolId: {
 			type: Schema.Types.ObjectId,
@@ -32,8 +33,10 @@ const userSchema = new Schema(
 		},
 
 		firstName: { type: String, required: true },
+		firstNameSearchValues: { type: Schema.Types.Array },
 		middleName: { type: String },
 		lastName: { type: String, required: true },
+		lastNameSearchValues: { type: Schema.Types.Array },
 		namePrefix: { type: String },
 		nameSuffix: { type: String },
 		searchIndexes: { type: Schema.Types.Array },
@@ -104,7 +107,14 @@ const userSchema = new Schema(
 
 userSchema.index({ schoolId: 1, roles: -1 });
 userSchema.index(
-	{ firstName: 'text', lastName: 'text', email: 'text', searchIndexes: 'text' },
+	{
+		firstName: 'text',
+		lastName: 'text',
+		email: 'text',
+		firstNameSearchValues: 'text',
+		lastNameSearchValues: 'text',
+		emailSearchValues: 'text',
+	},
 	{ default_language: 'none' } // no stop words and no stemming
 );
 // maybe the schoolId index is enough ?
@@ -117,9 +127,22 @@ if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
 
 // This 'pre-save' method slices the firstName, lastName and email
 // To allow searching the users
-userSchema.pre('save', function buildSearchIndex() {
-	this.searchIndexes = splitForSearchIndexes(this.firstName, this.lastName, this.email);
-});
+function buildSearchIndexOnSave() {
+	this.firstNameSearchValues = splitForSearchIndexes(this.firstName);
+	this.lastNameSearchValues = splitForSearchIndexes(this.lastName);
+	this.emailSearchValues = splitForSearchIndexes(this.email);
+}
+function buildSearchIndexOnUpdate() {
+	const data = this.getUpdate();
+	if (data.firstName && !data.firstNameSearchValues) this.firstNameSearchValues = splitForSearchIndexes(this.firstName);
+	if (data.lastName && !data.lastNameSearchValues) this.lastNameSearchValues = splitForSearchIndexes(this.lastName);
+	if (data.email && !data.emailSearchValues) this.emailSearchValues = splitForSearchIndexes(this.email);
+}
+userSchema.pre('save', buildSearchIndexOnSave);
+userSchema.pre('update', buildSearchIndexOnUpdate);
+userSchema.pre('updateOne', buildSearchIndexOnUpdate);
+userSchema.pre('updateMany', buildSearchIndexOnUpdate);
+userSchema.pre('findOneAndUpdate', buildSearchIndexOnUpdate);
 
 userSchema.virtual('fullName').get(function get() {
 	return [this.namePrefix, this.firstName, this.middleName, this.lastName, this.nameSuffix]
