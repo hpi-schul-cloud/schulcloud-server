@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-## [Unreleased]
+## [25.2.0]
+
+- SC-6060 - Updated error handling
 
 ### Added
 
@@ -19,11 +21,15 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6769 - Introduce API validation module
 - SC-6769 - API validation for users/admin routes
 - SC-6510 - Added Merlin Url Generator for Lern Store / Edu-sharing
+- SC-6567 - Add utils to cleanup incomingMessage stacks by logging errors
 
 ### Removed
 
+- SC-6586- Remove parents from users collection to improve maintainability
+
 ### Changed
 
+- SC-6986 - Changed a hook in the accounts service that restricts get requests to the same school, it expects a valid userID and matching schoolIds for both the requester and requested users
 - SC-6567 - clean up error pipline
 - SC-6510, fix a minor syntax error when exporting module
 - Update commons to 1.2.7: print configuration on startup, introduce hierarchical configuration file setup
@@ -31,27 +37,59 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
-- fixed README badges
-- SC-6151 fixed a bug that prevented api docu from being accessible
+-         - fixed README badges
+- SC-6151 - fixed a bug that prevented api docu from being accessible
+-         - Fix mocha tests
+
+
+## [25.1.2] - 2020-10-15
+
+### Fixed
+
+- SC-7085 - fixed importHash error when asking parent consent
+
+### Added
+
+### Removed
+
+## [25.1.1] - 2020-10-12
+
+### Security
+
+- SC-7165 package update for sanitization and add onload handler
 
 ## [25.1.0] - 2020-10-12
 
-### Removed - 25.1.0
+### Added
+
+### Removed
 
 - SC-6784 - Removed duplicated birth date formatting code in adminUsers service, which was causing an "Invalid date" output
 - SC-6743 - Removed usersForConsent related things in adminUsers service because the client does not send that parameter anymore
 - SC-6506 - Remove dependecy to feathers-swagger in routes.test.js
 
-### Changed - 25.1.0
+### Changed
 
 - SC-6774 remove no-await-in-loop from eslint exceptions
 - Rename statistic mails route, secure it over sync api key now
 - SC-6809 - Maintain RabbitMQ connection and channels
 - SC-5230 - Unblock Account-Page in Nuxt (securing /accounts and /users routes)
 
-### Security - 25.1.0
+### Security
 
 - Added hotfix merges
+
+## [25.0.12] - 2020-10-12
+
+### Fixed
+
+- SC-6676 allows only following roles for registration: teacher/student…
+
+## [25.0.11] - 2020-10-07
+
+### Fixed
+
+- SC-7180 homework create now validates data properly
 
 ## [25.0.12] - 2020-10-12
 
@@ -147,7 +185,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [24.5.0] - 2020-09-14
 
-- SC-6674 Added checks to ensure unique emails
 - Ignore database seed data with prettier, eslint, and codacy
 - SC-6640 - Fixed email check within registration (case insensitive)
 
