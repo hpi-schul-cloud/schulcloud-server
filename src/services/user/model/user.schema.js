@@ -103,7 +103,10 @@ const userSchema = new Schema(
 );
 
 userSchema.index({ schoolId: 1, roles: -1 });
-userSchema.index({ firstName: 'text', lastName: 'text', email: 'text', searchIndexes: 'text' });
+userSchema.index(
+	{ firstName: 'text', lastName: 'text', email: 'text', searchIndexes: 'text' },
+	{ default_language: 'none' } // no stop words and no stemming
+);
 // maybe the schoolId index is enough ?
 // https://ticketsystem.schul-cloud.org/browse/SC-3724
 
@@ -114,8 +117,7 @@ if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
 
 // This 'pre-save' method slices the firstName, lastName and email
 // To allow searching the users
-// eslint-disable-next-line func-names
-userSchema.pre('save', function () {
+userSchema.pre('save', function buildSearchIndex() {
 	this.searchIndexes = splitForSearchIndexes(this.firstName, this.lastName, this.email);
 });
 
