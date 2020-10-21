@@ -7,13 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [Unreleased] 
+
+### Added
+
+- SC-7357 - Add config service
+- SC-7083 - Added officialSchoolNumber to school-model
+
+
 ## [25.2.0]
 
 - SC-6060 - Updated error handling
 
 ### Added
 
-- SC-7083 - Added officialSchoolNumber to school-model
 - SC-7049 - Added unit tests for Merlin Service
 - SC-7157 - add feature flag for Merlin feature with fallback
 - SC-6567 - add new application errros
@@ -22,9 +29,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6769 - Introduce API validation module
 - SC-6769 - API validation for users/admin routes
 - SC-6510 - Added Merlin Url Generator for Lern Store / Edu-sharing
-- SC-7357 - Add config service
 - SC-6567 - Add utils to cleanup incomingMessage stacks by logging errors
-
 
 ### Removed
 
