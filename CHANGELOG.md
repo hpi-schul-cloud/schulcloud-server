@@ -7,10 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-## Unreleased
+## Next release
 
-### Added in unreleased
+### Changed in next release
 
+- Introduce plainSecrets in Configuration
 - Introduce FEATURE_PROMETHEUS_ENABLED to have a flag for enable prometheus api metrics
 
 ## [25.2.0]
