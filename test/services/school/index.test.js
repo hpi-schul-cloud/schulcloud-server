@@ -353,7 +353,7 @@ describe('school service', () => {
 				await app.service('/schools').patch(school._id, { officialSchoolNumber: 'foo' }, params);
 			} catch (err) {
 				expect(err).to.not.equal(undefined);
-				expect(err.message).to.include('School ID is incorrect');
+				expect(err.message).to.include('School number is incorrect');
 				expect(err.name).to.be.equal('Error');
 			}
 		});
