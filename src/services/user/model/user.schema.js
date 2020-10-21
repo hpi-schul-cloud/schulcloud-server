@@ -144,11 +144,9 @@ function buildSearchIndexOnSave() {
 }
 function buildSearchIndexOnUpdate() {
 	const data = this.getUpdate() || {};
-	if (data.firstName && !data.firstNameSearchValues)
-		this.set('firstNameSearchValues', splitForSearchIndexes(data.firstName));
-	if (data.lastName && !data.lastNameSearchValues)
-		this.set('lastNameSearchValues', splitForSearchIndexes(data.lastName));
-	if (data.email && !data.emailSearchValues) this.set('emailSearchValues', splitForSearchIndexes(data.email));
+	if (data.firstName && !data.firstNameSearchValues) data.firstNameSearchValues = splitForSearchIndexes(data.firstName);
+	if (data.lastName && !data.lastNameSearchValues) data.lastNameSearchValues = splitForSearchIndexes(data.lastName);
+	if (data.email && !data.emailSearchValues) data.emailSearchValues = splitForSearchIndexes(data.email);
 }
 userSchema.pre('save', buildSearchIndexOnSave);
 userSchema.pre('update', buildSearchIndexOnUpdate);
