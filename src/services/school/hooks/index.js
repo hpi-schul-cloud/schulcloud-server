@@ -211,7 +211,7 @@ const validateSchoolNumber = (context) => {
 		// eg: 'BE-16593' or '16593'
 		const officialSchoolNumberFormat = RegExp('\\D{0,2}-*\\d{5}$');
 		if (!officialSchoolNumberFormat.test(officialSchoolNumber)) {
-			throw new Error(`School ID is incorrect.\n The format should be 'AB-12345' or '12345' (without the quotations) `);
+			throw new Error(`School number is incorrect.\n The format should be 'AB-12345' or '12345' (without the quotations) `);
 		}
 	}
 	return context;

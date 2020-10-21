@@ -115,14 +115,21 @@ const createAWSObject = async (schoolId) => {
 	if (school === null) throw new NotFound('School not found.');
 
 	if (FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED) {
-		const S3_KEY = Configuration.get('S3_KEY');
+		const S3_KEY = 'Gk2BeKGTs3y8rkNUTqJM';
 		if (!school.storageProvider) {
 			school.storageProvider = await chooseProvider(schoolId);
 		}
 		school.storageProvider.secretAccessKey = CryptoJS.AES.decrypt(
-			school.storageProvider.secretAccessKey,
+			'U2FsdGVkX18xZ6qkwG9e4pK4dWC5Our4Oyc3fqx++npNs6a6H1VUwFnL8v1AxaH9RZfUy0EeIwuvRXsXLiz3Nw==',
 			S3_KEY
 		).toString(CryptoJS.enc.Utf8);
+		/* console.log(
+			CryptoJS.AES.decrypt(
+				'U2FsdGVkX18xZ6qkwG9e4pK4dWC5Our4Oyc3fqx++npNs6a6H1VUwFnL8v1AxaH9RZfUy0EeIwuvRXsXLiz3Nw==',
+				S3_KEY
+			).toString(CryptoJS.enc.Utf8),
+			'<-------'
+		); */
 
 		return {
 			s3: new aws.S3(getConfig(school.storageProvider)),
