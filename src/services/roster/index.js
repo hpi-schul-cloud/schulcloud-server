@@ -43,7 +43,7 @@ module.exports = function roster() {
 							return {
 								data: {
 									user_id: params.route.user,
-									username: encodeURI(oauth2.getSubject(params.pseudonym, app.settings.services.web)),
+									username: oauth2.getSubject(params.pseudonym, app.settings.services.web),
 									type: user.roles[0].name,
 								},
 							};
@@ -57,6 +57,7 @@ module.exports = function roster() {
 			find: [
 				globalHooks.ifNotLocal(hooks.tokenIsActive),
 				globalHooks.ifNotLocal(hooks.userIsMatching),
+				hooks.disableFilter,
 				hooks.stripIframe,
 			],
 		},
@@ -148,11 +149,11 @@ module.exports = function roster() {
 						data: {
 							students: users.data.map((user) => ({
 								user_id: user.pseudonym,
-								username: encodeURI(oauth2.getSubject(user.pseudonym, app.settings.services.web)),
+								username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
 							})),
 							teachers: teachers.data.map((user) => ({
 								user_id: user.pseudonym,
-								username: encodeURI(oauth2.getSubject(user.pseudonym, app.settings.services.web)),
+								username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
 							})),
 						},
 					}));
@@ -161,7 +162,7 @@ module.exports = function roster() {
 	};
 	const groupsHooks = {
 		before: {
-			get: [globalHooks.ifNotLocal(hooks.tokenIsActive), hooks.injectOriginToolIds],
+			get: [globalHooks.ifNotLocal(hooks.tokenIsActive), hooks.disableFilter, hooks.injectOriginToolIds],
 		},
 		after: {
 			get: hooks.groupContainsUser,

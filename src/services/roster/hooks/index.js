@@ -75,4 +75,9 @@ module.exports = {
 			return context;
 		throw new BadRequest('Current user is not part of group');
 	},
+
+	disableFilter: (context) => {
+		context.safeAttributes = ['username'];
+		return context;
+	}
 };
