@@ -17,7 +17,7 @@ jobs:
       uses: actions/setup-node@v1
     - run: npm ci
     - run: npm run setup
-    - name: check migrations.json formatting, check 'mongoexport --version' from above matchs locally
+    - name: check migrations.json formatting, check 'mongoexport --version' should match with 4.2
       run: | 
         npm run migration-persist
         git diff --exit-code backup/**
