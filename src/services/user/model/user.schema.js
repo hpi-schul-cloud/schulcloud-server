@@ -42,9 +42,13 @@ const userSchema = new Schema(
 
 		importHash: { type: String, index: true },
 		// inviteHash:{type:String},
-
-		children: [{ type: Schema.Types.ObjectId, ref: 'user' }],
-		parents: [{ type: Schema.Types.ObjectId, ref: 'user' }],
+		parents: [
+			{
+				firstName: { type: String, required: true },
+				lastName: { type: String, required: true },
+				email: { type: String, required: true, lowercase: true },
+			},
+		],
 		language: { type: String },
 		preferences: { type: Object }, // blackbox for frontend stuff like "cookies accepted"
 		features: {
@@ -63,7 +67,6 @@ const userSchema = new Schema(
 			},
 			parentConsents: [
 				{
-					parentId: { type: Schema.Types.ObjectId, ref: 'user' },
 					form: { type: String, enum: consentForm },
 					dateOfPrivacyConsent: { type: Date },
 					dateOfTermsOfUseConsent: { type: Date },
