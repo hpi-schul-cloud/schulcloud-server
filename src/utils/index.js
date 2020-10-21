@@ -4,6 +4,7 @@ const getAge = require('./getAge');
 const modelServices = require('./modelServices');
 const Cache = require('./cache');
 const database = require('./database');
+const incomingMessageToJson = require('./incomingMessageToJson');
 
 module.exports = {
 	modelServices,
@@ -12,4 +13,5 @@ module.exports = {
 	getAge,
 	Cache,
 	database,
+	incomingMessageToJson,
 };
