@@ -9,9 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Next release
 
-### Changed
+### Changed in next release
 
 - Introduce plainSecrets in Configuration
+- Introduce FEATURE_PROMETHEUS_ENABLED to have a flag for enable prometheus api metrics
 
 ## [25.2.0]
 
