@@ -9,8 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [25.2.0]
 
+- SC-6060 - Updated error handling
+
 ### Added
 
+- SC-7083 - Added officialSchoolNumber to school-model
 - SC-7049 - Added unit tests for Merlin Service
 - SC-7157 - add feature flag for Merlin feature with fallback
 - SC-6567 - add new application errros
@@ -22,6 +25,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6567 - Add utils to cleanup incomingMessage stacks by logging errors
 
 ### Removed
+
+- SC-6586- Remove parents from users collection to improve maintainability
 
 ### Changed
 
@@ -36,6 +41,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - fixed README badges
 - SC-6151 fixed a bug that prevented api docu from being accessible
 - SC-6151 fixed paths to openapi documentation
+- Fix mocha tests
 
 
 ## [25.1.2] - 2020-10-15

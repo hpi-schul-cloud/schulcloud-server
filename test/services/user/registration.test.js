@@ -2,42 +2,9 @@ const { expect } = require('chai');
 const assert = require('assert');
 
 const appPromise = require('../../../src/app');
-const accountModel = require('../../../src/services/account/model');
-const { consentModel } = require('../../../src/services/consent/model');
-const { userModel, registrationPinModel } = require('../../../src/services/user/model');
-const { schoolModel } = require('../../../src/services/school/model');
+const { userModel } = require('../../../src/services/user/model');
 
 const testObjects = require('../helpers/testObjects')(appPromise);
-
-const patchSchool = (system, schoolId) =>
-	schoolModel
-		.findOneAndUpdate(
-			{ _id: schoolId },
-			{
-				$push: {
-					systems: system._id,
-				},
-			},
-			{ new: true }
-		)
-		.lean()
-		.exec();
-
-const createAccount = (system) =>
-	accountModel.create({
-		lasttriedFailedLogin: '1970-01-01T00:00:00.000+0000',
-		activated: false,
-		username: 'fritz',
-		password: '',
-		systemId: system._id,
-	});
-
-const createPin = (pin = 6716, email) =>
-	registrationPinModel.create({
-		verified: false,
-		email: email || `${Date.now()}@test.de`,
-		pin,
-	});
 
 describe('registration service', () => {
 	let server;
@@ -96,7 +63,6 @@ describe('registration service', () => {
 				expect(response.account).to.have.property('_id');
 				expect(response.consent).to.have.property('_id');
 				expect(response.consent).to.have.property('userConsent');
-				expect(response.parent).to.equal(null);
 			});
 	});
 
@@ -136,9 +102,7 @@ describe('registration service', () => {
 				expect(response.user).to.have.property('_id');
 				expect(response.consent).to.have.property('_id');
 				expect(response.consent.parentConsents.length).to.be.at.least(1);
-				expect(response.parent).to.have.property('_id');
-				expect(response.user.parents[0].toString()).to.equal(response.parent._id.toString());
-				expect(response.parent.children[0].toString()).to.include(response.user._id.toString());
+				expect(response.user.parents[0]).not.to.be.null;
 				expect(response.account).to.have.property('_id');
 			});
 	});
@@ -319,7 +283,6 @@ describe('registration service', () => {
 					expect(response.account).to.have.property('_id');
 					expect(response.consent).to.have.property('_id');
 					expect(response.consent).to.have.property('userConsent');
-					expect(response.parent).to.equal(null);
 				});
 			});
 	});
@@ -404,7 +367,6 @@ describe('registration service', () => {
 					expect(response.account).to.have.property('_id');
 					expect(response.consent).to.have.property('_id');
 					expect(response.consent).to.have.property('userConsent');
-					expect(response.parent).to.equal(null);
 				});
 			});
 	});
