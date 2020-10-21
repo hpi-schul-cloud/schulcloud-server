@@ -14,6 +14,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7357 - Add config service
 - SC-7083 - Added officialSchoolNumber to school-model
 
+### Fixed
+
+-         - Fix mocha tests
+
 
 ## [25.2.0]
 
@@ -47,7 +51,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 -         - fixed README badges
 - SC-6151 - fixed a bug that prevented api docu from being accessible
--         - Fix mocha tests
 
 
 ## [25.1.2] - 2020-10-15
