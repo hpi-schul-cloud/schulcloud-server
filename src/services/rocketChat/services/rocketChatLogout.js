@@ -37,7 +37,7 @@ class RocketChatLogout {
 
 	/**
 	 * react to a user logging out
-	 * @param {*} contex
+	 * @param {*} context
 	 */
 	onAuthenticationRemoved(context) {
 		this.get(context.userId).catch((err) => {
