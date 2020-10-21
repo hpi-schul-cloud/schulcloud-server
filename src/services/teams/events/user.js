@@ -19,34 +19,32 @@ const patchOrRemoveTeam = (team) => {
 	return patchTeamUsers(team);
 };
 
-const deleteUser = (app) => {
-	app.service('users').on('removed', async (result) => {
-		const userId = result._id.toString();
-		let teams = await getTeams(userId);
-		teams = teams.map((team) => removeTeamUserFromTeam(team, userId));
-		const promises = teams.map((team) => patchOrRemoveTeam(team));
-
-		await Promise.all(promises)
-			.then(() => {
-				const teamIds = teams.map((team) => team._id);
-				logger.info(
-					`Remove user ${userId} from the teams ${teamIds},` + 'if team.userIds empty then removed the team too.'
-				);
-			})
-			.catch((err) => {
-				const notRemovedFromTeams = teams.filter((team) =>
-					team.userIds.some((teamUser) => equalIds(teamUser.userId, userId))
-				);
-
-				logger.warning(
-					`Can not remove user ${userId} from the teams ${notRemovedFromTeams},` +
-						'if team.userIds empty then removed the team too.',
-					err
-				);
-			});
-	});
-};
-
-module.exports = (app) => {
-	deleteUser(app);
-};
+// const deleteUser = (app) => {
+// app.service('users').on('removed', async (result) => {
+// 	const userId = result._id.toString();
+// 	let teams = await getTeams(userId);
+// 	teams = teams.map((team) => removeTeamUserFromTeam(team, userId));
+// 	const promises = teams.map((team) => patchOrRemoveTeam(team));
+//
+// 	await Promise.all(promises)
+// 		.then(() => {
+// 			const teamIds = teams.map((team) => team._id);
+// 			logger.info(
+// 				`Remove user ${userId} from the teams ${teamIds},` + 'if team.userIds empty then removed the team too.'
+// 			);
+// 		})
+// 		.catch((err) => {
+// 			const notRemovedFromTeams = teams.filter((team) =>
+// 				team.userIds.some((teamUser) => equalIds(teamUser.userId, userId))
+// 			);
+//
+// 			logger.warning(
+// 				`Can not remove user ${userId} from the teams ${notRemovedFromTeams},` +
+// 					'if team.userIds empty then removed the team too.',
+// 				err
+// 			);
+// 		});
+// });
+// };
+//
+module.exports = (app) => {};
