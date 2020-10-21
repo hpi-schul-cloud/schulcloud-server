@@ -20,6 +20,15 @@ const formatBirthdate1 = (datestamp) => {
 	return `${d[1]}.${d[0]}.${d[2]}`;
 };
 
+const appendParent = (user, data) => {
+	const parent = {
+		firstName: data.parent_firstName,
+		lastName: data.parent_lastName,
+		email: data.parent_email,
+	};
+	user.parents.push(parent);
+};
+
 const populateUser = (app, data) => {
 	let oldUser;
 	const user = {
@@ -29,7 +38,12 @@ const populateUser = (app, data) => {
 		roles: ['student'],
 		schoolId: data.schoolId,
 		language: data.language,
+		parents: [],
 	};
+
+	if (data.parent_email) {
+		appendParent(user, data);
+	}
 
 	const formatedBirthday = formatBirthdate1(data.birthDate);
 	if (formatedBirthday) {
@@ -62,7 +76,7 @@ const populateUser = (app, data) => {
 			oldUser = users.data[0];
 
 			Object.keys(oldUser).forEach((key) => {
-				if (oldUser[key] !== null && key !== 'firstName' && key !== 'lastName') {
+				if (oldUser[key] !== null && key !== 'firstName' && key !== 'lastName' && key !== 'parents') {
 					user[key] = oldUser[key];
 				}
 			});
@@ -120,7 +134,6 @@ const insertUserToDB = async (app, data, user) => {
 };
 
 const registerUser = function register(data, params, app) {
-	let parent = null;
 	let user = null;
 	let oldUser = null;
 	let account = null;
@@ -248,33 +261,11 @@ const registerUser = function register(data, params, app) {
 					return Promise.reject(new Error(msg));
 				});
 		})
-		.then(async () => {
-			// add parent if necessary
-			if (data.parent_email) {
-				parent = {
-					firstName: data.parent_firstName,
-					lastName: data.parent_lastName,
-					email: data.parent_email,
-					children: [user._id],
-					schoolId: data.schoolId,
-					roles: ['parent'],
-				};
-				try {
-					parent = await app.service('usersModel').create(parent);
-					user = await User.findByIdAndUpdate(user._id, { $push: { parents: [parent._id] } }, { new: true }).exec();
-				} catch (err) {
-					logger.log('warn', `Fehler beim Verknüpfen der Eltern. ${err}`);
-					return Promise.reject(new Error('Fehler beim Verknüpfen der Eltern.', err));
-				}
-			}
-			return Promise.resolve();
-		})
 		.then(() => {
 			// store consent
-			if (parent) {
+			if (data.parent_email) {
 				consent = {
 					form: 'digital',
-					parentId: parent._id,
 					privacyConsent: data.parent_privacyConsent === 'true',
 					termsOfUseConsent: data.parent_termsOfUseConsent === 'true',
 				};
@@ -301,7 +292,6 @@ const registerUser = function register(data, params, app) {
 		.then(() =>
 			Promise.resolve({
 				user,
-				parent,
 				account,
 				consent,
 			})
@@ -314,9 +304,6 @@ const registerUser = function register(data, params, app) {
 				} else {
 					rollbackPromises.push(User.findOneAndRemove({ _id: user._id }).exec());
 				}
-			}
-			if (parent && parent._id) {
-				rollbackPromises.push(User.findOneAndRemove({ _id: parent._id }).exec());
 			}
 			if (account && account._id) {
 				rollbackPromises.push(accountModel.findOneAndRemove({ _id: account._id }).exec());

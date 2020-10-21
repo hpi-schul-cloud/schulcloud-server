@@ -346,21 +346,6 @@
 },
 {
 	"_id": {
-		"$oid": "5b45f8d28c8dba65f8871e19"
-	},
-	"name": "parent",
-	"updatedAt": {
-		"$date": "2017-07-01T00:06:37.148Z"
-	},
-	"createdAt": {
-		"$date": "2017-07-01T00:06:37.148Z"
-	},
-	"roles": [],
-	"permissions": [],
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "5bb5c190fb457b1c3c0c7e0f"
 	},
 	"name": "teammember",

@@ -404,7 +404,12 @@
 		"API_VALIDATION_WHITELIST_EXTENSION": {
 			"type": "string",
 			"description": "when set, this is interpreted as a regex to extend the ignorelist for the API validation with any routes matching the regex.",
-			"examples": [".*\/courses\/[0-9a-f]{24}($|\/$)"]
+			"examples": [".*/courses/[0-9a-f]{24}($|/$)"]
+		},
+		"FEATURE_PROMETHEUS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable prometheus api metrics, if enabled, PROMETHEUS must be defined."
 		},
 		"PROMETHEUS": {
 			"type": "object",
@@ -435,7 +440,25 @@
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
 		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
-		"LERNSTORE_MODE",
-		"PROMETHEUS"
-	]
+		"LERNSTORE_MODE"
+	],
+	"allOf": [
+		{
+			"$ref": "#/definitions/FEATURE_PROMETHEUS_ENABLED"
+		}
+	],
+	"definitions": {
+		"FEATURE_PROMETHEUS_ENABLED": {
+			"if": {
+				"properties": {
+					"FEATURE_PROMETHEUS_ENABLED": {
+						"const": true
+					}
+				}
+			},
+			"then": {
+				"required": ["PROMETHEUS"]
+			}
+		}
+	}
 }
