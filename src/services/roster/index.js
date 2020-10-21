@@ -57,8 +57,8 @@ module.exports = function roster() {
 			find: [
 				globalHooks.ifNotLocal(hooks.tokenIsActive),
 				globalHooks.ifNotLocal(hooks.userIsMatching),
-				hooks.disableFilter,
 				hooks.stripIframe,
+				hooks.disableFilter,
 			],
 		},
 	};
@@ -162,7 +162,7 @@ module.exports = function roster() {
 	};
 	const groupsHooks = {
 		before: {
-			get: [globalHooks.ifNotLocal(hooks.tokenIsActive), hooks.disableFilter, hooks.injectOriginToolIds],
+			get: [globalHooks.ifNotLocal(hooks.tokenIsActive), hooks.injectOriginToolIds, hooks.disableFilter],
 		},
 		after: {
 			get: hooks.groupContainsUser,
