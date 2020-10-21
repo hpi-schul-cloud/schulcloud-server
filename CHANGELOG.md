@@ -7,13 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## Unreleased
+
+### Added in unreleased
+
+- Introduce FEATURE_PROMETHEUS_ENABLED to have a flag for enable prometheus api metrics
+
 ## [25.2.0]
 
 - SC-6060 - Updated error handling
 
 ### Added
 
-- Introduce PROMETHEUS_ENABLED to have a flag for enable prometheus api metrics
 - SC-7049 - Added unit tests for Merlin Service
 - SC-7157 - add feature flag for Merlin feature with fallback
 - SC-6567 - add new application errros
@@ -41,7 +46,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -         - fixed README badges
 - SC-6151 - fixed a bug that prevented api docu from being accessible
 -         - Fix mocha tests
-
 
 ## [25.1.2] - 2020-10-15
 
