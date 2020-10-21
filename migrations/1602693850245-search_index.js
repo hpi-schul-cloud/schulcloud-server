@@ -51,7 +51,7 @@ module.exports = {
 		await connect();
 
 		const amount = await User.countDocuments();
-		info(`${amount} users will be udated`);
+		info(`${amount} users will be updated`);
 		const limit = 250;
 		let skip = 0;
 		let looped = 0;
