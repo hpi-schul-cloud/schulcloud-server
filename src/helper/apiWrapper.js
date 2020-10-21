@@ -3,7 +3,7 @@ const qs = require('qs');
 const lodash = require('lodash');
 const { Configuration } = require('@schul-cloud/commons');
 
-module.exports = class RequestWrapper {
+module.exports = class ApiWrapper {
 	/**
 	 * @typedef {Object} RequestOptions
 	 * @param {axios.RequestMethod} method

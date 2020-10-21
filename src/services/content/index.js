@@ -2,7 +2,7 @@
 const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-const Api = require('../../utils/request');
+const Api = require('../../helper/apiWrapper');
 
 const api = new Api();
 const material = require('./material-model');

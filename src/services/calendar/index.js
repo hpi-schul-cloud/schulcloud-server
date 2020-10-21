@@ -1,7 +1,7 @@
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 const queryString = require('qs');
-const Api = require('../../utils/request');
+const Api = require('../../helper/apiWrapper');
 
 const api = new Api();
 const hooks = require('./hooks');

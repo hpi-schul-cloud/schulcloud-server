@@ -1,6 +1,6 @@
 const { Configuration } = require('@schul-cloud/commons');
 const reqlib = require('app-root-path').require;
-const Api = require('../../../utils/request');
+const Api = require('../../../helper/apiWrapper');
 
 const api = new Api();
 const { GeneralError } = reqlib('src/errors');

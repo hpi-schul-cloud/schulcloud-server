@@ -1,5 +1,5 @@
 const { Configuration } = require('@schul-cloud/commons');
-const Api = require('../../../../utils/request');
+const Api = require('../../../../helper/apiWrapper');
 const logger = require('../../../../logger');
 
 const dict = {
