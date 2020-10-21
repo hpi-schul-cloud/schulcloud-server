@@ -5,7 +5,7 @@ const registerProcessEvents = require('./utils/processEvents');
 
 registerProcessEvents(logger);
 
-//Configuration.printHierarchy();
+Configuration.printHierarchy();
 
 appPromise
 	.then((app) => {
