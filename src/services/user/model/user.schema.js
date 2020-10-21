@@ -39,7 +39,6 @@ const userSchema = new Schema(
 		lastNameSearchValues: { type: Schema.Types.Array },
 		namePrefix: { type: String },
 		nameSuffix: { type: String },
-		searchIndexes: { type: Schema.Types.Array },
 		forcePasswordChange: { type: Boolean, default: false },
 
 		birthday: { type: Date },
@@ -134,9 +133,11 @@ function buildSearchIndexOnSave() {
 }
 function buildSearchIndexOnUpdate() {
 	const data = this.getUpdate();
-	if (data.firstName && !data.firstNameSearchValues) this.firstNameSearchValues = splitForSearchIndexes(data.firstName);
-	if (data.lastName && !data.lastNameSearchValues) this.lastNameSearchValues = splitForSearchIndexes(data.lastName);
-	if (data.email && !data.emailSearchValues) this.emailSearchValues = splitForSearchIndexes(data.email);
+	if (data.firstName && !data.firstNameSearchValues)
+		this.set('firstNameSearchValues', splitForSearchIndexes(data.firstName));
+	if (data.lastName && !data.lastNameSearchValues)
+		this.set('lastNameSearchValues', splitForSearchIndexes(data.lastName));
+	if (data.email && !data.emailSearchValues) this.set('emailSearchValues', splitForSearchIndexes(data.email));
 }
 userSchema.pre('save', buildSearchIndexOnSave);
 userSchema.pre('update', buildSearchIndexOnUpdate);
