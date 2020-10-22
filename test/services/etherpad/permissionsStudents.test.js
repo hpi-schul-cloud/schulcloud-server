@@ -40,7 +40,7 @@ describe('Etherpad Permission Check: Students', () => {
 	let configBefore;
 
 	before((done) => {
-		configBefore = Configuration.toObject();
+		configBefore = Configuration.toObject({ plainSecrets: true });
 		freeport(async (err, port) => {
 			if (err) {
 				logger.warning('freeport:', err);
