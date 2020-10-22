@@ -12,6 +12,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-7293 - added Lern-Store view permission
 - SC-7357 - Add config service
 - SC-7083 - Added officialSchoolNumber to school-model
 - Introduce plainSecrets in Configuration
