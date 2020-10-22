@@ -3,7 +3,8 @@ const leanVirtuals = require('mongoose-lean-virtuals');
 const { Configuration } = require('@schul-cloud/commons');
 const mongooseHistory = require('mongoose-history');
 const roleModel = require('../../role/model');
-const { enableAuditLog, splitForSearchIndexes } = require('../../../utils/database');
+const { enableAuditLog } = require('../../../utils/database');
+const { splitForSearchIndexes } = require('../../../utils/search');
 const externalSourceSchema = require('../../../helper/externalSourceSchema');
 
 const { Schema } = mongoose;
