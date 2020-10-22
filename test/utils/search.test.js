@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const { splitForSearchIndexes } = require('../../src/utils/search.js');
 
-describe.only('tests for search utils', () => {
+describe('tests for search utils', () => {
 	describe('util splitForSearchIndexes', () => {
 		it('slitup one value', () => {
 			const string = 'Hans Mustafa';
