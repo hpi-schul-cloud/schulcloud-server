@@ -13,7 +13,7 @@ const hooks = require('./hooks');
 module.exports = function () {
 	const app = this;
 
-	app.use('/ltiTools/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/ltiTools/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	const options = {
 		Model: ltiTool,
