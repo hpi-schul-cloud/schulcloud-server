@@ -43,7 +43,7 @@ module.exports = {
 	up: async function up() {
 		await connect();
 		/// ///////////////////
-		/// Impelementation
+		/// Implementation
 
 		const amount = await User.countDocuments();
 		info(`${amount} users will be updated`);
