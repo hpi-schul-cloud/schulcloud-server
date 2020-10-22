@@ -219,7 +219,7 @@ class WopiFilesContentsService {
 module.exports = function setup() {
 	const app = this;
 
-	app.use('/wopi/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/wopi/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use(`${wopiPrefix}:fileId/contents`, new WopiFilesContentsService(app), handleResponseHeaders);
 	app.use(`${wopiPrefix}:fileId`, new WopiFilesInfoService(app), handleResponseHeaders);
 

@@ -16,7 +16,7 @@ describe('authentication hooks', function test() {
 	let testObjects;
 
 	before(async () => {
-		configBefore = Configuration.toObject();
+		configBefore = Configuration.toObject({ plainSecrets: true });
 
 		mockery.enable({
 			warnOnReplace: false,
