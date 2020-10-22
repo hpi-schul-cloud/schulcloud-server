@@ -20,6 +20,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-7395 - Changed ldap general strategy fetching of users from parallel to serialized
 - SC-6060 - Updated error handling
 
 ### Fixed
