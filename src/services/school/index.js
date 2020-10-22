@@ -83,7 +83,9 @@ module.exports = function schoolServices() {
 		handlePermissionsService.hooks(handlePermissionsHooks);
 	}
 
-	const FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED = Configuration.get('FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED');
+	const FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED = Configuration.get(
+		'FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED'
+	);
 	if (FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED) {
 		app.use('/school/student/studentlernstorevisibility', new HandlePermissions('student', 'LERNSTORE_VIEW'));
 		const handleLernStorePermissionsService = app.service('/school/student/studentlernstorevisibility');
