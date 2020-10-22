@@ -13,7 +13,7 @@ describe('storageProvider service', () => {
 	before(async () => {
 		app = await appPromise;
 		storageProviderService = app.service('storageProvider');
-		configBefore = Configuration.toObject(); // deep copy current config
+		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('S3_KEY', '1234567891234567');
 	});
 

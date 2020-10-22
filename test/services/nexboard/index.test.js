@@ -39,7 +39,7 @@ describe('Nexboard services', () => {
 	let configBefore;
 
 	before(() => {
-		configBefore = Configuration.toObject();
+		configBefore = Configuration.toObject({ plainSecrets: true });
 		freeport(async (err, port) => {
 			if (err) {
 				logger.warning('freeport:', err);
