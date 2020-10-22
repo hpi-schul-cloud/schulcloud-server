@@ -467,7 +467,7 @@ module.exports = function setup() {
 		lean: { virtuals: true },
 	};
 
-	app.use('/teams/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/teams/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/teams', service(options));
 	app.use('/teams/extern/get', new Get());

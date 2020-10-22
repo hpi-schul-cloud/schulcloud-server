@@ -12,10 +12,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-7293 - added Lern-Store view permission
 - SC-7357 - Add config service
 - SC-7083 - Added officialSchoolNumber to school-model
--         - Introduce plainSecrets in Configuration
--         - Introduce FEATURE_PROMETHEUS_ENABLED to have a flag for enable prometheus api metrics
+- Introduce plainSecrets in Configuration
+- Introduce FEATURE_PROMETHEUS_ENABLED to have a flag for enable prometheus api metrics
 
 ### Changed
 
@@ -23,13 +24,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
--         - Fix mocha tests
+- fixed README badges
+- Fix mocha tests
+- SC-6151 fixed a bug that prevented api docu from being accessible
+- SC-6151 fixed paths to openapi documentation
 
 ## [25.2.0]
 
 ### Added
 
 - SC-7015 - Added marking user as deleted
+- SC-4385 - Added a user exclusion regex to IServ strategy
 - SC-7049 - Added unit tests for Merlin Service
 - SC-7157 - add feature flag for Merlin feature with fallback
 - SC-6567 - add new application errros
@@ -53,9 +58,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Support asynchronous calls during server startup
 
 ### Fixed
-
--         - fixed README badges
-- SC-6151 - fixed a bug that prevented api docu from being accessible
 
 ## [25.1.2] - 2020-10-15
 
