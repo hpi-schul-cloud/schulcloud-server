@@ -68,6 +68,40 @@ const transformOptions = ({
 	return axiosOptions;
 };
 
+/**
+ * Transform axios response to internal format
+ * @param {axios.AxiosResponse} param0
+ */
+const transformResponse = ({ config, data, headers, request, status, statusText }) => {
+	if (config.resolveWithFullResponse === true) {
+		return {
+			options: config,
+			data,
+			headers,
+			request,
+			status,
+			statusText,
+		};
+	}
+	return data;
+};
+
+const transformErrorResponse = (error) => {
+	if (error.response) {
+		// we got a non-200 response which can be handled
+		return transformResponse(error);
+	}
+	if (error.request) {
+		// The request was made but no response was received
+		// `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+		// http.ClientRequest in node.js
+		throw error;
+	} else {
+		// Something happened in setting up the request that triggered an Error
+		throw error;
+	}
+};
+
 module.exports = class ApiWrapper {
 	/**
 	 * @typedef {Object} RequestOptions
@@ -101,26 +135,7 @@ module.exports = class ApiWrapper {
 	requestWrapper(requestOptions) {
 		const mergedOptions = lodash.merge({}, this.instanceOptions, requestOptions);
 		const axiosOptions = transformOptions(mergedOptions);
-		return axios
-			.request(axiosOptions)
-			.then(({ config, data, headers, request, status, statusText }) => {
-				if (config.resolveWithFullResponse === true) {
-					return {
-						options: config,
-						data,
-						headers,
-						request,
-						status,
-						statusText,
-					};
-				}
-				return data;
-			})
-			.catch((err) => {
-				// TODO handle and trasform error
-				console.log(err);
-				throw err;
-			});
+		return axios.request(axiosOptions).then(transformResponse).catch(transformErrorResponse);
 	}
 
 	/**
