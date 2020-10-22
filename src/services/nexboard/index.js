@@ -9,7 +9,7 @@ module.exports = (app) => {
 	const projectRoute = '/nexboard/projects';
 	const boardRoute = '/nexboard/boards';
 
-	app.use('/nexboard/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/nexboard/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use(projectRoute, new Project());
 	app.use(boardRoute, new Board());
 
