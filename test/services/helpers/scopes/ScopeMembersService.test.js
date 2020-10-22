@@ -1,7 +1,5 @@
 const { expect } = require('chai');
-const {
-	ScopeMembersService,
-} = require('../../../../src/services/helpers/scopePermissions');
+const { ScopeMembersService } = require('../../../../src/services/helpers/scopePermissions');
 
 describe('ScopeMembersService', () => {
 	it('should work', () => expect(ScopeMembersService).to.be.ok);
@@ -17,7 +15,7 @@ describe('ScopeMembersService', () => {
 			};
 			const fakeApp = {
 				// eslint-disable-next-line no-return-assign
-				use: (_path, service) => registeredService = Object.assign(service, defaults),
+				use: (_path, service) => (registeredService = Object.assign(service, defaults)),
 				service: (path) => (path === SERVICE_PATH ? registeredService : defaults),
 			};
 			const handler = (params) => {

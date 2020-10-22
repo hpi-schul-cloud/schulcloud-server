@@ -1,6 +1,7 @@
-const { NotFound, BadRequest } = require('@feathersjs/errors');
 const _ = require('lodash');
+const reqlib = require('app-root-path').require;
 
+const { NotFound, BadRequest } = reqlib('src/errors');
 const { FileModel } = require('../../fileStorage/model');
 const lessonModel = require('../model');
 
@@ -15,15 +16,14 @@ class LessonFilesService {
 
 	replaceFileLinksByFileId(files = [], lesson) {
 		const contents = lesson.contents || [];
-		return files.filter((file) => _.some(contents,
-			(c) => this.isTextContent(c) && this.includeFileKey(c, file.key)));
+		return files.filter((file) => _.some(contents, (c) => this.isTextContent(c) && this.includeFileKey(c, file.key)));
 	}
 
 	/**
-     * @returns all files which are included in text-components of a given lesson
-     * @param lessonId
-     * @param query contains shareToken
-     */
+	 * @returns all files which are included in text-components of a given lesson
+	 * @param lessonId
+	 * @param query contains shareToken
+	 */
 	find({ lessonId, query }) {
 		const { shareToken } = query;
 		if (!lessonId || !shareToken) throw new BadRequest('Missing parameters!');
@@ -35,8 +35,9 @@ class LessonFilesService {
 			}
 			// fetch files in the given course and check whether they are included in the lesson
 			// check whether the file is included in any lesson
-			return FileModel.find({ path: { $regex: lesson.courseId } })
-				.then((files) => this.replaceFileLinksByFileId(files, lesson));
+			return FileModel.find({ path: { $regex: lesson.courseId } }).then((files) =>
+				this.replaceFileLinksByFileId(files, lesson)
+			);
 		});
 	}
 }

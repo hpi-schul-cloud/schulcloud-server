@@ -12,11 +12,11 @@ const ObjectId = {
 	 * @returns {Boolean}
 	 */
 	equal(...args) {
-		if (!args || args.length < 2) throw new Error('could not compare less than two id\'s');
+		if (!args || args.length < 2) throw new Error("could not compare less than two id's");
 		const [firstId, ...otherIds] = args;
 		const firstIdAsString = String(firstId);
 		if (!ObjectId.isValid(firstIdAsString)) {
-			logger.warning('received invalid object ids to compare', args);
+			logger.debug('received invalid object ids to compare', args);
 			return false;
 		}
 		return otherIds.every((id) => firstIdAsString === String(id));

@@ -19,35 +19,35 @@ const consentCheckHooks = {
 	},
 };
 
-const getVersion = (ref, type, schoolId, date) => ref.find({
-	query: {
-		publishedAt: {
-			$gt: new Date(date),
-			$lte: new Date(),
-		},
-		$or: [
-			{
-				schoolId: {
-					$exists: false,
-				},
+const getVersion = (ref, type, schoolId, date) =>
+	ref.find({
+		query: {
+			publishedAt: {
+				$gt: new Date(date),
+				$lte: new Date(),
 			},
-			{ schoolId },
-		],
-		consentTypes: type,
-		$sort: {
-			schoolId: -1,
-			publishedAt: -1,
+			$or: [
+				{
+					schoolId: {
+						$exists: false,
+					},
+				},
+				{ schoolId },
+			],
+			consentTypes: type,
+			$sort: {
+				schoolId: -1,
+				publishedAt: -1,
+			},
 		},
-	},
-});
+	});
 
 const getRelevantConsentVersions = (data) => {
 	if (data.length === 0) return data;
 	const ref = data[0];
-	if (!({}).hasOwnProperty.call(ref, 'schoolId')) return data;
-	return data.filter((version) => ({}).hasOwnProperty.call(version, 'schoolId'));
+	if (!{}.hasOwnProperty.call(ref, 'schoolId')) return data;
+	return data.filter((version) => ({}.hasOwnProperty.call(version, 'schoolId')));
 };
-
 
 class ConsentCheckService {
 	async find(params) {
@@ -56,7 +56,7 @@ class ConsentCheckService {
 		const user = await this.userService.get(_id);
 		const consent = userToConsent(user);
 
-		if (consent.consentStatus === 'missing') {
+		if (['missing', 'unknown'].includes(consent.consentStatus)) {
 			return {
 				consentStatus: consent.consentStatus,
 			};
@@ -64,7 +64,7 @@ class ConsentCheckService {
 
 		// TODO: check age here to require consent
 		const selectedConsent = consent.userConsent || consent.parentConsents[0];
-		const { dateOfPrivacyConsent, dateOfTermsOfUseConsent } = (selectedConsent || {});
+		const { dateOfPrivacyConsent, dateOfTermsOfUseConsent } = selectedConsent || {};
 
 		let [{ data: privacy }, { data: termsOfUse }] = await Promise.all([
 			getVersion(this.versionService, consentTypes.PRIVACY, user.schoolId, dateOfPrivacyConsent),

@@ -1,8 +1,15 @@
 const REQUEST_TIMEOUT = 8000; // ms
 const request = require('request-promise-native');
 const { Configuration } = require('@schul-cloud/commons');
-const { GeneralError, NotFound } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { GeneralError } = reqlib('src/errors');
 const logger = require('../../../logger');
+const EduSearchResponse = require('./EduSearchResponse');
+
+const RETRY_ERROR_CODES = [401, 403];
+const COOKIE_RENEWAL_PERIOD_MS = 1800000; // 30 min
+const NO_PERMISSIONS_IMG = '/edu-sharing/themes/default/images/common/mime-types/previews/no-permissions.svg';
 
 const ES_PATH = {
 	AUTH: '/edu-sharing/rest/authentication/v1/validateSession',
@@ -10,6 +17,12 @@ const ES_PATH = {
 	SEARCH: '/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/',
 	TOKEN: '/edu-sharing/oauth2/token',
 };
+
+// file deepcode ignore StaticAccessThis: <Deepcode confuses values and methods>
+// file deepcode ignore PromiseNotCaughtNode: <Catch exists on line 90>
+// file deepcode ignore AttrAccessOnNull: <Accessing attr nodes on line 248>
+
+let lastCookieRenewalTime = null;
 
 class EduSharingConnector {
 	constructor() {
@@ -31,15 +44,13 @@ class EduSharingConnector {
 	static get authorization() {
 		const headers = {
 			...EduSharingConnector.headers,
-			Authorization: `Basic ${Buffer.from(`${Configuration.get('ES_USER')
-			}:${Configuration.get('ES_PASSWORD')}`).toString(
-				'base64',
-			)}`,
+			Authorization: `Basic ${Buffer.from(
+				`${Configuration.get('ES_USER')}:${Configuration.get('ES_PASSWORD')}`
+			).toString('base64')}`,
 		};
 
 		return headers;
 	}
-
 
 	// gets cookie (JSESSION) and attach it to header
 	getCookie() {
@@ -52,69 +63,56 @@ class EduSharingConnector {
 		};
 		return request(cookieOptions)
 			.then((result) => {
-				if (
-					result.statusCode !== 200
-					|| result.body.isValidLogin !== true
-				) {
+				if (result.statusCode !== 200 || result.body.isValidLogin !== true) {
 					throw Error('authentication error with edu sharing');
 				}
 				return result.headers['set-cookie'][0];
 			})
 			.catch((err) => {
-				logger.error('error: ', err);
+				logger.error(`Couldn't get edusharing cookie: ${err.statusCode} ${err.message}`);
 			});
 	}
 
 	// gets access_token and refresh_token
-	getAuth() {
+	async getAuth() {
 		const oauthoptions = {
 			method: 'POST',
 			url: `${Configuration.get('ES_DOMAIN')}${ES_PATH.TOKEN}`,
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 
-			body: `grant_type=${Configuration.get('ES_GRANT_TYPE')}&client_id=${
-				Configuration.get('ES_CLIENT_ID')
-			}&client_secret=${Configuration.get('ES_OAUTH_SECRET')}&username=${
-				Configuration.get('ES_USER')
-			}&password=${Configuration.get('ES_PASSWORD')}`,
+			body: `grant_type=${Configuration.get('ES_GRANT_TYPE')}&client_id=${Configuration.get(
+				'ES_CLIENT_ID'
+			)}&client_secret=${Configuration.get('ES_OAUTH_SECRET')}&username=${Configuration.get(
+				'ES_USER'
+			)}&password=${Configuration.get('ES_PASSWORD')}`,
 			timeout: REQUEST_TIMEOUT,
 		};
-		return request(oauthoptions).then((result) => {
-			if (result) {
-				const parsedResult = JSON.parse(result);
-				return Promise.resolve(parsedResult.access_token);
-			}
-			return Promise.reject(new GeneralError('Oauth failed'));
-		});
-	}
-
-	allConfigurationValuesHaveBeenDefined() {
-		return (
-			Configuration.has('ES_DOMAIN')
-			&& Configuration.has('ES_USER')
-			&& Configuration.has('ES_PASSWORD')
-			&& Configuration.has('ES_GRANT_TYPE')
-			&& Configuration.has('ES_OAUTH_SECRET')
-			&& Configuration.has('ES_CLIENT_ID')
-		);
+		try {
+			const result = await request(oauthoptions);
+			const parsedResult = JSON.parse(result);
+			return parsedResult.access_token;
+		} catch (e) {
+			return new GeneralError('Oauth failed', e);
+		}
 	}
 
 	async requestRepeater(options) {
 		let retry = 0;
 		const errors = [];
-		const retryErrors = [401, 403];
 		do {
 			try {
+				// eslint-disable-next-line no-await-in-loop
 				const eduResponse = await request(options);
 				return JSON.parse(eduResponse);
 			} catch (e) {
-				if (retryErrors.indexOf(e.statusCode) >= 0) {
+				if (RETRY_ERROR_CODES.indexOf(e.statusCode) >= 0) {
 					logger.info(`Trying to renew Edu Sharing connection. Attempt ${retry}`);
+					// eslint-disable-next-line no-await-in-loop
 					await this.login();
 				} else if (e.statusCode === 404) {
-					throw new NotFound('Edu Sharing returned no results');
+					return null;
 				} else {
-					logger.error(e);
+					logger.error(`Edusharing error occurred ${e.statusCode} ${e.message}`);
 					errors.push(e);
 				}
 			}
@@ -124,38 +122,63 @@ class EduSharingConnector {
 		throw new GeneralError('Edu Sharing Retry failed', errors);
 	}
 
-
 	async login() {
+		logger.info('Renewal of Edusharing credentials');
 		this.authorization = await this.getCookie();
 		this.accessToken = await this.getAuth();
 	}
 
-	isLoggedin() {
-		// returns false if cookie or accesstoken is falsy
-		return !!this.authorization && !!this.accessToken;
+	shouldRelogin() {
+		const nextCookieRenewalTime = lastCookieRenewalTime
+			? new Date(lastCookieRenewalTime.getTime() + COOKIE_RENEWAL_PERIOD_MS)
+			: new Date();
+		// should relogin if cookie expired or cookie or access token is empty
+		const shouldRelogin = new Date() >= nextCookieRenewalTime || !this.authorization || !this.accessToken;
+		if (shouldRelogin) {
+			lastCookieRenewalTime = new Date();
+		}
+		return shouldRelogin;
 	}
 
-	async getImage(url) {
+	async getImage(url, retry = true) {
 		const reqOptions = {
 			uri: url,
 			method: 'GET',
 			headers: {},
 			// necessary to get the image as binary value
 			encoding: null,
+			resolveWithFullResponse: true,
 		};
 		return request(reqOptions)
-			.then((result) => {
-				const encodedData = `data:image;base64,${result.toString('base64')}`;
+			.then(async (result) => {
+				// edusharing sometimes doesn't return error code if access token is expired
+				// but redirect to no permission image
+				if (retry && result.req.path === NO_PERMISSIONS_IMG) {
+					return this.tryToGetImageWithNewAccessToken(url);
+				}
+				const encodedData = `data:image;base64,${result.body.toString('base64')}`;
 				return Promise.resolve(encodedData);
 			})
-			.catch((err) => {
-				logger.error('error: ', err);
+			.catch(async (err) => {
+				if (retry && RETRY_ERROR_CODES.indexOf(err.statusCode) >= 0) {
+					return this.tryToGetImageWithNewAccessToken(url);
+				}
+				logger.error(`Couldn't fetch image for ${url}:
+				Edusharing responded with ${err.statusCode} ${err.message}`);
 				return Promise.reject(err);
 			});
 	}
 
+	async tryToGetImageWithNewAccessToken(url) {
+		logger.info('Trying to renew Edusharing access token.');
+		this.accessToken = await this.getAuth();
+		const urlObj = new URL(url);
+		urlObj.searchParams.set('accessToken', this.accessToken);
+		return this.getImage(urlObj.toString(), false);
+	}
+
 	async GET(id) {
-		if (this.isLoggedin() === false) {
+		if (this.shouldRelogin()) {
 			await this.login();
 		}
 		const propertyFilter = '-all-';
@@ -163,9 +186,7 @@ class EduSharingConnector {
 		const options = {
 			method: 'GET',
 			// eslint-disable-next-line max-len
-			url: `${Configuration.get('ES_DOMAIN')
-			}${ES_PATH.NODE}${id
-			}/metadata?propertyFilter=${propertyFilter}`,
+			url: `${Configuration.get('ES_DOMAIN')}${ES_PATH.NODE}${id}/metadata?propertyFilter=${propertyFilter}`,
 			headers: {
 				...EduSharingConnector.headers,
 				cookie: this.authorization,
@@ -174,43 +195,33 @@ class EduSharingConnector {
 		};
 
 		const eduResponse = await this.requestRepeater(options);
-		const node = eduResponse.node;
-		if (node.preview && node.preview.url) {
+		const { node } = eduResponse;
+		if (node && node.preview && node.preview.url) {
 			// eslint-disable-next-line max-len
-			node.preview.url = await this.getImage(`${node.preview.url}&accessToken=${this.accessToken}&crop=true&maxWidth=1200&maxHeight=800`);
+			node.preview.url = await this.getImage(
+				`${node.preview.url}&accessToken=${this.accessToken}&crop=true&maxWidth=1200&maxHeight=800`
+			);
 		}
 		return node;
 	}
 
-	async FIND({
-		query: {
-			searchQuery = '',
-			contentType = 'FILES',
-			$skip,
-			$limit,
-			sortProperties = 'score',
-		},
-	}) {
+	async FIND({ query: { searchQuery = '', contentType = 'FILES', $skip, $limit, sortProperties = 'score' } }) {
 		const skipCount = parseInt($skip, 10) || 0;
 		const maxItems = parseInt($limit, 10) || 9;
 		const sortAscending = false;
 		const propertyFilter = '-all-'; // '-all-' for all properties OR ccm-stuff
 		if (searchQuery.trim().length < 2) {
-			return {
-				total: 0,
-				limit: 0,
-				skip: 0,
-				data: [],
-			};
+			return new EduSearchResponse();
 		}
 
-		if (this.isLoggedin() === false) {
+		if (this.shouldRelogin()) {
 			await this.login();
 		}
 
 		const urlBase = `${Configuration.get('ES_DOMAIN')}${ES_PATH.SEARCH}?`;
-		const url = urlBase
-			+ [
+		const url =
+			urlBase +
+			[
 				`contentType=${contentType}`,
 				`skipCount=${skipCount}`,
 				`maxItems=${maxItems}`,
@@ -229,9 +240,7 @@ class EduSharingConnector {
 				cookie: this.authorization,
 			},
 			body: JSON.stringify({
-				criterias: [
-					{ property: 'ngsearchword', values: [`${searchQuery.toLowerCase()}`] },
-				],
+				criterias: [{ property: 'ngsearchword', values: [`${searchQuery.toLowerCase()}`] }],
 				facettes: ['cclom:general_keyword'],
 			}),
 			timeout: REQUEST_TIMEOUT,
@@ -239,24 +248,20 @@ class EduSharingConnector {
 
 		const parsed = await this.requestRepeater(options);
 
-		// // adds accesstoken to image-url to let user see the picture on client-side.
 		if (parsed && parsed.nodes) {
-			for (const node of parsed.nodes) {
+			const promises = parsed.nodes.map(async (node) => {
 				if (node.preview && node.preview.url) {
-					// eslint-disable-next-line max-len
-					node.preview.url = await this.getImage(`${node.preview.url}&accessToken=${this.accessToken}&crop=true&maxWidth=300&maxHeight=300`);
+					node.preview.url = await this.getImage(`${node.preview.url}
+					&accessToken=${this.accessToken}&crop=true&maxWidth=300&maxHeight=300`);
 				}
-			}
+			});
+			await Promise.allSettled(promises);
+		} else {
+			return new EduSearchResponse();
 		}
 
-		return {
-			total: parsed.pagination.total,
-			limit: parsed.pagination.count,
-			skip: parsed.pagination.from,
-			data: parsed.nodes,
-		};
+		return new EduSearchResponse(parsed);
 	}
-
 
 	static get Instance() {
 		if (!EduSharingConnector.instance) {

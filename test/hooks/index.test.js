@@ -1,12 +1,19 @@
 const { expect } = require('chai');
-const { BadRequest } = require('@feathersjs/errors');
-const {	lookupSchool } = require('../../src/hooks');
+const reqlib = require('app-root-path').require;
 
-const app = require('../../src/app');
-const { createTestUser, cleanup } = require('../services/helpers/testObjects')(app);
+const { BadRequest } = reqlib('src/errors');
+const { lookupSchool } = require('../../src/hooks');
 
+const appPromise = require('../../src/app');
+const { createTestUser, cleanup } = require('../services/helpers/testObjects')(appPromise);
 
 describe('#lookupSchool', () => {
+	let app;
+
+	before(async () => {
+		app = await appPromise;
+	});
+
 	it('should require authentication to provide a user', async () => {
 		try {
 			await lookupSchool({});
@@ -26,7 +33,7 @@ describe('#lookupSchool', () => {
 		}
 	});
 
-	it('should add the logged-in user\' school to the request params', async () => {
+	it("should add the logged-in user' school to the request params", async () => {
 		const user = await createTestUser();
 		const context = await lookupSchool({
 			app,

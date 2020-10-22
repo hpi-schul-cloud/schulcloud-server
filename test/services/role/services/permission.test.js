@@ -1,10 +1,11 @@
 const { expect } = require('chai');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 
-const permissionService = app.service('roles/:roleName/permissions');
 
-describe('PermissionService', async () => {
+describe('PermissionService', () => {
+	let app;
+	let permissionService;
 	const ROLES = {
 		TEST: 'test',
 		OTHER: 'other',
@@ -14,32 +15,20 @@ describe('PermissionService', async () => {
 		NOTHING: 'nothing spezial',
 	};
 
-	const testPermissions = [
-		'SINGING',
-		'DANCE_RAIN',
-		'WALK_LINES',
-		'RUN_FLOOR',
-	];
+	const testPermissions = ['SINGING', 'DANCE_RAIN', 'WALK_LINES', 'RUN_FLOOR'];
 
-	const otherPermissions = [
-		'SITTING',
-		'SITTING_ON_CHAIR',
-		'SITTING_ON_DESK',
-	];
+	const otherPermissions = ['SITTING', 'SITTING_ON_CHAIR', 'SITTING_ON_DESK'];
 
-	const extendedPermissions = [
-		'EAT_TO_KEEP_ALIVE',
-	];
+	const extendedPermissions = ['EAT_TO_KEEP_ALIVE'];
 
-	const multipleExtendedPermission = [
-		'WRITE_ON_BOARD',
-	];
+	const multipleExtendedPermission = ['WRITE_ON_BOARD'];
 
-	const xxPermissions = [
-		'GO_TO_TOILET',
-	];
+	const xxPermissions = ['GO_TO_TOILET'];
 
 	before(async () => {
+		app = await appPromise;
+		permissionService = app.service('roles/:roleName/permissions');
+
 		const testRole = await testObjects.createTestRole({
 			name: ROLES.TEST,
 			permissions: testPermissions,
@@ -98,10 +87,7 @@ describe('PermissionService', async () => {
 			},
 		});
 
-		expect(permissions).to.have.members([
-			...testPermissions,
-			...extendedPermissions,
-		]);
+		expect(permissions).to.have.members([...testPermissions, ...extendedPermissions]);
 	});
 
 	it('get Permissions with multiple roles', async () => {
@@ -142,8 +128,6 @@ describe('PermissionService', async () => {
 			},
 		});
 
-		expect(permissions).to.have.members([
-			...otherPermissions,
-		]);
+		expect(permissions).to.have.members([...otherPermissions]);
 	});
 });

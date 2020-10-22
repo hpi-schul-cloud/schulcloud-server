@@ -6,24 +6,24 @@ class SchoolYearFacade {
 	constructor(years, school) {
 		/** retrieves custom year for given year id
 		 * @param yearId ObjectId
-		*/
-		const customYearsOf = (yearId) => (school.customYears || [])
-			.filter((year) => String(year._id) === String(yearId));
+		 */
+		const customYearsOf = (yearId) => (school.customYears || []).filter((year) => String(year._id) === String(yearId));
 		/** overrides year values with custom year values if they have been defined */
-		const generateSchoolYears = () => this.years.map((year) => {
-			const customYearForYear = customYearsOf(year._id);
-			if (customYearForYear.length !== 0) {
-				const customYear = year;
-				if (customYearForYear.startDate) {
-					customYear.startDate = customYearForYear.startDate;
+		const generateSchoolYears = () =>
+			this.years.map((year) => {
+				const customYearForYear = customYearsOf(year._id);
+				if (customYearForYear.length !== 0) {
+					const customYear = year;
+					if (customYearForYear.startDate) {
+						customYear.startDate = customYearForYear.startDate;
+					}
+					if (customYearForYear.endDate) {
+						customYear.endDate = customYearForYear.endDate;
+					}
+					return customYear;
 				}
-				if (customYearForYear.endDate) {
-					customYear.endDate = customYearForYear.endDate;
-				}
-				return customYear;
-			}
-			return year;
-		});
+				return year;
+			});
 		this.years = years.sort(SchoolYearFacade.yearCompare);
 		if (school) {
 			this.customYears = (school.customYears || []).sort(SchoolYearFacade.yearCompare);
@@ -40,7 +40,7 @@ class SchoolYearFacade {
 
 	/** sorts years by their name value */
 	static yearCompare(year, otherYear) {
-		return (year.name.toString()).localeCompare(otherYear.name);
+		return year.name.toString().localeCompare(otherYear.name);
 	}
 
 	/**
@@ -53,9 +53,7 @@ class SchoolYearFacade {
 	get activeYear() {
 		if (this.activeYearIndex != null) return this.schoolYears[this.activeYearIndex];
 		const now = Date.now();
-		const activeYears = this.schoolYears
-			.filter((year) => year.startDate <= now
-			&& year.endDate >= now);
+		const activeYears = this.schoolYears.filter((year) => year.startDate <= now && year.endDate >= now);
 		if (activeYears.length !== 0) {
 			return activeYears[0];
 		}
@@ -81,8 +79,7 @@ class SchoolYearFacade {
 			return this.schoolYears[this.activeYearIndex + 1];
 		}
 		const now = Date.now();
-		const nextYears = this.schoolYears
-			.filter((year) => year.startDate >= now);
+		const nextYears = this.schoolYears.filter((year) => year.startDate >= now);
 		// next year is in first place
 		if (nextYears.length === 0) return null;
 		return nextYears[0];
@@ -123,8 +120,7 @@ class SchoolYearFacade {
 		};
 		const givenYearIndex = indexByValue(this.schoolYears, String(yearId));
 		const nextYearIndex = givenYearIndex + 1;
-		if (givenYearIndex === -1
-			|| this.schoolYears.length < nextYearIndex) {
+		if (givenYearIndex === -1 || this.schoolYears.length < nextYearIndex) {
 			return null;
 		}
 		return this.schoolYears[nextYearIndex];
@@ -136,7 +132,7 @@ class SchoolYearFacade {
 
 	static getDefaultEndDate(yearName) {
 		const year = SchoolYearFacade.extractStartYear(yearName);
-		return Date.UTC((year + 1), 6, 31); // 1.7.(YEAR+1)
+		return Date.UTC(year + 1, 6, 31); // 1.7.(YEAR+1)
 	}
 
 	static getDefaultStartDate(yearName) {

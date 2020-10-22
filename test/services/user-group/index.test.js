@@ -1,27 +1,34 @@
 const { expect } = require('chai');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
-const classesService = app.service('/classes');
-
 describe('classes service', () => {
+	let app;
+	let classesService;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		classesService = app.service('/classes');
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
+	});
+
 	it('is properly registered', () => {
 		expect(classesService).to.not.equal(undefined);
 	});
 
 	describe('find route', () => {
-		let server;
 		const createdIds = [];
-
-		before((done) => {
-			server = app.listen(0, done);
-		});
 
 		after(async () => {
 			await testObjects.classes.removeMany(createdIds);
-			await server.close();
 		});
 
 		afterEach(testObjects.cleanup);
@@ -29,7 +36,8 @@ describe('classes service', () => {
 		it('should allow teachers and admins to find all classes', async () => {
 			const teacherUser = await testObjects.createTestUser({ roles: ['teacher'] });
 			const adminUser = await testObjects.createTestUser({
-				roles: ['administrator'], schoolId: teacherUser.schoolId,
+				roles: ['administrator'],
+				schoolId: teacherUser.schoolId,
 			});
 
 			const classes = [
@@ -49,19 +57,18 @@ describe('classes service', () => {
 				}),
 			];
 
-			await Promise.all([teacherUser, adminUser].map(async (role) => {
-				const params = {
-					query: {},
-					...await generateRequestParamsFromUser(role),
-				};
-				const { data } = await classesService.find(params);
-				expect(data.length).to.equal(classes.length);
-				// all created classes should be in the response:
-				expect(classes.reduce(
-					(agg, cur) => agg && data.some((d) => equalIds(d._id, cur._id)),
-					true,
-				)).to.equal(true);
-			}));
+			await Promise.all(
+				[teacherUser, adminUser].map(async (role) => {
+					const params = {
+						query: {},
+						...(await generateRequestParamsFromUser(role)),
+					};
+					const { data } = await classesService.find(params);
+					expect(data.length).to.equal(classes.length);
+					// all created classes should be in the response:
+					expect(classes.reduce((agg, cur) => agg && data.some((d) => equalIds(d._id, cur._id)), true)).to.equal(true);
+				})
+			);
 		}).timeout(4000);
 
 		it('should allow students to only find classes they participate in', async () => {
@@ -84,7 +91,7 @@ describe('classes service', () => {
 
 			const params = {
 				query: {},
-				...await generateRequestParamsFromUser(studentUser),
+				...(await generateRequestParamsFromUser(studentUser)),
 			};
 			const { data } = await classesService.find(params);
 			expect(data.length).to.equal(1);
@@ -108,7 +115,7 @@ describe('classes service', () => {
 
 			const adminParams = {
 				query: {},
-				...await generateRequestParamsFromUser(adminUser),
+				...(await generateRequestParamsFromUser(adminUser)),
 			};
 
 			const { data } = await classesService.find(adminParams);
@@ -138,7 +145,7 @@ describe('classes service', () => {
 
 			const adminParams = {
 				query: {},
-				...await generateRequestParamsFromUser(adminUser),
+				...(await generateRequestParamsFromUser(adminUser)),
 			};
 			const { data } = await classesService.find(adminParams);
 
@@ -170,7 +177,7 @@ describe('classes service', () => {
 
 			const adminParams = {
 				query: {},
-				...await generateRequestParamsFromUser(adminUser),
+				...(await generateRequestParamsFromUser(adminUser)),
 			};
 			const { data } = await classesService.find(adminParams);
 
@@ -183,12 +190,12 @@ describe('classes service', () => {
 		it('CREATE patches successor ID in predecessor class', async () => {
 			const orgClass = await classesService.create({
 				name: 'sonnenklasse 1',
-				schoolId: '0000d186816abba584714c5f',
+				schoolId: '5f2987e020834114b8efd6f8',
 			});
 			createdIds.push(orgClass._id);
 			const successorClass = await classesService.create({
 				name: 'sonnenklasse 2',
-				schoolId: '0000d186816abba584714c5f',
+				schoolId: '5f2987e020834114b8efd6f8',
 				predecessor: orgClass._id,
 			});
 			createdIds.push(successorClass._id);

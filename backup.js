@@ -23,35 +23,41 @@ const {
  * ARGUMENT PARSING
  ****************************************** */
 
-const args = arg({
-	// Types
-	'--help': Boolean, // show the help
-	'-h': '--help',
+const args = arg(
+	{
+		// Types
+		'--help': Boolean, // show the help
+		'-h': '--help',
 
-	'--path': String, // export path or directory to import from
-	'-p': '--path',
+		'--path': String, // export path or directory to import from
+		'-p': '--path',
 
-	'--collection': [String], // collection(s) to import/export
-	'-c': '--collection',
+		'--collection': [String], // collection(s) to import/export
+		'-c': '--collection',
 
-	'--username': String, // Mongo Username
-	'-U': '--username',
+		'--username': String, // Mongo Username
+		'-U': '--username',
 
-	'--password': String, // Mongo Password
-	'-P': '--password',
+		'--password': String, // Mongo Password
+		'-P': '--password',
 
-	'--database': String, // Mongo Database
-	'-D': '--database',
+		'--database': String, // Mongo Database
+		'-D': '--database',
 
-	'--url': String, // Mongo Host String (ex. localhost:27017)
-	'-H': '--url',
+		'--url': String, // Mongo Host String (ex. localhost:27017)
+		'-H': '--url',
 
-	'--pretty': Boolean,
-	'-b': '--pretty',
-}, {
-	permissive: true,
-	argv: process.argv.slice(2),
-});
+		'--pretty': Boolean,
+		'-b': '--pretty',
+
+		'--sort': String, // export sort object requires string parameter like "{ name: 1, id: 1 }"
+		'-s': '--sort',
+	},
+	{
+		permissive: true,
+		argv: process.argv.slice(2),
+	}
+);
 
 if (args['--help']) {
 	log(`Usage: node backup.js [opts] <export|import>
@@ -78,12 +84,9 @@ OPTIONS:
 
 const getTimestamp = () => {
 	const d = new Date();
-	return `${d.getUTCFullYear()}_${
-		(`0${d.getUTCMonth() + 1}`).slice(-2)}_${
-		(`0${d.getUTCDate()}`).slice(-2)}_${
-		(`0${d.getUTCHours()}`).slice(-2)}_${
-		(`0${d.getUTCMinutes()}`).slice(-2)}_${
-		(`0${d.getUTCSeconds()}`).slice(-2)}`;
+	return `${d.getUTCFullYear()}_${`0${d.getUTCMonth() + 1}`.slice(-2)}_${`0${d.getUTCDate()}`.slice(
+		-2
+	)}_${`0${d.getUTCHours()}`.slice(-2)}_${`0${d.getUTCMinutes()}`.slice(-2)}_${`0${d.getUTCSeconds()}`.slice(-2)}`;
 };
 
 const CONFIG = {
@@ -122,19 +125,25 @@ const CONFIG = {
 
 const cleanJoin = (a = [], seperator = ' ') => a.filter(Boolean).join(seperator);
 
-const asyncExec = (command) => new Promise((resolve, reject) => {
-	exec(command, (error, stdout, stderr) => {
-		if (error) { return reject(error); }
-		return resolve(stdout || stderr);
+const asyncExec = (command) =>
+	new Promise((resolve, reject) => {
+		exec(command, (error, stdout, stderr) => {
+			if (error) {
+				return reject(error);
+			}
+			return resolve(stdout || stderr);
+		});
 	});
-});
 
-const readDir = (directoryPath) => new Promise((resolve, reject) => fs.readdir(directoryPath, (err, files) => {
-	if (err) {
-		return reject(err);
-	}
-	return resolve(files);
-}));
+const readDir = (directoryPath) =>
+	new Promise((resolve, reject) =>
+		fs.readdir(directoryPath, (err, files) => {
+			if (err) {
+				return reject(err);
+			}
+			return resolve(files);
+		})
+	);
 
 const getFirstCharFromFile = async (filePath, position = 0) => {
 	// open file for reading, returns file descriptor
@@ -163,17 +172,18 @@ const ensureDirectoryExistence = (filePath) => {
  * IMPORT
  ****************************************** */
 
-const importCollection = async ({
-	collection, filePath, drop = true,
-}) => {
+const importCollection = async ({ collection, filePath, drop = true }) => {
 	const cmdArgs = [
 		'mongoimport',
-		'--host', CONFIG.MONGO.URL,
-		'--db', CONFIG.MONGO.DATABASE,
+		'--host',
+		CONFIG.MONGO.URL,
+		'--db',
+		CONFIG.MONGO.DATABASE,
 		...CONFIG.MONGO.CREDENTIALS_ARGS,
-		'--collection', collection,
+		'--collection',
+		collection,
 		filePath,
-		await getFirstCharFromFile(filePath) === '[' ? '--jsonArray' : undefined,
+		(await getFirstCharFromFile(filePath)) === '[' ? '--jsonArray' : undefined,
 		drop ? '--drop ' : undefined,
 	];
 	const output = await asyncExec(cleanJoin(cmdArgs));
@@ -198,16 +208,19 @@ const importDirectory = async (directoryPath) => {
  * EXPORT
  ****************************************** */
 
-const exportCollection = async ({
-	collection, filePath,
-}) => {
+const exportCollection = async ({ collection, filePath }) => {
 	const cmdArgs = [
 		'mongoexport',
-		'--host', CONFIG.MONGO.URL,
-		'--db', CONFIG.MONGO.DATABASE,
+		'--host',
+		CONFIG.MONGO.URL,
+		'--db',
+		CONFIG.MONGO.DATABASE,
 		...CONFIG.MONGO.CREDENTIALS_ARGS,
-		'--collection', collection,
-		'--out', filePath,
+		'--collection',
+		collection,
+		'--out',
+		filePath,
+		args['--sort'] ? `--sort "${args['--sort']}"` : undefined,
 		'--jsonArray',
 		args['--pretty'] ? '--pretty' : undefined,
 	];
@@ -224,7 +237,8 @@ const getCollectionsToExport = async () => {
 			`${CONFIG.MONGO.URL}/${CONFIG.MONGO.DATABASE}`,
 			...CONFIG.MONGO.CREDENTIALS_ARGS,
 			'--quiet',
-			'--eval', '"db.getCollectionNames().join(\\" \\")"',
+			'--eval',
+			'"db.getCollectionNames().join(\\" \\")"',
 		];
 		log(cleanJoin(cmdArgs));
 		const all = await asyncExec(cleanJoin(cmdArgs));
@@ -253,8 +267,7 @@ const exportBackup = async (exportPath) => {
 const main = async () => {
 	if (args._.length === 0) {
 		throw new Error('import/export argument is missing');
-	} else
-	if (args._.length > 1) {
+	} else if (args._.length > 1) {
 		throw new Error('to many arguments');
 	} else if (args._[0] === 'import') {
 		await importDirectory(CONFIG.BACKUP_PATH_IMPORT);
@@ -264,6 +277,5 @@ const main = async () => {
 		throw new Error('invalid argument');
 	}
 };
-
 
 main();

@@ -1,22 +1,30 @@
 const chai = require('chai');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 
 const { expect } = chai;
 
-
-async function createSubmission(teachers, students, publicSubmission = false, substitutionTeachers = [], courseStudents = [], createTeacherPrivateSubmission = false) {
+async function createSubmission(
+	teachers,
+	students,
+	publicSubmission = false,
+	substitutionTeachers = [],
+	courseStudents = [],
+	createTeacherPrivateSubmission = false
+) {
 	const originalTeacher = teachers[0];
 	const submitterId = students[0];
 	const studentIds = students.map((s) => s._id);
 	const courseStudentIds = courseStudents.map((s) => s._id);
 
-	const course = !createTeacherPrivateSubmission ? await testObjects.createTestCourse({
-		teacherIds: teachers.map((t) => t._id),
-		substitutionIds: substitutionTeachers.map((s) => s._id),
-		userIds: [...new Set([...studentIds, ...courseStudentIds])],
-		schoolId: originalTeacher.schoolId,
-	}) : undefined;
+	const course = !createTeacherPrivateSubmission
+		? await testObjects.createTestCourse({
+				teacherIds: teachers.map((t) => t._id),
+				substitutionIds: substitutionTeachers.map((s) => s._id),
+				userIds: [...new Set([...studentIds, ...courseStudentIds])],
+				schoolId: originalTeacher.schoolId,
+		  })
+		: undefined;
 
 	const courseId = course ? course._id : undefined;
 	const homework = await testObjects.createTestHomework({
@@ -42,11 +50,13 @@ async function createSubmission(teachers, students, publicSubmission = false, su
 }
 
 describe('submission service', function test() {
+	let app;
 	this.timeout(4000);
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after(async () => {
@@ -59,7 +69,8 @@ describe('submission service', function test() {
 			testObjects.createTestUser({ roles: ['student'] }),
 		]);
 		const course = await testObjects.createTestCourse({
-			teacherIds: [teacher._id], userIds: [student._id],
+			teacherIds: [teacher._id],
+			userIds: [student._id],
 		});
 		const homework = await testObjects.createTestHomework({
 			teacherId: teacher._id,
@@ -74,13 +85,16 @@ describe('submission service', function test() {
 		});
 		const params = await testObjects.generateRequestParamsFromUser(student);
 		params.query = {};
-		const result = await app.service('submissions').create({
-			schoolId: course.schoolId,
-			courseId: course._id,
-			homeworkId: homework._id,
-			studentId: student._id,
-			comment: 'rot! nein, blau!!',
-		}, params);
+		const result = await app.service('submissions').create(
+			{
+				schoolId: course.schoolId,
+				courseId: course._id,
+				homeworkId: homework._id,
+				studentId: student._id,
+				comment: 'rot! nein, blau!!',
+			},
+			params
+		);
 		expect(result).to.not.be.undefined;
 		expect(result).to.haveOwnProperty('_id');
 		expect(result.teamMembers.length).to.equal(1);

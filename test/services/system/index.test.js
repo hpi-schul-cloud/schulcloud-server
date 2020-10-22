@@ -1,9 +1,21 @@
 const assert = require('assert');
 const { expect } = require('chai');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 
 describe('systemId service', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen();
+	});
+
+	after(async () => {
+		await server.close();
+	});
+
 	it('registered the systems service', () => {
 		assert.ok(app.service('systems'));
 	});
@@ -37,7 +49,7 @@ describe('systemId service', () => {
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(403);
-			expect(err.message).to.equal('You don\'t have one of the permissions: SYSTEM_EDIT.');
+			expect(err.message).to.equal("You don't have one of the permissions: SYSTEM_EDIT.");
 		}
 	});
 

@@ -1,7 +1,10 @@
-const { BadRequest } = require('@feathersjs/errors');
 const service = require('feathers-mongoose');
-const { HOST } = require('../../../../config/globals');
+const { Configuration } = require('@schul-cloud/commons');
+const reqlib = require('app-root-path').require;
 
+const { BadRequest } = reqlib('src/errors');
+
+const HOST = Configuration.get('HOST');
 const _TYPE = ['before', 'after'];
 const _METHOD = ['get', 'update', 'patch', 'create', 'find', 'remove'];
 
@@ -58,18 +61,24 @@ const patchParams = (params, account = {}) => {
 };
 
 /** * feathers is hook test ** */
-const _typeof = typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
-	? function (obj) {
-		return typeof obj;
-	}
-	: function (obj) {
-		return obj && typeof Symbol === 'function' && obj.constructor === Symbol && obj !== Symbol.prototype ? 'symbol' : typeof obj;
-	};
+const _typeof =
+	typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
+		? function (obj) {
+				return typeof obj;
+		  }
+		: function (obj) {
+				return obj && typeof Symbol === 'function' && obj.constructor === Symbol && obj !== Symbol.prototype
+					? 'symbol'
+					: typeof obj;
+		  };
 
 function isHookObject(hookObject) {
-	return (typeof hookObject === 'undefined' ? 'undefined' : _typeof(hookObject)) === 'object' && typeof hookObject.method === 'string' && typeof hookObject.type === 'string';
+	return (
+		(typeof hookObject === 'undefined' ? 'undefined' : _typeof(hookObject)) === 'object' &&
+		typeof hookObject.method === 'string' &&
+		typeof hookObject.type === 'string'
+	);
 }
-
 
 // todo: add service (?)
 // todo: add missing params : query:Object , authenticated:true  ...etc..
@@ -97,9 +106,13 @@ const createHook = (app, opt = {}) => {
 	const path = opt.servicePath || opt.path || '_TEST_PATH_';
 	const service = opt.servicePath ? app.service(opt.servicePath) : opt.service || getService(opt.options);
 
-
 	const hook = {
-		type, method, params, path, app, service,
+		type,
+		method,
+		params,
+		path,
+		app,
+		service,
 	};
 
 	if (hook.type === 'after') hook.result = result;
@@ -109,7 +122,6 @@ const createHook = (app, opt = {}) => {
 	if (isHookObject(hook)) return hook;
 	throw BadRequest('Is no hook object.');
 };
-
 
 const createHookStack = (app, opt) => {
 	const stack = {};
