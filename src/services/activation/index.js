@@ -6,6 +6,8 @@ const { ActivationModelService, Activation, EMailAddressActivation } = require('
 const { KEYWORDS } = require('./utils/customStrategyUtils');
 
 module.exports = (app) => {
+	app.use('/activation/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+
 	app.use('activationModel', ActivationModelService.activationModelService);
 	app.service('activationModel').hooks(ActivationModelService.activationModelHooks);
 
@@ -27,6 +29,4 @@ module.exports = (app) => {
 	app.use(EMailAddressActivationRoute, new EMailAddressActivation.Service());
 	const EMailAddressActivationService = app.service(EMailAddressActivationRoute);
 	EMailAddressActivationService.hooks(EMailAddressActivation.Hooks);
-
-	app.use('/activation/api', staticContent(path.join(__dirname, '/docs')));
 };

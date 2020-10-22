@@ -6,8 +6,7 @@ const { webuntisMetadataService, webuntisMetadataServiceHooks } = require('./ser
 /* In addition to setting up the service code, the service has to be included in src/index.js. */
 
 module.exports = (app) => {
+	app.use('/webuntisMetadata/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/webuntisMetadata', webuntisMetadataService);
 	app.service('/webuntisMetadata').hooks(webuntisMetadataServiceHooks);
-
-	app.use('/webuntisMetadata/api', staticContent(path.join(__dirname, '/docs')));
 };

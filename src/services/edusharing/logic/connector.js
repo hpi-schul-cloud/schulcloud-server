@@ -1,7 +1,9 @@
 const REQUEST_TIMEOUT = 8000; // ms
 const request = require('request-promise-native');
 const { Configuration } = require('@schul-cloud/commons');
-const { GeneralError } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { GeneralError } = reqlib('src/errors');
 const logger = require('../../../logger');
 const EduSearchResponse = require('./EduSearchResponse');
 
@@ -15,6 +17,10 @@ const ES_PATH = {
 	SEARCH: '/edu-sharing/rest/search/v1/queriesV2/mv-repo.schul-cloud.org/mds/ngsearch/',
 	TOKEN: '/edu-sharing/oauth2/token',
 };
+
+// file deepcode ignore StaticAccessThis: <Deepcode confuses values and methods>
+// file deepcode ignore PromiseNotCaughtNode: <Catch exists on line 90>
+// file deepcode ignore AttrAccessOnNull: <Accessing attr nodes on line 248>
 
 let lastCookieRenewalTime = null;
 
@@ -68,7 +74,7 @@ class EduSharingConnector {
 	}
 
 	// gets access_token and refresh_token
-	getAuth() {
+	async getAuth() {
 		const oauthoptions = {
 			method: 'POST',
 			url: `${Configuration.get('ES_DOMAIN')}${ES_PATH.TOKEN}`,
@@ -81,13 +87,13 @@ class EduSharingConnector {
 			)}&password=${Configuration.get('ES_PASSWORD')}`,
 			timeout: REQUEST_TIMEOUT,
 		};
-		return request(oauthoptions).then((result) => {
-			if (result) {
-				const parsedResult = JSON.parse(result);
-				return Promise.resolve(parsedResult.access_token);
-			}
-			return Promise.reject(new GeneralError('Oauth failed'));
-		});
+		try {
+			const result = await request(oauthoptions);
+			const parsedResult = JSON.parse(result);
+			return parsedResult.access_token;
+		} catch (e) {
+			return new GeneralError('Oauth failed', e);
+		}
 	}
 
 	async requestRepeater(options) {
@@ -95,11 +101,13 @@ class EduSharingConnector {
 		const errors = [];
 		do {
 			try {
+				// eslint-disable-next-line no-await-in-loop
 				const eduResponse = await request(options);
 				return JSON.parse(eduResponse);
 			} catch (e) {
 				if (RETRY_ERROR_CODES.indexOf(e.statusCode) >= 0) {
 					logger.info(`Trying to renew Edu Sharing connection. Attempt ${retry}`);
+					// eslint-disable-next-line no-await-in-loop
 					await this.login();
 				} else if (e.statusCode === 404) {
 					return null;

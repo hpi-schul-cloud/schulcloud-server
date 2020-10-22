@@ -21,12 +21,7 @@ module.exports = function setup() {
 		lean: { virtuals: true },
 	};
 
-	app.use('/roles', service(options));
-	const roleService = app.service('/roles');
-	roleService.hooks({
-		before: hooks.before(),
-		after: hooks.after,
-	});
+	app.use('/roles/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/roles/user', new UserRoles());
 	const userRoles = app.service('/roles/user');
@@ -40,7 +35,12 @@ module.exports = function setup() {
 	const permissionService = app.service('/roles/:roleName/permissions');
 	permissionService.hooks(permissionHooks);
 
-	app.use('/roles/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/roles', service(options));
+	const roleService = app.service('/roles');
+	roleService.hooks({
+		before: hooks.before(),
+		after: hooks.after,
+	});
 
 	definePermissions(
 		'ADMIN_TOGGLE_STUDENT_VISIBILITY',

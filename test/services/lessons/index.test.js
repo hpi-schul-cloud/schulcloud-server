@@ -1,10 +1,8 @@
 const assert = require('assert');
 const { expect } = require('chai');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
-const lessonService = app.service('lessons');
-const lessonCopyService = app.service('lessons/copy');
-const testObjects = require('../helpers/testObjects')(app);
+const testObjects = require('../helpers/testObjects')(appPromise);
 
 const testLesson = {
 	name: 'testLesson',
@@ -14,10 +12,16 @@ const testLesson = {
 };
 
 describe('lessons service', () => {
+	let app;
+	let lessonService;
+	let lessonCopyService;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		lessonService = app.service('lessons');
+		lessonCopyService = app.service('lessons/copy');
+		server = await app.listen(0);
 	});
 
 	after(async () => {
@@ -112,6 +116,29 @@ describe('lessons service', () => {
 			const result = await app.service('lessons').patch(lessonId, data, params);
 			expect(result).to.haveOwnProperty('_id');
 			expect(result.name).to.equal('students always use cool names');
+		});
+
+		it('the teacher can create courseGroup lessons', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const { _id: courseId } = await testObjects.createTestCourse({
+				schoolId,
+				teacherIds: [teacher._id],
+				userIds: [student._id],
+			});
+			// create a second course to be sure the course selection works
+			await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+			const { _id: courseGroupId } = await testObjects.createTestCourseGroup({
+				userIds: [student._id],
+				schoolId,
+				courseId,
+			});
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			const data = { name: 'Here we go...', courseGroupId };
+			const result = await app.service('lessons').create(data, params);
+			expect(result).to.haveOwnProperty('_id');
+			expect(result.name).to.equal('Here we go...');
 		});
 	});
 

@@ -1,5 +1,7 @@
 const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
-const { BadRequest, NotAuthenticated } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { NotAuthenticated, BadRequest } = reqlib('src/errors');
 
 const logger = require('../../../logger');
 const {
@@ -77,6 +79,15 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 	}
 
 	verifyConfiguration() {}
+
+	parse(req, res) {
+		if (req.body && req.body.strategy === 'tsp') {
+			return {
+				strategy: this.name,
+			};
+		}
+		return null;
+	}
 
 	async authenticate(authentication, params) {
 		const { ticket } = authentication;
@@ -180,11 +191,6 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		return {
 			authentication: { strategy: this.name },
 			[entity]: account,
-			payload: {
-				accountId: account._id,
-				userId: user._id,
-				systemId: account.systemId,
-			},
 		};
 	}
 }

@@ -1,7 +1,8 @@
-const { Forbidden, GeneralError } = require('@feathersjs/errors');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+const reqlib = require('app-root-path').require;
 
+const { Forbidden, GeneralError } = reqlib('src/errors');
 const logger = require('../../logger');
 const hooks = require('./hooks');
 const { externallyManaged } = require('../helpers/utils');
@@ -58,8 +59,8 @@ class Service {
 module.exports = function () {
 	const app = this;
 
+	app.use('/me/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/me', new Service());
-	app.use('/me/api', staticContent(path.join(__dirname, '/docs')));
 
 	const me = app.service('/me');
 	me.hooks(hooks);

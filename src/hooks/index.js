@@ -1,5 +1,7 @@
 /* eslint-disable no-param-reassign */
-const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = reqlib('src/errors');
 const { authenticate } = require('@feathersjs/authentication');
 
 const { v4: uuidv4 } = require('uuid');
@@ -112,7 +114,7 @@ exports.hasSchoolPermission = (inputPermission) => async (context) => {
 		params: { account },
 		app,
 	} = context;
-	if (!account && !account.userId) {
+	if (!account || !account.userId) {
 		throw new Forbidden('Cannot read account data');
 	}
 	try {
@@ -316,19 +318,17 @@ exports.checkCorrectCourseOrTeamId = async (context) => {
 		let validatedCourseId = (courseId || '').toString() || (context.id || '').toString();
 		let query = {
 			_id: validatedCourseId,
-			teacherIds: {
-				$in: [userId],
-			},
+			$or: [{ teacherIds: userId }, { substitutionIds: userId }],
 			$select: ['_id'],
 		};
 
 		if (courseGroupId) {
 			delete context.data.courseId;
-			const courseGroup = context.app.service('courseGroups').get(courseGroupId);
+			const courseGroup = await context.app.service('courseGroups').get(courseGroupId);
 			validatedCourseId = courseGroup.courseId;
 			query = {
 				_id: validatedCourseId,
-				$or: [{ teacherIds: { $in: [userId] } }, { userIds: { $in: [userId] } }],
+				$or: [{ teacherIds: userId }, { substitutionIds: userId }, { userIds: userId }],
 				$select: ['_id'],
 			};
 		}
@@ -716,8 +716,7 @@ exports.sendEmail = (context, maildata) => {
 								attachments,
 							})
 							.catch((err) => {
-								logger.warning(err);
-								throw new BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error');
+								throw new BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error', err);
 							});
 					}
 				});
