@@ -96,10 +96,10 @@ class AdminUsers {
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
 			if (clientQuery.searchQuery && clientQuery.searchQuery.trim().length !== 0) {
-				const seachQueryElements = splitForSearchIndexes(clientQuery.searchQuery.trim());
-				query.searchQuery = `${query.serachQuery} ${seachQueryElements.join(' ')}`;
+				const searchQueryElements = splitForSearchIndexes(clientQuery.searchQuery.trim());
+				query.searchQuery = `${query.searchQuery} ${searchQueryElements.join(' ')}`;
 				// increase gate by searched word, to get better results
-				query.searchFilterGate = seachQueryElements.length * 0.9;
+				query.searchFilterGate = searchQueryElements.length * 0.9;
 				// recreating sort here, to set searchQuery as first (main) parameter of sorting
 				query.sort = {
 					searchQuery: 1,
