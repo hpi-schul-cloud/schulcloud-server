@@ -1,12 +1,14 @@
 const { expect } = require('chai');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 const { buildAddUserMessage, messengerIsActivatedForSchool } = require('../../../src/services/messengerSync/utils');
 
 describe('messenger synchronizer utils', () => {
+	let app;
 	let server;
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -67,9 +69,7 @@ describe('messenger synchronizer utils', () => {
 		it('builds a correct object for teacher with team', async () => {
 			this.app = app;
 			const school = await testObjects.createTestSchool({ features: ['messenger', 'messengerSchoolRoom'] });
-			const { user, team } = await testObjects.createTestTeamWithOwner(
-				{ roles: ['teacher'], schoolId: school._id },
-			);
+			const { user, team } = await testObjects.createTestTeamWithOwner({ roles: ['teacher'], schoolId: school._id });
 			const result = await buildAddUserMessage({ userId: user._id, teams: [team] });
 			expect(result.method).to.equal('adduser');
 
@@ -95,9 +95,7 @@ describe('messenger synchronizer utils', () => {
 		it('builds a correct object for schoolSync with allhands disabled', async () => {
 			this.app = app;
 			const school = await testObjects.createTestSchool({ features: ['messenger'] });
-			const { user } = await testObjects.createTestTeamWithOwner(
-				{ roles: ['teacher'], schoolId: school._id },
-			);
+			const { user } = await testObjects.createTestTeamWithOwner({ roles: ['teacher'], schoolId: school._id });
 			await Promise.all([
 				testObjects.createTestCourse({ teacherIds: [user._id], schoolId: school._id }),
 				testObjects.createTestCourse({ teacherIds: [user._id], schoolId: school._id }),
@@ -212,7 +210,7 @@ describe('messenger synchronizer utils', () => {
 		it('false if messenger flag is not set', async () => {
 			// arrange
 			this.app = app;
-			const school = await testObjects.createTestSchool({ });
+			const school = await testObjects.createTestSchool({});
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 
 			// act

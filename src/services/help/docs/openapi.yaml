@@ -1,0 +1,74 @@
+security:
+  - jwtBearer: []
+info:
+  title: Schul-Cloud Help Service API
+  description:
+    This is the API specification for the Schul-Cloud Help service.
+    
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+components:
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    documents:
+      description: TODO
+    documents_list:
+      description: TODO
+
+paths:
+  /help/documents:
+    get:
+      parameters:
+        - description: Number of results to return
+          in: query
+          name: $limit
+          schema:
+            type: integer
+        - description: Number of results to skip
+          in: query
+          name: $skip
+          schema:
+            type: integer
+        - description: Property to sort results
+          in: query
+          name: $sort
+          style: deepObject
+          schema:
+            type: object
+        - description: Query parameters to filter
+          in: query
+          name: filter
+          style: form
+          explode: true
+          schema:
+            $ref: '#/components/schemas/documents'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/documents_list'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Retrieves a list of all resources from the service.
+      summary: ''
+      tags:
+        - help
+      security: []
+  
+openapi: 3.0.2
+tags:
+  - name: help
+    description: A help service.

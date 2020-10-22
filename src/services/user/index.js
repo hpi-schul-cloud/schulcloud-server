@@ -1,4 +1,9 @@
+const hooks = require('feathers-hooks-common');
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+const reqlib = require('app-root-path').require;
+
 const { userModel, registrationPinModel } = require('./model');
 const registrationPinsHooks = require('./hooks/registrationPins');
 const publicTeachersHooks = require('./hooks/publicTeachers');
@@ -14,14 +19,16 @@ const {
 	MailRegistrationLink,
 	RegistrationConsentService,
 	registrationConsentServiceHooks,
-	ForcePasswordChange: {
-		ForcePasswordChangeService,
-		ForcePasswordChangeServiceHooks,
-	},
+	ForcePasswordChange: { ForcePasswordChangeService, ForcePasswordChangeServiceHooks },
 	QrRegistrationLinks: { QrRegistrationLinks, qrRegistrationLinksHooks },
 } = require('./services');
 
+const { registerApiValidation } = reqlib('src/utils/apiValidation');
+
 module.exports = (app) => {
+	registerApiValidation(app, path.join(__dirname, '/docs/adminusers.openapi.yaml'));
+	app.use('/users/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+
 	app.use('usersModel', UsersModelService.userModelService);
 	app.service('usersModel').hooks(UsersModelService.userModelHooks);
 
@@ -32,28 +39,50 @@ module.exports = (app) => {
 	app.use('users/linkImport', new UserLinkImportService(userService)); // do not use hooks
 
 	/* publicTeachers Service */
-	app.use('/publicTeachers', service({
-		Model: userModel,
-		paginate: {
-			default: 25,
-			max: 1000,
-		},
-		lean: true,
-	}));
+	app.use(
+		'/publicTeachers',
+		service({
+			Model: userModel,
+			paginate: {
+				default: 25,
+				max: 1000,
+			},
+			lean: true,
+		})
+	);
 
 	const publicTeachersService = app.service('/publicTeachers');
 	publicTeachersService.hooks(publicTeachersHooks);
 
-
 	/* registrationPin Service */
-	app.use('/registrationPins', service({
-		Model: registrationPinModel,
-		paginate: {
-			default: 500,
-			max: 5000,
-		},
-		lean: true,
-	}));
+	app.use(
+		'/registrationPinsModel',
+		service({
+			Model: registrationPinModel,
+			paginate: {
+				default: 500,
+				max: 5000,
+			},
+			lean: true,
+		})
+	);
+	const registrationPinModelService = app.service('/registrationPinsModel');
+	registrationPinModelService.hooks({
+		before: { all: hooks.disallow('external') },
+		after: {},
+	});
+
+	app.use(
+		'/registrationPins',
+		service({
+			Model: registrationPinModel,
+			paginate: {
+				default: 500,
+				max: 5000,
+			},
+			lean: true,
+		})
+	);
 	const registrationPinService = app.service('/registrationPins');
 	registrationPinService.hooks(registrationPinsHooks);
 

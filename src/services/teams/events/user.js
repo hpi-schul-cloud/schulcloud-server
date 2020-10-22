@@ -30,19 +30,18 @@ const deleteUser = (app) => {
 			.then(() => {
 				const teamIds = teams.map((team) => team._id);
 				logger.info(
-					`Remove user ${userId} from the teams ${teamIds},`
-                    + 'if team.userIds empty then removed the team too.',
+					`Remove user ${userId} from the teams ${teamIds},` + 'if team.userIds empty then removed the team too.'
 				);
 			})
 			.catch((err) => {
-				const notRemovedFromTeams = teams.filter(
-					(team) => team.userIds.some((teamUser) => equalIds(teamUser.userId, userId)),
+				const notRemovedFromTeams = teams.filter((team) =>
+					team.userIds.some((teamUser) => equalIds(teamUser.userId, userId))
 				);
 
 				logger.warning(
-					`Can not remove user ${userId} from the teams ${notRemovedFromTeams},`
-                    + 'if team.userIds empty then removed the team too.',
-					err,
+					`Can not remove user ${userId} from the teams ${notRemovedFromTeams},` +
+						'if team.userIds empty then removed the team too.',
+					err
 				);
 			});
 	});

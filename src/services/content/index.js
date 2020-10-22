@@ -1,5 +1,7 @@
 const request = require('request-promise-native');
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 const material = require('./material-model');
 
 const resourcesHooks = require('./hooks/resources');
@@ -97,6 +99,8 @@ class RedirectService {
 
 module.exports = function () {
 	const app = this;
+
+	app.use('/content/api', staticContent(path.join(__dirname, '/docs')));
 
 	const options = {
 		Model: material,

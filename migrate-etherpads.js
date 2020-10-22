@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const arg = require('arg');
 
-const app = require('./src/app');
+const appPromise = require('./src/app');
 const { Configuration } = require('@schul-cloud/commons');
 const etherpadClient = require('./src/services/etherpad/utils/EtherpadClient.js');
 const { randomBytes } = require('crypto');
@@ -40,8 +40,8 @@ to copy the contents of the old pad to a new grouppad for given course.
 Finally it saves the changes to the given lesson.
 
 Example:
-node ./migrate-etherpads.js etherpad.schul-cloud.org
-npm run migrate-etherpads -- etherpad.schul-cloud.org
+node ./migrate-etherpads.js etherpad.hpi-schul-cloud.de
+npm run migrate-etherpads -- etherpad.hpi-schul-cloud.de
 
 OPTIONS:
 --help (-h)        Show this help.
@@ -130,6 +130,7 @@ function chunkArray(myArray, chunk_size){
  * MAIN
  ****************************************** */
 const run = async (oldPadDomain) => {
+	const app = await appPromise;
 	let searchRegex = new RegExp(`https://${oldPadDomain.replace(/\./g, '\\.')}.*`);
 
 	const lessonsService = app.service('/lessons');

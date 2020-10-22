@@ -1,9 +1,7 @@
 const service = require('feathers-mongoose');
 const Ajv = require('ajv');
 const auth = require('@feathersjs/authentication');
-const {
-	iff, isProvider, validateSchema, disallow,
-} = require('feathers-hooks-common');
+const { iff, isProvider, validateSchema, disallow } = require('feathers-hooks-common');
 const { customHook } = require('../hooks');
 const { hasPermission } = require('../../../hooks');
 
@@ -29,36 +27,18 @@ const modelService = service({
  */
 const modelServiceHooks = {
 	before: {
-		all: [
-			auth.hooks.authenticate('jwt'),
-		],
-		find: [
-			iff(isProvider('external'), hasPermission('SERVICE_TEMPLATE_VIEW')),
-		],
-		get: [
-			iff(isProvider('external'), hasPermission('SERVICE_TEMPLATE_VIEW')),
-		],
+		all: [auth.hooks.authenticate('jwt')],
+		find: [iff(isProvider('external'), hasPermission('SERVICE_TEMPLATE_VIEW'))],
+		get: [iff(isProvider('external'), hasPermission('SERVICE_TEMPLATE_VIEW'))],
 		create: [
-			iff(isProvider('external'), [
-				validateSchema(createSchema, Ajv),
-				hasPermission('SERVICE_TEMPLATE_CREATE'),
-			]),
+			iff(isProvider('external'), [validateSchema(createSchema, Ajv), hasPermission('SERVICE_TEMPLATE_CREATE')]),
 		],
-		update: [
-			disallow(),
-		],
+		update: [disallow()],
 		patch: [
 			customHook,
-			iff(isProvider('external'), [
-				validateSchema(patchSchema, Ajv),
-				hasPermission('SERVICE_TEMPLATE_EDIT'),
-			]),
+			iff(isProvider('external'), [validateSchema(patchSchema, Ajv), hasPermission('SERVICE_TEMPLATE_EDIT')]),
 		],
-		remove: [
-			iff(isProvider('external'), [
-				hasPermission('SERVICE_TEMPLATE_REMOVE'),
-			]),
-		],
+		remove: [iff(isProvider('external'), [hasPermission('SERVICE_TEMPLATE_REMOVE')])],
 	},
 	after: {
 		all: [],

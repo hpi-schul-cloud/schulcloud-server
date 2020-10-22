@@ -1,5 +1,6 @@
-const { BadRequest, NotFound, NotAcceptable } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
 
+const { NotFound, BadRequest, NotAcceptable } = reqlib('src/errors');
 const { FileModel } = require('../model');
 const createCorrectStrategy = require('./createCorrectStrategy');
 const { generateFileNameSuffix } = require('./filePathHelper');
@@ -22,7 +23,8 @@ const renameFileIfAlreadyExistInParent = (existingFile, newFileObject) => {
 			throw new NotAcceptable('File name test is fail.');
 		}
 		const [name, extension, others] = existingFile.name.split('.');
-		if (!others) { // found more then 2 elements after split
+		if (!others) {
+			// found more then 2 elements after split
 			throw new NotAcceptable('File with points in name is not valid file name.');
 		}
 		newFileObject.name = `${name}_${Date.now()}.${extension}`;

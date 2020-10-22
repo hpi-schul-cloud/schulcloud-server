@@ -1,5 +1,7 @@
 const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
-const { NotAuthenticated } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { NotAuthenticated } = reqlib('src/errors');
 const { omit } = require('lodash');
 
 class LdapStrategy extends AuthenticationBaseStrategy {
@@ -36,9 +38,12 @@ class LdapStrategy extends AuthenticationBaseStrategy {
 
 	async findEntity(username, params) {
 		const { entityUsernameField, service, errorMessage } = this.configuration;
-		const query = await this.getEntityQuery({
-			[entityUsernameField]: username,
-		}, params);
+		const query = await this.getEntityQuery(
+			{
+				[entityUsernameField]: username,
+			},
+			params
+		);
 
 		const findParams = { ...params, query };
 		const entityService = this.app.service(service);
@@ -80,11 +85,7 @@ class LdapStrategy extends AuthenticationBaseStrategy {
 		const user = await app.service('users').get(params.payload.userId);
 		const system = await app.service('systems').get(authentication.systemId);
 		if (user && system) {
-			const isAuthenticated = await ldapService.authenticate(
-				system,
-				user.ldapDn,
-				authentication.password,
-			);
+			const isAuthenticated = await ldapService.authenticate(system, user.ldapDn, authentication.password);
 			if (isAuthenticated) {
 				const { entity } = this.configuration;
 				const result = await this.findEntity(authentication.username, omit(params, 'provider'));

@@ -7,7 +7,6 @@ const accountModel = require('../src/services/account/model');
 // How to use more than one schema per collection on mongodb
 // https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
 
-
 // TODO npm run migration-persist and remove this line
 // TODO update seed data and remove this line
 
@@ -30,20 +29,27 @@ module.exports = {
 				.sort({
 					updatedAt: 1,
 					createdAt: 1,
-				}).skip(looped)
+				})
+				.skip(looped)
 				.limit(limit)
 				.lean()
 				.exec();
 			// eslint-disable-next-line no-loop-func
-			await Promise.all(users.map((user) => accountModel.find({ userId: user._id }).countDocuments()
-				.then((accounts) => {
-					if (accounts > 0) {
-						user.importHash = null;
-						removedImportHashes += 1;
-						return userModel.findByIdAndUpdate(user._id, user);
-					}
-					return Promise.resolve();
-				})));
+			await Promise.all(
+				users.map((user) =>
+					accountModel
+						.find({ userId: user._id })
+						.countDocuments()
+						.then((accounts) => {
+							if (accounts > 0) {
+								user.importHash = null;
+								removedImportHashes += 1;
+								return userModel.findByIdAndUpdate(user._id, user);
+							}
+							return Promise.resolve();
+						})
+				)
+			);
 
 			looped += users.length;
 		}
@@ -56,7 +62,7 @@ module.exports = {
 		await connect();
 		// ////////////////////////////////////////////////////
 		// Implement the necessary steps to roll back the migration here.
-		error('It is impossible to roleback the removal of the user\'s importHashes');
+		error("It is impossible to roleback the removal of the user's importHashes");
 		// ////////////////////////////////////////////////////
 		await close();
 	},

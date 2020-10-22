@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, BadRequest } = reqlib('src/errors');
 const { hasPermission } = require('../../../hooks');
 
 const { SC_SHORT_TITLE, SC_TITLE } = require('../../../../config/globals');
@@ -33,6 +35,7 @@ const getCurrentUserInfo = async (id, app) => {
 	return null;
 };
 
+// TODO: remove the awaits inside the loop
 class SendRegistrationLinkService {
 	async create(data, params) {
 		let totalMailsSend = 0;
@@ -54,29 +57,26 @@ class SendRegistrationLinkService {
 
 					// get registrationLink
 					if (user) {
-						const { shortLink } = await this.app.service('/registrationlink')
-							.create({
-								role: user.roles[0],
-								save: true,
-								patchUser: true,
-								schoolId: user.schoolId,
-								toHash: user.email,
-							});
+						const { shortLink } = await this.app.service('/registrationlink').create({
+							role: user.roles[0],
+							save: true,
+							patchUser: true,
+							schoolId: user.schoolId,
+							toHash: user.email,
+						});
 
 						// send mail
 						const { subject, content } = mailContent(user.firstName, user.lastName, shortLink);
-						await this.app.service('/mails')
-							.create({
-								email: user.email,
-								subject,
-								content,
-							});
+						await this.app.service('/mails').create({
+							email: user.email,
+							subject,
+							content,
+						});
 
 						if (!(user.preferences || {}).registrationMailSend) {
 							const updatedPreferences = user.preferences || {};
 							updatedPreferences.registrationMailSend = true;
-							await this.app.service('users')
-								.patch(user._id, { preferences: updatedPreferences }, params);
+							await this.app.service('users').patch(user._id, { preferences: updatedPreferences }, params);
 						}
 						totalMailsSend += 1;
 					} else {
@@ -88,7 +88,7 @@ class SendRegistrationLinkService {
 			return {
 				totalReceivedIds: userIds.length,
 				totalMailsSend,
-				alreadyRegisteredUsers: (userIds.length - totalMailsSend),
+				alreadyRegisteredUsers: userIds.length - totalMailsSend,
 			};
 		} catch (err) {
 			if ((err || {}).code === 403) {

@@ -1,8 +1,14 @@
-const { TooManyRequests } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BruteForcePrevention } = reqlib('src/errors');
 const { discard } = require('feathers-hooks-common');
 const { Configuration } = require('@schul-cloud/commons');
 const {
-	getRedisClient, redisSetAsync, redisDelAsync, extractDataFromJwt, getRedisData,
+	getRedisClient,
+	redisSetAsync,
+	redisDelAsync,
+	extractDataFromJwt,
+	getRedisData,
 } = require('../../../utils/redis');
 const { LOGIN_BLOCK_TIME: allowedTimeDifference } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
@@ -13,9 +19,12 @@ const updateUsernameForLDAP = async (context) => {
 	const { schoolId, strategy } = context.data;
 
 	if (strategy === 'ldap' && schoolId) {
-		await context.app.service('schools').get(schoolId).then((school) => {
-			context.data.username = `${school.ldapSchoolIdentifier}/${context.data.username}`;
-		});
+		await context.app
+			.service('schools')
+			.get(schoolId)
+			.then((school) => {
+				context.data.username = `${school.ldapSchoolIdentifier}/${context.data.username}`;
+			});
 	}
 	return context;
 };
@@ -40,11 +49,9 @@ const bruteForceCheck = async (context) => {
 			if (account.lasttriedFailedLogin) {
 				const timeDifference = (Date.now() - account.lasttriedFailedLogin) / 1000;
 				if (timeDifference < allowedTimeDifference) {
-					throw new TooManyRequests(
-						'Brute Force Prevention!', {
-							timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
-						},
-					);
+					throw new BruteForcePrevention('Brute Force Prevention!', {
+						timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
+					});
 				}
 			}
 			// set current time to last tried login
@@ -66,41 +73,44 @@ const bruteForceReset = async (context) => {
 
 const injectUserId = async (context) => {
 	const { strategy } = context.data;
-	const systemId = (strategy === 'local') ? undefined : context.data.systemId;
+	const systemId = strategy === 'local' ? undefined : context.data.systemId;
 
-	if (strategy !== 'jwt') {
-		return context.app.service('/accounts').find({
-			query: {
-				username: context.data.username,
-				systemId,
-			},
-			paginate: false,
-		}).then(async ([account]) => {
-			if (account) {
-				context.params.payload = {};
-				context.params.payload.accountId = account._id;
-				if (account.userId) {
-					context.params.payload.userId = account.userId;
-				}
-				if (account.systemId) {
-					context.params.payload.systemId = account.systemId;
-				}
-			} else if (['moodle', 'iserv'].includes(strategy)) {
-				const accountParameters = {
+	if (strategy !== 'jwt' && context.data.username) {
+		return context.app
+			.service('/accounts')
+			.find({
+				query: {
 					username: context.data.username,
-					password: context.data.password,
-					strategy,
 					systemId,
-				};
-				const newAccount = await context.app.service('accounts').create(accountParameters);
-				context.params.payload = {};
-				context.params.payload.accountId = newAccount._id;
-				if (newAccount.systemId) {
-					context.params.payload.systemId = newAccount.systemId;
+				},
+				paginate: false,
+			})
+			.then(async ([account]) => {
+				if (account) {
+					context.params.payload = {};
+					context.params.payload.accountId = account._id;
+					if (account.userId) {
+						context.params.payload.userId = account.userId;
+					}
+					if (account.systemId) {
+						context.params.payload.systemId = account.systemId;
+					}
+				} else if (['moodle', 'iserv'].includes(strategy)) {
+					const accountParameters = {
+						username: context.data.username,
+						password: context.data.password,
+						strategy,
+						systemId,
+					};
+					const newAccount = await context.app.service('accounts').create(accountParameters);
+					context.params.payload = {};
+					context.params.payload.accountId = newAccount._id;
+					if (newAccount.systemId) {
+						context.params.payload.systemId = newAccount.systemId;
+					}
 				}
-			}
-			return context;
-		});
+				return context;
+			});
 	}
 	return context;
 };
@@ -148,9 +158,7 @@ const addJwtToWhitelist = async (context) => {
 		const redisData = getRedisData({ privateDevice });
 		const { expirationInSeconds } = redisData;
 		// todo, do this async without await
-		await redisSetAsync(
-			redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds,
-		);
+		await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
 	}
 
 	return context;

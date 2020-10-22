@@ -1,5 +1,8 @@
 const moment = require('moment');
 const _ = require('lodash');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const hooks = require('./hooks/index');
 const swaggerDocs = require('./docs');
 const schoolModel = require('../school/model');
@@ -96,10 +99,12 @@ const fetchStatistics = () => {
 	const statistics = {};
 
 	return Promise.all(
-		promises.map((p) => p.promise.exec().then((res) => {
-			statistics[p.name] = res;
-			return res;
-		})),
+		promises.map((p) =>
+			p.promise.exec().then((res) => {
+				statistics[p.name] = res;
+				return res;
+			})
+		)
 	).then(() => statistics);
 };
 
@@ -109,8 +114,7 @@ class StatisticsService {
 	}
 
 	find() {
-		return fetchStatistics()
-			.then((statistics) => statistics);
+		return fetchStatistics().then((statistics) => statistics);
 	}
 
 	get(id, params) {
@@ -151,6 +155,8 @@ class StatisticsService {
 
 module.exports = function () {
 	const app = this;
+
+	app.use('/statistics/api', staticContent(path.join(__dirname, '/docs')));
 
 	app.use('/statistics', new StatisticsService());
 	const statisticsService = app.service('/statistics');

@@ -1,11 +1,23 @@
 const mongoose = require('mongoose');
 const assert = require('assert').strict;
 
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 
 const AdminOverview = require('../../../../src/services/teams/services/admin');
 
-describe('\'/teams/manage/admin\' service', () => {
+describe("'/teams/manage/admin' service", () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
 	it('registered the service', () => {
 		const service = app.service('/teams/manage/admin');
 
@@ -23,50 +35,50 @@ describe('\'/teams/manage/admin\' service', () => {
 			const userId = mongoose.Types.ObjectId('0000d733686abba584714c55');
 
 			teams = {
-				data: [{
-					_id: teamId,
-					color: '#d32f2f',
-					name: 'spinatenpower',
-					createdAt,
-					features: ['isTeam'],
-					desciption: 'Spintatenpower makes teams greate again',
-					schoolId: sessionSchoolId,
-					schoolIds: [
-						{
-							_id: sessionSchoolId,
-							name: 'Schiller-Oberschule',
-							fileStorageType: 'awsS3',
-							systems: ['0000d186816abba584714c90'],
-							updatedAt: '2017-01-01T00:06:37.148Z',
-							createdAt: '2017-01-01T00:06:37.148Z',
-							__v: 0,
-							currentYear: '5b7de0021a3a07c20a1c165e',
-							purpose: 'demo',
-						},
-					],
-					userIds: [
-						{
-							schoolId: sessionSchoolId,
-							role: {
-								name: 'teamowner',
+				data: [
+					{
+						_id: teamId,
+						color: '#d32f2f',
+						name: 'spinatenpower',
+						createdAt,
+						features: ['isTeam'],
+						desciption: 'Spintatenpower makes teams greate again',
+						schoolId: sessionSchoolId,
+						schoolIds: [
+							{
+								_id: sessionSchoolId,
+								name: 'Schiller-Oberschule',
+								fileStorageType: 'awsS3',
+								systems: ['0000d186816abba584714c90'],
+								updatedAt: '2017-01-01T00:06:37.148Z',
+								createdAt: '2017-01-01T00:06:37.148Z',
+								__v: 0,
+								currentYear: '5b7de0021a3a07c20a1c165e',
+								purpose: 'demo',
 							},
-							userId: {
-								_id: userId,
-								roles: [
-									{
-										name: 'lehrer',
-										createdAt,
-									},
-								],
-								firstName: 'Hans',
-								lastName: 'Peter',
-								should: 'removed',
+						],
+						userIds: [
+							{
+								schoolId: sessionSchoolId,
+								role: {
+									name: 'teamowner',
+								},
+								userId: {
+									_id: userId,
+									roles: [
+										{
+											name: 'lehrer',
+											createdAt,
+										},
+									],
+									firstName: 'Hans',
+									lastName: 'Peter',
+									should: 'removed',
+								},
 							},
-						},
-					],
-
-
-				}],
+						],
+					},
+				],
 				limit: 50,
 				skip: 0,
 				total: 1,
@@ -76,37 +88,39 @@ describe('\'/teams/manage/admin\' service', () => {
 				limit: 50,
 				skip: 0,
 				total: 1,
-				data:[{
-					membersTotal: 1,
-					name: 'spinatenpower',
-					_id: teamId,
-					color: '#d32f2f',
-					desciption: 'Spintatenpower makes teams greate again',
-					createdAtMySchool: true,
-					hasMembersOfOtherSchools: false,
-					hasRocketChat: false,
-					createdAt,
-					ownerExist: true,
-					schools: [{
-						_id: sessionSchoolId,
-						name: 'Schiller-Oberschule',
-					}],
-					schoolMembers: [
-						{
-							role: 'teamowner',
-							user: {
-								_id: userId,
-								firstName: 'Hans',
-								lastName: 'Peter',
-								roles: ['lehrer'],
+				data: [
+					{
+						membersTotal: 1,
+						name: 'spinatenpower',
+						_id: teamId,
+						color: '#d32f2f',
+						desciption: 'Spintatenpower makes teams greate again',
+						createdAtMySchool: true,
+						hasMembersOfOtherSchools: false,
+						hasRocketChat: false,
+						createdAt,
+						ownerExist: true,
+						schools: [
+							{
+								_id: sessionSchoolId,
+								name: 'Schiller-Oberschule',
 							},
-						},
-					],
-				}],
-			}
-			
+						],
+						schoolMembers: [
+							{
+								role: 'teamowner',
+								user: {
+									_id: userId,
+									firstName: 'Hans',
+									lastName: 'Peter',
+									roles: ['lehrer'],
+								},
+							},
+						],
+					},
+				],
+			};
 		});
-
 
 		it('test basic functionality', async () => {
 			const result = AdminOverview.mapped(teams, sessionSchoolId);
@@ -130,7 +144,6 @@ describe('\'/teams/manage/admin\' service', () => {
 			teams.data[0].userIds[0].schoolId = schoolId;
 			teams.data[0].schoolIds.push({ ...teams.data[0].schoolIds[0] });
 			teams.data[0].schoolIds[1]._id = schoolId;
-
 
 			expectedResult.data[0].createdAtMySchool = false;
 			expectedResult.data[0].hasMembersOfOtherSchools = true;

@@ -28,8 +28,8 @@ jobs:
         - ROCKET_CHAT_URI=http://localhost:5000
       cache: npm
       install:
-        - curl https://raw.githubusercontent.com/schul-cloud/schulcloud-authorization-server/master/docker-compose-test.yml > docker-compose-oauthserver.yml
-        - curl https://raw.githubusercontent.com/schul-cloud/schulcloud-authorization-server/master/.env.example > .env
+        - curl https://raw.githubusercontent.com/hpi-schul-cloud/schulcloud-authorization-server/master/docker-compose-test.yml > docker-compose-oauthserver.yml
+        - curl https://raw.githubusercontent.com/hpi-schul-cloud/schulcloud-authorization-server/master/.env.example > .env
         - sudo docker-compose -f docker-compose-oauthserver.yml up -d
         - sudo docker pull mongo:4.2
         - sudo docker run -d -p 27017:27017 mongo:4.2
@@ -44,6 +44,8 @@ jobs:
       cache: npm
       install:
         - echo "skipping install"
+      after_failure:
+        - cat /home/travis/.npm/_logs/*debug.log
     - stage: deploy
       if: NOT fork
       script:

@@ -1,5 +1,6 @@
-const { authenticate } = require('@feathersjs/authentication');
-const { BadRequest } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 const { disallow, iff, isProvider } = require('feathers-hooks-common');
 
 const base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
@@ -18,15 +19,9 @@ exports.before = {
 	all: [], // keep it public
 	find: [iff(isProvider('external'), disallow())],
 	get: [], // no scope restiction is needed
-	create: [
-		iff(isProvider('external'), disallow()),
-		isBase64,
-	],
+	create: [iff(isProvider('external'), disallow()), isBase64],
 	update: [disallow()],
-	patch: [
-		iff(isProvider('external'), disallow()),
-		isBase64,
-	],
+	patch: [iff(isProvider('external'), disallow()), isBase64],
 	remove: [iff(isProvider('external'), disallow())],
 };
 

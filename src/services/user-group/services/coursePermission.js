@@ -1,5 +1,6 @@
-const { Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
 
+const { Forbidden } = reqlib('src/errors');
 const { equal: compareIds } = require('../../../helper/compare').ObjectId;
 const { ScopePermissionService } = require('../../helpers/scopePermissions');
 
@@ -44,7 +45,7 @@ const setup = (app) => {
 		if (userIsSuperhero(user)) {
 			return getPermissions(courseRoles.superhero);
 		}
-		if ((userIsAdmin(user) && belongsToSameSchool(user, course))) {
+		if (userIsAdmin(user) && belongsToSameSchool(user, course)) {
 			return getPermissions(courseRoles.administrator);
 		}
 

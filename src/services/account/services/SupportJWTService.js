@@ -1,5 +1,8 @@
+/* eslint-disable max-classes-per-file */
 const CryptoJS = require('crypto-js');
-const { BadRequest } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const { ObjectId } = require('mongoose').Types;
 
@@ -8,12 +11,10 @@ const { authenticationSecret, audience: audienceName } = require('../../authenti
 const accountModel = require('../model');
 const logger = require('../../../logger');
 
-const {
-	getRedisClient, redisSetAsync, extractDataFromJwt, getRedisData,
-} = require('../../../utils/redis');
+const { getRedisClient, redisSetAsync, extractDataFromJwt, getRedisData } = require('../../../utils/redis');
 
 const DEFAULT_EXPIRED = 60 * 60 * 1000; // in ms => 1h
-const DEFAULT_AUDIENCE = 'https://schul-cloud.org'; // The organisation that create this jwt.
+const DEFAULT_AUDIENCE = 'https://hpi-schul-cloud.de'; // The organisation that create this jwt.
 
 class JWT {
 	/**
@@ -53,7 +54,7 @@ class JWT {
 		return CryptoJS.HmacSHA256(signature, secret);
 	}
 
-	async create(userId, secret) {
+	async create(userId, supportUserId, secret) {
 		const account = await accountModel.findOne({ userId }).select('_id').lean().exec();
 
 		if (!account && !account._id) {
@@ -71,6 +72,7 @@ class JWT {
 
 		const jwtData = {
 			support: true, // mark for support jwts
+			supportUserId,
 			accountId,
 			userId,
 			iat,
@@ -125,16 +127,16 @@ class SupportJWTService {
 	executeInfo(currentUserId, userId) {
 		const minutes = this.expiredOffset / (60 * 1000);
 		// eslint-disable-next-line max-len
-		logger.info(`[support][jwt] The support employee with the Id ${currentUserId} has created  a short live JWT for the user with the Id ${userId}. The JWT expires expires in ${minutes} minutes`);
+		logger.info(
+			`[support][jwt] The support employee with the Id ${currentUserId} has created  a short live JWT for the user with the Id ${userId}. The JWT expires expires in ${minutes} minutes`
+		);
 	}
 
 	async addToWhitelist(jwt) {
 		if (getRedisClient()) {
 			const { redisIdentifier, privateDevice } = extractDataFromJwt(jwt);
 			const redisData = getRedisData({ privateDevice });
-			await redisSetAsync(
-				redisIdentifier, JSON.stringify(redisData), 'EX', this.expiredOffset,
-			);
+			await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', this.expiredOffset);
 		}
 	}
 
@@ -147,14 +149,14 @@ class SupportJWTService {
 			const requestedUserId = userId.toString();
 			const currentUserId = params.account.userId.toString();
 
-			const jwt = await this.jwt.create(userId);
+			const jwt = await this.jwt.create(userId, currentUserId);
 
 			await this.addToWhitelist(jwt);
 
 			this.executeInfo(currentUserId, requestedUserId);
 			return jwt;
 		} catch (err) {
-			logger.warning(this.err.canNotCreateJWT, err);
+			logger.error(this.err.canNotCreateJWT, err);
 			return err;
 		}
 	}

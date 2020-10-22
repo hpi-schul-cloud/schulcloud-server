@@ -18,7 +18,10 @@ const federalStateModel = mongoose.model('federalState_20200805', federalStateSc
 
 const yearSchema = new Schema({
 	name: {
-		type: String, required: true, match: /^[0-9]{4}\/[0-9]{2}$/, unique: true,
+		type: String,
+		required: true,
+		match: /^[0-9]{4}\/[0-9]{2}$/,
+		unique: true,
 	},
 	startDate: { type: Date, required: true },
 	endDate: { type: Date, required: true },
@@ -37,19 +40,25 @@ module.exports = {
 		const nextSchoolYearId = await YearModel.findOne({ name: '2020/21' }).select('_id').lean().exec();
 
 		info('Fetch related federal states');
-		const federalStates = await federalStateModel.find(
-			{ name: { $in: federalStateNames } },
-		).select('_id name').lean().exec();
+		const federalStates = await federalStateModel
+			.find({ name: { $in: federalStateNames } })
+			.select('_id name')
+			.lean()
+			.exec();
 		const federalStateIds = federalStates.map((state) => state._id);
 		info(`Migrating schools in ${federalStateIds.length}: ${federalStateIds} or with no federal state assigned`);
 
 		const baseQuery = { $or: [{ federalState: { $in: federalStateIds } }, { federalState: { $exists: false } }] };
-		const resultLdapSchools = await School.updateMany({ ...baseQuery, ldapSchoolIdentifier: { $exists: true } },
-			{ inMaintenanceSince: DATE_CLUSTER }).exec();
+		const resultLdapSchools = await School.updateMany(
+			{ ...baseQuery, ldapSchoolIdentifier: { $exists: true } },
+			{ inMaintenanceSince: DATE_CLUSTER }
+		).exec();
 		info(`Migration result of LDAP Schools: ${resultLdapSchools.nModified} schools updated`);
 
-		const resultNonLdapSchools = await School.updateMany({ ...baseQuery, ldapSchoolIdentifier: { $exists: false } },
-			{ currentYear: nextSchoolYearId._id }).exec();
+		const resultNonLdapSchools = await School.updateMany(
+			{ ...baseQuery, ldapSchoolIdentifier: { $exists: false } },
+			{ currentYear: nextSchoolYearId._id }
+		).exec();
 		info(`Migration result of Non-LDAP Schools in: ${resultNonLdapSchools.nModified} schools updated`);
 
 		await close();
@@ -59,22 +68,29 @@ module.exports = {
 		await connect();
 		info('Disabling Maintenance mode for schools from Cluster 4 or with no federalState assigned');
 
-		const federalStates = await federalStateModel.find(
-			{ name: { $in: federalStateNames } },
-		).select('_id').lean().exec();
+		const federalStates = await federalStateModel
+			.find({ name: { $in: federalStateNames } })
+			.select('_id')
+			.lean()
+			.exec();
 		const federalStateIds = federalStates.map((state) => state._id);
 
 		const baseQuery = { $or: [{ federalState: { $in: federalStateIds } }, { federalState: { $exists: false } }] };
-		const schools = await School.updateMany({
-			...baseQuery,
-			ldapSchoolIdentifier: { $exists: true },
-			inMaintenanceSince: { $exists: true },
-		}, { $unset: { inMaintenanceSince: '' } }).exec();
+		const schools = await School.updateMany(
+			{
+				...baseQuery,
+				ldapSchoolIdentifier: { $exists: true },
+				inMaintenanceSince: { $exists: true },
+			},
+			{ $unset: { inMaintenanceSince: '' } }
+		).exec();
 		info(`Updated ${schools.nModified} LDAP schools`);
 
 		const currentSchoolYearId = await YearModel.findOne({ name: '2019/20' }).select('_id').lean().exec();
-		const nonLdapSchools = await School.updateMany({ ...baseQuery, ldapSchoolIdentifier: { $exists: false } },
-			{ currentYear: currentSchoolYearId._id }).exec();
+		const nonLdapSchools = await School.updateMany(
+			{ ...baseQuery, ldapSchoolIdentifier: { $exists: false } },
+			{ currentYear: currentSchoolYearId._id }
+		).exec();
 		info(`Updated ${nonLdapSchools.nModified} Non-LDAP schools`);
 
 		await close();

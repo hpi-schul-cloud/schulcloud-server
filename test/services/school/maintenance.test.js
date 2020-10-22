@@ -1,12 +1,24 @@
 const { expect } = require('chai');
-const app = require('../../../src/app');
-const { cleanup } = require('../helpers/testObjects')(app);
-const { create: createSchool } = require('../helpers/services/schools')(app);
-const { create: createSystem } = require('../helpers/services/testSystem')(app);
+const appPromise = require('../../../src/app');
+const { cleanup } = require('../helpers/testObjects')(appPromise);
+const { create: createSchool } = require('../helpers/services/schools')(appPromise);
+const { create: createSystem } = require('../helpers/services/testSystem')(appPromise);
 
 const { schoolUsesLdap } = require('../../../src/services/school/maintenance');
 
 describe('schoolUsesLdap', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await server.close();
+	});
+
 	it('should return false for normal schools', async () => {
 		const school = await createSchool();
 		expect(() => schoolUsesLdap(school)).not.to.throw();

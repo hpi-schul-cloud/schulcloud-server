@@ -4,8 +4,10 @@ const { getRandomInt } = require('../../src/utils/randomNumberGenerator');
 describe('randomNumberGenerator helper', () => {
 	it('should throw an exception when difference between max number and min number exceed allowed treshold', () => {
 		const maxAllowedRange = 281474976710656; // 6 bytes 256^6-1
-		assert.throws(() => getRandomInt(maxAllowedRange),
-			'Specified range is to big - cannot be greather than 256^6-1 = 281474976710656');
+		assert.throws(
+			() => getRandomInt(maxAllowedRange),
+			'Specified range is to big - cannot be greather than 256^6-1 = 281474976710656'
+		);
 	});
 
 	it('should by default min parameter to be equal 0 therefore not generated number less than 0', () => {
