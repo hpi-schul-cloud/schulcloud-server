@@ -7,19 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-## Unreleased
 
-### Added in unreleased
-
-- Introduce FEATURE_PROMETHEUS_ENABLED to have a flag for enable prometheus api metrics
-
-## [25.2.0]
-
-- SC-6060 - Updated error handling
+## [Unreleased] 
 
 ### Added
 
+- SC-7293 - added Lern-Store view permission
+- SC-7357 - Add config service
 - SC-7083 - Added officialSchoolNumber to school-model
+- Introduce plainSecrets in Configuration
+- Introduce FEATURE_PROMETHEUS_ENABLED to have a flag for enable prometheus api metrics
+
+### Changed
+
+- SC-6060 - Updated error handling
+
+### Fixed
+
+- fixed README badges
+- Fix mocha tests
+- SC-6151 fixed a bug that prevented api docu from being accessible
+- SC-6151 fixed paths to openapi documentation
+
+## [25.2.0]
+
+### Added
+
+- SC-4385 - Added a user exclusion regex to IServ strategy
 - SC-7049 - Added unit tests for Merlin Service
 - SC-7157 - add feature flag for Merlin feature with fallback
 - SC-6567 - add new application errros
