@@ -1,4 +1,6 @@
 const request = require('request-promise-native');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 const hooks = require('./hooks');
 const { REQUEST_TIMEOUT } = require('../../../config/globals');
@@ -279,6 +281,8 @@ class Service {
 
 module.exports = function () {
 	const app = this;
+
+	app.use('/calendar/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/calendar', new Service());
 	const contentService = app.service('/calendar');

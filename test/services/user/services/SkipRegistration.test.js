@@ -1,14 +1,16 @@
 const { expect } = require('chai');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
-
-const skipRegistrationService = app.service('/users/:userId/skipregistration');
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 
 describe('skipRegistration service', () => {
+	let skipRegistrationService;
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		skipRegistrationService = app.service('/users/:userId/skipregistration');
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -205,6 +207,28 @@ describe('skipRegistration service', () => {
 		const date = new Date('2014-12-19T00:00:00Z');
 		expect(user.birthday.toDateString()).to.equal(date.toDateString());
 		expect(user.importHash).to.equal(undefined);
+	});
+
+	it('keeps importHash if parent consent not given', async () => {
+		let user = await testObjects.createTestUser({
+			roles: ['student'],
+		});
+		user = await app.service('users').patch(user._id, { importHash: 'someHash' });
+		await skipRegistrationService.create(
+			{
+				parent_privacyConsent: false,
+				parent_termsOfUseConsent: false,
+				privacyConsent: true,
+				termsOfUseConsent: true,
+				birthday: '2014-12-19T00:00:00Z',
+				password: 'password1',
+			},
+			{ route: { userId: user._id } }
+		);
+		user = await app.service('users').get(user._id);
+		expect(user).to.not.equal(undefined);
+
+		expect(user.importHash).to.equal('someHash');
 	});
 
 	it('accepts multiple users at once', async () => {

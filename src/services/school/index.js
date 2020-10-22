@@ -1,5 +1,8 @@
 const service = require('feathers-mongoose');
 const { Configuration } = require('@schul-cloud/commons');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const schoolModels = require('./model');
 const hooks = require('./hooks');
 const schoolGroupHooks = require('./hooks/schoolGroup.hooks');
@@ -9,11 +12,13 @@ const { HandlePermissions, handlePermissionsHooks } = require('./services/permis
 module.exports = function schoolServices() {
 	const app = this;
 
+	app.use('/schools/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+
 	const options = {
 		Model: schoolModels.schoolModel,
 		paginate: {
 			default: 5,
-			max: 25,
+			max: 100, // this is the max currently used in the SHD
 		},
 		lean: {
 			virtuals: true,

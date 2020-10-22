@@ -52,6 +52,8 @@ const submissionSchema = new Schema({
 	gradeFileIds: [{ type: Schema.Types.ObjectId, ref: 'file', index: true }],
 });
 
+submissionSchema.index({ studentId: 1, teamMembers: 1 });
+
 enableAuditLog(homeworkSchema);
 enableAuditLog(submissionSchema);
 
@@ -61,4 +63,5 @@ const submissionModel = mongoose.model('submission', submissionSchema);
 module.exports = {
 	homeworkModel,
 	submissionModel,
+	SubmissionSchema: submissionSchema,
 };

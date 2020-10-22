@@ -4,12 +4,16 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const CryptoJS = require('crypto-js');
 const OAuth = require('oauth-1.0a');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 const ltiTool = require('./model');
 const hooks = require('./hooks');
 
 module.exports = function () {
 	const app = this;
+
+	app.use('/ltiTools/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	const options = {
 		Model: ltiTool,

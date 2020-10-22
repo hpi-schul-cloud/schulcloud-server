@@ -2,18 +2,20 @@ const assert = require('assert');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
-const metadataService = app.service('roster/users/:user/metadata');
-const userGroupsService = app.service('roster/users/:user/groups');
-const groupsService = app.service('roster/groups');
-const pseudonymService = app.service('pseudonym');
-const toolService = app.service('ltiTools');
-const courseService = app.service('courseModel');
 
 chai.use(chaiHttp);
 
 describe('roster service', function oauth() {
+	let app;
+	let metadataService;
+	let userGroupsService;
+	let groupsService;
+	let pseudonymService;
+	let toolService;
+	let courseService;
+
 	this.timeout(10000);
 	let server;
 
@@ -23,7 +25,14 @@ describe('roster service', function oauth() {
 
 	let pseudonym1 = null;
 
-	before(() => {
+	before(async () => {
+		app = await appPromise;
+		metadataService = app.service('roster/users/:user/metadata');
+		userGroupsService = app.service('roster/users/:user/groups');
+		groupsService = app.service('roster/groups');
+		pseudonymService = app.service('pseudonym');
+		toolService = app.service('ltiTools');
+		courseService = app.service('courseModel');
 		server = app.listen(0);
 
 		testUser1 = { _id: '0000d231816abba584714c9e' }; // cord carl

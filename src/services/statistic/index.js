@@ -1,5 +1,8 @@
 const moment = require('moment');
 const _ = require('lodash');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const hooks = require('./hooks/index');
 const swaggerDocs = require('./docs');
 const schoolModel = require('../school/model');
@@ -152,6 +155,8 @@ class StatisticsService {
 
 module.exports = function () {
 	const app = this;
+
+	app.use('/statistics/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/statistics', new StatisticsService());
 	const statisticsService = app.service('/statistics');

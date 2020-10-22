@@ -1,4 +1,7 @@
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const { gradeModel } = require('./model');
 const hooks = require('./hooks');
 const courseCopyService = require('./services/course-copy-service');
@@ -18,7 +21,7 @@ const { courseGroupHooks, courseGroupService } = require('./services/courseGroup
 module.exports = function () {
 	const app = this;
 
-	app.configure(courseCopyService);
+	app.use('/courses/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	/* Course model */
 	app.use('/courseModel', courseModelService);
@@ -60,6 +63,7 @@ module.exports = function () {
 	const classSuccessorService = app.service('/classes/successor');
 	classSuccessorService.hooks(classSuccessorHooks);
 
+	app.configure(courseCopyService);
 	app.configure(courseScopelistService);
 	app.configure(coursePermissionService);
 	app.configure(courseMembersService);

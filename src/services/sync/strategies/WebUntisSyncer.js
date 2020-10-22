@@ -1,4 +1,6 @@
-const { BadRequest } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 const Syncer = require('./Syncer');
 
 class WebUntisSyncer extends Syncer {

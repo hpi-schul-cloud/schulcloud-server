@@ -1,3 +1,6 @@
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const { Pad, Session, Group, Author } = require('./services');
 
 const { padHooks, sessionHooks, groupHooks, authorHooks } = require('./hooks');
@@ -7,6 +10,8 @@ module.exports = (app) => {
 	const sessionRoute = '/etherpad/sessions';
 	const groupRoute = '/etherpad/groups';
 	const authorRoute = '/etherpad/authors';
+
+	app.use('/etherpad/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use(padsRoute, new Pad());
 	app.use(sessionRoute, new Session());

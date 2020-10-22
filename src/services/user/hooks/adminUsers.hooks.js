@@ -1,4 +1,7 @@
-const { BadRequest } = require('@feathersjs/errors');
+/* eslint-disable no-underscore-dangle */
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 const { isValidObjectId } = require('mongoose');
 
 const validateParams = async (context) => {
@@ -23,6 +26,21 @@ const validateParams = async (context) => {
 	return context;
 };
 
+const parseRequestQuery = (context) => {
+	const { query } = context.params;
+
+	if (query._ids && typeof query._ids === 'object' && !Array.isArray(query._ids)) {
+		// If the number of users exceeds 20, the underlying parsing library
+		// will convert the array to an object with the index as the key.
+		// To continue working with it, we convert it here back to the array form.
+		// See the documentation for further infos: https://github.com/ljharb/qs#parsing-arrays
+		query._ids = Object.values(query._ids);
+	}
+
+	return context;
+};
+
 module.exports = {
 	validateParams,
+	parseRequestQuery,
 };

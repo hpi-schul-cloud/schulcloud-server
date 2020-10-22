@@ -1,4 +1,6 @@
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 const lessonModel = require('./model');
 const hooks = require('./hooks/index');
@@ -16,6 +18,8 @@ module.exports = function setup() {
 		},
 		lean: true,
 	};
+
+	app.use('/lessons/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/lessons', service(options));
 	app.use('/lessons/:lessonId/files', new LessonFilesService());

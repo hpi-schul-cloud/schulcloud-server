@@ -1,14 +1,13 @@
+/* eslint-disable max-classes-per-file */
 const { expect } = require('chai');
 const mockery = require('mockery');
 const sleep = require('util').promisify(setTimeout);
 
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
 const { datasourceRunModel } = require('../../../src/services/datasources/model');
 const Syncer = require('../../../src/services/sync/strategies/Syncer');
-
-const datasourceRunsService = app.service('datasourceRuns');
 
 /**
  * will always run successfully
@@ -38,18 +37,23 @@ class MockSyncerWithData extends Syncer {
 	}
 }
 
-describe('datasourceRuns service', () => {
+describe('datasourceRuns service', function test() {
+	this.timeout(10000);
+	let app;
+	let datasourceRunsService;
 	let server;
-	before((done) => {
+	before(async () => {
 		mockery.enable({
 			useCleanCache: true,
 			warnOnUnregistered: false,
 		});
 		mockery.registerMock('./strategies', [MockSyncer, MockSyncerWithData]);
+		app = await appPromise;
+		datasourceRunsService = app.service('datasourceRuns');
 		// eslint-disable-next-line global-require
 		const sync = require('../../../src/services/sync');
 		app.configure(sync);
-		server = app.listen(0, done);
+		server = await app.listen(0);
 	});
 
 	after((done) => {

@@ -1,9 +1,14 @@
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const hooks = require('./hooks');
 const globalHooks = require('../../hooks');
 const oauth2 = require('../oauth2/hooks');
 
 module.exports = function roster() {
 	const app = this;
+
+	app.use('/roster/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/roster', {
 		find() {

@@ -1,3 +1,6 @@
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const logger = require('../../logger');
 const { ROCKET_CHAT_URI, ROCKET_CHAT_ADMIN_TOKEN, ROCKET_CHAT_ADMIN_ID } = require('../../../config/globals');
 const { rocketChatUserHooks, rocketChatLoginHooks, rocketChatLogoutHooks, rocketChatChannelHooks } = require('./hooks');
@@ -20,6 +23,7 @@ if (ROCKET_CHAT_ADMIN_ID === undefined) {
 module.exports = function Setup() {
 	const app = this;
 
+	app.use('/rocketChat/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/rocketChat/channel', new RocketChatChannel());
 	app.use('/rocketChat/user', new RocketChatUser());
 	app.use('/rocketChat/login', new RocketChatLogin());

@@ -1,8 +1,13 @@
+/* eslint-disable max-classes-per-file */
 /**
  * Provides a basic wopi - endpoint, https://wopirest.readthedocs.io/en/latest/index.html
  */
-const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
 const rp = require('request-promise-native');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, NotFound, BadRequest } = reqlib('src/errors');
 const logger = require('../../logger');
 const hooks = require('./hooks');
 const { FileModel } = require('../fileStorage/model');
@@ -214,6 +219,7 @@ class WopiFilesContentsService {
 module.exports = function setup() {
 	const app = this;
 
+	app.use('/wopi/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use(`${wopiPrefix}:fileId/contents`, new WopiFilesContentsService(app), handleResponseHeaders);
 	app.use(`${wopiPrefix}:fileId`, new WopiFilesInfoService(app), handleResponseHeaders);
 

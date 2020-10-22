@@ -1,8 +1,13 @@
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const { ActivationModelService, Activation, EMailAddressActivation } = require('./services');
 
 const { KEYWORDS } = require('./utils/customStrategyUtils');
 
 module.exports = (app) => {
+	app.use('/activation/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+
 	app.use('activationModel', ActivationModelService.activationModelService);
 	app.service('activationModel').hooks(ActivationModelService.activationModelHooks);
 

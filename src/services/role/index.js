@@ -1,4 +1,7 @@
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const Role = require('./model');
 const hooks = require('./hooks');
 const { PermissionService, permissionHooks } = require('./services/permissions');
@@ -18,12 +21,7 @@ module.exports = function setup() {
 		lean: { virtuals: true },
 	};
 
-	app.use('/roles', service(options));
-	const roleService = app.service('/roles');
-	roleService.hooks({
-		before: hooks.before(),
-		after: hooks.after,
-	});
+	app.use('/roles/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/roles/user', new UserRoles());
 	const userRoles = app.service('/roles/user');
@@ -36,6 +34,13 @@ module.exports = function setup() {
 	app.use('/roles/:roleName/permissions', new PermissionService());
 	const permissionService = app.service('/roles/:roleName/permissions');
 	permissionService.hooks(permissionHooks);
+
+	app.use('/roles', service(options));
+	const roleService = app.service('/roles');
+	roleService.hooks({
+		before: hooks.before(),
+		after: hooks.after,
+	});
 
 	definePermissions(
 		'ADMIN_TOGGLE_STUDENT_VISIBILITY',
