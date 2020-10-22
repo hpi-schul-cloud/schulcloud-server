@@ -19,7 +19,7 @@ module.exports = function setup() {
 		lean: true,
 	};
 
-	app.use('/lessons/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/lessons/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/lessons', service(options));
 	app.use('/lessons/:lessonId/files', new LessonFilesService());
