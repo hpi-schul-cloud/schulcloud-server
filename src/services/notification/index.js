@@ -199,7 +199,7 @@ class NotificationService {
 module.exports = function () {
 	const app = this;
 
-	app.use('/notification/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/notification/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/notification/messages', new MessageService());
 	app.use('/notification/devices', new DeviceService());
 	app.use('/notification/callback', new CallbackService());

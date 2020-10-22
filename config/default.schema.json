@@ -253,6 +253,12 @@
 			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
 		},
+		"ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW": {
+			"type": "string",
+			"default": "enabled",
+			"enum": ["disabled", "enabled"],
+			"description": "Allows school admin to toggle student's LERNSTORE_VIEW permission."
+		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
 			"description": "Synchronous encryption key used to secure search user passwords",

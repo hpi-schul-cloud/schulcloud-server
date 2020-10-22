@@ -59,7 +59,7 @@ class Service {
 module.exports = function () {
 	const app = this;
 
-	app.use('/me/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/me/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/me', new Service());
 
 	const me = app.service('/me');
