@@ -415,6 +415,32 @@
 				}
 			},
 			"required": ["METRICS_PATH", "DURATION_BUCKETS_SECONDS"]
+		},
+		"DATABASE": {
+			"type": "object",
+			"description": "Database options.",
+			"properties": {
+				"URL": {
+					"type": "string",
+					"format": "uri",
+					"default": "mongodb://127.0.0.1:27017/schulcloud",
+					"description": "ConnectionString for DB."
+				},
+				"USERNAME": {
+					"type": "string",
+					"description": "User for DB."
+				},
+				"PASSWORD": {
+					"type": "string",
+					"description": "Password for DB."
+				},
+				"AUDIT": {
+					"type": "boolean",
+					"default": false,
+					"description": "Audit for DB."
+				}
+			},
+			"required": ["URL"]
 		}
 	},
 	"required": [
@@ -423,7 +449,8 @@
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
 		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
-		"LERNSTORE_MODE"
+		"LERNSTORE_MODE",
+		"DATABASE"
 	],
 	"allOf": [
 		{
