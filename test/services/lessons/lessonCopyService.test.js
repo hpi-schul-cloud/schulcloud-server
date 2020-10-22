@@ -1,10 +1,17 @@
 const { expect } = require('chai');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 
-const lessonCopyService = app.service('lessons/copy');
 
 describe('lesson copy service', () => {
+	let app;
+	let lessonCopyService;
+
+	before(async () => {
+		app = await appPromise;
+		lessonCopyService = app.service('lessons/copy');
+	});
+
 	after(async () => {
 		testObjects.cleanup();
 	});
@@ -74,10 +81,12 @@ describe('lesson copy service', () => {
 		const originalTeacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: originalSchool._id });
 		const targetTeacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: targetSchool._id });
 		const originalCourse = await testObjects.createTestCourse({
-			teacherIds: [originalTeacher._id], schoolId: originalSchool._id,
+			teacherIds: [originalTeacher._id],
+			schoolId: originalSchool._id,
 		});
 		const targetCourse = await testObjects.createTestCourse({
-			teacherIds: [originalTeacher._id], schoolId: targetSchool._id,
+			teacherIds: [originalTeacher._id],
+			schoolId: targetSchool._id,
 		});
 		const shareToken = `sharetoken${Date.now()}`;
 		const lesson = await testObjects.createTestLesson({ courseId: originalCourse._id, shareToken });

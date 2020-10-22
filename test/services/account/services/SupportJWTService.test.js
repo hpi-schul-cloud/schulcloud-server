@@ -4,13 +4,28 @@ const { decode } = require('jsonwebtoken');
 
 const { expect } = chai;
 
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 
-const supportJWTService = app.service('accounts/supportJWT');
-const testedPermission = 'CREATE_SUPPORT_JWT';
 
 describe('supportJWTService', () => {
+	let app;
+	let supportJWTService;
+	const testedPermission = 'CREATE_SUPPORT_JWT';
+
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		supportJWTService = app.service('accounts/supportJWT');
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
+	});
+
 	it('registered the supportJWT service', () => {
 		assert.ok(supportJWTService);
 	});
@@ -30,13 +45,11 @@ describe('supportJWTService', () => {
 			testObjects.setupUser({ roles: 'student' }),
 		]);
 
-		const { roles } = await app.service('users')
-			.get(superhero.userId, { query: { $populate: 'roles' } });
+		const { roles } = await app.service('users').get(superhero.userId, { query: { $populate: 'roles' } });
 
 		expect(roles[0].permissions).to.include(testedPermission);
 
-		const jwt = await supportJWTService
-			.create({ userId: student.userId }, superhero.requestParams);
+		const jwt = await supportJWTService.create({ userId: student.userId }, superhero.requestParams);
 
 		const decodedJWT = decode(jwt);
 
@@ -55,8 +68,7 @@ describe('supportJWTService', () => {
 			testObjects.setupUser({ roles: 'student' }),
 		]);
 
-		const { roles } = await app.service('users')
-			.get(teacher.user._id, { query: { $populate: 'roles' } });
+		const { roles } = await app.service('users').get(teacher.user._id, { query: { $populate: 'roles' } });
 
 		try {
 			await supportJWTService.create({ userId: student.userId }, teacher.requestParams);
@@ -65,6 +77,4 @@ describe('supportJWTService', () => {
 			expect(err.code).to.be.equal(403);
 		}
 	});
-
-	after(testObjects.cleanup);
 });

@@ -1,4 +1,6 @@
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest, Forbidden } = reqlib('src/errors');
 const { keepInArray } = require('feathers-hooks-common');
 const constants = require('../../../utils/constants');
 const { blockDisposableEmail } = require('../../../hooks');
@@ -10,17 +12,19 @@ const logger = require('../../../logger');
 
 const nullOrEmpty = (string) => !string;
 
-const login = async (app, username, password, strategy = 'local') => app.service('authentication')
-	.create({
-		strategy,
-		username,
-		password,
-	})
-	.then((result) => result.accessToken)
-	.catch((error) => {
-		logger.error(error);
-		return null;
-	});
+const login = async (app, username, password, strategy = 'local') =>
+	app
+		.service('authentication')
+		.create({
+			strategy,
+			username,
+			password,
+		})
+		.then((result) => result.accessToken)
+		.catch((error) => {
+			logger.error(error);
+			return null;
+		});
 
 const isValidLogin = (jwt) => !!jwt;
 
@@ -67,9 +71,7 @@ const validateEmail = (hook) => {
 };
 
 const filterEntryParamNames = async (context) => {
-	const allowedAttributes = [
-		'keyword', 'quarantinedObject', 'state',
-	];
+	const allowedAttributes = ['keyword', 'quarantinedObject', 'state'];
 	return keepInArray('entry', allowedAttributes)(context);
 };
 

@@ -4,7 +4,7 @@
 	},
 	"name" : "Mathe",
 	"schoolId" : {
-		"$oid": "0000d186816abba584714c5f"
+		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"teacherIds" : [
 		{
@@ -26,7 +26,7 @@
 {
 	"_id" : { "$oid": "59a3c657a2049554a93fec3a"},
 	"updatedAt" : { "$date": "2017-11-17T09:03:04.404Z"},
-	"schoolId" : { "$oid": "599ec0bb8e4e364ec18ff46c"},
+	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6"},
 	"name" : "Biologie 9b",
 	"description" : "Dieser Kurs wurde als Beispiel für den Demo-Zugang erstellt und enthält verschiedene Themen und Inhalte aus dem Fach Biologie! Wir wollen Ihnen dadurch die Breite der Einsatzmöglichkeit der Schul-Cloud im Unterricht aufzeigen! Schauen Sie doch selbst!",
 	"gradeSystem" : false,
@@ -88,7 +88,7 @@
 {
 	"_id" : { "$oid": "59a3cabaa2049554a93fec60"},
 	"updatedAt" : { "$date": "2017-09-27T20:14:51.573Z"},
-	"schoolId" : { "$oid": "599ec0bb8e4e364ec18ff46c"},
+	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6"},
 	"name" : "Mathe 9b",
 	"description" : "Dieser Kurs wurde als Beispiel für den Demo-Zugang erstellt und enthält verschiedene Themen und Inhalte aus dem Fach Mathematik! Wir wollen Ihnen dadurch die Breite der Einsatzmöglichkeit der Schul-Cloud im Unterricht aufzeigen! Schauen Sie doch selbst!\r\n\r\n",
 	"gradeSystem" : false,
@@ -151,7 +151,7 @@
 {
 "_id" : { "$oid": "59a3c948a2049554a93fec5f"},
 "updatedAt" : { "$date": "2017-10-11T15:56:10.087Z"},
-"schoolId" : { "$oid": "599ec0bb8e4e364ec18ff46c"},
+"schoolId" : { "$oid": "5f2987e020834114b8efd6f6"},
 "name" : "Physik 9b",
 "description" : "Dieser Kurs wurde als Beispiel für den Demo-Zugang erstellt und enthält verschiedene Themen und Inhalte aus dem Fach Physik! Wir wollen Ihnen dadurch die Breite der Einsatzmöglichkeit der Schul-Cloud im Unterricht aufzeigen! Schauen Sie doch selbst!",
 "gradeSystem" : false,
@@ -213,7 +213,7 @@
 {
 	"_id" : { "$oid": "59a3ce58a2049554a93fec6e"},
 	"updatedAt" : { "$date": "2017-09-18T07:47:11.449Z" },
-	"schoolId" : { "$oid": "599ec0bb8e4e364ec18ff46c"},
+	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6"},
 	"name" : "Erdkunde 9b",
 	"description" : "Dieser Kurs wurde als Beispiel für den Demo-Zugang erstellt und enthält verschiedene Themen und Inhalte aus dem Fach Erdkunde! Wir wollen Ihnen dadurch die Breite der Einsatzmöglichkeit der Schul-Cloud im Unterricht aufzeigen! Schauen Sie doch selbst!",
 	"gradeSystem" : false,
@@ -275,7 +275,7 @@
 {
 	"_id" : { "$oid": "59a3cd61a2049554a93fec68"},
 	"updatedAt" : { "$date": "2017-09-06T12:10:38.954Z" },
-	"schoolId" : { "$oid": "599ec0bb8e4e364ec18ff46c"},
+	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6"},
 	"name" : "Deutsch 9b",
 	"description" : "Dieser Kurs wurde als Beispiel für den Demo-Zugang erstellt und enthält verschiedene Themen und Inhalte aus dem Fach Deutsch! Wir wollen Ihnen dadurch die Breite der Einsatzmöglichkeit der Schul-Cloud im Unterricht aufzeigen! Schauen Sie doch selbst!",
 	"gradeSystem" : false,

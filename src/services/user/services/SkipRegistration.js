@@ -1,4 +1,6 @@
-const { BadRequest } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 
 /**
  * validate that request data is complete and valid.
@@ -8,8 +10,9 @@ const { BadRequest } = require('@feathersjs/errors');
  */
 const validateRequest = (data, targetUser) => {
 	const targetIsStudent = targetUser.roles[0].name === 'student';
-	if (!((data.parent_privacyConsent && data.parent_termsOfUseConsent)
-		|| (data.privacyConsent && data.termsOfUseConsent))) {
+	if (
+		!((data.parent_privacyConsent && data.parent_termsOfUseConsent) || (data.privacyConsent && data.termsOfUseConsent))
+	) {
 		return Promise.reject(new BadRequest('you have to set valid consents!'));
 	}
 	if (!data.password) return Promise.reject(new BadRequest('you have to set a password!'));
@@ -49,11 +52,13 @@ const createAccount = async function createAccount(data, targetUser, app) {
 const updateConsent = (data, targetUserId, app) => {
 	const consent = { userId: targetUserId };
 	if (data.parent_privacyConsent || data.parent_termsOfUseConsent) {
-		consent.parentConsents = [{
-			form: 'analog',
-			privacyConsent: data.parent_privacyConsent,
-			termsOfUseConsent: data.parent_termsOfUseConsent,
-		}];
+		consent.parentConsents = [
+			{
+				form: 'analog',
+				privacyConsent: data.parent_privacyConsent,
+				termsOfUseConsent: data.parent_termsOfUseConsent,
+			},
+		];
 	}
 	if (data.privacyConsent || data.termsOfUseConsent) {
 		consent.userConsent = {
@@ -66,14 +71,21 @@ const updateConsent = (data, targetUserId, app) => {
 };
 
 /**
- * removes the importhash from a user, and sets a birthday if one is given, as if the user just went through
- * registration.
+ * removes the importhash from a user if parent consent was given,
+ * sets birthday if given,
+ * as if the user just went through registration.
  * @param {Object} data the request data, may contain a birthday.
  * @param {ObjectId} targetUserId the id of the user to be updated.
  * @param {App} app the app object.
  */
-const updateUser = (data, targetUserId, app) => app.service('users')
-	.patch(targetUserId, { birthday: data.birthday, $unset: { importHash: '' } });
+const updateUser = (data, targetUserId, app) => {
+	const needsParentConsent = !data.parent_privacyConsent || !data.parent_termsOfUseConsent;
+	if (needsParentConsent) {
+		app.service('users').patch(targetUserId, { birthday: data.birthday });
+	} else {
+		app.service('users').patch(targetUserId, { birthday: data.birthday, $unset: { importHash: '' } });
+	}
+};
 
 class SkipRegistrationService {
 	constructor() {
@@ -81,8 +93,7 @@ class SkipRegistrationService {
 	}
 
 	async skipUserRegistration(data) {
-		const targetUser = await this.app.service('users').get(data.userId,
-			{ query: { $populate: 'roles' } });
+		const targetUser = await this.app.service('users').get(data.userId, { query: { $populate: 'roles' } });
 		await validateRequest(data, targetUser);
 
 		await Promise.all([
@@ -111,9 +122,7 @@ class SkipRegistrationService {
 			return this.skipUserRegistration(data);
 		}
 		if (Array.isArray(data.dataObjects)) {
-			const promiseResults = await Promise.allSettled(
-				data.dataObjects.map((d) => this.skipUserRegistration(d)),
-			);
+			const promiseResults = await Promise.allSettled(data.dataObjects.map((d) => this.skipUserRegistration(d)));
 			const result = promiseResults.map((r) => ({
 				success: r.status === 'fulfilled',
 				error: r.reason,

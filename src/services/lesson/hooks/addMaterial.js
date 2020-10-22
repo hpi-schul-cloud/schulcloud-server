@@ -1,8 +1,8 @@
-const { BadRequest, NotFound } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
-const {
-	iff, isProvider,
-} = require('feathers-hooks-common');
+const { iff, isProvider } = require('feathers-hooks-common');
+const reqlib = require('app-root-path').require;
+
+const { NotFound, BadRequest } = reqlib('src/errors');
 const { ObjectId } = require('../../../helper/compare');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
 const { equal } = require('../../../helper/compare').ObjectId;
@@ -31,9 +31,10 @@ const restrictToUsersCoursesLessons = async (context) => {
 	const { userId } = context.params.account;
 	const course = await getCourseFromLesson(context.params.lesson, context.app);
 
-	const userInCourse = course.userIds.some((id) => equal(id, userId))
-		|| course.teacherIds.some((id) => equal(id, userId))
-		|| course.substitutionIds.some((id) => equal(id, userId));
+	const userInCourse =
+		course.userIds.some((id) => equal(id, userId)) ||
+		course.teacherIds.some((id) => equal(id, userId)) ||
+		course.substitutionIds.some((id) => equal(id, userId));
 	if (!userInCourse) throw new NotFound(`no record found for id '${context.params.route.lessonId}'`);
 };
 
@@ -54,7 +55,6 @@ const validateData = async (context) => {
 
 	return context;
 };
-
 
 module.exports = {
 	before: () => ({

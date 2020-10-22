@@ -48,6 +48,13 @@ function buildandpush {
 	# take those images and push them up to docker hub
 	docker push schulcloud/schulcloud-server:$DOCKERTAG
 	docker push schulcloud/schulcloud-server:$GIT_SHA
+
+	# If branch is develop, add and push additional docker tags
+	if [[ "$TRAVIS_BRANCH" = "develop" ]]
+	then
+		docker tag schulcloud/schulcloud-server:$DOCKERTAG schulcloud/schulcloud-server:develop_latest
+		docker push schulcloud/schulcloud-server:develop_latest
+	fi
 }
 
 function deploytotest {
@@ -60,9 +67,9 @@ function deploytotest {
 	# copy config-file to server and execute mit travis_rsa
 	chmod 600 .build/travis_rsa
 	# scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa docker-compose-server.yml linux@test.schul-cloud.org:~
-	# ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.schul-cloud.org /usr/bin/docker stack deploy -c /home/linux/docker-compose-server.yml test-schul-cloud
-	# ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.schul-cloud.org /usr/bin/docker service update --force test-schul-cloud_server
-	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@test.schul-cloud.org schulcloud/schulcloud-server:$DOCKERTAG test-schul-cloud_server
+	# ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.hpi-schul-cloud.org /usr/bin/docker stack deploy -c /home/linux/docker-compose-server.yml test-schul-cloud
+	# ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.hpi-schul-cloud.org /usr/bin/docker service update --force test-schul-cloud_server
+	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@test.hpi-schul-cloud.org schulcloud/schulcloud-server:$DOCKERTAG test-schul-cloud_server
 }
 
 function deploytoprods {
@@ -73,13 +80,13 @@ function deploytoprods {
 	chmod 600 .build/travis_rsa
 
 	# brandenburg
-	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@open.schul-cloud.org schulcloud/schulcloud-server:latest brabu_server
+	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@open.hpi-schul-cloud.de schulcloud/schulcloud-server:latest brabu_server
 	# open
-	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@open.schul-cloud.org schulcloud/schulcloud-server:latest open_server
+	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@open.hpi-schul-cloud.de schulcloud/schulcloud-server:latest open_server
 	# thueringen
 	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@schulcloud-thueringen.de schulcloud/schulcloud-server:latest thueringen_server
 	# demo
-	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@demo.schul-cloud.org schulcloud/schulcloud-server:latest demo_server
+	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@demo.hpi-schul-cloud.de schulcloud/schulcloud-server:latest demo_server
 }
 
 function deploytostaging {
@@ -90,7 +97,7 @@ function deploytostaging {
 	chmod 600 .build/travis_rsa
 
 	# staging
-	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@staging.schul-cloud.org schulcloud/schulcloud-server:$DOCKERTAG staging_server
+	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@staging.hpi-schul-cloud.org schulcloud/schulcloud-server:$DOCKERTAG staging_server
 }
 
 function deploytohotfix {
@@ -101,27 +108,27 @@ function deploytohotfix {
 	chmod 600 .build/travis_rsa
 
 	# staging
-	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@hotfix$1.schul-cloud.dev schulcloud/schulcloud-server:$DOCKERTAG hotfix$1_server
+	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@hotfix$1.hpi-schul-cloud.org schulcloud/schulcloud-server:$DOCKERTAG hotfix$1_server
 }
 
 function inform {
 	if [[ "$TRAVIS_EVENT_TYPE" != "cron" ]]
 	then
-		curl -X POST -H 'Content-Type: application/json' --data '{"text":":rocket: Die Produktivsysteme können aktualisiert werden: Schul-Cloud Server! Dockertag: '$DOCKERTAG'"}' $WEBHOOK_URL_CHAT
+		curl -X POST -H 'Content-Type: application/json' --data '{"text":":rocket: Die Produktivsysteme können aktualisiert werden: HPI Schul-Cloud Server! Dockertag: '$DOCKERTAG'"}' $WEBHOOK_URL_CHAT
 	fi
 }
 
 function inform_staging {
 	if [[ "$TRAVIS_EVENT_TYPE" != "cron" ]]
 	then
-		curl -X POST -H 'Content-Type: application/json' --data '{"text":":boom: Das Staging-System wurde aktualisiert: Schul-Cloud Server! https://api.staging.schul-cloud.org/version (Dockertag: '$DOCKERTAG')"}' $WEBHOOK_URL_CHAT
+		curl -X POST -H 'Content-Type: application/json' --data '{"text":":boom: Das Staging-System wurde aktualisiert: HPI Schul-Cloud Server! https://api.staging.hpi-schul-cloud.org/version (Dockertag: '$DOCKERTAG')"}' $WEBHOOK_URL_CHAT
 	fi
 }
 
 function inform_hotfix {
 	if [[ "$TRAVIS_EVENT_TYPE" != "cron" ]]
 	then
-		curl -X POST -H 'Content-Type: application/json' --data '{"text":":boom: Das Hotfix-'$1'-System wurde aktualisiert: Schul-Cloud Server! https://api.hotfix'$1'.schul-cloud.org/version (Dockertag: '$DOCKERTAG')"}' $WEBHOOK_URL_CHAT
+		curl -X POST -H 'Content-Type: application/json' --data '{"text":":boom: Das Hotfix-'$1'-System wurde aktualisiert: HPI Schul-Cloud Server! https://api.hotfix'$1'.hpi-schul-cloud.org/version (Dockertag: '$DOCKERTAG')"}' $WEBHOOK_URL_CHAT
 	fi
 }
 
@@ -139,9 +146,10 @@ then
 elif [[ "$TRAVIS_BRANCH" = "develop" ]]
 then
 	# If an event occurs on branch develop deploy to test
-	echo "Event detected on branch develop. Attempting to deploy to development (test) environment..."
+	echo "Event detected on branch develop. Building docker image..."
 	buildandpush
-	deploytotest
+	# ops-1109: Deployment now in sc-app-ci
+	# deploytotest
 elif [[ $TRAVIS_BRANCH = release* ]]
 then
 	# If an event occurs on branch release* deploy to staging

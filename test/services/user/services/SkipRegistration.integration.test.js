@@ -1,15 +1,17 @@
 const { expect } = require('chai');
 
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 
-const testObjects = require('../../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
+const testObjects = require('../../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
 
 describe('SkipRegistration integration', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -23,14 +25,17 @@ describe('SkipRegistration integration', () => {
 			});
 
 			try {
-				await app.service('/users/:userId/skipregistration').create({
-					parent_privacyConsent: true,
-					parent_termsOfUseConsent: true,
-					privacyConsent: true,
-					termsOfUseConsent: true,
-					birthday: '2014-12-19T00:00:00Z',
-					password: 'password1',
-				}, { route: { userId: user._id }, provider: 'rest' });
+				await app.service('/users/:userId/skipregistration').create(
+					{
+						parent_privacyConsent: true,
+						parent_termsOfUseConsent: true,
+						privacyConsent: true,
+						termsOfUseConsent: true,
+						birthday: '2014-12-19T00:00:00Z',
+						password: 'password1',
+					},
+					{ route: { userId: user._id }, provider: 'rest' }
+				);
 				throw new Error('should fail');
 			} catch (err) {
 				expect(err).to.not.equal('undefined');
@@ -50,14 +55,17 @@ describe('SkipRegistration integration', () => {
 			scenarioParams.route = { userId: targetUser._id };
 
 			try {
-				await app.service('/users/:userId/skipregistration').create({
-					parent_privacyConsent: true,
-					parent_termsOfUseConsent: true,
-					privacyConsent: true,
-					termsOfUseConsent: true,
-					birthday: '2014-12-19T00:00:00Z',
-					password: 'password1',
-				}, scenarioParams);
+				await app.service('/users/:userId/skipregistration').create(
+					{
+						parent_privacyConsent: true,
+						parent_termsOfUseConsent: true,
+						privacyConsent: true,
+						termsOfUseConsent: true,
+						birthday: '2014-12-19T00:00:00Z',
+						password: 'password1',
+					},
+					scenarioParams
+				);
 				throw new Error('should fail');
 			} catch (err) {
 				expect(err).to.not.equal('undefined');
@@ -77,13 +85,16 @@ describe('SkipRegistration integration', () => {
 			scenarioParams.route = { userId: targetUser._id };
 
 			try {
-				await app.service('/users/:userId/skipregistration').create({
-					parent_privacyConsent: true,
-					parent_termsOfUseConsent: true,
-					privacyConsent: true,
-					termsOfUseConsent: true,
-					password: 'password1',
-				}, scenarioParams);
+				await app.service('/users/:userId/skipregistration').create(
+					{
+						parent_privacyConsent: true,
+						parent_termsOfUseConsent: true,
+						privacyConsent: true,
+						termsOfUseConsent: true,
+						password: 'password1',
+					},
+					scenarioParams
+				);
 				throw new Error('should fail');
 			} catch (err) {
 				expect(err).to.not.equal('undefined');
@@ -107,14 +118,17 @@ describe('SkipRegistration integration', () => {
 			scenarioParams.route = { userId: targetUser._id };
 
 			try {
-				await app.service('/users/:userId/skipregistration').create({
-					parent_privacyConsent: true,
-					parent_termsOfUseConsent: true,
-					privacyConsent: true,
-					termsOfUseConsent: true,
-					birthday: '2014-12-19T00:00:00Z',
-					password: 'password1',
-				}, scenarioParams);
+				await app.service('/users/:userId/skipregistration').create(
+					{
+						parent_privacyConsent: true,
+						parent_termsOfUseConsent: true,
+						privacyConsent: true,
+						termsOfUseConsent: true,
+						birthday: '2014-12-19T00:00:00Z',
+						password: 'password1',
+					},
+					scenarioParams
+				);
 				throw new Error('should fail');
 			} catch (err) {
 				expect(err).to.not.equal('undefined');
@@ -134,14 +148,17 @@ describe('SkipRegistration integration', () => {
 			const scenarioParams = await generateRequestParamsFromUser(actingUser);
 			scenarioParams.route = { userId: targetUser._id };
 
-			const result = await app.service('/users/:userId/skipregistration').create({
-				parent_privacyConsent: true,
-				parent_termsOfUseConsent: true,
-				privacyConsent: true,
-				termsOfUseConsent: true,
-				birthday: '2014-12-19T00:00:00Z',
-				password: 'password1',
-			}, scenarioParams);
+			const result = await app.service('/users/:userId/skipregistration').create(
+				{
+					parent_privacyConsent: true,
+					parent_termsOfUseConsent: true,
+					privacyConsent: true,
+					termsOfUseConsent: true,
+					birthday: '2014-12-19T00:00:00Z',
+					password: 'password1',
+				},
+				scenarioParams
+			);
 			expect(result).to.equal('success');
 		}).timeout(6000);
 
@@ -156,13 +173,16 @@ describe('SkipRegistration integration', () => {
 			const scenarioParams = await generateRequestParamsFromUser(actingUser);
 			scenarioParams.route = { userId: targetUser._id };
 
-			const result = await app.service('/users/:userId/skipregistration').create({
-				parent_privacyConsent: true,
-				parent_termsOfUseConsent: true,
-				privacyConsent: true,
-				termsOfUseConsent: true,
-				password: 'password1',
-			}, scenarioParams);
+			const result = await app.service('/users/:userId/skipregistration').create(
+				{
+					parent_privacyConsent: true,
+					parent_termsOfUseConsent: true,
+					privacyConsent: true,
+					termsOfUseConsent: true,
+					password: 'password1',
+				},
+				scenarioParams
+			);
 			expect(result).to.equal('success');
 		}).timeout(6000);
 
@@ -177,14 +197,17 @@ describe('SkipRegistration integration', () => {
 			const scenarioParams = await generateRequestParamsFromUser(actingUser);
 			scenarioParams.route = { userId: targetUser._id };
 
-			const result = await app.service('/users/:userId/skipregistration').create({
-				parent_privacyConsent: true,
-				parent_termsOfUseConsent: true,
-				privacyConsent: true,
-				termsOfUseConsent: true,
-				birthday: '2014-12-19T00:00:00Z',
-				password: 'password1',
-			}, scenarioParams);
+			const result = await app.service('/users/:userId/skipregistration').create(
+				{
+					parent_privacyConsent: true,
+					parent_termsOfUseConsent: true,
+					privacyConsent: true,
+					termsOfUseConsent: true,
+					birthday: '2014-12-19T00:00:00Z',
+					password: 'password1',
+				},
+				scenarioParams
+			);
 			expect(result).to.equal('success');
 		}).timeout(6000);
 	});
@@ -196,17 +219,22 @@ describe('SkipRegistration integration', () => {
 			});
 
 			try {
-				await app.service('/users/skipregistration').create({
-					dataObjects: [{
-						userId: user._id,
-						parent_privacyConsent: true,
-						parent_termsOfUseConsent: true,
-						privacyConsent: true,
-						termsOfUseConsent: true,
-						birthday: '2014-12-19T00:00:00Z',
-						password: 'password1',
-					}],
-				}, { provider: 'rest' });
+				await app.service('/users/skipregistration').create(
+					{
+						dataObjects: [
+							{
+								userId: user._id,
+								parent_privacyConsent: true,
+								parent_termsOfUseConsent: true,
+								privacyConsent: true,
+								termsOfUseConsent: true,
+								birthday: '2014-12-19T00:00:00Z',
+								password: 'password1',
+							},
+						],
+					},
+					{ provider: 'rest' }
+				);
 				throw new Error('should fail');
 			} catch (err) {
 				expect(err).to.not.equal('undefined');
@@ -226,54 +254,67 @@ describe('SkipRegistration integration', () => {
 		const scenarioParams = await generateRequestParamsFromUser(actingUser);
 
 		try {
-			await app.service('/users/skipregistration').create({
-				dataObjects: [{
-					userId: targetUser._id,
-					parent_privacyConsent: true,
-					parent_termsOfUseConsent: true,
-					privacyConsent: true,
-					termsOfUseConsent: true,
-					birthday: '2014-12-19T00:00:00Z',
-					password: 'password1',
-				}],
-			}, scenarioParams);
+			await app.service('/users/skipregistration').create(
+				{
+					dataObjects: [
+						{
+							userId: targetUser._id,
+							parent_privacyConsent: true,
+							parent_termsOfUseConsent: true,
+							privacyConsent: true,
+							termsOfUseConsent: true,
+							birthday: '2014-12-19T00:00:00Z',
+							password: 'password1',
+						},
+					],
+				},
+				scenarioParams
+			);
 			throw new Error('should fail');
 		} catch (err) {
 			expect(err).to.not.equal('undefined');
 			expect(err.code).to.equal(403);
-			expect(err.message).to.equal('You don\'t have one of the permissions: ADMIN_VIEW.');
+			expect(err.message).to.equal("You don't have one of the permissions: ADMIN_VIEW.");
 		}
 	});
 
 	it('succeeds for admin', async () => {
 		const [targetUserOne, targetUserTwo, actingUser] = await Promise.all([
-			testObjects.createTestUser({ roles: ['student'] })
+			testObjects
+				.createTestUser({ roles: ['student'] })
 				.then((u) => app.service('users').patch(u._id, { importHash: 'someHash' })),
-			testObjects.createTestUser({ roles: ['student'] })
+			testObjects
+				.createTestUser({ roles: ['student'] })
 				.then((u) => app.service('users').patch(u._id, { importHash: 'someHash' })),
 			testObjects.createTestUser({ roles: ['administrator'] }),
 		]);
 		const scenarioParams = await generateRequestParamsFromUser(actingUser);
 
-		const result = await app.service('/users/skipregistration').create({
-			dataObjects: [{
-				userId: targetUserOne._id,
-				parent_privacyConsent: true,
-				parent_termsOfUseConsent: true,
-				privacyConsent: true,
-				termsOfUseConsent: true,
-				birthday: '2014-12-19T00:00:00Z',
-				password: 'password1',
-			}, {
-				userId: targetUserTwo._id,
-				parent_privacyConsent: true,
-				parent_termsOfUseConsent: true,
-				privacyConsent: true,
-				termsOfUseConsent: true,
-				birthday: '2014-12-19T00:00:00Z',
-				password: 'password1',
-			}],
-		}, scenarioParams);
+		const result = await app.service('/users/skipregistration').create(
+			{
+				dataObjects: [
+					{
+						userId: targetUserOne._id,
+						parent_privacyConsent: true,
+						parent_termsOfUseConsent: true,
+						privacyConsent: true,
+						termsOfUseConsent: true,
+						birthday: '2014-12-19T00:00:00Z',
+						password: 'password1',
+					},
+					{
+						userId: targetUserTwo._id,
+						parent_privacyConsent: true,
+						parent_termsOfUseConsent: true,
+						privacyConsent: true,
+						termsOfUseConsent: true,
+						birthday: '2014-12-19T00:00:00Z',
+						password: 'password1',
+					},
+				],
+			},
+			scenarioParams
+		);
 		expect(Array.isArray(result)).to.equal(true);
 		expect(result[0].success).to.equal(true);
 		expect(result[1].success).to.eq(true);

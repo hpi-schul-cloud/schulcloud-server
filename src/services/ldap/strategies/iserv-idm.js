@@ -6,9 +6,9 @@ const AbstractLDAPStrategy = require('./interface.js');
  */
 class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 	/**
-     * @see AbstractLDAPStrategy#getSchools
-     * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName
-     */
+	 * @see AbstractLDAPStrategy#getSchools
+	 * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName
+	 */
 	async getSchools() {
 		const options = {
 			filter: 'objectClass=organization',
@@ -23,10 +23,10 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 	}
 
 	/**
-     * @see AbstractLDAPStrategy#getUsers
-     * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
-     * (Array) roles = ['teacher', 'student', 'administrator']
-     */
+	 * @see AbstractLDAPStrategy#getUsers
+	 * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
+	 * (Array) roles = ['teacher', 'student', 'administrator']
+	 */
 	async getUsers(school) {
 		const options = {
 			filter: '(&(objectClass=person)(sn=*)(uuid=*)(uid=*)(mail=*)(cn=*))',
@@ -38,6 +38,7 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 
 		const teacherRegex = /^cn=ROLE_TEACHER|^cn=ROLE_LEHRER/;
 		const adminRegex = /^cn=ROLE_ADMIN/;
+		const userExclusionRegex = /^cn=ROLE_NBC_EXCLUDE/;
 
 		const results = [];
 		data.forEach((obj) => {
@@ -63,7 +64,7 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 				roles.push('student');
 			}
 
-			if (!memberships.some((item) => item === 'ROLE_NO_SC')) {
+			if (!memberships.some((item) => userExclusionRegex.test(item))) {
 				results.push({
 					email: obj.mail,
 					firstName: obj.givenName,
@@ -79,9 +80,9 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 	}
 
 	/**
-     * @see AbstractLDAPStrategy#getClasses
-     * @returns {Array} Array of Objects containing className, ldapDn, uniqueMembers
-     */
+	 * @see AbstractLDAPStrategy#getClasses
+	 * @returns {Array} Array of Objects containing className, ldapDn, uniqueMembers
+	 */
 	async getClasses(school) {
 		const options = {
 			filter: 'description=*',

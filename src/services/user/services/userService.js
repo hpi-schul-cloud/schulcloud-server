@@ -1,8 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
-// const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
-// const logger = require('../../../logger');
-const { modelServices: { prepareInternalParams } } = require('../../../utils');
+const {
+	modelServices: { prepareInternalParams },
+} = require('../../../utils');
 const { userModel } = require('../model');
 const { hasEditPermissionForUser, hasReadPermissionForUser } = require('../hooks/index.hooks');
 
@@ -16,10 +16,13 @@ const {
 	computeProperty,
 	addCollation,
 	blockDisposableEmail,
+	getRestrictPopulatesHook,
+	preventPopulate,
 } = require('../../../hooks');
 const {
 	mapRoleFilterQuery,
 	checkUnique,
+	checkUniqueEmail,
 	checkJwt,
 	checkUniqueAccount,
 	updateAccountUsername,
@@ -37,6 +40,7 @@ const {
 	enforceRoleHierarchyOnCreate,
 	filterResult,
 	generateRegistrationLink,
+	sendRegistrationLink,
 	includeOnlySchoolRoles,
 } = require('../hooks/userService');
 
@@ -82,6 +86,10 @@ const userService = new UserService({
 	},
 });
 
+const populateWhitelist = {
+	roles: ['_id', 'name', 'permissions', 'roles'],
+};
+
 const userHooks = {
 	before: {
 		all: [],
@@ -91,15 +99,15 @@ const userHooks = {
 			resolveToIds('/roles', 'params.query.roles', 'name'),
 			authenticate('jwt'),
 			iff(isProvider('external'), restrictToCurrentSchool),
+			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
 			mapRoleFilterQuery,
 			addCollation,
 			iff(isProvider('external'), includeOnlySchoolRoles),
 		],
-		get: [
-			authenticate('jwt'),
-		],
+		get: [authenticate('jwt'), iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist))],
 		create: [
 			checkJwt(),
+			iff(isProvider('external'), preventPopulate),
 			pinIsVerified,
 			iff(isProvider('external'), restrictToCurrentSchool),
 			iff(isProvider('external'), enforceRoleHierarchyOnCreate),
@@ -108,19 +116,24 @@ const userHooks = {
 			checkUniqueAccount,
 			blockDisposableEmail('email'),
 			generateRegistrationLink,
+			sendRegistrationLink,
 			resolveToIds('/roles', 'data.roles', 'name'),
 		],
 		update: [
 			iff(isProvider('external'), disallow()),
+			iff(isProvider('external'), preventPopulate),
 			authenticate('jwt'),
 			sanitizeData,
+			checkUniqueEmail,
 			resolveToIds('/roles', 'data.$set.roles', 'name'),
 		],
 		patch: [
 			authenticate('jwt'),
+			iff(isProvider('external'), preventPopulate),
 			iff(isProvider('external'), securePatching),
 			permitGroupOperation,
 			sanitizeData,
+			checkUniqueEmail,
 			iff(isProvider('external'), hasEditPermissionForUser),
 			iff(isProvider('external'), restrictToCurrentSchool),
 			resolveToIds('/roles', 'data.roles', 'name'),
@@ -128,6 +141,7 @@ const userHooks = {
 		],
 		remove: [
 			authenticate('jwt'),
+			iff(isProvider('external'), preventPopulate),
 			iff(isProvider('external'), [restrictToCurrentSchool, enforceRoleHierarchyOnDelete]),
 		],
 	},
@@ -136,23 +150,26 @@ const userHooks = {
 		find: [
 			decorateAvatar,
 			decorateUsers,
-			iff(isProvider('external'), [filterResult, denyIfStudentTeamCreationNotAllowed({
-				errorMessage: 'The current user is not allowed to list other users!',
-			})]),
+			iff(isProvider('external'), [
+				filterResult,
+				denyIfStudentTeamCreationNotAllowed({
+					errorMessage: 'The current user is not allowed to list other users!',
+				}),
+			]),
 		],
 		get: [
 			decorateAvatar,
 			decorateUser,
 			computeProperty(userModel, 'getPermissions', 'permissions'),
-			iff(isProvider('external'), [hasReadPermissionForUser,
+			iff(isProvider('external'), [
+				hasReadPermissionForUser,
 				denyIfNotCurrentSchool({
-					errorMessage: 'Der angefragte Nutzer gehört nicht zur eigenen Schule!',
-				})]),
+					errorMessage: 'Der angefragte Nutzer ist unbekannt!',
+				}),
+			]),
 			iff(isProvider('external'), filterResult),
 		],
-		create: [
-			handleClassId,
-		],
+		create: [handleClassId],
 		update: [iff(isProvider('external'), filterResult)],
 		patch: [iff(isProvider('external'), filterResult)],
 		remove: [

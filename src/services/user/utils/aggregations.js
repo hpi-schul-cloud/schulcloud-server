@@ -1,6 +1,5 @@
 const { ObjectId } = require('mongoose').Types;
 
-
 const convertToIn = (value) => {
 	let list = [];
 	if (Array.isArray(value)) {
@@ -12,7 +11,6 @@ const convertToIn = (value) => {
 	}
 	return list;
 };
-
 
 /**
  * Allows to filter a attribute by a value
@@ -45,7 +43,6 @@ const getParentReducer = (type) => ({
 		input: '$consent.parentConsents',
 		initialValue: false,
 		in: { $or: ['$$value', `$$this.${type}`] },
-
 	},
 });
 
@@ -97,7 +94,6 @@ const getConsentStatusSwitch = () => {
 	const firstLevel = new Date();
 	firstLevel.setFullYear(currentDate.getFullYear() - 14);
 
-
 	return {
 		$switch: {
 			branches: [
@@ -128,11 +124,9 @@ const getConsentStatusSwitch = () => {
 									{ $eq: [getParentReducer('termsOfUseConsent'), true] },
 								],
 							},
-
 						],
 					},
 					then: 'ok',
-
 				},
 				{
 					case: {
@@ -177,7 +171,6 @@ const stageAddSelectProjectWithConsentCreate = (aggregation, select) => {
 	});
 };
 
-
 /**
  * Only select fields which are in select
  */
@@ -189,9 +182,7 @@ const stageSimpleProject = (aggregation, select) => {
 
 const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 	aggregation.push({
-		$lookup:
-		{
-
+		$lookup: {
 			from: 'classes',
 			let: { id: '$_id' },
 			pipeline: [
@@ -209,18 +200,12 @@ const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 											],
 										},
 										{
-											$or: [
-												{ $max: '$gradeLevel' },
-												{ $eq: [{ $type: '$gradeLevel' }, 'missing'] },
-											],
+											$or: [{ $max: '$gradeLevel' }, { $eq: [{ $type: '$gradeLevel' }, 'missing'] }],
 										},
 									],
 								},
 								{
-									$or: [
-										{ $in: ['$$id', '$userIds'] },
-										{ $in: ['$$id', '$teacherIds'] },
-									],
+									$or: [{ $in: ['$$id', '$userIds'] }, { $in: ['$$id', '$teacherIds'] }],
 								},
 							],
 						},
@@ -281,16 +266,16 @@ const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 const stageSort = (aggregation, sort) => {
 	const mSort = {};
 	for (const k in sort) {
-		if (({}).hasOwnProperty.call(sort, k)) mSort[k] = Number(sort[k]);
+		if ({}.hasOwnProperty.call(sort, k)) mSort[k] = Number(sort[k]);
 	}
 
-	if (typeof sort === 'object' && ({}).hasOwnProperty.call(sort, 'consentStatus')) {
+	if (typeof sort === 'object' && {}.hasOwnProperty.call(sort, 'consentStatus')) {
 		mSort.consentSortParam = mSort.consentStatus;
 		delete mSort.consentStatus;
 		stageAddConsentSortParam(aggregation);
 	}
 
-	if (typeof sort === 'object' && ({}).hasOwnProperty.call(sort, 'classes')) {
+	if (typeof sort === 'object' && {}.hasOwnProperty.call(sort, 'classes')) {
 		mSort['classesSort.gradeLevel'] = mSort.classes;
 		mSort['classesSort.name'] = mSort.classes;
 		delete mSort.classes;
@@ -300,7 +285,6 @@ const stageSort = (aggregation, sort) => {
 		$sort: mSort,
 	});
 };
-
 
 /**
  *	Convert the output to a feathers-mongoose like format:
@@ -327,9 +311,11 @@ const stageFormatWithTotal = (aggregation, limit, skip) => {
 					$limit: limit,
 				},
 			],
-			total: [{
-				$count: 'count',
-			}],
+			total: [
+				{
+					$count: 'count',
+				},
+			],
 		},
 	});
 
@@ -361,13 +347,26 @@ const stageFormatWithTotal = (aggregation, limit, skip) => {
  * @param {{select: Array, sort: Object, limit: Int, skip: Int, ...matches}} param0
  */
 const createMultiDocumentAggregation = ({
-	select, sort, limit = 25, skip = 0, consentStatus, classes, schoolYearId, ...match
+	select,
+	sort,
+	limit = 25,
+	skip = 0,
+	consentStatus,
+	classes,
+	schoolYearId,
+	...match
 }) => {
 	// eslint-disable-next-line no-param-reassign
 	limit = Number(limit);
 	// eslint-disable-next-line no-param-reassign
 	skip = Number(skip);
-	if (typeof match._id === 'string') match._id = ObjectId(match._id);
+	if (typeof match._id === 'string') {
+		match._id = ObjectId(match._id);
+	} else if (Array.isArray(match._id)) {
+		// build "$in" Query
+		const convertToObjectIds = (inArray) => inArray.map((id) => ObjectId(id));
+		match._id = { $in: convertToObjectIds(convertToIn(match._id)) };
+	}
 
 	const selectSortDiff = Object.getOwnPropertyNames(sort || {}).filter((s) => !select.includes(s));
 	const aggregation = [];
@@ -386,7 +385,6 @@ const createMultiDocumentAggregation = ({
 		if (match.schoolId && schoolYearId) stageLookupClasses(aggregation, match.schoolId, schoolYearId);
 	}
 
-
 	if (consentStatus) {
 		stageBaseFilter(aggregation, 'consentStatus', consentStatus);
 	}
@@ -404,13 +402,13 @@ const createMultiDocumentAggregation = ({
 	stageSimpleProject(aggregation, select);
 	// }
 
-	if (!match._id) stageFormatWithTotal(aggregation, limit, skip);
+	if (!match._id || Array.isArray(match._id.$in)) stageFormatWithTotal(aggregation, limit, skip);
 	return aggregation;
 };
-
 
 module.exports = {
 	convertSelect,
 	getParentReducer,
+	convertToIn,
 	createMultiDocumentAggregation,
 };

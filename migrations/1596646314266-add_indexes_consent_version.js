@@ -9,30 +9,31 @@ const logger = require('../src/logger');
 
 // use your own name for your model, otherwise other migrations may fail.
 // The third parameter is the actually relevent one for what collection to write to.
-const ConsentVersion = mongoose.model('consentVersions_20200805', new mongoose.Schema({
-	consentTypes: [{
-		type: String,
-		required: true,
-		index: true,
-	}],
-	consentText: { type: String, required: true },
-	// create request that include consentData, create a new base64Files entries and pass the id to consentDataId
-	consentDataId: { type: Schema.Types.ObjectId, ref: 'base64Files' },
-	schoolId: { type: Schema.Types.ObjectId, index: true },
-	publishedAt: { type: Date, required: true, index: true },
-	title: { type: String, required: true },
-}), 'consentversions');
-
-// How to use more than one schema per collection on mongodb
-// https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
-
-
-// TODO npm run migration-persist and remove this line
-// TODO update seed data and remove this line
+const ConsentVersion = mongoose.model(
+	'consentVersions_20200805',
+	new mongoose.Schema({
+		consentTypes: [
+			{
+				type: String,
+				required: true,
+				index: true,
+			},
+		],
+		consentText: { type: String, required: true },
+		// create request that include consentData, create a new base64Files entries and pass the id to consentDataId
+		consentDataId: { type: Schema.Types.ObjectId, ref: 'base64Files' },
+		schoolId: { type: Schema.Types.ObjectId, index: true },
+		publishedAt: { type: Date, required: true, index: true },
+		title: { type: String, required: true },
+	}),
+	'consentversions'
+);
 
 module.exports = {
 	up: async function up() {
+		await connect();
 		await ConsentVersion.syncIndexes();
+		await close();
 	},
 
 	down: async function down() {
