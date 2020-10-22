@@ -24,6 +24,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 -         - Fix mocha tests
+- SC-7454 - Restored invalid birth date fix in adminUsers service
 
 ## [25.2.0]
 
