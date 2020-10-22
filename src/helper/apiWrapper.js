@@ -3,6 +3,71 @@ const qs = require('qs');
 const lodash = require('lodash');
 const { Configuration } = require('@schul-cloud/commons');
 
+/**
+ * Request options wrapper to transform BL decisions for the library axios currently used
+ * @param {RequestOptions} options
+ */
+const transformOptions = ({
+	method = 'GET',
+	url,
+	baseURL,
+	data,
+	headers = {},
+	params,
+	responseType = 'json', // or 'arraybuffer'
+	contentType = undefined, // or 'x-www-form-urlencoded'
+	resolveWithFullResponse = false, // prefer not to set this true
+	timeout = undefined,
+	paramsSerializer = undefined,
+}) => {
+	/**
+	 * @type axios.AxiosRequestConfig
+	 */
+	const axiosOptions = {
+		// take properties without transformation
+		headers,
+		baseURL,
+		params,
+		// by default, returns response.data
+		resolveWithFullResponse,
+		timeout: Configuration.get('REQUEST_TIMEOUT_MS'),
+		paramsSerializer,
+	};
+
+	if (timeout !== undefined) {
+		Object.assign(axiosOptions, { timeout });
+	}
+
+	if (paramsSerializer === undefined) {
+		axiosOptions.paramsSerializer = (paramsObj) => {
+			// use custom params serializer based on qs as it supports nested objects
+			const serializedParams = qs.stringify(paramsObj);
+			return serializedParams;
+		};
+	}
+
+	// assign optional parameters without transformation
+	Object.assign(axiosOptions, method && { method }, url && { url }, data && { data });
+
+	// set responseType
+	if (['json', 'arraybuffer'].includes(responseType)) {
+		Object.assign(axiosOptions, { responseType });
+	} else {
+		throw new Error('unsupported responseType', { responseType });
+	}
+
+	// set contentType
+	if (contentType === 'x-www-form-urlencoded') {
+		// set header and transform data object
+		Object.assign(axiosOptions.headers, { contentType });
+		axiosOptions.data = qs.stringify(data);
+	} else if (contentType !== undefined) {
+		throw new Error('unsupported contentType', { contentType });
+	}
+
+	return axiosOptions;
+};
+
 module.exports = class ApiWrapper {
 	/**
 	 * @typedef {Object} RequestOptions
@@ -25,63 +90,6 @@ module.exports = class ApiWrapper {
 	}
 
 	/**
-	 * Request options wrapper to transform BL decisions for the library axios currently used
-	 * @param {RequestOptions} options
-	 */
-	static transformOptions({
-		method = 'GET',
-		url,
-		baseURL,
-		data,
-		headers = {},
-		params,
-		responseType = 'json', // or 'arraybuffer'
-		contentType = undefined, // or 'x-www-form-urlencoded'
-		resolveWithFullResponse = false, // prefer not to set this true
-		timeout = Configuration.get('REQUEST_TIMEOUT_MS'),
-		paramsSerializer = (paramsObj) => {
-			// use custom params serializer based on qs as it supports nested objects
-			const serializedParams = qs.stringify(paramsObj);
-			return serializedParams;
-		},
-	}) {
-		/**
-		 * @type axios.AxiosRequestConfig
-		 */
-		const axiosOptions = {
-			// take properties without transformation
-			headers,
-			baseURL,
-			params,
-			// by default, returns response.data
-			resolveWithFullResponse,
-			timeout,
-			paramsSerializer,
-		};
-
-		// assign optional parameters without transformation
-		Object.assign(axiosOptions, method && { method }, url && { url }, data && { data });
-
-		// set responseType
-		if (['json', 'arraybuffer'].includes(responseType)) {
-			Object.assign(axiosOptions, { responseType });
-		} else {
-			throw new Error('unsupported responseType', { responseType });
-		}
-
-		// set contentType
-		if (contentType === 'x-www-form-urlencoded') {
-			// set header and transform data object
-			Object.assign(axiosOptions.headers, { contentType });
-			axiosOptions.data = qs.stringify(data);
-		} else if (contentType !== undefined) {
-			throw new Error('unsupported contentType', { contentType });
-		}
-
-		return axiosOptions;
-	}
-
-	/**
 	 * Translates internal request for axios and handles error/response format
 	 * @param {axios.Method} method
 	 * @param {string} url
@@ -92,7 +100,7 @@ module.exports = class ApiWrapper {
 	 */
 	requestWrapper(requestOptions) {
 		const mergedOptions = lodash.merge({}, this.instanceOptions, requestOptions);
-		const axiosOptions = RequestWrapper.transformOptions(mergedOptions);
+		const axiosOptions = transformOptions(mergedOptions);
 		return axios
 			.request(axiosOptions)
 			.then(({ config, data, headers, request, status, statusText }) => {
@@ -109,8 +117,10 @@ module.exports = class ApiWrapper {
 				return data;
 			})
 			.catch((err) => {
+				// TODO handle and trasform error
 				console.log(err);
-			}); // TODO handle and trasform error
+				throw err;
+			});
 	}
 
 	/**
