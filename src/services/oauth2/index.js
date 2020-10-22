@@ -20,7 +20,7 @@ module.exports = function oauth2() {
 	// 	.then(res => { logger.log('info', 'Hydra status is: ' + res.statusText) })
 	// 	.catch(error => { logger.log('warn', 'Hydra got a problem: ' + error) });
 
-	app.use('/oauth2/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/oauth2/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/oauth2/baseUrl', {
 		find() {

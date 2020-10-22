@@ -100,7 +100,7 @@ class RedirectService {
 module.exports = function () {
 	const app = this;
 
-	app.use('/content/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/content/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	const options = {
 		Model: material,
