@@ -136,7 +136,10 @@ const validateEmailAndPin = (hook) => {
 
 const checkTimeWindow = async (hook) => {
 	const minimalTimeDifference = moment.duration(5, 'minutes').asMilliseconds();
-	const { importHash } = hook.data;
+	const { importHash, silent } = hook.data || {};
+	if (silent) {
+		return Promise.resolve(hook);
+	}
 
 	if (!importHash) {
 		throw new BadRequest('importHash missing');
