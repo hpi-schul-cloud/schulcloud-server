@@ -10,7 +10,7 @@ describe('tests for search utils', () => {
 			expect(result).to.be.deep.equals(expected);
 		});
 
-		it('slitup three value', () => {
+		it('slitup two value', () => {
 			const string1 = 'Hans P';
 			const string2 = 'e@b.d';
 			const expected = ['H', 'Ha', 'Han', 'ans', 'P', 'e', 'e@', 'e@b', '@b.', 'b.d'];
