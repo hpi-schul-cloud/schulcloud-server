@@ -14,6 +14,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Introduce plainSecrets in Configuration
 - Introduce FEATURE_PROMETHEUS_ENABLED to have a flag for enable prometheus api metrics
 
+### Fixed
+
+- SC-6586 Repaired migration script
+
 ## [25.2.0]
 
 - SC-6060 - Updated error handling
