@@ -49,7 +49,8 @@ const User = mongoose.model(
 			index: true,
 		},
 		parents: [
-			{	_id: false,
+			{
+				_id: false,
 				firstName: { type: String, required: true },
 				lastName: { type: String, required: true },
 				email: { type: String, required: true, lowercase: true },
