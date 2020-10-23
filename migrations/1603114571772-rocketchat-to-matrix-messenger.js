@@ -58,6 +58,8 @@ module.exports = {
 	},
 
 	down: async function down() {
-		warn("Schools using Matrix Messenger won't be migrated back to RocketChat automatically. If you need to switch Matrix Messenger of use the instance feature flag.");
+		warn(
+			"Schools using Matrix Messenger won't be migrated back to RocketChat automatically. If you need to switch Matrix Messenger of use the instance feature flag."
+		);
 	},
 };
