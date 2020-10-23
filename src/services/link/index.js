@@ -166,11 +166,11 @@ module.exports = function setup() {
 		}
 	}
 
+	app.use('/link/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+
 	app.use('/link', redirectToTarget, linkService);
 	app.use('/registrationlink', new RegistrationLinkService());
 	app.use('/expertinvitelink', new ExpertLinkService());
-
-	app.use('/link/api', staticContent(path.join(__dirname, '/docs')));
 
 	linkService = app.service('/link');
 	linkService.hooks(hooks);

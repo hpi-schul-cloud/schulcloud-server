@@ -16,7 +16,7 @@ const ObjectId = {
 		const [firstId, ...otherIds] = args;
 		const firstIdAsString = String(firstId);
 		if (!ObjectId.isValid(firstIdAsString)) {
-			logger.warning('received invalid object ids to compare', args);
+			logger.debug('received invalid object ids to compare', args);
 			return false;
 		}
 		return otherIds.every((id) => firstIdAsString === String(id));

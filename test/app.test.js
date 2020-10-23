@@ -5,18 +5,19 @@ const { expect } = chai;
 const chaiHttp = require('chai-http');
 
 chai.use(chaiHttp);
-const logger = require('../src/logger');
-const app = require('../src/app');
+const appPromise = require('../src/app');
 
 describe('Feathers application tests', () => {
-	before(function setup(done) {
-		this.server = app.listen(3031);
-		logger.level = 'error';
-		this.server.once('listening', () => done());
+	let app;
+	let server;
+
+	before(async function setup() {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after(function cleanup(done) {
-		this.server.close(done);
+		server.close(done);
 	});
 
 	it('starts and shows the index page', () =>
@@ -52,8 +53,8 @@ describe('Feathers application tests', () => {
 					.end((err, res) => {
 						assert.equal(res.statusCode, 404);
 						assert.equal(res.body.code, 404);
-						assert.equal(res.body.message, 'Page not found');
-						assert.equal(res.body.name, 'NotFound');
+						assert.equal(res.body.message, 'Page not found.');
+						assert.equal(res.body.name, 'PageNotFound');
 						resolve();
 					});
 			}));

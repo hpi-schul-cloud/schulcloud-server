@@ -100,6 +100,8 @@ class RedirectService {
 module.exports = function () {
 	const app = this;
 
+	app.use('/content/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+
 	const options = {
 		Model: material,
 		paginate: {
@@ -113,8 +115,6 @@ module.exports = function () {
 	app.use('/content/search', new SearchService());
 	app.use('/content/redirect', new RedirectService(), RedirectService.redirect);
 	app.use('/materials', service(options));
-
-	app.use('/content/api', staticContent(path.join(__dirname, '/docs')));
 
 	const resourcesService = app.service('/content/resources');
 	const searchService = app.service('/content/search');

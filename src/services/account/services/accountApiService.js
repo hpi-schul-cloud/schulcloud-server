@@ -1,6 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const local = require('@feathersjs/authentication-local');
-const { iff, isProvider, disallow } = require('feathers-hooks-common');
+const { iff, isProvider, disallow, keep } = require('feathers-hooks-common');
 const {
 	hasPermission,
 	permitGroupOperation,
@@ -19,7 +19,7 @@ const {
 	checkExistence,
 	protectUserId,
 	securePatching,
-	filterToRelated,
+	// filterToRelated,
 	restrictToUsersSchool,
 	validateUserName,
 	restrictToSameSchool,
@@ -117,7 +117,7 @@ const accountServiceHooks = {
 	after: {
 		all: [local.hooks.protect('password')],
 		find: [],
-		get: [filterToRelated(['_id', 'username', 'userId', 'systemId'])],
+		get: [iff(isProvider('external'), keep(['_id', 'username', 'userId', 'systemId']))],
 		create: [],
 		update: [],
 		patch: [],

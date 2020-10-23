@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, BadRequest } = reqlib('src/errors');
 const { hasPermission } = require('../../../hooks');
 
 const { SC_SHORT_TITLE, SC_TITLE } = require('../../../../config/globals');
@@ -33,6 +35,7 @@ const getCurrentUserInfo = async (id, app) => {
 	return null;
 };
 
+// TODO: remove the awaits inside the loop
 class SendRegistrationLinkService {
 	async create(data, params) {
 		let totalMailsSend = 0;

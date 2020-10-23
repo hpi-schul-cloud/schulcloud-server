@@ -2,6 +2,7 @@ const hooks = require('feathers-hooks-common');
 const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+const reqlib = require('app-root-path').require;
 
 const { userModel, registrationPinModel } = require('./model');
 const registrationPinsHooks = require('./hooks/registrationPins');
@@ -22,7 +23,12 @@ const {
 	QrRegistrationLinks: { QrRegistrationLinks, qrRegistrationLinksHooks },
 } = require('./services');
 
+const { registerApiValidation } = reqlib('src/utils/apiValidation');
+
 module.exports = (app) => {
+	registerApiValidation(app, path.join(__dirname, '/docs/adminusers.openapi.yaml'));
+	app.use('/users/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+
 	app.use('usersModel', UsersModelService.userModelService);
 	app.service('usersModel').hooks(UsersModelService.userModelHooks);
 
@@ -122,6 +128,4 @@ module.exports = (app) => {
 	app.service('/users/skipregistration').hooks(skipRegistrationBulkHooks);
 
 	app.use('/registrationSchool', new RegistrationSchoolService());
-
-	app.use('/users/api', staticContent(path.join(__dirname, '/docs')));
 };

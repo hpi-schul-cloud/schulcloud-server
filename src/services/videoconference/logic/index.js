@@ -1,6 +1,8 @@
 // const rp = require('request-promise-native');
 // const xml2js = require('xml2js-es6-promise');
-const { NotFound } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { NotFound } = reqlib('src/errors');
 const { error } = require('../../../logger');
 const { ROLES } = require('./constants');
 const utils = require('./utils');

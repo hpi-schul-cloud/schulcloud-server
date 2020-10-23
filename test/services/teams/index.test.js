@@ -2,20 +2,33 @@ const { ObjectId } = require('mongoose').Types;
 const { expect } = require('chai');
 const logger = require('../../../src/logger/index');
 
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 const {
 	createTestUser,
 	cleanup,
 	teams: teamsHelper,
 	generateRequestParams,
 	createTestAccount,
-} = require('../helpers/testObjects')(app);
-const testHelper = require('../helpers/testObjects')(app);
+} = require('../helpers/testObjects')(appPromise);
+const testHelper = require('../helpers/testObjects')(appPromise);
 
-const teamService = app.service('/teams');
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
 describe('Test team basic methods', () => {
+	let app;
+	let server;
+	let teamService;
+
+	before(async () => {
+		app = await appPromise;
+		teamService = app.service('/teams');
+		server = await app.listen(0);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
 	describe('teams create', () => {
 		let team;
 		let teamId;
@@ -127,6 +140,9 @@ describe('Test team basic methods', () => {
 });
 
 describe('Test team extern add services', () => {
+	let app;
+	let server;
+
 	let teacher;
 	let params;
 	let owner;
@@ -134,8 +150,10 @@ describe('Test team extern add services', () => {
 	let addService;
 
 	before(async () => {
+		app = await appPromise;
 		addService = app.service('/teams/extern/add');
 		addService.setup(app);
+		server = await app.listen();
 
 		[owner, teacher, expert] = await Promise.all([
 			createTestUser({ roles: ['teacher'] }),
@@ -150,7 +168,10 @@ describe('Test team extern add services', () => {
 		params = await generateRequestParams({ username, password });
 	});
 
-	after(testHelper.cleanup);
+	after(async () => {
+		await testHelper.cleanup;
+		await server.close();
+	});
 
 	it('add new teamadministrator with userId', async () => {
 		const { _id: teamId } = await teamsHelper.create(owner);

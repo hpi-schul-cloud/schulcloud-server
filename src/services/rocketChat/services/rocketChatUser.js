@@ -1,6 +1,7 @@
-const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const request = require('request-promise-native');
+const reqlib = require('app-root-path').require;
 
+const { Forbidden, BadRequest } = reqlib('src/errors');
 const { getRequestOptions, makeStringRCConform } = require('../helpers');
 const { SCHOOL_FEATURES } = require('../../school/model');
 const docs = require('../docs');
@@ -20,14 +21,14 @@ class RocketChatUser {
 		// toDo: check availibility in rocketChat as well.
 		return userModel.findOne({ username: userName }).then((result) => {
 			if (!result) {
-				return Promise.resolve(userName);
+				return userName;
 			}
 			return this.generateUserName(user);
 		});
 	}
 
 	async handleEmailInUse(err, email, password) {
-		if (err.error.error.includes('is already in use :(')) {
+		if (err && err.error && err.error.error && err.error.error.includes('is already in use :(')) {
 			// email already in use
 			const queryString = `query={"emails.address":"${email}"}`;
 			const rcUser = await request(getRequestOptions(`/api/v1/users.list?${queryString}`, {}, true, undefined, 'GET'));
@@ -74,6 +75,7 @@ class RocketChatUser {
 				const createdUser = await request(getRequestOptions('/api/v1/users.create', body, true)).catch(async (err) =>
 					this.handleEmailInUse(err, email, password)
 				);
+
 				const rcId = createdUser.user._id;
 				({ username } = createdUser.user);
 				return userModel.create({
@@ -136,7 +138,7 @@ class RocketChatUser {
 					await request(getRequestOptions('/api/v1/users.delete', { username: user.username }, true));
 					await userModel.deleteOne({ _id: user._id });
 				}
-				return Promise.resolve();
+				return true;
 			})
 			.catch((err) => {
 				logger.warning(new BadRequest('deleteUser', err));
@@ -153,11 +155,10 @@ class RocketChatUser {
 			.then((login) => {
 				const result = login;
 				delete result.password;
-				return Promise.resolve(result);
+				return result;
 			})
 			.catch((err) => {
-				logger.warning('encountered an error while fetching a rocket.chat user.', err);
-				throw err;
+				throw new BadRequest('encountered an error while fetching a rocket.chat user.', err);
 			});
 	}
 
@@ -173,7 +174,7 @@ class RocketChatUser {
 		return Promise.all(userIds.map((userId) => this.getOrCreateRocketChatAccount(userId)))
 			.then((accounts) => {
 				const result = accounts.map((account) => account.username);
-				return Promise.resolve(result);
+				return result;
 			})
 			.catch((err) => {
 				throw new BadRequest(err);

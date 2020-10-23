@@ -1,15 +1,13 @@
 const mockery = require('mockery');
 const { expect } = require('chai');
 
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 
 const {
 	hasEditPermissionForUser,
 	hasReadPermissionForUser,
 } = require('../../../../src/services/user/hooks/index.hooks');
-
-const userService = app.service('users');
 
 /**
  * Warning: Role Changes are not handled yet.
@@ -51,9 +49,13 @@ const assertPromiseStatus = (promise, success) =>
 		});
 
 describe('hasEditPermissionForUser', () => {
+	let app;
+	let userService;
 	let server;
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		userService = app.service('users');
+		server = await app.listen(0);
 	});
 
 	afterEach(async () => {
@@ -144,9 +146,13 @@ describe('hasEditPermissionForUser', () => {
 });
 
 describe('hasReadPermissionForUser', () => {
+	let app;
+	let userService;
 	let server;
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		userService = app.service('users');
+		server = await app.listen(0);
 	});
 
 	afterEach(async () => {
