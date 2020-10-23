@@ -7,12 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-## [25.1.5] - 2020-10-22
-
-### Fixed
-
-- SC-7452 - fixed time window check for LDAP users
-
 ## [Unreleased] 
 
 ### Added
