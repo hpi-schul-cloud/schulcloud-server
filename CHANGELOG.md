@@ -63,6 +63,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6151 - fixed a bug that prevented api docu from being accessible
 -         - Fix mocha tests
 
+## [25.1.5] - 2020-10-22
+
+### Fixed
+
+- SC-7452 - fixed time window check for LDAP users
+
 ## [25.1.4] - 2020-10-20
 
 ### Changed
