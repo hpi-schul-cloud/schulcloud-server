@@ -1,15 +1,10 @@
 const request = require('request-promise-native');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+const queryString = require('qs');
 
 const { Configuration } = require('@schul-cloud/commons');
 const hooks = require('./hooks');
-
-function toQueryString(paramsObject) {
-	return Object.keys(paramsObject)
-		.map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
-		.join('&');
-}
 
 /**
  * converts a jsonApi-event to a plain event
@@ -207,7 +202,7 @@ class Service {
 		const serviceUrls = this.app.get('services') || {};
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${serviceUrls.calendar}/events?${toQueryString(params.query)}`,
+			uri: `${serviceUrls.calendar}/events?${queryString.stringify(params.query)}`,
 			headers: {
 				Authorization: userId,
 			},

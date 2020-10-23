@@ -93,7 +93,7 @@
 		"papaparse": "^5.1.1",
 		"prom-client": "^11.5.3",
 		"prometheus-api-metrics": "^2.2.3",
-		"querystring": "^0.2.0",
+		"qs": "^6.9.4",
 		"read-chunk": "^3.0.0",
 		"redis": "^3.0.0",
 		"request-promise-core": "^1.1.4",
