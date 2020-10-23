@@ -36,6 +36,29 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - fixed README badges
 - SC-6151 fixed a bug that prevented api docu from being accessible
 
+## [25.1.6] - 2020-10-23
+
+### Changed
+
+- SC-7413 - Remove event listener for unhandled rejections and move this to winston
+
+## [25.1.5] - 2020-10-22
+
+### Fixed
+
+- SC-7452 - fixed time window check for LDAP users
+
+## [25.1.4] - 2020-10-20
+
+### Changed
+
+- SC-6986 - Changed permission check for PATCH method in the account service from STUDENT_CREATE to STUDENT_EDIT to allow teachers to change students' password
+
+## [25.1.3] - 2020-10-20
+
+### Fixed
+
+- SC-6986 - Changed a hook in the accounts service that restricts get requests to the same school, it expects a valid userID and matching schoolIds for both the requester and requested users
 
 ## [25.1.2] - 2020-10-15
 
