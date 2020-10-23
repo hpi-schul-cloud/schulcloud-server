@@ -421,6 +421,12 @@
 				}
 			},
 			"required": ["METRICS_PATH", "DURATION_BUCKETS_SECONDS"]
+		},
+		"REQUEST_TIMEOUT":{
+			"type": "integer",
+			"minimum": 0,
+			"default": 8000,
+			"description": "Default timeout for external requests in milliseconds."
 		}
 	},
 	"required": [

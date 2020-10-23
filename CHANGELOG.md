@@ -20,6 +20,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-6080 - move REQUEST_TIMEOUT from globals to Configuration
 - SC-6060 - Updated error handling
 
 ### Fixed
