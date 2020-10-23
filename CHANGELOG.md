@@ -11,7 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
-- SC-7293 - added Lern-Store view permission
+- SC-7293 - added Lern-Store view permission and a feature flag
 - SC-7357 - Add config service
 - SC-7083 - Added officialSchoolNumber to school-model
 - Introduce plainSecrets in Configuration
@@ -62,6 +62,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -         - fixed README badges
 - SC-6151 - fixed a bug that prevented api docu from being accessible
 -         - Fix mocha tests
+## [25.1.6] - 2020-10-23
+
+### Changed
+
+- SC-7413 - Remove event listener for unhandled rejections and move this to winston
 
 ## [25.1.5] - 2020-10-22
 
