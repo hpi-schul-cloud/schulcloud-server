@@ -62,7 +62,7 @@ describe('MessengerTokenService', function test() {
 			let configBefore;
 
 			before(() => {
-				configBefore = Configuration.toObject(); // deep copy current config
+				configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 				Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
 				Configuration.set('MATRIX_MESSENGER__SECRET', 'secret');
 			});

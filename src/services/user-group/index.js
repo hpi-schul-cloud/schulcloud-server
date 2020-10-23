@@ -21,7 +21,7 @@ const { courseGroupHooks, courseGroupService } = require('./services/courseGroup
 module.exports = function () {
 	const app = this;
 
-	app.use('/courses/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/courses/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	/* Course model */
 	app.use('/courseModel', courseModelService);

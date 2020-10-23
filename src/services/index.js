@@ -49,6 +49,7 @@ const nexboard = require('./nexboard');
 const etherpad = require('./etherpad');
 const storageProvider = require('./storageProvider');
 const activation = require('./activation');
+const config = require('./config');
 
 module.exports = function initializeServices() {
 	const app = this;
@@ -104,6 +105,7 @@ module.exports = function initializeServices() {
 	app.configure(etherpad);
 	app.configure(storageProvider);
 	app.configure(activation);
+	app.configure(config);
 
 	// initialize events
 	newsEvents.configure(app);

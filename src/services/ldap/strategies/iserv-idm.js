@@ -38,6 +38,7 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 
 		const teacherRegex = /^cn=ROLE_TEACHER|^cn=ROLE_LEHRER/;
 		const adminRegex = /^cn=ROLE_ADMIN/;
+		const userExclusionRegex = /^cn=ROLE_NBC_EXCLUDE/;
 
 		const results = [];
 		data.forEach((obj) => {
@@ -63,7 +64,7 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 				roles.push('student');
 			}
 
-			if (!memberships.some((item) => item === 'ROLE_NO_SC')) {
+			if (!memberships.some((item) => userExclusionRegex.test(item))) {
 				results.push({
 					email: obj.mail,
 					firstName: obj.givenName,

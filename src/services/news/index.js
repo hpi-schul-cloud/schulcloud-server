@@ -461,7 +461,7 @@ module.exports = function news() {
 	const newsService = new NewsService();
 	newsService.docs = newsDocs;
 	// use /news to access a user's news
-	app.use('/news/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/news/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/news', newsService);
 	app.service('news').hooks(hooks);
 
