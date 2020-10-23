@@ -10,7 +10,7 @@ const {
 	NODE_ENV,
 	MONGOOSE_CONNECTION_POOL_SIZE,
 	ENVIRONMENTS,
-} = require('../../config/globals'); //DATABASE_AUDIT DB_URL DB_USERNAME, DB_PASSWORD
+} = require('../../config/globals');
 
 
 if (Configuration.get('DATABASE__AUDIT') === 'true') {
@@ -51,11 +51,11 @@ function getConnectionOptions() {
 	const options = {
 		url: Configuration.get('DATABASE__URL'),
 	};
-	if(Configuration.has('DATABASE__USERNAME')){
-		options.username= Configuration.get('DATABASE__USERNAME');
+	if (Configuration.has('DATABASE__USERNAME')) {
+		options.username = Configuration.get('DATABASE__USERNAME');
 	}
-	if(Configuration.has('DATABASE__PASSWORD')){
-		options.password= Configuration.get('DATABASE__PASSWORD');
+	if (Configuration.has('DATABASE__PASSWORD')) {
+		options.password = Configuration.get('DATABASE__PASSWORD');
 	}
 	return options;
 }
