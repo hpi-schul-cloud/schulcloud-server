@@ -49,7 +49,7 @@ const User = mongoose.model(
 			index: true,
 		},
 		parents: [
-			{
+			{	_id: false,
 				firstName: { type: String, required: true },
 				lastName: { type: String, required: true },
 				email: { type: String, required: true, lowercase: true },
@@ -92,8 +92,8 @@ const getStudentsForParent = async (parent) => {
 };
 
 const updateStudentsParentData = async (studentIds, parent) => {
-	return User.updateMany(
-		{ _id: { $in: [studentIds] } },
+	await User.updateMany(
+		{ _id: { $in: studentIds } },
 		{
 			$set: {
 				parents: [
@@ -104,6 +104,12 @@ const updateStudentsParentData = async (studentIds, parent) => {
 					},
 				],
 			},
+		}
+	);
+
+	await User.updateMany(
+		{ _id: { $in: studentIds }, 'consent.parentConsents': { $exists: true } },
+		{
 			$unset: { 'consent.parentConsents.$[].parentId': '' },
 		}
 	);
@@ -113,6 +119,8 @@ const migrateParentsToStudents = async () => {
 	const parentIdsToDelete = [];
 	const parentRole = await getParentRole();
 	const cursor = findAllParents(parentRole).cursor();
+	const parentsCount = await findAllParents(parentRole).count().exec();
+	info(`${parentsCount} users with role parent found!`);
 	for (let parent = await cursor.next(); parent != null; parent = await cursor.next()) {
 		const students = await getStudentsForParent(parent);
 		const studentIds = getIds(students);
