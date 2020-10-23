@@ -33,6 +33,8 @@ const logger = createLogger({
 		new transports.Console({
 			level: LOG_LEVEL,
 			handleExceptions: true,
+			// https://github.com/winstonjs/winston#handling-uncaught-promise-rejections-with-winston
+			handleRejections: true,
 		}),
 	],
 	exitOnError: false,
