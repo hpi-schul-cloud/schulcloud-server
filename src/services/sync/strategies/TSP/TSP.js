@@ -2,7 +2,7 @@ const rp = require('request-promise-native');
 const url = require('url');
 const moment = require('moment');
 const { JWE, JWK, JWS } = require('jose');
-const uuid = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@schul-cloud/commons');
 const accountModel = require('../../../account/model');
 
@@ -208,7 +208,7 @@ class TspApi {
 			sub: HOST,
 			exp: issueDate + lifetime,
 			iat: issueDate,
-			jti: uuid(),
+			jti: uuidv4(),
 		});
 		const jwt = signToken(encryptToken(payload));
 		this.lastToken = jwt;
