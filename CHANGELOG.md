@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [25.1.6] - 2020-10-23
+
+### Changed
+
+- SC-7413 - Remove event listener for unhandled rejections and move this to winston
+
 ## [25.1.5] - 2020-10-22
 
 ### Fixed
