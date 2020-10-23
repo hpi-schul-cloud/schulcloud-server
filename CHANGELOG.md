@@ -7,8 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-
-## [Unreleased] 
+## [Unreleased]
 
 ### Added
 
@@ -20,6 +19,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- Dependencies: querystring replaced by qs
 - SC-6060 - Updated error handling
 
 ### Fixed
@@ -62,6 +62,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -         - fixed README badges
 - SC-6151 - fixed a bug that prevented api docu from being accessible
 -         - Fix mocha tests
+
+## [25.1.5] - 2020-10-22
+
+### Fixed
+
+- SC-7452 - fixed time window check for LDAP users
 
 ## [25.1.4] - 2020-10-20
 

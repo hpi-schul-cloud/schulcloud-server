@@ -1,6 +1,8 @@
+// eslint-disable-next-line max-classes-per-file
 const request = require('request-promise-native');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+const queryString = require('qs');
 
 const hooks = require('./hooks/index');
 
@@ -15,11 +17,6 @@ const mapResponseProps = (response) => {
 	response.id = response.data.id;
 	return response;
 };
-
-const toQueryString = (paramsObject) =>
-	Object.keys(paramsObject)
-		.map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
-		.join('&');
 
 class MessageService {
 	constructor(options) {
@@ -179,7 +176,7 @@ class NotificationService {
 		const userId = (params.account || {}).userId || params.payload.userId;
 
 		const options = {
-			uri: `${serviceUrls.notification}/notifications/` + `?user=${userId}&${toQueryString(params.query)}`,
+			uri: `${serviceUrls.notification}/notifications/?user=${userId}&${queryString.stringify(params.query)}`,
 			headers: {
 				token: userId,
 			},
