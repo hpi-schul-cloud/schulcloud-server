@@ -105,7 +105,7 @@
 		"strip-bom": "^4.0.0",
 		"universal-analytics": "^0.4.17",
 		"urlsafe-base64": "^1.0.0",
-		"uuid": "^7.0.3",
+		"uuid": "^8.3.0",
 		"wait-on": "^5.0.1",
 		"winston": "^3.2.0",
 		"xml2js-es6-promise": "^1.1.1"

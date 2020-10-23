@@ -60,7 +60,7 @@ class Service {
 module.exports = function () {
 	const app = this;
 
-	app.use('/analytics/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/analytics/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/analytics', new Service());
 	const contentService = app.service('/analytics');
