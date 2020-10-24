@@ -58,6 +58,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6510, fix a minor syntax error when exporting module
 - Update commons to 1.2.7: print configuration on startup, introduce hierarchical configuration file setup
 - Support asynchronous calls during server startup
+- SC-7091 Migration to enable the Matrix Messenger for all schools that had RocketChat enabled before
 
 ### Fixed
 
