@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [25.1.7] - 2020-10-26
+
+### Changed
+
+- SC-7476 - Prevent hash generation if user has account
+
 ## [25.1.6] - 2020-10-23
 
 ### Changed
@@ -40,7 +46,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 ### Removed
-
 
 ## [25.1.1] - 2020-10-12
 

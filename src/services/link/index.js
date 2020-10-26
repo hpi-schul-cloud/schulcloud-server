@@ -5,6 +5,7 @@ const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
+const { BadRequest } = require('@feathersjs/errors');
 const logger = require('../../logger');
 const link = require('./link-model');
 const hooks = require('./hooks');
@@ -72,6 +73,12 @@ module.exports = function setup() {
 			if (data.toHash) {
 				try {
 					const user = ((await app.service('users').find({ query: { email: data.toHash } })) || {}).data[0];
+
+					const account = ((await app.service('accounts').find({ query: { userId: user._id } })) || {})[0];
+					if (account && account.userId) {
+						throw new BadRequest(`User already has an account.`);
+					}
+
 					if (user && user.importHash) linkData.hash = user.importHash;
 					else {
 						await app
