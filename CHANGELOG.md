@@ -25,6 +25,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-6586 Repaired migration script
 - SC-7454 - Restored invalid birth date fix in adminUsers service
 - fixed README badges
 - Fix mocha tests
