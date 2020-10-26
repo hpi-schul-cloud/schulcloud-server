@@ -278,12 +278,13 @@ if (Configuration.has('API_VALIDATION_WHITELIST_EXTENSION')) {
 
 const registerApiValidation = async (app, apiSpec) => {
 	if (Configuration.get('FEATURE_API_VALIDATION_ENABLED')) {
+		const validateResponses = Configuration.get('FEATURE_API_RESPONSE_VALIDATION_ENABLED');
 		app.use(
 			OpenApiValidator.middleware({
 				apiSpec,
 				ignorePaths,
 				validateRequests: true,
-				// validateResponses: true, // <-- to validate responses
+				validateResponses,
 			})
 		);
 	}

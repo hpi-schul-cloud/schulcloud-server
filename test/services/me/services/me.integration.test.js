@@ -18,7 +18,7 @@ describe('me service integration tests', function test() {
 		delete require.cache[require.resolve('../../../../src/app')];
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		Configuration.set('FEATURE_API_VALIDATION_ENABLED', true);
-		Configuration.set('API_VALIDATION__FEATURE_API_RESPONSE_VALIDATION_ENABLED', true);
+		Configuration.set('FEATURE_API_RESPONSE_VALIDATION_ENABLED', true);
 		// eslint-disable-next-line global-require
 		const appPromise = require('../../../../src/app');
 		// eslint-disable-next-line global-require
