@@ -19,6 +19,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-7331 - introduce axios for external requests, implemented in status api
 - SC-6080 - move REQUEST_TIMEOUT from globals to Configuration
 - Dependencies: querystring replaced by qs
 - SC-6060 - Updated error handling
@@ -31,7 +32,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Fix mocha tests
 - SC-6151 fixed a bug that prevented api docu from being accessible
 - SC-6151 fixed paths to openapi documentation
-
 
 ## [25.2.0]
 
@@ -66,6 +66,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -         - fixed README badges
 - SC-6151 - fixed a bug that prevented api docu from being accessible
 -         - Fix mocha tests
+
 ## [25.1.6] - 2020-10-23
 
 ### Changed
