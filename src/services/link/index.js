@@ -8,6 +8,7 @@ const path = require('path');
 const logger = require('../../logger');
 const link = require('./link-model');
 const hooks = require('./hooks');
+const { BadRequest } = require('@feathersjs/errors');
 
 module.exports = function setup() {
 	const app = this;
@@ -72,6 +73,12 @@ module.exports = function setup() {
 			if (data.toHash) {
 				try {
 					const user = ((await app.service('users').find({ query: { email: data.toHash } })) || {}).data[0];
+
+					const account = ((await app.service('accounts').find({ query: { userId: user._id } })) || {})[0];
+					if (account && account.userId) {
+						throw new BadRequest(`User already has an account.`);
+					}
+
 					if (user && user.importHash) linkData.hash = user.importHash;
 					else {
 						await app
