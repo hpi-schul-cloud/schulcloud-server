@@ -3,7 +3,7 @@ const auth = require('@feathersjs/authentication');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { userModel } = require('../model');
 const { addDates: addConsentDate } = require('../hooks/consent');
-const { enableQuery, enableQueryAfter, resolveToIds } = require('../../../hooks');
+const { MarkForDeletion, MarkForDeletionAfter, resolveToIds } = require('../../../hooks');
 
 const userModelHooks = {
 	before: {
@@ -11,10 +11,10 @@ const userModelHooks = {
 		create: [resolveToIds('/roles', 'data.roles', 'name'), addConsentDate],
 		update: [addConsentDate],
 		patch: [addConsentDate],
-		remove: [enableQuery],
+		remove: [MarkForDeletion],
 	},
 	after: {
-		remove: [enableQueryAfter],
+		remove: [MarkForDeletionAfter],
 	},
 };
 

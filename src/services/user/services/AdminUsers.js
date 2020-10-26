@@ -305,9 +305,8 @@ class AdminUsers {
 			if (!equalIds(currentUser.schoolId, userToRemove.schoolId)) {
 				throw new Forbidden('You cannot remove users from other schools.');
 			}
-			// await this.app.service('accountModel').remove(null, { query: { userId: id } });
-			// return this.app.service('usersModel').remove(id);
-			await this.markUserAsDeleted(id);
+			await this.app.service('accountModel').remove(null, { query: { userId: id } });
+			return this.app.service('usersModel').remove(id);
 		}
 
 		const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
@@ -315,8 +314,8 @@ class AdminUsers {
 			throw new Forbidden('You cannot remove users from other schools.');
 		}
 
-		// await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
-		// return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
+		await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
+		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
 	}
 
 	async setup(app) {

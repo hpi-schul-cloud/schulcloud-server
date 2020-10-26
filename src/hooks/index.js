@@ -387,7 +387,7 @@ const testIfRoleNameExist = (user, roleNames) => {
 	return user.roles.some(({ name }) => roleNames.includes(name));
 };
 
-exports.enableQuery = (context) => {
+exports.MarkForDeletion = (context) => {
 	if (context.id) {
 		context.params.query = context.params.query || {};
 		context.params.query._id = context.id;
@@ -395,7 +395,7 @@ exports.enableQuery = (context) => {
 	}
 };
 
-exports.enableQueryAfter = (context) => {
+exports.MarkForDeletionAfter = (context) => {
 	if (!context.params.query._id) {
 		return context;
 	}
