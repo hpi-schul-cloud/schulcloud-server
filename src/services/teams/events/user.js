@@ -40,7 +40,7 @@ const deleteUser = (app) => {
 
 				logger.warning(
 					`Can not remove user ${userId} from the teams ${notRemovedFromTeams},` +
-					'if team.userIds empty then removed the team too.',
+						'if team.userIds empty then removed the team too.',
 					err
 				);
 			});
