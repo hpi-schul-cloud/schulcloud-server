@@ -250,13 +250,8 @@ class AdminUsers {
 
 	async markUserAsDeleted(userId) {
 		if (userId) {
-			await this.app.service('users').remove(null, {
-				query: {
-					userId,
-					deletedAt: {
-						default: new Date(),
-					},
-				},
+			await this.app.service('users').patch(userId, {
+				deletedAt: new Date(),
 			});
 			return `User ${userId} Marked to deletion and will be deleted after one week.`;
 		}
@@ -265,10 +260,8 @@ class AdminUsers {
 
 	async unMarkUserAsDeleted(userId) {
 		if (userId) {
-			await this.app.service('users').patch(null, {
-				query: {
-					deletedAt: null,
-				},
+			await this.app.service('users').patch(userId, {
+				deletedAt: null,
 			});
 			return `User ${userId} unMarked from deletion.`;
 		}
@@ -297,7 +290,6 @@ class AdminUsers {
 	}
 
 	async remove(id, params) {
-		const { _ids } = params.query;
 		const currentUser = await getCurrentUserInfo(params.account.userId);
 
 		if (id) {
@@ -305,17 +297,10 @@ class AdminUsers {
 			if (!equalIds(currentUser.schoolId, userToRemove.schoolId)) {
 				throw new Forbidden('You cannot remove users from other schools.');
 			}
-			await this.app.service('accountModel').remove(null, { query: { userId: id } });
-			return this.app.service('usersModel').remove(id);
+			return this.markUserAsDeleted(id);
 		}
 
-		const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
-		if (usersIds.some((user) => !equalIds(currentUser.schoolId, user.schoolId))) {
-			throw new Forbidden('You cannot remove users from other schools.');
-		}
-
-		await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
-		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
+		return new Forbidden('Error, User has invalid id.');
 	}
 
 	async setup(app) {
