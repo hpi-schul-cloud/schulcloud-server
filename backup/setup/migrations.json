@@ -798,6 +798,17 @@
 },
 {
 	"_id": {
+		"$oid": "5f901d78bfeb05502414011f"
+	},
+	"state": "up",
+	"name": "rocketchat-to-matrix-messenger",
+	"createdAt": {
+		"$date": "2020-10-19T13:36:11.772Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5f91453639a2a8ca44687c2d"
 	},
 	"state": "up",
