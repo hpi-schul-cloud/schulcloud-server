@@ -80,6 +80,8 @@ class AdminUsers {
 				skip: clientQuery.$skip || clientQuery.skip,
 				limit: clientQuery.$limit || clientQuery.limit,
 			};
+			query.deletedAt = null;
+
 			if (_id) {
 				query._id = _id;
 			} else if (clientQuery.users) {
