@@ -46,6 +46,7 @@ const userSchema = new Schema(
 		// inviteHash:{type:String},
 		parents: [
 			{
+				_id: false,
 				firstName: { type: String, required: true },
 				lastName: { type: String, required: true },
 				email: { type: String, required: true, lowercase: true },
