@@ -33,7 +33,7 @@ describe('me service integration tests', function test() {
 	});
 
 	describe('API tests', () => {
-		it('When user sends a valid response, then the call returns successfully', async () => {
+		it('When user sends an authorized request, then the call returns successfully', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 			const token = await testObjects.generateJWTFromUser(user);
@@ -45,8 +45,6 @@ describe('me service integration tests', function test() {
 				.set('content-type', 'application/json');
 			const response = await request.send();
 			expect(response.status).to.equal(200);
-			console.log(response)
-		
 			expect(response.body).to.haveOwnProperty('_id');
 		});
 	});
