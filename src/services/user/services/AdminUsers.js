@@ -226,7 +226,7 @@ class AdminUsers {
 	}
 
 	/**
-	 * Update the account email if eamil will be changed on user.
+	 * Update the account email if email will be changed on user.
 	 * IMPORTANT: Keep in mind to do a roleback if saving the user failed
 	 * @param {*} email
 	 * @param {*} userId
@@ -250,17 +250,21 @@ class AdminUsers {
 
 	async markUserAsDeleted(userId) {
 		if (userId) {
-			await this.app.service('users').remove(null, {
-				query: {
-					userId,
-					deletedAt: {
-						default: new Date(),
+			try {
+				await this.app.service('users').remove(null, {
+					query: {
+						userId,
+						deletedAt: {
+							default: new Date(),
+						},
 					},
-				},
-			});
-			return `User ${userId} Marked to deletion and will be deleted after one week.`;
+				});
+				return `User ${userId} Marked to deletion and will be deleted after one week.`;
+			} catch (err) {
+				logger.warning('You cannot remove user with invalid id.', err);
+				return new Forbidden('You cannot remove user with invalid id.');
+			}
 		}
-		return new Forbidden('You cannot remove user with invalid id.');
 	}
 
 	async unMarkUserAsDeleted(userId) {

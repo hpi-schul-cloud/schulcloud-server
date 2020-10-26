@@ -79,17 +79,17 @@ const setupUser = async (roleName, schoolId) => {
 	};
 };
 
-// const deleteUser = async (userId) => {
-// 	if (typeof userId === 'object' && userId.userId !== undefined) userId = userId.userId;
-//
-// 	const email = userId + AT;
-// 	await userModel.deleteOne({ email }); // todo: add error handling if not exist
-// 	await accountModel.deleteOne({ username: email });
-// };
+const deleteUser = async (userId) => {
+	if (typeof userId === 'object' && userId.userId !== undefined) userId = userId.userId;
+
+	const email = userId + AT;
+	await userModel.deleteOne({ email }); // todo: add error handling if not exist
+	await accountModel.deleteOne({ username: email });
+};
 
 module.exports = {
 	setupUser,
 	getToken,
 	getRoleByKey,
-	// deleteUser,
+	deleteUser,
 };
