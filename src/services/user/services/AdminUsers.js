@@ -255,12 +255,10 @@ class AdminUsers {
 					userId,
 					deletedAt: {
 						default: new Date(),
-						// after one week
-						expireAfterSeconds: 30,
 					},
 				},
 			});
-			return `User ${userId} Marked to deletion`;
+			return `User ${userId} Marked to deletion and will be deleted after one week.`;
 		}
 		return new Forbidden('You cannot remove user with invalid id.');
 	}
@@ -272,9 +270,9 @@ class AdminUsers {
 					deletedAt: null,
 				},
 			});
-			return `User ${userId} unMarked from deletion`;
+			return `User ${userId} unMarked from deletion.`;
 		}
-		return new Forbidden('Error - User has invalid id.');
+		return new Forbidden('Error, User has invalid id.');
 	}
 
 	async prepareRoleback(email, userId, fu) {
@@ -316,7 +314,6 @@ class AdminUsers {
 		if (usersIds.some((user) => !equalIds(currentUser.schoolId, user.schoolId))) {
 			throw new Forbidden('You cannot remove users from other schools.');
 		}
-		// await this.markUserAsDeleted(id);
 
 		// await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
 		// return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
