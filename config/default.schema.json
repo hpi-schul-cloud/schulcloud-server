@@ -421,7 +421,7 @@
 			},
 			"required": ["METRICS_PATH", "DURATION_BUCKETS_SECONDS"]
 		},
-    "REQUEST_TIMEOUT":{
+		"REQUEST_TIMEOUT": {
 			"type": "integer",
 			"minimum": 0,
 			"default": 8000,
@@ -452,6 +452,7 @@
 				}
 			},
 			"required": ["URL"]
+		}
 	},
 	"required": [
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
