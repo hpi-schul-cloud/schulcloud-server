@@ -6,12 +6,7 @@ const uriFormat = require('mongodb-uri');
 const { Configuration } = require('@schul-cloud/commons');
 
 const logger = require('../logger');
-const {
-	NODE_ENV,
-	MONGOOSE_CONNECTION_POOL_SIZE,
-	ENVIRONMENTS,
-} = require('../../config/globals');
-
+const { NODE_ENV, MONGOOSE_CONNECTION_POOL_SIZE, ENVIRONMENTS } = require('../../config/globals');
 
 if (Configuration.get('DATABASE__AUDIT') === 'true') {
 	logger.info('database audit log is globally enabled');
