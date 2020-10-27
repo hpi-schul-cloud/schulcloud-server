@@ -16,6 +16,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7083 - Added officialSchoolNumber to school-model
 - Introduce plainSecrets in Configuration
 - Introduce FEATURE_PROMETHEUS_ENABLED to have a flag for enable prometheus api metrics
+- SC-7411 - add API Specification and validation for /me service
+- SC-7411 - add API Specification and validation for /version service
 
 ### Changed
 
@@ -24,6 +26,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Dependencies: querystring replaced by qs
 - SC-6060 - Updated error handling
 - SC-7404 - automatic forwarding for requests without versionnumber if no matching route is found
+- SC-7411 - api versioning for /me service
+- SC-7411 - api versioning for /version service
 
 ### Fixed
 
