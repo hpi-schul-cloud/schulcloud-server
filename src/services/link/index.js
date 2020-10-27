@@ -5,10 +5,10 @@ const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
+const { BadRequest } = require('@feathersjs/errors');
 const logger = require('../../logger');
 const link = require('./link-model');
 const hooks = require('./hooks');
-const { BadRequest } = require('@feathersjs/errors');
 
 module.exports = function setup() {
 	const app = this;
