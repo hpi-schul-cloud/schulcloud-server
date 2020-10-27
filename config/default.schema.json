@@ -253,6 +253,11 @@
 			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
 		},
+		"FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Allows school admin to toggle student's LERNSTORE_VIEW permission."
+		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
 			"description": "Synchronous encryption key used to secure search user passwords",
@@ -416,6 +421,12 @@
 			},
 			"required": ["METRICS_PATH", "DURATION_BUCKETS_SECONDS"]
 		},
+    "REQUEST_TIMEOUT":{
+			"type": "integer",
+			"minimum": 0,
+			"default": 8000,
+			"description": "Default timeout for external requests in milliseconds."
+		},
 		"DATABASE": {
 			"type": "object",
 			"description": "Database options.",
@@ -441,7 +452,6 @@
 				}
 			},
 			"required": ["URL"]
-		}
 	},
 	"required": [
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
