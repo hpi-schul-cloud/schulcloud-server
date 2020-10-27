@@ -1,0 +1,4 @@
+{
+    "$schema": "./default.schema.json",
+    "REQUEST_TIMEOUT": 600000
+}
