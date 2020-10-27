@@ -36,7 +36,7 @@ const {
 	decorateUsers,
 	handleClassId,
 	pushRemoveEvent,
-	enforceRoleHierarchyOnDelete,
+	// enforceRoleHierarchyOnDelete,
 	enforceRoleHierarchyOnCreate,
 	filterResult,
 	generateRegistrationLink,
@@ -141,8 +141,9 @@ const userHooks = {
 		],
 		remove: [
 			authenticate('jwt'),
-			iff(isProvider('external'), disallow(), preventPopulate),
-			iff(isProvider('external'), disallow(), [restrictToCurrentSchool, enforceRoleHierarchyOnDelete]),
+			iff(isProvider('external'), disallow),
+			// iff(isProvider('external'), preventPopulate),
+			// iff(isProvider('external'), [restrictToCurrentSchool, enforceRoleHierarchyOnDelete]),
 		],
 	},
 	after: {

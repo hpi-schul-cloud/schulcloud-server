@@ -4,7 +4,7 @@ const { iff, isProvider, disallow, keep } = require('feathers-hooks-common');
 const {
 	hasPermission,
 	permitGroupOperation,
-	restrictToCurrentSchool,
+	// restrictToCurrentSchool,
 	preventPopulate,
 	getRestrictPopulatesHook,
 } = require('../../../hooks');
@@ -108,9 +108,10 @@ const accountServiceHooks = {
 		],
 		remove: [
 			authenticate('jwt'),
+			iff(isProvider('external'), disallow()),
 			hasPermission('ACCOUNT_CREATE'),
-			iff(isProvider('external'), restrictToUsersSchool),
-			iff(isProvider('external'), preventPopulate),
+			// iff(isProvider('external'), restrictToUsersSchool),
+			// iff(isProvider('external'), preventPopulate),
 			permitGroupOperation,
 		],
 	},
