@@ -405,6 +405,11 @@
 			"default": false,
 			"description": "Enable prometheus api metrics, if enabled, PROMETHEUS must be defined."
 		},
+		"SHOW_VERSION": {
+			"type": "boolean",
+			"default": false,
+			"description": "enable the /versions route"
+		},
 		"PROMETHEUS": {
 			"type": "object",
 			"description": "Prometheus metrics options used by prometheus-api-metrics",

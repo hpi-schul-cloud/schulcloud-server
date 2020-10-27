@@ -16,5 +16,7 @@ servers:
 paths:
   /me:
     $ref: '../me/docs/openapi.yaml#/paths/~1me'
+  /version:
+    $ref: '../versionService/openapi.yaml#/paths/~1version'
 
 openapi: 3.0.2
