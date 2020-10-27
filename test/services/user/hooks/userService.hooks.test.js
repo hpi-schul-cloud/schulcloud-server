@@ -1,15 +1,19 @@
 const { expect } = require('chai');
 const assert = require('assert');
-
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 const { enforceRoleHierarchyOnCreate, checkUniqueEmail } = require('../../../../src/services/user/hooks/userService');
+const { generateRequestParams } = require('../../helpers/services/login')(appPromise);
 
 const {
 	removeStudentFromCourses,
 	removeStudentFromClasses,
 	generateRegistrationLink,
 } = require('../../../../src/services/user/hooks/userService');
+
+chai.use(chaiAsPromised);
 
 describe('removeStudentFromCourses', () => {
 	let app;
@@ -182,6 +186,26 @@ describe('generateRegistrationLink', () => {
 			expect(err.code).to.equal(400);
 			expect(err.message).to.equal(expectedErrorMessage);
 		}
+	});
+
+	it('verify if hash is not generated when user already has an account', async () => {
+		const registrationLinkService = app.service('registrationlink');
+		const email = `max${Date.now()}@mustermann.de`;
+		const importHash = `${Date.now()}`;
+		const user = await testObjects.createTestUser({
+			importHash,
+			email,
+			firstName: 'Max',
+			lastName: 'Mustermann',
+			roles: 'student',
+		});
+		const username = user.email;
+		const password = 'Schulcloud1!';
+		await testObjects.createTestAccount({ username, password }, 'local', user);
+		await generateRequestParams({ username, password });
+		await chai
+			.expect(registrationLinkService.create({ toHash: user.email }))
+			.to.be.rejectedWith(Error, 'Fehler beim Generieren des Hashes. BadRequest: User already has an account.');
 	});
 
 	it('catches errors from /registrationlink', async () => {
