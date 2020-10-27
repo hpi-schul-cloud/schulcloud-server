@@ -58,7 +58,8 @@
 	},
 	"purpose": "demo",
 	"features": [
-		"rocketChat"
+		"rocketChat",
+		"messenger"
 	],
 	"enableStudentTeamCreation": false,
 	"permissions" : {
