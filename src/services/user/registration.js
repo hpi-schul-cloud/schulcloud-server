@@ -36,7 +36,8 @@ const populateUser = (app, data) => {
 
 	if (data.birthDate) {
 		user.birthday = new Date(data.birthDate);
-  }
+	}
+
 	if (data.parent_email) {
 		appendParent(user, data);
 	}
