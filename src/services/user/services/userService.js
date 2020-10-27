@@ -141,8 +141,8 @@ const userHooks = {
 		],
 		remove: [
 			authenticate('jwt'),
-			iff(isProvider('external'), preventPopulate),
-			iff(isProvider('external'), [restrictToCurrentSchool, enforceRoleHierarchyOnDelete]),
+			iff(isProvider('external'), disallow(), preventPopulate),
+			iff(isProvider('external'), disallow(), [restrictToCurrentSchool, enforceRoleHierarchyOnDelete]),
 		],
 	},
 	after: {
@@ -176,7 +176,7 @@ const userHooks = {
 			pushRemoveEvent,
 			removeStudentFromClasses,
 			removeStudentFromCourses,
-			iff(isProvider('external'), filterResult),
+			iff(isProvider('external'), disallow(), filterResult),
 		],
 	},
 };
