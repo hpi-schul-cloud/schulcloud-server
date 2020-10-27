@@ -25,5 +25,6 @@
 	"DATABASE":{
 		"URL": "mongodb://127.0.0.1:27017/schulcloud",
 		"AUDIT": false
-	}
+	},
+	"REQUEST_TIMEOUT": 8000
 }

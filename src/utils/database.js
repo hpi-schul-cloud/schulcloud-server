@@ -8,7 +8,14 @@ const { Configuration } = require('@schul-cloud/commons');
 const logger = require('../logger');
 const { NODE_ENV, MONGOOSE_CONNECTION_POOL_SIZE, ENVIRONMENTS } = require('../../config/globals');
 
-if (Configuration.get('DATABASE__AUDIT') === 'true') {
+const { URL, USERNAME, PASSWORD, AUDIT } = {
+	URL: 'DATABASE__URL',
+	USERNAME: 'DATABASE__USERNAME',
+	AUDIT: 'DATABASE__AUDIT',
+	PASSWORD: 'DATABASE__PASSWORD',
+};
+
+if (Configuration.has(AUDIT) && Configuration.get(AUDIT) === 'true') {
 	logger.info('database audit log is globally enabled');
 } else {
 	logger.info('database audit log is globally disabled');
@@ -23,7 +30,7 @@ const encodeMongoURI = (urlString) => {
 };
 
 function enableAuditLog(schema, options) {
-	if (Configuration.get('DATABASE__AUDIT') === 'true') {
+	if (Configuration.has(AUDIT) && Configuration.get(AUDIT) === 'true') {
 		// set database audit
 		schema.plugin(diffHistory.plugin, options);
 	}
@@ -44,13 +51,13 @@ function addAuthenticationToMongooseOptions(username, password, mongooseOptions)
 
 function getConnectionOptions() {
 	const options = {
-		url: Configuration.get('DATABASE__URL'),
+		url: Configuration.get(URL),
 	};
-	if (Configuration.has('DATABASE__USERNAME')) {
-		options.username = Configuration.get('DATABASE__USERNAME');
+	if (Configuration.has(USERNAME)) {
+		options.username = Configuration.get(USERNAME);
 	}
-	if (Configuration.has('DATABASE__PASSWORD')) {
-		options.password = Configuration.get('DATABASE__PASSWORD');
+	if (Configuration.has(PASSWORD)) {
+		options.password = Configuration.get(PASSWORD);
 	}
 	return options;
 }
