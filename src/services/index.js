@@ -50,6 +50,7 @@ const etherpad = require('./etherpad');
 const storageProvider = require('./storageProvider');
 const activation = require('./activation');
 const config = require('./config');
+const docs = require('./docs');
 
 module.exports = function initializeServices() {
 	const app = this;
@@ -57,6 +58,7 @@ module.exports = function initializeServices() {
 	database.connect();
 
 	// register services
+	app.configure(docs);
 	app.configure(authentication);
 	app.configure(analytics);
 	app.configure(base64Files);
