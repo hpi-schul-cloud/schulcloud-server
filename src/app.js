@@ -15,6 +15,7 @@ const { BODYPARSER_JSON_LIMIT, LEAD_TIME } = require('../config/globals');
 const middleware = require('./middleware');
 const sockets = require('./sockets');
 const services = require('./services');
+const components = require('./components');
 
 const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
@@ -83,6 +84,7 @@ const setupApp = async () => {
 			next();
 		})
 		.configure(services)
+		.configure(components)
 		.configure(sockets)
 		.configure(middleware)
 		.configure(setupAppHooks)
