@@ -1,26 +1,23 @@
 const { Configuration } = require('@schul-cloud/commons');
 const Api = require('../../../../helper/apiHelper');
 
-class StatusApi extends Api {
-	constructor() {
-		super({ baseURL: Configuration.get('ALERT_STATUS_API_URL') });
-	}
+const statusApi = () => {
+	const api = new Api({
+		baseURL: Configuration.get('ALERT_STATUS_API_URL'),
+	});
 
-	/**
-	 * Transform responses to return json data only
-	 * @param {T} data
-	 */
-	transformResponse(response) {
-		return response.data;
-	}
+	const getIncidents = (sort = 'id') => {
+		return api.get('/incidents', { params: { sort } }).then((response) => response.data);
+	};
 
-	getIncidents(sort = 'id') {
-		return this.get('/incidents', { params: { sort } });
-	}
+	const getComponent = (componentId) => {
+		return api.get(`/components/${componentId}`).then((response) => response.data);
+	};
 
-	getComponent(componentId) {
-		return this.get(`/components/${componentId}`);
-	}
-}
+	return {
+		getIncidents,
+		getComponent,
+	};
+};
 
-module.exports = new StatusApi();
+module.exports = statusApi();

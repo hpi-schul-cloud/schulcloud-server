@@ -29,12 +29,20 @@ module.exports = class ApiHelper {
 	}
 
 	/**
-	 * Override, to transform response in instances based on internal response format.
-	 * @param {axios.AxiosResponse} response like axios response defined in request wrapper
-	 * @protected
+	 * Take axios response and convert into internal response format
+	 * @param {axios.AxiosResponse} response like axios response defined in request wrappeår
+	 * @private
 	 */
-	transformResponse(response) {
-		return response;
+	transformResponse({ config, data, headers, request, status, statusText }) {
+		// return internal response format
+		return {
+			config,
+			data,
+			headers,
+			request,
+			status,
+			statusText,
+		};
 	}
 
 	/**
@@ -44,7 +52,7 @@ module.exports = class ApiHelper {
 	transformErrorResponse(error) {
 		if (error.response) {
 			// we got a non-200 response which can be responded but will still be thrown
-			throw this.transformResonse(error.response);
+			throw this.transformResponse(error.response);
 		}
 		if (error.request) {
 			// The request was made but no response was received
@@ -69,21 +77,7 @@ module.exports = class ApiHelper {
 	 */
 	requestWrapper(options) {
 		const requestOptions = lodash.merge({ ...ApiHelper.defaultOptions(), ...this.instanceOptions, ...options });
-		return axios
-			.request(requestOptions)
-			.then(({ config, data, headers, request, status, statusText }) => {
-				// return internal response format
-				return {
-					config,
-					data,
-					headers,
-					request,
-					status,
-					statusText,
-				};
-			})
-			.then(this.transformResponse)
-			.catch(this.transformErrorResponse);
+		return axios.request(requestOptions).then(this.transformResponse).catch(this.transformErrorResponse);
 	}
 
 	/**
