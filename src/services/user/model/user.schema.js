@@ -22,7 +22,7 @@ const consentTypes = {
 const userSchema = new Schema(
 	{
 		roles: [{ type: Schema.Types.ObjectId, ref: 'role' }],
-		email: { type: String, required: true, lowercase: true },
+		email: { type: String, required: true, lowercase: true, index: true },
 
 		schoolId: {
 			type: Schema.Types.ObjectId,
@@ -41,7 +41,6 @@ const userSchema = new Schema(
 		birthday: { type: Date },
 
 		importHash: { type: String, index: true },
-		// inviteHash:{type:String},
 
 		children: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 		parents: [{ type: Schema.Types.ObjectId, ref: 'user' }],
