@@ -3,7 +3,7 @@ const { Configuration } = require('@schul-cloud/commons');
 const { sha } = require('../helper/version');
 const { version } = require('../../package.json');
 
-const { SC_DOMAIN, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
+const { SC_DOMAIN, ENVIRONMENTS } = require('../../config/globals');
 /**
  * helpers
  */
@@ -85,11 +85,11 @@ module.exports = (app) => {
 			removeJwtToken,
 		];
 		// for local test runs, post feedback but skip it
-		if (NODE_ENV === ENVIRONMENTS.DEVELOPMENT) {
+		if (Configuration.get('NODE_ENV') === "development") {
 			middlewares.push(logItMiddleware(false));
 		}
 		// do not execute for test runs
-		if (NODE_ENV === ENVIRONMENTS.TEST) {
+		if (Configuration.get('NODE_ENV') === "test") {
 			middlewares = [skipItMiddleware];
 		}
 
@@ -108,7 +108,7 @@ module.exports = (app) => {
 
 		Sentry.init({
 			dsn: Configuration.get('SENTRY_DSN'),
-			environment: NODE_ENV,
+			environment: Configuration.get('NODE_ENV'),
 			release,
 			//	debug: true,
 			sampleRate: Configuration.get('SENTRY_SAMPLE_RATE'),

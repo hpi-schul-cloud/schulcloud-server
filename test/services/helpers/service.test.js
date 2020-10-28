@@ -2,10 +2,10 @@ const { expect } = require('chai');
 const nock = require('nock');
 
 const appPromise = require('../../../src/app');
-const { NODE_ENV, SMTP_SENDER } = require('../../../config/globals');
+const { SMTP_SENDER } = require('../../../config/globals');
 
 // eslint-disable-next-line import/no-dynamic-require
-const config = require(`../../../config/${NODE_ENV}.json`); // TODO cleanup
+const config = require(`../../../config/${Configuration.get('NODE_ENV')}.json`); // TODO cleanup
 
 const isMailbodyValid = ({ platform, platformId, to, subject, text, html, attachments }) => {
 	// file content must be base64 encoded ant therefore of type string

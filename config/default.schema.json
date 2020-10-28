@@ -426,6 +426,12 @@
 			"minimum": 0,
 			"default": 8000,
 			"description": "Default timeout for external requests in milliseconds."
+		},
+		"NODE_ENV":{
+			"type": "string",
+			"enum": ["development", "production", "migration", "test"],
+			"default": "development",
+			"description": "Set the environment for the server"
 		}
 	},
 	"required": [

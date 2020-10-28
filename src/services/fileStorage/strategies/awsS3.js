@@ -13,7 +13,7 @@ const { StorageProviderModel } = require('../../storageProvider/model');
 const UserModel = require('../../user/model');
 const filePermissionHelper = require('../utils/filePermissionHelper');
 const { removeLeadingSlash } = require('../utils/filePathHelper');
-const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
+const { ENVIRONMENTS } = require('../../../../config/globals');
 
 const HOST = Configuration.get('HOST');
 
@@ -94,7 +94,7 @@ if (!FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED) {
 	try {
 		//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
 		/* eslint-disable global-require, no-unused-expressions */
-		NODE_ENV === ENVIRONMENTS.PRODUCTION
+		Configuration.get('NODE_ENV') === "production"
 			? (awsConfig = require('../../../../config/secrets.js').aws)
 			: (awsConfig = require('../../../../config/secrets.json').aws);
 		/* eslint-enable global-require, no-unused-expressions */
