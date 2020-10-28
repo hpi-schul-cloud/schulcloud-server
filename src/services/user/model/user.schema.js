@@ -23,7 +23,7 @@ const consentTypes = {
 const userSchema = new Schema(
 	{
 		roles: [{ type: Schema.Types.ObjectId, ref: 'role' }],
-		email: { type: String, required: true, lowercase: true },
+		email: { type: String, required: true, lowercase: true, index: true },
 		emailSearchValues: { type: Schema.Types.Array },
 
 		schoolId: {
