@@ -23,6 +23,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6080 - move REQUEST_TIMEOUT from globals to Configuration
 - Dependencies: querystring replaced by qs
 - SC-6060 - Updated error handling
+- SC-7404 - automatic forwarding for requests without versionnumber if no matching route is found
 
 ### Fixed
 
