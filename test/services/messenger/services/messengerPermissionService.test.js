@@ -61,7 +61,7 @@ describe('MessengerPermissionService', function test() {
 	});
 
 	it('students have messenger permission to open one to one chats if school setting is set', async () => {
-		const school = await testObjects.createTestSchool({ features: ['studentsMessengerRoomCreate'] });
+		const school = await testObjects.createTestSchool({ features: ['messengerStudentRoomCreate'] });
 		const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
 
 		const params = {};
@@ -84,7 +84,7 @@ describe('MessengerPermissionService', function test() {
 	});
 
 	it('administrators from other school do not have messenger permission to open one to one chats even if school setting is set', async () => {
-		const school = await testObjects.createTestSchool({ features: ['studentsMessengerRoomCreate'] });
+		const school = await testObjects.createTestSchool({ features: ['messengerStudentRoomCreate'] });
 		const otherSchool = await testObjects.createTestSchool();
 		const adminUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId: otherSchool._id });
 
