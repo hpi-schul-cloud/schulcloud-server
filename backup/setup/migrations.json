@@ -817,5 +817,16 @@
 		"$date": "2020-10-21T17:36:19.189Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f9926b16c32c64b1c31f707"
+	},
+	"state": "up",
+	"name": "addIndexForUserEmail",
+	"createdAt": {
+		"$date": "2020-10-28T08:07:13.544Z"
+	},
+	"__v": 0
 }]
 
