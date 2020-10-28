@@ -27,6 +27,7 @@ const create = (appPromise) => async ({
 	sourceOptions = undefined,
 	enableStudentTeamCreation = undefined,
 	permissions = undefined,
+	language = 'de',
 	timezone = 'Europe/Berlin',
 } = {}) => {
 	const app = await appPromise;
