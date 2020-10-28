@@ -27,7 +27,7 @@ const prometheus = require('./utils/prometheus');
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
-const versionService = require('./services/version');
+const versionService = require('./services/versionService');
 
 const setupApp = async () => {
 	const app = express(feathers());
