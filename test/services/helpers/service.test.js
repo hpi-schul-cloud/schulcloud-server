@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 const nock = require('nock');
 
+const { Configuration } = require('@schul-cloud/commons');
 const appPromise = require('../../../src/app');
 const { SMTP_SENDER } = require('../../../config/globals');
 
