@@ -60,7 +60,7 @@ const generateJWTFromUser = (appPromise) => async (user) => {
 	const fetchJwt = generateJWT(app);
 	const jwt = await fetchJwt(credentials);
 	return jwt;
-}
+};
 
 module.exports = (app) => ({
 	generateJWT: generateJWT(app),

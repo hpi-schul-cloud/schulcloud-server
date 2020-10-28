@@ -36,6 +36,7 @@ components:
       properties:
         sha:
           type: string
+          pattern: '^[0-9a-f]{40}$'
         version:
           type: string
         branch:
