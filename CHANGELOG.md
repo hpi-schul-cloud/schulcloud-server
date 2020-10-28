@@ -68,6 +68,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -         - fixed README badges
 - SC-6151 - fixed a bug that prevented api docu from being accessible
 -         - Fix mocha tests
+## [25.1.7] - 2020-10-28
+
+### Added
+
+- SC-7491 - Add missing index on users.email to speed up slow query in registrationLink service
+
 ## [25.1.6] - 2020-10-23
 
 ### Changed
