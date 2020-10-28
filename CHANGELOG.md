@@ -32,13 +32,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-7517 improve oauth test stability
 - SC-6586 Repaired migration script
 - SC-7454 - Restored invalid birth date fix in adminUsers service
 - fixed README badges
 - Fix mocha tests
 - SC-6151 fixed a bug that prevented api docu from being accessible
 - SC-6151 fixed paths to openapi documentation
-
 
 ## [25.2.0]
 
@@ -73,6 +73,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 -         - fixed README badges
 - SC-6151 - fixed a bug that prevented api docu from being accessible
 -         - Fix mocha tests
+
 ## [25.1.7] - 2020-10-28
 
 ### Added
