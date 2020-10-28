@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [25.1.7] - 2020-10-28
+
+### Added
+
+- SC-7491 - Add missing index on users.email to speed up slow query in registrationLink service
+
 ## [25.1.6] - 2020-10-23
 
 ### Changed
@@ -36,11 +42,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 - SC-7085 - fixed importHash error when asking parent consent
-
-### Added
-
-### Removed
-
 
 ## [25.1.1] - 2020-10-12
 
