@@ -34,6 +34,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6151 fixed a bug that prevented api docu from being accessible
 - SC-6151 fixed paths to openapi documentation
 
+### Removed
+- SC-7413 - Cleanup UnhandledRejection code that is handled from winston now
+
 
 ## [25.2.0]
 
