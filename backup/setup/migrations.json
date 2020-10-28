@@ -798,6 +798,28 @@
 },
 {
 	"_id": {
+		"$oid": "5f993fb6ae0d8251a7a049e5"
+	},
+	"state": "up",
+	"name": "search_index",
+	"createdAt": {
+		"$date": "2020-10-14T16:44:10.245Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f993fb6ae0d8251a7a049e6"
+	},
+	"state": "up",
+	"name": "syncUserIndex",
+	"createdAt": {
+		"$date": "2020-10-15T11:46:01.84Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5f901d78bfeb05502414011f"
 	},
 	"state": "up",

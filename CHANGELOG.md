@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-6738 - Extend search input field in new admin tables to search for full name
 - SC-7293 - added Lern-Store view permission and a feature flag
 - SC-7357 - Add config service
 - SC-7083 - Added officialSchoolNumber to school-model
@@ -32,6 +33,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-7517 improve oauth test stability
 - SC-6586 Repaired migration script
 - SC-7454 - Restored invalid birth date fix in adminUsers service
 - fixed README badges
