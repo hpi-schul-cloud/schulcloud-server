@@ -76,7 +76,7 @@ function connect() {
 	);
 
 	const mongooseOptions = {
-		autoIndex: (Configuration.get('NODE_ENV') !== "production"),
+		autoIndex: Configuration.get('NODE_ENV') !== "production",
 		poolSize: MONGOOSE_CONNECTION_POOL_SIZE,
 		useNewUrlParser: true,
 		useFindAndModify: false,
