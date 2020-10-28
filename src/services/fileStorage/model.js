@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const uuid = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 const { enableAuditLog } = require('../../utils/database');
 
@@ -70,7 +70,7 @@ const fileSchema = new Schema({
 		},
 	},
 	thumbnail: { type: String },
-	thumbnailRequestToken: { type: String, default: uuid },
+	thumbnailRequestToken: { type: String, default: uuidv4 },
 	securityCheck: {
 		status: {
 			type: String,
@@ -78,7 +78,7 @@ const fileSchema = new Schema({
 			default: SecurityCheckStatusTypes.PENDING,
 		},
 		reason: { type: String, default: 'not yet scanned' },
-		requestToken: { type: String, default: uuid },
+		requestToken: { type: String, default: uuidv4 },
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now },
 	},

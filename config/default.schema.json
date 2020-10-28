@@ -201,20 +201,20 @@
 		"FEATURE_ALERTS_STATUS_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "If enabled, user will see messages/incidents from e.g status.schul-cloud."
+			"description": "If enabled, user will see messages/incidents from e.g status.hpi-schul-cloud."
 		},
 		"ALERT_STATUS_URL": {
 			"type": "string",
 			"format": "uri",
 			"pattern": ".*(?<!/)$",
-			"default": "https://status.hpi-schul-cloud.org",
+			"default": "https://status.hpi-schul-cloud.de",
 			"description": "The url of status message provider (should end without a slash)."
 		},
 		"ALERT_STATUS_API_URL": {
 			"type": "string",
 			"format": "uri",
 			"pattern": ".*(?<!/)$",
-			"default": "https://status.hpi-schul-cloud.org/api/v1",
+			"default": "https://status.hpi-schul-cloud.de/api/v1",
 			"description": "The api of status message provider (should end without a slash)."
 		},
 		"NEXBOARD_URL": {
@@ -253,6 +253,11 @@
 			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
 		},
+		"FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Allows school admin to toggle student's LERNSTORE_VIEW permission."
+		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
 			"description": "Synchronous encryption key used to secure search user passwords",
@@ -281,22 +286,22 @@
 		},
 		"ETHERPAD_URI": {
 			"type": "string",
-			"default": "https://schul-cloud.org/etherpad/api/1",
+			"default": "https://hpi-schul-cloud.de/etherpad/api/1",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_URI": {
 			"type": "string",
-			"default": "https://etherpad.schul-cloud.org/p",
+			"default": "https://etherpad.hpi-schul-cloud.de/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_NEW_PAD_URI": {
 			"type": "string",
-			"default": "https://schul-cloud.org/etherpad/p",
+			"default": "https://hpi-schul-cloud.de/etherpad/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_DOMAIN": {
 			"type": "string",
-			"default": "etherpad.schul-cloud.org",
+			"default": "etherpad.hpi-schul-cloud.de",
 			"description": "The old etherpad domain."
 		},
 		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
@@ -387,7 +392,12 @@
 		"API_VALIDATION_WHITELIST_EXTENSION": {
 			"type": "string",
 			"description": "when set, this is interpreted as a regex to extend the ignorelist for the API validation with any routes matching the regex.",
-			"examples": [".*\/courses\/[0-9a-f]{24}($|\/$)"]
+			"examples": [".*/courses/[0-9a-f]{24}($|/$)"]
+		},
+		"FEATURE_PROMETHEUS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable prometheus api metrics, if enabled, PROMETHEUS must be defined."
 		},
 		"PROMETHEUS": {
 			"type": "object",
@@ -410,6 +420,12 @@
 				}
 			},
 			"required": ["METRICS_PATH", "DURATION_BUCKETS_SECONDS"]
+		},
+		"REQUEST_TIMEOUT":{
+			"type": "integer",
+			"minimum": 0,
+			"default": 8000,
+			"description": "Default timeout for external requests in milliseconds."
 		}
 	},
 	"required": [
@@ -418,7 +434,25 @@
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
 		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
-		"LERNSTORE_MODE",
-		"PROMETHEUS"
-	]
+		"LERNSTORE_MODE"
+	],
+	"allOf": [
+		{
+			"$ref": "#/definitions/FEATURE_PROMETHEUS_ENABLED"
+		}
+	],
+	"definitions": {
+		"FEATURE_PROMETHEUS_ENABLED": {
+			"if": {
+				"properties": {
+					"FEATURE_PROMETHEUS_ENABLED": {
+						"const": true
+					}
+				}
+			},
+			"then": {
+				"required": ["PROMETHEUS"]
+			}
+		}
+	}
 }
