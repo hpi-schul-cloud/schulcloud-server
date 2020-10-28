@@ -2,6 +2,7 @@
 
 Based on [Node.js](https://nodejs.org/en/) and [Feathers](https://feathersjs.com/)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8c5d706d32a74453936901e59a2740e8)](https://app.codacy.com/gh/hpi-schul-cloud/schulcloud-server?utm_source=github.com&utm_medium=referral&utm_content=hpi-schul-cloud/schulcloud-server&utm_campaign=Badge_Grade_Settings)
 Develop: [![Build Status](https://travis-ci.com/hpi-schul-cloud/schulcloud-server.svg?branch=develop)](https://travis-ci.com/hpi-schul-cloud/schulcloud-server) 
 Master: [![Build Status](https://travis-ci.com/hpi-schul-cloud/schulcloud-server.svg?branch=master)](https://travis-ci.com/hpi-schul-cloud/schulcloud-server)
 
