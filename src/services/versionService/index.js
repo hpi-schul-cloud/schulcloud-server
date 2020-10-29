@@ -15,7 +15,7 @@ const startTime = Date.now();
 const startedAt = new Date();
 
 router.get('/legacy/v1/version', async (req, res, next) => {
-	if (!Configuration.get('SHOW_VERSION')) {
+	if (!Configuration.get('FEATURE_SHOW_VERSION_ENABLED')) {
 		return res.sendStatus(405);
 	}
 
