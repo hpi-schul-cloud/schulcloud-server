@@ -26,7 +26,7 @@ describe('user service v2', function test() {
 			const token = await testObjects.generateJWTFromUser(user);
 			const request = chai
 				.request(app)
-				.delete('/users/v2/users')
+				.delete(`/users/v2/users/${user._id}`)
 				.set('Accept', 'application/json')
 				.set('Authorization', token)
 				.set('content-type', 'application/json');
