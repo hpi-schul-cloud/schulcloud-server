@@ -12,7 +12,7 @@ describe('me service', () => {
 
 	before(async () => {
 		app = await appPromise;
-		meService = app.service('/me');
+		meService = app.service('legacy/v1/me');
 		server = await app.listen(0);
 	});
 

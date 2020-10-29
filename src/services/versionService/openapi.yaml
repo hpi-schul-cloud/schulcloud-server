@@ -1,0 +1,81 @@
+security:
+  - {}
+info:
+  title: HPI-Schul-Cloud version Service API
+  description:
+    This is the API specification for the HPI-Schul-Cloud version service.
+    
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+
+components:
+  schemas:
+    migration:
+      type: object
+      properties:
+        _id:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        state:
+          type: string
+          enum: [up, down]
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        __v:
+          type: integer
+    version:
+      type: object
+      properties:
+        sha:
+          type: string
+          pattern: '^[0-9a-f]{40}$'
+        version:
+          type: string
+        branch:
+          type: string
+        message:
+          type: string
+        birthtime:
+          type: string
+        migrations:
+          type: array
+          items:
+            $ref: '#/components/schemas/migration'
+        age:
+          type: integer
+        startedAt:
+          type: string
+          format: date-time
+
+paths:
+  /version:
+    get:
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/version'
+        '405':
+          description: not allowed - returned if the route is disabled on this server. Commonly the case for dev environments.
+        '500':
+          description: general error
+      description: Retrieves the version of the server.
+      summary: ''
+      tags:
+        - version
+      security: []
+  
+openapi: 3.0.2
+tags:
+  - name: version
+    description: A version service.
