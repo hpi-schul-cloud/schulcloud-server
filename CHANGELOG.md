@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [25.1.5] - 2020-10-22
+
+### Fixed
+
+- SC-7333 - fixed creation of homeworks within lessons
+
 ## [25.1.7] - 2020-10-28
 
 ### Added
