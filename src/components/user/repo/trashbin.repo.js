@@ -1,5 +1,13 @@
-const createUserTrashbin = () => {
-	// access trashbin model
+
+const createUserTrashbin = async (user, app) => {
+	const modelService = app.service('trashbinModel');
+	const data = {
+		userId: user._id,
+		documentId: user._id,
+		document: user,
+		deletedAt: new Date(),
+	};
+	return modelService.create(data);
 };
 
 const updateUserTrashbin = () => {

@@ -1,18 +1,29 @@
+
+const getUserToDelete = (id, app) => {
+	const modelService = app.service('usersModel');
+	return modelService.get(id);
+};
+
 const deleteUser = async (id, app) => {
 	return { success: true };
-}
+};
+
+const generateDummyEmail = () => {
+	const rnd = () => Math.round(Math.random() * 10000);
+	return `deleted_${Date.now()}_${rnd()}@mustermann.de`;
+};
+
 const replaceUserWithTombstone = async (id, app) => {
-	const modelService = app.service('usersModel');
-	const user = await modelService.get(id);
-	const { email } = user;
-	const deletedEmail = email.indexOf('DELETED_') < 0 ? `DELETED_${email}` : email;
-	return modelService.patch(id, {
-		email: deletedEmail,
+	return app.service('usersModel').update(id, {
+		email: generateDummyEmail(),
+		firstName: 'DELETED',
+		lastName: 'DELETED',
 		deletedAt: new Date(),
 	});
 };
 
 module.exports = {
 	replaceUserWithTombstone,
+	getUserToDelete,
 	deleteUser,
 };

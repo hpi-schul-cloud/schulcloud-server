@@ -5,6 +5,12 @@ const deleteUser = (id, app) => {
 	return userRepo.deleteUser(id, app);
 };
 
+const putUserToTrashbin = async (id, app) => {
+	const user = await userRepo.getUserToDelete(id, app);
+	const trashbinResult = await trashbinRepo.createUserTrashbin(user, app);
+	return { success: trashbinResult.status === 'fulfilled' };
+};
+
 const replaceUserWithTombstone = async (id, app) => {
 	const tombstoneBuilderPromises = [
 		userRepo.replaceUserWithTombstone(id, app),
@@ -31,5 +37,6 @@ const replaceUserWithTombstone = async (id, app) => {
 
 module.exports = {
 	deleteUser,
+	putUserToTrashbin,
 	replaceUserWithTombstone,
 };
