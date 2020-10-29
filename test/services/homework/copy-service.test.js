@@ -8,10 +8,16 @@ const { expect } = chai;
 
 describe('homework copy service', () => {
 	const homeworkIdsToDelete = [];
+	let server;
+
+	before((done) => {
+		server = app.listen(0, done);
+	});
 
 	after(async () => {
 		await homeworkModel.deleteMany({ id: { $in: homeworkIdsToDelete } });
-		testObjects.cleanup();
+		await testObjects.cleanup();
+		await server.close();
 	});
 
 	it('internal call can copy a homework via POST', async () => {
