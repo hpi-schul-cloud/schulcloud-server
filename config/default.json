@@ -26,5 +26,6 @@
 		"URL": "mongodb://127.0.0.1:27017/schulcloud",
 		"AUDIT": false
 	},
-	"REQUEST_TIMEOUT": 8000
+	"REQUEST_TIMEOUT": 8000,
+	"FEATURE_SHOW_VERSION_ENABLED": false
 }
