@@ -76,6 +76,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6151 - fixed a bug that prevented api docu from being accessible
 -         - Fix mocha tests
 
+## [25.1.5] - 2020-10-22
+
+### Fixed
+
+- SC-7333 - fixed creation of homeworks within lessons
+
 ## [25.1.7] - 2020-10-28
 
 ### Added
