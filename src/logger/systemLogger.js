@@ -1,10 +1,10 @@
 const winston = require('winston');
 const util = require('util');
 const { Configuration } = require('@schul-cloud/commons');
-const { SYSTEM_LOG_LEVEL, ENVIRONMENTS } = require('../../config/globals');
+const { SYSTEM_LOG_LEVEL } = require('../../config/globals');
 
 const systemLogLevel = SYSTEM_LOG_LEVEL;
-const colorizeMessage = (Configuration.get('NODE_ENV') !== "production")
+const colorizeMessage = Configuration.get('NODE_ENV') !== 'production';
 
 const systemLogger = winston.createLogger({
 	level: systemLogLevel,
