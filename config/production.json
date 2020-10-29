@@ -1,4 +1,5 @@
 {
+	"$schema": "./default.schema.json",
 	"host": "localhost",
 	"port": "PORT",
 	"mongodb": "MONGO_URI",
@@ -11,5 +12,6 @@
 		"web": "HOST"
 	},
 	"NOTIFICATION_PLATFORM":"NOTIFICATION_PLATFORM",
-	"NODE_ENV": "production"
+	"NODE_ENV": "production",
+	"FEATURE_SHOW_VERSION_ENABLED": true
 }
