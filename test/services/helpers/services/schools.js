@@ -57,7 +57,7 @@ const create = (appPromise) => async ({
 		enableStudentTeamCreation,
 		permissions,
 		language,
-		timezone
+		timezone,
 	});
 	createdSchoolIds.push(school._id);
 	return school;
