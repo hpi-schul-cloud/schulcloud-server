@@ -36,6 +36,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - fixed README badges
 - SC-6151 fixed a bug that prevented api docu from being accessible
 
+## [25.1.8] - 2020-10-22
+
+### Fixed
+
+- SC-7333 - fixed creation of homeworks within lessons
+
 ## [25.1.7] - 2020-10-28
 
 ### Added
