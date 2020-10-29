@@ -23,7 +23,6 @@ const ignorePathsList = [
 	/|(.*\/alert\/api($|\/$))/,
 	/|(.*\/analytics($|\/$))/,
 	/|(.*\/analytics\/api($|\/$))/,
-	/|(.*\/authentication($|\/$))/,
 	/|(.*\/authentication\/api($|\/$))/,
 	/|(.*\/base64Files($|\/$))/,
 	/|(.*\/base64Files\/[0-9a-f]{24}($|\/$))/,

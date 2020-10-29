@@ -209,7 +209,7 @@ const hooks = {
 		remove: [removeProvider],
 	},
 	after: {
-		all: [discard('account.password')],
+		all: [discard('account.password'), globalHooks.transformToDataTransferObject],
 		create: [bruteForceReset, addJwtToWhitelist],
 		remove: [populateResult, removeJwtFromWhitelist],
 	},
