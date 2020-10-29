@@ -14,7 +14,7 @@ const nullOrEmpty = (string) => !string;
 
 const login = async (app, username, password, strategy = 'local') =>
 	app
-		.service('authentication')
+		.service('legacy/v1/authentication')
 		.create({
 			strategy,
 			username,

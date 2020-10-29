@@ -49,7 +49,7 @@ module.exports = function requstLogger(_app) {
 		};
 		app.use((req, res, next) => {
 			const shouldPrint = level > 1 || req.feathers.provider === 'rest';
-			const printAuth = req.path === '/authentication' ? level > 2 : true;
+			const printAuth = req.path === '/authentication' || req.path === 'legacy/v1/authentication' ? level > 2 : true;
 			if (shouldPrint && printAuth) {
 				print(req);
 			}

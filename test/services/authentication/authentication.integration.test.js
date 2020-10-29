@@ -1,0 +1,56 @@
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const commons = require('@schul-cloud/commons');
+
+const { Configuration } = commons;
+
+chai.use(chaiHttp);
+const { expect } = chai;
+
+describe('authentication service integration tests', function test() {
+	let app;
+	let server;
+	let configBefore;
+	let testObjects;
+	this.timeout(10000);
+
+	before(async () => {
+		delete require.cache[require.resolve('../../../src/app')];
+		configBefore = Configuration.toObject({ plainSecrets: true });
+		Configuration.set('FEATURE_API_VALIDATION_ENABLED', true);
+		Configuration.set('FEATURE_API_RESPONSE_VALIDATION_ENABLED', true);
+		// eslint-disable-next-line global-require
+		const appPromise = require('../../../src/app');
+		// eslint-disable-next-line global-require
+		testObjects = require('../helpers/testObjects')(appPromise);
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await server.close();
+		Configuration.reset(configBefore);
+	});
+
+	describe('API tests', () => {
+		it('When a user sends valid local authentication details, then he recieves a jwt', async () => {
+			const accountDetails = { username: `${Date.now()}poweruser@mail.schul.tech`, password: 'passwordA' };
+			const { _id: schoolId } = await testObjects.createTestSchool();
+			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			await testObjects.createTestAccount(accountDetails, null, user);
+			const request = chai
+				.request(app)
+				.post('/legacy/v1/authentication')
+				.set('Accept', 'application/json')
+				.set('content-type', 'application/json');
+			const response = await request.send({
+				strategy: 'local',
+				username: accountDetails.username,
+				password: accountDetails.password,
+				foo: 'bar',
+			});
+			expect(response.status).to.equal(201);
+			expect(response.body).to.haveOwnProperty('accessToken');
+		});
+	});
+});

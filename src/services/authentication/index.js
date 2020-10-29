@@ -71,8 +71,8 @@ module.exports = (app) => {
 	authentication.register('tsp', new TSPStrategy());
 	authentication.register('api-key', new ApiKeyStrategy());
 
-	app.use('/authentication', authentication);
+	app.use('/legacy/v1/authentication', authentication);
 
-	const authenticationService = app.service('authentication');
+	const authenticationService = app.service('/legacy/v1/authentication');
 	authenticationService.hooks(hooks);
 };

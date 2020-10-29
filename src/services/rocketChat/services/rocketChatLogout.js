@@ -53,7 +53,7 @@ class RocketChatLogout {
 	 * @listens authentication:removed
 	 */
 	registerEventListeners() {
-		this.app.service('authentication').on('removed', this.onAuthenticationRemoved.bind(this));
+		this.app.service('/legacy/v1/authentication').on('removed', this.onAuthenticationRemoved.bind(this));
 	}
 
 	setup(app) {
