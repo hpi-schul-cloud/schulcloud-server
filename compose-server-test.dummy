@@ -24,6 +24,13 @@ services:
       replicas: 1
       restart_policy:
         condition: any
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
     depends_on:
       - server-mongodb
     environment:
