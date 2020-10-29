@@ -13,13 +13,19 @@ const replaceUserWithTombstone = async (id, app) => {
 	try {
 		const results = await Promise.allSettled(tombstoneBuilderPromises);
 		const success = results.every((r) => r.status === 'fulfilled');
-		return { success };
+		if (!success) {
+			const rejectedReasons = results
+				.filter((r) => r.status === 'rejected')
+				.map((r) => r.reason)
+				.join(';');
+			return { success: false, reason: rejectedReasons };
+		}
+		return { success: true };
 	} catch (err) {
 		if (err.code >= 500) {
 			throw new GeneralError(id);
 		}
-		console.log(id, err);
-		return { success: false };
+		return { success: false, reason: err };
 	}
 };
 
