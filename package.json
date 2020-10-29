@@ -20,7 +20,7 @@
 	"scripts": {
 		"lint": "eslint . --fix --ignore-path .gitignore",
 		"seed": "node ./backup.js -p setup/ -D schulcloud-test import",
-		"test": "cross-env npm run seed && npm run coverage",
+		"test": "cross-env NODE_ENV=test npm run seed && npm run coverage",
 		"backup": "node ./backup.js -b export",
 		"setup": "node ./backup.js -p setup/ import",
 		"start": "node src/",
