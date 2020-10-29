@@ -30,8 +30,8 @@ describe('version service integration tests', function test() {
 	});
 
 	describe('API tests', () => {
-		it('When an unauthenticated user tries to access the version route, and SHOW_VERSION is activated, then the call returns as 200 with data', async () => {
-			Configuration.set('SHOW_VERSION', true);
+		it('When an unauthenticated user tries to access the version route, and FEATURE_SHOW_VERSION_ENABLED is activated, then the call returns as 200 with data', async () => {
+			Configuration.set('FEATURE_SHOW_VERSION_ENABLED', true);
 			const request = chai
 				.request(app)
 				.get('/version')
@@ -42,8 +42,8 @@ describe('version service integration tests', function test() {
 			expect(response.body).to.haveOwnProperty('version');
 		});
 
-		it('When an unauthenticated user tries to access the version route, and SHOW_VERSION is deactivated, then the call returns as 405', async () => {
-			Configuration.set('SHOW_VERSION', false);
+		it('When an unauthenticated user tries to access the version route, and FEATURE_SHOW_VERSION_ENABLED is deactivated, then the call returns as 405', async () => {
+			Configuration.set('FEATURE_SHOW_VERSION_ENABLED', false);
 			const request = chai
 				.request(app)
 				.get('/version')
