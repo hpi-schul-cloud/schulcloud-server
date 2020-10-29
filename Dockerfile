@@ -9,6 +9,7 @@ COPY ./package-lock.json .
 
 RUN npm install 
 #--only=production
+RUN npm run build
 
 COPY . .
 #COPY ./localtime /etc/localtime

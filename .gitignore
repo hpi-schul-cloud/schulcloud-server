@@ -52,4 +52,4 @@ version
 *.patch
 
 # typescript build
-build/*
+build

@@ -6,8 +6,7 @@ module.exports = {
 	recursive: true,
 	package: './package.json',
 	slow: 75,
-	require: ['ts-node/register', 'tsconfig-paths/register', 'source-map-support/register'],
 	timeout: 2000,
-	'watch-files': ['test/*', 'src/*', 'build/*', 'config/*'],
-	spec: ['test/**/*.test.js'], // ts files needs to be added too
+	'watch-files': ['test/*', 'src/*', 'config/*'],
+	spec: ['test/**/*.test.js', 'test/**/*.test.ts'], // ts files needs to be added too
 };
