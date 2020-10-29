@@ -1,8 +1,8 @@
 const winston = require('winston');
+const { Configuration } = require('@schul-cloud/commons');
 
 const { format, transports, createLogger } = winston;
-const { LOG_LEVEL, ENVIRONMENTS } = require('../../config/globals');
-const { Configuration } = require('@schul-cloud/commons');
+const { LOG_LEVEL } = require('../../config/globals');
 
 const addType = format.printf((log) => {
 	if (log.stack || log.level === 'error') {
@@ -13,9 +13,9 @@ const addType = format.printf((log) => {
 	return log;
 });
 
-const colorize = (Configuration.get('NODE_ENV') !== "production");
+const colorize = Configuration.get('NODE_ENV') !== 'production';
 let formater;
-if (Configuration.get('NODE_ENV') === "test") {
+if (Configuration.get('NODE_ENV') === 'test') {
 	formater = format.combine(format.prettyPrint({ depth: 1, colorize }));
 } else {
 	formater = format.combine(

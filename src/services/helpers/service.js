@@ -5,7 +5,7 @@ const { Configuration } = require('@schul-cloud/commons');
 const { GeneralError } = reqlib('src/errors');
 const logger = require('../../logger');
 
-const { SMTP_SENDER, ENVIRONMENTS } = require('../../../config/globals');
+const { SMTP_SENDER } = require('../../../config/globals');
 
 const checkForToken = (params, app) => {
 	if ((params.headers || {}).token) {
@@ -77,7 +77,7 @@ module.exports = function setup(app) {
 			};
 
 			// send mail with defined transport object in production mode
-			if ((Configuration.get('NODE_ENV') === "production") || FORCE_SEND_EMAIL) {
+			if (Configuration.get('NODE_ENV') === 'production' || FORCE_SEND_EMAIL) {
 				return request(requestOptions).catch((error) => {
 					throw new GeneralError(error.message);
 				});

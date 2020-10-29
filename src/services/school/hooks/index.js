@@ -4,7 +4,6 @@ const { Configuration } = require('@schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
 const { Forbidden } = reqlib('src/errors');
-const { ENVIRONMENTS } = require('../../../../config/globals');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
 
@@ -108,7 +107,7 @@ const setCurrentYearIfMissing = async (hook) => {
 
 const createDefaultStorageOptions = (hook) => {
 	// create buckets only in production mode
-	if (Configuration.get('NODE_ENV') !== "production") {
+	if (Configuration.get('NODE_ENV') !== 'production') {
 		return Promise.resolve(hook);
 	}
 	const storageType = getDefaultFileStorageType();

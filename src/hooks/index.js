@@ -12,7 +12,7 @@ const mongoose = require('mongoose');
 const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
-const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE, ENVIRONMENTS } = require('../../config/globals');
+const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE } = require('../../config/globals');
 const { isDisposableEmail } = require('../utils/disposableEmail');
 const { getRestrictPopulatesHook, preventPopulate } = require('./restrictPopulate');
 // Add any common hooks you want to share across services in here.
@@ -487,7 +487,7 @@ exports.restrictToUsersOwnCourses = (context) =>
 		return context;
 	});
 
-const isProductionMode = (Configuration.get('NODE_ENV') === "production");
+const isProductionMode = Configuration.get('NODE_ENV') === 'production';
 exports.mapPayload = (context) => {
 	if (!isProductionMode) {
 		logger.info(
