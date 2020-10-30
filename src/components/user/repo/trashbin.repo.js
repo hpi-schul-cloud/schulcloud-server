@@ -1,6 +1,6 @@
 const { model: trashbinModel } = require('./db/trashbin.schema');
 
-const createUserTrashbin2 = (userId) => {
+const createUserTrashbinDR = (userId) => {
 	// access trashbin model
 	const trashbin = trashbinModel({
 		userId,
@@ -8,7 +8,7 @@ const createUserTrashbin2 = (userId) => {
 	return trashbin.save();
 };
 
-const createUserTrashbin = async (user, app) => {
+const createUserTrashbinMW = async (user, app) => {
 	const modelService = app.service('trashbinModel');
 	const data = {
 		userId: user._id,
@@ -25,7 +25,7 @@ const updateUserTrashbin = (userId, data = {}) => {
 };
 
 module.exports = {
-	createUserTrashbin,
-	createUserTrashbin2,
+	createUserTrashbinMW,
+	createUserTrashbinDR,
 	updateUserTrashbin,
 };
