@@ -34,8 +34,8 @@ describe('Feathers application tests', () => {
 			const res = await chai.request(app).get('/path/to/nowhere').set('content-type', 'application/json');
 			assert.equal(res.status, 404);
 			assert.equal(res.body.code, 404);
-			assert.equal(res.body.message, 'Page not found');
-			assert.equal(res.body.name, 'NotFound');
+			assert.equal(res.body.message, 'Page not found.');
+			assert.equal(res.body.name, 'PageNotFound');
 		});
 
 		it('serves swagger api docs', async () => {
