@@ -9,9 +9,9 @@ COPY ./package-lock.json .
 
 RUN npm install 
 #--only=production
-RUN npm run build
 
 COPY . .
+RUN npm run build
 #COPY ./localtime /etc/localtime
 ENV TZ=Europe/Berlin
 
