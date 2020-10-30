@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [25.1.10] - 2020-11-05
 
+### Changed
+
+- IMP-160 - integration-tests repo renamed to end-to-end-tests
+
 ### Added
 
 - SC-7683 - Add log metic for memory usage, add async error logging util, catch one unhandledRejection error and remove cronjob task from server.
