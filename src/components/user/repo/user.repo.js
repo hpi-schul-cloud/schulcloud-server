@@ -1,10 +1,9 @@
-const getUserToDelete = (id, app) => {
-	const modelService = app.service('usersModel');
-	return modelService.get(id);
-};
+const { userModel: User } = require('../../../services/user/model');
 
-const deleteUser = async (id, app) => {
-	return { success: true };
+const getUser = async (id, app) => {
+	const modelService = app.service('usersModel');
+	const user = await modelService.get(id);
+	return user;
 };
 
 const generateDummyEmail = () => {
@@ -32,15 +31,30 @@ const createUserTombstone = (user) => {
 	return userTombstone;
 };
 
-const replaceUserWithTombstone = async (user, app) => {
+const deleteUser = async (id, app) => {
+	return { success: true };
+}
+const replaceUserWithTombstoneMW = async (user, app) => {
 	const userId = user._id;
 	return app
 		.service('usersModel')
 		.update(userId, createUserTombstone(user));
 };
 
+const replaceUserWithTombstoneDR = async (id, app, replaceData = {}) => {
+	const user = await getUser(id, app);
+
+	return User.replaceOne(
+		{ _id: user._id },
+		{
+			...replaceData,
+			deletedAt: new Date(),
+		});
+};
+
 module.exports = {
-	replaceUserWithTombstone,
-	getUserToDelete,
+	getUser,
+	replaceUserWithTombstoneMW,
+	replaceUserWithTombstoneDR,
 	deleteUser,
 };

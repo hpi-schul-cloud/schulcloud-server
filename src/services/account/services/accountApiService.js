@@ -107,10 +107,9 @@ const accountServiceHooks = {
 			local.hooks.hashPassword('password'),
 		],
 		remove: [
+			iff(isProvider('external'), disallow()),
 			authenticate('jwt'),
 			hasPermission('ACCOUNT_CREATE'),
-			iff(isProvider('external'), restrictToUsersSchool),
-			iff(isProvider('external'), preventPopulate),
 			permitGroupOperation,
 		],
 	},
