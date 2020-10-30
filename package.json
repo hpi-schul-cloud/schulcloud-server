@@ -32,7 +32,7 @@
 		"startd": "nodemon build/src/",
 		"debug": "nodemon --config .nodemon.json -x npm run inspect",
 		"debug:container": "nodemon --config .nodemon.json -x npm run inspect-container",
-		"dev": "nodemon --config .nodemon.json -x node --inspect=5959 -r ts-node/register src/",
+		"debug-ts": "nodemon --config .nodemon.json -x node --inspect=5959 -r ts-node/register src/",
 		"coverage": "cross-env NODE_ENV=test nyc npm run mocha",
 		"coverage-codecov": "cross-env NODE_ENV=test nyc report --reporter=text-lcov | codecov --pipe",
 		"mocha": "cross-env NODE_ENV=test ts-mocha --exit",
