@@ -140,6 +140,7 @@ const userHooks = {
 			updateAccountUsername,
 		],
 		remove: [
+			iff(isProvider('external'), disallow()),
 			authenticate('jwt'),
 			iff(isProvider('external'), preventPopulate),
 			iff(isProvider('external'), [restrictToCurrentSchool, enforceRoleHierarchyOnDelete]),
