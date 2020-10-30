@@ -8,12 +8,14 @@ const deleteUser = (id, app) => {
 const putUserToTrashbin = async (id, app) => {
 	const user = await userRepo.getUserToDelete(id, app);
 	const trashbinResult = await trashbinRepo.createUserTrashbin(user, app);
-	return { success: trashbinResult.status === 'fulfilled' };
+	return { success: !!trashbinResult.deletedAt };
 };
 
 const replaceUserWithTombstone = async (id, app) => {
+	const user = await userRepo.getUserToDelete(id, app);
+
 	const tombstoneBuilderPromises = [
-		userRepo.replaceUserWithTombstone(id, app),
+		userRepo.replaceUserWithTombstone(user, app),
 		accountRepo.replaceUserAccountWithTombstone(id, app),
 	];
 	try {

@@ -4,7 +4,7 @@ const createUserTrashbin = async (user, app) => {
 	const data = {
 		userId: user._id,
 		documentId: user._id,
-		document: user,
+		document: JSON.stringify(user),
 		deletedAt: new Date(),
 	};
 	return modelService.create(data);

@@ -8,8 +8,6 @@ const trashbinSchema = {
 	deletedAt: { type: Date, default: null },
 };
 
-const trashbinModel = mongoose.model('trashbinModel', trashbinSchema);
+const trashbinModel = mongoose.model('trashbin', trashbinSchema);
 
-module.exports = {
-	trashbinModel,
-};
+module.exports = trashbinModel;
