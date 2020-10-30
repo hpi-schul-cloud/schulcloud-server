@@ -5,6 +5,11 @@ const getUserAccount = async (userId, app) => {
 	return account;
 };
 
+const deleteUserAccount = async (userId, app) => {
+	const result = await accountModel.deleteOne({ userId });
+	return result;
+};
+
 const replaceUserAccountWithTombstone = async (userId, app) => {
 	const modelService = app.service('accountModel');
 	const accounts = await modelService.find({ query: { userId } });
@@ -22,5 +27,6 @@ const replaceUserAccountWithTombstone = async (userId, app) => {
 
 module.exports = {
 	getUserAccount,
+	deleteUserAccount,
 	replaceUserAccountWithTombstone,
 };
