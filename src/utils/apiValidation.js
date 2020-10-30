@@ -23,6 +23,7 @@ const ignorePathsList = [
 	/|(.*\/alert\/api($|\/$))/,
 	/|(.*\/analytics($|\/$))/,
 	/|(.*\/analytics\/api($|\/$))/,
+	/|(.*\/authentication($|\/$))/,
 	/|(.*\/authentication\/api($|\/$))/,
 	/|(.*\/base64Files($|\/$))/,
 	/|(.*\/base64Files\/[0-9a-f]{24}($|\/$))/,
@@ -267,6 +268,7 @@ const ignorePathsList = [
 	/|(.*\/wopi\/files\/[0-9a-f]{24}\/contents($|\/$))/,
 	/|(.*\/wopi\/files\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/wopi\/api($|\/$))/,
+	/|(.*\/legacy\/v1\/\/api($|\/$))/,
 ];
 
 const ignorePaths = new RegExp(ignorePathsList.map((r) => r.source).join(''));
