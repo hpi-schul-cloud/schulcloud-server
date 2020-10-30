@@ -29,6 +29,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7404 - automatic forwarding for requests without versionnumber if no matching route is found
 - SC-7411 - api versioning for /me service
 - SC-7411 - api versioning for /version service
+- IMP-160 - integration-tests repo renamed to end-to-end-tests
 
 ### Fixed
 
