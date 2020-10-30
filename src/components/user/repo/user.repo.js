@@ -9,7 +9,7 @@ const deleteUser = async (id, app) => {
 
 const generateDummyEmail = () => {
 	const rnd = () => Math.round(Math.random() * 10000);
-	return `new_deleted_${Date.now()}_${rnd()}@mustermann.de`;
+	return `deleted_${Date.now()}_${rnd()}@mustermann.de`;
 };
 
 const createUserTombstone = (user) => {
