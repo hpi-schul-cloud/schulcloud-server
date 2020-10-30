@@ -204,7 +204,8 @@ paths:
       summary: ''
       tags:
         - authentication
-      security: []
+      security:
+        - jwtBearer: []
 openapi: 3.0.2
 tags:
   - name: authentication
