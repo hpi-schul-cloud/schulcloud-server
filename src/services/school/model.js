@@ -16,8 +16,9 @@ const SCHOOL_FEATURES = {
 	ROCKET_CHAT: 'rocketChat',
 	VIDEOCONFERENCE: 'videoconference',
 	MESSENGER: 'messenger',
-	STUDENTVISIBILITY: 'studentVisibility', // depricated
+	STUDENTVISIBILITY: 'studentVisibility', // deprecated
 	MESSENGER_SCHOOL_ROOM: 'messengerSchoolRoom',
+	MESSENGER_STUDENT_ROOM_CREATE: 'messengerStudentRoomCreate',
 };
 
 const defaultFeatures = [];
