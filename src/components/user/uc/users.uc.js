@@ -1,8 +1,26 @@
 const { GeneralError } = require('../../../errors');
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
 
-const deleteUser = (id, app) => {
-	return userRepo.deleteUser(id, app);
+const deleteUser = async (id, app) => {
+	try {
+		// get user
+		const user = await userRepo.getUser(id, app);
+		// save user to trashbin
+		await trashbinRepo.updateUserTrashbin(id, { user });
+		// get user
+		const account = await accountRepo.getUserAccount(id, app);
+		// save account to trashbin
+		await trashbinRepo.updateUserTrashbin(id, { account });
+		// delete account
+		// replace user by tombstone
+		//
+		return { success: true };
+	} catch (err) {
+		if (err.code >= 500) {
+			throw new GeneralError(id);
+		}
+		return { success: false, reason: err };
+	}
 };
 
 const replaceUserWithTombstone = async (id, app) => {

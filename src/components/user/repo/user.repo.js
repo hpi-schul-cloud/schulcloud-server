@@ -1,3 +1,9 @@
+const getUser = async (id, app) => {
+	const modelService = app.service('usersModel');
+	const user = await modelService.get(id);
+	return user;
+};
+
 const deleteUser = async (id, app) => {
 	return { success: true };
 }
@@ -13,6 +19,7 @@ const replaceUserWithTombstone = async (id, app) => {
 };
 
 module.exports = {
+	getUser,
 	replaceUserWithTombstone,
 	deleteUser,
 };
