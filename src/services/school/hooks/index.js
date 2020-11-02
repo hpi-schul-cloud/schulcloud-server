@@ -251,7 +251,7 @@ exports.before = {
 exports.after = {
 	all: [
 		// todo: remove id if possible (shouldnt exist)
-		iff(isNotAuthenticated, keep('name', 'purpose', 'systems', '_id', 'id', 'language')),
+		iff(isNotAuthenticated, keep('name', 'purpose', 'systems', '_id', 'id', 'language', 'timezone')),
 		iff(
 			populateInQuery,
 			keepInArray('systems', [
