@@ -11,6 +11,7 @@ module.exports = class ApiHelper {
 	 */
 	constructor(options = {}) {
 		this.instanceOptions = options;
+		this.axios = axios.create();
 	}
 
 	/**
@@ -77,7 +78,7 @@ module.exports = class ApiHelper {
 	 */
 	requestWrapper(options) {
 		const requestOptions = lodash.merge({ ...ApiHelper.defaultOptions(), ...this.instanceOptions, ...options });
-		return axios.request(requestOptions).then(this.transformResponse).catch(this.transformErrorResponse);
+		return this.axios.request(requestOptions).then(this.transformResponse).catch(this.transformErrorResponse);
 	}
 
 	/**
