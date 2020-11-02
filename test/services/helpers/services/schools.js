@@ -27,6 +27,8 @@ const create = (appPromise) => async ({
 	sourceOptions = undefined,
 	enableStudentTeamCreation = undefined,
 	permissions = undefined,
+	language = 'de',
+	timezone = 'Europe/Berlin',
 } = {}) => {
 	const app = await appPromise;
 	const school = await app.service('schools').create({
@@ -54,6 +56,8 @@ const create = (appPromise) => async ({
 		sourceOptions,
 		enableStudentTeamCreation,
 		permissions,
+		language,
+		timezone,
 	});
 	createdSchoolIds.push(school._id);
 	return school;

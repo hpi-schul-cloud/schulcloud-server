@@ -25,6 +25,12 @@
 	"DATABASE":{
 		"URL": "mongodb://127.0.0.1:27017/schulcloud",
 		"AUDIT": false
+  },
+	"MATRIX_MESSENGER": {
+		"URI": "https://matrix.messenger.schule",
+		"SERVERNAME": "messenger.schule",
+		"SECRET": "SECRET",
+		"STUDENT_ROOM_CREATION": false
 	},
 	"REQUEST_TIMEOUT": 8000,
 	"FEATURE_SHOW_VERSION_ENABLED": false
