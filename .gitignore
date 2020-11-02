@@ -40,6 +40,7 @@ backup/*
 # Visual Studio Code data
 .vscode
 .vs/**
+.dccache
 
 # local dev secrets
 config/secrets.json
