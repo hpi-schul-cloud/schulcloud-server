@@ -147,8 +147,8 @@
 		"simple-oauth2": "^3.0.0",
 		"sinon": "^9.0.0",
 		"source-map-support": "^0.5.19",
-		"ts-mocha": "^7.0.0",
+		"ts-mocha": "^8.0.0",
 		"ts-node": "^9.0.0",
-		"typescript": "^4.0.3"
+		"typescript": "^4.0.5"
 	}
 }
