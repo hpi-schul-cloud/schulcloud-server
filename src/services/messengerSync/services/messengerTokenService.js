@@ -58,10 +58,10 @@ class MessengerTokenService {
 		const scId = (params.account || {}).userId;
 		if (!scId) throw new BadRequest('no user');
 
-		const homeserver = Configuration.get('MATRIX_SERVERNAME');
+		const homeserver = Configuration.get('MATRIX_MESSENGER__SERVERNAME');
 		const matrixId = `@sso_${scId.toString()}:${homeserver}`;
-		const matrixUri = Configuration.get('MATRIX_URI');
-		const matrixSecret = Configuration.get('MATRIX_SECRET');
+		const matrixUri = Configuration.get('MATRIX_MESSENGER__URI');
+		const matrixSecret = Configuration.get('MATRIX_MESSENGER__SECRET');
 
 		return obtainAccessToken(matrixId, matrixUri, matrixSecret);
 	}
