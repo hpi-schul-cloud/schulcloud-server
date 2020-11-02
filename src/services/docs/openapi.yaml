@@ -14,6 +14,8 @@ servers:
   - url: /legacy/v1/
 
 paths:
+  /accounts/jwtTimer:
+    $ref: '../account/docs/openapi.yaml#/paths/~1accounts~1jwtTimer'
   /authentication:
     $ref: '../authentication/docs/openapi.yaml#/paths/~1authentication'
   /me:
