@@ -156,6 +156,7 @@ const updatesChat = (key, data) => {
 		SCHOOL_FEATURES.MESSENGER,
 		SCHOOL_FEATURES.MESSENGER_SCHOOL_ROOM,
 		SCHOOL_FEATURES.VIDEOCONFERENCE,
+		SCHOOL_FEATURES.MESSENGER_STUDENT_ROOM_CREATE,
 	];
 	return updatesArray(key) && chatFeatures.indexOf(data[key].features) !== -1;
 };
@@ -251,7 +252,7 @@ exports.before = {
 exports.after = {
 	all: [
 		// todo: remove id if possible (shouldnt exist)
-		iff(isNotAuthenticated, keep('name', 'purpose', 'systems', '_id', 'id', 'language')),
+		iff(isNotAuthenticated, keep('name', 'purpose', 'systems', '_id', 'id', 'language', 'timezone')),
 		iff(
 			populateInQuery,
 			keepInArray('systems', [
