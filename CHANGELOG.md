@@ -23,6 +23,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-7331 - introduce axios for external requests, implemented in status api
 - SC-7395 - Changed ldap general strategy fetching of users from parallel to serialized
 - SC-6080 - move REQUEST_TIMEOUT from globals to Configuration
 - Dependencies: querystring replaced by qs
@@ -42,6 +43,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Fix mocha tests
 - SC-6151 fixed a bug that prevented api docu from being accessible
 - SC-6151 fixed paths to openapi documentation
+- Fixed searching for names including a dash
 
 ## [25.2.0]
 
