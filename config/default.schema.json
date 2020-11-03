@@ -511,6 +511,7 @@
 		"LERNSTORE_MODE",
 		"FEATURE_SHOW_VERSION_ENABLED"
 	],
+
 	"allOf": [
 		{
 			"$ref": "#/definitions/FEATURE_PROMETHEUS_ENABLED"
