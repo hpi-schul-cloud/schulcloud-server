@@ -17,7 +17,7 @@ const deleteUser = async (id, app) => {
 		const resultAccDel = await accountRepo.deleteUserAccount(id);
 		// replace user by tombstone
 		const uid = ObjectId();
-		const resultUsrTmb = await userRepo.replaceUserWithTombstone(id, app, {
+		const resultUsrTmb = await userRepo.replaceUserWithTombstoneDR(id, app, {
 			firstName: 'DELETED',
 			lastName: 'USER',
 			email: `${uid}@deleted`,
@@ -32,9 +32,17 @@ const deleteUser = async (id, app) => {
 	}
 };
 
+const putUserToTrashbin = async (id, app) => {
+	const user = await userRepo.getUser(id, app);
+	const trashbinResult = await trashbinRepo.createUserTrashbinMW(user, app);
+	return { success: !!trashbinResult.deletedAt };
+};
+
 const replaceUserWithTombstone = async (id, app) => {
+	const user = await userRepo.getUser(id, app);
+
 	const tombstoneBuilderPromises = [
-		userRepo.replaceUserWithTombstone(id, app),
+		userRepo.replaceUserWithTombstoneMW(user, app),
 		accountRepo.replaceUserAccountWithTombstone(id, app),
 	];
 	try {
@@ -58,5 +66,6 @@ const replaceUserWithTombstone = async (id, app) => {
 
 module.exports = {
 	deleteUser,
+	putUserToTrashbin,
 	replaceUserWithTombstone,
 };

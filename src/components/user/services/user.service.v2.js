@@ -1,10 +1,24 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { deleteUser } = require('../uc/users.uc');
+const { BadRequest } = require('../../../errors');
+const { replaceUserWithTombstone, deleteUser, putUserToTrashbin } = require('../uc/users.uc');
+const logger = require('../../../logger');
 
 class UserServiceV2 {
 	async remove(id, params) {
-
 		return deleteUser(id, this.app);
+	}
+
+	async removeMW(id, params) {
+		const res = await putUserToTrashbin(id, this.app);
+		if (res.success) {
+			return replaceUserWithTombstone(id, this.app).catch((error) => {
+				logger.error(error);
+				return new BadRequest('User cannot be replaced with tombstone', error);
+			});
+		}
+		else {
+			return new BadRequest('User cannot be put to trashbin');
+		}
 	}
 
 	async setup(app) {

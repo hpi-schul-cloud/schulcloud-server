@@ -2,23 +2,19 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const schema = new Schema({
-		userId: {
-			type: Schema.Types.ObjectId,
-			ref: 'user',
-			required: true,
-			index: true,
-		},
-		user: { type: Object },
-		account: { type: Object },
+const trashbinSchema = {
+	userId: {
+		type: Schema.Types.ObjectId,
+		ref: 'user',
+		required: true,
+		index: true,
 	},
-	{
-		timestamps: true,
-	}
-);
-
-const model = mongoose.model('trashbin', schema);
-
-module.exports = {
-	model,
+	user: { type: Object },
+	account: { type: Object },
+	document: { type: String },
+	deletedAt: { type: Date, default: null },
 };
+
+const trashbinModel = mongoose.model('trashbin', trashbinSchema);
+
+module.exports = trashbinModel;

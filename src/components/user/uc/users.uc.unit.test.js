@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const sinon = require('sinon');
 const { deleteUser, replaceUserWithTombstone } = require('./users.uc');
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
@@ -18,18 +19,17 @@ describe('users usecase', () => {
 
 	describe('user replace with tombstone orchestrator', () => {
 		it('when the function is called, then it returns (replace with useful test)', async () => {
-			const { _id: schoolId } = await testObjects.createTestSchool();
-			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const user = await testObjects.createTestUser();
 			const result = await replaceUserWithTombstone(user._id, app);
 			expect(result).to.deep.equal({ success: true });
 		});
 	});
 	describe('user delete orchestrator', () => {
-		it('when the function is called, then it returns (replace with useful test)', () => {
+		it('when the function is called, then it returns (replace with useful test)', async () => {
 			// arrange
-
+			const user = await testObjects.createTestUser();
 			// act
-			const result = deleteUser();
+			const result = deleteUser(user._id, app);
 
 			// assert
 			expect(result).to.deep.equal({ success: true });
