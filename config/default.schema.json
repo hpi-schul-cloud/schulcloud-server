@@ -150,20 +150,37 @@
 			"default": false,
 			"description": "If enabled, adds support for Matrix Messenger."
 		},
-		"MATRIX_URI": {
-			"type": "string",
-			"format": "uri",
-			"default": "https://matrix.messenger.schule",
-			"description": "The URI of the Matrix Messenger server."
-		},
-		"MATRIX_SERVERNAME": {
-			"type": "string",
-			"default": "messenger.schule",
-			"description": "Servername of the Matrix Messenger server."
-		},
-		"MATRIX_SECRET": {
-			"type": "string",
-			"description": "Shared secret for the Matrix server."
+		"MATRIX_MESSENGER": {
+			"type": "object",
+			"description": "Matrix messenger properties, required always to be defined",
+			"required": [
+				"URI",
+				"SERVERNAME",
+				"SECRET",
+				"STUDENT_ROOM_CREATION"
+			],
+			"properties": {
+				"URI": {
+					"type": "string",
+					"format": "uri",
+					"default": "https://matrix.messenger.schule",
+					"description": "The URI of the Matrix Messenger server."
+				},
+				"SERVERNAME": {
+					"type": "string",
+					"default": "messenger.schule",
+					"description": "Servername of the Matrix Messenger server."
+				},
+				"SECRET": {
+					"type": "string",
+					"description": "Shared secret for the Matrix server."
+				},
+				"STUDENT_ROOM_CREATION": {
+					"type": "boolean",
+					"default": false,
+					"description": "If enabled, school admins can allow students to create additional chat rooms"
+				}
+			}
 		},
 		"FEATURE_RABBITMQ_ENABLED": {
 			"type": "boolean",
@@ -389,6 +406,11 @@
 			"default": false,
 			"description": "when enabled, all incoming requests are validated against the openapi schemata, unless the route is whitelisted."
 		},
+		"FEATURE_API_RESPONSE_VALIDATION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "when enabled, all incoming requests are validated against the openapi schemata, unless the route is whitelisted."
+		},
 		"API_VALIDATION_WHITELIST_EXTENSION": {
 			"type": "string",
 			"description": "when set, this is interpreted as a regex to extend the ignorelist for the API validation with any routes matching the regex.",
@@ -398,6 +420,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enable prometheus api metrics, if enabled, PROMETHEUS must be defined."
+		},
+		"FEATURE_SHOW_VERSION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "enable the /versions route"
 		},
 		"PROMETHEUS": {
 			"type": "object",
@@ -421,7 +448,7 @@
 			},
 			"required": ["METRICS_PATH", "DURATION_BUCKETS_SECONDS"]
 		},
-		"REQUEST_TIMEOUT":{
+		"REQUEST_TIMEOUT": {
 			"type": "integer",
 			"minimum": 0,
 			"default": 8000,
@@ -434,7 +461,8 @@
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
 		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
-		"LERNSTORE_MODE"
+		"LERNSTORE_MODE",
+		"FEATURE_SHOW_VERSION_ENABLED"
 	],
 	"allOf": [
 		{
