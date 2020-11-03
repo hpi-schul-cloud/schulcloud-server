@@ -1,6 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { keep } = require('feathers-hooks-common');
-const { BadRequest, Forbidden, GeneralError, NotFound } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, NotFound, BadRequest, GeneralError } = reqlib('src/errors');
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
 const { hasRoleNoHook, hasPermissionNoHook, hasPermission } = require('../../../hooks');
@@ -49,23 +51,6 @@ const checkUnique = (hook) => {
 		if (isLoggedIn || asTask === undefined || asTask === 'student') {
 			return Promise.reject(new BadRequest(`Die E-Mail Adresse ist bereits in Verwendung!`));
 		}
-		if (asTask === 'parent') {
-			userService.update(
-				{ _id: user._id },
-				{
-					$set: {
-						children: (user.children || []).concat(input.children),
-						firstName: input.firstName,
-						lastName: input.lastName,
-					},
-				}
-			);
-			return Promise.reject(
-				new BadRequest("parentCreatePatch... it's not a bug, it's a feature - and it really is this time!", user)
-			);
-			/* to stop the create process, the message are catch and resolve in regestration hook */
-		}
-
 		return Promise.resolve(hook);
 	});
 };

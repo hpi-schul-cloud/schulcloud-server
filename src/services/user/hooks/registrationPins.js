@@ -1,8 +1,10 @@
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
-const { BadRequest, Forbidden, TooManyRequests } = require('@feathersjs/errors');
 const { Configuration } = require('@schul-cloud/commons');
 const moment = require('moment');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, BadRequest, TooManyRequests } = reqlib('src/errors');
 const { NODE_ENV, ENVIRONMENTS, SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../model').registrationPinModel;
@@ -136,7 +138,10 @@ const validateEmailAndPin = (hook) => {
 
 const checkTimeWindow = async (hook) => {
 	const minimalTimeDifference = moment.duration(5, 'minutes').asMilliseconds();
-	const { importHash } = hook.data;
+	const { importHash, silent } = hook.data || {};
+	if (silent) {
+		return Promise.resolve(hook);
+	}
 
 	if (!importHash) {
 		throw new BadRequest('importHash missing');

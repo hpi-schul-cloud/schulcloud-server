@@ -19,6 +19,8 @@ module.exports = function setup() {
 		lean: true,
 	};
 
+	app.use('/lessons/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+
 	app.use('/lessons', service(options));
 	app.use('/lessons/:lessonId/files', new LessonFilesService());
 	app.use('/lessons/copy', new LessonCopyService(app));
@@ -38,8 +40,6 @@ module.exports = function setup() {
 				.exec();
 		},
 	});
-
-	app.use('/lessons/api', staticContent(path.join(__dirname, '/docs')));
 
 	const systemService = app.service('/lessons');
 	const lessonFilesService = app.service('/lessons/:lessonId/files/');

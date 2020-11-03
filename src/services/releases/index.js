@@ -52,9 +52,9 @@ module.exports = function relases() {
 		lean: true,
 	};
 
+	app.use('/releases/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/releases/fetch', new ReleaseFetchService());
 	app.use('/releases', service(options));
-	app.use('/releases/api', staticContent(path.join(__dirname, '/docs')));
 
 	const releaseFetchService = app.service('/releases/fetch');
 	const releaseService = app.service('/releases');

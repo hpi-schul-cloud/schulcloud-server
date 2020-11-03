@@ -4,7 +4,7 @@ on:
 jobs:
   UPDATE:
     runs-on: ubuntu-latest
-    if: startsWith('ref/heads/release/', github.ref)
+    if: startsWith(github.ref, 'refs/heads/release/')
     steps:
       - uses: actions/checkout@v2
       - name: Substring branch name
