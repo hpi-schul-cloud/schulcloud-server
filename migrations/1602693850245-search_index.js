@@ -28,7 +28,7 @@ const User = mongoose.model(
 const splitForSearchIndexes = (...searchTexts) => {
 	const arr = [];
 	searchTexts.forEach((item) => {
-		item.split(' ').forEach((it) => {
+		item.split(/[\s-]/g).forEach((it) => {
 			if (it.length === 0) return;
 
 			arr.push(it.slice(0, 1));
