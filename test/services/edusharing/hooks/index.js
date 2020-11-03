@@ -1,49 +1,58 @@
 const assert = require('assert');
 const { expect } = require('chai');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 
 describe('edusharing hooks', () => {
-	let server;
+	let app;
 	let eduSharingService;
+	let server;
 
-	before((done) => {
+	before(async () => {
+		app = await appPromise;
 		eduSharingService = app.service('edu-sharing');
-		server = app.listen(0, done);
+		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
 	});
 
 	it('registered the service', async () => {
 		assert.ok(eduSharingService);
 	});
 
-	it('get restrict Lern-Store access to students from SH', async () => {
+	it('get restrict Lern-Store access to students', async () => {
 		try {
-			const studentSH = await testObjects.createTestUser({ roles: ['student', 'studentSH'] });
-			const paramsStudentSH = await testObjects.generateRequestParamsFromUser(studentSH);
-			await eduSharingService.get('dummy', paramsStudentSH);
+			const school = await testObjects.createTestSchool({
+				permissions: { student: { LERNSTORE_VIEW: false } },
+			});
+			const student = await testObjects.createTestUser({ schoolId: school._id, roles: ['student'] });
+			const paramsStudent = await testObjects.generateRequestParamsFromUser(student);
+			await eduSharingService.get('dummy', paramsStudent);
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(403);
-			expect(err.message).to.equal("You don't have permission to access this resource.");
+			expect(err.message).to.equal("You don't have one of the permissions: LERNSTORE_VIEW.");
 		}
 	});
 
-	it('find restrict Lern-Store access to students from SH', async () => {
+	it('find restrict Lern-Store access to students', async () => {
 		try {
-			const studentSH = await testObjects.createTestUser({ roles: ['student', 'studentSH'] });
-			const paramsStudentSH = await testObjects.generateRequestParamsFromUser(studentSH);
-			paramsStudentSH.query = { query: { searchQuery: 'foo' } };
-			await eduSharingService.find(paramsStudentSH);
+			const school = await testObjects.createTestSchool({
+				permissions: { student: { LERNSTORE_VIEW: false } },
+			});
+			const student = await testObjects.createTestUser({ schoolId: school._id, roles: ['student'] });
+			const paramsStudent = await testObjects.generateRequestParamsFromUser(student);
+			paramsStudent.query = { query: { searchQuery: 'foo' } };
+			await eduSharingService.find(paramsStudent);
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(403);
-			expect(err.message).to.equal("You don't have permission to access this resource.");
+			expect(err.message).to.equal("You don't have one of the permissions: LERNSTORE_VIEW.");
 		}
 	});
 });
