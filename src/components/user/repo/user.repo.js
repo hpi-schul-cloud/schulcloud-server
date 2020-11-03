@@ -21,7 +21,7 @@ const createUserTombstone = (user) => {
 		firstName: 'DELETED',
 		lastName: 'DELETED',
 		deletedAt: new Date(),
-		// schoolId: user.schoolId,
+		schoolId: user.schoolId,
 	};
 	// eslint-disable-next-line guard-for-in
 	for (const i in user) {
