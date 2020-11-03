@@ -9,20 +9,6 @@ const ENVIRONMENTS = {
 
 const { NODE_ENV = ENVIRONMENTS.DEVELOPMENT } = process.env;
 
-let defaultLogLevel = null;
-switch (NODE_ENV) {
-	case ENVIRONMENTS.PRODUCTION:
-		defaultLogLevel = 'error'; // level 3
-		break;
-	case ENVIRONMENTS.TEST:
-		defaultLogLevel = 'emerg'; // level 0
-		break;
-	case ENVIRONMENTS.DEVELOPMENT:
-	case ENVIRONMENTS.MIGRATION:
-	default:
-		defaultLogLevel = 'debug'; // level 7
-}
-
 let defaultDbUrl = null;
 switch (NODE_ENV) {
 	case ENVIRONMENTS.TEST:
@@ -55,7 +41,6 @@ const globals = {
 	 */
 	NODE_ENV,
 	ENVIRONMENTS,
-	LOG_LEVEL: process.env.LOG_LEVEL || defaultLogLevel,
 	SYSTEM_LOG_LEVEL: process.env.SYSTEM_LOG_LEVEL || 'sendRequests',
 	// secrets smtp
 	SMTP: process.env.SMTP,

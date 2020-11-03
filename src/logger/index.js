@@ -1,3 +1,9 @@
+/*
+Loglevels:
+	PRODUCTION: 'error'; // level 3
+	TEST: 'emerg'; // level 0
+	DEVELOPMENT & MIGRATION: 'debug'; // level 7
+*/
 const winston = require('winston');
 const { Configuration } = require('@schul-cloud/commons');
 
