@@ -262,7 +262,7 @@ const hasCreatePermission = async (context) => {
 	}
 
 	if (data.lessonId) {
-		const lesson = context.app.service('lessons').get(data.lessonId);
+		const lesson = await context.app.service('lessons').get(data.lessonId);
 		if (!(data.courseId && equalIds(lesson.courseId, data.courseId))) {
 			throw new NotFound('lesson not found. did you forget to pass the correct course?');
 		}

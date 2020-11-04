@@ -11,26 +11,40 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-6690 - refactors edu-sharing service and sets defaults
+- SC-6738 - Extend search input field in new admin tables to search for full name
 - SC-7293 - added Lern-Store view permission and a feature flag
 - SC-7357 - Add config service
 - SC-7083 - Added officialSchoolNumber to school-model
 - Introduce plainSecrets in Configuration
 - Introduce FEATURE_PROMETHEUS_ENABLED to have a flag for enable prometheus api metrics
+- SC-7411 - add API Specification and validation for /me service
+- SC-7411 - add API Specification and validation for /version service
 
 ### Changed
 
+- SC-7331 - introduce axios for external requests, implemented in status api
+- SC-7395 - Changed ldap general strategy fetching of users from parallel to serialized
 - SC-6080 - move REQUEST_TIMEOUT from globals to Configuration
 - Dependencies: querystring replaced by qs
 - SC-6060 - Updated error handling
+- SC-7404 - automatic forwarding for requests without versionnumber if no matching route is found
+- SC-7411 - api versioning for /me service
+- SC-7411 - api versioning for /version service
+- IMP-160 - integration-tests repo renamed to end-to-end-tests
+- SC-5900 - Move Synapse synchronization logic into server
 
 ### Fixed
 
+- SC-7530 rename SHOW_VERSION to FEATURE_SHOW_VERSION_ENABLED
+- SC-7517 improve oauth test stability
+- SC-6586 Repaired migration script
 - SC-7454 - Restored invalid birth date fix in adminUsers service
 - fixed README badges
 - Fix mocha tests
 - SC-6151 fixed a bug that prevented api docu from being accessible
 - SC-6151 fixed paths to openapi documentation
-
+- Fixed searching for names including a dash
 
 ## [25.2.0]
 
@@ -45,6 +59,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6769 - Introduce API validation module
 - SC-6769 - API validation for users/admin routes
 - SC-6510 - Added Merlin Url Generator for Lern Store / Edu-sharing
+- SC-5476 - Added school settings to enable students to open own chat rooms
 - SC-6567 - Add utils to cleanup incomingMessage stacks by logging errors
 
 ### Removed
@@ -58,13 +73,26 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6510, fix a minor syntax error when exporting module
 - Update commons to 1.2.7: print configuration on startup, introduce hierarchical configuration file setup
 - Support asynchronous calls during server startup
-- SC-5900 - Move Synapse synchronization logic into server
+- SC-7091 Migration to enable the Matrix Messenger for all schools that had RocketChat enabled before
 
 ### Fixed
 
 -         - fixed README badges
 - SC-6151 - fixed a bug that prevented api docu from being accessible
 -         - Fix mocha tests
+
+## [25.1.5] - 2020-10-22
+
+### Fixed
+
+- SC-7333 - fixed creation of homeworks within lessons
+
+## [25.1.7] - 2020-10-28
+
+### Added
+
+- SC-7491 - Add missing index on users.email to speed up slow query in registrationLink service
+
 ## [25.1.6] - 2020-10-23
 
 ### Changed
@@ -234,6 +262,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - Ignore database seed data with prettier, eslint, and codacy
 - SC-6640 - Fixed email check within registration (case insensitive)
+- SC-2710 - Adding time zones, default for school and theme
 
 ### Added - 24.5.0
 

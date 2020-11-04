@@ -190,7 +190,7 @@ const isCourseModerator = (course, userId) => {
 };
 
 const buildMatrixUserId = (userId) => {
-	const servername = Configuration.get('MATRIX_SERVERNAME');
+	const servername = Configuration.get('MATRIX_MESSENGER__SERVERNAME');
 	return `@sso_${userId.toString()}:${servername}`;
 };
 
@@ -258,17 +258,17 @@ const buildMessageObject = async (data) => {
 		},
 	};
 
-	if (isAdmin && Configuration.has('MATRIX_WELCOME_MESSAGE_ADMIN')) {
+	if (isAdmin && Configuration.has('MATRIX_MESSENGER__WELCOME_MESSAGE_ADMIN')) {
 		result.welcome = {
-			text: Configuration.get('MATRIX_WELCOME_MESSAGE_ADMIN'),
+			text: Configuration.get('MATRIX_MESSENGER__WELCOME_MESSAGE_ADMIN'),
 		};
-	} else if (isTeacher && Configuration.has('MATRIX_WELCOME_MESSAGE_TEACHER')) {
+	} else if (isTeacher && Configuration.has('MATRIX_MESSENGER__WELCOME_MESSAGE_TEACHER')) {
 		result.welcome = {
-			text: Configuration.get('MATRIX_WELCOME_MESSAGE_TEACHER'),
+			text: Configuration.get('MATRIX_MESSENGER__WELCOME_MESSAGE_TEACHER'),
 		};
-	} else if (Configuration.has('MATRIX_WELCOME_MESSAGE_STUDENT')) {
+	} else if (Configuration.has('MATRIX_MESSENGER__WELCOME_MESSAGE_STUDENT')) {
 		result.welcome = {
-			text: Configuration.get('MATRIX_WELCOME_MESSAGE_STUDENT'),
+			text: Configuration.get('MATRIX_MESSENGER__WELCOME_MESSAGE_STUDENT'),
 		};
 	}
 

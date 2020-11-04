@@ -1,4 +1,4 @@
-class EduSearchResponse {
+class EduSharingResponse {
 	constructor(parsed) {
 		this.total = 0;
 		this.limit = 0;
@@ -14,4 +14,4 @@ class EduSearchResponse {
 	}
 }
 
-module.exports = EduSearchResponse;
+module.exports = EduSharingResponse;
