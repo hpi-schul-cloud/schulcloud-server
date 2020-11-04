@@ -8,9 +8,11 @@ const createUserTrashbin = (userId) => {
 	return trashbin.save();
 };
 
-const updateUserTrashbin = (userId, data = {}) => {
+const updateUserTrashbin = async (id, data = {}) => {
 	// access trashbin model
-	return trashbinModel.updateOne({ userId }, data, { upsert: true });
+	const trashbin = await trashbinModel.findById(id).exec();
+	trashbin.set(data);
+	return trashbin.save();
 };
 
 module.exports = {
