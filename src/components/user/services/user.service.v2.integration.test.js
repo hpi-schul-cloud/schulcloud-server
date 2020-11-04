@@ -20,9 +20,9 @@ describe('user service v2', function test() {
 	});
 
 	describe('API tests', () => {
-		it('When an authorized user delets a student, then stuff is happening (replace with useful test)', async () => {
+		it('When an authorized user deletes a student and returns success', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
-			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
 			const token = await testObjects.generateJWTFromUser(user);
 			const request = chai
 				.request(app)
@@ -32,6 +32,7 @@ describe('user service v2', function test() {
 				.set('content-type', 'application/json');
 			const response = await request.send();
 			expect(response.status).to.equal(200);
+			expect(response.body).to.deep.equal({ success: true });
 		});
 	});
 });
