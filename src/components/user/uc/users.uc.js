@@ -1,23 +1,36 @@
 const { ObjectId } = require('mongoose').Types;
 
-const { GeneralError } = require('../../../errors');
+const { GeneralError, NotFound } = require('../../../errors');
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
 
 const deleteUser = async (id, app) => {
 	try {
 		// get user
 		const user = await userRepo.getUser(id, app);
+		if (!(user && user._id)) {
+			throw new NotFound(`User ${id} not found`);
+		}
+
+		const trashBin = await trashbinRepo.createUserTrashbin(id);
+		if (!(trashBin && trashBin._id)) {
+			throw new GeneralError(`Unable to initiate trashBin`);
+		}
+
 		// save user to trashbin
-		await trashbinRepo.updateUserTrashbin(id, { user });
-		// get user
+		await trashbinRepo.updateUserTrashbin(trashBin._id, { user });
+
+		// get account
 		const account = await accountRepo.getUserAccount(id, app);
+
 		// save account to trashbin
-		await trashbinRepo.updateUserTrashbin(id, { account });
+		await trashbinRepo.updateUserTrashbin(trashBin._id, { account });
+
 		// delete account
-		const resultAccDel = await accountRepo.deleteUserAccount(id);
+		await accountRepo.deleteUserAccount(id);
+
 		// replace user by tombstone
 		const uid = ObjectId();
-		const resultUsrTmb = await userRepo.replaceUserWithTombstone(id, app, {
+		await userRepo.replaceUserWithTombstone(id, app, {
 			firstName: 'DELETED',
 			lastName: 'USER',
 			email: `${uid}@deleted`,
