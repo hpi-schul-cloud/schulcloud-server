@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [25.1.6] - 2020-11-03
+
+### Fixed
+
+- SC-7638 - fixed pin creation for users with accounts
+
 ## [25.1.5] - 2020-10-22
 
 ### Fixed
