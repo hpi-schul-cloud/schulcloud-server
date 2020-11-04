@@ -10,6 +10,13 @@ describe('tests for search utils', () => {
 			expect(result).to.be.deep.equals(expected);
 		});
 
+		it('slitup at dash', () => {
+			const string = 'Hans-Mustafa';
+			const expected = ['H', 'Ha', 'Han', 'ans', 'M', 'Mu', 'Mus', 'ust', 'sta', 'taf', 'afa'];
+			const result = splitForSearchIndexes(string);
+			expect(result).to.be.deep.equals(expected);
+		});
+
 		it('slitup two value', () => {
 			const string1 = 'Hans P';
 			const string2 = 'e@b.d';

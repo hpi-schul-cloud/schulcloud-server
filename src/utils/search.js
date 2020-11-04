@@ -10,7 +10,7 @@
 const splitForSearchIndexes = (...searchTexts) => {
 	const arr = [];
 	searchTexts.forEach((item) => {
-		item.split(' ').forEach((it) => {
+		item.split(/[\s-]/g).forEach((it) => {
 			// eslint-disable-next-line no-plusplus
 			if (it.length === 0) return;
 
