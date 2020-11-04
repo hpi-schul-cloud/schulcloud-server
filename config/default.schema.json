@@ -356,15 +356,18 @@
 			"type": "string",
 			"format": "uri",
 			"pattern": ".*(?<!/)$",
-			"description": "The URL for the edu-sharing repository."
+			"description": "The URL for the edu-sharing repository.",
+			"default": "https://mv-repo.schul-cloud.org"
 		},
 		"ES_USER": {
 			"type": "string",
-			"description": "The username for edu-sharing api access"
+			"description": "The username for edu-sharing api access",
+			"default": ""
 		},
 		"ES_PASSWORD": {
 			"type": "string",
-			"description": "The password for edu-sharing api access"
+			"description": "The password for edu-sharing api access",
+			"default": ""
 		},
 		"ES_GRANT_TYPE": {
 			"type": "string",
