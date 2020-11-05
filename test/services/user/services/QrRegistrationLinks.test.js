@@ -29,7 +29,7 @@ describe('qrRegistrationLinks service tests', () => {
 			app
 		);
 
-	describe('CREATE', () => {
+	describe.only('CREATE', () => {
 		it('should return Forbidden when user without permission tries to generate registration links', async () => {
 			const testUser = await testObjects.createTestUser();
 			const userRequestAuthentication = await generateRequestParamsFromUser(testUser);
@@ -40,22 +40,24 @@ describe('qrRegistrationLinks service tests', () => {
 			});
 		});
 		it('should return registration link for 1 user', async () => {
-			const testUser = await testObjects.createTestUser({ roles: ['teacher'] });
-			const userRequestAuthentication = await generateRequestParamsFromUser(testUser);
-			return postRegistrationLinks(userRequestAuthentication, [testUser._id]).then((res) => {
-				expect(res.length).to.equal(1);
-			});
+			const requestUser = await testObjects.createTestUser({ roles: ['teacher'], accounts: [] });
+			const testUser2 = await testObjects.createTestUser();
+			const userRequestAuthentication = await generateRequestParamsFromUser(requestUser);
+			const results = await postRegistrationLinks(userRequestAuthentication, [testUser2._id]);
+			expect(results.length).to.equal(1);
 		});
 		it('should return registration link for 3 users', async () => {
-			const testUser = await testObjects.createTestUser({ roles: ['teacher'] });
+			const requestUser = await testObjects.createTestUser({ roles: ['teacher'] });
+			const testUser1 = await testObjects.createTestUser();
 			const testUser2 = await testObjects.createTestUser();
 			const testUser3 = await testObjects.createTestUser();
-			const userRequestAuthentication = await generateRequestParamsFromUser(testUser);
-			return postRegistrationLinks(userRequestAuthentication, [testUser._id, testUser2._id, testUser3._id]).then(
-				(res) => {
-					expect(res.length).to.equal(3);
-				}
-			);
+			const userRequestAuthentication = await generateRequestParamsFromUser(requestUser);
+			const results = await postRegistrationLinks(userRequestAuthentication, [
+				testUser1._id,
+				testUser2._id,
+				testUser3._id,
+			]);
+			expect(results.length).to.equal(3);
 		});
 		it('should return bad request if the id is invalid', async () => {
 			const testUser = await testObjects.createTestUser({ roles: ['teacher'] });
