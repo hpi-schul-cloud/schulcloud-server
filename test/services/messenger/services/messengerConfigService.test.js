@@ -10,7 +10,7 @@ const createRequestParamsForAdmin = async (testObjects, schoolFeatures) => {
 	const params = await testObjects.generateRequestParamsFromUser(adminUser);
 	params.route = { schoolId: school._id.toString() };
 	return params;
-}
+};
 
 describe('MessengerConfigService', function test() {
 	this.timeout(30000);
@@ -20,8 +20,7 @@ describe('MessengerConfigService', function test() {
 	let schoolServiceListeners;
 	let testObjects;
 
-	describe('if Matrix messenger is enabled', function test() {
-
+	describe('if Matrix messenger is enabled', () => {
 		before(async () => {
 			configBefore = Configuration.toObject(); // deep copy current config
 			Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
@@ -51,7 +50,7 @@ describe('MessengerConfigService', function test() {
 		});
 
 		it('administrators can activate messenger', async () => {
-			const params = await createRequestParamsForAdmin(testObjects, [])
+			const params = await createRequestParamsForAdmin(testObjects, []);
 			const result = await app.service('schools/:schoolId/messenger').patch(null, { messenger: true }, params);
 			expect(result.messenger).to.be.true;
 			expect(result.messengerSchoolRoom).to.be.false;
@@ -127,8 +126,7 @@ describe('MessengerConfigService', function test() {
 		});
 	});
 
-	describe('if Matrix messenger is disabled', function test() {
-
+	describe('if Matrix messenger is disabled', () => {
 		before(async () => {
 			configBefore = Configuration.toObject(); // deep copy current config
 			Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', false);

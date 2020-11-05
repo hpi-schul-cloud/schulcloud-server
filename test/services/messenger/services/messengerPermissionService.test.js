@@ -151,7 +151,7 @@ describe('MessengerPermissionService', function test() {
 		});
 	});
 
-	describe('if Matrix messenger is disabled', function test() {
+	describe('if Matrix messenger is disabled', () => {
 		before(async () => {
 			configBefore = Configuration.toObject(); // deep copy current config
 			Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', false);
