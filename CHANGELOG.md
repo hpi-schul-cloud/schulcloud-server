@@ -36,6 +36,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - fixed README badges
 - SC-6151 fixed a bug that prevented api docu from being accessible
 
+## [25.1.9] - 2020-11-03
+
+### Fixed
+
+- SC-7638 - fixed pin creation for users with accounts
+
 ## [25.1.8] - 2020-10-22
 
 ### Fixed
