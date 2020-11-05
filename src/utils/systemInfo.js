@@ -1,0 +1,44 @@
+const { loadavg, cpus, networkInterfaces, uptime, freemem, totalmem } = require('os');
+
+const byteToMB = (kb) => {
+	if (kb <= 0) {
+		return kb;
+	}
+	return kb / 1024 / 1024;
+};
+
+const pid = () => process.pid;
+
+// https://nodejs.org/api/process.html#process_process_memoryusage
+const memoryUsage = () => {
+	const result = process.memoryUsage();
+	return {
+		rss_MB: byteToMB(result.rss),
+		heapTotal_MB: byteToMB(result.heapTotal),
+		heapUsed_MB: byteToMB(result.heapUsed),
+		external_MB: byteToMB(result.external),
+		arrayBuffers_MB: byteToMB(result.arrayBuffers),
+	};
+};
+
+// https://nodejs.org/api/os.htm
+const info = {};
+info.memory = () => ({
+	pid: pid(),
+	uptime: uptime(),
+	loadavg: loadavg(),
+	memoryUsage: memoryUsage(),
+	freemem_MB: byteToMB(freemem()),
+	totalmem_MB: byteToMB(totalmem()),
+});
+module.exports = {
+	info,
+	pid,
+	memoryUsage,
+	loadavg,
+	cpus,
+	networkInterfaces,
+	freemem,
+	totalmem,
+	uptime,
+};
