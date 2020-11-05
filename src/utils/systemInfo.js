@@ -7,13 +7,6 @@ const byteToMB = (byte) => {
 	return byte / 1024 / 1024;
 };
 
-const secToMin = (sec) => {
-	if (sec <= 0) {
-		return sec;
-	}
-	return sec / 60;
-};
-
 const pid = () => process.pid;
 
 // https://nodejs.org/api/process.html#process_process_memoryusage
@@ -32,7 +25,7 @@ const memoryUsage = () => {
 const info = {};
 info.memory = () => ({
 	pid: pid(),
-	uptime_Minute: secToMin(uptime()),
+	uptime: uptime(),
 	loadavg: loadavg(),
 	memoryUsage: memoryUsage(),
 	freemem_MB: byteToMB(freemem()),
