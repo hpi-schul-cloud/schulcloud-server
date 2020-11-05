@@ -1,10 +1,7 @@
 const { loadavg, uptime, freemem, totalmem } = require('os');
 // cpus
 // networkInterfaces
-const byteToMB = (byte) => {
-	if (byte <= 0) {
-		return byte;
-	}
+const byteToMB = (byte = 0) => {
 	return byte / 1024 / 1024;
 };
 
