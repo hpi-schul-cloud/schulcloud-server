@@ -11,6 +11,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-5476 - Extend tests for Matrix messenger config and permission service
+- SC-6690 - refactors edu-sharing service and sets defaults
 - SC-6738 - Extend search input field in new admin tables to search for full name
 - SC-7293 - added Lern-Store view permission and a feature flag
 - SC-7357 - Add config service
@@ -22,7 +24,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+
 - SC-7476 - Prevent hash generation if user has account
+- SC-7331 - introduce axios for external requests, implemented in status api
 - SC-7395 - Changed ldap general strategy fetching of users from parallel to serialized
 - SC-6080 - move REQUEST_TIMEOUT from globals to Configuration
 - Dependencies: querystring replaced by qs
@@ -34,6 +38,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-7353 course sharing between teachers
 - SC-7530 rename SHOW_VERSION to FEATURE_SHOW_VERSION_ENABLED
 - SC-7517 improve oauth test stability
 - SC-6586 Repaired migration script
@@ -42,6 +47,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Fix mocha tests
 - SC-6151 fixed a bug that prevented api docu from being accessible
 - SC-6151 fixed paths to openapi documentation
+- Fixed searching for names including a dash
 
 ## [25.2.0]
 
@@ -74,11 +80,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
--         - fixed README badges
+- fixed README badges
 - SC-6151 - fixed a bug that prevented api docu from being accessible
--         - Fix mocha tests
+- Fix mocha tests
 
-## [25.1.5] - 2020-10-22
+## [25.1.9] - 2020-11-03
+
+### Fixed
+
+- SC-7638 - fixed pin creation for users with accounts
+
+## [25.1.8] - 2020-10-22
 
 ### Fixed
 
