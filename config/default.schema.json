@@ -456,6 +456,18 @@
 			"minimum": 0,
 			"default": 8000,
 			"description": "Default timeout for external requests in milliseconds."
+		},
+		"LDAP_SYSTEM_SYNCER_POOL_SIZE": {
+			"type": "integer",
+			"minimum": 1,
+			"default": 1,
+			"description": "Determines how many system syncers will be run in parallel (at most) during the LDAP sync."
+		},
+		"LDAP_SCHOOL_SYNCER_POOL_SIZE": {
+			"type": "integer",
+			"minimum": 1,
+			"default": 1,
+			"description": "Determines how many school syncers will be run in parallel (at most) during the LDAP sync."
 		}
 	},
 	"required": [

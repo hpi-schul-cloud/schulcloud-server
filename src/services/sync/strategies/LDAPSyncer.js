@@ -1,3 +1,5 @@
+const asyncPool = require('tiny-async-pool');
+const { Configuration } = require('@schul-cloud/commons');
 const SystemSyncer = require('./SystemSyncer');
 const LDAPSchoolSyncer = require('./LDAPSchoolSyncer');
 
@@ -24,13 +26,16 @@ class LDAPSyncer extends SystemSyncer {
 		await super.steps();
 		const schools = await this.getSchools();
 		const activeSchools = schools.filter((s) => !s.inMaintenance);
-		for (const school of activeSchools) {
+		const nextSchoolSync = async (school) => {
 			const stats = await new LDAPSchoolSyncer(this.app, {}, this.logger, this.system, school).sync();
 			if (stats.success !== true) {
 				this.stats.errors.push(`LDAP sync failed for school "${school.name}" (${school._id}).`);
 			}
 			this.stats.schools[school.ldapSchoolIdentifier] = stats;
-		}
+		};
+		const poolSize = Configuration.get('LDAP_SCHOOL_SYNCER_POOL_SIZE');
+		this.logger.info(`Running LDAP school sync with pool size ${poolSize}`);
+		await asyncPool(poolSize, activeSchools, nextSchoolSync);
 		return this.stats;
 	}
 

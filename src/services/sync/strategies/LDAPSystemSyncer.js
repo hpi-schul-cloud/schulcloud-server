@@ -1,3 +1,5 @@
+const asyncPool = require('tiny-async-pool');
+const { Configuration } = require('@schul-cloud/commons');
 const Syncer = require('./Syncer');
 const LDAPSyncer = require('./LDAPSyncer');
 
@@ -31,7 +33,7 @@ class LDAPSystemSyncer extends Syncer {
 	async steps() {
 		await super.steps();
 		const systems = await this.getSystems();
-		for (const system of systems) {
+		const nextSystemSync = async (system) => {
 			const stats = await new LDAPSyncer(this.app, {}, this.logger, system).sync();
 			if (stats.success !== true) {
 				this.stats.errors.push(`LDAP sync failed for system "${system.alias}" (${system._id}).`);
@@ -43,7 +45,10 @@ class LDAPSystemSyncer extends Syncer {
 				.service('ldap')
 				.disconnect(system.ldapConfig)
 				.catch((error) => this.logger.error('Could not unbind from LDAP server', { error }));
-		}
+		};
+		const poolSize = Configuration.get('LDAP_SYSTEM_SYNCER_POOL_SIZE');
+		this.logger.info(`Running LDAP system sync with pool size ${poolSize}`);
+		await asyncPool(poolSize, systems, nextSystemSync);
 		return this.stats;
 	}
 
