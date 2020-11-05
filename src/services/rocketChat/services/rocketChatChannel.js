@@ -7,6 +7,7 @@ const { randomSuffix } = require('../randomPass');
 const { channelModel } = require('../model');
 const docs = require('../docs');
 const logger = require('../../../logger');
+const { asyncErrorLog } = require('../../../errors/utils');
 
 /**
  * Service that maps schulcloud teams to rocketChat groups.
@@ -296,11 +297,15 @@ class RocketChatChannel {
 	}
 
 	async onTeamPatched(result) {
-		if (result.features.includes(TEAM_FEATURES.ROCKET_CHAT)) {
-			await RocketChatChannel.unarchiveChannel(result._id);
-			await this.synchronizeModerators(result._id);
-		} else {
-			RocketChatChannel.archiveChannel(result._id);
+		try {
+			if (result.features.includes(TEAM_FEATURES.ROCKET_CHAT)) {
+				await RocketChatChannel.unarchiveChannel(result._id);
+				await this.synchronizeModerators(result._id);
+			} else {
+				RocketChatChannel.archiveChannel(result._id);
+			}
+		} catch (err) {
+			asyncErrorLog(err, 'An error is throwed in onTeamPatched Event.');
 		}
 	}
 
