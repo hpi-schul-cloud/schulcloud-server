@@ -1,13 +1,12 @@
-const { loadavg, cpus, networkInterfaces, uptime, freemem, totalmem } = require('os');
-
+const { loadavg, uptime, freemem, totalmem } = require('os');
+// cpus
+// networkInterfaces
 const byteToMB = (byte) => {
 	if (byte <= 0) {
 		return byte;
 	}
 	return byte / 1024 / 1024;
 };
-
-const pid = () => process.pid;
 
 // https://nodejs.org/api/process.html#process_process_memoryusage
 const memoryUsage = () => {
@@ -24,7 +23,7 @@ const memoryUsage = () => {
 // https://nodejs.org/api/os.htm
 const info = {};
 info.memory = () => ({
-	pid: pid(),
+	pid: process.pid,
 	uptime: uptime(),
 	loadavg: loadavg(),
 	memoryUsage: memoryUsage(),
@@ -33,12 +32,5 @@ info.memory = () => ({
 });
 module.exports = {
 	info,
-	pid,
 	memoryUsage,
-	loadavg,
-	cpus,
-	networkInterfaces,
-	freemem,
-	totalmem,
-	uptime,
 };

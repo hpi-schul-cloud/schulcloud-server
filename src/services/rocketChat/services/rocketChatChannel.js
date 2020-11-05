@@ -305,7 +305,7 @@ class RocketChatChannel {
 				RocketChatChannel.archiveChannel(result._id);
 			}
 		} catch (err) {
-			asyncErrorLog(err, 'An error is throwed in onTeamPatched Event.');
+			asyncErrorLog(err, 'An error was thrown in onTeamPatched event.');
 		}
 	}
 
