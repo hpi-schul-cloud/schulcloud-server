@@ -1,10 +1,17 @@
 const { loadavg, cpus, networkInterfaces, uptime, freemem, totalmem } = require('os');
 
-const byteToMB = (kb) => {
-	if (kb <= 0) {
-		return kb;
+const byteToMB = (byte) => {
+	if (byte <= 0) {
+		return byte;
 	}
-	return kb / 1024 / 1024;
+	return byte / 1024 / 1024;
+};
+
+const secToMin = (sec) => {
+	if (sec <= 0) {
+		return sec;
+	}
+	return sec / 60;
 };
 
 const pid = () => process.pid;
@@ -25,7 +32,7 @@ const memoryUsage = () => {
 const info = {};
 info.memory = () => ({
 	pid: pid(),
-	uptime: uptime(),
+	uptime_Minute: secToMin(uptime()),
 	loadavg: loadavg(),
 	memoryUsage: memoryUsage(),
 	freemem_MB: byteToMB(freemem()),
