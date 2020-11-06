@@ -7,6 +7,7 @@ const { Forbidden } = require('@feathersjs/errors');
 const Syncer = require('./Syncer');
 const ClassImporter = require('./mixins/ClassImporter');
 const { SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
+const { equal } = require('../../../helper/compare').ObjectId;
 
 const ATTRIBUTES = [
 	{ name: 'namePrefix', aliases: ['nameprefix', 'prefix', 'title', 'affix'] },
@@ -288,7 +289,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			return [await this.createUser(record), true];
 		}
 
-		if (user.schoolId !== schoolId) {
+		if (!equal(user.schoolId, schoolId)) {
 			// Give the feedback that the user exist. But can only execute by admins and is an important information.
 			throw new Forbidden('User is not on your school.');
 		}
