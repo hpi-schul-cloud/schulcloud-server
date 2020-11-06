@@ -118,9 +118,9 @@ userSchema.index(
 	},
 	{
 		weights: {
-			firstName: 5,
-			lastName: 5,
-			email: 5,
+			firstName: 10,
+			lastName: 10,
+			email: 10,
 			firstNameSearchValues: 2,
 			lastNameSearchValues: 2,
 			emailSearchValues: 1,

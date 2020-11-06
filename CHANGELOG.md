@@ -11,6 +11,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-5476 - Extend tests for Matrix messenger config and permission service
+- SC-6690 - refactors edu-sharing service and sets defaults
 - SC-6738 - Extend search input field in new admin tables to search for full name
 - SC-7293 - added Lern-Store view permission and a feature flag
 - SC-7357 - Add config service
@@ -22,6 +24,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-7331 - introduce axios for external requests, implemented in status api
 - SC-7395 - Changed ldap general strategy fetching of users from parallel to serialized
 - SC-6080 - move REQUEST_TIMEOUT from globals to Configuration
 - Dependencies: querystring replaced by qs
@@ -29,9 +32,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7404 - automatic forwarding for requests without versionnumber if no matching route is found
 - SC-7411 - api versioning for /me service
 - SC-7411 - api versioning for /version service
+- IMP-160 - integration-tests repo renamed to end-to-end-tests
 
 ### Fixed
 
+- SC-7353 course sharing between teachers
 - SC-7530 rename SHOW_VERSION to FEATURE_SHOW_VERSION_ENABLED
 - SC-7517 improve oauth test stability
 - SC-6586 Repaired migration script
@@ -40,6 +45,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Fix mocha tests
 - SC-6151 fixed a bug that prevented api docu from being accessible
 - SC-6151 fixed paths to openapi documentation
+- Fixed searching for names including a dash
 
 ## [25.2.0]
 
@@ -54,6 +60,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6769 - Introduce API validation module
 - SC-6769 - API validation for users/admin routes
 - SC-6510 - Added Merlin Url Generator for Lern Store / Edu-sharing
+- SC-5476 - Added school settings to enable students to open own chat rooms
 - SC-6567 - Add utils to cleanup incomingMessage stacks by logging errors
 
 ### Removed
@@ -71,9 +78,21 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
--         - fixed README badges
+- fixed README badges
 - SC-6151 - fixed a bug that prevented api docu from being accessible
--         - Fix mocha tests
+- Fix mocha tests
+
+## [25.1.9] - 2020-11-03
+
+### Fixed
+
+- SC-7638 - fixed pin creation for users with accounts
+
+## [25.1.8] - 2020-10-22
+
+### Fixed
+
+- SC-7333 - fixed creation of homeworks within lessons
 
 ## [25.1.7] - 2020-10-28
 
@@ -250,6 +269,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - Ignore database seed data with prettier, eslint, and codacy
 - SC-6640 - Fixed email check within registration (case insensitive)
+- SC-2710 - Adding time zones, default for school and theme
+
 
 ### Added - 24.5.0
 

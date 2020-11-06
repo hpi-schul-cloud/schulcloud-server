@@ -150,20 +150,37 @@
 			"default": false,
 			"description": "If enabled, adds support for Matrix Messenger."
 		},
-		"MATRIX_URI": {
-			"type": "string",
-			"format": "uri",
-			"default": "https://matrix.messenger.schule",
-			"description": "The URI of the Matrix Messenger server."
-		},
-		"MATRIX_SERVERNAME": {
-			"type": "string",
-			"default": "messenger.schule",
-			"description": "Servername of the Matrix Messenger server."
-		},
-		"MATRIX_SECRET": {
-			"type": "string",
-			"description": "Shared secret for the Matrix server."
+		"MATRIX_MESSENGER": {
+			"type": "object",
+			"description": "Matrix messenger properties, required always to be defined",
+			"required": [
+				"URI",
+				"SERVERNAME",
+				"SECRET",
+				"STUDENT_ROOM_CREATION"
+			],
+			"properties": {
+				"URI": {
+					"type": "string",
+					"format": "uri",
+					"default": "https://matrix.messenger.schule",
+					"description": "The URI of the Matrix Messenger server."
+				},
+				"SERVERNAME": {
+					"type": "string",
+					"default": "messenger.schule",
+					"description": "Servername of the Matrix Messenger server."
+				},
+				"SECRET": {
+					"type": "string",
+					"description": "Shared secret for the Matrix server."
+				},
+				"STUDENT_ROOM_CREATION": {
+					"type": "boolean",
+					"default": false,
+					"description": "If enabled, school admins can allow students to create additional chat rooms"
+				}
+			}
 		},
 		"FEATURE_RABBITMQ_ENABLED": {
 			"type": "boolean",
@@ -339,15 +356,18 @@
 			"type": "string",
 			"format": "uri",
 			"pattern": ".*(?<!/)$",
-			"description": "The URL for the edu-sharing repository."
+			"description": "The URL for the edu-sharing repository.",
+			"default": "https://mv-repo.schul-cloud.org"
 		},
 		"ES_USER": {
 			"type": "string",
-			"description": "The username for edu-sharing api access"
+			"description": "The username for edu-sharing api access",
+			"default": ""
 		},
 		"ES_PASSWORD": {
 			"type": "string",
-			"description": "The password for edu-sharing api access"
+			"description": "The password for edu-sharing api access",
+			"default": ""
 		},
 		"ES_GRANT_TYPE": {
 			"type": "string",
