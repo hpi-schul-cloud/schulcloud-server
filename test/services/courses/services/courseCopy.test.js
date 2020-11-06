@@ -19,7 +19,7 @@ describe('courses copy service', () => {
 	before(async () => {
 		app = await appPromise;
 		copyCourseService = app.service('courses/copy');
-		shareCourseService = app.service('courses/share');
+		shareCourseService = app.service('courses-share');
 		server = await app.listen();
 	});
 
