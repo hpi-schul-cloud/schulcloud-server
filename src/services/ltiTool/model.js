@@ -12,7 +12,7 @@ const ltiToolSchema = new Schema({
 	name: { type: String },
 	url: { type: String, required: true },
 	key: { type: String },
-	secret: { type: String, required: true },
+	secret: { type: String },
 	logo_url: { type: String },
 	lti_message_type: { type: String },
 	lti_version: { type: String },
