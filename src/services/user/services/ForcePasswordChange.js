@@ -1,7 +1,9 @@
-const { BadRequest } = require('@feathersjs/errors');
 const { disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const bcrypt = require('bcryptjs');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 const { passwordsMatch } = require('../../../utils/passwordHelpers');
 
 const addUserForcedToChangePasswordFlag = (context) => {
@@ -55,16 +57,14 @@ class ForcePasswordChangeService {
 			password: newPassword,
 		};
 
-		const accountPromise = this.app.service('/accounts')
-			.patch(params.account._id, accountUpdate, params);
+		const accountPromise = this.app.service('/accounts').patch(params.account._id, accountUpdate, params);
 		await accountPromise
 			.then((result) => Promise.resolve(result))
 			.catch((err) => {
 				throw new BadRequest(this.err.failed, err);
 			});
 
-		const userPromise = this.app.service('/users')
-			.patch(params.account.userId, { forcePasswordChange: false });
+		const userPromise = this.app.service('/users').patch(params.account.userId, { forcePasswordChange: false });
 		return userPromise
 			.then((result) => Promise.resolve(result))
 			.catch((err) => {

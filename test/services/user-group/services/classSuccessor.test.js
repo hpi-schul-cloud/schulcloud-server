@@ -1,17 +1,19 @@
 const { expect } = require('chai');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
 const SchoolYearFacade = require('../../../../src/services/school/logic/year');
 const classSuccessorServiceClass = require('../../../../src/services/user-group/services/classSuccessor');
 
-const classSuccessorService = app.service('classes/successor');
-
 describe('classSuccessor service', () => {
+	let app;
+	let classSuccessorService;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		classSuccessorService = app.service('classes/successor');
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -39,7 +41,9 @@ describe('classSuccessor service', () => {
 		const yearAfter = await schoolYears.getNextYearAfter(classYear);
 
 		const newClass = await testObjects.createTestClass({
-			name: 'mondklasse', schoolId: school._id, year: classYear,
+			name: 'mondklasse',
+			schoolId: school._id,
+			year: classYear,
 		});
 		const successor = await classSuccessorService.get(newClass._id);
 
@@ -113,7 +117,7 @@ describe('classSuccessor service', () => {
 		const yearAfter = await schoolYears.getNextYearAfter(classYear);
 
 		const name = `klasse ${Date.now()}`;
-		const classThisYear	= await testObjects.createTestClass({ name, schoolId: school._id, year: classYear });
+		const classThisYear = await testObjects.createTestClass({ name, schoolId: school._id, year: classYear });
 		const classYearAfter = await testObjects.createTestClass({ name, schoolId: school._id, year: yearAfter });
 		const newClass = await testObjects.createTestClass({ name, schoolId: school._id, year: classYear });
 		const successor = await classSuccessorService.get(newClass._id);

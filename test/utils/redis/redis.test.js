@@ -75,7 +75,7 @@ describe('redis helpers', () => {
 		let configBefore;
 
 		before(async () => {
-			configBefore = Configuration.toObject();
+			configBefore = Configuration.toObject({ plainSecrets: true });
 			mockery.enable({
 				warnOnReplace: false,
 				warnOnUnregistered: false,

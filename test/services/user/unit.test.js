@@ -3,66 +3,93 @@ const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 
 const { Configuration } = require('@schul-cloud/commons');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
-const userService = app.service('users');
-const registrationPinService = app.service('registrationPins');
 const { registrationPinModel } = require('../../../src/services/user/model');
 
-const publicTeachersService = app.service('publicTeachers');
-const testObjects = require('../helpers/testObjects')(app);
+const testObjects = require('../helpers/testObjects')(appPromise);
 
 describe('registrationPin Service', () => {
+	let app;
+	let registrationPinService;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		registrationPinService = app.service('registrationPins');
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await server.close();
+		await testObjects.cleanup();
+	});
+
 	let pin = null;
 	const email = 'test.adresse@schul-cloud.org';
 	it('registered the registrationPin Service', () => {
 		assert.ok(registrationPinService);
 	});
 
-	it('creates pins correctly', () => registrationPinService
-		.create({ email, silent: true })
-		.then(async () => {
-			({ pin } = (await registrationPinModel.findOne({ email }).exec()));
-		})
-		.then(() => registrationPinService.find({ query: { email, pin } }))
-		.then((pinObjects) => expect(pinObjects.data[0]).to.have.property('pin')));
+	it('creates pins correctly', () =>
+		registrationPinService
+			.create({ email, silent: true })
+			.then(async () => {
+				({ pin } = await registrationPinModel.findOne({ email }).exec());
+			})
+			.then(() => registrationPinService.find({ query: { email, pin } }))
+			.then((pinObjects) => expect(pinObjects.data[0]).to.have.property('pin')));
 
-	it('overwrites old pins', () => registrationPinService
-		.create({ email, silent: true })
-		.then(async () => {
-			const newPin = (await registrationPinModel.findOne({ email }).exec()).pin;
-			expect(newPin).to.be.ok;
-			expect(pin).to.be.not.equal(newPin);
-			pin = newPin;
-		})
-		.then(() => registrationPinService.create({ email, silent: true }))
-		.then(async () => {
-			const newPin = (await registrationPinModel.findOne({ email }).exec()).pin;
-			expect(newPin).to.be.ok;
-			expect(pin).to.be.not.equal(newPin);
-			pin = newPin;
-		})
-		.then(() => registrationPinService.find({ query: { email, pin } }))
-		.then((pinObjects) => expect(pinObjects.data).to.have.lengthOf(1)));
+	it('overwrites old pins', () =>
+		registrationPinService
+			.create({ email, silent: true })
+			.then(async () => {
+				const newPin = (await registrationPinModel.findOne({ email }).exec()).pin;
+				expect(newPin).to.be.ok;
+				expect(pin).to.be.not.equal(newPin);
+				pin = newPin;
+			})
+			.then(() => registrationPinService.create({ email, silent: true }))
+			.then(async () => {
+				const newPin = (await registrationPinModel.findOne({ email }).exec()).pin;
+				expect(newPin).to.be.ok;
+				expect(pin).to.be.not.equal(newPin);
+				pin = newPin;
+			})
+			.then(() => registrationPinService.find({ query: { email, pin } }))
+			.then((pinObjects) => expect(pinObjects.data).to.have.lengthOf(1)));
 
-	it('find without pin fails', () => registrationPinService
-		.create({ email, silent: true })
-		.then(() => registrationPinService.create({ email, silent: true }))
-		.then(() => registrationPinService.find({ query: { email } }))
-		.then(() => { throw new Error('pin should be given'); })
-		.catch((err) => expect(err.message.length).to.be.greaterThan(5)));
+	it('find without pin fails', () =>
+		registrationPinService
+			.create({ email, silent: true })
+			.then(() => registrationPinService.create({ email, silent: true }))
+			.then(() => registrationPinService.find({ query: { email } }))
+			.then(() => {
+				throw new Error('pin should be given');
+			})
+			.catch((err) => expect(err.message.length).to.be.greaterThan(5)));
 });
 
 describe('publicTeachers service', () => {
+	let app;
+	let userService;
+	let publicTeachersService;
+
 	let testStudent = {};
 	let testTeacher = {};
 	let testTeacherDisabled = {};
 	let testTeacherEnabled = {};
 	let teacherFromDifferentSchool;
 	let params;
+	let server;
 	const schoolId = new ObjectId().toString();
 
-	it('register services and create test users', async () => {
+	before(async () => {
+		app = await appPromise;
+		userService = app.service('users');
+		publicTeachersService = app.service('publicTeachers');
+		server = await app.listen(0);
+
 		testStudent = await testObjects.createTestUser({
 			roles: ['student'],
 			discoverable: false,
@@ -87,8 +114,6 @@ describe('publicTeachers service', () => {
 			schoolId,
 			firstName: 'teacher-enabled',
 		});
-		assert.ok(userService);
-		assert.ok(publicTeachersService);
 		teacherFromDifferentSchool = await testObjects.createTestUser({
 			schoolId: new ObjectId(),
 			roles: ['teacher'],
@@ -97,10 +122,23 @@ describe('publicTeachers service', () => {
 		params = await testObjects.generateRequestParamsFromUser(teacherFromDifferentSchool);
 	});
 
+	after((done) => {
+		server.close(done);
+	});
+
+	after(testObjects.cleanup);
+
+	it('test if services registered', async () => {
+		assert.ok(userService);
+		assert.ok(publicTeachersService);
+	});
+
 	describe('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', () => {
 		// save TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION value
 		// eslint-disable-next-line max-len
-		const ORIGINAL_TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION = Configuration.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
+		const ORIGINAL_TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION = Configuration.get(
+			'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION'
+		);
 		let result;
 
 		it('set to opt-in: find 1 discoverable teacher (testTeacherEnabled) but not find other teachers', async () => {
@@ -148,7 +186,10 @@ describe('publicTeachers service', () => {
 		});
 		// reset TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION back to original value
 		// eslint-disable-next-line max-len
-		Configuration.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', ORIGINAL_TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION);
+		Configuration.set(
+			'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION',
+			ORIGINAL_TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION
+		);
 	});
 
 	after(async () => {

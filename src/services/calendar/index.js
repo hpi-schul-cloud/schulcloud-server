@@ -1,14 +1,10 @@
 const request = require('request-promise-native');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+const queryString = require('qs');
 
+const { Configuration } = require('@schul-cloud/commons');
 const hooks = require('./hooks');
-const { REQUEST_TIMEOUT } = require('../../../config/globals');
-
-function toQueryString(paramsObject) {
-	return Object
-		.keys(paramsObject)
-		.map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
-		.join('&');
-}
 
 /**
  * converts a jsonApi-event to a plain event
@@ -58,9 +54,7 @@ const convertEventToJsonApi = (body) => ({
 				'x-sc-courseTimeId': body.courseTimeId,
 			},
 			relationships: {
-				'scope-ids': [
-					body.scopeId,
-				],
+				'scope-ids': [body.scopeId],
 				'separate-users': false,
 			},
 		},
@@ -134,7 +128,6 @@ class Service {
 						name: 'scopeId',
 						type: 'string',
 					},
-
 				],
 				summary: 'Creates a new event for the given scope',
 			},
@@ -188,17 +181,19 @@ class Service {
 			},
 			body: convertEventToJsonApi(data),
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT'),
 		};
 
 		return request(options).then((events) => {
-			events = (events.data || []).map((event) => Object.assign(event, {
-				title: event.summary,
-				allDay: false, // TODO: find correct value
-				start: Date.parse(event.dtstart),
-				end: Date.parse(event.dtend),
-				url: '', // TODO: add x-sc-field
-			}));
+			events = (events.data || []).map((event) =>
+				Object.assign(event, {
+					title: event.summary,
+					allDay: false, // TODO: find correct value
+					start: Date.parse(event.dtstart),
+					end: Date.parse(event.dtend),
+					url: '', // TODO: add x-sc-field
+				})
+			);
 			return events.map(convertJsonApiToEvent);
 		});
 	}
@@ -207,21 +202,25 @@ class Service {
 		const serviceUrls = this.app.get('services') || {};
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${serviceUrls.calendar}/events?${toQueryString(params.query)}`,
+			uri: `${serviceUrls.calendar}/events?${queryString.stringify(params.query)}`,
 			headers: {
 				Authorization: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT'),
 		};
 
 		return request(options).then((events) => {
-			events = (params.query || {}).userId || (events.data || events || []).map((event) => Object.assign(event, {
-				title: event.summary,
-				allDay: false, // TODO: find correct value
-				start: Date.parse(event.dtstart),
-				end: Date.parse(event.dtend),
-			}));
+			events =
+				(params.query || {}).userId ||
+				(events.data || events || []).map((event) =>
+					Object.assign(event, {
+						title: event.summary,
+						allDay: false, // TODO: find correct value
+						start: Date.parse(event.dtstart),
+						end: Date.parse(event.dtend),
+					})
+				);
 
 			return events.map(convertJsonApiToEvent);
 		});
@@ -238,7 +237,7 @@ class Service {
 			},
 			json: true,
 			method: 'DELETE',
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT'),
 			body: { data: [{ type: 'event' }] },
 		};
 
@@ -261,11 +260,11 @@ class Service {
 			},
 			body: convertEventToJsonApi(data),
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT'),
 		};
 
 		return request(options).then((events) => {
-			events = (events.data || events || []);
+			events = events.data || events || [];
 			return events.map(convertJsonApiToEvent);
 		});
 	}
@@ -277,6 +276,8 @@ class Service {
 
 module.exports = function () {
 	const app = this;
+
+	app.use('/calendar/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/calendar', new Service());
 	const contentService = app.service('/calendar');

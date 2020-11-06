@@ -4,15 +4,24 @@
 # develop-Branch goes to test, Master-Branch goes to productive systems
 
 # decrypt key
-openssl aes-256-cbc -K $encrypted_2709882c490b_key -iv $encrypted_2709882c490b_iv -in travis_rsa.enc -out travis_rsa -d
+mkdir -p .build
+openssl aes-256-cbc -K $encrypted_bce910623bb2_key -iv $encrypted_bce910623bb2_iv -in travis_rsa.enc -out .build/travis_rsa -d
 
+#
+# set -e : "... Exit immediately if a pipeline [...], which may consist of a single simple command [...],
+# a list [...], or a compound command [...] returns a non-zero status. ..."
+# [From: https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html]
+#
+# trap [action] [signal] : Trap calls catch on every EXIT with:
+# - status code = 0: Successful run
+# - status code != 0: Error
+#
 set -e
 trap 'catch $? $LINENO' EXIT
 catch() {
-	echo "kabummm!!!"
-	if [ "$1" != "0" ]; then
-		echo "War wohl nicht so gut. Fehler $1, guckst du $2"
-	fi
+  if [ "$1" != "0" ]; then
+    echo "An issue occured in line $2. Status code: $1"
+  fi
 }
 
 if [ "$TRAVIS_BRANCH" = "master" ]
@@ -39,6 +48,13 @@ function buildandpush {
 	# take those images and push them up to docker hub
 	docker push schulcloud/schulcloud-server:$DOCKERTAG
 	docker push schulcloud/schulcloud-server:$GIT_SHA
+
+	# If branch is develop, add and push additional docker tags
+	if [[ "$TRAVIS_BRANCH" = "develop" ]]
+	then
+		docker tag schulcloud/schulcloud-server:$DOCKERTAG schulcloud/schulcloud-server:develop_latest
+		docker push schulcloud/schulcloud-server:develop_latest
+	fi
 }
 
 function deploytotest {
@@ -49,11 +65,11 @@ function deploytotest {
 	# eval "echo \"$( cat compose-server-test.dummy )\"" > docker-compose-server.yml
 
 	# copy config-file to server and execute mit travis_rsa
-	chmod 600 travis_rsa
+	chmod 600 .build/travis_rsa
 	# scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa docker-compose-server.yml linux@test.schul-cloud.org:~
-	# ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.schul-cloud.org /usr/bin/docker stack deploy -c /home/linux/docker-compose-server.yml test-schul-cloud
-	# ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.schul-cloud.org /usr/bin/docker service update --force test-schul-cloud_server
-	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:$DOCKERTAG test-schul-cloud_server
+	# ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.hpi-schul-cloud.org /usr/bin/docker stack deploy -c /home/linux/docker-compose-server.yml test-schul-cloud
+	# ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@test.hpi-schul-cloud.org /usr/bin/docker service update --force test-schul-cloud_server
+	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@test.hpi-schul-cloud.org schulcloud/schulcloud-server:$DOCKERTAG test-schul-cloud_server
 }
 
 function deploytoprods {
@@ -61,16 +77,16 @@ function deploytoprods {
 	# compose-files are distributed via Ansible, many different secrets, Mongo_URIs etc.
 
 	# copy config-file to server and execute mit travis_rsa
-	chmod 600 travis_rsa
+	chmod 600 .build/travis_rsa
 
 	# brandenburg
-	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@open.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest brabu_server
+	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@open.hpi-schul-cloud.de schulcloud/schulcloud-server:latest brabu_server
 	# open
-	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@open.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest open_server
+	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@open.hpi-schul-cloud.de schulcloud/schulcloud-server:latest open_server
 	# thueringen
-	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@schulcloud-thueringen.de /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest thueringen_server
+	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@schulcloud-thueringen.de schulcloud/schulcloud-server:latest thueringen_server
 	# demo
-	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@demo.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:latest demo_server
+	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@demo.hpi-schul-cloud.de schulcloud/schulcloud-server:latest demo_server
 }
 
 function deploytostaging {
@@ -78,10 +94,10 @@ function deploytostaging {
 	# compose-files are distributed via Ansible, many different secrets, Mongo_URIs etc.
 
 	# copy config-file to server and execute mit travis_rsa
-	chmod 600 travis_rsa
+	chmod 600 .build/travis_rsa
 
 	# staging
-	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@staging.schul-cloud.org /usr/bin/docker service update --force --image schulcloud/schulcloud-server:$DOCKERTAG staging_server
+	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@staging.hpi-schul-cloud.org schulcloud/schulcloud-server:$DOCKERTAG staging_server
 }
 
 function deploytohotfix {
@@ -89,30 +105,30 @@ function deploytohotfix {
 	# compose-files are distributed via Ansible, many different secrets, Mongo_URIs etc.
 
 	# copy config-file to server and execute mit travis_rsa
-	chmod 600 travis_rsa
+	chmod 600 .build/travis_rsa
 
 	# staging
-	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i travis_rsa linux@hotfix$1.schul-cloud.dev /usr/bin/docker service update --force --image schulcloud/schulcloud-server:$DOCKERTAG hotfix$1_server
+	ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i .build/travis_rsa travis@hotfix$1.hpi-schul-cloud.org schulcloud/schulcloud-server:$DOCKERTAG hotfix$1_server
 }
 
 function inform {
 	if [[ "$TRAVIS_EVENT_TYPE" != "cron" ]]
 	then
-		curl -X POST -H 'Content-Type: application/json' --data '{"text":":rocket: Die Produktivsysteme können aktualisiert werden: Schul-Cloud Server! Dockertag: '$DOCKERTAG'"}' $WEBHOOK_URL_CHAT
+		curl -X POST -H 'Content-Type: application/json' --data '{"text":":rocket: Die Produktivsysteme können aktualisiert werden: HPI Schul-Cloud Server! Dockertag: '$DOCKERTAG'"}' $WEBHOOK_URL_CHAT
 	fi
 }
 
 function inform_staging {
 	if [[ "$TRAVIS_EVENT_TYPE" != "cron" ]]
 	then
-		curl -X POST -H 'Content-Type: application/json' --data '{"text":":boom: Das Staging-System wurde aktualisiert: Schul-Cloud Server! https://api.staging.schul-cloud.org/version (Dockertag: '$DOCKERTAG')"}' $WEBHOOK_URL_CHAT
+		curl -X POST -H 'Content-Type: application/json' --data '{"text":":boom: Das Staging-System wurde aktualisiert: HPI Schul-Cloud Server! https://api.staging.hpi-schul-cloud.org/version (Dockertag: '$DOCKERTAG')"}' $WEBHOOK_URL_CHAT
 	fi
 }
 
 function inform_hotfix {
 	if [[ "$TRAVIS_EVENT_TYPE" != "cron" ]]
 	then
-		curl -X POST -H 'Content-Type: application/json' --data '{"text":":boom: Das Hotfix-'$1'-System wurde aktualisiert: Schul-Cloud Server! https://api.hotfix'$1'.schul-cloud.org/version (Dockertag: '$DOCKERTAG')"}' $WEBHOOK_URL_CHAT
+		curl -X POST -H 'Content-Type: application/json' --data '{"text":":boom: Das Hotfix-'$1'-System wurde aktualisiert: HPI Schul-Cloud Server! https://api.hotfix'$1'.hpi-schul-cloud.org/version (Dockertag: '$DOCKERTAG')"}' $WEBHOOK_URL_CHAT
 	fi
 }
 
@@ -121,30 +137,42 @@ printf "%s\n%s\n%s" $TRAVIS_COMMIT $TRAVIS_BRANCH $TRAVIS_COMMIT_MESSAGE > ./ver
 
 if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
 then
+	# If an event occurs on branch master make sure it's
+	# no pull request, call inform. Discard if event
+	# is related to a pull request.
+	echo "Event detected on branch master. Event is no Pull Request. Informing team."
 	buildandpush
 	inform
 elif [[ "$TRAVIS_BRANCH" = "develop" ]]
 then
+	# If an event occurs on branch develop deploy to test
+	echo "Event detected on branch develop. Building docker image..."
 	buildandpush
-	deploytotest
+	# ops-1109: Deployment now in sc-app-ci
+	# deploytotest
 elif [[ $TRAVIS_BRANCH = release* ]]
 then
+	# If an event occurs on branch release* deploy to staging
+	echo "Event detected on branch release*. Attempting to deploy to staging environment..."
 	buildandpush
 	deploytostaging
 	inform_staging
 elif [[ $TRAVIS_BRANCH = hotfix* ]]
 then
+	# If an event occurs on branch hotfix* parse team id
+	# and deploy to according hotfix environment
 	TEAM="$(cut -d'/' -f2 <<< $TRAVIS_BRANCH)"
 	if [[ "$TEAM" -gt 0 && "$TEAM" -lt 8 ]]; then
+    	echo "Event detected on branch hotfix/$TEAM/... . Attempting to deploy to hotfix environment $TEAM..."
 		buildandpush
 		deploytohotfix $TEAM
 		inform_hotfix $TEAM
 	else
-		echo "Hotfix branch name do not match requirements to deploy"
+		echo "Event detected on branch hotfix*. However, branch name pattern does not match requirements to deploy. Expected hotfix/<team_number>/XX.XX.XX but got $TRAVIS_BRANCH"
 	fi
-
 else
-	echo "Nix wird deployt"
+	# If no condition is met, nothing will be deployed.
+	echo "Event detected which does not meet any conditions. Deployment will be skipped."
 fi
 
 exit 0

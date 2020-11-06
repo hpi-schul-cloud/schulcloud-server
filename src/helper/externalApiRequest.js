@@ -1,10 +1,11 @@
 const request = require('request-promise-native');
-const { REQUEST_TIMEOUT } = require('../../config/globals');
+const { Configuration } = require('@schul-cloud/commons');
 
-const externalApiRequest = (baseUrl) => request.defaults({
-	baseUrl,
-	timeout: REQUEST_TIMEOUT,
-	json: true,
-});
+const externalApiRequest = (baseUrl) =>
+	request.defaults({
+		baseUrl,
+		timeout: Configuration.get('REQUEST_TIMEOUT'),
+		json: true,
+	});
 
 module.exports = externalApiRequest;

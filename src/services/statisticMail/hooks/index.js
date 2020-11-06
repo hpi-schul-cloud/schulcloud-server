@@ -1,13 +1,9 @@
 const hooks = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
-const { isSuperHero } = require('../../../hooks');
-
+const { isSuperHero, ifNotLocal } = require('../../../hooks');
 
 exports.before = {
-	all: [
-		authenticate('jwt'),
-		isSuperHero(),
-	],
+	all: [ifNotLocal(authenticate('jwt', 'api-key')), ifNotLocal(isSuperHero())],
 	find: [hooks.disallow()],
 	get: [hooks.disallow()],
 	create: [],

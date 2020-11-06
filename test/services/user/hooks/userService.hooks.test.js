@@ -1,15 +1,33 @@
 const { expect } = require('chai');
 const assert = require('assert');
 
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
-const { enforceRoleHierarchyOnCreate } = require('../../../../src/services/user/hooks/userService');
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
+const { enforceRoleHierarchyOnCreate, checkUniqueEmail } = require('../../../../src/services/user/hooks/userService');
 
 const {
-	removeStudentFromCourses, removeStudentFromClasses, generateRegistrationLink,
+	removeStudentFromCourses,
+	removeStudentFromClasses,
+	generateRegistrationLink,
 } = require('../../../../src/services/user/hooks/userService');
 
 describe('removeStudentFromCourses', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
+	afterEach(async () => {
+		await testObjects.cleanup();
+	});
+
 	it('removes single student from all his courses', async () => {
 		const user = await testObjects.createTestUser({ roles: ['student'] });
 		const courses = await Promise.all([
@@ -22,10 +40,8 @@ describe('removeStudentFromCourses', () => {
 		});
 
 		expect(updatedCourses.length).to.equal(2);
-		const userInAnyCourse = updatedCourses.some(
-			(course) => course.userIds.some(
-				(id) => id.toString() === user._id.toString(),
-			),
+		const userInAnyCourse = updatedCourses.some((course) =>
+			course.userIds.some((id) => id.toString() === user._id.toString())
 		);
 		expect(userInAnyCourse).to.equal(false);
 	});
@@ -43,22 +59,20 @@ describe('removeStudentFromCourses', () => {
 			query: { _id: { $in: courses.map((c) => c._id) } },
 		});
 		expect(updatedCourses.length).to.equal(3);
-		const userInAnyCourse = updatedCourses.some(
-			(course) => course.userIds.some(
-				(id) => (
-					id.toString() === firstId._id.toString()
-					|| id.toString() === secondId._id.toString()),
-			),
+		const userInAnyCourse = updatedCourses.some((course) =>
+			course.userIds.some((id) => id.toString() === firstId._id.toString() || id.toString() === secondId._id.toString())
 		);
 		expect(userInAnyCourse).to.equal(false);
 	});
 });
 
 describe('removeStudentFromClasses', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -81,10 +95,8 @@ describe('removeStudentFromClasses', () => {
 		});
 
 		expect(updatedClasses.length).to.equal(2);
-		const userInAnyClass = updatedClasses.some(
-			(klass) => klass.userIds.some(
-				(id) => id.toString() === user._id.toString(),
-			),
+		const userInAnyClass = updatedClasses.some((klass) =>
+			klass.userIds.some((id) => id.toString() === user._id.toString())
 		);
 		expect(userInAnyClass).to.equal(false);
 	});
@@ -102,26 +114,24 @@ describe('removeStudentFromClasses', () => {
 			query: { _id: { $in: classes.map((c) => c._id) } },
 		});
 		expect(updatedClasses.length).to.equal(3);
-		const userInAnyClass = updatedClasses.some(
-			(klass) => klass.userIds.some(
-				(id) => (
-					id.toString() === firstId._id.toString()
-					|| id.toString() === secondId._id.toString()),
-			),
+		const userInAnyClass = updatedClasses.some((klass) =>
+			klass.userIds.some((id) => id.toString() === firstId._id.toString() || id.toString() === secondId._id.toString())
 		);
 		expect(userInAnyClass).to.equal(false);
 	});
 });
 
 describe('generateRegistrationLink', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	afterEach(async () => {
@@ -133,9 +143,9 @@ describe('generateRegistrationLink', () => {
 	const getAppMock = (registrationlinkMock) => ({
 		service: (service) => {
 			if (service === '/registrationlink') {
-				return ({
+				return {
 					create: async (data) => registrationlinkMock(data),
-				});
+				};
 			}
 			throw new Error('unknown service');
 		},
@@ -176,7 +186,9 @@ describe('generateRegistrationLink', () => {
 
 	it('catches errors from /registrationlink', async () => {
 		const context = {
-			app: getAppMock(() => { throw new Error('test error'); }),
+			app: getAppMock(() => {
+				throw new Error('test error');
+			}),
 			data: {
 				generateRegistrationLink: true,
 				roles: ['student'],
@@ -201,12 +213,13 @@ describe('generateRegistrationLink', () => {
 		};
 		const context = {
 			app: getAppMock((data) => {
-				if (data.role === userData.roles[0]
-					&& data.save === true
-					&& data.patchUser === true
-					&& data.host
-					&& data.schoolId === userData.schoolId
-					&& data.toHash === userData.email
+				if (
+					data.role === userData.roles[0] &&
+					data.save === true &&
+					data.patchUser === true &&
+					data.host &&
+					data.schoolId === userData.schoolId &&
+					data.toHash === userData.email
 				) {
 					return { hash: expectedHash };
 				}
@@ -223,13 +236,16 @@ describe('generateRegistrationLink', () => {
 });
 
 describe('enforceRoleHierarchyOnCreate', () => {
+	let app;
 	let server;
-	before((done) => {
-		server = app.listen(0, done);
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	afterEach(async () => {
@@ -244,7 +260,7 @@ describe('enforceRoleHierarchyOnCreate', () => {
 				service: (serviceName) => {
 					if (serviceName === 'users') {
 						return {
-							get: () => (Promise.resolve({ permissions: createrPermissions, roles: createrRoles })),
+							get: () => Promise.resolve({ permissions: createrPermissions, roles: createrRoles }),
 						};
 					}
 					if (serviceName === 'roles') {
@@ -254,7 +270,7 @@ describe('enforceRoleHierarchyOnCreate', () => {
 									return Promise.resolve(createdRole);
 								}
 								// eslint-disable-next-line prefer-promise-reject-errors
-								return Promise.reject('not found');
+								return Promise.reject(new Error('not found'));
 							},
 						};
 					}
@@ -361,6 +377,91 @@ describe('enforceRoleHierarchyOnCreate', () => {
 		const context = createContext([], ['STUDENT_CREATE'], ['student', 'parent']);
 		try {
 			await enforceRoleHierarchyOnCreate(context);
+		} catch (error) {
+			assert.fail(`expected promise resolved, but error was '${error.message}'`);
+		}
+	});
+});
+
+describe('checkUniqueEmail', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
+	afterEach(async () => {
+		await testObjects.cleanup();
+	});
+
+	const currentTs = Date.now();
+	const currentEmail = `current.${currentTs}@account.de`;
+	const updatedEmail = `Current.${currentTs}@Account.DE`;
+	const changedEmail = `Changed.${currentTs}@Account.DE`;
+	const mockUser = {
+		firstName: 'Test',
+		lastName: 'Testington',
+		schoolId: '5f2987e020834114b8efd6f8',
+	};
+
+	it('fails because of duplicate email', async () => {
+		const expectedErrorMessage = `Die E-Mail Adresse ist bereits in Verwendung!`;
+
+		await testObjects.createTestUser({ email: currentEmail });
+
+		const context = {
+			app,
+			data: {
+				...mockUser,
+				email: updatedEmail,
+			},
+		};
+
+		try {
+			await checkUniqueEmail(context);
+			assert.fail('should have failed');
+		} catch (error) {
+			expect(error.message).to.equal(expectedErrorMessage);
+			expect(error.code).to.equal(400);
+		}
+	});
+
+	it('succeeds because of unique email', async () => {
+		await testObjects.createTestUser({ email: currentEmail });
+
+		const context = {
+			app,
+			data: {
+				...mockUser,
+				email: changedEmail,
+			},
+		};
+
+		try {
+			await checkUniqueEmail(context);
+		} catch (error) {
+			assert.fail(`expected promise resolved, but error was '${error.message}'`);
+		}
+	});
+
+	it('succeeds because nothing to do (no email)', async () => {
+		await testObjects.createTestUser({ email: currentEmail });
+
+		const context = {
+			app,
+			data: {
+				...mockUser,
+			},
+		};
+
+		try {
+			await checkUniqueEmail(context);
 		} catch (error) {
 			assert.fail(`expected promise resolved, but error was '${error.message}'`);
 		}

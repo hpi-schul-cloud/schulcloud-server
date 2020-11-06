@@ -1,7 +1,8 @@
 const service = require('feathers-mongoose');
-const {
-	gradeModel,
-} = require('./model');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
+const { gradeModel } = require('./model');
 const hooks = require('./hooks');
 const courseCopyService = require('./services/course-copy-service');
 const courseScopelistService = require('./services/courseScopeLists');
@@ -20,7 +21,7 @@ const { courseGroupHooks, courseGroupService } = require('./services/courseGroup
 module.exports = function () {
 	const app = this;
 
-	app.configure(courseCopyService);
+	app.use('/courses/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	/* Course model */
 	app.use('/courseModel', courseModelService);
@@ -44,14 +45,17 @@ module.exports = function () {
 	app.service('/classes').hooks(classesHooks);
 
 	/* Grade model */
-	app.use('/grades', service({
-		Model: gradeModel,
-		paginate: {
-			default: 25,
-			max: 100,
-		},
-		lean: true,
-	}));
+	app.use(
+		'/grades',
+		service({
+			Model: gradeModel,
+			paginate: {
+				default: 25,
+				max: 100,
+			},
+			lean: true,
+		})
+	);
 	const gradeService = app.service('/grades');
 	gradeService.hooks(hooks);
 
@@ -59,6 +63,7 @@ module.exports = function () {
 	const classSuccessorService = app.service('/classes/successor');
 	classSuccessorService.hooks(classSuccessorHooks);
 
+	app.configure(courseCopyService);
 	app.configure(courseScopelistService);
 	app.configure(coursePermissionService);
 	app.configure(courseMembersService);

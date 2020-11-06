@@ -139,10 +139,7 @@ class EMailAddressActivationService {
 
 const EMailAddressActivationHooks = {
 	before: {
-		all: [
-			authenticate('jwt'),
-			hasPermission(['ACCOUNT_EDIT']),
-		],
+		all: [authenticate('jwt'), hasPermission(['ACCOUNT_EDIT'])],
 		find: [disallow()],
 		get: [disallow()],
 		create: [

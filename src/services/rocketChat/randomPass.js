@@ -1,6 +1,6 @@
 const { getRandomInt } = require('../../utils/randomNumberGenerator');
 
-const rnd36 = () => (getRandomInt(35)).toString(36);
+const rnd36 = () => getRandomInt(35).toString(36);
 
 const rndSpecial = () => {
 	const c = ['!', '$', '.'];
@@ -30,7 +30,6 @@ const generateSuffix = (m) => {
 	}
 	return suffix;
 };
-
 
 exports.randomPass = (max) => generatePass(max || 36);
 

@@ -1,19 +1,18 @@
 const { expect } = require('chai');
-const app = require('../../../../src/app');
-const {
-	createTestSchool,
-	createTestClass,
-	createTestTeamWithOwner,
-	cleanup,
-} = require('../../helpers/testObjects')(app);
-
-const registrationSchoolService = app.service('/registrationSchool');
+const appPromise = require('../../../../src/app');
+const { createTestSchool, createTestClass, createTestTeamWithOwner, cleanup } = require('../../helpers/testObjects')(
+	appPromise
+);
 
 describe('registrationSchool service', () => {
+	let app;
+	let registrationSchoolService;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		registrationSchoolService = app.service('/registrationSchool');
+		server = await app.listen();
 	});
 
 	after((done) => {
@@ -38,7 +37,7 @@ describe('registrationSchool service', () => {
 	});
 
 	it('get school from teamId', async () => {
-		const expertSchoolId = '598ec0bc8e4e364ec18ff46d';
+		const expertSchoolId = '5f2987e020834114b8efd6f9';
 		const { team } = await createTestTeamWithOwner();
 		const result = await registrationSchoolService.get(team._id);
 		expect(result._id.toString()).to.equal(expertSchoolId);

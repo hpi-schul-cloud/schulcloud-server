@@ -58,6 +58,30 @@ function getConnectionOptions() {
 }
 
 /**
+ * Splitting the inputs into 3 letters for search indexing.
+ * + first letter
+ * + first two letters combination
+ * to increase the quality
+ *
+ * @param {*} string
+ * @returns [Array]
+ */
+const splitForSearchIndexes = (...searchTexts) => {
+	const arr = [];
+	searchTexts.forEach((item) => {
+		item.split(' ').forEach((it) => {
+			// eslint-disable-next-line no-plusplus
+			if (it.length === 0) return;
+
+			arr.push(it.slice(0, 1));
+			if (it.length > 1) arr.push(it.slice(0, 2));
+			for (let i = 0; i < it.length - 2; i += 1) arr.push(it.slice(i, i + 3));
+		});
+	});
+	return arr;
+};
+
+/**
  * creates the initial connection to a mongodb.
  * see https://mongoosejs.com/docs/connections.html#error-handling for error handling
  *
@@ -67,10 +91,13 @@ function connect() {
 	mongoose.Promise = global.Promise;
 	const options = getConnectionOptions();
 
-	logger.info('connect to database host',
+	logger.info(
+		'connect to database host',
 		options.url,
 		options.username ? `with username ${options.username}` : 'without user',
-		options.password ? 'and' : 'and without', 'password');
+		options.password ? 'and' : 'and without',
+		'password'
+	);
 
 	const mongooseOptions = {
 		autoIndex: NODE_ENV !== ENVIRONMENTS.PRODUCTION,
@@ -81,16 +108,9 @@ function connect() {
 		useUnifiedTopology: true,
 	};
 
-	addAuthenticationToMongooseOptions(
-		options.username,
-		options.password,
-		mongooseOptions,
-	);
+	addAuthenticationToMongooseOptions(options.username, options.password, mongooseOptions);
 
-	return mongoose.connect(
-		encodeMongoURI(options.url),
-		mongooseOptions,
-	).then((resolved) => {
+	return mongoose.connect(encodeMongoURI(options.url), mongooseOptions).then((resolved) => {
 		// handle errors that appear after connection setup
 		mongoose.connection.on('error', (err) => {
 			logger.error(err);
@@ -108,4 +128,5 @@ module.exports = {
 	close,
 	getConnectionOptions,
 	enableAuditLog,
+	splitForSearchIndexes,
 };

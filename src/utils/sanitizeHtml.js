@@ -6,9 +6,43 @@ const maxDeep = 12;
 const keys = ['content', 'text', 'comment', 'gradeComment', 'description'];
 const paths = ['lessons', 'news', 'newsModel', 'homework', 'submissions'];
 const saveKeys = ['password', 'secret'];
-const allowedTags = ['h1', 'h2', 'h3', 'blockquote', 'p', 'a', 'ul', 'ol', 's', 'u', 'span', 'del',
-	'li', 'b', 'i', 'img', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
-	'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'audio', 'video', 'sub', 'sup'];
+const allowedTags = [
+	'h1',
+	'h2',
+	'h3',
+	'blockquote',
+	'p',
+	'a',
+	'ul',
+	'ol',
+	's',
+	'u',
+	'span',
+	'del',
+	'li',
+	'b',
+	'i',
+	'img',
+	'strong',
+	'em',
+	'strike',
+	'code',
+	'hr',
+	'br',
+	'div',
+	'table',
+	'thead',
+	'caption',
+	'tbody',
+	'tr',
+	'th',
+	'td',
+	'pre',
+	'audio',
+	'video',
+	'sub',
+	'sup',
+];
 const allowedSchemes = ['http', 'https', 'ftp', 'mailto'];
 
 // const allowedSchemesByTag = {
@@ -68,12 +102,22 @@ const normalize = (data) => {
 };
 
 /**
+ * Should split for example "onload=" to on "load =", "ONLOAD=" should also split
+ * @param {String} str The string that should validate.
+ * @example onload, onreload, onmouseover and so on
+ */
+const replaceOnload = (str) => {
+	return str.replace(/ (on)(.*)=/gi, ' $1 $2 = ');
+};
+
+/**
  * sanitizes data
  * https://www.npmjs.com/package/sanitize-html
  * @param {*} data
  * @param {*} param
  */
-const sanitize = (data, isHTML = false) => sanitizeHtml(normalize(data), isHTML ? htmlTrueOptions : htmlFalseOptions);
+const sanitize = (data, isHTML = false) =>
+	replaceOnload(sanitizeHtml(normalize(data), isHTML ? htmlTrueOptions : htmlFalseOptions));
 
 /**
  * disables sanitization for defined keys if a path is matching

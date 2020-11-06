@@ -1,7 +1,7 @@
-const {
-	Project,
-	Board,
-} = require('./services');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
+const { Project, Board } = require('./services');
 
 const hooks = require('./hooks');
 
@@ -9,6 +9,7 @@ module.exports = (app) => {
 	const projectRoute = '/nexboard/projects';
 	const boardRoute = '/nexboard/boards';
 
+	app.use('/nexboard/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use(projectRoute, new Project());
 	app.use(boardRoute, new Board());
 

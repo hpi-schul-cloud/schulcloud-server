@@ -1,6 +1,7 @@
-const { BadRequest, GeneralError } = require('@feathersjs/errors');
 const local = require('@feathersjs/authentication-local');
-const { SilentError } = require('../../../middleware/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest, GeneralError, SilentError } = reqlib('src/errors');
 const logger = require('../../../logger/index');
 const globalHooks = require('../../../hooks');
 
@@ -29,10 +30,14 @@ class ChangePasswordService {
 		}
 		try {
 			await Promise.all([
-				this.accountModel.updateOne({ _id: pwrecover.account },
-					{ $set: { password: data.password } }).lean().exec(),
-				this.passwordRecoveryModel.updateOne({ token: data.resetId },
-					{ $set: { changed: true } }).lean().exec(),
+				this.accountModel
+					.updateOne({ _id: pwrecover.account }, { $set: { password: data.password } })
+					.lean()
+					.exec(),
+				this.passwordRecoveryModel
+					.updateOne({ token: data.resetId }, { $set: { changed: true } })
+					.lean()
+					.exec(),
 			]).catch((err) => {
 				throw new GeneralError('passwordRecovery can not patch data', err);
 			});
@@ -45,10 +50,7 @@ class ChangePasswordService {
 
 const hooks = {
 	before: {
-		create: [
-			globalHooks.blockDisposableEmail('username'),
-			local.hooks.hashPassword('password'),
-		],
+		create: [globalHooks.blockDisposableEmail('username'), local.hooks.hashPassword('password')],
 	},
 };
 
