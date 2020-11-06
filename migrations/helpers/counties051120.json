@@ -1,0 +1,2408 @@
+[
+	{
+		"countyId": 8111,
+		"county": "Stuttgart",
+		"licensePlate": "S",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8115,
+		"county": "Böblingen",
+		"licensePlate": "BB, LEO",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8116,
+		"county": "Esslingen",
+		"licensePlate": "ES, NT",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8117,
+		"county": "Göppingen",
+		"licensePlate": "GP",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8118,
+		"county": "Ludwigsburg",
+		"licensePlate": "LB, VAI",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8119,
+		"county": "Rems-Murr-Kreis",
+		"licensePlate": "WN, BK",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8121,
+		"county": "Heilbronn",
+		"licensePlate": "HN",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8125,
+		"county": "Landkreis Heilbronn",
+		"licensePlate": "HN",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8126,
+		"county": "Hohenlohekreis",
+		"licensePlate": "KÜN, ÖHR",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8127,
+		"county": "Schwäbisch Hall",
+		"licensePlate": "SHA, BK, CR",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8128,
+		"county": "Main-Tauber-Kreis",
+		"licensePlate": "TBB, MGH",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8135,
+		"county": "Heidenheim",
+		"licensePlate": "HDH",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8136,
+		"county": "Ostalbkreis",
+		"licensePlate": "AA, GD",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8211,
+		"county": "Baden-Baden",
+		"licensePlate": "BAD",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8212,
+		"county": "Karlsruhe",
+		"licensePlate": "KA",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8215,
+		"county": "Landkreis Karlsruhe",
+		"licensePlate": "KA",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8216,
+		"county": "Rastatt",
+		"licensePlate": "RA, BH",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8221,
+		"county": "Heidelberg",
+		"licensePlate": "HD",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8222,
+		"county": "Mannheim",
+		"licensePlate": "MA",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8225,
+		"county": "Neckar-Odenwald-Kreis",
+		"licensePlate": "MOS, BCH",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8226,
+		"county": "Rhein-Neckar-Kreis",
+		"licensePlate": "HD",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8231,
+		"county": "Pforzheim",
+		"licensePlate": "PF",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8235,
+		"county": "Calw",
+		"licensePlate": "CW",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8236,
+		"county": "Enzkreis",
+		"licensePlate": "PF",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8237,
+		"county": "Freudenstadt",
+		"licensePlate": "FDS, HCH, HOR, WOL",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8311,
+		"county": "Freiburg im Breisgau",
+		"licensePlate": "FR",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8315,
+		"county": "Breisgau-Hochschwarzwald",
+		"licensePlate": "FR",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8316,
+		"county": "Emmendingen",
+		"licensePlate": "EM",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8317,
+		"county": "Ortenaukreis",
+		"licensePlate": "OG, BH, KEL, LR, WOL",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8325,
+		"county": "Rottweil",
+		"licensePlate": "RW",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8326,
+		"county": "Schwarzwald-Baar-Kreis",
+		"licensePlate": "VS",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8327,
+		"county": "Tuttlingen",
+		"licensePlate": "TUT",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8335,
+		"county": "Konstanz",
+		"licensePlate": "KN,",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8336,
+		"county": "Lörrach",
+		"licensePlate": "LÖ",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8337,
+		"county": "Waldshut",
+		"licensePlate": "WT",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8415,
+		"county": "Reutlingen",
+		"licensePlate": "RT",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8416,
+		"county": "Tübingen",
+		"licensePlate": "TÜ",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8417,
+		"county": "Zollernalbkreis",
+		"licensePlate": "BL, HCH",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8421,
+		"county": "Ulm",
+		"licensePlate": "UL",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8425,
+		"county": "Alb-Donau-Kreis",
+		"licensePlate": "UL",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8426,
+		"county": "Biberach",
+		"licensePlate": "BC",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8435,
+		"county": "Bodenseekreis",
+		"licensePlate": "FN, TT, ÜB",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8436,
+		"county": "Ravensburg",
+		"licensePlate": "RV, SLG, ÜB, WG",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 8437,
+		"county": "Sigmaringen",
+		"licensePlate": "SIG",
+		"federalId": "0000b186816abba584714c50"
+	},
+	{
+		"countyId": 9161,
+		"county": "Ingolstadt",
+		"licensePlate": "IN",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9162,
+		"county": "München",
+		"licensePlate": "M",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9163,
+		"county": "Rosenheim",
+		"licensePlate": "RO",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9171,
+		"county": "Altötting",
+		"licensePlate": "AÖ, LF",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9172,
+		"county": "Berchtesgadener Land",
+		"licensePlate": "BGL, BGD, LF, REI",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9173,
+		"county": "Bad Tölz-Wolfratshausen",
+		"licensePlate": "TÖL, WOR",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9174,
+		"county": "Dachau",
+		"licensePlate": "DAH",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9175,
+		"county": "Ebersberg",
+		"licensePlate": "EBE",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9176,
+		"county": "Eichstätt",
+		"licensePlate": "EI",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9177,
+		"county": "Erding",
+		"licensePlate": "ED",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9178,
+		"county": "Freising",
+		"licensePlate": "FS",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9179,
+		"county": "Fürstenfeldbruck",
+		"licensePlate": "FFB",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9180,
+		"county": "Garmisch-Partenkirchen",
+		"licensePlate": "GAP",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9181,
+		"county": "Landsberg am Lech",
+		"licensePlate": "LL",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9182,
+		"county": "Miesbach",
+		"licensePlate": "MB",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9183,
+		"county": "Mühldorf am Inn",
+		"licensePlate": "MÜ, VIB, WS",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9184,
+		"county": "Landkreis München",
+		"licensePlate": "M, AIB, WOR",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9185,
+		"county": "Neuburg-Schrobenhausen",
+		"licensePlate": "ND, SOB",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9186,
+		"county": "Pfaffenhofen an der Ilm",
+		"licensePlate": "PAF",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9187,
+		"county": "Landkreis Rosenheim",
+		"licensePlate": "RO, AIB, WS",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9188,
+		"county": "Starnberg",
+		"licensePlate": "STA, WOR",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9189,
+		"county": "Traunstein",
+		"licensePlate": "TS, LF",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9190,
+		"county": "Weilheim-Schongau",
+		"licensePlate": "WM, SOG",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9261,
+		"county": "Landshut",
+		"licensePlate": "LA",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9262,
+		"county": "Passau",
+		"licensePlate": "PA",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9263,
+		"county": "Straubing",
+		"licensePlate": "SR",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9271,
+		"county": "Deggendorf",
+		"licensePlate": "DEG",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9272,
+		"county": "Freyung-Grafenau",
+		"licensePlate": "FRG, GRA, WOS",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9273,
+		"county": "Kelheim",
+		"licensePlate": "KEH, MAI, PAR, RID, ROL",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9274,
+		"county": "Landkreis Landshut",
+		"licensePlate": "LA, MAI, MAL, ROL, VIB",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9275,
+		"county": "Landkreis Passau",
+		"licensePlate": "PA",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9276,
+		"county": "Regen",
+		"licensePlate": "REG, VIT",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9277,
+		"county": "Rottal-Inn",
+		"licensePlate": "PAN, EG, GRI, VIB",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9278,
+		"county": "Straubing-Bogen",
+		"licensePlate": "SR, BOG, MAL",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9279,
+		"county": "Dingolfing-Landau",
+		"licensePlate": "DGF, LAN",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9361,
+		"county": "Amberg",
+		"licensePlate": "AM",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9362,
+		"county": "Regensburg",
+		"licensePlate": "R",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9363,
+		"county": "Weiden in der Oberpfalz",
+		"licensePlate": "WEN",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9371,
+		"county": "Amberg-Sulzbach",
+		"licensePlate": "AS, BUL, ESB, NAB, SUL",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9372,
+		"county": "Cham",
+		"licensePlate": "CHA, KÖZ, ROD, WÜM",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9373,
+		"county": "Neumarkt in der Oberpfalz",
+		"licensePlate": "NM, PAR",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9374,
+		"county": "Neustadt an der Waldnaab",
+		"licensePlate": "NEW, ESB, VOH",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9375,
+		"county": "Landkreis Regensburg",
+		"licensePlate": "R",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9376,
+		"county": "Schwandorf",
+		"licensePlate": "SAD, BUL, NAB, NEN, OVI, ROD",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9377,
+		"county": "Tirschenreuth",
+		"licensePlate": "TIR, KEM",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9461,
+		"county": "Bamberg",
+		"licensePlate": "BA",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9462,
+		"county": "Bayreuth",
+		"licensePlate": "BT",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9463,
+		"county": "Coburg",
+		"licensePlate": "CO, NEC",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9464,
+		"county": "Hof",
+		"licensePlate": "HO",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9471,
+		"county": "Landkreis Bamberg",
+		"licensePlate": "BA",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9472,
+		"county": "Landkreis Bayreuth",
+		"licensePlate": "BT, EBS, ESB, KEM, MÜB, PEG",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9473,
+		"county": "Landkreis Coburg",
+		"licensePlate": "CO, NEC",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9474,
+		"county": "Forchheim",
+		"licensePlate": "FO, EBS, PEG",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9475,
+		"county": "Landkreis Hof",
+		"licensePlate": "HO, MÜB, NAI, REH, SAN",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9476,
+		"county": "Kronach",
+		"licensePlate": "KC, SAN",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9477,
+		"county": "Kulmbach",
+		"licensePlate": "KU, EBS, SAN",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9478,
+		"county": "Lichtenfels",
+		"licensePlate": "LIF, STE",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9479,
+		"county": "Wunsiedel im Fichtelgebirge",
+		"licensePlate": "WUN, MAK, REH, SEL",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9561,
+		"county": "Ansbach",
+		"licensePlate": "AN",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9562,
+		"county": "Erlangen",
+		"licensePlate": "ER",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9563,
+		"county": "Fürth",
+		"licensePlate": "FÜ",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9564,
+		"county": "Nürnberg",
+		"licensePlate": "N",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9565,
+		"county": "Schwabach",
+		"licensePlate": "SC",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9571,
+		"county": "Landkreis Ansbach",
+		"licensePlate": "AN, DKB, FEU, ROT",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9572,
+		"county": "Erlangen-Höchstadt",
+		"licensePlate": "ERH, HÖS",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9573,
+		"county": "Landkreis Fürth",
+		"licensePlate": "FÜ",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9574,
+		"county": "Nürnberger Land",
+		"licensePlate": "LAU, ESB, HEB, N, PEG",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9575,
+		"county": "Neustadt an der Aisch-Bad Windsheim",
+		"licensePlate": "NEA, SEF, UFF",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9576,
+		"county": "Roth",
+		"licensePlate": "RH, HIP",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9577,
+		"county": "Weißenburg-Gunzenhausen",
+		"licensePlate": "WUG, GUN",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9661,
+		"county": "Aschaffenburg",
+		"licensePlate": "AB",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9662,
+		"county": "Schweinfurt",
+		"licensePlate": "SW",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9663,
+		"county": "Würzburg",
+		"licensePlate": "WÜ",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9671,
+		"county": "Landkreis Aschaffenburg",
+		"licensePlate": "AB, ALZ",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9672,
+		"county": "Bad Kissingen",
+		"licensePlate": "KG, BRK, HAB",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9673,
+		"county": "Rhön-Grabfeld",
+		"licensePlate": "NES, KÖN, MET",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9674,
+		"county": "Haßberge",
+		"licensePlate": "HAS, EBN, GEO, HOH",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9675,
+		"county": "Kitzingen",
+		"licensePlate": "KT",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9676,
+		"county": "Miltenberg",
+		"licensePlate": "MIL, OBB",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9677,
+		"county": "Main-Spessart",
+		"licensePlate": "MSP",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9678,
+		"county": "Landkreis Schweinfurt",
+		"licensePlate": "SW, GEO",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9679,
+		"county": "Landkreis Würzburg",
+		"licensePlate": "WÜ, OCH",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9761,
+		"county": "Augsburg",
+		"licensePlate": "A",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9762,
+		"county": "Kaufbeuren",
+		"licensePlate": "KF",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9763,
+		"county": "Kempten",
+		"licensePlate": "KE",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9764,
+		"county": "Memmingen",
+		"licensePlate": "MM",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9771,
+		"county": "Aichach-Friedberg",
+		"licensePlate": "AIC, FDB",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9772,
+		"county": "Landkreis Augsburg",
+		"licensePlate": "A, SMÜ, WER",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9773,
+		"county": "Dillingen an der Donau",
+		"licensePlate": "DLG, WER",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9774,
+		"county": "Günzburg",
+		"licensePlate": "GZ, KRU",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9775,
+		"county": "Neu-Ulm",
+		"licensePlate": "NU, ILL",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9776,
+		"county": "Lindau (Bodensee)",
+		"licensePlate": "LI",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9777,
+		"county": "Ostallgäu",
+		"licensePlate": "OAL, FÜS, MOD",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9778,
+		"county": "Unterallgäu",
+		"licensePlate": "MN",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9779,
+		"county": "Donau-Ries",
+		"licensePlate": "DON, NÖ",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 9780,
+		"county": "Oberallgäu",
+		"licensePlate": "OA",
+		"federalId": "0000b186816abba584714c51"
+	},
+	{
+		"countyId": 11001,
+		"county": "Berlin",
+		"licensePlate": "B",
+		"federalId": "0000b186816abba584714c52"
+	},
+	{
+		"countyId": 12051,
+		"county": "Brandenburg an der Havel",
+		"licensePlate": "BRB",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 12052,
+		"county": "Cottbus",
+		"licensePlate": "CB",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 12053,
+		"county": "Frankfurt",
+		"licensePlate": "FF",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 12054,
+		"county": "Potsdam",
+		"licensePlate": "P",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 12060,
+		"county": "Barnim",
+		"licensePlate": "BAR, BER, EW",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 12061,
+		"county": "Dahme-Spreewald",
+		"licensePlate": "LDS, KW, LC, LN",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 12062,
+		"county": "Elbe-Elster",
+		"licensePlate": "EE, FI, LIB",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 12063,
+		"county": "Havelland",
+		"licensePlate": "HVL, NAU, RN",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 12064,
+		"county": "Märkisch-Oderland",
+		"licensePlate": "MOL, FRW, SEE, SRB",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 12065,
+		"county": "Oberhavel",
+		"licensePlate": "OHV",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 12066,
+		"county": "Oberspreewald-Lausitz",
+		"licensePlate": "OSL, CA, SFB",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 12067,
+		"county": "Oder-Spree",
+		"licensePlate": "LOS, BSK, EH, FW",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 12068,
+		"county": "Ostprignitz-Ruppin",
+		"licensePlate": "OPR, KY, NP, WK",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 12069,
+		"county": "Potsdam-Mittelmark",
+		"licensePlate": "PM",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 12070,
+		"county": "Prignitz",
+		"licensePlate": "PR",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 12071,
+		"county": "Spree-Neiße",
+		"licensePlate": "SPN, FOR, GUB, SPB",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 12072,
+		"county": "Teltow-Fläming",
+		"licensePlate": "TF",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 12073,
+		"county": "Uckermark",
+		"licensePlate": "UM, ANG, PZ, SDT, TP",
+		"federalId": "0000b186816abba584714c53"
+	},
+	{
+		"countyId": 4011,
+		"county": "Bremen",
+		"licensePlate": "HB",
+		"federalId": "0000b186816abba584714c54"
+	},
+	{
+		"countyId": 4012,
+		"county": "Bremerhaven",
+		"licensePlate": "HB",
+		"federalId": "0000b186816abba584714c54"
+	},
+	{
+		"countyId": 2000,
+		"county": "Hamburg",
+		"licensePlate": "HH",
+		"federalId": "0000b186816abba584714c55"
+	},
+	{
+		"countyId": 6411,
+		"county": "Darmstadt",
+		"licensePlate": "DA",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6412,
+		"county": "Frankfurt am Main",
+		"licensePlate": "F",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6413,
+		"county": "Offenbach am Main",
+		"licensePlate": "OF",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6414,
+		"county": "Wiesbaden",
+		"licensePlate": "WI",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6431,
+		"county": "Bergstraße",
+		"licensePlate": "HP",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6432,
+		"county": "Darmstadt-Dieburg",
+		"licensePlate": "DA, DI",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6433,
+		"county": "Groß-Gerau",
+		"licensePlate": "GG",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6434,
+		"county": "Hochtaunuskreis",
+		"licensePlate": "HG, USI",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6435,
+		"county": "Main-Kinzig-Kreis",
+		"licensePlate": "MKK, HU, GN, SLÜ",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6436,
+		"county": "Main-Taunus-Kreis",
+		"licensePlate": "MTK",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6437,
+		"county": "Odenwaldkreis",
+		"licensePlate": "ERB",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6438,
+		"county": "Offenbach",
+		"licensePlate": "OF",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6439,
+		"county": "Rheingau-Taunus-Kreis",
+		"licensePlate": "RÜD, SWA",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6440,
+		"county": "Wetteraukreis",
+		"licensePlate": "FB, BÜD",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6531,
+		"county": "Gießen",
+		"licensePlate": "GI",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6532,
+		"county": "Lahn-Dill-Kreis",
+		"licensePlate": "LDK, DIL,",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6533,
+		"county": "Limburg-Weilburg",
+		"licensePlate": "LM, WEL",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6534,
+		"county": "Marburg-Biedenkopf",
+		"licensePlate": "MR, BID",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6535,
+		"county": "Vogelsbergkreis",
+		"licensePlate": "VB",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6611,
+		"county": "Kassel",
+		"licensePlate": "KS",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6631,
+		"county": "Fulda",
+		"licensePlate": "FD",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6632,
+		"county": "Hersfeld-Rotenburg",
+		"licensePlate": "HEF, ROF",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6633,
+		"county": "Landkreis Kassel",
+		"licensePlate": "KS, HOG, WOH",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6634,
+		"county": "Schwalm-Eder-Kreis",
+		"licensePlate": "HR, FZ, MEG, ZIG",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6635,
+		"county": "Waldeck-Frankenberg",
+		"licensePlate": "KB, FKB, WA",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 6636,
+		"county": "Werra-Meißner-Kreis",
+		"licensePlate": "ESW, WIZ",
+		"federalId": "0000b186816abba584714c56"
+	},
+	{
+		"countyId": 13003,
+		"county": "Rostock",
+		"licensePlate": "HRO",
+		"federalId": "0000b186816abba584714c57"
+	},
+	{
+		"countyId": 13004,
+		"county": "Schwerin",
+		"licensePlate": "SN",
+		"federalId": "0000b186816abba584714c57"
+	},
+	{
+		"countyId": 13071,
+		"county": "Mecklenburgische Seenplatte",
+		"licensePlate": "MSE, AT, DM, MC, MST, MÜR, NZ, RM, WRN,",
+		"federalId": "0000b186816abba584714c57"
+	},
+	{
+		"countyId": 13072,
+		"county": "Landkreis Rostock",
+		"licensePlate": "LRO, BÜZ, DBR, GÜ, ROS, TET",
+		"federalId": "0000b186816abba584714c57"
+	},
+	{
+		"countyId": 13073,
+		"county": "Vorpommern-Rügen",
+		"licensePlate": "VR, GMN, NVP, RDG, RÜG,",
+		"federalId": "0000b186816abba584714c57"
+	},
+	{
+		"countyId": 13074,
+		"county": "Nordwestmecklenburg",
+		"licensePlate": "NWM, GDB, GVM, WIS,",
+		"federalId": "0000b186816abba584714c57"
+	},
+	{
+		"countyId": 13075,
+		"county": "Vorpommern-Greifswald",
+		"licensePlate": "VG, ANK, GW, PW, SBG, UEM, WLG,",
+		"federalId": "0000b186816abba584714c57"
+	},
+	{
+		"countyId": 13076,
+		"county": "Ludwigslust-Parchim",
+		"licensePlate": "LUP, HGN, LBZ, LWL, PCH, STB",
+		"federalId": "0000b186816abba584714c57"
+	},
+	{
+		"countyId": 3101,
+		"county": "Braunschweig",
+		"licensePlate": "BS",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3102,
+		"county": "Salzgitter",
+		"licensePlate": "SZ",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3103,
+		"county": "Wolfsburg",
+		"licensePlate": "WOB",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3151,
+		"county": "Gifhorn",
+		"licensePlate": "GF",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3153,
+		"county": "Goslar",
+		"licensePlate": "GS, BRL, CLZ",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3154,
+		"county": "Helmstedt",
+		"licensePlate": "HE",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3155,
+		"county": "Northeim",
+		"licensePlate": "NOM, EIN, GAN",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3157,
+		"county": "Peine",
+		"licensePlate": "PE",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3158,
+		"county": "Wolfenbüttel",
+		"licensePlate": "WF",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3159,
+		"county": "Göttingen",
+		"licensePlate": "GÖ, DUD, HMÜ, OHA",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3241,
+		"county": "Hannover",
+		"licensePlate": "H",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3251,
+		"county": "Diepholz",
+		"licensePlate": "DH, SY",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3252,
+		"county": "Hameln-Pyrmont",
+		"licensePlate": "HM",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3254,
+		"county": "Hildesheim",
+		"licensePlate": "HI, ALF",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3255,
+		"county": "Holzminden",
+		"licensePlate": "HOL",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3256,
+		"county": "Nienburg/Weser",
+		"licensePlate": "NI",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3257,
+		"county": "Schaumburg",
+		"licensePlate": "SHG, RI",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3351,
+		"county": "Celle",
+		"licensePlate": "CE",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3352,
+		"county": "Cuxhaven",
+		"licensePlate": "CUX",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3353,
+		"county": "Harburg",
+		"licensePlate": "WL",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3354,
+		"county": "Lüchow-Dannenberg",
+		"licensePlate": "DAN",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3355,
+		"county": "Lüneburg",
+		"licensePlate": "LG",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3356,
+		"county": "Osterholz",
+		"licensePlate": "OHZ",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3357,
+		"county": "Rotenburg (Wümme)",
+		"licensePlate": "ROW, BRV",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3358,
+		"county": "Heidekreis",
+		"licensePlate": "HK",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3359,
+		"county": "Stade",
+		"licensePlate": "STD",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3360,
+		"county": "Uelzen",
+		"licensePlate": "UE",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3361,
+		"county": "Verden",
+		"licensePlate": "VER",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3401,
+		"county": "Delmenhorst",
+		"licensePlate": "DEL",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3402,
+		"county": "Emden",
+		"licensePlate": "EMD",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3403,
+		"county": "Oldenburg",
+		"licensePlate": "OL",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3404,
+		"county": "Osnabrück",
+		"licensePlate": "OS",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3405,
+		"county": "Wilhelmshaven",
+		"licensePlate": "WHV",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3451,
+		"county": "Ammerland",
+		"licensePlate": "WST",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3452,
+		"county": "Aurich",
+		"licensePlate": "AUR, NOR",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3453,
+		"county": "Cloppenburg",
+		"licensePlate": "CLP",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3454,
+		"county": "Emsland",
+		"licensePlate": "EL",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3455,
+		"county": "Friesland",
+		"licensePlate": "FRI",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3456,
+		"county": "Grafschaft Bentheim",
+		"licensePlate": "NOH",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3457,
+		"county": "Leer",
+		"licensePlate": "LER",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3458,
+		"county": "Landkreis Oldenburg",
+		"licensePlate": "OL",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3459,
+		"county": "Landkreis Osnabrück",
+		"licensePlate": "OS, BSB, MEL, WTL",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3460,
+		"county": "Vechta",
+		"licensePlate": "VEC",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3461,
+		"county": "Wesermarsch",
+		"licensePlate": "BRA",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 3462,
+		"county": "Wittmund",
+		"licensePlate": "WTM",
+		"federalId": "0000b186816abba584714c58"
+	},
+	{
+		"countyId": 5111,
+		"county": "Düsseldorf",
+		"licensePlate": "D",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5112,
+		"county": "Duisburg",
+		"licensePlate": "DU",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5113,
+		"county": "Essen",
+		"licensePlate": "E",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5114,
+		"county": "Krefeld",
+		"licensePlate": "KR",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5116,
+		"county": "Mönchengladbach",
+		"licensePlate": "MG",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5117,
+		"county": "Mülheim an der Ruhr",
+		"licensePlate": "MH",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5119,
+		"county": "Oberhausen",
+		"licensePlate": "OB",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5120,
+		"county": "Remscheid",
+		"licensePlate": "RS",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5122,
+		"county": "Solingen",
+		"licensePlate": "SG",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5124,
+		"county": "Wuppertal",
+		"licensePlate": "W",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5154,
+		"county": "Kleve",
+		"licensePlate": "KLE, GEL",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5158,
+		"county": "Mettmann",
+		"licensePlate": "ME",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5162,
+		"county": "Rhein-Kreis Neuss",
+		"licensePlate": "NE, GV",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5166,
+		"county": "Viersen",
+		"licensePlate": "VIE, KK",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5170,
+		"county": "Wesel",
+		"licensePlate": "WES, DIN, MO",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5314,
+		"county": "Bonn",
+		"licensePlate": "BN",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5315,
+		"county": "Köln",
+		"licensePlate": "K",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5316,
+		"county": "Leverkusen",
+		"licensePlate": "LEV, OP",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5334,
+		"county": "Aachen",
+		"licensePlate": "AC, MON",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5358,
+		"county": "Düren",
+		"licensePlate": "DN, JÜL, MON, SLE",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5362,
+		"county": "Rhein-Erft-Kreis",
+		"licensePlate": "BM",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5366,
+		"county": "Euskirchen",
+		"licensePlate": "EU, SLE",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5370,
+		"county": "Heinsberg",
+		"licensePlate": "HS, ERK, GK",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5374,
+		"county": "Oberbergischer Kreis",
+		"licensePlate": "GM",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5378,
+		"county": "Rheinisch-Bergischer Kreis",
+		"licensePlate": "GL",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5382,
+		"county": "Rhein-Sieg-Kreis",
+		"licensePlate": "SU",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5512,
+		"county": "Bottrop",
+		"licensePlate": "BOT",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5513,
+		"county": "Gelsenkirchen",
+		"licensePlate": "GE",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5515,
+		"county": "Münster",
+		"licensePlate": "MS",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5554,
+		"county": "Borken",
+		"licensePlate": "BOR, AH, BOH",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5558,
+		"county": "Coesfeld",
+		"licensePlate": "COE, LH",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5562,
+		"county": "Recklinghausen",
+		"licensePlate": "RE, CAS, GLA",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5566,
+		"county": "Steinfurt",
+		"licensePlate": "ST, BF, TE",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5570,
+		"county": "Warendorf",
+		"licensePlate": "WAF, BE",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5711,
+		"county": "Bielefeld",
+		"licensePlate": "BI",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5754,
+		"county": "Gütersloh",
+		"licensePlate": "GT",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5758,
+		"county": "Herford",
+		"licensePlate": "HF",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5762,
+		"county": "Höxter",
+		"licensePlate": "HX, WAR",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5766,
+		"county": "Lippe",
+		"licensePlate": "LIP",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5770,
+		"county": "Minden-Lübbecke",
+		"licensePlate": "MI",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5774,
+		"county": "Paderborn",
+		"licensePlate": "PB, BÜR",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5911,
+		"county": "Bochum",
+		"licensePlate": "BO, WAT",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5913,
+		"county": "Dortmund",
+		"licensePlate": "DO",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5914,
+		"county": "Hagen",
+		"licensePlate": "HA",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5915,
+		"county": "Hamm",
+		"licensePlate": "HAM",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5916,
+		"county": "Herne",
+		"licensePlate": "HER, WAN",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5954,
+		"county": "Ennepe-Ruhr-Kreis",
+		"licensePlate": "EN, WIT",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5958,
+		"county": "Hochsauerlandkreis",
+		"licensePlate": "HSK",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5962,
+		"county": "Märkischer Kreis",
+		"licensePlate": "MK",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5966,
+		"county": "Olpe",
+		"licensePlate": "OE",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5970,
+		"county": "Siegen-Wittgenstein",
+		"licensePlate": "SI, BLB",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5974,
+		"county": "Soest",
+		"licensePlate": "SO, LP",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 5978,
+		"county": "Unna",
+		"licensePlate": "UN, LH, LÜN",
+		"federalId": "0000b186816abba584714c59"
+	},
+	{
+		"countyId": 7111,
+		"county": "Koblenz",
+		"licensePlate": "KO",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7131,
+		"county": "Ahrweiler",
+		"licensePlate": "AW",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7132,
+		"county": "Altenkirchen (Westerwald)",
+		"licensePlate": "AK",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7133,
+		"county": "Bad Kreuznach",
+		"licensePlate": "KH",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7134,
+		"county": "Birkenfeld",
+		"licensePlate": "BIR",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7135,
+		"county": "Cochem-Zell",
+		"licensePlate": "COC, ZEL",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7137,
+		"county": "Mayen-Koblenz",
+		"licensePlate": "MYK, MY",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7138,
+		"county": "Neuwied",
+		"licensePlate": "NR",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7140,
+		"county": "Rhein-Hunsrück-Kreis",
+		"licensePlate": "SIM, GOA",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7141,
+		"county": "Rhein-Lahn-Kreis",
+		"licensePlate": "EMS, DIZ, GOH",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7143,
+		"county": "Westerwaldkreis",
+		"licensePlate": "WW",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7211,
+		"county": "Trier",
+		"licensePlate": "TR",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7231,
+		"county": "Bernkastel-Wittlich",
+		"licensePlate": "WIL, BKS",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7232,
+		"county": "Eifelkreis Bitburg-Prüm",
+		"licensePlate": "BIT, PRÜ",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7233,
+		"county": "Vulkaneifel",
+		"licensePlate": "DAU",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7235,
+		"county": "Trier-Saarburg",
+		"licensePlate": "TR, SAB",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7311,
+		"county": "Frankenthal",
+		"licensePlate": "FT",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7312,
+		"county": "Kaiserslautern",
+		"licensePlate": "KL",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7313,
+		"county": "Landau in der Pfalz",
+		"licensePlate": "LD",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7314,
+		"county": "Ludwigshafen am Rhein",
+		"licensePlate": "LU",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7315,
+		"county": "Mainz",
+		"licensePlate": "MZ",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7316,
+		"county": "Neustadt an der Weinstraße",
+		"licensePlate": "NW",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7317,
+		"county": "Pirmasens",
+		"licensePlate": "PS",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7318,
+		"county": "Speyer",
+		"licensePlate": "SP",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7319,
+		"county": "Worms",
+		"licensePlate": "WO",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7320,
+		"county": "Zweibrücken",
+		"licensePlate": "ZW",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7331,
+		"county": "Alzey-Worms",
+		"licensePlate": "AZ",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7332,
+		"county": "Bad Dürkheim",
+		"licensePlate": "DÜW",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7333,
+		"county": "Donnersbergkreis",
+		"licensePlate": "KIB, ROK",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7334,
+		"county": "Germersheim",
+		"licensePlate": "GER",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7335,
+		"county": "Landkreis Kaiserslautern",
+		"licensePlate": "KL",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7336,
+		"county": "Kusel",
+		"licensePlate": "KUS",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7337,
+		"county": "Südliche Weinstraße",
+		"licensePlate": "SÜW",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7338,
+		"county": "Rhein-Pfalz-Kreis",
+		"licensePlate": "RP",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7339,
+		"county": "Mainz-Bingen",
+		"licensePlate": "MZ, BIN",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 7340,
+		"county": "Südwestpfalz",
+		"licensePlate": "PS, ZW",
+		"federalId": "0000b186816abba584714c60"
+	},
+	{
+		"countyId": 10041,
+		"county": "Saarbrücken, Regionalverband",
+		"licensePlate": "SB,",
+		"federalId": "0000b186816abba584714c61"
+	},
+	{
+		"countyId": 10042,
+		"county": "Merzig-Wadern",
+		"licensePlate": "MZG",
+		"federalId": "0000b186816abba584714c61"
+	},
+	{
+		"countyId": 10043,
+		"county": "Neunkirchen",
+		"licensePlate": "NK",
+		"federalId": "0000b186816abba584714c61"
+	},
+	{
+		"countyId": 10044,
+		"county": "Saarlouis",
+		"licensePlate": "SLS",
+		"federalId": "0000b186816abba584714c61"
+	},
+	{
+		"countyId": 10045,
+		"county": "Saarpfalz-Kreis",
+		"licensePlate": "HOM,",
+		"federalId": "0000b186816abba584714c61"
+	},
+	{
+		"countyId": 10046,
+		"county": "St. Wendel",
+		"licensePlate": "WND",
+		"federalId": "0000b186816abba584714c61"
+	},
+	{
+		"countyId": 14511,
+		"county": "Chemnitz",
+		"licensePlate": "C",
+		"federalId": "0000b186816abba584714c62"
+	},
+	{
+		"countyId": 14521,
+		"county": "Erzgebirgskreis",
+		"licensePlate": "ERZ, ANA, ASZ, AU, MAB, MEK, STL, SZB, ZP",
+		"federalId": "0000b186816abba584714c62"
+	},
+	{
+		"countyId": 14522,
+		"county": "Mittelsachsen",
+		"licensePlate": "FG, BED, DL, FLÖ, HC, MW, RL",
+		"federalId": "0000b186816abba584714c62"
+	},
+	{
+		"countyId": 14523,
+		"county": "Vogtlandkreis",
+		"licensePlate": "V, AE, OVL, PL, RC",
+		"federalId": "0000b186816abba584714c62"
+	},
+	{
+		"countyId": 14524,
+		"county": "Zwickau",
+		"licensePlate": "Z, GC, HOT, WDA",
+		"federalId": "0000b186816abba584714c62"
+	},
+	{
+		"countyId": 14612,
+		"county": "Dresden",
+		"licensePlate": "DD",
+		"federalId": "0000b186816abba584714c62"
+	},
+	{
+		"countyId": 14625,
+		"county": "Bautzen",
+		"licensePlate": "BZ, BIW, HY, KM",
+		"federalId": "0000b186816abba584714c62"
+	},
+	{
+		"countyId": 14626,
+		"county": "Görlitz",
+		"licensePlate": "GR, LÖB, NOL, NY, WSW, ZI",
+		"federalId": "0000b186816abba584714c62"
+	},
+	{
+		"countyId": 14627,
+		"county": "Meißen",
+		"licensePlate": "MEI, GRH, RG, RIE",
+		"federalId": "0000b186816abba584714c62"
+	},
+	{
+		"countyId": 14628,
+		"county": "Sächsische Schweiz-Osterzgebirge",
+		"licensePlate": "PIR, DW, FTL, SEB",
+		"federalId": "0000b186816abba584714c62"
+	},
+	{
+		"countyId": 14713,
+		"county": "Leipzig",
+		"licensePlate": "L",
+		"federalId": "0000b186816abba584714c62"
+	},
+	{
+		"countyId": 14729,
+		"county": "Landkreis Leipzig",
+		"licensePlate": "L, BNA, GHA, GRM, MTL, WUR",
+		"federalId": "0000b186816abba584714c62"
+	},
+	{
+		"countyId": 14730,
+		"county": "Nordsachsen",
+		"licensePlate": "TDO, DZ, EB, OZ, TG, TO",
+		"federalId": "0000b186816abba584714c62"
+	},
+	{
+		"countyId": 15001,
+		"county": "Dessau-Roßlau",
+		"licensePlate": "DE, RSL",
+		"federalId": "0000b186816abba584714c63"
+	},
+	{
+		"countyId": 15002,
+		"county": "Halle",
+		"licensePlate": "HAL",
+		"federalId": "0000b186816abba584714c63"
+	},
+	{
+		"countyId": 15003,
+		"county": "Magdeburg",
+		"licensePlate": "MD",
+		"federalId": "0000b186816abba584714c63"
+	},
+	{
+		"countyId": 15081,
+		"county": "Altmarkkreis Salzwedel",
+		"licensePlate": "SAW, GA, KLZ",
+		"federalId": "0000b186816abba584714c63"
+	},
+	{
+		"countyId": 15082,
+		"county": "Anhalt-Bitterfeld",
+		"licensePlate": "ABI, AZE, BTF, KÖT, ZE",
+		"federalId": "0000b186816abba584714c63"
+	},
+	{
+		"countyId": 15083,
+		"county": "Börde",
+		"licensePlate": "BK, BÖ, HDL, OC, OK, WMS, WZL",
+		"federalId": "0000b186816abba584714c63"
+	},
+	{
+		"countyId": 15084,
+		"county": "Burgenlandkreis",
+		"licensePlate": "BLK, HHM, NEB, NMB, WSF, ZZ",
+		"federalId": "0000b186816abba584714c63"
+	},
+	{
+		"countyId": 15085,
+		"county": "Harz",
+		"licensePlate": "HZ, HBS, QLB, WR",
+		"federalId": "0000b186816abba584714c63"
+	},
+	{
+		"countyId": 15086,
+		"county": "Jerichower Land",
+		"licensePlate": "JL, BRG, GNT",
+		"federalId": "0000b186816abba584714c63"
+	},
+	{
+		"countyId": 15087,
+		"county": "Mansfeld-Südharz",
+		"licensePlate": "MSH, EIL, HET, ML, SGH",
+		"federalId": "0000b186816abba584714c63"
+	},
+	{
+		"countyId": 15088,
+		"county": "Saalekreis",
+		"licensePlate": "SK, MER, MQ, QFT",
+		"federalId": "0000b186816abba584714c63"
+	},
+	{
+		"countyId": 15089,
+		"county": "Salzlandkreis",
+		"licensePlate": "SLK, ASL, BBG, SBK, SFT",
+		"federalId": "0000b186816abba584714c63"
+	},
+	{
+		"countyId": 15090,
+		"county": "Stendal",
+		"licensePlate": "SDL, HV, OBG",
+		"federalId": "0000b186816abba584714c63"
+	},
+	{
+		"countyId": 15091,
+		"county": "Wittenberg",
+		"licensePlate": "WB, GHC, JE",
+		"federalId": "0000b186816abba584714c63"
+	},
+	{
+		"countyId": 1001,
+		"county": "Flensburg",
+		"licensePlate": "FL",
+		"federalId": "0000b186816abba584714c64"
+	},
+	{
+		"countyId": 1002,
+		"county": "Kiel",
+		"licensePlate": "KI",
+		"federalId": "0000b186816abba584714c64"
+	},
+	{
+		"countyId": 1003,
+		"county": "Lübeck",
+		"licensePlate": "HL",
+		"federalId": "0000b186816abba584714c64"
+	},
+	{
+		"countyId": 1004,
+		"county": "Neumünster",
+		"licensePlate": "NMS",
+		"federalId": "0000b186816abba584714c64"
+	},
+	{
+		"countyId": 1051,
+		"county": "Dithmarschen",
+		"licensePlate": "HEI, MED",
+		"federalId": "0000b186816abba584714c64"
+	},
+	{
+		"countyId": 1053,
+		"county": "Herzogtum Lauenburg",
+		"licensePlate": "RZ",
+		"federalId": "0000b186816abba584714c64"
+	},
+	{
+		"countyId": 1054,
+		"county": "Nordfriesland",
+		"licensePlate": "NF",
+		"federalId": "0000b186816abba584714c64"
+	},
+	{
+		"countyId": 1055,
+		"county": "Ostholstein",
+		"licensePlate": "OH",
+		"federalId": "0000b186816abba584714c64"
+	},
+	{
+		"countyId": 1056,
+		"county": "Pinneberg",
+		"licensePlate": "PI",
+		"federalId": "0000b186816abba584714c64"
+	},
+	{
+		"countyId": 1057,
+		"county": "Plön",
+		"licensePlate": "PLÖ",
+		"federalId": "0000b186816abba584714c64"
+	},
+	{
+		"countyId": 1058,
+		"county": "Rendsburg-Eckernförde",
+		"licensePlate": "RD, ECK",
+		"federalId": "0000b186816abba584714c64"
+	},
+	{
+		"countyId": 1059,
+		"county": "Schleswig-Flensburg",
+		"licensePlate": "SL",
+		"federalId": "0000b186816abba584714c64"
+	},
+	{
+		"countyId": 1060,
+		"county": "Segeberg",
+		"licensePlate": "SE",
+		"federalId": "0000b186816abba584714c64"
+	},
+	{
+		"countyId": 1061,
+		"county": "Steinburg",
+		"licensePlate": "IZ",
+		"federalId": "0000b186816abba584714c64"
+	},
+	{
+		"countyId": 1062,
+		"county": "Stormarn",
+		"licensePlate": "OD",
+		"federalId": "0000b186816abba584714c64"
+	},
+	{
+		"countyId": 16051,
+		"county": "Erfurt",
+		"licensePlate": "EF",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16052,
+		"county": "Gera",
+		"licensePlate": "G",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16053,
+		"county": "Jena",
+		"licensePlate": "J",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16054,
+		"county": "Suhl",
+		"licensePlate": "SHL",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16055,
+		"county": "Weimar",
+		"licensePlate": "WE",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16056,
+		"county": "Eisenach",
+		"licensePlate": "EA",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16061,
+		"county": "Eichsfeld",
+		"licensePlate": "EIC, HIG, WBS",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16062,
+		"county": "Nordhausen",
+		"licensePlate": "NDH",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16063,
+		"county": "Wartburgkreis",
+		"licensePlate": "WAK, SLZ",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16064,
+		"county": "Unstrut-Hainich-Kreis",
+		"licensePlate": "UH, LSZ, MHL",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16065,
+		"county": "Kyffhäuserkreis",
+		"licensePlate": "KYF, ART, SDH",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16066,
+		"county": "Schmalkalden-Meiningen",
+		"licensePlate": "SM, MGN",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16067,
+		"county": "Gotha",
+		"licensePlate": "GTH",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16068,
+		"county": "Sömmerda",
+		"licensePlate": "SÖM",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16069,
+		"county": "Hildburghausen",
+		"licensePlate": "HBN",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16070,
+		"county": "Ilm-Kreis",
+		"licensePlate": "IK, ARN, IL",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16071,
+		"county": "Weimarer Land",
+		"licensePlate": "AP, APD",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16072,
+		"county": "Sonneberg",
+		"licensePlate": "SON, NH",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16073,
+		"county": "Saalfeld-Rudolstadt",
+		"licensePlate": "SLF, RU",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16074,
+		"county": "Saale-Holzland-Kreis",
+		"licensePlate": "SHK, EIS, SRO",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16075,
+		"county": "Saale-Orla-Kreis",
+		"licensePlate": "SOK, LBS, PN, SCZ",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16076,
+		"county": "Greiz",
+		"licensePlate": "GRZ, ZR",
+		"federalId": "0000b186816abba584714c65"
+	},
+	{
+		"countyId": 16077,
+		"county": "Altenburger Land",
+		"licensePlate": "ABG, SLN",
+		"federalId": "0000b186816abba584714c65"
+	}
+]

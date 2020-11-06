@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-7142 - Counties/Kreise added to federal states
 - SC-7615 - reduces the errors in lernstore
 - SC-5476 - Extend tests for Matrix messenger config and permission service
 - SC-6690 - refactors edu-sharing service and sets defaults
