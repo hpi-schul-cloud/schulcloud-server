@@ -1,7 +1,7 @@
 const { expect } = require('chai');
+const { Configuration } = require('@schul-cloud/commons');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise);
-const { Configuration } = require('@schul-cloud/commons');
 const {
 	buildAddUserMessage,
 	buildDeleteCourseMessage,
@@ -19,6 +19,8 @@ describe('messenger synchronizer utils', () => {
 		app = await appPromise;
 		server = await app.listen(0);
 		configBefore = Configuration.toObject();
+
+		Configuration.set('MATRIX_MESSENGER__SERVERNAME', 'fake.server');
 	});
 
 	after((done) => {
@@ -246,7 +248,7 @@ describe('messenger synchronizer utils', () => {
 
 			// only student message
 			const studentWelcomeMessage = 'Welcome Student';
-			Configuration.set('MATRIX_WELCOME_MESSAGE_STUDENT', studentWelcomeMessage);
+			Configuration.set('MATRIX_MESSENGER__WELCOME_MESSAGE_STUDENT', studentWelcomeMessage);
 
 			const resultStudent1 = await buildAddUserMessage({ userId: student._id, fullSync: true });
 			expect(resultStudent1.welcome.text).to.equal(studentWelcomeMessage);
@@ -259,7 +261,7 @@ describe('messenger synchronizer utils', () => {
 
 			// with teacher message
 			const teacherWelcomeMessage = 'Welcome Teacher';
-			Configuration.set('MATRIX_WELCOME_MESSAGE_TEACHER', teacherWelcomeMessage);
+			Configuration.set('MATRIX_MESSENGER__WELCOME_MESSAGE_TEACHER', teacherWelcomeMessage);
 
 			const resultStudent2 = await buildAddUserMessage({ userId: student._id, fullSync: true });
 			expect(resultStudent2.welcome.text).to.equal(studentWelcomeMessage);
@@ -272,7 +274,7 @@ describe('messenger synchronizer utils', () => {
 
 			// with admin message
 			const adminWelcomeMessage = 'Welcome Admin';
-			Configuration.set('MATRIX_WELCOME_MESSAGE_ADMIN', adminWelcomeMessage);
+			Configuration.set('MATRIX_MESSENGER__WELCOME_MESSAGE_ADMIN', adminWelcomeMessage);
 
 			const resultStudent3 = await buildAddUserMessage({ userId: student._id, fullSync: true });
 			expect(resultStudent3.welcome.text).to.equal(studentWelcomeMessage);
@@ -284,8 +286,8 @@ describe('messenger synchronizer utils', () => {
 			expect(resultAdmin3.welcome.text).to.equal(adminWelcomeMessage);
 
 			// only admin message
-			Configuration.remove('MATRIX_WELCOME_MESSAGE_STUDENT');
-			Configuration.remove('MATRIX_WELCOME_MESSAGE_TEACHER');
+			Configuration.remove('MATRIX_MESSENGER__WELCOME_MESSAGE_STUDENT');
+			Configuration.remove('MATRIX_MESSENGER__WELCOME_MESSAGE_TEACHER');
 
 			const resultStudent4 = await buildAddUserMessage({ userId: student._id, fullSync: true });
 			expect(resultStudent4).not.to.haveOwnProperty('welcome');
