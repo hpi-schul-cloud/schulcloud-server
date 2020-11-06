@@ -1,7 +1,9 @@
+// eslint-disable-next-line max-classes-per-file
 const _ = require('lodash');
 const nanoid = require('nanoid');
-const { GeneralError } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
 
+const { GeneralError } = reqlib('src/errors');
 const logger = require('../../../logger');
 const hooks = require('../hooks/copyCourseHook');
 const { courseModel } = require('../model');
@@ -196,10 +198,10 @@ module.exports = function setup() {
 	const app = this;
 
 	app.use('/courses/copy', new CourseCopyService(app));
-	app.use('/courses/share', new CourseShareService(app));
+	app.use('/courses-share', new CourseShareService(app));
 
 	const courseCopyService = app.service('/courses/copy');
-	const courseShareService = app.service('/courses/share');
+	const courseShareService = app.service('/courses-share');
 
 	courseCopyService.hooks({
 		before: hooks.before,

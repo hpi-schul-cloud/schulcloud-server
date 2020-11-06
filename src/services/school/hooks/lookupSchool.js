@@ -1,4 +1,6 @@
-const { BadRequest, NotFound } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { NotFound, BadRequest } = reqlib('src/errors');
 const { schoolModel: School } = require('../model');
 
 /**
@@ -13,7 +15,15 @@ module.exports = async (context) => {
 	const { schoolId } = context.params.route;
 	try {
 		context.params.school = await School.findById(schoolId)
-			.select(['name', 'currentYear', 'inMaintenanceSince', 'inMaintenance', 'enableStudentTeamCreation', 'language'])
+			.select([
+				'name',
+				'currentYear',
+				'inMaintenanceSince',
+				'inMaintenance',
+				'enableStudentTeamCreation',
+				'language',
+				'timezone',
+			])
 			.populate(['currentYear', 'systems'])
 			.lean({ virtuals: true })
 			.exec();

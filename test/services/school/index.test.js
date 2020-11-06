@@ -4,15 +4,28 @@ const { Configuration } = require('@schul-cloud/commons');
 
 const { expect } = chai;
 
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
 const { schoolModel: School, yearModel: YearModel } = require('../../../src/services/school/model');
 
-const testObjects = require('../helpers/testObjects')(app);
-const { create: createSchool, info: createdSchoolIds } = require('../helpers/services/schools')(app);
+const testObjects = require('../helpers/testObjects')(appPromise);
+const { create: createSchool, info: createdSchoolIds } = require('../helpers/services/schools')(appPromise);
 
 describe('school service', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
+	});
+
 	it('registered the schools services', () => {
 		assert.ok(app.service('schools'));
 	});
@@ -28,9 +41,10 @@ describe('school service', () => {
 		let defaultYears = null;
 		let sampleYear;
 		let sampleSchoolData;
-		const schoolService = app.service('/schools');
+		let schoolService;
 
 		before('load data and set samples', async () => {
+			schoolService = app.service('/schools');
 			defaultYears = await YearModel.find().sort('name').lean().exec();
 			sampleYear = defaultYears[0];
 			const school = await createSchool();
@@ -99,6 +113,16 @@ describe('school service', () => {
 			});
 		});
 
+		it('create school with timezone', async () => {
+			const defaultTz = 'Europe/Berlin';
+			const serviceCreatedSchool = await schoolService.create({ ...sampleSchoolData, timezone: defaultTz });
+			const { _id: schoolId } = serviceCreatedSchool;
+			createdSchoolIds.push(schoolId);
+			const out = await schoolService.get(schoolId);
+			expect(out, 'school has been saved').to.be.not.null;
+			expect(out.timezone, 'the defined timezone has been added to the school').to.be.equal(defaultTz);
+		});
+
 		it('create school with currentYear defined explictly', async () => {
 			const serviceCreatedSchool = await schoolService.create({ ...sampleSchoolData, currentYear: sampleYear });
 			const { _id: schoolId } = serviceCreatedSchool;
@@ -161,17 +185,6 @@ describe('school service', () => {
 	});
 
 	describe('patch schools', () => {
-		let server;
-
-		before((done) => {
-			server = app.listen(0, done); // required to initialize all services used for testObjects
-		});
-
-		after((done) => {
-			server.close(done);
-			testObjects.cleanup();
-		});
-
 		it('administrator can patch his own school', async () => {
 			const school = await testObjects.createTestSchool({});
 			const admin = await testObjects.createTestUser({
@@ -338,10 +351,66 @@ describe('school service', () => {
 				expect(result.isTeamCreationByStudentsEnabled).to.be.false;
 			}
 		);
+		it('should fail to update officialSchoolNumber with wrong format', async () => {
+			const school = await testObjects.createTestSchool({});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['administrator'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			try {
+				await app.service('/schools').patch(school._id, { officialSchoolNumber: 'foo' }, params);
+			} catch (err) {
+				expect(err).to.not.equal(undefined);
+				expect(err.message).to.include('School number is incorrect');
+				expect(err.name).to.be.equal('Error');
+			}
+		});
+		it('should succeed to update officialSchoolNumber with correct format', async () => {
+			const school = await testObjects.createTestSchool({});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['administrator'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const schoolNumber = 'BA-13372';
+			let result;
+
+			try {
+				result = await app.service('/schools').patch(school._id, { officialSchoolNumber: schoolNumber }, params);
+			} catch (err) {
+				throw new Error('should not have failed', err);
+			}
+			expect(result.officialSchoolNumber).to.be.equal(schoolNumber);
+
+			const schoolNumber2 = '13372';
+			let result2;
+
+			try {
+				result2 = await app.service('/schools').patch(school._id, { officialSchoolNumber: schoolNumber2 }, params);
+			} catch (err) {
+				throw new Error('should not have failed', err);
+			}
+			expect(result2.officialSchoolNumber).to.be.equal(schoolNumber2);
+		});
 	});
 });
 
 describe('years service', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen();
+	});
+
+	after(async () => {
+		await server.close();
+	});
+
 	it('registered the years services', () => {
 		assert.ok(app.service('years'));
 		assert.ok(app.service('gradeLevels'));

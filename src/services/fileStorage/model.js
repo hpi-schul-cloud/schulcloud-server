@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const uuid = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 const { enableAuditLog } = require('../../utils/database');
 
@@ -70,7 +70,7 @@ const fileSchema = new Schema({
 		},
 	},
 	thumbnail: { type: String },
-	thumbnailRequestToken: { type: String, default: uuid },
+	thumbnailRequestToken: { type: String, default: uuidv4 },
 	securityCheck: {
 		status: {
 			type: String,
@@ -78,7 +78,7 @@ const fileSchema = new Schema({
 			default: SecurityCheckStatusTypes.PENDING,
 		},
 		reason: { type: String, default: 'not yet scanned' },
-		requestToken: { type: String, default: uuid },
+		requestToken: { type: String, default: uuidv4 },
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now },
 	},
@@ -113,11 +113,15 @@ fileSchema.index({ name: 'text' });
 // Index on permissions to speed up shared-files queries
 fileSchema.index({ 'permissions.refId': 1, 'permissions.refPermModel': 1 });
 
+// Speed up directory listings
+fileSchema.index({ owner: 1, parent: 1 });
+
 const FileModel = mongoose.model('file', fileSchema);
 const FilePermissionModel = mongoose.model('filePermissionModel', permissionSchema);
 
 module.exports = {
 	FileModel,
+	FileSchema: fileSchema,
 	SecurityCheckStatusTypes,
 	permissionSchema,
 	FilePermissionModel,

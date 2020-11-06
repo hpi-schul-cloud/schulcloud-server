@@ -1,16 +1,19 @@
 const { expect } = require('chai');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
-const { generateRequestParamsFromUser, generateRequestParams } = require('../../helpers/services/login')(app);
-
-const qrRegistrationLinksService = app.service('/users/qrRegistrationLink');
-const accountService = app.service('accounts');
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser, generateRequestParams } = require('../../helpers/services/login')(appPromise);
 
 describe('qrRegistrationLinks service tests', () => {
+	let app;
+	let qrRegistrationLinksService;
+	let accountService;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		qrRegistrationLinksService = app.service('/users/qrRegistrationLink');
+		accountService = app.service('accounts');
+		server = await app.listen(0);
 	});
 
 	after((done) => {

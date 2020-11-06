@@ -1,15 +1,17 @@
 const { expect } = require('chai');
 const sleep = require('util').promisify(setTimeout);
 
-const app = require('../../../../../src/app');
-const testObjects = require('../../../helpers/testObjects')(app);
+const appPromise = require('../../../../../src/app');
+const testObjects = require('../../../helpers/testObjects')(appPromise);
 const WebUntisSyncer = require('../../../../../src/services/sync/strategies/WebUntisSyncer');
 
 // These tests should use a mock once the webuntis sync actually does something!
 describe('webuntis Syncer', () => {
+	let app;
 	let server;
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after(async () => {

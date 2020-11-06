@@ -1,5 +1,7 @@
 /* eslint-disable no-param-reassign */
-const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = reqlib('src/errors');
 const { authenticate } = require('@feathersjs/authentication');
 
 const { v4: uuidv4 } = require('uuid');
@@ -13,10 +15,12 @@ const logger = require('../logger');
 const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 const { isDisposableEmail } = require('../utils/disposableEmail');
 const { getRestrictPopulatesHook, preventPopulate } = require('./restrictPopulate');
+const { transformToDataTransferObject } = require('./transformToDataTransferObject');
 // Add any common hooks you want to share across services in here.
 
 exports.preventPopulate = preventPopulate;
 exports.getRestrictPopulatesHook = getRestrictPopulatesHook;
+exports.transformToDataTransferObject = transformToDataTransferObject;
 
 // don't require authentication for internal requests
 exports.ifNotLocal = function ifNotLocal(hookForRemoteRequests) {
@@ -112,7 +116,7 @@ exports.hasSchoolPermission = (inputPermission) => async (context) => {
 		params: { account },
 		app,
 	} = context;
-	if (!account && !account.userId) {
+	if (!account || !account.userId) {
 		throw new Forbidden('Cannot read account data');
 	}
 	try {
@@ -714,8 +718,7 @@ exports.sendEmail = (context, maildata) => {
 								attachments,
 							})
 							.catch((err) => {
-								logger.warning(err);
-								throw new BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error');
+								throw new BadRequest((err.error || {}).message || err.message || err || 'Unknown mailing error', err);
 							});
 					}
 				});

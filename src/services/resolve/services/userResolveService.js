@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
-const errors = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { NotFound } = reqlib('src/errors');
 
 // get an json api conform entry
 const getDataEntry = ({ type, id, name, authorities = ['can-read'], attributes = {} }) => ({
@@ -53,7 +55,7 @@ class UserResolver {
 		return getScope
 			.then((scope) => {
 				// find users that are related to scope (either teacher or student)
-				if (!scope) throw new errors.NotFound('No scope found for given id.');
+				if (!scope) throw new NotFound('No scope found for given id.');
 
 				return userService.find({
 					query: {

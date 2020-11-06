@@ -1,7 +1,11 @@
 {
 	"title": "HPI Schul-Cloud Configuration",
 	"type": "object",
+	"additionalProperties": false,
 	"properties": {
+		"$schema": {
+			"type": "string"
+		},
 		"CLIENT_API_KEY": {
 			"type": "string",
 			"default": "example",
@@ -35,28 +39,18 @@
 		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION": {
 			"type": "string",
 			"default": "enabled",
-			"enum": [
-				"disabled",
-				"opt-in",
-				"opt-out",
-				"enabled"
-			],
+			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "defines wheter external team invitation shows teachers from different schools or not. if enabled system wide there are options general enabled or opt-in/-out by user required."
 		},
 		"STUDENT_TEAM_CREATION": {
 			"type": "string",
 			"default": "opt-out",
-			"enum": [
-				"disabled",
-				"opt-in",
-				"opt-out",
-				"enabled"
-			],
+			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "defines wheter students may create teams or not. if enabled system wide there are options general enabled or opt-in/-out by school admin required."
 		},
 		"REDIS_URI": {
 			"type": "string",
-			"pattern": "(rediss?:)?\/\/((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(\/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
+			"pattern": "(rediss?:)?//((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
 			"description": "URL of a Redis server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
 		},
 		"PIN_MAX_AGE_SECONDS": {
@@ -156,20 +150,37 @@
 			"default": false,
 			"description": "If enabled, adds support for Matrix Messenger."
 		},
-		"MATRIX_URI": {
-			"type": "string",
-			"format": "uri",
-			"default": "https://matrix.messenger.schule",
-			"description": "The URI of the Matrix Messenger server."
-		},
-		"MATRIX_SERVERNAME": {
-			"type": "string",
-			"default": "messenger.schule",
-			"description": "Servername of the Matrix Messenger server."
-		},
-		"MATRIX_SECRET": {
-			"type": "string",
-			"description": "Shared secret for the Matrix server."
+		"MATRIX_MESSENGER": {
+			"type": "object",
+			"description": "Matrix messenger properties, required always to be defined",
+			"required": [
+				"URI",
+				"SERVERNAME",
+				"SECRET",
+				"STUDENT_ROOM_CREATION"
+			],
+			"properties": {
+				"URI": {
+					"type": "string",
+					"format": "uri",
+					"default": "https://matrix.messenger.schule",
+					"description": "The URI of the Matrix Messenger server."
+				},
+				"SERVERNAME": {
+					"type": "string",
+					"default": "messenger.schule",
+					"description": "Servername of the Matrix Messenger server."
+				},
+				"SECRET": {
+					"type": "string",
+					"description": "Shared secret for the Matrix server."
+				},
+				"STUDENT_ROOM_CREATION": {
+					"type": "boolean",
+					"default": false,
+					"description": "If enabled, school admins can allow students to create additional chat rooms"
+				}
+			}
 		},
 		"FEATURE_RABBITMQ_ENABLED": {
 			"type": "boolean",
@@ -207,20 +218,20 @@
 		"FEATURE_ALERTS_STATUS_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "If enabled, user will see messages/incidents from e.g status.schul-cloud."
+			"description": "If enabled, user will see messages/incidents from e.g status.hpi-schul-cloud."
 		},
 		"ALERT_STATUS_URL": {
 			"type": "string",
 			"format": "uri",
 			"pattern": ".*(?<!/)$",
-			"default": "https://status.schul-cloud.org",
+			"default": "https://status.hpi-schul-cloud.de",
 			"description": "The url of status message provider (should end without a slash)."
 		},
 		"ALERT_STATUS_API_URL": {
 			"type": "string",
 			"format": "uri",
 			"pattern": ".*(?<!/)$",
-			"default": "https://status.schul-cloud.org/api/v1",
+			"default": "https://status.hpi-schul-cloud.de/api/v1",
 			"description": "The api of status message provider (should end without a slash)."
 		},
 		"NEXBOARD_URL": {
@@ -256,13 +267,13 @@
 		"ADMIN_TOGGLE_STUDENT_VISIBILITY": {
 			"type": "string",
 			"default": "enabled",
-			"enum": [
-				"disabled",
-				"opt-in",
-				"opt-out",
-				"enabled"
-			],
+			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
+		},
+		"FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Allows school admin to toggle student's LERNSTORE_VIEW permission."
 		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
@@ -292,22 +303,22 @@
 		},
 		"ETHERPAD_URI": {
 			"type": "string",
-			"default": "https://schul-cloud.org/etherpad/api/1",
+			"default": "https://hpi-schul-cloud.de/etherpad/api/1",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_URI": {
 			"type": "string",
-			"default": "https://etherpad.schul-cloud.org/p",
+			"default": "https://etherpad.hpi-schul-cloud.de/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_NEW_PAD_URI": {
 			"type": "string",
-			"default": "https://schul-cloud.org/etherpad/p",
+			"default": "https://hpi-schul-cloud.de/etherpad/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_DOMAIN": {
 			"type": "string",
-			"default": "etherpad.schul-cloud.org",
+			"default": "etherpad.hpi-schul-cloud.de",
 			"description": "The old etherpad domain."
 		},
 		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
@@ -337,11 +348,7 @@
 		},
 		"LERNSTORE_MODE": {
 			"type": "string",
-			"enum": [
-				"DISABLED",
-				"LEGACY",
-				"EDUSHARING"
-			],
+			"enum": ["DISABLED", "LEGACY", "EDUSHARING"],
 			"default": "DISABLED",
 			"description": "Defines the backend for the lernstore, the client just may be enabled or disabled only, if this is not disabled in the server."
 		},
@@ -349,15 +356,18 @@
 			"type": "string",
 			"format": "uri",
 			"pattern": ".*(?<!/)$",
-			"description": "The URL for the edu-sharing repository."
+			"description": "The URL for the edu-sharing repository.",
+			"default": "https://mv-repo.schul-cloud.org"
 		},
 		"ES_USER": {
 			"type": "string",
-			"description": "The username for edu-sharing api access"
+			"description": "The username for edu-sharing api access",
+			"default": ""
 		},
 		"ES_PASSWORD": {
 			"type": "string",
-			"description": "The password for edu-sharing api access"
+			"description": "The password for edu-sharing api access",
+			"default": ""
 		},
 		"ES_GRANT_TYPE": {
 			"type": "string",
@@ -371,10 +381,81 @@
 			"type": "string",
 			"description": "The client id for edu-sharing api access"
 		},
+		"SECRET_ES_MERLIN_USERNAME": {
+			"type": "string",
+			"description": "The username for Merlin login, used for edusharing"
+		},
+		"SECRET_ES_MERLIN_PW": {
+			"type": "string",
+			"description": "The password for Merlin login, used for edusharing"
+		},
+		"ES_MERLIN_AUTH_URL": {
+			"type": "string",
+			"description": "Connection url for Merlin content",
+			"default": "http://merlin.nibis.de/auth.php"
+		},
+		"FEATURE_ES_MERLIN_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "When enabled, the merlin referene will generate a valid url"
+		},
 		"SILENT_ERROR_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Brute force flag during recovery password process"
+		},
+		"FEATURE_API_VALIDATION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "when enabled, all incoming requests are validated against the openapi schemata, unless the route is whitelisted."
+		},
+		"FEATURE_API_RESPONSE_VALIDATION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "when enabled, all incoming requests are validated against the openapi schemata, unless the route is whitelisted."
+		},
+		"API_VALIDATION_WHITELIST_EXTENSION": {
+			"type": "string",
+			"description": "when set, this is interpreted as a regex to extend the ignorelist for the API validation with any routes matching the regex.",
+			"examples": [".*/courses/[0-9a-f]{24}($|/$)"]
+		},
+		"FEATURE_PROMETHEUS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable prometheus api metrics, if enabled, PROMETHEUS must be defined."
+		},
+		"FEATURE_SHOW_VERSION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "enable the /versions route"
+		},
+		"PROMETHEUS": {
+			"type": "object",
+			"description": "Prometheus metrics options used by prometheus-api-metrics",
+			"properties": {
+				"METRICS_PATH": {
+					"type": "string",
+					"default": "/metrics",
+					"description": "public metrics route",
+					"pattern": ".*(?<!/)$"
+				},
+				"DURATION_BUCKETS_SECONDS": {
+					"type": "array",
+					"items": {
+						"type": "number",
+						"minimum": 0
+					},
+					"default": [0.01, 0.05, 0.1, 0.2, 0.5, 0.75, 1, 3, 5, 8, 15, 30, 60, 120],
+					"description": "Times to define buckets by seconds which contain all requests with max. the given amount of time. Must be in ascending order. "
+				}
+			},
+			"required": ["METRICS_PATH", "DURATION_BUCKETS_SECONDS"]
+		},
+		"REQUEST_TIMEOUT": {
+			"type": "integer",
+			"minimum": 0,
+			"default": 8000,
+			"description": "Default timeout for external requests in milliseconds."
 		}
 	},
 	"required": [
@@ -383,6 +464,26 @@
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
 		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
-		"LERNSTORE_MODE"
-	]
+		"LERNSTORE_MODE",
+		"FEATURE_SHOW_VERSION_ENABLED"
+	],
+	"allOf": [
+		{
+			"$ref": "#/definitions/FEATURE_PROMETHEUS_ENABLED"
+		}
+	],
+	"definitions": {
+		"FEATURE_PROMETHEUS_ENABLED": {
+			"if": {
+				"properties": {
+					"FEATURE_PROMETHEUS_ENABLED": {
+						"const": true
+					}
+				}
+			},
+			"then": {
+				"required": ["PROMETHEUS"]
+			}
+		}
+	}
 }

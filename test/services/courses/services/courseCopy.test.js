@@ -1,12 +1,9 @@
 const assert = require('assert');
 const chai = require('chai');
 
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 
-const copyCourseService = app.service('courses/copy');
-const shareCourseService = app.service('courses/share');
-
-const testObjects = require('../../helpers/testObjects')(app);
+const testObjects = require('../../helpers/testObjects')(appPromise);
 
 const testUserId = '0000d231816abba584714c9e';
 const testCourseExample = '0000dcfbfb5c7a3f00bf21ab';
@@ -14,6 +11,22 @@ const testCourseExample = '0000dcfbfb5c7a3f00bf21ab';
 let shareToken;
 
 describe('courses copy service', () => {
+	let app;
+	let copyCourseService;
+	let shareCourseService;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		copyCourseService = app.service('courses/copy');
+		shareCourseService = app.service('courses-share');
+		server = await app.listen();
+	});
+
+	after(async () => {
+		await server.close();
+	});
+
 	it('registered the course copy service', () => {
 		assert.ok(copyCourseService);
 	});

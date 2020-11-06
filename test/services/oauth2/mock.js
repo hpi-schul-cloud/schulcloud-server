@@ -6,20 +6,22 @@ const chaiHttp = require('chai-http');
 const oauth2Server = require('./oauth2MockServer');
 const oauth2 = require('../../../src/services/oauth2');
 
-const app = require('../../../src/app');
-
-const baseUrlService = app.service('oauth2/baseUrl');
-const clientsService = app.service('oauth2/clients');
-const loginService = app.service('oauth2/loginRequest');
-const introspectService = app.service('oauth2/introspect');
-const consentService = app.service('oauth2/auth/sessions/consent');
-
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 
 chai.use(chaiHttp);
 
-describe('oauth2 service', function oauthTest() {
-	this.timeout(10000);
+const { expect } = chai;
+
+describe('oauth2 service mock', function oauthTest() {
+	let app;
+	let baseUrlService;
+	let clientsService;
+	let loginService;
+	let introspectService;
+	let consentService;
+	let server;
+	this.timeout(15000);
 
 	const testUser2 = {
 		_id: '0000d224816abba584714c9c',
@@ -43,20 +45,30 @@ describe('oauth2 service', function oauthTest() {
 		subject_type: 'pairwise',
 	};
 
-	const beforeHydraUri = app.settings.services.hydra;
-	before(async () => {
+	let beforeHydraUri;
+	before(async function before() {
 		this.timeout(10000);
+		app = await appPromise;
+
+		baseUrlService = app.service('oauth2/baseUrl');
+		clientsService = app.service('oauth2/clients');
+		loginService = app.service('oauth2/loginRequest');
+		introspectService = app.service('oauth2/introspect');
+		consentService = app.service('oauth2/auth/sessions/consent');
+
+		beforeHydraUri = app.settings.services.hydra;
 
 		const o2mock = await oauth2Server({});
 		app.settings.services.hydra = o2mock.url;
 
 		app.configure(oauth2);
+		server = await app.listen();
 	});
 
-	after((done) => {
+	after(async () => {
 		// sets uri back to original uri
 		app.settings.services.hydra = beforeHydraUri;
-		done();
+		await server.close();
 	});
 
 	it('is registered', () => {
@@ -96,13 +108,11 @@ describe('oauth2 service', function oauthTest() {
 				assert(true);
 			}));
 
-	it('GET Login Request', () =>
-		app
-			.service('oauth2/loginRequest')
-			.get(null)
-			.then((result) => {
-				assert.strictEqual(result.challenge, null);
-			}));
+	it('GET Login Request', async () => {
+		const id = null;
+		const result = await app.service('oauth2/loginRequest').get(id);
+		expect(result).to.eql({ challenge: null, client: { client_id: 'thethingwearelookingfor' } });
+	});
 
 	it('PATCH Login Request Accept', async () => {
 		const user = await testObjects.createTestUser();
@@ -131,20 +141,18 @@ describe('oauth2 service', function oauthTest() {
 		app.service('ltiTools').remove(ltiTool._id);
 	});
 
-	it('PATCH Login Request Reject', () =>
-		app
-			.service('oauth2/loginRequest')
-			.patch(
-				null,
-				{},
-				{
-					query: { accept: 0 },
-					account: { userId: '0000d224816abba584714c9c' },
-				}
-			)
-			.then(() => {
-				assert.ok(true);
-			}));
+	/* fix this test, but not sure if the expect result what we want */
+	it('PATCH Login Request Reject', async () => {
+		const id = null;
+		const data = {};
+		const params = {
+			query: { accept: 0 },
+			account: { userId: '0000d224816abba584714c9c' },
+		};
+
+		const result = await app.service('oauth2/loginRequest').patch(id, data, params);
+		expect(result).to.eql({ client_id: null });
+	});
 
 	it('Introspect Inactive Token', () =>
 		app

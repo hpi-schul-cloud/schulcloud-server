@@ -7,11 +7,142 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-## Unreleased
+## [Unreleased]
 
-### Added - Unreleased
+### Added
 
+- SC-5476 - Extend tests for Matrix messenger config and permission service
+- SC-6690 - refactors edu-sharing service and sets defaults
+- SC-6738 - Extend search input field in new admin tables to search for full name
+- SC-7293 - added Lern-Store view permission and a feature flag
+- SC-7357 - Add config service
+- SC-7083 - Added officialSchoolNumber to school-model
+- Introduce plainSecrets in Configuration
+- Introduce FEATURE_PROMETHEUS_ENABLED to have a flag for enable prometheus api metrics
+- SC-7411 - add API Specification and validation for /me service
+- SC-7411 - add API Specification and validation for /version service
+
+### Changed
+
+- SC-7331 - introduce axios for external requests, implemented in status api
+- SC-7395 - Changed ldap general strategy fetching of users from parallel to serialized
+- SC-6080 - move REQUEST_TIMEOUT from globals to Configuration
+- Dependencies: querystring replaced by qs
+- SC-6060 - Updated error handling
+- SC-7404 - automatic forwarding for requests without versionnumber if no matching route is found
+- SC-7411 - api versioning for /me service
+- SC-7411 - api versioning for /version service
+- IMP-160 - integration-tests repo renamed to end-to-end-tests
+
+### Fixed
+
+- SC-7353 course sharing between teachers
+- SC-7530 rename SHOW_VERSION to FEATURE_SHOW_VERSION_ENABLED
+- SC-7517 improve oauth test stability
+- SC-6586 Repaired migration script
+- SC-7454 - Restored invalid birth date fix in adminUsers service
+- fixed README badges
+- Fix mocha tests
+- SC-6151 fixed a bug that prevented api docu from being accessible
+- SC-6151 fixed paths to openapi documentation
+- Fixed searching for names including a dash
+
+## [25.2.0]
+
+### Added
+
+- SC-4385 - Added a user exclusion regex to IServ strategy
+- SC-7049 - Added unit tests for Merlin Service
+- SC-7157 - add feature flag for Merlin feature with fallback
+- SC-6567 - add new application errros
+- SC-6766 - Added ESLint rules with Promise rules
 - SC-6830 - Added hook to parse request to arrays when > 20 users are requested in adminUsers service
+- SC-6769 - Introduce API validation module
+- SC-6769 - API validation for users/admin routes
+- SC-6510 - Added Merlin Url Generator for Lern Store / Edu-sharing
+- SC-5476 - Added school settings to enable students to open own chat rooms
+- SC-6567 - Add utils to cleanup incomingMessage stacks by logging errors
+
+### Removed
+
+- SC-6586- Remove parents from users collection to improve maintainability
+
+### Changed
+
+- SC-6986 - Changed a hook in the accounts service that restricts get requests to the same school, it expects a valid userID and matching schoolIds for both the requester and requested users
+- SC-6567 - clean up error pipline
+- SC-6510, fix a minor syntax error when exporting module
+- Update commons to 1.2.7: print configuration on startup, introduce hierarchical configuration file setup
+- Support asynchronous calls during server startup
+- SC-7091 Migration to enable the Matrix Messenger for all schools that had RocketChat enabled before
+
+### Fixed
+
+- fixed README badges
+- SC-6151 - fixed a bug that prevented api docu from being accessible
+- Fix mocha tests
+
+## [25.1.9] - 2020-11-03
+
+### Fixed
+
+- SC-7638 - fixed pin creation for users with accounts
+
+## [25.1.8] - 2020-10-22
+
+### Fixed
+
+- SC-7333 - fixed creation of homeworks within lessons
+
+## [25.1.7] - 2020-10-28
+
+### Added
+
+- SC-7491 - Add missing index on users.email to speed up slow query in registrationLink service
+
+## [25.1.6] - 2020-10-23
+
+### Changed
+
+- SC-7413 - Remove event listener for unhandled rejections and move this to winston
+
+## [25.1.5] - 2020-10-22
+
+### Fixed
+
+- SC-7452 - fixed time window check for LDAP users
+
+## [25.1.4] - 2020-10-20
+
+### Changed
+
+- SC-6986 - Changed permission check for PATCH method in the account service from STUDENT_CREATE to STUDENT_EDIT to allow teachers to change students' password
+
+## [25.1.3] - 2020-10-20
+
+### Fixed
+
+- SC-6986 - Changed a hook in the accounts service that restricts get requests to the same school, it expects a valid userID and matching schoolIds for both the requester and requested users
+
+## [25.1.2] - 2020-10-15
+
+### Fixed
+
+- SC-7085 - fixed importHash error when asking parent consent
+
+### Added
+
+### Removed
+
+## [25.1.1] - 2020-10-12
+
+### Security
+
+- SC-7165 package update for sanitization and add onload handler
+
+## [25.1.0] - 2020-10-12
+
+### Added
 
 ### Removed
 
@@ -19,32 +150,118 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6743 - Removed usersForConsent related things in adminUsers service because the client does not send that parameter anymore
 - SC-6506 - Remove dependecy to feathers-swagger in routes.test.js
 
-### Changed - Unreleased
+### Changed
 
 - SC-6774 remove no-await-in-loop from eslint exceptions
 - Rename statistic mails route, secure it over sync api key now
 - SC-6809 - Maintain RabbitMQ connection and channels
 - SC-5230 - Unblock Account-Page in Nuxt (securing /accounts and /users routes)
 
-### Security - Unreleased
+### Security
 
 - Added hotfix merges
 
-## 25.0.1
+## [25.0.12] - 2020-10-12
 
-### Fixed - 25.0.1
+### Fixed
+
+- SC-6676 allows only following roles for registration: teacher/student…
+
+## [25.0.11] - 2020-10-07
+
+### Fixed
+
+- SC-7180 homework create now validates data properly
+
+## [25.0.12] - 2020-10-12
+
+### Fixed
+
+- SC-6676 allows only following roles for registration: teacher/student…
+
+## [25.0.11] - 2020-10-07
+
+### Fixed
+
+- SC-7180 homework create now validates data properly
+
+## [25.0.10] - 2020-10-07
+
+### Added
+
+- configured prometheus metrics - bucket sizes
+- SC-6766 log unhandledRejection and unhandledException
+
+## [25.0.9] - 2020-10-07
+
+### Added
+
+- SC-7115 - Reduce mongoose DB role request by enabling minor caching
+
+## [25.0.8] - 2020-10-06
+
+### Fixed
+
+- SC-6676 - Registration: User with role parent should not be able to log-in
+- SC-6960 - instead of deleting and recreating users during the rollback of a failed registration, use replace if necessary
+- SC-6960 - properly raise exceptions during the registration process
+
+## [25.0.7] - 2020-10-01
+
+### Removed
+
+- OPS-1316 - removed custom keep-alive header creation in express middleware
+
+## [25.0.6] - 2020-10-01
+
+### Added
+
+- OPS-1316 - add indexes for slow files and submission queries
+
+## [25.0.5] - 2020-10-01
+
+### Added
+
+- SC-6973 - add time window for pin creation
+
+## [25.0.4] - 2020-09-30
+
+### Added
+
+- Added lead time detection
+
+## [25.0.3]
+
+### Added
+
+- SC-6942 - add parse method to TSP strategy to declare it can handle the request and to keep authentication params clean
+
+### Fixed
+
+- SC-6942 - don't override payload defined by authentication method
+- SC-6942 - don't search for account to populate if no username is given in `injectUsername`
+
+## [25.0.2]
+
+### Changed
+
+- send mail for registration pin after add pin to db
+
+## [25.0.1]
+
+### Fixed
 
 - SC-6696 - Fixed query used to determine course membership when checking permissions for course group lessons
 
-## 25.0.0
+## [25.0.0]
 
-### Changed - 25.0.0
+### Changed
 
 - Extend JWT payload by schoolId and roleIds
 
 ## [24.5.1] - 2020-09-16
 
-### Secrutiy - 24.5.1
+### Secrutiy
 
 - Secure admin routes (update, patch, create)
 
@@ -52,6 +269,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - Ignore database seed data with prettier, eslint, and codacy
 - SC-6640 - Fixed email check within registration (case insensitive)
+- SC-2710 - Adding time zones, default for school and theme
+
 
 ### Added - 24.5.0
 
@@ -60,7 +279,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [24.4.6] - 2020-09-11
 
-### Changed in 24.4.6
+### Changed
 
 - SC-6733: central personal data does not get updated via CSV import
 

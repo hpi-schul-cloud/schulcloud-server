@@ -8,6 +8,8 @@ const hooks = require('./hooks');
 module.exports = function () {
 	const app = this;
 
+	app.use('/systems/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+
 	const options = {
 		Model: system,
 		paginate: {
@@ -20,6 +22,4 @@ module.exports = function () {
 	app.use('/systems', service(options));
 	const systemService = app.service('/systems');
 	systemService.hooks(hooks);
-
-	app.use('/systems/api', staticContent(path.join(__dirname, '/docs')));
 };

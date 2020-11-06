@@ -1,21 +1,21 @@
 const { expect } = require('chai');
 
-const app = require('../../../../../src/app');
+const appPromise = require('../../../../../src/app');
 const roleModel = require('../../../../../src/services/role/model.js');
 const { userModel } = require('../../../../../src/services/user/model');
 const MailService = require('../../../../../src/services/helpers/service.js');
 
-const testObjects = require('../../../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../../../helpers/services/login')(app);
-const { create: createUser } = require('../../../helpers/services/users')(app);
-const { create: createSchool } = require('../../../helpers/services/schools')(app);
+const testObjects = require('../../../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../../../helpers/services/login')(appPromise);
+const { create: createUser } = require('../../../helpers/services/users')(appPromise);
+const { create: createSchool } = require('../../../helpers/services/schools')(appPromise);
 const { create: createYear } = require('../../../helpers/services/years');
 const {
 	createByName: createClass,
 	findOneByName: findClass,
 	findByName: findClasses,
 	deleteByName: deleteClass,
-} = require('../../../helpers/services/classes')(app);
+} = require('../../../helpers/services/classes')(appPromise);
 
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
 const { SC_TITLE } = require('../../../../../config/globals');
@@ -23,10 +23,12 @@ const { SC_TITLE } = require('../../../../../config/globals');
 const { deleteUser, MockEmailService } = require('./helper');
 
 describe('CSVSyncer Integration', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -1587,10 +1589,6 @@ describe('CSVSyncer Integration', () => {
 				roles: 'student',
 				schoolId: SCHOOL_ID,
 			});
-			const parent = await createUser({
-				roles: 'parent',
-				schoolId: SCHOOL_ID,
-			});
 			scenarioParams = await generateRequestParamsFromUser(user);
 			scenarioParams.query = {
 				target: 'csv',
@@ -1598,11 +1596,7 @@ describe('CSVSyncer Integration', () => {
 				role: 'teacher',
 			};
 			scenarioData = {
-				data:
-					'firstName,lastName,email\n' +
-					`Peter,Pan,${user.email}\n` +
-					`Peter,Lustig,${parent.email}\n` +
-					`Test,Testington,${student.email}\n`,
+				data: `firstName,lastName,email\n Peter,Pan,${user.email}\n Test,Testington,${student.email}\n`,
 			};
 		});
 
@@ -1617,8 +1611,8 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.users.successful).to.equal(0);
 			expect(stats.users.created).to.equal(0);
 			expect(stats.users.updated).to.equal(0);
-			expect(stats.users.failed).to.equal(3);
-			expect(stats.errors.length).to.equal(3);
+			expect(stats.users.failed).to.equal(2);
+			expect(stats.errors.length).to.equal(2);
 			expect(stats.errors[0].message).to.equal(
 				'Es existiert bereits ein Nutzer mit dieser E-Mail-Adresse, jedoch mit einer anderen Rolle.'
 			);

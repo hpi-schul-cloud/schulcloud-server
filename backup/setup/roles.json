@@ -40,6 +40,7 @@
 		"HOMEWORK_CREATE",
 		"HOMEWORK_EDIT",
 		"HOMEWORK_VIEW",
+		"LERNSTORE_VIEW",
 		"LINK_CREATE",
 		"NEWS_VIEW",
 		"NOTIFICATION_CREATE",
@@ -100,6 +101,7 @@
 		"HELPDESK_EDIT",
 		"HELPDESK_VIEW",
 		"MESSENGER_SYNC",
+		"MESSENGER_ROOM_CREATE",
 		"NEWS_CREATE",
 		"NEWS_EDIT",
 		"REQUEST_CONSENTS",
@@ -155,6 +157,7 @@
 		"DATASOURCES_VIEW",
 		"FEDERALSTATE_CREATE",
 		"FEDERALSTATE_EDIT",
+		"MESSENGER_ROOM_CREATE",
 		"MESSENGER_SYNC",
 		"RELEASES_CREATE",
 		"RELEASES_EDIT",
@@ -205,6 +208,7 @@
 		"COURSE_REMOVE",
 		"ENTERTHECLOUD_START",
 		"LESSONS_VIEW",
+		"MESSENGER_ROOM_CREATE",
 		"NEWS_CREATE",
 		"NEWS_EDIT",
 		"REQUEST_CONSENTS",
@@ -339,21 +343,6 @@
 		"SUBMISSIONS_SCHOOL_VIEW",
 		"TOOL_NEW_VIEW"
 	],
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "5b45f8d28c8dba65f8871e19"
-	},
-	"name": "parent",
-	"updatedAt": {
-		"$date": "2017-07-01T00:06:37.148Z"
-	},
-	"createdAt": {
-		"$date": "2017-07-01T00:06:37.148Z"
-	},
-	"roles": [],
-	"permissions": [],
 	"__v": 0
 },
 {
