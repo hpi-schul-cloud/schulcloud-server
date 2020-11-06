@@ -23,12 +23,7 @@ const CountyModel = mongoose.model('county', countySchema);
 const federalStateModel = mongoose.model(
 	'federalState',
 	new mongoose.Schema({
-		name: { type: String, required: true },
-		abbreviation: { type: String, required: true },
-		logoUrl: { type: String, required: true },
 		counties: [{ type: countySchema }],
-		createdAt: { type: Date, default: Date.now },
-		updatedAt: { type: Date, default: Date.now },
 	})
 );
 
