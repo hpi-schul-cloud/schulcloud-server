@@ -476,30 +476,15 @@
 		},
 		"SC": {
 			"type": "object",
-			"description": "Matrix messenger properties, required always to be defined",
+			"description": "Set the general properties for the Projekt.",
 			"properties": {
-				"DOMAIN": {
-					"type": "string",
-					"default": "localhost",
-					"description": "The URI of the Matrix Messenger server."
-				},
 				"TITLE": {
 					"type": "string",
 					"default": "HPI Schul-Cloud",
-					"description": "The URI of the Matrix Messenger server."
-				},
-				"THEME": {
-					"type": "string",
-					"default": "default",
-					"description": "The URI of the Matrix Messenger server."
-				},
-				"SHORT_TITLE": {
-					"type": "string",
-					"default": "HPI Schul-Cloud",
-					"description": "The URI of the Matrix Messenger server."
+					"description": "Title is set for dev, test and by default. For Production set in instances, so not in production.json"
 				}
 			},
-			"required": ["DOMAIN"]
+			"required": ["TITLE"]
 		}
 	},
 	"required": [
@@ -509,7 +494,8 @@
 		"HOST",
 		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
 		"LERNSTORE_MODE",
-		"FEATURE_SHOW_VERSION_ENABLED"
+		"FEATURE_SHOW_VERSION_ENABLED",
+		"SC"
 	],
 
 	"allOf": [
