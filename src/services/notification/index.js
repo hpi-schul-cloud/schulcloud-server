@@ -4,7 +4,7 @@ const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 const queryString = require('qs');
 
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const hooks = require('./hooks/index');
 
 /**

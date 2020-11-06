@@ -1,6 +1,6 @@
 const request = require('request-promise-native');
 const reqlib = require('app-root-path').require;
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { GeneralError } = reqlib('src/errors');
 const logger = require('../../logger');

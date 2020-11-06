@@ -1,7 +1,7 @@
 const mockery = require('mockery');
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const commons = require('@schul-cloud/commons');
+const commons = require('@hpi-schul-cloud/commons');
 const rabbitmqMock = require('./rabbitmqMock');
 const { ACTIONS } = require('../../../src/services/messengerSync/producer');
 
@@ -23,7 +23,7 @@ describe('service', function test() {
 			warnOnUnregistered: false,
 			useCleanCache: true,
 		});
-		mockery.registerMock('@schul-cloud/commons', commons);
+		mockery.registerMock('@hpi-schul-cloud/commons', commons);
 		mockery.registerMock('amqplib', rabbitmqMock.amqplib);
 
 		// eslint-disable-next-line global-require
