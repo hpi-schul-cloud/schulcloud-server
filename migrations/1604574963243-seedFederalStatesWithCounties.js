@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 
 const { connect, close } = require('../src/utils/database');
 const allCounties = require('./helpers/counties051120.json');
-const logger = require('../src/logger');
 
 // use your own name for your model, otherwise other migrations may fail.
 // The third parameter is the actually relevent one for what collection to write to.
@@ -12,7 +11,7 @@ const countySchema = new mongoose.Schema(
 	{
 		countyId: { type: Number },
 		county: { type: String },
-		licensePlate: { type: String },
+		antaresKey: { type: String },
 	},
 	{
 		timestamps: true,
@@ -29,7 +28,7 @@ const federalStateModel = mongoose.model(
 
 const getCounties = (stateId) => {
 	const stateCounties = allCounties
-		.filter((county) => county.federalId === JSON.stringify(stateId))
+		.filter((county) => JSON.stringify(county.federalId) === JSON.stringify(stateId))
 		.map((county) => new CountyModel(county));
 	return stateCounties;
 };
@@ -54,12 +53,8 @@ module.exports = {
 		await connect();
 		// ////////////////////////////////////////////////////
 		// Implement the necessary steps to roll back the migration here.
-		await federalStateModel.updateMany({}, { $pull: { counties: [] } });
-
-		await CountyModel.deleteMany()
-			.exec()
-			.then((deletedCounties) => logger.info(`Down migration finished. \nDeleted ${deletedCounties.length} entries `))
-			.catch((e) => logger.error('Down migration failed. Error: ', e));
+		await federalStateModel.updateMany({}, { $set: { counties: [] } });
+		await CountyModel.deleteMany().exec();
 		// ////////////////////////////////////////////////////
 		await close();
 	},

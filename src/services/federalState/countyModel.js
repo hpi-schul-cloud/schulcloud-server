@@ -6,7 +6,7 @@ const countySchema = new Schema(
 	{
 		countyId: { type: Number },
 		county: { type: String },
-		licensePlate: { type: String },
+		antaresKey: { type: String },
 	},
 	{
 		timestamps: true,
