@@ -14,7 +14,7 @@ const SIGNATURE_KEY = Configuration.get('TSP_API_SIGNATURE_KEY');
 const BASE_URL = Configuration.get('TSP_API_BASE_URL');
 const CLIENT_ID = Configuration.get('TSP_API_CLIENT_ID');
 const CLIENT_SECRET = Configuration.get('TSP_API_CLIENT_SECRET');
-const { HOST, SC_DOMAIN } = require('../../../../../config/globals');
+const { HOST } = require('../../../../../config/globals');
 
 const ENCRYPTION_OPTIONS = { alg: 'dir', enc: 'A128CBC-HS256' };
 const SIGNATURE_OPTIONS = { alg: 'HS512' };
@@ -203,7 +203,7 @@ class TspApi {
 		this.lastTokenExpires = issueDate + lifetime;
 		const payload = JSON.stringify({
 			apiClientSecret: CLIENT_SECRET,
-			iss: SC_DOMAIN,
+			iss: Configuration.get('SC__DOMAIN'),
 			aud: BASE_URL,
 			sub: HOST,
 			exp: issueDate + lifetime,

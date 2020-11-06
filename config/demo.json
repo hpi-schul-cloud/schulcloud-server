@@ -1,6 +1,9 @@
 {
 	"$schema": "./default.schema.json",
 	"SC": {
-		"TITLE": "Demo HPI Schul-Cloud"
+		"TITLE": "Demo HPI Schul-Cloud",
+		"DOMAIN": "demo.hpi-schul-cloud.de",
+		"THEME": "demo",
+		"SHORT_TITLE": "Demo HPI Schul-Cloud"
 	}
 }

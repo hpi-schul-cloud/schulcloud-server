@@ -1,6 +1,9 @@
 {
 	"$schema": "./default.schema.json",
 	"SC": {
-		"TITLE": "Demo HPI Schul-Cloud"
+		"TITLE": "Brandenburg Schul-Cloud",
+		"DOMAIN": "brandenburg.schul-cloud.org",
+		"THEME": "brb",
+		"SHORT_TITLE": "Brandenburg Schul-Cloud"
 	}
 }

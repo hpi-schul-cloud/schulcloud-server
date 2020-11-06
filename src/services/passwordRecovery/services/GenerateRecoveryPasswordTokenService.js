@@ -8,7 +8,6 @@ const PasswordRecoveryModel = require('../model');
 const { randomStringAsBase64Url } = require('../../../utils/randomNumberGenerator');
 const globalHooks = require('../../../hooks');
 const logger = require('../../../logger/index');
-const { SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const HOST = Configuration.get('HOST');
 
@@ -66,10 +65,10 @@ Bitte setzen Sie Ihr Passwort unter folgendem Link zurück:
 ${recoveryLink}\n
 Bitte beachten Sie das der Link nur für 6 Stunden gültig ist. Danach müssen sie ein neuen Link anfordern.\n
 Mit Freundlichen Grüßen
-Ihr ${SC_SHORT_TITLE} Team`;
+Ihr ${Configuration.get('SC__SHORT_TITLE')} Team`;
 
 				globalHooks.sendEmail(context, {
-					subject: `Passwort zurücksetzen für die ${SC_SHORT_TITLE}`,
+					subject: `Passwort zurücksetzen für die ${Configuration.get('SC__SHORT_TITLE')}`,
 					emails: [account.userId.email],
 					content: {
 						text: mailContent,

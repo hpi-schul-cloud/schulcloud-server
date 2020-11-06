@@ -1,6 +1,9 @@
 {
 	"$schema": "./default.schema.json",
 	"SC": {
-		"TITLE": "Thüringer Schulcloud"
+		"TITLE": "Thüringer Schulcloud",
+		"DOMAIN": "test.schulcloud-thueringen.de",
+		"THEME": "thr",
+		"SHORT_TITLE": "Thüringer Schulcloud"
 	}
 }

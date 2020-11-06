@@ -1,6 +1,9 @@
 {
 	"$schema": "./default.schema.json",
 	"SC": {
-		"TITLE": "Niedersächsische Bildungscloud"
+		"TITLE": "Niedersächsische Bildungscloud",
+		"DOMAIN": "international.hpi-schul-cloud.de",
+		"THEME": "n21",
+		"SHORT_TITLE": "Niedersächsische Bildungscloud"
 	}
 }
