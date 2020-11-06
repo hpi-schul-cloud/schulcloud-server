@@ -281,7 +281,6 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		return this.app.service('registrationlink').create(params);
 	}
 
-	// Add tests
 	async createOrUpdateUser(record, schoolId) {
 		const user = await this.findUserForRecord(record);
 
@@ -298,7 +297,6 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		return [await this.app.service('users').get(user._id), false];
 	}
 
-	// rename user
 	async findUserForRecord(record) {
 		const users = await this.app.service('users').find(
 			{
