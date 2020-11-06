@@ -13,6 +13,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-7695 - prevent csv user override operations on other schools
 
+## [25.1.10] - 2020-11-05
+
+### Added
+
 ## [25.1.9] - 2020-11-03
 
 ### Fixed
