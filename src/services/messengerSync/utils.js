@@ -176,7 +176,7 @@ const buildMessageObject = async (data) => {
 			})
 		);
 	}
-	const servername = Configuration.get('MATRIX_SERVERNAME');
+	const servername = Configuration.get('MATRIX_MESSENGER__SERVERNAME');
 
 	return {
 		method: 'adduser',

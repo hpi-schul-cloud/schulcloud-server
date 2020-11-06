@@ -16,7 +16,7 @@ describe('handleAutoLogout hook', function test() {
 	let testObjects;
 
 	before(async () => {
-		configBefore = Configuration.toObject(); // deep copy current config
+		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('REDIS_URI', '//validHost:3333');
 		Configuration.set('JWT_TIMEOUT_SECONDS', 7200);
 

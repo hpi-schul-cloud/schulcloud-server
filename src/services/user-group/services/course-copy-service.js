@@ -198,10 +198,10 @@ module.exports = function setup() {
 	const app = this;
 
 	app.use('/courses/copy', new CourseCopyService(app));
-	app.use('/courses/share', new CourseShareService(app));
+	app.use('/courses-share', new CourseShareService(app));
 
 	const courseCopyService = app.service('/courses/copy');
-	const courseShareService = app.service('/courses/share');
+	const courseShareService = app.service('/courses-share');
 
 	courseCopyService.hooks({
 		before: hooks.before,

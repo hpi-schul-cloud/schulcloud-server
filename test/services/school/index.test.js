@@ -113,6 +113,16 @@ describe('school service', () => {
 			});
 		});
 
+		it('create school with timezone', async () => {
+			const defaultTz = 'Europe/Berlin';
+			const serviceCreatedSchool = await schoolService.create({ ...sampleSchoolData, timezone: defaultTz });
+			const { _id: schoolId } = serviceCreatedSchool;
+			createdSchoolIds.push(schoolId);
+			const out = await schoolService.get(schoolId);
+			expect(out, 'school has been saved').to.be.not.null;
+			expect(out.timezone, 'the defined timezone has been added to the school').to.be.equal(defaultTz);
+		});
+
 		it('create school with currentYear defined explictly', async () => {
 			const serviceCreatedSchool = await schoolService.create({ ...sampleSchoolData, currentYear: sampleYear });
 			const { _id: schoolId } = serviceCreatedSchool;
@@ -341,6 +351,50 @@ describe('school service', () => {
 				expect(result.isTeamCreationByStudentsEnabled).to.be.false;
 			}
 		);
+		it('should fail to update officialSchoolNumber with wrong format', async () => {
+			const school = await testObjects.createTestSchool({});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['administrator'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			try {
+				await app.service('/schools').patch(school._id, { officialSchoolNumber: 'foo' }, params);
+			} catch (err) {
+				expect(err).to.not.equal(undefined);
+				expect(err.message).to.include('School number is incorrect');
+				expect(err.name).to.be.equal('Error');
+			}
+		});
+		it('should succeed to update officialSchoolNumber with correct format', async () => {
+			const school = await testObjects.createTestSchool({});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['administrator'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const schoolNumber = 'BA-13372';
+			let result;
+
+			try {
+				result = await app.service('/schools').patch(school._id, { officialSchoolNumber: schoolNumber }, params);
+			} catch (err) {
+				throw new Error('should not have failed', err);
+			}
+			expect(result.officialSchoolNumber).to.be.equal(schoolNumber);
+
+			const schoolNumber2 = '13372';
+			let result2;
+
+			try {
+				result2 = await app.service('/schools').patch(school._id, { officialSchoolNumber: schoolNumber2 }, params);
+			} catch (err) {
+				throw new Error('should not have failed', err);
+			}
+			expect(result2.officialSchoolNumber).to.be.equal(schoolNumber2);
+		});
 	});
 });
 

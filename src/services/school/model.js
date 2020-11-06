@@ -16,8 +16,9 @@ const SCHOOL_FEATURES = {
 	ROCKET_CHAT: 'rocketChat',
 	VIDEOCONFERENCE: 'videoconference',
 	MESSENGER: 'messenger',
-	STUDENTVISIBILITY: 'studentVisibility', // depricated
+	STUDENTVISIBILITY: 'studentVisibility', // deprecated
 	MESSENGER_SCHOOL_ROOM: 'messengerSchoolRoom',
+	MESSENGER_STUDENT_ROOM_CREATE: 'messengerStudentRoomCreate',
 };
 
 const defaultFeatures = [];
@@ -59,6 +60,7 @@ const schoolSchema = new Schema(
 			default: '',
 			enum: ['', 'school', 'schoolGroup'],
 		},
+		officialSchoolNumber: { type: String },
 		systems: [{ type: Schema.Types.ObjectId, ref: 'system' }],
 		federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },
 		createdAt: { type: Date, default: Date.now },
@@ -72,6 +74,7 @@ const schoolSchema = new Schema(
 		purpose: { type: String },
 		rssFeeds: [{ type: rssFeedSchema }],
 		language: { type: String },
+		timezone: { type: String },
 		features: {
 			type: [String],
 			default: defaultFeatures,
