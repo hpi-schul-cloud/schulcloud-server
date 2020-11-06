@@ -2,11 +2,11 @@ const { parse } = require('papaparse');
 const stripBOM = require('strip-bom');
 const { mix } = require('mixwith');
 const { Configuration } = require('@schul-cloud/commons');
+const { Forbidden } = require('@feathersjs/errors');
 
 const Syncer = require('./Syncer');
 const ClassImporter = require('./mixins/ClassImporter');
 const { SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
-const { Forbidden } = require('@feathersjs/errors');
 
 const ATTRIBUTES = [
 	{ name: 'namePrefix', aliases: ['nameprefix', 'prefix', 'title', 'affix'] },
