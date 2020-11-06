@@ -12,7 +12,7 @@ const countySchema = new mongoose.Schema(
 	{
 		countyId: { type: Number },
 		county: { type: String },
-		licensePlate: [{ type: String }],
+		licensePlate: { type: String },
 	},
 	{
 		timestamps: true,
@@ -35,10 +35,7 @@ const federalStateModel = mongoose.model(
 const getCounties = (stateId) => {
 	const stateCounties = allCounties
 		.filter((county) => county.federalId === JSON.stringify(stateId))
-		.map((county) => {
-			county.licensePlate = county.licensePlate.split(', ');
-			return new CountyModel(county);
-		});
+		.map((county) => new CountyModel(county));
 	return stateCounties;
 };
 
