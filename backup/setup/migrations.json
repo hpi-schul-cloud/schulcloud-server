@@ -22,7 +22,7 @@
 	},
 	"name": "AddPositionToLessons",
 	"createdAt": {
-		"$date": "2019-07-08T14:15:27.05Z"
+		"$date": "2019-07-08T14:15:27.050Z"
 	},
 	"state": "up",
 	"__v": 0
@@ -56,7 +56,7 @@
 	"state": "up",
 	"name": "addStartAndEndDateToYearCollection",
 	"createdAt": {
-		"$date": "2019-07-17T08:12:18.48Z"
+		"$date": "2019-07-17T08:12:18.480Z"
 	},
 	"__v": 0
 },
@@ -199,7 +199,7 @@
 	"state": "up",
 	"name": "AddScopePermissionsViewPermissionToCourseTeachers",
 	"createdAt": {
-		"$date": "2019-09-25T14:59:22.19Z"
+		"$date": "2019-09-25T14:59:22.190Z"
 	},
 	"__v": 0
 },
@@ -407,7 +407,7 @@
 	"state": "up",
 	"name": "addVideoconferencePermissionsToTeamRoles",
 	"createdAt": {
-		"$date": "2020-02-03T09:18:11.13Z"
+		"$date": "2020-02-03T09:18:11.130Z"
 	},
 	"__v": 0
 },
@@ -429,7 +429,7 @@
 	"state": "up",
 	"name": "datasource-permissions-for-superhero",
 	"createdAt": {
-		"$date": "2020-02-19T14:22:21.2Z"
+		"$date": "2020-02-19T14:22:21.200Z"
 	},
 	"__v": 0
 },
@@ -539,7 +539,7 @@
 	"state": "up",
 	"name": "addAdminPermissionForManagingStudentTeamCreation",
 	"createdAt": {
-		"$date": "2020-04-15T12:59:02.81Z"
+		"$date": "2020-04-15T12:59:02.810Z"
 	},
 	"__v": 0
 },
@@ -605,7 +605,7 @@
 	"state": "up",
 	"name": "encrypt-ldap-search-user-password",
 	"createdAt": {
-		"$date": "2020-05-26T14:00:06.91Z"
+		"$date": "2020-05-26T14:00:06.910Z"
 	},
 	"__v": 0
 },
@@ -776,7 +776,7 @@
 },
 {
 	"_id": {
-		"$oid": "5f735acf026e67ed1ca47e97"
+		"$oid": "5fa3dcbdca06ca41959af86b"
 	},
 	"state": "up",
 	"name": "copy-parents-data-into-children-entities-and-delete-parent-users",
@@ -798,7 +798,7 @@
 },
 {
 	"_id": {
-		"$oid": "5f993fb6ae0d8251a7a049e5"
+		"$oid": "5fa3dcbdca06ca41959af86c"
 	},
 	"state": "up",
 	"name": "search_index",
@@ -809,7 +809,7 @@
 },
 {
 	"_id": {
-		"$oid": "5f9adffc788a4f97487fa014"
+		"$oid": "5fa3dcbdca06ca41959af86d"
 	},
 	"state": "up",
 	"name": "add-messenger-one-to-one-permissions",
@@ -820,18 +820,18 @@
 },
 {
 	"_id": {
-		"$oid": "5f993fb6ae0d8251a7a049e6"
+		"$oid": "5fa3dcbdca06ca41959af86e"
 	},
 	"state": "up",
 	"name": "syncUserIndex",
 	"createdAt": {
-		"$date": "2020-10-15T11:46:01.84Z"
+		"$date": "2020-10-15T11:46:01.840Z"
 	},
 	"__v": 0
 },
 {
 	"_id": {
-		"$oid": "5f901d78bfeb05502414011f"
+		"$oid": "5fa3dcbdca06ca41959af86f"
 	},
 	"state": "up",
 	"name": "rocketchat-to-matrix-messenger",
@@ -842,7 +842,7 @@
 },
 {
 	"_id": {
-		"$oid": "5f91453639a2a8ca44687c2d"
+		"$oid": "5fa3dcbdca06ca41959af870"
 	},
 	"state": "up",
 	"name": "disableLernStoreForStudentsinNI_SH",
@@ -853,12 +853,23 @@
 },
 {
 	"_id": {
-		"$oid": "5f9926b16c32c64b1c31f707"
+		"$oid": "5fa3dcbdca06ca41959af871"
 	},
 	"state": "up",
 	"name": "addIndexForUserEmail",
 	"createdAt": {
 		"$date": "2020-10-28T08:07:13.544Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3def3d21e804a816dc1b5"
+	},
+	"state": "up",
+	"name": "seedFederalStatesWithCounties",
+	"createdAt": {
+		"$date": "2020-11-05T11:16:03.243Z"
 	},
 	"__v": 0
 }]
