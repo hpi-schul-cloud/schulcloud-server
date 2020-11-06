@@ -3,7 +3,6 @@ const { Configuration } = require('@schul-cloud/commons');
 const { sha } = require('../helper/version');
 const { version } = require('../../package.json');
 
-const { SC_DOMAIN, ENVIRONMENTS } = require('../../config/globals');
 /**
  * helpers
  */
@@ -85,11 +84,11 @@ module.exports = (app) => {
 			removeJwtToken,
 		];
 		// for local test runs, post feedback but skip it
-		if (Configuration.get('NODE_ENV') === "development") {
+		if (Configuration.get('NODE_ENV') === 'development') {
 			middlewares.push(logItMiddleware(false));
 		}
 		// do not execute for test runs
-		if (Configuration.get('NODE_ENV') === "test") {
+		if (Configuration.get('NODE_ENV') === 'test') {
 			middlewares = [skipItMiddleware];
 		}
 
@@ -121,7 +120,7 @@ module.exports = (app) => {
 		Sentry.configureScope((scope) => {
 			scope.setTag('frontend', false);
 			scope.setLevel('warning');
-			scope.setTag('domain', SC_DOMAIN);
+			scope.setTag('domain', Configuration.get('SC__DOMAIN'));
 			scope.setTag('sha', sha);
 		});
 

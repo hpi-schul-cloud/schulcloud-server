@@ -1,4 +1,4 @@
-const { SC_THEME } = require('../../../config/globals');
+const { Configuration } = require('@schul-cloud/commons');
 
 const MessageProvider = [];
 let messages = null;
@@ -17,7 +17,7 @@ class Cache {
 		let newMessages = [];
 
 		for (let i = 0; i < MessageProvider.length; i += 1) {
-			const data = await MessageProvider[i].getMessage(SC_THEME);
+			const data = await MessageProvider[i].getMessage(Configuration.get('SC__THEME'));
 			if (!data.success) {
 				success = false;
 				return;

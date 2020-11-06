@@ -5,7 +5,6 @@ const reqlib = require('app-root-path').require;
 const { Forbidden, BadRequest } = reqlib('src/errors');
 const { hasPermission } = require('../../../hooks');
 
-const { SC_SHORT_TITLE } = require('../../../../config/globals');
 const logger = require('../../../logger');
 
 const mailContent = (firstName, lastName, registrationLink) => {
@@ -18,7 +17,7 @@ Hallo ${firstName} ${lastName}!
 				'SC__TITLE'
 			)} beizutreten, bitte vervollständige deine Registrierung unter folgendem Link: 
 ${registrationLink}
-\nViel Spaß und einen guten Start wünscht dir dein ${SC_SHORT_TITLE}-Team`,
+\nViel Spaß und einen guten Start wünscht dir dein ${Configuration.get('SC__SHORT_TITLE')}-Team`,
 			html: '',
 		},
 	};

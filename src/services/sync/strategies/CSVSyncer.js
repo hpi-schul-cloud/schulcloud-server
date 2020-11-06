@@ -6,7 +6,10 @@ const { Forbidden } = require('@feathersjs/errors');
 
 const Syncer = require('./Syncer');
 const ClassImporter = require('./mixins/ClassImporter');
+<<<<<<< HEAD
 const { equal } = require('../../../helper/compare').ObjectId;
+=======
+>>>>>>> all SC_Main config
 
 const ATTRIBUTES = [
 	{ name: 'namePrefix', aliases: ['nameprefix', 'prefix', 'title', 'affix'] },
@@ -369,7 +372,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 							'bitte vervollständige deine Registrierung unter folgendem Link: ' +
 							`${user.shortLink}\n\n` +
 							'Viel Spaß und einen guten Start wünscht dir dein ' +
-							`${SC_SHORT_TITLE}-Team`,
+							`${Configuration.get('SC__SHORT_TITLE')}-Team`,
 					},
 				});
 				this.stats.invitations.successful += 1;

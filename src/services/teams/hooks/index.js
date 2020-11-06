@@ -1,11 +1,11 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { Configuration } = require('@schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
 const { Forbidden, NotFound, BadRequest, Conflict, NotImplemented, MethodNotAllowed, NotAcceptable } = reqlib(
 	'src/errors'
 );
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
-const { SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const globalHooks = require('../../../hooks');
 const logger = require('../../../logger');
@@ -593,7 +593,7 @@ const sendInfo = (hook) => {
 	return getSessionUser(hook)
 		.then((user) => {
 			globalHooks.sendEmail(hook, {
-				subject: `${SC_SHORT_TITLE}: Team-Einladung`,
+				subject: `${Configuration.get('SC__SHORT_TITLE')}: Team-Einladung`,
 				emails: [email],
 				content: {
 					text: createEmailText(hook, user),

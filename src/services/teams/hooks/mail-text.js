@@ -1,18 +1,18 @@
-const { SC_SHORT_TITLE } = require('../../../../config/globals');
+const { Configuration } = require('@schul-cloud/commons');
 
-const close = `\n\nViel Spaß und einen guten Start wünscht dir dein ${SC_SHORT_TITLE}-Team`;
+const close = `\n\nViel Spaß und einen guten Start wünscht dir dein ${Configuration.get('SC__SHORT_TITLE')}-Team`;
 
 const inviteWithRegistration = ({ invitee, inviter, teamName, shortLink }) => `Hallo ${invitee}!
-\nDu wurdest von ${inviter} eingeladen, dem Team '${teamName}' der ${SC_SHORT_TITLE} beizutreten.
-Da du noch keinen ${SC_SHORT_TITLE} Account besitzt, folge bitte diesem Link,
+\nDu wurdest von ${inviter} eingeladen, dem Team '${teamName}' der ${Configuration.get('SC__SHORT_TITLE')} beizutreten.
+Da du noch keinen ${Configuration.get('SC__SHORT_TITLE')} Account besitzt, folge bitte diesem Link,
 um die Registrierung abzuschließen und dem Team beizutreten: ${shortLink}${close}`;
 
 const inviteWithEmail = ({ invitee, inviter, teamName, shortLink }) => `Hallo ${invitee}!
-\nDu wurdest von ${inviter} zu dem Team '${teamName}' der ${SC_SHORT_TITLE} hinzugefügt.
+\nDu wurdest von ${inviter} zu dem Team '${teamName}' der ${Configuration.get('SC__SHORT_TITLE')} hinzugefügt.
 Klicke auf diesen Link, um deine Teams aufzurufen: ${shortLink}${close}`;
 
 const addedToTeam = ({ invitee, inviter, teamName, shortLink }) => `Hallo ${invitee}!
-\nDu wurdest von ${inviter} eingeladen, dem Team '${teamName}' der ${SC_SHORT_TITLE} beizutreten.
+\nDu wurdest von ${inviter} eingeladen, dem Team '${teamName}' der ${Configuration.get('SC__SHORT_TITLE')} beizutreten.
 Klicke auf diesen Link, um die Einladung anzunehmen: ${shortLink}${close}`;
 
 const isNewRegistration = (linkData, user) => {

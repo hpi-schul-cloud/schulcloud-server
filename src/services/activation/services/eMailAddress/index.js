@@ -1,6 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
+const { Configuration } = require('@schul-cloud/commons');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
-const { SC_SHORT_TITLE } = require('../../../../../config/globals');
 const logger = require('../../../../logger');
 
 const {
@@ -38,7 +38,7 @@ const buildActivationLinkMail = (user, entry) => {
 \nHallo ${user.firstName},
 \nbitte bestätige deine neue E-Mail-Adresse (${email}) über folgenden Link: ${activationLink}
 \nBitte beachte, dass der Aktivierungslink nur 2 Stunden gültig ist.
-\nDein ${SC_SHORT_TITLE} Team`,
+\nDein ${Configuration.get('SC__SHORT_TITLE')} Team`,
 		html: '',
 	};
 
@@ -51,10 +51,12 @@ const buildFYIMail = (user) => {
 	const content = {
 		text: `E-Mail-Adresse geändert
 \nHallo ${user.firstName},
-\nwir wollten dich nur informieren, dass sich die E-Mail-Adresse für dein ${SC_SHORT_TITLE} Konto geändert hat.
+\nwir wollten dich nur informieren, dass sich die E-Mail-Adresse für dein ${Configuration.get(
+			'SC__SHORT_TITLE'
+		)} Konto geändert hat.
 \nWenn du die Änderung veranlasst hast, ist alles in Ordnung.
 \nFalls du nicht darum gebeten hast, deine E-Mail-Adresse zu änderen, kontaktiere deinen Schuladministrator oder unseren User-Support.
-\nDein ${SC_SHORT_TITLE} Team`,
+\nDein ${Configuration.get('SC__SHORT_TITLE')} Team`,
 		html: '',
 	};
 
