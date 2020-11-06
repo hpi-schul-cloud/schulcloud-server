@@ -1,4 +1,4 @@
-const { authenticate } = require('@feathersjs/authentication');
+const { authenticateSC } = require('../../../hooks/authentication');
 const reqlib = require('app-root-path').require;
 
 const { NotFound, BadRequest } = reqlib('src/errors');
@@ -167,7 +167,7 @@ const populateWhitelist = {
 };
 
 exports.before = () => ({
-	all: [authenticate('jwt'), mapUsers],
+	all: [authenticateSC(), mapUsers],
 	find: [
 		hasPermission('TOPIC_VIEW'),
 		iff(isProvider('external'), validateLessonFind),

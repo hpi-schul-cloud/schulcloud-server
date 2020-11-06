@@ -1,4 +1,4 @@
-const { authenticate } = require('@feathersjs/authentication');
+const { authenticateSC } = require('../../../hooks/authentication');
 const local = require('@feathersjs/authentication-local');
 const { iff, isProvider, disallow, keep } = require('feathers-hooks-common');
 const {
@@ -75,7 +75,7 @@ const accountServiceHooks = {
 		// find, get and create cannot be protected by authenticate('jwt')
 		// the route is used internally by login and admin services
 		find: [
-			authenticate('jwt'),
+			authenticateSC(),
 			iff(isProvider('external'), restrictAccess),
 			iff(isProvider('external'), restrictToSameSchool),
 			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
@@ -93,7 +93,7 @@ const accountServiceHooks = {
 		],
 		update: [disallow('external')],
 		patch: [
-			authenticate('jwt'),
+			authenticateSC(),
 			iff(isProvider('external'), preventPopulate),
 			sanitizeUsername,
 			validateUserName,
@@ -107,7 +107,7 @@ const accountServiceHooks = {
 			local.hooks.hashPassword('password'),
 		],
 		remove: [
-			authenticate('jwt'),
+			authenticateSC(),
 			hasPermission('ACCOUNT_CREATE'),
 			iff(isProvider('external'), restrictToUsersSchool),
 			iff(isProvider('external'), preventPopulate),

@@ -144,9 +144,14 @@ const leadTimeDetection = (context) => {
 	}
 };
 
+const testHook = (context) => {
+	console.log(context.path);
+	return context;
+}
+
 function setupAppHooks(app) {
 	const before = {
-		all: [iff(isProvider('external'), handleAutoLogout)],
+		all: [iff(isProvider('external'), handleAutoLogout), testHook],
 		find: [],
 		get: [],
 		create: [iff(isProvider('external'), [sanitizeDataHook, removeObjectIdInData])],

@@ -1,6 +1,6 @@
 const service = require('feathers-mongoose');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
-const auth = require('@feathersjs/authentication');
+const { authenticateSC } = require('../../../hooks/authentication');
 
 const accountModel = require('../model');
 
@@ -12,7 +12,7 @@ const accountModelService = service({
 
 const accountModelServiceHooks = {
 	before: {
-		all: [auth.hooks.authenticate('jwt')],
+		all: [authenticateSC()],
 		find: [iff(isProvider('external'), disallow())],
 		get: [iff(isProvider('external'), disallow())],
 		create: [iff(isProvider('external'), disallow())],
