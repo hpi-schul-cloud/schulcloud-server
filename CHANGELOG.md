@@ -49,6 +49,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6151 fixed paths to openapi documentation
 - Fixed searching for names including a dash
 
+### Removed
+
+- SC-7413 - Cleanup UnhandledRejection code that is handled from winston now
+
 ## [25.2.0]
 
 ### Added
