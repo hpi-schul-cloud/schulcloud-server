@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [25.1.11] - 2020-11-06
+
+### Security
+
+- SC-7695 - prevent csv user override operations on other schools
+
 ## [25.1.9] - 2020-11-03
 
 ### Fixed

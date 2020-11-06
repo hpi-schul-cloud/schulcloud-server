@@ -114,6 +114,9 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		}
 	};
 
+	const rnd = () => Math.round(Math.random() * 10000);
+	const randomGen = () => `${Date.now()}_${rnd()}`;
+
 	return {
 		createTestAccount: accounts.create,
 		createTestActivation: activation.create,
@@ -144,5 +147,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		info,
 		setupUser,
 		options: opt,
+		randomGen,
 	};
 };
