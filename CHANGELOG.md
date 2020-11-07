@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [25.1.11] - 2020-11-06
+
+### Security
+
+- SC-7695 - prevent csv user override operations on other schools
+
 ## [25.1.10] - 2020-11-05
 
 ### Added
-
-- SC-7683 - Add log metic for memory usage, add async error logging util, catch one unhandledRejection error and remove cronjob task from server.
 
 ## [25.1.9] - 2020-11-03
 
