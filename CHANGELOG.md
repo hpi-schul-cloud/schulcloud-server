@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-7615 - reduces the errors in lernstore
 - SC-5476 - Extend tests for Matrix messenger config and permission service
 - SC-6690 - refactors edu-sharing service and sets defaults
 - SC-6738 - Extend search input field in new admin tables to search for full name
@@ -49,6 +50,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6151 fixed paths to openapi documentation
 - Fixed searching for names including a dash
 
+### Removed
+
+- SC-7413 - Cleanup UnhandledRejection code that is handled from winston now
+
 ## [25.2.0]
 
 ### Added
@@ -83,6 +88,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - fixed README badges
 - SC-6151 - fixed a bug that prevented api docu from being accessible
 - Fix mocha tests
+
+## [25.1.11] - 2020-11-06
+
+### Security
+
+- SC-7695 - prevent csv user override operations on other schools
+
+## [25.1.10] - 2020-11-05
+
+### Added
+
+- SC-7683 - Add log metic for memory usage, add async error logging util, catch one unhandledRejection error and remove cronjob task from server.
 
 ## [25.1.9] - 2020-11-03
 
