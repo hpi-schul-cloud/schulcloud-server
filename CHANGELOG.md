@@ -88,6 +88,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6151 - fixed a bug that prevented api docu from being accessible
 - Fix mocha tests
 
+## [25.1.11] - 2020-11-06
+
+### Security
+
+- SC-7695 - prevent csv user override operations on other schools
+
 ## [25.1.10] - 2020-11-05
 
 ### Added
