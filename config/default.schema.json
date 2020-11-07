@@ -468,6 +468,11 @@
 			"minimum": 0,
 			"default": 8000,
 			"description": "Default timeout for external requests in milliseconds."
+		},
+		"MEMORY_INTERVAL_TIME" : {
+			"type": "integer",
+			"default": 0,
+			"description": "Is the time for logging memory metrics to log in >secounds<. Default 0 will disable the logging."
 		}
 	},
 	"required": [
