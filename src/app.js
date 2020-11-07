@@ -13,6 +13,7 @@ const { ObjectId } = require('mongoose').Types;
 const { BODYPARSER_JSON_LIMIT, LEAD_TIME } = require('../config/globals');
 
 const middleware = require('./middleware');
+const setupConfiguration = require('./configuration');
 const sockets = require('./sockets');
 const services = require('./services');
 
@@ -55,6 +56,7 @@ const setupApp = async () => {
 		.use(cors())
 		.use(favicon(path.join(app.get('public'), 'favicon.ico')))
 		.use('/', express.static('public'))
+		.configure(setupConfiguration)
 		.configure(sentry)
 		.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
 		.use('/', bodyParser.json({ limit: '10mb' }))
