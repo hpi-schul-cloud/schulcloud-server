@@ -36,6 +36,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - fixed README badges
 - SC-6151 fixed a bug that prevented api docu from being accessible
 
+## [25.1.10] - 2020-11-05
+
+### Added
+
+- SC-7683 - Add log metic for memory usage, add async error logging util, catch one unhandledRejection error and remove cronjob task from server.
+
 ## [25.1.9] - 2020-11-03
 
 ### Fixed

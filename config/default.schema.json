@@ -410,6 +410,11 @@
 				}
 			},
 			"required": ["METRICS_PATH", "DURATION_BUCKETS_SECONDS"]
+		},
+		"MEMORY_INTERVAL_TIME" : {
+			"type": "integer",
+			"default": 0,
+			"description": "Is the time for logging memory metrics to log in >secounds<. Default 0 will disable the logging."
 		}
 	},
 	"required": [
