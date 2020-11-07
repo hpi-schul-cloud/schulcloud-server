@@ -1618,4 +1618,81 @@ describe('CSVSyncer Integration', () => {
 			);
 		});
 	});
+
+	describe('Scenario 20 - User email already in use on other school', () => {
+		let scenarioParams;
+		let scenarioData;
+		let existingUser;
+		let school;
+
+		const SCHOOL_ID = testObjects.options.schoolId;
+		const EMAIL = `${testObjects.randomGen()}a@b.de`;
+
+		before(async () => {
+			const user = await createUser({
+				roles: 'administrator',
+				schoolId: SCHOOL_ID,
+			});
+
+			school = await testObjects.createTestSchool();
+
+			existingUser = await createUser({
+				email: EMAIL,
+				schoolId: school._id,
+				roles: 'teacher',
+			});
+
+			scenarioParams = await generateRequestParamsFromUser(user);
+			scenarioParams.query = {
+				target: 'csv',
+				school: SCHOOL_ID,
+				role: 'teacher',
+			};
+			scenarioData = {
+				data: `firstName,lastName,email\nPeter,Pan,${EMAIL}\n`,
+			};
+		});
+
+		after(async () => {
+			await testObjects.cleanup();
+		});
+
+		it('Should create a user with tested email.', () => {
+			expect(existingUser.email).to.equal(EMAIL);
+		});
+
+		it('should be accepted for execution', () => {
+			expect(CSVSyncer.params(scenarioParams, scenarioData)).to.not.equal(false);
+		});
+
+		it('should initialize without errors', () => {
+			const params = CSVSyncer.params(scenarioParams, scenarioData);
+			const instance = new CSVSyncer(app, {}, ...params);
+			expect(instance).to.not.equal(undefined);
+		});
+
+		it('should report one failures', async () => {
+			const [stats] = await app.service('sync').create(scenarioData, scenarioParams);
+
+			expect(stats.success).to.equal(false);
+			expect(stats.users.successful).to.equal(0);
+			expect(stats.users.created).to.equal(0);
+			expect(stats.users.updated).to.equal(0);
+			expect(stats.users.failed).to.equal(1);
+			expect(stats.errors.length).to.equal(1);
+
+			const users = await userModel.find({
+				email: { $in: EMAIL },
+			});
+
+			expect(users.length, 'should no doublications exist').to.equal(1);
+			expect(users[0].schoolId.toString(), 'should no override existing user schoolId').to.equal(school._id.toString());
+
+			expect(stats.errors[0]).to.eql({
+				type: 'user',
+				entity: `Peter,Pan,${EMAIL}`,
+				message: 'User is not on your school.',
+			});
+		});
+	});
 });
