@@ -472,10 +472,10 @@ describe('checkUniqueEmail', () => {
 
 describe('decorateUsers', () => {
 	const service = {
-		find(params) {},
+		find: sinon.spy(),
 	};
 
-	const serviceSpy = sinon.spy(service, 'find');
+	// const serviceSpy = sinon.spy(service, 'find');
 	const hookMock = {
 		app: {
 			// eslint-disable-next-line no-unused-vars
@@ -492,6 +492,6 @@ describe('decorateUsers', () => {
 
 	it('should call roles service exactly once', async () => {
 		await decorateUsers(hookMock);
-		assert(serviceSpy.calledOnce);
+		assert(service.find.calledOnce);
 	});
 });
