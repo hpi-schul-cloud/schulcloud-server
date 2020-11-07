@@ -26,6 +26,14 @@ const mapRoleFilterQuery = (hook) => {
 
 	return Promise.resolve(hook);
 };
+const getProtectedRoles = (hook) =>
+	hook.app.service('/roles').find({
+		// load protected roles
+		query: {
+			// TODO: cache these
+			name: ['teacher', 'admin'],
+		},
+	});
 
 const checkUnique = (hook) => {
 	const userService = hook.service;
@@ -313,13 +321,7 @@ const getDisplayName = (user, protectedRoles) => {
  * @returns {object} - the hook with the decorated user
  */
 const decorateUser = async (hook) => {
-	const protectedRoles = await hook.app.service('/roles').find({
-		// load protected roles
-		query: {
-			// TODO: cache these
-			name: ['teacher', 'admin'],
-		},
-	});
+	const protectedRoles = await getProtectedRoles(hook);
 	const displayName = getDisplayName(hook.result, protectedRoles);
 	hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
 	hook.result.displayName = displayName;
@@ -373,13 +375,7 @@ const decorateAvatar = (hook) => {
  */
 const decorateUsers = async (hook) => {
 	hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
-	const protectedRoles = await hook.app.service('/roles').find({
-		// load protected roles
-		query: {
-			// TODO: cache these
-			name: ['teacher', 'admin'],
-		},
-	});
+	const protectedRoles = await getProtectedRoles(hook);
 	const users = (hook.result.data || []).map((user) => {
 		user.displayName = getDisplayName(user, protectedRoles);
 		return user;

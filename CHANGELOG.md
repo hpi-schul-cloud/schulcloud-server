@@ -46,6 +46,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6151 fixed a bug that prevented api docu from being accessible
 - SC-6151 fixed paths to openapi documentation
 - Fixed searching for names including a dash
+- SC-7572 - Find /users route after hooks - extremely slow
 
 ## [25.2.0]
 
