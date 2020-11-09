@@ -147,6 +147,7 @@
 	"customYears": [],
 	"rssFeeds": [],
 	"__v": 0,
+	"purpose": "demo",
 	"permissions": {
 		"student": {
 			"LERNSTORE_VIEW": true
@@ -185,6 +186,7 @@
 	"customYears": [],
 	"rssFeeds": [],
 	"__v": 0,
+	"purpose": "demo",
 	"permissions": {
 		"student": {
 			"LERNSTORE_VIEW": true
@@ -225,6 +227,7 @@
 	"customYears": [],
 	"rssFeeds": [],
 	"__v": 0,
+	"purpose": "demo",
 	"permissions": {
 		"student": {
 			"LERNSTORE_VIEW": true
