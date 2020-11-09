@@ -32,7 +32,7 @@ class WopiFilesInfoService {
 
 	find(params) {
 		if (!(params.route || {}).fileId) {
-			throw new BadRequest('No fileId exist.');
+			throw new BadRequest('No fileId exist. (1)');
 		}
 		const { fileId } = params.route;
 		const { userId } = params.account;
@@ -46,6 +46,7 @@ class WopiFilesInfoService {
 
 		// check whether a valid file is requested
 		return FileModel.findOne({ _id: fileId })
+			.lean()
 			.exec()
 			.then((file) => {
 				if (!file) {
@@ -86,9 +87,14 @@ class WopiFilesInfoService {
 	}
 
 	// eslint-disable-next-line object-curly-newline
-	create(data, { payload, _id, account, wopiAction }) {
+	create(data, { payload, account, wopiAction, route }) {
 		// check whether a valid file is requested
-		return FileModel.findOne({ _id })
+		if (!(route || {}).fileId) {
+			throw new BadRequest('No fileId exist. (2)');
+		}
+		const { fileId } = route;
+		return FileModel.findOne({ _id: fileId })
+			.lean()
 			.exec()
 			.then((file) => {
 				if (!file) {
@@ -116,7 +122,7 @@ class WopiFilesContentsService {
 	find(params) {
 		// {fileId: _id, payload, account}
 		if (!(params.route || {}).fileId) {
-			throw new BadRequest('No fileId exist.');
+			throw new BadRequest('No fileId exist. (3)');
 		}
 		const { account, payload } = params;
 		const { fileId } = params.route;
@@ -124,6 +130,7 @@ class WopiFilesContentsService {
 
 		// check whether a valid file is requested
 		return FileModel.findOne({ _id: fileId })
+			.lean()
 			.exec()
 			.then((file) => {
 				if (!file) {
@@ -153,8 +160,7 @@ class WopiFilesContentsService {
 					});
 			})
 			.catch((err) => {
-				logger.warning(err);
-				throw new NotFound('The requested file was not found! (4)');
+				throw new NotFound('The requested file was not found! (4)', err);
 			});
 	}
 
@@ -164,7 +170,7 @@ class WopiFilesContentsService {
 	 */
 	create(data, params) {
 		if (!(params.route || {}).fileId) {
-			throw new BadRequest('No fileId exist.');
+			throw new BadRequest('No fileId exist. (4)');
 		}
 		const { payload, account, wopiAction } = params;
 		const { fileId } = params.route;
@@ -177,7 +183,7 @@ class WopiFilesContentsService {
 		// check whether a valid file is requested
 		return FileModel.findOne({ _id: fileId }).then((file) => {
 			if (!file) {
-				throw new NotFound('The requested file was not found! (5)');
+				throw new NotFound('The requested file was not found! (6)');
 			}
 			file.key = decodeURIComponent(file.key);
 
@@ -219,7 +225,7 @@ class WopiFilesContentsService {
 module.exports = function setup() {
 	const app = this;
 
-	app.use('/wopi/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+	app.use('/wopi/api', staticContent(path.join(__dirname, '/docs')));
 	app.use(`${wopiPrefix}:fileId/contents`, new WopiFilesContentsService(app), handleResponseHeaders);
 	app.use(`${wopiPrefix}:fileId`, new WopiFilesInfoService(app), handleResponseHeaders);
 
