@@ -85,13 +85,6 @@ const setupApp = async () => {
 			req.feathers.headers = req.headers;
 			req.feathers.originalUrl = req.originalUrl;
 			next();
-		})
-		.configure(services)
-		.configure(components)
-		.configure(sockets)
-		.configure(middleware)
-		.configure(setupAppHooks)
-		.configure(errorHandler);
 		});
 
 	if (Configuration.get('REQUEST_LOGGING_ENABLED') === true) {
@@ -100,7 +93,13 @@ const setupApp = async () => {
 			next();
 		});
 	}
-	app.configure(services).configure(sockets).configure(middleware).configure(setupAppHooks).configure(errorHandler);
+	app
+		.configure(services)
+		.configure(components)
+		.configure(sockets)
+		.configure(middleware)
+		.configure(setupAppHooks)
+		.configure(errorHandler);
 
 	return app;
 };
