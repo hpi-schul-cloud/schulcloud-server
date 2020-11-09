@@ -61,7 +61,8 @@ paths:
       summary: ''
       tags:
         - sync
-      security: []
+      security:
+        - jwtBearer: []
     post:
       parameters:
         - description: target syncer
@@ -86,7 +87,8 @@ paths:
       summary: ''
       tags:
         - sync
-      security: []
+      security:
+        - jwtBearer: []
       requestBody:
         required: true
         content:

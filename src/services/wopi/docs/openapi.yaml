@@ -96,7 +96,8 @@ paths:
       summary: ''
       tags:
         - wopi
-      security: []
+      security:
+        - jwtBearer: []
     post:
       parameters:
         - in: path
@@ -141,13 +142,8 @@ paths:
       summary: ''
       tags:
         - wopi
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/files'
+      security:
+        - jwtBearer: []
   '/wopi/files/{fileId}':
     get:
       parameters:
@@ -172,7 +168,8 @@ paths:
       summary: ''
       tags:
         - wopi
-      security: []
+      security:
+        - jwtBearer: []
     post:
       parameters:
         - in: path
@@ -215,13 +212,8 @@ paths:
       summary: ''
       tags:
         - wopi
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/files'
+      security:
+        - jwtBearer: []
   
 openapi: 3.0.2
 tags:
