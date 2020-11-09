@@ -12,8 +12,6 @@ const schema = new Schema(
 		},
 		user: { type: Object },
 		account: { type: Object },
-		document: { type: String },
-		deletedAt: { type: Date, default: null },
 	},
 	{
 		timestamps: true,
