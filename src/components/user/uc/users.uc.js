@@ -3,6 +3,17 @@ const { ObjectId } = require('mongoose').Types;
 const { GeneralError, NotFound } = require('../../../errors');
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
 
+const replaceUserWithTombstoneDR = async (id, app) => {
+	const uid = ObjectId();
+	return userRepo.replaceUserWithTombstoneDR(id, app, {
+		firstName: 'DELETED',
+		lastName: 'USER',
+		email: `${uid}@deleted`,
+		deletedAt: new Date(),
+	});
+
+}
+
 const deleteUser = async (id, app) => {
 	try {
 		// get user
@@ -29,13 +40,7 @@ const deleteUser = async (id, app) => {
 		await accountRepo.deleteUserAccount(id);
 
 		// replace user by tombstone
-		const uid = ObjectId();
-		await userRepo.replaceUserWithTombstoneDR(id, app, {
-			firstName: 'DELETED',
-			lastName: 'USER',
-			email: `${uid}@deleted`,
-			deletedAt: new Date(),
-		});
+		await replaceUserWithTombstoneDR(id, app);
 		return { success: true };
 	} catch (err) {
 		if (err.code >= 500) {
@@ -53,7 +58,7 @@ const putUserToTrashbin = async (id, app) => {
 
 const replaceUserWithTombstone = async (id, app) => {
 	const tombstoneBuilderPromises = [
-		userRepo.replaceUserWithTombstoneDR(id, app),
+		userRepo.replaceUserWithTombstoneMW(id, app),
 		accountRepo.replaceUserAccountWithTombstone(id, app),
 	];
 	try {
