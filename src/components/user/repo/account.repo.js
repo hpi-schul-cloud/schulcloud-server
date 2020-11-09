@@ -1,13 +1,28 @@
-const accountModel = require('../../../services/account/model');
+// const accountModel = require('../../../services/account/model');
 
 const getUserAccount = async (userId, app) => {
-	const account = await accountModel.findOne({ userId });
+	const [account] = await app.service('accounts').find({
+		query: {
+			userId,
+			$limit: 1,
+		},
+		paginate: false,
+	});
 	return account;
 };
 
 const deleteUserAccount = async (userId, app) => {
-	const result = await accountModel.deleteOne({ userId });
-	return result;
+	const [account] = await app.service('accounts').find({
+		query: {
+			userId,
+			$limit: 1,
+		},
+		paginate: false,
+	});
+	if (account && account._id) {
+		return app.service('accounts').remove(account._id);
+	}
+	return null;
 };
 
 const replaceUserAccountWithTombstone = async (userId, app) => {

@@ -37,7 +37,7 @@ const deleteUser = async (id, app) => {
 		await trashbinRepo.updateUserTrashbin(trashBin._id, { account });
 
 		// delete account
-		await accountRepo.deleteUserAccount(id);
+		await accountRepo.deleteUserAccount(id, app);
 
 		// replace user by tombstone
 		await replaceUserWithTombstoneDR(id, app);
