@@ -37,7 +37,7 @@ const deleteUserData = async (id, app) => {
 const deleteUserUC = async (id, app) => {
 	const data = await getUserData(id, app);
 
-	const trashBin = await trashbinRepo.createUserTrashbin(app, id, data);
+	const trashBin = await trashbinRepo.createUserTrashbin(id, data);
 	if (!(trashBin && trashBin._id)) {
 		throw new GeneralError(`Unable to initiate trashBin`);
 	}
