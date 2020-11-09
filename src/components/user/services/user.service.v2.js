@@ -3,7 +3,6 @@ const { deleteUser } = require('../uc/users.uc');
 
 class UserServiceV2 {
 	async remove(id, params) {
-
 		return deleteUser(id, this.app);
 	}
 

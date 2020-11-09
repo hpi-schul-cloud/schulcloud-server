@@ -6,9 +6,9 @@ const getUser = async (id, app) => {
 	return user;
 };
 
-const deleteUser = async (id, app) => {
-	return { success: true };
-};
+// const deleteUser = async (id, app) => {
+// 	return { success: true };
+// };
 
 const generateDummyEmail = () => {
 	const rnd = () => Math.round(Math.random() * 10000);

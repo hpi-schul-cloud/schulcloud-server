@@ -11,8 +11,7 @@ const replaceUserWithTombstoneDR = async (id, app) => {
 		email: `${uid}@deleted`,
 		deletedAt: new Date(),
 	});
-
-}
+};
 
 const deleteUser = async (id, app) => {
 	try {
