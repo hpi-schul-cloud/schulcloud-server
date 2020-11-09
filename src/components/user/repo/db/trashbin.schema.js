@@ -11,14 +11,14 @@ const schema = new Schema({
 		},
 		user: { type: Object },
 		account: { type: Object },
+		document: { type: String },
+		deletedAt: { type: Date, default: null },
 	},
 	{
 		timestamps: true,
 	}
 );
 
-const model = mongoose.model('trashbin', schema);
+const trashbinModel = mongoose.model('trashbin', schema);
 
-module.exports = {
-	model,
-};
+module.exports = trashbinModel;
