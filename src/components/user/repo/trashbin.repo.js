@@ -2,23 +2,19 @@ const trashbinModel = require('./db/trashbin.schema');
 
 /**
  * Creates the trashbin document
+ * @param app
  * @param {string} userId UserId of user to be deleted
+ * @param data
  * @returns {trashbinModel} Trashbin document
  */
-const createUserTrashbinDR = async (userId) => {
-	const trashbin = await trashbinModel.create({ userId });
-	return trashbin.toObject();
-};
-
-const createUserTrashbinMW = async (user, app) => {
+const createUserTrashbin = async (app, userId, data) => {
 	const modelService = app.service('trashbinModel');
-	const data = {
-		userId: user._id,
-		documentId: user._id,
-		document: JSON.stringify(user),
-		deletedAt: new Date(),
+
+	const trashbinData = {
+		userId,
+		...data,
 	};
-	return modelService.create(data);
+	return modelService.create(trashbinData);
 };
 
 /**
@@ -33,7 +29,6 @@ const updateUserTrashbin = async (id, data = {}) => {
 };
 
 module.exports = {
-	createUserTrashbinMW,
-	createUserTrashbinDR,
+	createUserTrashbin,
 	updateUserTrashbin,
 };

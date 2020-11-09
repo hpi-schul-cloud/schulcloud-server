@@ -48,17 +48,7 @@ describe('user service v2', function test() {
 				.set('Authorization', token)
 				.set('content-type', 'application/json');
 			const response = await request.send();
-			expect(response.status).to.equal(200);
-			expect(response.body).to.deep.equal({
-				reason: {
-					className: 'not-found',
-					code: 404,
-					errors: {},
-					message: `No record found for id '${notFoundId}'`,
-					name: 'NotFound',
-				},
-				success: false,
-			});
+			expect(response.status).to.equal(404);
 		});
 	});
 });
