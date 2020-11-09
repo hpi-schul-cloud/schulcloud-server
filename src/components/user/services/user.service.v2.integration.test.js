@@ -1,5 +1,6 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 
@@ -33,6 +34,31 @@ describe('user service v2', function test() {
 			const response = await request.send();
 			expect(response.status).to.equal(200);
 			expect(response.body).to.deep.equal({ success: true });
+		});
+
+		it('Returns error is user not found', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool();
+			const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const notFoundId = ObjectId();
+			const token = await testObjects.generateJWTFromUser(user);
+			const request = chai
+				.request(app)
+				.delete(`/users/v2/users/${notFoundId}`)
+				.set('Accept', 'application/json')
+				.set('Authorization', token)
+				.set('content-type', 'application/json');
+			const response = await request.send();
+			expect(response.status).to.equal(200);
+			expect(response.body).to.deep.equal({
+				reason: {
+					className: 'not-found',
+					code: 404,
+					errors: {},
+					message: `No record found for id '${notFoundId}'`,
+					name: 'NotFound',
+				},
+				success: false,
+			});
 		});
 	});
 });
