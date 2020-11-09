@@ -181,51 +181,54 @@ class WopiFilesContentsService {
 		const signedUrlService = this.app.service('fileStorage/signedUrl');
 
 		// check whether a valid file is requested
-		return FileModel.findOne({ _id: fileId }).then((file) => {
-			if (!file) {
-				throw new NotFound('The requested file was not found! (6)');
-			}
-			file.key = decodeURIComponent(file.key);
+		return FileModel.findOne({ _id: fileId })
+			.lean()
+			.exec()
+			.then((file) => {
+				if (!file) {
+					throw new NotFound('The requested file was not found! (6)');
+				}
+				file.key = decodeURIComponent(file.key);
 
-			// generate signedUrl for updating file to storage
-			return signedUrlService
-				.patch(file._id, {}, { payload, account })
-				.then((signedUrl) => {
-					// put binary content directly to file in storage
-					const options = {
-						method: 'PUT',
-						uri: signedUrl.url,
-						contentType: file.type,
-						body: data,
-					};
+				// generate signedUrl for updating file to storage
+				return signedUrlService
+					.patch(file._id, {}, { payload, account })
+					.then((signedUrl) => {
+						// put binary content directly to file in storage
+						const options = {
+							method: 'PUT',
+							uri: signedUrl.url,
+							contentType: file.type,
+							body: data,
+						};
 
-					return rp(options)
-						.then(() =>
-							FileModel.findOneAndUpdate(
-								{ _id: file._id },
-								{ $inc: { __v: 1 }, updatedAt: Date.now(), size: data.length }
+						return rp(options)
+							.then(() =>
+								FileModel.findOneAndUpdate(
+									{ _id: file._id },
+									{ $inc: { __v: 1 }, updatedAt: Date.now(), size: data.length }
+								)
+									.exec()
+									.catch((err) => {
+										logger.warning(new Error(err));
+									})
 							)
-								.exec()
-								.catch((err) => {
-									logger.warning(new Error(err));
-								})
-						)
-						.then(() => Promise.resolve({ lockId: file.lockId }))
-						.catch((err) => {
-							logger.warning(err);
-						});
-				})
-				.catch((err) => {
-					logger.warning(new Error(err));
-				});
-		});
+							.then(() => Promise.resolve({ lockId: file.lockId }))
+							.catch((err) => {
+								logger.warning(err);
+							});
+					})
+					.catch((err) => {
+						logger.warning(new Error(err));
+					});
+			});
 	}
 }
 
 module.exports = function setup() {
 	const app = this;
 
-	app.use('/wopi/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/wopi/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use(`${wopiPrefix}:fileId/contents`, new WopiFilesContentsService(app), handleResponseHeaders);
 	app.use(`${wopiPrefix}:fileId`, new WopiFilesInfoService(app), handleResponseHeaders);
 
