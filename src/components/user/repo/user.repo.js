@@ -57,5 +57,5 @@ module.exports = {
 	getUser,
 	replaceUserWithTombstoneMW,
 	replaceUserWithTombstoneDR,
-	deleteUser,
+	// deleteUser,
 };
