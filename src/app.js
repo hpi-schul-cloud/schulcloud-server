@@ -18,10 +18,10 @@ const middleware = require('./middleware');
 const setupConfiguration = require('./configuration');
 const sockets = require('./sockets');
 const services = require('./services');
+const requestLog = require('./logger/RequestLogger');
 
 const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
-const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
 const rabbitMq = require('./utils/rabbitmq');
@@ -81,7 +81,6 @@ const setupApp = async () => {
 		})
 		.configure(rest(handleResponseType))
 		.configure(socketio())
-		.configure(requestLogger)
 		.use((req, res, next) => {
 			// pass header into hooks.params
 			// todo: To create a fake requestId on this place is a temporary solution
@@ -92,12 +91,14 @@ const setupApp = async () => {
 			req.feathers.headers = req.headers;
 			req.feathers.originalUrl = req.originalUrl;
 			next();
-		})
-		.configure(services)
-		.configure(sockets)
-		.configure(middleware)
-		.configure(setupAppHooks)
-		.configure(errorHandler);
+		});
+	if (Configuration.get('REQUEST_LOGGING_ENABLED') === true) {
+		app.use((req, res, next) => {
+			requestLog(`${req.method} ${req.originalUrl}`);
+			next();
+		});
+	}
+	app.configure(services).configure(sockets).configure(middleware).configure(setupAppHooks).configure(errorHandler);
 
 	return app;
 };

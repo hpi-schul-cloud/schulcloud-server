@@ -36,6 +36,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - fixed README badges
 - SC-6151 fixed a bug that prevented api docu from being accessible
 
+## [25.1.12] - 2020-11-09
+
+### Added
+
+- SC-7683 - add request logging options
+
 ## [25.1.11] - 2020-11-06
 
 ### Security
