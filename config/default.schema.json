@@ -179,6 +179,18 @@
 					"type": "boolean",
 					"default": false,
 					"description": "If enabled, school admins can allow students to create additional chat rooms"
+				},
+				"WELCOME_MESSAGE_ADMIN": {
+					"type": "string",
+					"description": "Greet new admin users with a personal message from the sync bot"
+				},
+				"WELCOME_MESSAGE_TEACHER": {
+					"type": "string",
+					"description": "Greet new teacher users with a personal message from the sync bot"
+				},
+				"WELCOME_MESSAGE_STUDENT": {
+					"type": "string",
+					"description": "Greet new student users with a personal message from the sync bot"
 				}
 			}
 		},
