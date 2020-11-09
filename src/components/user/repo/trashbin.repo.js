@@ -1,4 +1,4 @@
-const trashbinModel = require('./db/trashbin.schema');
+const Trashbin = require('./db/trashbin.schema');
 
 /**
  * Creates the trashbin document
@@ -8,13 +8,12 @@ const trashbinModel = require('./db/trashbin.schema');
  * @returns {trashbinModel} Trashbin document
  */
 const createUserTrashbin = async (app, userId, data) => {
-	const modelService = app.service('trashbinModel');
-
 	const trashbinData = {
 		userId,
 		...data,
 	};
-	return modelService.create(trashbinData);
+	const trashbin = await Trashbin.create(trashbinData);
+	return trashbin.toObject();
 };
 
 /**
@@ -24,7 +23,7 @@ const createUserTrashbin = async (app, userId, data) => {
  */
 const updateUserTrashbin = async (id, data = {}) => {
 	// access trashbin model
-	const trashbin = await trashbinModel.findByIdAndUpdate(id, { $set: data });
+	const trashbin = await Trashbin.findByIdAndUpdate(id, { $set: data });
 	return trashbin.toObject();
 };
 

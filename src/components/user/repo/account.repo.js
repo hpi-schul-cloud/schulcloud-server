@@ -1,4 +1,3 @@
-// const accountModel = require('../../../services/account/model');
 
 const getUserAccount = async (userId, app) => {
 	const [account] = await app.service('accounts').find({
