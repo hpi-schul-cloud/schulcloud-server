@@ -131,9 +131,16 @@ const sort = (data, sortOrder) => {
 	return sortInternal(data, sortOrderObject);
 };
 
+const asyncFilter = async (data, predicate) => {
+	const results = await Promise.all(data.map(predicate));
+
+	return data.filter((_v, index) => results[index]);
+};
+
 module.exports = {
 	flatten,
 	paginate,
 	sort,
 	convertToSortOrderObject,
+	asyncFilter,
 };
