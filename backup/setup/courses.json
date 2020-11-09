@@ -325,5 +325,236 @@
 	"__v" : 0,
 	"untilDate" : { "$date": "2018-05-30T22:00:00.000Z" },
 	"startDate" : { "$date": "2017-08-27T22:00:00.000Z" }
+},
+{
+	"_id": {
+		"$oid": "5fa3a2c0a9c31a26f4d1d2f0"
+	},
+	"userIds": [],
+	"classIds": [],
+	"teacherIds": [
+		{
+			"$oid": "5fa2c71bb229544f2c6966d9"
+		}
+	],
+	"substitutionIds": [],
+	"ltiToolIds": [],
+	"color": "#ACACAC",
+	"isCopyFrom": null,
+	"features": [],
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"name": "Mathe",
+	"startDate": {
+		"$date": "2020-07-31T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2023-07-30T22:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2020-11-05T06:59:12.254Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T07:42:48.242Z"
+	},
+	"times": [],
+	"__v": 0,
+	"description": ""
+},
+{
+	"_id": {
+		"$oid": "5fa3a2f3a9c31a26f4d1d309"
+	},
+	"userIds": [
+		{
+			"$oid": "5fa30079b229544f2c6969ff"
+		}
+	],
+	"classIds": [],
+	"teacherIds": [
+		{
+			"$oid": "5fa2c71bb229544f2c6966d9"
+		}
+	],
+	"substitutionIds": [],
+	"ltiToolIds": [],
+	"color": "#FF4081",
+	"isCopyFrom": null,
+	"features": [],
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"name": "German",
+	"startDate": {
+		"$date": "2020-07-31T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2023-07-12T22:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2020-11-05T07:00:03.92Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T07:42:13.994Z"
+	},
+	"times": [],
+	"__v": 0,
+	"description": ""
+},
+{
+	"_id": {
+		"$oid": "5fa3a481a9c31a26f4d1d3e1"
+	},
+	"userIds": [],
+	"classIds": [],
+	"teacherIds": [
+		{
+			"$oid": "5fa2c71bb229544f2c6966d9"
+		}
+	],
+	"substitutionIds": [],
+	"ltiToolIds": [],
+	"color": "#00E5FF",
+	"isCopyFrom": null,
+	"features": [],
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"name": "Biologie",
+	"startDate": {
+		"$date": "2020-07-31T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2023-07-16T22:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2020-11-05T07:06:41.779Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T07:43:56.218Z"
+	},
+	"times": [],
+	"__v": 0,
+	"description": ""
+},
+{
+	"_id": {
+		"$oid": "5fa3a5e5a9c31a26f4d1d47e"
+	},
+	"userIds": [
+		{
+			"$oid": "5fa3010eb229544f2c696a6a"
+		}
+	],
+	"classIds": [],
+	"teacherIds": [
+		{
+			"$oid": "5fa2c71bb229544f2c6966d9"
+		}
+	],
+	"substitutionIds": [],
+	"ltiToolIds": [],
+	"color": "#1DE9B6",
+	"isCopyFrom": null,
+	"features": [],
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"name": "Physik",
+	"startDate": {
+		"$date": "2020-07-31T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2023-07-19T22:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2020-11-05T07:12:37.355Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T07:44:18.457Z"
+	},
+	"times": [],
+	"__v": 0,
+	"description": ""
+},
+{
+	"_id": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"userIds": [
+		{
+			"$oid": "5fa2cccab229544f2c696917"
+		},
+		{
+			"$oid": "5fa3010eb229544f2c696a6a"
+		}
+	],
+	"classIds": [],
+	"teacherIds": [
+		{
+			"$oid": "5fa2c71bb229544f2c6966d9"
+		}
+	],
+	"substitutionIds": [],
+	"ltiToolIds": [],
+	"color": "#FFEE58",
+	"isCopyFrom": null,
+	"features": [],
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"name": "Course with subject and tasks",
+	"startDate": {
+		"$date": "2020-07-31T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2023-07-26T22:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2020-11-05T07:38:39.176Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T07:44:49.247Z"
+	},
+	"times": [],
+	"__v": 0,
+	"description": ""
+},
+{
+	"_id": {
+		"$oid": "5fa3deb9a9c31a26f4d1dbd2"
+	},
+	"userIds": [],
+	"classIds": [],
+	"teacherIds": [
+		{
+			"$oid": "5fa2c71bb229544f2c6966d9"
+		}
+	],
+	"substitutionIds": [],
+	"ltiToolIds": [],
+	"color": "#D4AF37",
+	"isCopyFrom": null,
+	"features": [],
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"name": "English",
+	"startDate": {
+		"$date": "2020-07-31T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2023-07-12T22:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2020-11-05T11:15:05.278Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T11:15:21.899Z"
+	},
+	"times": [],
+	"__v": 0,
+	"description": ""
 }
 ]
