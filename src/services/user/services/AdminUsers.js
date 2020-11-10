@@ -231,7 +231,7 @@ class AdminUsers {
 	}
 
 	/**
-	 * Update the account email if eamil will be changed on user.
+	 * Update the account email if email will be changed on user.
 	 * IMPORTANT: Keep in mind to do a roleback if saving the user failed
 	 * @param {*} email
 	 * @param {*} userId
@@ -279,19 +279,30 @@ class AdminUsers {
 		const currentUser = await getCurrentUserInfo(params.account.userId);
 
 		if (id) {
-			_ids.push(id);
+			if (typeof id === 'object') {
+				_ids.push(id._id);
+			} else {
+				_ids.push(id);
+			}
 		}
 
 		const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
-		if (usersIds.some((user) => !equalIds(currentUser.schoolId, user.schoolId))) {
+		if (!usersIds.some((user) => equalIds(currentUser.schoolId, user.schoolId))) {
 			throw new Forbidden('You cannot remove users from other schools.');
 		}
 
 		const results = await Promise.all(_ids.map((userId) => this.app.service('users/v2/users').remove(userId)));
 
-		return {
-			success: results.every((result) => result === true),
-		};
+		const result = results.reduce(
+			(acc, val) => ({
+				success: acc.success && val.success,
+				ok: val.success ? acc.ok + 1 : acc.ok,
+				error: !val.success ? acc.error + 1 : acc.error,
+			}),
+			{ success: true, ok: 0, error: 0 }
+		);
+
+		return result;
 	}
 
 	async setup(app) {
