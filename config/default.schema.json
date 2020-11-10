@@ -153,12 +153,7 @@
 		"MATRIX_MESSENGER": {
 			"type": "object",
 			"description": "Matrix messenger properties, required always to be defined",
-			"required": [
-				"URI",
-				"SERVERNAME",
-				"SECRET",
-				"STUDENT_ROOM_CREATION"
-			],
+			"required": ["URI", "SERVERNAME", "SECRET", "STUDENT_ROOM_CREATION"],
 			"properties": {
 				"URI": {
 					"type": "string",
@@ -469,7 +464,7 @@
 			"default": 8000,
 			"description": "Default timeout for external requests in milliseconds."
 		},
-		"MEMORY_INTERVAL_TIME" : {
+		"MEMORY_INTERVAL_TIME": {
 			"type": "integer",
 			"default": 0,
 			"description": "Is the time for logging memory metrics to log in >secounds<. Default 0 will disable the logging."
