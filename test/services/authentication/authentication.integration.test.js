@@ -41,8 +41,8 @@ describe('authentication service integration tests', function test() {
 			const request = chai
 				.request(app)
 				.post('/authentication')
-				.set('Accept', 'application/json')
-				.set('content-type', 'application/json');
+				.set('Accept', 'application/json; charset=utf-8')
+				.set('content-type', 'application/json; charset=utf-8');
 			const response = await request.send({
 				strategy: 'local',
 				username: accountDetails.username,
@@ -63,9 +63,9 @@ describe('authentication service integration tests', function test() {
 			const request = chai
 				.request(app)
 				.delete('/authentication')
-				.set('Accept', 'application/json')
+				.set('Accept', 'application/json; charset=utf-8')
 				.set('Authorization', token)
-				.set('content-type', 'application/json');
+				.set('content-type', 'application/json; charset=utf-8');
 			const response = await request.send();
 			expect(response.status).to.equal(200);
 			expect(response.body).to.haveOwnProperty('accessToken');
