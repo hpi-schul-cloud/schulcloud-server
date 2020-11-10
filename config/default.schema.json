@@ -473,6 +473,33 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enabled that every request is logged with the information route and method"
+		},
+		"SC": {
+			"type": "object",
+			"description": "Matrix messenger properties, required always to be defined",
+			"properties": {
+				"DOMAIN": {
+					"type": "string",
+					"default": "localhost",
+					"description": "The URI of the Matrix Messenger server."
+				},
+				"TITLE": {
+					"type": "string",
+					"default": "HPI Schul-Cloud",
+					"description": "The URI of the Matrix Messenger server."
+				},
+				"THEME": {
+					"type": "string",
+					"default": "default",
+					"description": "The URI of the Matrix Messenger server."
+				},
+				"SHORT_TITLE": {
+					"type": "string",
+					"default": "HPI Schul-Cloud",
+					"description": "The URI of the Matrix Messenger server."
+				}
+			},
+			"required": ["DOMAIN"]
 		}
 	},
 	"required": [

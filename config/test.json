@@ -12,5 +12,10 @@
 	"NOTIFICATION_PLATFORM": "testplatform",
 	"LDAP_PASSWORD_ENCRYPTION_KEY": "1234567890123456",
 	"ADMIN_TOGGLE_STUDENT_VISIBILITY": "opt-out",
-	"NODE_ENV": "test"
+	"SC": {
+		"DOMAIN": "localhost",
+		"TITLE": "HPI Schul-Cloud",
+		"THEME": "default",
+		"SHORT_TITLE": "HPI Schul-Cloud"
+	}
 }
