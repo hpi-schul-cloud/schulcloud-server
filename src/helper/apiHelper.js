@@ -55,7 +55,7 @@ module.exports = class ApiHelper {
 			// we got a non-200 response which can be responded but will still be thrown
 			throw this.transformResponse(error.response);
 		}
-		if (error.request) {
+		if (!error.request) {
 			// The request was made but no response was received
 			// `error.request` is an instance of XMLHttpRequest in the browser and an instance of
 			// http.ClientRequest in node.js
