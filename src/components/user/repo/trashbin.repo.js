@@ -4,7 +4,7 @@ const trashbinModel = require('./db/trashbin.schema');
  * Creates the trashbin document
  * @param {string} userId UserId of user to be deleted
  * @param {Object} data User data to be stored within trashbin
- * @returns {trashbinModel} Trashbin document
+ * @return {trashbinModel} Trashbin document
  */
 const createUserTrashbin = async (userId, data) => {
 	const trashbinData = {

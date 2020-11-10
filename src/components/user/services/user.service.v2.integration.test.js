@@ -30,7 +30,7 @@ describe('user service v2', function test() {
 				.delete(`/users/v2/users/${user._id}`)
 				.set('Accept', 'application/json')
 				.set('Authorization', token)
-				.set('content-type', 'application/json');
+				.set('Content-type', 'application/json');
 			const response = await request.send();
 			expect(response.status).to.equal(200);
 			expect(response.body).to.deep.equal({ success: true });
@@ -46,7 +46,7 @@ describe('user service v2', function test() {
 				.delete(`/users/v2/users/${notFoundId}`)
 				.set('Accept', 'application/json')
 				.set('Authorization', token)
-				.set('content-type', 'application/json');
+				.set('Content-type', 'application/json');
 			const response = await request.send();
 			expect(response.status).to.equal(404);
 		});
