@@ -34,15 +34,15 @@ describe('authentication service integration tests', function test() {
 
 	describe('Login', () => {
 		it('When a user sends valid local authentication details, then he recieves a jwt', async () => {
-			const accountDetails = { username: `${Date.now()}poweruser@mail.schul.tech`, password: 'passwordA' };
+			const accountDetails = { username: `${Date.now()}poweruser@mail.schul.tech`, password: `password${Date.now()}` };
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 			await testObjects.createTestAccount(accountDetails, null, user);
 			const request = chai
 				.request(app)
 				.post('/authentication')
-				.set('Accept', 'application/json; charset=utf-8')
-				.set('content-type', 'application/json; charset=utf-8');
+				.set('Accept', 'application/json')
+				.set('content-type', 'application/json');
 			const response = await request.send({
 				strategy: 'local',
 				username: accountDetails.username,
@@ -56,16 +56,16 @@ describe('authentication service integration tests', function test() {
 
 	describe('Logout', () => {
 		it('When a user successfully removes his authentication, then he is logged out', async () => {
-			const accountDetails = { username: `${Date.now()}poweruser@mail.schul.tech`, password: 'passwordA' };
+			const accountDetails = { username: `${Date.now()}poweruser@mail.schul.tech`, password: `password${Date.now()}` };
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 			const token = await testObjects.generateJWTFromUser(user);
 			const request = chai
 				.request(app)
 				.delete('/authentication')
-				.set('Accept', 'application/json; charset=utf-8')
+				.set('Accept', 'application/json')
 				.set('Authorization', token)
-				.set('content-type', 'application/json; charset=utf-8');
+				.set('content-type', 'application/json');
 			const response = await request.send();
 			expect(response.status).to.equal(200);
 			expect(response.body).to.haveOwnProperty('accessToken');
