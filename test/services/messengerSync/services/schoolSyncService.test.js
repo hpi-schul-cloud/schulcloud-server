@@ -29,6 +29,7 @@ describe('service', function test() {
 		// eslint-disable-next-line global-require
 		testObjects = require('../../helpers/testObjects')(app);
 		server = await app.listen(0);
+		rabbitmqMock.reset();
 	});
 
 	after((done) => {
