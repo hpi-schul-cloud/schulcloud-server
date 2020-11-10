@@ -80,5 +80,4 @@ module.exports = {
 		context.safeAttributes = ['username'];
 		return context;
 	},
-
 };
