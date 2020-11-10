@@ -1,9 +1,15 @@
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = reqlib('src/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const { deleteUserUC } = require('../uc/users.uc');
+const globalHooks = require('../../../hooks');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 class UserServiceV2 {
 	async remove(id, params) {
-		return deleteUserUC(id, this.app);
+		const { query } = params;
+		return deleteUserUC(query.userId, this.app);
 	}
 
 	async setup(app) {
@@ -15,14 +21,44 @@ const userServiceV2 = new UserServiceV2({
 	// default pagination and other options
 });
 
+const hasPermission = async (context) => {
+	const isSuperHero = await globalHooks.hasRole(context, context.params.account.userId, 'superhero');
+	if (isSuperHero) {
+		return context;
+	}
+
+	const isAdmin = await globalHooks.hasRole(context, context.params.account.userId, 'administrator');
+	if (isAdmin) {
+		return context;
+	}
+
+	throw new Forbidden('You has no access.');
+};
+
+const restrictToSameSchool = async (context) => {
+	const isSuperHero = await globalHooks.hasRole(context, context.params.account.userId, 'superhero');
+	if (isSuperHero) {
+		return context;
+	}
+
+	const { query } = context.params;
+	if (query.userId) {
+		const { schoolId: currentUserSchoolId } = await globalHooks.getUser(context);
+		const { schoolId: requestedUserSchoolId } = await context.app.service('users').get(query.userId);
+
+		if (!equalIds(currentUserSchoolId, requestedUserSchoolId)) {
+			throw new Forbidden('You has no access.');
+		}
+
+		return context;
+	}
+
+	throw new BadRequest('The request query should include a valid userId');
+};
+
 const userServiceV2Hooks = {
 	before: {
-		all: [
-			authenticate('jwt'),
-			// check permissions
-			// restrict to current school
-			// etc
-		],
+		all: [authenticate('jwt'), hasPermission, restrictToSameSchool],
 	},
 	after: {},
 };
