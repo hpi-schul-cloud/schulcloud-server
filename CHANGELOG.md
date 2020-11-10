@@ -22,6 +22,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Introduce FEATURE_PROMETHEUS_ENABLED to have a flag for enable prometheus api metrics
 - SC-7411 - add API Specification and validation for /me service
 - SC-7411 - add API Specification and validation for /version service
+- SC-7205 - create new data seed for QA
 
 ### Changed
 
@@ -48,6 +49,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6151 fixed a bug that prevented api docu from being accessible
 - SC-6151 fixed paths to openapi documentation
 - Fixed searching for names including a dash
+- SC-7572 - Find /users route after hooks - extremely slow
 
 ### Removed
 
@@ -87,6 +89,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - fixed README badges
 - SC-6151 - fixed a bug that prevented api docu from being accessible
 - Fix mocha tests
+
+## [25.1.12] - 2020-11-09
+
+### Added
+
+- SC-7683 - add request logging options
 
 ## [25.1.11] - 2020-11-06
 

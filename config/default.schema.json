@@ -473,6 +473,11 @@
 			"type": "integer",
 			"default": 0,
 			"description": "Is the time for logging memory metrics to log in >secounds<. Default 0 will disable the logging."
+		},
+		"REQUEST_LOGGING_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enabled that every request is logged with the information route and method"
 		}
 	},
 	"required": [
