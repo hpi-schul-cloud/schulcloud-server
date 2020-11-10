@@ -512,7 +512,6 @@
 		"FEATURE_SHOW_VERSION_ENABLED",
 		"SC"
 	],
-
 	"allOf": [
 		{
 			"$ref": "#/definitions/FEATURE_PROMETHEUS_ENABLED"
