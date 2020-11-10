@@ -19,11 +19,57 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    wopi_metadata:
+      description: metadata according to wopi standard
+      type: object
+      properties:
+        SupportsCobalt:
+          type: boolean
+        SupportsContainers:
+          type: boolean
+        SupportsDeleteFile:
+          type: boolean
+        SupportsEcosystem:
+          type: boolean
+        SupportsExtendedLockLength:
+          type: boolean
+        SupportsFolders:
+          type: boolean
+        SupportsGetFileWopiSrc:
+          type: boolean
+        SupportsGetLock:
+          type: boolean
+        SupportsLocks:
+          type: boolean
+        SupportsRename:
+          type: boolean
+        SupportsUpdate:
+          type: boolean
+        SupportsUserInfo:
+          type: boolean
+        UserCanRename:
+          type: boolean
+        OwnerId:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        UserId:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        BaseFileName:
+          type: string
+        Size:
+          type: integer
+        Version:
+          type: integer
+        UserFriendlyName:
+          type: string
+        UserCanWrite:
+          type: boolean
+        UserCanNotWriteRelative:
+          type: boolean
+        
     files:
       description: TODO
-    files_list:
-      description: TODO
-
 paths:
   '/wopi/files/{fileId}/contents':
     get:
@@ -40,7 +86,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/files_list'
+                type: string
+                format: binary
         '401':
           description: not authenticated
         '500':
@@ -49,7 +96,8 @@ paths:
       summary: ''
       tags:
         - wopi
-      security: []
+      security:
+        - jwtBearer: []
     post:
       parameters:
         - in: path
@@ -75,6 +123,7 @@ paths:
           name: x-wopi-lock
           schema:
             type: string
+            format: binary
           required: true
           description: A string to identify the lock to a file. required for 'LOCK', 'PUT', 'REFRESH_LOCK', 'UNLOCK'.
       responses:
@@ -83,7 +132,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/files'
+                type: string
+                format: binary
         '401':
           description: not authenticated
         '500':
@@ -92,13 +142,8 @@ paths:
       summary: ''
       tags:
         - wopi
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/files'
+      security:
+        - jwtBearer: []
   '/wopi/files/{fileId}':
     get:
       parameters:
@@ -114,7 +159,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/files_list'
+                $ref: '#/components/schemas/wopi_metadata'
         '401':
           description: not authenticated
         '500':
@@ -123,7 +168,8 @@ paths:
       summary: ''
       tags:
         - wopi
-      security: []
+      security:
+        - jwtBearer: []
     post:
       parameters:
         - in: path
@@ -157,7 +203,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/files'
+                {}
         '401':
           description: not authenticated
         '500':
@@ -166,13 +212,8 @@ paths:
       summary: ''
       tags:
         - wopi
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/files'
+      security:
+        - jwtBearer: []
   
 openapi: 3.0.2
 tags:
