@@ -21,6 +21,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Introduce FEATURE_PROMETHEUS_ENABLED to have a flag for enable prometheus api metrics
 - SC-7411 - add API Specification and validation for /me service
 - SC-7411 - add API Specification and validation for /version service
+- SC-7571 - solved performance issues - bulk QR-code generation 
 
 ### Changed
 
