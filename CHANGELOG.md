@@ -25,6 +25,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7205 - create new data seed for QA
 - SC-7614 - creates documentation for edu sharing endpoints
 - SC-7370 - Add optional rootPath attribute modifier to iserv-idm strategy
+- SC-7499 - add API Specification for public services
 
 ### Changed
 
