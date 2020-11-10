@@ -1,4 +1,5 @@
 const AbstractLDAPStrategy = require('./interface.js');
+const { filterForModifiedEntities } = require('./deltaSyncUtils');
 
 /**
  * iServ-IDM-specific LDAP functionality
@@ -28,8 +29,9 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 */
 	async getUsers(school) {
+		const requiredAttributes = '(objectClass=person)(sn=*)(uuid=*)(uid=*)(mail=*)(cn=*)';
 		const options = {
-			filter: '(&(objectClass=person)(sn=*)(uuid=*)(uid=*)(mail=*)(cn=*))',
+			filter: filterForModifiedEntities(this.config.lastSuccessfulFullSync, `(&${requiredAttributes})`),
 			scope: 'sub',
 			attributes: ['givenName', 'sn', 'dn', 'uuid', 'cn', 'mail', 'objectClass', 'memberOf'],
 		};
@@ -85,7 +87,7 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 	 */
 	async getClasses(school) {
 		const options = {
-			filter: 'description=*',
+			filter: filterForModifiedEntities(this.config.lastSuccessfulFullSync, `(description=*)`),
 			scope: 'sub',
 			attributes: ['dn', 'description', 'member'],
 		};
