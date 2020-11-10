@@ -13,12 +13,7 @@ const { getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRed
 const { LEAD_TIME } = require('../config/globals');
 
 const sanitizeDataHook = (context) => {
-	if (
-		(context.data || context.result) &&
-		context.path &&
-		context.path !== 'authentication' &&
-		context.path !== 'legacy/v1/authentication'
-	) {
+	if ((context.data || context.result) && context.path && context.path !== 'authentication') {
 		sanitizeDeep(context.type === 'before' ? context.data : context.result, context.path, 0, context.safeAttributes);
 	}
 	return context;

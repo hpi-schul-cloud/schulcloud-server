@@ -23,7 +23,7 @@ const REQUEST_PARAMS = {
 
 const getToken = async ({ userId }) => {
 	const app = await appPromise;
-	const result = app.service('legacy/v1/authentication').create(
+	const result = app.service('authentication').create(
 		{
 			strategy: 'local',
 			username: userId + AT,
