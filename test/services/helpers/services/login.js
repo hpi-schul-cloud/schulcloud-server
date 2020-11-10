@@ -2,7 +2,7 @@ const accountsHelper = require('./accounts');
 
 const generateJWT = (appPromise) => async ({ username, password }) => {
 	const app = await appPromise;
-	const result = await app.service('legacy/v1/authentication').create(
+	const result = await app.service('authentication').create(
 		{
 			strategy: 'local',
 			username,

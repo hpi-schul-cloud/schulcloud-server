@@ -40,7 +40,7 @@ describe('authentication service integration tests', function test() {
 			await testObjects.createTestAccount(accountDetails, null, user);
 			const request = chai
 				.request(app)
-				.post('/legacy/v1/authentication')
+				.post('/authentication')
 				.set('Accept', 'application/json')
 				.set('content-type', 'application/json');
 			const response = await request.send({
