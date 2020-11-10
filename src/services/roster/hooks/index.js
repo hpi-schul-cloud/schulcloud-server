@@ -92,6 +92,6 @@ module.exports = {
 	disableFilter: (context) => {
 		context.safeAttributes = ['username'];
 		return context;
-	}
+	},
 
 };
