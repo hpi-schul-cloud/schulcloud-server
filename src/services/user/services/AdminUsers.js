@@ -11,7 +11,7 @@ const { Forbidden, BadRequest, GeneralError } = reqlib('src/errors');
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const { splitForSearchIndexes } = require('../../../utils/search');
-const { hasSchoolPermission, blockDisposableEmail } = require('../../../hooks');
+const { hasSchoolPermission, blockDisposableEmail, transformToDataTransferObject } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { validateParams, parseRequestQuery } = require('../hooks/adminUsers.hooks');
 const { sendRegistrationLink } = require('../hooks/userService');
@@ -332,6 +332,7 @@ const adminHookGenerator = (kind) => ({
 		remove: [hasSchoolPermission(`${kind}_DELETE`), parseRequestQuery, validateParams],
 	},
 	after: {
+		all: [transformToDataTransferObject],
 		find: [formatBirthdayOfUsers],
 		create: [sendRegistrationLink],
 	},

@@ -188,7 +188,8 @@ paths:
       summary: ''
       tags:
         - me
-      security: []
+      security:
+        - jwtBearer: []
   
 openapi: 3.0.2
 tags:
