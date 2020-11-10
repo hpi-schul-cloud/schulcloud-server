@@ -20,10 +20,12 @@ describe('qrRegistrationLinks service tests', () => {
 		server.close(done);
 	});
 
-	const postRegistrationLinks = (requestParams, userIds) =>
+	const postRegistrationLinks = (requestParams, userIds, roleName = 'teacher', selectionType = 'inclusive') =>
 		qrRegistrationLinksService.create(
 			{
 				userIds,
+				roleName,
+				selectionType,
 			},
 			requestParams,
 			app
@@ -48,8 +50,8 @@ describe('qrRegistrationLinks service tests', () => {
 		});
 		it('should return registration link for 3 users', async () => {
 			const testUser = await testObjects.createTestUser({ roles: ['teacher'] });
-			const testUser2 = await testObjects.createTestUser();
-			const testUser3 = await testObjects.createTestUser();
+			const testUser2 = await testObjects.createTestUser({ roles: ['teacher'] });
+			const testUser3 = await testObjects.createTestUser({ roles: ['teacher'] });
 			const userRequestAuthentication = await generateRequestParamsFromUser(testUser);
 			return postRegistrationLinks(userRequestAuthentication, [testUser._id, testUser2._id, testUser3._id]).then(
 				(res) => {
@@ -81,6 +83,43 @@ describe('qrRegistrationLinks service tests', () => {
 			return postRegistrationLinks(params, [String(user._id)]).then((resp) => {
 				expect(resp.length).to.equal(0);
 				accountService.remove(testAccount._id);
+			});
+		});
+
+		it('should return registration link for all users (from the caller school) with a role given (stundent)', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool();
+			const callingUser = await testObjects.createTestUser({ roles: 'teacher', schoolId });
+			const testUser1 = await testObjects.createTestUser({ roles: 'student', schoolId, firstName: 'register1' });
+			const testUser2 = await testObjects.createTestUser({ roles: 'student', schoolId, firstName: 'register2' });
+			const userRequestAuthentication = await generateRequestParamsFromUser(callingUser);
+			return postRegistrationLinks(userRequestAuthentication, [], 'student', 'exclusive').then((res) => {
+				expect(res.length).to.equal(2);
+				expect(res.filter((result) => result.firstName === testUser1.firstName).length).to.equal(1);
+				expect(res.filter((result) => result.firstName === testUser2.firstName).length).to.equal(1);
+			});
+		});
+
+		it('should return registration link for all users (from the caller school) with a role given (teacher)', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool();
+			const callingUser = await testObjects.createTestUser({ roles: 'administrator', schoolId });
+			const testUser1 = await testObjects.createTestUser({ roles: 'teacher', schoolId, firstName: 'TeacherRegister1' });
+			const testUser2 = await testObjects.createTestUser({ roles: 'teacher', schoolId, firstName: 'TeacherRegister2' });
+			const userRequestAuthentication = await generateRequestParamsFromUser(callingUser);
+			return postRegistrationLinks(userRequestAuthentication, [], 'teacher', 'exclusive').then((res) => {
+				expect(res.length).to.equal(2);
+				expect(res.filter((result) => result.firstName === testUser1.firstName).length).to.equal(1);
+				expect(res.filter((result) => result.firstName === testUser2.firstName).length).to.equal(1);
+			});
+		});
+
+		it('should return bad request for unsuported role given (other than student or teacher)', async () => {
+			const testUser = await testObjects.createTestUser({ roles: ['teacher'] });
+			const userRequestAuthentication = await generateRequestParamsFromUser(testUser);
+			return postRegistrationLinks(userRequestAuthentication, [], 'admin').catch((err) => {
+				expect(err.code).to.equal(400);
+				expect(err.name).to.equal('BadRequest');
+				expect(err.message).to.equal('Can not generate QR registration links');
+				expect(err.errors.message).to.equal('The given role is not supported');
 			});
 		});
 	});
