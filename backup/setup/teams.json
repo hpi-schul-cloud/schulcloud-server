@@ -136,4 +136,73 @@
     "createdAt" : { "$date": "2020-01-14T13:30:29.108Z" }, 
     "updatedAt" : { "$date": "2020-01-15T12:20:53.682Z" }, 
     "__v" : 0
+},
+{
+	"_id": {
+		"$oid": "5fa3e16aa9c31a26f4d1dc43"
+	},
+	"schoolIds": [
+		{
+			"$oid": "5fa2c5ccb229544f2c69666c"
+		}
+	],
+	"description": "Have fun",
+	"classIds": [],
+	"color": "#d32f2f",
+	"features": [
+		"isTeam"
+	],
+	"name": "Musik",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"userIds": [
+		{
+			"userId": {
+				"$oid": "5fa2c71bb229544f2c6966d9"
+			},
+			"role": {
+				"$oid": "5bb5c62bfb457b1c3c0c7e14"
+			},
+			"schoolId": {
+				"$oid": "5fa2c5ccb229544f2c69666c"
+			},
+			"createdAt": {
+				"$date": "2020-11-05T11:26:34.133Z"
+			},
+			"updatedAt": {
+				"$date": "2020-11-05T11:26:34.133Z"
+			}
+		}
+	],
+	"filePermission": [
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refPermModel": "role",
+			"refId": {
+				"$oid": "5bb5c190fb457b1c3c0c7e0f"
+			}
+		},
+		{
+			"write": true,
+			"read": true,
+			"create": true,
+			"delete": true,
+			"refPermModel": "role",
+			"refId": {
+				"$oid": "5bb5c391fb457b1c3c0c7e10"
+			}
+		}
+	],
+	"invitedUserIds": [],
+	"createdAt": {
+		"$date": "2020-11-05T11:26:34.133Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T11:26:34.133Z"
+	},
+	"__v": 0
 }]
