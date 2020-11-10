@@ -32,10 +32,10 @@ components:
         time:
           type: string
           format: date-time
-        consents:
+        contents:
           type: array
           items:
-            ref: '#/components/schemas/contents'
+            $ref: '#/components/schemas/contents'
         materialIds:
           type: array
           items:
@@ -340,6 +340,7 @@ paths:
                 type: array
                 items:
                   type: object
+                  additionalProperties: true
         '401':
           description: not authenticated
         '500':
