@@ -6,10 +6,7 @@ const { Forbidden } = require('@feathersjs/errors');
 
 const Syncer = require('./Syncer');
 const ClassImporter = require('./mixins/ClassImporter');
-<<<<<<< HEAD
 const { equal } = require('../../../helper/compare').ObjectId;
-=======
->>>>>>> all SC_Main config
 
 const ATTRIBUTES = [
 	{ name: 'namePrefix', aliases: ['nameprefix', 'prefix', 'title', 'affix'] },
