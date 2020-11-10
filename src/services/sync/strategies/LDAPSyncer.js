@@ -1,4 +1,4 @@
-const SystemSyncer = require('./SystemSyncer');
+const Syncer = require('./Syncer');
 const LDAPSchoolSyncer = require('./LDAPSchoolSyncer');
 
 const SchoolYearFacade = require('../../school/logic/year.js');
@@ -9,12 +9,17 @@ const SchoolYearFacade = require('../../school/logic/year.js');
  * @class LDAPSyncer
  * @implements {Syncer}
  */
-class LDAPSyncer extends SystemSyncer {
+class LDAPSyncer extends Syncer {
 	constructor(app, stats, logger, system) {
-		super(app, stats, logger, system);
+		super(app, stats, logger);
+		this.system = system;
 		this.stats = Object.assign(this.stats, {
 			schools: {},
 		});
+	}
+
+	prefix() {
+		return this.system.alias;
 	}
 
 	/**

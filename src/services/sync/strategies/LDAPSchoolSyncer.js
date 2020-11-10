@@ -1,14 +1,15 @@
 const accountModel = require('../../account/model');
-const SystemSyncer = require('./SystemSyncer');
+const Syncer = require('./Syncer');
 
 /**
  * Implements syncing schools from LDAP servers based on the Syncer interface
  * @class LDAPSyncer
  * @implements {Syncer}
  */
-class LDAPSchoolSyncer extends SystemSyncer {
+class LDAPSchoolSyncer extends Syncer {
 	constructor(app, stats, logger, system, school) {
-		super(app, stats, logger, system);
+		super(app, stats, logger);
+		this.system = system;
 		this.school = school;
 		this.stats = Object.assign(this.stats, {
 			name: this.school.name,
@@ -29,7 +30,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	 * @see {Syncer#prefix}
 	 */
 	prefix() {
-		return `${super.prefix()} | ${this.school.name}`;
+		return `${this.system.alias} | ${this.school.name}`;
 	}
 
 	/**
