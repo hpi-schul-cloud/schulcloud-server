@@ -27,15 +27,18 @@ class LDAPSyncer extends Syncer {
 	 */
 	async steps() {
 		await super.steps();
+		await this.attemptRun();
 		const schools = await this.getSchools();
 		const activeSchools = schools.filter((s) => !s.inMaintenance);
 		for (const school of activeSchools) {
+			// eslint-disable-next-line no-await-in-loop
 			const stats = await new LDAPSchoolSyncer(this.app, {}, this.logger, this.system, school).sync();
 			if (stats.success !== true) {
 				this.stats.errors.push(`LDAP sync failed for school "${school.name}" (${school._id}).`);
 			}
 			this.stats.schools[school.ldapSchoolIdentifier] = stats;
 		}
+		await this.persistRun();
 		return this.stats;
 	}
 
@@ -103,6 +106,40 @@ class LDAPSyncer extends Syncer {
 			this.logInfo(`Created ${newSchools} new schools and updated ${updates} schools`);
 			return Promise.resolve(res);
 		});
+	}
+
+	/**
+	 * Updates the lastSyncAttempt attribute of the system's ldapConfig
+	 * @async
+	 */
+	async attemptRun() {
+		const now = Date.now();
+		this.logger.debug(`Setting system.ldapConfig.lastSyncAttempt = ${now}`);
+		const update = {
+			'ldapConfig.lastSyncAttempt': now,
+		};
+		await this.app.service('systems').patch(this.system._id, update);
+		this.logger.debug('System stats updated.');
+	}
+
+	/**
+	 * Updates the lastSuccessfulFullSync attribute of the system's ldapConfig if
+	 * the sync was successful.
+	 * @async
+	 */
+	async persistRun() {
+		this.logger.debug('System-Sync done. Updating system stats...');
+		if (this.successful()) {
+			const now = Date.now();
+			this.logger.debug(`Setting ldapConfig.lastSuccessfulFullSync = ${now}.`);
+			const update = {
+				'ldapConfig.lastSuccessfulFullSync': now,
+			};
+			await this.app.service('systems').patch(this.system._id, update);
+			this.logger.debug('System stats updated.');
+		} else {
+			this.logger.debug('Not successful. Skipping...');
+		}
 	}
 }
 
