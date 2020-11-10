@@ -24,6 +24,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7411 - add API Specification and validation for /me service
 - SC-7411 - add API Specification and validation for /version service
 - SC-7205 - create new data seed for QA
+- SC-7370 - Add optional rootPath attribute modifier to iserv-idm strategy
 
 ### Changed
 
