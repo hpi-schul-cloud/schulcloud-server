@@ -43,8 +43,9 @@ describe('qrRegistrationLinks service tests', () => {
 		});
 		it('should return registration link for 1 user', async () => {
 			const testUser = await testObjects.createTestUser({ roles: ['teacher'] });
+			const testUser1 = await testObjects.createTestUser({ roles: ['student'] });
 			const userRequestAuthentication = await generateRequestParamsFromUser(testUser);
-			return postRegistrationLinks(userRequestAuthentication, [testUser._id]).then((res) => {
+			return postRegistrationLinks(userRequestAuthentication, [testUser1._id], 'student').then((res) => {
 				expect(res.length).to.equal(1);
 			});
 		});
@@ -52,8 +53,9 @@ describe('qrRegistrationLinks service tests', () => {
 			const testUser = await testObjects.createTestUser({ roles: ['teacher'] });
 			const testUser2 = await testObjects.createTestUser({ roles: ['teacher'] });
 			const testUser3 = await testObjects.createTestUser({ roles: ['teacher'] });
+			const testUser4 = await testObjects.createTestUser({ roles: ['teacher'] });
 			const userRequestAuthentication = await generateRequestParamsFromUser(testUser);
-			return postRegistrationLinks(userRequestAuthentication, [testUser._id, testUser2._id, testUser3._id]).then(
+			return postRegistrationLinks(userRequestAuthentication, [testUser2._id, testUser3._id, testUser4._id]).then(
 				(res) => {
 					expect(res.length).to.equal(3);
 				}

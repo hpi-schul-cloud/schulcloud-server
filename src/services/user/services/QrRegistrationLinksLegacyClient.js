@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { hasPermission, restrictToCurrentSchool } = require('../../../hooks');
+const { BadRequest } = require('../../activation/utils/generalUtils');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 class QrRegistrationLinksLegacyClient {
 	constructor(userModel) {
@@ -10,10 +12,11 @@ class QrRegistrationLinksLegacyClient {
 	}
 
 	async create(data, params) {
-		const { classId, role: roleName, schoolId } = data;
+		const { classId, role, schoolId } = data;
 		const inputUserIds = await this.getUserIds(classId, schoolId);
 		const generateLinkServiceParams = this.getGenerateLinkServiceParams(data);
-		const selectionType = inputUserIds.length === 0 ? 'exclusive' : 'inclusive';
+		const selectionType = (classId && 'inclusive') || 'exclusive';
+		const roleName = role || (classId && 'student');
 		return this.qrLinkServiceNew
 			.create(
 				{
@@ -44,15 +47,17 @@ class QrRegistrationLinksLegacyClient {
 		let userIds = [];
 		if (classId) {
 			// TODO Test it!
-			const classItem = await this.classService.find({
+			const classItem = await this.classService.get(classId, {
 				query: {
-					classId,
-					schoolId,
 					$populate: { path: 'userIds', select: ['_id', 'lastName', 'fullName'] },
 				},
 				paginate: false,
 			});
-			userIds = { ...classItem.userIds };
+			if (!equalIds(classItem.schoolId, schoolId)) {
+				throw new BadRequest(`ClassId does match user's school`);
+			}
+
+			userIds = [...classItem.userIds];
 		}
 
 		return userIds;
@@ -60,7 +65,7 @@ class QrRegistrationLinksLegacyClient {
 
 	setup(app) {
 		this.app = app;
-		this.classService = app.service('/class');
+		this.classService = app.service('/classes');
 		this.qrLinkServiceNew = app.service('users/qrRegistrationLink');
 	}
 }
