@@ -561,7 +561,7 @@ const sendRegistrationLink = async (context) => {
 };
 
 const filterResult = async (context) => {
-	const userCallingHimself = ObjectId.equal(context.id, context.params.account.userId);
+	const userCallingHimself = context.id && ObjectId.equal(context.id, context.params.account.userId);
 	const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
 	if (userCallingHimself || userIsSuperhero) {
 		return context;
