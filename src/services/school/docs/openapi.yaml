@@ -147,7 +147,7 @@ paths:
           description: not authenticated
         '500':
           description: general error
-      description: Retrieves a list of all resources from the service.
+      description: Retrieves a list of all schools.
       summary: ''
       tags:
         - schools
