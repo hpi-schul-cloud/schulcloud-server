@@ -1,5 +1,6 @@
 const logger = require('../../../logger');
-const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
+const { ENVIRONMENTS } = require('../../../../config/globals');
+const { Configuration } = require('@schul-cloud/commons');
 
 const jwtFromCookieString = (cookieString) => {
 	try {
@@ -32,7 +33,7 @@ const authHeaderExtractor = (req) => {
 let secrets;
 try {
 	// todo resolve this somewhere else
-	if (NODE_ENV === ENVIRONMENTS.PRODUCTION) {
+	if (Configuration.get('NODE_ENV') === "production") {
 		// eslint-disable-next-line global-require
 		secrets = require('../../../../config/secrets.js');
 	} else {
@@ -44,7 +45,7 @@ try {
 }
 
 const authenticationSecret = secrets.authentication ? secrets.authentication : 'secrets';
-if (NODE_ENV === ENVIRONMENTS.PRODUCTION && !secrets.authentication) {
+if ((Configuration.get('NODE_ENV') === "production") && !secrets.authentication) {
 	logger.error('use default authentication secret');
 }
 

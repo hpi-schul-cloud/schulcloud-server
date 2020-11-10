@@ -53,7 +53,6 @@ const globals = {
 	/**
 	 * default value 'development' matches default of app.get('env'), but use globals
 	 */
-	NODE_ENV,
 	ENVIRONMENTS,
 	LOG_LEVEL: process.env.LOG_LEVEL || defaultLogLevel,
 	SYSTEM_LOG_LEVEL: process.env.SYSTEM_LOG_LEVEL || 'sendRequests',
@@ -108,11 +107,5 @@ const globals = {
 	ETHERPAD_COOKIE__EXPIRES_SECONDS: process.env.ETHERPAD_COOKIE__EXPIRES_SECONDS,
 	ETHERPAD_ETHERPAD_COOKIE_RELEASE_THRESHOLD: process.env.ETHERPAD_COOKIE_RELEASE_THRESHOLD,
 };
-
-// validation /////////////////////////////////////////////////
-const ENVIRONMENT_VALUES = Object.values(ENVIRONMENTS);
-if (!ENVIRONMENT_VALUES.includes(globals.NODE_ENV)) {
-	throw new Error('NODE_ENV must match one of valid environments', { ENVIRONMENT_VALUES, NODE_ENV });
-}
 
 module.exports = globals;

@@ -3,10 +3,10 @@
 const mongoose = require('mongoose');
 const diffHistory = require('mongoose-diff-history/diffHistory');
 const uriFormat = require('mongodb-uri');
+const { Configuration } = require('@schul-cloud/commons');
 
 const logger = require('../logger');
 const {
-	NODE_ENV,
 	DATABASE_AUDIT,
 	MONGOOSE_CONNECTION_POOL_SIZE,
 	DB_URL,
@@ -100,7 +100,7 @@ function connect() {
 	);
 
 	const mongooseOptions = {
-		autoIndex: NODE_ENV !== ENVIRONMENTS.PRODUCTION,
+		autoIndex: (Configuration.get('NODE_ENV') !== "production"),
 		poolSize: MONGOOSE_CONNECTION_POOL_SIZE,
 		useNewUrlParser: true,
 		useFindAndModify: false,
