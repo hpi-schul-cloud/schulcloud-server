@@ -25,9 +25,14 @@ function obtainAccessToken(userId, homeserverApiUri, secret) {
 		json: true,
 	};
 	return request(options).then((response) => {
+		const homeserverUrl =
+			response.well_known && response.well_known['m.homeserver'] && response.well_known['m.homeserver'].base_url
+				? response.well_known['m.homeserver'].base_url
+				: homeserverApiUri;
+
 		const session = {
 			userId,
-			homeserverUrl: homeserverApiUri,
+			homeserverUrl,
 			accessToken: response.access_token,
 			deviceId: response.device_id,
 			servername: response.home_server,
