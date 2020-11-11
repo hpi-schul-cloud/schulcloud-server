@@ -772,7 +772,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/500'
-      description: Retrieves a url to a Merlin resource from the server
+
+      description: Retrieves a url to a merlin resource from the server
+      tags:
+        - edu-sharing
 openapi: 3.0.2
 tags:
   - name: edu-sharing
