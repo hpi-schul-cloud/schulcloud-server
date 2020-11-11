@@ -27,11 +27,20 @@ class LDAPSyncer extends SystemSyncer {
 		const schools = await this.getSchools();
 		const activeSchools = schools.filter((s) => !s.inMaintenance);
 		const nextSchoolSync = async (school) => {
-			const stats = await new LDAPSchoolSyncer(this.app, {}, this.logger, this.system, school).sync();
-			if (stats.success !== true) {
-				this.stats.errors.push(`LDAP sync failed for school "${school.name}" (${school._id}).`);
+			try {
+				const stats = await new LDAPSchoolSyncer(this.app, {}, this.logger, this.system, school).sync();
+				if (stats.success !== true) {
+					this.stats.errors.push(`LDAP sync failed for school "${school.name}" (${school._id}).`);
+				}
+				this.stats.schools[school.ldapSchoolIdentifier] = stats;
+			} catch (err) {
+				// We need to catch errors here, so that the async pool will not reject early without
+				// running all sync processes
+				this.logger.error('Uncaught LDAP sync error', { error: err, systemId: this.system._id, schoolId: school._id });
+				this.stats.errors.push(
+					`LDAP sync failed for school "${school.name}" (${school._id}) with error "${err.message}".`
+				);
 			}
-			this.stats.schools[school.ldapSchoolIdentifier] = stats;
 		};
 		const poolSize = Configuration.get('LDAP_SCHOOL_SYNCER_POOL_SIZE');
 		this.logger.info(`Running LDAP school sync with pool size ${poolSize}`);

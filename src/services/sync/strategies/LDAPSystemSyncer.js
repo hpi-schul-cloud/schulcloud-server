@@ -34,17 +34,26 @@ class LDAPSystemSyncer extends Syncer {
 		await super.steps();
 		const systems = await this.getSystems();
 		const nextSystemSync = async (system) => {
-			const stats = await new LDAPSyncer(this.app, {}, this.logger, system).sync();
-			if (stats.success !== true) {
-				this.stats.errors.push(`LDAP sync failed for system "${system.alias}" (${system._id}).`);
+			try {
+				const stats = await new LDAPSyncer(this.app, {}, this.logger, system).sync();
+				if (stats.success !== true) {
+					this.stats.errors.push(`LDAP sync failed for system "${system.alias}" (${system._id}).`);
+				}
+				this.stats.systems[system.alias] = stats;
+			} catch (err) {
+				// We need to catch errors here, so that the async pool will not reject early without
+				// running all sync processes
+				this.logger.error('Uncaught LDAP sync error', { error: err, systemId: system._id });
+				this.stats.errors.push(
+					`LDAP sync failed for system "${system.alias}" (${system._id}) with error "${err.message}".`
+				);
+			} finally {
+				// don't let unbind errors stop the sync
+				this.app
+					.service('ldap')
+					.disconnect(system.ldapConfig)
+					.catch((error) => this.logger.error('Could not unbind from LDAP server', { error }));
 			}
-			this.stats.systems[system.alias] = stats;
-
-			// don't let unbind errors stop the sync
-			this.app
-				.service('ldap')
-				.disconnect(system.ldapConfig)
-				.catch((error) => this.logger.error('Could not unbind from LDAP server', { error }));
 		};
 		const poolSize = Configuration.get('LDAP_SYSTEM_SYNCER_POOL_SIZE');
 		this.logger.info(`Running LDAP system sync with pool size ${poolSize}`);
