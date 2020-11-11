@@ -220,6 +220,38 @@ const validateSchoolNumber = (context) => {
 	return context;
 };
 
+// school County
+const validateCounty = async (context) => {
+	console.log(context.data.county, 'context.data.county');
+	if (context && context.data && context.data.county) {
+		console.log('should not be here');
+		const schools = await context.app.service('schools').find({
+			query: {
+				name: context.data.name,
+				$populate: 'federalState',
+				$limit: 1,
+			},
+		});
+		const currentSchool = schools.data[0];
+		if (!currentSchool) {
+			throw new Error(`Internal error`);
+		}
+
+		const { county } = context.data;
+		if (
+			!currentSchool.federalState.counties.length ||
+			!currentSchool.federalState.counties.some((c) => JSON.stringify(c._id) === JSON.stringify(county))
+		) {
+			throw new Error(`The state doesn't not have a matching county`);
+		}
+		/* Tries to replace the existing county with a new one */
+		if (currentSchool.county && JSON.stringify(currentSchool.county) !== JSON.stringify(county)) {
+			throw new Error(`This school already have a county`);
+		}
+	}
+	return context;
+};
+
 exports.before = {
 	all: [globalHooks.authenticateWhenJWTExist],
 	find: [],
@@ -242,6 +274,7 @@ exports.before = {
 		globalHooks.ifNotLocal(globalHooks.lookupSchool),
 		globalHooks.ifNotLocal(restrictToUserSchool),
 		validateSchoolNumber,
+		validateCounty,
 	],
 	/* It is disabled for the moment, is added with new "Löschkonzept"
     remove: [authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
