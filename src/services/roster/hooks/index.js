@@ -4,6 +4,11 @@ const { BadRequest } = reqlib('src/errors');
 const oauth2 = require('../../oauth2/hooks');
 
 module.exports = {
+	disableFilter: (context) => {
+		context.safeAttributes = ['username'];
+		return context;
+	},
+
 	tokenIsActive: (context) =>
 		context.app
 			.service('/oauth2/introspect')
@@ -76,8 +81,4 @@ module.exports = {
 		throw new BadRequest('Current user is not part of group');
 	},
 
-	disableFilter: (context) => {
-		context.safeAttributes = ['username'];
-		return context;
-	},
 };
