@@ -41,10 +41,16 @@ const restrictToSameSchool = async (context) => {
 		return context;
 	}
 
-	const { query } = context.params;
-	if (query.userId) {
+	let targetId;
+	if (context.id) {
+		targetId = context.id;
+	} else {
+		targetId = (((context || {}).params || {}).query || {}).userId;
+	}
+
+	if (targetId) {
 		const { schoolId: currentUserSchoolId } = await globalHooks.getUser(context);
-		const { schoolId: requestedUserSchoolId } = await context.app.service('users').get(query.userId);
+		const { schoolId: requestedUserSchoolId } = await context.app.service('users').get(targetId);
 
 		if (!equalIds(currentUserSchoolId, requestedUserSchoolId)) {
 			throw new Forbidden('You has no access.');
