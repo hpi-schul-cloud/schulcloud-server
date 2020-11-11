@@ -7,11 +7,16 @@ const Syncer = require('./Syncer');
  * @implements {Syncer}
  */
 class LDAPSchoolSyncer extends Syncer {
-	constructor(app, stats, logger, system, school) {
+	constructor(app, stats, logger, system, school, options) {
 		super(app, stats, logger);
 		this.system = system;
 		this.school = school;
+		this.options = options;
+		if (options.forceFullSync) {
+			delete this.system.ldapConfig.lastModifyTimestamp;
+		}
 		this.stats = Object.assign(this.stats, {
+			modifyDate: '0',
 			name: this.school.name,
 			users: {
 				created: 0,
@@ -48,7 +53,9 @@ class LDAPSchoolSyncer extends Syncer {
 		const ldapUsers = await this.app.service('ldap').getUsers(this.system.ldapConfig, this.school);
 		this.logInfo(`Creating and updating ${ldapUsers.length} users...`);
 		for (const ldapUser of ldapUsers) {
-			await this.createOrUpdateUser(ldapUser, this.school);
+			// eslint-disable-next-line no-await-in-loop
+			await this.createOrUpdateUser(ldapUser);
+			this.compareModifyDate(ldapUser.modifyTimestamp);
 		}
 
 		this.logInfo(
@@ -68,6 +75,10 @@ class LDAPSchoolSyncer extends Syncer {
 				`updated ${this.stats.classes.updated} classes. ` +
 				`Skipped errors: ${this.stats.classes.errors}.`
 		);
+	}
+
+	compareModifyDate(date) {
+		if (date && this.stats.modifyDate < date) this.stats.modifyDate = date;
 	}
 
 	createOrUpdateUser(idmUser) {
@@ -163,7 +174,10 @@ class LDAPSchoolSyncer extends Syncer {
 	async createClassesFromLdapData(data, school) {
 		for (const ldapClass of data) {
 			try {
+				this.compareModifyDate(ldapClass.modifyTimestamp);
+				// eslint-disable-next-line no-await-in-loop
 				const klass = await this.getOrCreateClassFromLdapData(ldapClass, school);
+				// eslint-disable-next-line no-await-in-loop
 				await this.populateClassUsers(ldapClass, klass, school);
 			} catch (err) {
 				this.stats.classes.errors += 1;

@@ -34,6 +34,7 @@ const systemSchema = new Schema(
 			lastSyncAttempt: { type: Date },
 			lastSuccessfulFullSync: { type: Date },
 			lastSuccessfulPartialSync: { type: Date },
+			lastModifyTimestamp: { type: String },
 			url: { type: String },
 			rootPath: { type: String },
 			searchUser: { type: String },

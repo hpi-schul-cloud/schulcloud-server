@@ -6,7 +6,7 @@ const getModifiedFilter = (timestamp, attributeName = 'modifyTimestamp') =>
 	`(|(!(${attributeName}=*))(${attributeName}>=${timestamp}))`;
 
 const filterForModifiedEntities = (lastChange, existingFilter = '') => {
-	if (!(lastChange instanceof Date)) {
+	if (!/\d{14}Z/.test(lastChange)) {
 		return existingFilter;
 	}
 	const timestamp = getLDAPTimestamp(lastChange);

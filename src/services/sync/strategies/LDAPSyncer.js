@@ -10,9 +10,10 @@ const SchoolYearFacade = require('../../school/logic/year.js');
  * @implements {Syncer}
  */
 class LDAPSyncer extends Syncer {
-	constructor(app, stats, logger, system) {
+	constructor(app, stats, logger, system, options = {}) {
 		super(app, stats, logger);
 		this.system = system;
+		this.options = options;
 		this.stats = Object.assign(this.stats, {
 			schools: {},
 		});
@@ -32,7 +33,10 @@ class LDAPSyncer extends Syncer {
 		const activeSchools = schools.filter((s) => !s.inMaintenance);
 		for (const school of activeSchools) {
 			// eslint-disable-next-line no-await-in-loop
-			const stats = await new LDAPSchoolSyncer(this.app, {}, this.logger, this.system, school).sync();
+			const stats = await new LDAPSchoolSyncer(this.app, {}, this.logger, this.system, school, this.options).sync();
+			if (!this.stats.modifyTimestamp) {
+				this.stats.modifyTimestamp = stats.modifyTimestamp;
+			}
 			if (stats.success !== true) {
 				this.stats.errors.push(`LDAP sync failed for school "${school.name}" (${school._id}).`);
 			}
@@ -130,11 +134,16 @@ class LDAPSyncer extends Syncer {
 	async persistRun() {
 		this.logger.debug('System-Sync done. Updating system stats...');
 		if (this.successful()) {
-			const now = Date.now();
-			this.logger.debug(`Setting ldapConfig.lastSuccessfulFullSync = ${now}.`);
 			const update = {
-				'ldapConfig.lastSuccessfulFullSync': now,
+				'ldapConfig.lastModifyTimestamp': this.stats.modifyTimestamp,
 			};
+			const now = Date.now();
+			if (this.this.options.forceFullSync) {
+				update['ldapConfig.lastSuccessfulFullSync'] = now;
+			} else {
+				update['ldapConfig.lastSuccessfulPartialSync'] = now;
+			}
+			this.logger.debug(`Setting these values: ${JSON.stringify(update)}.`);
 			await this.app.service('systems').patch(this.system._id, update);
 			this.logger.debug('System stats updated.');
 		} else {
