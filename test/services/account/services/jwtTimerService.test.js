@@ -1,14 +1,25 @@
-const assert = require('assert');
-
-const { expect } = require('chai');
-const mockery = require('mockery');
 const commons = require('@schul-cloud/commons');
 
 const { Configuration } = commons;
 
+const assert = require('assert');
+
+const { expect } = require('chai');
+const mockery = require('mockery');
+
 const redisMock = require('../../../utils/redis/redisMock');
 
 describe('jwtTimer service', () => {
+	let configBefore = null;
+
+	before(async () => {
+		configBefore = Configuration.toObject({ plainSecrets: true });
+		Configuration.set('SC__SHORT_TITLE', 'default');
+	});
+	after(() => {
+		Configuration.reset(configBefore);
+	});
+
 	it('registered the supportJWT service', async () => {
 		// eslint-disable-next-line global-require
 		const defaultApp = await require('../../../../src/app');
@@ -19,24 +30,22 @@ describe('jwtTimer service', () => {
 		let testObjects;
 		let app;
 		let redisHelper;
-		let configBefore = null;
 
 		describe('with redis instance', () => {
 			let server;
 			before(async () => {
-				configBefore = Configuration.toObject({ plainSecrets: true });
 				mockery.enable({
 					warnOnReplace: false,
 					warnOnUnregistered: false,
 					useCleanCache: true,
 				});
+
 				delete require.cache[require.resolve('../../../../src/utils/redis')];
 				delete require.cache[require.resolve('../../helpers/testObjects')];
 				delete require.cache[require.resolve('../../../../src/services/account/services/jwtTimerService')];
 				delete require.cache[require.resolve('../../../../src/app')];
-
-				mockery.registerMock('redis', redisMock);
 				mockery.registerMock('@schul-cloud/commons', commons);
+				mockery.registerMock('redis', redisMock);
 				/* eslint-disable global-require */
 				redisHelper = require('../../../../src/utils/redis');
 				app = await require('../../../../src/app');
@@ -63,6 +72,9 @@ describe('jwtTimer service', () => {
 			});
 
 			it('FIND returns the whitelist timeToLive on the JWT that is used', async () => {
+				before(async () => {
+					mockery.registerMock('@schul-cloud/commons', commons);
+				});
 				const user = await testObjects.createTestUser();
 				const params = await testObjects.generateRequestParamsFromUser(user);
 				const { redisIdentifier } = redisHelper.extractDataFromJwt(params.authentication.accessToken);
@@ -150,7 +162,6 @@ describe('jwtTimer service', () => {
 			delete require.cache[require.resolve('../../../../src/app')];
 			delete require.cache[require.resolve('../../helpers/testObjects')];
 			delete require.cache[require.resolve('../../../../src/services/account/services/jwtTimerService')];
-			Configuration.reset(configBefore);
 		});
 	});
 });
