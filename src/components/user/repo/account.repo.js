@@ -1,23 +1,25 @@
-const getUserAccount = async (userId, app) => {
-	const [account] = await app.service('accounts').find({
-		query: {
-			userId,
-			$limit: 1,
-		},
-		paginate: false,
-	});
-	return account;
-};
-
-const deleteUserAccount = async (userId, app) => {
-	const account = await getUserAccount(userId, app);
-	if (account && account._id) {
-		return app.service('accounts').remove(account._id);
+module.exports = class AccountRepo {
+	setup(app) {
+		this.service = app.service('accounts');
 	}
-	return null;
+
+	async getUserAccount(userId) {
+		const [account] = await this.service.find({
+			query: {
+				userId,
+				$limit: 1,
+			},
+			paginate: false,
+		});
+		return account;
+	}
+
+	async deleteUserAccount(userId) {
+		const account = await this.getUserAccount(userId);
+		if (account && account._id) {
+			return this.service.remove(account._id);
+		}
+		return null;
+	}
 };
 
-module.exports = {
-	getUserAccount,
-	deleteUserAccount,
-};

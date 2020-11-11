@@ -21,7 +21,6 @@ const accountSchema = new Schema(
 
 		lasttriedFailedLogin: { type: Date, default: 0 },
 		expiresAt: { type: Date },
-		deletedAt: { type: Date, default: null },
 		activated: { type: Boolean, default: false },
 	},
 	{

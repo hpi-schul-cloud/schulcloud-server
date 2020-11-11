@@ -42,7 +42,7 @@ describe('user service v2', function test() {
 				.set('Content-type', 'application/json');
 			const response = await request.send();
 			expect(response.status).to.equal(200);
-			expect(response.body).to.deep.equal({ success: true });
+			expect(response.body.userId).to.deep.equal(user._id.toString());
 		});
 
 		it('Fails when not authorized user deletes a student', async () => {

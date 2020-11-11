@@ -2,18 +2,18 @@ const reqlib = require('app-root-path').require;
 
 const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = reqlib('src/errors');
 const { authenticate } = require('@feathersjs/authentication');
-const { deleteUserUC } = require('../uc/users.uc');
 const globalHooks = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 class UserServiceV2 {
 	async remove(id, params) {
 		const { query } = params;
-		return deleteUserUC(query.userId, this.app);
+		return this.userFacade.deleteUser(query.userId);
 	}
 
 	async setup(app) {
 		this.app = app;
+		this.userFacade = app.service('userFacade');
 	}
 }
 
