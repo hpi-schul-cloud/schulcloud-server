@@ -113,7 +113,8 @@ class LDAPSyncer extends Syncer {
 	}
 
 	/**
-	 * Updates the lastSyncAttempt attribute of the system's ldapConfig
+	 * Updates the lastSyncAttempt attribute of the system's ldapConfig.
+	 * This is very useful for second-level User-Support.
 	 * @async
 	 */
 	async attemptRun() {
@@ -127,26 +128,33 @@ class LDAPSyncer extends Syncer {
 	}
 
 	/**
-	 * Updates the lastSuccessfulFullSync attribute of the system's ldapConfig if
-	 * the sync was successful.
+	 * Updates relevant attributes of the system's ldapConfig if the sync was successful.
+	 * This is necessary for (future) delta syncs and second-level User-Support.
 	 * @async
 	 */
 	async persistRun() {
 		this.logger.debug('System-Sync done. Updating system stats...');
 		if (this.successful()) {
 			const update = {
-				'ldapConfig.lastModifyTimestamp': this.stats.modifyTimestamp,
+				'ldapConfig.lastModifyTimestamp': this.stats.modifyTimestamp, // requirement for next delta sync
 			};
+
+			// The following is not strictly necessary for delta sync, but very handy for the second-level
+			// User-Support:
 			const now = Date.now();
 			if (this.options.forceFullSync || !this.system.ldapConfig.lastModifyTimestamp) {
+				// if there is no lastModifyTimestamp present, this must have been a full sync
 				update['ldapConfig.lastSuccessfulFullSync'] = now;
 			} else {
 				update['ldapConfig.lastSuccessfulPartialSync'] = now;
 			}
+
 			this.logger.debug(`Setting these values: ${JSON.stringify(update)}.`);
 			await this.app.service('systems').patch(this.system._id, update);
 			this.logger.debug('System stats updated.');
 		} else {
+			// The sync attempt was persisted before the run (see #attemptRun) in order to
+			// record the run even if there are uncaught errors. Nothing to do here...
 			this.logger.debug('Not successful. Skipping...');
 		}
 	}
