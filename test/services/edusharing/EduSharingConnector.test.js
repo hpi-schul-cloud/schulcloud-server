@@ -49,8 +49,11 @@ describe('EduSharing service', () => {
 			const student = await testObjects.createTestUser({ roles: ['student'] });
 			const paramsStudent = await testObjects.generateRequestParamsFromUser(student);
 
-			sinon.stub(request, 'post').returns(MockNodes);
 			sinon.stub(request, 'get').returns(MockAuth);
+
+			const postStub = sinon.stub(request, 'post');
+			postStub.onCall(0).throws({ statusCode: 403, message: 'Stubbing request fail' });
+			postStub.onCall(1).returns(MockNodes);
 
 			paramsStudent.query = { searchQuery: 'foo' };
 			const response = await eduSharingService.find(paramsStudent);

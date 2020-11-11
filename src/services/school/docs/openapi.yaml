@@ -19,31 +19,96 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
-    schools:
-      description: TODO
-    schools_list:
-      description: TODO
-    schoolId:
-      description: TODO
-    schoolId_list:
-      description: TODO
-    schoolGroup:
-      description: TODO
-    schoolGroup_list:
-      description: TODO
     years:
-      description: TODO
-    years_list:
-      description: TODO
-    gradeLevels:
-      description: TODO
-    gradeLevels_list:
-      description: TODO
-    teacher:
-      description: TODO
-    teacher_list:
-      description: TODO
-
+      type: object
+      properties:
+        _id:
+          type: string
+          pattern: '[a-f0-9]{24}'
+        __v:
+          type: integer
+        name:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+    schools:
+      description: datatransfer object of a school in the schoolcloud
+      type: object
+      properties:
+        _id:
+          type: string
+          pattern: '[a-f0-9]{24}'
+        id:
+          type: string
+          pattern: '[a-f0-9]{24}'
+        name:
+          type: string
+        fileStorageType:
+          type: string
+          enum: [awsS3]
+        systems:
+          type: array
+          items:
+            type: string
+            pattern: '[a-f0-9]{24}'
+        updatedAt:
+          type: string
+          format: date
+        createdAt:
+          type: string
+          format: date
+        __v:
+          type: string
+        currentYear:
+          type: string
+          pattern: '[a-f0-9]{24}'
+        purpose:
+          type: string
+        permissions:
+          type: object
+          description: object containing school specific permission overwrites
+        inMaintenance:
+          type: boolean
+        documentBaseDir:
+          type: string
+        isExternal:
+          type: string
+        isTeamCreationByStudentsEnabled:
+          type: boolean
+        years:
+          type: object
+          properties:
+            schoolYears:
+              type: array
+              items:
+                $ref: '#/components/schemas/years'
+            activeYear:
+              $ref: '#/components/schemas/years'
+            defaultYear:
+              $ref: '#/components/schemas/years'
+            nextYear:
+              $ref: '#/components/schemas/years'
+            lastYear:
+              $ref: '#/components/schemas/years'
+        
+    schools_list:
+      description: a list of paginated schools
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/schools'
+        total:
+          type: integer
+        limit:
+          type: integer
+        skip:
+          type: integer
 paths:
   /schools:
     get:
@@ -82,35 +147,11 @@ paths:
           description: not authenticated
         '500':
           description: general error
-      description: Retrieves a list of all resources from the service.
+      description: Retrieves a list of all schools.
       summary: ''
       tags:
         - schools
       security: []
-    post:
-      parameters: []
-      responses:
-        '201':
-          description: created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/schools'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Creates a new resource with data.
-      summary: ''
-      tags:
-        - schools
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/schools'
   '/schools/{_id}':
     get:
       parameters:
@@ -163,7 +204,8 @@ paths:
       summary: ''
       tags:
         - schools
-      security: []
+      security:
+        - jwtBearer: []
       requestBody:
         required: true
         content:
@@ -195,750 +237,15 @@ paths:
       summary: ''
       tags:
         - schools
-      security: []
+      security:
+        - jwtBearer: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/schools'
-    delete:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of schools to remove
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/schools'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Removes the resource with id.
-      summary: ''
-      tags:
-        - schools
-      security: []
-  '/schools/{schoolId}/maintenance':
-    get:
-      parameters:
-        - in: path
-          name: schoolId
-          schema:
-            type: string
-          required: true
-          description: schoolId parameter
-        - description: Number of results to return
-          in: query
-          name: $limit
-          schema:
-            type: integer
-        - description: Number of results to skip
-          in: query
-          name: $skip
-          schema:
-            type: integer
-        - description: Property to sort results
-          in: query
-          name: $sort
-          style: deepObject
-          schema:
-            type: object
-        - description: Query parameters to filter
-          in: query
-          name: filter
-          style: form
-          explode: true
-          schema:
-            $ref: '#/components/schemas/schoolId'
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/schoolId_list'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Retrieves a list of all resources from the service.
-      summary: ''
-      tags:
-        - schools
-      security: []
-    post:
-      parameters:
-        - in: path
-          name: schoolId
-          schema:
-            type: string
-          required: true
-          description: schoolId parameter
-      responses:
-        '201':
-          description: created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/schoolId'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Creates a new resource with data.
-      summary: ''
-      tags:
-        - schools
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/schoolId'
-  /schoolGroup:
-    get:
-      parameters:
-        - description: Number of results to return
-          in: query
-          name: $limit
-          schema:
-            type: integer
-        - description: Number of results to skip
-          in: query
-          name: $skip
-          schema:
-            type: integer
-        - description: Property to sort results
-          in: query
-          name: $sort
-          style: deepObject
-          schema:
-            type: object
-        - description: Query parameters to filter
-          in: query
-          name: filter
-          style: form
-          explode: true
-          schema:
-            $ref: '#/components/schemas/schoolGroup'
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/schoolGroup_list'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Retrieves a list of all resources from the service.
-      summary: ''
-      tags:
-        - schoolGroup
-      security: []
-    post:
-      parameters: []
-      responses:
-        '201':
-          description: created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/schoolGroup'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Creates a new resource with data.
-      summary: ''
-      tags:
-        - schoolGroup
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/schoolGroup'
-  '/schoolGroup/{_id}':
-    get:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of schoolGroup to return
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/schoolGroup'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Retrieves a single resource with the given id from the service.
-      summary: ''
-      tags:
-        - schoolGroup
-      security: []
-    put:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of schoolGroup to update
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/schoolGroup'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Updates the resource identified by id using data.
-      summary: ''
-      tags:
-        - schoolGroup
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/schoolGroup'
-    patch:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of schoolGroup to update
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/schoolGroup'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Updates the resource identified by id using data.
-      summary: ''
-      tags:
-        - schoolGroup
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/schoolGroup'
-    delete:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of schoolGroup to remove
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/schoolGroup'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Removes the resource with id.
-      summary: ''
-      tags:
-        - schoolGroup
-      security: []
-  /years:
-    get:
-      parameters:
-        - description: Number of results to return
-          in: query
-          name: $limit
-          schema:
-            type: integer
-        - description: Number of results to skip
-          in: query
-          name: $skip
-          schema:
-            type: integer
-        - description: Property to sort results
-          in: query
-          name: $sort
-          style: deepObject
-          schema:
-            type: object
-        - description: Query parameters to filter
-          in: query
-          name: filter
-          style: form
-          explode: true
-          schema:
-            $ref: '#/components/schemas/years'
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/years_list'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Retrieves a list of all resources from the service.
-      summary: ''
-      tags:
-        - years
-      security: []
-    post:
-      parameters: []
-      responses:
-        '201':
-          description: created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/years'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Creates a new resource with data.
-      summary: ''
-      tags:
-        - years
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/years'
-  '/years/{_id}':
-    get:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of years to return
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/years'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Retrieves a single resource with the given id from the service.
-      summary: ''
-      tags:
-        - years
-      security: []
-    put:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of years to update
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/years'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Updates the resource identified by id using data.
-      summary: ''
-      tags:
-        - years
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/years'
-    patch:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of years to update
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/years'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Updates the resource identified by id using data.
-      summary: ''
-      tags:
-        - years
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/years'
-    delete:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of years to remove
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/years'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Removes the resource with id.
-      summary: ''
-      tags:
-        - years
-      security: []
-  /gradeLevels:
-    get:
-      parameters:
-        - description: Number of results to return
-          in: query
-          name: $limit
-          schema:
-            type: integer
-        - description: Number of results to skip
-          in: query
-          name: $skip
-          schema:
-            type: integer
-        - description: Property to sort results
-          in: query
-          name: $sort
-          style: deepObject
-          schema:
-            type: object
-        - description: Query parameters to filter
-          in: query
-          name: filter
-          style: form
-          explode: true
-          schema:
-            $ref: '#/components/schemas/gradeLevels'
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/gradeLevels_list'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Retrieves a list of all resources from the service.
-      summary: ''
-      tags:
-        - gradeLevels
-      security: []
-    post:
-      parameters: []
-      responses:
-        '201':
-          description: created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/gradeLevels'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Creates a new resource with data.
-      summary: ''
-      tags:
-        - gradeLevels
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/gradeLevels'
-  '/gradeLevels/{_id}':
-    get:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of gradeLevels to return
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/gradeLevels'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Retrieves a single resource with the given id from the service.
-      summary: ''
-      tags:
-        - gradeLevels
-      security: []
-    put:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of gradeLevels to update
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/gradeLevels'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Updates the resource identified by id using data.
-      summary: ''
-      tags:
-        - gradeLevels
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/gradeLevels'
-    patch:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of gradeLevels to update
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/gradeLevels'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Updates the resource identified by id using data.
-      summary: ''
-      tags:
-        - gradeLevels
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/gradeLevels'
-    delete:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of gradeLevels to remove
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/gradeLevels'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Removes the resource with id.
-      summary: ''
-      tags:
-        - gradeLevels
-      security: []
-  /school/teacher/studentvisibility:
-    get:
-      parameters:
-        - description: Number of results to return
-          in: query
-          name: $limit
-          schema:
-            type: integer
-        - description: Number of results to skip
-          in: query
-          name: $skip
-          schema:
-            type: integer
-        - description: Property to sort results
-          in: query
-          name: $sort
-          style: deepObject
-          schema:
-            type: object
-        - description: Query parameters to filter
-          in: query
-          name: filter
-          style: form
-          explode: true
-          schema:
-            $ref: '#/components/schemas/teacher'
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/teacher_list'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Retrieves a list of all resources from the service.
-      summary: ''
-      tags:
-        - school
-      security: []
-  '/school/teacher/studentvisibility/{id}':
-    patch:
-      parameters:
-        - in: path
-          name: id
-          description: ID of teacher to update
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/teacher'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Updates the resource identified by id using data.
-      summary: ''
-      tags:
-        - school
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/teacher'
 openapi: 3.0.2
 tags:
   - name: schools
     description: A schools service.
-  - name: schoolGroup
-    description: A schoolGroup service.
-  - name: years
-    description: A years service.
-  - name: gradeLevels
-    description: A gradeLevels service.
-  - name: school
-    description: A school service.
