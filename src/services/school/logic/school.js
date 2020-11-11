@@ -1,12 +1,13 @@
-const { URL } = require('url');
 const { Configuration } = require('@schul-cloud/commons');
+const { URL } = require('url');
 const logger = require('../../../logger');
-const { DOCUMENT_BASE_DIR } = require('../../../../config/globals');
+const { DOCUMENT_BASE_DIR, NODE_ENV } = require('../../../../config/globals');
 
 const getDocumentBaseDir = (school) => {
 	// parse id eventually from populated schoolGroup if defined, otherwise set false
 	const groupId = school.schoolGroupId ? school.schoolGroupId._id || school.schoolGroupId : false;
 	let schoolBaseDir;
+
 	switch (school.documentBaseDirType) {
 		case 'school':
 			//  use school id

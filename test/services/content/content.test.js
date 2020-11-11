@@ -1,3 +1,5 @@
+const commons = require('@schul-cloud/commons');
+
 const assert = require('assert');
 
 const chai = require('chai');
@@ -22,6 +24,7 @@ describe('content service', function () {
 			warnOnUnregistered: false,
 			useCleanCache: true,
 		});
+		mockery.registerMock('@schul-cloud/commons', commons);
 		mockery.registerMock('request-promise-native', requestMock);
 		// eslint-disable-next-line global-require
 		app = await require('../../../src/app');

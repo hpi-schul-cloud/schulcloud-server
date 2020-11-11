@@ -33,6 +33,9 @@
 	"FEATURE_SHOW_VERSION_ENABLED": false,
 	"REQUEST_LOGGING_ENABLED": true,
 	"SC": {
-		"TITLE": "HPI Schul-Cloud"
+		"DOMAIN": "localhost",
+		"TITLE": "HPI Schul-Cloud",
+		"THEME": "default",
+		"SHORT_TITLE": "HPI Schul-Cloud"
 	}
 }

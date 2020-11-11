@@ -15,7 +15,6 @@ class Cache {
 	async updateMessages() {
 		let success = false;
 		let newMessages = [];
-
 		for (let i = 0; i < MessageProvider.length; i += 1) {
 			const data = await MessageProvider[i].getMessage(Configuration.get('SC__THEME'));
 			if (!data.success) {

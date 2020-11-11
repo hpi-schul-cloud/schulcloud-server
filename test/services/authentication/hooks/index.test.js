@@ -1,8 +1,9 @@
-const mockery = require('mockery');
-const { expect } = require('chai');
 const commons = require('@schul-cloud/commons');
 
 const { Configuration } = commons;
+
+const mockery = require('mockery');
+const { expect } = require('chai');
 const redisMock = require('../../../utils/redis/redisMock');
 
 describe('authentication hooks', function test() {
@@ -25,6 +26,7 @@ describe('authentication hooks', function test() {
 		});
 		mockery.registerMock('redis', redisMock);
 		mockery.registerMock('@schul-cloud/commons', commons);
+		Configuration.set('SC__SHORT_TITLE', 'default');
 
 		delete require.cache[require.resolve('../../../../src/app')];
 		delete require.cache[require.resolve('../../../../src/utils/redis')];
