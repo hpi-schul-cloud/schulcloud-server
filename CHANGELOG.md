@@ -42,6 +42,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- ARC-137 avoid DoS on alerts in error state
 - SC-7353 course sharing between teachers
 - SC-7530 rename SHOW_VERSION to FEATURE_SHOW_VERSION_ENABLED
 - SC-7517 improve oauth test stability
