@@ -34,7 +34,7 @@ class LDAPSyncer extends Syncer {
 		for (const school of activeSchools) {
 			// eslint-disable-next-line no-await-in-loop
 			const stats = await new LDAPSchoolSyncer(this.app, {}, this.logger, this.system, school, this.options).sync();
-			if (!this.stats.modifyTimestamp) {
+			if (!this.stats.modifyTimestamp && stats.modifyTimestamp) {
 				this.stats.modifyTimestamp = stats.modifyTimestamp;
 			}
 			if (stats.success !== true) {
@@ -138,7 +138,7 @@ class LDAPSyncer extends Syncer {
 				'ldapConfig.lastModifyTimestamp': this.stats.modifyTimestamp,
 			};
 			const now = Date.now();
-			if (this.this.options.forceFullSync) {
+			if (this.options.forceFullSync || !this.system.ldapConfig.lastModifyTimestamp) {
 				update['ldapConfig.lastSuccessfulFullSync'] = now;
 			} else {
 				update['ldapConfig.lastSuccessfulPartialSync'] = now;

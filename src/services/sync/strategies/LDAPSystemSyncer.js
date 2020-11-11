@@ -22,8 +22,8 @@ class LDAPSystemSyncer extends Syncer {
 		return target === 'ldap';
 	}
 
-	static params(params, data) {
-		const forceFullSync = params.query.forceFullSync || data.forceFullSync || false;
+	static params(params, data = {}) {
+		const forceFullSync = params.query.forceFullSync === 'true' || data.forceFullSync || false;
 		return [
 			{
 				forceFullSync,

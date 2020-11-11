@@ -9,8 +9,7 @@ const filterForModifiedEntities = (lastChange, existingFilter = '') => {
 	if (!/\d{14}Z/.test(lastChange)) {
 		return existingFilter;
 	}
-	const timestamp = getLDAPTimestamp(lastChange);
-	const filter = getModifiedFilter(timestamp);
+	const filter = getModifiedFilter(lastChange);
 	return `(&${existingFilter}${filter})`;
 };
 

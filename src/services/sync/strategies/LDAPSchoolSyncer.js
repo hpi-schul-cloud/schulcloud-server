@@ -7,7 +7,7 @@ const Syncer = require('./Syncer');
  * @implements {Syncer}
  */
 class LDAPSchoolSyncer extends Syncer {
-	constructor(app, stats, logger, system, school, options) {
+	constructor(app, stats, logger, system, school, options = {}) {
 		super(app, stats, logger);
 		this.system = system;
 		this.school = school;
@@ -16,7 +16,7 @@ class LDAPSchoolSyncer extends Syncer {
 			delete this.system.ldapConfig.lastModifyTimestamp;
 		}
 		this.stats = Object.assign(this.stats, {
-			modifyDate: '0',
+			modifyTimestamp: this.system.ldapConfig.lastModifyTimestamp || '0',
 			name: this.school.name,
 			users: {
 				created: 0,
@@ -78,7 +78,7 @@ class LDAPSchoolSyncer extends Syncer {
 	}
 
 	compareModifyDate(date) {
-		if (date && this.stats.modifyDate < date) this.stats.modifyDate = date;
+		if (date && this.stats.modifyTimestamp < date) this.stats.modifyTimestamp = date;
 	}
 
 	createOrUpdateUser(idmUser) {
