@@ -1,10 +1,8 @@
 const sinon = require('sinon');
 
 const { expect } = require('chai');
-const { deleteUserUC, replaceUserWithTombstoneUC } = require('./users.uc');
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
-const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
 
 const USER_ID = 'USER_ID';
 
@@ -43,14 +41,23 @@ let createUserTrashbinStub;
 describe('users usecase', () => {
 	let app;
 	let server;
+	let userFacade;
+	let userRepo;
+	let accountRepo;
+	let trashbinRepo;
 
 	before(async () => {
 		app = await appPromise;
 		server = await app.listen(0);
+		userFacade = app.service('userFacade');
 
 		const user = createTestUser(USER_ID);
 		const account = createTestAccount(user);
 		const trashbin = createTestTrashbin(user._id, { user, account });
+
+		userRepo = app.service('userRepo');
+		accountRepo = app.service('accountRepo');
+		trashbinRepo = app.service('trashbinRepo');
 
 		// init stubs
 		getUserStub = sinon.stub(userRepo, 'getUser');
@@ -79,7 +86,7 @@ describe('users usecase', () => {
 	describe('user replace with tombstone orchestrator', () => {
 		it('when the function is called, then it returns (replace with useful test)', async () => {
 			const user = await testObjects.createTestUser();
-			const result = await replaceUserWithTombstoneUC(user._id, app);
+			const result = await userFacade.replaceUserWithTombstone(user._id);
 			expect(result).to.deep.equal({ success: true });
 		});
 	});
@@ -87,16 +94,16 @@ describe('users usecase', () => {
 	describe('user delete orchestrator', () => {
 		it('should successfully mark user for deletion', async () => {
 			// act
-			const result = await deleteUserUC(USER_ID, app);
+			const result = await userFacade.deleteUser(USER_ID);
 
-			expect(result).to.deep.equal({ success: true });
+			expect(result.userId).to.deep.equal(USER_ID);
 		});
 
 		it('should return not found if user cannot be found', async () => {
 			// init stubs
 			const userId = 'NOT_FOUND_USER';
 			getUserStub.withArgs(userId);
-			expect(() => deleteUserUC(userId, app), "if user wasn't found it should fail").to.throw;
+			expect(() => userFacade.deleteUser(userId), "if user wasn't found it should fail").to.throw;
 		});
 
 		it("should return error if trashbin couldn't be created", async () => {
@@ -110,7 +117,7 @@ describe('users usecase', () => {
 			getUserAccountStub.withArgs(userId).returns(account);
 			createUserTrashbinStub.withArgs(userId);
 
-			expect(() => deleteUserUC(userId, app), "if trashbin couldn't be created it should fail").to.throw;
+			expect(() => userFacade.deleteUser(userId), "if trashbin couldn't be created it should fail").to.throw;
 		});
 	});
 });

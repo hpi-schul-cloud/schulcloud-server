@@ -1,57 +1,64 @@
-const { ObjectId } = require('mongoose').Types;
+const {ObjectId} = require('mongoose').Types;
 
-const { GeneralError, NotFound } = require('../../../errors');
-const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
+const {GeneralError, NotFound} = require('../../../errors');
 
-const replaceUserWithTombstoneUC = async (id, app) => {
-	const uid = ObjectId();
-	await userRepo.replaceUserWithTombstone(id, app, {
-		firstName: 'DELETED',
-		lastName: 'USER',
-		email: `${uid}@deleted`,
-		deletedAt: new Date(),
-	});
-	return { success: true };
+module.exports = class UserUC {
+    constructor(app) {
+        this.userRepo = app.service('userRepo');
+        this.accountRepo = app.service('accountRepo');
+        this.trashbinRepo = app.service('trashbinRepo');
+    }
+
+    async getUserData(id) {
+        const data = {};
+
+        const user = await this.userRepo.getUser(id);
+        if (!(user && user._id && !user.deletedAt)) {
+            throw new NotFound(`User ${id} not found`);
+        }
+        data.user = user;
+
+        const account = await this.accountRepo.getUserAccount(id);
+        if (account) {
+            data.account = account;
+        }
+        return data;
+    };
+
+    async deleteUserData(id) {
+        await this.accountRepo.deleteUserAccount(id);
+    };
+
+    async createUserTrashbin(id, data) {
+        const trashBin = await this.trashbinRepo.createUserTrashbin(id, data);
+        if (!(trashBin && trashBin._id)) {
+            throw new GeneralError(`Unable to initiate trashBin`);
+        }
+        return trashBin;
+    };
+
+
+    async replaceUserWithTombstoneUC(id) {
+        const uid = ObjectId();
+        await this.userRepo.replaceUserWithTombstone(id,{
+            firstName: 'DELETED',
+            lastName: 'USER',
+            email: `${uid}@deleted`,
+            deletedAt: new Date(),
+        });
+        return {success: true};
+    };
+
+    async deleteUserUC(id) {
+        const data = await this.getUserData(id);
+
+        const trashBin = await this.createUserTrashbin(id, data);
+
+        await this.replaceUserWithTombstoneUC(id);
+
+        await this.deleteUserData(id);
+
+        return trashBin;
+    };
 };
 
-const getUserData = async (id, app) => {
-	const data = {};
-
-	const user = await userRepo.getUser(id, app);
-	if (!(user && user._id)) {
-		throw new NotFound(`User ${id} not found`);
-	}
-	data.user = user;
-
-	const account = await accountRepo.getUserAccount(id, app);
-	if (account) {
-		data.account = account;
-	}
-	return data;
-};
-
-const deleteUserData = async (id, app) => {
-	await accountRepo.deleteUserAccount(id, app);
-};
-
-const deleteUserUC = async (id, app) => {
-	const data = await getUserData(id, app);
-
-	const trashBin = await trashbinRepo.createUserTrashbin(id, data);
-	if (!(trashBin && trashBin._id)) {
-		throw new GeneralError(`Unable to initiate trashBin`);
-	}
-
-	// replace user by tombstone
-	await replaceUserWithTombstoneUC(id, app);
-
-	// delete account
-	await deleteUserData(id, app);
-
-	return { success: true };
-};
-
-module.exports = {
-	deleteUserUC,
-	replaceUserWithTombstoneUC,
-};
