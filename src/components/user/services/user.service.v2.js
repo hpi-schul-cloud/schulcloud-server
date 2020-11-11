@@ -1,6 +1,6 @@
 const reqlib = require('app-root-path').require;
 
-const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = reqlib('src/errors');
+const { Forbidden, BadRequest } = reqlib('src/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const { deleteUserUC } = require('../uc/users.uc');
 const globalHooks = require('../../../hooks');
