@@ -1,6 +1,6 @@
 const reqlib = require('app-root-path').require;
 
-const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = reqlib('src/errors');
+const { Forbidden, BadRequest } = reqlib('src/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
@@ -8,7 +8,7 @@ const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 class UserServiceV2 {
 	async remove(id, params) {
 		const { query } = params;
-		return this.userFacade.deleteUser(query.userId);
+		return this.userFacade.deleteUser(id || query.userId);
 	}
 
 	async setup(app) {
@@ -22,17 +22,41 @@ const userServiceV2 = new UserServiceV2({
 });
 
 const hasPermission = async (context) => {
-	const isSuperHero = await globalHooks.hasRole(context, context.params.account.userId, 'superhero');
+	const [
+		isSuperHero,
+		// isAdmin
+	] = await Promise.all([
+		globalHooks.hasRoleNoHook(context, context.params.account.userId, 'superhero'),
+		globalHooks.hasRoleNoHook(context, context.params.account.userId, 'administrator'),
+	]);
+
 	if (isSuperHero) {
 		return context;
 	}
 
-	const isAdmin = await globalHooks.hasRole(context, context.params.account.userId, 'administrator');
-	if (isAdmin) {
-		return context;
+	const [targetIsStudent, targetIsTeacher, targetIsAdmin] = await Promise.all([
+		globalHooks.hasRoleNoHook(context, context.id, 'student'),
+		globalHooks.hasRoleNoHook(context, context.id, 'teacher'),
+		globalHooks.hasRoleNoHook(context, context.id, 'administrator'),
+	]);
+	let permissionChecks = [true];
+	if (targetIsStudent) {
+		permissionChecks.push(globalHooks.hasPermissionNoHook(context, context.params.account.userId, 'STUDENT_DELETE'));
+	}
+	if (targetIsTeacher) {
+		permissionChecks.push(globalHooks.hasPermissionNoHook(context, context.params.account.userId, 'TEACHER_DELETE'));
+	}
+	if (targetIsAdmin) {
+		permissionChecks.push(isSuperHero);
 	}
 
-	throw new Forbidden('You has no access.');
+	permissionChecks = await Promise.all(permissionChecks);
+
+	if (!permissionChecks.reduce((accumulator, val) => accumulator && val)) {
+		throw new Forbidden('you dont have permission to delete this user!');
+	}
+
+	return context;
 };
 
 const restrictToSameSchool = async (context) => {
@@ -53,7 +77,7 @@ const restrictToSameSchool = async (context) => {
 		const { schoolId: requestedUserSchoolId } = await context.app.service('users').get(targetId);
 
 		if (!equalIds(currentUserSchoolId, requestedUserSchoolId)) {
-			throw new Forbidden('You has no access.');
+			throw new Forbidden('You have no access.');
 		}
 
 		return context;
