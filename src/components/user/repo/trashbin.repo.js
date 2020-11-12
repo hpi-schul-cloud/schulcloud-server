@@ -1,9 +1,7 @@
 const trashbinModel = require('./db/trashbin.schema');
 
 module.exports = class TrashbinRepo {
-	setup() {
-
-	}
+	setup() {}
 
 	/**
 	 * Creates the trashbin document
@@ -11,7 +9,7 @@ module.exports = class TrashbinRepo {
 	 * @param {Object} data User data to be stored within trashbin
 	 * @return {trashbinModel} Trashbin document
 	 */
-	async createUserTrashbin(userId, data){
+	async createUserTrashbin(userId, data) {
 		const trashbinData = {
 			...data,
 			userId,
@@ -25,10 +23,9 @@ module.exports = class TrashbinRepo {
 	 * @param {string} id Id of user trashbin document
 	 * @param {Object} data Data to be added/updated
 	 */
-	async updateUserTrashbin(id, data = {}){
+	async updateUserTrashbin(id, data = {}) {
 		// access trashbin model
 		const trashbin = await trashbinModel.findByIdAndUpdate(id, { $set: data });
 		return trashbin.toObject();
-	};
-}
-
+	}
+};

@@ -891,12 +891,18 @@ describe('AdminUsersService', () => {
 			roles: ['student'],
 			schoolId: school._id,
 		};
-		const objectTypeStudentTest = await adminStudentsService.create({...studentData, email: `testDeleteStudent3${Date.now()}@de.de`}, params);
+		const objectTypeStudentTest = await adminStudentsService.create(
+			{...studentData, email: `testDeleteStudent3${Date.now()}@de.de`},
+			params
+		);
 		const deletedObjectType = await adminStudentsService.remove(objectTypeStudentTest, params);
 		expect(deletedObjectType).to.not.be.undefined;
 		expect(deletedObjectType.length).to.equals(1);
 
-		const stringTypeStudentTest = await adminStudentsService.create({...studentData, email: `testDeleteStudent4${Date.now()}@de.de`}, params);
+		const stringTypeStudentTest = await adminStudentsService.create(
+			{...studentData, email: `testDeleteStudent4${Date.now()}@de.de`},
+			params
+		);
 		const deletedeStringType = await adminStudentsService.remove(stringTypeStudentTest._id.toString(), params);
 		expect(deletedeStringType).to.not.be.undefined;
 		expect(deletedeStringType.length).to.equals(1);
@@ -1806,12 +1812,18 @@ describe('AdminTeachersService', () => {
 			schoolId: school._id,
 		};
 
-		const objectTypeTeacherTest = await adminTeachersService.create({...teacherData, email: `testDeleteTeacher3${Date.now()}@de.d`}, params);
+		const objectTypeTeacherTest = await adminTeachersService.create(
+			{...teacherData, email: `testDeleteTeacher3${Date.now()}@de.d`},
+			params
+		);
 		const deletedObjectType = await adminTeachersService.remove(objectTypeTeacherTest, params);
 		expect(deletedObjectType).to.not.be.undefined;
 		expect(deletedObjectType.length).to.equals(1);
 
-		const stringTypeTeacherTest = await adminTeachersService.create({...teacherData, email: `testDeleteTeacher4${Date.now()}@de.d`}, params);
+		const stringTypeTeacherTest = await adminTeachersService.create(
+			{...teacherData, email: `testDeleteTeacher4${Date.now()}@de.d`},
+			params
+		);
 		const deletedeStringType = await adminTeachersService.remove(stringTypeTeacherTest._id, params);
 		expect(deletedeStringType).to.not.be.undefined;
 		expect(deletedeStringType.length).to.equals(1);

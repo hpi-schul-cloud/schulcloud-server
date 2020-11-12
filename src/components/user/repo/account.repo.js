@@ -22,4 +22,3 @@ module.exports = class AccountRepo {
 		return null;
 	}
 };
-
