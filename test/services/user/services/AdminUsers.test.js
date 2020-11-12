@@ -679,7 +679,7 @@ describe('AdminUsersService', () => {
 		};
 		const deletedStudent = await adminStudentsService.remove(null, params);
 		expect(deletedStudent).to.not.be.undefined;
-		expect(deletedStudent.success).to.equals(true);
+		expect(deletedStudent.length).to.equals(1);
 	});
 
 	it('users without STUDENT_DELETE permission cannnot access the REMOVE method', async () => {
@@ -783,7 +783,7 @@ describe('AdminUsersService', () => {
 
 		const deletedStudent = await adminStudentsService.remove(null, params);
 		expect(deletedStudent).to.not.be.undefined;
-		expect(deletedStudent.success).to.equals(true);
+		expect(deletedStudent.length).to.equals(1);
 
 		try {
 			await app.service('accountModel').get(studentAccount._id);
@@ -848,7 +848,7 @@ describe('AdminUsersService', () => {
 
 		const deletedStudent = await adminStudentsService.remove(null, params);
 		expect(deletedStudent).to.not.be.undefined;
-		expect(deletedStudent.success).to.equals(true);
+		expect(deletedStudent.length).to.equals(1);
 
 		const otherStudentData = {
 			firstName: 'otherValidDeleteStudent',
@@ -895,12 +895,12 @@ describe('AdminUsersService', () => {
 		const objectTypeStudentTest = await adminStudentsService.create(studentData, params);
 		const deletedObjectType = await adminStudentsService.remove(objectTypeStudentTest, params);
 		expect(deletedObjectType).to.not.be.undefined;
-		expect(deletedObjectType.success).to.equals(true);
+		expect(deletedObjectType.length).to.equals(1);
 
 		const stringTypeStudentTest = await adminStudentsService.create(studentData, params);
 		const deletedeStringType = await adminStudentsService.remove(stringTypeStudentTest._id, params);
 		expect(deletedeStringType).to.not.be.undefined;
-		expect(deletedeStringType.success).to.equals(true);
+		expect(deletedeStringType.length).to.equals(1);
 	});
 
 	describe('patch and update', () => {
@@ -1594,7 +1594,7 @@ describe('AdminTeachersService', () => {
 		};
 		const deletedTeacher = await adminTeachersService.remove(null, params);
 		expect(deletedTeacher).to.not.be.undefined;
-		expect(deletedTeacher.success).to.equals(true);
+		expect(deletedTeacher.length).to.equals(1);
 	});
 
 	it('users without TEACHER_DELETE permission cannnot access the REMOVE method', async () => {
@@ -1698,7 +1698,7 @@ describe('AdminTeachersService', () => {
 
 		const deletedTeacher = await adminTeachersService.remove(null, params);
 		expect(deletedTeacher).to.not.be.undefined;
-		expect(deletedTeacher.success).to.equals(true);
+		expect(deletedTeacher.length).to.equals(1);
 
 		try {
 			await app.service('accountModel').get(teacherAccount._id);
@@ -1763,7 +1763,7 @@ describe('AdminTeachersService', () => {
 
 		const deletedTeacher = await adminTeachersService.remove(null, params);
 		expect(deletedTeacher).to.not.be.undefined;
-		expect(deletedTeacher.success).to.equals(true);
+		expect(deletedTeacher.length).to.equals(1);
 
 		const otherTeacherData = {
 			firstName: 'otherValidDeleteTeacher',
@@ -1811,11 +1811,11 @@ describe('AdminTeachersService', () => {
 		const objectTypeTeacherTest = await adminTeachersService.create(teacherData, params);
 		const deletedObjectType = await adminTeachersService.remove(objectTypeTeacherTest, params);
 		expect(deletedObjectType).to.not.be.undefined;
-		expect(deletedObjectType.success).to.equals(true);
+		expect(deletedObjectType.length).to.equals(1);
 
 		const stringTypeTeacherTest = await adminTeachersService.create(teacherData, params);
 		const deletedeStringType = await adminTeachersService.remove(stringTypeTeacherTest._id, params);
 		expect(deletedeStringType).to.not.be.undefined;
-		expect(deletedeStringType.success).to.equals(true);
+		expect(deletedeStringType.length).to.equals(1);
 	});
 });
