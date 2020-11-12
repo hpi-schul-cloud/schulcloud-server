@@ -9,7 +9,8 @@
  * @param {String} attributeName optional attribute name to check
  */
 const getModifiedFilter = (timestamp, attributeName = 'modifyTimestamp') =>
-	`(|(!(${attributeName}=*))(${attributeName}>=${timestamp}))`;
+	// do unquel in combination with <= to get a > which is not supported by ldap
+	`(|(!(${attributeName}=*))(!(${attributeName}<=${timestamp})))`;
 
 /**
  * Returns an LDAP filter based on a given filter and a last change time. If lastChange is

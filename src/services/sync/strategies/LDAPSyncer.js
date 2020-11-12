@@ -34,9 +34,17 @@ class LDAPSyncer extends Syncer {
 		for (const school of activeSchools) {
 			// eslint-disable-next-line no-await-in-loop
 			const stats = await new LDAPSchoolSyncer(this.app, {}, this.logger, this.system, school, this.options).sync();
-			if (!this.stats.modifyTimestamp && stats.modifyTimestamp) {
+			if (
+				!this.stats.modifyTimestamp &&
+				(stats.users.updated !== 0 ||
+					stats.users.created !== 0 ||
+					stats.classes.updated !== 0 ||
+					stats.classes.created !== 0) &&
+				stats.modifyTimestamp
+			) {
 				this.stats.modifyTimestamp = stats.modifyTimestamp;
 			}
+
 			if (stats.success !== true) {
 				this.stats.errors.push(`LDAP sync failed for school "${school.name}" (${school._id}).`);
 			}
@@ -135,9 +143,10 @@ class LDAPSyncer extends Syncer {
 	async persistRun() {
 		this.logger.debug('System-Sync done. Updating system stats...');
 		if (this.successful()) {
-			const update = {
-				'ldapConfig.lastModifyTimestamp': this.stats.modifyTimestamp, // requirement for next delta sync
-			};
+			const update = {};
+			if (this.stats.modifyTimestamp) {
+				update['ldapConfig.lastModifyTimestamp'] = this.stats.modifyTimestamp; // requirement for next delta sync
+			}
 
 			// The following is not strictly necessary for delta sync, but very handy for the second-level
 			// User-Support:
