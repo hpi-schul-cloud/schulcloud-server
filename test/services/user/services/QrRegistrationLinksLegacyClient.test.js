@@ -1,4 +1,3 @@
-/* eslint-disable promise/always-return */
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
@@ -33,13 +32,14 @@ describe('qrRegistrationLinksLegacyClient service tests', () => {
 		it('should return Forbidden when user without permission tries to generate registration links', async () => {
 			const testUser = await testObjects.createTestUser();
 			const userRequestAuthentication = await generateRequestParamsFromUser(testUser);
-			return createRegistrationLinks(userRequestAuthentication, testUser._id)
-				.then(() => expect.fail('Forbidden expected'))
-				.catch((err) => {
-					expect(err.code).to.equal(403);
-					expect(err.name).to.equal('Forbidden');
-					expect(err.message).to.equal("You don't have one of the permissions: STUDENT_LIST, TEACHER_LIST.");
-				});
+			try {
+				await createRegistrationLinks(userRequestAuthentication, testUser._id);
+				expect.fail('Forbidden expected')
+			} catch (err) {
+				expect(err.code).to.equal(403);
+				expect(err.name).to.equal('Forbidden');
+				expect(err.message).to.equal("You don't have one of the permissions: STUDENT_LIST, TEACHER_LIST.");
+			}
 		});
 
 		it('should throw BadRequest if class does not belong user school', async () => {
@@ -51,13 +51,15 @@ describe('qrRegistrationLinksLegacyClient service tests', () => {
 			// given caller from School B
 			const caller = await testObjects.createTestUser({ roles: ['teacher'] });
 			const userRequestAuthentication = await generateRequestParamsFromUser(caller);
-			return createRegistrationLinks(userRequestAuthentication, testClass._id)
-				.then(() => expect.fail('BadRequest expected'))
-				.catch((err) => {
-					expect(err.code).to.equal(400);
-					expect(err.name).to.equal('BadRequest');
-					expect(err.message).to.equal(`ClassId does match user's school`);
-				});
+
+			try {
+				await createRegistrationLinks(userRequestAuthentication, testClass._id);
+				expect.fail('BadRequest expected')
+			} catch (err) {
+				expect(err.code).to.equal(400);
+				expect(err.name).to.equal('BadRequest');
+				expect(err.message).to.equal(`ClassId does match user's school`);
+			}
 		});
 
 		it('should return registration link for all users from a class', async () => {
@@ -66,11 +68,11 @@ describe('qrRegistrationLinksLegacyClient service tests', () => {
 			const testClass = await testObjects.createTestClass({ userIds: [testStudent1._id, testStudent2._id] });
 			const testUser = await testObjects.createTestUser({ roles: ['teacher'] });
 			const userRequestAuthentication = await generateRequestParamsFromUser(testUser);
-			return createRegistrationLinks(userRequestAuthentication, testClass._id).then((res) => {
-				expect(res.length).to.equal(2);
-				expect(res.filter((result) => result.email === testStudent1.email).length).to.equal(1);
-				expect(res.filter((result) => result.email === testStudent2.email).length).to.equal(1);
-			});
+
+			const res = await createRegistrationLinks(userRequestAuthentication, testClass._id);
+			expect(res.length).to.equal(2);
+			expect(res.filter((result) => result.email === testStudent1.email).length).to.equal(1);
+			expect(res.filter((result) => result.email === testStudent2.email).length).to.equal(1);
 		});
 
 		it('should return registration link for all users (from the caller school) with a role given (stundent)', async () => {
@@ -79,11 +81,10 @@ describe('qrRegistrationLinksLegacyClient service tests', () => {
 			const testUser1 = await testObjects.createTestUser({ roles: 'student', schoolId });
 			const testUser2 = await testObjects.createTestUser({ roles: 'student', schoolId });
 			const userRequestAuthentication = await generateRequestParamsFromUser(callingUser);
-			return createRegistrationLinks(userRequestAuthentication, undefined, 'student').then((res) => {
-				expect(res.length).to.equal(2);
-				expect(res.filter((result) => result.email === testUser1.email).length).to.equal(1);
-				expect(res.filter((result) => result.email === testUser2.email).length).to.equal(1);
-			});
+			const res = await createRegistrationLinks(userRequestAuthentication, undefined, 'student');
+			expect(res.length).to.equal(2);
+			expect(res.filter((result) => result.email === testUser1.email).length).to.equal(1);
+			expect(res.filter((result) => result.email === testUser2.email).length).to.equal(1);
 		});
 
 		it('should return response in an expected form', async () => {
@@ -91,15 +92,14 @@ describe('qrRegistrationLinksLegacyClient service tests', () => {
 			const testStudent2 = await testObjects.createTestUser({ roles: ['student'] });
 			const testClass = await testObjects.createTestClass({ userIds: [testStudent2._id] });
 			const userRequestAuthentication = await generateRequestParamsFromUser(testUser);
-			return createRegistrationLinks(userRequestAuthentication, testClass._id).then((res) => {
-				expect(res.length).to.equal(1);
-				const result = res[0];
-				expect(result.firstName).to.equal(testStudent2.firstName);
-				expect(result.lastName).to.equal(testStudent2.lastName);
-				expect(result.email).to.equal(testStudent2.email);
-				expect(result.hash).not.to.be.empty;
-				expect(result.registrationLink.shortLink).not.to.be.empty;
-			});
+			const res = await createRegistrationLinks(userRequestAuthentication, testClass._id);
+			expect(res.length).to.equal(1);
+			const result = res[0];
+			expect(result.firstName).to.equal(testStudent2.firstName);
+			expect(result.lastName).to.equal(testStudent2.lastName);
+			expect(result.email).to.equal(testStudent2.email);
+			expect(result.hash).not.to.be.empty;
+			expect(result.registrationLink.shortLink).not.to.be.empty;
 		});
 	});
 });

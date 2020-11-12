@@ -19,16 +19,15 @@ class QrRegistrationLinks {
 			if (!userWithoutAccount.length) {
 				return [];
 			}
-			const generateServiceLinkParams = this.getGenerateLinkServiceParams(data);
-			const result = await this.generateQrRegistrationLinks(userWithoutAccount, generateServiceLinkParams);
+			const regLinkServiceParams = this.getRegistrationLinkServiceParams(data);
+			const result = await this.generateQrRegistrationLinks(userWithoutAccount, regLinkServiceParams);
 			return result;
 		} catch (err) {
 			throw new BadRequest(this.err.failed, err);
 		}
 	}
 
-	getGenerateLinkServiceParams(data) {
-		// save, patchUser. host,
+	getRegistrationLinkServiceParams(data) {
 		const { save = true, patchUser = true, host } = data;
 		return { save, patchUser, host };
 	}
@@ -41,13 +40,13 @@ class QrRegistrationLinks {
 		});
 	}
 
-	async getHashLinks(userDetailList, generateServiceLinkParams) {
+	async getHashLinks(userDetailList, regLinkServiceParams) {
 		const promiseList = [];
 		for (const user of userDetailList) {
 			promiseList.push(
 				this.registrationLinkService
 					.create({
-						...generateServiceLinkParams,
+						...regLinkServiceParams,
 						role: user.roles[0],
 						schoolId: user.schoolId,
 						toHash: user.email,
@@ -70,21 +69,19 @@ class QrRegistrationLinks {
 		return result;
 	}
 
-	async getUserHashes(userIdChunk, generateServiceLinkParams) {
+	async getUserHashes(userIdChunk, regLinkServiceParams) {
 		const userDetailList = await this.getUserDetails(userIdChunk);
-		return this.getHashLinks(userDetailList.data, generateServiceLinkParams);
+		return this.getHashLinks(userDetailList.data, regLinkServiceParams);
 	}
 
-	async generateQrRegistrationLinks(userIds, generateServiceLinkParams) {
+	async generateQrRegistrationLinks(userIds, regLinkServiceParams) {
 		const qrRegistrationLinks = [];
-		let index = 0;
-		const arrayLength = userIds.length;
-		const chunkSize = 200;
-		for (index = 0; index < arrayLength; index += chunkSize) {
+		const chunkSize = 100;
+		for (let index = 0; index < userIds.length; index += chunkSize) {
 			const temparray = userIds.slice(index, index + chunkSize);
 			// it is a bulk call - therefore it is OK to wait
 			// eslint-disable-next-line no-await-in-loop
-			const partResult = await this.getUserHashes(temparray, generateServiceLinkParams);
+			const partResult = await this.getUserHashes(temparray, regLinkServiceParams);
 			qrRegistrationLinks.push(...partResult);
 		}
 
