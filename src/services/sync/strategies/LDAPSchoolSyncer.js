@@ -55,7 +55,7 @@ class LDAPSchoolSyncer extends Syncer {
 		for (const ldapUser of ldapUsers) {
 			// eslint-disable-next-line no-await-in-loop
 			await this.createOrUpdateUser(ldapUser);
-			this.compareModifyDate(ldapUser.modifyTimestamp);
+			this.updateModifyTimestampMaximum(ldapUser.modifyTimestamp);
 		}
 
 		this.logInfo(
@@ -77,7 +77,7 @@ class LDAPSchoolSyncer extends Syncer {
 		);
 	}
 
-	compareModifyDate(date) {
+	updateModifyTimestampMaximum(date) {
 		if (date && this.stats.modifyTimestamp < date) this.stats.modifyTimestamp = date;
 	}
 
@@ -174,7 +174,7 @@ class LDAPSchoolSyncer extends Syncer {
 	async createClassesFromLdapData(data, school) {
 		for (const ldapClass of data) {
 			try {
-				this.compareModifyDate(ldapClass.modifyTimestamp);
+				this.updateModifyTimestampMaximum(ldapClass.modifyTimestamp);
 				// eslint-disable-next-line no-await-in-loop
 				const klass = await this.getOrCreateClassFromLdapData(ldapClass, school);
 				// eslint-disable-next-line no-await-in-loop
