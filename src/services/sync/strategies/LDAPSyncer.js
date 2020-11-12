@@ -1,3 +1,5 @@
+const asyncPool = require('tiny-async-pool');
+const { Configuration } = require('@schul-cloud/commons');
 const Syncer = require('./Syncer');
 const LDAPSchoolSyncer = require('./LDAPSchoolSyncer');
 
@@ -31,25 +33,36 @@ class LDAPSyncer extends Syncer {
 		await this.attemptRun();
 		const schools = await this.getSchools();
 		const activeSchools = schools.filter((s) => !s.inMaintenance);
-		for (const school of activeSchools) {
-			// eslint-disable-next-line no-await-in-loop
-			const stats = await new LDAPSchoolSyncer(this.app, {}, this.logger, this.system, school, this.options).sync();
-			if (
-				!this.stats.modifyTimestamp &&
-				(stats.users.updated !== 0 ||
-					stats.users.created !== 0 ||
-					stats.classes.updated !== 0 ||
-					stats.classes.created !== 0) &&
-				stats.modifyTimestamp
-			) {
-				this.stats.modifyTimestamp = stats.modifyTimestamp;
-			}
+		const nextSchoolSync = async (school) => {
+			try {
+				const stats = await new LDAPSchoolSyncer(this.app, {}, this.logger, this.system, school, this.options).sync();
+				if (
+					!this.stats.modifyTimestamp &&
+					(stats.users.updated !== 0 ||
+						stats.users.created !== 0 ||
+						stats.classes.updated !== 0 ||
+						stats.classes.created !== 0) &&
+					stats.modifyTimestamp
+				) {
+					this.stats.modifyTimestamp = stats.modifyTimestamp;
+				}
 
-			if (stats.success !== true) {
-				this.stats.errors.push(`LDAP sync failed for school "${school.name}" (${school._id}).`);
+				if (stats.success !== true) {
+					this.stats.errors.push(`LDAP sync failed for school "${school.name}" (${school._id}).`);
+				}
+				this.stats.schools[school.ldapSchoolIdentifier] = stats;
+			} catch (err) {
+				// We need to catch errors here, so that the async pool will not reject early without
+				// running all sync processes
+				this.logger.error('Uncaught LDAP sync error', { error: err, systemId: this.system._id, schoolId: school._id });
+				this.stats.errors.push(
+					`LDAP sync failed for school "${school.name}" (${school._id}) with error "${err.message}".`
+				);
 			}
-			this.stats.schools[school.ldapSchoolIdentifier] = stats;
-		}
+		};
+		const poolSize = Configuration.get('LDAP_SCHOOL_SYNCER_POOL_SIZE');
+		this.logger.info(`Running LDAP school sync with pool size ${poolSize}`);
+		await asyncPool(poolSize, activeSchools, nextSchoolSync);
 		await this.persistRun();
 		return this.stats;
 	}
