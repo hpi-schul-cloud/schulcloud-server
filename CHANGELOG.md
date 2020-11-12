@@ -45,6 +45,7 @@ determine how many system/school syncers will be run in parallel (at most) durin
 - SC-7411 - api versioning for /version service
 - IMP-160 - integration-tests repo renamed to end-to-end-tests
 - SC-5900 - Move Synapse synchronization logic into server
+- SC-7499 Fixes documentation for edu sharing endpoints
 
 ### Fixed
 
