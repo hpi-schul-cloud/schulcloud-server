@@ -95,6 +95,12 @@ determine how many system/school syncers will be run in parallel (at most) durin
 - SC-6151 - fixed a bug that prevented api docu from being accessible
 - Fix mocha tests
 
+## [25.1.13] - 2020-11-12
+
+### Changed
+
+- SC-7395 - Changed ldap general strategy fetching of users from parallel to serialized
+
 ## [25.1.12] - 2020-11-09
 
 ### Added
