@@ -291,7 +291,7 @@ class AdminUsers {
 			throw new Forbidden('You cannot remove users from other schools.');
 		}
 
-		const results = await Promise.all(_ids.map((userId) => this.app.service('users/v2/users').remove(userId)));
+		const results = await Promise.all(_ids.map((userId) => this.app.service('users/v2/users').remove(userId, params)));
 
 		const result = results.reduce(
 			(acc, val) => ({
