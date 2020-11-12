@@ -201,4 +201,77 @@ describe('IservIdmLDAPStrategy', () => {
 			expect(ldapServiceMock.searchCollection.lastArg.filter).to.include('!(modifyTimestamp<=20201020000000Z)');
 		});
 	});
+
+	describe('#getClasses', () => {
+		function MockLdapService() {
+			return {
+				setup: () => {},
+				searchCollection: sinon.fake.returns([
+					{
+						dn: 'cn=klasse9a,ou=groups,o=Testschule,dc=de',
+						description: '9a',
+						member: [
+							'cn=teacher,ou=users,o=Testschule,dc=de',
+							'cn=student1,ou=users,o=Testschule,dc=de',
+							'cn=student2,ou=users,o=Testschule,dc=de',
+						],
+						modifyTimestamp: '20201020000000Z',
+					},
+					{
+						dn: 'cn=Kollegium,ou=groups,o=Testschule,dc=de',
+						description: 'Alle Lehrkräfte',
+						member: ['cn=teacher,ou=users,o=Testschule,dc=de', 'cn=admin,ou=users,o=Testschule,dc=de'],
+						modifyTimestamp: '20201020000000Z',
+					},
+				]),
+			};
+		}
+
+		beforeEach(() => {
+			ldapServiceMock = new MockLdapService();
+			app.use('/ldap', ldapServiceMock);
+		});
+
+		it('should return all IServ groups as classes', async () => {
+			const school = {
+				ldapSchoolIdentifier: 'o=Testschule,dc=de',
+			};
+			const classes = await new IservIdmLDAPStrategy(app, {}).getClasses(school);
+			expect(classes.length).to.equal(2);
+		});
+
+		it('should follow the internal interface', async () => {
+			const classes = await new IservIdmLDAPStrategy(app, {}).getClasses({});
+			classes.forEach((klass) => {
+				['className', 'ldapDn', 'uniqueMembers', 'modifyTimestamp'].forEach((attr) => {
+					expect(klass).to.haveOwnProperty(attr);
+				});
+			});
+		});
+
+		it('should search in ou=groups', async () => {
+			const mockConfig = {};
+			await new IservIdmLDAPStrategy(app, mockConfig).getClasses({ ldapSchoolIdentifier: 'cn=foo,cn=bar' });
+			expect(ldapServiceMock.searchCollection.calledWith(mockConfig, 'ou=groups,cn=foo,cn=bar')).to.equal(true);
+		});
+
+		it('should return all members as array', async () => {
+			const classes = await new IservIdmLDAPStrategy(app, {}).getClasses({});
+			expect(classes[0].uniqueMembers).to.be.instanceOf(Array).and.to.have.length(3);
+			expect(classes[1].uniqueMembers).to.be.instanceOf(Array).and.to.have.length(2);
+		});
+
+		it('should not use delta-sync operational attributes in query if no previous sync went through', async () => {
+			await new IservIdmLDAPStrategy(app, {}).getClasses({});
+			expect(ldapServiceMock.searchCollection.lastArg.filter).not.to.include('modifyTimestamp');
+		});
+
+		it('should filter for modifyTimestamp if applicable', async () => {
+			const config = {
+				lastModifyTimestamp: '20201020000000Z',
+			};
+			await new IservIdmLDAPStrategy(app, config).getClasses({});
+			expect(ldapServiceMock.searchCollection.lastArg.filter).to.include('!(modifyTimestamp<=20201020000000Z)');
+		});
+	});
 });
