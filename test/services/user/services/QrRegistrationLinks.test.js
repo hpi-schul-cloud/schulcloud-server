@@ -29,7 +29,7 @@ describe('qrRegistrationLinks service tests', () => {
 			app
 		);
 
-	describe.only('CREATE', () => {
+	describe('CREATE', () => {
 		it('should return Forbidden when user without permission tries to generate registration links', async () => {
 			const testUser = await testObjects.createTestUser();
 			const userRequestAuthentication = await generateRequestParamsFromUser(testUser);
