@@ -27,6 +27,9 @@ determine how many system/school syncers will be run in parallel (at most) durin
 - SC-7205 - create new data seed for QA
 - SC-7614 - creates documentation for edu sharing endpoints
 - SC-7370 - Add optional rootPath attribute modifier to iserv-idm strategy
+- SC-4667 - persist time of last attempted and last successful LDAP sync to database (based on system)
+- SC-4667 - Only request and compare LDAP entities that have changed since the last sync (using operational attribute modifyTimestamp with fallback)
+- SC-4667 - Add optional `forceFullSync` option (as get param or json payload) to force a full LDAP sync
 - SC-7499 - add API Specification for public services
 
 ### Changed
