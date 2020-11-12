@@ -4,16 +4,17 @@ const { Forbidden, BadRequest } = reqlib('src/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const UserUc = require('../uc/users.uc');
 
 class UserServiceV2 {
 	async remove(id, params) {
 		const { query } = params;
-		return this.userFacade.deleteUser(id || query.userId);
+		return this.userUC.deleteUser(id || query.userId);
 	}
 
 	async setup(app) {
 		this.app = app;
-		this.userFacade = app.service('userFacade');
+		this.userUC = new UserUc(app);
 	}
 }
 
