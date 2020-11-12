@@ -44,6 +44,7 @@ class LDAPSyncer extends Syncer {
 						stats.classes.created !== 0) &&
 					stats.modifyTimestamp
 				) {
+					// persist the largest modifyTimestamp of the first updated school for the next delta sync
 					this.stats.modifyTimestamp = stats.modifyTimestamp;
 				}
 
