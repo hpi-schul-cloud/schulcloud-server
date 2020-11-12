@@ -1,9 +1,9 @@
 security:
   - jwtBearer: []
 info:
-  title: Schul-Cloud User Service API
+  title: Schul-Cloud Account Service API
   description:
-    This is the API specification for the Schul-Cloud User service.
+    This is the API specification for the HPI Schul-Cloud Account service.
     
   contact:
     name: support
@@ -12,8 +12,6 @@ info:
     name: GPL-3.0
     url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
   version: 1.0.0
-servers:
-  - url: /users/admin/
 components:
   securitySchemes:
     jwtBearer:
@@ -21,54 +19,23 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
-    user_admin_base:
-      description: Data Transfer Object containing userdata
-      type: object
-      properties:
-        firstName:
-          type: string
-        lastName:
-          type: string
-        email:
-          type: string
-          format: 'email'
-        birthday:
-          type: string
-        roles:
-          type: array
-          items:
-            type: string
-        schoolId:
-          type: string
-          pattern: '^[0-9a-f]{24}$'
-        sendRegistration:
-          type: boolean
-        generateRegistrationLink:
-          type: boolean
-    user_admin:
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/user_admin_base'
-        - required:
-          - firstName
-          - lastName
-          - email
-    user_admin_list:
+    accountModel:
       description: TODO
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/user_admin'
-        total:
-          type: integer
-        limit:
-          type: integer
-        skip:
-          type: integer
+    accountModel_list:
+      description: TODO
+    accounts:
+      description: TODO
+    accounts_list:
+      description: TODO
+    jwtTimer:
+      description: TODO
+    supportJWT:
+      description: TODO
+    confirm:
+      description: TODO
+
 paths:
-  /students:
+  /accountModel:
     get:
       parameters:
         - description: Number of results to return
@@ -84,60 +51,23 @@ paths:
         - description: Property to sort results
           in: query
           name: $sort
+          style: deepObject
           schema:
             type: object
-        - description: Regex to search for in firstName, lastName, and emails.
-          in: query
-          name: searchQuery
-          schema:
-            type: string
         - description: Query parameters to filter
           in: query
-          name: firstName
+          name: filter
+          style: form
+          explode: true
           schema:
-            type: string
-        - description: Query parameters to filter
-          in: query
-          name: lastName
-          schema:
-            type: string
-        - description: Query parameters to filter
-          in: query
-          name: createdAt
-          schema:
-            anyOf:
-              - type: string
-              - type: object
-        - description: Query parameters to filter
-          in: query
-          name: consentStatus
-          schema:
-            anyOf:
-              - type: string
-              - type: object
-        - description: Array of user ids to filter
-          in: query
-          name: users
-          schema:
-            anyOf:
-              - type: string
-              - type: array
-              - type: object
-        - description: Array of classes to filter
-          in: query
-          name: classes
-          schema:
-            anyOf:
-              - type: string
-              - type: array
-              - type: object
+            $ref: '#/components/schemas/accountModel'
       responses:
         '200':
           description: success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user_admin_list'
+                $ref: '#/components/schemas/accountModel_list'
         '401':
           description: not authenticated
         '500':
@@ -145,7 +75,7 @@ paths:
       description: Retrieves a list of all resources from the service.
       summary: ''
       tags:
-        - users
+        - accountModel
       security: []
     post:
       parameters: []
@@ -155,7 +85,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user_admin'
+                $ref: '#/components/schemas/accountModel'
         '401':
           description: not authenticated
         '500':
@@ -163,22 +93,22 @@ paths:
       description: Creates a new resource with data.
       summary: ''
       tags:
-        - users
+        - accountModel
       security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/user_admin'
-  '/students/{id}':
+              $ref: '#/components/schemas/accountModel'
+  '/accountModel/{_id}':
     get:
       parameters:
         - in: path
-          name: id
-          description: ID of admin to return
+          name: _id
+          description: ID of accountModel to return
           schema:
-            type: string
+            type: integer
           required: true
       responses:
         '200':
@@ -186,7 +116,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user_admin'
+                $ref: '#/components/schemas/accountModel'
         '401':
           description: not authenticated
         '404':
@@ -196,15 +126,15 @@ paths:
       description: Retrieves a single resource with the given id from the service.
       summary: ''
       tags:
-        - users
+        - accountModel
       security: []
     put:
       parameters:
         - in: path
-          name: id
-          description: ID of admin to update
+          name: _id
+          description: ID of accountModel to update
           schema:
-            type: string
+            type: integer
           required: true
       responses:
         '200':
@@ -212,7 +142,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user_admin'
+                $ref: '#/components/schemas/accountModel'
         '401':
           description: not authenticated
         '404':
@@ -222,21 +152,21 @@ paths:
       description: Updates the resource identified by id using data.
       summary: ''
       tags:
-        - users
+        - accountModel
       security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/user_admin'
+              $ref: '#/components/schemas/accountModel'
     patch:
       parameters:
         - in: path
-          name: id
-          description: ID of admin to update
+          name: _id
+          description: ID of accountModel to update
           schema:
-            type: string
+            type: integer
           required: true
       responses:
         '200':
@@ -244,7 +174,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user_admin'
+                $ref: '#/components/schemas/accountModel'
         '401':
           description: not authenticated
         '404':
@@ -254,21 +184,21 @@ paths:
       description: Updates the resource identified by id using data.
       summary: ''
       tags:
-        - users
+        - accountModel
       security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/user_admin_base'
+              $ref: '#/components/schemas/accountModel'
     delete:
       parameters:
         - in: path
-          name: id
-          description: ID of admin to remove
+          name: _id
+          description: ID of accountModel to remove
           schema:
-            type: string
+            type: integer
           required: true
       responses:
         '200':
@@ -276,7 +206,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user_admin'
+                $ref: '#/components/schemas/accountModel'
         '401':
           description: not authenticated
         '404':
@@ -286,9 +216,9 @@ paths:
       description: Removes the resource with id.
       summary: ''
       tags:
-        - users
+        - accountModel
       security: []
-  /teachers:
+  /accounts:
     get:
       parameters:
         - description: Number of results to return
@@ -304,60 +234,23 @@ paths:
         - description: Property to sort results
           in: query
           name: $sort
+          style: deepObject
           schema:
             type: object
-        - description: Regex to search for in firstName, lastName, and emails.
-          in: query
-          name: searchQuery
-          schema:
-            type: string
         - description: Query parameters to filter
           in: query
-          name: firstName
+          name: filter
+          style: form
+          explode: true
           schema:
-            type: string
-        - description: Query parameters to filter
-          in: query
-          name: lastName
-          schema:
-            type: string
-        - description: Query parameters to filter
-          in: query
-          name: createdAt
-          schema:
-            anyOf:
-              - type: string
-              - type: object
-        - description: Query parameters to filter
-          in: query
-          name: consentStatus
-          schema:
-            anyOf:
-              - type: string
-              - type: object
-        - description: Array of user ids to filter
-          in: query
-          name: users
-          schema:
-            anyOf:
-              - type: string
-              - type: array
-              - type: object
-        - description: Array of classes to filter
-          in: query
-          name: classes
-          schema:
-            anyOf:
-              - type: string
-              - type: array
-              - type: object
+            $ref: '#/components/schemas/accounts'
       responses:
         '200':
           description: success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user_admin_list'
+                $ref: '#/components/schemas/accounts_list'
         '401':
           description: not authenticated
         '500':
@@ -365,7 +258,7 @@ paths:
       description: Retrieves a list of all resources from the service.
       summary: ''
       tags:
-        - users
+        - accounts
       security: []
     post:
       parameters: []
@@ -375,7 +268,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user_admin'
+                $ref: '#/components/schemas/accounts'
         '401':
           description: not authenticated
         '500':
@@ -383,22 +276,22 @@ paths:
       description: Creates a new resource with data.
       summary: ''
       tags:
-        - users
+        - accounts
       security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/user_admin'
-  '/teachers/{id}':
+              $ref: '#/components/schemas/accounts'
+  '/accounts/{id}':
     get:
       parameters:
         - in: path
           name: id
-          description: ID of admin to return
+          description: ID of accounts to return
           schema:
-            type: string
+            type: integer
           required: true
       responses:
         '200':
@@ -406,7 +299,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user_admin'
+                $ref: '#/components/schemas/accounts'
         '401':
           description: not authenticated
         '404':
@@ -416,15 +309,15 @@ paths:
       description: Retrieves a single resource with the given id from the service.
       summary: ''
       tags:
-        - users
+        - accounts
       security: []
     put:
       parameters:
         - in: path
           name: id
-          description: ID of admin to update
+          description: ID of accounts to update
           schema:
-            type: string
+            type: integer
           required: true
       responses:
         '200':
@@ -432,7 +325,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user_admin'
+                $ref: '#/components/schemas/accounts'
         '401':
           description: not authenticated
         '404':
@@ -442,21 +335,21 @@ paths:
       description: Updates the resource identified by id using data.
       summary: ''
       tags:
-        - users
+        - accounts
       security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/user_admin'
+              $ref: '#/components/schemas/accounts'
     patch:
       parameters:
         - in: path
           name: id
-          description: ID of admin to update
+          description: ID of accounts to update
           schema:
-            type: string
+            type: integer
           required: true
       responses:
         '200':
@@ -464,7 +357,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user_admin'
+                $ref: '#/components/schemas/accounts'
         '401':
           description: not authenticated
         '404':
@@ -474,21 +367,21 @@ paths:
       description: Updates the resource identified by id using data.
       summary: ''
       tags:
-        - users
+        - accounts
       security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/user_admin_base'
+              $ref: '#/components/schemas/accounts'
     delete:
       parameters:
         - in: path
           name: id
-          description: ID of admin to remove
+          description: ID of accounts to remove
           schema:
-            type: string
+            type: integer
           required: true
       responses:
         '200':
@@ -496,7 +389,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user_admin'
+                $ref: '#/components/schemas/accounts'
         '401':
           description: not authenticated
         '404':
@@ -506,6 +399,104 @@ paths:
       description: Removes the resource with id.
       summary: ''
       tags:
-        - users
+        - accounts
       security: []
+  /accounts/jwtTimer:
+    get:
+      parameters: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jwtTimer'
+        '405':
+          description: feature is disabled on this instance
+      description: >-
+        returns the remaining seconds the JWT used to authenticate this request
+        is whitelisted. throws an 405 error if the instance does not have
+        support for JWT whitelisting
+      summary: get ttl of the jwt
+      tags:
+        - accounts
+      security: []
+    post:
+      parameters: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jwtTimer'
+        '405':
+          description: feature is disabled on this instance
+      description: >-
+        resets the remaining time the JWT used to authenticate this request is
+        whitelisted, and returns the value it was reset to. throws an 405 error
+        if the instance does not have support for JWT whitelisting
+      summary: reset jwt ttl
+      tags:
+        - accounts
+      security: []
+      requestBody:
+        content:
+          {}
+        description: no request body required
+  /accounts/supportJWT:
+    post:
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/supportJWT'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Creates a new resource with data.
+      summary: ''
+      tags:
+        - accounts
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/supportJWT'
+  /accounts/confirm:
+    post:
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/confirm'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Creates a new resource with data.
+      summary: ''
+      tags:
+        - accounts
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/confirm'
 openapi: 3.0.2
+tags:
+  - name: accountModel
+    description: An accountModel service.
+  - name: accounts
+    description: An accounts service.

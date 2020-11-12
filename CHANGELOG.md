@@ -23,6 +23,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7411 - add API Specification and validation for /me service
 - SC-7411 - add API Specification and validation for /version service
 - SC-7205 - create new data seed for QA
+- SC-7614 - creates documentation for edu sharing endpoints
+- SC-7370 - Add optional rootPath attribute modifier to iserv-idm strategy
+- SC-7499 - add API Specification for public services
 
 ### Changed
 
@@ -40,6 +43,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- ARC-137 avoid DoS on alerts in error state
 - SC-7353 course sharing between teachers
 - SC-7530 rename SHOW_VERSION to FEATURE_SHOW_VERSION_ENABLED
 - SC-7517 improve oauth test stability
@@ -90,6 +94,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - fixed README badges
 - SC-6151 - fixed a bug that prevented api docu from being accessible
 - Fix mocha tests
+
+## [25.1.13] - 2020-11-12
+
+### Changed
+
+- SC-7395 - Changed ldap general strategy fetching of users from parallel to serialized
 
 ## [25.1.12] - 2020-11-09
 
