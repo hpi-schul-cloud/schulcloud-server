@@ -7,7 +7,7 @@ module.exports = (app) => {
 		app.use('schools/:schoolId/messenger', messengerConfigService);
 		app.service('schools/:schoolId/messenger').hooks(messengerConfigHooks);
 
-		app.use('schools/:schoolId/messengerPermissions', messengerPermissionService);
-		app.service('schools/:schoolId/messengerPermissions').hooks(messengerPermissionHooks);
+		app.use('/messengerPermissions', messengerPermissionService);
+		app.service('/messengerPermissions').hooks(messengerPermissionHooks);
 	}
 };
