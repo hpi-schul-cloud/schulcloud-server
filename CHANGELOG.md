@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [25.1.13] - 2020-11-12
+
+### Changed
+
+- SC-7395 - Changed ldap general strategy fetching of users from parallel to serialized
+
 ## [25.1.12] - 2020-11-09
 
 ### Added
