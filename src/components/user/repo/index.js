@@ -3,7 +3,7 @@ const AccountRepo = require('./account.repo');
 const TrashbinRepo = require('./trashbin.repo');
 const disallow = require('../../../common/disallow.hook');
 
-module.exports = function setUpRepos(app){
+module.exports = function setUpRepos(app) {
 	app.use('/accountRepo', new AccountRepo());
 	app.service('accountRepo').hooks(disallow);
 

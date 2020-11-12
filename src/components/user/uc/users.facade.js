@@ -6,7 +6,7 @@ class UserFacade {
 		this.userUc = new UserUc(app);
 	}
 
-	async deleteUser (id) {
+	async deleteUser(id) {
 		return this.userUc.deleteUserUC(id);
 	}
 

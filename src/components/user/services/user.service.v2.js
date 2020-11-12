@@ -89,7 +89,13 @@ const restrictToSameSchool = async (context) => {
 
 const userServiceV2Hooks = {
 	before: {
-		all: [authenticate('jwt'), hasPermission, restrictToSameSchool],
+		all: [
+			authenticate('jwt'),
+			hasPermission,
+			// TODO: Seperate routes and checks for student, and teacher, and admin deletion
+			// globalHooks.hasPermission(['STUDENT_DELETE', 'TEACHER_DELETE']),
+			restrictToSameSchool,
+		],
 	},
 	after: {},
 };
