@@ -19,11 +19,6 @@ module.exports = {
 				throw new Error(error);
 			}),
 
-	disableFilter: (context) => {
-		context.safeAttributes = ['username'];
-		return context;
-	},
-
 	userIsMatching: (context) => {
 		if (
 			context.params.tokenInfo.obfuscated_subject === decodeURIComponent(context.params.route.user) ||

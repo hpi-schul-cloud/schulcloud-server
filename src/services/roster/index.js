@@ -4,6 +4,7 @@ const path = require('path');
 const hooks = require('./hooks');
 const globalHooks = require('../../hooks');
 const oauth2 = require('../oauth2/hooks');
+const { excludeAttributesFromSanitization } = require('../../hooks/sanitizationExceptions');
 
 module.exports = function roster() {
 	const app = this;
@@ -58,7 +59,7 @@ module.exports = function roster() {
 				globalHooks.ifNotLocal(hooks.tokenIsActive),
 				globalHooks.ifNotLocal(hooks.userIsMatching),
 				hooks.stripIframe,
-				hooks.disableFilter,
+				excludeAttributesFromSanitization('roster/users/:user/metadata', 'username'),
 			],
 		},
 	};
@@ -162,7 +163,11 @@ module.exports = function roster() {
 	};
 	const groupsHooks = {
 		before: {
-			get: [globalHooks.ifNotLocal(hooks.tokenIsActive), hooks.injectOriginToolIds, hooks.disableFilter],
+			get: [
+				globalHooks.ifNotLocal(hooks.tokenIsActive),
+				hooks.injectOriginToolIds,
+				excludeAttributesFromSanitization('roster/groups', 'username'),
+			],
 		},
 		after: {
 			get: hooks.groupContainsUser,
