@@ -247,6 +247,10 @@ const validateCounty = async (context) => {
 			throw new Error(`This school already have a county`);
 		}
 	}
+	// checks for empty value and deletes it from context
+	if (context && context.data && Object.keys(context.data).includes('county') && context.data.county === '') {
+		delete context.data.county;
+	}
 	return context;
 };
 
