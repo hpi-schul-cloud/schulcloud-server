@@ -3,10 +3,6 @@ const globalHooks = require('../../../hooks');
 const userUC = require('../uc/users.uc');
 
 class UserServiceV2 {
-	constructor(roleName) {
-		this.roleName = roleName;
-	}
-
 	async remove(id, params) {
 		return userUC.deleteUserUC(id, { ...params, app: this.app });
 	}

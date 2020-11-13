@@ -1,5 +1,5 @@
 const getUserAccount = async (userId, app) => {
-	const [account] = await app.service('accounts').find({
+	const [account] = await app.service('accountModel').find({
 		query: {
 			userId,
 			$limit: 1,
@@ -12,7 +12,7 @@ const getUserAccount = async (userId, app) => {
 const deleteUserAccount = async (userId, app) => {
 	const account = await getUserAccount(userId, app);
 	if (account && account._id) {
-		return app.service('accounts').remove(account._id);
+		return app.service('accountModel').remove(account._id);
 	}
 	return null;
 };
