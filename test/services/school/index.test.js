@@ -184,7 +184,7 @@ describe('school service', () => {
 		});
 	});
 
-	describe('patch schools', () => {
+	only('patch schools', () => {
 		it('administrator can patch his own school', async () => {
 			const school = await testObjects.createTestSchool({});
 			const admin = await testObjects.createTestUser({
@@ -395,7 +395,22 @@ describe('school service', () => {
 			}
 			expect(result2.officialSchoolNumber).to.be.equal(schoolNumber2);
 		});
-	});
+		it('should fail to update county if state does not have the provided county ', async () => {
+			const school = await testObjects.createTestSchool({});
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['administrator'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			try {
+				await app.service('/schools').patch(school.name, { county: '123' }, params);
+			} catch (err) {
+				expect(err).to.not.equal(undefined);
+				expect(err.message).to.include(`The state doesn't not have a matching county`);
+				expect(err.name).to.be.equal('Error');
+			}
+		});
 });
 
 describe('years service', () => {

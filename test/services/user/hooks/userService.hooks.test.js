@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const sinon = require('sinon');
 const assert = require('assert');
 
 const appPromise = require('../../../../src/app');
@@ -9,6 +10,7 @@ const {
 	removeStudentFromCourses,
 	removeStudentFromClasses,
 	generateRegistrationLink,
+	decorateUsers,
 } = require('../../../../src/services/user/hooks/userService');
 
 describe('removeStudentFromCourses', () => {
@@ -465,5 +467,31 @@ describe('checkUniqueEmail', () => {
 		} catch (error) {
 			assert.fail(`expected promise resolved, but error was '${error.message}'`);
 		}
+	});
+});
+
+describe('decorateUsers', () => {
+	const service = {
+		find: sinon.spy(),
+	};
+
+	// const serviceSpy = sinon.spy(service, 'find');
+	const hookMock = {
+		app: {
+			// eslint-disable-next-line no-unused-vars
+			service(url) {
+				return service;
+			},
+		},
+		result: {
+			constructor: {
+				name: '',
+			},
+		},
+	};
+
+	it('should call roles service exactly once', async () => {
+		await decorateUsers(hookMock);
+		assert(service.find.calledOnce);
 	});
 });
