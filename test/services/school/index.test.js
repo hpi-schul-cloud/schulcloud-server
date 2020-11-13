@@ -184,233 +184,235 @@ describe('school service', () => {
 		});
 	});
 
-	only('patch schools', () => {
-		it('administrator can patch his own school', async () => {
-			const school = await testObjects.createTestSchool({});
-			const admin = await testObjects.createTestUser({
-				schoolId: school._id,
-				roles: ['administrator'],
-			});
-			const params = await testObjects.generateRequestParamsFromUser(admin);
-
-			const result = await app.service('/schools').patch(school._id, { features: ['rocketChat'] }, params);
-			expect(result).to.not.be.undefined;
-			expect(result.features).to.include('rocketChat');
-		});
-
-		it('administrator can not patch a different school', async () => {
-			const usersSchool = await testObjects.createTestSchool({});
-			const otherSchool = await testObjects.createTestSchool({});
-			const admin = await testObjects.createTestUser({
-				schoolId: usersSchool._id,
-				roles: ['administrator'],
-			});
-			const params = await testObjects.generateRequestParamsFromUser(admin);
-
-			try {
-				await app.service('/schools').patch(otherSchool._id, { features: ['rocketChat'] }, params);
-				throw new Error('should have failed');
-			} catch (err) {
-				expect(err.message).to.not.equal('should have failed');
-				expect(err.code).to.equal(403);
-			}
-		});
-
-		it('superhero can patch any school', async () => {
-			const usersSchool = await testObjects.createTestSchool({});
-			const otherSchool = await testObjects.createTestSchool({});
-			const batman = await testObjects.createTestUser({
-				schoolId: usersSchool._id,
-				roles: ['superhero'],
-			});
-			const params = await testObjects.generateRequestParamsFromUser(batman);
-
-			const result = await app
-				.service('/schools')
-				.patch(otherSchool._id, { name: 'all strings are better with "BATMAN!" in it!' }, params);
-			expect(result).to.not.be.undefined;
-			expect(result.name).to.equal('all strings are better with "BATMAN!" in it!');
-		});
-
-		it('push as admin', async () => {
-			const school = await testObjects.createTestSchool({});
-			const admin = await testObjects.createTestUser({
-				schoolId: school._id,
-				roles: ['administrator'],
-			});
-			const params = await testObjects.generateRequestParamsFromUser(admin);
-
-			const body = { $push: { features: 'rocketChat' } };
-			const result = await app.service('/schools').patch(school._id, body, params);
-			expect(result).to.not.be.undefined;
-			expect(result.features).to.include('rocketChat');
-		});
-
-		it('unable without permissions', async () => {
-			const school = await testObjects.createTestSchool({});
-			const role = await testObjects.createTestRole({ name: 'noPermissions', permissions: [] });
-			const admin = await testObjects.createTestUser({
-				schoolId: school._id,
-				roles: [role.name],
-			});
-			const params = await testObjects.generateRequestParamsFromUser(admin);
-
-			const body = { $push: { features: 'rocketChat' } };
-			const result = await app.service('/schools').patch(school._id, body, params);
-			expect(result).to.not.be.undefined;
-			expect(result.features).to.not.include('rocketChat');
-		});
-
-		it('possible with SCHOOL_CHAT_MANAGE permissions', async () => {
-			const school = await testObjects.createTestSchool({});
-			const role = await testObjects.createTestRole({
-				name: 'chatPermissions',
-				permissions: ['SCHOOL_CHAT_MANAGE'],
-			});
-			const admin = await testObjects.createTestUser({
-				schoolId: school._id,
-				roles: [role.name],
-			});
-			const params = await testObjects.generateRequestParamsFromUser(admin);
-
-			const body = { $push: { features: 'rocketChat' } };
-			const result = await app.service('/schools').patch(school._id, body, params);
-			expect(result).to.not.be.undefined;
-			expect(result.features).to.include('rocketChat');
-		});
-
-		it(
-			'team creation by students should be updated according to environment setting' + ' without admin setting',
-			async () => {
+	'patch schools',
+		() => {
+			it('administrator can patch his own school', async () => {
 				const school = await testObjects.createTestSchool({});
+				const admin = await testObjects.createTestUser({
+					schoolId: school._id,
+					roles: ['administrator'],
+				});
+				const params = await testObjects.generateRequestParamsFromUser(admin);
 
-				Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
-				let result = await app.service('/schools').get(school._id);
-				expect(result.isTeamCreationByStudentsEnabled).to.be.true;
-
-				Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
-				result = await app.service('/schools').get(school._id);
-				expect(result.isTeamCreationByStudentsEnabled).to.be.false;
-
-				Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
-				result = await app.service('/schools').get(school._id);
-				expect(result.isTeamCreationByStudentsEnabled).to.be.false;
-
-				Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
-				result = await app.service('/schools').get(school._id);
-				expect(result.isTeamCreationByStudentsEnabled).to.be.true;
-			}
-		);
-
-		it(
-			'team creation by students should be updated according to ' + 'environment setting and enabled by admin',
-			async () => {
-				// school with enabled student team creation by admin
-				const school = await testObjects.createTestSchool({ enableStudentTeamCreation: true });
-				expect(school.enableStudentTeamCreation).to.be.true;
-
-				Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
-				let result = await app.service('/schools').get(school._id);
-				expect(result.isTeamCreationByStudentsEnabled).to.be.true;
-
-				Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
-				result = await app.service('/schools').get(school._id);
-				expect(result.isTeamCreationByStudentsEnabled).to.be.false;
-
-				Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
-				result = await app.service('/schools').get(school._id);
-				expect(result.isTeamCreationByStudentsEnabled).to.be.true;
-
-				Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
-				result = await app.service('/schools').get(school._id);
-				expect(result.isTeamCreationByStudentsEnabled).to.be.true;
-			}
-		);
-
-		it(
-			'team creation by students should be updated according to ' + 'environment setting and disabled by admin',
-			async () => {
-				// school with enabled student team creation by admin
-				const school = await testObjects.createTestSchool({ enableStudentTeamCreation: false });
-				expect(school.enableStudentTeamCreation).to.be.false;
-
-				Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
-				let result = await app.service('/schools').get(school._id);
-				expect(result.isTeamCreationByStudentsEnabled).to.be.true;
-
-				Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
-				result = await app.service('/schools').get(school._id);
-				expect(result.isTeamCreationByStudentsEnabled).to.be.false;
-
-				Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
-				result = await app.service('/schools').get(school._id);
-				expect(result.isTeamCreationByStudentsEnabled).to.be.false;
-
-				Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
-				result = await app.service('/schools').get(school._id);
-				expect(result.isTeamCreationByStudentsEnabled).to.be.false;
-			}
-		);
-		it('should fail to update officialSchoolNumber with wrong format', async () => {
-			const school = await testObjects.createTestSchool({});
-			const admin = await testObjects.createTestUser({
-				schoolId: school._id,
-				roles: ['administrator'],
+				const result = await app.service('/schools').patch(school._id, { features: ['rocketChat'] }, params);
+				expect(result).to.not.be.undefined;
+				expect(result.features).to.include('rocketChat');
 			});
-			const params = await testObjects.generateRequestParamsFromUser(admin);
 
-			try {
-				await app.service('/schools').patch(school._id, { officialSchoolNumber: 'foo' }, params);
-			} catch (err) {
-				expect(err).to.not.equal(undefined);
-				expect(err.message).to.include('School number is incorrect');
-				expect(err.name).to.be.equal('Error');
-			}
-		});
-		it('should succeed to update officialSchoolNumber with correct format', async () => {
-			const school = await testObjects.createTestSchool({});
-			const admin = await testObjects.createTestUser({
-				schoolId: school._id,
-				roles: ['administrator'],
+			it('administrator can not patch a different school', async () => {
+				const usersSchool = await testObjects.createTestSchool({});
+				const otherSchool = await testObjects.createTestSchool({});
+				const admin = await testObjects.createTestUser({
+					schoolId: usersSchool._id,
+					roles: ['administrator'],
+				});
+				const params = await testObjects.generateRequestParamsFromUser(admin);
+
+				try {
+					await app.service('/schools').patch(otherSchool._id, { features: ['rocketChat'] }, params);
+					throw new Error('should have failed');
+				} catch (err) {
+					expect(err.message).to.not.equal('should have failed');
+					expect(err.code).to.equal(403);
+				}
 			});
-			const params = await testObjects.generateRequestParamsFromUser(admin);
 
-			const schoolNumber = 'BA-13372';
-			let result;
+			it('superhero can patch any school', async () => {
+				const usersSchool = await testObjects.createTestSchool({});
+				const otherSchool = await testObjects.createTestSchool({});
+				const batman = await testObjects.createTestUser({
+					schoolId: usersSchool._id,
+					roles: ['superhero'],
+				});
+				const params = await testObjects.generateRequestParamsFromUser(batman);
 
-			try {
-				result = await app.service('/schools').patch(school._id, { officialSchoolNumber: schoolNumber }, params);
-			} catch (err) {
-				throw new Error('should not have failed', err);
-			}
-			expect(result.officialSchoolNumber).to.be.equal(schoolNumber);
-
-			const schoolNumber2 = '13372';
-			let result2;
-
-			try {
-				result2 = await app.service('/schools').patch(school._id, { officialSchoolNumber: schoolNumber2 }, params);
-			} catch (err) {
-				throw new Error('should not have failed', err);
-			}
-			expect(result2.officialSchoolNumber).to.be.equal(schoolNumber2);
-		});
-		it('should fail to update county if state does not have the provided county ', async () => {
-			const school = await testObjects.createTestSchool({});
-			const admin = await testObjects.createTestUser({
-				schoolId: school._id,
-				roles: ['administrator'],
+				const result = await app
+					.service('/schools')
+					.patch(otherSchool._id, { name: 'all strings are better with "BATMAN!" in it!' }, params);
+				expect(result).to.not.be.undefined;
+				expect(result.name).to.equal('all strings are better with "BATMAN!" in it!');
 			});
-			const params = await testObjects.generateRequestParamsFromUser(admin);
 
-			try {
-				await app.service('/schools').patch(school.name, { county: '123' }, params);
-			} catch (err) {
-				expect(err).to.not.equal(undefined);
-				expect(err.message).to.include(`The state doesn't not have a matching county`);
-				expect(err.name).to.be.equal('Error');
-			}
-		});
+			it('push as admin', async () => {
+				const school = await testObjects.createTestSchool({});
+				const admin = await testObjects.createTestUser({
+					schoolId: school._id,
+					roles: ['administrator'],
+				});
+				const params = await testObjects.generateRequestParamsFromUser(admin);
+
+				const body = { $push: { features: 'rocketChat' } };
+				const result = await app.service('/schools').patch(school._id, body, params);
+				expect(result).to.not.be.undefined;
+				expect(result.features).to.include('rocketChat');
+			});
+
+			it('unable without permissions', async () => {
+				const school = await testObjects.createTestSchool({});
+				const role = await testObjects.createTestRole({ name: 'noPermissions', permissions: [] });
+				const admin = await testObjects.createTestUser({
+					schoolId: school._id,
+					roles: [role.name],
+				});
+				const params = await testObjects.generateRequestParamsFromUser(admin);
+
+				const body = { $push: { features: 'rocketChat' } };
+				const result = await app.service('/schools').patch(school._id, body, params);
+				expect(result).to.not.be.undefined;
+				expect(result.features).to.not.include('rocketChat');
+			});
+
+			it('possible with SCHOOL_CHAT_MANAGE permissions', async () => {
+				const school = await testObjects.createTestSchool({});
+				const role = await testObjects.createTestRole({
+					name: 'chatPermissions',
+					permissions: ['SCHOOL_CHAT_MANAGE'],
+				});
+				const admin = await testObjects.createTestUser({
+					schoolId: school._id,
+					roles: [role.name],
+				});
+				const params = await testObjects.generateRequestParamsFromUser(admin);
+
+				const body = { $push: { features: 'rocketChat' } };
+				const result = await app.service('/schools').patch(school._id, body, params);
+				expect(result).to.not.be.undefined;
+				expect(result.features).to.include('rocketChat');
+			});
+
+			it(
+				'team creation by students should be updated according to environment setting' + ' without admin setting',
+				async () => {
+					const school = await testObjects.createTestSchool({});
+
+					Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
+					let result = await app.service('/schools').get(school._id);
+					expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+
+					Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
+					result = await app.service('/schools').get(school._id);
+					expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+
+					Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
+					result = await app.service('/schools').get(school._id);
+					expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+
+					Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
+					result = await app.service('/schools').get(school._id);
+					expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+				}
+			);
+
+			it(
+				'team creation by students should be updated according to ' + 'environment setting and enabled by admin',
+				async () => {
+					// school with enabled student team creation by admin
+					const school = await testObjects.createTestSchool({ enableStudentTeamCreation: true });
+					expect(school.enableStudentTeamCreation).to.be.true;
+
+					Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
+					let result = await app.service('/schools').get(school._id);
+					expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+
+					Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
+					result = await app.service('/schools').get(school._id);
+					expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+
+					Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
+					result = await app.service('/schools').get(school._id);
+					expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+
+					Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
+					result = await app.service('/schools').get(school._id);
+					expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+				}
+			);
+
+			it(
+				'team creation by students should be updated according to ' + 'environment setting and disabled by admin',
+				async () => {
+					// school with enabled student team creation by admin
+					const school = await testObjects.createTestSchool({ enableStudentTeamCreation: false });
+					expect(school.enableStudentTeamCreation).to.be.false;
+
+					Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
+					let result = await app.service('/schools').get(school._id);
+					expect(result.isTeamCreationByStudentsEnabled).to.be.true;
+
+					Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
+					result = await app.service('/schools').get(school._id);
+					expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+
+					Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
+					result = await app.service('/schools').get(school._id);
+					expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+
+					Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
+					result = await app.service('/schools').get(school._id);
+					expect(result.isTeamCreationByStudentsEnabled).to.be.false;
+				}
+			);
+			it('should fail to update officialSchoolNumber with wrong format', async () => {
+				const school = await testObjects.createTestSchool({});
+				const admin = await testObjects.createTestUser({
+					schoolId: school._id,
+					roles: ['administrator'],
+				});
+				const params = await testObjects.generateRequestParamsFromUser(admin);
+
+				try {
+					await app.service('/schools').patch(school._id, { officialSchoolNumber: 'foo' }, params);
+				} catch (err) {
+					expect(err).to.not.equal(undefined);
+					expect(err.message).to.include('School number is incorrect');
+					expect(err.name).to.be.equal('Error');
+				}
+			});
+			it('should succeed to update officialSchoolNumber with correct format', async () => {
+				const school = await testObjects.createTestSchool({});
+				const admin = await testObjects.createTestUser({
+					schoolId: school._id,
+					roles: ['administrator'],
+				});
+				const params = await testObjects.generateRequestParamsFromUser(admin);
+
+				const schoolNumber = 'BA-13372';
+				let result;
+
+				try {
+					result = await app.service('/schools').patch(school._id, { officialSchoolNumber: schoolNumber }, params);
+				} catch (err) {
+					throw new Error('should not have failed', err);
+				}
+				expect(result.officialSchoolNumber).to.be.equal(schoolNumber);
+
+				const schoolNumber2 = '13372';
+				let result2;
+
+				try {
+					result2 = await app.service('/schools').patch(school._id, { officialSchoolNumber: schoolNumber2 }, params);
+				} catch (err) {
+					throw new Error('should not have failed', err);
+				}
+				expect(result2.officialSchoolNumber).to.be.equal(schoolNumber2);
+			});
+			it('should fail to update county if state does not have the provided county ', async () => {
+				const school = await testObjects.createTestSchool({});
+				const admin = await testObjects.createTestUser({
+					schoolId: school._id,
+					roles: ['administrator'],
+				});
+				const params = await testObjects.generateRequestParamsFromUser(admin);
+
+				try {
+					await app.service('/schools').patch(school.name, { county: '123' }, params);
+				} catch (err) {
+					expect(err).to.not.equal(undefined);
+					expect(err.message).to.include(`The state doesn't not have a matching county`);
+					expect(err.name).to.be.equal('Error');
+				}
+			});
+		};
 });
 
 describe('years service', () => {
