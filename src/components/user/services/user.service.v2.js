@@ -4,23 +4,21 @@ const { Forbidden, BadRequest } = reqlib('src/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
-const UserUc = require('../uc/users.uc');
+const userUC = require('../uc/users.uc');
 
 class UserServiceV2 {
+	constructor(roleName) {
+		this.roleName = roleName;
+	}
+
 	async remove(id, params) {
-		const { query } = params;
-		return this.userUC.deleteUser(id || query.userId);
+		return userUC.deleteUserUC(id, { ...params, app: this.app });
 	}
 
 	async setup(app) {
 		this.app = app;
-		this.userUC = new UserUc(app);
 	}
 }
-
-const userServiceV2 = new UserServiceV2({
-	// default pagination and other options
-});
 
 const hasPermission = async (context) => {
 	const [
@@ -87,17 +85,12 @@ const restrictToSameSchool = async (context) => {
 	throw new BadRequest('The request query should include a valid userId');
 };
 
-const userServiceV2Hooks = {
+const adminHookGenerator = (kind) => ({
 	before: {
-		all: [
-			authenticate('jwt'),
-			hasPermission,
-			// TODO: Seperate routes and checks for student, and teacher, and admin deletion
-			// globalHooks.hasPermission(['STUDENT_DELETE', 'TEACHER_DELETE']),
-			restrictToSameSchool,
-		],
+		all: [authenticate('jwt')],
+		remove: [globalHooks.hasSchoolPermission(`${kind}_DELETE`)],
 	},
 	after: {},
-};
+});
 
-module.exports = { userServiceV2, userServiceV2Hooks };
+module.exports = { UserServiceV2, adminHookGenerator };

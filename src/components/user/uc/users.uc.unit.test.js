@@ -89,14 +89,6 @@ describe('users usecase', () => {
 		await server.close();
 	});
 
-	describe('user replace with tombstone orchestrator', () => {
-		it('when the function is called, then it returns (replace with useful test)', async () => {
-			const user = await testObjects.createTestUser();
-			const result = await userUC.replaceUserWithTombstoneUC(user._id);
-			expect(result).to.deep.equal({ success: true });
-		});
-	});
-
 	describe('user delete orchestrator', () => {
 		it('should successfully mark user for deletion', async () => {
 			// act

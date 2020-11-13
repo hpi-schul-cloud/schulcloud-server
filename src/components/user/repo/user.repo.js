@@ -1,23 +1,22 @@
 const { userModel: User } = require('../../../services/user/model');
 
-module.exports = class UserRepo {
-	setup(app) {
-		this.userService = app.service('users');
-	}
+const getUser = async (id, app) => {
+	return app.service('users').get(id);
+};
 
-	async getUser(id) {
-		return this.userService.get(id);
-	}
+const replaceUserWithTombstone = async (id, replaceData = {}, app) => {
+	const user = await getUser(id, app);
 
-	async replaceUserWithTombstone(id, replaceData = {}) {
-		const user = await this.getUser(id);
+	return User.replaceOne(
+		{ _id: user._id },
+		{
+			...replaceData,
+			deletedAt: new Date(),
+		}
+	);
+};
 
-		return User.replaceOne(
-			{ _id: user._id },
-			{
-				...replaceData,
-				deletedAt: new Date(),
-			}
-		);
-	}
-}
+module.exports = {
+	getUser,
+	replaceUserWithTombstone,
+};

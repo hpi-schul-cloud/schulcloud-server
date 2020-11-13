@@ -35,7 +35,7 @@ describe('user service v2', function test() {
 			const token = await getAdminToken(schoolId);
 			const request = chai
 				.request(app)
-				.delete(`/users/v2/users/${user._id.toString()}`)
+				.delete(`/users/v2/admin/students/${user._id.toString()}`)
 				.query({ userId: user._id.toString() })
 				.set('Accept', 'application/json')
 				.set('Authorization', token)
@@ -53,7 +53,7 @@ describe('user service v2', function test() {
 			const token = await testObjects.generateJWTFromUser(teacher);
 			const request = chai
 				.request(app)
-				.delete(`/users/v2/users/${user._id.toString()}`)
+				.delete(`/users/v2/admin/students/${user._id.toString()}`)
 				.query({ userId: user._id.toString() })
 				.set('Accept', 'application/json')
 				.set('Authorization', token)
@@ -68,14 +68,13 @@ describe('user service v2', function test() {
 			const token = await getAdminToken(schoolId);
 			const request = chai
 				.request(app)
-				.delete(`/users/v2/users/${notFoundId.toString()}`)
+				.delete(`/users/v2/admin/students/${notFoundId.toString()}`)
 				.query({ userId: notFoundId.toString() })
 				.set('Accept', 'application/json')
 				.set('Authorization', token)
 				.set('Content-type', 'application/json');
 			const response = await request.send();
-			// expect(response.status).to.equal(404);
-			expect(response.status).to.equal(500);
+			expect(response.status).to.equal(404);
 		});
 
 		it('Fails when user from different deletes a student', async () => {
@@ -85,7 +84,7 @@ describe('user service v2', function test() {
 			const token = await getAdminToken(otherSchoolId);
 			const request = chai
 				.request(app)
-				.delete(`/users/v2/users/${user._id.toString()}`)
+				.delete(`/users/v2/admin/students/${user._id.toString()}`)
 				.query({ userId: user._id.toString() })
 				.set('Accept', 'application/json')
 				.set('Authorization', token)
