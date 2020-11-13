@@ -1,6 +1,11 @@
-const { userServiceV2, userServiceV2Hooks } = require('./user.service.v2');
+const userServiceV2 = require('./user.service.v2');
 
 module.exports = (app) => {
-	app.use('users/v2/users/', userServiceV2);
-	app.service('users/v2/users/').hooks(userServiceV2Hooks);
+	const adminStudentsRoute = '/users/v2/admin/student';
+	app.use(adminStudentsRoute, new userServiceV2.UserServiceV2('student'));
+	app.service(adminStudentsRoute).hooks(userServiceV2.adminHookGenerator('STUDENT'));
+
+	const adminTeachersRoute = '/users/v2/admin/teacher';
+	app.use(adminTeachersRoute, new userServiceV2.UserServiceV2('teacher'));
+	app.service(adminTeachersRoute).hooks(userServiceV2.adminHookGenerator('TEACHER'));
 };

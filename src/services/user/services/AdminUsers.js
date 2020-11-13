@@ -292,7 +292,9 @@ class AdminUsers {
 			throw new Forbidden('You cannot remove users from other schools.');
 		}
 
-		return Promise.all(_ids.map((userId) => this.app.service('users/v2/users').remove(userId, params)));
+		return Promise.all(
+			_ids.map((userId) => this.app.service(`users/v2/admin/${this.roleName}`).remove(userId, params))
+		);
 	}
 
 	async setup(app) {

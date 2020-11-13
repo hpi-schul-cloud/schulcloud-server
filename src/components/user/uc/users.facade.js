@@ -1,17 +1,13 @@
-const UserUc = require('./users.uc');
+const userUc = require('./users.uc');
 const disallow = require('../../../common/disallow.hook');
 
 class UserFacade {
 	setup(app) {
-		this.userUc = new UserUc(app);
+		this.app = app;
 	}
 
-	async deleteUser(id) {
-		return this.userUc.deleteUserUC(id);
-	}
-
-	async replaceUserWithTombstone(id) {
-		return this.userUc.replaceUserWithTombstoneUC(id);
+	async deleteUser(id, params) {
+		return userUc.deleteUserUC(id, { ...params, app: this.app });
 	}
 }
 

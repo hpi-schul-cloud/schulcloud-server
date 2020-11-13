@@ -1,24 +1,38 @@
 const sinon = require('sinon');
-
+const { ObjectId } = require('mongoose').Types;
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../app');
-const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
-const {GeneralError, NotFound} = require('../../../errors');
-const UserUc = require('../uc/users.uc');
+const userUC = require('./users.uc');
+
+const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
 const USER_ID = 'USER_ID';
+const CURRENT_USER_ID = 'CURRENT_USER_ID';
+const CURRENT_SCHOOL_ID = new ObjectId();
 
-const createTestUser = (userId) => {
+const createCurrentUser = (userId = CURRENT_USER_ID) => {
+	return {
+		_id: userId,
+		userId,
+		firstName: 'Admin',
+		lastName: 'Admin',
+		email: `admin@test.de`,
+		schoolId: CURRENT_SCHOOL_ID,
+		roles: [],
+	};
+};
+
+const createTestUser = (userId = USER_ID) => {
 	return {
 		_id: userId,
 		firstName: 'Max',
 		lastName: 'Mustermann',
 		email: `delete_me@test.de`,
-		schoolId: 'SCHOOL_ID',
+		schoolId: CURRENT_SCHOOL_ID,
 		roles: [],
 	};
 };
@@ -47,27 +61,19 @@ let createUserTrashbinStub;
 describe('users usecase', () => {
 	let app;
 	let server;
-	let userUC;
-	let userRepo;
-	let accountRepo;
-	let trashbinRepo;
 
 	before(async () => {
 		app = await appPromise;
 		server = await app.listen(0);
-		userUC = new UserUc(app);
 
 		const user = createTestUser(USER_ID);
 		const account = createTestAccount(user);
 		const trashbin = createTestTrashbin(user._id, { user, account });
 
-		userRepo = app.service('userRepo');
-		accountRepo = app.service('accountRepo');
-		trashbinRepo = app.service('trashbinRepo');
-
 		// init stubs
 		getUserStub = sinon.stub(userRepo, 'getUser');
 		getUserStub.withArgs(USER_ID).returns(user);
+		getUserStub.withArgs(CURRENT_USER_ID).returns(user);
 		sinon.stub(userRepo, 'replaceUserWithTombstone');
 
 		getUserAccountStub = sinon.stub(accountRepo, 'getUserAccount');
@@ -89,18 +95,11 @@ describe('users usecase', () => {
 		await server.close();
 	});
 
-	describe('user replace with tombstone orchestrator', () => {
-		it('when the function is called, then it returns (replace with useful test)', async () => {
-			const user = await testObjects.createTestUser();
-			const result = await userUC.replaceUserWithTombstoneUC(user._id);
-			expect(result).to.deep.equal({ success: true });
-		});
-	});
-
 	describe('user delete orchestrator', () => {
 		it('should successfully mark user for deletion', async () => {
 			// act
-			const result = await userUC.deleteUserUC(USER_ID);
+			const currentUser = createCurrentUser();
+			const result = await userUC.deleteUserUC(USER_ID, { account: currentUser, app });
 
 			expect(result.userId).to.deep.equal(USER_ID);
 		});
@@ -123,7 +122,8 @@ describe('users usecase', () => {
 			getUserAccountStub.withArgs(userId).returns(account);
 			createUserTrashbinStub.withArgs(userId);
 
-			expect(() => userUC.deleteUserUC(userId), "if trashbin couldn't be created it should fail").to.throw;
+			expect(() => userUC.deleteUserUC(userId, { account, app }), "if trashbin couldn't be created it should fail").to
+				.throw;
 		});
 	});
 });
