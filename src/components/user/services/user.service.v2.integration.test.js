@@ -35,7 +35,7 @@ describe('user service v2', function test() {
 			const token = await getAdminToken(schoolId);
 			const request = chai
 				.request(app)
-				.delete(`/users/v2/admin/students/${user._id.toString()}`)
+				.delete(`/users/v2/admin/student/${user._id.toString()}`)
 				.query({ userId: user._id.toString() })
 				.set('Accept', 'application/json')
 				.set('Authorization', token)
@@ -53,7 +53,7 @@ describe('user service v2', function test() {
 			const token = await testObjects.generateJWTFromUser(teacher);
 			const request = chai
 				.request(app)
-				.delete(`/users/v2/admin/students/${user._id.toString()}`)
+				.delete(`/users/v2/admin/student/${user._id.toString()}`)
 				.query({ userId: user._id.toString() })
 				.set('Accept', 'application/json')
 				.set('Authorization', token)
@@ -68,7 +68,7 @@ describe('user service v2', function test() {
 			const token = await getAdminToken(schoolId);
 			const request = chai
 				.request(app)
-				.delete(`/users/v2/admin/students/${notFoundId.toString()}`)
+				.delete(`/users/v2/admin/student/${notFoundId.toString()}`)
 				.query({ userId: notFoundId.toString() })
 				.set('Accept', 'application/json')
 				.set('Authorization', token)
@@ -84,7 +84,7 @@ describe('user service v2', function test() {
 			const token = await getAdminToken(otherSchoolId);
 			const request = chai
 				.request(app)
-				.delete(`/users/v2/admin/students/${user._id.toString()}`)
+				.delete(`/users/v2/admin/student/${user._id.toString()}`)
 				.query({ userId: user._id.toString() })
 				.set('Accept', 'application/json')
 				.set('Authorization', token)

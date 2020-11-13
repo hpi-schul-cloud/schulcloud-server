@@ -1,7 +1,7 @@
 const { ObjectId } = require('mongoose').Types;
-
-const { GeneralError, NotFound } = require('../../../errors');
+const { GeneralError, NotFound, Forbidden, BadRequest } = require('../../../errors');
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const getUserData = async (id, app) => {
 	const data = {};
@@ -46,8 +46,21 @@ const replaceUserWithTombstone = async (id, app) => {
 	return { success: true };
 };
 
-const deleteUserUC = async (id, params) => {
-	const { app } = params;
+const restrictToSameSchool = async (id, account, app) => {
+	if (id) {
+		const { schoolId: currentUserSchoolId } = await app.service('usersModel').get(account.userId);
+		const { schoolId: requestedUserSchoolId } = await app.service('usersModel').get(id);
+
+		if (!equalIds(currentUserSchoolId, requestedUserSchoolId)) {
+			throw new Forbidden('You have no access.');
+		}
+		return true;
+	}
+	throw new BadRequest('The request query should include a valid userId');
+};
+
+const deleteUserUC = async (id, { account, app }) => {
+	await restrictToSameSchool(id, account, app);
 
 	const data = await getUserData(id, app);
 
