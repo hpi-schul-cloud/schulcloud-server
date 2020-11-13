@@ -96,7 +96,7 @@ describe('qrRegistrationLinks service tests', () => {
 			const testUser1 = await testObjects.createTestUser({ roles: 'student', schoolId, firstName: 'register1' });
 			const testUser2 = await testObjects.createTestUser({ roles: 'student', schoolId, firstName: 'register2' });
 			const userRequestAuthentication = await generateRequestParamsFromUser(callingUser);
-			const res = await postRegistrationLinks(userRequestAuthentication, [], 'student', 'exclusive')
+			const res = await postRegistrationLinks(userRequestAuthentication, [], 'student', 'exclusive');
 			expect(res.length).to.equal(2);
 			expect(res.filter((result) => result.firstName === testUser1.firstName).length).to.equal(1);
 			expect(res.filter((result) => result.firstName === testUser2.firstName).length).to.equal(1);

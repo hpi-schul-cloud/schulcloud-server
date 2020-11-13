@@ -34,7 +34,7 @@ describe('qrRegistrationLinksLegacyClient service tests', () => {
 			const userRequestAuthentication = await generateRequestParamsFromUser(testUser);
 			try {
 				await createRegistrationLinks(userRequestAuthentication, testUser._id);
-				expect.fail('Forbidden expected')
+				expect.fail('Forbidden expected');
 			} catch (err) {
 				expect(err.code).to.equal(403);
 				expect(err.name).to.equal('Forbidden');
@@ -54,7 +54,7 @@ describe('qrRegistrationLinksLegacyClient service tests', () => {
 
 			try {
 				await createRegistrationLinks(userRequestAuthentication, testClass._id);
-				expect.fail('BadRequest expected')
+				expect.fail('BadRequest expected');
 			} catch (err) {
 				expect(err.code).to.equal(400);
 				expect(err.name).to.equal('BadRequest');
