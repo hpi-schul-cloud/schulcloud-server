@@ -26,6 +26,14 @@ const mapRoleFilterQuery = (hook) => {
 
 	return Promise.resolve(hook);
 };
+const getProtectedRoles = (hook) =>
+	hook.app.service('/roles').find({
+		// load protected roles
+		query: {
+			// TODO: cache these
+			name: ['teacher', 'admin'],
+		},
+	});
 
 const checkUnique = (hook) => {
 	const userService = hook.service;
@@ -295,40 +303,30 @@ const securePatching = async (context) => {
  * @param app {object} - the global feathers-app
  * @returns {string} - a display name of the given user
  */
-const getDisplayName = (user, app) =>
-	app
-		.service('/roles')
-		.find({
-			// load protected roles
-			query: {
-				// TODO: cache these
-				name: ['teacher', 'admin'],
-			},
-		})
-		.then((protectedRoles) => {
-			const protectedRoleIds = (protectedRoles.data || []).map((role) => role._id);
-			const isProtectedUser = protectedRoleIds.find((role) => (user.roles || []).includes(role));
+const getDisplayName = (user, protectedRoles) => {
+	const protectedRoleIds = (protectedRoles.data || []).map((role) => role._id);
+	const isProtectedUser = protectedRoleIds.find((role) => (user.roles || []).includes(role));
 
-			user.age = getAge(user.birthday);
+	user.age = getAge(user.birthday);
 
-			if (isProtectedUser) {
-				return user.lastName ? user.lastName : user._id;
-			}
-			return user.lastName ? `${user.firstName} ${user.lastName}` : user._id;
-		});
+	if (isProtectedUser) {
+		return user.lastName ? user.lastName : user._id;
+	}
+	return user.lastName ? `${user.firstName} ${user.lastName}` : user._id;
+};
 
 /**
  *
  * @param hook {object} - the hook of the server-request
  * @returns {object} - the hook with the decorated user
  */
-const decorateUser = (hook) =>
-	getDisplayName(hook.result, hook.app)
-		.then((displayName) => {
-			hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
-			hook.result.displayName = displayName;
-		})
-		.then(() => Promise.resolve(hook));
+const decorateUser = async (hook) => {
+	const protectedRoles = await getProtectedRoles(hook);
+	const displayName = getDisplayName(hook.result, protectedRoles);
+	hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
+	hook.result.displayName = displayName;
+	return hook;
+};
 
 /**
  *
@@ -375,19 +373,15 @@ const decorateAvatar = (hook) => {
  * @param hook {object} - the hook of the server-request
  * @returns {object} - the hook with the decorated users
  */
-const decorateUsers = (hook) => {
+const decorateUsers = async (hook) => {
 	hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
-	const userPromises = (hook.result.data || []).map((user) =>
-		getDisplayName(user, hook.app).then((displayName) => {
-			user.displayName = displayName;
-			return user;
-		})
-	);
-
-	return Promise.all(userPromises).then((users) => {
-		hook.result.data = users;
-		return Promise.resolve(hook);
+	const protectedRoles = await getProtectedRoles(hook);
+	const users = (hook.result.data || []).map((user) => {
+		user.displayName = getDisplayName(user, protectedRoles);
+		return user;
 	});
+	hook.result.data = users;
+	return hook;
 };
 
 const handleClassId = (hook) => {
@@ -567,7 +561,7 @@ const sendRegistrationLink = async (context) => {
 };
 
 const filterResult = async (context) => {
-	const userCallingHimself = ObjectId.equal(context.id, context.params.account.userId);
+	const userCallingHimself = context.id && ObjectId.equal(context.id, context.params.account.userId);
 	const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
 	if (userCallingHimself || userIsSuperhero) {
 		return context;
