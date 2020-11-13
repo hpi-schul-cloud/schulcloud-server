@@ -222,9 +222,7 @@ const validateSchoolNumber = (context) => {
 
 // school County
 const validateCounty = async (context) => {
-	console.log(context.data.county, 'context.data.county');
 	if (context && context.data && context.data.county) {
-		console.log('should not be here');
 		const schools = await context.app.service('schools').find({
 			query: {
 				name: context.data.name,
