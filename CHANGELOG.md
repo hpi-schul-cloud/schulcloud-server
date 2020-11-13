@@ -31,6 +31,7 @@ determine how many system/school syncers will be run in parallel (at most) durin
 - SC-4667 - Only request and compare LDAP entities that have changed since the last sync (using operational attribute modifyTimestamp with fallback)
 - SC-4667 - Add optional `forceFullSync` option (as get param or json payload) to force a full LDAP sync
 - SC-7499 - add API Specification for public services
+- SC-7571 - solved performance issues - bulk QR-code generation 
 - BF-282 - LTI 1.3 Support
 
 ### Changed
