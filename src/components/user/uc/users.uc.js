@@ -48,8 +48,8 @@ const replaceUserWithTombstone = async (id, app) => {
 
 const restrictToSameSchool = async (id, account, app) => {
 	if (id) {
-		const { schoolId: currentUserSchoolId } = await app.service('usersModel').get(account.userId);
-		const { schoolId: requestedUserSchoolId } = await app.service('usersModel').get(id);
+		const { schoolId: currentUserSchoolId } = await userRepo.getUser(account.userId, app);
+		const { schoolId: requestedUserSchoolId } = await userRepo.getUser(id, app);
 
 		if (!equalIds(currentUserSchoolId, requestedUserSchoolId)) {
 			throw new Forbidden('You have no access.');
