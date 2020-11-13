@@ -6,6 +6,9 @@ const maxDeep = 12;
 const keys = ['content', 'text', 'comment', 'gradeComment', 'description'];
 const paths = ['lessons', 'news', 'newsModel', 'homework', 'submissions'];
 const saveKeys = ['password', 'secret'];
+const safePathKeys = {
+	'tools/sign/lti13': 'name',
+};
 const allowedTags = [
 	'h1',
 	'h2',
@@ -144,7 +147,11 @@ const sanitizeDeep = (data, path, depth = 0, safeAttributes = []) => {
 		Object.entries(data).forEach(([key, value]) => {
 			if (typeof value === 'string') {
 				// ignore values completely
-				if (saveKeys.includes(key) || safeAttributes.includes(key)) {
+				if (
+					saveKeys.includes(key) ||
+					safeAttributes.includes(key) ||
+					(path in safePathKeys && safePathKeys[path].includes(key))
+				) {
 					return data; // TODO:  why not over keys in allowedHtmlByPathAndKeys
 				}
 				data[key] = sanitize(value, allowedHtmlByPathAndKeys(path, key));

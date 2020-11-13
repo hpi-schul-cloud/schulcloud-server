@@ -3,6 +3,7 @@ const { disallow } = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 const oauth2 = require('../../oauth2/hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { excludeAttributesFromSanitization } = require('../../../hooks/sanitizationExceptions');
 
 const toArray = (data) => (Array.isArray(data) ? data : [data]);
 
@@ -96,7 +97,12 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [createMissingPseudonyms, globalHooks.ifNotLocal(filterValidUsers), populateUsername],
+	find: [
+		createMissingPseudonyms,
+		globalHooks.ifNotLocal(filterValidUsers),
+		populateUsername,
+		excludeAttributesFromSanitization('pseudonym', 'iframe'),
+	],
 	get: [],
 	create: [],
 	update: [],

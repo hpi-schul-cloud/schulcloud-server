@@ -95,7 +95,6 @@ module.exports = function () {
 
 	app.use('/tools/sign/lti13', {
 		create(data) {
-			data.request.name = decodeURI(data.request.name);
 			return Promise.resolve(jwt.sign(data.request, fs.readFileSync('private_key.pem'), { algorithm: 'RS256' }));
 		},
 	});
