@@ -225,7 +225,7 @@ const validateCounty = async (context) => {
 	if (context && context.data && context.data.county) {
 		const schools = await context.app.service('schools').find({
 			query: {
-				name: context.data.name,
+				_id: context.id,
 				$populate: 'federalState',
 				$limit: 1,
 			},
