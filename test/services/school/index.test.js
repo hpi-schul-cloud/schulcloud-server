@@ -184,8 +184,7 @@ describe('school service', () => {
 		});
 	});
 
-	'patch schools',
-		() => {
+	describe('patch schools', () => {
 			it('administrator can patch his own school', async () => {
 				const school = await testObjects.createTestSchool({});
 				const admin = await testObjects.createTestUser({
