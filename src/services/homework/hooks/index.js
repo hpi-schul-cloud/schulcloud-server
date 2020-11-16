@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
-const errors = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, GeneralError, NotFound } = reqlib('src/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
 const logger = require('../../../logger');
 
@@ -96,7 +98,7 @@ const hasViewPermissionAfter = (hook) => {
 	} else {
 		// check if it is a single homework AND user has view permission
 		if (data.schoolId != undefined && !hasPermission(data)) {
-			return Promise.reject(new errors.Forbidden("You don't have permissions!"));
+			return Promise.reject(new Forbidden("You don't have permissions!"));
 		}
 	}
 	hook.result.data ? (hook.result.data = data) : (hook.result = data);
@@ -217,21 +219,21 @@ const hasPatchPermission = (hook) => {
 				const addsOnlySelf = addedStudents.length === 1 && equalIds(addedStudents[0], hook.params.account.userId);
 
 				if (removesOnlySelf || addsOnlySelf) {
-					return Promise.resolve(hook);
+					return hook;
 				}
 			}
 
 			// if user is a student of that course and the only
 			// difference of in the archived array is the current student it, let it pass.
 			if (isTeacher(hook.params.account.userId, homework)) {
-				return Promise.resolve(hook);
+				return hook;
 			}
-			return Promise.reject(new errors.Forbidden());
+			throw new Forbidden();
 		})
 		.catch((err) => {
-			logger.warning(err);
-			return Promise.reject(
-				new errors.GeneralError({ message: "[500 INTERNAL ERROR] - can't reach homework service @isTeacher function" })
+			throw new GeneralError(
+				{ message: "[500 INTERNAL ERROR] - can't reach homework service @isTeacher function" },
+				err
 			);
 		});
 };
@@ -256,13 +258,13 @@ const hasCreatePermission = async (context) => {
 			course.userIds.some((id) => equalIds(id, userId)) ||
 			course.teacherIds.some((id) => equalIds(id, userId)) ||
 			course.substitutionIds.some((id) => equalIds(id, userId));
-		if (!userInCourse) throw new errors.NotFound('course not found');
+		if (!userInCourse) throw new NotFound('course not found');
 	}
 
 	if (data.lessonId) {
 		const lesson = await context.app.service('lessons').get(data.lessonId);
 		if (!(data.courseId && equalIds(lesson.courseId, data.courseId))) {
-			throw new errors.NotFound('lesson not found. did you forget to pass the correct course?');
+			throw new NotFound('lesson not found. did you forget to pass the correct course?');
 		}
 	}
 	context.data = data;

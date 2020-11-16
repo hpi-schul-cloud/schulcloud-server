@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [25.2.0]
+
+### Added
+
+- SC-7049 - Added unit tests for Merlin Service
+- SC-7157 - add feature flag for Merlin feature with fallback
+- SC-6567 - add new application errros
+- SC-6766 - Added ESLint rules with Promise rules
+- SC-6830 - Added hook to parse request to arrays when > 20 users are requested in adminUsers service
+- SC-6769 - Introduce API validation module
+- SC-6769 - API validation for users/admin routes
+- SC-6510 - Added Merlin Url Generator for Lern Store / Edu-sharing
+- SC-6567 - Add utils to cleanup incomingMessage stacks by logging errors
+
+### Removed
+
+### Changed
+
+- SC-6986 - Changed a hook in the accounts service that restricts get requests to the same school, it expects a valid userID and matching schoolIds for both the requester and requested users
+- SC-6567 - clean up error pipline
+- SC-6510, fix a minor syntax error when exporting module
+- Update commons to 1.2.7: print configuration on startup, introduce hierarchical configuration file setup
+- Support asynchronous calls during server startup
+
+### Fixed
+
+- fixed README badges
+- SC-6151 fixed a bug that prevented api docu from being accessible
+
 ## [25.1.13] - 2020-11-12
 
 ### Changed

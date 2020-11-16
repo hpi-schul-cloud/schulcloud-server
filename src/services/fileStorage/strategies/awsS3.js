@@ -1,6 +1,8 @@
 const { promisify } = require('es6-promisify');
 const CryptoJS = require('crypto-js');
-const { BadRequest, NotFound, GeneralError } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { NotFound, BadRequest, GeneralError } = reqlib('src/errors');
 const { Configuration } = require('@schul-cloud/commons');
 const aws = require('aws-sdk');
 const pathUtil = require('path');

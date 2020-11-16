@@ -12,11 +12,13 @@ const { HandlePermissions, handlePermissionsHooks } = require('./services/permis
 module.exports = function schoolServices() {
 	const app = this;
 
+	app.use('/schools/api', staticContent(path.join(__dirname, '/docs')));
+
 	const options = {
 		Model: schoolModels.schoolModel,
 		paginate: {
 			default: 5,
-			max: 25,
+			max: 100, // this is the max currently used in the SHD
 		},
 		lean: {
 			virtuals: true,
@@ -26,8 +28,6 @@ module.exports = function schoolServices() {
 	app.use('/schools', service(options));
 	const schoolService = app.service('/schools');
 	schoolService.hooks(hooks);
-
-	app.use('/schools/api', staticContent(path.join(__dirname, '/docs')));
 
 	app.use('/schools/:schoolId/maintenance', new SchoolMaintenanceService());
 

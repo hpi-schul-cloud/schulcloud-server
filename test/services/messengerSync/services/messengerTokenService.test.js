@@ -3,19 +3,21 @@ const commons = require('@schul-cloud/commons');
 
 const { Configuration } = commons;
 const nock = require('nock');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 const {
 	messengerTokenService,
 	messengerTokenHooks,
 } = require('../../../../src/services/messengerSync/services/messengerTokenService');
 
 describe('MessengerTokenService', function test() {
+	let app;
 	this.timeout(10000);
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after(async () => {
@@ -82,7 +84,9 @@ describe('MessengerTokenService', function test() {
 					})
 					.catch((err) => {
 						expect(err).to.not.be.undefined;
-						expect(err.code).to.equals(403);
+						// TODO: it toggle from time to time between code and statusCode, why i do not know..
+						const status = err.code || err.statusCode;
+						expect(status).to.equals(403);
 					});
 			});
 

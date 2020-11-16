@@ -2,21 +2,26 @@ const assert = require('assert');
 const { expect } = require('chai');
 const { Configuration } = require('@schul-cloud/commons');
 const { ObjectId } = require('mongoose').Types;
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 
-const userService = app.service('users');
-const classesService = app.service('classes');
-const coursesService = app.service('courses');
-const testObjects = require('../../helpers/testObjects')(app);
+const testObjects = require('../../helpers/testObjects')(appPromise);
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const testGenericErrorMessage = 'Der angefragte Nutzer ist unbekannt!';
 
 describe('user service', () => {
+	let userService;
+	let classesService;
+	let coursesService;
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		userService = app.service('users');
+		classesService = app.service('classes');
+		coursesService = app.service('courses');
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -53,7 +58,7 @@ describe('user service', () => {
 					id: '0000d231816abba584714d01',
 					accounts: [],
 					schoolId: '5f2987e020834114b8efd6f8',
-					email: 'user@testusers.net',
+					email: 'user1246@testusers.net',
 					firstName: 'Max',
 					lastName: 'Tester',
 					roles: [testSubrole._id],
@@ -366,6 +371,7 @@ describe('user service', () => {
 			const student = await testObjects.createTestUser({ roles: ['student'] });
 			const studentParams = await testObjects.generateRequestParamsFromUser(student);
 			studentParams.query = {};
+			Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
 
 			await app.service('schools').patch(student.schoolId, { enableStudentTeamCreation: true });
 
@@ -733,7 +739,7 @@ describe('user service', () => {
 					})
 					.catch((err) => {
 						// eslint-disable-next-line max-len
-						expect(err.message).to.equal('Die E-Mail Adresse ExistinG@aCCount.de ist bereits in Verwendung!');
+						expect(err.message).to.equal(`Die E-Mail Adresse ist bereits in Verwendung!`);
 						resolve();
 					});
 			});

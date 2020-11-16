@@ -201,20 +201,20 @@
 		"FEATURE_ALERTS_STATUS_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "If enabled, user will see messages/incidents from e.g status.schul-cloud."
+			"description": "If enabled, user will see messages/incidents from e.g status.hpi-schul-cloud."
 		},
 		"ALERT_STATUS_URL": {
 			"type": "string",
 			"format": "uri",
 			"pattern": ".*(?<!/)$",
-			"default": "https://status.schul-cloud.org",
+			"default": "https://status.hpi-schul-cloud.de",
 			"description": "The url of status message provider (should end without a slash)."
 		},
 		"ALERT_STATUS_API_URL": {
 			"type": "string",
 			"format": "uri",
 			"pattern": ".*(?<!/)$",
-			"default": "https://status.schul-cloud.org/api/v1",
+			"default": "https://status.hpi-schul-cloud.de/api/v1",
 			"description": "The api of status message provider (should end without a slash)."
 		},
 		"NEXBOARD_URL": {
@@ -281,22 +281,22 @@
 		},
 		"ETHERPAD_URI": {
 			"type": "string",
-			"default": "https://schul-cloud.org/etherpad/api/1",
+			"default": "https://hpi-schul-cloud.de/etherpad/api/1",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_URI": {
 			"type": "string",
-			"default": "https://etherpad.schul-cloud.org/p",
+			"default": "https://etherpad.hpi-schul-cloud.de/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_NEW_PAD_URI": {
 			"type": "string",
-			"default": "https://schul-cloud.org/etherpad/p",
+			"default": "https://hpi-schul-cloud.de/etherpad/p",
 			"description": "The etherpad api version uri."
 		},
 		"ETHERPAD_OLD_PAD_DOMAIN": {
 			"type": "string",
-			"default": "etherpad.schul-cloud.org",
+			"default": "etherpad.hpi-schul-cloud.de",
 			"description": "The old etherpad domain."
 		},
 		"ETHERPAD_COOKIE__EXPIRES_SECONDS": {
@@ -356,10 +356,38 @@
 			"type": "string",
 			"description": "The client id for edu-sharing api access"
 		},
+		"SECRET_ES_MERLIN_USERNAME": {
+			"type": "string",
+			"description": "The username for Merlin login, used for edusharing"
+		},
+		"SECRET_ES_MERLIN_PW": {
+			"type": "string",
+			"description": "The password for Merlin login, used for edusharing"
+		},
+		"ES_MERLIN_AUTH_URL": {
+			"type": "string",
+			"description": "Connection url for Merlin content",
+			"default": "http://merlin.nibis.de/auth.php"
+		},
+		"FEATURE_ES_MERLIN_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "When enabled, the merlin referene will generate a valid url"
+		},
 		"SILENT_ERROR_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Brute force flag during recovery password process"
+		},
+		"FEATURE_API_VALIDATION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "when enabled, all incoming requests are validated against the openapi schemata, unless the route is whitelisted."
+		},
+		"API_VALIDATION_WHITELIST_EXTENSION": {
+			"type": "string",
+			"description": "when set, this is interpreted as a regex to extend the ignorelist for the API validation with any routes matching the regex.",
+			"examples": [".*\/courses\/[0-9a-f]{24}($|\/$)"]
 		},
 		"PROMETHEUS": {
 			"type": "object",
