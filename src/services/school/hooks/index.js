@@ -1,6 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider, discard, disallow, keepInArray, keep } = require('feathers-hooks-common');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
 const { Forbidden } = reqlib('src/errors');

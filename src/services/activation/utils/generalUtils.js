@@ -1,7 +1,7 @@
 const reqlib = require('app-root-path').require;
 
 const { Forbidden, NotFound, BadRequest, GeneralError } = reqlib('src/errors');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { getQuarantinedObject, createQuarantinedObject, KEYWORDS } = require('./customStrategyUtils');
 const customErrorMessages = require('./customErrorMessages');
 const Mail = require('../services/interface/mailFormat');

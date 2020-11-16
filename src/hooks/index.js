@@ -6,7 +6,7 @@ const { authenticate } = require('@feathersjs/authentication');
 
 const { v4: uuidv4 } = require('uuid');
 
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const _ = require('lodash');
 const mongoose = require('mongoose');
 const { equal: equalIds } = require('../helper/compare').ObjectId;

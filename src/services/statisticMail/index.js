@@ -1,4 +1,4 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const hooks = require('./hooks/index');
 const { SC_SHORT_TITLE } = require('../../../config/globals');
 
