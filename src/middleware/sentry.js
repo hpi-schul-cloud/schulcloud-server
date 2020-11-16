@@ -4,6 +4,9 @@ const { sha } = require('../helper/version');
 const { version } = require('../../package.json');
 
 const { SC_DOMAIN, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
+
+const { getTrace } = require('../utils/context');
+
 /**
  * helpers
  */
@@ -23,8 +26,8 @@ const replaceIds = (string) => {
  */
 const removeIdMiddleware = (event) => {
 	if (event && event.request) {
-		// eslint-disable-next-line camelcase
 		const {
+			// eslint-disable-next-line camelcase
 			request: { data, url, query_string },
 		} = event;
 		if (data) {
@@ -48,11 +51,21 @@ const removeJwtToken = (event) => {
 	return event;
 };
 
+const addTraceIds = (event) => {
+	if (event && event.tags) {
+		const { spawnId, traceId } = getTrace();
+		if (traceId !== undefined) event.tags.trace = traceId;
+		if (spawnId !== undefined) event.tags.spawn = spawnId;
+	}
+	return event;
+};
+
 const logItMiddleware = (sendToSentry = false) => (event, hint, app) => {
 	app.logger.info(
 		'If you are not in default mode, the error is sent to sentry at this point! ' +
 			'If you actually want to send a real request to sentry, please modify sendToSentry.'
 	);
+	return event; // TODO remove this line again
 	return sendToSentry ? event : null;
 };
 
@@ -83,6 +96,7 @@ module.exports = (app) => {
 			// filterByErrorMessageMiddleware('could not initialize rocketchat user'),
 			removeIdMiddleware,
 			removeJwtToken,
+			addTraceIds,
 		];
 		// for local test runs, post feedback but skip it
 		if (NODE_ENV === ENVIRONMENTS.DEVELOPMENT) {

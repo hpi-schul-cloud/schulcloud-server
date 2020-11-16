@@ -9,7 +9,6 @@ const cors = require('cors');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
-const { ObjectId } = require('mongoose').Types;
 
 const { BODYPARSER_JSON_LIMIT, LEAD_TIME } = require('../config/globals');
 
@@ -25,31 +24,35 @@ const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
 const rabbitMq = require('./utils/rabbitmq');
 const prometheus = require('./utils/prometheus');
+const { requestContext, getContext, runContext } = require('./utils/context');
 
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
 const versionService = require('./services/versionService');
 
-const setupApp = async () => {
-	const app = express(feathers());
-	app.disable('x-powered-by');
+const setupApp = () => {
+	return new Promise((resolve) => {
+		runContext({ initiator: 'SETUP' }, () => {
+			console.log('context is...', getContext());
+			const app = express(feathers());
+			app.disable('x-powered-by');
 
-	const config = configuration();
-	app.configure(config);
+			const config = configuration();
+			app.configure(config);
 
-	if (LEAD_TIME) {
-		app.use((req, res, next) => {
-			req.leadTime = Date.now();
-			next();
-		});
-	}
+			if (LEAD_TIME) {
+				app.use((req, res, next) => {
+					req.leadTime = Date.now();
+					next();
+				});
+			}
 
-	app.configure(prometheus);
+			app.configure(prometheus);
 
-	setupSwagger(app);
-	initializeRedisClient();
-	rabbitMq.setup(app);
+			setupSwagger(app);
+			initializeRedisClient();
+			rabbitMq.setup(app);
 
 	app
 		.use(compress())
@@ -73,12 +76,9 @@ const setupApp = async () => {
 		})
 		.configure(rest(handleResponseType))
 		.configure(socketio())
+		.use(requestContext)
 		.use((req, res, next) => {
 			// pass header into hooks.params
-			// todo: To create a fake requestId on this place is a temporary solution
-			// it MUST be removed after the API gateway is established
-			const uid = ObjectId();
-			req.headers.requestId = uid.toString();
 			req.feathers.leadTime = req.leadTime;
 			req.feathers.headers = req.headers;
 			req.feathers.originalUrl = req.originalUrl;

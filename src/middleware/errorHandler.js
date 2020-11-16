@@ -10,6 +10,7 @@ const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention } = reqlib('
 const { convertToFeathersError, cleanupIncomingMessage } = reqlib('src/errors/utils');
 
 const logger = require('../logger');
+const { getContextValue, CONSTANTS: CONTEXT_CONSTANTS, getTrace } = require('../utils/context');
 
 const MAX_LEVEL_FILTER = 12;
 
@@ -159,7 +160,8 @@ const saveResponseFilter = (error) => ({
 	name: error.name,
 	message: error.message instanceof Error && error.message.message ? error.message.message : error.message,
 	code: error.code,
-	traceId: error.traceId,
+	traceId: error[CONTEXT_CONSTANTS.TRACE_ID],
+	spawnId: error[CONTEXT_CONSTANTS.SPAWN_ID],
 });
 
 const sendError = (res, error) => {
@@ -212,13 +214,14 @@ const returnAsJson = express.errorHandler({
 	},
 });
 
-const addTraceId = (error, req, res, next) => {
-	error.traceId = (req.headers || {}).requestId || error.traceId;
+const addTrace = (error, req, res, next) => {
+	const trace = getTrace();
+	Object.assign(error, trace);
 	next(error);
 };
 
 const errorHandler = (app) => {
-	app.use(addTraceId);
+	app.use(addTrace);
 	app.use(filterSecrets);
 	app.use(Sentry.Handlers.errorHandler());
 	app.use(handleValidationError);
