@@ -1,7 +1,7 @@
 const { promisify } = require('util');
 const redis = require('redis');
 const jwt = require('jsonwebtoken');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
 const { BadRequest, GeneralError } = reqlib('src/errors');

@@ -1,5 +1,5 @@
 const asyncPool = require('tiny-async-pool');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const Syncer = require('./Syncer');
 const LDAPSyncer = require('./LDAPSyncer');
 

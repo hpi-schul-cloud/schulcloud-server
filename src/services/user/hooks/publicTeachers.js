@@ -1,5 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { disallow } = require('feathers-hooks-common');
 const reqlib = require('app-root-path').require;
 

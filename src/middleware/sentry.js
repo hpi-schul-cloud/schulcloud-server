@@ -1,5 +1,5 @@
 const Sentry = require('@sentry/node');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { sha } = require('../helper/version');
 const { version } = require('../../package.json');
 
