@@ -892,7 +892,7 @@ describe('AdminUsersService', () => {
 			schoolId: school._id,
 		};
 		const objectTypeStudentTest = await adminStudentsService.create(
-			{...studentData, email: `testDeleteStudent3${Date.now()}@de.de`},
+			{ ...studentData, email: `testDeleteStudent3${Date.now()}@de.de` },
 			params
 		);
 		const deletedObjectType = await adminStudentsService.remove(objectTypeStudentTest, params);
@@ -900,7 +900,7 @@ describe('AdminUsersService', () => {
 		expect(deletedObjectType.length).to.equals(1);
 
 		const stringTypeStudentTest = await adminStudentsService.create(
-			{...studentData, email: `testDeleteStudent4${Date.now()}@de.de`},
+			{ ...studentData, email: `testDeleteStudent4${Date.now()}@de.de` },
 			params
 		);
 		const deletedeStringType = await adminStudentsService.remove(stringTypeStudentTest._id.toString(), params);
@@ -1813,7 +1813,7 @@ describe('AdminTeachersService', () => {
 		};
 
 		const objectTypeTeacherTest = await adminTeachersService.create(
-			{...teacherData, email: `testDeleteTeacher3${Date.now()}@de.d`},
+			{ ...teacherData, email: `testDeleteTeacher3${Date.now()}@de.d` },
 			params
 		);
 		const deletedObjectType = await adminTeachersService.remove(objectTypeTeacherTest, params);
@@ -1821,7 +1821,7 @@ describe('AdminTeachersService', () => {
 		expect(deletedObjectType.length).to.equals(1);
 
 		const stringTypeTeacherTest = await adminTeachersService.create(
-			{...teacherData, email: `testDeleteTeacher4${Date.now()}@de.d`},
+			{ ...teacherData, email: `testDeleteTeacher4${Date.now()}@de.d` },
 			params
 		);
 		const deletedeStringType = await adminTeachersService.remove(stringTypeTeacherTest._id, params);
