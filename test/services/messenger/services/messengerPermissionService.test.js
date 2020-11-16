@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 describe('MessengerPermissionService', function test() {
 	this.timeout(300000);

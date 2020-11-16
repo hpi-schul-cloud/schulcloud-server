@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 const { createDateFromAge, createParentConsent, createUserConsent } = require('../utils/helper');

@@ -1,6 +1,6 @@
 const Sentry = require('@sentry/node');
 const express = require('@feathersjs/express');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const jwt = require('jsonwebtoken');
 const OpenApiValidator = require('express-openapi-validator');
 

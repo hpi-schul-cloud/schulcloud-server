@@ -36,6 +36,7 @@ determine how many system/school syncers will be run in parallel (at most) durin
 
 ### Changed
 
+- OPS-1289 - moved and updated commons (to hpi-schul-cloud/commons)
 - SC-6596 - Changed route for messenger permissions service
 - SC-7331 - introduce axios for external requests, implemented in status api
 - SC-7395 - Changed ldap general strategy fetching of users from parallel to serialized
