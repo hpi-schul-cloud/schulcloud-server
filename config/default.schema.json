@@ -406,18 +406,6 @@
 			"description": "The password for edu-sharing api access",
 			"default": ""
 		},
-		"ES_GRANT_TYPE": {
-			"type": "string",
-			"description": "The grant_type for edu-sharing api access"
-		},
-		"ES_OAUTH_SECRET": {
-			"type": "string",
-			"description": "The oauth for edu-sharing api access"
-		},
-		"ES_CLIENT_ID": {
-			"type": "string",
-			"description": "The client id for edu-sharing api access"
-		},
 		"SECRET_ES_MERLIN_USERNAME": {
 			"type": "string",
 			"description": "The username for Merlin login, used for edusharing"
@@ -426,6 +414,11 @@
 			"type": "string",
 			"description": "The password for Merlin login, used for edusharing"
 		},
+		"SECRET_ES_MERLIN_KEY": {
+			"type": "string",
+			"description": "Synchronous encryption key used to secure merlin counties credentials. Only used with FEATURE_ES_MERLIN_ENABLED=true",
+			"pattern": ".{16}.*"
+		},
 		"ES_MERLIN_AUTH_URL": {
 			"type": "string",
 			"description": "Connection url for Merlin content",
@@ -433,7 +426,7 @@
 		},
 		"FEATURE_ES_MERLIN_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "When enabled, the merlin referene will generate a valid url"
 		},
 		"SILENT_ERROR_ENABLED": {
@@ -579,6 +572,23 @@
 					"FILE_SECURITY_SERVICE_USERNAME",
 					"FILE_SECURITY_SERVICE_PASSWORD",
 					"API_HOST"
+				]
+			}
+		},
+		"FEATURE_ES_MERLIN_ENABLED": {
+			"if": {
+				"proprieties": {
+					"FEATURE_ES_MERLIN_ENABLED": {
+						"const": true
+					}
+				}
+			},
+			"then": {
+				"required": [
+					"ES_MERLIN_AUTH_URL",
+					"SECRET_ES_MERLIN_USERNAME",
+					"SECRET_ES_MERLIN_PW",
+					"SECRET_ES_MERLIN_KEY"
 				]
 			}
 		}

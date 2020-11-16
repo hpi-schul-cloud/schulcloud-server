@@ -75,9 +75,8 @@ const convertMerlinUrl = async (context) => {
 		await Promise.all(
 			materialIds.map(async (material) => {
 				if (material.merlinReference) {
-					material.url = await context.app
-						.service('edu-sharing/merlinToken')
-						.find({ query: { merlinReference: material.merlinReference } });
+					context.params.query.merlinReference = material.merlinReference;
+					material.url = await context.app.service('edu-sharing/merlinToken').find(context.params);
 				}
 			})
 		);
