@@ -28,6 +28,23 @@ describe('user service v2', function test() {
 		return token;
 	};
 
+	const getPermissionToken = async (schoolId, permissions = []) => {
+		const currentUserRole = `currentUserPermission`;
+		await testObjects.createTestRole({
+			name: currentUserRole,
+			permissions,
+		});
+		const currentUser = await testObjects.createTestUser({
+			firstName: 'deleteUser',
+			roles: [currentUserRole],
+			schoolId,
+		});
+		const credentials = { username: currentUser.email, password: `${Date.now()}` };
+		await testObjects.createTestAccount(credentials, 'local', currentUser);
+		const token = await testObjects.generateJWT(credentials);
+		return token;
+	}
+
 	describe('API tests', () => {
 		it('When an authorized user deletes a student and returns success', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
@@ -86,6 +103,46 @@ describe('user service v2', function test() {
 				.request(app)
 				.delete(`/users/v2/admin/student/${user._id.toString()}`)
 				.query({ userId: user._id.toString() })
+				.set('Accept', 'application/json')
+				.set('Authorization', token)
+				.set('Content-type', 'application/json');
+			const response = await request.send();
+			expect(response.status).to.equal(403);
+		});
+
+		it('users with STUDENT_DELETE permission can REMOVE students', async () => {
+			const school = await testObjects.createTestSchool({
+				name: 'testSchool',
+			});
+			const { _id: schoolId } = school;
+
+			const token = await getPermissionToken(schoolId, ['STUDENT_DELETE']);
+
+			const deleteUser = await testObjects.createTestUser({ roles: ['student'], schoolId });
+
+			const request = chai
+				.request(app)
+				.delete(`/users/v2/admin/student/${deleteUser._id.toString()}`)
+				.set('Accept', 'application/json')
+				.set('Authorization', token)
+				.set('Content-type', 'application/json');
+			const response = await request.send();
+			expect(response.status).to.equal(200);
+		});
+
+		it('users with STUDENT_DELETE permission can not REMOVE teachers', async () => {
+			const school = await testObjects.createTestSchool({
+				name: 'testSchool',
+			});
+			const { _id: schoolId } = school;
+
+			const token = await getPermissionToken(schoolId, ['STUDENT_DELETE']);
+
+			const deleteUser = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+
+			const request = chai
+				.request(app)
+				.delete(`/users/v2/admin/teacher/${deleteUser._id.toString()}`)
 				.set('Accept', 'application/json')
 				.set('Authorization', token)
 				.set('Content-type', 'application/json');

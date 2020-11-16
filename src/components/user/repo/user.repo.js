@@ -16,7 +16,17 @@ const replaceUserWithTombstone = async (id, replaceData = {}, app) => {
 	);
 };
 
+const getUserRoles = async (id, app) => {
+	const { roles } = await app.service('usersModel').get(id, {
+		query: {
+			$populate: ['roles'],
+		},
+	});
+	return roles;
+};
+
 module.exports = {
 	getUser,
+	getUserRoles,
 	replaceUserWithTombstone,
 };

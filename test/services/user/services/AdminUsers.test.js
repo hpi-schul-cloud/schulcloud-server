@@ -761,6 +761,7 @@ describe('AdminUsersService', () => {
 		const studentDetails = {
 			firstName: 'testDeleteStudent',
 			lastName: 'Tested',
+			roles: ['student'],
 			email: `testDeleteStudent${Date.now()}@tested.de`,
 			schoolId: school._id,
 		};
@@ -1682,6 +1683,7 @@ describe('AdminTeachersService', () => {
 			firstName: 'testDeleteTeacher',
 			lastName: 'Tested',
 			email: `testDeleteTeacher${Date.now()}@tested.de`,
+			roles: ['teacher'],
 			schoolId: school._id,
 		};
 		const teacher = await testObjects.createTestUser(teacherDetails);

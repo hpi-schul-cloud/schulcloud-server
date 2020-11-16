@@ -6,8 +6,8 @@ class UserFacade {
 		this.app = app;
 	}
 
-	async deleteUser(id, params) {
-		return userUc.deleteUserUC(id, { ...params, app: this.app });
+	async deleteUser(id, roleName, params) {
+		return userUc.deleteUserUC(id, roleName, { ...params, app: this.app });
 	}
 }
 

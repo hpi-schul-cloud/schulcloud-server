@@ -57,6 +57,7 @@ const createTestTrashbin = (userId, data) => {
 let getUserStub;
 let getUserAccountStub;
 let createUserTrashbinStub;
+let getUserRolesStub;
 
 describe('users usecase', () => {
 	let app;
@@ -74,6 +75,10 @@ describe('users usecase', () => {
 		getUserStub = sinon.stub(userRepo, 'getUser');
 		getUserStub.withArgs(USER_ID).returns(user);
 		getUserStub.withArgs(CURRENT_USER_ID).returns(user);
+
+		getUserRolesStub = sinon.stub(userRepo, 'getUserRoles');
+		getUserRolesStub.withArgs().returns([{ name: 'student' }]);
+
 		sinon.stub(userRepo, 'replaceUserWithTombstone');
 
 		getUserAccountStub = sinon.stub(accountRepo, 'getUserAccount');
@@ -99,7 +104,7 @@ describe('users usecase', () => {
 		it('should successfully mark user for deletion', async () => {
 			// act
 			const currentUser = createCurrentUser();
-			const result = await userUC.deleteUserUC(USER_ID, { account: currentUser, app });
+			const result = await userUC.deleteUserUC(USER_ID, 'student', { account: currentUser, app });
 
 			expect(result.userId).to.deep.equal(USER_ID);
 		});
@@ -108,7 +113,7 @@ describe('users usecase', () => {
 			// init stubs
 			const userId = 'NOT_FOUND_USER';
 			getUserStub.withArgs(userId);
-			expect(() => userUC.deleteUserUC(userId), "if user wasn't found it should fail").to.throw;
+			expect(() => userUC.deleteUserUC(userId, 'student'), "if user wasn't found it should fail").to.throw;
 		});
 
 		it("should return error if trashbin couldn't be created", async () => {
@@ -122,7 +127,7 @@ describe('users usecase', () => {
 			getUserAccountStub.withArgs(userId).returns(account);
 			createUserTrashbinStub.withArgs(userId);
 
-			expect(() => userUC.deleteUserUC(userId, { account, app }), "if trashbin couldn't be created it should fail").to
+			expect(() => userUC.deleteUserUC(userId, 'student', { account, app }), "if trashbin couldn't be created it should fail").to
 				.throw;
 		});
 	});

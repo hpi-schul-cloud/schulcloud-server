@@ -2,6 +2,7 @@ const { ObjectId } = require('mongoose').Types;
 const { GeneralError, NotFound } = require('../../../errors');
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
 const restrictToSameSchool = require('../../../utils/restrictToSameSchool');
+const restrictToRole = require('../../../utils/restrictToRole');
 
 const getUserData = async (id, app) => {
 	const data = {};
@@ -46,8 +47,9 @@ const replaceUserWithTombstone = async (id, app) => {
 	return { success: true };
 };
 
-const deleteUserUC = async (id, { account, app }) => {
+const deleteUserUC = async (id, roleName, { account, app }) => {
 	await restrictToSameSchool(id, account, app);
+	await restrictToRole(id, roleName, app);
 
 	const data = await getUserData(id, app);
 
