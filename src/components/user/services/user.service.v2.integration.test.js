@@ -43,7 +43,7 @@ describe('user service v2', function test() {
 		await testObjects.createTestAccount(credentials, 'local', currentUser);
 		const token = await testObjects.generateJWT(credentials);
 		return token;
-	}
+	};
 
 	describe('API tests', () => {
 		it('When an authorized user deletes a student and returns success', async () => {

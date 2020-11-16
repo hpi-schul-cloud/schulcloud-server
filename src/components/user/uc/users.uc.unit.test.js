@@ -127,8 +127,10 @@ describe('users usecase', () => {
 			getUserAccountStub.withArgs(userId).returns(account);
 			createUserTrashbinStub.withArgs(userId);
 
-			expect(() => userUC.deleteUserUC(userId, 'student', { account, app }), "if trashbin couldn't be created it should fail").to
-				.throw;
+			expect(
+				() => userUC.deleteUserUC(userId, 'student', { account, app }),
+				"if trashbin couldn't be created it should fail"
+			).to.throw;
 		});
 	});
 });
