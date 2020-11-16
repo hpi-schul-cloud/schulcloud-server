@@ -69,7 +69,9 @@ module.exports = function setup() {
 		 */
 		async create(data, params) {
 			const linkData = {};
-			if (data.toHash) {
+			if (data.hash) {
+				linkData.hash = data.hash;
+			} else if (data.toHash) {
 				try {
 					const user = ((await app.service('users').find({ query: { email: data.toHash } })) || {}).data[0];
 					if (user && user.importHash) linkData.hash = user.importHash;
