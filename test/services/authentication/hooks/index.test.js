@@ -25,6 +25,7 @@ describe('authentication hooks', function test() {
 		});
 		mockery.registerMock('redis', redisMock);
 		mockery.registerMock('@hpi-schul-cloud/commons', commons);
+		Configuration.set('SC__SHORT_TITLE', 'HPI Schul-Cloud');
 
 		delete require.cache[require.resolve('../../../../src/app')];
 		delete require.cache[require.resolve('../../../../src/utils/redis')];

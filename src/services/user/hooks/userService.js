@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { keep } = require('feathers-hooks-common');
 const reqlib = require('app-root-path').require;
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { Forbidden, NotFound, BadRequest, GeneralError } = reqlib('src/errors');
 const logger = require('../../../logger');
@@ -10,7 +11,7 @@ const { hasRoleNoHook, hasPermissionNoHook, hasPermission } = require('../../../
 const { getAge } = require('../../../utils');
 
 const constants = require('../../../utils/constants');
-const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS, SC_DOMAIN } = require('../../../../config/globals');
+const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../../../config/globals');
 
 /**
  *
@@ -538,7 +539,7 @@ const generateRegistrationLink = async (context) => {
 				role: data.roles[0],
 				save: true,
 				patchUser: true,
-				host: SC_DOMAIN,
+				host: Configuration.get('SC__DOMAIN'),
 				schoolId: data.schoolId,
 				toHash: data.email,
 			})

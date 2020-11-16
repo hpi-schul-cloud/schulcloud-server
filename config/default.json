@@ -29,5 +29,12 @@
 		"STUDENT_ROOM_CREATION": false
 	},
 	"REQUEST_TIMEOUT": 8000,
-	"FEATURE_SHOW_VERSION_ENABLED": false
+	"FEATURE_SHOW_VERSION_ENABLED": false,
+	"REQUEST_LOGGING_ENABLED": true,
+	"SC": {
+		"DOMAIN": "localhost",
+		"TITLE": "HPI Schul-Cloud",
+		"THEME": "default",
+		"SHORT_TITLE": "HPI Schul-Cloud"
+	}
 }

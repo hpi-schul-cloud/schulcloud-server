@@ -25,6 +25,7 @@ describe('jwtTimer service', () => {
 			let server;
 			before(async () => {
 				configBefore = Configuration.toObject({ plainSecrets: true });
+				Configuration.set('SC__SHORT_TITLE', 'HPI Schul-Cloud');
 				mockery.enable({
 					warnOnReplace: false,
 					warnOnUnregistered: false,

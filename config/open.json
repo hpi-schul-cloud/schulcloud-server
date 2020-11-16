@@ -1,0 +1,9 @@
+{
+	"$schema": "./default.schema.json",
+	"SC": {
+		"TITLE": "Open Schul-Cloud",
+		"DOMAIN": "open.hpi-schul-cloud.de",
+		"THEME": "open",
+		"SHORT_TITLE": "Open Schul-Cloud"
+	}
+}

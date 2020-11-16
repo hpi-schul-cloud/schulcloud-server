@@ -12,5 +12,11 @@
 		"web": "HOST"
 	},
 	"NOTIFICATION_PLATFORM": "NOTIFICATION_PLATFORM",
-	"FEATURE_SHOW_VERSION_ENABLED": true
+	"FEATURE_SHOW_VERSION_ENABLED": true,
+	"SC": {
+		"DOMAIN": "localhost",
+		"TITLE": "HPI Schul-Cloud",
+		"THEME": "default",
+		"SHORT_TITLE": "HPI Schul-Cloud"
+	}
 }

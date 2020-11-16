@@ -3,7 +3,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const { sha } = require('../helper/version');
 const { version } = require('../../package.json');
 
-const { SC_DOMAIN, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
+const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 /**
  * helpers
  */
@@ -121,7 +121,7 @@ module.exports = (app) => {
 		Sentry.configureScope((scope) => {
 			scope.setTag('frontend', false);
 			scope.setLevel('warning');
-			scope.setTag('domain', SC_DOMAIN);
+			scope.setTag('domain', Configuration.get('SC__DOMAIN'));
 			scope.setTag('sha', sha);
 		});
 

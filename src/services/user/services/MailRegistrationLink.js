@@ -1,21 +1,23 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const reqlib = require('app-root-path').require;
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { Forbidden, BadRequest } = reqlib('src/errors');
 const { hasPermission } = require('../../../hooks');
 
-const { SC_SHORT_TITLE, SC_TITLE } = require('../../../../config/globals');
 const logger = require('../../../logger');
 
 const mailContent = (firstName, lastName, registrationLink) => {
 	const mail = {
-		subject: `Einladung für die Nutzung der ${SC_TITLE}!`,
+		subject: `Einladung für die Nutzung der ${Configuration.get('SC__TITLE')}!`,
 		content: {
-			text: `Einladung in die ${SC_TITLE}
+			text: `Einladung in die ${Configuration.get('SC__TITLE')}
 Hallo ${firstName} ${lastName}!
-\nDu wurdest eingeladen, der ${SC_TITLE} beizutreten, bitte vervollständige deine Registrierung unter folgendem Link: 
+\nDu wurdest eingeladen, der ${Configuration.get(
+				'SC__TITLE'
+			)} beizutreten, bitte vervollständige deine Registrierung unter folgendem Link: 
 ${registrationLink}
-\nViel Spaß und einen guten Start wünscht dir dein ${SC_SHORT_TITLE}-Team`,
+\nViel Spaß und einen guten Start wünscht dir dein ${Configuration.get('SC__SHORT_TITLE')}-Team`,
 			html: '',
 		},
 	};

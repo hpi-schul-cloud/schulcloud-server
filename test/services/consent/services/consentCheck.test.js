@@ -22,6 +22,7 @@ describe('consentCheck tests', () => {
 
 	before(async () => {
 		app = await appPromise;
+		Configuration.set('SC__THEME', 'default');
 		schoolSerivce = app.service('/schools');
 		consentCheckService = app.service('/consents/:userId/check');
 		server = await app.listen(0);

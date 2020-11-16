@@ -5,7 +5,7 @@ const moment = require('moment');
 const reqlib = require('app-root-path').require;
 
 const { Forbidden, BadRequest, TooManyRequests } = reqlib('src/errors');
-const { NODE_ENV, ENVIRONMENTS, SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
+const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../model').registrationPinModel;
 const { getRandomInt } = require('../../../utils/randomNumberGenerator');
@@ -33,23 +33,25 @@ function createinfoText(hook) {
 			consentWords = '';
 		}
 
-		return `Vielen Dank, dass Sie Ihrem Kind ${consentWords}die Nutzung der ${SC_TITLE} ermöglichen.
+		return `Vielen Dank, dass Sie Ihrem Kind ${consentWords}die Nutzung der ${Configuration.get(
+			'SC__TITLE'
+		)} ermöglichen.
 Bitte geben Sie den folgenden Bestätigungscode im Registrierungsprozess ein, um die Registrierung abzuschließen:
 
 PIN: ${pin}
 
 Mit Freundlichen Grüßen
-Ihr ${SC_SHORT_TITLE}-Team`;
+Ihr ${Configuration.get('SC__SHORT_TITLE')}-Team`;
 	}
 	if (role === 'student' || role === 'employee' || role === 'expert') {
-		return `Vielen Dank, dass du die ${SC_TITLE} nutzen möchtest.
+		return `Vielen Dank, dass du die ${Configuration.get('SC__TITLE')} nutzen möchtest.
 Bitte gib den folgenden Bestätigungscode im Registrierungsprozess ein,
-um deine Registrierung bei der ${SC_TITLE} abzuschließen:
+um deine Registrierung bei der ${Configuration.get('SC__TITLE')} abzuschließen:
 
 PIN: ${pin}
 
 Mit freundlichen Grüßen
-Dein ${SC_SHORT_TITLE}-Team`;
+Dein ${Configuration.get('SC__SHORT_TITLE')}-Team`;
 	}
 	throw new BadRequest('Die angegebene Rolle ist ungültig.', { role });
 }
@@ -91,7 +93,7 @@ const checkAndVerifyPin = (hook) => {
 const mailPin = (hook) => {
 	if (!(hook.data || {}).silent) {
 		globalHooks.sendEmail(hook, {
-			subject: `${SC_SHORT_TITLE}: Registrierung mit PIN verifizieren`,
+			subject: `${Configuration.get('SC__SHORT_TITLE')}: Registrierung mit PIN verifizieren`,
 			emails: (hook.data || {}).email,
 			content: {
 				text: createinfoText(hook),

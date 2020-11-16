@@ -1,0 +1,9 @@
+{
+	"$schema": "./default.schema.json",
+	"SC": {
+		"TITLE": "Internationale Schulcloud",
+		"DOMAIN": "international.hpi-schul-cloud.de",
+		"THEME": "int",
+		"SHORT_TITLE": "Internationale Schulcloud"
+	}
+}
