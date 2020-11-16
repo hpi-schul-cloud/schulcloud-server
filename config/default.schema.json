@@ -401,6 +401,18 @@
 			"type": "string",
 			"description": "The password for Merlin login, used for edusharing"
 		},
+		"ES_MERLIN_TEST_COUNTY_ID": {
+			"type": "integer",
+			"description": "The county Id for for Merlin test county, used for edusharing"
+		},
+		"SECRET_MERLIN_TEST_COUNTY_USERNAME": {
+			"type": "string",
+			"description": "The password for Merlin test county login, used for edusharing"
+		},
+		"SECRET_ES_MERLIN_TEST_COUNTY_PASS": {
+			"type": "string",
+			"description": "The password for Merlin test county login, used for edusharing"
+		},
 		"ES_MERLIN_AUTH_URL": {
 			"type": "string",
 			"description": "Connection url for Merlin content",
@@ -408,7 +420,7 @@
 		},
 		"FEATURE_ES_MERLIN_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "When enabled, the merlin referene will generate a valid url"
 		},
 		"SILENT_ERROR_ENABLED": {

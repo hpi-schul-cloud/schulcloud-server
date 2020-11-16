@@ -8,12 +8,12 @@ const EduSharingConnector = require('./services/EduSharingConnector');
 const MerlinTokenGenerator = require('./services/MerlinTokenGenerator');
 
 class EduSharing {
-	find(data) {
-		return EduSharingConnector.FIND(data);
+	find(params) {
+		return EduSharingConnector.FIND(params.query, params.authentication.payload.schoolId);
 	}
 
 	get(id, params) {
-		return EduSharingConnector.GET(id, params);
+		return EduSharingConnector.GET(id, params.authentication.payload.schoolId);
 	}
 }
 

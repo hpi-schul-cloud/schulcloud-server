@@ -13,6 +13,6 @@ const countySchema = new Schema(
 	}
 );
 module.exports = {
-	CountyModel: mongoose.model('county', countySchema),
+	CountyModel: mongoose.model('federalstate.counties', countySchema),
 	countySchema,
 };
