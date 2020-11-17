@@ -1,6 +1,6 @@
 // Global hooks that run for every service
 const { iff, isProvider } = require('feathers-hooks-common');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const Sentry = require('@sentry/node');
 const reqlib = require('app-root-path').require;
 

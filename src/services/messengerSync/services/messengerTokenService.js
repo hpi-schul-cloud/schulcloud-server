@@ -1,6 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const request = require('request-promise-native');
 const hmacSHA512 = require('crypto-js/hmac-sha512');
 const reqlib = require('app-root-path').require;
@@ -25,9 +25,14 @@ function obtainAccessToken(userId, homeserverApiUri, secret) {
 		json: true,
 	};
 	return request(options).then((response) => {
+		const homeserverUrl =
+			response.well_known && response.well_known['m.homeserver'] && response.well_known['m.homeserver'].base_url
+				? response.well_known['m.homeserver'].base_url
+				: homeserverApiUri;
+
 		const session = {
 			userId,
-			homeserverUrl: homeserverApiUri,
+			homeserverUrl,
 			accessToken: response.access_token,
 			deviceId: response.device_id,
 			servername: response.home_server,

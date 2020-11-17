@@ -1,5 +1,5 @@
 const request = require('request-promise-native');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
 const { GeneralError } = reqlib('src/errors');
@@ -20,7 +20,8 @@ const basicAuthorizationHeaders = {
 	)}`,
 };
 
-const eduSharingCookieValidity = 3540000; // 59 min
+// bug in edu-sharing limits session to 5 min instead of 1h
+const eduSharingCookieValidity = 240000; // 4 min
 let eduSharingCookieExpires = new Date();
 
 class EduSharingConnector {
@@ -66,19 +67,26 @@ class EduSharingConnector {
 		}
 	}
 
-	async eduSharingRequest(options) {
+	async eduSharingRequest(options, retried = false) {
 		try {
 			await this.authorize();
 			if (options.method.toUpperCase() === 'POST') {
 				return await request.post(options);
 			}
-			return await request.get(options);
+			const res = await request.get(options);
+			return res;
 		} catch (err) {
 			if (err.statusCode === 404) {
 				return null;
 			}
 			logger.error(`Edu-Sharing failed request with error ${err.statusCode} ${err.message}`, options);
-			throw new GeneralError('Edu-Sharing Request failed');
+			if (retried === true) {
+				throw new GeneralError('Edu-Sharing Request failed');
+			} else {
+				eduSharingCookieExpires = new Date();
+				const response = await this.eduSharingRequest(options, true);
+				return response;
+			}
 		}
 	}
 

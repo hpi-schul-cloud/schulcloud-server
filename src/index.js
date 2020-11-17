@@ -1,9 +1,6 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('./app');
 const logger = require('./logger');
-// const registerProcessEvents = require('./utils/processEvents');
-
-// registerProcessEvents(logger);
 
 Configuration.printHierarchy();
 

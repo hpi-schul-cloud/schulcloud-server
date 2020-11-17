@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { isDisposableEmail } = require('../../src/utils/disposableEmail');
 
