@@ -6,6 +6,7 @@ const appPromise = require('../../../app');
 const userUC = require('./users.uc');
 
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
+const { GeneralError } = require('../../../errors');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
@@ -37,7 +38,8 @@ const createTestUser = (userId = USER_ID) => {
 	};
 };
 
-const createTestAccount = (user) => {
+const createTestAccount = (userId = USER_ID) => {
+	const user = createTestUser(userId);
 	return {
 		_id: 'ACCOUNT_ID',
 		userId: user._id,
@@ -46,11 +48,14 @@ const createTestAccount = (user) => {
 	};
 };
 
-const createTestTrashbin = (userId, data) => {
+const createTestTrashbin = (userId = USER_ID) => {
+	const user = createTestUser(userId);
+	const account = createTestAccount(userId);
 	return {
 		_id: 'TRASHBIN_ID',
 		userId,
-		...data,
+		user,
+		account,
 	};
 };
 
@@ -67,14 +72,10 @@ describe('users usecase', () => {
 		app = await appPromise;
 		server = await app.listen(0);
 
-		const user = createTestUser(USER_ID);
-		const account = createTestAccount(user);
-		const trashbin = createTestTrashbin(user._id, { user, account });
-
 		// init stubs
 		getUserStub = sinon.stub(userRepo, 'getUser');
-		getUserStub.withArgs(USER_ID).returns(user);
-		getUserStub.withArgs(CURRENT_USER_ID).returns(user);
+		getUserStub.withArgs('NOT_FOUND_USER').returns();
+		getUserStub.callsFake((userId = USER_ID) => createTestUser(userId));
 
 		getUserRolesStub = sinon.stub(userRepo, 'getUserRoles');
 		getUserRolesStub.withArgs().returns([{ name: 'student' }]);
@@ -82,11 +83,13 @@ describe('users usecase', () => {
 		sinon.stub(userRepo, 'replaceUserWithTombstone');
 
 		getUserAccountStub = sinon.stub(accountRepo, 'getUserAccount');
-		getUserAccountStub.withArgs(USER_ID).returns(account);
+		getUserAccountStub.callsFake((userId = USER_ID) => createTestAccount(userId));
 
 		sinon.stub(accountRepo, 'deleteUserAccount');
+
 		createUserTrashbinStub = sinon.stub(trashbinRepo, 'createUserTrashbin');
-		createUserTrashbinStub.withArgs(USER_ID).returns(trashbin);
+		createUserTrashbinStub.withArgs('TRASHBIN_ERROR').returns();
+		createUserTrashbinStub.callsFake((userId = USER_ID) => createTestTrashbin(userId));
 	});
 
 	after(async () => {
@@ -111,26 +114,26 @@ describe('users usecase', () => {
 
 		it('should return not found if user cannot be found', async () => {
 			// init stubs
+			const currentUser = createCurrentUser();
 			const userId = 'NOT_FOUND_USER';
-			getUserStub.withArgs(userId);
-			expect(() => userUC.deleteUserUC(userId, 'student'), "if user wasn't found it should fail").to.throw;
+			expect(
+				() => userUC.deleteUserUC(userId, 'student', { account: currentUser, app }),
+				"if user wasn't found it should fail"
+			).to.throw;
 		});
 
 		it("should return error if trashbin couldn't be created", async () => {
 			// init stubs
-			const userId = 'USER_ID_2';
-			const user = createTestUser(userId);
-			const account = createTestAccount(user);
+			const currentUser = createCurrentUser();
 
-			// init stubs
-			getUserStub.withArgs(userId).returns(user);
-			getUserAccountStub.withArgs(userId).returns(account);
-			createUserTrashbinStub.withArgs(userId);
-
-			expect(
-				() => userUC.deleteUserUC(userId, 'student', { account, app }),
-				"if trashbin couldn't be created it should fail"
-			).to.throw;
+			try {
+				await userUC.deleteUserUC('TRASHBIN_ERROR', 'student', { account: currentUser, app });
+			} catch (err) {
+				expect(err).to.be.an.instanceof(GeneralError);
+				expect(err.message).to.include('Unable to initiate trashBin');
+				return;
+			}
+			expect.fail('createUserTrashbin should have errored');
 		});
 	});
 });
