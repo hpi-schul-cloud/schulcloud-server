@@ -2,17 +2,14 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const countySchema = new Schema(
-	{
-		countyId: { type: Number },
-		county: { type: String },
-		antaresKey: { type: String },
-	},
-	{
-		timestamps: true,
-	}
-);
+const countySchema = new Schema({
+	countyId: { type: Number },
+	county: { type: String },
+	antaresKey: { type: String },
+});
+const CountyModel = mongoose.model('county', countySchema);
+
 module.exports = {
-	CountyModel: mongoose.model('county', countySchema),
+	CountyModel,
 	countySchema,
 };

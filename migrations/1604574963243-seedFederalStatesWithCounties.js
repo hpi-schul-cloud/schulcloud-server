@@ -7,16 +7,11 @@ const allCounties = require('./helpers/counties051120.json');
 // use your own name for your model, otherwise other migrations may fail.
 // The third parameter is the actually relevent one for what collection to write to.
 
-const countySchema = new mongoose.Schema(
-	{
-		countyId: { type: Number },
-		county: { type: String },
-		antaresKey: { type: String },
-	},
-	{
-		timestamps: true,
-	}
-);
+const countySchema = new mongoose.Schema({
+	countyId: { type: Number },
+	county: { type: String },
+	antaresKey: { type: String },
+});
 const CountyModel = mongoose.model('county', countySchema);
 
 const federalStateModel = mongoose.model(
