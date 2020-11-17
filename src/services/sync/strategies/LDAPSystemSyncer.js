@@ -1,3 +1,5 @@
+const asyncPool = require('tiny-async-pool');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const Syncer = require('./Syncer');
 const LDAPSyncer = require('./LDAPSyncer');
 
@@ -7,8 +9,9 @@ const LDAPSyncer = require('./LDAPSyncer');
  * @implements {Syncer}
  */
 class LDAPSystemSyncer extends Syncer {
-	constructor(app, stats, logger) {
+	constructor(app, stats, logger, options = {}) {
 		super(app, stats, logger);
+		this.options = options;
 		Object.assign(this.stats, {
 			systems: {},
 		});
@@ -21,8 +24,13 @@ class LDAPSystemSyncer extends Syncer {
 		return target === 'ldap';
 	}
 
-	static params() {
-		return [true];
+	static params(params, data = {}) {
+		const forceFullSync = params.query.forceFullSync === 'true' || data.forceFullSync || false;
+		return [
+			{
+				forceFullSync,
+			},
+		];
 	}
 
 	/**
@@ -31,19 +39,31 @@ class LDAPSystemSyncer extends Syncer {
 	async steps() {
 		await super.steps();
 		const systems = await this.getSystems();
-		for (const system of systems) {
-			const stats = await new LDAPSyncer(this.app, {}, this.logger, system).sync();
-			if (stats.success !== true) {
-				this.stats.errors.push(`LDAP sync failed for system "${system.alias}" (${system._id}).`);
+		const nextSystemSync = async (system) => {
+			try {
+				const stats = await new LDAPSyncer(this.app, {}, this.logger, system, this.options).sync();
+				if (stats.success !== true) {
+					this.stats.errors.push(`LDAP sync failed for system "${system.alias}" (${system._id}).`);
+				}
+				this.stats.systems[system.alias] = stats;
+			} catch (err) {
+				// We need to catch errors here, so that the async pool will not reject early without
+				// running all sync processes
+				this.logger.error('Uncaught LDAP sync error', { error: err, systemId: system._id });
+				this.stats.errors.push(
+					`LDAP sync failed for system "${system.alias}" (${system._id}) with error "${err.message}".`
+				);
+			} finally {
+				// don't let unbind errors stop the sync
+				this.app
+					.service('ldap')
+					.disconnect(system.ldapConfig)
+					.catch((error) => this.logger.error('Could not unbind from LDAP server', { error }));
 			}
-			this.stats.systems[system.alias] = stats;
-
-			// don't let unbind errors stop the sync
-			this.app
-				.service('ldap')
-				.disconnect(system.ldapConfig)
-				.catch((error) => this.logger.error('Could not unbind from LDAP server', { error }));
-		}
+		};
+		const poolSize = Configuration.get('LDAP_SYSTEM_SYNCER_POOL_SIZE');
+		this.logger.info(`Running LDAP system sync with pool size ${poolSize}`);
+		await asyncPool(poolSize, systems, nextSystemSync);
 		return this.stats;
 	}
 
