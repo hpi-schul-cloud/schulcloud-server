@@ -28,6 +28,16 @@ if [ "$TRAVIS_BRANCH" = "master" ]
 then
 	#export DOCKERTAG=latest
 	export DOCKERTAG=master_v$( jq -r '.version' package.json )_$( date +"%y%m%d%H%M" )
+elif [[ "$TRAVIS_BRANCH" = feature/* ]]
+then
+	# extract JIRA_TICKET_ID from TRAVIS_BRANCH
+	JIRA_TICKET_ID=${TRAVIS_BRANCH/#feature\//}
+	JIRA_TICKET_TEAM=${JIRA_TICKET_ID/%-*/}
+	JIRA_TICKET_ID=${JIRA_TICKET_ID/#$JIRA_TICKET_TEAM"-"/}
+	JIRA_TICKET_ID=${JIRA_TICKET_ID/%-*/}
+	JIRA_TICKET_ID=$JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID	
+	# export DOCKERTAG=naming convention feature-<Jira id>-latest
+	export DOCKERTAG=$( echo "feature-"$JIRA_TICKET_ID"-latest")
 else
 	# replace special characters in branch name for docker tag
 	export DOCKERTAG=$( echo $TRAVIS_BRANCH | tr -s "[:punct:]" "-" | tr -s "[:upper:]" "[:lower:]" )_v$( jq -r '.version' package.json )_$( date +"%y%m%d%H%M" )
@@ -54,6 +64,12 @@ function buildandpush {
 	then
 		docker tag schulcloud/schulcloud-server:$DOCKERTAG schulcloud/schulcloud-server:develop_latest
 		docker push schulcloud/schulcloud-server:develop_latest
+	fi
+
+	# If branch is feature, add and push additional docker tags
+	if [[ "$TRAVIS_BRANCH" =~ ^"feature/"* ]]
+	then
+		docker push schulcloud/schulcloud-server:$DOCKERTAG
 	fi
 }
 
@@ -150,6 +166,12 @@ then
 	buildandpush
 	# ops-1109: Deployment now in sc-app-ci
 	# deploytotest
+elif [[ "$TRAVIS_BRANCH" =~ ^"feature/"* ]]
+then
+	# If an event occurs on branch feature deploy to test
+	echo "Event detected on branch feature. Building docker image..."
+	buildandpush
+	# OPS-1559: Enhance build pipeline to use featurebranches
 elif [[ $TRAVIS_BRANCH = release* ]]
 then
 	# If an event occurs on branch release* deploy to staging
