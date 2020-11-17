@@ -10,6 +10,8 @@ branches:
     - develop
     - master
     - /^(?i:release|hotfix).*$/
+    # naming convention feature/<JIRA-Ticket ID>-<Jira_Summary>
+    - /^(feature\/[A-Z]+-[0-9]+-[a-zA-Z_]+)$/
 
 stages:
   - name: test
