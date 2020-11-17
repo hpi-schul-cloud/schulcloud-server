@@ -44,7 +44,7 @@ services:
       - MONGO_URI=mongodb://server-mongodb:27017/schulcloud
       - CALENDAR_URI=http://calendar:3000
       - CONTENT_URI=https://content.schul-cloud.org
-      - NOTIFICATION_URI=http://notification:303
+      - NOTIFICATION_URI=http://notification:3030
       - PORT=3030
       # AUTH Secret
       - AUTHENTICATION=$AUTHENTICATION
