@@ -5,7 +5,7 @@ const { version } = require('../../package.json');
 
 const { SC_DOMAIN, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 
-const { getTrace } = require('../utils/context');
+const { getContext } = require('../utils/context');
 
 /**
  * helpers
@@ -51,11 +51,9 @@ const removeJwtToken = (event) => {
 	return event;
 };
 
-const addTraceIds = (event) => {
+const addRequestId = (event) => {
 	if (event && event.tags) {
-		const { spawnId, traceId } = getTrace();
-		if (traceId !== undefined) event.tags.trace = traceId;
-		if (spawnId !== undefined) event.tags.spawn = spawnId;
+		event.tags.requestId = getContext().getRequestId();
 	}
 	return event;
 };
@@ -65,8 +63,7 @@ const logItMiddleware = (sendToSentry = false) => (event, hint, app) => {
 		'If you are not in default mode, the error is sent to sentry at this point! ' +
 			'If you actually want to send a real request to sentry, please modify sendToSentry.'
 	);
-	return event; // TODO remove this line again
-	return sendToSentry ? event : null;
+	return event; // TODO revert
 };
 
 const filterByErrorCodesMiddleware = (...errorCode) => (event, hint, app) => {
@@ -96,7 +93,7 @@ module.exports = (app) => {
 			// filterByErrorMessageMiddleware('could not initialize rocketchat user'),
 			removeIdMiddleware,
 			removeJwtToken,
-			addTraceIds,
+			addRequestId,
 		];
 		// for local test runs, post feedback but skip it
 		if (NODE_ENV === ENVIRONMENTS.DEVELOPMENT) {

@@ -11,13 +11,7 @@ const {
 } = require('./utils');
 const { getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData } = require('./utils/redis');
 const { LEAD_TIME } = require('../config/globals');
-const {
-	getContextValue,
-	CONSTANTS: CONTEXT_CONSTANTS,
-	getTrace,
-	getContext,
-	setContextValue,
-} = require('./utils/context');
+const { getContext } = require('./utils/context');
 
 const sanitizeDataHook = (context) => {
 	if ((context.data || context.result) && context.path && context.path !== 'authentication') {
@@ -142,7 +136,7 @@ const leadTimeDetection = (context) => {
 
 			if (headers) {
 				info.connection = headers.connection;
-				Object.assign(info, getTrace());
+				info.requestId = getContext().getRequestId();
 			}
 			const error = new SlowQuery(`Slow query warning at route ${context.path}`, info);
 			logger.error(error);
@@ -152,11 +146,10 @@ const leadTimeDetection = (context) => {
 };
 
 const validateContext = (feathersContext) => {
-	const { traceId, spawnId } = getTrace();
-	if (traceId === undefined || spawnId === undefined) {
+	const requestId = getContext().getRequestId();
+	if (requestId === undefined) {
 		const error = new ApplicationError(`context lost on path ${feathersContext.path}`, {
-			traceId,
-			spawnId,
+			requestId,
 		});
 		Sentry.captureException(error);
 		logger.error(error);
