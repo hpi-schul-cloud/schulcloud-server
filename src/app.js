@@ -9,10 +9,10 @@ const cors = require('cors');
 const rest = require('@feathersjs/express/rest');
 const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
-const { ObjectId } = require('mongoose').Types;
 
 const { BODYPARSER_JSON_LIMIT, LEAD_TIME } = require('../config/globals');
 
+const { runContextMiddlewareInit } = require('./utils/context');
 const middleware = require('./middleware');
 const setupConfiguration = require('./configuration');
 const sockets = require('./sockets');
@@ -73,12 +73,9 @@ const setupApp = async () => {
 		})
 		.configure(rest(handleResponseType))
 		.configure(socketio())
+		.use(runContextMiddlewareInit)
 		.use((req, res, next) => {
 			// pass header into hooks.params
-			// todo: To create a fake requestId on this place is a temporary solution
-			// it MUST be removed after the API gateway is established
-			const uid = ObjectId();
-			req.headers.requestId = uid.toString();
 			req.feathers.leadTime = req.leadTime;
 			req.feathers.headers = req.headers;
 			req.feathers.originalUrl = req.originalUrl;

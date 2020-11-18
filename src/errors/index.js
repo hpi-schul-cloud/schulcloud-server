@@ -5,16 +5,18 @@ const logger = require('../logger');
 
 const setDefaultMessage = (className) => `Error of type ${className}`;
 
-const resolvedTraceId = (ref, message, additional) => {
-	if (message instanceof Error && message.traceId) {
-		ref.traceId = message.traceId;
-		delete message.traceId;
-	} else if (additional instanceof Error && additional.traceId) {
-		ref.traceId = additional.traceId;
-		delete message.traceId;
+// TODO @ CeEv
+const resolveRequestId = (ref, message, additional) => {
+	if (message instanceof Error && message.requestId) {
+		ref.requestId = message.requestId;
+		delete message.requestId;
+	} else if (additional instanceof Error && additional.requestId) {
+		ref.requestId = additional.requestId;
+		delete message.requestId;
 	} else {
+		// TODO ???
 		const uid = ObjectId();
-		ref.traceId = uid.toString();
+		ref.requestId = uid.toString();
 	}
 };
 
@@ -34,7 +36,7 @@ const prepare = (ref, message, additional, params, className) => {
 	}
 	ref.errors = additional || {};
 	ref.className = className;
-	resolvedTraceId(ref, message, additional);
+	resolveRequestId(ref, message, additional);
 	// Error.captureStackTrace(ref, ref.constructor);
 };
 
@@ -228,8 +230,6 @@ class SilentError extends ApplicationError {
 		this.className = 'silent-error';
 		this.data = {};
 		this.errors = {};
-		const uid = ObjectId();
-		this.traceId = uid.toString();
 	}
 }
 // take from ldap

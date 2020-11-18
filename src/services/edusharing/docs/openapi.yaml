@@ -2,9 +2,8 @@ security:
   - jwtBearer: []
 info:
   title: Schul-Cloud Edu-Sharing Service API
-  description:
-    This is the API specification for the Schul-Cloud Edu-Sharing service.
-    
+  description: This is the API specification for the Schul-Cloud Edu-Sharing service.
+
   contact:
     name: support
     email: info@hpi-schul-cloud.de
@@ -37,16 +36,16 @@ components:
                   type: boolean
                   example: false
                 id:
-                    type: string
+                  type: string
                 title:
-                    type: string
+                  type: string
                 icon:
-                    type: string
+                  type: string
                 logo:
-                    type: string
+                  type: string
                 isHomeRepo:
-                    type: boolean
-                    example: false
+                  type: boolean
+                  example: false
             id:
               type: string
         content:
@@ -151,25 +150,25 @@ components:
               type: object
               properties:
                 primaryAffiliation:
-                    type: string
+                  type: string
                 skills:
-                    type: array
-                    items:
-                        type: string
+                  type: array
+                  items:
+                    type: string
                 types:
-                    type: array
-                    items:
-                        type: string
+                  type: array
+                  items:
+                    type: string
                 firstName:
-                    type: string
+                  type: string
                 lastName:
-                    type: string
+                  type: string
                 email:
-                    type: string
+                  type: string
                 avatar:
-                    type: string
+                  type: string
                 about:
-                    type: string
+                  type: string
             firstName:
               type: string
               example: Administrator
@@ -190,25 +189,25 @@ components:
               type: object
               properties:
                 primaryAffiliation:
-                    type: string
+                  type: string
                 skills:
-                    type: array
-                    items:
-                        type: string
+                  type: array
+                  items:
+                    type: string
                 types:
-                    type: array
-                    items:
-                        type: string
+                  type: array
+                  items:
+                    type: string
                 firstName:
-                    type: string
+                  type: string
                 lastName:
-                    type: string
+                  type: string
                 email:
-                    type: string
+                  type: string
                 avatar:
-                    type: string
+                  type: string
                 about:
-                    type: string
+                  type: string
             firstName:
               type: string
               example: Administrator
@@ -569,25 +568,25 @@ components:
               type: object
               properties:
                 primaryAffiliation:
-                    type: string
+                  type: string
                 skills:
-                    type: array
-                    items:
-                        type: string
+                  type: array
+                  items:
+                    type: string
                 types:
-                    type: array
-                    items:
-                        type: string
+                  type: array
+                  items:
+                    type: string
                 firstName:
-                    type: string
+                  type: string
                 lastName:
-                    type: string
+                  type: string
                 email:
-                    type: string
+                  type: string
                 avatar:
-                    type: string
+                  type: string
                 about:
-                    type: string
+                  type: string
             firstName:
               type: string
               example: Administrator
@@ -626,7 +625,7 @@ components:
         code:
           type: number
           example: 401
-        traceId:
+        requestId:
           type: string
           example: '0faa0000000c181b0e40aff'
     404:
@@ -640,7 +639,7 @@ components:
         code:
           type: number
           example: 404
-        traceId:
+        requestId:
           type: string
           example: '0faa0000000c181b0e40aff'
     500:
@@ -654,7 +653,7 @@ components:
         code:
           type: number
           example: 500
-        traceId:
+        requestId:
           type: string
           example: '0faa0000000c181b0e40aff'
 

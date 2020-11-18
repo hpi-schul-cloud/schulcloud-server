@@ -56,6 +56,14 @@ const logItMiddleware = (sendToSentry = false) => (event, hint, app) => {
 	return sendToSentry ? event : null;
 };
 
+const addContext = (event) => {
+	if (event && event.tags && event.response && event.response.headers && event.response.headers.requestId) {
+		// TODO add more context information, take it from context instead of response
+		event.tags.requestId = event.response.headers.requestId;
+	}
+	return event;
+};
+
 const filterByErrorCodesMiddleware = (...errorCode) => (event, hint, app) => {
 	const code = hint.originalException.code || hint.originalException.statusCode;
 	if (errorCode.includes(code)) {
@@ -83,6 +91,7 @@ module.exports = (app) => {
 			// filterByErrorMessageMiddleware('could not initialize rocketchat user'),
 			removeIdMiddleware,
 			removeJwtToken,
+			addContext,
 		];
 		// for local test runs, post feedback but skip it
 		if (NODE_ENV === ENVIRONMENTS.DEVELOPMENT) {

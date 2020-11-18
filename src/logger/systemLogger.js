@@ -40,7 +40,7 @@ const requestError = (req, userId = 'noUserId', error) =>
 		util.inspect(
 			{
 				type: 'errorData',
-				traceId: error.traceId,
+				requestId: error.requestId,
 				userId,
 				url: req.originalUrl,
 				data: req.body,

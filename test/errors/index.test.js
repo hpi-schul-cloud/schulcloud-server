@@ -45,7 +45,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('BadRequest');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('NotAuthenticated', () => {
@@ -59,7 +59,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('NotAuthenticated');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new AutoLogout', () => {
@@ -73,7 +73,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('AutoLogout');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new PaymentError', () => {
@@ -87,7 +87,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('PaymentError');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new Forbidden', () => {
@@ -101,7 +101,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('Forbidden');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new NotFound', () => {
@@ -115,7 +115,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('NotFound');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new MethodNotAllowed', () => {
@@ -129,7 +129,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('MethodNotAllowed');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new NotAcceptable', () => {
@@ -143,7 +143,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('NotAcceptable');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new Timeout', () => {
@@ -157,7 +157,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('Timeout');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new SlowQuery', () => {
@@ -171,7 +171,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('SlowQuery');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new Conflict', () => {
@@ -185,7 +185,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('Conflict');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new LengthRequired', () => {
@@ -199,7 +199,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('LengthRequired');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new Unprocessable', () => {
@@ -213,7 +213,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('Unprocessable');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new TooManyRequests', () => {
@@ -227,7 +227,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('TooManyRequests');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new BruteForcePrevention', () => {
@@ -241,7 +241,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('BruteForcePrevention');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new GeneralError', () => {
@@ -255,7 +255,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('GeneralError');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new NotImplemented', () => {
@@ -269,7 +269,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('NotImplemented');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new BadGateway', () => {
@@ -283,7 +283,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('BadGateway');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new Unavailable', () => {
@@ -297,7 +297,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('Unavailable');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new PageNotFound', () => {
@@ -311,7 +311,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('PageNotFound');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new Gone', () => {
@@ -325,7 +325,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('Gone');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new UnhandledRejection', () => {
@@ -339,7 +339,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('UnhandledRejection');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new UnhandledException', () => {
@@ -353,7 +353,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('UnhandledException');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new SilentError', () => {
@@ -367,7 +367,7 @@ describe('errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('SilentError');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new NoClientInstanceError', () => {
@@ -389,7 +389,7 @@ describe('parameter for feathers errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('BadRequest');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 		expect(err.stack).to.not.undefined;
 	});
 
@@ -405,7 +405,7 @@ describe('parameter for feathers errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('BadRequest');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors instanceof Error, 'errors should empty object').to.be.true;
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 		expect(err.stack).to.not.undefined;
 	});
 
@@ -421,7 +421,7 @@ describe('parameter for feathers errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('BadRequest');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors instanceof FeathersError, 'errors should empty object').to.be.true;
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 		expect(err.stack).to.not.undefined;
 	});
 
@@ -441,7 +441,7 @@ describe('parameter for feathers errors', () => {
 			expect(err.name, 'should the name of constructor').to.equal('BadRequest');
 			expect(err.data, 'should empty object').to.eql({});
 			expect(err.errors instanceof Error, 'errors should empty object').to.be.true;
-			expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+			expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 			expect(err.stack).to.not.undefined;
 		}
 	});
@@ -458,7 +458,7 @@ describe('parameter for feathers errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('BadRequest');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors instanceof Error, 'errors should empty object').to.be.true;
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 		expect(err.stack).to.not.undefined;
 	});
 
@@ -474,7 +474,7 @@ describe('parameter for feathers errors', () => {
 		expect(err.name, 'should the name of constructor').to.equal('BadRequest');
 		expect(err.data, 'should empty object').to.eql({});
 		expect(err.errors instanceof FeathersError, 'errors should empty object').to.be.true;
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 		expect(err.stack).to.not.undefined;
 	});
 
@@ -494,7 +494,7 @@ describe('parameter for feathers errors', () => {
 			expect(err.name, 'should the name of constructor').to.equal('BadRequest');
 			expect(err.data, 'should empty object').to.eql({});
 			expect(err.errors instanceof Error, 'errors should empty object').to.be.true;
-			expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+			expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 			expect(err.stack).to.not.undefined;
 		}
 	});
@@ -519,7 +519,7 @@ describe('parameter for feathers errors', () => {
 			1: { k3: 'c', k2: 'd' },
 		});
 		expect(err.errors instanceof Error, 'errors should empty object').to.be.true;
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
+		expect(err.requestId, 'should contain a non empty string').to.not.undefined;
 		expect(err.stack).to.not.undefined;
 	});
 });
