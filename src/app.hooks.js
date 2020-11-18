@@ -4,14 +4,13 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const Sentry = require('@sentry/node');
 const reqlib = require('app-root-path').require;
 
-const { AutoLogout, SlowQuery, ApplicationError } = reqlib('src/errors');
+const { AutoLogout, SlowQuery } = reqlib('src/errors');
 const logger = require('./logger');
 const {
 	sanitizeHtml: { sanitizeDeep },
 } = require('./utils');
 const { getRedisClient, redisGetAsync, redisSetAsync, extractDataFromJwt, getRedisData } = require('./utils/redis');
 const { LEAD_TIME } = require('../config/globals');
-const { getContext } = require('./utils/context');
 
 const sanitizeDataHook = (context) => {
 	if ((context.data || context.result) && context.path && context.path !== 'authentication') {
@@ -136,7 +135,7 @@ const leadTimeDetection = (context) => {
 
 			if (headers) {
 				info.connection = headers.connection;
-				info.requestId = getContext().getRequestId();
+				info.requestId = headers.requestId;
 			}
 			const error = new SlowQuery(`Slow query warning at route ${context.path}`, info);
 			logger.error(error);
@@ -145,21 +144,9 @@ const leadTimeDetection = (context) => {
 	}
 };
 
-const validateContext = (feathersContext) => {
-	const requestId = getContext().getRequestId();
-	if (requestId === undefined) {
-		const error = new ApplicationError(`context lost on path ${feathersContext.path}`, {
-			requestId,
-		});
-		Sentry.captureException(error);
-		logger.error(error);
-	}
-	return feathersContext;
-};
-
 function setupAppHooks(app) {
 	const before = {
-		all: [iff(isProvider('external'), handleAutoLogout), validateContext],
+		all: [iff(isProvider('external'), handleAutoLogout)],
 		find: [],
 		get: [],
 		create: [iff(isProvider('external'), [sanitizeDataHook, removeObjectIdInData])],
