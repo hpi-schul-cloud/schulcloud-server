@@ -15,7 +15,7 @@ branches:
 
 stages:
   - name: test
-    if: NOT (commit_message =~ /(skip-test-stage)/ AND branch = master)
+    if: NOT ((commit_message =~ /(skip-test-stage)/ AND branch = master) OR branch = /^(?i:feature).*$/ )
   - name: deploy
     if: NOT (commit_message =~ /(skip-deploy-stage)/)
 jobs:
