@@ -1,4 +1,4 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { messengerConfigService, messengerConfigHooks } = require('./services/messengerConfigService');
 const { messengerPermissionService, messengerPermissionHooks } = require('./services/messengerPermissionService');
 

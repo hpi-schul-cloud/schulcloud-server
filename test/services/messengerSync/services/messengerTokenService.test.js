@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const commons = require('@schul-cloud/commons');
+const commons = require('@hpi-schul-cloud/commons');
 
 const { Configuration } = commons;
 const nock = require('nock');

@@ -12,7 +12,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - SC-4666 - Added a pool based LDAP system and school sync. LDAP_SYSTEM_SYNCER_POOL_SIZE and LDAP_SCHOOL_SYNCER_POOL_SIZE variables
-determine how many system/school syncers will be run in parallel (at most) during the LDAP sync.
+  determine how many system/school syncers will be run in parallel (at most) during the LDAP sync.
 - SC-7615 - reduces the errors in lernstore
 - SC-5476 - Extend tests for Matrix messenger config and permission service
 - SC-6690 - refactors edu-sharing service and sets defaults
@@ -31,11 +31,12 @@ determine how many system/school syncers will be run in parallel (at most) durin
 - SC-4667 - Only request and compare LDAP entities that have changed since the last sync (using operational attribute modifyTimestamp with fallback)
 - SC-4667 - Add optional `forceFullSync` option (as get param or json payload) to force a full LDAP sync
 - SC-7499 - add API Specification for public services
-- SC-7571 - solved performance issues - bulk QR-code generation 
+- SC-7571 - solved performance issues - bulk QR-code generation
 
 ### Changed
 
 - SC-7476 - Prevent hash generation if user has account
+- OPS-1289 - moved and updated commons (to hpi-schul-cloud/commons)
 - SC-6596 - Changed route for messenger permissions service
 - SC-7331 - introduce axios for external requests, implemented in status api
 - SC-7395 - Changed ldap general strategy fetching of users from parallel to serialized
@@ -51,6 +52,7 @@ determine how many system/school syncers will be run in parallel (at most) durin
 
 ### Fixed
 
+- ARC-138 fix changelog action
 - ARC-137 avoid DoS on alerts in error state
 - SC-7353 course sharing between teachers
 - SC-7530 rename SHOW_VERSION to FEATURE_SHOW_VERSION_ENABLED

@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const queryString = require('qs');
 const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
