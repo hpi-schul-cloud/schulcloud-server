@@ -10,10 +10,14 @@ const { expect } = chai;
 describe('user service v2', function test() {
 	let app;
 	let server;
+	let accountModelService;
+	let usersModelService;
 
 	before(async () => {
 		app = await appPromise;
 		server = await app.listen(0);
+		accountModelService = app.service('accountModel');
+		usersModelService = app.service('usersModel');
 	});
 
 	after(async () => {
@@ -128,6 +132,12 @@ describe('user service v2', function test() {
 				.set('Content-type', 'application/json');
 			const response = await request.send();
 			expect(response.status).to.equal(200);
+
+			const checkUser = await usersModelService.get(deleteUser._id);
+			expect(checkUser.fullName).to.equal('DELETED USER');
+
+			const checkAccount = await accountModelService.find({ query: { userId: deleteUser._id }, paginate: false });
+			expect(checkAccount.length).to.equal(0);
 		});
 
 		it('users with STUDENT_DELETE permission can not REMOVE teachers', async () => {
