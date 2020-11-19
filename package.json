@@ -99,6 +99,7 @@
 		"redis": "^3.0.0",
 		"request-promise-core": "^1.1.4",
 		"request-promise-native": "^1.0.3",
+		"rewire": "^5.0.0",
 		"rss-parser": "^3.6.2",
 		"sanitize-html": "^2.1.0",
 		"serve-favicon": "^2.3.2",

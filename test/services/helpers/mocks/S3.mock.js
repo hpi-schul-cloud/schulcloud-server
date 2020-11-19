@@ -16,6 +16,7 @@ class AWSStrategy {
 
 const enable = () => {
 	mockery.enable({
+		warnOnReplace: false, // ?
 		warnOnUnregistered: false,
 		useCleanCache: true,
 	});
