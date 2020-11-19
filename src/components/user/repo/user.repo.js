@@ -1,7 +1,11 @@
 const { userModel: User } = require('../../../services/user/model');
 
+const getService = (app) => {
+	return app.service('usersModel');
+}
+
 const getUser = async (id, app) => {
-	return app.service('users').get(id);
+	return getService(app).get(id);
 };
 
 const replaceUserWithTombstone = async (id, replaceData = {}, app) => {
@@ -17,7 +21,7 @@ const replaceUserWithTombstone = async (id, replaceData = {}, app) => {
 };
 
 const getUserRoles = async (id, app) => {
-	const { roles } = await app.service('usersModel').get(id, {
+	const { roles } = await getService(app).get(id, {
 		query: {
 			$populate: ['roles'],
 		},

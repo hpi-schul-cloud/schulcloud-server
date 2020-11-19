@@ -8,7 +8,7 @@ class UserServiceV2 {
 	}
 
 	async remove(id, params) {
-		return userUC.deleteUserUC(id, this.roleName, { ...params, app: this.app });
+		return userUC.deleteUser(id, this.roleName, { ...params, app: this.app });
 	}
 
 	async setup(app) {

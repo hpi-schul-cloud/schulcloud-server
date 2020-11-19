@@ -1,19 +1,20 @@
 const { ObjectId } = require('mongoose').Types;
-const { BadRequest } = require('../../../errors');
+const { BadRequest, Forbidden } = require('../../../errors');
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
-const restrictToSameSchool = require('../../../utils/restrictToSameSchool');
-const restrictToRole = require('../../../utils/restrictToRole');
+const hasSameSchool = require('../../../utils/hasSameSchool');
+const hasRole = require('../../../utils/hasRole');
 
-const getUserData = async (id, app) => {
+const getUserRelatedData = async (id, app) => {
 	const user = await userRepo.getUser(id, app);
 	if (user.deletedAt) {
 		throw new BadRequest(`User already deleted`);
 	}
+
 	const account = await accountRepo.getUserAccount(id, app);
 	return { user, account };
 };
 
-const deleteUserData = async (data, app) => {
+const deleteUserRelatedData = async (data, app) => {
 	const { id } = data.user;
 	await accountRepo.deleteUserAccount(id, app);
 };
@@ -37,21 +38,27 @@ const replaceUserWithTombstone = async (id, app) => {
 	return { success: true };
 };
 
-const deleteUserUC = async (id, roleName, { account, app }) => {
-	await restrictToSameSchool(id, account, app);
-	await restrictToRole(id, roleName, app);
+const checkPermissions = async (id, account, app, roleName) => {
+	if ((await hasSameSchool(id, account, app)) && (await hasRole(id, roleName, app))) {
+		return true;
+	}
+	throw new Forbidden(`You don't have permissions to perform this action`);
+};
 
-	const data = await getUserData(id, app);
+const deleteUser = async (id, roleName, { account, app }) => {
+	await checkPermissions(id, account, app, roleName);
 
-	const trashBin = await createUserTrashbin(id, data);
+	const userRelatedData = await getUserRelatedData(id, app);
+
+	const trashBin = await createUserTrashbin(id, userRelatedData);
 
 	await replaceUserWithTombstone(id, app);
 
-	await deleteUserData(data, app);
+	await deleteUserRelatedData(userRelatedData, app);
 
 	return trashBin;
 };
 
 module.exports = {
-	deleteUserUC,
+	deleteUser,
 };

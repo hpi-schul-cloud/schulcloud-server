@@ -105,7 +105,7 @@ describe('users usecase', () => {
 		it('should successfully mark user for deletion', async () => {
 			// act
 			const currentUser = createCurrentUser();
-			const result = await userUC.deleteUserUC(USER_ID, 'student', { account: currentUser, app });
+			const result = await userUC.deleteUser(USER_ID, 'student', { account: currentUser, app });
 
 			expect(result.userId).to.deep.equal(USER_ID);
 		});
@@ -115,7 +115,7 @@ describe('users usecase', () => {
 			const currentUser = createCurrentUser();
 			const userId = 'NOT_FOUND_USER';
 			expect(
-				() => userUC.deleteUserUC(userId, 'student', { account: currentUser, app }),
+				() => userUC.deleteUser(userId, 'student', { account: currentUser, app }),
 				"if user wasn't found it should fail"
 			).to.throw;
 		});
