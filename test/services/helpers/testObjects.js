@@ -1,6 +1,7 @@
 const logger = require('../../../src/logger/index');
 
 const serviceHelpers = require('./services');
+const mockHelpers = require('./mocks');
 
 const warn = (message, pass) => {
 	logger.warning(message);
@@ -149,5 +150,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		setupUser,
 		options: opt,
 		randomGen,
+		mocks: mockHelpers,
 	};
 };
