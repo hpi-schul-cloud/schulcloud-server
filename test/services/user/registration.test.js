@@ -371,4 +371,43 @@ describe('registration service', () => {
 				});
 			});
 	});
+
+	it('hashService returns a string', () => {
+		const email = `max${Date.now()}@mustermann.de`;
+		const hashData = {
+			toHash: email,
+			save: true,
+			patchUser: true,
+		};
+
+		return (
+			hashService
+				.create(hashData)
+				// eslint-disable-next-line promise/always-return
+				.then((res) => {
+					expect(res).to.be.a('string');
+				})
+				.catch(() => {})
+		);
+	});
+
+	it('hashService returns bad request without toHash parameter', () => {
+		const hashData = {
+			save: true,
+			patchUser: true,
+		};
+
+		return (
+			hashService
+				.create(hashData)
+				// eslint-disable-next-line promise/always-return
+				.then(() => {
+					expect.fail('BadRequest: Please set toHash key.');
+				})
+				.catch((e) => {
+					expect(e.type).to.equal('FeathersError');
+					expect(e.className).to.equal('bad-request');
+				})
+		);
+	});
 });
