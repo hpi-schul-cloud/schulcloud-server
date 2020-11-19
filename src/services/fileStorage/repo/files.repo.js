@@ -21,6 +21,8 @@ const deleteFilesByIDs = async (fileIds = []) => {
 	return result;
 };
 
+// TODO: delete permission of user + tests for it
+
 // TODO: discuss if repo should catch errors or only throw up
 module.exports = {
 	findFilesThatUserCanAccess,

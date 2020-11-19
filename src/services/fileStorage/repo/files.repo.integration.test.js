@@ -42,6 +42,7 @@ describe('user.repo.integration.test', () => {
 		expect(findFileIds).to.not.include(fileNOTToBeFound._id.toString());
 	});
 
+	// FileId do not exist
 	// found no results
 	it('deleteFilesByIDs', async () => {
 		const userId = generateObjectId();
