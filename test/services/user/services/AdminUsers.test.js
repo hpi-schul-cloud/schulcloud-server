@@ -418,6 +418,7 @@ describe('AdminUsersService', () => {
 		const birthdayMock = new Date(2000, 0, 1, 20, 45, 30);
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 		const mockStudent = await testObjects.createTestUser({
+			firstName: 'Lukas',
 			birthday: birthdayMock,
 			roles: ['student'],
 		});
