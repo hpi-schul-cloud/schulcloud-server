@@ -14,7 +14,13 @@ const findFilesThatUserCanAccess = async (userId) => {
 		// format
 		// null is valid response but should formated to array
 		// format in a way that key relationship can restore
-		return result;
+		// --> delta
+		return [
+			{
+				complete: false,
+				data: [],
+			},
+		];
 	} catch (err) {
 		throw new Unprocessable('Can not execute find shared files.', err);
 	}
@@ -39,9 +45,9 @@ const deleteUserData = async (userId) => {
 	});
 
 	try {
-		const ids = context.data.map(({ _id }) => _id);
-
-		await repo.deleteFilesByIDs(ids);
+		// const ids = context.data.map(({ _id }) => _id);
+		// delete referenzes
+		// await repo.deleteFilesByIDs(ids);
 		// TODO: { n: 2, ok: 1, deletedCount: 2 }
 	} catch (err) {
 		context.errros.push(new Unprocessable('Can not deleted files', err));
