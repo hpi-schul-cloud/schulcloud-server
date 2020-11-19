@@ -4,20 +4,14 @@ const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
 const restrictToSameSchool = require('../../../utils/restrictToSameSchool');
 const restrictToRole = require('../../../utils/restrictToRole');
 
-const getUserData = async (id, app) => {
-	const data = {};
-
+const getUserAndAccountData = async (id, app) => {
 	const user = await userRepo.getUser(id, app);
 	if (!(user && user._id && !user.deletedAt)) {
 		throw new NotFound(`User ${id} not found`);
 	}
-	data.user = user;
 
 	const account = await accountRepo.getUserAccount(id, app);
-	if (account) {
-		data.account = account;
-	}
-	return data;
+	return { user, account };
 };
 
 const deleteUserData = async (id, app) => {
@@ -51,7 +45,7 @@ const deleteUserUC = async (id, roleName, { account, app }) => {
 	await restrictToSameSchool(id, account, app);
 	await restrictToRole(id, roleName, app);
 
-	const data = await getUserData(id, app);
+	const data = await getUserAndAccountData(id, app);
 
 	const trashBin = await createUserTrashbin(id, data);
 
