@@ -7,17 +7,12 @@ const { FileModel } = require('../model');
  * Permission based search
  * @param {BSON || BSONString} userId
  */
-const findFilesShardWithUserId = async (userId) => {
+const findFilesThatUserCanAccess = async (userId) => {
 	const insideOfPermissions = {
 		permissions: { $elemMatch: { refPermModel: 'user', refId: userId } },
 	};
-	const isNotOwner = {
-		owner: { $ne: userId },
-		refOwnerModel: { $ne: 'user' },
-	};
-	const $and = [insideOfPermissions, isNotOwner];
 
-	const result = await FileModel.find({ $and }).lean().exec();
+	const result = await FileModel.find(insideOfPermissions).lean().exec();
 	return result;
 };
 
@@ -28,6 +23,6 @@ const deleteFilesByIDs = async (fileIds = []) => {
 
 // TODO: discuss if repo should catch errors or only throw up
 module.exports = {
-	findFilesShardWithUserId,
+	findFilesThatUserCanAccess,
 	deleteFilesByIDs,
 };

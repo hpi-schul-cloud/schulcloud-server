@@ -8,11 +8,12 @@ const repo = require('../repo/files.repo');
  * Delete file connections for files shared with user
  * @param {BSON || BSONString} userId
  */
-const findSharedFilesWithUserId = async (userId) => {
+const findFilesThatUserCanAccess = async (userId) => {
 	try {
-		const result = await repo.findFilesShardWithUser(userId);
+		const result = await repo.findFilesThatUserCanAccess(userId);
 		// format
 		// null is valid response but should formated to array
+		// format in a way that key relationship can restore
 		return result;
 	} catch (err) {
 		throw new Unprocessable('Can not execute find shared files.', err);
@@ -26,7 +27,7 @@ const deleteUserData = async (userId) => {
 		errros: [],
 	};
 
-	const results = await Promise.allSettled([findSharedFilesWithUserId(userId)]);
+	const results = await Promise.allSettled([findFilesThatUserCanAccess(userId)]);
 
 	results.forEach(({ status, value, reason }) => {
 		if (status === 'rejected') {
@@ -41,6 +42,7 @@ const deleteUserData = async (userId) => {
 		const ids = context.data.map(({ _id }) => _id);
 
 		await repo.deleteFilesByIDs(ids);
+		// TODO: { n: 2, ok: 1, deletedCount: 2 }
 	} catch (err) {
 		context.errros.push(new Unprocessable('Can not deleted files', err));
 	}
