@@ -6,7 +6,6 @@ const appPromise = require('../../../app');
 const userUC = require('./users.uc');
 
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
-const { GeneralError } = require('../../../errors');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
@@ -88,7 +87,6 @@ describe('users usecase', () => {
 		sinon.stub(accountRepo, 'deleteUserAccount');
 
 		createUserTrashbinStub = sinon.stub(trashbinRepo, 'createUserTrashbin');
-		createUserTrashbinStub.withArgs('TRASHBIN_ERROR').returns();
 		createUserTrashbinStub.callsFake((userId = USER_ID) => createTestTrashbin(userId));
 	});
 
@@ -120,20 +118,6 @@ describe('users usecase', () => {
 				() => userUC.deleteUserUC(userId, 'student', { account: currentUser, app }),
 				"if user wasn't found it should fail"
 			).to.throw;
-		});
-
-		it("should return error if trashbin couldn't be created", async () => {
-			// init stubs
-			const currentUser = createCurrentUser();
-
-			try {
-				await userUC.deleteUserUC('TRASHBIN_ERROR', 'student', { account: currentUser, app });
-			} catch (err) {
-				expect(err).to.be.an.instanceof(GeneralError);
-				expect(err.message).to.include('Unable to initiate trashBin');
-				return;
-			}
-			expect.fail('createUserTrashbin should have errored');
 		});
 	});
 });

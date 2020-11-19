@@ -1,13 +1,13 @@
 const { ObjectId } = require('mongoose').Types;
-const { GeneralError, NotFound } = require('../../../errors');
+const { BadRequest } = require('../../../errors');
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
 const restrictToSameSchool = require('../../../utils/restrictToSameSchool');
 const restrictToRole = require('../../../utils/restrictToRole');
 
 const getUserAndAccountData = async (id, app) => {
 	const user = await userRepo.getUser(id, app);
-	if (!(user && user._id && !user.deletedAt)) {
-		throw new NotFound(`User ${id} not found`);
+	if (user.deletedAt) {
+		throw new BadRequest(`User already deleted`);
 	}
 
 	const account = await accountRepo.getUserAccount(id, app);
@@ -19,11 +19,7 @@ const deleteUserData = async (id, app) => {
 };
 
 const createUserTrashbin = async (id, data) => {
-	const trashBin = await trashbinRepo.createUserTrashbin(id, data);
-	if (!(trashBin && trashBin._id)) {
-		throw new GeneralError(`Unable to initiate trashBin`);
-	}
-	return trashBin;
+	return trashbinRepo.createUserTrashbin(id, data);
 };
 
 const replaceUserWithTombstone = async (id, app) => {
