@@ -38,7 +38,9 @@ const deleteUserData = async (userId) => {
 	});
 
 	try {
-		await repo.deleteFilesByIDs(context.data);
+		const ids = context.data.map(({ _id }) => _id);
+
+		await repo.deleteFilesByIDs(ids);
 	} catch (err) {
 		context.errros.push(new Unprocessable('Can not deleted files', err));
 	}

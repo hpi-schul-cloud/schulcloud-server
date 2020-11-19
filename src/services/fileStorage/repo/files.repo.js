@@ -8,16 +8,21 @@ const { FileModel } = require('../model');
  * @param {BSON || BSONString} userId
  */
 const findFilesShardWithUserId = async (userId) => {
-	const query = {
-		permissions: { refPermModel: 'user', refId: userId },
+	const insideOfPermissions = {
+		permissions: { $elemMatch: { refPermModel: 'user', refId: userId } },
 	};
-	const result = await FileModel.find(query).lean().exec();
+	const isNotOwner = {
+		owner: { $ne: userId },
+		refOwnerModel: { $ne: 'user' },
+	};
+	const $and = [insideOfPermissions, isNotOwner];
+
+	const result = await FileModel.find({ $and }).lean().exec();
 	return result;
 };
 
 const deleteFilesByIDs = async (fileIds = []) => {
-	const $or = fileIds.map((_id) => ({ _id }));
-	const result = await FileModel.deleteMany({ $or });
+	const result = await FileModel.deleteMany({ _id: { $in: fileIds } });
 	return result;
 };
 
