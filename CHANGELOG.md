@@ -52,6 +52,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-1589 Trim strings to avoid empty team names
 - ARC-138 fix changelog action
 - ARC-137 avoid DoS on alerts in error state
 - SC-7353 course sharing between teachers
@@ -65,6 +66,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6151 fixed paths to openapi documentation
 - Fixed searching for names including a dash
 - SC-7572 - Find /users route after hooks - extremely slow
+- SC-7573 - Route/hash-broken promise chain
 
 ### Removed
 
