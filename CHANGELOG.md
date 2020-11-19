@@ -52,6 +52,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-1589 Trim strings to avoid empty team names
 - ARC-138 fix changelog action
 - ARC-137 avoid DoS on alerts in error state
 - SC-7353 course sharing between teachers
