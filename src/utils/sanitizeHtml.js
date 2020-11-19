@@ -95,10 +95,11 @@ const htmlFalseOptions = {
 	},
 };
 
-const normalize = (data) => {
-	const match = data.match(/(?=").*(?==).*/gi);
-	data = match !== null ? data.replace(/"/gi, '&#8220;') : data;
-	data = match !== null ? data.replace(/=/gi, '&#61;') : data;
+const normalize = (data, isHTML = false) => {
+	if (isHTML === false) {
+		data = data.replace(/"/gi, '&#8220;');
+		data = data.replace(/=/gi, '&#61;');
+	}
 	data = data.replace(/(&lt;)|(&#60;)/gi, '<');
 	data = data.replace(/(&gt;)|(&#62;)/gi, '>');
 	return data;
@@ -121,7 +122,8 @@ const normalize = (data) => {
  * @param {*} data
  * @param {*} param
  */
-const sanitize = (data, isHTML = false) => sanitizeHtml(normalize(data), isHTML ? htmlTrueOptions : htmlFalseOptions);
+const sanitize = (data, isHTML = false) =>
+	sanitizeHtml(normalize(data, isHTML), isHTML ? htmlTrueOptions : htmlFalseOptions);
 
 /**
  * disables sanitization for defined keys if a path is matching
