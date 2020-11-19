@@ -1,5 +1,5 @@
 const { Forbidden, BadRequest } = require('../errors');
-const { userRepo } = require('../components/user/repo/index');
+const { userRepo } = require('../components/user/repo');
 
 const restrictToRole = async (id, roleName, app) => {
 	if (!id) {
