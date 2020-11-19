@@ -96,19 +96,24 @@ const htmlFalseOptions = {
 };
 
 const normalize = (data) => {
+	const match = data.match(/(?=").*(?==).*/gi);
+	data = match !== null ? data.replace(/"/gi, '&#8220;') : data;
+	data = match !== null ? data.replace(/=/gi, '&#61;') : data;
 	data = data.replace(/(&lt;)|(&#60;)/gi, '<');
 	data = data.replace(/(&gt;)|(&#62;)/gi, '>');
 	return data;
 };
 
 /**
- * Should split for example "onload=" to on "load =", "ONLOAD=" should also split
- * @param {String} str The string that should validate.
- * @example onload, onreload, onmouseover and so on
+ * Replaces unwanted scripts
+ * @param {*} data
  */
-const replaceOnload = (str) => {
-	return str.replace(/ (on)(.*)=/gi, ' $1 $2 = ');
-};
+// const replaceScripts = (data) => {
+// 	// Match any expression with double quotes (") or equal (=)
+// 	const match = data.match(/(?=").*(?==).*/gi);
+// 	data = match !== null ? data.replace(/"|=/gi, '') : data;
+// 	return data;
+// };
 
 /**
  * sanitizes data
@@ -116,8 +121,7 @@ const replaceOnload = (str) => {
  * @param {*} data
  * @param {*} param
  */
-const sanitize = (data, isHTML = false) =>
-	replaceOnload(sanitizeHtml(normalize(data), isHTML ? htmlTrueOptions : htmlFalseOptions));
+const sanitize = (data, isHTML = false) => sanitizeHtml(normalize(data), isHTML ? htmlTrueOptions : htmlFalseOptions);
 
 /**
  * disables sanitization for defined keys if a path is matching
