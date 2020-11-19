@@ -40,9 +40,6 @@ const systemSchema = new Schema(
 			searchUser: { type: String },
 			searchUserPassword: { type: String },
 			provider: { type: String },
-			importUser: { type: String },
-			importUserPassword: { type: String },
-			importUrl: { type: String },
 			providerOptions: {
 				schoolName: { type: String },
 				userPathAdditions: { type: String },
