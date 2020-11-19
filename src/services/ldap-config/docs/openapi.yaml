@@ -1,0 +1,28 @@
+security:
+  - jwtBearer: []
+info:
+  title: Schul-Cloud LDAP-Config Service API
+  description:
+    This is the API specification for the Schul-Cloud LDAP-Config service.
+    
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+components:
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /ldap-config:
+  
+openapi: 3.0.2
+tags:
+  - name: ldap
+    description: An ldap service.
