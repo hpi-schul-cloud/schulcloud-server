@@ -2,10 +2,10 @@ const { Forbidden, BadRequest } = require('../errors');
 const { userRepo } = require('../components/user/repo/index');
 const { equal: equalIds } = require('../helper/compare').ObjectId;
 
-const restrictToSameSchool = async (id, account, app) => {
-	if (id) {
+const restrictToSameSchool = async (userId, account, app) => {
+	if (userId) {
 		const { schoolId: currentUserSchoolId } = await userRepo.getUser(account.userId, app);
-		const { schoolId: requestedUserSchoolId } = await userRepo.getUser(id, app);
+		const { schoolId: requestedUserSchoolId } = await userRepo.getUser(userId, app);
 
 		if (!equalIds(currentUserSchoolId, requestedUserSchoolId)) {
 			throw new Forbidden('You have no access.');
