@@ -8,7 +8,7 @@ describe('[utils] sanitizeDeep', () => {
 			key: '" onmouseover=alert(document.cookie)       //;&gt;/',
 		};
 		const output = {
-			key: ' onmouseoveralert(document.cookie)       //;&gt;/',
+			key: '“ onmouseover=alert(document.cookie)       //;&gt;/',
 		};
 		expect(sanitizeDeep(input)).to.eql(output);
 	});
@@ -18,7 +18,7 @@ describe('[utils] sanitizeDeep', () => {
 			key: '" ONLOAD=alert(document.cookie)       //;&gt;/',
 		};
 		const output = {
-			key: ' ONLOADalert(document.cookie)       //;&gt;/',
+			key: '“ ONLOAD=alert(document.cookie)       //;&gt;/',
 		};
 		expect(sanitizeDeep(input)).to.eql(output);
 	});
@@ -28,7 +28,7 @@ describe('[utils] sanitizeDeep', () => {
 			key: '" onreload=alert(document.cookie)       //;&gt;/',
 		};
 		const output = {
-			key: ' onreloadalert(document.cookie)       //;&gt;/',
+			key: '“ onreload=alert(document.cookie)       //;&gt;/',
 		};
 		expect(sanitizeDeep(input)).to.eql(output);
 	});
@@ -38,7 +38,7 @@ describe('[utils] sanitizeDeep', () => {
 			key: '" ONRELOAD=alert(document.cookie)       //;&gt;/',
 		};
 		const output = {
-			key: ' ONRELOADalert(document.cookie)       //;&gt;/',
+			key: '“ ONRELOAD=alert(document.cookie)       //;&gt;/',
 		};
 		expect(sanitizeDeep(input)).to.eql(output);
 	});
@@ -48,7 +48,7 @@ describe('[utils] sanitizeDeep', () => {
 			key: '" onmouseover=alert(document.cookie)       //;&gt;/',
 		};
 		const output = {
-			key: ' onmouseoveralert(document.cookie)       //;&gt;/',
+			key: '“ onmouseover=alert(document.cookie)       //;&gt;/',
 		};
 		expect(sanitizeDeep(input)).to.eql(output);
 	});
@@ -58,7 +58,7 @@ describe('[utils] sanitizeDeep', () => {
 			key: '" ONMOUSEOVER=alert(document.cookie)       //;&gt;/',
 		};
 		const output = {
-			key: ' ONMOUSEOVERalert(document.cookie)       //;&gt;/',
+			key: '“ ONMOUSEOVER=alert(document.cookie)       //;&gt;/',
 		};
 		expect(sanitizeDeep(input)).to.eql(output);
 	});
@@ -74,7 +74,7 @@ describe('[utils] sanitizeDeep', () => {
 		const output = {
 			deep1: {
 				deep2: {
-					key: ' onloadalert(document.cookie)       //;&gt;/',
+					key: '“ onload=alert(document.cookie)       //;&gt;/',
 				},
 			},
 		};
@@ -86,7 +86,7 @@ describe('[utils] sanitizeDeep', () => {
 			key: '" onmouseover&#61;alert(document.cookie)       //;&gt;/',
 		};
 		const output = {
-			key: ' onmouseoveralert(document.cookie)       //;&gt;/',
+			key: '\" onmouseover=alert(document.cookie)       //;&gt;/',
 		};
 		expect(sanitizeDeep(input)).to.eql(output);
 	});
@@ -107,7 +107,7 @@ describe('[utils] sanitizeDeep', () => {
 			key: '" onmouseover&#92;&#61;alert(document.cookie)       //;&gt;/',
 		};
 		const output = {
-			key: ' onmouseover\\alert(document.cookie)       //;&gt;/',
+			key: '\" onmouseover\\=alert(document.cookie)       //;&gt;/',
 		};
 		expect(sanitizeDeep(input)).to.eql(output);
 	});
@@ -117,7 +117,7 @@ describe('[utils] sanitizeDeep', () => {
 			key: '" onmouseoverU+005C&#61;alert(document.cookie)       //;&gt;/',
 		};
 		const output = {
-			key: ' onmouseoverU+005Calert(document.cookie)       //;&gt;/',
+			key: '\" onmouseoverU+005C=alert(document.cookie)       //;&gt;/',
 		};
 		expect(sanitizeDeep(input)).to.eql(output);
 	});
@@ -128,7 +128,7 @@ describe('[utils] sanitizeDeep', () => {
 			key: '" onmouseover&#47;&#61;alert(document.cookie)       //;&gt;/',
 		};
 		const output = {
-			key: ' onmouseover/alert(document.cookie)       //;&gt;/',
+			key: '\" onmouseover/=alert(document.cookie)       //;&gt;/',
 		};
 		expect(sanitizeDeep(input)).to.eql(output);
 	});
@@ -138,7 +138,7 @@ describe('[utils] sanitizeDeep', () => {
 			key: '" onmouseoverU+002F&#61;alert(document.cookie)       //;&gt;/',
 		};
 		const output = {
-			key: ' onmouseoverU+002Falert(document.cookie)       //;&gt;/',
+			key: '\" onmouseoverU+002F=alert(document.cookie)       //;&gt;/',
 		};
 		expect(sanitizeDeep(input)).to.eql(output);
 	});
@@ -148,17 +148,17 @@ describe('[utils] sanitizeDeep', () => {
 			key: '" onloadonload=alert(document.cookie)       //;&gt;/',
 		};
 		const output = {
-			key: ' onloadonloadalert(document.cookie)       //;&gt;/',
+			key: '“ onloadonload=alert(document.cookie)       //;&gt;/',
 		};
 		expect(sanitizeDeep(input)).to.eql(output);
 	});
 
 	it('onload as text should NOT destructor', () => {
 		const input = {
-			key: '" onload alert(document.cookie)       //;&gt;/',
+			key: '" onload = alert(document.cookie)       //;&gt;/',
 		};
 		const output = {
-			key: '" onload alert(document.cookie)       //;&gt;/',
+			key: '“ onload = alert(document.cookie)       //;&gt;/',
 		};
 		expect(sanitizeDeep(input)).to.eql(output);
 	});
@@ -168,7 +168,7 @@ describe('[utils] sanitizeDeep', () => {
 			key: '" onload==alert(document.cookie)       //;&gt;/',
 		};
 		const output = {
-			key: ' onloadalert(document.cookie)       //;&gt;/',
+			key: '“ onload==alert(document.cookie)       //;&gt;/',
 		};
 		expect(sanitizeDeep(input)).to.eql(output);
 	});

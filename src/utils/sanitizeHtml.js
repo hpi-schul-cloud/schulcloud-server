@@ -97,8 +97,9 @@ const htmlFalseOptions = {
 
 const normalize = (data, isHTML = false) => {
 	if (isHTML === false) {
-		data = data.replace(/"/gi, '&#8220;');
-		data = data.replace(/=/gi, '&#61;');
+		const match = data.match(/(?=").*(?==).*/gi);
+		data = match !== null ? data.replace(/"/gi, '&#8220;') : data;
+		data = match !== null ? data.replace(/=/gi, '&#61;') : data;
 	}
 	data = data.replace(/(&lt;)|(&#60;)/gi, '<');
 	data = data.replace(/(&gt;)|(&#62;)/gi, '>');
