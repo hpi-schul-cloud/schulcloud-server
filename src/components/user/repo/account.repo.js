@@ -1,4 +1,3 @@
-
 const getService = (app) => {
 	return app.service('accountModel');
 };
@@ -15,7 +14,10 @@ const getUserAccount = async (userId, app) => {
 };
 
 const deleteUserAccount = async (account, app) => {
-	return getService(app).remove(account._id);
+	if (account && account._id) {
+		return getService(app).remove(account._id);
+	}
+	return null;
 };
 
 module.exports = {
