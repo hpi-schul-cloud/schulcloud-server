@@ -680,6 +680,9 @@ describe('AdminUsersService', () => {
 		const deletedStudent = await adminStudentsService.remove(null, params);
 		expect(deletedStudent).to.not.be.undefined;
 		expect(deletedStudent.length).to.equals(1);
+		expect(deletedStudent[0].user).to.not.be.undefined;
+		expect(deletedStudent[0].user._id).to.not.be.undefined;
+		expect(deletedStudent[0].user._id).to.equals(student._id.toString());
 	});
 
 	it('users without STUDENT_DELETE permission cannnot access the REMOVE method', async () => {
@@ -785,6 +788,9 @@ describe('AdminUsersService', () => {
 		const deletedStudent = await adminStudentsService.remove(null, params);
 		expect(deletedStudent).to.not.be.undefined;
 		expect(deletedStudent.length).to.equals(1);
+		expect(deletedStudent[0].user).to.not.be.undefined;
+		expect(deletedStudent[0].user._id).to.not.be.undefined;
+		expect(deletedStudent[0].user._id).to.equals(student._id.toString());
 
 		try {
 			await app.service('accountModel').get(studentAccount._id);
@@ -850,6 +856,9 @@ describe('AdminUsersService', () => {
 		const deletedStudent = await adminStudentsService.remove(null, params);
 		expect(deletedStudent).to.not.be.undefined;
 		expect(deletedStudent.length).to.equals(1);
+		expect(deletedStudent[0].user).to.not.be.undefined;
+		expect(deletedStudent[0].user._id).to.not.be.undefined;
+		expect(deletedStudent[0].user._id).to.equals(student._id.toString());
 
 		const otherStudentData = {
 			firstName: 'otherValidDeleteStudent',
@@ -899,6 +908,9 @@ describe('AdminUsersService', () => {
 		const deletedObjectType = await adminStudentsService.remove(objectTypeStudentTest, params);
 		expect(deletedObjectType).to.not.be.undefined;
 		expect(deletedObjectType.length).to.equals(1);
+		expect(deletedObjectType[0].user).to.not.be.undefined;
+		expect(deletedObjectType[0].user._id).to.not.be.undefined;
+		expect(deletedObjectType[0].user._id).to.equals(objectTypeStudentTest._id.toString());
 
 		const stringTypeStudentTest = await adminStudentsService.create(
 			{ ...studentData, email: `testDeleteStudent4${Date.now()}@de.de` },
@@ -907,6 +919,9 @@ describe('AdminUsersService', () => {
 		const deletedeStringType = await adminStudentsService.remove(stringTypeStudentTest._id.toString(), params);
 		expect(deletedeStringType).to.not.be.undefined;
 		expect(deletedeStringType.length).to.equals(1);
+		expect(deletedeStringType[0].user).to.not.be.undefined;
+		expect(deletedeStringType[0].user._id).to.not.be.undefined;
+		expect(deletedeStringType[0].user._id).to.equals(stringTypeStudentTest._id.toString());
 	});
 
 	describe('patch and update', () => {
@@ -1601,6 +1616,9 @@ describe('AdminTeachersService', () => {
 		const deletedTeacher = await adminTeachersService.remove(null, params);
 		expect(deletedTeacher).to.not.be.undefined;
 		expect(deletedTeacher.length).to.equals(1);
+		expect(deletedTeacher[0].user).to.not.be.undefined;
+		expect(deletedTeacher[0].user._id).to.not.be.undefined;
+		expect(deletedTeacher[0].user._id).to.equals(teacher._id.toString());
 	});
 
 	it('users without TEACHER_DELETE permission cannnot access the REMOVE method', async () => {
@@ -1706,6 +1724,9 @@ describe('AdminTeachersService', () => {
 		const deletedTeacher = await adminTeachersService.remove(null, params);
 		expect(deletedTeacher).to.not.be.undefined;
 		expect(deletedTeacher.length).to.equals(1);
+		expect(deletedTeacher[0].user).to.not.be.undefined;
+		expect(deletedTeacher[0].user._id).to.not.be.undefined;
+		expect(deletedTeacher[0].user._id).to.equals(teacher._id.toString());
 
 		try {
 			await app.service('accountModel').get(teacherAccount._id);
@@ -1771,6 +1792,9 @@ describe('AdminTeachersService', () => {
 		const deletedTeacher = await adminTeachersService.remove(null, params);
 		expect(deletedTeacher).to.not.be.undefined;
 		expect(deletedTeacher.length).to.equals(1);
+		expect(deletedTeacher[0].user).to.not.be.undefined;
+		expect(deletedTeacher[0].user._id).to.not.be.undefined;
+		expect(deletedTeacher[0].user._id).to.equals(teacher._id.toString());
 
 		const otherTeacherData = {
 			firstName: 'otherValidDeleteTeacher',
@@ -1821,6 +1845,9 @@ describe('AdminTeachersService', () => {
 		const deletedObjectType = await adminTeachersService.remove(objectTypeTeacherTest, params);
 		expect(deletedObjectType).to.not.be.undefined;
 		expect(deletedObjectType.length).to.equals(1);
+		expect(deletedObjectType[0].user).to.not.be.undefined;
+		expect(deletedObjectType[0].user._id).to.not.be.undefined;
+		expect(deletedObjectType[0].user._id).to.equals(objectTypeTeacherTest._id.toString());
 
 		const stringTypeTeacherTest = await adminTeachersService.create(
 			{ ...teacherData, email: `testDeleteTeacher4${Date.now()}@de.d` },
@@ -1829,5 +1856,8 @@ describe('AdminTeachersService', () => {
 		const deletedeStringType = await adminTeachersService.remove(stringTypeTeacherTest._id, params);
 		expect(deletedeStringType).to.not.be.undefined;
 		expect(deletedeStringType.length).to.equals(1);
+		expect(deletedeStringType[0].user).to.not.be.undefined;
+		expect(deletedeStringType[0].user._id).to.not.be.undefined;
+		expect(deletedeStringType[0].user._id).to.equals(stringTypeTeacherTest._id.toString());
 	});
 });
