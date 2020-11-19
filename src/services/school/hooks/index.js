@@ -206,9 +206,24 @@ const isNotAuthenticated = async (context) => {
 	return !((context.params.headers || {}).authorization || (context.params.account && context.params.account.userId));
 };
 
-const validateSchoolNumber = (context) => {
+const validateSchoolNumber = async (context) => {
 	if (context && context.data && context.data.officialSchoolNumber) {
 		const { officialSchoolNumber } = context.data;
+		const schools = await context.app.service('schools').find({
+			query: {
+				_id: context.id,
+				$populate: 'federalState',
+				$limit: 1,
+			},
+		});
+		const currentSchool = schools.data[0];
+		if (!currentSchool) {
+			throw new Error(`Internal error`);
+		}
+
+		if (!!currentSchool.officialSchoolNumber) {
+			throw new Error(`This school already have an officialSchoolNumber`);
+		}
 		// eg: 'BE-16593' or '16593'
 		const officialSchoolNumberFormat = RegExp('\\D{0,2}-*\\d{5}$');
 		if (!officialSchoolNumberFormat.test(officialSchoolNumber)) {
@@ -246,9 +261,12 @@ const validateCounty = async (context) => {
 		if (currentSchool.county && JSON.stringify(currentSchool.county) !== JSON.stringify(county)) {
 			throw new Error(`This school already have a county`);
 		}
+		context.data.county = currentSchool.federalState.counties.find((c) => {
+			return JSON.stringify(c._id) === JSON.stringify(county);
+		});
 	}
 	// checks for empty value and deletes it from context
-	if (context && context.data && Object.keys(context.data).includes('county') && context.data.county === '') {
+	if (context && context.data && Object.keys(context.data).includes('county') && !context.data.county) {
 		delete context.data.county;
 	}
 	return context;

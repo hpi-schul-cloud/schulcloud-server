@@ -7,19 +7,19 @@
             "antaresKey" : "S",
             "_id": {"$oid": "5fa55eb53f472a2d986c87ba"},
             "countyId" : 8111,
-            "county" : "Stuttgart"
+            "name" : "Stuttgart"
         },
         {
             "antaresKey" : "BB",
             "_id": {"$oid": "5fa55eb53f472a2d986c87bb"},
             "countyId" : 8115,
-            "county" : "Böblingen"
+            "name" : "Böblingen"
         },
         {
             "antaresKey" : "ES",
             "_id": {"$oid": "5fa55eb53f472a2d986c87bc"},
             "countyId" : 8116,
-            "county" : "Esslingen"
+            "name" : "Esslingen"
         }
 	],
 	"name": "Baden-Württemberg",
@@ -54,13 +54,13 @@
             "antaresKey" : "BRB",
             "_id" : {"$oid":"5fa55eb53f472a2d986c8812"},
             "countyId" : 12051,
-            "county" : "Brandenburg an der Havel"
+            "name" : "Brandenburg an der Havel"
         },
         {
             "antaresKey" : "CB",
             "_id" : {"$oid":"5fa55eb53f472a2d986c8813"},
             "countyId" : 12052,
-            "county" : "Cottbus"
+            "name" : "Cottbus"
         }
 	],
 	"name": "Brandenburg",

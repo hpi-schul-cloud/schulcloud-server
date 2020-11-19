@@ -386,7 +386,7 @@ describe('school service', () => {
 			}
 			expect(result2.officialSchoolNumber).to.be.equal(schoolNumber2);
 		});
-		it.only('should fail to update county if state does not have the provided county ', async () => {
+		it('should fail to update county if state does not have the provided county ', async () => {
 			const school = await testObjects.createTestSchool({ federalState: '0000b186816abba584714c53' });
 			const admin = await testObjects.createTestUser({
 				schoolId: school._id,
@@ -402,19 +402,20 @@ describe('school service', () => {
 				expect(err.name).to.be.equal('Error');
 			}
 		});
-		/* it.only('should succeed to update county if state have the provided county ', async () => {
+		it.only('should succeed to update county if state have the provided county ', async () => {
 			const school = await testObjects.createTestSchool({ federalState: '0000b186816abba584714c53' });
 			const admin = await testObjects.createTestUser({
 				schoolId: school._id,
 				roles: ['administrator'],
 			});
 			const params = await testObjects.generateRequestParamsFromUser(admin);
-
+			console.log('here');
 			const result = await app.service('/schools').patch(school._id, { county: '5fa55eb53f472a2d986c8812' }, params);
-			console.log(result);
+			console.log(result, 'result');
 			// params.query = { $populate: 'county' };
 			const school2 = await app.service('/schools').get(school._id);
-		}); */
+			console.log(school2, '?');
+		});
 	});
 });
 
