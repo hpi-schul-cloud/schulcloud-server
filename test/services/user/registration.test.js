@@ -380,13 +380,15 @@ describe('registration service', () => {
 			patchUser: true,
 		};
 
-		hashService
-			.create(hashData)
-			// eslint-disable-next-line promise/always-return
-			.then((res) => {
-				expect(res).to.be.a('string');
-			})
-			.catch(() => {});
+		return (
+			hashService
+				.create(hashData)
+				// eslint-disable-next-line promise/always-return
+				.then((res) => {
+					expect(res).to.be.a('string');
+				})
+				.catch(() => {})
+		);
 	});
 
 	it('hashService returns bad request without toHash parameter', () => {
@@ -395,13 +397,17 @@ describe('registration service', () => {
 			patchUser: true,
 		};
 
-		hashService
-			.create(hashData)
-			// eslint-disable-next-line promise/always-return
-			.then(() => {})
-			.catch((e) => {
-				expect(e.type).to.equal('FeathersError');
-				expect(e.className).to.equal('bad-request');
-			});
+		return (
+			hashService
+				.create(hashData)
+				// eslint-disable-next-line promise/always-return
+				.then(() => {
+					expect.fail('BadRequest: Please set toHash key.');
+				})
+				.catch((e) => {
+					expect(e.type).to.equal('FeathersError');
+					expect(e.className).to.equal('bad-request');
+				})
+		);
 	});
 });

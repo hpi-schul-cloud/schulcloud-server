@@ -24,7 +24,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Introduce FEATURE_PROMETHEUS_ENABLED to have a flag for enable prometheus api metrics
 - SC-7411 - add API Specification and validation for /me service
 - SC-7411 - add API Specification and validation for /version service
-- SC-7573 - Route/hash-broken promise chain
 - SC-7205 - create new data seed for QA
 - SC-7614 - creates documentation for edu sharing endpoints
 - SC-7370 - Add optional rootPath attribute modifier to iserv-idm strategy
@@ -66,6 +65,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6151 fixed paths to openapi documentation
 - Fixed searching for names including a dash
 - SC-7572 - Find /users route after hooks - extremely slow
+- SC-7573 - Route/hash-broken promise chain
 
 ### Removed
 
