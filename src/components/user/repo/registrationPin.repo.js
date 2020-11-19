@@ -12,9 +12,13 @@ const getRegistrationPins = async (email, app) => {
 	});
 };
 
-const deleteRegistrationPins = async (email, app) => {
-	const registrationPins = await getRegistrationPins(email, app);
-	registrationPins.forEach((registrationPin) => getService(app).remove(registrationPin));
+const deleteRegistrationPins = async (registrationPins, app) => {
+	if (registrationPins._id) {
+		getService(app).remove(registrationPins._id);
+	}
+	else if (registrationPins.length > 1) {
+		registrationPins.forEach((registrationPin) => getService(app).remove(registrationPin._id));
+	}
 };
 
 module.exports = {

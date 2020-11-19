@@ -14,12 +14,8 @@ const getUserAccount = async (userId, app) => {
 	return account;
 };
 
-const deleteUserAccount = async (userId, app) => {
-	const account = await getUserAccount(userId, app);
-	if (account && account._id) {
-		return getService(app).remove(account._id);
-	}
-	return null;
+const deleteUserAccount = async (account, app) => {
+	return getService(app).remove(account._id);
 };
 
 module.exports = {

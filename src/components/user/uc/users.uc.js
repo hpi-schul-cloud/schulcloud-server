@@ -11,14 +11,13 @@ const getUserRelatedData = async (id, app) => {
 	}
 
 	const account = await accountRepo.getUserAccount(id, app);
-	const registrationPins = registrationPinRepo.getRegistrationPins(user.email, app);
+	const registrationPins = await registrationPinRepo.getRegistrationPins(user.email, app);
 	return { user, account, registrationPins };
 };
 
-const deleteUserRelatedData = async (data, app) => {
-	const { id, email } = data.user;
-	await accountRepo.deleteUserAccount(id, app);
-	await registrationPinRepo.deleteRegistrationPins(email, app);
+const deleteUserRelatedData = async ({ account, registrationPins }, app) => {
+	await accountRepo.deleteUserAccount(account, app);
+	await registrationPinRepo.deleteRegistrationPins(registrationPins, app);
 };
 
 const createUserTrashbin = async (id, data) => {

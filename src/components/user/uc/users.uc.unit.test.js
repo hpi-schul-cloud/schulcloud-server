@@ -48,23 +48,25 @@ const createTestAccount = (userId = USER_ID) => {
 	};
 };
 
-const createRegistrationPin = (email = USER_EMAIL) => {
-	return {
-		email,
-		pin: 'USER_PIN',
-		verified: true,
-		importHash: 'USER_IMPORT_HASH'
-	};
+const createRegistrationPins = (email = USER_EMAIL) => {
+	return [
+		{
+			_id: 'REGISTRATION_PIN_ID',
+			email,
+			pin: 'USER_PIN',
+			verified: true,
+			importHash: 'USER_IMPORT_HASH',
+		},
+	];
 };
 
-const createTestTrashbin = (userId = USER_ID) => {
-	const user = createTestUser(userId);
-	const account = createTestAccount(userId);
+const createTestTrashbin = (userId) => {
 	return {
 		_id: 'TRASHBIN_ID',
 		userId,
-		user,
-		account,
+		user: createTestUser(userId),
+		account: createTestAccount(userId),
+		registrationPins: createRegistrationPins(USER_EMAIL),
 	};
 };
 
@@ -73,7 +75,6 @@ let getUserAccountStub;
 let getRegistrationPinsStub;
 let createUserTrashbinStub;
 let getUserRolesStub;
-
 describe('users usecase', () => {
 	let app;
 	let server;
@@ -98,7 +99,9 @@ describe('users usecase', () => {
 		sinon.stub(accountRepo, 'deleteUserAccount');
 
 		getRegistrationPinsStub = sinon.stub(registrationPinRepo, 'getRegistrationPins');
-		getRegistrationPinsStub.callsFake((email = USER_EMAIL) => createRegistrationPin(email));
+		getRegistrationPinsStub.callsFake((email = USER_EMAIL) => createRegistrationPins(email));
+
+		// sinon.stub(registrationPinRepo, 'deleteRegistrationPins');
 
 		createUserTrashbinStub = sinon.stub(trashbinRepo, 'createUserTrashbin');
 		createUserTrashbinStub.callsFake((userId = USER_ID) => createTestTrashbin(userId));
@@ -110,7 +113,8 @@ describe('users usecase', () => {
 		userRepo.replaceUserWithTombstone.restore();
 		getUserAccountStub.restore();
 		accountRepo.deleteUserAccount.restore();
-		registrationPinRepo.getRegistrationPins.restore();
+		getRegistrationPinsStub.restore();
+		// registrationPinRepo.deleteRegistrationPins.restore();
 		createUserTrashbinStub.restore();
 
 		await server.close();
@@ -123,9 +127,7 @@ describe('users usecase', () => {
 			const result = await userUC.deleteUser(USER_ID, 'student', { account: currentUser, app });
 
 			expect(result.userId).to.deep.equal(USER_ID);
-			expect(result.user).to.deep.equal(createTestUser());
-			expect(result.account).to.deep.equal(createTestAccount());
-			expect(result.registrationPins).to.deep.equal(createRegistrationPin());
+			expect(result).to.deep.equal(createTestTrashbin(USER_ID));
 		});
 
 		it('should return not found if user cannot be found', async () => {
