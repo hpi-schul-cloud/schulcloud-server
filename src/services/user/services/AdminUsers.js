@@ -287,14 +287,16 @@ class AdminUsers {
 		}
 
 		const currentUser = await getCurrentUserInfo(params.account.userId);
-		const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
+		const userPromises = _ids.map((userId) => getCurrentUserInfo(userId));
+		const usersIds = await Promise.all(userPromises);
 		if (!usersIds.some((user) => equalIds(currentUser.schoolId, user.schoolId))) {
 			throw new Forbidden('You cannot remove users from other schools.');
 		}
 
-		return Promise.all(
-			_ids.map((userId) => this.app.service(`users/v2/admin/${this.roleName}`).remove(userId, params))
+		const removePromises = _ids.map((userId) =>
+			this.app.service(`users/v2/admin/${this.roleName}`).remove(userId, params)
 		);
+		return Promise.all(removePromises);
 	}
 
 	async setup(app) {
