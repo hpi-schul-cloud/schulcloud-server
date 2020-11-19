@@ -36,7 +36,10 @@
 		"$oid": "0000b186816abba584714c53"
 	},
 	"county":{
-		"$oid": "5fa55eb53f472a2d986c8812"
+		"antaresKey" : "BRB",
+		"_id" : {"$oid":"5fa55eb53f472a2d986c8812"},
+		"countyId" : 12051,
+		"name" : "Brandenburg an der Havel"
 	},
 	"systems": [
 		{
@@ -80,10 +83,16 @@
 	},
 	"name": "Expertenschule",
 	"federalState": {
-		"$oid": "0000b186816abba584714c53"
+		"antaresKey" : "BRB",
+		"_id" : {"$oid":"5fa55eb53f472a2d986c8812"},
+		"countyId" : 12051,
+		"name" : "Brandenburg an der Havel"
 	},
 	"county":{
-		"$oid": "5fa55eb53f472a2d986c8813"
+		"antaresKey" : "CB",
+		"_id" : {"$oid":"5fa55eb53f472a2d986c8813"},
+		"countyId" : 12052,
+		"name" : "Cottbus"
 	},
 	"createdAt": {
 		"$date": "2018-11-09T10:04:11.721Z"
@@ -108,8 +117,11 @@
 		"$oid": "0000b186816abba584714c53"
 	},
 	"county":{
-		"$oid": "5fa55eb53f472a2d986c8813"
-	},
+            "antaresKey" : "CB",
+            "_id" : {"$oid":"5fa55eb53f472a2d986c8813"},
+            "countyId" : 12052,
+            "name" : "Cottbus"
+        },
 	"createdAt": {
 		"$date": "2017-08-24T12:04:11.721Z"
 	},
@@ -144,7 +156,10 @@
 		"$oid": "0000b186816abba584714c53"
 	},
 	"county":{
-		"$oid": "5fa55eb53f472a2d986c8813"
+		"antaresKey" : "CB",
+		"_id" : {"$oid":"5fa55eb53f472a2d986c8813"},
+		"countyId" : 12052,
+		"name" : "Cottbus"
 	},
 	"fileStorageType": "awsS3",
 	"currentYear": {
@@ -186,7 +201,10 @@
 		"$oid": "0000b186816abba584714c53"
 	},
 	"county":{
-		"$oid": "5fa55eb53f472a2d986c8813"
+		"antaresKey" : "CB",
+		"_id" : {"$oid":"5fa55eb53f472a2d986c8813"},
+		"countyId" : 12052,
+		"name" : "Cottbus"
 	},
 	"fileStorageType": "awsS3",
 	"currentYear": {
