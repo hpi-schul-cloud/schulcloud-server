@@ -1,5 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
-const globalHooks = require('../../../hooks');
+const { hasSchoolPermission } = require('../../../hooks');
 const userUC = require('../uc/users.uc');
 
 class UserServiceV2 {
@@ -19,7 +19,7 @@ class UserServiceV2 {
 const adminHookGenerator = (kind) => ({
 	before: {
 		all: [authenticate('jwt')],
-		remove: [globalHooks.hasSchoolPermission(`${kind}_DELETE`)],
+		remove: [hasSchoolPermission(`${kind}_DELETE`)],
 	},
 	after: {},
 });
