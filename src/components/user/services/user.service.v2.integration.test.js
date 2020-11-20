@@ -1,6 +1,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const { ObjectId } = require('mongoose').Types;
+const moment = require('moment');
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 
@@ -12,12 +13,14 @@ describe('user service v2', function test() {
 	let server;
 	let accountModelService;
 	let usersModelService;
+	let registrationPinModelService;
 
 	before(async () => {
 		app = await appPromise;
 		server = await app.listen(0);
 		accountModelService = app.service('accountModel');
 		usersModelService = app.service('usersModel');
+		registrationPinModelService = app.service('registrationPinsModel');
 	});
 
 	after(async () => {
@@ -122,7 +125,8 @@ describe('user service v2', function test() {
 
 			const token = await getPermissionToken(schoolId, ['STUDENT_DELETE']);
 
-			const deleteUser = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const birthday = moment().subtract(12, 'year').format('YYYY-MM-DD');
+			const deleteUser = await testObjects.createTestUser({ roles: ['student'], birthday, schoolId });
 
 			const request = chai
 				.request(app)
@@ -138,6 +142,12 @@ describe('user service v2', function test() {
 
 			const checkAccount = await accountModelService.find({ query: { userId: deleteUser._id }, paginate: false });
 			expect(checkAccount.length).to.equal(0);
+
+			const checkRegistrationPin = await registrationPinModelService.find({
+				query: { email: deleteUser.email },
+				paginate: false,
+			});
+			expect(checkRegistrationPin.length).to.equal(0);
 		});
 
 		it('users with STUDENT_DELETE permission can not REMOVE teachers', async () => {

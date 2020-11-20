@@ -1,6 +1,5 @@
-
 const getService = (app) => {
-	return app.service('registrationPins');
+	return app.service('registrationPinsModel');
 };
 
 const getRegistrationPins = async (email, app) => {
@@ -13,12 +12,11 @@ const getRegistrationPins = async (email, app) => {
 };
 
 const deleteRegistrationPins = async (registrationPins, app) => {
-	if (registrationPins._id) {
-		getService(app).remove(registrationPins._id);
-	}
-	else if (registrationPins.length > 1) {
-		registrationPins.forEach((registrationPin) => getService(app).remove(registrationPin._id));
-	}
+	const ids = registrationPins._id
+		? [registrationPins._id]
+		: registrationPins.map((registrationPin) => registrationPin._id);
+	const removePromises = ids.map((id) => getService(app).remove(id));
+	await Promise.all(removePromises);
 };
 
 module.exports = {
