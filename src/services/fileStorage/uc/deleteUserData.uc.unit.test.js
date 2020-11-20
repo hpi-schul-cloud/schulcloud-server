@@ -1,22 +1,57 @@
 const { expect } = require('chai');
-const rewire = require('rewire');
+const mockery = require('mockery');
+const { ObjectId } = require('mongoose').Types;
 
-const deleteUserDataUcRewire = rewire('./deleteUserData.uc');
-const { deleteUserData } = require('./deleteUserData.uc');
+// const deleteUserDataUcRewire = rewire('./deleteUserData.uc');
+
+const file = (userId) => ({
+	_id: ObjectId(),
+	isDirectory: false,
+	name: 'lorem-image.png',
+	type: 'image/png',
+	size: 12345,
+	storageFileName: 'lorem-image.png',
+	thumbnail: 'https://schulcloud.org/images/login-right.png',
+	permissions: [{ write: true, read: true, create: true, delete: true, refId: userId, refPermModel: 'user' }],
+	owner: userId,
+	creator: userId,
+	refOwnerModel: 'user',
+	thumbnailRequestToken: '123 - uuidv4',
+});
+
+const goodMockRepo = {
+	findFilesThatUserCanAccess: (userId) => [file(userId), file(userId)],
+	deleteFilesByIDs: () => ({ n: 3, ok: 1, deletedCount: 3 }),
+	findPersonalFiles: (userId) => [file(userId), file(userId)],
+	removeFilePermissionsByUserId: () => ({ n: 3, ok: 1, nModified: 3 }),
+};
 
 describe('deletedUserData.uc.unit', () => {
-	let findSharedFilesWithUserId;
+	describe('deleteUserData', () => {
+		let deleteUserData;
 
-	before(() => {
-		// eslint-disable-next-line no-underscore-dangle
-		findSharedFilesWithUserId = deleteUserDataUcRewire.__get__('findSharedFilesWithUserId');
-	});
+		before(() => {
+			mockery.enable({
+				warnOnReplace: false,
+				warnOnUnregistered: false,
+				useCleanCache: true,
+			});
+			mockery.registerMock('../repo/files.repo', goodMockRepo);
+			({ deleteUserData } = require('./deleteUserData.uc'));
+		});
 
-	it('deleteUserData handle errors', () => {
+		after(() => {
+			mockery.deregisterAll();
+			mockery.disable();
+		});
 
-	});
-
-	it('deleteUserData return fulfilled context', () => {
-
+		it('all should work without errors', async () => {
+			const result = await deleteUserData(ObjectId());
+			expect(result).to.have.all.keys('context', 'deleted', 'references', 'errors');
+			expect(result.errors).to.be.an('array').with.lengthOf(0);
+			expect(result.deleted).to.be.an('array').with.lengthOf(2);
+			expect(result.references).to.be.an('array').with.lengthOf(2);
+			//TODO: test partial 
+		});
 	});
 });
