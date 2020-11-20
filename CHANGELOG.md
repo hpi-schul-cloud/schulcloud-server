@@ -47,7 +47,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7411 - api versioning for /version service
 - IMP-160 - integration-tests repo renamed to end-to-end-tests
 - SC-5900 - Move Synapse synchronization logic into server
-- SC-7499 Fixes documentation for edu sharing endpoints
+- SC-7499 - Fixes documentation for edu sharing endpoints
+- SC-7872 - Fix audience of the jwt to new organisation name.
 
 ### Fixed
 

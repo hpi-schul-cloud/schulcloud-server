@@ -29,7 +29,6 @@ const getRequestInfo = (req) => {
 		if (decodedJWT && decodedJWT.accountId) {
 			info.user = {
 				accountId: decodedJWT.accountId,
-				aud: decodedJWT.aud,
 				userId: decodedJWT.userId,
 			};
 			if (decodedJWT.support === true) {
