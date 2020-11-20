@@ -1,4 +1,4 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const constants = require('../../utils/constants');
 const { passwordsMatch } = require('../../utils/passwordHelpers'); // fixmer this should be removed
 

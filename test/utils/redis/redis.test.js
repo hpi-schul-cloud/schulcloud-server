@@ -2,7 +2,7 @@
 
 const { expect } = require('chai');
 const mockery = require('mockery');
-const commons = require('@schul-cloud/commons');
+const commons = require('@hpi-schul-cloud/commons');
 
 const { Configuration } = commons;
 
@@ -19,7 +19,7 @@ describe('redis helpers', () => {
 				useCleanCache: true,
 			});
 			mockery.registerMock('redis', redisMock);
-			mockery.registerMock('@schul-cloud/commons', commons);
+			mockery.registerMock('@hpi-schul-cloud/commons', commons);
 
 			delete require.cache[require.resolve('../../../src/utils/redis')];
 			redisHelpers = require('../../../src/utils/redis');
@@ -82,7 +82,7 @@ describe('redis helpers', () => {
 				useCleanCache: true,
 			});
 			mockery.registerMock('redis', redisMock);
-			mockery.registerMock('@schul-cloud/commons', commons);
+			mockery.registerMock('@hpi-schul-cloud/commons', commons);
 
 			delete require.cache[require.resolve('../../../src/utils/redis')];
 			redisHelpers = require('../../../src/utils/redis');

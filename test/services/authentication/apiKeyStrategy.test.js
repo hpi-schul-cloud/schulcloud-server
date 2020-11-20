@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const { authenticate } = require('@feathersjs/authentication');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const appPromise = require('../../../src/app');
 

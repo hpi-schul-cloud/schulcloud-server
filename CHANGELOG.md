@@ -11,6 +11,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-4666 - Added a pool based LDAP system and school sync. LDAP_SYSTEM_SYNCER_POOL_SIZE and LDAP_SCHOOL_SYNCER_POOL_SIZE variables
+  determine how many system/school syncers will be run in parallel (at most) during the LDAP sync.
+- SC-7615 - reduces the errors in lernstore
 - SC-5476 - Extend tests for Matrix messenger config and permission service
 - SC-6690 - refactors edu-sharing service and sets defaults
 - SC-6738 - Extend search input field in new admin tables to search for full name
@@ -21,9 +24,19 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Introduce FEATURE_PROMETHEUS_ENABLED to have a flag for enable prometheus api metrics
 - SC-7411 - add API Specification and validation for /me service
 - SC-7411 - add API Specification and validation for /version service
+- SC-7205 - create new data seed for QA
+- SC-7614 - creates documentation for edu sharing endpoints
+- SC-7370 - Add optional rootPath attribute modifier to iserv-idm strategy
+- SC-4667 - persist time of last attempted and last successful LDAP sync to database (based on system)
+- SC-4667 - Only request and compare LDAP entities that have changed since the last sync (using operational attribute modifyTimestamp with fallback)
+- SC-4667 - Add optional `forceFullSync` option (as get param or json payload) to force a full LDAP sync
+- SC-7499 - add API Specification for public services
+- SC-7571 - solved performance issues - bulk QR-code generation
 
 ### Changed
 
+- OPS-1289 - moved and updated commons (to hpi-schul-cloud/commons)
+- SC-6596 - Changed route for messenger permissions service
 - SC-7331 - introduce axios for external requests, implemented in status api
 - SC-7395 - Changed ldap general strategy fetching of users from parallel to serialized
 - SC-6080 - move REQUEST_TIMEOUT from globals to Configuration
@@ -33,9 +46,15 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7411 - api versioning for /me service
 - SC-7411 - api versioning for /version service
 - IMP-160 - integration-tests repo renamed to end-to-end-tests
+- SC-5900 - Move Synapse synchronization logic into server
+- SC-7499 - Fixes documentation for edu sharing endpoints
+- SC-7872 - Fix audience of the jwt to new organisation name.
 
 ### Fixed
 
+- SC-1589 Trim strings to avoid empty team names
+- ARC-138 fix changelog action
+- ARC-137 avoid DoS on alerts in error state
 - SC-7353 course sharing between teachers
 - SC-7530 rename SHOW_VERSION to FEATURE_SHOW_VERSION_ENABLED
 - SC-7517 improve oauth test stability
@@ -46,6 +65,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6151 fixed a bug that prevented api docu from being accessible
 - SC-6151 fixed paths to openapi documentation
 - Fixed searching for names including a dash
+- SC-7572 - Find /users route after hooks - extremely slow
+- SC-7573 - Route/hash-broken promise chain
+
+### Removed
+
+- SC-7413 - Cleanup UnhandledRejection code that is handled from winston now
 
 ## [25.2.0]
 
@@ -81,6 +106,30 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - fixed README badges
 - SC-6151 - fixed a bug that prevented api docu from being accessible
 - Fix mocha tests
+
+## [25.1.13] - 2020-11-12
+
+### Changed
+
+- SC-7395 - Changed ldap general strategy fetching of users from parallel to serialized
+
+## [25.1.12] - 2020-11-09
+
+### Added
+
+- SC-7683 - add request logging options
+
+## [25.1.11] - 2020-11-06
+
+### Security
+
+- SC-7695 - prevent csv user override operations on other schools
+
+## [25.1.10] - 2020-11-05
+
+### Added
+
+- SC-7683 - Add log metic for memory usage, add async error logging util, catch one unhandledRejection error and remove cronjob task from server.
 
 ## [25.1.9] - 2020-11-03
 
@@ -270,7 +319,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Ignore database seed data with prettier, eslint, and codacy
 - SC-6640 - Fixed email check within registration (case insensitive)
 - SC-2710 - Adding time zones, default for school and theme
-
 
 ### Added - 24.5.0
 
