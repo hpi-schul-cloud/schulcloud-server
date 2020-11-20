@@ -1,5 +1,5 @@
 const request = require('request-promise-native');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const externalApiRequest = (baseUrl) =>
 	request.defaults({

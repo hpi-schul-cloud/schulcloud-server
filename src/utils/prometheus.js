@@ -1,5 +1,5 @@
 const apiMetrics = require('prometheus-api-metrics');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 module.exports = (app) => {
 	if (Configuration.has('FEATURE_PROMETHEUS_ENABLED') && Configuration.get('FEATURE_PROMETHEUS_ENABLED') === true) {

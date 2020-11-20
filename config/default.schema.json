@@ -469,10 +469,32 @@
 			"default": 8000,
 			"description": "Default timeout for external requests in milliseconds."
 		},
+		"LDAP_SYSTEM_SYNCER_POOL_SIZE": {
+			"type": "integer",
+			"minimum": 1,
+			"default": 1,
+			"description": "Determines how many system syncers will be run in parallel (at most) during the LDAP sync."
+		},
+		"LDAP_SCHOOL_SYNCER_POOL_SIZE": {
+			"type": "integer",
+			"minimum": 1,
+			"default": 1,
+			"description": "Determines how many school syncers will be run in parallel (at most) during the LDAP sync."
+		},
 		"MEMORY_INTERVAL_TIME" : {
 			"type": "integer",
 			"default": 0,
 			"description": "Is the time for logging memory metrics to log in >secounds<. Default 0 will disable the logging."
+		},
+		"REQUEST_LOGGING_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enabled that every request is logged with the information route and method"
+		},
+		"JWT_AUD": {
+			"type": "string",
+			"default": "https://hpi-schul-cloud.de",
+			"description": "It is the organisation web point that is created the jwt and where questions can addressed."
 		}
 	},
 	"required": [

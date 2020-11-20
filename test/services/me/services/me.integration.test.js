@@ -1,6 +1,6 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const commons = require('@schul-cloud/commons');
+const commons = require('@hpi-schul-cloud/commons');
 
 const { Configuration } = commons;
 
@@ -41,7 +41,7 @@ describe('me service integration tests', function test() {
 				.request(app)
 				.get('/me')
 				.set('Accept', 'application/json')
-				.set('Authorization', token)
+				.set('Authorization', `Bearer ${token}`)
 				.set('content-type', 'application/json');
 			const response = await request.send();
 			expect(response.status).to.equal(200);

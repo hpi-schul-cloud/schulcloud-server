@@ -1,5 +1,5 @@
 const CryptoJS = require('crypto-js');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const encryptSecret = (context) => {
 	if (context.data.ldapConfig && context.data.ldapConfig.searchUserPassword) {
