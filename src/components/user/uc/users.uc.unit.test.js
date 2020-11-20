@@ -72,7 +72,7 @@ const createTestTrashbin = (userId) => {
 
 let getUserStub;
 let getUserAccountStub;
-let getRegistrationPinsStub;
+let findStub;
 let createUserTrashbinStub;
 let getUserRolesStub;
 describe('users usecase', () => {
@@ -98,10 +98,10 @@ describe('users usecase', () => {
 
 		sinon.stub(accountRepo, 'deleteUserAccount');
 
-		getRegistrationPinsStub = sinon.stub(registrationPinRepo, 'getRegistrationPins');
-		getRegistrationPinsStub.callsFake((email = USER_EMAIL) => createRegistrationPins(email));
+		findStub = sinon.stub(registrationPinRepo, 'find');
+		findStub.callsFake((email = USER_EMAIL) => createRegistrationPins(email));
 
-		// sinon.stub(registrationPinRepo, 'deleteRegistrationPins');
+		// sinon.stub(registrationPinRepo, 'delete');
 
 		createUserTrashbinStub = sinon.stub(trashbinRepo, 'createUserTrashbin');
 		createUserTrashbinStub.callsFake((userId = USER_ID) => createTestTrashbin(userId));
@@ -113,8 +113,8 @@ describe('users usecase', () => {
 		userRepo.replaceUserWithTombstone.restore();
 		getUserAccountStub.restore();
 		accountRepo.deleteUserAccount.restore();
-		getRegistrationPinsStub.restore();
-		// registrationPinRepo.deleteRegistrationPins.restore();
+		findStub.restore();
+		// registrationPinRepo.delete.restore();
 		createUserTrashbinStub.restore();
 
 		await server.close();

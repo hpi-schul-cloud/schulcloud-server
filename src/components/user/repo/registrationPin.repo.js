@@ -20,6 +20,6 @@ const deleteRegistrationPins = async (registrationPins, app) => {
 };
 
 module.exports = {
-	getRegistrationPins,
-	deleteRegistrationPins,
+	find: getRegistrationPins,
+	delete: deleteRegistrationPins,
 };
