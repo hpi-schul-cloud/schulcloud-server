@@ -19,16 +19,16 @@ const file = (userId) => ({
 	thumbnailRequestToken: '123 - uuidv4',
 });
 
-const goodMockRepo = {
-	findFilesThatUserCanAccess: (userId) => [file(userId), file(userId)],
-	deleteFilesByIDs: () => ({ n: 3, ok: 1, deletedCount: 3 }),
-	findPersonalFiles: (userId) => [file(userId), file(userId)],
-	removeFilePermissionsByUserId: () => ({ n: 3, ok: 1, nModified: 3 }),
-};
-
 describe('deletedUserData.uc.unit', () => {
 	describe('deleteUserData', () => {
 		let deleteUserData;
+
+		const mockRepo = {
+			findFilesThatUserCanAccess: (userId) => [file(userId), file(userId)],
+			deleteFilesByIDs: () => ({ n: 3, ok: 1, deletedCount: 3 }),
+			findPersonalFiles: (userId) => [file(userId), file(userId)],
+			removeFilePermissionsByUserId: () => ({ n: 3, ok: 1, nModified: 3 }),
+		};
 
 		before(() => {
 			mockery.enable({
@@ -36,7 +36,8 @@ describe('deletedUserData.uc.unit', () => {
 				warnOnUnregistered: false,
 				useCleanCache: true,
 			});
-			mockery.registerMock('../repo/files.repo', goodMockRepo);
+			mockery.registerMock('../repo/files.repo', mockRepo);
+			// eslint-disable-next-line global-require
 			({ deleteUserData } = require('./deleteUserData.uc'));
 		});
 
@@ -51,7 +52,8 @@ describe('deletedUserData.uc.unit', () => {
 			expect(result.errors).to.be.an('array').with.lengthOf(0);
 			expect(result.deleted).to.be.an('array').with.lengthOf(2);
 			expect(result.references).to.be.an('array').with.lengthOf(2);
-			//TODO: test partial 
+			// TODO: test partial
+			// TODO: deleted has all keys
 		});
 	});
 });
