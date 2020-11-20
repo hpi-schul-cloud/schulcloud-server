@@ -49,10 +49,17 @@ describe('user service v2', function test() {
 		return token;
 	};
 
+	const createUserWithRelatedData = async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool();
+		const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
+		await testObjects.createTestClass({ userIds: [user._id], schoolId });
+		return { schoolId, user };
+	};
+
 	describe('API tests', () => {
 		it('When an authorized user deletes a student and returns success', async () => {
-			const { _id: schoolId } = await testObjects.createTestSchool();
-			const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const { schoolId, user } = await createUserWithRelatedData();
+
 			const token = await getAdminToken(schoolId);
 			const request = chai
 				.request(app)

@@ -12,6 +12,7 @@ const schema = new Schema(
 		},
 		user: { type: Object },
 		account: { type: Object },
+		classIds: [{ type: Schema.Types.ObjectId, ref: 'class' }],
 	},
 	{
 		timestamps: true,
