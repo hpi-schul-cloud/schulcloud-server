@@ -13,7 +13,8 @@ const getPseudonyms = async (userId, app) => {
 };
 
 const deletePseudonyms = async (pseudonyms, app) => {
-	pseudonyms.forEach((pseudonym) => getService(app).remove(pseudonym._id));
+	const removePromises = pseudonyms.map((pseudonym) => getService(app).remove(pseudonym._id));
+	await Promise.all(removePromises);
 };
 
 module.exports = {
