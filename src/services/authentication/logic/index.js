@@ -1,3 +1,5 @@
+const { Configuration } = require('@hpi-schul-cloud/commons');
+
 const logger = require('../../../logger');
 const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 
@@ -48,7 +50,7 @@ if (NODE_ENV === ENVIRONMENTS.PRODUCTION && !secrets.authentication) {
 	logger.error('use default authentication secret');
 }
 
-const audience = 'https://schul-cloud.org';
+const audience = Configuration.get('JWT_AUD');
 
 module.exports = {
 	jwtFromCookieString,
