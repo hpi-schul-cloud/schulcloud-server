@@ -12,14 +12,15 @@ const lengthValidation = (result, fileIds) => {
 
 /**
  * Permission based search
- * @param {BSON || BSONString} userId
+ * @param {BSON|BSONString} userId
+ * @param {string|array|object} [select]
  */
-const findFilesThatUserCanAccess = async (userId) => {
+const findFilesThatUserCanAccess = async (userId, select) => {
 	const insideOfPermissions = {
 		permissions: { $elemMatch: { refPermModel: 'user', refId: userId } },
 	};
 
-	const result = await FileModel.find(insideOfPermissions).lean().exec();
+	const result = await FileModel.find(insideOfPermissions, select).lean().exec();
 	return result;
 };
 
@@ -32,13 +33,18 @@ const deleteFilesByIDs = async (fileIds = []) => {
 	return lengthValidation(result, fileIds);
 };
 
-const findPersonalFiles = async (userId) => {
+/**
+ * @param {BSON|BSONString} userId
+ * @param {string|array|object} [select]
+ */
+const findPersonalFiles = async (userId, select) => {
 	const query = {
 		refOwnerModel: 'user',
 		creator: userId,
 		owner: userId,
 	};
-	const result = await FileModel.find(query).lean().exec();
+
+	const result = await FileModel.find(query, select).lean().exec();
 	return result;
 };
 

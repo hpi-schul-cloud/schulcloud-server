@@ -6,50 +6,57 @@ const { BadRequest } = require('../../activation/utils/generalUtils');
 const repo = require('../repo/files.repo');
 
 const isUserPermission = (userId) => (p) => p.refId.toString() === userId.toString() && p.refPermModel === 'user';
+
+const extractIds = (result = []) => result.map(({ _id }) => _id);
+
+const handleIncompleteDeleteOperations = async (resultStatus, context, userId, dbFindOperation) => {
+	if (resultStatus.ok !== 1 && resultStatus.deletedCount < resultStatus.n) {
+		const failedFileIds = await dbFindOperation(userId, '_id');
+		resultStatus.failedFileIds = extractIds(failedFileIds);
+		const error = new BadRequest('Incomple deletions:', resultStatus);
+		context.errors.push(error);
+	}
+};
+
 /**
  * Delete file connections for files shared with user
- * @param {BSON || BSONString} userId
+ * @param {BSON|BSONString} userId
+ * @param {object} context
  */
-const removePermissionsThatUserCanAccess = async (userId) => {
+const removePermissionsThatUserCanAccess = async (userId, context) => {
 	try {
-		const result = await repo.findFilesThatUserCanAccess(userId);
+		const files = await repo.findFilesThatUserCanAccess(userId);
 
-		// format
-		// null is valid response but should formated to array
-		// format in a way that key relationship can restore
-		// --> delta
-		// repo operation for remove permission of user
-		const references = result.map(({ _id, permissions: p }) => {
+		// filter information to delete
+		const references = files.map(({ _id, permissions: p }) => {
 			const permissions = p.filter(isUserPermission(userId));
 			return { _id, permissions };
 		});
 
-		const resultStatus = await repo.removeFilePermissionsByUserId();
-		if (resultStatus.ok !== 1) {
-			throw new BadRequest('Can not all file permissions from user.', resultStatus);
-		}
+		const resultStatus = await repo.removeFilePermissionsByUserId(extractIds(files), userId);
+		await handleIncompleteDeleteOperations(resultStatus, context, userId, repo.findFilesThatUserCanAccess);
 
-		return {
-			references, // [{ _id, permissions: [ {} ]} , { _id, permissions: [ {} ]}]
-		};
+		context.references = [...context.references, ...references];
 	} catch (err) {
 		throw new Unprocessable('Can not remove file permissions', err);
 	}
 };
 
-const deletePersonalFiles = async (userId) => {
+/**
+ * @param {BSON|BSONString} userId
+ * @param {object} context
+ */
+const deletePersonalFiles = async (userId, context) => {
 	try {
-		const result = await repo.findPersonalFiles(userId);
-		const ids = result.map(({ _id }) => _id);
-		const resultStatus = await repo.deleteFilesByIDs(ids);
-		if (resultStatus.ok !== 1) {
-			throw new BadRequest('Can not delete all personal files', resultStatus);
-		}
-		return {
-			deleted: result,
-		};
+		const files = await repo.findPersonalFiles(userId);
+		const resultStatus = await repo.deleteFilesByIDs(extractIds(files));
+
+		await handleIncompleteDeleteOperations(resultStatus, context, userId, repo.findPersonalFiles);
+
+		context.deleted = [...context.deleted, ...files];
 	} catch (err) {
-		throw new Unprocessable('Can not deleted personal files.', err);
+		const error = new Unprocessable('Can not deleted personal files.', err);
+		context.errors.push(error);
 	}
 };
 /*
@@ -76,13 +83,9 @@ const deleteUserData = async (userId) => {
 		errors: [],
 	};
 
-	// TODO pass errors and do not throw OR pass context
-	const deletedFiles = await deletePersonalFiles(userId);
-	context.deleted = [...context.deleted, ...deletedFiles.deleted];
-	// const fileIds = deletedFiles.map(({ _id }) => _id);
-	// await setS3ExperiedForFileIds(fileIds); ..promise.all with removePermissionsThatUserCanAccess
-	const removedPermissions = await removePermissionsThatUserCanAccess(userId);
-	context.references = [...context.references, ...removedPermissions.references];
+	await deletePersonalFiles(userId, context);
+	// await setS3ExperiedForFileIds(extractId(deletedFiles)); ..promise.all with removePermissionsThatUserCanAccess
+	await removePermissionsThatUserCanAccess(userId, context);
 	// const replaceUserIds = await replaceUserId(userId);
 
 	return context;

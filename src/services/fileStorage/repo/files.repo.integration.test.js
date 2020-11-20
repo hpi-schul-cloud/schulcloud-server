@@ -33,7 +33,7 @@ describe('user.repo.integration.test', () => {
 	});
 
 	describe('findPersonalFiles', () => {
-		it('no result', async () => {
+		it('does not find files from other users', async () => {
 			const userToBeDeletedId = generateObjectId();
 			const fileOwnerId = generateObjectId();
 
@@ -51,8 +51,19 @@ describe('user.repo.integration.test', () => {
 			await fileTestUtils.create({ owner: fileOwnerId });
 
 			const result = await findPersonalFiles(userToBeDeletedId);
-			expect(result, 'should return emptry array').to.be.an('array').with.lengthOf(1);
-			expect(result[0]._id.toString()).to.include(ownedByUserToBeDeleted._id.toString());
+			expect(result).to.be.an('array').with.lengthOf(1);
+			expect(result[0]._id.toString()).to.equal(ownedByUserToBeDeleted._id.toString());
+		});
+
+		it('work for select', async () => {
+			const owner = generateObjectId();
+
+			await fileTestUtils.create({ owner });
+
+			const selectedKeys = ['_id', 'owner'];
+			const result = await findPersonalFiles(owner, selectedKeys);
+			expect(result).to.be.an('array').with.lengthOf(1);
+			expect(result[0]).to.have.all.keys(selectedKeys);
 		});
 	});
 
@@ -83,6 +94,17 @@ describe('user.repo.integration.test', () => {
 			expect(findFileIds).to.include(fileToBeFound._id.toString());
 			expect(findFileIds).to.include(fileWhereUserToBeDeletedIsOwner._id.toString());
 			expect(findFileIds).to.not.include(fileNOTToBeFound._id.toString());
+		});
+
+		it('work for select', async () => {
+			const owner = generateObjectId();
+
+			await fileTestUtils.create({ owner });
+
+			const selectedKeys = ['_id', 'owner'];
+			const result = await findFilesThatUserCanAccess(owner, selectedKeys);
+			expect(result).to.be.an('array').with.lengthOf(1);
+			expect(result[0]).to.have.all.keys(selectedKeys);
 		});
 	});
 
