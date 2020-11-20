@@ -38,7 +38,8 @@ const removePermissionsThatUserCanAccess = async (userId, context) => {
 
 		context.references = [...context.references, ...references];
 	} catch (err) {
-		throw new Unprocessable('Can not remove file permissions', err);
+		const error = new Unprocessable('Can not remove file permissions.', err);
+		context.errors.push(error);
 	}
 };
 
@@ -83,10 +84,12 @@ const deleteUserData = async (userId) => {
 		errors: [],
 	};
 
+	// step 1
 	await deletePersonalFiles(userId, context);
+	// step 2 -> Promise.all
 	// await setS3ExperiedForFileIds(extractId(deletedFiles)); ..promise.all with removePermissionsThatUserCanAccess
 	await removePermissionsThatUserCanAccess(userId, context);
-	// const replaceUserIds = await replaceUserId(userId);
+	// const replaceUserIds = await replaceUserId(userId); - step 2 or step 3
 
 	return context;
 };
