@@ -16,6 +16,7 @@ module.exports = function () {
 		lean: false,
 	};
 
+	app.use('/pseudonymModel', service({ ...options, lean: true }));
 	app.use('/pseudonym/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/pseudonym', service(options));
 

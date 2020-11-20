@@ -5,7 +5,7 @@ const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../app');
 const userUC = require('./users.uc');
 
-const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
+const { userRepo, accountRepo, trashbinRepo, pseudonymRepo } = require('../repo/index');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
@@ -58,10 +58,26 @@ const createTestTrashbin = (userId = USER_ID) => {
 	};
 };
 
+const createTestPseudonyms = (userId = USER_ID) => {
+	const pseudonyms = [];
+	// eslint-disable-next-line no-plusplus
+	for (let i = 0; i < 5; i++) {
+		const pseudonym = {
+			userId,
+			toolId: 'TOOL_ID',
+			pseudonym: `PSEUDONYM_${i}`,
+		};
+		pseudonyms.push(pseudonym);
+	}
+
+	return pseudonyms;
+};
+
 let getUserStub;
 let getUserAccountStub;
 let createUserTrashbinStub;
 let getUserRolesStub;
+let getPseudonymsStub;
 
 describe('users usecase', () => {
 	let app;
@@ -84,6 +100,9 @@ describe('users usecase', () => {
 		getUserAccountStub = sinon.stub(accountRepo, 'getUserAccount');
 		getUserAccountStub.callsFake((userId = USER_ID) => createTestAccount(userId));
 
+		getPseudonymsStub = sinon.stub(pseudonymRepo, 'getPseudonyms');
+		getPseudonymsStub.callsFake((userId = USER_ID) => createTestPseudonyms(userId));
+
 		sinon.stub(accountRepo, 'deleteUserAccount');
 
 		createUserTrashbinStub = sinon.stub(trashbinRepo, 'createUserTrashbin');
@@ -97,6 +116,7 @@ describe('users usecase', () => {
 		getUserAccountStub.restore();
 		accountRepo.deleteUserAccount.restore();
 		createUserTrashbinStub.restore();
+		getPseudonymsStub.restore();
 
 		await server.close();
 	});
@@ -108,6 +128,7 @@ describe('users usecase', () => {
 			const result = await userUC.deleteUser(USER_ID, 'student', { account: currentUser, app });
 
 			expect(result.userId).to.deep.equal(USER_ID);
+			expect(result).to.deep.equal(createTestTrashbin(USER_ID));
 		});
 
 		it('should return not found if user cannot be found', async () => {

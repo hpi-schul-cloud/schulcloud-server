@@ -20,6 +20,10 @@ describe('user service v2', function test() {
 		usersModelService = app.service('usersModel');
 	});
 
+	afterEach(async () => {
+		await testObjects.cleanup();
+	});
+
 	after(async () => {
 		await server.close();
 	});
@@ -53,6 +57,8 @@ describe('user service v2', function test() {
 		it('When an authorized user deletes a student and returns success', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const ltiTool = await testObjects.createTestLtiTool();
+			await testObjects.createTestPseudonym({ pseudonym: 'PSEUDONYM' }, ltiTool, user);
 			const token = await getAdminToken(schoolId);
 			const request = chai
 				.request(app)

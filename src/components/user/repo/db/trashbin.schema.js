@@ -12,6 +12,7 @@ const schema = new Schema(
 		},
 		user: { type: Object },
 		account: { type: Object },
+		pseudonyms: { type: Object },
 	},
 	{
 		timestamps: true,

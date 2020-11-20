@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongoose').Types;
 const { BadRequest, Forbidden } = require('../../../errors');
-const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
+const { userRepo, accountRepo, trashbinRepo, pseudonymRepo } = require('../repo/index');
 const hasSameSchool = require('../../../utils/hasSameSchool');
 const hasRole = require('../../../utils/hasRole');
 
@@ -11,12 +11,14 @@ const getUserRelatedData = async (id, app) => {
 	}
 
 	const account = await accountRepo.getUserAccount(id, app);
-	return { user, account };
+	const pseudonyms = await pseudonymRepo.getPseudonyms(id, app);
+	return { user, account, pseudonyms };
 };
 
 const deleteUserRelatedData = async (data, app) => {
 	const { id } = data.user;
 	await accountRepo.deleteUserAccount(id, app);
+	await pseudonymRepo.deletePseudonyms(data.pseudonyms, app);
 };
 
 const createUserTrashbin = async (id, data) => {
