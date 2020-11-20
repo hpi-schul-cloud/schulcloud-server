@@ -10,7 +10,7 @@ const isUserPermission = (userId) => (p) => p.refId.toString() === userId.toStri
 const extractIds = (result = []) => result.map(({ _id }) => _id);
 
 const handleIncompleteDeleteOperations = async (resultStatus, context, userId, dbFindOperation) => {
-	if (resultStatus.ok !== 1 && resultStatus.deletedCount < resultStatus.n) {
+	if (resultStatus.ok !== 1 || resultStatus.deletedCount < resultStatus.n) {
 		const failedFileIds = await dbFindOperation(userId, '_id');
 		resultStatus.failedFileIds = extractIds(failedFileIds);
 		const error = new BadRequest('Incomple deletions:', resultStatus);
