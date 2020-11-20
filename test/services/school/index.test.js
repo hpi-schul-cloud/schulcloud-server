@@ -184,7 +184,7 @@ describe('school service', () => {
 		});
 	});
 
-	describe('patch schools', () => {
+	describe.only('patch schools', () => {
 		it('administrator can patch his own school', async () => {
 			const school = await testObjects.createTestSchool({});
 			const admin = await testObjects.createTestUser({
@@ -358,6 +358,23 @@ describe('school service', () => {
 				expect(err.name).to.be.equal('Error');
 			}
 		});
+		it('should fail to update officialSchoolNumber if school already have one', async () => {
+			const school = await testObjects.createTestSchool({ officialSchoolNumber: 'bv-12345' });
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['administrator'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			try {
+				await app.service('/schools').patch(school._id, { officialSchoolNumber: 'vb-54321' }, params);
+			} catch (err) {
+				expect(err).to.not.equal(undefined);
+				console.log(err, 'err?!==!==!');
+				expect(err.message).to.include('School number is incorrect');
+				expect(err.name).to.be.equal('Error');
+			}
+		});
 		it('should succeed to update officialSchoolNumber with correct format', async () => {
 			const school = await testObjects.createTestSchool({});
 			const admin = await testObjects.createTestUser({
@@ -402,19 +419,16 @@ describe('school service', () => {
 				expect(err.name).to.be.equal('Error');
 			}
 		});
-		it.only('should succeed to update county if state have the provided county ', async () => {
+		it('should succeed to update county if state have the provided county ', async () => {
 			const school = await testObjects.createTestSchool({ federalState: '0000b186816abba584714c53' });
 			const admin = await testObjects.createTestUser({
 				schoolId: school._id,
 				roles: ['administrator'],
 			});
 			const params = await testObjects.generateRequestParamsFromUser(admin);
-			console.log('here');
-			const result = await app.service('/schools').patch(school._id, { county: '5fa55eb53f472a2d986c8812' }, params);
-			console.log(result, 'result');
-			// params.query = { $populate: 'county' };
-			const school2 = await app.service('/schools').get(school._id);
-			console.log(school2, '?');
+			const countId = '5fa55eb53f472a2d986c8812';
+			const result = await app.service('/schools').patch(school._id, { county: countId }, params);
+			expect(result.county).to.be.eq(countyId);
 		});
 	});
 });
