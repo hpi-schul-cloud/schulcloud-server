@@ -3,18 +3,17 @@ const getService = (app) => {
 };
 
 const getRegistrationPins = async (email, app) => {
-	return getService(app).find({
+	const registrationPins = await getService(app).find({
 		query: {
 			email,
 		},
 		paginate: false,
 	});
+	return Array.isArray(registrationPins) ? registrationPins : [registrationPins];
 };
 
 const deleteRegistrationPins = async (registrationPins, app) => {
-	const ids = registrationPins._id
-		? [registrationPins._id]
-		: registrationPins.map((registrationPin) => registrationPin._id);
+	const ids = registrationPins.map((registrationPin) => registrationPin._id);
 	const removePromises = ids.map((id) => getService(app).remove(id));
 	await Promise.all(removePromises);
 };
