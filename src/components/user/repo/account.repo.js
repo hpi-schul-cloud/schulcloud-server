@@ -1,4 +1,3 @@
-
 const getService = (app) => {
 	return app.service('accountModel');
 };
