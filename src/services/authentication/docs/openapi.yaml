@@ -138,7 +138,7 @@ components:
                 aud:
                   type: string
                   description: audience of the token
-                  example: https://hpi-schul-cloud.org
+                  example: https://hpi-schul-cloud.de
                 iss:
                   type: string
                   description: issuer of the token

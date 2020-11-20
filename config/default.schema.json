@@ -490,6 +490,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enabled that every request is logged with the information route and method"
+		},
+		"JWT_AUD": {
+			"type": "string",
+			"default": "https://hpi-schul-cloud.de",
+			"description": "It is the organisation web point that is created the jwt and where questions can addressed."
 		}
 	},
 	"required": [
