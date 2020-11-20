@@ -2,7 +2,7 @@ const { userModel: User } = require('../../../services/user/model');
 
 const getService = (app) => {
 	return app.service('usersModel');
-}
+};
 
 const getUser = async (id, app) => {
 	return getService(app).get(id);
