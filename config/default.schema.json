@@ -498,22 +498,22 @@
 				"TITLE": {
 					"type": "string",
 					"default": "HPI Schul-Cloud",
-					"description": "Title is set for dev, test and by default. For Production set in instances, so not in production.json"
+					"description": "Formal title of the instance. Used in emails, error messages, etc. For Production set in instances, so not in production.json"
 				},
 				"DOMAIN": {
 					"type": "string",
 					"default": "localhost",
-					"description": "Domain is set for dev, test and by default. For Production set in instances, so not in production.json"
+					"description": "Instance theme. Used for privacy document base paths, etc. Used for cookies, CORS-defaults, etc. For Production set in instances, so not in production.json"
 				},
 				"THEME": {
 					"type": "string",
 					"default": "localhost",
-					"description": "Theme is set for dev, test and by default. For Production set in instances, so not in production.json"
+					"description": "Instance theme. Used for privacy document base paths, etc. For Production set in instances, so not in production.json"
 				},
 				"SHORT_TITLE": {
 					"type": "string",
 					"default": "localhost",
-					"description": "short title is set for dev, test and by default. For Production set in instances, so not in production.json"
+					"description": "Short version of the instance title. Used in emails, error messages, etc. if the formal title is too long or unhandy. Short Production set in instances, so not in production.json"
 				}
 			},
 			"required": ["TITLE"]
