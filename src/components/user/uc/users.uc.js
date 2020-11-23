@@ -4,37 +4,33 @@ const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
 const hasSameSchool = require('../../../utils/hasSameSchool');
 const hasRole = require('../../../utils/hasRole');
 
-const getUserRelatedData = async (id, app) => {
-	const user = await userRepo.getUser(id, app);
+const getUserRelatedData = async (id) => {
+	const user = await userRepo.getUser(id);
 	if (user.deletedAt) {
 		throw new BadRequest(`User already deleted`);
 	}
 
-	const account = await accountRepo.getUserAccount(id, app);
+	const account = await accountRepo.getUserAccount(id);
 	return { user, account };
 };
 
-const deleteUserRelatedData = async (data, app) => {
+const deleteUserRelatedData = async (data) => {
 	const { id } = data.user;
-	await accountRepo.deleteUserAccount(id, app);
+	await accountRepo.deleteUserAccount(id);
 };
 
 const createUserTrashbin = async (id, data) => {
 	return trashbinRepo.createUserTrashbin(id, data);
 };
 
-const replaceUserWithTombstone = async (id, app) => {
+const replaceUserWithTombstone = async (id) => {
 	const uid = ObjectId();
-	await userRepo.replaceUserWithTombstone(
-		id,
-		{
-			firstName: 'DELETED',
-			lastName: 'USER',
-			email: `${uid}@deleted`,
-			deletedAt: new Date(),
-		},
-		app
-	);
+	await userRepo.replaceUserWithTombstone(id, {
+		firstName: 'DELETED',
+		lastName: 'USER',
+		email: `${uid}@deleted`,
+		deletedAt: new Date(),
+	});
 	return { success: true };
 };
 
