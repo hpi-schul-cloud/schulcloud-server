@@ -1,31 +1,42 @@
 const { userModel: User } = require('../../../services/user/model');
+const { NotFound, GeneralError } = require('../../../errors');
 
-const getService = (app) => {
-	return app.service('usersModel');
+const getUser = async (_id) => {
+	const user = await User.findOne({ _id }).lean().exec();
+	if (user == null) {
+		throw new NotFound('no account for this user');
+	}
+	return user;
 };
 
-const getUser = async (id, app) => {
-	return getService(app).get(id);
-};
-
-const replaceUserWithTombstone = async (id, replaceData = {}, app) => {
-	const user = await getUser(id, app);
-
-	return User.replaceOne(
-		{ _id: user._id },
+const replaceUserWithTombstone = async (id, replaceData = {}) => {
+	const replaceResult = await User.replaceOne(
+		{ _id: id },
 		{
 			...replaceData,
 			deletedAt: new Date(),
-		}
-	);
+		},
+		{ new: true }
+	)
+		.lean()
+		.exec();
+	if (replaceResult.n !== 1) {
+		throw new NotFound('could not find user to replace with tombstone');
+	}
+	if (replaceResult.ok !== 1 || replaceResult.nModified !== 1) {
+		throw new GeneralError('db error during replacement of user with tombstone');
+	}
+	return getUser(id);
 };
 
-const getUserRoles = async (id, app) => {
-	const { roles } = await getService(app).get(id, {
-		query: {
-			$populate: ['roles'],
-		},
-	});
+const getUserRoles = async (_id) => {
+	const { roles } = await User.findOne({
+		_id,
+	})
+		.select('roles')
+		.populate('roles')
+		.lean()
+		.exec();
 	return roles;
 };
 
