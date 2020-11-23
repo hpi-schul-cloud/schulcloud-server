@@ -9,9 +9,9 @@ const isUserPermission = (userId) => (p) => p.refId.toString() === userId.toStri
 
 const extractIds = (result = []) => result.map(({ _id }) => _id);
 
-const handleIncompleteDeleteOperations = async (resultStatus, context, userId, dbFindOperation) => {
+const handleIncompleteDeleteOperations = async (resultStatus, context, dbFindOperation) => {
 	if (resultStatus.ok !== 1 || resultStatus.deletedCount < resultStatus.n) {
-		const failedFileIds = await dbFindOperation(userId, '_id');
+		const failedFileIds = await dbFindOperation(context.userId, '_id');
 		resultStatus.failedFileIds = extractIds(failedFileIds);
 		const error = new BadRequest('Incomple deletions:', resultStatus);
 		context.errors.push(error);
@@ -23,8 +23,9 @@ const handleIncompleteDeleteOperations = async (resultStatus, context, userId, d
  * @param {BSON|BSONString} userId
  * @param {object} context
  */
-const removePermissionsThatUserCanAccess = async (userId, context) => {
+const removePermissionsThatUserCanAccess = async (context) => {
 	try {
+		const { userId } = context;
 		const files = await repo.findFilesThatUserCanAccess(userId);
 
 		// filter information to delete
@@ -34,7 +35,8 @@ const removePermissionsThatUserCanAccess = async (userId, context) => {
 		});
 
 		const resultStatus = await repo.removeFilePermissionsByUserId(extractIds(files), userId);
-		await handleIncompleteDeleteOperations(resultStatus, context, userId, repo.findFilesThatUserCanAccess);
+		resultStatus.type = 'references';
+		await handleIncompleteDeleteOperations(resultStatus, context, repo.findFilesThatUserCanAccess);
 
 		context.references = [...context.references, ...references];
 	} catch (err) {
@@ -47,12 +49,14 @@ const removePermissionsThatUserCanAccess = async (userId, context) => {
  * @param {BSON|BSONString} userId
  * @param {object} context
  */
-const deletePersonalFiles = async (userId, context) => {
+const deletePersonalFiles = async (context) => {
 	try {
+		const { userId } = context;
 		const files = await repo.findPersonalFiles(userId);
-		const resultStatus = await repo.deleteFilesByIDs(extractIds(files));
 
-		await handleIncompleteDeleteOperations(resultStatus, context, userId, repo.findPersonalFiles);
+		const resultStatus = await repo.deleteFilesByIDs(extractIds(files));
+		resultStatus.type = 'deleted';
+		await handleIncompleteDeleteOperations(resultStatus, context, repo.findPersonalFiles);
 
 		context.deleted = [...context.deleted, ...files];
 	} catch (err) {
@@ -82,13 +86,14 @@ const deleteUserData = async (userId) => {
 		deleted: [],
 		references: [],
 		errors: [],
+		userId,
 	};
 
 	// step 1
-	await deletePersonalFiles(userId, context);
+	await deletePersonalFiles(context);
 	// step 2 -> Promise.all
 	// await setS3ExperiedForFileIds(extractId(deletedFiles)); ..promise.all with removePermissionsThatUserCanAccess
-	await removePermissionsThatUserCanAccess(userId, context);
+	await removePermissionsThatUserCanAccess(context);
 	// const replaceUserIds = await replaceUserId(userId); - step 2 or step 3
 
 	return context;
