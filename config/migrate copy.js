@@ -1,6 +1,6 @@
 /**
  * this file is used to customize 'npm run migration'
- * see https://www.npmjs.com/package/migrate-mongoosesetting-options-automatically
+ * see https://www.npmjs.com/package/migrate-mongoose#setting-options-automatically
  * for further details
  */
 
