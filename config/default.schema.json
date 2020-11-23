@@ -517,6 +517,11 @@
 				}
 			},
 			"required": ["TITLE"]
+		},
+		"BODYPARSER_JSON_LIMIT": {
+			"type": "string",
+			"default": "20mb",
+			"description": "Bodyparser max of ExpressJS. Parses the Body of HTTP Request, to get content (json, etc)"
 		}
 	},
 	"required": [

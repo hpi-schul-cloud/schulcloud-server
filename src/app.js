@@ -11,7 +11,7 @@ const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
-const { BODYPARSER_JSON_LIMIT, LEAD_TIME } = require('../config/globals');
+const { LEAD_TIME } = require('../config/globals');
 
 const middleware = require('./middleware');
 const setupConfiguration = require('./configuration');
@@ -59,7 +59,7 @@ const setupApp = async () => {
 		.use('/', express.static('public'))
 		.configure(setupConfiguration)
 		.configure(sentry)
-		.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
+		.use('/helpdesk', bodyParser.json({ limit: Configuration.get('BODYPARSER_JSON_LIMIT') }))
 		.use('/', bodyParser.json({ limit: '10mb' }))
 		.use(bodyParser.urlencoded({ extended: true }))
 		.use(bodyParser.raw({ type: () => true, limit: '10mb' }))

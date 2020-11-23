@@ -36,5 +36,6 @@
 		"TITLE": "HPI Schul-Cloud",
 		"THEME": "default",
 		"SHORT_TITLE": "HPI Schul-Cloud"
-	}
+	},
+	"BODYPARSER_JSON_LIMIT": "20mb"
 }
