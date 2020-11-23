@@ -1,27 +1,20 @@
-const getService = (app) => {
-	return app.service('accountModel');
-};
+const accountModel = require('../../../services/account/model');
+const { NotFound } = require('../../../errors');
 
-const getUserAccount = async (userId, app) => {
-	const [account] = await getService(app).find({
-		query: {
-			userId,
-			$limit: 1,
-		},
-		paginate: false,
-	});
+const getUserAccount = async (userId) => {
+	const account = await accountModel.findOne({ userId }).lean().exec();
+	if (account == null) {
+		throw new NotFound('no account for this user');
+	}
 	return account;
 };
 
-const deleteUserAccount = async (userId, app) => {
-	const account = await getUserAccount(userId, app);
-	if (account && account._id) {
-		return getService(app).remove(account._id);
-	}
-	return null;
+const deleteAccountForUserId = async (userId) => {
+	const result = await accountModel.findOneAndRemove({ userId }).lean().exec();
+	return result;
 };
 
 module.exports = {
 	getUserAccount,
-	deleteUserAccount,
+	deleteAccountForUserId,
 };
