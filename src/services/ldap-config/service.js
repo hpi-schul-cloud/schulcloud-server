@@ -18,6 +18,11 @@ class LdapConfigService {
 		});
 	}
 
+	/**
+	 * Retrieves and returns options object to be used for #verifyAndSaveLdapConfig
+	 * @param {Object} params feathers request params
+	 * @returns {Object} options `{ schoolId: ObjectId, activateSystem: Boolean, saveSystem: Boolean}`
+	 */
 	getOptions(params) {
 		const { verifyOnly, activate } = params.query;
 
@@ -31,6 +36,12 @@ class LdapConfigService {
 		};
 	}
 
+	/**
+	 * Actual business logic to validate and save LDAP configs
+	 * @param {Object} config config data
+	 * @param {Object} options options object
+	 * @returns {Object} verification result
+	 */
 	async verifyAndSaveLdapConfig(config, options) {
 		const verificationResult = await this.verifyConfig(config);
 		if (verificationResult.ok && options.saveSystem) {
