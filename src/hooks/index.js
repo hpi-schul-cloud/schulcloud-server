@@ -12,7 +12,7 @@ const mongoose = require('mongoose');
 const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
-const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
+const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 const { isDisposableEmail } = require('../utils/disposableEmail');
 const { getRestrictPopulatesHook, preventPopulate } = require('./restrictPopulate');
 const { transformToDataTransferObject } = require('./transformToDataTransferObject');
@@ -620,7 +620,7 @@ function validatedAttachments(attachments) {
 			throw new Error('Email Attachment is not a valid file!');
 		}
 		cTotalBufferSize += element.size;
-		if (cTotalBufferSize >= MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE) {
+		if (cTotalBufferSize >= Configuration.get('MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE')) {
 			throw new BadRequest('Email Attachments exceed the max. total file limit.');
 		}
 	});

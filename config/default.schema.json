@@ -517,6 +517,39 @@
 				}
 			},
 			"required": ["TITLE"]
+		},
+		"DATABASE_AUDIT": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable/Disable Database audit for MongoDB."
+		},
+		"DB_URL": {
+			"type": "string",
+			"default": "defaultDbUrl",
+			"description": "The main Database Connection-URL"
+		},
+		"DB_USERNAME": {
+			"type": "string",
+			"description": "Username for Database."
+		},
+		"DB_PASSWORD": {
+			"type": "string",
+			"description": "Password for Database."
+		},
+		"DOCUMENT_BASE_DIR": {
+			"type": "string",
+			"default": "https://s3.hidrive.strato.com/schul-cloud-hpi/",
+			"description": "Document base root; so URL for document base dir."
+		},
+		"MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE": {
+			"type": "number",
+			"default": 5242880,
+			"description": "Maximum sice of file allowed for Attachments. Set to 5 MB (1024 * 1024 * 5)"
+		},
+		"MONGOOSE_CONNECTION_POOL_SIZE": {
+			"type": "number",
+			"default": 50,
+			"description": "How many connections are allowed to connect to MongoDB"
 		}
 	},
 	"required": [

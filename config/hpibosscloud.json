@@ -5,5 +5,6 @@
 		"DOMAIN": "hpi-schul-cloud.de",
 		"THEME": "default",
 		"SHORT_TITLE": "HPI Schul-Cloud"
-	}
+	},
+	"DOCUMENT_BASE_DIR": "https://s3.hidrive.strato.com/schul-cloud-hpi/"
 }

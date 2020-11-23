@@ -33,15 +33,6 @@ switch (NODE_ENV) {
 }
 
 const globals = {
-	BODYPARSER_JSON_LIMIT: process.env.BODYPARSER_JSON_LIMIT || '20mb',
-	DATABASE_AUDIT: process.env.DATABASE_AUDIT || 'false',
-	DB_URL: process.env.DB_URL || defaultDbUrl,
-	DB_USERNAME: process.env.DB_USERNAME,
-	DB_PASSWORD: process.env.DB_PASSWORD,
-	DOCUMENT_BASE_DIR: process.env.DOCUMENT_BASE_DIR || 'https://s3.hidrive.strato.com/schul-cloud-hpi/',
-	MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE: 5 * 1024 * 1024, // 5MB
-	MONGOOSE_CONNECTION_POOL_SIZE: parseInt(process.env.MONGOOSE_CONNECTION_POOL_SIZE || '10', 10),
-
 	SMTP_SENDER: process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
 
 	KEEP_ALIVE: process.env.KEEP_ALIVE || false,
