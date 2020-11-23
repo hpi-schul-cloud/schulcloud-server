@@ -49,8 +49,10 @@ describe('deletedUserData.uc.unit', () => {
 		it('all should work without errors', async () => {
 			const userId = ObjectId();
 			const result = await deleteUserData(userId);
-			expect(result).to.have.all.keys('context', 'deleted', 'references', 'errors');
+			expect(result).to.have.all.keys('context', 'deleted', 'references', 'errors', 'userId');
 
+			expect(result.context).to.equal('files');
+			expect(result.userId.toString()).to.equal(userId.toString());
 			expect(result.errors).to.be.an('array').with.lengthOf(0);
 			expect(result.deleted).to.be.an('array').with.lengthOf(2);
 			expect(result.references).to.be.an('array').with.lengthOf(2);
@@ -89,9 +91,12 @@ describe('deletedUserData.uc.unit', () => {
 		});
 
 		it('should handle errors', async () => {
-			const result = await deleteUserData(ObjectId());
-			expect(result).to.have.all.keys('context', 'deleted', 'references', 'errors');
+			const userId = ObjectId();
+			const result = await deleteUserData(userId);
+			expect(result).to.have.all.keys('context', 'deleted', 'references', 'errors', 'userId');
 
+			expect(result.context).to.equal('files');
+			expect(result.userId.toString()).to.equal(userId.toString());
 			expect(result.errors).to.be.an('array').with.lengthOf(2);
 			expect(result.deleted).to.be.an('array').with.lengthOf(0);
 			expect(result.references).to.be.an('array').with.lengthOf(0);
@@ -100,12 +105,12 @@ describe('deletedUserData.uc.unit', () => {
 			const personalFilesError = result.errors[0];
 			expect(personalFilesError.message).to.equal('Incomple deletions:');
 			expect(personalFilesError.code).to.equal(400);
-			expect(personalFilesError.errors).to.eql({ n: 3, ok: 0, deletedCount: 2, failedFileIds: [] });
+			expect(personalFilesError.errors).to.eql({ n: 3, ok: 0, deletedCount: 2, failedFileIds: [], type: 'deleted' });
 
 			const removePermError = result.errors[1];
 			expect(removePermError.message).to.equal('Incomple deletions:');
 			expect(removePermError.code).to.equal(400);
-			expect(removePermError.errors).to.eql({ n: 3, ok: 0, nModified: 2, failedFileIds: [] });
+			expect(removePermError.errors).to.eql({ n: 3, ok: 0, nModified: 2, failedFileIds: [], type: 'references' });
 		});
 	});
 
@@ -145,9 +150,12 @@ describe('deletedUserData.uc.unit', () => {
 		});
 
 		it('kill all invaders', async () => {
-			const result = await deleteUserData(ObjectId());
-			expect(result).to.have.all.keys('context', 'deleted', 'references', 'errors');
+			const userId = ObjectId();
+			const result = await deleteUserData(userId);
+			expect(result).to.have.all.keys('context', 'deleted', 'references', 'errors', 'userId');
 
+			expect(result.context).to.equal('files');
+			expect(result.userId.toString()).to.equal(userId.toString());
 			expect(result.errors).to.be.an('array').with.lengthOf(2);
 			expect(result.deleted).to.be.an('array').with.lengthOf(0);
 			expect(result.references).to.be.an('array').with.lengthOf(0);
