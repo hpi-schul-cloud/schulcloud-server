@@ -495,6 +495,11 @@
 			"type": "string",
 			"default": "https://hpi-schul-cloud.de",
 			"description": "It is the organisation web point that is created the jwt and where questions can addressed."
+		},
+		"KEEP_ALIVE": {
+			"type": "boolean",
+			"default": false,
+			"description": "For external request it can set the keep alive header to let open the connection for short period."
 		}
 	},
 	"required": [
