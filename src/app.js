@@ -1,7 +1,7 @@
 const express = require('@feathersjs/express');
 const feathers = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const path = require('path');
 const favicon = require('serve-favicon');
 const compress = require('compression');

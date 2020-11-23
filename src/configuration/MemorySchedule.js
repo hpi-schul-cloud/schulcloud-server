@@ -1,4 +1,4 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { info } = require('../utils/systemInfo');
 const logger = require('../logger');
 

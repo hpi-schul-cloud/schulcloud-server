@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const amqp = require('amqplib/callback_api');
 
 amqp.connect(Configuration.get('RABBITMQ_URI'), (error0, connection) => {

@@ -2,7 +2,7 @@ const express = require('express');
 
 const migrationFactory = require('migrate-mongoose/src/db');
 const mongoose = require('mongoose');
-const commons = require('@schul-cloud/commons');
+const commons = require('@hpi-schul-cloud/commons');
 
 const MigrationModel = migrationFactory(undefined, mongoose.connection);
 const { version } = require('../../../package.json');
