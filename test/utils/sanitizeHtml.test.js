@@ -173,6 +173,16 @@ describe('[utils] sanitizeDeep', () => {
 		expect(sanitizeDeep(input)).to.eql(output);
 	});
 
+	it('ononmouseover with " gets transformed to “', () => {
+		const input = {
+			key: '" ononmouseover=alert(1) Test',
+		};
+		const output = {
+			key: '“ ononmouseover=alert(1) Test',
+		};
+		expect(sanitizeDeep(input)).to.eql(output);
+	});
+
 	it('controlslist should not sanitize ', () => {
 		const input = {
 			key: ' controlslist="do stuff"',
