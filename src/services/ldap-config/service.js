@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const logger = require('../../logger');
 const errorHandlers = require('./errors');
 
@@ -55,9 +56,59 @@ class LdapConfigService {
 		return result;
 	}
 
-	async saveConfig(/* config */) {
-		logger.info('saving');
-		return 42;
+	/**
+	 * Saves and activates a config
+	 *
+	 * @param {*} config
+	 * @param {*} schoolId
+	 * @param {*} systemId
+	 * @memberof LdapConfigService
+	 */
+	async saveConfig(config, schoolId, systemId = undefined, activate = true) {
+		const systemService = await this.app.service('systems');
+		const schoolsService = await this.app.service('schools');
+
+		const school = await schoolsService.get(schoolId);
+		const system = LdapConfigService.constructSystem(config, school, activate);
+
+		const session = await mongoose.startSession();
+		await session.withTransaction(async () => {
+			if (systemId) {
+				// update existing system (already assigned to school)
+				await Promise.all([
+					systemService.patch(systemId, system),
+					schoolsService.patch(schoolId, {
+						ldapSchoolIdentifier: config.rootPath,
+					}),
+				]);
+			} else {
+				// create a new system and assign it to the school
+				const { _id: newSystemId } = await systemService.create(system);
+				await schoolsService.patch(schoolId, {
+					ldapSchoolIdentifier: config.rootPath,
+					$addToSet: {
+						systems: newSystemId,
+					},
+				});
+			}
+		});
+		session.endSession();
+	}
+
+	static constructSystem(config, school, activate = true) {
+		return {
+			type: 'ldap',
+			alias: school.name,
+			ldapConfig: {
+				...config,
+				provider: 'general',
+				providerOptions: {
+					...config.providerOptions,
+					schoolName: school.name,
+				},
+				active: activate,
+			},
+		};
 	}
 
 	/**
