@@ -32,6 +32,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-4667 - Add optional `forceFullSync` option (as get param or json payload) to force a full LDAP sync
 - SC-7499 - add API Specification for public services
 - SC-7571 - solved performance issues - bulk QR-code generation
+- SC-7915 - facade locator
 
 ### Changed
 
