@@ -20,13 +20,19 @@ const createUserTrashbin = async (userId, data) => {
  * @param {string} id Id of user trashbin document
  * @param {Object} data Data to be added/updated
  */
-const updateUserTrashbin = async (id, data = {}) => {
+const updateTrashbinByUserId = async (userId, data = {}) => {
 	// access trashbin model
-	const trashbin = await trashbinModel.findByIdAndUpdate(id, { $set: data });
-	return trashbin.toObject();
+	const trashbin = await trashbinModel
+		.findOneAndUpdate({ userId }, { $set: data }, { new: true })
+		.sort({
+			createdAt: -1,
+		})
+		.lean()
+		.exec();
+	return trashbin;
 };
 
 module.exports = {
 	createUserTrashbin,
-	updateUserTrashbin,
+	updateTrashbinByUserId,
 };
