@@ -1,4 +1,5 @@
 const logger = require('../../logger');
+const errorHandlers = require('./errors');
 
 class LdapConfigService {
 	setup(app) {
@@ -20,6 +21,7 @@ class LdapConfigService {
 		const ldap = this.app.service('ldap');
 		const result = {
 			ok: false,
+			errors: [],
 			users: {},
 			classes: {},
 		};
@@ -30,7 +32,14 @@ class LdapConfigService {
 			result.classes = LdapConfigService.generateClassStats(classes);
 			result.ok = true;
 		} catch (error) {
-			logger.warning('Error during LDAP config verification', { error });
+			for (const { match, message } of errorHandlers) {
+				if (match(error)) {
+					result.errors.push(message);
+				}
+			}
+			if (result.errors.length === 0) {
+				logger.warning('Uncaught error during LDAP config verification', { error });
+			}
 		} finally {
 			ldap.disconnect(config);
 		}
