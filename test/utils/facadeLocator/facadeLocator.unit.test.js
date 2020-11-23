@@ -5,8 +5,8 @@ const sinon = require('sinon');
 
 const { setupFacadeLocator, setupFacades } = require('../../../src/utils/facadeLocator');
 
-describe.only('facadeLocator', () => {
-	describe('unit tests', () => {
+describe('facadeLocator', () => {
+	describe('registering facades', () => {
 		it('when a facade is registered, then it is accessible via the app.', () => {
 			const app = express(feathers());
 			setupFacadeLocator(app);
