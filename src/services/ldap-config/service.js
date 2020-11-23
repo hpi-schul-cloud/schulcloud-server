@@ -8,15 +8,33 @@ class LdapConfigService {
 	}
 
 	async create(config, params) {
+		return this.verifyAndSaveLdapConfig(config, this.getOptions(params));
+	}
+
+	async patch(id, config, params) {
+		return this.verifyAndSaveLdapConfig(config, {
+			...this.getOptions(params),
+			systemId: id,
+		});
+	}
+
+	getOptions(params) {
 		const { verifyOnly, activate } = params.query;
 
 		const saveSystem = verifyOnly !== true && verifyOnly !== 'true';
 		const activateSystem = activate !== false && activate !== 'false';
 
-		const verificationResult = await this.verifyConfig(config);
+		return {
+			schoolId: params.account.schoolId,
+			activateSystem,
+			saveSystem,
+		};
+	}
 
-		if (verificationResult.ok && saveSystem) {
-			await this.saveConfig(config, params.account.schoolId, null, activateSystem);
+	async verifyAndSaveLdapConfig(config, options) {
+		const verificationResult = await this.verifyConfig(config);
+		if (verificationResult.ok && options.saveSystem) {
+			await this.saveConfig(config, options.schoolId, options.systemId, options.activateSystem);
 		}
 		return verificationResult;
 	}
