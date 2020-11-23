@@ -92,7 +92,7 @@ class LdapConfigService {
 				});
 			}
 		});
-		session.endSession();
+		await session.endSession();
 	}
 
 	static constructSystem(config, school, activate = true) {
