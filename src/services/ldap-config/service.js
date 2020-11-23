@@ -11,7 +11,7 @@ class LdapConfigService {
 
 		const verificationResult = await this.verifyConfig(config);
 
-		if (verificationResult.ok && !verifyOnly) {
+		if (verificationResult.ok && verifyOnly !== 'true' && verifyOnly !== true) {
 			await this.saveConfig(config);
 		}
 		return verificationResult;
@@ -47,6 +47,7 @@ class LdapConfigService {
 	}
 
 	async saveConfig(/* config */) {
+		logger.info('saving');
 		return 42;
 	}
 
