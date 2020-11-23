@@ -12,12 +12,14 @@ describe('user service v2', function test() {
 	let server;
 	let accountModelService;
 	let usersModelService;
+	let classModelService;
 
 	before(async () => {
 		app = await appPromise;
 		server = await app.listen(0);
 		accountModelService = app.service('accountModel');
 		usersModelService = app.service('usersModel');
+		classModelService = app.service('classModel');
 	});
 
 	after(async () => {
@@ -51,14 +53,24 @@ describe('user service v2', function test() {
 
 	const createUserWithRelatedData = async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
+		const teacher1 = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const teacher2 = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const user1 = await testObjects.createTestUser({ roles: ['student'], schoolId });
+		const user2 = await testObjects.createTestUser({ roles: ['student'], schoolId });
+		const user3 = await testObjects.createTestUser({ roles: ['student'], schoolId });
+		const user4 = await testObjects.createTestUser({ roles: ['student'], schoolId });
 		const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
-		await testObjects.createTestClass({ userIds: [user._id], schoolId });
-		return { schoolId, user };
+		const { _id: classId } = await testObjects.createTestClass({
+			teacherIds: [teacher1._id, teacher2._id],
+			userIds: [user1._id, user2._id, user3._id, user4._id, user._id],
+			schoolId,
+		});
+		return { schoolId, classId, user, user1, user2, user3, user4, teacher1, teacher2 };
 	};
 
 	describe('API tests', () => {
 		it('When an authorized user deletes a student and returns success', async () => {
-			const { schoolId, user } = await createUserWithRelatedData();
+			const { schoolId, classId, user, user1 } = await createUserWithRelatedData();
 
 			const token = await getAdminToken(schoolId);
 			const request = chai
@@ -71,6 +83,15 @@ describe('user service v2', function test() {
 			const response = await request.send();
 			expect(response.status).to.equal(200);
 			expect(response.body.userId).to.deep.equal(user._id.toString());
+
+			const checkClass = await classModelService.find({ query: { _id: classId }, paginate: false });
+			expect(checkClass).to.have.lengthOf(1);
+			expect(checkClass[0].userIds).to.have.lengthOf(4);
+
+			const assignedUsers = checkClass[0].userIds.filter((userId) => userId.toString() === user1._id.toString());
+			const deletedUsers = checkClass[0].userIds.filter((userId) => userId.toString() === user._id.toString());
+			expect(assignedUsers).to.have.lengthOf(1);
+			expect(deletedUsers).to.have.lengthOf(0);
 		});
 
 		it('Fails when not authorized user deletes a student', async () => {
