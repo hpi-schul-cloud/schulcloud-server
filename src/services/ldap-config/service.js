@@ -57,12 +57,12 @@ class LdapConfigService {
 	}
 
 	/**
-	 * Saves and activates a config
-	 *
-	 * @param {*} config
-	 * @param {*} schoolId
-	 * @param {*} systemId
-	 * @memberof LdapConfigService
+	 * Saves (and optionally activates) an LDAP config for a given school.
+	 * If no systemId is given, a new system will be created and assigned.
+	 * @param {Object} config LDAP config object
+	 * @param {ObjectId} schoolId id of the school
+	 * @param {Object} [systemId] optional id of the system to update
+	 * @param {Boolean} [activate=true] optional value for `ldapConfig.active`
 	 */
 	async saveConfig(config, schoolId, systemId = undefined, activate = true) {
 		const systemService = await this.app.service('systems');
@@ -95,6 +95,17 @@ class LdapConfigService {
 		await session.endSession();
 	}
 
+	/**
+	 * Returns a system collection object based on an abbreviated LDAP config
+	 * object and a school object. The school's name will be used for both system
+	 * `alias` and `ldapConfig.providerOptions.schoolName`. Provider is always
+	 * `general`. Type is always `ldap`.
+	 * @static
+	 * @param {Object} config LDAP config object
+	 * @param {School} school the school at which to activate the system
+	 * @param {boolean} [activate=true] optional value for `ldapConfig.active`
+	 * @returns {System} system object to be used for creating or updating
+	 */
 	static constructSystem(config, school, activate = true) {
 		return {
 			type: 'ldap',
