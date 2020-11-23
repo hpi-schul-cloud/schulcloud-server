@@ -35,6 +35,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- request logging disabled for non development environment
 - OPS-1289 - moved and updated commons (to hpi-schul-cloud/commons)
 - SC-6596 - Changed route for messenger permissions service
 - SC-7331 - introduce axios for external requests, implemented in status api
@@ -68,6 +69,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Fixed searching for names including a dash
 - SC-7572 - Find /users route after hooks - extremely slow
 - SC-7573 - Route/hash-broken promise chain
+- SC-7884 - Authentication error when accessing any nuxt page in the client.
 
 ### Removed
 
