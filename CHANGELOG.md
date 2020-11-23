@@ -67,7 +67,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6151 fixed paths to openapi documentation
 - Fixed searching for names including a dash
 - SC-7572 - Find /users route after hooks - extremely slow
+<<<<<<< HEAD
 - SC-7573 - Route/hash-broken promise chain
+=======
+- SC-7884 - Authentication error when accessing any nuxt page in the client.
+>>>>>>> origin/release/25.3.0
 
 ### Removed
 
