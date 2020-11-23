@@ -28,8 +28,10 @@ class LdapConfigService {
 		try {
 			const users = await ldap.getUsers(config);
 			result.users = LdapConfigService.generateUserStats(users);
-			const classes = await ldap.getClasses(config);
-			result.classes = LdapConfigService.generateClassStats(classes);
+			if (LdapConfigService.shouldVerifyClasses(config)) {
+				const classes = await ldap.getClasses(config);
+				result.classes = LdapConfigService.generateClassStats(classes);
+			}
 			result.ok = true;
 		} catch (error) {
 			for (const { match, message } of errorHandlers) {
@@ -72,6 +74,21 @@ class LdapConfigService {
 			total: classes.length,
 			sample: classes.length > 0 ? classes[0] : {},
 		};
+	}
+
+	/**
+	 * Determines whether a given config needs to sync classes.
+	 * @static
+	 * @param {Object} config LDAP config object
+	 * @returns {Boolean} true/false
+	 */
+	static shouldVerifyClasses(config) {
+		return (
+			config.providerOptions &&
+			config.providerOptions.classPathAdditions &&
+			config.providerOptions.classPathAdditions !== ''
+			// return false if classPathAdditions are undefined or empty
+		);
 	}
 }
 
