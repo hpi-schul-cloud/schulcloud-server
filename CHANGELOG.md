@@ -36,6 +36,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- request logging disabled for non development environment
 - OPS-1289 - moved and updated commons (to hpi-schul-cloud/commons)
 - SC-6596 - Changed route for messenger permissions service
 - SC-7331 - introduce axios for external requests, implemented in status api
@@ -48,10 +49,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7411 - api versioning for /version service
 - IMP-160 - integration-tests repo renamed to end-to-end-tests
 - SC-5900 - Move Synapse synchronization logic into server
-- SC-7499 Fixes documentation for edu sharing endpoints
+- SC-7499 - Fixes documentation for edu sharing endpoints
+- SC-7872 - Fix audience of the jwt to new organisation name.
 
 ### Fixed
 
+- SC-1589 Trim strings to avoid empty team names
 - ARC-138 fix changelog action
 - ARC-137 avoid DoS on alerts in error state
 - SC-7353 course sharing between teachers
@@ -65,6 +68,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6151 fixed paths to openapi documentation
 - Fixed searching for names including a dash
 - SC-7572 - Find /users route after hooks - extremely slow
+- SC-7573 - Route/hash-broken promise chain
 
 ### Removed
 
