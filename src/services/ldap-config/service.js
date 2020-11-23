@@ -17,6 +17,13 @@ class LdapConfigService {
 		return verificationResult;
 	}
 
+	/**
+	 * Verifies a given config by connecting to the server and retrieving sample
+	 * objects. Errors are caught and categorized.
+	 * @param {Object} config LDAP config object
+	 * @returns {Object} verification result object
+	 * `{ ok: Boolean, errors: [], users: {}, classes: {} }`
+	 */
 	async verifyConfig(config) {
 		const ldap = this.app.service('ldap');
 		const result = {
@@ -53,6 +60,13 @@ class LdapConfigService {
 		return 42;
 	}
 
+	/**
+	 * Generates statistics about LDAP verification result for users.
+	 * @static
+	 * @param {Array} [users=[]] array of users returned from LDAP provider strategy #getUsers
+	 * @returns {Object} statistics
+	 * `{ total: Number, admin: Number, teacher: Number, student: Number, sample: {} }`
+	 */
 	static generateUserStats(users = []) {
 		const result = {
 			total: users.length,
@@ -69,6 +83,13 @@ class LdapConfigService {
 		return result;
 	}
 
+	/**
+	 * Generates statistics about LDAP verification result for classes.
+	 * @static
+	 * @param {Array} [classes=[]] array of classes returned from LDAP provider strategy #getClasses
+	 * @returns {Object} statistics
+	 * `{ total: Number, sample: {} }`
+	 */
 	static generateClassStats(classes = []) {
 		return {
 			total: classes.length,
