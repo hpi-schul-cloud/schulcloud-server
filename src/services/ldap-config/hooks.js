@@ -1,6 +1,10 @@
+const { authenticate } = require('@feathersjs/authentication');
+
+const { lookupSchool } = require('../../hooks');
+
 module.exports = {
 	before: {
-		all: [],
+		all: [authenticate('jwt'), lookupSchool],
 	},
 	after: {
 		all: [],

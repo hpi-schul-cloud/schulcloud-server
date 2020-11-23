@@ -8,12 +8,15 @@ class LdapConfigService {
 	}
 
 	async create(config, params) {
-		const { verifyOnly } = params.query;
+		const { verifyOnly, activate } = params.query;
+
+		const saveSystem = verifyOnly !== true && verifyOnly !== 'true';
+		const activateSystem = activate !== false && activate !== 'false';
 
 		const verificationResult = await this.verifyConfig(config);
 
-		if (verificationResult.ok && verifyOnly !== 'true' && verifyOnly !== true) {
-			await this.saveConfig(config);
+		if (verificationResult.ok && saveSystem) {
+			await this.saveConfig(config, params.account.schoolId, null, activateSystem);
 		}
 		return verificationResult;
 	}
