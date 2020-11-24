@@ -35,6 +35,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC 7926 - DB and SMTP to new config
 - request logging disabled for non development environment
 - SC-7588 - SC-main (Titel, etc) in new config
 - OPS-1289 - moved and updated commons (to hpi-schul-cloud/commons)
