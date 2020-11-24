@@ -50,6 +50,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-5900 - Move Synapse synchronization logic into server
 - SC-7499 - Fixes documentation for edu sharing endpoints
 - SC-7872 - Fix audience of the jwt to new organisation name.
+- SC-7543 - deprecates `GET /ldap/:id` and `PATCH /ldap/:id` routes 
 
 ### Fixed
 

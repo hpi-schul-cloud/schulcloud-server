@@ -35,6 +35,9 @@ module.exports = function LDAPService() {
 			// only needed to register as a feathers service
 		}
 
+		/**
+		 * @deprecated
+		 */
 		get(id, params) {
 			return app
 				.service('systems')
@@ -61,7 +64,10 @@ module.exports = function LDAPService() {
 				});
 		}
 
-		/** Used for activation only */
+		/**
+		 * Used for activation only
+		 * @deprecated
+		 */
 		async patch(systemId, payload, context) {
 			const systemService = await app.service('systems');
 			const userService = await app.service('users');
