@@ -13,7 +13,7 @@ info:
     url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
   version: 1.0.0
 servers:
-  - url: /course/v2
+  - url: /courses/v2
 components:
   securitySchemes:
     jwtBearer:
