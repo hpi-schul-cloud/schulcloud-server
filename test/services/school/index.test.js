@@ -12,7 +12,7 @@ const { schoolModel: School, yearModel: YearModel } = require('../../../src/serv
 const testObjects = require('../helpers/testObjects')(appPromise);
 const { create: createSchool, info: createdSchoolIds } = require('../helpers/services/schools')(appPromise);
 
-describe.only('school service', () => {
+describe('school service', () => {
 	let app;
 	let server;
 
@@ -184,7 +184,7 @@ describe.only('school service', () => {
 		});
 	});
 
-	describe.only('patch schools', () => {
+	describe('patch schools', () => {
 		it('administrator can patch his own school', async () => {
 			const school = await testObjects.createTestSchool({});
 			const admin = await testObjects.createTestUser({
