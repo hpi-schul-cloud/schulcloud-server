@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const logger = require('../../logger');
 const errorHandlers = require('./errors');
 
 class LdapConfigService {
@@ -80,7 +79,9 @@ class LdapConfigService {
 				}
 			}
 			if (result.errors.length === 0) {
-				logger.warning('Uncaught error during LDAP config verification', { error });
+				// Something unexpected happened, so let's push it to the logs and
+				// tell the client that this was not planned
+				throw error;
 			}
 		} finally {
 			ldap.disconnect(config);
