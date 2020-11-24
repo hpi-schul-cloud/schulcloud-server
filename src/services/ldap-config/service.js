@@ -27,8 +27,6 @@ class LdapConfigService {
 	async get(systemId, params) {
 		// Proxying the request params here to have the system service hooks check
 		// the permissions, filtering sensitive data, etc.
-		delete params.route;
-		delete params.query;
 		const system = await this.app.service('systems').get(systemId, params);
 		if (!system.ldapConfig || system.ldapConfig.provider !== 'general') {
 			throw new Forbidden('The requested system is not configurable with this endpoint');
