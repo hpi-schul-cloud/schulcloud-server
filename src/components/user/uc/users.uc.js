@@ -1,8 +1,18 @@
 const { ObjectId } = require('mongoose').Types;
 const { BadRequest, Forbidden } = require('../../../errors');
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
-const hasSameSchool = require('../../../utils/hasSameSchool');
-const hasRole = require('../../../utils/hasRole');
+const { hasRole } = require('./userRoles.uc');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+
+const userHaveSameSchool = async (userId, otherUserId) => {
+	if (userId && otherUserId) {
+		const { schoolId: currentUserSchoolId } = await userRepo.getUser(otherUserId);
+		const { schoolId: requestedUserSchoolId } = await userRepo.getUser(userId);
+
+		return equalIds(currentUserSchoolId, requestedUserSchoolId);
+	}
+	return false;
+};
 
 const getUserRelatedData = async (id) => {
 	const user = await userRepo.getUser(id);
@@ -16,7 +26,7 @@ const getUserRelatedData = async (id) => {
 
 const deleteUserRelatedData = async (data) => {
 	const { id } = data.user;
-	await accountRepo.deleteUserAccount(id);
+	await accountRepo.deleteAccountForUserId(id);
 };
 
 const createUserTrashbin = async (id, data) => {
@@ -34,23 +44,24 @@ const replaceUserWithTombstone = async (id) => {
 	return { success: true };
 };
 
-const checkPermissions = async (id, account, app, roleName) => {
-	if ((await hasSameSchool(id, account, app)) && (await hasRole(id, roleName, app))) {
+const checkPermissions = async (id, roleName, { account }) => {
+	const conditionPromises = await Promise.all([userHaveSameSchool(id, account.userId), hasRole(id, roleName)]);
+	if (conditionPromises.every((v) => v === true)) {
 		return true;
 	}
 	throw new Forbidden(`You don't have permissions to perform this action`);
 };
 
-const deleteUser = async (id, roleName, { account, app }) => {
-	await checkPermissions(id, account, app, roleName);
+const deleteUser = async (id, roleName, { account }) => {
+	await checkPermissions(id, roleName, { account });
 
-	const userRelatedData = await getUserRelatedData(id, app);
+	const userRelatedData = await getUserRelatedData(id);
 
 	const trashBin = await createUserTrashbin(id, userRelatedData);
 
-	await replaceUserWithTombstone(id, app);
+	await replaceUserWithTombstone(id);
 
-	await deleteUserRelatedData(userRelatedData, app);
+	await deleteUserRelatedData(userRelatedData);
 
 	return trashBin;
 };

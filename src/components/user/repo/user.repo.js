@@ -30,14 +30,18 @@ const replaceUserWithTombstone = async (id, replaceData = {}) => {
 };
 
 const getUserRoles = async (_id) => {
-	const { roles } = await User.findOne({
+	const user = await User.findOne({
 		_id,
 	})
 		.select('roles')
 		.populate('roles')
 		.lean()
 		.exec();
-	return roles;
+	if (user == null) {
+		throw new NotFound('no such user');
+	}
+
+	return user.roles;
 };
 
 module.exports = {

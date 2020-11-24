@@ -2,7 +2,6 @@ const sinon = require('sinon');
 const { ObjectId } = require('mongoose').Types;
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const appPromise = require('../../../app');
 const userUC = require('./users.uc');
 
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
@@ -64,13 +63,7 @@ let createUserTrashbinStub;
 let getUserRolesStub;
 
 describe('users usecase', () => {
-	let app;
-	let server;
-
 	before(async () => {
-		app = await appPromise;
-		server = await app.listen(0);
-
 		// init stubs
 		getUserStub = sinon.stub(userRepo, 'getUser');
 		getUserStub.withArgs('NOT_FOUND_USER').returns();
@@ -84,7 +77,7 @@ describe('users usecase', () => {
 		getUserAccountStub = sinon.stub(accountRepo, 'getUserAccount');
 		getUserAccountStub.callsFake((userId = USER_ID) => createTestAccount(userId));
 
-		sinon.stub(accountRepo, 'deleteUserAccount');
+		sinon.stub(accountRepo, 'deleteAccountForUserId');
 
 		createUserTrashbinStub = sinon.stub(trashbinRepo, 'createUserTrashbin');
 		createUserTrashbinStub.callsFake((userId = USER_ID) => createTestTrashbin(userId));
@@ -93,19 +86,18 @@ describe('users usecase', () => {
 	after(async () => {
 		// restore stubbed functions
 		getUserStub.restore();
+		getUserRolesStub.restore();
 		userRepo.replaceUserWithTombstone.restore();
 		getUserAccountStub.restore();
-		accountRepo.deleteUserAccount.restore();
+		accountRepo.deleteAccountForUserId.restore();
 		createUserTrashbinStub.restore();
-
-		await server.close();
 	});
 
 	describe('user delete orchestrator', () => {
 		it('should successfully mark user for deletion', async () => {
 			// act
 			const currentUser = createCurrentUser();
-			const result = await userUC.deleteUser(USER_ID, 'student', { account: currentUser, app });
+			const result = await userUC.deleteUser(USER_ID, 'student', { account: currentUser });
 
 			expect(result.userId).to.deep.equal(USER_ID);
 		});
@@ -115,7 +107,7 @@ describe('users usecase', () => {
 			const currentUser = createCurrentUser();
 			const userId = 'NOT_FOUND_USER';
 			expect(
-				() => userUC.deleteUser(userId, 'student', { account: currentUser, app }),
+				() => userUC.deleteUser(userId, 'student', { account: currentUser }),
 				"if user wasn't found it should fail"
 			).to.throw;
 		});
