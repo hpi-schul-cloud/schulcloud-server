@@ -92,13 +92,7 @@ const setupApp = async () => {
 			next();
 		});
 	}
-	app
-		.configure(services)
-		.configure(sockets)
-		.configure(middleware)
-		.configure(setupAppHooks)
-		.configure(setupFacades)
-		.configure(errorHandler);
+	app.configure(services).configure(sockets).configure(middleware).configure(setupAppHooks).configure(errorHandler);
 
 	return app;
 };

@@ -1,4 +1,3 @@
-const assert = require('assert');
 const chai = require('chai');
 
 const { expect } = chai;
@@ -7,7 +6,7 @@ const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 const appPromise = require('../../../src/app');
 
-describe.only('Facade Locator integration tests', () => {
+describe('Facade Locator integration tests', () => {
 	let app;
 	let server;
 
@@ -20,16 +19,17 @@ describe.only('Facade Locator integration tests', () => {
 		server.close(done);
 	});
 
-	describe('correct setup', () => {
-		it('when a facade is registered, then it is accessible', () => {
+	describe('correct setup in app', () => {
+		it('when a facade is registered in the app, then it is accessible', () => {
+			const facadePath = `realityinvasion${Date.now()}`;
 			const facade = {
-				testFunction: () => 'alien invaders',
+				testFunction: () => 'illithid invaders',
 			};
-			app.registerFacade('testfacade', facade);
+			app.registerFacade(facadePath, facade);
 
-			const result = app.facade('testfacade').testFunction();
+			const result = app.facade(facadePath).testFunction();
 
-			expect(result).to.equal('alien invaders');
-		})
-	})
+			expect(result).to.equal('illithid invaders');
+		});
+	});
 });

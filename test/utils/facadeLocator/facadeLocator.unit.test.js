@@ -1,89 +1,99 @@
-const { expect, assert } = require('chai');
+const { expect } = require('chai');
 const express = require('@feathersjs/express');
 const feathers = require('@feathersjs/feathers');
-const sinon = require('sinon');
 
-const { setupFacadeLocator, setupFacades } = require('../../../src/utils/facadeLocator');
+const { setupFacadeLocator, facadeLocator } = require('../../../src/utils/facadeLocator');
 
 describe('facadeLocator', () => {
-	describe('registering facades', () => {
-		it('when a facade is registered, then it is accessible via the app.', () => {
-			const app = express(feathers());
-			setupFacadeLocator(app);
+	describe('facadeLocator', () => {
+		it('when a face is registered, then it is accessible', () => {
+			const facadePath = `spaceinvasion${Date.now()}`;
 			const facade = {
 				testFunction: () => 'space invaders',
 			};
-			app.registerFacade('testfacade', facade);
+			facadeLocator.registerFacade(facadePath, facade);
 
-			const result = app.facade('testfacade').testFunction();
+			const result = facadeLocator.facade(facadePath).testFunction();
 
 			expect(result).to.equal('space invaders');
 		});
 
 		it('when trying to call a facade that doesnt exist, then undefined is returned', () => {
-			const app = express(feathers());
-			setupFacadeLocator(app);
-
-			const result = app.facade('thisdoesntexist');
+			const result = facadeLocator.facade('thisdoesntexist');
 
 			expect(result).to.be.undefined;
 		});
 
-		it('when a facade is registered, then its setup method is called', async () => {
-			const app = express(feathers());
-			setupFacadeLocator(app);
-			const facade = {
-				setup: (application) => application,
-			};
-			const spy = sinon.spy(facade, 'setup');
-			app.registerFacade('testfacade', facade);
-			setupFacades(app);
-
-			assert(spy.calledOnce);
-		});
-
 		it('when a facade is registered with trailing or leading slashes, then the slashes are ignored', () => {
-			const app = express(feathers());
-			setupFacadeLocator(app);
+			const facadePath = `alieninvasion${Date.now()}`;
 			const facade = {
 				testFunction: () => 'alien invaders',
 			};
-			app.registerFacade('/testfacade/', facade);
+			facadeLocator.registerFacade(`/${facadePath}/`, facade);
 
-			const result = app.facade('testfacade').testFunction();
+			const result = facadeLocator.facade(facadePath).testFunction();
 
 			expect(result).to.equal('alien invaders');
 		});
 
 		it('when a facade is called with trailing or leading slashes, then the slashes are ignored', () => {
-			const app = express(feathers());
-			setupFacadeLocator(app);
+			const facadePath = `dinoinvasion${Date.now()}`;
 			const facade = {
 				testFunction: () => 'dinosaurier invaders',
 			};
-			app.registerFacade('testfacade', facade);
+			facadeLocator.registerFacade(facadePath, facade);
 
-			const result = app.facade('/testfacade/').testFunction();
+			const result = facadeLocator.facade(`/${facadePath}/`).testFunction();
 
 			expect(result).to.equal('dinosaurier invaders');
 		});
 
 		it('when a facade is overwritten, then only the new facade is accessible', () => {
-			const app = express(feathers());
-			setupFacadeLocator(app);
+			const facadePath = `greenskininvasion${Date.now()}`;
 			const facade = {
 				testFunction: () => 'goblin invaders',
 			};
-			app.registerFacade('/testfacade/', facade);
+			facadeLocator.registerFacade(facadePath, facade);
 
 			const owerwritefacade = {
 				testFunction: () => 'ork invaders',
 			};
-			app.registerFacade('/testfacade/', owerwritefacade);
+			facadeLocator.registerFacade(facadePath, owerwritefacade);
 
-			const result = app.facade('testfacade').testFunction();
+			const result = facadeLocator.facade(facadePath).testFunction();
 
 			expect(result).to.equal('ork invaders');
+		});
+	});
+
+	describe('facade locator via app', () => {
+		it('when a facade is registered, then it is accessible via the app', () => {
+			const facadePath = `undeadinvasion${Date.now()}`;
+			const facade = {
+				testFunction: () => 'undead invaders',
+			};
+			facadeLocator.registerFacade(facadePath, facade);
+
+			const app = express(feathers());
+			setupFacadeLocator(app);
+
+			const result = app.facade(facadePath).testFunction();
+
+			expect(result).to.equal('undead invaders');
+		});
+
+		it('when a facade is registered via the app, then it is accessible', () => {
+			const facadePath = `colonisation${Date.now()}`;
+			const app = express(feathers());
+			setupFacadeLocator(app);
+			const facade = {
+				testFunction: () => 'colonist invaders',
+			};
+			app.registerFacade(facadePath, facade);
+
+			const result = facadeLocator.facade(facadePath).testFunction();
+
+			expect(result).to.equal('colonist invaders');
 		});
 	});
 });
