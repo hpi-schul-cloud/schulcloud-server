@@ -78,7 +78,7 @@ class LdapConfigService {
 	/**
 	 * Retrieves and returns options object to be used for #verifyAndSaveLdapConfig
 	 * @param {Object} params feathers request params
-	 * @returns {Object} options `{ schoolId: ObjectId, activateSystem: Boolean, saveSystem: Boolean}`
+	 * @returns {Object} options `{ school: School, activateSystem: Boolean, saveSystem: Boolean}`
 	 */
 	getOptions(params) {
 		const { verifyOnly, activate } = params.query;
@@ -87,7 +87,7 @@ class LdapConfigService {
 		const activateSystem = activate !== false && activate !== 'false';
 
 		return {
-			schoolId: params.account.schoolId,
+			school: params.school,
 			activateSystem,
 			saveSystem,
 		};
@@ -102,7 +102,7 @@ class LdapConfigService {
 	async verifyAndSaveLdapConfig(config, options) {
 		const verificationResult = await this.verifyConfig(config);
 		if (verificationResult.ok && options.saveSystem) {
-			await this.saveConfig(config, options.schoolId, options.systemId, options.activateSystem);
+			await this.saveConfig(config, options.school, options.systemId, options.activateSystem);
 		}
 		return verificationResult;
 	}
@@ -152,15 +152,14 @@ class LdapConfigService {
 	 * Saves (and optionally activates) an LDAP config for a given school.
 	 * If no systemId is given, a new system will be created and assigned.
 	 * @param {Object} config LDAP config object
-	 * @param {ObjectId} schoolId id of the school
+	 * @param {School} school the school to update
 	 * @param {Object} [systemId] optional id of the system to update
 	 * @param {Boolean} [activate=true] optional value for `ldapConfig.active`
 	 */
-	async saveConfig(config, schoolId, systemId = undefined, activate = true) {
+	async saveConfig(config, school, systemId = undefined, activate = true) {
 		const systemService = await this.app.service('systems');
 		const schoolsService = await this.app.service('schools');
 
-		const school = await schoolsService.get(schoolId);
 		const system = LdapConfigService.constructSystem(config, school, activate);
 
 		const session = await mongoose.startSession();
@@ -170,7 +169,7 @@ class LdapConfigService {
 				const thingsToDo = [systemService.patch(systemId, system)];
 				if (activate) {
 					thingsToDo.push(
-						schoolsService.patch(schoolId, {
+						schoolsService.patch(school._id, {
 							ldapSchoolIdentifier: config.rootPath,
 						})
 					);
@@ -180,7 +179,7 @@ class LdapConfigService {
 				// create a new system and assign it to the school
 				const { _id: newSystemId } = await systemService.create(system);
 				if (activate) {
-					await schoolsService.patch(schoolId, {
+					await schoolsService.patch(school._id, {
 						ldapSchoolIdentifier: config.rootPath,
 						$addToSet: {
 							systems: newSystemId,
