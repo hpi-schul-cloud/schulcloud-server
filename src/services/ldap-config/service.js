@@ -258,6 +258,8 @@ class LdapConfigService {
 
 	/**
 	 * Determines whether a given config needs to sync classes.
+	 * Specifically, returns `false` if classPathAdditions are undefined or empty
+	 * and `true` otherwise
 	 * @static
 	 * @param {Object} config LDAP config object
 	 * @returns {Boolean} true/false
@@ -267,7 +269,6 @@ class LdapConfigService {
 			config.providerOptions &&
 			config.providerOptions.classPathAdditions &&
 			config.providerOptions.classPathAdditions !== ''
-			// return false if classPathAdditions are undefined or empty
 		);
 	}
 }
