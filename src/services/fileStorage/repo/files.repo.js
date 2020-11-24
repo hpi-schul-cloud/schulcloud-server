@@ -1,4 +1,5 @@
 const { FileModel } = require('../model');
+const createCorrectStrategy = require('../utils/createCorrectStrategy');
 /**
  * user based database operations for files
  */
@@ -60,9 +61,17 @@ const removeFilePermissionsByUserId = async (fileIds = [], userId) => {
 	return lengthValidation(result, fileIds);
 };
 
+const moveFilesToTrash = (fileIds = [], schoolId) => {
+	// TODO
+	// TODO: Remove hard coded string
+	const storageStrategy = createCorrectStrategy('awsS3')
+	storageStrategy.moveFilesToTrash(schoolId, fileIds);
+};
+
 module.exports = {
 	findFilesThatUserCanAccess,
 	deleteFilesByIDs,
 	findPersonalFiles,
 	removeFilePermissionsByUserId,
+	moveFilesToTrash,
 };

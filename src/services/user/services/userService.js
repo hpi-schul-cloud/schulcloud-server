@@ -44,6 +44,8 @@ const {
 	includeOnlySchoolRoles,
 } = require('../hooks/userService');
 
+const { deleteUserData } = require('../../fileStorage/uc/deleteUserData.uc');
+
 // const USER_RABBIT_EXCHANGE = 'user';
 class UserService {
 	constructor(options) {
@@ -70,8 +72,11 @@ class UserService {
 		return this.app.service('usersModel').patch(id, data, prepareInternalParams(params));
 	}
 
-	remove(id, params) {
-		return this.app.service('usersModel').remove(id, prepareInternalParams(params));
+	async remove(id, params) {
+		// TODO move the following to user.service.v2 when the other pr is merged
+		await deleteUserData(id);
+		// end move
+		// return this.app.service('usersModel').remove(id, prepareInternalParams(params));
 	}
 
 	async setup(app) {
