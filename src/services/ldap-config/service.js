@@ -34,10 +34,40 @@ class LdapConfigService {
 		return system.ldapConfig;
 	}
 
+	/**
+	 * `POST /ldap-config`
+	 * Creates a new system with the given LDAP config and attaches it to the
+	 * caller's school, if the config is validated successfully. The validation
+	 * result is returned.
+	 * If `validateOnly === true`, changes are not persisted to the systems and
+	 * school collection. Otherwise, a new system is created.
+	 * After creating the system, if `activate !== false`, it is added as a login
+	 * system to the caller's school and the school's ldapSchoolIdentifier attribute
+	 * is set to the config's base path.
+	 * @param {Object} config an LDAP config (given as JSON in request body)
+	 * @param {Object} params Feathers request params
+	 * @returns {Object} validation result object
+	 * `{ ok: Boolean, errors: [], users: {}, classes: {} }`
+	 */
 	async create(config, params) {
 		return this.verifyAndSaveLdapConfig(config, this.getOptions(params));
 	}
 
+	/**
+	 * `PATCH /ldap-config/:systemId`
+	 * Patches an existing system with the given LDAP config and attaches it to
+	 * the caller's school if the config is validated successfully.
+	 * If `validateOnly === true`, changes are not persisted to the systems and
+	 * school collection. Otherwise, the system is patched.
+	 * After patching the system, if `activate !== false`, it is added as a login
+	 * system to the caller's school and the school's ldapSchoolIdentifier attribute
+	 * is set to the config's base path.
+	 * @param {ObjectId} id systemId of system to patch
+	 * @param {Object} config LDAP config object
+	 * @param {Object} params Feathers request params
+	 * @returns validation result object
+	 * `{ ok: Boolean, errors: [], users: {}, classes: {} }`
+	 */
 	async patch(id, config, params) {
 		return this.verifyAndSaveLdapConfig(config, {
 			...this.getOptions(params),
