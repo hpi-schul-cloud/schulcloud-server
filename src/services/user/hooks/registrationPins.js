@@ -55,7 +55,7 @@ Dein ${SC_SHORT_TITLE}-Team`;
 }
 
 const checkAndVerifyPin = (hook) => {
-	if (hook.result.length === 0 || hook.result.data.length === 0) {
+	if (hook.result.data.length === 0) {
 		return hook;
 	}
 	if (hook.result.data.length === 1) {
