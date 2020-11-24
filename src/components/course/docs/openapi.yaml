@@ -45,8 +45,8 @@ components:
           minimum: 0
           maximum: 6
         startTime:
-          type: string
-          pattern: '(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)'
+          type: integer
+          description: Time in miliseconds from midnight.
         duration:
           description: value in miliseconds
           type: number
