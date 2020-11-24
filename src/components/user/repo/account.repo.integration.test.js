@@ -61,9 +61,10 @@ describe('account repository', () => {
 			expect(result).to.haveOwnProperty('password');
 		});
 
-		it('when the funcion is called with an invalid id, then it throws 404', async () => {
-			const uid = ObjectId();
-			expect(accountRepo.getUserAccount(uid)).to.eventually.throw(new NotFound());
+		it('when no account exists for a user, then null is returned', async () => {
+			const userId = ObjectId();
+			const result = await accountRepo.getUserAccount(userId);
+			expect(result).to.be.null;
 		});
 	});
 });
