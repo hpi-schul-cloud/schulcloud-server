@@ -220,7 +220,6 @@ const validateSchoolNumber = async (context) => {
 		if (!currentSchool) {
 			throw new Error(`Internal error`);
 		}
-
 		if (currentSchool.officialSchoolNumber) {
 			throw new Error(`This school already have an officialSchoolNumber`);
 		}
