@@ -1,9 +1,39 @@
 const mongoose = require('mongoose');
+const reqlib = require('app-root-path').require;
+
 const errorHandlers = require('./errors');
+
+const { Forbidden } = reqlib('src/errors');
 
 class LdapConfigService {
 	setup(app) {
 		this.app = app;
+	}
+
+	/**
+	 * `GET /ldap-config/:systemId`
+	 * Returns the ldapConfig of a given system in the same format as accepted
+	 * by the other methods of this service.
+	 * If the given system is not a LDAP system (i.e. does not have the ldapConfig
+	 * attribute) or is not of the type `general` (i.e. a self-service config), the
+	 * access is denied.
+	 * To access the system data, the authentication information are proxied to the
+	 * System service, so that access is only granted to administrators and only to
+	 * systems of the own school.
+	 * @param {ObjectId} systemId ID of an existing system with LDAP config
+	 * @param {Object} params Feathers request params
+	 * @returns {Object} ldapConfig attribute of the given system
+	 */
+	async get(systemId, params) {
+		// Proxying the request params here to have the system service hooks check
+		// the permissions, filtering sensitive data, etc.
+		delete params.route;
+		delete params.query;
+		const system = await this.app.service('systems').get(systemId, params);
+		if (!system.ldapConfig || system.ldapConfig.provider !== 'general') {
+			throw new Forbidden('The requested system is not configurable with this endpoint');
+		}
+		return system.ldapConfig;
 	}
 
 	async create(config, params) {
