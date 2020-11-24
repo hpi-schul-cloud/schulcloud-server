@@ -2,6 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { iff, keepQuery, isProvider, disallow } = require('feathers-hooks-common');
 
 const { populateCurrentSchool } = require('../../../hooks');
+const fillDefaultValues = require('./fillDefaultValues');
 const restrictToSchoolSystems = require('../../ldap/hooks/restrictToSchoolSystems');
 
 module.exports = {
@@ -13,6 +14,7 @@ module.exports = {
 			iff(!isProvider('external'), disallow()),
 			keepQuery('activate', 'verifyOnly'),
 			populateCurrentSchool,
+			fillDefaultValues,
 		],
 		patch: [
 			// only allow external calls (the service needs a user)
@@ -20,6 +22,7 @@ module.exports = {
 			keepQuery('activate', 'verifyOnly'),
 			populateCurrentSchool,
 			restrictToSchoolSystems,
+			fillDefaultValues,
 		],
 		update: [disallow()],
 		remove: [disallow()],
