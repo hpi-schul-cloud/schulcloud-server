@@ -109,21 +109,26 @@ class LdapConfigService {
 		await session.withTransaction(async () => {
 			if (systemId) {
 				// update existing system (already assigned to school)
-				await Promise.all([
-					systemService.patch(systemId, system),
-					schoolsService.patch(schoolId, {
-						ldapSchoolIdentifier: config.rootPath,
-					}),
-				]);
+				const thingsToDo = [systemService.patch(systemId, system)];
+				if (activate) {
+					thingsToDo.push(
+						schoolsService.patch(schoolId, {
+							ldapSchoolIdentifier: config.rootPath,
+						})
+					);
+				}
+				await Promise.all(thingsToDo);
 			} else {
 				// create a new system and assign it to the school
 				const { _id: newSystemId } = await systemService.create(system);
-				await schoolsService.patch(schoolId, {
-					ldapSchoolIdentifier: config.rootPath,
-					$addToSet: {
-						systems: newSystemId,
-					},
-				});
+				if (activate) {
+					await schoolsService.patch(schoolId, {
+						ldapSchoolIdentifier: config.rootPath,
+						$addToSet: {
+							systems: newSystemId,
+						},
+					});
+				}
 			}
 		});
 		await session.endSession();
