@@ -6,6 +6,7 @@ const path = require('path');
 const reqlib = require('app-root-path').require;
 
 const { Forbidden, NotFound, BadRequest, GeneralError, NotAuthenticated, NoClientInstanceError } = reqlib('src/errors');
+const LDAPConnectionError = require('./LDAPConnectionError');
 
 const hooks = require('./hooks');
 
@@ -143,7 +144,7 @@ module.exports = function LDAPService() {
 
 				client.on('error', (e) => {
 					logger.error('Error during LDAP operation', { error: e });
-					reject(new GeneralError('LDAP error', e));
+					reject(new LDAPConnectionError('LDAP error', e));
 				});
 
 				client.on('connect', () => {

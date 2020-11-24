@@ -1,4 +1,5 @@
 const reqlib = require('app-root-path').require;
+const LDAPConnectionError = require('../ldap/LDAPConnectionError');
 
 const { NotAuthenticated } = reqlib('src/errors');
 
@@ -9,9 +10,9 @@ const errorHandlers = [
 		message: 'Wrong search-user credentials',
 	},
 	{
-		match: (error) => error.errors && error.errors.errno === 'ENOTFOUND',
-		type: 'WRONG_URL',
-		message: 'Wrong server URL',
+		match: (error) => error instanceof LDAPConnectionError,
+		type: 'CONNECTION_ERROR',
+		message: (error) => `${error.data.code}: ${error.data.message}`,
 	},
 	{
 		match: (error) => error.lde_message === 'No Such Object',
