@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
+## [25.2.1]
+
+### Fixed
+
+- SC-7714 Fixes script injection issue
 
 ## [Unreleased]
 
@@ -69,6 +74,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - Fixed searching for names including a dash
 - SC-7572 - Find /users route after hooks - extremely slow
 - SC-7573 - Route/hash-broken promise chain
+- SC-7884 - Authentication error when accessing any nuxt page in the client.
 
 ### Removed
 
