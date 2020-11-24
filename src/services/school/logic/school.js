@@ -1,7 +1,6 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { URL } = require('url');
 const logger = require('../../../logger');
-const { DOCUMENT_BASE_DIR } = require('../../../../config/globals');
 
 const getDocumentBaseDir = (school) => {
 	// parse id eventually from populated schoolGroup if defined, otherwise set false
@@ -25,7 +24,7 @@ const getDocumentBaseDir = (school) => {
 			schoolBaseDir = `${Configuration.get('SC__THEME')}/`;
 			break;
 	}
-	return String(new URL(schoolBaseDir, DOCUMENT_BASE_DIR));
+	return String(new URL(schoolBaseDir, Configuration.get('DOCUMENT_BASE_DIR')));
 };
 
 module.exports = { getDocumentBaseDir };

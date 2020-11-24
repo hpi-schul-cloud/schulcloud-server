@@ -1,8 +1,7 @@
+const { Configuration } = require('@hpi-schul-cloud/commons');
+
 const {
 	HOST,
-	SMTP,
-	SMTP_HOST,
-	SMTP_PORT,
 	AWS_ACCESS_KEY,
 	AWS_SECRET_ACCESS_KEY,
 	AWS_REGION,
@@ -11,10 +10,10 @@ const {
 } = require('./globals');
 
 const secrets = {
-	smtp: SMTP,
+	smtp: Configuration.get('SMTP'),
 	sendmail: {
-		host: SMTP_HOST,
-		port: SMTP_PORT,
+		host: Configuration.get('SMTP_HOST'),
+		port: Configuration.get('SMTP_PORT'),
 	},
 	aws: {
 		signatureVersion: 'v4',

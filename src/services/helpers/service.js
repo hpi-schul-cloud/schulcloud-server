@@ -5,7 +5,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const { GeneralError } = reqlib('src/errors');
 const logger = require('../../logger');
 
-const { SMTP_SENDER, NODE_ENV, ENVIRONMENTS } = require('../../../config/globals');
+const { NODE_ENV, ENVIRONMENTS } = require('../../../config/globals');
 
 const checkForToken = (params, app) => {
 	if ((params.headers || {}).token) {
@@ -56,7 +56,7 @@ module.exports = function setup(app) {
 				subject,
 				text: content.text,
 				html: content.html,
-				from: SMTP_SENDER,
+				from: Configuration.get('SMTP_SENDER'),
 				replyTo: replyEmail,
 				attachments: base64Attachments,
 			};

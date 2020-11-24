@@ -6,13 +6,12 @@ const path = require('path');
 const problemModel = require('./model');
 const hooks = require('./hooks');
 const logger = require('../../logger');
-const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE } = require('../../../config/globals');
 
 if (Configuration.get('BODYPARSER_JSON_LIMIT') === undefined) {
 	/* eslint-disable-next-line  */
 	logger.warning(
 		`please set the environment variable BODYPARSER_JSON_LIMIT to min. '${Math.ceil(
-			1.36 * (MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE / 1024 / 1024)
+			1.36 * (Configuration.get('MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE') / 1024 / 1024)
 		)}mb' for helpdesk to work correctly! (Currently: ${Configuration.get('BODYPARSER_JSON_LIMIT')})`
 	);
 }

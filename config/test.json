@@ -17,5 +17,6 @@
 		"TITLE": "HPI Schul-Cloud",
 		"THEME": "default",
 		"SHORT_TITLE": "HPI Schul-Cloud"
-	}
+	},
+	"DB_URL": "mongodb://127.0.0.1:27017/schulcloud-test"
 }

@@ -1,8 +1,9 @@
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { expect } = require('chai');
 const nock = require('nock');
 
 const appPromise = require('../../../src/app');
-const { NODE_ENV, SMTP_SENDER } = require('../../../config/globals');
+const { NODE_ENV } = require('../../../config/globals');
 
 // eslint-disable-next-line import/no-dynamic-require
 const config = require(`../../../config/${NODE_ENV}.json`); // TODO cleanup
@@ -85,7 +86,7 @@ describe('Mail Service', async () => {
 
 		it('From address should not be changed by the caller', async () => {
 			const notifcationMock = getNotificationMock({
-				from: SMTP_SENDER,
+				from: Configuration.get('SMTP_SENDER'),
 			});
 
 			await mailService.create({
