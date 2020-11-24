@@ -73,9 +73,9 @@ class LdapConfigService {
 			}
 			result.ok = true;
 		} catch (error) {
-			for (const { match, message, code } of errorHandlers) {
+			for (const { match, message, type } of errorHandlers) {
 				if (match(error)) {
-					result.errors.push({ message, code });
+					result.errors.push({ message, type });
 				}
 			}
 			if (result.errors.length === 0) {
