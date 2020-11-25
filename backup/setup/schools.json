@@ -83,10 +83,7 @@
 	},
 	"name": "Expertenschule",
 	"federalState": {
-		"antaresKey" : "BRB",
-		"_id" : {"$oid":"5fa55eb53f472a2d986c8812"},
-		"countyId" : 12051,
-		"name" : "Brandenburg an der Havel"
+		"$oid": "0000b186816abba584714c53"
 	},
 	"county":{
 		"antaresKey" : "CB",
