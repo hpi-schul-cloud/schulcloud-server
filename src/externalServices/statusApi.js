@@ -1,5 +1,5 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const Api = require('../../../../helper/apiHelper');
+const Api = require('./apiHelper');
 
 const statusApi = () => {
 	const api = new Api({
