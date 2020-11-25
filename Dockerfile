@@ -11,6 +11,7 @@ RUN npm install
 #--only=production
 
 COPY . .
+RUN npm run build
 #COPY ./localtime /etc/localtime
 ENV TZ=Europe/Berlin
 

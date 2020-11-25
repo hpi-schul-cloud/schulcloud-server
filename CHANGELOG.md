@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
+## [25.2.1]
+
+### Fixed
+
+- SC-7714 Fixes script injection issue
 
 ## [Unreleased]
 
@@ -31,7 +36,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-4667 - Only request and compare LDAP entities that have changed since the last sync (using operational attribute modifyTimestamp with fallback)
 - SC-4667 - Add optional `forceFullSync` option (as get param or json payload) to force a full LDAP sync
 - SC-7499 - add API Specification for public services
-- SC-7571 - solved performance issues - bulk QR-code generation
+- SC-7571 - solved performance issues - bulk QR-code generation 
+- SC-6294 - Introduce Typescript in schulcloud-server
 
 ### Changed
 
@@ -51,6 +57,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-5900 - Move Synapse synchronization logic into server
 - SC-7499 - Fixes documentation for edu sharing endpoints
 - SC-7872 - Fix audience of the jwt to new organisation name.
+- SC-7868 - Move external request helpers to more present file location
 
 ### Fixed
 
