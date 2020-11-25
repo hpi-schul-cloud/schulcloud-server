@@ -1,4 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { SC_THEME } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
@@ -94,9 +95,22 @@ const feedback = () => async (hook) => {
 		// TODO: NOTIFICATION SERVICE
 	} else {
 		data.systemInformation = await generateSystemInformation(hook);
+		const emails = [];
+		if (SC_THEME === 'n21') {
+			if (data.supportType) {
+				if (data.supportType === 'problem') {
+					emails.push('nbc-support@netz-21.de');
+				}
+				if (data.supportType === 'wish') {
+					emails.push('nbc-wunsch@netz-21.de');
+				}
+			}
+		} else {
+			emails.push('ticketsystem@schul-cloud.org');
+		}
 		globalHooks.sendEmail(hook, {
 			subject: data.title || data.subject || 'nosubject',
-			emails: ['ticketsystem@schul-cloud.org'],
+			emails: emails,
 			replyEmail: data.replyEmail,
 			content: {
 				text: createFeedbackText((hook.params.account || {}).username || 'nouser', data),
