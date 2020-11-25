@@ -1,6 +1,7 @@
 const express = require('@feathersjs/express');
 const feathers = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
+const prom = require('prom-client');
 const apiMetrics = require('express-prom-bundle');
 const path = require('path');
 const favicon = require('serve-favicon');
@@ -12,7 +13,7 @@ const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
 const { Configuration } = require('@schul-cloud/commons');
-const { BODYPARSER_JSON_LIMIT, LEAD_TIME } = require('../config/globals');
+const { BODYPARSER_JSON_LIMIT, LEAD_TIME, NODE_ENV } = require('../config/globals');
 
 const middleware = require('./middleware');
 const setupConfiguration = require('./configuration');
@@ -52,6 +53,10 @@ const setupApp = async () => {
 			includePath: Configuration.get('PROMETHEUS__INCLUDE_PATH'),
 			metricType: Configuration.get('PROMETHEUS__METRIC_TYPE'),
 		};
+		if (NODE_ENV === 'test') {
+			// due to hot reload, we have to clear prom client metric registration within of tests
+			prom.register.clear();
+		}
 		app.use(apiMetrics(metricsOptions));
 	}
 
