@@ -1,20 +1,26 @@
 const { registrationPinModel } = require('../../../services/user/model');
-const { NotFound } = require('../../../errors');
+const { GeneralError } = require('../../../errors');
 
-const getRegistrationPins = async (email) => {
-	const registrationPin = await registrationPinModel.findOne({ email }).lean().exec();
-	if (registrationPin === null) {
-		throw new NotFound('no registration pin for this user');
-	}
-	return registrationPin;
+const getRegistrationPinsForUser = async (email) => {
+	return registrationPinModel.find({ email }).lean().exec();
 };
 
-const deleteRegistrationPinForUser = async (email) => {
-	const result = await registrationPinModel.findOneAndRemove({ email }).lean().exec();
-	return result;
+const deleteRegistrationPins = async (registrationPinIds) => {
+	const deleteResult = await registrationPinModel
+		.deleteMany({
+			_id: {
+				$in: registrationPinIds,
+			},
+		})
+		.lean()
+		.exec();
+	if (deleteResult.n !== deleteResult.ok || deleteResult.ok !== registrationPinIds.length) {
+		throw new GeneralError('db error during deleting registration pin');
+	}
+	return registrationPinIds;
 };
 
 module.exports = {
-	getRegistrationPin: getRegistrationPins,
-	deleteRegistrationPinForUser
+	getRegistrationPinsForUser,
+	deleteRegistrationPins,
 };
