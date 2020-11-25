@@ -155,11 +155,11 @@ class LdapConfigService {
 	 * @param {Object} [systemId] optional id of the system to update
 	 * @param {Boolean} [activate=true] optional value for `ldapConfig.active`
 	 */
-	async saveConfig(config, school, systemId = undefined, activate = true) {
+	async saveConfig(config, school, systemId = undefined, activate) {
 		const systemService = await this.app.service('systems');
 		const schoolsService = await this.app.service('schools');
 
-		const system = LdapConfigService.constructSystem(config, school, activate);
+		const system = LdapConfigService.constructSystem(config, school, activate === undefined || activate);
 
 		const session = await mongoose.startSession();
 		await session.withTransaction(async () => {
@@ -198,10 +198,10 @@ class LdapConfigService {
 	 * @static
 	 * @param {Object} config LDAP config object
 	 * @param {School} school the school at which to activate the system
-	 * @param {boolean} [activate=true] optional value for `ldapConfig.active`
+	 * @param {boolean} [activate] value for `ldapConfig.active`
 	 * @returns {System} system object to be used for creating or updating
 	 */
-	static constructSystem(config, school, activate = true) {
+	static constructSystem(config, school, activate) {
 		return {
 			type: 'ldap',
 			alias: school.name,
