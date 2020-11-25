@@ -264,7 +264,7 @@ class LdapConfigService {
 	 * @returns {Boolean} true/false
 	 */
 	static shouldVerifyClasses(config) {
-		return (
+		return !!(
 			config.providerOptions &&
 			config.providerOptions.classPathAdditions &&
 			config.providerOptions.classPathAdditions !== ''
