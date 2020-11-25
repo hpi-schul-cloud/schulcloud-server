@@ -137,7 +137,7 @@ describe('AdminUsersService', () => {
 
 	it('only shows current classes', async () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-		const student = await testObjects.createTestUser({ roles: ['student'] });
+		const student = await testObjects.createTestUser({ firstName: 'Max', roles: ['student'] });
 		const currentSchool = await app.service('schools').get(teacher.schoolId);
 
 		const { currentYear } = currentSchool;
@@ -192,6 +192,7 @@ describe('AdminUsersService', () => {
 		});
 		const student1 = await testObjects
 			.createTestUser({
+				firstName: 'Max',
 				roles: ['student'],
 				consent: {
 					userConsent: {
@@ -458,7 +459,7 @@ describe('AdminUsersService', () => {
 		const mockData = {
 			firstName: 'testFirst',
 			lastName: 'testLast',
-			email: `studentTest${Date.now()}@de.de`,
+			email: 'studentTest@de.de',
 			roles: ['student'],
 			schoolId: admin.schoolId,
 		};
@@ -500,6 +501,7 @@ describe('AdminUsersService', () => {
 			permissions: ['STUDENT_LIST'],
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['studentListPerm'],
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
@@ -513,6 +515,7 @@ describe('AdminUsersService', () => {
 			permissions: [],
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['noStudentListPerm'],
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
@@ -535,11 +538,13 @@ describe('AdminUsersService', () => {
 			name: 'testSchool',
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['studentListPerm'],
 			schoolId: school._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
 		const student = await testObjects.createTestUser({
+			firstName: 'Hans',
 			roles: ['student'],
 			schoolId: school._id,
 		});
@@ -557,6 +562,7 @@ describe('AdminUsersService', () => {
 			name: 'testSchool',
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['noStudentListPerm'],
 			schoolId: school._id,
 		});
@@ -599,6 +605,8 @@ describe('AdminUsersService', () => {
 			name: 'testSchool',
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
+			lastName: 'lastTestUser',
 			roles: ['studentCreatePerm'],
 			schoolId: school._id,
 		});
@@ -606,7 +614,7 @@ describe('AdminUsersService', () => {
 		const studentData = {
 			firstName: 'testCreateStudent',
 			lastName: 'lastTestCreateStudent',
-			email: `testCreateStudent${Date.now()}@de.de`,
+			email: 'testCreateStudent@de.de',
 			roles: ['student'],
 			schoolId: school._id,
 		};
@@ -624,11 +632,13 @@ describe('AdminUsersService', () => {
 			name: 'testSchool',
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['noStudentCreatePerm'],
 			schoolId: school._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
 		const studentData = await testObjects.createTestUser({
+			firstName: 'testCreateStudent',
 			roles: ['student'],
 		});
 
@@ -650,6 +660,7 @@ describe('AdminUsersService', () => {
 			name: 'testSchool',
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['studentDeletePerm'],
 			schoolId: school._id,
 		});
@@ -657,7 +668,7 @@ describe('AdminUsersService', () => {
 		const studentData = {
 			firstName: 'testDeleteStudent',
 			lastName: 'lastTestDeleteStudent',
-			email: `testDeleteStudent${Date.now()}@de.de`,
+			email: 'testDeleteStudent@de.de',
 			roles: ['student'],
 			schoolId: school._id,
 		};
@@ -668,10 +679,7 @@ describe('AdminUsersService', () => {
 		};
 		const deletedStudent = await adminStudentsService.remove(null, params);
 		expect(deletedStudent).to.not.be.undefined;
-		expect(deletedStudent.length).to.equals(1);
-		expect(deletedStudent[0].user).to.not.be.undefined;
-		expect(deletedStudent[0].user._id).to.not.be.undefined;
-		expect(deletedStudent[0].user._id).to.equals(student._id.toString());
+		expect(deletedStudent.firstName).to.equals('testDeleteStudent');
 	});
 
 	it('users without STUDENT_DELETE permission cannnot access the REMOVE method', async () => {
@@ -683,6 +691,7 @@ describe('AdminUsersService', () => {
 			name: 'testSchool',
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['noStudentDeletePerm'],
 			schoolId: school._id,
 		});
@@ -690,7 +699,7 @@ describe('AdminUsersService', () => {
 		const studentData = {
 			firstName: 'testDeleteStudent',
 			lastName: 'lastDeleteStudent',
-			email: `testDeleteStudent2${Date.now()}@de.de`,
+			email: 'testDeleteStudent2@de.de',
 			roles: ['student'],
 			schoolId: school._id,
 		};
@@ -743,25 +752,26 @@ describe('AdminUsersService', () => {
 			name: 'testSchool',
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['administrator'],
 			schoolId: school._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
 
-		const student = await testObjects.createTestUser({
-			roles: ['student'],
+		const studentDetails = {
+			firstName: 'testDeleteStudent',
+			lastName: 'Tested',
+			email: `testDeleteStudent${Date.now()}@tested.de`,
 			schoolId: school._id,
-		});
+		};
+		const student = await testObjects.createTestUser(studentDetails);
 
-		const studentAccount = await testObjects.createTestAccount(
-			{
-				username: student.email,
-				password: 'ca4t9fsfr3dsd',
-				userId: student._id,
-			},
-			false,
-			student
-		);
+		const accountDetails = {
+			username: `testDeleteStudent${Date.now()}@tested.de`,
+			password: 'ca4t9fsfr3dsd',
+			userId: student._id,
+		};
+		const studentAccount = await app.service('/accounts').create(accountDetails);
 
 		params.query = {
 			...params.query,
@@ -773,10 +783,7 @@ describe('AdminUsersService', () => {
 
 		const deletedStudent = await adminStudentsService.remove(null, params);
 		expect(deletedStudent).to.not.be.undefined;
-		expect(deletedStudent.length).to.equals(1);
-		expect(deletedStudent[0].user).to.not.be.undefined;
-		expect(deletedStudent[0].user._id).to.not.be.undefined;
-		expect(deletedStudent[0].user._id).to.equals(student._id.toString());
+		expect(deletedStudent.firstName).to.equals('testDeleteStudent');
 
 		try {
 			await app.service('accountModel').get(studentAccount._id);
@@ -821,6 +828,7 @@ describe('AdminUsersService', () => {
 			name: 'testSchool',
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['administrator'],
 			schoolId: school._id,
 		});
@@ -828,7 +836,7 @@ describe('AdminUsersService', () => {
 		const studentData = {
 			firstName: 'validDeleteStudent',
 			lastName: 'lastValidDeleteStudent',
-			email: `validDeleteStudent${Date.now()}@de.de`,
+			email: 'validDeleteStudent@de.de',
 			roles: ['student'],
 			schoolId: school._id,
 		};
@@ -840,15 +848,12 @@ describe('AdminUsersService', () => {
 
 		const deletedStudent = await adminStudentsService.remove(null, params);
 		expect(deletedStudent).to.not.be.undefined;
-		expect(deletedStudent.length).to.equals(1);
-		expect(deletedStudent[0].user).to.not.be.undefined;
-		expect(deletedStudent[0].user._id).to.not.be.undefined;
-		expect(deletedStudent[0].user._id).to.equals(student._id.toString());
+		expect(deletedStudent.firstName).to.equals('validDeleteStudent');
 
 		const otherStudentData = {
 			firstName: 'otherValidDeleteStudent',
 			lastName: 'otherLastValidDeleteStudent',
-			email: `otherValidDeleteStudent${Date.now()}@de.de`,
+			email: 'otherValidDeleteStudent@de.de',
 			roles: ['student'],
 			schoolId: school._id,
 		};
@@ -883,30 +888,20 @@ describe('AdminUsersService', () => {
 		const studentData = {
 			firstName: 'testDeleteStudent',
 			lastName: 'lastDeleteStudent',
+			email: 'testDeleteStudent3@de.de',
 			roles: ['student'],
 			schoolId: school._id,
 		};
-		const objectTypeStudentTest = await adminStudentsService.create(
-			{ ...studentData, email: `testDeleteStudent3${Date.now()}@de.de` },
-			params
-		);
+
+		const objectTypeStudentTest = await adminStudentsService.create(studentData, params);
 		const deletedObjectType = await adminStudentsService.remove(objectTypeStudentTest, params);
 		expect(deletedObjectType).to.not.be.undefined;
-		expect(deletedObjectType.length).to.equals(1);
-		expect(deletedObjectType[0].user).to.not.be.undefined;
-		expect(deletedObjectType[0].user._id).to.not.be.undefined;
-		expect(deletedObjectType[0].user._id).to.equals(objectTypeStudentTest._id.toString());
+		expect(deletedObjectType.firstName).to.equals('testDeleteStudent');
 
-		const stringTypeStudentTest = await adminStudentsService.create(
-			{ ...studentData, email: `testDeleteStudent4${Date.now()}@de.de` },
-			params
-		);
-		const deletedeStringType = await adminStudentsService.remove(stringTypeStudentTest._id.toString(), params);
+		const stringTypeStudentTest = await adminStudentsService.create(studentData, params);
+		const deletedeStringType = await adminStudentsService.remove(stringTypeStudentTest._id, params);
 		expect(deletedeStringType).to.not.be.undefined;
-		expect(deletedeStringType.length).to.equals(1);
-		expect(deletedeStringType[0].user).to.not.be.undefined;
-		expect(deletedeStringType[0].user._id).to.not.be.undefined;
-		expect(deletedeStringType[0].user._id).to.equals(stringTypeStudentTest._id.toString());
+		expect(deletedeStringType.firstName).to.equals('testDeleteStudent');
 	});
 
 	describe('patch and update', () => {
@@ -920,15 +915,12 @@ describe('AdminUsersService', () => {
 			});
 			// given
 			const user = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
-			const account = await testObjects.createTestAccount(
-				{
-					username: user.email,
-					password: 'password',
-					userId: user._id,
-				},
-				false,
-				user
-			);
+			const accountDetails = {
+				username: user.email,
+				password: 'password',
+				userId: user._id,
+			};
+			const account = await testObjects.createTestAccount(accountDetails, false, user);
 			expect(user.email).equals(account.username);
 
 			// when
@@ -1034,6 +1026,7 @@ describe('AdminUsersService', () => {
 			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
 			const user = await testObjects.createTestUser({
 				roles: [role],
+				email: userMail,
 				schoolId: school._id,
 			});
 			const account = await testObjects.createTestAccount(
@@ -1069,7 +1062,7 @@ describe('AdminUsersService', () => {
 				const result = await service[type](
 					user._id.toString(),
 					{
-						email: otherUser.email,
+						email: otherUser.eamil,
 						firstName: 'Anne',
 						lastName: newUserName,
 					},
@@ -1382,7 +1375,7 @@ describe('AdminTeachersService', () => {
 		const mockData = {
 			firstName: 'testFirst',
 			lastName: 'testLast',
-			email: `teacherTest${Date.now()}@de.de`,
+			email: 'teacherTest@de.de',
 			roles: ['teacher'],
 			schoolId: admin.schoolId,
 		};
@@ -1424,6 +1417,7 @@ describe('AdminTeachersService', () => {
 			permissions: ['TEACHER_LIST'],
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['teacherListPerm'],
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
@@ -1437,6 +1431,7 @@ describe('AdminTeachersService', () => {
 			permissions: [],
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['noTeacherListPerm'],
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
@@ -1459,11 +1454,13 @@ describe('AdminTeachersService', () => {
 			name: 'testSchool',
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['teacherListPerm'],
 			schoolId: school._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
 		const teacher = await testObjects.createTestUser({
+			firstName: 'Affenmesserkamppf',
 			roles: ['teacher'],
 			schoolId: school._id,
 		});
@@ -1481,6 +1478,7 @@ describe('AdminTeachersService', () => {
 			name: 'testSchool',
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['noTeacherListPerm'],
 			schoolId: school._id,
 		});
@@ -1523,6 +1521,8 @@ describe('AdminTeachersService', () => {
 			name: 'testSchool',
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
+			lastName: 'lastTestUser',
 			roles: ['teacherCreatePerm'],
 			schoolId: school._id,
 		});
@@ -1530,7 +1530,7 @@ describe('AdminTeachersService', () => {
 		const teacherData = {
 			firstName: 'testCreateTeacher',
 			lastName: 'lastTestCreateTeacher',
-			email: `testCreateTeacher${Date.now()}@de.de`,
+			email: 'testCreateTeacher@de.de',
 			roles: ['teacher'],
 			schoolId: school._id,
 		};
@@ -1548,11 +1548,13 @@ describe('AdminTeachersService', () => {
 			name: 'testSchool',
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['noTeacherCreatePerm'],
 			schoolId: school._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
 		const teacherData = await testObjects.createTestUser({
+			firstName: 'testCreateTeacher',
 			roles: ['teacher'],
 		});
 
@@ -1574,6 +1576,7 @@ describe('AdminTeachersService', () => {
 			name: 'testSchool',
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['teacherDeletePerm'],
 			schoolId: school._id,
 		});
@@ -1581,7 +1584,7 @@ describe('AdminTeachersService', () => {
 		const teacherData = {
 			firstName: 'testDeleteTeacher',
 			lastName: 'lastTestDeleteTeacher',
-			email: `testDeleteTeacher${Date.now()}@de.de`,
+			email: 'testDeleteTeacher@de.de',
 			roles: ['teacher'],
 			schoolId: school._id,
 		};
@@ -1592,10 +1595,7 @@ describe('AdminTeachersService', () => {
 		};
 		const deletedTeacher = await adminTeachersService.remove(null, params);
 		expect(deletedTeacher).to.not.be.undefined;
-		expect(deletedTeacher.length).to.equals(1);
-		expect(deletedTeacher[0].user).to.not.be.undefined;
-		expect(deletedTeacher[0].user._id).to.not.be.undefined;
-		expect(deletedTeacher[0].user._id).to.equals(teacher._id.toString());
+		expect(deletedTeacher.firstName).to.equals('testDeleteTeacher');
 	});
 
 	it('users without TEACHER_DELETE permission cannnot access the REMOVE method', async () => {
@@ -1607,6 +1607,7 @@ describe('AdminTeachersService', () => {
 			name: 'testSchool',
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['noTeacherDeletePerm'],
 			schoolId: school._id,
 		});
@@ -1614,7 +1615,7 @@ describe('AdminTeachersService', () => {
 		const teacherData = {
 			firstName: 'testDeleteTeacher',
 			lastName: 'lastDeleteTeacher',
-			email: `testDeleteTeacher2${Date.now()}@de.de`,
+			email: 'testDeleteTeacher2@de.de',
 			roles: ['teacher'],
 			schoolId: school._id,
 		};
@@ -1667,25 +1668,26 @@ describe('AdminTeachersService', () => {
 			name: 'testSchool',
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['administrator'],
 			schoolId: school._id,
 		});
 		const params = await testObjects.generateRequestParamsFromUser(testUser);
 
-		const teacher = await testObjects.createTestUser({
-			roles: ['teacher'],
+		const teacherDetails = {
+			firstName: 'testDeleteTeacher',
+			lastName: 'Tested',
+			email: 'testDeleteTeacher@tested.de',
 			schoolId: school._id,
-		});
+		};
+		const teacher = await testObjects.createTestUser(teacherDetails);
 
-		const teacherAccount = await testObjects.createTestAccount(
-			{
-				username: teacher.email,
-				password: 'ca4t9fsfr3dsd',
-				userId: teacher._id,
-			},
-			false,
-			teacher
-		);
+		const accountDetails = {
+			username: 'testDeleteTeacher@tested.de',
+			password: 'ca4t9fsfr3dsd',
+			userId: teacher._id,
+		};
+		const teacherAccount = await app.service('/accounts').create(accountDetails);
 
 		params.query = {
 			...params.query,
@@ -1697,10 +1699,7 @@ describe('AdminTeachersService', () => {
 
 		const deletedTeacher = await adminTeachersService.remove(null, params);
 		expect(deletedTeacher).to.not.be.undefined;
-		expect(deletedTeacher.length).to.equals(1);
-		expect(deletedTeacher[0].user).to.not.be.undefined;
-		expect(deletedTeacher[0].user._id).to.not.be.undefined;
-		expect(deletedTeacher[0].user._id).to.equals(teacher._id.toString());
+		expect(deletedTeacher.firstName).to.equals('testDeleteTeacher');
 
 		try {
 			await app.service('accountModel').get(teacherAccount._id);
@@ -1745,6 +1744,7 @@ describe('AdminTeachersService', () => {
 			name: 'testSchool',
 		});
 		const testUser = await testObjects.createTestUser({
+			firstName: 'testUser',
 			roles: ['administrator'],
 			schoolId: school._id,
 		});
@@ -1752,7 +1752,7 @@ describe('AdminTeachersService', () => {
 		const teacherData = {
 			firstName: 'validDeleteTeacher',
 			lastName: 'lastValidDeleteTeacher',
-			email: `validDeleteTeacher${Date.now()}@de.de`,
+			email: 'validDeleteTeacher@de.de',
 			roles: ['teacher'],
 			schoolId: school._id,
 		};
@@ -1764,15 +1764,12 @@ describe('AdminTeachersService', () => {
 
 		const deletedTeacher = await adminTeachersService.remove(null, params);
 		expect(deletedTeacher).to.not.be.undefined;
-		expect(deletedTeacher.length).to.equals(1);
-		expect(deletedTeacher[0].user).to.not.be.undefined;
-		expect(deletedTeacher[0].user._id).to.not.be.undefined;
-		expect(deletedTeacher[0].user._id).to.equals(teacher._id.toString());
+		expect(deletedTeacher.firstName).to.equals('validDeleteTeacher');
 
 		const otherTeacherData = {
 			firstName: 'otherValidDeleteTeacher',
 			lastName: 'otherLastValidDeleteTeacher',
-			email: `otherValidDeleteTeacher${Date.now()}@de.de`,
+			email: 'otherValidDeleteTeacher@de.de',
 			roles: ['teacher'],
 			schoolId: school._id,
 		};
@@ -1807,30 +1804,19 @@ describe('AdminTeachersService', () => {
 		const teacherData = {
 			firstName: 'testDeleteTeacher',
 			lastName: 'lastDeleteTeacher',
+			email: 'testDeleteTeacher3@de.de',
 			roles: ['teacher'],
 			schoolId: school._id,
 		};
 
-		const objectTypeTeacherTest = await adminTeachersService.create(
-			{ ...teacherData, email: `testDeleteTeacher3${Date.now()}@de.d` },
-			params
-		);
+		const objectTypeTeacherTest = await adminTeachersService.create(teacherData, params);
 		const deletedObjectType = await adminTeachersService.remove(objectTypeTeacherTest, params);
 		expect(deletedObjectType).to.not.be.undefined;
-		expect(deletedObjectType.length).to.equals(1);
-		expect(deletedObjectType[0].user).to.not.be.undefined;
-		expect(deletedObjectType[0].user._id).to.not.be.undefined;
-		expect(deletedObjectType[0].user._id).to.equals(objectTypeTeacherTest._id.toString());
+		expect(deletedObjectType.firstName).to.equals('testDeleteTeacher');
 
-		const stringTypeTeacherTest = await adminTeachersService.create(
-			{ ...teacherData, email: `testDeleteTeacher4${Date.now()}@de.d` },
-			params
-		);
+		const stringTypeTeacherTest = await adminTeachersService.create(teacherData, params);
 		const deletedeStringType = await adminTeachersService.remove(stringTypeTeacherTest._id, params);
 		expect(deletedeStringType).to.not.be.undefined;
-		expect(deletedeStringType.length).to.equals(1);
-		expect(deletedeStringType[0].user).to.not.be.undefined;
-		expect(deletedeStringType[0].user._id).to.not.be.undefined;
-		expect(deletedeStringType[0].user._id).to.equals(stringTypeTeacherTest._id.toString());
+		expect(deletedeStringType.firstName).to.equals('testDeleteTeacher');
 	});
 });
