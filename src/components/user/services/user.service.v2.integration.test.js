@@ -50,7 +50,7 @@ describe('user service v2', function test() {
 	};
 
 	describe('API tests', () => {
-		it('When an authorized user deletes a student and returns success', async () => {
+		it('When an admin deletes a student, then it succeeds', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
 			const token = await getAdminToken(schoolId);
@@ -66,7 +66,7 @@ describe('user service v2', function test() {
 			expect(response.body.userId).to.deep.equal(user._id.toString());
 		});
 
-		it('Fails when not authorized user deletes a student', async () => {
+		it('when a teacher deletes a student, then it throws Forbidden', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			// const params = await testObjects.generateRequestParamsFromUser(admin);
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
@@ -83,7 +83,7 @@ describe('user service v2', function test() {
 			expect(response.status).to.equal(403);
 		});
 
-		it('Returns error is user not found', async () => {
+		it('when an admin deletes a non-existing user, then it throws Not-Found', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const notFoundId = ObjectId();
 			const token = await getAdminToken(schoolId);
@@ -98,7 +98,7 @@ describe('user service v2', function test() {
 			expect(response.status).to.equal(404);
 		});
 
-		it('Fails when user from different deletes a student', async () => {
+		it('when an admin deletes a student from a different school, then it throws Not-Found', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const { _id: otherSchoolId } = await testObjects.createTestSchool();
 			const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
@@ -114,7 +114,7 @@ describe('user service v2', function test() {
 			expect(response.status).to.equal(403);
 		});
 
-		it('users with STUDENT_DELETE permission can REMOVE students', async () => {
+		it('when a user with STUDENT_DELETE permission deletes a student, then it succeeds', async () => {
 			const school = await testObjects.createTestSchool({
 				name: 'testSchool',
 			});
@@ -140,7 +140,7 @@ describe('user service v2', function test() {
 			expect(checkAccount.length).to.equal(0);
 		});
 
-		it('users with STUDENT_DELETE permission can not REMOVE teachers', async () => {
+		it('when a user with STUDENT_DELETE permission deletes a teacher, then it throws Forbidden', async () => {
 			const school = await testObjects.createTestSchool({
 				name: 'testSchool',
 			});

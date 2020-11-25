@@ -94,15 +94,14 @@ describe('users usecase', () => {
 	});
 
 	describe('user delete orchestrator', () => {
-		it('should successfully mark user for deletion', async () => {
-			// act
+		it('when an authorized admin calls the function, it succeeds', async () => {
 			const currentUser = createCurrentUser();
 			const result = await userUC.deleteUser(USER_ID, 'student', { account: currentUser });
 
 			expect(result.userId).to.deep.equal(USER_ID);
 		});
 
-		it('should return not found if user cannot be found', async () => {
+		it('when the function is called with an invalid id, then it fails', async () => {
 			// init stubs
 			const currentUser = createCurrentUser();
 			const userId = 'NOT_FOUND_USER';
