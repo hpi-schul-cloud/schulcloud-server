@@ -37,8 +37,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-4667 - Only request and compare LDAP entities that have changed since the last sync (using operational attribute modifyTimestamp with fallback)
 - SC-4667 - Add optional `forceFullSync` option (as get param or json payload) to force a full LDAP sync
 - SC-7499 - add API Specification for public services
-- SC-7571 - solved performance issues - bulk QR-code generation
 - SC-7915 - facade locator
+- SC-7571 - solved performance issues - bulk QR-code generation 
+- SC-6294 - Introduce Typescript in schulcloud-server
 
 ### Changed
 
@@ -57,6 +58,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-5900 - Move Synapse synchronization logic into server
 - SC-7499 - Fixes documentation for edu sharing endpoints
 - SC-7872 - Fix audience of the jwt to new organisation name.
+- SC-7868 - Move external request helpers to more present file location
 
 ### Fixed
 
