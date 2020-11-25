@@ -10,8 +10,12 @@ const schema = new Schema(
 			required: true,
 			index: true,
 		},
-		user: { type: Object },
-		account: { type: Object },
+		data: [
+			{
+				scope: { type: String },
+				data: { type: Object },
+			},
+		],
 	},
 	{
 		timestamps: true,

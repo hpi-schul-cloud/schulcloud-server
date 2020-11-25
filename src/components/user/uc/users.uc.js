@@ -15,17 +15,26 @@ const userHaveSameSchool = async (userId, otherUserId) => {
 };
 
 const getUserRelatedData = async (id) => {
+	const returnArray = [];
 	const user = await userRepo.getUser(id);
 	if (user.deletedAt) {
 		throw new BadRequest(`User already deleted`);
 	}
+	returnArray.push({
+		scope: 'user',
+		data: user,
+	});
 
 	const account = await accountRepo.getUserAccount(id);
-	return { user, account };
+	returnArray.push({
+		scope: 'user',
+		data: user,
+	});
+
+	return [user, account];
 };
 
-const deleteUserRelatedData = async (data) => {
-	const { id } = data.user;
+const deleteUserRelatedData = async (id) => {
 	await accountRepo.deleteAccountForUserId(id);
 };
 
@@ -61,7 +70,7 @@ const deleteUser = async (id, roleName, { account }) => {
 
 	await replaceUserWithTombstone(id);
 
-	await deleteUserRelatedData(userRelatedData);
+	await deleteUserRelatedData(id);
 
 	return trashBin;
 };
