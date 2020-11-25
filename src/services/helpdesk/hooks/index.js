@@ -1,5 +1,4 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { SC_THEME } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
@@ -96,9 +95,7 @@ const feedback = () => async (hook) => {
 	} else {
 		data.systemInformation = await generateSystemInformation(hook);
 		const emails = [];
-
-		// eslint-disable-next-line no-process-env <- in order to prepare tests because I couldn't mock SC_THEME
-		if (process.env.SC_THEME === 'n21') {
+		if (SC_THEME === 'n21') {
 			if (data.supportType) {
 				if (data.supportType === 'problem') {
 					emails.push('nbc-support@netz-21.de');
@@ -112,7 +109,7 @@ const feedback = () => async (hook) => {
 		}
 		globalHooks.sendEmail(hook, {
 			subject: data.title || data.subject || 'nosubject',
-			emails: emails,
+			emails,
 			replyEmail: data.replyEmail,
 			content: {
 				text: createFeedbackText((hook.params.account || {}).username || 'nouser', data),

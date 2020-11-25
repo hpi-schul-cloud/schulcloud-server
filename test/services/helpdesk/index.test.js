@@ -1,8 +1,8 @@
+// eslint-disable no-process-env
 const assert = require('assert');
 const { expect } = require('chai');
 const sinon = require('sinon');
 const appPromise = require('../../../src/app');
-const mockery = require('mockery');
 
 describe('helpdesk service', function test() {
 	this.timeout(10000);
@@ -20,15 +20,11 @@ describe('helpdesk service', function test() {
 
 	function MockMailService() {
 		return {
-			create: sinon.fake.returns(Promise.resolve())
+			create: sinon.fake.returns(Promise.resolve()),
 		};
 	}
 
 	before(async () => {
-		mockery.enable({
-			warnOnUnregistered: false,
-		});
-
 		app = await appPromise;
 		helpdeskService = app.service('helpdesk');
 		({ logger } = app);
@@ -118,7 +114,6 @@ describe('helpdesk service', function test() {
 		app.use('/mails', mailService);
 		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
 		expect(mailService.create.firstArg.email).to.equal('ticketsystem@schul-cloud.org');
-
 	});
 
 	it('POST /helpdesk to schoolcloud with problem and with n21 theme should pass proper email in argument based on the supportType', async () => {
@@ -131,9 +126,11 @@ describe('helpdesk service', function test() {
 		};
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
+		const tempScTheme = process.env.SC_THEME;
 		process.env.SC_THEME = 'n21';
 		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
 		expect(mailService.create.firstArg.email).to.equal('nbc-support@netz-21.de');
+		process.env.SC_THEME = tempScTheme;
 	});
 
 	it('POST /helpdesk to schoolcloud with problem and with n21 theme should pass proper email in argument based on the supportType', async () => {
@@ -146,9 +143,11 @@ describe('helpdesk service', function test() {
 		};
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
+		const tempScTheme = process.env.SC_THEME;
 		process.env.SC_THEME = 'n21';
 		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
 		expect(mailService.create.firstArg.email).to.equal('nbc-wunsch@netz-21.de');
+		process.env.SC_THEME = tempScTheme;
 	});
 
 	it('POST /helpdesk to schoolcloud with feedback, valid data', () => {
