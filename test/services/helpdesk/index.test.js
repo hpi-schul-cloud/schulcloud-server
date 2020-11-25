@@ -1,6 +1,8 @@
 const assert = require('assert');
 const { expect } = require('chai');
+const sinon = require('sinon');
 const appPromise = require('../../../src/app');
+const mockery = require('mockery');
 
 describe('helpdesk service', function test() {
 	this.timeout(10000);
@@ -16,7 +18,17 @@ describe('helpdesk service', function test() {
 		schoolId: '5836bb5664582c35df3bc000',
 	};
 
+	function MockMailService() {
+		return {
+			create: sinon.fake.returns(Promise.resolve())
+		};
+	}
+
 	before(async () => {
+		mockery.enable({
+			warnOnUnregistered: false,
+		});
+
 		app = await appPromise;
 		helpdeskService = app.service('helpdesk');
 		({ logger } = app);
@@ -92,6 +104,51 @@ describe('helpdesk service', function test() {
 			expect(result).to.equal({});
 			expect(result.replyTo).to.equal('test@mail.de');
 		});
+	});
+
+	it('POST /helpdesk to schoolcloud with problem and without theme should pass proper email in argument', async () => {
+		const postBody = {
+			type: 'contactHPI',
+			supportType: 'problem',
+			subject: 'Dies ist ein Titel 4',
+			problemDescription: 'Dies ist die Problembeschreibung 1',
+			replyEmail: 'test@mail.de',
+		};
+		const mailService = new MockMailService();
+		app.use('/mails', mailService);
+		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
+		expect(mailService.create.firstArg.email).to.equal('ticketsystem@schul-cloud.org');
+
+	});
+
+	it('POST /helpdesk to schoolcloud with problem and with n21 theme should pass proper email in argument based on the supportType', async () => {
+		const postBody = {
+			type: 'contactHPI',
+			supportType: 'problem',
+			subject: 'Dies ist ein Titel 4',
+			problemDescription: 'Dies ist die Problembeschreibung 1',
+			replyEmail: 'test@mail.de',
+		};
+		const mailService = new MockMailService();
+		app.use('/mails', mailService);
+		process.env.SC_THEME = 'n21';
+		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
+		expect(mailService.create.firstArg.email).to.equal('nbc-support@netz-21.de');
+	});
+
+	it('POST /helpdesk to schoolcloud with problem and with n21 theme should pass proper email in argument based on the supportType', async () => {
+		const postBody = {
+			type: 'contactHPI',
+			supportType: 'wish',
+			subject: 'Dies ist ein Titel 4',
+			problemDescription: 'Dies ist die Problembeschreibung 1',
+			replyEmail: 'test@mail.de',
+		};
+		const mailService = new MockMailService();
+		app.use('/mails', mailService);
+		process.env.SC_THEME = 'n21';
+		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
+		expect(mailService.create.firstArg.email).to.equal('nbc-wunsch@netz-21.de');
 	});
 
 	it('POST /helpdesk to schoolcloud with feedback, valid data', () => {

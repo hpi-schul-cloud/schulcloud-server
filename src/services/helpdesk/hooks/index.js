@@ -96,7 +96,9 @@ const feedback = () => async (hook) => {
 	} else {
 		data.systemInformation = await generateSystemInformation(hook);
 		const emails = [];
-		if (SC_THEME === 'n21') {
+
+		// eslint-disable-next-line no-process-env <- in order to prepare tests because I couldn't mock SC_THEME
+		if (process.env.SC_THEME === 'n21') {
 			if (data.supportType) {
 				if (data.supportType === 'problem') {
 					emails.push('nbc-support@netz-21.de');
