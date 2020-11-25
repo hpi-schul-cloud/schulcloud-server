@@ -233,9 +233,10 @@ class LdapConfigService {
 			sample: users.length > 0 ? users[0] : {},
 		};
 		for (const user of users) {
-			if (user.roles.includes('administrator')) result.admin += 1;
-			if (user.roles.includes('teacher')) result.teacher += 1;
-			if (user.roles.includes('student')) result.student += 1;
+			const roles = user.roles || [];
+			if (roles.includes('administrator')) result.admin += 1;
+			if (roles.includes('teacher')) result.teacher += 1;
+			if (roles.includes('student')) result.student += 1;
 		}
 		return result;
 	}
