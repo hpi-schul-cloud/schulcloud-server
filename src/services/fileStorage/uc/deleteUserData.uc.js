@@ -7,6 +7,7 @@ const repo = require('../repo/files.repo');
 
 // Todo: delete
 const { userModel } = require('../../user/model');
+const { schoolModel } = require('../../school/model');
 
 const isUserPermission = (userId) => (p) => p.refId.toString() === userId.toString() && p.refPermModel === 'user';
 
@@ -59,10 +60,11 @@ const deletePersonalFiles = async (context) => {
 		const { userId } = context;
 		const files = await repo.findPersonalFiles(userId);
 
-		// Todo: Use user repo
+		// Todo: Use repos instead of models
 		const user = await userModel.findById(userId).exec();
+		const school = await schoolModel.findById(user._id).exec();
 
-		await repo.moveFilesToTrash(extractStorageIds(files), user.schoolId);
+		await repo.moveFilesToTrash(extractStorageIds(files), school);
 
 		const resultStatus = await repo.deleteFilesByIDs(extractIds(files));
 		resultStatus.type = 'deleted';

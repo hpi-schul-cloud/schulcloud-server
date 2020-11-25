@@ -61,11 +61,9 @@ const removeFilePermissionsByUserId = async (fileIds = [], userId) => {
 	return lengthValidation(result, fileIds);
 };
 
-const moveFilesToTrash = (fileIds = [], schoolId) => {
-	// TODO
-	// TODO: Remove hard coded string
-	const storageStrategy = createCorrectStrategy('awsS3')
-	storageStrategy.moveFilesToTrash(schoolId, fileIds);
+const moveFilesToTrash = (fileIds = [], school) => {
+	const storageStrategy = createCorrectStrategy(school.fileStorageType)
+	storageStrategy.moveFilesToTrash(school._id, fileIds);
 };
 
 module.exports = {

@@ -534,7 +534,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		// TODO error handling
 		const { s3, bucket } = await createAWSObject(schoolId);
 		// TODO split into x copy operations at once
-		await Promise.all(
+		const copyResult = await Promise.all(
 			fileIds.map((fileId) => {
 				const copyParams = {
 					Bucket: bucket,
@@ -558,7 +558,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				})),
 			},
 		};
-		await s3.deleteObjects(deleteParams).promise();
+		const deleteResult = await s3.deleteObjects(deleteParams).promise();
 	}
 }
 

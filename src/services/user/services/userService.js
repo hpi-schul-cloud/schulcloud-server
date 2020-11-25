@@ -72,9 +72,9 @@ class UserService {
 		return this.app.service('usersModel').patch(id, data, prepareInternalParams(params));
 	}
 
-	async remove(id, params) {
+	remove(id, params) {
 		// TODO move the following to user.service.v2 when the other pr is merged
-		await deleteUserData(id);
+		return deleteUserData(id).then(this.app.service('usersModel').remove(id, prepareInternalParams(params)));
 		// end move
 		// return this.app.service('usersModel').remove(id, prepareInternalParams(params));
 	}
