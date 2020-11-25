@@ -206,7 +206,7 @@ const isNotAuthenticated = async (context) => {
 	return !((context.params.headers || {}).authorization || (context.params.account && context.params.account.userId));
 };
 
-const validateSchoolNumber = async (context) => {
+const validateOfficialSchoolNumber = async (context) => {
 	if (context && context.data && context.data.officialSchoolNumber) {
 		const { officialSchoolNumber } = context.data;
 		const schools = await context.app.service('schools').find({
@@ -280,19 +280,23 @@ exports.before = {
 		globalHooks.hasPermission('SCHOOL_CREATE'),
 		setDefaultFileStorageType,
 		setCurrentYearIfMissing,
+		validateOfficialSchoolNumber,
+		validateCounty,
 	],
 	update: [
 		authenticate('jwt'),
 		globalHooks.hasPermission('SCHOOL_EDIT'),
 		globalHooks.ifNotLocal(globalHooks.lookupSchool),
 		globalHooks.ifNotLocal(restrictToUserSchool),
+		validateOfficialSchoolNumber,
+		validateCounty,
 	],
 	patch: [
 		authenticate('jwt'),
 		globalHooks.ifNotLocal(hasEditPermissions),
 		globalHooks.ifNotLocal(globalHooks.lookupSchool),
 		globalHooks.ifNotLocal(restrictToUserSchool),
-		validateSchoolNumber,
+		validateOfficialSchoolNumber,
 		validateCounty,
 	],
 	/* It is disabled for the moment, is added with new "Löschkonzept"
