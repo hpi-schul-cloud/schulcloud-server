@@ -1,0 +1,91 @@
+type: object
+description: schame for request body of patch request
+required:
+  - url
+  - rootPath
+  - searchUser
+  - provider
+  - providerOptions
+  - roleAttributeNameMapping
+  - classAttributeNameMapping
+properties:
+  url:
+    allOf:
+      - $ref: '../openapi.yaml#/components/schemas/ldapUrl'
+  rootPath:
+    allOf:
+      - $ref: '../openapi.yaml#/components/schemas/dn'
+  searchUser:
+    allOf:
+      - $ref: '../openapi.yaml#/components/schemas/dn'
+  provider:
+    type: string
+  providerOptions:
+    type: object
+    description: attributes to select data
+    properties:
+      userPathAdditions:
+        allOf:
+          - $ref: '../openapi.yaml#/components/schemas/dn'
+      classPathAdditions:
+        allOf:
+          - $ref: '../openapi.yaml#/components/schemas/dn'
+      roleType:
+        type: string
+      userAttributeNameMapping:
+        type: object
+        required:
+          - givenName
+          - sn
+          - uuid
+          - uid
+          - mail
+          - role
+        properties:
+          givenName:
+            type: string
+          sn:
+            type: string
+          dn:
+            type: string
+          uuid:
+            type: string
+          uid:
+            type: string
+          mail:
+            type: string
+          role:
+            type: string
+      roleAttributeNameMapping:
+        type: object
+        required:
+          - roleStudent
+          - roleTeacher
+          - roleAdmin
+          - roleNoSc
+        properties:
+          roleStudent:
+            allOf:
+              - $ref: '../openapi.yaml#/components/schemas/dn'
+          roleTeacher:
+            allOf:
+              - $ref: '../openapi.yaml#/components/schemas/dn'
+          roleAdmin:
+            allOf:
+              - $ref: '../openapi.yaml#/components/schemas/dn'
+          roleNoSc:
+            oneOf:
+              - $ref: '../openapi.yaml#/components/schemas/dn'
+              - type: string
+      classAttributeNameMapping:
+        type: object
+        required:
+          - description
+          - uniqueMember
+        properties:
+          description:
+            type: string
+          dn:
+            type: string
+          uniqueMember:
+            type: string

@@ -1,0 +1,8 @@
+type: object
+description: validate request body from post requests
+properties:
+  url:
+      allOf:
+        - $ref: '../openapi.yaml#/components/schemas/dn'
+  searchUserPassword:
+    type: string

@@ -1,0 +1,78 @@
+type: object
+description: schame for request body of patch request
+required:
+  - url
+  - rootPath
+  - seachUser
+  - provider
+  - providerObtions
+  - roleAttributeNameMapping
+  - classAttributeNameMapping
+properties:
+  url:
+    allOf:
+      - $ref: '../openapi.yaml#/components/schemas/dn'
+  rootPath:
+    allOf:
+      - $ref: '../openapi.yaml#/components/schemas/dn'
+  searchUser:
+    type: string
+    pattern:
+  provider:
+    type: string
+  providerOptions:
+    type: object
+    description: attributes to select data
+    properties:
+      userPathAdditions:
+        allOf:
+          - $ref: '../openapi.yaml#/components/schemas/dn'
+      classPathAdditions:
+        allOf:
+          - $ref: '../openapi.yaml#/components/schemas/dn'
+      roleType:
+        type: string
+      userAttributeNameMapping:
+        type: object
+        properties:
+          givenName:
+            type: string
+          sn:
+            type: string
+          dn:
+            type: string
+          uuid:
+            type: string
+          uid:
+            type: string
+          mail:
+            type: string
+          role:
+            type: string
+      roleAttributeNameMapping:
+        type: object
+        properties:
+          roleStudent:
+            type: string
+            pattern:
+          roleTeacher:
+            type: string
+            pattern:
+          roleAdmin:
+            type: string
+            pattern:
+          roleNoSc:
+            type: string
+            pattern:
+      classAttributeNameMapping:
+        type: object
+        properties:
+          description:
+            type: string
+            pattern:
+          dn:
+            type: string
+            pattern:
+          uniqueMember:
+            type: string
+            pattern:

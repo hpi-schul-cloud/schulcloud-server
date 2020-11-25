@@ -1,0 +1,9 @@
+type: object
+description: validate request body from post requests
+required:
+  - searchUserPassword
+allOf:
+  - $ref: 'get.response.yaml'
+properties:
+  searchUserPassword:
+    type: string
