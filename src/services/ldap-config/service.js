@@ -131,10 +131,9 @@ class LdapConfigService {
 			}
 			result.ok = true;
 		} catch (error) {
-			for (const { match, message: messagefn, type } of errorHandlers) {
+			for (const { match, message, type } of errorHandlers) {
 				if (match(error)) {
-					const message = messagefn instanceof Function ? messagefn(error) : messagefn;
-					result.errors.push({ message, type });
+					result.errors.push({ message: message(error), type });
 				}
 			}
 			if (result.errors.length === 0) {
