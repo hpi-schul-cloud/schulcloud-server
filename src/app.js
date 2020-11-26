@@ -29,6 +29,7 @@ const rabbitMq = require('./utils/rabbitmq');
 const prometheus = require('./utils/prometheus');
 
 const { setupFacadeLocator, setupFacades } = require('./utils/facadeLocator');
+const { setupFacadeLocator } = require('./utils/facadeLocator');
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
