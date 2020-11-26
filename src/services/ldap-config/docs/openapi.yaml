@@ -33,6 +33,9 @@ components:
     ldapUrl:
       type: string
       pattern: ^ldaps:\/\/[\w\.-]+\.[a-z]+(:\d+)?$
+    emptyString:
+      type: string
+      pattern: ^$
 paths:
   /ldap-config:
     post:
@@ -50,7 +53,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas/post.requestBody.yaml'
+                $ref: 'schemas/verify.response.yaml'
   '/patch/{_id}':
     patch:
       parameters:
@@ -67,7 +70,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'schemas/patch.requestBody.yaml'
+                $ref: 'schemas/verify.response.yaml'
 
 
 openapi: 3.0.2

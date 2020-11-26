@@ -1,8 +1,7 @@
 type: object
 description: validate request body from post requests
+allOf:
+  - $ref: '../openapi.yaml#/components/schemas/dn'
 properties:
-  url:
-      allOf:
-        - $ref: '../openapi.yaml#/components/schemas/dn'
   searchUserPassword:
     type: string

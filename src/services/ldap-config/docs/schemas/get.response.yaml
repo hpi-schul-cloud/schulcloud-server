@@ -6,8 +6,6 @@ required:
   - searchUser
   - provider
   - providerOptions
-  - roleAttributeNameMapping
-  - classAttributeNameMapping
 properties:
   url:
     allOf:
@@ -23,13 +21,19 @@ properties:
   providerOptions:
     type: object
     description: attributes to select data
+    required:
+      - roleType
+      - userAttributeNameMapping
+      - roleAttributeNameMapping
     properties:
       userPathAdditions:
         allOf:
           - $ref: '../openapi.yaml#/components/schemas/dn'
+          #- $ref: '../openapi.yaml#/components/schemas/emptyString'
       classPathAdditions:
         allOf:
           - $ref: '../openapi.yaml#/components/schemas/dn'
+          #- $ref: '../openapi.yaml#/components/schemas/emptyString'
       roleType:
         type: string
       userAttributeNameMapping:
@@ -62,21 +66,15 @@ properties:
           - roleStudent
           - roleTeacher
           - roleAdmin
-          - roleNoSc
         properties:
           roleStudent:
-            allOf:
-              - $ref: '../openapi.yaml#/components/schemas/dn'
+            type: string
           roleTeacher:
-            allOf:
-              - $ref: '../openapi.yaml#/components/schemas/dn'
+            type: string
           roleAdmin:
-            allOf:
-              - $ref: '../openapi.yaml#/components/schemas/dn'
+            type: string
           roleNoSc:
-            oneOf:
-              - $ref: '../openapi.yaml#/components/schemas/dn'
-              - type: string
+            type: string
       classAttributeNameMapping:
         type: object
         required:

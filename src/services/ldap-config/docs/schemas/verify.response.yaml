@@ -1,78 +1,46 @@
 type: object
 description: schame for request body of patch request
 required:
-  - url
-  - rootPath
-  - seachUser
-  - provider
-  - providerObtions
-  - roleAttributeNameMapping
-  - classAttributeNameMapping
+  - ok
 properties:
-  url:
-    allOf:
-      - $ref: '../openapi.yaml#/components/schemas/dn'
-  rootPath:
-    allOf:
-      - $ref: '../openapi.yaml#/components/schemas/dn'
-  searchUser:
-    type: string
-    pattern:
-  provider:
-    type: string
-  providerOptions:
+  ok:
+    type: boolean
+  error:
+    type: array
+    items:
+      type: object
+      required:
+        - type
+        - message
+      properties:
+        type:
+          type: string
+        message:
+          type: string
+  users:
     type: object
-    description: attributes to select data
+    required:
+      - total
+      - admin
+      - teacher
+      - student
     properties:
-      userPathAdditions:
-        allOf:
-          - $ref: '../openapi.yaml#/components/schemas/dn'
-      classPathAdditions:
-        allOf:
-          - $ref: '../openapi.yaml#/components/schemas/dn'
-      roleType:
-        type: string
-      userAttributeNameMapping:
+      total:
+        type: integer
+      admin:
+        type: integer
+      teacher:
+        type: integer
+      student:
+        type: integer
+      sample:
         type: object
-        properties:
-          givenName:
-            type: string
-          sn:
-            type: string
-          dn:
-            type: string
-          uuid:
-            type: string
-          uid:
-            type: string
-          mail:
-            type: string
-          role:
-            type: string
-      roleAttributeNameMapping:
+  classes:
+    type: object
+    required:
+      - total
+    properties:
+      total:
+        type: integer
+      sample:
         type: object
-        properties:
-          roleStudent:
-            type: string
-            pattern:
-          roleTeacher:
-            type: string
-            pattern:
-          roleAdmin:
-            type: string
-            pattern:
-          roleNoSc:
-            type: string
-            pattern:
-      classAttributeNameMapping:
-        type: object
-        properties:
-          description:
-            type: string
-            pattern:
-          dn:
-            type: string
-            pattern:
-          uniqueMember:
-            type: string
-            pattern:
