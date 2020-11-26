@@ -6,7 +6,7 @@ const OpenApiValidator = require('express-openapi-validator');
 
 const reqlib = require('app-root-path').require;
 
-const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention } = reqlib('src/errors');
+const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention, BadRequest } = reqlib('src/errors');
 const { convertToFeathersError, cleanupIncomingMessage } = reqlib('src/errors/utils');
 
 const logger = require('../logger');
@@ -182,6 +182,9 @@ const handleValidationError = (error, req, res, next) => {
 	if (error instanceof OpenApiValidator.error.NotFound) {
 		// sanitize
 		const err = new PageNotFound(error);
+		next(err);
+	} else if (error instanceof OpenApiValidator.error.BadRequest) {
+		const err = new BadRequest(error);
 		next(err);
 	} else {
 		next(error);
