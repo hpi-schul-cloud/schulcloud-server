@@ -27,11 +27,11 @@ const getUserRelatedData = async (id) => {
 
 	const account = await accountRepo.getUserAccount(id);
 	returnArray.push({
-		scope: 'user',
-		data: user,
+		scope: 'account',
+		data: account,
 	});
 
-	return [user, account];
+	return returnArray;
 };
 
 const deleteUserRelatedData = async (id) => {
