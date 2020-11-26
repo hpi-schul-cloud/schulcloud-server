@@ -27,13 +27,13 @@ properties:
       - roleAttributeNameMapping
     properties:
       userPathAdditions:
-        allOf:
+        oneOf:
           - $ref: '../openapi.yaml#/components/schemas/dn'
-          #- $ref: '../openapi.yaml#/components/schemas/emptyString'
+          - $ref: '../openapi.yaml#/components/schemas/emptyString'
       classPathAdditions:
-        allOf:
+        oneOf:
           - $ref: '../openapi.yaml#/components/schemas/dn'
-          #- $ref: '../openapi.yaml#/components/schemas/emptyString'
+          - $ref: '../openapi.yaml#/components/schemas/emptyString'
       roleType:
         type: string
       userAttributeNameMapping:
