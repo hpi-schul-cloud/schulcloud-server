@@ -8,7 +8,7 @@ const restrictToSchoolSystems = require('../../ldap/hooks/restrictToSchoolSystem
 module.exports = {
 	before: {
 		all: [authenticate('jwt')],
-		get: [iff(isProvider('external'), keepQuery([]))],
+		get: [iff(isProvider('external'), keepQuery())],
 		create: [
 			// only allow external calls (the service needs a user)
 			iff(!isProvider('external'), disallow()),
