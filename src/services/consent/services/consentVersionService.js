@@ -45,10 +45,10 @@ class ConsentVersionService {
 		this.docs = {};
 	}
 
-	createBase64File(consentDocumentData) {
-		const { schoolId, consentData, shdUpload } = consentDocumentData;
+	createBase64File(consentDocumentData, isShdUpload) {
+		const { schoolId, consentData } = consentDocumentData;
 		if (consentData) {
-			if (!schoolId && !shdUpload) {
+			if (!schoolId && !isShdUpload) {
 				return Promise.reject(new BadRequest('SchoolId is required for school consents.'));
 			}
 			return this.app.service('base64Files').create({
@@ -79,11 +79,10 @@ class ConsentVersionService {
 		return this.app.service('consentVersionsModel').find(prepareInternalParams(querySchoolIdEmpty));
 	}
 
-	async create(data, params) {
-		const consentDocumentData = data;
-		consentDocumentData.shdUpload = await isSuperheroUser(this.app, params.account.userId);
+	async create(consentDocumentData, params) {
+		const isShdUpload = await isSuperheroUser(this.app, params.account.userId);
 
-		const base64 = await this.createBase64File(consentDocumentData);
+		const base64 = await this.createBase64File(consentDocumentData, isShdUpload);
 		if (base64._id) {
 			consentDocumentData.consentDataId = base64._id;
 			delete consentDocumentData.consentData;
