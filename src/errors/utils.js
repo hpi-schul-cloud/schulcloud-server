@@ -14,7 +14,6 @@ const convertToFeathersError = (error) => {
 		return error;
 	}
 	const code = error.code || error.statusCode || 500;
-	logger.error(error);
 	return new errorsByCode[code](error);
 };
 
