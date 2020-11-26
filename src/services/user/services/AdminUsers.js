@@ -231,7 +231,7 @@ class AdminUsers {
 	}
 
 	/**
-	 * Update the account email if email will be changed on user.
+	 * Update the account email if eamil will be changed on user.
 	 * IMPORTANT: Keep in mind to do a roleback if saving the user failed
 	 * @param {*} email
 	 * @param {*} userId
@@ -275,28 +275,25 @@ class AdminUsers {
 	}
 
 	async remove(id, params) {
-		const _ids = [];
+		const { _ids } = params.query;
+		const currentUser = await getCurrentUserInfo(params.account.userId);
+
 		if (id) {
-			if (typeof id === 'object') {
-				_ids.push(id._id);
-			} else {
-				_ids.push(id);
+			const userToRemove = await getCurrentUserInfo(id);
+			if (!equalIds(currentUser.schoolId, userToRemove.schoolId)) {
+				throw new Forbidden('You cannot remove users from other schools.');
 			}
-		} else {
-			_ids.push(...(((params || {}).query || {})._ids || []));
+			await this.app.service('accountModel').remove(null, { query: { userId: id } });
+			return this.app.service('usersModel').remove(id);
 		}
 
-		const currentUser = await getCurrentUserInfo(params.account.userId);
-		const userPromises = _ids.map((userId) => getCurrentUserInfo(userId));
-		const usersIds = await Promise.all(userPromises);
-		if (!usersIds.some((user) => equalIds(currentUser.schoolId, user.schoolId))) {
+		const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
+		if (usersIds.some((user) => !equalIds(currentUser.schoolId, user.schoolId))) {
 			throw new Forbidden('You cannot remove users from other schools.');
 		}
 
-		const removePromises = _ids.map((userId) =>
-			this.app.service(`users/v2/admin/${this.roleName}`).remove(userId, params)
-		);
-		return Promise.all(removePromises);
+		await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
+		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
 	}
 
 	async setup(app) {
