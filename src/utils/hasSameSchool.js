@@ -1,4 +1,4 @@
-const { userRepo } = require('../components/user/repo/index');
+const { userRepo } = require('../components/pseudonym/repo/index');
 const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const hasSameSchool = async (userId, account, app) => {

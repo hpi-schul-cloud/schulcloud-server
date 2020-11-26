@@ -1,4 +1,4 @@
-const { userRepo } = require('../components/user/repo');
+const { userRepo } = require('../components/pseudonym/repo');
 
 const hasRole = async (id, roleName, app) => {
 	if (!id || !roleName) return false;

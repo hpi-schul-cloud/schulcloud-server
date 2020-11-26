@@ -1,8 +1,7 @@
-const getService = (app) => {
-	return app.service('pseudonymModel');
-};
+const { pseudonymModel } = require('../../../services/pseudonym/model');
 
-const getPseudonyms = async (userId, app) => {
+const getPseudonymsForUser = async (userId) => {
+	pseudonymModel.find({ userId }).lean().exec();
 	const pseudonyms = await getService(app).find({
 		query: {
 			userId,
