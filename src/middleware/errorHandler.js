@@ -97,6 +97,7 @@ const secretDataKeys = (() =>
 		'description',
 		'gradeComment',
 		'_csrf',
+		'searchUserPassword',
 	].map((k) => k.toLocaleLowerCase()))();
 
 const filterSecretValue = (key, value) => {
