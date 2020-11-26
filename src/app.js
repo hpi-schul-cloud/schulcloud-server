@@ -28,6 +28,7 @@ const sentry = require('./middleware/sentry');
 const rabbitMq = require('./utils/rabbitmq');
 const prometheus = require('./utils/prometheus');
 
+const { setupFacadeLocator } = require('./utils/facadeLocator');
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
@@ -49,6 +50,7 @@ const setupApp = async () => {
 
 	app.configure(prometheus);
 
+	setupFacadeLocator(app);
 	setupSwagger(app);
 	initializeRedisClient();
 	rabbitMq.setup(app);
