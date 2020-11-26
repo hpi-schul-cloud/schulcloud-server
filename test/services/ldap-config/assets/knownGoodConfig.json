@@ -1,0 +1,29 @@
+{
+    "url": "ldaps://local.host:636",
+    "rootPath" : "dc=schul-cloud,dc=org",
+    "searchUser" : "cn=ldapadmin,dc=schul-cloud,dc=org",
+    "searchUserPassword" : "*********",
+    "providerOptions" : {
+        "userPathAdditions" : "ou=users",
+        "classPathAdditions" : "ou=classes,ou=groups",
+        "roleType" : "group",
+        "userAttributeNameMapping" : {
+            "givenName" : "givenName",
+            "sn" : "sn",
+            "uuid" : "uidNumber",
+            "uid" : "uid",
+            "mail" : "mail",
+            "role" : "description"
+        },
+        "roleAttributeNameMapping" : {
+            "roleStudent" : "cn=student,ou=roles,ou=groups,dc=schul-cloud,dc=org",
+            "roleTeacher" : "cn=teacher,ou=roles,ou=groups,dc=schul-cloud,dc=org",
+            "roleAdmin" : "cn=admin,ou=roles,ou=groups,dc=schul-cloud,dc=org",
+            "roleNoSc" : "no-sc"
+        },
+        "classAttributeNameMapping" : {
+            "description" : "description",
+            "uniqueMember" : "member"
+        }
+    }
+}
