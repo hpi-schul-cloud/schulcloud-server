@@ -22,7 +22,13 @@ components:
         pattern: '^[0-9a-f]{24}$'
     verifyOnly:
       name: verifyOnly
-      description: run only verification without saving the data
+      description: run only verification without saving the data (default = false)
+      in: query
+      schema:
+        type: boolean
+    activate:
+      name: activate
+      description: value to set as system.ldapConfig.active (default = true)
       in: query
       schema:
         type: boolean
@@ -40,6 +46,7 @@ paths:
   /ldap-config:
     post:
       parameters:
+        - $ref: '#/components/parameters/activate'
         - $ref: '#/components/parameters/verifyOnly'
       requestBody:
         required: true
@@ -57,6 +64,7 @@ paths:
   '/patch/{_id}':
     patch:
       parameters:
+        - $ref: '#/components/parameters/activate'
         - $ref: '#/components/parameters/verifyOnly'
       requestBody:
         required: true
