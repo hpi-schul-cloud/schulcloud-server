@@ -1,22 +1,25 @@
-const { pseudonymModel } = require('../../../services/pseudonym/model');
+const Pseudonym = require('../../../services/pseudonym/model');
+const { GeneralError } = require('../../../errors');
 
 const getPseudonymsForUser = async (userId) => {
-	pseudonymModel.find({ userId }).lean().exec();
-	const pseudonyms = await getService(app).find({
-		query: {
-			userId,
-		},
-		paginate: false,
-	});
-	return pseudonyms._id ? Array.of(pseudonyms) : pseudonyms;
+	return Pseudonym.find({ userId }).lean().exec();
 };
 
-const deletePseudonyms = async (pseudonyms, app) => {
-	const removePromises = pseudonyms.map((pseudonym) => getService(app).remove(pseudonym._id));
-	await Promise.all(removePromises);
+const deletePseudonyms = async (pseudonymIds) => {
+	const deleteResult = await Pseudonym.deleteMany({
+		_id: {
+			$in: pseudonymIds,
+		},
+	})
+		.lean()
+		.exec();
+	if (deleteResult.n !== deleteResult.ok || deleteResult.ok !== pseudonymIds.length) {
+		throw new GeneralError('db error during deleting pseudonyms');
+	}
+	return pseudonymIds;
 };
 
 module.exports = {
-	getPseudonyms,
+	getPseudonymsForUser,
 	deletePseudonyms,
 };
