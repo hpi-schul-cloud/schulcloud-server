@@ -17,6 +17,8 @@ const middleware = require('./middleware');
 const setupConfiguration = require('./configuration');
 const sockets = require('./sockets');
 const services = require('./services');
+const components = require('./components');
+
 const requestLog = require('./logger/RequestLogger');
 
 const defaultHeaders = require('./middleware/defaultHeaders');
@@ -86,13 +88,20 @@ const setupApp = async () => {
 			req.feathers.originalUrl = req.originalUrl;
 			next();
 		});
+
 	if (Configuration.get('REQUEST_LOGGING_ENABLED') === true) {
 		app.use((req, res, next) => {
 			requestLog(`${req.method} ${req.originalUrl}`);
 			next();
 		});
 	}
-	app.configure(services).configure(sockets).configure(middleware).configure(setupAppHooks).configure(errorHandler);
+	app
+		.configure(services)
+		.configure(components)
+		.configure(sockets)
+		.configure(middleware)
+		.configure(setupAppHooks)
+		.configure(errorHandler);
 
 	return app;
 };
