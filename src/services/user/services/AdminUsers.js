@@ -231,7 +231,7 @@ class AdminUsers {
 	}
 
 	/**
-	 * Update the account email if eamil will be changed on user.
+	 * Update the account email if email will be changed on user.
 	 * IMPORTANT: Keep in mind to do a roleback if saving the user failed
 	 * @param {*} email
 	 * @param {*} userId
