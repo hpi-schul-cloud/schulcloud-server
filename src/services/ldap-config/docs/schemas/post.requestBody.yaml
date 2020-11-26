@@ -4,7 +4,6 @@ required:
   - url
   - rootPath
   - searchUser
-  - provider
   - providerOptions
   - searchUserPassword
 additionalProperties: false
