@@ -1,0 +1,46 @@
+type: object
+description: schame for request body of patch request
+required:
+  - ok
+properties:
+  ok:
+    type: boolean
+  error:
+    type: array
+    items:
+      type: object
+      required:
+        - type
+        - message
+      properties:
+        type:
+          type: string
+        message:
+          type: string
+  users:
+    type: object
+    required:
+      - total
+      - admin
+      - teacher
+      - student
+    properties:
+      total:
+        type: integer
+      admin:
+        type: integer
+      teacher:
+        type: integer
+      student:
+        type: integer
+      sample:
+        type: object
+  classes:
+    type: object
+    required:
+      - total
+    properties:
+      total:
+        type: integer
+      sample:
+        type: object
