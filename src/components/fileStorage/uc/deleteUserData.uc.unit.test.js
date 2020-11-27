@@ -7,11 +7,17 @@ const { removePermissionsThatUserCanAccess } = require('./deleteUserData.uc');
 
 const fileRepo = require('../repo/files.repo');
 
-describe('deletedUserData.uc.unit', function () {
+describe.only('deletedUserData.uc.unit', () => {
 	describe('removePermissionsThatUserCanAccess', () => {
+		let fileRepoStub;
+
+		afterEach(() => {
+			fileRepoStub.restore();
+		});
+
 		it('when the function is called with valid user id, then it returns with valud trash bin format', async () => {
 			const userId = new ObjectId();
-			const fileRepoStub = sinon.stub(fileRepo, 'removeFilePermissionsByUserId');
+			fileRepoStub = sinon.stub(fileRepo, 'removeFilePermissionsByUserId');
 			fileRepoStub.withArgs(userId).returns({
 				_id: 1,
 				filePermissions: [
