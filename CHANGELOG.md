@@ -38,7 +38,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-4667 - Only request and compare LDAP entities that have changed since the last sync (using operational attribute modifyTimestamp with fallback)
 - SC-4667 - Add optional `forceFullSync` option (as get param or json payload) to force a full LDAP sync
 - SC-7499 - add API Specification for public services
-- SC-7827 - Add deletion concept handling for personal files and permissions.
+- SC-7827 - Add deletion concept handling for file permissions.
 - SC-7915 - facade locator
 - SC-7571 - solved performance issues - bulk QR-code generation 
 - SC-6294 - Introduce Typescript in schulcloud-server
