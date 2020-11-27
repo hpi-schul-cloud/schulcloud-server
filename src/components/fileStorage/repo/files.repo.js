@@ -1,15 +1,5 @@
-const { FileModel } = require('../model');
-const createCorrectStrategy = require('../utils/createCorrectStrategy');
-/**
- * user based database operations for files
- */
-
-const lengthValidation = (result, fileIds) => {
-	if (fileIds.length > result.n) {
-		result.ok = 0;
-	}
-	return result;
-};
+const { FileModel } = require('./db');
+const { createStrategy } = require('./strategies');
 
 /**
  * Permission based search
@@ -19,6 +9,7 @@ const lengthValidation = (result, fileIds) => {
 const findFilesThatUserCanAccess = async (userId, select) => {
 	const insideOfPermissions = {
 		permissions: { $elemMatch: { refPermModel: 'user', refId: userId } },
+		owner: { $ne: userId },
 	};
 
 	const result = await FileModel.find(insideOfPermissions, select).lean().exec();
@@ -31,7 +22,8 @@ const findFilesThatUserCanAccess = async (userId, select) => {
  */
 const deleteFilesByIDs = async (fileIds = []) => {
 	const result = await FileModel.deleteMany({ _id: { $in: fileIds } });
-	return lengthValidation(result, fileIds);
+	const success = result.ok === 1 && result.n === result.nModified && fileIds.length === result.n;
+	return { fileIds, success };
 };
 
 /**
@@ -54,15 +46,39 @@ const findPersonalFiles = async (userId, select) => {
  * @param {*} userId
  * @return {MongooseBatchResult}
  */
-const removeFilePermissionsByUserId = async (fileIds = [], userId) => {
-	const query = { _id: { $in: fileIds } };
-	const $pull = { permissions: { refId: userId } };
-	const result = await FileModel.updateMany(query, { $pull }).lean().exec();
-	return lengthValidation(result, fileIds);
+const removeFilePermissionsByUserId = async (userId) => {
+	const searchQuery = { permissions: { $elemMatch: { refId: userId } } };
+
+	const filePermissions = await FileModel.aggregate([
+		{
+			$match: {
+				permissions: {
+					$elemMatch: { refId: userId },
+				},
+			},
+		},
+		{
+			$project: {
+				_id: 1,
+				permissions: {
+					$filter: {
+						input: '$permissions',
+						as: 'permission',
+						cond: { $eq: ['$$permission.refId', userId] },
+					},
+				},
+			},
+		},
+	]);
+
+	const updateQuery = { $pull: { permissions: { refId: userId } } };
+	const result = await FileModel.updateMany(searchQuery, updateQuery).lean().exec();
+	const success = result.ok === 1 && result.n === result.nModified && filePermissions.length === result.n;
+	return { filePermissions, success };
 };
 
 const moveFilesToTrash = (fileIds = [], school) => {
-	const storageStrategy = createCorrectStrategy(school.fileStorageType)
+	const storageStrategy = createStrategy(school.fileStorageType);
 	storageStrategy.moveFilesToTrash(school._id, fileIds);
 };
 

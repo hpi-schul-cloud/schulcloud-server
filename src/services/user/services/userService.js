@@ -44,7 +44,7 @@ const {
 	includeOnlySchoolRoles,
 } = require('../hooks/userService');
 
-const { deleteUserData } = require('../../fileStorage/uc/deleteUserData.uc');
+const { deleteUserData } = require('../../../components/fileStorage/uc/deleteUserData.uc');
 
 // const USER_RABBIT_EXCHANGE = 'user';
 class UserService {

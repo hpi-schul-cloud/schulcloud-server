@@ -1,13 +1,15 @@
 const reqlib = require('app-root-path').require;
 
+const logger = require('../../../logger');
+
 const { Unprocessable } = reqlib('src/errors');
 
-const { BadRequest } = require('../../activation/utils/generalUtils');
+const { BadRequest } = require('../../../services/activation/utils/generalUtils');
 const repo = require('../repo/files.repo');
 
 // Todo: delete
-const { userModel } = require('../../user/model');
-const { schoolModel } = require('../../school/model');
+const { userModel } = require('../../../services/user/model');
+const { schoolModel } = require('../../../services/school/model');
 
 const isUserPermission = (userId) => (p) => p.refId.toString() === userId.toString() && p.refPermModel === 'user';
 
@@ -27,27 +29,20 @@ const handleIncompleteDeleteOperations = async (resultStatus, context, dbFindOpe
 /**
  * Delete file connections for files shared with user
  * @param {BSON|BSONString} userId
- * @param {object} context
  */
-const removePermissionsThatUserCanAccess = async (context) => {
+const removePermissionsThatUserCanAccess = async (userId) => {
 	try {
-		const { userId } = context;
-		const files = await repo.findFilesThatUserCanAccess(userId);
+		const { success: finished, filePermissions } = await repo.removeFilePermissionsByUserId(userId);
 
-		// filter information to delete
-		const references = files.map(({ _id, permissions: p }) => {
-			const permissions = p.filter(isUserPermission(userId));
-			return { _id, permissions };
-		});
+		const trashBinData = filePermissions.map((fp) => ({
+			scope: 'filePermission',
+			data: fp,
+		}));
 
-		const resultStatus = await repo.removeFilePermissionsByUserId(extractIds(files), userId);
-		resultStatus.type = 'references';
-		await handleIncompleteDeleteOperations(resultStatus, context, repo.findFilesThatUserCanAccess);
-
-		context.references = [...context.references, ...references];
+		return { finished, trashBinData };
 	} catch (err) {
-		const error = new Unprocessable('Can not remove file permissions.', err);
-		context.errors.push(error);
+		logger.warning('error during tombstone dissolve in file permissions', err);
+		return { finished: false, trashBinData: [] };
 	}
 };
 
@@ -93,24 +88,18 @@ const setS3ExperiedForFileIds = async (fileIds) => {
 */
 
 const deleteUserData = async (userId) => {
-	const context = {
-		context: 'files',
-		deleted: [],
-		references: [],
-		errors: [],
-		userId,
-	};
-
 	// step 1
-	await deletePersonalFiles(context);
+	// await deletePersonalFiles(context);
 	// step 2 -> Promise.all
-	// await setS3ExperiedForFileIds(extractId(deletedFiles)); ..promise.all with removePermissionsThatUserCanAccess
-	await removePermissionsThatUserCanAccess(context);
+	const result = await removePermissionsThatUserCanAccess(userId);
 	// const replaceUserIds = await replaceUserId(userId); - step 2 or step 3
 
-	return context;
+	// concatinate results
+
+	return result;
 };
 
 module.exports = {
 	deleteUserData,
+	removePermissionsThatUserCanAccess,
 };

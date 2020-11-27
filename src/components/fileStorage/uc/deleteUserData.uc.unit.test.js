@@ -1,69 +1,40 @@
 const { expect } = require('chai');
 const mockery = require('mockery');
+const sinon = require('sinon');
 const { ObjectId } = require('mongoose').Types;
 
-// const deleteUserDataUcRewire = rewire('./deleteUserData.uc');
+const { removePermissionsThatUserCanAccess } = require('./deleteUserData.uc');
 
-const file = (userId) => ({
-	_id: ObjectId(),
-	isDirectory: false,
-	name: 'lorem-image.png',
-	type: 'image/png',
-	size: 12345,
-	storageFileName: 'lorem-image.png',
-	thumbnail: 'https://schulcloud.org/images/login-right.png',
-	permissions: [{ write: true, read: true, create: true, delete: true, refId: userId, refPermModel: 'user' }],
-	owner: userId,
-	creator: userId,
-	refOwnerModel: 'user',
-	thumbnailRequestToken: '123 - uuidv4',
-});
+const fileRepo = require('../repo/files.repo');
 
-describe('deletedUserData.uc.unit', () => {
-	describe('deleteUserData', () => {
-		let deleteUserData;
-
-		const mockRepo = {
-			findFilesThatUserCanAccess: async (userId) => [file(userId), file(userId)],
-			deleteFilesByIDs: async () => ({ n: 3, ok: 1, deletedCount: 3 }),
-			findPersonalFiles: async (userId) => [file(userId), file(userId)],
-			removeFilePermissionsByUserId: async () => ({ n: 3, ok: 1, nModified: 3 }),
-		};
-
-		before(() => {
-			mockery.enable({
-				warnOnReplace: false,
-				warnOnUnregistered: false,
-				useCleanCache: true,
+describe.only('deletedUserData.uc.unit', function () {
+	describe('removePermissionsThatUserCanAccess', () => {
+		it('when the function is called with valid user id, then it returns with valud trash bin format', async () => {
+			const userId = new ObjectId();
+			const fileRepoStub = sinon.stub(fileRepo, 'removeFilePermissionsByUserId');
+			fileRepoStub.withArgs(userId).returns({
+				_id: 1,
+				filePermissions: [
+					{
+						_id: new ObjectId(),
+						permissions: [
+							{
+								refId: userId,
+							},
+						],
+					},
+				],
 			});
-			mockery.registerMock('../repo/files.repo', mockRepo);
-			// eslint-disable-next-line global-require
-			({ deleteUserData } = require('./deleteUserData.uc'));
-		});
-
-		after(() => {
-			mockery.deregisterAll();
-			mockery.disable();
-		});
-
-		it('all should work without errors', async () => {
-			const userId = ObjectId();
-			const result = await deleteUserData(userId);
-			expect(result).to.have.all.keys('context', 'deleted', 'references', 'errors', 'userId');
-
-			expect(result.context).to.equal('files');
-			expect(result.userId.toString()).to.equal(userId.toString());
-			expect(result.errors).to.be.an('array').with.lengthOf(0);
-			expect(result.deleted).to.be.an('array').with.lengthOf(2);
-			expect(result.references).to.be.an('array').with.lengthOf(2);
-
-			expect(result.deleted[0]).to.have.all.keys(Object.keys(file(userId)));
-			expect(result.references[0]).to.not.have.all.keys(Object.keys(file(userId)));
-			expect(result.references[0]._id).to.not.undefined;
+			const result = await removePermissionsThatUserCanAccess(userId);
+			expect(result.trashBinData).to.be.an('array');
+			result.trashBinData.forEach((data) => {
+				expect(data).to.haveOwnProperty('scope');
+				expect(data.data).to.be.an('object');
+			});
 		});
 	});
 
-	describe('deleteUserData', () => {
+	describe.skip('deleteUserData', () => {
 		let deleteUserData;
 
 		const mockRepo = {
@@ -114,7 +85,7 @@ describe('deletedUserData.uc.unit', () => {
 		});
 	});
 
-	describe('WWW turn off by alien attack, what should our application do?', () => {
+	describe.skip('WWW turn off by alien attack, what should our application do?', () => {
 		let deleteUserData;
 
 		const mockRepo = {
