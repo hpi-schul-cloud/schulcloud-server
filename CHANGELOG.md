@@ -38,6 +38,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7499 - add API Specification for public services
 - SC-7571 - solved performance issues - bulk QR-code generation 
 - SC-6294 - Introduce Typescript in schulcloud-server
+- SC-7476 - Prevent hash generation if user has account
 
 ### Changed
 
