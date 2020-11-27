@@ -83,16 +83,10 @@ const globals = {
 	FILE_PREVIEW_SERVICE_URI: process.env.FILE_PREVIEW_SERVICE_URI || 'http://localhost:3000/filepreview',
 	FILE_PREVIEW_CALLBACK_URI: process.env.FILE_PREVIEW_CALLBACK_URI || 'http://localhost:3030/fileStorage/thumbnail/',
 	ENABLE_THUMBNAIL_GENERATION: process.env.ENABLE_THUMBNAIL_GENERATION || false,
-	FILE_SECURITY_CHECK_SERVICE_URI: process.env.FILE_SECURITY_CHECK_SERVICE_URI || 'http://localhost:8081/scan/file',
 	/** path must start and end with a slash */
 	SECURITY_CHECK_SERVICE_PATH: '/fileStorage/securityCheck/',
-	/** url must not end with slash */
-	API_HOST: process.env.API_HOST || 'http://localhost:3030',
 	FILE_SECURITY_CHECK_MAX_FILE_SIZE:
 		parseInt(process.env.FILE_SECURITY_CHECK_MAX_FILE_SIZE || '', 10) || 512 * 1024 * 1024,
-	FILE_SECURITY_SERVICE_USERNAME: process.env.FILE_SECURITY_SERVICE_USERNAME || '',
-	FILE_SECURITY_SERVICE_PASSWORD: process.env.FILE_SECURITY_SERVICE_PASSWORD || '',
-	ENABLE_FILE_SECURITY_CHECK: process.env.ENABLE_FILE_SECURITY_CHECK || 'false',
 	// rocketchat (here are no defaults defined)
 	ROCKET_CHAT_URI: process.env.ROCKET_CHAT_URI,
 	ROCKET_CHAT_ADMIN_TOKEN: process.env.ROCKET_CHAT_ADMIN_TOKEN,
