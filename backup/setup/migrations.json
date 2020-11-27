@@ -861,5 +861,16 @@
 		"$date": "2020-10-28T08:07:13.544Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3def3d21e804a816dc1b5"
+	},
+	"state": "up",
+	"name": "seedFederalStatesWithCounties",
+	"createdAt": {
+		"$date": "2020-11-05T11:16:03.243Z"
+	},
+	"__v": 0
 }]
 
