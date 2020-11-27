@@ -40,7 +40,7 @@ module.exports = (app, opt) => ({
 	lessons,
 	login: login(app, opt),
 	ltiTools: ltiTools(app, opt),
-	pseudonyms: pseudonyms(app, opt),
+	pseudonyms,
 	storageProviders: storageProviders(app),
 	submissions: submissions(app, opt),
 	teams: teams(app, opt),

@@ -60,7 +60,8 @@ describe('pseudonym repo', () => {
 			const ltiTool = await testObjects.createTestLtiTool();
 			const testPseudonym = await testObjects.createTestPseudonym({ pseudonym: 'PSEUDONYM' }, ltiTool, user);
 			const pseudonyms = await pseudonymRepo.getPseudonymsForUser(user._id);
-			expect(pseudonyms[0]).to.deep.equal(testPseudonym);
+			expect(pseudonyms[0]._id).to.deep.equal(testPseudonym._id);
+			expect(pseudonyms[0].userId).to.deep.equal(user._id);
 		});
 
 		it('when the function is called with user id, for which pseudonyms dont exist, then it should return empty array', async () => {

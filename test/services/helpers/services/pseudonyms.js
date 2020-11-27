@@ -1,31 +1,27 @@
+const Pseudonym = require('../../../../src/services/pseudonym/model');
+
 let createdpseudonymsIds = [];
 
-// should rewrite
-const createTestPseudonym = (appPromise) => async (pseudonymParameters, ltiTool, user) => {
-	const app = await appPromise;
+const createTestPseudonym = async (pseudonymParameters, ltiTool, user) => {
 	pseudonymParameters.userId = user._id;
 	pseudonymParameters.toolId = ltiTool._id;
-	return app
-		.service('pseudonymModel')
-		.create(pseudonymParameters)
-		.then((pseudonym) => {
-			createdpseudonymsIds.push(pseudonym._id.toString());
-			return pseudonym;
-		});
+
+	const pseudonym = await Pseudonym.create(pseudonymParameters);
+	createdpseudonymsIds.push(pseudonym._id.toString());
+	return pseudonym;
 };
 
-const cleanup = (appPromise) => async () => {
-	const app = await appPromise;
+const cleanup = async () => {
 	if (createdpseudonymsIds.length === 0) {
 		return Promise.resolve();
 	}
 	const ids = createdpseudonymsIds;
 	createdpseudonymsIds = [];
-	return ids.map((id) => app.service('pseudonymModel').remove(id));
+	return Pseudonym.deleteMany({ _id: { $in: ids } });
 };
 
-module.exports = (app, opt) => ({
-	create: createTestPseudonym(app, opt),
-	cleanup: cleanup(app),
+module.exports = {
+	create: createTestPseudonym,
+	cleanup,
 	info: createdpseudonymsIds,
-});
+};

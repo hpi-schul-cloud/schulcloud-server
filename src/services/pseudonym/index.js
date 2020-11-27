@@ -2,7 +2,6 @@ const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
-const { disallow } = require('feathers-hooks-common');
 const Pseudonym = require('./model');
 const hooks = require('./hooks');
 
@@ -22,10 +21,4 @@ module.exports = function () {
 
 	const pseudonymService = app.service('/pseudonym');
 	pseudonymService.hooks(hooks);
-
-	const pseudonymModelService = app.service('/pseudonymModel');
-	pseudonymModelService.hooks({
-		before: { all: disallow('external') },
-		after: {},
-	});
 };
