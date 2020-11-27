@@ -534,31 +534,35 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		// TODO error handling
 		const { s3, bucket } = await createAWSObject(schoolId);
 		// TODO split into x copy operations at once
-		const copyResult = await Promise.all(
-			fileIds.map((fileId) => {
-				const copyParams = {
-					Bucket: bucket,
-					CopySource: `/${bucket}/${fileId}`,
-					Key: `expiring_${fileId}`,
-					MetadataDirective: 'REPLACE',
-					Metadata: {
-						expires: true,
-					}
-				};
-				return s3.copyObject(copyParams).promise();
-			})
-		);
 
-		// TODO deleteObjects takes max 1000 entries
-		const deleteParams = {
-			Bucket: bucket,
-			Delete: {
-				Objects: fileIds.map((fileId) => ({
-					Key: fileId,
-				})),
-			},
-		};
-		const deleteResult = await s3.deleteObjects(deleteParams).promise();
+		const parallelRequests = 100; // we can experiment with inc-/decreasing this. Max 1000 for the delete request
+		for(let processedFiles = 0; processedFiles < fileIds.length; processedFiles+= parallelRequests) {
+
+			const fileIdSubset = fileIds.slice(processedFilesPage, processedFilesPage + parallelRequests);
+			const copyResult = await Promise.all(
+				fileIdSubset.map((fileId) => {
+					const copyParams = {
+						Bucket: bucket,
+						CopySource: `/${bucket}/${fileId}`,
+						Key: `expiring_${fileId}`,
+						MetadataDirective: 'REPLACE',
+						Metadata: {
+							expires: true,
+						}
+					};
+					return s3.copyObject(copyParams).promise();
+				})
+			);
+			const deleteParams = {
+				Bucket: bucket,
+				Delete: {
+					Objects: fileIdSubset.map((fileId) => ({
+						Key: fileId,
+					})),
+				},
+			};
+			const deleteResult = await s3.deleteObjects(deleteParams).promise();
+		}
 	}
 }
 
