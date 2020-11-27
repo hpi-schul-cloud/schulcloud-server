@@ -57,8 +57,17 @@ describe('files.repo.integration.test', () => {
 			).to.be.true;
 		});
 
-		it('when there is a filed owned by the user then his permmissions are also removed');
+		it('when called, then the response contains only files shared with the user', async () => {
+			const userId = generateObjectId();
+			const fileOwnerId = generateObjectId();
 
-		it('when called, then the response contains only files shared with the user');
+			const userToBeDeletedPermission = fileTestUtils.createPermission({ refId: userId });
+			const additonalPermissions = [userToBeDeletedPermission];
+			await fileTestUtils.create({ owner: fileOwnerId, additonalPermissions });
+			await fileTestUtils.create({ owner: fileOwnerId });
+
+			const resultStatus = await removeFilePermissionsByUserId(userId);
+			expect(resultStatus.filePermissions).to.be.an('array').with.lengthOf(1);
+		});
 	});
 });

@@ -4,7 +4,7 @@ const testObjects = require('../../../../test/services/helpers/testObjects')(app
 
 const { FileModel } = require('../repo/db');
 
-describe.only('fileStorageFacade', () => {
+describe('fileStorageFacade', () => {
 	let server;
 	let app;
 
