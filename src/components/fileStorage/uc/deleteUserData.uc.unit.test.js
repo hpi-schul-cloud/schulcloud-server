@@ -7,7 +7,7 @@ const { removePermissionsThatUserCanAccess } = require('./deleteUserData.uc');
 
 const fileRepo = require('../repo/files.repo');
 
-describe.only('deletedUserData.uc.unit', function () {
+describe('deletedUserData.uc.unit', function () {
 	describe('removePermissionsThatUserCanAccess', () => {
 		it('when the function is called with valid user id, then it returns with valud trash bin format', async () => {
 			const userId = new ObjectId();

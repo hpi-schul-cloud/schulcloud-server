@@ -8,7 +8,7 @@ const {
 	findPersonalFiles,
 } = require('./files.repo');
 
-describe.only('files.repo.integration.test', () => {
+describe('files.repo.integration.test', () => {
 	let fileTestUtils;
 	let server;
 	let generateObjectId;
@@ -151,7 +151,7 @@ describe.only('files.repo.integration.test', () => {
 			expect(resultStatus.success).to.be.true;
 			expect(resultStatus.filePermissions).to.be.an('array').with.lengthOf(1);
 
-			const sharedFileCheck = await FileModel.findById(sharedFile._id);
+			const sharedFileCheck = await FileModel.findById(sharedFile._id).lean().exec();
 			expect(sharedFileCheck.permissions.some((permission) => permission.refId.toString() === userId.toString())).to.be.false;
 		});
 
