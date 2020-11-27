@@ -124,7 +124,7 @@ describe('removeStudentFromClasses', () => {
 	});
 });
 
-describe.only('generateRegistrationLink', () => {
+describe('generateRegistrationLink', () => {
 	let app;
 	let server;
 
