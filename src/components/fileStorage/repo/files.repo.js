@@ -1,45 +1,4 @@
 const { FileModel } = require('./db');
-const { createStrategy } = require('./strategies');
-
-/**
- * Permission based search
- * @param {BSON|BSONString} userId
- * @param {string|array|object} [select]
- */
-const findFilesThatUserCanAccess = async (userId, select) => {
-	const insideOfPermissions = {
-		permissions: { $elemMatch: { refPermModel: 'user', refId: userId } },
-		owner: { $ne: userId },
-	};
-
-	const result = await FileModel.find(insideOfPermissions, select).lean().exec();
-	return result;
-};
-
-/**
- * @param {*} fileIds
- * @return {MongooseBatchResult}
- */
-const deleteFilesByIDs = async (fileIds = []) => {
-	const result = await FileModel.deleteMany({ _id: { $in: fileIds } });
-	const success = result.ok === 1 && result.n === result.nModified && fileIds.length === result.n;
-	return { fileIds, success };
-};
-
-/**
- * @param {BSON|BSONString} userId
- * @param {string|array|object} [select]
- */
-const findPersonalFiles = async (userId, select) => {
-	const query = {
-		refOwnerModel: 'user',
-		creator: userId,
-		owner: userId,
-	};
-
-	const result = await FileModel.find(query, select).lean().exec();
-	return result;
-};
 
 /**
  * @param {*} fileIds
@@ -77,15 +36,6 @@ const removeFilePermissionsByUserId = async (userId) => {
 	return { filePermissions, success };
 };
 
-const moveFilesToTrash = (fileIds = [], school) => {
-	const storageStrategy = createStrategy(school.fileStorageType);
-	storageStrategy.moveFilesToTrash(school._id, fileIds);
-};
-
 module.exports = {
-	findFilesThatUserCanAccess,
-	deleteFilesByIDs,
-	findPersonalFiles,
 	removeFilePermissionsByUserId,
-	moveFilesToTrash,
 };
