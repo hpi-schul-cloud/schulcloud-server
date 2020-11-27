@@ -227,6 +227,12 @@
 			"pattern": ".*(?<!/)$",
 			"description": "The client url (should end without a slash)."
 		},
+		"API_HOST": {
+			"type": "string",
+			"format": "uri",
+			"pattern": ".*(?<!/)$",
+			"description": "The server endpoint, for external calls like Antivirus service. When called from docker container, can be http://host.docker.internal:3030"
+		},
 		"FEATURE_ALERTS_STATUS_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -275,6 +281,30 @@
 			"type": "string",
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
+		},
+		"STORAGE_SIGNED_URL_EXPIRE": {
+			"type": "integer",
+			"default": 60,
+			"description": "Expiration time in seconds for signedUrl used by antivirus"
+		},
+		"ENABLE_FILE_SECURITY_CHECK": {
+			"type": "boolean",
+			"description": "enables antivirus check for files",
+			"default": false
+		},
+		"FILE_SECURITY_CHECK_SERVICE_URI": {
+			"type": "string",
+			"description": "Antivirus file endpoint",
+			"format": "uri",
+			"pattern": ".*(?<!/)$"
+		},
+		"FILE_SECURITY_SERVICE_USERNAME": {
+			"type": "string",
+			"description": "Username for the antivirus service"
+		},
+		"FILE_SECURITY_SERVICE_PASSWORD": {
+			"type": "string",
+			"description": "Password for the antivirus service"
 		},
 		"ADMIN_TOGGLE_STUDENT_VISIBILITY": {
 			"type": "string",
@@ -503,7 +533,8 @@
 	],
 	"allOf": [
 		{
-			"$ref": "#/definitions/FEATURE_PROMETHEUS_ENABLED"
+			"$ref": "#/definitions/FEATURE_PROMETHEUS_ENABLED",
+			"$ref": "#/definitions/ANTIVIRUS"
 		}
 	],
 	"definitions": {
@@ -517,6 +548,23 @@
 			},
 			"then": {
 				"required": ["PROMETHEUS"]
+			}
+		},
+		"ANTIVIRUS": {
+			"if": {
+				"properties": {
+					"ENABLE_FILE_SECURITY_CHECK": {
+						"const": true
+					}
+				}
+			},
+			"then": {
+				"required": [
+					"FILE_SECURITY_CHECK_SERVICE_URI",
+					"FILE_SECURITY_SERVICE_USERNAME",
+					"FILE_SECURITY_SERVICE_PASSWORD",
+					"API_HOST"
+				]
 			}
 		}
 	}
