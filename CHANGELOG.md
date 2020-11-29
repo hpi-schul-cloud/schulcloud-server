@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
+
+## [25.2.2]
+
+### Changed
+
+- SC-7773 - moved config values for antivirus file service
+
 ## [25.2.1]
 
 ### Fixed
@@ -16,6 +23,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-7838 - move pseudonyms to trashbin
 - SC-7142 - Counties/Kreise added to federal states.
 - SC-7555 - move user and account to trashbin
 - SC-4666 - Added a pool based LDAP system and school sync. LDAP_SYSTEM_SYNCER_POOL_SIZE and LDAP_SCHOOL_SYNCER_POOL_SIZE variables
