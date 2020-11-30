@@ -23,6 +23,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-7836 - Removing registration pin by removing the user
 - SC-7838 - move pseudonyms to trashbin
 - SC-7142 - Counties/Kreise added to federal states.
 - SC-7555 - move user and account to trashbin
