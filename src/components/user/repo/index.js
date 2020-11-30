@@ -4,8 +4,8 @@ const trashbinRepo = require('./trashbin.repo');
 const registrationPinRepo = require('./registrationPin.repo');
 
 module.exports = {
-  accountRepo,
-  registrationPinRepo,
-  trashbinRepo,
+	accountRepo,
+	registrationPinRepo,
+	trashbinRepo,
 	userRepo,
 };
