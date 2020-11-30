@@ -75,7 +75,7 @@ describe('admin users integration tests', function test() {
 		});
 		expect(response).to.not.be.undefined;
 		expect(response.error).to.not.be.undefined;
-		expect(response.error.status).to.equal(500);
+		expect(response.error.status).to.equal(400);
 	});
 
 	it('POST fails with invalid email format', async () => {
@@ -95,7 +95,7 @@ describe('admin users integration tests', function test() {
 		});
 		expect(response).to.not.be.undefined;
 		expect(response.error).to.not.be.undefined;
-		expect(response.error.status).to.equal(500);
+		expect(response.error.status).to.equal(400);
 	});
 
 	it('FIND basic request', async () => {
