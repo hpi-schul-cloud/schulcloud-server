@@ -1,0 +1,103 @@
+security:
+  - jwtBearer: []
+info:
+  title: Schul-Cloud User Service API
+  description:
+    This is the API specification for the Schul-Cloud User service.
+    
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+servers:
+  - url: /courses/v2
+components:
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    course_details:
+      description: Data Transfer Object containing userdata
+      type: object
+      properties:
+        name:
+          type: string
+        color:
+          type: string
+        times:
+          type: array
+          items:
+            $ref: '#/components/schemas/time_details'
+        itemDetails:
+          type: array
+          items:
+            $ref: '#/components/schemas/item_details'
+    time_details:
+      type: object
+      properties:
+        weekday:
+          type: integer
+          minimum: 0
+          maximum: 6
+        startTime:
+          type: integer
+          description: Time in miliseconds from midnight.
+        duration:
+          description: value in miliseconds
+          type: number
+        eventId:
+          type: string
+        room:
+          type: string
+      required:
+        - weekday
+    item_details:
+      type: object
+      properties:
+        published:
+          type: boolean
+        title:
+          type: string
+        dueDate:
+          type: string
+          format: date-time
+        type:
+          type: string
+          enum: ['document', 'task']
+paths:
+  '/course/{id}':
+    get:
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+            pattern: '^[0-9a-f]{24}$'
+          description: ID of the course to be returned
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/course_details'
+        '401':
+          description: not authenticated
+        '403':
+          description: Forbidden
+        '404':
+          description: If there is no course with the given id.
+        '500':
+          description: general error
+      description: Retrieves a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - courses
+      security: []
+openapi: 3.0.2
