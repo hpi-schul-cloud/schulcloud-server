@@ -48,13 +48,14 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-4667 - Add optional `forceFullSync` option (as get param or json payload) to force a full LDAP sync
 - SC-7499 - add API Specification for public services
 - SC-7915 - facade locator
-- SC-7571 - solved performance issues - bulk QR-code generation 
+- SC-7571 - solved performance issues - bulk QR-code generation
 - SC-6294 - Introduce Typescript in schulcloud-server
 - SC-7028 - Add Course Component API Specification document
 - SC-7476 - Prevent hash generation if user has account
 
 ### Changed
 
+- SC-7998 - use default service setup for /version
 - request logging disabled for non development environment
 - OPS-1289 - moved and updated commons (to hpi-schul-cloud/commons)
 - SC-6596 - Changed route for messenger permissions service
