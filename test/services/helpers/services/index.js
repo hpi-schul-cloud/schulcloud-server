@@ -13,6 +13,7 @@ const login = require('./login');
 const ltiTools = require('./ltiTools');
 const pseudonyms = require('./pseudonyms');
 const roles = require('./roles');
+const registrationPins = require('./registrationPins');
 const schoolGroups = require('./schoolGroups');
 const schools = require('./schools');
 const storageProviders = require('./storageProviders');
@@ -30,6 +31,7 @@ module.exports = (app, opt) => ({
 	consentVersion: consentVersion(app, opt),
 	courses: courses(app, opt),
 	courseGroups: courseGroups(app, opt),
+	registrationPins: registrationPins(app, opt),
 	roles,
 	schools: schools(app, opt),
 	years,
