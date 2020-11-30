@@ -1,5 +1,5 @@
 #!/bin/bash
-export TRAVIS_BRANCH="feature/OPS-1559-Enhance_build_pipeline"
+
 # automatically rolls out new versions on brandenburg, demo, open and test
 # develop-Branch goes to test, Master-Branch goes to productive systems
 
@@ -73,7 +73,7 @@ then
 	JIRA_TICKET_TEAM=${JIRA_TICKET_ID/%-*/} 
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/#$JIRA_TICKET_TEAM"-"/}
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/%-*/}
-	JIRA_TICKET_ID=$( echo $JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID | tr -s "[:upper:]" "[:lower:]" )	
+	JIRA_TICKET_ID=$( echo $JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID | tr -s "[:upper:]" "[:lower:]" )
 	
 	echo JIRA_TICKET_ID=$JIRA_TICKET_ID
 	
