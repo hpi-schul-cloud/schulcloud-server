@@ -52,7 +52,7 @@ echo GIT_FLOW_BRANCH:$GIT_FLOW_BRANCH
 # OPS-1664
 if [ "$TRAVIS_BRANCH" = "master" ] || [ "$GIT_FLOW_BRANCH" = "release" ]
 then
-	export DOCKERTAG=$GIT_FLOW_BRANCH-v$( jq -r '.version' package.json )-latest
+	export DOCKERTAG=$GIT_FLOW_BRANCH_v$( jq -r '.version' package.json )_latest
 elif [ "$GIT_FLOW_BRANCH" = "hotfix" ]
 then
 	# extract JIRA_TICKET_ID from TRAVIS_BRANCH
@@ -60,12 +60,12 @@ then
 	JIRA_TICKET_TEAM=${JIRA_TICKET_ID/%-*/} 
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/#$JIRA_TICKET_TEAM"-"/}
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/%-*/}
-	JIRA_TICKET_ID=$( echo $JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID | tr -s "[:upper:]" "[:lower:]" )	
+	JIRA_TICKET_ID=$( echo $JIRA_TICKET_TEAM"_"$JIRA_TICKET_ID | tr -s "[:upper:]" "[:lower:]" )	
 	
 	echo JIRA_TICKET_ID=$JIRA_TICKET_ID
 	
 	# export DOCKERTAG=naming convention feature-<Jira id>-latest
-	export DOCKERTAG=$( echo $GIT_FLOW_BRANCH"-"$JIRA_TICKET_ID"-latest")
+	export DOCKERTAG=$( echo $GIT_FLOW_BRANCH"_"$JIRA_TICKET_ID"_latest")
 elif [ "$GIT_FLOW_BRANCH" = "feature" ]
 then
 	# extract JIRA_TICKET_ID from TRAVIS_BRANCH
@@ -73,15 +73,15 @@ then
 	JIRA_TICKET_TEAM=${JIRA_TICKET_ID/%-*/} 
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/#$JIRA_TICKET_TEAM"-"/}
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/%-*/}
-	JIRA_TICKET_ID=$( echo $JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID | tr -s "[:upper:]" "[:lower:]" )
+	JIRA_TICKET_ID=$( echo $JIRA_TICKET_TEAM"_"$JIRA_TICKET_ID | tr -s "[:upper:]" "[:lower:]" )
 	
 	echo JIRA_TICKET_ID=$JIRA_TICKET_ID
 	
 	# export DOCKERTAG=naming convention feature-<Jira id>-latest
-	export DOCKERTAG=$( echo $GIT_FLOW_BRANCH"-"$JIRA_TICKET_ID"-latest")
+	export DOCKERTAG=$( echo $GIT_FLOW_BRANCH"_"$JIRA_TICKET_ID"_latest")
 else
 	# replace special characters in branch name for docker tag
-	export DOCKERTAG=$( echo $GIT_FLOW_BRANCH"-latest")
+	export DOCKERTAG=$( echo $GIT_FLOW_BRANCH"_latest")
 fi
 
 echo DOCKERTAG=$DOCKERTAG
