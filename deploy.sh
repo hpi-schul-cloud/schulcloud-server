@@ -24,11 +24,6 @@ catch() {
   fi
 }
 
-# set $TRAVIS_BRANCH
-
-TRAVIS_BRANCH="feature/OPS-1559-Enhance_build_pipeline"
-echo TRAVIS_BRANCH=$TRAVIS_BRANCH
-
 # extract GIT_FLOW_BRANCH from TRAVIS_BRANCH
 if [[ "$TRAVIS_BRANCH" == "master" ]]
 then
