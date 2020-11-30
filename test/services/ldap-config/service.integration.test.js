@@ -10,13 +10,12 @@ const LDAPConnectionError = require('../../../src/services/ldap/LDAPConnectionEr
 const testObjects = require('../helpers/testObjects')(appPromise);
 const knownGoodConfig = require('./assets/knownGoodConfig.json');
 
-describe.only('LdapConfigService', () => {
+describe('LdapConfigService', () => {
 	let app;
 	let server;
 	let configBefore;
 
 	before(async () => {
-		delete require.cache[require.resolve('../../../src/app')];
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		Configuration.set('FEATURE_API_VALIDATION_ENABLED', true);
 		Configuration.set('FEATURE_API_RESPONSE_VALIDATION_ENABLED', true);
