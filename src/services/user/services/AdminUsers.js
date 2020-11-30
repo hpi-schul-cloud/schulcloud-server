@@ -4,14 +4,14 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
 const { Forbidden, BadRequest, GeneralError } = reqlib('src/errors');
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const { splitForSearchIndexes } = require('../../../utils/search');
-const { hasSchoolPermission, blockDisposableEmail } = require('../../../hooks');
+const { hasSchoolPermission, blockDisposableEmail, transformToDataTransferObject } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { validateParams, parseRequestQuery } = require('../hooks/adminUsers.hooks');
 const { sendRegistrationLink } = require('../hooks/userService');
@@ -231,7 +231,7 @@ class AdminUsers {
 	}
 
 	/**
-	 * Update the account email if eamil will be changed on user.
+	 * Update the account email if email will be changed on user.
 	 * IMPORTANT: Keep in mind to do a roleback if saving the user failed
 	 * @param {*} email
 	 * @param {*} userId
@@ -323,6 +323,7 @@ const adminHookGenerator = (kind) => ({
 		remove: [hasSchoolPermission(`${kind}_DELETE`), parseRequestQuery, validateParams],
 	},
 	after: {
+		all: [transformToDataTransferObject],
 		find: [formatBirthdayOfUsers],
 		create: [sendRegistrationLink],
 	},

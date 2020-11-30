@@ -1,9 +1,10 @@
 /* eslint-disable max-classes-per-file */
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const queryString = require('qs');
 const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+const { BadRequest } = require('@feathersjs/errors');
 
 const logger = require('../../logger');
 const link = require('./link-model');
@@ -69,17 +70,22 @@ module.exports = function setup() {
 		 */
 		async create(data, params) {
 			const linkData = {};
-			if (data.toHash) {
+			if (data.hash) {
+				linkData.hash = data.hash;
+			} else if (data.toHash) {
 				try {
 					const user = ((await app.service('users').find({ query: { email: data.toHash } })) || {}).data[0];
 					if (user && user.importHash) linkData.hash = user.importHash;
 					else {
-						await app
-							.service('hash')
-							.create(data)
-							.then((generatedHash) => {
-								linkData.hash = generatedHash;
-							});
+						if (user) {
+							const account = ((await app.service('accounts').find({ query: { userId: user._id } })) || {})[0];
+							if (account && account.userId) {
+								throw new BadRequest(`User already has an account.`);
+							}
+						}
+
+						const generatedHash = await app.service('hash').create(data);
+						linkData.hash = generatedHash;
 					}
 				} catch (err) {
 					logger.warning(err);

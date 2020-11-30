@@ -1,6 +1,6 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const logger = require('../../../../logger');
-const statusApi = require('./statusApi');
+const { statusApi } = require('../../../../externalServices');
 
 const dict = {
 	default: 1,
@@ -83,7 +83,9 @@ module.exports = {
 			}
 		} else {
 			/* eslint-disable-next-line */
-			logger.error('Alert-MessageProvider: status: ALERT_STATUS_API_URL or ALERT_STATUS_URL is not defined, while FEATURE_ALERTS_STATUS_ENABLED has been enabled!');
+			logger.error(
+				'Alert-MessageProvider: status: ALERT_STATUS_API_URL or ALERT_STATUS_URL is not defined, while FEATURE_ALERTS_STATUS_ENABLED has been enabled!'
+			);
 			return null;
 		}
 	},

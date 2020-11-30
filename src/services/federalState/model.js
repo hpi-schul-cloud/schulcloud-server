@@ -5,6 +5,7 @@
 
 const mongoose = require('mongoose');
 const { enableAuditLog } = require('../../utils/database');
+const { countySchema } = require('./countyModel');
 
 const { Schema } = mongoose;
 
@@ -12,6 +13,7 @@ const federalStateSchema = new Schema({
 	name: { type: String, required: true },
 	abbreviation: { type: String, required: true },
 	logoUrl: { type: String, required: true },
+	counties: [{ type: countySchema }],
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });

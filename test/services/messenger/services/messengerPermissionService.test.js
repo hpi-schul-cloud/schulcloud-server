@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 describe('MessengerPermissionService', function test() {
 	this.timeout(300000);
@@ -31,69 +31,29 @@ describe('MessengerPermissionService', function test() {
 		it('administrators have messenger permission to open one to one chats', async () => {
 			const school = await testObjects.createTestSchool();
 			const adminUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
-
-			const params = {};
-			params.route = { schoolId: school._id.toString() };
-
-			const result = await app.service('schools/:schoolId/messengerPermissions').get(adminUser._id, params);
+			const result = await app.service('/messengerPermissions').get(adminUser._id, {});
 			expect(result.createRoom).to.be.true;
 		});
 
 		it('teachers have messenger permission to open one to one chats', async () => {
 			const school = await testObjects.createTestSchool();
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
-
-			const params = {};
-			params.route = { schoolId: school._id.toString() };
-
-			const result = await app.service('schools/:schoolId/messengerPermissions').get(teacher._id, params);
+			const result = await app.service('/messengerPermissions').get(teacher._id);
 			expect(result.createRoom).to.be.true;
 		});
 
 		it('students do not have messenger permission to open one to one chats by default', async () => {
 			const school = await testObjects.createTestSchool();
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
-
-			const params = {};
-			params.route = { schoolId: school._id.toString() };
-
-			const result = await app.service('schools/:schoolId/messengerPermissions').get(student._id, params);
+			const result = await app.service('/messengerPermissions').get(student._id);
 			expect(result.createRoom).to.be.false;
 		});
 
 		it('students have messenger permission to open one to one chats if school setting is set', async () => {
 			const school = await testObjects.createTestSchool({ features: ['messengerStudentRoomCreate'] });
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
-
-			const params = {};
-			params.route = { schoolId: school._id.toString() };
-
-			const result = await app.service('schools/:schoolId/messengerPermissions').get(student._id, params);
+			const result = await app.service('/messengerPermissions').get(student._id);
 			expect(result.createRoom).to.be.true;
-		});
-
-		it('administrators from other school do not have messenger permission to open one to one chats', async () => {
-			const school = await testObjects.createTestSchool();
-			const otherSchool = await testObjects.createTestSchool();
-			const adminUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId: otherSchool._id });
-
-			const params = {};
-			params.route = { schoolId: school._id.toString() };
-
-			const result = await app.service('schools/:schoolId/messengerPermissions').get(adminUser._id, params);
-			expect(result.createRoom).to.be.false;
-		});
-
-		it('administrators from other school do not have messenger permission to open one to one chats even if school setting is set', async () => {
-			const school = await testObjects.createTestSchool({ features: ['messengerStudentRoomCreate'] });
-			const otherSchool = await testObjects.createTestSchool();
-			const adminUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId: otherSchool._id });
-
-			const params = {};
-			params.route = { schoolId: school._id.toString() };
-
-			const result = await app.service('schools/:schoolId/messengerPermissions').get(adminUser._id, params);
-			expect(result.createRoom).to.be.false;
 		});
 	});
 
@@ -120,33 +80,21 @@ describe('MessengerPermissionService', function test() {
 		it('administrators have messenger permission to open one to one chats', async () => {
 			const school = await testObjects.createTestSchool();
 			const adminUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
-
-			const params = {};
-			params.route = { schoolId: school._id.toString() };
-
-			const result = await app.service('schools/:schoolId/messengerPermissions').get(adminUser._id, params);
+			const result = await app.service('/messengerPermissions').get(adminUser._id);
 			expect(result.createRoom).to.be.true;
 		});
 
 		it('teachers have messenger permission to open one to one chats', async () => {
 			const school = await testObjects.createTestSchool();
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
-
-			const params = {};
-			params.route = { schoolId: school._id.toString() };
-
-			const result = await app.service('schools/:schoolId/messengerPermissions').get(teacher._id, params);
+			const result = await app.service('/messengerPermissions').get(teacher._id);
 			expect(result.createRoom).to.be.true;
 		});
 
 		it('students do not have messenger permission to open one to one chats', async () => {
 			const school = await testObjects.createTestSchool({ features: ['messengerStudentRoomCreate'] });
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
-
-			const params = {};
-			params.route = { schoolId: school._id.toString() };
-
-			const result = await app.service('schools/:schoolId/messengerPermissions').get(student._id, params);
+			const result = await app.service('/messengerPermissions').get(student._id);
 			expect(result.createRoom).to.be.false;
 		});
 	});
@@ -168,7 +116,7 @@ describe('MessengerPermissionService', function test() {
 		});
 
 		it('the service is not exposed', async () => {
-			expect(app.service('schools/:schoolId/messenger')).to.be.undefined;
+			expect(app.service('/messengerPermissions')).to.be.undefined;
 		});
 	});
 });

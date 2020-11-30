@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const mongooseHistory = require('mongoose-history');
 const roleModel = require('../../role/model');
 const { enableAuditLog } = require('../../../utils/database');
@@ -100,6 +100,7 @@ const userSchema = new Schema(
 
 		customAvatarBackgroundColor: { type: String },
 		avatarSettings: { type: Object },
+		deletedAt: { type: Date, default: null },
 	},
 	{
 		timestamps: true,
