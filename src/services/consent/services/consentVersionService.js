@@ -5,6 +5,8 @@ const { BadRequest } = reqlib('src/errors');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 
 const { restrictToCurrentSchool, denyIfNotCurrentSchoolOrEmpty, hasPermission } = require('../../../hooks');
+
+const { SC_THEME } = require('../../../../config/globals');
 const { isSuperheroUser } = require('../../../helper/userHelpers');
 
 const {
@@ -45,12 +47,18 @@ class ConsentVersionService {
 		this.docs = {};
 	}
 
+	validateConsentUpload(isShdUpload, schoolId) {
+		if (isShdUpload && SC_THEME === "n21") {
+			return Promise.reject(new BadRequest('SHD consent upload is disabled for NBC instance.'));
+		}
+		else if (!schoolId) {
+			return Promise.reject(new BadRequest('SchoolId is required for school consents.'));
+		}
+	}
+
 	createBase64File(consentDocumentData, isShdUpload) {
 		const { schoolId, consentData } = consentDocumentData;
 		if (consentData) {
-			if (!schoolId && !isShdUpload) {
-				return Promise.reject(new BadRequest('SchoolId is required for school consents.'));
-			}
 			return this.app.service('base64Files').create({
 				schoolId,
 				data: consentDocumentData.consentData,
@@ -81,13 +89,12 @@ class ConsentVersionService {
 
 	async create(consentDocumentData, params) {
 		const isShdUpload = await isSuperheroUser(this.app, params.account.userId);
-
+		this.validateConsentUpload(isShdUpload, consentDocumentData.schoolId);
 		const base64 = await this.createBase64File(consentDocumentData, isShdUpload);
 		if (base64._id) {
 			consentDocumentData.consentDataId = base64._id;
 			delete consentDocumentData.consentData;
 		}
-
 		return this.app.service('consentVersionsModel').create(consentDocumentData, prepareInternalParams(params));
 	}
 
