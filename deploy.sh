@@ -1,5 +1,5 @@
 #!/bin/bash
-
+export TRAVIS_BRANCH="feature/OPS-1559-Enhance_build_pipeline"
 # automatically rolls out new versions on brandenburg, demo, open and test
 # develop-Branch goes to test, Master-Branch goes to productive systems
 
@@ -24,11 +24,41 @@ catch() {
   fi
 }
 
-if [ "$TRAVIS_BRANCH" = "master" ]
+# set $TRAVIS_BRANCH
+
+TRAVIS_BRANCH="feature/OPS-1559-Enhance_build_pipeline"
+echo TRAVIS_BRANCH=$TRAVIS_BRANCH
+
+# extract GIT_FLOW_BRANCH from TRAVIS_BRANCH
+if [[ "$TRAVIS_BRANCH" == "master" ]]
 then
-	#export DOCKERTAG=latest
-	export DOCKERTAG=master_v$( jq -r '.version' package.json )_$( date +"%y%m%d%H%M" )
-elif [[ "$TRAVIS_BRANCH" = feature/* ]]
+	GIT_FLOW_BRANCH="master"
+elif [[ "$TRAVIS_BRANCH" == "develop" ]]
+then
+	GIT_FLOW_BRANCH="develop"
+elif [[ "$TRAVIS_BRANCH" =~ ^"release"* ]]
+then
+	GIT_FLOW_BRANCH="release"
+elif [[ "$TRAVIS_BRANCH" =~ ^hotfix\/[A-Z]+-[0-9]+-[a-zA-Z_]+$ ]]
+then
+	GIT_FLOW_BRANCH="hotfix"
+elif [[ "$TRAVIS_BRANCH" =~ ^feature\/[A-Z]+-[0-9]+-[a-zA-Z_]+$ ]]
+then
+	GIT_FLOW_BRANCH="feature"
+else
+	# Check for naming convention <branch>/<JIRA-Ticket ID>-<Jira_Summary>
+	# OPS-1664
+	echo -e "Event detected. However, branch name pattern does not match requirements to deploy. Expected <branch>/<JIRA-Ticket ID>-<Jira_Summary> but got $TRAVIS_BRANCH"
+	exit 0
+fi
+echo GIT_FLOW_BRANCH:$GIT_FLOW_BRANCH
+
+# export DOCKERTAG=latest
+# OPS-1664
+if [ "$TRAVIS_BRANCH" = "master" ] || [ "$GIT_FLOW_BRANCH" = "release" ]
+then
+	export DOCKERTAG=$GIT_FLOW_BRANCH-v$( jq -r '.version' package.json )-latest
+elif [ "$GIT_FLOW_BRANCH" = "hotfix" ] || [ "$GIT_FLOW_BRANCH" = "feature" ]
 then
 	# extract JIRA_TICKET_ID from TRAVIS_BRANCH
 	JIRA_TICKET_ID=${TRAVIS_BRANCH/#feature\//}
@@ -36,11 +66,14 @@ then
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/#$JIRA_TICKET_TEAM"-"/}
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/%-*/}
 	JIRA_TICKET_ID=$JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID	
+	
+	echo JIRA_TICKET_ID=$JIRA_TICKET_ID
+	
 	# export DOCKERTAG=naming convention feature-<Jira id>-latest
-	export DOCKERTAG=$( echo "feature-"$JIRA_TICKET_ID"-latest")
+	export DOCKERTAG=$( echo $GIT_FLOW_BRANCH"-"$JIRA_TICKET_ID"-latest")
 else
 	# replace special characters in branch name for docker tag
-	export DOCKERTAG=$( echo $TRAVIS_BRANCH | tr -s "[:punct:]" "-" | tr -s "[:upper:]" "[:lower:]" )_v$( jq -r '.version' package.json )_$( date +"%y%m%d%H%M" )
+	export DOCKERTAG=$( echo $GIT_FLOW_BRANCH"-latest")
 fi
 
 function buildandpush {
@@ -60,10 +93,10 @@ function buildandpush {
 	docker push schulcloud/schulcloud-server:$GIT_SHA
 
 	# If branch is develop, add and push additional docker tags
-	if [[ "$TRAVIS_BRANCH" = "develop" ]]
+	if [ "$TRAVIS_BRANCH" = "develop" ]
 	then
-		docker tag schulcloud/schulcloud-server:$DOCKERTAG schulcloud/schulcloud-server:develop_latest
-		docker push schulcloud/schulcloud-server:develop_latest
+		docker tag schulcloud/schulcloud-server:$DOCKERTAG schulcloud/schulcloud-server:$( echo $TRAVIS_BRANCH | tr -s "[:punct:]" "-" | tr -s "[:upper:]" "[:lower:]" )_v$( jq -r '.version' package.json )_$( date +"%y%m%d%H%M" )
+		docker push schulcloud/schulcloud-server:$( echo $TRAVIS_BRANCH | tr -s "[:punct:]" "-" | tr -s "[:upper:]" "[:lower:]" )_v$( jq -r '.version' package.json )_$( date +"%y%m%d%H%M" )
 	fi
 
 	# If branch is feature, add and push additional docker tags
@@ -159,7 +192,7 @@ then
 	echo "Event detected on branch master. Event is no Pull Request. Informing team."
 	buildandpush
 	inform
-elif [[ "$TRAVIS_BRANCH" = "develop" ]]
+elif [ "$TRAVIS_BRANCH" = "develop" ]
 then
 	# If an event occurs on branch develop deploy to test
 	echo "Event detected on branch develop. Building docker image..."
@@ -179,7 +212,7 @@ then
 	buildandpush
 	deploytostaging
 	inform_staging
-elif [[ $TRAVIS_BRANCH = hotfix* ]]
+elif [[ $TRAVIS_BRANCH = hotfix/* ]]
 then
 	# If an event occurs on branch hotfix* parse team id
 	# and deploy to according hotfix environment
