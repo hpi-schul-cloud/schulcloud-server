@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
 const reqlib = require('app-root-path').require;
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { Forbidden } = reqlib('src/errors');
 
@@ -12,8 +13,12 @@ const knownGoodConfig = require('./assets/knownGoodConfig.json');
 describe('LdapConfigService', () => {
 	let app;
 	let server;
+	let configBefore;
 
 	before(async () => {
+		configBefore = Configuration.toObject({ plainSecrets: true });
+		Configuration.set('FEATURE_API_VALIDATION_ENABLED', true);
+		Configuration.set('FEATURE_API_RESPONSE_VALIDATION_ENABLED', true);
 		app = await appPromise;
 		server = await app.listen(0);
 	});
@@ -21,6 +26,7 @@ describe('LdapConfigService', () => {
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+		Configuration.reset(configBefore);
 	});
 
 	describe('GET route', () => {
