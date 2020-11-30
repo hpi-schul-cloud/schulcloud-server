@@ -9,6 +9,8 @@ describe('helpdesk service', function test() {
 	let app;
 	let helpdeskService;
 	let logger;
+	let originalMailService;;
+
 	const testProblem = {
 		type: 'contactAdmin',
 		_id: '5836bb5664582c35df3bc214',
@@ -26,12 +28,14 @@ describe('helpdesk service', function test() {
 
 	before(async () => {
 		app = await appPromise;
+		originalMailService = app.service('mails');
 		helpdeskService = app.service('helpdesk');
 		({ logger } = app);
 		await helpdeskService.create(testProblem);
 	});
 
 	after((done) => {
+		app.use('/mails', originalMailService);
 		helpdeskService
 			.remove(testProblem)
 			.then((result) => {
