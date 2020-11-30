@@ -24,6 +24,11 @@ catch() {
   fi
 }
 
+# set $TRAVIS_BRANCH
+
+TRAVIS_BRANCH="feature/OPS-1559-Enhance_build_pipeline"
+echo TRAVIS_BRANCH=$TRAVIS_BRANCH
+
 # extract GIT_FLOW_BRANCH from TRAVIS_BRANCH
 if [[ "$TRAVIS_BRANCH" == "master" ]]
 then
@@ -53,14 +58,27 @@ echo GIT_FLOW_BRANCH:$GIT_FLOW_BRANCH
 if [ "$TRAVIS_BRANCH" = "master" ] || [ "$GIT_FLOW_BRANCH" = "release" ]
 then
 	export DOCKERTAG=$GIT_FLOW_BRANCH-v$( jq -r '.version' package.json )-latest
-elif [ "$GIT_FLOW_BRANCH" = "hotfix" ] || [ "$GIT_FLOW_BRANCH" = "feature" ]
+elif [ "$GIT_FLOW_BRANCH" = "hotfix" ]
+then
+	# extract JIRA_TICKET_ID from TRAVIS_BRANCH
+	JIRA_TICKET_ID=${TRAVIS_BRANCH/#hotfix\//}
+	JIRA_TICKET_TEAM=${JIRA_TICKET_ID/%-*/} 
+	JIRA_TICKET_ID=${JIRA_TICKET_ID/#$JIRA_TICKET_TEAM"-"/}
+	JIRA_TICKET_ID=${JIRA_TICKET_ID/%-*/}
+	JIRA_TICKET_ID=$( echo $JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID | tr -s "[:upper:]" "[:lower:]" )	
+	
+	echo JIRA_TICKET_ID=$JIRA_TICKET_ID
+	
+	# export DOCKERTAG=naming convention feature-<Jira id>-latest
+	export DOCKERTAG=$( echo $GIT_FLOW_BRANCH"-"$JIRA_TICKET_ID"-latest")
+elif [ "$GIT_FLOW_BRANCH" = "feature" ]
 then
 	# extract JIRA_TICKET_ID from TRAVIS_BRANCH
 	JIRA_TICKET_ID=${TRAVIS_BRANCH/#feature\//}
-	JIRA_TICKET_TEAM=${JIRA_TICKET_ID/%-*/}
+	JIRA_TICKET_TEAM=${JIRA_TICKET_ID/%-*/} 
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/#$JIRA_TICKET_TEAM"-"/}
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/%-*/}
-	JIRA_TICKET_ID=$JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID	
+	JIRA_TICKET_ID=$( echo $JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID | tr -s "[:upper:]" "[:lower:]" )	
 	
 	echo JIRA_TICKET_ID=$JIRA_TICKET_ID
 	
@@ -70,6 +88,8 @@ else
 	# replace special characters in branch name for docker tag
 	export DOCKERTAG=$( echo $GIT_FLOW_BRANCH"-latest")
 fi
+
+echo DOCKERTAG=$DOCKERTAG
 
 function buildandpush {
 	# build containers
@@ -87,6 +107,7 @@ function buildandpush {
 	docker push schulcloud/schulcloud-server:$DOCKERTAG
 	docker push schulcloud/schulcloud-server:$GIT_SHA
 
+	## notwendig??
 	# If branch is develop, add and push additional docker tags
 	if [ "$TRAVIS_BRANCH" = "develop" ]
 	then
