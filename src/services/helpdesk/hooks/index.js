@@ -104,7 +104,7 @@ const feedback = () => async (hook) => {
 				emails.push(Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS'));
 			}
 		} else {
-			emails.push('ticketsystem@schul-cloud.org');
+			emails.push(Configuration.get('SUPPORT_PROBLEM_EMAIL_ADDRESS'));
 		}
 		globalHooks.sendEmail(hook, {
 			subject: data.title || data.subject || 'nosubject',
