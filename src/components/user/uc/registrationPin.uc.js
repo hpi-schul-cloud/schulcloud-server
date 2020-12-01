@@ -8,7 +8,12 @@ const deleteRegistrationPins = async (pinIds) => {
 	return registrationPinRepo.deleteRegistrationPins(pinIds);
 };
 
+const deleteRegistrationPinsByEmail = async (email) => {
+	return { complete: true, data: registrationPinRepo.deleteRegistrationPinsByEmail(email) };
+};
+
 module.exports = {
 	getRegistrationPinsForUser,
 	deleteRegistrationPins,
+	deleteRegistrationPinsByEmail,
 };

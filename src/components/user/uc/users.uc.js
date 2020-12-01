@@ -2,6 +2,7 @@ const { ObjectId } = require('mongoose').Types;
 const { BadRequest, Forbidden } = require('../../../errors');
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
 const { hasRole } = require('./userRoles.uc');
+const { catch, catch } = require('src/app');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const userHaveSameSchool = async (userId, otherUserId) => {
@@ -14,7 +15,7 @@ const userHaveSameSchool = async (userId, otherUserId) => {
 	return false;
 };
 
-const getUserRelatedData = async (id) => {
+const getUserData = async (id) => {
 	const returnArray = [];
 	const user = await userRepo.getUser(id);
 	if (user.deletedAt) {
@@ -34,9 +35,16 @@ const getUserRelatedData = async (id) => {
 	return returnArray;
 };
 
-const deleteUserRelatedData = async (id) => {
-	await accountRepo.deleteAccountForUserId(id);
+const deleteUserRelatedData = async (user, app) => {
+	try{
+		const registrationPinFacade = app.facade('/registrationPin/v2');
+		const registrationPinTrash = registrationPinFacade.deleteRegistrationPinsByEmail(user.email);
+		trashbinRepo.updateTrashbinByUserId(user.id, registrationPinTrash.data); // TODO unnecessary for PINs?
+	} catch(error) {
+		// TODO
+	}
 };
+
 
 const createUserTrashbin = async (id, data) => {
 	return trashbinRepo.createUserTrashbin(id, data);
@@ -50,6 +58,7 @@ const replaceUserWithTombstone = async (id) => {
 		email: `${uid}@deleted`,
 		deletedAt: new Date(),
 	});
+	await accountRepo.deleteAccountForUserId(id);
 	return { success: true };
 };
 
@@ -61,16 +70,18 @@ const checkPermissions = async (id, roleName, { account }) => {
 	throw new Forbidden(`You don't have permissions to perform this action`);
 };
 
-const deleteUser = async (id, roleName, { account }) => {
+const deleteUser = async (id, roleName, { account, app }) => {
 	await checkPermissions(id, roleName, { account });
+	// const fileStorage = app.facade('/fileStorage/v2');
 
-	const userRelatedData = await getUserRelatedData(id);
+	const userAccountData = await getUserData(id);
+	const user = userAccountData.find((item) => {item.scope === 'user'}).data;
 
-	const trashBin = await createUserTrashbin(id, userRelatedData);
+	const trashBin = await createUserTrashbin(id, userAccountData);
 
 	await replaceUserWithTombstone(id);
 
-	await deleteUserRelatedData(id);
+	await deleteUserRelatedData(user, app);
 
 	return trashBin;
 };
