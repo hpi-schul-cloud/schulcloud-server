@@ -95,6 +95,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7572 - Find /users route after hooks - extremely slow
 - SC-7573 - Route/hash-broken promise chain
 - SC-7884 - Authentication error when accessing any nuxt page in the client.
+- Fix typescript compiling error
 
 ### Removed
 
