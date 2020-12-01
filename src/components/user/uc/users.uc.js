@@ -1,6 +1,7 @@
 const { ObjectId } = require('mongoose').Types;
 const { BadRequest, Forbidden } = require('../../../errors');
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
+const pseudonymUC = require('../../pseudonym/uc/pseudonym.uc');
 const { hasRole } = require('./userRoles.uc');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
@@ -26,16 +27,31 @@ const getUserRelatedData = async (id) => {
 	});
 
 	const account = await accountRepo.getUserAccount(id);
-	returnArray.push({
-		scope: 'account',
-		data: account,
-	});
+	if (account) {
+		returnArray.push({
+			scope: 'account',
+			data: account,
+		});
+	}
+
+	const pseudonyms = await pseudonymUC.getPseudonymsForUser(id);
+	if (pseudonyms.length > 0) {
+		returnArray.push({
+			scope: 'pseudonym',
+			data: pseudonyms,
+		});
+	}
 
 	return returnArray;
 };
 
-const deleteUserRelatedData = async (id) => {
+const deleteUserRelatedData = async (id, userRelatedData) => {
 	await accountRepo.deleteAccountForUserId(id);
+	const userRelatedPseudonyms = userRelatedData.filter((data) => data.scope === 'pseudonym');
+	if (userRelatedPseudonyms && userRelatedPseudonyms.length === 1) {
+		const pseudonymsIds = userRelatedPseudonyms[0].data.map((pseudonym) => pseudonym._id);
+		await pseudonymUC.deletePseudonyms(pseudonymsIds);
+	}
 };
 
 const createUserTrashbin = async (id, data) => {
@@ -70,7 +86,7 @@ const deleteUser = async (id, roleName, { account }) => {
 
 	await replaceUserWithTombstone(id);
 
-	await deleteUserRelatedData(id);
+	await deleteUserRelatedData(id, userRelatedData);
 
 	return trashBin;
 };

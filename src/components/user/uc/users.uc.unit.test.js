@@ -4,7 +4,8 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const userUC = require('./users.uc');
 
-const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
+const { userRepo, accountRepo, trashbinRepo } = require('../repo');
+const { pseudonymRepo } = require('../../pseudonym/repo');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
@@ -46,6 +47,17 @@ const createTestAccount = (userId = USER_ID) => {
 	};
 };
 
+const createTestPseudonyms = (userId = USER_ID) => {
+	return [
+		{
+			_id: 'PSEUDONYM_ID',
+			userId,
+			toolId: 'TOOL_ID',
+			pseudonym: 'PSEUDONYM',
+		},
+	];
+};
+
 const createTestTrashbin = (userId = USER_ID) => {
 	const user = createTestUser(userId);
 	const account = createTestAccount(userId);
@@ -61,6 +73,7 @@ let getUserStub;
 let getUserAccountStub;
 let createUserTrashbinStub;
 let getUserRolesStub;
+let getPseudonymsForUserStub;
 
 describe('users usecase', () => {
 	before(async () => {
@@ -79,6 +92,11 @@ describe('users usecase', () => {
 
 		sinon.stub(accountRepo, 'deleteAccountForUserId');
 
+		getPseudonymsForUserStub = sinon.stub(pseudonymRepo, 'getPseudonymsForUser');
+		getPseudonymsForUserStub.callsFake((userId = USER_ID) => createTestPseudonyms(userId));
+
+		sinon.stub(pseudonymRepo, 'deletePseudonyms');
+
 		createUserTrashbinStub = sinon.stub(trashbinRepo, 'createUserTrashbin');
 		createUserTrashbinStub.callsFake((userId = USER_ID) => createTestTrashbin(userId));
 	});
@@ -91,6 +109,8 @@ describe('users usecase', () => {
 		getUserAccountStub.restore();
 		accountRepo.deleteAccountForUserId.restore();
 		createUserTrashbinStub.restore();
+		getPseudonymsForUserStub.restore();
+		pseudonymRepo.deletePseudonyms.restore();
 	});
 
 	describe('user delete orchestrator', () => {
