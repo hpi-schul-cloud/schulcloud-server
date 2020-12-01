@@ -60,7 +60,7 @@ then
 	JIRA_TICKET_TEAM=${JIRA_TICKET_ID/%-*/} 
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/#$JIRA_TICKET_TEAM"-"/}
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/%-*/}
-	JIRA_TICKET_ID=$( echo $JIRA_TICKET_TEAM"_"$JIRA_TICKET_ID | tr -s "[:upper:]" "[:lower:]" )	
+	JIRA_TICKET_ID=$( echo $JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID | tr -s "[:upper:]" "[:lower:]" )	
 	
 	echo JIRA_TICKET_ID=$JIRA_TICKET_ID
 	
@@ -73,7 +73,7 @@ then
 	JIRA_TICKET_TEAM=${JIRA_TICKET_ID/%-*/} 
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/#$JIRA_TICKET_TEAM"-"/}
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/%-*/}
-	JIRA_TICKET_ID=$( echo $JIRA_TICKET_TEAM"_"$JIRA_TICKET_ID | tr -s "[:upper:]" "[:lower:]" )
+	JIRA_TICKET_ID=$( echo $JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID | tr -s "[:upper:]" "[:lower:]" )
 	
 	echo JIRA_TICKET_ID=$JIRA_TICKET_ID
 	
