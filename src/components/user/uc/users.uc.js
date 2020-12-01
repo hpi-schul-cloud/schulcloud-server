@@ -1,6 +1,7 @@
 const { ObjectId } = require('mongoose').Types;
 const { BadRequest, Forbidden } = require('../../../errors');
-const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
+const { userRepo, accountRepo, trashbinRepo } = require('../repo');
+const registrationPinUC = require('./registrationPin.uc');
 const pseudonymUC = require('../../pseudonym/uc/pseudonym.uc');
 const { hasRole } = require('./userRoles.uc');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
@@ -42,15 +43,35 @@ const getUserRelatedData = async (id) => {
 		});
 	}
 
+	const registrationPins = await registrationPinUC.getRegistrationPinsForUser(user.email);
+	if (registrationPins.length > 0) {
+		returnArray.push({
+			scope: 'registrationPin',
+			data: registrationPins,
+		});
+	}
+
 	return returnArray;
+};
+
+const findDataIdsByScope = (userRelatedData, scope) => {
+	const scopeData = userRelatedData.filter((data) => data.scope === scope);
+	if (scopeData && scopeData.length === 1) {
+		return scopeData[0].data.map((data) => data._id);
+	}
+	return [];
 };
 
 const deleteUserRelatedData = async (id, userRelatedData) => {
 	await accountRepo.deleteAccountForUserId(id);
-	const userRelatedPseudonyms = userRelatedData.filter((data) => data.scope === 'pseudonym');
-	if (userRelatedPseudonyms && userRelatedPseudonyms.length === 1) {
-		const pseudonymsIds = userRelatedPseudonyms[0].data.map((pseudonym) => pseudonym._id);
-		await pseudonymUC.deletePseudonyms(pseudonymsIds);
+	const pseudonymIds = findDataIdsByScope(userRelatedData, 'pseudonym');
+	if (pseudonymIds.length > 0) {
+		await pseudonymUC.deletePseudonyms(pseudonymIds);
+	}
+
+	const registrationPinIds = findDataIdsByScope(userRelatedData, 'registrationPin');
+	if (registrationPinIds.length > 0) {
+		await registrationPinUC.deleteRegistrationPins(registrationPinIds);
 	}
 };
 

@@ -4,13 +4,14 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const userUC = require('./users.uc');
 
-const { userRepo, accountRepo, trashbinRepo } = require('../repo');
+const { userRepo, accountRepo, trashbinRepo, registrationPinRepo } = require('../repo');
 const { pseudonymRepo } = require('../../pseudonym/repo');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
 const USER_ID = 'USER_ID';
+const USER_EMAIL = `admin@test.de`;
 const CURRENT_USER_ID = 'CURRENT_USER_ID';
 const CURRENT_SCHOOL_ID = new ObjectId();
 
@@ -20,7 +21,7 @@ const createCurrentUser = (userId = CURRENT_USER_ID) => {
 		userId,
 		firstName: 'Admin',
 		lastName: 'Admin',
-		email: `admin@test.de`,
+		email: USER_EMAIL,
 		schoolId: CURRENT_SCHOOL_ID,
 		roles: [],
 	};
@@ -58,14 +59,34 @@ const createTestPseudonyms = (userId = USER_ID) => {
 	];
 };
 
+const createTestRegistrationPins = (email = USER_EMAIL) => {
+	return [
+		{
+			_id: 'REGISTRATION_PIN_ID',
+			email,
+			pin: 'REGISTRATION_PIN',
+			verified: true,
+			importHash: 'HASH',
+		},
+	];
+};
+
 const createTestTrashbin = (userId = USER_ID) => {
 	const user = createTestUser(userId);
 	const account = createTestAccount(userId);
 	return {
 		_id: 'TRASHBIN_ID',
 		userId,
-		user,
-		account,
+		data: [
+			{
+				scope: 'user',
+				data: user,
+			},
+			{
+				scope: 'account',
+				data: account,
+			},
+		],
 	};
 };
 
@@ -74,6 +95,7 @@ let getUserAccountStub;
 let createUserTrashbinStub;
 let getUserRolesStub;
 let getPseudonymsForUserStub;
+let getRegistrationPinsStub;
 
 describe('users usecase', () => {
 	before(async () => {
@@ -97,6 +119,11 @@ describe('users usecase', () => {
 
 		sinon.stub(pseudonymRepo, 'deletePseudonyms');
 
+		getRegistrationPinsStub = sinon.stub(registrationPinRepo, 'getRegistrationPinsForUser');
+		getRegistrationPinsStub.callsFake((userEmail = USER_EMAIL) => createTestRegistrationPins(userEmail));
+
+		sinon.stub(registrationPinRepo, 'deleteRegistrationPins');
+
 		createUserTrashbinStub = sinon.stub(trashbinRepo, 'createUserTrashbin');
 		createUserTrashbinStub.callsFake((userId = USER_ID) => createTestTrashbin(userId));
 	});
@@ -111,6 +138,8 @@ describe('users usecase', () => {
 		createUserTrashbinStub.restore();
 		getPseudonymsForUserStub.restore();
 		pseudonymRepo.deletePseudonyms.restore();
+		getRegistrationPinsStub.restore();
+		registrationPinRepo.deleteRegistrationPins.restore();
 	});
 
 	describe('user delete orchestrator', () => {
@@ -119,6 +148,8 @@ describe('users usecase', () => {
 			const result = await userUC.deleteUser(USER_ID, 'student', { account: currentUser });
 
 			expect(result.userId).to.deep.equal(USER_ID);
+			expect(result.data.filter((d) => d.scope === 'user')[0].data).to.be.not.undefined;
+			expect(result.data.filter((d) => d.scope === 'account')[0].data).to.be.not.undefined;
 		});
 
 		it('when the function is called with an invalid id, then it fails', async () => {
