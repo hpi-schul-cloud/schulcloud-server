@@ -1,11 +1,11 @@
 const { expect } = require('chai');
-const mockery = require('mockery');
 const sinon = require('sinon');
 const { ObjectId } = require('mongoose').Types;
 
 const { removePermissionsThatUserCanAccess } = require('./deleteUserData.uc');
 
 const fileRepo = require('../repo/files.repo');
+const { GeneralError } = require('../../../errors');
 
 describe('deletedUserData.uc.unit', () => {
 	describe('removePermissionsThatUserCanAccess', () => {
@@ -15,7 +15,7 @@ describe('deletedUserData.uc.unit', () => {
 			fileRepoStub.restore();
 		});
 
-		it('when the function is called with valid user id, then it returns with valud trash bin format', async () => {
+		it('when the function is called with valid user id, then it returns with valid trash bin format', async () => {
 			const userId = new ObjectId();
 			fileRepoStub = sinon.stub(fileRepo, 'removeFilePermissionsByUserId');
 			fileRepoStub.withArgs(userId).returns({
@@ -32,11 +32,20 @@ describe('deletedUserData.uc.unit', () => {
 				],
 			});
 			const result = await removePermissionsThatUserCanAccess(userId);
-			expect(result.trashBinData).to.be.an('array');
+			expect(result.trashBinData).to.be.an('array').that.is.not.empty;
 			result.trashBinData.forEach((data) => {
 				expect(data).to.haveOwnProperty('scope');
 				expect(data.data).to.be.an('object');
 			});
+		});
+
+		it('when an error is thrown, then it returns empty array and success false', async () => {
+			const userId = new ObjectId();
+			fileRepoStub = sinon.stub(fileRepo, 'removeFilePermissionsByUserId');
+			fileRepoStub.withArgs(userId).throws(new GeneralError());
+			const result = await removePermissionsThatUserCanAccess(userId);
+			expect(result.trashBinData).to.be.an('array').that.is.empty;
+			expect(result.success).to.be.false;
 		});
 	});
 });

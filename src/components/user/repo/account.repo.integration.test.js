@@ -6,7 +6,6 @@ const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 const accountRepo = require('./account.repo');
 const accountModel = require('../../../services/account/model');
-const { NotFound } = require('../../../errors');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;

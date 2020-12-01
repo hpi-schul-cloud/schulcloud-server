@@ -1,13 +1,10 @@
 const { FileModel } = require('./db');
 
 /**
- * @param {*} fileIds
  * @param {*} userId
- * @return {MongooseBatchResult}
+ * @return {data, success}
  */
 const removeFilePermissionsByUserId = async (userId) => {
-	const searchQuery = { permissions: { $elemMatch: { refId: userId } } };
-
 	const filePermissions = await FileModel.aggregate([
 		{
 			$match: {
@@ -29,6 +26,7 @@ const removeFilePermissionsByUserId = async (userId) => {
 			},
 		},
 	]);
+	const searchQuery = { permissions: { $elemMatch: { refId: userId } } };
 
 	const updateQuery = { $pull: { permissions: { refId: userId } } };
 	const result = await FileModel.updateMany(searchQuery, updateQuery).lean().exec();

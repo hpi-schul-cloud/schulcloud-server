@@ -37,7 +37,8 @@ describe('files.repo.integration.test', () => {
 			expect(resultStatus.filePermissions).to.be.an('array').with.lengthOf(1);
 
 			const sharedFileCheck = await FileModel.findById(sharedFile._id).lean().exec();
-			expect(sharedFileCheck.permissions.some((permission) => permission.refId.toString() === userId.toString())).to.be.false;
+			expect(sharedFileCheck.permissions.some((permission) => permission.refId.toString() === userId.toString())).to.be
+				.false;
 		});
 
 		it('when there is a file shared with the user, only the users permissions are returned', async () => {
