@@ -56,7 +56,7 @@ class ConsentVersionService {
 		}
 	}
 
-	createBase64File(consentDocumentData, isShdUpload) {
+	createBase64File(consentDocumentData) {
 		const { schoolId, consentData } = consentDocumentData;
 		if (consentData) {
 			return this.app.service('base64Files').create({
@@ -90,7 +90,7 @@ class ConsentVersionService {
 	async create(consentDocumentData, params) {
 		const isShdUpload = await isSuperheroUser(this.app, params.account.userId);
 		this.validateConsentUpload(isShdUpload, consentDocumentData.schoolId);
-		const base64 = await this.createBase64File(consentDocumentData, isShdUpload);
+		const base64 = await this.createBase64File(consentDocumentData);
 		if (base64._id) {
 			consentDocumentData.consentDataId = base64._id;
 			delete consentDocumentData.consentData;
