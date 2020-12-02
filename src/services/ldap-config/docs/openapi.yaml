@@ -47,6 +47,8 @@ components:
 paths:
   /:
     post:
+      tags:
+        - ldap-config
       parameters:
         - $ref: '#/components/parameters/activate'
         - $ref: '#/components/parameters/verifyOnly'
@@ -64,7 +66,23 @@ paths:
               schema:
                 $ref: 'schemas/verify.response.yaml'
   '/{_id}':
+    get:
+      tags:
+        - ldap-config
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: returns the LDAP config of the given system id
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/get.response.yaml'
+        '403':
+          description: the requesting user is not allowed to access this system
     patch:
+      tags:
+        - ldap-config
       parameters:
         - $ref: '#/components/parameters/activate'
         - $ref: '#/components/parameters/verifyOnly'
@@ -75,7 +93,7 @@ paths:
             schema:
               $ref: 'schemas/patch.requestBody.yaml'
       responses:
-        '201':
+        '200':
           description: success
           content:
             application/json:
@@ -85,5 +103,5 @@ paths:
 
 openapi: 3.0.2
 tags:
-  - name: ldap
-    description: An ldap service.
+  - name: ldap-config
+    description: A service to get, validate, patch, and activate LDAP configurations.
