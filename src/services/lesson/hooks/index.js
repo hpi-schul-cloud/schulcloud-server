@@ -74,7 +74,7 @@ const setPosition = async (context) => {
 const mapUsers = (context) => {
 	if (context.data && context.data.contents) {
 		context.data.contents = (context.data.contents || []).map((item) => {
-			item.user = item.user || context.params.account.userId;
+			item.user = item.user || context.params.account.userId; // TODO why is the current user added here?
 			return item;
 		});
 	}
