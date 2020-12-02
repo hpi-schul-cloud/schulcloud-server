@@ -12,6 +12,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 - SC-8057 Fix Mocha config
 
+## [25.2.4]
+
+### Changed
+
+- SC-6727 Change email addresses for tickets for Niedersachsen - fixed after review
+
 ## [25.2.3]
 
 ### Changed
