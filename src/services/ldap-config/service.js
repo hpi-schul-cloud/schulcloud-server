@@ -41,9 +41,9 @@ class LdapConfigService {
 	 * result is returned.
 	 * If `validateOnly === true`, changes are not persisted to the systems and
 	 * school collection. Otherwise, a new system is created.
-	 * After creating the system, if `activate !== false`, it is added as a login
-	 * system to the caller's school and the school's ldapSchoolIdentifier attribute
-	 * is set to the config's base path.
+	 * After creating the system, it is added as a login system to the caller's
+	 * school and (if `activate !== false`) the school's ldapSchoolIdentifier
+	 * attribute is set to the config's base path.
 	 * @param {Object} config an LDAP config (given as JSON in request body)
 	 * @param {Object} params Feathers request params
 	 * @returns {Object} validation result object
@@ -81,7 +81,7 @@ class LdapConfigService {
 	 * @returns {Object} options `{ school: School, activateSystem: Boolean, saveSystem: Boolean}`
 	 */
 	getOptions(params) {
-		const { verifyOnly, activate } = params.query;
+		const { verifyOnly, activate } = params.query || {};
 
 		const saveSystem = verifyOnly !== true && verifyOnly !== 'true';
 		const activateSystem = activate !== false && activate !== 'false';
@@ -177,14 +177,15 @@ class LdapConfigService {
 			} else {
 				// create a new system and assign it to the school
 				const { _id: newSystemId } = await systemService.create(system);
+				const schoolUpdate = {
+					$addToSet: {
+						systems: newSystemId,
+					},
+				};
 				if (activate) {
-					await schoolsService.patch(school._id, {
-						ldapSchoolIdentifier: config.rootPath,
-						$addToSet: {
-							systems: newSystemId,
-						},
-					});
+					schoolUpdate.ldapSchoolIdentifier = config.rootPath;
 				}
+				await schoolsService.patch(school._id, schoolUpdate);
 			}
 		});
 		await session.endSession();
