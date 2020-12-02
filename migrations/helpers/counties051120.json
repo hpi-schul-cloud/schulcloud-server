@@ -1,0 +1,2809 @@
+[
+{
+    "countyId": 8425,
+    "name": "Alb-Donau-Kreis",
+    "antaresKey": "",
+    "Federal State": "Baden-Württemberg",
+    "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8211,
+  "name": "Baden-Baden",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8426,
+  "name": "Biberach",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8115,
+  "name": "Böblingen",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8435,
+  "name": "Bodenseekreis",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8315,
+  "name": "Breisgau-Hochschwarzwald",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8235,
+  "name": "Calw",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8316,
+  "name": "Emmendingen",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8236,
+  "name": "Enzkreis",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8116,
+  "name": "Esslingen",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8311,
+  "name": "Freiburg im Breisgau",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8237,
+  "name": "Freudenstadt",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8117,
+  "name": "Göppingen",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8221,
+  "name": "Heidelberg",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8135,
+  "name": "Heidenheim",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8121,
+  "name": "Heilbronn",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8126,
+  "name": "Hohenlohekreis",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8212,
+  "name": "Karlsruhe",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8335,
+  "name": "Konstanz",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8125,
+  "name": "Landkreis Heilbronn",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8215,
+  "name": "Landkreis Karlsruhe",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8336,
+  "name": "Lörrach",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8118,
+  "name": "Ludwigsburg",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8128,
+  "name": "Main-Tauber-Kreis",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8222,
+  "name": "Mannheim",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8225,
+  "name": "Neckar-Odenwald-Kreis",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8317,
+  "name": "Ortenaukreis",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8136,
+  "name": "Ostalbkreis",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8231,
+  "name": "Pforzheim",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8216,
+  "name": "Rastatt",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8436,
+  "name": "Ravensburg",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8119,
+  "name": "Rems-Murr-Kreis",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8415,
+  "name": "Reutlingen",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8226,
+  "name": "Rhein-Neckar-Kreis",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8325,
+  "name": "Rottweil",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8127,
+  "name": "Schwäbisch Hall",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8326,
+  "name": "Schwarzwald-Baar-Kreis",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8437,
+  "name": "Sigmaringen",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8111,
+  "name": "Stuttgart",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8416,
+  "name": "Tübingen",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8327,
+  "name": "Tuttlingen",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8421,
+  "name": "Ulm",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8337,
+  "name": "Waldshut",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 8417,
+  "name": "Zollernalbkreis",
+  "antaresKey": "",
+  "Federal State": "Baden-Württemberg",
+  "federalId": "0000b186816abba584714c50"
+},
+{
+  "countyId": 9771,
+  "name": "Aichach-Friedberg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9171,
+  "name": "Altötting",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9361,
+  "name": "Amberg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9371,
+  "name": "Amberg-Sulzbach",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9561,
+  "name": "Ansbach",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9661,
+  "name": "Aschaffenburg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9761,
+  "name": "Augsburg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9672,
+  "name": "Bad Kissingen",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9173,
+  "name": "Bad Tölz-Wolfratshausen",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9461,
+  "name": "Bamberg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9462,
+  "name": "Bayreuth",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9172,
+  "name": "Berchtesgadener Land",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9372,
+  "name": "Cham",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9463,
+  "name": "Coburg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9174,
+  "name": "Dachau",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9271,
+  "name": "Deggendorf",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9773,
+  "name": "Dillingen an der Donau",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9279,
+  "name": "Dingolfing-Landau",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9779,
+  "name": "Donau-Ries",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9175,
+  "name": "Ebersberg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9176,
+  "name": "Eichstätt",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9177,
+  "name": "Erding",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9562,
+  "name": "Erlangen",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9572,
+  "name": "Erlangen-Höchstadt",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9474,
+  "name": "Forchheim",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9178,
+  "name": "Freising",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9272,
+  "name": "Freyung-Grafenau",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9179,
+  "name": "Fürstenfeldbruck",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9563,
+  "name": "Fürth",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9180,
+  "name": "Garmisch-Partenkirchen",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9774,
+  "name": "Günzburg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9674,
+  "name": "Haßberge",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9464,
+  "name": "Hof",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9161,
+  "name": "Ingolstadt",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9762,
+  "name": "Kaufbeuren",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9273,
+  "name": "Kelheim",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9763,
+  "name": "Kempten",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9675,
+  "name": "Kitzingen",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9476,
+  "name": "Kronach",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9477,
+  "name": "Kulmbach",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9571,
+  "name": "Landkreis Ansbach",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9671,
+  "name": "Landkreis Aschaffenburg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9772,
+  "name": "Landkreis Augsburg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9471,
+  "name": "Landkreis Bamberg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9472,
+  "name": "Landkreis Bayreuth",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9473,
+  "name": "Landkreis Coburg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9573,
+  "name": "Landkreis Fürth",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9475,
+  "name": "Landkreis Hof",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9274,
+  "name": "Landkreis Landshut",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9184,
+  "name": "Landkreis München",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9275,
+  "name": "Landkreis Passau",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9375,
+  "name": "Landkreis Regensburg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9187,
+  "name": "Landkreis Rosenheim",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9678,
+  "name": "Landkreis Schweinfurt",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9679,
+  "name": "Landkreis Würzburg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9181,
+  "name": "Landsberg am Lech",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9261,
+  "name": "Landshut",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9478,
+  "name": "Lichtenfels",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9776,
+  "name": "Lindau (Bodensee)",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9677,
+  "name": "Main-Spessart",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9764,
+  "name": "Memmingen",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9182,
+  "name": "Miesbach",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9676,
+  "name": "Miltenberg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9183,
+  "name": "Mühldorf am Inn",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9162,
+  "name": "München",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9775,
+  "name": "Neu-Ulm",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9185,
+  "name": "Neuburg-Schrobenhausen",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9373,
+  "name": "Neumarkt in der Oberpfalz",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9575,
+  "name": "Neustadt an der Aisch-Bad Windsheim",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9374,
+  "name": "Neustadt an der Waldnaab",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9564,
+  "name": "Nürnberg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9574,
+  "name": "Nürnberger Land",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9780,
+  "name": "Oberallgäu",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9777,
+  "name": "Ostallgäu",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9262,
+  "name": "Passau",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9186,
+  "name": "Pfaffenhofen an der Ilm",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9276,
+  "name": "Regen",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9362,
+  "name": "Regensburg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9673,
+  "name": "Rhön-Grabfeld",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9163,
+  "name": "Rosenheim",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9576,
+  "name": "Roth",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9277,
+  "name": "Rottal-Inn",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9565,
+  "name": "Schwabach",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9376,
+  "name": "Schwandorf",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9662,
+  "name": "Schweinfurt",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9188,
+  "name": "Starnberg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9263,
+  "name": "Straubing",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9278,
+  "name": "Straubing-Bogen",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9377,
+  "name": "Tirschenreuth",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9189,
+  "name": "Traunstein",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9778,
+  "name": "Unterallgäu",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9363,
+  "name": "Weiden in der Oberpfalz",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9190,
+  "name": "Weilheim-Schongau",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9577,
+  "name": "Weißenburg-Gunzenhausen",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9479,
+  "name": "Wunsiedel im Fichtelgebirge",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 9663,
+  "name": "Würzburg",
+  "antaresKey": "",
+  "Federal State": "Bayern",
+  "federalId": "0000b186816abba584714c51"
+},
+{
+  "countyId": 11001,
+  "name": "Berlin",
+  "antaresKey": "",
+  "Federal State": "Berlin",
+  "federalId": "0000b186816abba584714c52"
+},
+{
+  "countyId": 12060,
+  "name": "Barnim",
+  "antaresKey": "BAR",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 12051,
+  "name": "Brandenburg an der Havel",
+  "antaresKey": "",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 12052,
+  "name": "Cottbus",
+  "antaresKey": "",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 12061,
+  "name": "Dahme-Spreewald",
+  "antaresKey": "",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 12062,
+  "name": "Elbe-Elster",
+  "antaresKey": "EE",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 12053,
+  "name": "Frankfurt",
+  "antaresKey": "FF",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 12063,
+  "name": "Havelland",
+  "antaresKey": "",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 12064,
+  "name": "Märkisch-Oderland",
+  "antaresKey": "MOL",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 12065,
+  "name": "Oberhavel",
+  "antaresKey": "OHV",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 12066,
+  "name": "Oberspreewald-Lausitz",
+  "antaresKey": "",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 12067,
+  "name": "Oder-Spree",
+  "antaresKey": "",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 12068,
+  "name": "Ostprignitz-Ruppin",
+  "antaresKey": "OPR",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 12054,
+  "name": "Potsdam",
+  "antaresKey": "P",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 12069,
+  "name": "Potsdam-Mittelmark",
+  "antaresKey": "PM",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 12070,
+  "name": "Prignitz",
+  "antaresKey": "PR",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 12071,
+  "name": "Spree-Neiße",
+  "antaresKey": "SPN",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 12072,
+  "name": "Teltow-Fläming",
+  "antaresKey": "TF",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 12073,
+  "name": "Uckermark",
+  "antaresKey": "",
+  "Federal State": "Brandenburg",
+  "federalId": "0000b186816abba584714c53"
+},
+{
+  "countyId": 4011,
+  "name": "Bremen",
+  "antaresKey": "",
+  "Federal State": "Bremen",
+  "federalId": "0000b186816abba584714c54"
+},
+{
+  "countyId": 4012,
+  "name": "Bremerhaven",
+  "antaresKey": "",
+  "Federal State": "Bremen",
+  "federalId": "0000b186816abba584714c54"
+},
+{
+  "countyId": 2000,
+  "name": "Hamburg",
+  "antaresKey": "",
+  "Federal State": "Hamburg",
+  "federalId": "0000b186816abba584714c55"
+},
+{
+  "countyId": 6431,
+  "name": "Bergstraße",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6411,
+  "name": "Darmstadt",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6432,
+  "name": "Darmstadt-Dieburg",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6412,
+  "name": "Frankfurt am Main",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6631,
+  "name": "Fulda",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6531,
+  "name": "Gießen",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6433,
+  "name": "Groß-Gerau",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6632,
+  "name": "Hersfeld-Rotenburg",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6434,
+  "name": "Hochtaunuskreis",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6611,
+  "name": "Kassel",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6532,
+  "name": "Lahn-Dill-Kreis",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6633,
+  "name": "Landkreis Kassel",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6533,
+  "name": "Limburg-Weilburg",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6435,
+  "name": "Main-Kinzig-Kreis",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6436,
+  "name": "Main-Taunus-Kreis",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6534,
+  "name": "Marburg-Biedenkopf",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6437,
+  "name": "Odenwaldkreis",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6438,
+  "name": "Offenbach",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6413,
+  "name": "Offenbach am Main",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6439,
+  "name": "Rheingau-Taunus-Kreis",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6634,
+  "name": "Schwalm-Eder-Kreis",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6535,
+  "name": "Vogelsbergkreis",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6635,
+  "name": "Waldeck-Frankenberg",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6636,
+  "name": "Werra-Meißner-Kreis",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6440,
+  "name": "Wetteraukreis",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 6414,
+  "name": "Wiesbaden",
+  "antaresKey": "",
+  "Federal State": "Hessen",
+  "federalId": "0000b186816abba584714c56"
+},
+{
+  "countyId": 13072,
+  "name": "Landkreis Rostock",
+  "antaresKey": "",
+  "Federal State": "Mecklenburg-Vorpommern",
+  "federalId": "0000b186816abba584714c57"
+},
+{
+  "countyId": 13076,
+  "name": "Ludwigslust-Parchim",
+  "antaresKey": "",
+  "Federal State": "Mecklenburg-Vorpommern",
+  "federalId": "0000b186816abba584714c57"
+},
+{
+  "countyId": 13071,
+  "name": "Mecklenburgische Seenplatte",
+  "antaresKey": "",
+  "Federal State": "Mecklenburg-Vorpommern",
+  "federalId": "0000b186816abba584714c57"
+},
+{
+  "countyId": 13074,
+  "name": "Nordwestmecklenburg",
+  "antaresKey": "",
+  "Federal State": "Mecklenburg-Vorpommern",
+  "federalId": "0000b186816abba584714c57"
+},
+{
+  "countyId": 13003,
+  "name": "Rostock",
+  "antaresKey": "",
+  "Federal State": "Mecklenburg-Vorpommern",
+  "federalId": "0000b186816abba584714c57"
+},
+{
+  "countyId": 13004,
+  "name": "Schwerin",
+  "antaresKey": "",
+  "Federal State": "Mecklenburg-Vorpommern",
+  "federalId": "0000b186816abba584714c57"
+},
+{
+  "countyId": 13075,
+  "name": "Vorpommern-Greifswald",
+  "antaresKey": "",
+  "Federal State": "Mecklenburg-Vorpommern",
+  "federalId": "0000b186816abba584714c57"
+},
+{
+  "countyId": 13073,
+  "name": "Vorpommern-Rügen",
+  "antaresKey": "",
+  "Federal State": "Mecklenburg-Vorpommern",
+  "federalId": "0000b186816abba584714c57"
+},
+{
+  "countyId": 3451,
+  "name": "Ammerland",
+  "antaresKey": "WST",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3452,
+  "name": "Aurich",
+  "antaresKey": "AUR",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3101,
+  "name": "Braunschweig",
+  "antaresKey": "BS",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3351,
+  "name": "Celle",
+  "antaresKey": "CE",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3453,
+  "name": "Cloppenburg",
+  "antaresKey": "CLP",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3352,
+  "name": "Cuxhaven",
+  "antaresKey": "CUX",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3401,
+  "name": "Delmenhorst",
+  "antaresKey": "",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3251,
+  "name": "Diepholz",
+  "antaresKey": "DH",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3402,
+  "name": "Emden",
+  "antaresKey": "EMD",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3454,
+  "name": "Emsland",
+  "antaresKey": "LI",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3455,
+  "name": "Friesland",
+  "antaresKey": "FRI",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3151,
+  "name": "Gifhorn",
+  "antaresKey": "GF",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3153,
+  "name": "Goslar",
+  "antaresKey": "GS",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3159,
+  "name": "Göttingen",
+  "antaresKey": "GOE",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3456,
+  "name": "Grafschaft Bentheim",
+  "antaresKey": "NOH",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3252,
+  "name": "Hameln-Pyrmont",
+  "antaresKey": "HM",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3241,
+  "name": "Hannover",
+  "antaresKey": "H",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3353,
+  "name": "Harburg",
+  "antaresKey": "WL",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3358,
+  "name": "Heidekreis",
+  "antaresKey": "SFA",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3154,
+  "name": "Helmstedt",
+  "antaresKey": "",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3254,
+  "name": "Hildesheim",
+  "antaresKey": "HI",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3255,
+  "name": "Holzminden",
+  "antaresKey": "HOL",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3458,
+  "name": "Landkreis Oldenburg",
+  "antaresKey": "LKOL",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3459,
+  "name": "Landkreis Osnabrück",
+  "antaresKey": "",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3457,
+  "name": "Leer",
+  "antaresKey": "LER",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3354,
+  "name": "Lüchow-Dannenberg",
+  "antaresKey": "",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3355,
+  "name": "Lüneburg",
+  "antaresKey": "LG",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3256,
+  "name": "Nienburg/Weser",
+  "antaresKey": "NI",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3155,
+  "name": "Northeim",
+  "antaresKey": "NOR",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3403,
+  "name": "Oldenburg",
+  "antaresKey": "",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3404,
+  "name": "Osnabrück",
+  "antaresKey": "",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3356,
+  "name": "Osterholz",
+  "antaresKey": "OHZ",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3157,
+  "name": "Peine",
+  "antaresKey": "",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3357,
+  "name": "Rotenburg (Wümme)",
+  "antaresKey": "ROW",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3102,
+  "name": "Salzgitter",
+  "antaresKey": "SZ",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3257,
+  "name": "Schaumburg",
+  "antaresKey": "SHG",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3359,
+  "name": "Stade",
+  "antaresKey": "STD",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3360,
+  "name": "Uelzen",
+  "antaresKey": "UE",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3460,
+  "name": "Vechta",
+  "antaresKey": "VEC",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3361,
+  "name": "Verden",
+  "antaresKey": "VER",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3461,
+  "name": "Wesermarsch",
+  "antaresKey": "BRA",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3405,
+  "name": "Wilhelmshaven",
+  "antaresKey": "",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3462,
+  "name": "Wittmund",
+  "antaresKey": "WTM",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3158,
+  "name": "Wolfenbüttel",
+  "antaresKey": "WF",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 3103,
+  "name": "Wolfsburg",
+  "antaresKey": "WOB",
+  "Federal State": "Niedersachsen",
+  "federalId": "0000b186816abba584714c58"
+},
+{
+  "countyId": 5334,
+  "name": "Aachen",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5711,
+  "name": "Bielefeld",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5911,
+  "name": "Bochum",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5314,
+  "name": "Bonn",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5554,
+  "name": "Borken",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5512,
+  "name": "Bottrop",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5558,
+  "name": "Coesfeld",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5913,
+  "name": "Dortmund",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5112,
+  "name": "Duisburg",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5358,
+  "name": "Düren",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5111,
+  "name": "Düsseldorf",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5954,
+  "name": "Ennepe-Ruhr-Kreis",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5113,
+  "name": "Essen",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5366,
+  "name": "Euskirchen",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5513,
+  "name": "Gelsenkirchen",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5754,
+  "name": "Gütersloh",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5914,
+  "name": "Hagen",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5915,
+  "name": "Hamm",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5370,
+  "name": "Heinsberg",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5758,
+  "name": "Herford",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5916,
+  "name": "Herne",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5958,
+  "name": "Hochsauerlandkreis",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5762,
+  "name": "Höxter",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5154,
+  "name": "Kleve",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5315,
+  "name": "Köln",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5114,
+  "name": "Krefeld",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5316,
+  "name": "Leverkusen",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5766,
+  "name": "Lippe",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5962,
+  "name": "Märkischer Kreis",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5158,
+  "name": "Mettmann",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5770,
+  "name": "Minden-Lübbecke",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5116,
+  "name": "Mönchengladbach",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5117,
+  "name": "Mülheim an der Ruhr",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5515,
+  "name": "Münster",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5374,
+  "name": "Oberbergischer Kreis",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5119,
+  "name": "Oberhausen",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5966,
+  "name": "Olpe",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5774,
+  "name": "Paderborn",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5562,
+  "name": "Recklinghausen",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5120,
+  "name": "Remscheid",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5362,
+  "name": "Rhein-Erft-Kreis",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5162,
+  "name": "Rhein-Kreis Neuss",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5382,
+  "name": "Rhein-Sieg-Kreis",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5378,
+  "name": "Rheinisch-Bergischer Kreis",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5970,
+  "name": "Siegen-Wittgenstein",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5974,
+  "name": "Soest",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5122,
+  "name": "Solingen",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5566,
+  "name": "Steinfurt",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5978,
+  "name": "Unna",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5166,
+  "name": "Viersen",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5570,
+  "name": "Warendorf",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5170,
+  "name": "Wesel",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 5124,
+  "name": "Wuppertal",
+  "antaresKey": "",
+  "Federal State": "Nordrhein-Westfalen",
+  "federalId": "0000b186816abba584714c59"
+},
+{
+  "countyId": 7131,
+  "name": "Ahrweiler",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7132,
+  "name": "Altenkirchen (Westerwald)",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7331,
+  "name": "Alzey-Worms",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7332,
+  "name": "Bad Dürkheim",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7133,
+  "name": "Bad Kreuznach",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7231,
+  "name": "Bernkastel-Wittlich",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7134,
+  "name": "Birkenfeld",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7135,
+  "name": "Cochem-Zell",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7333,
+  "name": "Donnersbergkreis",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7232,
+  "name": "Eifelkreis Bitburg-Prüm",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7311,
+  "name": "Frankenthal",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7334,
+  "name": "Germersheim",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7312,
+  "name": "Kaiserslautern",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7111,
+  "name": "Koblenz",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7336,
+  "name": "Kusel",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7313,
+  "name": "Landau in der Pfalz",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7335,
+  "name": "Landkreis Kaiserslautern",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7314,
+  "name": "Ludwigshafen am Rhein",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7315,
+  "name": "Mainz",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7339,
+  "name": "Mainz-Bingen",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7137,
+  "name": "Mayen-Koblenz",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7316,
+  "name": "Neustadt an der Weinstraße",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7138,
+  "name": "Neuwied",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7317,
+  "name": "Pirmasens",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7140,
+  "name": "Rhein-Hunsrück-Kreis",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7141,
+  "name": "Rhein-Lahn-Kreis",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7338,
+  "name": "Rhein-Pfalz-Kreis",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7318,
+  "name": "Speyer",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7337,
+  "name": "Südliche Weinstraße",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7340,
+  "name": "Südwestpfalz",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7211,
+  "name": "Trier",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7235,
+  "name": "Trier-Saarburg",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7233,
+  "name": "Vulkaneifel",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7143,
+  "name": "Westerwaldkreis",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7319,
+  "name": "Worms",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 7320,
+  "name": "Zweibrücken",
+  "antaresKey": "",
+  "Federal State": "Rheinland-Pfalz",
+  "federalId": "0000b186816abba584714c60"
+},
+{
+  "countyId": 10042,
+  "name": "Merzig-Wadern",
+  "antaresKey": "",
+  "Federal State": "Saarland",
+  "federalId": "0000b186816abba584714c61"
+},
+{
+  "countyId": 10043,
+  "name": "Neunkirchen",
+  "antaresKey": "",
+  "Federal State": "Saarland",
+  "federalId": "0000b186816abba584714c61"
+},
+{
+  "countyId": 10041,
+  "name": "Saarbrücken, Regionalverband",
+  "antaresKey": "",
+  "Federal State": "Saarland",
+  "federalId": "0000b186816abba584714c61"
+},
+{
+  "countyId": 10044,
+  "name": "Saarlouis",
+  "antaresKey": "",
+  "Federal State": "Saarland",
+  "federalId": "0000b186816abba584714c61"
+},
+{
+  "countyId": 10045,
+  "name": "Saarpfalz-Kreis",
+  "antaresKey": "",
+  "Federal State": "Saarland",
+  "federalId": "0000b186816abba584714c61"
+},
+{
+  "countyId": 10046,
+  "name": "St. Wendel",
+  "antaresKey": "",
+  "Federal State": "Saarland",
+  "federalId": "0000b186816abba584714c61"
+},
+{
+  "countyId": 14625,
+  "name": "Bautzen",
+  "antaresKey": "",
+  "Federal State": "Sachsen",
+  "federalId": "0000b186816abba584714c62"
+},
+{
+  "countyId": 14511,
+  "name": "Chemnitz",
+  "antaresKey": "",
+  "Federal State": "Sachsen",
+  "federalId": "0000b186816abba584714c62"
+},
+{
+  "countyId": 14612,
+  "name": "Dresden",
+  "antaresKey": "",
+  "Federal State": "Sachsen",
+  "federalId": "0000b186816abba584714c62"
+},
+{
+  "countyId": 14521,
+  "name": "Erzgebirgskreis",
+  "antaresKey": "",
+  "Federal State": "Sachsen",
+  "federalId": "0000b186816abba584714c62"
+},
+{
+  "countyId": 14626,
+  "name": "Görlitz",
+  "antaresKey": "",
+  "Federal State": "Sachsen",
+  "federalId": "0000b186816abba584714c62"
+},
+{
+  "countyId": 14729,
+  "name": "Landkreis Leipzig",
+  "antaresKey": "",
+  "Federal State": "Sachsen",
+  "federalId": "0000b186816abba584714c62"
+},
+{
+  "countyId": 14713,
+  "name": "Leipzig",
+  "antaresKey": "",
+  "Federal State": "Sachsen",
+  "federalId": "0000b186816abba584714c62"
+},
+{
+  "countyId": 14627,
+  "name": "Meißen",
+  "antaresKey": "",
+  "Federal State": "Sachsen",
+  "federalId": "0000b186816abba584714c62"
+},
+{
+  "countyId": 14522,
+  "name": "Mittelsachsen",
+  "antaresKey": "",
+  "Federal State": "Sachsen",
+  "federalId": "0000b186816abba584714c62"
+},
+{
+  "countyId": 14730,
+  "name": "Nordsachsen",
+  "antaresKey": "",
+  "Federal State": "Sachsen",
+  "federalId": "0000b186816abba584714c62"
+},
+{
+  "countyId": 14628,
+  "name": "Sächsische Schweiz-Osterzgebirge",
+  "antaresKey": "",
+  "Federal State": "Sachsen",
+  "federalId": "0000b186816abba584714c62"
+},
+{
+  "countyId": 14523,
+  "name": "Vogtlandkreis",
+  "antaresKey": "",
+  "Federal State": "Sachsen",
+  "federalId": "0000b186816abba584714c62"
+},
+{
+  "countyId": 14524,
+  "name": "Zwickau",
+  "antaresKey": "",
+  "Federal State": "Sachsen",
+  "federalId": "0000b186816abba584714c62"
+},
+{
+  "countyId": 15081,
+  "name": "Altmarkkreis Salzwedel",
+  "antaresKey": "",
+  "Federal State": "Sachsen-Anhalt",
+  "federalId": "0000b186816abba584714c63"
+},
+{
+  "countyId": 15082,
+  "name": "Anhalt-Bitterfeld",
+  "antaresKey": "",
+  "Federal State": "Sachsen-Anhalt",
+  "federalId": "0000b186816abba584714c63"
+},
+{
+  "countyId": 15083,
+  "name": "Börde",
+  "antaresKey": "",
+  "Federal State": "Sachsen-Anhalt",
+  "federalId": "0000b186816abba584714c63"
+},
+{
+  "countyId": 15084,
+  "name": "Burgenlandkreis",
+  "antaresKey": "",
+  "Federal State": "Sachsen-Anhalt",
+  "federalId": "0000b186816abba584714c63"
+},
+{
+  "countyId": 15001,
+  "name": "Dessau-Roßlau",
+  "antaresKey": "",
+  "Federal State": "Sachsen-Anhalt",
+  "federalId": "0000b186816abba584714c63"
+},
+{
+  "countyId": 15002,
+  "name": "Halle",
+  "antaresKey": "",
+  "Federal State": "Sachsen-Anhalt",
+  "federalId": "0000b186816abba584714c63"
+},
+{
+  "countyId": 15085,
+  "name": "Harz",
+  "antaresKey": "",
+  "Federal State": "Sachsen-Anhalt",
+  "federalId": "0000b186816abba584714c63"
+},
+{
+  "countyId": 15086,
+  "name": "Jerichower Land",
+  "antaresKey": "",
+  "Federal State": "Sachsen-Anhalt",
+  "federalId": "0000b186816abba584714c63"
+},
+{
+  "countyId": 15003,
+  "name": "Magdeburg",
+  "antaresKey": "",
+  "Federal State": "Sachsen-Anhalt",
+  "federalId": "0000b186816abba584714c63"
+},
+{
+  "countyId": 15087,
+  "name": "Mansfeld-Südharz",
+  "antaresKey": "",
+  "Federal State": "Sachsen-Anhalt",
+  "federalId": "0000b186816abba584714c63"
+},
+{
+  "countyId": 15088,
+  "name": "Saalekreis",
+  "antaresKey": "",
+  "Federal State": "Sachsen-Anhalt",
+  "federalId": "0000b186816abba584714c63"
+},
+{
+  "countyId": 15089,
+  "name": "Salzlandkreis",
+  "antaresKey": "",
+  "Federal State": "Sachsen-Anhalt",
+  "federalId": "0000b186816abba584714c63"
+},
+{
+  "countyId": 15090,
+  "name": "Stendal",
+  "antaresKey": "",
+  "Federal State": "Sachsen-Anhalt",
+  "federalId": "0000b186816abba584714c63"
+},
+{
+  "countyId": 15091,
+  "name": "Wittenberg",
+  "antaresKey": "",
+  "Federal State": "Sachsen-Anhalt",
+  "federalId": "0000b186816abba584714c63"
+},
+{
+  "countyId": 1051,
+  "name": "Dithmarschen",
+  "antaresKey": "",
+  "Federal State": "Schleswig-Holstein",
+  "federalId": "0000b186816abba584714c64"
+},
+{
+  "countyId": 1001,
+  "name": "Flensburg",
+  "antaresKey": "",
+  "Federal State": "Schleswig-Holstein",
+  "federalId": "0000b186816abba584714c64"
+},
+{
+  "countyId": 1053,
+  "name": "Herzogtum Lauenburg",
+  "antaresKey": "",
+  "Federal State": "Schleswig-Holstein",
+  "federalId": "0000b186816abba584714c64"
+},
+{
+  "countyId": 1002,
+  "name": "Kiel",
+  "antaresKey": "",
+  "Federal State": "Schleswig-Holstein",
+  "federalId": "0000b186816abba584714c64"
+},
+{
+  "countyId": 1003,
+  "name": "Lübeck",
+  "antaresKey": "",
+  "Federal State": "Schleswig-Holstein",
+  "federalId": "0000b186816abba584714c64"
+},
+{
+  "countyId": 1004,
+  "name": "Neumünster",
+  "antaresKey": "",
+  "Federal State": "Schleswig-Holstein",
+  "federalId": "0000b186816abba584714c64"
+},
+{
+  "countyId": 1054,
+  "name": "Nordfriesland",
+  "antaresKey": "",
+  "Federal State": "Schleswig-Holstein",
+  "federalId": "0000b186816abba584714c64"
+},
+{
+  "countyId": 1055,
+  "name": "Ostholstein",
+  "antaresKey": "",
+  "Federal State": "Schleswig-Holstein",
+  "federalId": "0000b186816abba584714c64"
+},
+{
+  "countyId": 1056,
+  "name": "Pinneberg",
+  "antaresKey": "",
+  "Federal State": "Schleswig-Holstein",
+  "federalId": "0000b186816abba584714c64"
+},
+{
+  "countyId": 1057,
+  "name": "Plön",
+  "antaresKey": "",
+  "Federal State": "Schleswig-Holstein",
+  "federalId": "0000b186816abba584714c64"
+},
+{
+  "countyId": 1058,
+  "name": "Rendsburg-Eckernförde",
+  "antaresKey": "",
+  "Federal State": "Schleswig-Holstein",
+  "federalId": "0000b186816abba584714c64"
+},
+{
+  "countyId": 1059,
+  "name": "Schleswig-Flensburg",
+  "antaresKey": "",
+  "Federal State": "Schleswig-Holstein",
+  "federalId": "0000b186816abba584714c64"
+},
+{
+  "countyId": 1060,
+  "name": "Segeberg",
+  "antaresKey": "",
+  "Federal State": "Schleswig-Holstein",
+  "federalId": "0000b186816abba584714c64"
+},
+{
+  "countyId": 1061,
+  "name": "Steinburg",
+  "antaresKey": "",
+  "Federal State": "Schleswig-Holstein",
+  "federalId": "0000b186816abba584714c64"
+},
+{
+  "countyId": 1062,
+  "name": "Stormarn",
+  "antaresKey": "",
+  "Federal State": "Schleswig-Holstein",
+  "federalId": "0000b186816abba584714c64"
+},
+{
+  "countyId": 16077,
+  "name": "Altenburger Land",
+  "antaresKey": "",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16061,
+  "name": "Eichsfeld",
+  "antaresKey": "EIC",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16056,
+  "name": "Eisenach",
+  "antaresKey": "",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16051,
+  "name": "Erfurt",
+  "antaresKey": "",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16052,
+  "name": "Gera",
+  "antaresKey": "",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16067,
+  "name": "Gotha",
+  "antaresKey": "GTH",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16076,
+  "name": "Greiz",
+  "antaresKey": "GRZ",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16069,
+  "name": "Hildburghausen",
+  "antaresKey": "",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16070,
+  "name": "Ilm-Kreis",
+  "antaresKey": "IK",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16053,
+  "name": "Jena",
+  "antaresKey": "J",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16065,
+  "name": "Kyffhäuserkreis",
+  "antaresKey": "",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16062,
+  "name": "Nordhausen",
+  "antaresKey": "",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16074,
+  "name": "Saale-Holzland-Kreis",
+  "antaresKey": "",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16075,
+  "name": "Saale-Orla-Kreis",
+  "antaresKey": "",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16073,
+  "name": "Saalfeld-Rudolstadt",
+  "antaresKey": "SLF",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16066,
+  "name": "Schmalkalden-Meiningen",
+  "antaresKey": "",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16068,
+  "name": "Sömmerda",
+  "antaresKey": "",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16072,
+  "name": "Sonneberg",
+  "antaresKey": "",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16054,
+  "name": "Suhl",
+  "antaresKey": "",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16064,
+  "name": "Unstrut-Hainich-Kreis",
+  "antaresKey": "UH",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16063,
+  "name": "Wartburgkreis",
+  "antaresKey": "",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16055,
+  "name": "Weimar",
+  "antaresKey": "",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+},
+{
+  "countyId": 16071,
+  "name": "Weimarer Land",
+  "antaresKey": "AP",
+  "Federal State": "Thüringen",
+  "federalId": "0000b186816abba584714c65"
+}
+]
