@@ -132,7 +132,7 @@ describe('helpdesk service', function test() {
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
 		const tempScTheme = Configuration.get('SUPPORT_PROBLEM_EMAIL_ADDRESS');
-		Configuration.set('SUPPORT_PROBLEM_EMAIL_ADDRESS', "nbc-support@netz-21.de");
+		Configuration.set('SUPPORT_PROBLEM_EMAIL_ADDRESS', 'nbc-support@netz-21.de');
 		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
 		expect(mailService.create.firstArg.email).to.equal('nbc-support@netz-21.de');
 		Configuration.set('SUPPORT_PROBLEM_EMAIL_ADDRESS', tempScTheme);
@@ -149,7 +149,7 @@ describe('helpdesk service', function test() {
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
 		const tempScTheme = Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS');
-		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', "nbc-wunsch@netz-21.de");
+		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', 'nbc-wunsch@netz-21.de');
 		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
 		expect(mailService.create.firstArg.email).to.equal('nbc-wunsch@netz-21.de');
 		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', tempScTheme);

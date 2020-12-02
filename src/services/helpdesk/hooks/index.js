@@ -99,7 +99,7 @@ const feedback = () => async (hook) => {
 		if (data.supportType) {
 			if (data.supportType === 'problem') {
 				emails.push(Configuration.get('SUPPORT_PROBLEM_EMAIL_ADDRESS'));
-			} else  {
+			} else {
 				emails.push(Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS'));
 			}
 		} else {
