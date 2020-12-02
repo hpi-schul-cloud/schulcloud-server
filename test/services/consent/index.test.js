@@ -16,7 +16,7 @@ let consentVersionService;
 
 chai.use(chaiAsPromised);
 
-describe.only('consent service', () => {
+describe('consent service', () => {
 	let app;
 	let server;
 	before(async () => {
