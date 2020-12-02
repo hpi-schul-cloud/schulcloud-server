@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
+## [25.2.4]
+
+### Changed
+
+- SC-6727 Change email addresses for tickets for Niedersachsen - fixed after review
+
+## [25.2.3]
+
+### Changed
+
+- SC-6727 Change email addresses for tickets for Niedersachsen
 
 ## [25.2.2]
 
@@ -23,6 +34,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-7836 - Removing registration pin by removing the user
 - SC-7838 - move pseudonyms to trashbin
 - SC-7142 - Counties/Kreise added to federal states.
 - SC-7555 - move user and account to trashbin
@@ -50,6 +62,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7571 - solved performance issues - bulk QR-code generation 
 - SC-6294 - Introduce Typescript in schulcloud-server
 - SC-7543 - Adds ldap-config service to create, load, and patch LDAP-configs (replaces /ldap endpoints for new client)
+- SC-7028 - Add Course Component API Specification document
 - SC-7476 - Prevent hash generation if user has account
 
 ### Changed
@@ -90,6 +103,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7572 - Find /users route after hooks - extremely slow
 - SC-7573 - Route/hash-broken promise chain
 - SC-7884 - Authentication error when accessing any nuxt page in the client.
+- Fix typescript compiling error
 
 ### Removed
 

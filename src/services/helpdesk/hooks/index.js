@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
@@ -94,9 +95,19 @@ const feedback = () => async (hook) => {
 		// TODO: NOTIFICATION SERVICE
 	} else {
 		data.systemInformation = await generateSystemInformation(hook);
+		const emails = [];
+		if (data.supportType) {
+			if (data.supportType === 'problem') {
+				emails.push(Configuration.get('SUPPORT_PROBLEM_EMAIL_ADDRESS'));
+			} else {
+				emails.push(Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS'));
+			}
+		} else {
+			emails.push(Configuration.get('SUPPORT_PROBLEM_EMAIL_ADDRESS'));
+		}
 		globalHooks.sendEmail(hook, {
 			subject: data.title || data.subject || 'nosubject',
-			emails: ['ticketsystem@schul-cloud.org'],
+			emails,
 			replyEmail: data.replyEmail,
 			content: {
 				text: createFeedbackText((hook.params.account || {}).username || 'nouser', data),
