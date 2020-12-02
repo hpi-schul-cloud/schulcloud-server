@@ -5,6 +5,7 @@ const chaiAsPromised = require('chai-as-promised');
 const reqlib = require('app-root-path').require;
 
 const { BadRequest } = reqlib('src/errors');
+const { expect } = require('chai');
 const appPromise = require('../../../src/app');
 const globals = require('../../../config/globals');
 
@@ -154,5 +155,22 @@ describe.only('consent service', () => {
 			.to.not.be.rejectedWith(BadRequest, 'SHD consent upload is disabled for NBC instance.');
 
 		globals.SC_THEME = OLD_SC_THEME;
+	});
+
+	it('consentVersionService create method should upload conset version when user is an admin', async () => {
+		const adminUser = await testObjects.createTestUser({ roles: ['administrator'] });
+		const params = await testObjects.generateRequestParamsFromUser(adminUser);
+		const consentParams = {
+			title: 'Test title',
+			publishedAt: '12.13.2020 14:45',
+			consentText: 'Test text',
+		};
+
+		const result = await consentVersionService.create(consentParams, params);
+
+		expect(result).to.not.be.null;
+		expect(result).has.property('title').and.is.equal(consentParams.title);
+		expect(result).has.property('publishedAt').and.is.not.null;
+		expect(result).has.property('consentText').and.is.equal(consentParams.consentText);
 	});
 });
