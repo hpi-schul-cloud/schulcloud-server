@@ -6,7 +6,7 @@ const { iff, isProvider, disallow } = require('feathers-hooks-common');
 
 const { restrictToCurrentSchool, denyIfNotCurrentSchoolOrEmpty, hasPermission } = require('../../../hooks');
 
-const { SC_THEME } = require('../../../../config/globals');
+const globals = require('../../../../config/globals');
 const { isSuperheroUser } = require('../../../helper/userHelpers');
 
 const {
@@ -47,12 +47,13 @@ class ConsentVersionService {
 		this.docs = {};
 	}
 
+	// eslint-disable-next-line consistent-return
 	validateConsentUpload(isShdUpload, schoolId) {
-		if (isShdUpload && SC_THEME === "n21") {
-			return Promise.reject(new BadRequest('SHD consent upload is disabled for NBC instance.'));
+		if (isShdUpload && globals.SC_THEME === 'n21') {
+			throw new BadRequest('SHD consent upload is disabled for NBC instance.');
 		}
-		else if (!schoolId) {
-			return Promise.reject(new BadRequest('SchoolId is required for school consents.'));
+		if (!schoolId && !isShdUpload) {
+			throw new BadRequest('SchoolId is required for school consents.');
 		}
 	}
 

@@ -1,18 +1,38 @@
 const assert = require('assert');
 const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 const appPromise = require('../../../src/app');
+const globals = require('../../../config/globals');
+
+const testObjects = require('../helpers/testObjects')(appPromise);
 
 let consentService;
 let consentVersionService;
 
-describe('consent service', () => {
+chai.use(chaiAsPromised);
+
+describe.only('consent service', () => {
 	let app;
+	let server;
 	before(async () => {
 		app = await appPromise;
 		consentService = app.service('/consents');
 		consentService.setup(app);
 		consentVersionService = app.service('consentVersions');
 		consentVersionService.setup(app);
+		server = await app.listen(0);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
+	afterEach(async () => {
+		await testObjects.cleanup();
 	});
 
 	it('registered the consent service', () => {
@@ -109,4 +129,30 @@ describe('consent service', () => {
 		consentService.find({ query: { userId: '59ae89b71f513506904e1cc9' } }).then((consent) => {
 			chai.expect(consent).to.exist;
 		}));
+
+	it('consentVersionService create method should return an error if shdUpload and instance NBC', async () => {
+		const superHeroUser = await testObjects.createTestUser({ roles: ['superhero'] });
+		const params = await testObjects.generateRequestParamsFromUser(superHeroUser);
+		const OLD_SC_THEME = globals.SC_THEME;
+		globals.SC_THEME = 'n21';
+
+		await chai
+			.expect(consentVersionService.create({}, params))
+			.to.be.rejectedWith(BadRequest, 'SHD consent upload is disabled for NBC instance.');
+
+		globals.SC_THEME = OLD_SC_THEME;
+	});
+
+	it('consentVersionService create method should not return an error if shdUpload and instance different than NBC', async () => {
+		const superHeroUser = await testObjects.createTestUser({ roles: ['superhero'] });
+		const params = await testObjects.generateRequestParamsFromUser(superHeroUser);
+		const OLD_SC_THEME = globals.SC_THEME;
+		globals.SC_THEME = 'default';
+
+		await chai
+			.expect(consentVersionService.create({}, params))
+			.to.not.be.rejectedWith(BadRequest, 'SHD consent upload is disabled for NBC instance.');
+
+		globals.SC_THEME = OLD_SC_THEME;
+	});
 });
