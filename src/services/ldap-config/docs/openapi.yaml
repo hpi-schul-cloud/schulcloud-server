@@ -11,6 +11,8 @@ info:
     name: GPL-3.0
     url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
   version: 1.0.0
+servers:
+  - url: /ldap-config/
 components:
   parameters:
     id:
@@ -43,7 +45,7 @@ components:
       type: string
       pattern: ^$
 paths:
-  /ldap-config:
+  /:
     post:
       parameters:
         - $ref: '#/components/parameters/activate'
@@ -61,7 +63,7 @@ paths:
             application/json:
               schema:
                 $ref: 'schemas/verify.response.yaml'
-  '/patch/{_id}':
+  '/{_id}':
     patch:
       parameters:
         - $ref: '#/components/parameters/activate'

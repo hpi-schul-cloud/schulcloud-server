@@ -34,7 +34,7 @@ describe('version service integration tests', function test() {
 			Configuration.set('FEATURE_SHOW_VERSION_ENABLED', true);
 			const request = chai
 				.request(app)
-				.get('/legacy/v1/version')
+				.get('/version')
 				.set('Accept', 'application/json')
 				.set('content-type', 'application/json');
 			const response = await request.send();
@@ -46,7 +46,7 @@ describe('version service integration tests', function test() {
 			Configuration.set('FEATURE_SHOW_VERSION_ENABLED', false);
 			const request = chai
 				.request(app)
-				.get('/legacy/v1/version')
+				.get('/version')
 				.set('Accept', 'application/json')
 				.set('content-type', 'application/json');
 			const response = await request.send();
