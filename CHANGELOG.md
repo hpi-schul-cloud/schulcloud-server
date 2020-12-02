@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
+## [25.2.4]
+
+### Changed
+
+- SC-6727 Change email addresses for tickets for Niedersachsen - fixed after review
+
+## [25.2.3]
+
+### Changed
+
+- SC-6727 Change email addresses for tickets for Niedersachsen
 
 ## [25.2.2]
 

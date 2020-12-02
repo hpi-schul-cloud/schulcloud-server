@@ -520,6 +520,16 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enabled that every request is logged with the information route and method"
+		},
+		"SUPPORT_PROBLEM_EMAIL_ADDRESS": {
+			"type": "string",
+			"default": "ticketsystem@schul-cloud.org",
+			"description": "Email address used for reporting a problem"
+		},
+		"SUPPORT_WISH_EMAIL_ADDRESS": {
+			"type": "string",
+			"default": "ticketsystem@schul-cloud.org",
+			"description": "Email address used for reporting a wish"
 		}
 	},
 	"required": [
