@@ -453,12 +453,12 @@
 		},
 		"SUPPORT_PROBLEM_EMAIL_ADDRESS": {
 			"type": "string",
-			"default": "support@hpi-schul-cloud.org",
+			"default": "ticketsystem@schul-cloud.org",
 			"description": "Email address used for reporting a problem"
 		},
 		"SUPPORT_WISH_EMAIL_ADDRESS": {
 			"type": "string",
-			"default": "wish@hpi-schul-cloud.org",
+			"default": "ticketsystem@schul-cloud.org",
 			"description": "Email address used for reporting a wish"
 		}
 	},
