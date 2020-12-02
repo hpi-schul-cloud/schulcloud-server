@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
+const { Configuration } = require('@schul-cloud/commons');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
@@ -95,18 +96,14 @@ const feedback = () => async (hook) => {
 	} else {
 		data.systemInformation = await generateSystemInformation(hook);
 		const emails = [];
-		// eslint-disable-next-line no-process-env
-		if (process.env.SC_THEME === 'n21') {
-			if (data.supportType) {
-				if (data.supportType === 'problem') {
-					emails.push('nbc-support@netz-21.de');
-				}
-				if (data.supportType === 'wish') {
-					emails.push('nbc-wunsch@netz-21.de');
-				}
+		if (data.supportType) {
+			if (data.supportType === 'problem') {
+				emails.push(Configuration.get('SUPPORT_PROBLEM_EMAIL_ADDRESS'));
+			} else {
+				emails.push(Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS'));
 			}
 		} else {
-			emails.push('ticketsystem@schul-cloud.org');
+			emails.push(Configuration.get('SUPPORT_PROBLEM_EMAIL_ADDRESS'));
 		}
 		globalHooks.sendEmail(hook, {
 			subject: data.title || data.subject || 'nosubject',

@@ -3,6 +3,7 @@ const assert = require('assert');
 const { expect } = require('chai');
 const sinon = require('sinon');
 const appPromise = require('../../../src/app');
+const { Configuration } = require('@schul-cloud/commons');
 
 describe('helpdesk service', function test() {
 	this.timeout(10000);
@@ -120,7 +121,7 @@ describe('helpdesk service', function test() {
 		expect(mailService.create.firstArg.email).to.equal('ticketsystem@schul-cloud.org');
 	});
 
-	it('POST /helpdesk to schoolcloud with problem and with n21 theme should pass proper email in argument based on the supportType', async () => {
+	it('POST /helpdesk to schoolcloud with problem should be send to specified in configuration email address if supportType is specified', async () => {
 		const postBody = {
 			type: 'contactHPI',
 			supportType: 'problem',
@@ -130,14 +131,14 @@ describe('helpdesk service', function test() {
 		};
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
-		const tempScTheme = process.env.SC_THEME;
-		process.env.SC_THEME = 'n21';
+		const tempScTheme = Configuration.get('SUPPORT_PROBLEM_EMAIL_ADDRESS');
+		Configuration.set('SUPPORT_PROBLEM_EMAIL_ADDRESS', 'nbc-support@netz-21.de');
 		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
 		expect(mailService.create.firstArg.email).to.equal('nbc-support@netz-21.de');
-		process.env.SC_THEME = tempScTheme;
+		Configuration.set('SUPPORT_PROBLEM_EMAIL_ADDRESS', tempScTheme);
 	});
 
-	it('POST /helpdesk to schoolcloud with problem and with n21 theme should pass proper email in argument based on the supportType', async () => {
+	it('POST /helpdesk to schoolcloud with wish should be send to specified in configuration email address if supportType is specified', async () => {
 		const postBody = {
 			type: 'contactHPI',
 			supportType: 'wish',
@@ -147,11 +148,11 @@ describe('helpdesk service', function test() {
 		};
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
-		const tempScTheme = process.env.SC_THEME;
-		process.env.SC_THEME = 'n21';
+		const tempScTheme = Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS');
+		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', 'nbc-wunsch@netz-21.de');
 		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
 		expect(mailService.create.firstArg.email).to.equal('nbc-wunsch@netz-21.de');
-		process.env.SC_THEME = tempScTheme;
+		Configuration.set('SUPPORT_WISH_EMAIL_ADDRESS', tempScTheme);
 	});
 
 	it('POST /helpdesk to schoolcloud with feedback, valid data', () => {
