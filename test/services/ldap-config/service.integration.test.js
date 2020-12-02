@@ -1,24 +1,33 @@
-const { expect } = require('chai');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
 const sinon = require('sinon');
 const reqlib = require('app-root-path').require;
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { Forbidden } = reqlib('src/errors');
 
-const appPromise = require('../../../src/app');
 const LDAPConnectionError = require('../../../src/services/ldap/LDAPConnectionError');
-const testObjects = require('../helpers/testObjects')(appPromise);
 const knownGoodConfig = require('./assets/knownGoodConfig.json');
+const knownBadConfig = require('./assets/knownBadConfig.json');
+
+chai.use(chaiHttp);
+const { expect } = chai;
 
 describe('LdapConfigService', () => {
 	let app;
 	let server;
 	let configBefore;
+	let testObjects;
 
 	before(async () => {
+		delete require.cache[require.resolve('../../../src/app')];
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		Configuration.set('FEATURE_API_VALIDATION_ENABLED', true);
 		Configuration.set('FEATURE_API_RESPONSE_VALIDATION_ENABLED', true);
+		// eslint-disable-next-line global-require
+		const appPromise = require('../../../src/app');
+		// eslint-disable-next-line global-require
+		testObjects = require('../helpers/testObjects')(appPromise);
 		app = await appPromise;
 		server = await app.listen(0);
 	});
@@ -89,7 +98,7 @@ describe('LdapConfigService', () => {
 		});
 
 		it("should allow accessing the LDAP config of the user's school", async () => {
-			const result = await app.service('ldap-config').get(generalLdapSystem1._id, paramsAdmin1);
+			const result = await app.service('legacy/v1/ldap-config').get(generalLdapSystem1._id, paramsAdmin1);
 			// also note that this does not return the system, but the ldapConfig
 			expect(result.provider).to.equal('general');
 			expect(result.url).to.equal('ldaps://foo.bar:636');
@@ -97,7 +106,7 @@ describe('LdapConfigService', () => {
 
 		it('should not allow accessing systems with provider!=general', async () => {
 			try {
-				await app.service('ldap-config').get(iservLdapSystem1._id, paramsAdmin1);
+				await app.service('legacy/v1/ldap-config').get(iservLdapSystem1._id, paramsAdmin1);
 				expect.fail('this should not happen');
 			} catch (err) {
 				expect(err).to.be.instanceOf(Forbidden);
@@ -106,7 +115,7 @@ describe('LdapConfigService', () => {
 
 		it('should not allow accessing non-ldap systems', async () => {
 			try {
-				await app.service('ldap-config').get(otherSystem1._id, paramsAdmin1);
+				await app.service('legacy/v1/ldap-config').get(otherSystem1._id, paramsAdmin1);
 				expect.fail('this should not happen');
 			} catch (err) {
 				expect(err).to.be.instanceOf(Forbidden);
@@ -115,7 +124,7 @@ describe('LdapConfigService', () => {
 
 		it('should not allow accessing systems of different schools', async () => {
 			try {
-				await app.service('ldap-config').get(system2._id, paramsAdmin1);
+				await app.service('legacy/v1/ldap-config').get(system2._id, paramsAdmin1);
 				expect.fail('this should not happen');
 			} catch (err) {
 				expect(err).to.be.instanceOf(Forbidden);
@@ -124,7 +133,7 @@ describe('LdapConfigService', () => {
 
 		it('should not allow accessing a system if not admin', async () => {
 			try {
-				await app.service('ldap-config').get(system2._id, paramsTeacher2);
+				await app.service('legacy/v1/ldap-config').get(system2._id, paramsTeacher2);
 				expect.fail('this should not happen');
 			} catch (err) {
 				expect(err).to.be.instanceOf(Forbidden);
@@ -184,7 +193,7 @@ describe('LdapConfigService', () => {
 		});
 
 		it("should allow adding a new system based on the given LDAP config to the user's school", async () => {
-			const result = await app.service('ldap-config').create(knownGoodConfig, params);
+			const result = await app.service('legacy/v1/ldap-config').create(knownGoodConfig, params);
 			expect(result.ok).to.equal(true);
 
 			const patchedSchool = await app.service('schools').get(school._id, { query: { $populate: 'systems' } });
@@ -197,18 +206,21 @@ describe('LdapConfigService', () => {
 
 		it('should honor the activate param', async () => {
 			const result = await app
-				.service('ldap-config')
+				.service('legacy/v1/ldap-config')
 				.create(knownGoodConfig, { ...params, query: { activate: false } });
 			expect(result.ok).to.equal(true);
 
-			const patchedSchool = await app.service('schools').get(school._id);
-			expect(patchedSchool.systems.length).to.equal(0);
+			const patchedSchool = await app.service('schools').get(school._id, { query: { $populate: 'systems' } });
+			expect(patchedSchool.systems.length).to.equal(1);
+			expect(patchedSchool.systems[0].ldapConfig.active).to.equal(false);
 			expect(patchedSchool.ldapSchoolIdentifier).to.equal(undefined);
+
+			testObjects.info().testSystem.push(patchedSchool.systems[0]._id);
 		});
 
 		it('should not save with verifyOnly=true', async () => {
 			const result = await app
-				.service('ldap-config')
+				.service('legacy/v1/ldap-config')
 				.create(knownGoodConfig, { ...params, query: { verifyOnly: true } });
 			expect(result.ok).to.equal(true);
 			expect(result.users.admin).to.equal(1);
@@ -227,11 +239,41 @@ describe('LdapConfigService', () => {
 			app.use('ldap', ldapServiceMock);
 
 			const result = await app
-				.service('ldap-config')
+				.service('legacy/v1/ldap-config')
 				.create(knownGoodConfig, { ...params, query: { activate: false } });
 			expect(result.ok).to.equal(false);
 			expect(result.errors.length).to.equal(1);
 			expect(result.errors[0].type).to.equal('CONNECTION_ERROR');
+		});
+
+		it('should succeed via external API', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool();
+			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+			const token = await testObjects.generateJWTFromUser(user);
+			const request = chai
+				.request(app)
+				.post('/ldap-config?verifyOnly=true')
+				.set('Accept', 'application/json')
+				.set('Authorization', `Bearer ${token}`)
+				.set('content-type', 'application/json');
+			const response = await request.send(knownGoodConfig);
+			expect(response.status).to.equal(201);
+			expect(response.body.ok).to.equal(true);
+		});
+
+		it('should return 400 if required parameters are missing', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool();
+			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+			const token = await testObjects.generateJWTFromUser(user);
+			const request = chai
+				.request(app)
+				.post('/ldap-config')
+				.set('Accept', 'application/json')
+				.set('Authorization', `Bearer ${token}`)
+				.set('content-type', 'application/json');
+			const response = await request.send(knownBadConfig);
+			expect(response.status).to.equal(400);
+			expect(response.body.message).to.include("request.body should have required property 'rootPath'");
 		});
 	});
 
@@ -298,7 +340,7 @@ describe('LdapConfigService', () => {
 		});
 
 		it('should verify the given config and patch the system and school', async () => {
-			const result = await app.service('ldap-config').patch(system._id, knownGoodConfig, params);
+			const result = await app.service('legacy/v1/ldap-config').patch(system._id, knownGoodConfig, params);
 			expect(result.ok).to.equal(true);
 
 			const patchedSchool = await app.service('schools').get(school._id, { query: { $populate: 'systems' } });
@@ -309,7 +351,7 @@ describe('LdapConfigService', () => {
 
 		it('should allow to verify only via param', async () => {
 			const result = await app
-				.service('ldap-config')
+				.service('legacy/v1/ldap-config')
 				.patch(system._id, knownGoodConfig, { ...params, query: { verifyOnly: true } });
 			expect(result.ok).to.equal(true);
 			expect(result.users.admin).to.equal(1);
@@ -323,7 +365,7 @@ describe('LdapConfigService', () => {
 
 		it('should allow to update the system without activating', async () => {
 			const result = await app
-				.service('ldap-config')
+				.service('legacy/v1/ldap-config')
 				.patch(system._id, knownGoodConfig, { ...params, query: { activate: false } });
 			expect(result.ok).to.equal(true);
 
