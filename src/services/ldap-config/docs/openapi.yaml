@@ -65,6 +65,8 @@ paths:
             application/json:
               schema:
                 $ref: 'schemas/verify.response.yaml'
+        '403':
+          description: the requesting user is not allowed to access this system
   '/{_id}':
     get:
       tags:

@@ -2,6 +2,8 @@ type: object
 description: schame for request body of patch request
 required:
   - ok
+  - users
+  - classes
 properties:
   ok:
     type: boolean
@@ -19,11 +21,6 @@ properties:
           type: string
   users:
     type: object
-    required:
-      - total
-      - admin
-      - teacher
-      - student
     properties:
       total:
         type: integer
@@ -37,8 +34,6 @@ properties:
         type: object
   classes:
     type: object
-    required:
-      - total
     properties:
       total:
         type: integer
