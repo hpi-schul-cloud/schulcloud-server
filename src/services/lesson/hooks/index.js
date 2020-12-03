@@ -42,6 +42,29 @@ const addShareTokenIfCourseShareable = async (context) => {
 // Generate a new url for material that have merlin as source.
 // The url expires after 2 hours
 const convertMerlinUrl = async (context) => {
+	// Converts urls to valid merlin urls on the fly
+	// This if snippet only applies if the user went to the course first and added content from the course
+	if (context.result && context.result.contents && context.result.contents.length) {
+		await Promise.all(
+			context.result.contents.map(async (content) => {
+				if (content && content.content && content.content.resources && content.content.resources.length) {
+					await Promise.all(
+						content.content.resources.map(async (resource) => {
+							if (resource && resource.url && resource.url.includes('merlin') && resource.url.includes('identifier')) {
+								const splitted = resource.url.split('=');
+								const merlinReference = splitted[splitted.length - 1];
+								resource.url = await context.app
+									.service('edu-sharing/merlinToken')
+									.find({ query: { merlinReference } });
+							}
+						})
+					);
+				}
+			})
+		);
+	}
+
+	// Converts url to a valid merlin url if a merlin reference is stored in in the material
 	if (
 		context.result &&
 		context.result.materialIds &&
