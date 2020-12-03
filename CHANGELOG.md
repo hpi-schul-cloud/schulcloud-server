@@ -6,31 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
-## [25.2.4]
-
-### Changed
-
-- SC-6727 Change email addresses for tickets for Niedersachsen - fixed after review
-
-## [25.2.3]
-
-### Changed
-
-- SC-6727 Change email addresses for tickets for Niedersachsen
-
-## [25.2.2]
-
-### Changed
-
-- SC-7773 - moved config values for antivirus file service
-
-## [25.2.1]
-
-### Fixed
-
-- SC-7714 Fixes script injection issue
-
-## [Unreleased]
+## [25.3.0]
 
 ### Added
 
@@ -60,7 +36,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7499 - add API Specification for public services
 - SC-7827 - Add deletion concept handling for file permissions.
 - SC-7915 - facade locator
-- SC-7571 - solved performance issues - bulk QR-code generation 
+- SC-7571 - solved performance issues - bulk QR-code generation
 - SC-6294 - Introduce Typescript in schulcloud-server
 - SC-7028 - Add Course Component API Specification document
 - SC-7476 - Prevent hash generation if user has account
@@ -86,6 +62,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-6294 fix mocha test execution and build, summarize coverage results
 - SC-1589 Trim strings to avoid empty team names
 - ARC-138 fix changelog action
 - ARC-137 avoid DoS on alerts in error state
@@ -107,6 +84,30 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Removed
 
 - SC-7413 - Cleanup UnhandledRejection code that is handled from winston now
+
+## [25.2.4]
+
+### Changed
+
+- SC-6727 Change email addresses for tickets for Niedersachsen - fixed after review
+
+## [25.2.3]
+
+### Changed
+
+- SC-6727 Change email addresses for tickets for Niedersachsen
+
+## [25.2.2]
+
+### Changed
+
+- SC-7773 - moved config values for antivirus file service
+
+## [25.2.1]
+
+### Fixed
+
+- SC-7714 Fixes script injection issue
 
 ## [25.2.0]
 
