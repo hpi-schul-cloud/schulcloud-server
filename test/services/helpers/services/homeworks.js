@@ -4,6 +4,11 @@ let createdHomeworks = [];
 
 const create = (opt) => async (data) => {
 	data.schoolId = data.schoolId || opt.schoolId;
+	data.name = data.name || 'testHomework';
+	data.availableDate = data.availableDate || new Date();
+	data.teacherId = data.teacherId || opt.generateObjectId();
+	data.private = data.private || false;
+
 	const homework = await homeworkModel.create(data);
 	createdHomeworks.push(homework._id);
 	return homework;
