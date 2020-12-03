@@ -1,8 +1,9 @@
+import userUC from './users.uc';
+
 const sinon = require('sinon');
 const { ObjectId } = require('mongoose').Types;
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const userUC = require('./users.uc');
 
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
 

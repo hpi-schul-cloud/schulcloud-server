@@ -2,8 +2,8 @@ const { ObjectId } = require('mongoose').Types;
 const { BadRequest, Forbidden } = require('../../../errors');
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
 const { hasRole } = require('./userRoles.uc');
-const { catch, catch } = require('src/app');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { asyncErrorLog } = require('../../../errors/utils');
 
 const userHaveSameSchool = async (userId, otherUserId) => {
 	if (userId && otherUserId) {
@@ -35,16 +35,29 @@ const getUserData = async (id) => {
 	return returnArray;
 };
 
-const deleteUserRelatedData = async (user, app) => {
-	try{
-		const registrationPinFacade = app.facade('/registrationPin/v2');
-		const registrationPinTrash = registrationPinFacade.deleteRegistrationPinsByEmail(user.email);
-		trashbinRepo.updateTrashbinByUserId(user.id, registrationPinTrash.data); // TODO unnecessary for PINs?
-	} catch(error) {
-		// TODO
+const deleteUserRelatedData = async (userId, app) => {
+	const [deleteUserFacades] = [];
+	for (const facadeName of deleteUserFacades) {
+		const facade = app.facade(facadeName);
+		if (typeof facade.deleteUserData === 'function') {
+			try {
+				const trash = facade.deleteUserData(userId);
+				trashbinRepo.updateTrashbinByUserId(userId, trash.data);
+			} catch (error) {
+				asyncErrorLog(error, `failed to delete user data for facade ${facadeName}`);
+			}
+		} else if (Array.isArray(facade.deleteUserData)) {
+			for (const deleteFn of facade.deleteUserData) {
+				try {
+					const trash = deleteFn(userId);
+					trashbinRepo.updateTrashbinByUserId(userId, trash.data);
+				} catch (error) {
+					asyncErrorLog(error, `failed to delete user data for facade ${facadeName}#${deleteFn.name}`);
+				}
+			}
+		}
 	}
 };
-
 
 const createUserTrashbin = async (id, data) => {
 	return trashbinRepo.createUserTrashbin(id, data);
@@ -75,13 +88,22 @@ const deleteUser = async (id, roleName, { account, app }) => {
 	// const fileStorage = app.facade('/fileStorage/v2');
 
 	const userAccountData = await getUserData(id);
-	const user = userAccountData.find((item) => {item.scope === 'user'}).data;
+	const user = userAccountData.find((item) => {
+		item.scope === 'user';
+	}).data;
 
 	const trashBin = await createUserTrashbin(id, userAccountData);
 
 	await replaceUserWithTombstone(id);
+	try {
+		const registrationPinFacade = app.facade('/registrationPin/v2');
+		const registrationPinTrash = registrationPinFacade.deleteRegistrationPinsByEmail(user.email);
+		trashbinRepo.updateTrashbinByUserId(user.id, registrationPinTrash.data); // TODO unnecessary for PINs?
+	} catch(error) {
+		// TODO
+	}
 
-	await deleteUserRelatedData(user, app);
+	await deleteUserRelatedData(user.id, app);
 
 	return trashBin;
 };
