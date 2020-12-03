@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const reqlib = require('app-root-path').require;
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { NotFound, BadRequest } = reqlib('src/errors');
 const nanoid = require('nanoid');
@@ -50,7 +51,7 @@ const convertMerlinUrl = async (context) => {
 				if (content && content.content && content.content.resources && content.content.resources.length) {
 					await Promise.all(
 						content.content.resources.map(async (resource) => {
-							if (resource && resource.url && resource.merlinReference) {
+							if (resource && resource.merlinReference) {
 								const { merlinReference } = resource;
 								resource.url = await context.app
 									.service('edu-sharing/merlinToken')
@@ -88,8 +89,9 @@ const attachMerlinReferenceToLesson = (context) => {
 		context.data.contents.forEach((c) => {
 			if (c.content && c.content.resources && c.content.resources.length) {
 				c.content.resources.forEach((resource) => {
-					const isMerlin = new RegExp(/merlin\.nibis.*identifier/);
-					if (resource.url && isMerlin.test(resource.url)) {
+					const isMerlin =
+						resource.url && resource.url.includes(`${Configuration.get('ES_MERLIN_AUTH_URL')}?identifier=`);
+					if (isMerlin) {
 						const merlinReference = resource.url.match(/.*identifier=\s*([^\n\r]*)/);
 						resource.merlinReference = merlinReference[1];
 					}
