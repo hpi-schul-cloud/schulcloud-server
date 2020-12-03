@@ -43,6 +43,7 @@ const addShareTokenIfCourseShareable = async (context) => {
 // Generate a new url for material that have merlin as source.
 // The url expires after 2 hours
 const convertMerlinUrl = async (context) => {
+	if (Configuration.get('FEATURE_ES_MERLIN_ENABLED') !== true) return context;
 	// Converts urls to valid merlin urls on the fly
 	// This if snippet only applies if the user went to the course first and added content from the course
 	if (context.result && context.result.contents && context.result.contents.length) {
