@@ -7,20 +7,15 @@ const repo = require('../../repo/files.repo');
  * @param {BSON|BSONString} userId
  */
 const removePermissionsThatUserCanAccess = async (userId) => {
-	try {
-		const filePermissions = await repo.getFilePermissionsByUserId(userId);
-		const trashBinData = filePermissions.map((fp) => ({
-			scope: 'filePermission',
-			data: fp,
-		}));
+	const filePermissions = await repo.getFilePermissionsByUserId(userId);
+	const trashBinData = filePermissions.map((fp) => ({
+		scope: 'filePermission',
+		data: fp,
+	}));
 
-		const finished = await repo.removeFilePermissionsByUserId(userId);
+	const complete = await repo.removeFilePermissionsByUserId(userId);
 
-		return { finished, trashBinData };
-	} catch (err) {
-		logger.warning('error during tombstone dissolve in file permissions', err);
-		return { finished: false, trashBinData: [] };
-	}
+	return { complete, trashBinData };
 };
 
 module.exports = {

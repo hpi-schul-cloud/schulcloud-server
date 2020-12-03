@@ -18,13 +18,14 @@ describe('fileStorageFacade', () => {
 		await server.close();
 	});
 
-	describe('delteUserRelatedData', () => {
+	describe('deleteUserRelatedData', () => {
 		it('when called with valid user id, then it returns trash bin data', async () => {
 			const user = await testObjects.createTestUser();
 			await testObjects.createTestFile({ owner: user });
 
 			const result = await app.facade('/fileStorage/v2').deleteUserRelatedData(user._id);
 
+			expect(result.complete).to.be.true;
 			expect(result.trashBinData).to.be.an('array');
 			result.trashBinData.forEach((data) => {
 				expect(data).to.haveOwnProperty('scope');

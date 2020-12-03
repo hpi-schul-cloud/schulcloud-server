@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 const { ObjectId } = require('mongoose').Types;
 
-const { removePermissionsThatUserCanAccess } = require('./applicationInternal/removePermissionst');
+const { removePermissionsThatUserCanAccess } = require('./applicationInternal/removePermissions');
 
 const fileRepo = require('../repo/files.repo');
 const { GeneralError } = require('../../../errors');
@@ -34,6 +34,7 @@ describe('deletedUserData.uc.unit', () => {
 				},
 			]);
 			const result = await removePermissionsThatUserCanAccess(userId);
+			expect(result.complete).to.be.true;
 			expect(result.trashBinData).to.be.an('array').that.is.not.empty;
 			result.trashBinData.forEach((data) => {
 				expect(data).to.haveOwnProperty('scope');
@@ -41,13 +42,11 @@ describe('deletedUserData.uc.unit', () => {
 			});
 		});
 
-		it.skip('when an error is thrown, then it returns empty array and success false', async () => {
+		it('when an error is thrown, then the error is not caught', () => {
 			const userId = new ObjectId();
 			const getFilePermissionStub = sinon.stub(fileRepo, 'getFilePermissionsByUserId');
 			getFilePermissionStub.withArgs(userId).throws(new GeneralError());
-			const result = await removePermissionsThatUserCanAccess(userId);
-			expect(result.trashBinData).to.be.an('array').that.is.empty;
-			expect(result.success).to.be.false;
+			expect(removePermissionsThatUserCanAccess(userId)).to.be.rejected;
 		});
 	});
 });
