@@ -6,32 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
-
-## [25.2.4]
-
-### Changed
-
-- SC-6727 Change email addresses for tickets for Niedersachsen - fixed after review
-
-## [25.2.3]
-
-### Changed
-
-- SC-6727 Change email addresses for tickets for Niedersachsen
-
-## [25.2.2]
-
-### Changed
-
-- SC-7773 - moved config values for antivirus file service
-
-## [25.2.1]
-
-### Fixed
-
-- SC-7714 Fixes script injection issue
-
-## [Unreleased]
+## [25.3.0]
 
 ### Added
 
@@ -108,6 +83,30 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Removed
 
 - SC-7413 - Cleanup UnhandledRejection code that is handled from winston now
+
+## [25.2.4]
+
+### Changed
+
+- SC-6727 Change email addresses for tickets for Niedersachsen - fixed after review
+
+## [25.2.3]
+
+### Changed
+
+- SC-6727 Change email addresses for tickets for Niedersachsen
+
+## [25.2.2]
+
+### Changed
+
+- SC-7773 - moved config values for antivirus file service
+
+## [25.2.1]
+
+### Fixed
+
+- SC-7714 Fixes script injection issue
 
 ## [25.2.0]
 
