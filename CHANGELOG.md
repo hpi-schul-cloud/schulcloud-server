@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
+
+## [25.2.4]
+
+### Changed
+
+- SC-6727 Change email addresses for tickets for Niedersachsen - fixed after review
+
 ## [25.2.3]
 
 ### Changed
@@ -53,7 +60,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-4667 - Add optional `forceFullSync` option (as get param or json payload) to force a full LDAP sync
 - SC-7499 - add API Specification for public services
 - SC-7915 - facade locator
-- SC-7571 - solved performance issues - bulk QR-code generation 
+- SC-7571 - solved performance issues - bulk QR-code generation
 - SC-6294 - Introduce Typescript in schulcloud-server
 - SC-7028 - Add Course Component API Specification document
 - SC-7476 - Prevent hash generation if user has account
@@ -79,6 +86,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-6294 fix mocha test execution and build, summarize coverage results
 - SC-1589 Trim strings to avoid empty team names
 - ARC-138 fix changelog action
 - ARC-137 avoid DoS on alerts in error state
