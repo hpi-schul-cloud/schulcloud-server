@@ -36,7 +36,6 @@ const {
 	FILE_SECURITY_CHECK_MAX_FILE_SIZE,
 	SECURITY_CHECK_SERVICE_PATH,
 } = require('../../../config/globals');
-const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const sanitizeObj = (obj) => {
 	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
