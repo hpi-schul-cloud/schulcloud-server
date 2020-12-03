@@ -18,7 +18,7 @@ const isMailbodyValid = ({ platform, platformId, to, subject, text, html, attach
 
 const getNotificationMock = (expectedData = {}) =>
 	new Promise((resolve) => {
-		nock(config.services.notification)
+		nock(config.NOTIFICATION_URI)
 			.post('/mails')
 			.reply(200, (uri, requestBody) => {
 				Object.entries(expectedData).forEach(([key, value]) => {
