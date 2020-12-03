@@ -5,6 +5,8 @@ class CoursesFacade {
 		this.app = app;
 	}
 
+	// TODO here we check general permissions!
+
 	// async deleteUser(id, roleName, params) {
 	// 	return userUc.deleteUser(id, roleName, { ...params, app: this.app });
 	// }

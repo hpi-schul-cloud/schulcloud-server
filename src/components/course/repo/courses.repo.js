@@ -1,33 +1,33 @@
 const { courseModel } = require('../../../services/user-group/model');
+const { updateManyResult } = require('./helper');
 
 // TODO
 
-/**
- *
- * @param {*} userId
- * @param {*} prop
- */
-const deleteUserIdFromCoursesProp = (userId, prop) => {
-	// delete user within teacher
-	// delete user within subteachers
-	// delete user within userIds
-	// return {
-	//     [
-	//         id:courseId
-	//         teacher:bool
-	//         subteacher:bool
-	//         userIds:bool
-	//     ]
-	// }
+const filterUserInProp = (userId, prop) => {
+	return { [prop]: userId };
 };
 
-// const getCourseGroupIdsByUserId = (userId) => {
-// 	return [{ courseId: id, courseGroupIds: [courseGroupIds] }];
-// };
+/**
+ * Get courses with user
+ * @param {string} userId
+ */
+const getCoursesWithProp = async (userId, prop) => {
+	const filter = filterUserInProp(userId, prop);
+	const result = await courseModel.find(filter).lean().exec();
+	return result;
+};
 
-// const deleteUserFromUserGroups = (userId, courseGroupIds) => {
-// 	// coursegroupModel.updateMany
-// 	// return courseGroupIds where the user has been removed
-// };
+const deletePropFromCourseUsers = async (userId, prop) => {
+	const filter = filterUserInProp(userId, prop);
+	const result = await courseModel.updateMany(filter, {}).lean().exec();
+	return updateManyResult(result);
+};
 
-module.exports = {};
+const getCoursesWithUser = (userId) => {
+	return getCoursesWithProp(userId, 'userId');
+};
+const deleteUserFromCourseUsers = (userId) => {
+	return deletePropFromCourseUsers(userId, 'userId');
+};
+
+module.exports = { getCoursesWithUser, deleteUserFromCourseUsers };

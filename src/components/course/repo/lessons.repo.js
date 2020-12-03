@@ -1,8 +1,5 @@
 const { lessonModel } = require('./db/lesson');
-
-const updateManyResult = ({ n, nModified, ok }) => {
-	return { success: ok === 1, matchedDocuments: n, modifiedDocuments: nModified };
-};
+const { updateManyResult } = require('./helper');
 
 /**
  * Filter lessons by contents including the given userId.

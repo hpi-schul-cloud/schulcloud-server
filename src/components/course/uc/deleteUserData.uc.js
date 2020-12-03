@@ -9,13 +9,23 @@ const addLessonsToTrashbinData = (lessons = [], trashBinData) => {
 	Object.assign(trashBinData, { lessonIds });
 };
 
-/**
- *
- * @param {string} userId
- */
-const deleteUserData = async (userId) => {
-	const trashBinData = [];
-	let success = true;
+const deleteUserDatafromLessons = async (userId) => {
+	debug(`deleting user mentions in lesson contents started`, { userId });
+	// delete user from lesson contents
+	// see mapUser, seems not to be required anywhere (can be deleted)
+	const lessons = await lessonsRepo.getLessonsWithUserInContens(userId);
+	debug(`found ${lessons.length} lessons with contents of given user to be removed`, { userId });
+	const data = [];
+	if (lessons.length !== 0) {
+		addLessonsToTrashbinData(lessons, data);
+		const result = await lessonsRepo.deleteUserFromLessonContents(userId);
+		debug(`removed user from ${result.matchedDocuments} lessons`, { userId });
+	}
+	debug(`deleting user mentions in lesson contents finished`, { userId });
+	return { trashBinData: { scope: 'lessons', data }, complete: true };
+};
+
+const deleteUyserDataFromCourses = async (userId) => {
 	// TODO permissions
 
 	// delete user relations from course:
@@ -34,31 +44,10 @@ const deleteUserData = async (userId) => {
 	// 	courseGroups: [courseGroupIds]
 	// }]
 	//
-	try {
-		const courses = coursesRepo.getCoursesWithUserInUsers(userId);
-	} catch (err) {
-		// TODO
-	}
+	const data = [];
+	const courses = coursesRepo.getCoursesWithUserInUsers(userId);
 
-	// delete user from lesson contents
-	// see mapUser, seems not to be required anywhere (can be deleted)
-	try {
-		const lessons = await lessonsRepo.getLessonsWithUserInContens(userId);
-		debug(`found ${lessons.length} lessons with contents of given user to be removed`);
-		if (lessons.length !== 0) {
-			addLessonsToTrashbinData(lessons, trashBinData);
-			const result = await lessonsRepo.deleteUserFromLessonContents(userId);
-			debug(`removed user from ${result.matchedDocuments} lessons`);
-		}
-	} catch (err) {
-		// TODO await orchestrator
-		success = false;
-		throw err;
-	}
-
-	return { success, trashBinData };
+	return { trashBinData: { scope: 'courses', data }, complete: true };
 };
 
-module.exports = {
-	deleteUserData,
-};
+module.exports = [deleteUserDatafromLessons, deleteUyserDataFromCourses];
