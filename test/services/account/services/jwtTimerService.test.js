@@ -2,7 +2,7 @@ const assert = require('assert');
 
 const { expect } = require('chai');
 const mockery = require('mockery');
-const commons = require('@schul-cloud/commons');
+const commons = require('@hpi-schul-cloud/commons');
 
 const { Configuration } = commons;
 
@@ -24,7 +24,7 @@ describe('jwtTimer service', () => {
 		describe('with redis instance', () => {
 			let server;
 			before(async () => {
-				configBefore = Configuration.toObject();
+				configBefore = Configuration.toObject({ plainSecrets: true });
 				mockery.enable({
 					warnOnReplace: false,
 					warnOnUnregistered: false,
@@ -36,7 +36,7 @@ describe('jwtTimer service', () => {
 				delete require.cache[require.resolve('../../../../src/app')];
 
 				mockery.registerMock('redis', redisMock);
-				mockery.registerMock('@schul-cloud/commons', commons);
+				mockery.registerMock('@hpi-schul-cloud/commons', commons);
 				/* eslint-disable global-require */
 				redisHelper = require('../../../../src/utils/redis');
 				app = await require('../../../../src/app');

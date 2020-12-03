@@ -1,5 +1,5 @@
 const { defaults } = require('lodash');
-const uuid = require('uuid').v4;
+const { v4: uuidv4 } = require('uuid');
 
 const { FileModel } = require('../../../../src/services/fileStorage/model');
 
@@ -24,7 +24,7 @@ const create = () => async (overrides) => {
 			},
 		],
 		creator: overrides.owner,
-		thumbnailRequestToken: uuid(),
+		thumbnailRequestToken: uuidv4(),
 	});
 
 	const file = await FileModel.create(data);

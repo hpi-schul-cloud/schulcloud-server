@@ -15,7 +15,6 @@ const { canWrite, canRead } = require('../fileStorage/utils/filePermissionHelper
 const hostCapabilitiesHelper = require('./utils/hostCapabilitiesHelper');
 const filePostActionHelper = require('./utils/filePostActionHelper');
 const handleResponseHeaders = require('../../middleware/handleResponseHeaders');
-const docs = require('./docs');
 
 const wopiPrefix = '/wopi/files/';
 
@@ -27,7 +26,6 @@ const wopiPrefix = '/wopi/files/';
 class WopiFilesInfoService {
 	constructor(app) {
 		this.app = app;
-		this.docs = docs.wopiFilesInfoService;
 	}
 
 	find(params) {
@@ -106,7 +104,6 @@ class WopiFilesInfoService {
 class WopiFilesContentsService {
 	constructor(app) {
 		this.app = app;
-		this.docs = docs.wopiFilesContentsService;
 	}
 
 	/**
@@ -219,7 +216,7 @@ class WopiFilesContentsService {
 module.exports = function setup() {
 	const app = this;
 
-	app.use('/wopi/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/wopi/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use(`${wopiPrefix}:fileId/contents`, new WopiFilesContentsService(app), handleResponseHeaders);
 	app.use(`${wopiPrefix}:fileId`, new WopiFilesInfoService(app), handleResponseHeaders);
 

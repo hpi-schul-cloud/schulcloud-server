@@ -52,8 +52,19 @@ const generateRequestParamsFromUser = (appPromise) => async (user) => {
 	return requestParams;
 };
 
+const generateJWTFromUser = (appPromise) => async (user) => {
+	const app = await appPromise;
+	const credentials = { username: user.email, password: user.email };
+	await accountsHelper(app).create(credentials, 'local', user);
+
+	const fetchJwt = generateJWT(app);
+	const jwt = await fetchJwt(credentials);
+	return jwt;
+};
+
 module.exports = (app) => ({
 	generateJWT: generateJWT(app),
 	generateRequestParams: generateRequestParams(app),
 	generateRequestParamsFromUser: generateRequestParamsFromUser(app),
+	generateJWTFromUser: generateJWTFromUser(app),
 });

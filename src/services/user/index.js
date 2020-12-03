@@ -21,6 +21,7 @@ const {
 	registrationConsentServiceHooks,
 	ForcePasswordChange: { ForcePasswordChangeService, ForcePasswordChangeServiceHooks },
 	QrRegistrationLinks: { QrRegistrationLinks, qrRegistrationLinksHooks },
+	QrRegistrationLinksLegacyClient: { QrRegistrationLinksLegacyClient, qrRegistrationLinksLegacyHooks },
 } = require('./services');
 
 const { registerApiValidation } = reqlib('src/utils/apiValidation');
@@ -121,6 +122,11 @@ module.exports = (app) => {
 	app.use(qrRegistrationLinksRoute, new QrRegistrationLinks(userModel));
 	const qrRegistrationLinksService = app.service(qrRegistrationLinksRoute);
 	qrRegistrationLinksService.hooks(qrRegistrationLinksHooks);
+
+	const qrRegistrationLinkLegacyRoute = '/users/qrRegistrationLinkLegacy';
+	app.use(qrRegistrationLinkLegacyRoute, new QrRegistrationLinksLegacyClient(userModel));
+	const qrRegistrationLinksLegacyService = app.service(qrRegistrationLinkLegacyRoute);
+	qrRegistrationLinksLegacyService.hooks(qrRegistrationLinksLegacyHooks);
 
 	app.use('/users/:userId/skipregistration', new SkipRegistrationService());
 	app.service('/users/:userId/skipregistration').hooks(skipRegistrationSingleHooks);

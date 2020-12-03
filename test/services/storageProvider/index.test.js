@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const CryptoJS = require('crypto-js');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise);
 
@@ -13,7 +13,7 @@ describe('storageProvider service', () => {
 	before(async () => {
 		app = await appPromise;
 		storageProviderService = app.service('storageProvider');
-		configBefore = Configuration.toObject(); // deep copy current config
+		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('S3_KEY', '1234567891234567');
 	});
 

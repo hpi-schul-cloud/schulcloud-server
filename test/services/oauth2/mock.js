@@ -11,7 +11,9 @@ const testObjects = require('../helpers/testObjects')(appPromise);
 
 chai.use(chaiHttp);
 
-describe('oauth2 service', function oauthTest() {
+const { expect } = chai;
+
+describe('oauth2 service mock', function oauthTest() {
 	let app;
 	let baseUrlService;
 	let clientsService;
@@ -19,7 +21,7 @@ describe('oauth2 service', function oauthTest() {
 	let introspectService;
 	let consentService;
 	let server;
-	this.timeout(10000);
+	this.timeout(15000);
 
 	const testUser2 = {
 		_id: '0000d224816abba584714c9c',
@@ -44,9 +46,9 @@ describe('oauth2 service', function oauthTest() {
 	};
 
 	let beforeHydraUri;
-	before(async () => {
-		app = await appPromise;
+	before(async function before() {
 		this.timeout(10000);
+		app = await appPromise;
 
 		baseUrlService = app.service('oauth2/baseUrl');
 		clientsService = app.service('oauth2/clients');
@@ -106,13 +108,11 @@ describe('oauth2 service', function oauthTest() {
 				assert(true);
 			}));
 
-	it('GET Login Request', () =>
-		app
-			.service('oauth2/loginRequest')
-			.get(null)
-			.then((result) => {
-				assert.strictEqual(result.challenge, null);
-			}));
+	it('GET Login Request', async () => {
+		const id = null;
+		const result = await app.service('oauth2/loginRequest').get(id);
+		expect(result).to.eql({ challenge: null, client: { client_id: 'thethingwearelookingfor' } });
+	});
 
 	it('PATCH Login Request Accept', async () => {
 		const user = await testObjects.createTestUser();
@@ -141,20 +141,18 @@ describe('oauth2 service', function oauthTest() {
 		app.service('ltiTools').remove(ltiTool._id);
 	});
 
-	it('PATCH Login Request Reject', () =>
-		app
-			.service('oauth2/loginRequest')
-			.patch(
-				null,
-				{},
-				{
-					query: { accept: 0 },
-					account: { userId: '0000d224816abba584714c9c' },
-				}
-			)
-			.then(() => {
-				assert.ok(true);
-			}));
+	/* fix this test, but not sure if the expect result what we want */
+	it('PATCH Login Request Reject', async () => {
+		const id = null;
+		const data = {};
+		const params = {
+			query: { accept: 0 },
+			account: { userId: '0000d224816abba584714c9c' },
+		};
+
+		const result = await app.service('oauth2/loginRequest').patch(id, data, params);
+		expect(result).to.eql({ client_id: null });
+	});
 
 	it('Introspect Inactive Token', () =>
 		app

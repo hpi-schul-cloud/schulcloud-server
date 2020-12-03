@@ -2,7 +2,7 @@ const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
 const reqlib = require('app-root-path').require;
 
 const { NotAuthenticated } = reqlib('src/errors');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 class ApiKeyStrategy extends AuthenticationBaseStrategy {
 	parse(req, res) {

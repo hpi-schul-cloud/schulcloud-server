@@ -7,7 +7,7 @@ const { datasourceRunService, datasourceRunsHooks } = require('./services/dataso
 module.exports = function setup() {
 	const app = this;
 
-	app.use('/datasources/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/datasources/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/datasources', datasourceService);
 

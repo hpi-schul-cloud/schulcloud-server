@@ -14,7 +14,7 @@ module.exports = function () {
 	const app = this;
 
 	// REPLACEMENT FOR CURRENT consent ROUTE
-	app.use('/consents/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/consents/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/consents', new deprecated.ConsentService());
 	app.service('/consents').hooks(deprecated.consentHooks);

@@ -1,4 +1,5 @@
 {
+	"$schema": "./default.schema.json",
 	"host": "localhost",
 	"port": "PORT",
 	"mongodb": "MONGO_URI",
@@ -10,5 +11,6 @@
 		"hydra": "HYDRA_URI",
 		"web": "HOST"
 	},
-	"NOTIFICATION_PLATFORM":"NOTIFICATION_PLATFORM"
+	"NOTIFICATION_PLATFORM": "NOTIFICATION_PLATFORM",
+	"FEATURE_SHOW_VERSION_ENABLED": true
 }

@@ -3,7 +3,7 @@ const CryptoJS = require('crypto-js');
 const reqlib = require('app-root-path').require;
 
 const { NotFound, BadRequest, GeneralError } = reqlib('src/errors');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const aws = require('aws-sdk');
 const pathUtil = require('path');
 const fs = require('fs');

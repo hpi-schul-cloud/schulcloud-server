@@ -140,6 +140,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,
 		generateRequestParamsFromUser: login.generateRequestParamsFromUser,
+		generateJWTFromUser: login.generateJWTFromUser,
 		createdUserIds: warn('@deprecated use info() instead', users.info),
 		teams,
 		classes,

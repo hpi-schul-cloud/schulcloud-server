@@ -2,7 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const { expect } = require('chai');
 const mockery = require('mockery');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const mockAws = require('./s3.mock');
 const appPromise = require('../../../../src/app');
 
@@ -35,7 +35,7 @@ describe('multple S3 AWS file storage strategy', () => {
 			},
 		});
 
-		configBefore = Configuration.toObject(); // deep copy current config
+		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED', true);
 		Configuration.set('S3_KEY', '1234567891234567');
 

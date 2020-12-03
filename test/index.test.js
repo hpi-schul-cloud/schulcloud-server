@@ -1,3 +1,3 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 Configuration.printHierarchy();

@@ -1,7 +1,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const freeport = require('freeport');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const logger = require('../../../src/logger');
 const MockServer = require('./MockServer');
 const testObjects = require('../helpers/testObjects');
@@ -39,7 +39,7 @@ describe('Nexboard services', () => {
 	let configBefore;
 
 	before(() => {
-		configBefore = Configuration.toObject();
+		configBefore = Configuration.toObject({ plainSecrets: true });
 		freeport(async (err, port) => {
 			if (err) {
 				logger.warning('freeport:', err);

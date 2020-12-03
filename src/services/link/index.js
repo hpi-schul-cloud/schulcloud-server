@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
-const { Configuration } = require('@schul-cloud/commons');
-const queryString = require('querystring');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const queryString = require('qs');
 const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
@@ -69,7 +69,9 @@ module.exports = function setup() {
 		 */
 		async create(data, params) {
 			const linkData = {};
-			if (data.toHash) {
+			if (data.hash) {
+				linkData.hash = data.hash;
+			} else if (data.toHash) {
 				try {
 					const user = ((await app.service('users').find({ query: { email: data.toHash } })) || {}).data[0];
 					if (user && user.importHash) linkData.hash = user.importHash;
@@ -166,7 +168,7 @@ module.exports = function setup() {
 		}
 	}
 
-	app.use('/link/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/link/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/link', redirectToTarget, linkService);
 	app.use('/registrationlink', new RegistrationLinkService());

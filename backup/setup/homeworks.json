@@ -935,5 +935,709 @@
 		"$date": "2017-09-22T09:41:00.385Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3a99ea9c31a26f4d1d4e5"
+	},
+	"fileIds": [],
+	"courseId": null,
+	"lessonId": null,
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Biologie 7C ",
+	"description": "<p>Herz</p>",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T07:27:00Z"
+	},
+	"dueDate": {
+		"$date": "2023-11-04T07:27:00Z"
+	},
+	"private": true,
+	"createdAt": {
+		"$date": "2020-11-05T07:28:30.102Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T07:28:30.102Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b0b7a9c31a26f4d1d749"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task1",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T07:58:47.348Z"
+	},
+	"dueDate": null,
+	"private": true,
+	"createdAt": {
+		"$date": "2020-11-05T07:58:47.382Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T07:58:47.382Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b0dba9c31a26f4d1d764"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task2",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T07:59:00Z"
+	},
+	"dueDate": null,
+	"private": true,
+	"createdAt": {
+		"$date": "2020-11-05T07:59:23.317Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T07:59:23.317Z"
+	},
+	"__v": 0,
+	"publicSubmissions": false,
+	"teamSubmissions": false
+},
+{
+	"_id": {
+		"$oid": "5fa3b1a3a9c31a26f4d1d77f"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task3",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:02:43.523Z"
+	},
+	"dueDate": null,
+	"private": true,
+	"createdAt": {
+		"$date": "2020-11-05T08:02:43.554Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:02:43.554Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b21ca9c31a26f4d1d840"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task4",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:04:44.35Z"
+	},
+	"dueDate": null,
+	"private": true,
+	"createdAt": {
+		"$date": "2020-11-05T08:04:44.386Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:04:44.386Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b23da9c31a26f4d1d868"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task5",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:05:17.76Z"
+	},
+	"dueDate": null,
+	"private": true,
+	"createdAt": {
+		"$date": "2020-11-05T08:05:17.786Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:05:17.786Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b256a9c31a26f4d1d890"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task6",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:05:42.443Z"
+	},
+	"dueDate": null,
+	"private": true,
+	"createdAt": {
+		"$date": "2020-11-05T08:05:42.473Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:05:42.473Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b273a9c31a26f4d1d8b8"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task7",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:06:11.107Z"
+	},
+	"dueDate": null,
+	"private": true,
+	"createdAt": {
+		"$date": "2020-11-05T08:06:11.139Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:06:11.139Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b69ba9c31a26f4d1d8e0"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task8",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:23:55.191Z"
+	},
+	"dueDate": null,
+	"private": true,
+	"createdAt": {
+		"$date": "2020-11-05T08:23:55.223Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:23:55.223Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b8caa9c31a26f4d1d8fb"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task9",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:33:14.817Z"
+	},
+	"dueDate": null,
+	"private": true,
+	"createdAt": {
+		"$date": "2020-11-05T08:33:14.862Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:33:14.862Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b8e8a9c31a26f4d1d923"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task10",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:33:44.558Z"
+	},
+	"dueDate": null,
+	"private": true,
+	"createdAt": {
+		"$date": "2020-11-05T08:33:44.584Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:33:44.584Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b8fea9c31a26f4d1d94b"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task11",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:34:06.137Z"
+	},
+	"dueDate": null,
+	"createdAt": {
+		"$date": "2020-11-05T08:34:06.173Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:34:06.173Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b912a9c31a26f4d1d974"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task12",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:34:26.613Z"
+	},
+	"dueDate": null,
+	"createdAt": {
+		"$date": "2020-11-05T08:34:26.647Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:34:26.647Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b92aa9c31a26f4d1d99d"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task13",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:34:50.407Z"
+	},
+	"dueDate": null,
+	"createdAt": {
+		"$date": "2020-11-05T08:34:50.439Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:34:50.439Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b93da9c31a26f4d1d9c6"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task14",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:35:09.032Z"
+	},
+	"dueDate": null,
+	"createdAt": {
+		"$date": "2020-11-05T08:35:09.062Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:35:09.062Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b956a9c31a26f4d1d9ef"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task15",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:35:34.721Z"
+	},
+	"dueDate": null,
+	"createdAt": {
+		"$date": "2020-11-05T08:35:34.761Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:35:34.761Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b96ca9c31a26f4d1da18"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task16",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:35:56.778Z"
+	},
+	"dueDate": null,
+	"createdAt": {
+		"$date": "2020-11-05T08:35:56.808Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:35:56.808Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b986a9c31a26f4d1da41"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task17",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:36:22.38Z"
+	},
+	"dueDate": null,
+	"createdAt": {
+		"$date": "2020-11-05T08:36:22.41Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:36:22.41Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b9a9a9c31a26f4d1da6a"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task18",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:36:57.885Z"
+	},
+	"dueDate": null,
+	"createdAt": {
+		"$date": "2020-11-05T08:36:57.91Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:36:57.91Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b9bea9c31a26f4d1da93"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task19",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:37:18.615Z"
+	},
+	"dueDate": null,
+	"createdAt": {
+		"$date": "2020-11-05T08:37:18.644Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:37:18.644Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3b9d1a9c31a26f4d1dabc"
+	},
+	"fileIds": [],
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"lessonId": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"maxTeamMembers": null,
+	"archived": [],
+	"name": "Task20",
+	"description": "",
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"teacherId": {
+		"$oid": "5fa2c71bb229544f2c6966d9"
+	},
+	"availableDate": {
+		"$date": "2020-11-05T08:37:37.236Z"
+	},
+	"dueDate": null,
+	"createdAt": {
+		"$date": "2020-11-05T08:37:37.27Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T08:37:37.27Z"
+	},
+	"__v": 0
 }
 ]

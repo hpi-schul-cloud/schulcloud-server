@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const CryptoJS = require('crypto-js');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { connect, close } = require('../src/utils/database');
 

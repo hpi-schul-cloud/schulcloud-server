@@ -36,8 +36,8 @@ jobs:
         - npm ci
         - npm i -g wait-on
         - wait-on tcp:27017 -t 60000
-    - script: curl "https://raw.githubusercontent.com/hpi-schul-cloud/integration-tests/master/scripts/ci/fetch.travis.sh" | bash
-      name: "test:integration"
+    - script: curl "https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/master/scripts/ci/fetch.travis.sh" | bash
+      name: "test:end-to-end"
       env:
         - IT_CLIENT_HOST=nuxtclient
         - IT_CLIENT_PORT=4000

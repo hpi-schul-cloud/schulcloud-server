@@ -150,20 +150,49 @@
 			"default": false,
 			"description": "If enabled, adds support for Matrix Messenger."
 		},
-		"MATRIX_URI": {
-			"type": "string",
-			"format": "uri",
-			"default": "https://matrix.messenger.schule",
-			"description": "The URI of the Matrix Messenger server."
-		},
-		"MATRIX_SERVERNAME": {
-			"type": "string",
-			"default": "messenger.schule",
-			"description": "Servername of the Matrix Messenger server."
-		},
-		"MATRIX_SECRET": {
-			"type": "string",
-			"description": "Shared secret for the Matrix server."
+		"MATRIX_MESSENGER": {
+			"type": "object",
+			"description": "Matrix messenger properties, required always to be defined",
+			"required": [
+				"URI",
+				"SERVERNAME",
+				"SECRET",
+				"STUDENT_ROOM_CREATION"
+			],
+			"properties": {
+				"URI": {
+					"type": "string",
+					"format": "uri",
+					"default": "https://matrix.messenger.schule",
+					"description": "The URI of the Matrix Messenger server."
+				},
+				"SERVERNAME": {
+					"type": "string",
+					"default": "messenger.schule",
+					"description": "Servername of the Matrix Messenger server."
+				},
+				"SECRET": {
+					"type": "string",
+					"description": "Shared secret for the Matrix server."
+				},
+				"STUDENT_ROOM_CREATION": {
+					"type": "boolean",
+					"default": false,
+					"description": "If enabled, school admins can allow students to create additional chat rooms"
+				},
+				"WELCOME_MESSAGE_ADMIN": {
+					"type": "string",
+					"description": "Greet new admin users with a personal message from the sync bot"
+				},
+				"WELCOME_MESSAGE_TEACHER": {
+					"type": "string",
+					"description": "Greet new teacher users with a personal message from the sync bot"
+				},
+				"WELCOME_MESSAGE_STUDENT": {
+					"type": "string",
+					"description": "Greet new student users with a personal message from the sync bot"
+				}
+			}
 		},
 		"FEATURE_RABBITMQ_ENABLED": {
 			"type": "boolean",
@@ -283,6 +312,11 @@
 			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
 		},
+		"FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Allows school admin to toggle student's LERNSTORE_VIEW permission."
+		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
 			"description": "Synchronous encryption key used to secure search user passwords",
@@ -364,15 +398,18 @@
 			"type": "string",
 			"format": "uri",
 			"pattern": ".*(?<!/)$",
-			"description": "The URL for the edu-sharing repository."
+			"description": "The URL for the edu-sharing repository.",
+			"default": "https://mv-repo.schul-cloud.org"
 		},
 		"ES_USER": {
 			"type": "string",
-			"description": "The username for edu-sharing api access"
+			"description": "The username for edu-sharing api access",
+			"default": ""
 		},
 		"ES_PASSWORD": {
 			"type": "string",
-			"description": "The password for edu-sharing api access"
+			"description": "The password for edu-sharing api access",
+			"default": ""
 		},
 		"ES_GRANT_TYPE": {
 			"type": "string",
@@ -414,10 +451,25 @@
 			"default": false,
 			"description": "when enabled, all incoming requests are validated against the openapi schemata, unless the route is whitelisted."
 		},
+		"FEATURE_API_RESPONSE_VALIDATION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "when enabled, all incoming requests are validated against the openapi schemata, unless the route is whitelisted."
+		},
 		"API_VALIDATION_WHITELIST_EXTENSION": {
 			"type": "string",
 			"description": "when set, this is interpreted as a regex to extend the ignorelist for the API validation with any routes matching the regex.",
-			"examples": [".*\/courses\/[0-9a-f]{24}($|\/$)"]
+			"examples": [".*/courses/[0-9a-f]{24}($|/$)"]
+		},
+		"FEATURE_PROMETHEUS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable prometheus api metrics, if enabled, PROMETHEUS must be defined."
+		},
+		"FEATURE_SHOW_VERSION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "enable the /versions route"
 		},
 		"PROMETHEUS": {
 			"type": "object",
@@ -440,6 +492,24 @@
 				}
 			},
 			"required": ["METRICS_PATH", "DURATION_BUCKETS_SECONDS"]
+		},
+		"REQUEST_TIMEOUT": {
+			"type": "integer",
+			"minimum": 0,
+			"default": 8000,
+			"description": "Default timeout for external requests in milliseconds."
+		},
+		"LDAP_SYSTEM_SYNCER_POOL_SIZE": {
+			"type": "integer",
+			"minimum": 1,
+			"default": 1,
+			"description": "Determines how many system syncers will be run in parallel (at most) during the LDAP sync."
+		},
+		"LDAP_SCHOOL_SYNCER_POOL_SIZE": {
+			"type": "integer",
+			"minimum": 1,
+			"default": 1,
+			"description": "Determines how many school syncers will be run in parallel (at most) during the LDAP sync."
 		},
 		"MEMORY_INTERVAL_TIME" : {
 			"type": "integer",
@@ -469,14 +539,27 @@
 		"HOST",
 		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
 		"LERNSTORE_MODE",
-		"PROMETHEUS"
+		"FEATURE_SHOW_VERSION_ENABLED"
 	],
 	"allOf": [
 		{
+			"$ref": "#/definitions/FEATURE_PROMETHEUS_ENABLED",
 			"$ref": "#/definitions/ANTIVIRUS"
 		}
 	],
 	"definitions": {
+		"FEATURE_PROMETHEUS_ENABLED": {
+			"if": {
+				"properties": {
+					"FEATURE_PROMETHEUS_ENABLED": {
+						"const": true
+					}
+				}
+			},
+			"then": {
+				"required": ["PROMETHEUS"]
+			}
+		},
 		"ANTIVIRUS": {
 			"if": {
 				"properties": {
