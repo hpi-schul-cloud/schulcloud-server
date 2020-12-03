@@ -29,7 +29,7 @@ const getTestObjects = async () => {
 	return { courseTeacher, lesson };
 };
 
-describe.only(
+describe(
 	'when having a user in lesson contents',
 	withApp(() => {
 		it('should remove the related lessons', async () => {
@@ -52,8 +52,8 @@ describe.only(
 
 			// check the filter finds the lesson created
 			const matches = await lessonsRepo.getLessonsWithUserInContens(courseTeacher._id);
-			expect(equal(matches[0]._id, lesson._id), 'result matches created lesson').to.be.true;
 			expect(matches.length, 'one result found only').to.equal(1);
+			expect(equal(matches[0]._id, lesson._id), 'result matches created lesson').to.be.true;
 		});
 	})
 );

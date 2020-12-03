@@ -25,6 +25,13 @@ const deleteUserDatafromLessons = async (userId) => {
 	return { trashBinData: { scope: 'lessons', data }, complete: true };
 };
 
+const addCoursesToData = (courses = [], data, propName) => {
+	const dataItems = courses.map((course) => {
+		return { courseId: course._id, [propName]: true };
+	});
+	data.push(...dataItems);
+};
+
 const deleteUyserDataFromCourses = async (userId) => {
 	// TODO permissions
 
@@ -46,6 +53,10 @@ const deleteUyserDataFromCourses = async (userId) => {
 	//
 	const data = [];
 	const courses = coursesRepo.getCoursesWithUserInUsers(userId);
+	if (courses.length !== 0) {
+		coursesRepo.deleteUserFromCourseUsers(userId);
+		addCoursesToData(courses, data, 'user');
+	}
 
 	return { trashBinData: { scope: 'courses', data }, complete: true };
 };

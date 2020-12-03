@@ -19,15 +19,32 @@ const getCoursesWithProp = async (userId, prop) => {
 
 const deletePropFromCourseUsers = async (userId, prop) => {
 	const filter = filterUserInProp(userId, prop);
-	const result = await courseModel.updateMany(filter, {}).lean().exec();
+	const result = await courseModel
+		.updateMany(filter, { $pull: { [prop]: userId } })
+		.lean()
+		.exec();
 	return updateManyResult(result);
 };
 
 const getCoursesWithUser = (userId) => {
-	return getCoursesWithProp(userId, 'userId');
-};
-const deleteUserFromCourseUsers = (userId) => {
-	return deletePropFromCourseUsers(userId, 'userId');
+	return getCoursesWithProp(userId, 'userIds');
 };
 
-module.exports = { getCoursesWithUser, deleteUserFromCourseUsers };
+const getCoursesWithUserAsTeacher = (userId) => {
+	return getCoursesWithProp(userId, 'teacherIds');
+};
+
+const getCoursesWithUserAsSubstituteTeacher = (userId) => {
+	return getCoursesWithProp(userId, 'substitutionIds');
+};
+
+const deleteUserFromCourseUsers = (userId) => {
+	return deletePropFromCourseUsers(userId, 'userIds');
+};
+
+module.exports = {
+	getCoursesWithUser,
+	getCoursesWithUserAsTeacher,
+	getCoursesWithUserAsSubstituteTeacher,
+	deleteUserFromCourseUsers,
+};
