@@ -8,7 +8,6 @@ const { Forbidden } = reqlib('src/errors');
 class LdapConfigService {
 	setup(app) {
 		this.app = app;
-		this.systemId = undefined;
 	}
 
 	/**
@@ -70,8 +69,7 @@ class LdapConfigService {
 	 * `{ ok: Boolean, errors: [], users: {}, classes: {} }`
 	 */
 	async patch(id, config, params) {
-		this.systemId = id;
-		return this.verifyAndSaveLdapConfig(config, this.getOptions(params));
+		return this.verifyAndSaveLdapConfig(config, this.getOptions(params), id);
 	}
 
 	/**
@@ -96,15 +94,16 @@ class LdapConfigService {
 	 * Actual business logic to validate and save LDAP configs
 	 * @param {Object} config config data
 	 * @param {Object} options options object
+	 * @param {ObjectId} systemId optional systemId (when patching)
 	 * @returns {Object} verification result
 	 */
-	async verifyAndSaveLdapConfig(config, options) {
-		if (this.systemId && !config.searchUserPassword) {
-			await this.useExisitingPassword(config);
+	async verifyAndSaveLdapConfig(config, options, systemId) {
+		if (systemId && !config.searchUserPassword) {
+			await this.useExisitingPassword(config, systemId);
 		}
 		const verificationResult = await this.verifyConfig(config);
 		if (verificationResult.ok && options.saveSystem) {
-			await this.saveConfig(config, options.school, options.activateSystem);
+			await this.saveConfig(config, systemId, options.school, options.activateSystem);
 		}
 		return verificationResult;
 	}
@@ -114,9 +113,9 @@ class LdapConfigService {
 	 * The client may leave out the password field to signal that it did not change.
 	 * @param {Object} config config data
 	 */
-	async useExisitingPassword(config) {
+	async useExisitingPassword(config, systemId) {
 		// password wasn't changed, so we need to get the current one from the system
-		const originalSystem = await this.app.service('systems').get(this.systemId);
+		const originalSystem = await this.app.service('systems').get(systemId);
 		config.searchUserPassword = originalSystem.ldapConfig.searchUserPassword;
 	}
 
@@ -164,10 +163,11 @@ class LdapConfigService {
 	 * Saves (and optionally activates) an LDAP config for a given school.
 	 * If no systemId is given, a new system will be created and assigned.
 	 * @param {Object} config LDAP config object
+	 * @param {ObjectId} systemId an existing systemId or falsy value to create one
 	 * @param {School} school the school to update
 	 * @param {Boolean} [activate=true] optional value for `ldapConfig.active`
 	 */
-	async saveConfig(config, school, activate) {
+	async saveConfig(config, systemId, school, activate) {
 		const systemService = await this.app.service('systems');
 		const schoolsService = await this.app.service('schools');
 
@@ -175,9 +175,9 @@ class LdapConfigService {
 
 		const session = await mongoose.startSession();
 		await session.withTransaction(async () => {
-			if (this.systemId) {
+			if (systemId) {
 				// update existing system (already assigned to school)
-				const thingsToDo = [systemService.patch(this.systemId, system)];
+				const thingsToDo = [systemService.patch(systemId, system)];
 				if (activate) {
 					thingsToDo.push(
 						schoolsService.patch(school._id, {
