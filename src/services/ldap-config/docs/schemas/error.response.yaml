@@ -1,5 +1,5 @@
 type: object
-description: result on success full creat and verify
+description: result on error for create and verify
 properties:
   ok:
     type: boolean

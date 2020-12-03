@@ -1,5 +1,5 @@
 type: object
-description: schame for request body of patch request
+description: schema for request body of patch request
 required:
   - url
   - rootPath
