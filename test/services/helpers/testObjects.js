@@ -1,3 +1,5 @@
+const { ObjectId: generateObjectId } = require('mongoose').Types;
+
 const logger = require('../../../src/logger/index');
 
 const serviceHelpers = require('./services');
@@ -7,7 +9,7 @@ const warn = (message, pass) => {
 	return pass;
 };
 
-module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
+module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObjectId }) => {
 	const {
 		accounts,
 		activation,
@@ -161,5 +163,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		setupUser,
 		options: opt,
 		randomGen,
+		generateObjectId,
 	};
 };
