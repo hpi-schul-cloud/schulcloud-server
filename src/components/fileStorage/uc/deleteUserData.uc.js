@@ -1,26 +1,4 @@
-const logger = require('../../../logger');
-
-const repo = require('../repo/files.repo');
-
-/**
- * Delete file connections for files shared with user
- * @param {BSON|BSONString} userId
- */
-const removePermissionsThatUserCanAccess = async (userId) => {
-	try {
-		const { success: finished, filePermissions } = await repo.removeFilePermissionsByUserId(userId);
-
-		const trashBinData = filePermissions.map((fp) => ({
-			scope: 'filePermission',
-			data: fp,
-		}));
-
-		return { finished, trashBinData };
-	} catch (err) {
-		logger.warning('error during tombstone dissolve in file permissions', err);
-		return { finished: false, trashBinData: [] };
-	}
-};
+const { removePermissionsThatUserCanAccess } = require('./applicationInternal/removePermissions')
 
 const deleteUserData = async (userId) => {
 	// step 1
@@ -36,5 +14,4 @@ const deleteUserData = async (userId) => {
 
 module.exports = {
 	deleteUserData,
-	removePermissionsThatUserCanAccess,
 };
