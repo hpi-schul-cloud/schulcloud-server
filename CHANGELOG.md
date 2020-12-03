@@ -58,6 +58,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7499 - Fixes documentation for edu sharing endpoints
 - SC-7872 - Fix audience of the jwt to new organisation name.
 - SC-7868 - Move external request helpers to more present file location
+- SC-7474 pull docker container for tests if commit id exists on docker hub
 
 ### Fixed
 
