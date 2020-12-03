@@ -36,7 +36,7 @@ const getUserData = async (id) => {
 };
 
 const deleteUserRelatedData = async (userId, app) => {
-	const [deleteUserFacades] = [];
+	const deleteUserFacades = [];
 	for (const facadeName of deleteUserFacades) {
 		const facade = app.facade(facadeName);
 		if (typeof facade.deleteUserData === 'function') {
@@ -88,9 +88,7 @@ const deleteUser = async (id, roleName, { account, app }) => {
 	// const fileStorage = app.facade('/fileStorage/v2');
 
 	const userAccountData = await getUserData(id);
-	const user = userAccountData.find((item) => {
-		item.scope === 'user';
-	}).data;
+	const user = userAccountData.find(({ scope }) => scope === 'user').data;
 
 	const trashBin = await createUserTrashbin(id, userAccountData);
 
@@ -99,8 +97,8 @@ const deleteUser = async (id, roleName, { account, app }) => {
 		const registrationPinFacade = app.facade('/registrationPin/v2');
 		const registrationPinTrash = registrationPinFacade.deleteRegistrationPinsByEmail(user.email);
 		trashbinRepo.updateTrashbinByUserId(user.id, registrationPinTrash.data); // TODO unnecessary for PINs?
-	} catch(error) {
-		// TODO
+	} catch (error) {
+		asyncErrorLog(error, `failed to delete regeistration pin for user ${user.id}`);
 	}
 
 	await deleteUserRelatedData(user.id, app);
