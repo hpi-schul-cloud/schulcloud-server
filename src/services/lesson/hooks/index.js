@@ -50,9 +50,8 @@ const convertMerlinUrl = async (context) => {
 				if (content && content.content && content.content.resources && content.content.resources.length) {
 					await Promise.all(
 						content.content.resources.map(async (resource) => {
-							if (resource && resource.url && resource.url.includes('merlin') && resource.url.includes('identifier')) {
-								const splitted = resource.url.split('=');
-								const merlinReference = splitted[splitted.length - 1];
+							if (resource && resource.url && resource.merlinReference) {
+								const { merlinReference } = resource;
 								resource.url = await context.app
 									.service('edu-sharing/merlinToken')
 									.find({ query: { merlinReference } });
@@ -81,6 +80,24 @@ const convertMerlinUrl = async (context) => {
 			})
 		);
 	}
+	return context;
+};
+
+const attachMerlinReferenceToLesson = (context) => {
+	if (context.data && context.data.contents && context.data.contents.length) {
+		context.data.contents.forEach((c) => {
+			if (c.content && c.content.resources && c.content.resources.length) {
+				c.content.resources.forEach((resource) => {
+					const isMerlin = new RegExp(/merlin\.nibis.*identifier/);
+					if (resource.url && isMerlin.test(resource.url)) {
+						const merlinReference = resource.url.match(/.*identifier=\s*([^\n\r]*)/);
+						resource.merlinReference = merlinReference[1];
+					}
+				});
+			}
+		});
+	}
+
 	return context;
 };
 
@@ -217,6 +234,7 @@ exports.before = () => ({
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 	],
 	patch: [
+		attachMerlinReferenceToLesson,
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 		permitGroupOperation,
 		ifNotLocal(checkCorrectCourseOrTeamId),
