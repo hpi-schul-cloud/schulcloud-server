@@ -87,10 +87,9 @@ const chooseProvider = async (schoolId) => {
 	return provider;
 };
 
-const FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED = Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED');
 // begin legacy
 let awsConfig = {};
-if (!FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED) {
+if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === false) {
 	try {
 		//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
 		/* eslint-disable global-require, no-unused-expressions */
@@ -114,7 +113,7 @@ const createAWSObject = async (schoolId) => {
 
 	if (school === null) throw new NotFound('School not found.');
 
-	if (FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED) {
+	if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === true) {
 		const S3_KEY = Configuration.get('S3_KEY');
 		if (!school.storageProvider) {
 			school.storageProvider = await chooseProvider(schoolId);
@@ -405,7 +404,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						const params = {
 							Bucket: safeAwsObject.bucket,
 							Key: flatFileName,
-							Expires: 60,
+							Expires: Configuration.get('STORAGE_SIGNED_URL_EXPIRE'),
 							ContentType: fileType,
 							Metadata: header,
 						};
@@ -436,7 +435,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					const params = {
 						Bucket: awsObject.bucket,
 						Key: flatFileName,
-						Expires: 60,
+						Expires: Configuration.get('STORAGE_SIGNED_URL_EXPIRE'),
 					};
 					const getBoolean = (value) => value === true || value === 'true';
 					if (getBoolean(download)) {

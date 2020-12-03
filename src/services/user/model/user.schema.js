@@ -100,6 +100,7 @@ const userSchema = new Schema(
 
 		customAvatarBackgroundColor: { type: String },
 		avatarSettings: { type: Object },
+		deletedAt: { type: Date, default: null },
 	},
 	{
 		timestamps: true,
