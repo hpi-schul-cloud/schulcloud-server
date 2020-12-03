@@ -8,6 +8,7 @@ const { Forbidden } = reqlib('src/errors');
 class LdapConfigService {
 	setup(app) {
 		this.app = app;
+		this.systemId = undefined;
 	}
 
 	/**
@@ -69,10 +70,8 @@ class LdapConfigService {
 	 * `{ ok: Boolean, errors: [], users: {}, classes: {} }`
 	 */
 	async patch(id, config, params) {
-		return this.verifyAndSaveLdapConfig(config, {
-			...this.getOptions(params),
-			systemId: id,
-		});
+		this.systemId = id;
+		return this.verifyAndSaveLdapConfig(config, this.getOptions(params));
 	}
 
 	/**
@@ -100,11 +99,25 @@ class LdapConfigService {
 	 * @returns {Object} verification result
 	 */
 	async verifyAndSaveLdapConfig(config, options) {
+		if (this.systemId && !config.searchUserPassword) {
+			await this.useExisitingPassword(config);
+		}
 		const verificationResult = await this.verifyConfig(config);
 		if (verificationResult.ok && options.saveSystem) {
-			await this.saveConfig(config, options.school, options.systemId, options.activateSystem);
+			await this.saveConfig(config, options.school, options.activateSystem);
 		}
 		return verificationResult;
+	}
+
+	/**
+	 * Updates the config with the current searchUserPassword if none was given.
+	 * The client may leave out the password field to signal that it did not change.
+	 * @param {Object} config config data
+	 */
+	async useExisitingPassword(config) {
+		// password wasn't changed, so we need to get the current one from the system
+		const originalSystem = await this.app.service('systems').get(this.systemId);
+		config.searchUserPassword = originalSystem.ldapConfig.searchUserPassword;
 	}
 
 	/**
@@ -152,10 +165,9 @@ class LdapConfigService {
 	 * If no systemId is given, a new system will be created and assigned.
 	 * @param {Object} config LDAP config object
 	 * @param {School} school the school to update
-	 * @param {Object} [systemId] optional id of the system to update
 	 * @param {Boolean} [activate=true] optional value for `ldapConfig.active`
 	 */
-	async saveConfig(config, school, systemId = undefined, activate) {
+	async saveConfig(config, school, activate) {
 		const systemService = await this.app.service('systems');
 		const schoolsService = await this.app.service('schools');
 
@@ -163,9 +175,9 @@ class LdapConfigService {
 
 		const session = await mongoose.startSession();
 		await session.withTransaction(async () => {
-			if (systemId) {
+			if (this.systemId) {
 				// update existing system (already assigned to school)
-				const thingsToDo = [systemService.patch(systemId, system)];
+				const thingsToDo = [systemService.patch(this.systemId, system)];
 				if (activate) {
 					thingsToDo.push(
 						schoolsService.patch(school._id, {
