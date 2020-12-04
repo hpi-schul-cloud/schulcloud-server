@@ -1,7 +1,12 @@
 const reqlib = require('app-root-path').require;
 
 const { DeletedUserDataError } = reqlib('src/errors');
-const { findPrivateHomeworksFromUser, deletePrivateHomeworksFromUser } = require('../repo/task.repo');
+const {
+	findPrivateHomeworksFromUser,
+	deletePrivateHomeworksFromUser,
+	findPublicHomeworksFromUser,
+	replaceUserInHomeworks,
+} = require('../repo/task.repo');
 
 // TODO
 const deletePrivateSubmissions = async (userId) => {
@@ -24,33 +29,38 @@ const removeConnectionToSharedSubmissions = async (userId) => {
 
 const deletePrivateUserHomeworks = async (userId, context = []) => {
 	const result = await findPrivateHomeworksFromUser(userId);
-	const execute = await deletePrivateHomeworksFromUser(userId);
+	const success = await deletePrivateHomeworksFromUser(userId);
 
 	const status = {
 		context: 'homeworks',
 		type: 'private',
 		data: result,
-		success: execute.success,
+		success,
 	};
 	context.push(status);
 	return context;
 };
 
-const removeConnectionToSharedHomeworks = async (userId) => {
-	// TODO
-	return {
+const removeConnectionToSharedHomeworks = async (userId, replaceUserId, context = []) => {
+	const result = await findPublicHomeworksFromUser(userId, ['_id', 'teacherId']);
+	const success = await deletePrivateHomeworksFromUser(userId, replaceUserId);
+
+	const status = {
 		context: 'homeworks',
 		type: 'shared',
-		data: [],
+		data: result,
+		success,
 	};
+	context.push(status);
+	return context;
 };
 
-const deleteUserRelatedData = async (userId) => {
+const deleteUserRelatedData = async (userId, schoolTombStoneUserId) => {
 	const context = [];
 	try {
 		// TODO Promise.all
 		await deletePrivateSubmissions(userId, context);
-		await removeConnectionToSharedSubmissions(userId, context);
+		await removeConnectionToSharedSubmissions(userId, schoolTombStoneUserId, context);
 		await deletePrivateUserHomeworks(userId, context);
 		await removeConnectionToSharedHomeworks(userId, context);
 		// TODO clearify the latest conclusio array, or object ..but is the array matched in user to object then array make no sense

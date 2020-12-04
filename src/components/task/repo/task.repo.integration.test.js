@@ -2,7 +2,12 @@ const chai = require('chai');
 
 const testObjects = require('../../../../test/services/helpers/testObjects');
 const { SubmissionModel, HomeworkModel } = require('../db');
-const { findPrivateHomeworksFromUser, deletePrivateHomeworksFromUser } = require('./task.repo');
+const {
+	findPrivateHomeworksFromUser,
+	deletePrivateHomeworksFromUser,
+	findPublicHomeworksFromUser,
+	replaceUserInHomeworks,
+} = require('./task.repo');
 const appPromise = require('../../../app');
 
 const { expect } = chai;
@@ -17,22 +22,31 @@ const createHomeworks = async (testHelper) => {
 	const promPrivateLesson = testHelper.createTestHomework({ teacherId: userId, private: true, lessonId });
 	const promPrivateCourse = testHelper.createTestHomework({ teacherId: userId, private: true, courseId });
 
-	const promNotPrivate = testHelper.createTestHomework({ teacherId: userId, private: false });
-	const promNotPrivateLesson = testHelper.createTestHomework({ teacherId: userId, private: false, lessonId });
-	const promNotPrivateCourse = testHelper.createTestHomework({ teacherId: userId, private: false, courseId });
+	const promPublic = testHelper.createTestHomework({ teacherId: userId, private: false });
+	const promPublicLesson = testHelper.createTestHomework({ teacherId: userId, private: false, lessonId });
+	const promPublicCourse = testHelper.createTestHomework({ teacherId: userId, private: false, courseId });
 
 	const promOtherPrivate = testHelper.createTestHomework({ teacherId: otherUserId, private: true });
 	const promOtherPrivateLesson = testHelper.createTestHomework({ teacherId: otherUserId, private: true, lessonId });
 	const promOtherPrivateCourse = testHelper.createTestHomework({ teacherId: otherUserId, private: true, courseId });
 
-	const [privateH, lessonH, courseH, h1, h2, h3, h4, h5, h6] = await Promise.all([
+	const [
+		privateH,
+		privateLessonH,
+		privateCourseH,
+		publicH,
+		publicLessonH,
+		publicCourseH,
+		otherPrivateH,
+		otherPrivateLessonH,
+		otherPrivateCourseH,
+	] = await Promise.all([
 		promPrivate,
 		promPrivateLesson,
 		promPrivateCourse,
-		// other homeworks marked as h1 and should not touched
-		promNotPrivate,
-		promNotPrivateLesson,
-		promNotPrivateCourse,
+		promPublic,
+		promPublicLesson,
+		promPublicCourse,
 		promOtherPrivate,
 		promOtherPrivateLesson,
 		promOtherPrivateCourse,
@@ -41,21 +55,15 @@ const createHomeworks = async (testHelper) => {
 	return {
 		userId,
 		otherUserId,
-		private: {
-			privateH,
-			lessonH,
-			courseH,
-		},
-		notPrivate: {
-			h1,
-			h2,
-			h3,
-		},
-		others: {
-			h4,
-			h5,
-			h6,
-		},
+		privateH,
+		privateLessonH,
+		privateCourseH,
+		publicH,
+		publicLessonH,
+		publicCourseH,
+		otherPrivateH,
+		otherPrivateLessonH,
+		otherPrivateCourseH,
 	};
 };
 
@@ -83,17 +91,14 @@ describe.only('task.repo', () => {
 
 	describe('findPrivateHomeworksFromUser', () => {
 		it('should find private homeworks from a user in all contexts', async () => {
-			const {
-				userId,
-				private: { privateH, lessonH, courseH },
-			} = await createHomeworks(testHelper);
+			const { userId, privateH, privateLessonH, privateCourseH } = await createHomeworks(testHelper);
 
 			const result = await findPrivateHomeworksFromUser(userId);
 
 			expect(result).to.be.an('array').with.lengthOf(3);
 			expect(result.some(matchId(privateH)), 'find private not added homework').to.be.true;
-			expect(result.some(matchId(lessonH)), 'find private lesson homework').to.be.true;
-			expect(result.some(matchId(courseH)), 'find private course homework').to.be.true;
+			expect(result.some(matchId(privateLessonH)), 'find private lesson homework').to.be.true;
+			expect(result.some(matchId(privateCourseH)), 'find private course homework').to.be.true;
 		});
 
 		it('should work with select as second parameter', async () => {
@@ -158,33 +163,112 @@ describe.only('task.repo', () => {
 		});
 	});
 
+	describe('findPublicHomeworksFromUser', () => {
+		it('should find public homeworks from a user in all contexts', async () => {
+			const { userId, publicH, publicLessonH, publicCourseH } = await createHomeworks(testHelper);
+
+			const result = await findPublicHomeworksFromUser(userId);
+
+			expect(result).to.be.an('array').with.lengthOf(3);
+			// from DB and model is public homework without lesson and course possible, it is only force by client controller
+			expect(result.some(matchId(publicH)), 'find public not added homework').to.be.true;
+			expect(result.some(matchId(publicLessonH)), 'find public lesson homework').to.be.true;
+			expect(result.some(matchId(publicCourseH)), 'find public course homework').to.be.true;
+		});
+
+		it('should work with select as second parameter', async () => {
+			const userId = testHelper.generateObjectId();
+
+			const homework = await testHelper.createTestHomework({ teacherId: userId, private: false });
+
+			const selectedKeys = ['_id', 'teacherId'];
+			const result = await findPublicHomeworksFromUser(userId, selectedKeys);
+			expect(result).to.be.an('array').with.lengthOf(1);
+			expect(result[0]).to.have.all.keys(selectedKeys);
+			expect(result[0]._id.toString()).to.equal(homework._id.toString());
+			expect(result[0].teacherId.toString()).to.equal(userId.toString());
+		});
+
+		it('should handle private homeworks exist without errors', async () => {
+			const userId = testHelper.generateObjectId();
+
+			await testHelper.createTestHomework({ teacherId: userId, private: true });
+			const result = await findPublicHomeworksFromUser(userId);
+			expect(result).to.be.an('array').with.lengthOf(0);
+		});
+
+		it('should handle no user matched without errors', async () => {
+			const userId = testHelper.generateObjectId();
+			const otherUserId = testHelper.generateObjectId();
+
+			await testHelper.createTestHomework({ teacherId: otherUserId });
+			const result = await findPublicHomeworksFromUser(userId);
+			expect(result).to.be.an('array').with.lengthOf(0);
+		});
+
+		it('should handle unexpected inputs', async () => {
+			const userId = testHelper.generateObjectId();
+
+			await testHelper.createTestHomework({ teacherId: userId });
+
+			// must execute step by step that errors not mixed
+			const resultNull = await findPublicHomeworksFromUser(null);
+			expect(resultNull, 'when input is null').to.be.an('array').with.lengthOf(0);
+
+			const resultUndefined = await findPublicHomeworksFromUser(undefined);
+			expect(resultUndefined, 'when input is undefined').to.be.an('array').with.lengthOf(0);
+
+			try {
+				await findPublicHomeworksFromUser('123');
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "123" at path "teacherId" for model "homework"'
+				);
+			}
+
+			try {
+				await findPublicHomeworksFromUser(() => {});
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "teacherId" for model "homework"'
+				);
+			}
+		});
+	});
+
 	describe('deletePrivateHomeworksFromUser', () => {
 		it('should deleted private homeworks from a user in all contexts', async () => {
 			const {
 				userId,
 				otherUserId,
-				notPrivate: { h1, h2, h3 },
-				others: { h4, h5, h6 },
+				publicH,
+				publicLessonH,
+				publicCourseH,
+				otherPrivateH,
+				otherPrivateLessonH,
+				otherPrivateCourseH,
 			} = await createHomeworks(testHelper);
 
 			const result = await deletePrivateHomeworksFromUser(userId);
 			expect(result).to.be.true;
 
 			// all homeworks that should not deleted
-			const [dbResultNotPrivate, dbResultOther] = await Promise.all([
+			const [dbResultPublic, dbResultOtherPrivate] = await Promise.all([
 				findHomeworks(userId),
 				findHomeworks(otherUserId),
 			]);
-			// not private homework still exist
-			expect(dbResultNotPrivate).to.be.an('array').with.lengthOf(3);
-			expect(dbResultNotPrivate.some(matchId(h1))).to.be.true;
-			expect(dbResultNotPrivate.some(matchId(h2))).to.be.true;
-			expect(dbResultNotPrivate.some(matchId(h3))).to.be.true;
+			// public homework still exist
+			expect(dbResultPublic).to.be.an('array').with.lengthOf(3);
+			expect(dbResultPublic.some(matchId(publicH))).to.be.true;
+			expect(dbResultPublic.some(matchId(publicLessonH))).to.be.true;
+			expect(dbResultPublic.some(matchId(publicCourseH))).to.be.true;
 			// homeworks from other users are not touched
-			expect(dbResultOther).to.be.an('array').with.lengthOf(3);
-			expect(dbResultOther.some(matchId(h4))).to.be.true;
-			expect(dbResultOther.some(matchId(h5))).to.be.true;
-			expect(dbResultOther.some(matchId(h6))).to.be.true;
+			expect(dbResultOtherPrivate).to.be.an('array').with.lengthOf(3);
+			expect(dbResultOtherPrivate.some(matchId(otherPrivateH))).to.be.true;
+			expect(dbResultOtherPrivate.some(matchId(otherPrivateLessonH))).to.be.true;
+			expect(dbResultOtherPrivate.some(matchId(otherPrivateCourseH))).to.be.true;
 		});
 
 		it('should handle no private homeworks exist without errors', async () => {
