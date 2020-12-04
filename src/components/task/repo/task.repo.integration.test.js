@@ -186,5 +186,53 @@ describe.only('task.repo', () => {
 			expect(dbResultOther.some(matchId(h5))).to.be.true;
 			expect(dbResultOther.some(matchId(h6))).to.be.true;
 		});
+
+		it('should handle no private homeworks exist without errors', async () => {
+			const userId = testHelper.generateObjectId();
+
+			await testHelper.createTestHomework({ teacherId: userId });
+			const result = await deletePrivateHomeworksFromUser(userId);
+			expect(result).to.be.true;
+		});
+
+		it('should handle no user matched without errors', async () => {
+			const userId = testHelper.generateObjectId();
+			const otherUserId = testHelper.generateObjectId();
+
+			await testHelper.createTestHomework({ teacherId: otherUserId });
+			const result = await deletePrivateHomeworksFromUser(userId);
+			expect(result).to.be.true;
+		});
+
+		it('should handle unexpected inputs', async () => {
+			const userId = testHelper.generateObjectId();
+
+			await testHelper.createTestHomework({ teacherId: userId });
+
+			// must execute step by step that errors not mixed
+			const resultNull = await deletePrivateHomeworksFromUser(null);
+			expect(resultNull, 'when input is null').to.be.true;
+
+			const resultUndefined = await deletePrivateHomeworksFromUser(undefined);
+			expect(resultUndefined, 'when input is undefined').to.be.true;
+
+			try {
+				await deletePrivateHomeworksFromUser('123');
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "123" at path "teacherId" for model "homework"'
+				);
+			}
+
+			try {
+				await deletePrivateHomeworksFromUser(() => {});
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "teacherId" for model "homework"'
+				);
+			}
+		});
 	});
 });
