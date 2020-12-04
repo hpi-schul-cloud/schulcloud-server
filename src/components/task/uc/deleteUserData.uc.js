@@ -5,7 +5,7 @@ const {
 	findPrivateHomeworksFromUser,
 	deletePrivateHomeworksFromUser,
 	findPublicHomeworksFromUser,
-	replaceUserInHomeworks,
+	replaceUserInPublicHomeworks,
 } = require('../repo/task.repo');
 
 // TODO
@@ -43,7 +43,7 @@ const deletePrivateUserHomeworks = async (userId, context = []) => {
 
 const removeConnectionToSharedHomeworks = async (userId, replaceUserId, context = []) => {
 	const result = await findPublicHomeworksFromUser(userId, ['_id', 'teacherId']);
-	const success = await deletePrivateHomeworksFromUser(userId, replaceUserId);
+	const success = await replaceUserInPublicHomeworks(userId, replaceUserId);
 
 	const status = {
 		context: 'homeworks',

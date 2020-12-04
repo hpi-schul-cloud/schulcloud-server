@@ -6,7 +6,7 @@ const {
 	findPrivateHomeworksFromUser,
 	deletePrivateHomeworksFromUser,
 	findPublicHomeworksFromUser,
-	replaceUserInHomeworks,
+	replaceUserInPublicHomeworks,
 } = require('./task.repo');
 const appPromise = require('../../../app');
 
@@ -69,8 +69,12 @@ const createHomeworks = async (testHelper) => {
 
 const matchId = (ressource) => ({ _id }) => _id.toString() === ressource._id.toString();
 const findHomeworks = (userId) => HomeworkModel.find({ teacherId: userId }).lean().exec();
+const cleanupUnexpectedHomeworks = () =>
+	HomeworkModel.deleteMany({ $or: [{ teacherId: null }, { teacherId: undefined }] })
+		.lean()
+		.exec();
 
-describe.only('task.repo', () => {
+describe.only('in "task.repo" the function', () => {
 	let app;
 	let server;
 	let testHelper;
@@ -132,6 +136,10 @@ describe.only('task.repo', () => {
 		});
 
 		it('should handle unexpected inputs', async () => {
+			// cleanup null and undefined matched homeworks
+			const result = await cleanupUnexpectedHomeworks();
+			expect(result.ok, 'but cleanup before must work').to.equal(1);
+
 			const userId = testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: userId });
@@ -207,11 +215,16 @@ describe.only('task.repo', () => {
 		});
 
 		it('should handle unexpected inputs', async () => {
+			// cleanup null and undefined matched homeworks
+			const result = await cleanupUnexpectedHomeworks();
+			expect(result.ok, 'but cleanup before must work').to.equal(1);
+
 			const userId = testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: userId });
 
 			// must execute step by step that errors not mixed
+			// TODO: how to validate if no homework exist and add by other test that can match, for all unexpected input tests
 			const resultNull = await findPublicHomeworksFromUser(null);
 			expect(resultNull, 'when input is null').to.be.an('array').with.lengthOf(0);
 
@@ -289,6 +302,10 @@ describe.only('task.repo', () => {
 		});
 
 		it('should handle unexpected inputs', async () => {
+			// cleanup null and undefined matched homeworks
+			const result = await cleanupUnexpectedHomeworks();
+			expect(result.ok, 'but cleanup before must work').to.equal(1);
+
 			const userId = testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: userId });
@@ -315,6 +332,143 @@ describe.only('task.repo', () => {
 			} catch (err) {
 				expect(err.message, 'when input is not bson string').to.equal(
 					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "teacherId" for model "homework"'
+				);
+			}
+		});
+	});
+
+	describe('replaceUserInPublicHomeworks', () => {
+		it('should replace user in public homeworks in all contexts', async () => {
+			const replaceUserId = testHelper.generateObjectId();
+			const {
+				userId,
+				otherUserId,
+				privateH,
+				privateLessonH,
+				privateCourseH,
+				publicH,
+				publicLessonH,
+				publicCourseH,
+				otherPrivateH,
+				otherPrivateLessonH,
+				otherPrivateCourseH,
+			} = await createHomeworks(testHelper);
+
+			const result = await replaceUserInPublicHomeworks(userId, replaceUserId);
+			expect(result).to.be.true;
+
+			const [dbResultUser, dbResultOther, dbResultReplaceUser] = await Promise.all([
+				findHomeworks(userId),
+				findHomeworks(otherUserId),
+				findHomeworks(replaceUserId),
+			]);
+			// private homework still exist
+			expect(dbResultUser).to.be.an('array').with.lengthOf(3);
+			expect(dbResultUser.some(matchId(privateH))).to.be.true;
+			expect(dbResultUser.some(matchId(privateLessonH))).to.be.true;
+			expect(dbResultUser.some(matchId(privateCourseH))).to.be.true;
+			// public user is replaced
+			expect(dbResultReplaceUser).to.be.an('array').with.lengthOf(3);
+			expect(dbResultReplaceUser.some(matchId(publicH))).to.be.true;
+			expect(dbResultReplaceUser.some(matchId(publicLessonH))).to.be.true;
+			expect(dbResultReplaceUser.some(matchId(publicCourseH))).to.be.true;
+			// homeworks from other users are not touched
+			expect(dbResultOther).to.be.an('array').with.lengthOf(3);
+			expect(dbResultOther.some(matchId(otherPrivateH))).to.be.true;
+			expect(dbResultOther.some(matchId(otherPrivateLessonH))).to.be.true;
+			expect(dbResultOther.some(matchId(otherPrivateCourseH))).to.be.true;
+		});
+
+		it('should handle no public homeworks exist without errors', async () => {
+			const replaceUserId = testHelper.generateObjectId();
+			const userId = testHelper.generateObjectId();
+
+			await testHelper.createTestHomework({ teacherId: userId, private: true });
+			const result = await replaceUserInPublicHomeworks(userId, replaceUserId);
+			expect(result).to.be.true;
+		});
+
+		it('should handle no user matched without errors', async () => {
+			const replaceUserId = testHelper.generateObjectId();
+			const userId = testHelper.generateObjectId();
+			const otherUserId = testHelper.generateObjectId();
+
+			await testHelper.createTestHomework({ teacherId: otherUserId });
+			const result = await replaceUserInPublicHomeworks(userId, replaceUserId);
+			expect(result).to.be.true;
+		});
+
+		it('should handle unexpected first parameter inputs', async () => {
+			// cleanup null and undefined matched homeworks
+			const result = await cleanupUnexpectedHomeworks();
+			expect(result.ok, 'but cleanup before must work').to.equal(1);
+
+			const replaceUserId = testHelper.generateObjectId();
+			const userId = testHelper.generateObjectId();
+
+			await testHelper.createTestHomework({ teacherId: userId });
+
+			// must execute step by step that errors not mixed
+			const resultNull = await replaceUserInPublicHomeworks(null, replaceUserId);
+			expect(resultNull, 'when input is null').to.be.true;
+
+			const resultUndefined = await replaceUserInPublicHomeworks(undefined, replaceUserId);
+			expect(resultUndefined, 'when input is undefined').to.be.true;
+
+			try {
+				await replaceUserInPublicHomeworks('123', replaceUserId);
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "123" at path "teacherId" for model "homework"'
+				);
+			}
+
+			try {
+				await replaceUserInPublicHomeworks(() => {}, replaceUserId);
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "teacherId" for model "homework"'
+				);
+			}
+		});
+
+		it('should handle unexpected second parameter inputs', async () => {
+			// cleanup null and undefined matched homeworks
+			const result = await cleanupUnexpectedHomeworks();
+			expect(result.ok, 'but cleanup before must work').to.equal(1);
+
+			const userId = testHelper.generateObjectId();
+
+			await testHelper.createTestHomework({ teacherId: userId });
+
+			// must execute step by step that errors not mixed
+			const resultNull = await replaceUserInPublicHomeworks(userId, null);
+			expect(resultNull, 'when input is null').to.be.true;
+
+			// cleanup null and undefined matched homeworks
+			const result2 = await cleanupUnexpectedHomeworks();
+			expect(result2.ok, 'but cleanup before must work').to.equal(1);
+
+			const resultUndefined = await replaceUserInPublicHomeworks(userId, undefined);
+			expect(resultUndefined, 'when input is undefined').to.be.true;
+
+			try {
+				await replaceUserInPublicHomeworks(userId, '123');
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "123" at path "teacherId"'
+				);
+			}
+
+			try {
+				await replaceUserInPublicHomeworks(userId, () => {});
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "teacherId"'
 				);
 			}
 		});

@@ -38,7 +38,7 @@ const deletePrivateHomeworksFromUser = async (userId) => {
  * @param {BSON|BsonString} userId
  * @return {Boolean}
  */
-const replaceUserInHomeworks = async (userId, replaceUserId) => {
+const replaceUserInPublicHomeworks = async (userId, replaceUserId) => {
 	const result = await HomeworkModel.updateMany(publicHomeworkQuery(userId), { $set: { teacherId: replaceUserId } })
 		.lean()
 		.exec();
@@ -50,5 +50,5 @@ module.exports = {
 	findPrivateHomeworksFromUser,
 	findPublicHomeworksFromUser,
 	deletePrivateHomeworksFromUser,
-	replaceUserInHomeworks,
+	replaceUserInPublicHomeworks,
 };
