@@ -3,7 +3,7 @@ const { BadRequest, Forbidden } = require('../../../errors');
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
 const { hasRole } = require('./userRoles.uc');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
-const { asyncErrorLog } = require('../../../errors/utils');
+const errorUtils = require('../../../errors/utils');
 
 const userHaveSameSchool = async (userId, otherUserId) => {
 	if (userId && otherUserId) {
@@ -35,24 +35,33 @@ const getUserData = async (id) => {
 	return returnArray;
 };
 
-const deleteUserRelatedData = async (userId, app) => {
-	const deleteUserFacades = [];
+/**
+ *
+ * @param {*} userId
+ * @param {*} app instance of app to get facades from
+ * @param {*} deleteUserFacades e.g. ['/registrationPin/v2', '/fileStorage/v2']
+ */
+const deleteUserRelatedData = async (userId, app, deleteUserFacades = []) => {
 	for (const facadeName of deleteUserFacades) {
 		const facade = app.facade(facadeName);
 		if (typeof facade.deleteUserData === 'function') {
 			try {
-				const trash = facade.deleteUserData(userId);
-				trashbinRepo.updateTrashbinByUserId(userId, trash.data);
+				// eslint-disable-next-line no-await-in-loop
+				const trash = await facade.deleteUserData(userId);
+				// eslint-disable-next-line no-await-in-loop
+				await trashbinRepo.updateTrashbinByUserId(userId, trash.data);
 			} catch (error) {
-				asyncErrorLog(error, `failed to delete user data for facade ${facadeName}`);
+				errorUtils.asyncErrorLog(error, `failed to delete user data for facade ${facadeName}`);
 			}
 		} else if (Array.isArray(facade.deleteUserData)) {
 			for (const deleteFn of facade.deleteUserData) {
 				try {
-					const trash = deleteFn(userId);
-					trashbinRepo.updateTrashbinByUserId(userId, trash.data);
+					// eslint-disable-next-line no-await-in-loop
+					const trash = await deleteFn(userId);
+					// eslint-disable-next-line no-await-in-loop
+					await trashbinRepo.updateTrashbinByUserId(userId, trash.data);
 				} catch (error) {
-					asyncErrorLog(error, `failed to delete user data for facade ${facadeName}#${deleteFn.name}`);
+					errorUtils.asyncErrorLog(error, `failed to delete user data for facade ${facadeName}#${deleteFn.name}`);
 				}
 			}
 		}
@@ -90,22 +99,30 @@ const deleteUser = async (id, roleName, { account, app }) => {
 	const userAccountData = await getUserData(id);
 	const user = userAccountData.find(({ scope }) => scope === 'user').data;
 
-	const trashBin = await createUserTrashbin(id, userAccountData);
+	await createUserTrashbin(id, userAccountData);
 
 	await replaceUserWithTombstone(id);
 	try {
 		const registrationPinFacade = app.facade('/registrationPin/v2');
-		const registrationPinTrash = registrationPinFacade.deleteRegistrationPinsByEmail(user.email);
-		trashbinRepo.updateTrashbinByUserId(user.id, registrationPinTrash.data); // TODO unnecessary for PINs?
+		const registrationPinTrash = await registrationPinFacade.deleteRegistrationPinsByEmail(user.email);
+		await trashbinRepo.updateTrashbinByUserId(user.id, registrationPinTrash.data); // TODO unnecessary for PINs?
 	} catch (error) {
-		asyncErrorLog(error, `failed to delete regeistration pin for user ${user.id}`);
+		errorUtils.asyncErrorLog(error, `failed to delete registration pin for user ${user.id}`);
 	}
 
-	await deleteUserRelatedData(user.id, app);
-
-	return trashBin;
+	// this is an async function, but we don't need to wait for it, because we don't give any errors information back to the user
+	deleteUserRelatedData(user.id, app, []).catch((error) => {
+		errorUtils.asyncErrorLog(error, 'deleteUserRelatedData failed');
+	});
 };
 
 module.exports = {
 	deleteUser,
+	// following not to exported by facade
+	checkPermissions,
+	createUserTrashbin,
+	deleteUserRelatedData,
+	getUserData,
+	replaceUserWithTombstone,
+	userHaveSameSchool,
 };
