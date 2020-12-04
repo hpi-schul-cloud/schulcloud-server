@@ -25,14 +25,14 @@ const deleteUserDatafromLessons = async (userId) => {
 	return { trashBinData: { scope: 'lessons', data }, complete: true };
 };
 
-const addCoursesToData = (courses = [], data, propName) => {
-	const dataItems = courses.map((course) => {
-		return { courseId: course._id, [propName]: true };
-	});
-	data.push(...dataItems);
+const addCoursesToData = (coursesAggreate = [], data) => {
+	const student = coursesAggreate.filter((course) => course.student).map((course) => course._id);
+	const teacher = coursesAggreate.filter((course) => course.teacher).map((course) => course._id);
+	const substituteTeacher = coursesAggreate.filter((course) => course.substituteTeacher).map((course) => course._id);
+	Object.assign(data, { courseIds: { student, teacher, substituteTeacher } });
 };
 
-const deleteUyserDataFromCourses = async (userId) => {
+const deleteUserDataFromCourses = async (userId) => {
 	// TODO permissions
 
 	// delete user relations from course:
@@ -51,14 +51,26 @@ const deleteUyserDataFromCourses = async (userId) => {
 	// 	courseGroups: [courseGroupIds]
 	// }]
 	//
+
+	// courseIds: {
+	// 	student : [],
+	// 	teacher: [],
+	// 	substituteTeacher: [],
+	//  courseGroupIds: [],
+	// }
+
 	const data = [];
 	const courses = coursesRepo.getCoursesWithUserInUsers(userId);
 	if (courses.length !== 0) {
-		coursesRepo.deleteUserFromCourseUsers(userId);
-		addCoursesToData(courses, data, 'user');
+		coursesRepo.deleteUserFromCourseRelations(userId);
+		addCoursesToData(courses, data);
 	}
 
 	return { trashBinData: { scope: 'courses', data }, complete: true };
 };
 
-module.exports = [deleteUserDatafromLessons, deleteUyserDataFromCourses];
+const deleteUserData = () => {
+	return [deleteUserDataFromCourses, deleteUserDatafromLessons];
+};
+
+module.exports = [deleteUserDatafromLessons, deleteUserDataFromCourses];
