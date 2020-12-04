@@ -57,14 +57,6 @@ const removePermissionFromRoles = async () => {
 const addPermissionToSchools = async (stateAbbr) => {
 	const stateId = await FederalStateModel.findOne({ abbreviation: stateAbbr }, '_id').lean().exec();
 	try {
-		const schools = await SchoolModel.find({
-			federalState: mongoose.Types.ObjectId(stateId._id),
-		})
-			.lean()
-			.exec();
-
-		logger.info(schools);
-
 		await SchoolModel.updateMany(
 			{
 				federalState: mongoose.Types.ObjectId(stateId._id),

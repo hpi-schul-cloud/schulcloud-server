@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [25.3.2]
+
+- SC-8083 - removes forgotten logging code in lernstore migration
+
 ## [25.3.1]
+
 ### Fixed
 
 SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-parent-users is broken
