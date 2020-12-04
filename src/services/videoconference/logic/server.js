@@ -1,5 +1,5 @@
 const bbb = require('bbb-promise');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { isUrl } = require('./utils');
 
 const FEATURE_VIDEOCONFERENCE_ENABLED = Configuration.get('FEATURE_VIDEOCONFERENCE_ENABLED');

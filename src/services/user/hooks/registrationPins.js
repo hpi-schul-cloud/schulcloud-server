@@ -1,6 +1,6 @@
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const moment = require('moment');
 const reqlib = require('app-root-path').require;
 

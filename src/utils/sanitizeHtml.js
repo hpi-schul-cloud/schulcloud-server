@@ -95,19 +95,15 @@ const htmlFalseOptions = {
 	},
 };
 
-const normalize = (data) => {
+const normalize = (data, isHTML = false) => {
+	if (isHTML === false) {
+		const match = data.match(/(?=").*(?==).*/gi);
+		data = match !== null ? data.replace(/"/gi, '&#8220;') : data;
+		data = match !== null ? data.replace(/=/gi, '&#61;') : data;
+	}
 	data = data.replace(/(&lt;)|(&#60;)/gi, '<');
 	data = data.replace(/(&gt;)|(&#62;)/gi, '>');
 	return data;
-};
-
-/**
- * Should split for example "onload=" to on "load =", "ONLOAD=" should also split
- * @param {String} str The string that should validate.
- * @example onload, onreload, onmouseover and so on
- */
-const replaceOnload = (str) => {
-	return str.replace(/ (on)(.*)=/gi, ' $1 $2 = ');
 };
 
 /**
@@ -117,7 +113,7 @@ const replaceOnload = (str) => {
  * @param {*} param
  */
 const sanitize = (data, isHTML = false) =>
-	replaceOnload(sanitizeHtml(normalize(data), isHTML ? htmlTrueOptions : htmlFalseOptions));
+	sanitizeHtml(normalize(data, isHTML), isHTML ? htmlTrueOptions : htmlFalseOptions);
 
 /**
  * disables sanitization for defined keys if a path is matching

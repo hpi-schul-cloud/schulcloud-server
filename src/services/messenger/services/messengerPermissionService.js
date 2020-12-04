@@ -1,5 +1,5 @@
 const { disallow } = require('feathers-hooks-common');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { SCHOOL_FEATURES } = require('../../school/model');
 
 class MessengerPermissionService {
@@ -17,20 +17,17 @@ class MessengerPermissionService {
 	 * @param {Object} params feathers params object
 	 */
 	async get(id, params) {
-		const [user, school] = await Promise.all([
-			this.app.service('users').get(id),
-			this.app.service('schools').get(params.route.schoolId),
-		]);
+		const user = await this.app.service('users').get(id);
+		const school = await this.app.service('schools').get(user.schoolId);
 
 		const roles = await this.app.service('roles').find({ query: { _id: { $in: user.roles } } });
 		const userPermissions = roles.data.map((role) => role.permissions).flat();
 
 		const messengerPermissions = {};
 		messengerPermissions.createRoom =
-			user.schoolId.equals(school._id) &&
-			(userPermissions.includes('MESSENGER_ROOM_CREATE') ||
-				(Configuration.get('MATRIX_MESSENGER__STUDENT_ROOM_CREATION') &&
-					school.features.includes(SCHOOL_FEATURES.MESSENGER_STUDENT_ROOM_CREATE)));
+			userPermissions.includes('MESSENGER_ROOM_CREATE') ||
+			(Configuration.get('MATRIX_MESSENGER__STUDENT_ROOM_CREATION') &&
+				school.features.includes(SCHOOL_FEATURES.MESSENGER_STUDENT_ROOM_CREATE));
 		return messengerPermissions;
 	}
 }

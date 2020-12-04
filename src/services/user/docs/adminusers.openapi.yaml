@@ -24,10 +24,6 @@ components:
     user_admin_base:
       description: Data Transfer Object containing userdata
       type: object
-      required:
-        - firstName
-        - lastName
-        - email
       properties:
         firstName:
           type: string

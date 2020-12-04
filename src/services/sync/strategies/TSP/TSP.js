@@ -3,7 +3,7 @@ const url = require('url');
 const moment = require('moment');
 const { JWE, JWK, JWS } = require('jose');
 const { v4: uuidv4 } = require('uuid');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const accountModel = require('../../../account/model');
 
 const ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes

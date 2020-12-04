@@ -51,19 +51,18 @@ class Syncer {
 	 * @returns {Promise} Promise resolving with statistics (check
 	 * `stats.success` for result)
 	 */
-	sync() {
+	async sync() {
 		this.logInfo('Started syncing');
-		return this.steps()
-			.catch((err) => {
-				this.logError('Error while syncing', { error: err });
-				this.stats.errors.push(err);
-			})
-			.then(() => {
-				this.stats.success = this.stats.errors.length === 0;
-				const aggregated = Syncer.aggregateStats(this.stats);
-				this.logInfo('Finished syncing', aggregated);
-				return this.stats;
-			});
+		try {
+			await this.steps();
+		} catch (err) {
+			this.logError('Error while syncing', { error: err });
+			this.stats.errors.push(err);
+		}
+		this.stats.success = this.successful();
+		const aggregated = Syncer.aggregateStats(this.stats);
+		this.logInfo('Finished syncing', aggregated);
+		return this.stats;
 	}
 
 	/**
@@ -97,6 +96,15 @@ class Syncer {
 			successful: stats && stats.success === true ? 1 : 0,
 			failed: stats && stats.success !== true ? 1 : 0,
 		};
+	}
+
+	/**
+	 * Returns true if no errors occurred (based on stats). Returns false otherwise.
+	 * Can be overridden for more complex success criteria.
+	 * @returns {Boolean} true/false
+	 */
+	successful() {
+		return this.stats.errors.length === 0;
 	}
 
 	logInfo(message, ...args) {

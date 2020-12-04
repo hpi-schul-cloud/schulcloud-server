@@ -1,4 +1,5 @@
 const AbstractLDAPStrategy = require('./interface.js');
+const { filterForModifiedEntities } = require('./deltaSyncUtils');
 
 /**
  * General LDAP functionality
@@ -37,10 +38,9 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 
 		const requiredAttributes = [userAttributeNameMapping.uuid, userAttributeNameMapping.mail];
 		const requiredFilters = requiredAttributes.map((attr) => `(${attr}=*)`).join('');
-		const filter = `(&(objectClass=person)${requiredFilters})`;
 
 		const options = {
-			filter,
+			filter: filterForModifiedEntities(this.config.lastModifyTimestamp, `(&(objectClass=person)${requiredFilters})`),
 			scope: 'sub',
 			attributes: [
 				userAttributeNameMapping.givenName,
@@ -49,6 +49,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 				userAttributeNameMapping.uuid,
 				userAttributeNameMapping.uid,
 				userAttributeNameMapping.mail,
+				'modifyTimestamp',
 				roleType === 'group' ? 'memberOf' : userAttributeNameMapping.role,
 			],
 		};
@@ -126,6 +127,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 				ldapDn: obj[userAttributeNameMapping.dn],
 				ldapUUID: obj[userAttributeNameMapping.uuid],
 				ldapUID: obj[userAttributeNameMapping.uid],
+				modifyTimestamp: obj.modifyTimestamp,
 			});
 		});
 
@@ -143,12 +145,16 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 
 		if (classPathAdditions !== '') {
 			const options = {
-				filter: `${classAttributeNameMapping.description}=*`,
+				filter: filterForModifiedEntities(
+					this.config.lastModifyTimestamp,
+					`${classAttributeNameMapping.description}=*`
+				),
 				scope: 'sub',
 				attributes: [
 					classAttributeNameMapping.dn,
 					classAttributeNameMapping.description,
 					classAttributeNameMapping.uniqueMember,
+					'modifyTimestamp',
 				],
 			};
 			const searchString = `${classPathAdditions},${this.config.rootPath}`;
@@ -160,6 +166,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 						className: obj[classAttributeNameMapping.description],
 						ldapDn: obj[classAttributeNameMapping.dn],
 						uniqueMembers: obj[classAttributeNameMapping.uniqueMember],
+						modifyTimestamp: obj.modifyTimestamp,
 					}))
 				);
 		}

@@ -1,7 +1,7 @@
 const axios = require('axios');
 const qs = require('qs');
 const lodash = require('lodash');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { Timeout, GeneralError } = require('../errors');
 
 module.exports = class ApiHelper {

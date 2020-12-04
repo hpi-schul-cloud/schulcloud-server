@@ -1,5 +1,5 @@
 const OpenApiValidator = require('express-openapi-validator');
-const commons = require('@schul-cloud/commons');
+const commons = require('@hpi-schul-cloud/commons');
 
 const { Configuration } = commons;
 
@@ -10,7 +10,7 @@ const ignorePathsList = [
 	/|(.*\/accounts\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/accounts\/api($|\/$))/,
 	/|(.*\/accounts\/confirm($|\/$))/,
-	/|(.*\/accounts\/jwtTimer($|\/$))/,
+	/|(.*\/accounts\/jwtTimer($|\/$))/, // todo: proper api-integrationtests with redis
 	/|(.*\/accounts\/supportJWT($|\/$))/,
 	/|(.*\/activationModel($|\/$))/,
 	/|(.*\/activationModel\/[0-9a-f]{24}($|\/$))/,
@@ -23,7 +23,7 @@ const ignorePathsList = [
 	/|(.*\/alert\/api($|\/$))/,
 	/|(.*\/analytics($|\/$))/,
 	/|(.*\/analytics\/api($|\/$))/,
-	/|(.*\/authentication($|\/$))/,
+	/|(.*\/authentication($|\/$))/, // todo: make sure external systems work with spec
 	/|(.*\/authentication\/api($|\/$))/,
 	/|(.*\/base64Files($|\/$))/,
 	/|(.*\/base64Files\/[0-9a-f]{24}($|\/$))/,
@@ -268,6 +268,7 @@ const ignorePathsList = [
 	/|(.*\/wopi\/files\/[0-9a-f]{24}\/contents($|\/$))/,
 	/|(.*\/wopi\/files\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/wopi\/api($|\/$))/,
+	/|(.*\/legacy\/v1\/\/api($|\/$))/,
 ];
 
 const ignorePaths = new RegExp(ignorePathsList.map((r) => r.source).join(''));

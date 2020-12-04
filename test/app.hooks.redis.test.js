@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const mockery = require('mockery');
-const commons = require('@schul-cloud/commons');
+const commons = require('@hpi-schul-cloud/commons');
 const redisMock = require('./utils/redis/redisMock');
 
 const { Configuration } = commons; // separated from require, mocked in tests
@@ -26,7 +26,7 @@ describe('handleAutoLogout hook', function test() {
 			useCleanCache: true,
 		});
 		mockery.registerMock('redis', redisMock);
-		mockery.registerMock('@schul-cloud/commons', commons);
+		mockery.registerMock('@hpi-schul-cloud/commons', commons);
 
 		delete require.cache[require.resolve('../src/utils/redis')];
 		delete require.cache[require.resolve('../src/app')];

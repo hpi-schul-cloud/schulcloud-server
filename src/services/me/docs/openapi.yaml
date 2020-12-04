@@ -28,7 +28,7 @@ components:
           properties:
             form:
               type: string
-              enum: ['analog', digital', 'update']
+              enum: ['analog', 'digital', 'update']
             source:
               type: string
             dateOfPrivacyConsent:
@@ -48,7 +48,7 @@ components:
             properties:
               form:
                 type: string
-                enum: ['analog', digital', 'update']
+                enum: ['analog', 'digital', 'update']
               source:
                 type: string
               dateOfPrivacyConsent:
@@ -188,7 +188,8 @@ paths:
       summary: ''
       tags:
         - me
-      security: []
+      security:
+        - jwtBearer: []
   
 openapi: 3.0.2
 tags:

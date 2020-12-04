@@ -1,4 +1,4 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { authenticate } = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
 const { hasPermission, hasSchoolPermission } = require('../../../hooks');
