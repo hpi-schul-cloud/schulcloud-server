@@ -9,7 +9,8 @@ const findPrivateHomeworksFromUser = async (userId) => {
 
 const deletePrivateHomeworksFromUser = async (userId) => {
 	const result = await HomeworkModel.deleteMany(privateHomeworkQuery(userId)).lean().exec();
-	const success = result.ok === 1 && result.n === result.nModified;
+	const success = result.ok === 1 && result.n === result.deletedCount;
+	// TODO it sound bad to not give feedback over which ressources are deleted. A list of deleted _ids are also nice in this situation.
 	return success;
 };
 
