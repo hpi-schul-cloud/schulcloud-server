@@ -173,8 +173,10 @@ const bulkMigrateParentsFromStudents = async () => {
 							lastName: student.parents[0].lastName,
 							email: student.parents[0].email,
 							schoolId: student.schoolId,
-							children: [student._id],
 							roles: [parentRole._id],
+						},
+						$push: {
+							children: student._id,
 						},
 					},
 					{
