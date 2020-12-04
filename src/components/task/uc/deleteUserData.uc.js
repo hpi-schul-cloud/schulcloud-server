@@ -22,8 +22,7 @@ const removeConnectionToSharedSubmissions = async (userId) => {
 	};
 };
 
-const deletePrivateUserHomeworks = async (userId, context) => {
-	// TODO
+const deletePrivateUserHomeworks = async (userId, context = []) => {
 	const result = await findPrivateHomeworksFromUser(userId);
 	const execute = await deletePrivateHomeworksFromUser(userId);
 
@@ -34,7 +33,7 @@ const deletePrivateUserHomeworks = async (userId, context) => {
 		success: execute.success,
 	};
 	context.push(status);
-	return status;
+	return context;
 };
 
 const removeConnectionToSharedHomeworks = async (userId) => {
@@ -47,13 +46,13 @@ const removeConnectionToSharedHomeworks = async (userId) => {
 };
 
 const deleteUserRelatedData = async (userId) => {
-	// TODO Promise.all
 	const context = [];
 	try {
-		const privateSubmissions = await deletePrivateSubmissions(userId, context);
-		const sharedSubmissions = await removeConnectionToSharedSubmissions(userId, context);
-		const privateHomeworks = await deletePrivateUserHomeworks(userId, context);
-		const sharedHomeworks = await removeConnectionToSharedHomeworks(userId, context);
+		// TODO Promise.all
+		await deletePrivateSubmissions(userId, context);
+		await removeConnectionToSharedSubmissions(userId, context);
+		await deletePrivateUserHomeworks(userId, context);
+		await removeConnectionToSharedHomeworks(userId, context);
 		// TODO clearify the latest conclusio array, or object ..but is the array matched in user to object then array make no sense
 		return context;
 	} catch (err) {

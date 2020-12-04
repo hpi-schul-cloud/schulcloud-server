@@ -109,16 +109,52 @@ describe.only('task.repo', () => {
 			expect(result[0].name).to.equal(homework.name);
 		});
 
-		it('should handle no private homeworks exist without errors', () => {
-			// private not exist
+		it('should handle no private homeworks exist without errors', async () => {
+			const userId = testHelper.generateObjectId();
+
+			await testHelper.createTestHomework({ teacherId: userId });
+			const result = await findPrivateHomeworksFromUser(userId);
+			expect(result).to.be.an('array').with.lengthOf(0);
 		});
 
-		it('should handle no user matched without errors', () => {
-			// userId not exist
+		it('should handle no user matched without errors', async () => {
+			const userId = testHelper.generateObjectId();
+			const otherUserId = testHelper.generateObjectId();
+
+			await testHelper.createTestHomework({ teacherId: otherUserId });
+			const result = await findPrivateHomeworksFromUser(userId);
+			expect(result).to.be.an('array').with.lengthOf(0);
 		});
 
-		it('should handle unexpected inputs', () => {
-			// function, null, undefined, string
+		it('should handle unexpected inputs', async () => {
+			const userId = testHelper.generateObjectId();
+
+			await testHelper.createTestHomework({ teacherId: userId });
+
+			// must execute step by step that errors not mixed
+			const resultNull = await findPrivateHomeworksFromUser(null);
+			expect(resultNull, 'when input is null').to.be.an('array').with.lengthOf(0);
+
+			const resultUndefined = await findPrivateHomeworksFromUser(undefined);
+			expect(resultUndefined, 'when input is undefined').to.be.an('array').with.lengthOf(0);
+
+			try {
+				await findPrivateHomeworksFromUser('123');
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "123" at path "teacherId" for model "homework"'
+				);
+			}
+
+			try {
+				await findPrivateHomeworksFromUser(() => {});
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "teacherId" for model "homework"'
+				);
+			}
 		});
 	});
 
