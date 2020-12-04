@@ -96,6 +96,19 @@ describe.only('task.repo', () => {
 			expect(result.some(matchId(courseH)), 'find private course homework').to.be.true;
 		});
 
+		it('should work with select as second parameter', async () => {
+			const userId = testHelper.generateObjectId();
+
+			const homework = await testHelper.createTestHomework({ teacherId: userId, private: true });
+
+			const selectedKeys = ['_id', 'name'];
+			const result = await findPrivateHomeworksFromUser(userId, selectedKeys);
+			expect(result).to.be.an('array').with.lengthOf(1);
+			expect(result[0]).to.have.all.keys(selectedKeys);
+			expect(result[0]._id.toString()).to.equal(homework._id.toString());
+			expect(result[0].name).to.equal(homework.name);
+		});
+
 		it('should handle no private homeworks exist without errors', () => {
 			// private not exist
 		});
