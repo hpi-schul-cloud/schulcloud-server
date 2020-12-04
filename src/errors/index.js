@@ -220,6 +220,20 @@ class ApplicationError extends Error {
 	}
 }
 
+class DeletedUserDataError extends ApplicationError {
+	constructor(message, error, data) {
+		super(message);
+		this.code = 601;
+		this.type = 'ApplicationError';
+		this.className = 'deleted-user-data-error';
+		this.data = data;
+		this.errors = error;
+		const uid = ObjectId();
+		this.traceId = uid.toString();
+		Error.captureStackTrace(this, this.constructor);
+	}
+}
+
 class SilentError extends ApplicationError {
 	constructor(message) {
 		super(message);
@@ -257,6 +271,7 @@ const errorsByCode = {
 
 module.exports = {
 	ApplicationError,
+	DeletedUserDataError,
 	FeathersError: featherErrors.FeathersError,
 	FeathersNotAuthenticated: featherErrors.NotAuthenticated,
 	BadRequest,
