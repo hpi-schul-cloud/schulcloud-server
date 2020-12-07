@@ -8,6 +8,7 @@ const {
 	findPublicHomeworksFromUser,
 	replaceUserInPublicHomeworks,
 	findGroupSubmissionsFromUser,
+	removeGroupSubmissionsConnectionsForUser,
 } = require('./task.repo');
 const appPromise = require('../../../app');
 
@@ -68,9 +69,13 @@ const createHomeworks = async (testHelper) => {
 	};
 };
 
+const groupSubmissionQuery = (userId) => ({ $and: [{ teamMembers: userId }, { teamMembers: { $ne: null } }] });
 const matchId = (ressource) => ({ _id }) => _id.toString() === ressource._id.toString();
-const findHomeworks = (userId) => HomeworkModel.find({ teacherId: userId }).lean().exec();
-const cleanupUnexpectedHomeworks = () =>
+
+const db = {};
+db.findHomeworks = (userId) => HomeworkModel.find({ teacherId: userId }).lean().exec();
+db.findGroupSubmissions = (userId) => SubmissionModel.find(groupSubmissionQuery(userId)).lean().exec();
+db.cleanupUnexpectedHomeworks = () =>
 	HomeworkModel.deleteMany({ $or: [{ teacherId: null }, { teacherId: undefined }] })
 		.lean()
 		.exec();
@@ -140,7 +145,7 @@ describe('in "task.repo" the function', () => {
 
 		it('should handle unexpected inputs', async () => {
 			// cleanup null and undefined matched homeworks
-			const result = await cleanupUnexpectedHomeworks();
+			const result = await db.cleanupUnexpectedHomeworks();
 			expect(result.ok, 'but cleanup before must work').to.equal(1);
 
 			const userId = testHelper.generateObjectId();
@@ -219,7 +224,7 @@ describe('in "task.repo" the function', () => {
 
 		it('should handle unexpected inputs', async () => {
 			// cleanup null and undefined matched homeworks
-			const result = await cleanupUnexpectedHomeworks();
+			const result = await db.cleanupUnexpectedHomeworks();
 			expect(result.ok, 'but cleanup before must work').to.equal(1);
 
 			const userId = testHelper.generateObjectId();
@@ -272,8 +277,8 @@ describe('in "task.repo" the function', () => {
 
 			// all homeworks that should not deleted
 			const [dbResultPublic, dbResultOtherPrivate] = await Promise.all([
-				findHomeworks(userId),
-				findHomeworks(otherUserId),
+				db.findHomeworks(userId),
+				db.findHomeworks(otherUserId),
 			]);
 			// public homework still exist
 			expect(dbResultPublic).to.be.an('array').with.lengthOf(3);
@@ -306,7 +311,7 @@ describe('in "task.repo" the function', () => {
 
 		it('should handle unexpected inputs', async () => {
 			// cleanup null and undefined matched homeworks
-			const result = await cleanupUnexpectedHomeworks();
+			const result = await db.cleanupUnexpectedHomeworks();
 			expect(result.ok, 'but cleanup before must work').to.equal(1);
 
 			const userId = testHelper.generateObjectId();
@@ -361,9 +366,9 @@ describe('in "task.repo" the function', () => {
 			expect(result).to.eql({ success: 1, modified: 3, count: 3 });
 
 			const [dbResultUser, dbResultOther, dbResultReplaceUser] = await Promise.all([
-				findHomeworks(userId),
-				findHomeworks(otherUserId),
-				findHomeworks(replaceUserId),
+				db.findHomeworks(userId),
+				db.findHomeworks(otherUserId),
+				db.findHomeworks(replaceUserId),
 			]);
 			// private homework still exist
 			expect(dbResultUser).to.be.an('array').with.lengthOf(3);
@@ -403,7 +408,7 @@ describe('in "task.repo" the function', () => {
 
 		it('should handle unexpected first parameter inputs', async () => {
 			// cleanup null and undefined matched homeworks
-			const result = await cleanupUnexpectedHomeworks();
+			const result = await db.cleanupUnexpectedHomeworks();
 			expect(result.ok, 'but cleanup before must work').to.equal(1);
 
 			const replaceUserId = testHelper.generateObjectId();
@@ -439,7 +444,7 @@ describe('in "task.repo" the function', () => {
 
 		it('should handle unexpected second parameter inputs', async () => {
 			// cleanup null and undefined matched homeworks
-			const result = await cleanupUnexpectedHomeworks();
+			const result = await db.cleanupUnexpectedHomeworks();
 			expect(result.ok, 'but cleanup before must work').to.equal(1);
 
 			const userId = testHelper.generateObjectId();
@@ -455,7 +460,7 @@ describe('in "task.repo" the function', () => {
 			});
 
 			// cleanup null and undefined matched homeworks
-			const result2 = await cleanupUnexpectedHomeworks();
+			const result2 = await db.cleanupUnexpectedHomeworks();
 			expect(result2.ok, 'but cleanup before must work').to.equal(1);
 
 			const resultUndefined = await replaceUserInPublicHomeworks(userId, undefined);
@@ -564,6 +569,87 @@ describe('in "task.repo" the function', () => {
 
 			try {
 				await findGroupSubmissionsFromUser(() => {});
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "teamMembers" for model "submission"'
+				);
+			}
+		});
+	});
+
+	describe('removeGroupSubmissionsConnectionsForUser', () => {
+		it('should remove all group connection in submissions', async () => {
+			const userId = testHelper.generateObjectId();
+			const otherUserId = testHelper.generateObjectId();
+			const otherUserId2 = testHelper.generateObjectId();
+
+			const groupAloneProm = testHelper.createTestSubmission({ studentId: userId, teamMembers: [userId] });
+			const groupOwnerProm = testHelper.createTestSubmission({ studentId: userId, teamMembers: [userId, otherUserId] });
+			const groupAsTeamMemberProm = testHelper.createTestSubmission({
+				studentId: otherUserId,
+				teamMembers: [otherUserId, userId],
+			});
+			const otherGroupSubmissionProm = testHelper.createTestSubmission({
+				studentId: otherUserId,
+				teamMembers: [otherUserId2, otherUserId],
+			});
+
+			const [groupAlone, groupOwner, groupAsTeamMember] = await Promise.all([
+				groupAloneProm,
+				groupOwnerProm,
+				groupAsTeamMemberProm,
+				otherGroupSubmissionProm,
+			]);
+			const status = await removeGroupSubmissionsConnectionsForUser(userId);
+			expect(status).to.eql({ success: 1, modified: 3, count: 3 });
+
+			const result = await db.findGroupSubmissions(userId);
+			expect(result.some(matchId(groupAlone)), 'where user is alone in group').to.be.false;
+			expect(result.some(matchId(groupOwner)), 'where user is teammember and owner').to.be.false;
+			expect(result.some(matchId(groupAsTeamMember)), 'where user is a teammeber but no owner').to.be.false;
+		});
+
+		it('should handle no group submission exist without errors', async () => {
+			const userId = testHelper.generateObjectId();
+
+			await testHelper.createTestSubmission({ studentId: userId });
+			const result = await removeGroupSubmissionsConnectionsForUser(userId);
+			expect(result).to.eql({ success: 1, modified: 0, count: 0 });
+		});
+
+		it('should handle no user matched without errors', async () => {
+			const userId = testHelper.generateObjectId();
+			const otherUserId = testHelper.generateObjectId();
+
+			await testHelper.createTestSubmission({ studentId: otherUserId, teamMebers: [otherUserId] });
+			const result = await removeGroupSubmissionsConnectionsForUser(userId);
+			expect(result).to.eql({ success: 1, modified: 0, count: 0 });
+		});
+
+		it('should handle unexpected inputs', async () => {
+			const userId = testHelper.generateObjectId();
+
+			await testHelper.createTestSubmission({ studentId: userId, teamMebers: [userId] });
+
+			// must execute step by step that errors not mixed
+			const resultNull = await removeGroupSubmissionsConnectionsForUser(null);
+			expect(resultNull, 'when input is null').to.eql({ success: 1, modified: 0, count: 0 });
+
+			const resultUndefined = await removeGroupSubmissionsConnectionsForUser(undefined);
+			expect(resultUndefined, 'when input is undefined').to.eql({ success: 1, modified: 0, count: 0 });
+
+			try {
+				await removeGroupSubmissionsConnectionsForUser('123');
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "123" at path "teamMembers" for model "submission"'
+				);
+			}
+
+			try {
+				await removeGroupSubmissionsConnectionsForUser(() => {});
 				throw new Error('test failed');
 			} catch (err) {
 				expect(err.message, 'when input is not bson string').to.equal(
