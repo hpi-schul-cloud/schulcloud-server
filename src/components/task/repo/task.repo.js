@@ -1,5 +1,12 @@
 const { SubmissionModel, HomeworkModel } = require('../db');
 
+const mapStatus = ({ ok, deletedCount, n, nModified }) => ({
+	success: ok,
+	modified: deletedCount === undefined ? nModified : deletedCount,
+	count: n,
+});
+
+/** Homeworks */
 const privateHomeworkQuery = (userId) => ({ private: true, teacherId: userId });
 const publicHomeworkQuery = (userId) => ({ private: false, teacherId: userId });
 
@@ -29,9 +36,7 @@ const findPublicHomeworksFromUser = async (userId, select) => {
  */
 const deletePrivateHomeworksFromUser = async (userId) => {
 	const result = await HomeworkModel.deleteMany(privateHomeworkQuery(userId)).lean().exec();
-	const success = result.ok === 1 && result.n === result.deletedCount;
-	// TODO it sound bad to not give feedback over which ressources are deleted. A list of deleted _ids are also nice in this situation.
-	return success;
+	return mapStatus(result);
 };
 
 /**
@@ -42,8 +47,20 @@ const replaceUserInPublicHomeworks = async (userId, replaceUserId) => {
 	const result = await HomeworkModel.updateMany(publicHomeworkQuery(userId), { $set: { teacherId: replaceUserId } })
 		.lean()
 		.exec();
-	const success = result.ok === 1 && result.n === result.nModified;
-	return success;
+	return mapStatus(result);
+};
+
+/** Submissions */
+
+const groupSubmissionQuery = (userId) => ({ $and: [{ teamMembers: userId }, { teamMembers: { $ne: null } }] });
+/**
+ * @param {BSON|BsonString} userId
+ * @param {Array|String|StringList|MongooseSelectObject} [select]
+ * @return {Array}
+ */
+const findGroupSubmissionsFromUser = async (userId, select) => {
+	const result = await SubmissionModel.find(groupSubmissionQuery(userId), select).lean().exec();
+	return result;
 };
 
 module.exports = {
@@ -51,4 +68,5 @@ module.exports = {
 	findPublicHomeworksFromUser,
 	deletePrivateHomeworksFromUser,
 	replaceUserInPublicHomeworks,
+	findGroupSubmissionsFromUser,
 };

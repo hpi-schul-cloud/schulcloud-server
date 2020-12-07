@@ -4,12 +4,12 @@ let createdSubmissions = [];
 
 const create = (opt) => async (data) => {
 	data.schoolId = data.schoolId || opt.schoolId;
-	if (!data.homeworkId || !data.studentId) {
-		throw new Error('testSubmission requires a homework and student id!');
-	}
-	const homework = await submissionModel.create(data);
-	createdSubmissions.push(homework._id);
-	return homework;
+	data.homeworkId = data.homeworkId || opt.generateObjectId();
+	data.studentId = data.studentId || opt.generateObjectId();
+
+	const submission = await submissionModel.create(data);
+	createdSubmissions.push(submission._id);
+	return submission;
 };
 
 const cleanup = () => {

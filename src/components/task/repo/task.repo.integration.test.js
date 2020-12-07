@@ -7,6 +7,7 @@ const {
 	deletePrivateHomeworksFromUser,
 	findPublicHomeworksFromUser,
 	replaceUserInPublicHomeworks,
+	findGroupSubmissionsFromUser,
 } = require('./task.repo');
 const appPromise = require('../../../app');
 
@@ -73,8 +74,10 @@ const cleanupUnexpectedHomeworks = () =>
 	HomeworkModel.deleteMany({ $or: [{ teacherId: null }, { teacherId: undefined }] })
 		.lean()
 		.exec();
+const cleanupUnexpectedSubmissions = () =>
+	SubmissionModel.deleteMany({ $or: [{ studentId: null }, { studentId: undefined }], teamMembers: null });
 
-describe.only('in "task.repo" the function', () => {
+describe('in "task.repo" the function', () => {
 	let app;
 	let server;
 	let testHelper;
@@ -265,7 +268,7 @@ describe.only('in "task.repo" the function', () => {
 			} = await createHomeworks(testHelper);
 
 			const result = await deletePrivateHomeworksFromUser(userId);
-			expect(result).to.be.true;
+			expect(result).to.eql({ success: 1, modified: 3, count: 3 });
 
 			// all homeworks that should not deleted
 			const [dbResultPublic, dbResultOtherPrivate] = await Promise.all([
@@ -289,7 +292,7 @@ describe.only('in "task.repo" the function', () => {
 
 			await testHelper.createTestHomework({ teacherId: userId });
 			const result = await deletePrivateHomeworksFromUser(userId);
-			expect(result).to.be.true;
+			expect(result).to.eql({ success: 1, modified: 0, count: 0 });
 		});
 
 		it('should handle no user matched without errors', async () => {
@@ -298,7 +301,7 @@ describe.only('in "task.repo" the function', () => {
 
 			await testHelper.createTestHomework({ teacherId: otherUserId });
 			const result = await deletePrivateHomeworksFromUser(userId);
-			expect(result).to.be.true;
+			expect(result).to.eql({ success: 1, modified: 0, count: 0 });
 		});
 
 		it('should handle unexpected inputs', async () => {
@@ -312,10 +315,10 @@ describe.only('in "task.repo" the function', () => {
 
 			// must execute step by step that errors not mixed
 			const resultNull = await deletePrivateHomeworksFromUser(null);
-			expect(resultNull, 'when input is null').to.be.true;
+			expect(resultNull, 'when input is null').to.eql({ success: 1, modified: 0, count: 0 });
 
 			const resultUndefined = await deletePrivateHomeworksFromUser(undefined);
-			expect(resultUndefined, 'when input is undefined').to.be.true;
+			expect(resultUndefined, 'when input is undefined').to.eql({ success: 1, modified: 0, count: 0 });
 
 			try {
 				await deletePrivateHomeworksFromUser('123');
@@ -355,7 +358,7 @@ describe.only('in "task.repo" the function', () => {
 			} = await createHomeworks(testHelper);
 
 			const result = await replaceUserInPublicHomeworks(userId, replaceUserId);
-			expect(result).to.be.true;
+			expect(result).to.eql({ success: 1, modified: 3, count: 3 });
 
 			const [dbResultUser, dbResultOther, dbResultReplaceUser] = await Promise.all([
 				findHomeworks(userId),
@@ -385,7 +388,7 @@ describe.only('in "task.repo" the function', () => {
 
 			await testHelper.createTestHomework({ teacherId: userId, private: true });
 			const result = await replaceUserInPublicHomeworks(userId, replaceUserId);
-			expect(result).to.be.true;
+			expect(result).to.eql({ success: 1, modified: 0, count: 0 });
 		});
 
 		it('should handle no user matched without errors', async () => {
@@ -395,7 +398,7 @@ describe.only('in "task.repo" the function', () => {
 
 			await testHelper.createTestHomework({ teacherId: otherUserId });
 			const result = await replaceUserInPublicHomeworks(userId, replaceUserId);
-			expect(result).to.be.true;
+			expect(result).to.eql({ success: 1, modified: 0, count: 0 });
 		});
 
 		it('should handle unexpected first parameter inputs', async () => {
@@ -410,10 +413,10 @@ describe.only('in "task.repo" the function', () => {
 
 			// must execute step by step that errors not mixed
 			const resultNull = await replaceUserInPublicHomeworks(null, replaceUserId);
-			expect(resultNull, 'when input is null').to.be.true;
+			expect(resultNull, 'when input is null').to.eql({ success: 1, modified: 0, count: 0 });
 
 			const resultUndefined = await replaceUserInPublicHomeworks(undefined, replaceUserId);
-			expect(resultUndefined, 'when input is undefined').to.be.true;
+			expect(resultUndefined, 'when input is undefined').to.eql({ success: 1, modified: 0, count: 0 });
 
 			try {
 				await replaceUserInPublicHomeworks('123', replaceUserId);
@@ -445,14 +448,18 @@ describe.only('in "task.repo" the function', () => {
 
 			// must execute step by step that errors not mixed
 			const resultNull = await replaceUserInPublicHomeworks(userId, null);
-			expect(resultNull, 'when input is null').to.be.true;
+			expect(resultNull, 'when input is null').to.eql({
+				success: 1,
+				modified: 1,
+				count: 1,
+			});
 
 			// cleanup null and undefined matched homeworks
 			const result2 = await cleanupUnexpectedHomeworks();
 			expect(result2.ok, 'but cleanup before must work').to.equal(1);
 
 			const resultUndefined = await replaceUserInPublicHomeworks(userId, undefined);
-			expect(resultUndefined, 'when input is undefined').to.be.true;
+			expect(resultUndefined, 'when input is undefined').to.eql({ success: 1, modified: 0, count: 0 });
 
 			try {
 				await replaceUserInPublicHomeworks(userId, '123');
@@ -469,6 +476,98 @@ describe.only('in "task.repo" the function', () => {
 			} catch (err) {
 				expect(err.message, 'when input is not bson string').to.equal(
 					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "teacherId"'
+				);
+			}
+		});
+	});
+
+	describe('findGroupSubmissionsFromUser', () => {
+		it('should find only all group submissions', async () => {
+			const userId = testHelper.generateObjectId();
+			const otherUserId = testHelper.generateObjectId();
+			const otherUserId2 = testHelper.generateObjectId();
+
+			const groupAloneProm = testHelper.createTestSubmission({ studentId: userId, teamMembers: [userId] });
+			const groupOwnerProm = testHelper.createTestSubmission({ studentId: userId, teamMembers: [userId, otherUserId] });
+			const groupAsTeamMemberProm = testHelper.createTestSubmission({
+				studentId: otherUserId,
+				teamMembers: [otherUserId, userId],
+			});
+			const otherGroupSubmissionProm = testHelper.createTestSubmission({
+				studentId: otherUserId,
+				teamMembers: [otherUserId2, otherUserId],
+			});
+
+			const [groupAlone, groupOwner, groupAsTeamMember] = await Promise.all([
+				groupAloneProm,
+				groupOwnerProm,
+				groupAsTeamMemberProm,
+				otherGroupSubmissionProm,
+			]);
+			const result = await findGroupSubmissionsFromUser(userId);
+			expect(result).to.be.an('array').with.lengthOf(3);
+			expect(result.some(matchId(groupAlone)), 'where user is alone in group').to.be.true;
+			expect(result.some(matchId(groupOwner)), 'where user is teammember and owner').to.be.true;
+			expect(result.some(matchId(groupAsTeamMember)), 'where user is a teammeber but no owner').to.be.true;
+		});
+
+		it('should work with select as second parameter', async () => {
+			const userId = testHelper.generateObjectId();
+
+			const homework = await testHelper.createTestSubmission({ studentId: userId, teamMembers: [userId] });
+
+			const selectedKeys = ['_id', 'studentId'];
+			const result = await findGroupSubmissionsFromUser(userId, selectedKeys);
+			expect(result).to.be.an('array').with.lengthOf(1);
+			expect(result[0]).to.have.all.keys(selectedKeys);
+			expect(result[0]._id.toString()).to.equal(homework._id.toString());
+			expect(result[0].studentId.toString()).to.equal(userId.toString());
+		});
+
+		it('should handle no group submission exist without errors', async () => {
+			const userId = testHelper.generateObjectId();
+
+			await testHelper.createTestSubmission({ studentId: userId });
+			const result = await findGroupSubmissionsFromUser(userId);
+			expect(result).to.be.an('array').with.lengthOf(0);
+		});
+
+		it('should handle no user matched without errors', async () => {
+			const userId = testHelper.generateObjectId();
+			const otherUserId = testHelper.generateObjectId();
+
+			await testHelper.createTestSubmission({ studentId: otherUserId, teamMebers: [otherUserId] });
+			const result = await findGroupSubmissionsFromUser(userId);
+			expect(result).to.be.an('array').with.lengthOf(0);
+		});
+
+		it('should handle unexpected inputs', async () => {
+			const userId = testHelper.generateObjectId();
+
+			await testHelper.createTestSubmission({ studentId: userId, teamMebers: [userId] });
+
+			// must execute step by step that errors not mixed
+			const resultNull = await findGroupSubmissionsFromUser(null);
+			expect(resultNull, 'when input is null').to.be.an('array').with.lengthOf(0);
+
+			const resultUndefined = await findGroupSubmissionsFromUser(undefined);
+			expect(resultUndefined, 'when input is undefined').to.be.an('array').with.lengthOf(0);
+
+			try {
+				await findGroupSubmissionsFromUser('123');
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "123" at path "teamMembers" for model "submission"'
+				);
+			}
+
+			try {
+				await findGroupSubmissionsFromUser(() => {});
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "teamMembers" for model "submission"'
 				);
 			}
 		});
