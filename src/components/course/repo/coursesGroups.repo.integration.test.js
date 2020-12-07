@@ -18,7 +18,7 @@ const prepareTestObjects = async () => {
 describe.only(
 	'when creating a courseGroup',
 	withApp(() => {
-		it('should keep all the given properties', async () => {
+		it('should persist all the given properties', async () => {
 			const testSchool = await testObjects.createTestSchool();
 			const testUser = await testObjects.createTestUser({ schoolId: testSchool._id });
 			const testCourse = await testObjects.createTestCourse({ schoolId: testSchool._id });
