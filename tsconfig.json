@@ -15,5 +15,5 @@
 		"target": "ES2019"
 	},
 	"include": ["src/**/*", "src/**/*.json"],
-	"exclude": ["node_modules", "test/**/*", "config/*", "package.json"]
+	"exclude": ["node_modules", "test/**/*", "config/*", "package.json", "src/**/*.test.js", "src/**/*.test.ts"]
 }
