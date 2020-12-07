@@ -11,6 +11,25 @@ const { withApp, testObjects } = require('../../../../test/utils/withApp.test');
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
+const messageForRole = (expectedRole) => {
+	(expectedRole === true && '') || 'not';
+};
+
+const checkUserRoleInCourse = (result, expectOptions) => {
+	expect(result.student).to.be.equal(
+		expectOptions.student,
+		`should ${messageForRole(expectOptions.student)} be found as student`
+	);
+	expect(result.teacher).to.be.equal(
+		expectOptions.teacher,
+		`should ${messageForRole(expectOptions.teacher)} be found as teacher`
+	);
+	expect(result.substituteTeacher).to.be.equal(
+		expectOptions.substituteTeacher,
+		`should ${messageForRole(expectOptions.substituteTeacher)} be found as substituteTeacher`
+	);
+};
+
 describe.only(
 	'when having a user in course',
 	withApp(() => {
@@ -22,9 +41,7 @@ describe.only(
 
 			expect(result.length, 'one result found only').to.equal(1);
 			expect(equal(result[0]._id, course._id), 'result matches created course').to.be.true;
-			expect(result[0].student, 'should be found as student').to.be.true;
-			expect(result[0].teacher, 'should not be found as teacher').to.be.false;
-			expect(result[0].substituteTeacher, 'should not be found as substitute teacher').to.be.false;
+			checkUserRoleInCourse(result[0], { student: true, teacher: false, substituteTeacher: false });
 		});
 
 		it('should return courses the user leads (as a primary teacher)', async () => {
@@ -35,9 +52,7 @@ describe.only(
 
 			expect(result.length, 'one result found only').to.equal(1);
 			expect(equal(result[0]._id, course._id), 'result matches created course').to.be.true;
-			expect(result[0].student, 'should not be found as student').to.be.false;
-			expect(result[0].teacher, 'should be found as teacher').to.be.true;
-			expect(result[0].substituteTeacher, 'should not be found as substitute teacher').to.be.false;
+			checkUserRoleInCourse(result[0], { student: false, teacher: true, substituteTeacher: false });
 		});
 
 		it('should return courses the user leads (as a substitute teacher)', async () => {
@@ -48,23 +63,37 @@ describe.only(
 
 			expect(result.length, 'one result found only').to.equal(1);
 			expect(equal(result[0]._id, course._id), 'result matches created course').to.be.true;
-			expect(result[0].student, 'should not be found as student').to.be.false;
-			expect(result[0].teacher, 'should not be found as teacher').to.be.false;
-			expect(result[0].substituteTeacher, 'should be found as substitute teacher').to.be.true;
+			checkUserRoleInCourse(result[0], { student: false, teacher: false, substituteTeacher: true });
 		});
 
-		// it('should delete user from courses the user attends', async () => {
-		// 	const student = await testObjects.createTestUser({ roles: 'student' });
-		// 	await testObjects.createTestCourse({ userIds: [student._id] });
+		it('should not return courses the user does not belong to', async () => {
+			const user = await testObjects.createTestUser({ roles: 'teacher' });
+			await testObjects.createTestCourse();
 
-		// 	const result = await coursesRepo.deleteUserFromCourseUsers(student._id);
-		// 	expect(result.matchedDocuments, 'only one course should match').to.equal(1);
-		// 	expect(result.modifiedDocuments, 'only one course should be modified').to.equal(1);
+			const result = await coursesRepo.getCoursesWithUser(user._id);
 
-		// 	// the user has been removed
-		// 	const matchesAfter = await coursesRepo.getCoursesWithUser(student._id);
-		// 	expect(matchesAfter.length, 'all results have been removed').to.equal(0);
-		// });
+			expect(result.length, 'no result found').to.equal(0);
+		});
+
+		it('should return all courses with all roles the user belongs to', async () => {
+			const user = await testObjects.createTestUser({ roles: 'teacher' });
+			// attend a course
+			const studentCourse = await testObjects.createTestCourse({ userIds: [user._id] });
+			// lead a course as teacher and substitute teacher
+			const teacherCourse = await testObjects.createTestCourse({ substitutionIds: [user._id], teacherIds: [user._id] });
+
+			const result = await coursesRepo.getCoursesWithUser(user._id);
+			expect(result.length, 'two results found').to.equal(2);
+
+			// TODO FIX IT
+			const resultIds = result.map((res) => res._id);
+			expect(resultIds).to.have.members([studentCourse._id, teacherCourse._id], 'expected Course ids missing');
+
+			const resultStudentCourse = result.find((res) => equal(res._id, studentCourse._id));
+			checkUserRoleInCourse(resultStudentCourse, { student: true, teacher: false, substituteTeacher: false });
+			const resultTeacherCourse = result.find((res) => equal(res._id, teacherCourse._id));
+			checkUserRoleInCourse(resultTeacherCourse, { student: false, teacher: true, substituteTeacher: true });
+		});
 
 		it('should delete user from course relations - user, teacher, substituteTeacher', async () => {
 			const student = await testObjects.createTestUser({ roles: 'student' });
@@ -89,6 +118,7 @@ describe.only(
 			const matchesAfter = await coursesRepo.getCoursesWithUser(student._id);
 			expect(matchesAfter.length, 'all results have been removed').to.equal(0);
 
+			// additional user is not affeceted
 			const matchesAfterAdditionalUser = await coursesRepo.getCoursesWithUser(additionalUser._id);
 			expect(matchesAfterAdditionalUser.length, 'other users should not be removed').to.equal(2);
 		});
