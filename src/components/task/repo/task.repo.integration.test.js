@@ -8,7 +8,9 @@ const {
 	findPublicHomeworksFromUser,
 	replaceUserInPublicHomeworks,
 	findGroupSubmissionsFromUser,
+	findSingleSubmissionsFromUser,
 	removeGroupSubmissionsConnectionsForUser,
+	deleteSingleSubmissionsFromUser,
 } = require('./task.repo');
 const appPromise = require('../../../app');
 
@@ -79,8 +81,6 @@ db.cleanupUnexpectedHomeworks = () =>
 	HomeworkModel.deleteMany({ $or: [{ teacherId: null }, { teacherId: undefined }] })
 		.lean()
 		.exec();
-const cleanupUnexpectedSubmissions = () =>
-	SubmissionModel.deleteMany({ $or: [{ studentId: null }, { studentId: undefined }], teamMembers: null });
 
 describe('in "task.repo" the function', () => {
 	let app;
@@ -658,4 +658,8 @@ describe('in "task.repo" the function', () => {
 			}
 		});
 	});
+
+	// TODO: findSingleSubmissionsFromUser
+
+	// TODO: deleteSingleSubmissionsFromUser
 });

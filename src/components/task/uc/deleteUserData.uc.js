@@ -4,32 +4,52 @@ const {
 	deletePrivateHomeworksFromUser,
 	findPublicHomeworksFromUser,
 	replaceUserInPublicHomeworks,
+	findGroupSubmissionsFromUser,
+	findSingleSubmissionsFromUser,
+	removeGroupSubmissionsConnectionsForUser,
+	deleteSingleSubmissionsFromUser,
 } = require('../repo/task.repo');
 
 const checkStatus = (status) => {
-	if (status.success !== 1) {
+	if (status.success !== 1 || status.count !== status.modified) {
 		// TODO: who is really look into logs for this?
-		logger.warning('Task step failed', status);
+		logger.warning('User deletion task has some miss matches.', status);
 	}
 };
 
-// TODO
 const deletePrivateSubmissions = async (userId) => {
-	// TODO
-	return {
-		context: 'submissions',
+	const result = await findSingleSubmissionsFromUser(userId);
+
+	if (result.length > 0) {
+		const status = await deleteSingleSubmissionsFromUser(userId);
+		checkStatus(status);
+	}
+
+	const trashbinData = {
+		scope: 'submissions',
 		type: 'private',
-		data: [],
+		data: result,
 	};
+
+	// TODO: complete should from type boolean and false until it is finished by the executed instance
+	return { trashbinData, complete: undefined };
 };
 
 const removeConnectionToSharedSubmissions = async (userId) => {
-	// TODO
-	return {
-		context: 'submissions',
+	const result = await findGroupSubmissionsFromUser(userId, ['_id', 'teamMembers']);
+	//TODO: teamMembers include more then they should, fix this and add test for it
+	if (result.length > 0) {
+		const status = await removeGroupSubmissionsConnectionsForUser(userId);
+		checkStatus(status);
+	}
+
+	const trashbinData = {
+		scope: 'submissions',
 		type: 'shared',
-		data: [],
+		data: result,
 	};
+
+	return { trashbinData, complete: undefined };
 };
 
 const deletePrivateUserHomeworks = async (userId) => {
@@ -41,7 +61,7 @@ const deletePrivateUserHomeworks = async (userId) => {
 	}
 
 	const trashbinData = {
-		context: 'homeworks',
+		scope: 'homeworks',
 		type: 'private',
 		data: result,
 	};
@@ -58,7 +78,7 @@ const removeConnectionToSharedHomeworks = async (userId, replaceUserId) => {
 	}
 
 	const trashbinData = {
-		context: 'homeworks',
+		scope: 'homeworks',
 		type: 'shared',
 		data: result,
 	};
