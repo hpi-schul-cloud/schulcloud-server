@@ -6,9 +6,8 @@ const filterUserInUserGroups = (userId) => {
 };
 
 const getCourseGroupsWithUser = async (userId) => {
-	// TODO Do we always need to take schoolId into consideration?
 	const result = await courseGroupModel.find(filterUserInUserGroups(userId)).lean().exec();
-
+	// TODO convert DAO to BO
 	return result;
 };
 

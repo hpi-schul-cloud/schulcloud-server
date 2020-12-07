@@ -10,7 +10,6 @@ chai.use(chaiAsPromised);
 describe('when removing user relations in courses', () => {
 	describe('all the lessons', () => {
 		it('should be addded to trashbindata', () => {
-			// TODO
 		});
 	});
 });

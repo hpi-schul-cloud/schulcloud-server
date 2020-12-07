@@ -1,8 +1,8 @@
 const { ObjectId } = require('mongoose').Types;
-const { BadRequest, Forbidden } = require('../../../errors');
+const { BadRequest, Forbidden, ApplicationError } = require('../../../errors');
 const { coursesRepo, lessonsRepo, courseGroupsRepo } = require('../repo/index');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
-const { debug } = require('../../../logger');
+const { debug, warning } = require('../../../logger');
 
 const addLessonsToTrashbinData = (lessons = [], trashBinData) => {
 	const lessonIds = lessons.map((lesson) => lesson._id);
@@ -32,36 +32,8 @@ const addCoursesToData = (coursesAggreate = [], data) => {
 	Object.assign(data, { courseIds: { student, teacher, substituteTeacher } });
 };
 
-const addCourseGroupData = (courseGroupdata = [], data) => {
-	const courseGroupIds = courseGroupdata.map((courseGroup) => courseGroup._id);
-	Object.assign(data, courseGroupIds);
-};
-
 const deleteUserDataFromCourses = async (userId) => {
-	// TODO permissions
-
-	// delete user relations from course:
-	// (userIds[ObjectId], teacherIds[ObjectId], substitutionIds[ObjectId])
-	// add to trashbin
-
-	// delete user relations from course groups:
-	// (userIds[ObjectId])
-
-	// add to trashbin:
-	// courses: [{
-	//  id: courseId
-	// 	user: Boolean,
-	// 	teacher: Boolean,
-	// 	substitutionTeacher: Boolean
-	// }]
-	//
-
-	// courseIds: {
-	// 	student : [],
-	// 	teacher: [],
-	// 	substituteTeacher: [],
-	// }
-
+	// TODO Permission check
 	const data = [];
 	const courses = await coursesRepo.getCoursesWithUserInUsers(userId);
 	if (courses.length !== 0) {
@@ -71,20 +43,25 @@ const deleteUserDataFromCourses = async (userId) => {
 	return { trashBinData: { scope: 'courses', data }, complete: true };
 };
 
+const addCourseGroupData = (courseGroupdata = [], data) => {
+	const courseGroupIds = courseGroupdata.map((courseGroup) => courseGroup._id);
+	Object.assign(data, courseGroupIds);
+};
+
 const deleteUserDataFromCourseGroups = async (userId) => {
 	// courseGroupIds: []
 	const data = [];
 	const courseGroups = await courseGroupsRepo.getCourseGroupsWithUser(userId);
-	if (coursesRepo.length !== 0) {
+	if (courseGroups.length !== 0) {
 		await courseGroupsRepo.deleteUserFromUserGroups(userId);
 		addCourseGroupData(courseGroups, data);
 	}
 
-	return { trashBinData: { scope: 'courses', data }, complete: true };
+	return { trashBinData: { scope: 'courseGroups', data }, complete: true };
 };
 
 const deleteUserData = () => {
 	return [deleteUserDataFromCourses, deleteUserDatafromLessons, deleteUserDataFromCourseGroups];
 };
 
-module.exports = [deleteUserData, deleteUserDatafromLessons, deleteUserDataFromCourses];
+module.exports = { deleteUserData };
