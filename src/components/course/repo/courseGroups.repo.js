@@ -14,10 +14,7 @@ const getCourseGroupsWithUser = async (userId) => {
 
 const deleteUserFromUserGroups = async (userId) => {
 	const filter = filterUserInUserGroups(userId);
-	const result = await courseGroupModel
-		.updateMany(filter, { $pull: { userIds: userId } })
-		.lean() // Do we really need it?
-		.exec();
+	const result = await courseGroupModel.updateMany(filter, { $pull: { userIds: userId } }).exec();
 	return updateManyResult(result);
 };
 

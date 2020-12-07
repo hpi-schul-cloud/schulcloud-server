@@ -35,7 +35,7 @@ const addCoursesToData = (coursesAggreate = [], data) => {
 const addCourseGroupData = (courseGroupdata = [], data) => {
 	const courseGroupIds = courseGroupdata.map((courseGroup) => courseGroup._id);
 	Object.assign(data, courseGroupIds);
-}
+};
 
 const deleteUserDataFromCourses = async (userId) => {
 	// TODO permissions
@@ -61,7 +61,6 @@ const deleteUserDataFromCourses = async (userId) => {
 	// 	teacher: [],
 	// 	substituteTeacher: [],
 	// }
-	
 
 	const data = [];
 	const courses = await coursesRepo.getCoursesWithUserInUsers(userId);
@@ -69,9 +68,6 @@ const deleteUserDataFromCourses = async (userId) => {
 		await coursesRepo.deleteUserFromCourseRelations(userId);
 		addCoursesToData(courses, data);
 	}
-
-	
-
 	return { trashBinData: { scope: 'courses', data }, complete: true };
 };
 
@@ -85,7 +81,7 @@ const deleteUserDataFromCourseGroups = async (userId) => {
 	}
 
 	return { trashBinData: { scope: 'courses', data }, complete: true };
-}
+};
 
 const deleteUserData = () => {
 	return [deleteUserDataFromCourses, deleteUserDatafromLessons, deleteUserDataFromCourseGroups];
