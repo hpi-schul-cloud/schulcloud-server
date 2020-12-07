@@ -43,7 +43,11 @@ const addShareTokenIfCourseShareable = async (context) => {
 // Generate a new url for material that have merlin as source.
 // The url expires after 2 hours
 const convertMerlinUrl = async (context) => {
-	if (Configuration.get('FEATURE_ES_MERLIN_ENABLED') === false) return context;
+	const hasSchool = context.params?.authentication?.payload?.schoolId;
+	if (Configuration.get('FEATURE_ES_MERLIN_ENABLED') === false || !hasSchool) {
+		return context;
+	}
+
 	// Converts urls to valid merlin urls on the fly
 	// This if snippet only applies if the user went to the course first and added content from the course
 	if (context.result && context.result.contents && context.result.contents.length) {
@@ -53,10 +57,8 @@ const convertMerlinUrl = async (context) => {
 					await Promise.all(
 						content.content.resources.map(async (resource) => {
 							if (resource && resource.merlinReference) {
-								const { merlinReference } = resource;
-								resource.url = await context.app
-									.service('edu-sharing/merlinToken')
-									.find({ query: { merlinReference } });
+								context.params.query.merlinReference = resource.merlinReference;
+								resource.url = await context.app.service('edu-sharing/merlinToken').find(context.params);
 							}
 						})
 					);
@@ -85,6 +87,9 @@ const convertMerlinUrl = async (context) => {
 };
 
 const attachMerlinReferenceToLesson = (context) => {
+	if (Configuration.get('FEATURE_ES_MERLIN_ENABLED') === false) {
+		return context;
+	}
 	if (context.data && context.data.contents && context.data.contents.length) {
 		context.data.contents.forEach((c) => {
 			if (c.content && c.content.resources && c.content.resources.length) {
