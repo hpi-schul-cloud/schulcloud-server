@@ -118,6 +118,28 @@ describe('lessons service', () => {
 			expect(result.name).to.equal('students always use cool names');
 		});
 
+		/* it('merlin reference should be attached automaticaly if it\'s content from merlin', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const { _id: courseId } = await testObjects.createTestCourse({
+				schoolId,
+				teacherIds: [teacher._id],
+				userIds: [student._id],
+			});
+			const { _id: courseGroupId } = await testObjects.createTestCourseGroup({
+				userIds: [student._id],
+				schoolId,
+				courseId,
+			});
+			const { _id: lessonId } = await testObjects.createTestLesson({ name: 'testlesson', courseGroupId });
+			const params = await testObjects.generateRequestParamsFromUser(student);
+			const data = { name: 'students always use cool names', courseId, courseGroupId };
+			const result = await app.service('lessons').patch(lessonId, data, params);
+			expect(result).to.haveOwnProperty('_id');
+			expect(result.name).to.equal('students always use cool names');
+		}); */
+
 		it('the teacher can create courseGroup lessons', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });

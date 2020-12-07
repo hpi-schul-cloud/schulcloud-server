@@ -43,7 +43,7 @@ const addShareTokenIfCourseShareable = async (context) => {
 // Generate a new url for material that have merlin as source.
 // The url expires after 2 hours
 const convertMerlinUrl = async (context) => {
-	if (Configuration.get('FEATURE_ES_MERLIN_ENABLED') !== true) return context;
+	if (Configuration.get('FEATURE_ES_MERLIN_ENABLED') === false) return context;
 	// Converts urls to valid merlin urls on the fly
 	// This if snippet only applies if the user went to the course first and added content from the course
 	if (context.result && context.result.contents && context.result.contents.length) {
@@ -90,11 +90,13 @@ const attachMerlinReferenceToLesson = (context) => {
 		context.data.contents.forEach((c) => {
 			if (c.content && c.content.resources && c.content.resources.length) {
 				c.content.resources.forEach((resource) => {
-					const isMerlin =
-						resource.url && resource.url.includes(`${Configuration.get('ES_MERLIN_AUTH_URL')}?identifier=`);
-					if (isMerlin) {
-						const merlinReference = resource.url.match(/.*identifier=\s*([^\n\r]*)/);
-						resource.merlinReference = merlinReference[1];
+					const merlinUrl = new URL(resource.url);
+					if (
+						`${merlinUrl.protocol}//${merlinUrl.hostname}${merlinUrl.pathname}` ===
+							Configuration.get('ES_MERLIN_AUTH_URL') &&
+						merlinUrl.searchParams.get('identifier').length
+					) {
+						resource.merlinReference = merlinUrl.searchParams.get('identifier');
 					}
 				});
 			}
