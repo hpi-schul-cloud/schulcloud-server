@@ -1,11 +1,8 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const { ObjectId } = require('mongoose').Types;
 
-const appPromise = require('../../../app');
 const coursesRepo = require('./courses.repo');
-const { NotFound } = require('../../../errors');
-const { equal } = require('../../../helper/compare').ObjectId;
+const { equal, toString: idToString } = require('../../../helper/compare').ObjectId;
 const { withApp, testObjects } = require('../../../../test/utils/withApp.test');
 
 chai.use(chaiAsPromised);
@@ -36,7 +33,8 @@ describe.only(
 		it('should return courses the user attends', async () => {
 			const student = await testObjects.createTestUser({ roles: 'student' });
 			const course = await testObjects.createTestCourse({ userIds: [student._id] });
-			// TODO create more courses
+			// other course the user does not belong to
+			await testObjects.createTestCourse();
 			const result = await coursesRepo.getCoursesWithUser(student._id);
 
 			expect(result.length, 'one result found only').to.equal(1);
@@ -85,9 +83,11 @@ describe.only(
 			const result = await coursesRepo.getCoursesWithUser(user._id);
 			expect(result.length, 'two results found').to.equal(2);
 
-			// TODO FIX IT
-			const resultIds = result.map((res) => res._id);
-			expect(resultIds).to.have.members([studentCourse._id, teacherCourse._id], 'expected Course ids missing');
+			const resultIds = result.map((res) => res.id);
+			expect(resultIds).to.have.members(
+				[idToString(studentCourse._id), idToString(teacherCourse._id)],
+				'expected Course ids missing'
+			);
 
 			const resultStudentCourse = result.find((res) => equal(res._id, studentCourse._id));
 			checkUserRoleInCourse(resultStudentCourse, { student: true, teacher: false, substituteTeacher: false });

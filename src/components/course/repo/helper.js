@@ -1,4 +1,6 @@
-const updateManyResult = ({ n, nModified, ok }) => {
+// todo test?
+
+const updateManyResultDAO2BO = ({ n, nModified, ok }) => {
 	// todo is ok === 0 possible or does it throw?
 	if (ok !== 1) {
 		// log/throw
@@ -6,4 +8,8 @@ const updateManyResult = ({ n, nModified, ok }) => {
 	return { success: ok === 1, matchedDocuments: n, modifiedDocuments: nModified };
 };
 
-module.exports = { updateManyResult };
+const filterUserInUserGroups = (userId) => {
+	return { userIds: userId };
+};
+
+module.exports = { updateManyResultDAO2BO, filterUserInUserGroups };
