@@ -157,6 +157,28 @@ describe('consent service', () => {
 		globals.SC_THEME = OLD_SC_THEME;
 	});
 
+	it('consentVersionService create method should create new consent if SHD upload', async () => {
+		const superHeroUser = await testObjects.createTestUser({ roles: ['superhero'] });
+		const params = await testObjects.generateRequestParamsFromUser(superHeroUser);
+		const OLD_SC_THEME = globals.SC_THEME;
+		globals.SC_THEME = 'default';
+
+		const consentParams = {
+			title: 'Test title',
+			publishedAt: '12.13.2020 14:45',
+			consentText: 'Test text',
+		};
+
+		const result = await consentVersionService.create(consentParams, params);
+
+		expect(result).to.not.be.null;
+		expect(result).has.property('title').and.is.equal(consentParams.title);
+		expect(result).has.property('publishedAt').and.is.not.null;
+		expect(result).has.property('consentText').and.is.equal(consentParams.consentText);
+
+		globals.SC_THEME = OLD_SC_THEME;
+	});
+
 	it('consentVersionService create method should upload conset version when user is an admin', async () => {
 		const adminUser = await testObjects.createTestUser({ roles: ['administrator'] });
 		const params = await testObjects.generateRequestParamsFromUser(adminUser);
