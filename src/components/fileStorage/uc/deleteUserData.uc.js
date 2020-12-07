@@ -1,4 +1,4 @@
-const { removePermissionsThatUserCanAccess } = require('./applicationInternal/removePermissions')
+const { removePermissionsThatUserCanAccess } = require('./applicationInternal/removePermissions');
 
 const deleteUserData = async (userId) => {
 	// step 1

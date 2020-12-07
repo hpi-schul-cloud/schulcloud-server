@@ -1,5 +1,3 @@
-const logger = require('../../../../logger');
-
 const repo = require('../../repo/files.repo');
 
 /**
