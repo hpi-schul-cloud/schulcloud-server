@@ -23,21 +23,28 @@ describe('fileStorageFacade', () => {
 			const user = await testObjects.createTestUser();
 			await testObjects.createTestFile({ owner: user });
 
-			const result = await app.facade('/fileStorage/v2').deleteUserRelatedData(user._id);
-
-			expect(result.complete).to.be.true;
-			expect(result.trashBinData).to.be.an('array');
-			result.trashBinData.forEach((data) => {
-				expect(data).to.haveOwnProperty('scope');
-				expect(data.data).to.be.an('object');
-			});
+			const deleteFunctions = app.facade('/fileStorage/v2').deleteUserData;
+			for (const deleteFunction of deleteFunctions) {
+				// eslint-disable-next-line no-await-in-loop
+				const result = await deleteFunction(user._id);
+				expect(result.complete).to.be.true;
+				expect(result.trashBinData).to.be.an('array');
+				result.trashBinData.forEach((data) => {
+					expect(data).to.haveOwnProperty('scope');
+					expect(data.data).to.be.an('object');
+				});
+			}
 		});
 
 		it('when called with valid user id, then it deletes the users file permissions', async () => {
 			const user = await testObjects.createTestUser();
 			const file = await testObjects.createTestFile({ owner: user });
 
-			await app.facade('/fileStorage/v2').deleteUserRelatedData(user._id);
+			const deleteFunctions = app.facade('/fileStorage/v2').deleteUserData;
+			for (const deleteFunction of deleteFunctions) {
+				// eslint-disable-next-line no-await-in-loop
+				await deleteFunction(user._id);
+			}
 
 			const result = await FileModel.findById(file._id).lean().exec();
 

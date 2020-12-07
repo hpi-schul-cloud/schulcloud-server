@@ -1,9 +1,7 @@
 const deleteUserDataUc = require('./deleteUserData.uc');
 
 const facade = {
-	deleteUserRelatedData: async (userId) => {
-		return deleteUserDataUc.deleteUserData(userId);
-	},
+	deleteUserData: deleteUserDataUc.deleteUserData,
 };
 
 module.exports = (app) => {
