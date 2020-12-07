@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [25.3.2]
+
+### Added
+
+- SC-7734 - Added a hook that takes care of merlin content to generate valid urls for users
+
 ## [25.3.1]
+
 ### Fixed
 
 SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-parent-users is broken
