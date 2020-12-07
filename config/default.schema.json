@@ -426,7 +426,7 @@
 		},
 		"FEATURE_ES_MERLIN_ENABLED": {
 			"type": "boolean",
-			"default": true,
+			"default": false,
 			"description": "When enabled, the merlin referene will generate a valid url"
 		},
 		"SILENT_ERROR_ENABLED": {
