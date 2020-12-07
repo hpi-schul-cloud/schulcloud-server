@@ -53,6 +53,7 @@ const replaceUserInPublicHomeworks = async (userId, replaceUserId) => {
 /** Submissions */
 
 const groupSubmissionQuery = (userId) => ({ $and: [{ teamMembers: userId }, { teamMembers: { $ne: null } }] });
+
 /**
  * @param {BSON|BsonString} userId
  * @param {Array|String|StringList|MongooseSelectObject} [select]
@@ -63,10 +64,18 @@ const findGroupSubmissionsFromUser = async (userId, select) => {
 	return result;
 };
 
+const removeGroupSubmissionsConnectionsForUser = async (userId) => {
+	const result = await SubmissionModel.updateMany(groupSubmissionQuery(userId), { $pull: { teamMembers: userId } })
+		.lean()
+		.exec();
+	return mapStatus(result);
+};
+
 module.exports = {
 	findPrivateHomeworksFromUser,
 	findPublicHomeworksFromUser,
 	deletePrivateHomeworksFromUser,
 	replaceUserInPublicHomeworks,
 	findGroupSubmissionsFromUser,
+	removeGroupSubmissionsConnectionsForUser,
 };
