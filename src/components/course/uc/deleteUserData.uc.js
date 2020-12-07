@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongoose').Types;
 const { BadRequest, Forbidden } = require('../../../errors');
-const { coursesRepo, lessonsRepo } = require('../repo/index');
+const { coursesRepo, lessonsRepo, courseGroupsRepo } = require('../repo/index');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { debug } = require('../../../logger');
 
@@ -32,6 +32,11 @@ const addCoursesToData = (coursesAggreate = [], data) => {
 	Object.assign(data, { courseIds: { student, teacher, substituteTeacher } });
 };
 
+const addCourseGroupData = (courseGroupdata = [], data) => {
+	const courseGroupIds = courseGroupdata.map((courseGroup) => courseGroup._id);
+	Object.assign(data, courseGroupIds);
+}
+
 const deleteUserDataFromCourses = async (userId) => {
 	// TODO permissions
 
@@ -48,7 +53,6 @@ const deleteUserDataFromCourses = async (userId) => {
 	// 	user: Boolean,
 	// 	teacher: Boolean,
 	// 	substitutionTeacher: Boolean
-	// 	courseGroups: [courseGroupIds]
 	// }]
 	//
 
@@ -56,21 +60,35 @@ const deleteUserDataFromCourses = async (userId) => {
 	// 	student : [],
 	// 	teacher: [],
 	// 	substituteTeacher: [],
-	//  courseGroupIds: [],
 	// }
+	
 
 	const data = [];
-	const courses = coursesRepo.getCoursesWithUserInUsers(userId);
+	const courses = await coursesRepo.getCoursesWithUserInUsers(userId);
 	if (courses.length !== 0) {
-		coursesRepo.deleteUserFromCourseRelations(userId);
+		await coursesRepo.deleteUserFromCourseRelations(userId);
 		addCoursesToData(courses, data);
 	}
+
+	
 
 	return { trashBinData: { scope: 'courses', data }, complete: true };
 };
 
+const deleteUserDataFromCourseGroups = async (userId) => {
+	// courseGroupIds: []
+	const data = [];
+	const courseGroups = await courseGroupsRepo.getCourseGroupsWithUser(userId);
+	if (coursesRepo.length !== 0) {
+		await courseGroupsRepo.deleteUserFromUserGroups(userId);
+		addCourseGroupData(courseGroups, data);
+	}
+
+	return { trashBinData: { scope: 'courses', data }, complete: true };
+}
+
 const deleteUserData = () => {
-	return [deleteUserDataFromCourses, deleteUserDatafromLessons];
+	return [deleteUserDataFromCourses, deleteUserDatafromLessons, deleteUserDataFromCourseGroups];
 };
 
-module.exports = [deleteUserDatafromLessons, deleteUserDataFromCourses];
+module.exports = [deleteUserData, deleteUserDatafromLessons, deleteUserDataFromCourses];
