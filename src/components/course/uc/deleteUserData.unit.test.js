@@ -1,26 +1,12 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const { withApp, testObjects } = require('../../../../test/utils/withApp.test');
+const { withApp, testObjects, appPromise } = require('../../../../test/utils/withApp.test');
+const { createLessonContents } = require('../../../../test/services/helpers/services')(appPromise).lessons;
 const { equal, toString: idToString } = require('../../../helper/compare').ObjectId;
 const { deleteUserData } = require('./deleteUserData.uc');
 const { ApplicationError } = require('../../../errors');
-
 const { expect } = chai;
 chai.use(chaiAsPromised);
-
-const createLessonContents = ({
-	user,
-	component = 'text',
-	title = 'a content title',
-	content = {},
-	hidden = false,
-} = {}) => ({
-	user,
-	component,
-	title,
-	content,
-	hidden,
-});
 
 const simulateOrchestratedDeletion = (userId) => {
 	return Promise.all(
@@ -34,22 +20,23 @@ const repeat = (times, promiseFn) => {
 	return Promise.all([...Array(times)].map(() => promiseFn()));
 };
 
-const createTestUsers = async () => {
+const createTestData = async () => {
 	const school = await testObjects.createTestSchool();
 	const student = await testObjects.createTestUser({ schoolId: school._id });
 	const teacher = await testObjects.createTestUser({ schoolId: school._id });
+	const substituteTeacher = await testObjects.createTestUser({ schoolId: school._id });
 	const otherUser = await testObjects.createTestUser({ schoolId: school._id });
 	const course = await testObjects.createTestCourse({ schoolId: school._id });
-	return { otherUser, teacher, student, school, course };
+	return { otherUser, teacher, substituteTeacher, student, school, course };
 };
 
 // TODO mock the repositoriy calls
 
-describe.only(
+describe(
 	'when removing user data in courses',
 	withApp(async () => {
 		it('should resolve with empty trashbin data for a user with no course connection', async () => {
-			const { student } = await createTestUsers();
+			const { student } = await createTestData();
 			const stepResults = await simulateOrchestratedDeletion(student._id);
 
 			expect(stepResults.length, 'have steps executed').to.be.not.equal(0);
@@ -78,7 +65,7 @@ describe.only(
 		});
 
 		it('should add only user related lesson contents to trashbin data', async () => {
-			const { otherUser, teacher } = await createTestUsers();
+			const { otherUser, teacher } = await createTestData();
 
 			await testObjects.createTestLesson({
 				description: 'a lesson not related to our user',
@@ -99,7 +86,7 @@ describe.only(
 		});
 
 		it('should add multiple user related lesson contents to trashbin data', async () => {
-			const { teacher } = await createTestUsers();
+			const { teacher } = await createTestData();
 
 			const teachersLessons = await repeat(2, () =>
 				testObjects.createTestLesson({
@@ -119,7 +106,7 @@ describe.only(
 		});
 
 		it('should add only user related course groups to trashbin data', async () => {
-			const { otherUser, teacher, course } = await createTestUsers();
+			const { otherUser, teacher, course } = await createTestData();
 
 			await testObjects.createTestCourseGroup({
 				userIds: [otherUser._id],
@@ -140,7 +127,7 @@ describe.only(
 		});
 
 		it('should have added multiple user relations from course groups to trashbin data', async () => {
-			const { teacher, course } = await createTestUsers();
+			const { teacher, course } = await createTestData();
 
 			const teachersCourseGroups = await repeat(2, () =>
 				testObjects.createTestCourseGroup({
@@ -162,36 +149,44 @@ describe.only(
 			);
 		});
 
-		it('should have added student user data from courses to trashbin data', async () => {
-			const { otherUser, student } = await createTestUsers();
-			const course = await testObjects.createTestCourse({ userIds: [student._id, otherUser._id] });
-			const courses = await repeat(2, () =>
-				testObjects.createTestCourseGroup({
-					userIds: [student._id],
-					courseId: course._id,
-				})
-			);
+		describe('when removing user relations from courses', () => {
+			const haveUserCoursesInTrashBin = async (userId, type, userCourseIds) => {
+				const stepResults = await simulateOrchestratedDeletion(userId);
+				const coursesResults = stepResults.filter((result) => result.trashBinData.scope === 'courses');
+				expect(coursesResults.length, 'have one courses item added').to.be.equal(1);
+				const { courseIds } = coursesResults[0].trashBinData.data;
+				expect(courseIds[type]).to.be.an('array').of.length(userCourseIds.length);
+				expect(courseIds[type].map(idToString), 'contain all users course groups').to.have.members(
+					userCourseIds,
+					'a user course group is missing'
+				);
+			};
 
-			const studentCourseIds = courses.map((studentCourse) => idToString(studentCourse._id));
-			const otherCourse = await testObjects.createTestCourseGroup({
-				userIds: [otherUser._id],
-				courseId: course._id,
+			it('should have added user data from courses to trashbin data', async () => {
+				const { student, teacher, substituteTeacher } = await createTestData();
+				const studentCourses = await repeat(2, () =>
+					testObjects.createTestCourse({
+						userIds: [student._id],
+					})
+				);
+				const studentCourseIds = studentCourses.map((course) => idToString(course._id));
+				const teacherCourses = await repeat(2, () =>
+					testObjects.createTestCourse({
+						teacherIds: [teacher._id],
+					})
+				);
+				const teacherCourseIds = teacherCourses.map((course) => idToString(course._id));
+				const substituteTeacherCourses = await repeat(2, () =>
+					testObjects.createTestCourse({
+						substitutionIds: [substituteTeacher._id],
+					})
+				);
+				const substituteTeacherCourseIds = substituteTeacherCourses.map((course) => idToString(course._id));
+
+				await haveUserCoursesInTrashBin(student._id, 'student', studentCourseIds);
+				await haveUserCoursesInTrashBin(teacher._id, 'teacher', teacherCourseIds);
+				await haveUserCoursesInTrashBin(substituteTeacher._id, 'substituteTeacher', substituteTeacherCourseIds);
 			});
-			courses.push(otherCourse);
-
-			const stepResults = await simulateOrchestratedDeletion(student._id);
-			const coursesResults = stepResults.filter((result) => result.trashBinData.scope === 'courses');
-			expect(coursesResults.length, 'have one courses item added').to.be.equal(1);
-			const { courseIds } = coursesResults[0].trashBinData.data;
-			expect(courseIds.student).to.be.an('array').of.length(2);
-			expect(courseIds.student.map(idToString), 'contain all users course groups').to.have.members(
-				studentCourseIds,
-				'a user course group is missing'
-			);
-			expect(courseIds.teacher).to.be.an('array').of.length(0);
-			expect(courseIds.substituteTeacher).to.be.an('array').of.length(0);
 		});
-		it('should have added teacher user data from courses to trashbin data', () => {});
-		it('should have added substitution teacher user data from courses to trashbin data', () => {});
 	})
 );

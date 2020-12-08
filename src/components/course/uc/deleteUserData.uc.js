@@ -42,7 +42,7 @@ const deleteUserDataFromCourses = async (userId) => {
 
 	const data = [];
 	const courses = await coursesRepo.getCoursesWithUser(userId);
-	let complete = false;
+	let complete = true;
 	if (courses.length !== 0) {
 		complete = await coursesRepo.deleteUserFromCourseRelations(userId).success;
 		addCoursesToData(courses, data);

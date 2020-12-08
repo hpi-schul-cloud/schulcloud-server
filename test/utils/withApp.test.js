@@ -25,4 +25,4 @@ const withApp = (testFunction) => {
 	return testFunction;
 };
 
-module.exports = { withApp, testObjects };
+module.exports = { withApp, testObjects, appPromise };

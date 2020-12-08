@@ -28,65 +28,6 @@ const checkUserRoleInCourse = (result, expectOptions) => {
 };
 
 describe(
-	'when having a course',
-	withApp(() => {
-		it('should persist all properties given', async () => {
-			const testSchool = await testObjects.createTestSchool();
-			const testUser = await testObjects.createTestUser({ schoolId: testSchool._id });
-			const testTeacher = await testObjects.createTestUser({ schoolId: testSchool._id });
-			const testSubstitutionTeacher = await testObjects.createTestUser({ schoolId: testSchool._id });
-			const testClass = await testObjects.createTestClass({ schoolId: testSchool._id });
-			const testLtiTool = await testObjects.createTestLtiTool();
-			const start = Date.now();
-			const end = Date.now() + 8600;
-			const testCourse = await testObjects.createTestCourse({
-				name: 'a course name',
-				schoolId: testSchool._id,
-				userIds: [testUser._id],
-				description: 'a course description',
-				classIds: [testClass._id],
-				teacherIds: [testTeacher._id],
-				substitutionIds: [testSubstitutionTeacher._id],
-				ltiToolIds: [testLtiTool],
-				features: ['messenger'],
-				startDate: start,
-				untilDate: end,
-			});
-			const result = await coursesRepo.getCourseById(testCourse._id);
-			expect(equal(result.id, testCourse._id), 'resolves with the created course');
-			// userGroup
-			expect(result.name, 'name has been persisted').to.be.equal('a course name');
-			expect(equal(testSchool._id, result.schoolId), 'schoolId has been persisted').to.be.true;
-			expect(result.userIds, 'userId has been added').to.have.members(
-				[idToString(testUser._id)],
-				'the given user is missing'
-			);
-			expect(result.description, 'description has been persisted').to.be.equal('a course description');
-			// course
-			expect(result.teacherIds, 'teacherId has been added').to.have.members(
-				[idToString(testTeacher._id)],
-				'the given teacher is missing'
-			);
-			expect(result.substitutionIds, 'substitution teacher id has been added').to.have.members(
-				[idToString(testSubstitutionTeacher._id)],
-				'the given substitution teacher is missing'
-			);
-			expect(result.ltiToolIds, 'lti tool id has been added').to.have.members(
-				[idToString(testLtiTool._id)],
-				'the given lti tool id is missing'
-			);
-			expect(result.features, 'features have been added').to.have.members(
-				['messenger'],
-				'messenger is missing in features'
-			);
-			expect(result.color, 'default color has been applied').to.be.equal('#ACACAC');
-			expect(result.startDate, 'startDate has been added').to.be.equal(new Date(start).toISOString());
-			expect(result.untilDate, 'untilDate has been added').to.be.equal(new Date(end).toISOString());
-		});
-	})
-);
-
-describe(
 	'when having a user in course',
 	withApp(() => {
 		it('should return courses the user attends', async () => {
@@ -157,9 +98,9 @@ describe(
 			const resultStudentCourse = result.find((res) => equal(res.id, studentCourse._id));
 			checkUserRoleInCourse(resultStudentCourse, { student: true, teacher: false, substituteTeacher: false });
 
-			const hasSubstitutionTeacher = teacherCourse.substitutionIds.length === 0;
+			const hasSubstitutionIds = teacherCourse.substitutionIds.length > 0;
 			expect(
-				hasSubstitutionTeacher,
+				hasSubstitutionIds,
 				'user might not be added to substitution teachers because it has been added to teachers'
 			).to.be.false;
 			expect(equal(teacherCourse.teacherIds[0], user._id), 'user is added to teachers').to.be.true;
@@ -167,7 +108,7 @@ describe(
 			checkUserRoleInCourse(resultTeacherCourse, {
 				student: false,
 				teacher: true,
-				substituteTeacher: hasSubstitutionTeacher,
+				substituteTeacher: hasSubstitutionIds,
 			});
 
 			const resultSubstitutionTeacherCourse = result.find((res) => equal(res.id, substitutionTeacherCourse._id));

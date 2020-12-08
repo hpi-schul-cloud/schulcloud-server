@@ -2,6 +2,22 @@ const { courseModel } = require('../../../services/user-group/model');
 const { updateManyResultDAO2BO } = require('./helper');
 const { toString: idToString } = require('../../../helper/compare').ObjectId;
 
+// filter
+
+const filterCourseMember = (userId) => ({
+	$or: [
+		{
+			substitutionIds: userId,
+		},
+		{
+			teacherIds: userId,
+		},
+		{
+			userIds: userId,
+		},
+	],
+});
+
 // converter DAO 2 BO
 
 const courseIdWithUserProjection2BO = ({ _id, student, substituteTeacher, teacher }) => ({
@@ -24,19 +40,7 @@ const getCoursesWithUser = async (userId) => {
 	const result = await courseModel
 		.aggregate([
 			{
-				$match: {
-					$or: [
-						{
-							substitutionIds: userId,
-						},
-						{
-							teacherIds: userId,
-						},
-						{
-							userIds: userId,
-						},
-					],
-				},
+				$match: filterCourseMember(userId),
 			},
 			{
 				$project: {
@@ -57,19 +61,7 @@ const getCoursesWithUser = async (userId) => {
 };
 
 const deleteUserFromCourseRelations = async (userId) => {
-	const filter = {
-		$or: [
-			{
-				substitutionIds: userId,
-			},
-			{
-				teacherIds: userId,
-			},
-			{
-				userIds: userId,
-			},
-		],
-	};
+	const filter = filterCourseMember(userId);
 	const result = await courseModel
 		.updateMany(filter, { $pull: { teacherIds: userId, substitutionIds: userId, userIds: userId } })
 		.exec();
