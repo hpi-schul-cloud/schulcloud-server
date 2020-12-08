@@ -31,6 +31,11 @@
 			"default": false,
 			"description": "To disabled the brute force prevention hooks for by authentication."
 		},
+		"FORCE_SEND_EMAIL": {
+			"type": "boolean",
+			"default": false,
+			"description": "Send mails to notification service, also if not in production mode"
+		},
 		"SYNC_API_KEY": {
 			"type": "string",
 			"default": "example",
@@ -266,6 +271,14 @@
 		"NEXBOARD_USER_ID": {
 			"type": "string",
 			"description": "The nexboard 'schul-cloud' userId."
+		},
+		"NOTIFICATION_PLATFORM": {
+			"type": "string",
+			"description": "Set the platform to use in notification service"
+		},
+		"NOTIFICATION_URI": {
+			"type": "string",
+			"description": "Url to the notificaiton service"
 		},
 		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
 			"type": "boolean",
