@@ -27,7 +27,7 @@ const checkUserRoleInCourse = (result, expectOptions) => {
 	);
 };
 
-describe.only(
+describe(
 	'when having a course',
 	withApp(() => {
 		it('should persist all properties given', async () => {
@@ -86,7 +86,7 @@ describe.only(
 	})
 );
 
-describe.only(
+describe(
 	'when having a user in course',
 	withApp(() => {
 		it('should return courses the user attends', async () => {
@@ -157,13 +157,18 @@ describe.only(
 			const resultStudentCourse = result.find((res) => equal(res.id, studentCourse._id));
 			checkUserRoleInCourse(resultStudentCourse, { student: true, teacher: false, substituteTeacher: false });
 
+			const hasSubstitutionTeacher = teacherCourse.substitutionIds.length === 0;
 			expect(
-				teacherCourse.substitutionIds,
-				'user is not added to substitution teachers because it has been added to teachers'
-			).to.be.empty;
+				hasSubstitutionTeacher,
+				'user might not be added to substitution teachers because it has been added to teachers'
+			).to.be.false;
 			expect(equal(teacherCourse.teacherIds[0], user._id), 'user is added to teachers').to.be.true;
 			const resultTeacherCourse = result.find((res) => equal(res.id, teacherCourse._id));
-			checkUserRoleInCourse(resultTeacherCourse, { student: false, teacher: true, substituteTeacher: false });
+			checkUserRoleInCourse(resultTeacherCourse, {
+				student: false,
+				teacher: true,
+				substituteTeacher: hasSubstitutionTeacher,
+			});
 
 			const resultSubstitutionTeacherCourse = result.find((res) => equal(res.id, substitutionTeacherCourse._id));
 			checkUserRoleInCourse(resultSubstitutionTeacherCourse, {

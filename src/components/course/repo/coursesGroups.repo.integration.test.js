@@ -15,7 +15,7 @@ const prepareTestObjects = async () => {
 	return { testSchool, testUser, testCourse };
 };
 
-describe.only(
+describe(
 	'when creating a courseGroup',
 	withApp(() => {
 		it('should persist all the given properties', async () => {
@@ -30,19 +30,15 @@ describe.only(
 			});
 			const courseGroup = await courseGroupsRepo.getCourseGroupById(idToString(testCourseGroup._id));
 
-			expect(equal(testCourseGroup._id, courseGroup.id), 'course id is defined properly').to.be.true;
-			expect(typeof courseGroup.id).to.be.equal('string');
+			expect(equal(testCourseGroup._id, courseGroup._id), 'course id is defined properly').to.be.true;
 			expect(courseGroup.name, 'name has been set').to.be.equal('a course group name');
 			expect(equal(testSchool._id, courseGroup.schoolId), 'schoolId is defined properly').to.be.true;
-			expect(typeof courseGroup.schoolId).to.be.equal('string');
 			expect(equal(testUser._id, courseGroup.userIds[0]), 'some userId is defined properly').to.be.true;
-			expect(courseGroup.userIds.map((id) => typeof id)).to.all.includes('string');
 			expect(equal(testCourse._id, courseGroup.courseId), 'courseId is defined properly').to.be.true;
-			expect(typeof courseGroup.courseId).to.be.equal('string');
 		});
 	})
 );
-describe.only(
+describe(
 	'when having a user in courseGroup',
 	withApp(async () => {
 		it('should return course groups including the user', async () => {
@@ -56,7 +52,7 @@ describe.only(
 			});
 			const courseGroups = await courseGroupsRepo.getCourseGroupsWithUser(idToString(testUser._id));
 			expect(courseGroups.length, 'should resolve with one coursegroup only').to.be.equal(1);
-			expect(equal(testCourseGroup._id, courseGroups[0].id), 'resolves with the created course group').to.be.true;
+			expect(equal(testCourseGroup._id, courseGroups[0]._id), 'resolves with the created course group').to.be.true;
 		});
 		it('should not return course groups without the user', async () => {
 			const { testSchool, testUser, testCourse } = await prepareTestObjects();
@@ -84,7 +80,7 @@ describe.only(
 			const courseGroups = await courseGroupsRepo.getCourseGroupsWithUser(idToString(testUser._id));
 			expect(courseGroups.length, 'should resolve with the course groups the user is part of').to.be.equal(2);
 			expect(
-				courseGroups.map((courseGroup) => courseGroup.id),
+				courseGroups.map((courseGroup) => idToString(courseGroup._id)),
 				'expected user related course group missing'
 			).to.have.members([idToString(testCourseGroup._id), idToString(multiUserCourseGroup._id)]);
 		});
@@ -106,15 +102,16 @@ describe.only(
 				courseId: testCourse._id,
 			});
 			const otherCourseGroup = await courseGroupsRepo.getCourseGroupById(otherTestCourseGroup._id);
-			expect(equal(otherCourseGroup.id, otherTestCourseGroup._id), 'second course group exist').to.be.true;
+			expect(equal(otherCourseGroup._id, otherTestCourseGroup._id), 'second course group exist').to.be.true;
 
 			const result = await courseGroupsRepo.deleteUserFromUserGroups(idToString(testUser._id));
 			expect(result.modifiedDocuments, 'one course group has been modified only').to.be.equal(1);
 			expect(result.matchedDocuments, 'one course group has been matched only').to.be.equal(1);
 
 			const courseGroup = await courseGroupsRepo.getCourseGroupById(testCourseGroup._id);
-			expect(courseGroup.userIds, 'testUser id has been removed').not.includes(idToString(testUser._id));
-			expect(courseGroup.userIds, 'other user id still exists').includes(idToString(otherUser._id));
+			const userIds = courseGroup.userIds.map(idToString);
+			expect(userIds, 'testUser id has been removed').not.includes(idToString(testUser._id));
+			expect(userIds, 'other user id still exists').includes(idToString(otherUser._id));
 		});
 	})
 );

@@ -1,36 +1,10 @@
 const { courseGroupModel } = require('../../../services/user-group/model');
 const { updateManyResultDAO2BO, filterUserInUserGroups } = require('./helper');
-const { toString } = require('../../../helper/compare').ObjectId;
 
 // converter DAO 2 BO
 
-const userGroupDAO2BO = ({ _id, name, schoolId, userIds = [], createdAt, updatedAt }) => {
-	return {
-		id: toString(_id),
-		name,
-		schoolId: toString(schoolId),
-		userIds: userIds.map(toString),
-		createdAt,
-		updatedAt,
-	};
-};
-
-const courseGroupDAO2BO = ({
-	// userGroup
-	_id,
-	name,
-	schoolId,
-	userIds = [],
-	createdAt,
-	updatedAt,
-	// courseGroup
-	courseId,
-}) => {
-	const userGroupBo = userGroupDAO2BO({ _id, name, schoolId, userIds, createdAt, updatedAt });
-	return {
-		...userGroupBo,
-		courseId: toString(courseId),
-	};
+const courseGroupToBO = (courseGroupDAO) => {
+	return { ...courseGroupDAO };
 };
 
 // public members
@@ -41,12 +15,12 @@ const courseGroupDAO2BO = ({
  */
 const getCourseGroupById = async (courseGroupId) => {
 	const result = await courseGroupModel.findById(courseGroupId).lean().exec();
-	return courseGroupDAO2BO(result);
+	return courseGroupToBO(result);
 };
 
 const getCourseGroupsWithUser = async (userId) => {
 	const result = await courseGroupModel.find(filterUserInUserGroups(userId)).lean().exec();
-	return result.map(courseGroupDAO2BO);
+	return result.map(courseGroupToBO);
 };
 
 const deleteUserFromUserGroups = async (userId) => {

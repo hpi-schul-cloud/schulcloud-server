@@ -1,5 +1,5 @@
 const { lessonModel } = require('./db/lesson');
-const { updateManyResult } = require('./helper');
+const { updateManyResultDAO2BO } = require('./helper');
 
 /**
  * Filter lessons by contents including the given userId.
@@ -23,7 +23,7 @@ const deleteUserFromLessonContents = async (userId) => {
 		.updateMany(filter, { $unset: { 'contents.$[].user': '' } })
 		.lean()
 		.exec();
-	return updateManyResult(result);
+	return updateManyResultDAO2BO(result);
 };
 
 module.exports = { getLessonsWithUserInContens, deleteUserFromLessonContents };
