@@ -2,6 +2,19 @@ const reqlib = require('app-root-path').require;
 
 const { BadRequest } = reqlib('src/errors');
 
+const isValidLdapConfigStructure = (config) => {
+	return (
+		config &&
+		config.providerOptions &&
+		config.providerOptions.userAttributeNameMapping &&
+		// classPathAdditions are optional, but if they exist and are not empty string,
+		// classAttributeNameMapping needs to be set
+		(!config.providerOptions.classPathAdditions ||
+			config.providerOptions.classPathAdditions === '' ||
+			config.providerOptions.classAttributeNameMapping)
+	);
+};
+
 /**
  * Sets sensible default values for LDAP configs to be consumed by
  * the ldap-config service. Specifically, attribute mappings for the
@@ -12,14 +25,7 @@ const { BadRequest } = reqlib('src/errors');
  */
 module.exports = (context) => {
 	const { data } = context;
-	if (
-		data &&
-		data.providerOptions &&
-		data.providerOptions.userAttributeNameMapping &&
-		(!data.providerOptions.classPathAdditions ||
-			data.providerOptions.classPathAdditions === '' ||
-			data.providerOptions.classAttributeNameMapping)
-	) {
+	if (isValidLdapConfigStructure(data)) {
 		data.provider = 'general';
 		data.providerOptions.userAttributeNameMapping.dn = data.providerOptions.userAttributeNameMapping.dn || 'dn';
 		data.providerOptions.classAttributeNameMapping = data.providerOptions.classAttributeNameMapping || {};
