@@ -872,5 +872,16 @@
 		"$date": "2020-11-05T11:16:03.243Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fce1cde80e541b219058c1a"
+	},
+	"state": "up",
+	"name": "merlin_credentials",
+	"createdAt": {
+		"$date": "2020-11-30T12:25:19.373Z"
+	},
+	"__v": 0
 }]
 
