@@ -156,8 +156,15 @@ describe.only(
 
 			const resultStudentCourse = result.find((res) => equal(res.id, studentCourse._id));
 			checkUserRoleInCourse(resultStudentCourse, { student: true, teacher: false, substituteTeacher: false });
+
+			expect(
+				teacherCourse.substitutionIds,
+				'user is not added to substitution teachers because it has been added to teachers'
+			).to.be.empty;
+			expect(equal(teacherCourse.teacherIds[0], user._id), 'user is added to teachers').to.be.true;
 			const resultTeacherCourse = result.find((res) => equal(res.id, teacherCourse._id));
-			checkUserRoleInCourse(resultTeacherCourse, { student: false, teacher: true, substituteTeacher: false }); // todo check why substitutionteacher is false (should be true)
+			checkUserRoleInCourse(resultTeacherCourse, { student: false, teacher: true, substituteTeacher: false });
+
 			const resultSubstitutionTeacherCourse = result.find((res) => equal(res.id, substitutionTeacherCourse._id));
 			checkUserRoleInCourse(resultSubstitutionTeacherCourse, {
 				student: false,
