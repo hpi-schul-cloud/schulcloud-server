@@ -1,19 +1,18 @@
-const coursesUC = require('./courses.uc');
+const deleteUserUc = require('./deleteUserData.uc');
 
 class CoursesFacade {
 	setup(app) {
 		this.app = app;
 	}
 
-	// TODO here we check general permissions!
+	async deleteUserData(userIdForDeletion, userContext) {
+		// TODO permissions
+		// userFromSameSchool(userContext.currentUserId, userIdForDeletion);
+		// userHasPermission(userContext.currentUserId, 'DELETE_USER');
 
-	// async deleteUser(id, roleName, params) {
-	// 	return userUc.deleteUser(id, roleName, { ...params, app: this.app });
-	// }
-
-	// async userHasRole(userId, roleName) {
-	// 	return userRolesUc.hasRole(userId, roleName);
-	// }
+		// TODO let nobody change the given userId behind facade, assign it
+		return deleteUserUc.deleteUserData(userIdForDeletion);
+	}
 }
 
 module.exports = function setupUsersFacade(app) {
