@@ -1,5 +1,6 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const chaiAsPromised = require('chai-as-promised');
 const sinon = require('sinon');
 const reqlib = require('app-root-path').require;
 const { Configuration } = require('@hpi-schul-cloud/commons');
@@ -10,6 +11,7 @@ const LDAPConnectionError = require('../../../src/services/ldap/LDAPConnectionEr
 const knownGoodConfig = require('./assets/knownGoodConfig.json');
 const knownBadConfig = require('./assets/knownBadConfig.json');
 
+chai.use(chaiAsPromised);
 chai.use(chaiHttp);
 const { expect } = chai;
 
@@ -105,39 +107,25 @@ describe('LdapConfigService', () => {
 		});
 
 		it('should not allow accessing systems with provider!=general', async () => {
-			try {
-				await app.service('legacy/v1/ldap-config').get(iservLdapSystem1._id, paramsAdmin1);
-				expect.fail('this should not happen');
-			} catch (err) {
-				expect(err).to.be.instanceOf(Forbidden);
-			}
+			expect(app.service('legacy/v1/ldap-config').get(iservLdapSystem1._id, paramsAdmin1)).to.eventually.throw(
+				new Forbidden()
+			);
 		});
 
 		it('should not allow accessing non-ldap systems', async () => {
-			try {
-				await app.service('legacy/v1/ldap-config').get(otherSystem1._id, paramsAdmin1);
-				expect.fail('this should not happen');
-			} catch (err) {
-				expect(err).to.be.instanceOf(Forbidden);
-			}
+			expect(app.service('legacy/v1/ldap-config').get(otherSystem1._id, paramsAdmin1)).to.eventually.throw(
+				new Forbidden()
+			);
 		});
 
 		it('should not allow accessing systems of different schools', async () => {
-			try {
-				await app.service('legacy/v1/ldap-config').get(system2._id, paramsAdmin1);
-				expect.fail('this should not happen');
-			} catch (err) {
-				expect(err).to.be.instanceOf(Forbidden);
-			}
+			expect(app.service('legacy/v1/ldap-config').get(system2._id, paramsAdmin1)).to.eventually.throw(new Forbidden());
 		});
 
 		it('should not allow accessing a system if not admin', async () => {
-			try {
-				await app.service('legacy/v1/ldap-config').get(system2._id, paramsTeacher2);
-				expect.fail('this should not happen');
-			} catch (err) {
-				expect(err).to.be.instanceOf(Forbidden);
-			}
+			expect(app.service('legacy/v1/ldap-config').get(system2._id, paramsTeacher2)).to.eventually.throw(
+				new Forbidden()
+			);
 		});
 	});
 
