@@ -94,6 +94,9 @@ class LdapConfigService {
 	 * Actual business logic to validate and save LDAP configs
 	 * @param {Object} config config data
 	 * @param {Object} options options object
+	 * @param {Boolean} options.saveSystem whether to save validated config to the DB
+	 * @param {Boolean} options.activateSystem whether to activate the system after saving
+	 * @param {School} options.school the school to which to attach the config when saving
 	 * @param {ObjectId} systemId optional systemId (when patching)
 	 * @returns {Object} verification result
 	 */
