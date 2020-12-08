@@ -2,6 +2,7 @@ const sinon = require('sinon');
 const { ObjectId } = require('mongoose').Types;
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
+const sinonChai = require('sinon-chai');
 const userUC = require('./users.uc');
 
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
@@ -9,6 +10,7 @@ const errorUtils = require('../../../errors/utils');
 
 const { expect, assert } = chai;
 chai.use(chaiAsPromised);
+chai.use(sinonChai);
 
 const USER_ID = 'USER_ID';
 const CURRENT_USER_ID = 'CURRENT_USER_ID';
@@ -93,7 +95,7 @@ let getUserRolesStub;
 let asyncErrorLogStub;
 
 describe('users usecase', () => {
-	before(async () => {
+	beforeEach(async () => {
 		// init stubs
 		getUserStub = sinon.stub(userRepo, 'getUser');
 		getUserStub.withArgs('NOT_FOUND_USER').returns();
@@ -115,37 +117,22 @@ describe('users usecase', () => {
 		updateTrashbinByUserIdStub = sinon.stub(trashbinRepo, 'updateTrashbinByUserId');
 		asyncErrorLogStub = sinon.stub(errorUtils, 'asyncErrorLog');
 	});
-	beforeEach(() => {
-		getUserStub.resetHistory();
-		getUserRolesStub.resetHistory();
-		getUserAccountStub.resetHistory();
-		createUserTrashbinStub.resetHistory();
-		updateTrashbinByUserIdStub.resetHistory();
-		asyncErrorLogStub.resetHistory();
-	});
 
-	after(async () => {
-		// restore stubbed functions
-		getUserStub.restore();
-		getUserRolesStub.restore();
-		userRepo.replaceUserWithTombstone.restore();
-		getUserAccountStub.restore();
-		accountRepo.deleteAccountForUserId.restore();
-		createUserTrashbinStub.restore();
-		updateTrashbinByUserIdStub.restore();
-		asyncErrorLogStub.restore();
-	});
+	afterEach(sinon.restore);
 
 	describe('user delete orchestrator', () => {
 		it('when an authorized admin calls the function, it succeeds', async () => {
 			const currentUser = createCurrentUser();
+			const testUser = createTestUser();
 			const testAccount = createTestAccount();
 			await userUC.deleteUser(USER_ID, 'student', { account: currentUser, app: appStub });
-			expect(createUserTrashbinStub.calledWith(USER_ID, [currentUser, testAccount])).to.be.true;
+			expect(createUserTrashbinStub).to.have.been.calledWith(USER_ID, [
+				{ scope: 'user', data: testUser },
+				{ scope: 'account', data: testAccount },
+			]);
 		});
 
 		it('when the function is called with an invalid id, then it fails', async () => {
-			// init stubs
 			const currentUser = createCurrentUser();
 			const userId = 'NOT_FOUND_USER';
 			expect(
