@@ -111,7 +111,17 @@
 	"name": "Niedersachsen",
 	"abbreviation": "NI",
 	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Coat_of_arms_of_Lower_Saxony.svg/593px-Coat_of_arms_of_Lower_Saxony.svg.png",
-	"__v": 0
+	"__v": 0,
+	"counties" : [
+		{
+			"antaresKey" : "NI",
+			"_id": {"$oid":"5fa55eb53f472a2d986c8812"},
+			"countyId": 3256,
+			"name": "Nienburg/Weser",
+			"merlinUser": "dummy-EncryptedMerlinUser",
+			"secretMerlinKey": "dummy-encryptedMerlinKey"
+		}
+	]
 },
 {
 	"_id": {

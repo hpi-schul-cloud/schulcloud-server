@@ -235,7 +235,11 @@
         "dummy title_1606238808463"
       ],
       "ccm:ph_invited": [
-        "GROUP_public"
+        "GROUP_county-3459",
+        "GROUP_county-3404",
+        "GROUP_LowerSaxony-private",
+        "GROUP_county-3456",
+        "GROUP_county-3256"
       ],
       "ccm:ph_users": [
         "admin"
