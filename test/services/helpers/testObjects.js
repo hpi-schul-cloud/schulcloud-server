@@ -1,6 +1,7 @@
 const logger = require('../../../src/logger/index');
 
 const serviceHelpers = require('./services');
+const mockHelpers = require('./mocks');
 
 const warn = (message, pass) => {
 	logger.warning(message);
