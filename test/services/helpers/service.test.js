@@ -102,7 +102,7 @@ describe('Mail Service', async () => {
 
 	describe('invalid emails', () => {
 		beforeEach(() => {
-			nock(config.services.notification).post('/mails').replyWithError('invalid data send');
+			nock(config.NOTIFICATION_URI).post('/mails').replyWithError('invalid data send');
 		});
 		it('should throw if notification server returns error', async () => {
 			try {
