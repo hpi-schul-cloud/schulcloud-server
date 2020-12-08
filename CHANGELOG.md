@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
+
+## [25.2.5]
+
+### Fixed
+
+- OPS-1735 - Fixes transaction handling in file service by using the mongoose transaction helper,
+properly closing the session, and using the correct readPreference (everything except primary fails)
+
 ## [25.2.4]
 
 ### Changed
