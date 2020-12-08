@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
+
+## [25.3.2]
+
+### Added
+
+- SC-7734 - Added a hook that takes care of merlin content to generate valid urls for users
+
+## [25.3.1]
+
+### Fixed
+
+SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-parent-users is broken
+
 ## [25.3.0]
 
 ### Added
@@ -39,6 +52,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6294 - Introduce Typescript in schulcloud-server
 - SC-7028 - Add Course Component API Specification document
 - SC-7476 - Prevent hash generation if user has account
+- SC-6692 - Added Lern-Store counties support for Niedersachsen (Merlin)
 
 ### Changed
 
