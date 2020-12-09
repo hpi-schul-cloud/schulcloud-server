@@ -1,59 +1,107 @@
 const { classModel } = require('../../../services/user-group/model');
 const { GeneralError, BadRequest } = require('../../../errors');
+const { toString: idToString } = require('../../../helper/compare').ObjectId;
 
-const getUserQuery = (userRole, userId) => {
-	if (userRole === 'student') {
+const getUserQuery = (userId, classRole) => {
+	if (classRole === 'student') {
 		return { userIds: { $in: userId } };
 	}
-	if (userRole === 'teacher') {
+	if (classRole === 'teacher') {
 		return { teacherIds: { $in: userId } };
 	}
 
-	throw new BadRequest(`User role ${userRole} is not valid role for classes`);
+	throw new BadRequest(`User role ${classRole} is not valid role for classes`);
 };
 
-const getClassesForUser = async (userId, userRole = 'student') => {
-	return classModel.find(getUserQuery(userRole, userId)).lean().exec();
+const filterClassMember = (userId) => ({
+	$or: [
+		{
+			teacherIds: userId,
+		},
+		{
+			userIds: userId,
+		},
+	],
+});
+
+const classIdWithUserProjection2BO = ({ _id, student, teacher }) => ({
+	_id,
+	id: idToString(_id),
+	student: student === true,
+	teacher: teacher === true,
+});
+
+const findClassesByUserAndClassRole = (userId, classRole) => {
+	return classModel.find(getUserQuery(userId, classRole)).lean().exec();
 };
 
-const getClassesForStudent = async (userId) => {
-	return getClassesForUser(userId, 'student');
-};
-
-const getClassesForTeacher = async (teacherId) => {
-	return getClassesForUser(teacherId, 'teacher');
-};
-
-const removeUserFromClasses = async (userId, userRole, classIds) => {
-	const updateResult = await classModel
-		.updateMany(
+// PUBLIC
+/**
+ * Returns a list of class Id with the user role plays in it
+ * @param {String|ObjectId} userId - the user's to check
+ * @returns: {Array} An array of result objects
+ */
+const getClassesForUser = async (userId) => {
+	const result = await classModel
+		.aggregate([
+			{ $match: filterClassMember(userId) },
 			{
-				_id: { $in: classIds },
+				$project: {
+					teacher: {
+						$in: [userId, '$teacherIds'],
+					},
+					student: {
+						$in: [userId, '$userIds'],
+					},
+				},
 			},
-			{ $pull: getUserQuery(userRole, userId) }
-		)
-		.lean()
+		])
 		.exec();
-	if (updateResult.nModified !== classIds.length) {
-		throw new BadRequest(`some class doesn't contains the requested user`);
-	} else if (updateResult.n !== updateResult.ok || updateResult.ok !== classIds.length) {
-		throw new GeneralError(`db error during updating classes`);
-	}
 
-	return classIds;
+	return result.map(classIdWithUserProjection2BO);
 };
 
-const removeStudentFromClasses = async (userId, classIds) => {
-	return removeUserFromClasses(userId, 'student', classIds);
+/**
+ * Returns a list of class Id the user belongs to (as student)
+ * @param {String|ObjectId} userId - the user's to check
+ * @returns: {Array} Array of Class Business Objects
+ */
+const findClassesByStudent = async (userId) => {
+	const searchResult = await findClassesByUserAndClassRole(userId, 'student');
+	return searchResult;
 };
 
-const removeTeacherFromClasses = async (userId, classIds) => {
-	return removeUserFromClasses(userId, 'teacher', classIds);
+/**
+ * Returns a list of class Id the user belongs to (as teacher)
+ * @param {String|ObjectId} userId - the user's to check
+ * @returns: {Array} Array of Class Business Objects
+ */
+const findClassesByTeacher = async (teacherId) => {
+	const searchResult = await findClassesByUserAndClassRole(teacherId, 'teacher');
+	return searchResult;
+};
+
+/**
+ * Removes the user for all classes he/she belongs to
+ * @param {String|ObjectId} userId - the user's Id
+ * @returns: {Object} Update Many Result Object
+ */
+const removeUserFromClasses = async (userId) => {
+	const filter = filterClassMember(userId);
+	const updateResult = await classModel.updateMany(filter, { $pull: { teacherIds: userId, userIds: userId } }).exec();
+
+	return updateResult; // TODO updateManyResultDAO2BO(updateResult);
+};
+
+const findClassById = (classId) => {
+	const classItem = classModel.findById(classId).lean().exec();
+	return classItem;
 };
 
 module.exports = {
-	getClassesForStudent,
-	getClassesForTeacher,
-	removeStudentFromClasses,
-	removeTeacherFromClasses,
+	findClassById,
+	getClassesForUser,
+	findClassesByStudent,
+	findClassesByTeacher,
+	removeUserFromClasses,
 };
