@@ -4,13 +4,14 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
 const { Forbidden, BadRequest, GeneralError } = reqlib('src/errors');
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
-const { hasSchoolPermission, blockDisposableEmail } = require('../../../hooks');
+const { splitForSearchIndexes } = require('../../../utils/search');
+const { hasSchoolPermission, blockDisposableEmail, transformToDataTransferObject } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { validateParams, parseRequestQuery } = require('../hooks/adminUsers.hooks');
 const { sendRegistrationLink } = require('../hooks/userService');
@@ -94,12 +95,16 @@ class AdminUsers {
 			if (clientQuery.classes) query.classes = clientQuery.classes;
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
-			if (clientQuery.searchQuery) {
-				query.$or = [
-					{ firstName: { $regex: clientQuery.searchQuery, $options: 'i' } },
-					{ lastName: { $regex: clientQuery.searchQuery, $options: 'i' } },
-					{ email: { $regex: clientQuery.searchQuery, $options: 'i' } },
-				];
+			if (clientQuery.searchQuery && clientQuery.searchQuery.trim().length !== 0) {
+				const searchQueryElements = splitForSearchIndexes(clientQuery.searchQuery.trim());
+				query.searchQuery = `${clientQuery.searchQuery} ${searchQueryElements.join(' ')}`;
+				// increase gate by searched word, to get better results
+				query.searchFilterGate = searchQueryElements.length * 0.9;
+				// recreating sort here, to set searchQuery as first (main) parameter of sorting
+				query.sort = {
+					searchQuery: 1,
+					...query.sort,
+				};
 			}
 
 			const dateQueries = ['createdAt'];
@@ -304,9 +309,6 @@ class AdminUsers {
 const formatBirthdayOfUsers = ({ result: { data: users } }) => {
 	users.forEach((user) => {
 		if (user.birthday) user.birthday = moment(user.birthday).format('DD.MM.YYYY');
-		if (user.birthday) {
-			user.birthday = moment(user.birthday).format('DD.MM.YYYY');
-		}
 	});
 };
 
@@ -321,6 +323,7 @@ const adminHookGenerator = (kind) => ({
 		remove: [hasSchoolPermission(`${kind}_DELETE`), parseRequestQuery, validateParams],
 	},
 	after: {
+		all: [transformToDataTransferObject],
 		find: [formatBirthdayOfUsers],
 		create: [sendRegistrationLink],
 	},

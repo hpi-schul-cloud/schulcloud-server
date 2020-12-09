@@ -1,34 +1,6 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const constants = require('../../utils/constants');
 const { passwordsMatch } = require('../../utils/passwordHelpers'); // fixmer this should be removed
-
-/* eslint-disable prefer-promise-reject-errors */ const createParent = (data, params, user, app) =>
-	app
-		.service('/registrationPins/')
-		.find({ query: { pin: data.pin, email: data.parent_email, verified: false } })
-		.then((check) => {
-			if (!(check.data && check.data.length > 0 && check.data[0].pin === data.pin)) {
-				return Promise.reject(new Error('Ungültige Pin, bitte überprüfe die Eingabe.'));
-			}
-			const parentData = {
-				firstName: data.parent_firstName,
-				lastName: data.parent_lastName,
-				email: data.parent_email,
-				// eslint-disable-next-line no-underscore-dangle
-				children: [user._Id],
-				schoolId: user.schoolId,
-				roles: ['parent'],
-			};
-			return app
-				.service('users')
-				.create(parentData, { _additional: { asTask: 'parent' } })
-				.catch((err) => {
-					if (err.message.startsWith('parentCreatePatch')) {
-						return Promise.resolve(err.data);
-					}
-					return Promise.reject(new Error('Fehler beim Erstellen des Elternaccounts.'));
-				});
-		});
 
 const getAutomaticConsent = () => ({
 	form: 'digital',
@@ -56,13 +28,6 @@ const firstLogin = async (data, params, app) => {
 		accountUpdate.password_verification = data.password_verification || data['password-2'];
 		accountUpdate.password = data['password-1'];
 		accountPromise = await app.service('accounts').patch(accountId, accountUpdate, params);
-	}
-
-	if (data.parent_email) {
-		await createParent(data, params, user, app).then((parent) => {
-			// toDo: keep old parents?
-			userUpdate.parents = [parent._id];
-		});
 	}
 
 	// wrong birthday object?

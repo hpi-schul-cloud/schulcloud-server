@@ -4,10 +4,10 @@ const path = require('path');
 
 const hooks = require('./hooks');
 const merlinHooks = require('./hooks/merlin.hooks');
-const EduSharingConnector = require('./logic/connector');
-const MerlinTokenGenerator = require('./logic/MerlinTokenGenerator');
+const EduSharingConnector = require('./services/EduSharingConnector');
+const MerlinTokenGenerator = require('./services/MerlinTokenGenerator');
 
-class EduSearch {
+class EduSharing {
 	find(data) {
 		return EduSharingConnector.FIND(data);
 	}
@@ -24,18 +24,21 @@ class MerlinToken {
 }
 
 module.exports = (app) => {
-	const merlinRoute = 'edu-sharing/merlinToken';
+	const eduSharingRoute = '/edu-sharing';
+	const merlinRoute = `${eduSharingRoute}/merlinToken`;
+	const docRoute = `${eduSharingRoute}/api`;
+
+	app.use(docRoute, staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+
 	app.use(merlinRoute, new MerlinToken(), (req, res) => {
 		res.send(res.data);
 	});
 	const merlinService = app.service(merlinRoute);
 	merlinService.hooks(merlinHooks);
 
-	const eduRoute = '/edu-sharing';
-	app.use(`${eduRoute}/api`, staticContent(path.join(__dirname, '/docs')));
-	app.use(eduRoute, new EduSearch(), (req, res) => {
+	app.use(eduSharingRoute, new EduSharing(), (req, res) => {
 		res.send(res.data);
 	});
-	const eduService = app.service(eduRoute);
-	eduService.hooks(hooks);
+	const eduSharingService = app.service(eduSharingRoute);
+	eduSharingService.hooks(hooks);
 };

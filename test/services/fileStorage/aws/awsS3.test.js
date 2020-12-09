@@ -4,7 +4,7 @@ const { expect } = require('chai');
 const mockery = require('mockery');
 const mockAws = require('./s3.mock');
 const logger = require('../../../../src/logger');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
 
 const testObjects = require('../../helpers/testObjects')(appPromise);

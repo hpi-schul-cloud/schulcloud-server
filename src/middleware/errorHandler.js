@@ -1,7 +1,8 @@
 const Sentry = require('@sentry/node');
 const express = require('@feathersjs/express');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const jwt = require('jsonwebtoken');
+const OpenApiValidator = require('express-openapi-validator');
 
 const reqlib = require('app-root-path').require;
 
@@ -176,6 +177,17 @@ const handleSilentError = (error, req, res, next) => {
 	}
 };
 
+const handleValidationError = (error, req, res, next) => {
+	// todo: handle other validation errors so they are formatted properly
+	if (error instanceof OpenApiValidator.error.NotFound) {
+		// sanitize
+		const err = new PageNotFound(error);
+		next(err);
+	} else {
+		next(error);
+	}
+};
+
 const skipErrorLogging = (error, req, res, next) => {
 	if (
 		error instanceof PageNotFound ||
@@ -209,6 +221,7 @@ const errorHandler = (app) => {
 	app.use(addTraceId);
 	app.use(filterSecrets);
 	app.use(Sentry.Handlers.errorHandler());
+	app.use(handleValidationError);
 	// TODO make skipErrorLogging configruable if middleware is added
 	app.use(skipErrorLogging);
 	app.use(formatAndLogErrors);

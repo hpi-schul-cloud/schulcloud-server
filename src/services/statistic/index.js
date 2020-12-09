@@ -156,7 +156,7 @@ class StatisticsService {
 module.exports = function () {
 	const app = this;
 
-	app.use('/statistics/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/statistics/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/statistics', new StatisticsService());
 	const statisticsService = app.service('/statistics');

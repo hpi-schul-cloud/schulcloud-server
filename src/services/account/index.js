@@ -56,7 +56,7 @@ class PasswordGenService {
 }
 */
 module.exports = (app) => {
-	app.use('/accounts/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/accounts/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/accountModel', accountModelService);
 	app.service('/accountModel').hooks(accountModelServiceHooks);
 

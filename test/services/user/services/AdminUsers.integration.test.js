@@ -1,6 +1,6 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const commons = require('@schul-cloud/commons');
+const commons = require('@hpi-schul-cloud/commons');
 
 const { Configuration } = commons;
 
@@ -16,7 +16,7 @@ describe('admin users integration tests', function test() {
 
 	before(async () => {
 		delete require.cache[require.resolve('../../../../src/app')];
-		configBefore = Configuration.toObject();
+		configBefore = Configuration.toObject({ plainSecrets: true });
 		Configuration.set('FEATURE_API_VALIDATION_ENABLED', true);
 		// eslint-disable-next-line global-require
 		const appPromise = require('../../../../src/app');

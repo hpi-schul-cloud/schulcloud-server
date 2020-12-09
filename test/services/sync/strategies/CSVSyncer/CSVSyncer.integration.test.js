@@ -1589,10 +1589,6 @@ describe('CSVSyncer Integration', () => {
 				roles: 'student',
 				schoolId: SCHOOL_ID,
 			});
-			const parent = await createUser({
-				roles: 'parent',
-				schoolId: SCHOOL_ID,
-			});
 			scenarioParams = await generateRequestParamsFromUser(user);
 			scenarioParams.query = {
 				target: 'csv',
@@ -1600,11 +1596,7 @@ describe('CSVSyncer Integration', () => {
 				role: 'teacher',
 			};
 			scenarioData = {
-				data:
-					'firstName,lastName,email\n' +
-					`Peter,Pan,${user.email}\n` +
-					`Peter,Lustig,${parent.email}\n` +
-					`Test,Testington,${student.email}\n`,
+				data: `firstName,lastName,email\n Peter,Pan,${user.email}\n Test,Testington,${student.email}\n`,
 			};
 		});
 
@@ -1619,8 +1611,8 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.users.successful).to.equal(0);
 			expect(stats.users.created).to.equal(0);
 			expect(stats.users.updated).to.equal(0);
-			expect(stats.users.failed).to.equal(3);
-			expect(stats.errors.length).to.equal(3);
+			expect(stats.users.failed).to.equal(2);
+			expect(stats.errors.length).to.equal(2);
 			expect(stats.errors[0].message).to.equal(
 				'Es existiert bereits ein Nutzer mit dieser E-Mail-Adresse, jedoch mit einer anderen Rolle.'
 			);

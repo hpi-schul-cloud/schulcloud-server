@@ -1,7 +1,7 @@
 const express = require('@feathersjs/express');
 const feathers = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
-const apiMetrics = require('prometheus-api-metrics');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const path = require('path');
 const favicon = require('serve-favicon');
 const compress = require('compression');
@@ -11,7 +11,6 @@ const bodyParser = require('body-parser');
 const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
-const { Configuration } = require('@schul-cloud/commons');
 const { BODYPARSER_JSON_LIMIT, LEAD_TIME } = require('../config/globals');
 
 const middleware = require('./middleware');
@@ -25,11 +24,12 @@ const handleResponseType = require('./middleware/handleReponseType');
 const errorHandler = require('./middleware/errorHandler');
 const sentry = require('./middleware/sentry');
 const rabbitMq = require('./utils/rabbitmq');
+const prometheus = require('./utils/prometheus');
 
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
-const versionService = require('./services/version');
+const versionService = require('./services/versionService');
 
 const setupApp = async () => {
 	const app = express(feathers());
@@ -45,15 +45,7 @@ const setupApp = async () => {
 		});
 	}
 
-	const metricsOptions = {};
-	if (Configuration.has('PROMETHEUS__METRICS_PATH')) {
-		metricsOptions.metricsPath = Configuration.get('PROMETHEUS__METRICS_PATH');
-	}
-	if (Configuration.has('PROMETHEUS__DURATION_BUCKETS_SECONDS[0]')) {
-		// TODO rewrite configuration to support arrays via get()
-		metricsOptions.durationBuckets = Configuration.data.PROMETHEUS.DURATION_BUCKETS_SECONDS;
-	}
-	app.use(apiMetrics(metricsOptions));
+	app.configure(prometheus);
 
 	setupSwagger(app);
 	initializeRedisClient();

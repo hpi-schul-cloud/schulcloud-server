@@ -23,7 +23,7 @@ if (ROCKET_CHAT_ADMIN_ID === undefined) {
 module.exports = function Setup() {
 	const app = this;
 
-	app.use('/rocketChat/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/rocketChat/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/rocketChat/channel', new RocketChatChannel());
 	app.use('/rocketChat/user', new RocketChatUser());
 	app.use('/rocketChat/login', new RocketChatLogin());

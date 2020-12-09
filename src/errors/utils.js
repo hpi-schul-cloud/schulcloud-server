@@ -31,6 +31,7 @@ const cleanupIncomingMessage = (error = {}) => {
 	}
 };
 
+// TODO please rename if you found a better name
 const asyncErrorLog = (err, message) => {
 	if (message) {
 		logger.error(message, err);

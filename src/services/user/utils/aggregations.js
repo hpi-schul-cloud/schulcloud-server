@@ -266,19 +266,16 @@ const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 const stageSort = (aggregation, sort) => {
 	const mSort = {};
 	for (const k in sort) {
-		if ({}.hasOwnProperty.call(sort, k)) mSort[k] = Number(sort[k]);
-	}
-
-	if (typeof sort === 'object' && {}.hasOwnProperty.call(sort, 'consentStatus')) {
-		mSort.consentSortParam = mSort.consentStatus;
-		delete mSort.consentStatus;
-		stageAddConsentSortParam(aggregation);
-	}
-
-	if (typeof sort === 'object' && {}.hasOwnProperty.call(sort, 'classes')) {
-		mSort['classesSort.gradeLevel'] = mSort.classes;
-		mSort['classesSort.name'] = mSort.classes;
-		delete mSort.classes;
+		if (k === 'searchQuery') {
+			mSort.score = { $meta: 'textScore' };
+		} else if (k === 'consentStatus') {
+			mSort.consentSortParam = Number(sort[k]);
+			stageAddConsentSortParam(aggregation);
+		} else if (k === 'classes') {
+			const order = Number(sort[k]);
+			mSort['classesSort.gradeLevel'] = order;
+			mSort['classesSort.name'] = order;
+		} else if ({}.hasOwnProperty.call(sort, k)) mSort[k] = Number(sort[k]);
 	}
 
 	aggregation.push({
@@ -341,6 +338,17 @@ const stageFormatWithTotal = (aggregation, limit, skip) => {
 };
 
 /**
+ * require a amount of quality which reduce the result
+ *
+ * @param {Array} aggregation
+ * @param {Number} amount
+ */
+const stageFilterSearch = (aggregation, amount) => {
+	aggregation.push({ $addFields: { score: { $meta: 'textScore' } } });
+	aggregation.push({ $match: { score: { $gte: amount } } });
+};
+
+/**
  * Creates an Array for an Aggregation pipeline and can handle, select, sort, limit, skip and matches.
  * To filter or sort by consentStatus, it have also to be seleceted first.
  *
@@ -354,6 +362,8 @@ const createMultiDocumentAggregation = ({
 	consentStatus,
 	classes,
 	schoolYearId,
+	searchQuery,
+	searchFilterGate,
 	...match
 }) => {
 	// eslint-disable-next-line no-param-reassign
@@ -371,10 +381,21 @@ const createMultiDocumentAggregation = ({
 	const selectSortDiff = Object.getOwnPropertyNames(sort || {}).filter((s) => !select.includes(s));
 	const aggregation = [];
 
+	if (searchQuery) {
+		// to sort by this value, add 'searchQuery' to sort value
+		match.$text = {
+			$search: searchQuery,
+		};
+	}
+
 	if (match) {
 		aggregation.push({
 			$match: match,
 		});
+	}
+
+	if (searchQuery && searchFilterGate) {
+		stageFilterSearch(aggregation, searchFilterGate);
 	}
 
 	if (select) {

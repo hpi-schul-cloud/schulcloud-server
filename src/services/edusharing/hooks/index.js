@@ -1,6 +1,7 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { authenticate } = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
+const { hasPermission, hasSchoolPermission } = require('../../../hooks');
 const reqlib = require('app-root-path').require;
 
 const { NotFound } = reqlib('src/errors');
@@ -15,8 +16,8 @@ const isEdusharing = (context) => {
 
 exports.before = {
 	all: [authenticate('jwt'), isEdusharing],
-	find: [],
-	get: [],
+	find: [hasPermission('LERNSTORE_VIEW'), hasSchoolPermission('LERNSTORE_VIEW')],
+	get: [hasPermission('LERNSTORE_VIEW'), hasSchoolPermission('LERNSTORE_VIEW')],
 	create: [disallow()],
 	update: [disallow()],
 	patch: [disallow()],

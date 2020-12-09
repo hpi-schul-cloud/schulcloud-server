@@ -60,7 +60,7 @@ class HelpDocumentsService {
 
 module.exports = function news() {
 	const app = this;
-	app.use('/help/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/help/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	const docPath = 'help/documents';
 	app.use(docPath, new HelpDocumentsService());

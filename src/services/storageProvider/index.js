@@ -15,7 +15,7 @@ module.exports = (app) => {
 		lean: true,
 	};
 
-	app.use('/storageProvider/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/storageProvider/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/storageProvider', service(options));
 
 	const storageProviderService = app.service('/storageProvider');

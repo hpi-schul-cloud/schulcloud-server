@@ -19,8 +19,140 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
-    authentication:
-      description: TODO
+    authentication_body:
+      description: Payload for an authentication request
+      properties:
+        strategy:
+            type: string
+            enum: ['local', 'ldap', 'moodle', 'iserv', 'tsp']
+        username:
+          type: string
+        password:
+          type: string
+        privateDevice:
+          type: boolean
+          description: when this is set, the user will remain logged in for longer when inactive.
+        systemId:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        schoolId:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+      required:
+        - username
+        - password
+        - strategy
+    authentication_response:
+      description: Response for a successful authentication
+      properties:
+        accessToken:
+          type: string
+        account:
+          type: object
+          properties:
+            __v:
+              type: integer
+            _id:
+              type: string
+              pattern: '^[0-9a-f]{24}$'
+            activated:
+              type: boolean
+            createdAt:
+              type: string
+              format: date-time
+            lasttriedFailedLogin:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+            userId:
+              type: string
+              pattern: '^[0-9a-f]{24}$'
+            username:
+              type: string
+        authentication:
+          type: object
+          properties:
+            strategy:
+              type: string
+              enum: ['local', 'ldap', 'moodle', 'iserv', 'tsp']
+    logout_response:
+      description: Response for a successful logout
+      properties:
+        accessToken:
+          type: string
+        account:
+          type: object
+          properties:
+            __v:
+              type: integer
+            _id:
+              type: string
+              pattern: '^[0-9a-f]{24}$'
+            createdAt:
+              type: string
+              format: date-time
+            lasttriedFailedLogin:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+            userId:
+              type: string
+              pattern: '^[0-9a-f]{24}$'
+            username:
+              type: string
+        authentication:
+          type: object
+          properties:
+            strategy:
+              type: string
+              enum: ['jwt']
+            accessToken:
+              type: string
+            payload:
+              type: object
+              properties:
+                accountId:
+                  type: string
+                  pattern: '^[0-9a-f]{24}$'
+                userId:
+                  type: string
+                  pattern: '^[0-9a-f]{24}$'
+                schoolId:
+                  type: string
+                  pattern: '^[0-9a-f]{24}$'
+                roles:
+                  type: array
+                  items:
+                    type: string
+                    pattern: '^[0-9a-f]{24}$'
+                iat:
+                  type: integer
+                  description: unix timestamp of when the jwt was issued
+                exp:
+                  type: integer
+                  description: unix timestamp of when the jwt would have expired
+                aud:
+                  type: string
+                  description: audience of the token
+                  example: https://hpi-schul-cloud.org
+                iss:
+                  type: string
+                  description: issuer of the token
+                  example: feathers
+                sub:
+                  type: string
+                  pattern: '^[0-9a-f]{24}$'
+                  description: subject of the token
+                jti:
+                  type: string
+                  description: unique identifier of the token
+        userId:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
 
 paths:
   /authentication:
@@ -32,12 +164,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/authentication'
+                $ref: '#/components/schemas/authentication_response'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/logout_response'
         '401':
           description: not authenticated
         '500':
           description: general error
-      description: Creates a new resource with data.
+      description: Logs in the user based on authentication data.
       summary: ''
       tags:
         - authentication
@@ -47,34 +182,30 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/authentication'
-  '/authentication/{id}':
+              $ref: '#/components/schemas/authentication_body'
     delete:
-      parameters:
-        - in: path
-          name: id
-          description: ID of authentication to remove
-          schema:
-            type: integer
-          required: true
       responses:
         '200':
           description: success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/authentication'
+                $ref: '#/components/schemas/logout_response'
+            application/x-www-form-urlencoded:
+              schema:
+                $ref: '#/components/schemas/logout_response'
         '401':
           description: not authenticated
         '404':
           description: not found
         '500':
           description: general error
-      description: Removes the resource with id.
+      description: logs out the authenticating user, invalidating the jwt used for the call.
       summary: ''
       tags:
         - authentication
-      security: []
+      security:
+        - jwtBearer: []
 openapi: 3.0.2
 tags:
   - name: authentication

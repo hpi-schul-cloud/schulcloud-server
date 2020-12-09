@@ -481,5 +481,256 @@
 	"__v" : 0,
 	"hidden" : false,
 	"shareToken" : "BkKMQz8aZ"
+},
+{
+	"_id": {
+		"$oid": "5fa3a449a9c31a26f4d1d363"
+	},
+	"materialIds": [],
+	"hidden": true,
+	"isCopyFrom": null,
+	"position": 0,
+	"courseId": {
+		"$oid": "5fa3a393a9c31a26f4d1d327"
+	},
+	"name": "Herz",
+	"contents": [
+		{
+			"_id": {
+				"$oid": "5fa3a449a9c31a26f4d1d364"
+			},
+			"title": "TEXT",
+			"hidden": false,
+			"component": "text",
+			"user": {
+				"$oid": "5fa2c71bb229544f2c6966d9"
+			},
+			"content": {
+				"text": "<p>some text</p>"
+			}
+		},
+		{
+			"_id": {
+				"$oid": "5fa3a449a9c31a26f4d1d365"
+			},
+			"title": "GeoGebra",
+			"hidden": false,
+			"component": "geoGebra",
+			"user": {
+				"$oid": "5fa2c71bb229544f2c6966d9"
+			},
+			"content": {
+				"materialId": "ucxngdjf"
+			}
+		},
+		{
+			"_id": {
+				"$oid": "5fa3a449a9c31a26f4d1d366"
+			},
+			"title": "Material",
+			"hidden": false,
+			"component": "resources",
+			"user": {
+				"$oid": "5fa2c71bb229544f2c6966d9"
+			},
+			"content": {
+				"resources": [
+					{
+						"url": "http://www.heynkes.de/biologie/",
+						"title": "Heynkes Biologie",
+						"description": "",
+						"client": "Schul-Cloud"
+					}
+				]
+			}
+		},
+		{
+			"_id": {
+				"$oid": "5fa3a449a9c31a26f4d1d367"
+			},
+			"title": "Etherpad",
+			"hidden": false,
+			"component": "Etherpad",
+			"user": {
+				"$oid": "5fa2c71bb229544f2c6966d9"
+			},
+			"content": {
+				"title": "3ed874daa424a938da325d30",
+				"description": "Etherpad description",
+				"url": "https://schul-cloud.org/etherpad/pbc4du"
+			}
+		}
+	],
+	"time": {
+		"$date": "2020-11-04T23:00:00Z"
+	},
+	"date": {
+		"$date": "1999-12-31T23:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2020-11-05T07:05:45.915Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T07:05:45.915Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3a502a9c31a26f4d1d449"
+	},
+	"materialIds": [],
+	"hidden": true,
+	"isCopyFrom": null,
+	"position": 0,
+	"courseId": {
+		"$oid": "5fa3a481a9c31a26f4d1d3e1"
+	},
+	"name": "Herz",
+	"contents": [
+		{
+			"_id": {
+				"$oid": "5fa3a502a9c31a26f4d1d44a"
+			},
+			"title": "TEXT",
+			"hidden": false,
+			"component": "text",
+			"user": {
+				"$oid": "5fa2c71bb229544f2c6966d9"
+			},
+			"content": {
+				"text": "<p>some text</p>"
+			}
+		},
+		{
+			"_id": {
+				"$oid": "5fa3a502a9c31a26f4d1d44b"
+			},
+			"title": "GeoGebra",
+			"hidden": false,
+			"component": "geoGebra",
+			"user": {
+				"$oid": "5fa2c71bb229544f2c6966d9"
+			},
+			"content": {
+				"materialId": "ucxngdjf"
+			}
+		},
+		{
+			"_id": {
+				"$oid": "5fa3a502a9c31a26f4d1d44c"
+			},
+			"title": "Material",
+			"hidden": false,
+			"component": "resources",
+			"user": {
+				"$oid": "5fa2c71bb229544f2c6966d9"
+			},
+			"content": {
+				"resources": [
+					{
+						"url": "http://www.heynkes.de/biologie/",
+						"title": "Heynkes Biologie",
+						"description": "",
+						"client": "Schul-Cloud"
+					}
+				]
+			}
+		}
+	],
+	"time": {
+		"$date": "2020-11-04T23:00:00Z"
+	},
+	"date": {
+		"$date": "1999-12-31T23:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2020-11-05T07:08:50.055Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T07:08:50.055Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3a847a9c31a26f4d1d4a7"
+	},
+	"materialIds": [],
+	"hidden": true,
+	"isCopyFrom": null,
+	"position": 0,
+	"courseId": {
+		"$oid": "5fa3a5e5a9c31a26f4d1d47e"
+	},
+	"name": "Sun",
+	"contents": [],
+	"time": {
+		"$date": "2020-11-04T23:00:00Z"
+	},
+	"date": {
+		"$date": "1999-12-31T23:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2020-11-05T07:22:47.23Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T07:22:47.23Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3ac4ca9c31a26f4d1d55e"
+	},
+	"materialIds": [],
+	"hidden": false,
+	"isCopyFrom": null,
+	"position": 0,
+	"courseId": {
+		"$oid": "5fa3abffa9c31a26f4d1d518"
+	},
+	"name": "Statistic",
+	"contents": [],
+	"time": {
+		"$date": "2020-11-04T23:00:00Z"
+	},
+	"date": {
+		"$date": "1999-12-31T23:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2020-11-05T07:39:56.232Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T07:40:02.36Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3defca9c31a26f4d1dc18"
+	},
+	"materialIds": [],
+	"hidden": true,
+	"isCopyFrom": null,
+	"position": 0,
+	"courseId": {
+		"$oid": "5fa3deb9a9c31a26f4d1dbd2"
+	},
+	"name": "Grammatik",
+	"contents": [],
+	"time": {
+		"$date": "2020-11-04T23:00:00Z"
+	},
+	"date": {
+		"$date": "1999-12-31T23:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2020-11-05T11:16:12.973Z"
+	},
+	"updatedAt": {
+		"$date": "2020-11-05T11:16:12.973Z"
+	},
+	"__v": 0
 }
 ]

@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 const lodash = require('lodash');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 const reqlib = require('app-root-path').require;
@@ -483,7 +483,7 @@ class CreateVideoconferenceService {
 }
 
 module.exports = function setup(app) {
-	app.use('/videoconference/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/videoconference/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/videoconference', new CreateVideoconferenceService(app));
 	app.use('/videoconference/:scopeName', new GetVideoconferenceService(app));
 	const videoConferenceServices = [app.service('/videoconference'), app.service('/videoconference/:scopeName')];

@@ -15,7 +15,7 @@ if (BODYPARSER_JSON_LIMIT === undefined) {
 module.exports = function () {
 	const app = this;
 
-	app.use('/helpdesk/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/helpdesk/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	const options = {
 		Model: problemModel,

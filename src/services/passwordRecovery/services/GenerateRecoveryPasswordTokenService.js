@@ -1,6 +1,6 @@
 const { keep } = require('feathers-hooks-common');
 const local = require('@feathersjs/authentication-local');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
 const { NotFound, BadRequest } = reqlib('src/errors');

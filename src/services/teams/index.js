@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 const service = require('feathers-mongoose');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 const reqlib = require('app-root-path').require;
@@ -467,7 +467,7 @@ module.exports = function setup() {
 		lean: { virtuals: true },
 	};
 
-	app.use('/teams/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/teams/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/teams', service(options));
 	app.use('/teams/extern/get', new Get());

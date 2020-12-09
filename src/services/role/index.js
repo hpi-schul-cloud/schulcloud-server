@@ -21,7 +21,7 @@ module.exports = function setup() {
 		lean: { virtuals: true },
 	};
 
-	app.use('/roles/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/roles/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/roles/user', new UserRoles());
 	const userRoles = app.service('/roles/user');

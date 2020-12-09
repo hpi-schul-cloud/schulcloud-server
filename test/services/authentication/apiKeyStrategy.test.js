@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const { authenticate } = require('@feathersjs/authentication');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const appPromise = require('../../../src/app');
 
@@ -29,7 +29,7 @@ describe('api-key authentication strategy', () => {
 		app.use(testRoute, new TestService());
 		app.service(testRoute).hooks(testServiceHooks);
 		server = await app.listen(0);
-		configBefore = Configuration.toObject();
+		configBefore = Configuration.toObject({ plainSecrets: true });
 		Configuration.set('CALENDAR_API_KEY', 'validKey');
 	});
 

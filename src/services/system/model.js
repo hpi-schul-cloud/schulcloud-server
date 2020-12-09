@@ -31,6 +31,10 @@ const systemSchema = new Schema(
 		oaClientSecret: { type: String }, // just for oauth2-systems
 		ldapConfig: {
 			active: { type: Boolean },
+			lastSyncAttempt: { type: Date },
+			lastSuccessfulFullSync: { type: Date },
+			lastSuccessfulPartialSync: { type: Date },
+			lastModifyTimestamp: { type: String },
 			url: { type: String },
 			rootPath: { type: String },
 			searchUser: { type: String },

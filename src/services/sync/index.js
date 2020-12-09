@@ -52,7 +52,7 @@ module.exports = function setup() {
 		}
 	}
 
-	app.use('/sync/api', staticContent(path.join(__dirname, '/docs')));
+	app.use('/sync/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/sync', new SyncService());
 
 	const syncService = app.service('/sync');
