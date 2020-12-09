@@ -1,5 +1,5 @@
 const { courseGroupModel } = require('../../../services/user-group/model');
-const { updateManyResultDAO2BO, filterUserInUserGroups } = require('./helper');
+const { updateManyResult, filterUserInUserGroups } = require('./helper');
 
 // converter DAO 2 BO
 
@@ -26,7 +26,7 @@ const getCourseGroupsWithUser = async (userId) => {
 const deleteUserFromUserGroups = async (userId) => {
 	const filter = filterUserInUserGroups(userId);
 	const result = await courseGroupModel.updateMany(filter, { $pull: { userIds: userId } }).exec();
-	return updateManyResultDAO2BO(result);
+	return updateManyResult(result);
 };
 
 module.exports = {

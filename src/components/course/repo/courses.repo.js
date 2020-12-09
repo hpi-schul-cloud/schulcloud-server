@@ -1,5 +1,5 @@
 const { courseModel } = require('../../../services/user-group/model');
-const { updateManyResultDAO2BO } = require('./helper');
+const { updateManyResult } = require('./helper');
 const { toString: idToString } = require('../../../helper/compare').ObjectId;
 
 // filter
@@ -65,7 +65,7 @@ const deleteUserFromCourseRelations = async (userId) => {
 	const result = await courseModel
 		.updateMany(filter, { $pull: { teacherIds: userId, substitutionIds: userId, userIds: userId } })
 		.exec();
-	return updateManyResultDAO2BO(result);
+	return updateManyResult(result);
 };
 
 /**

@@ -29,7 +29,7 @@ const getTestObjects = async () => {
 	return { courseTeacher, lesson };
 };
 
-describe(
+describe.only(
 	'when having a user in lesson contents',
 	withApp(() => {
 		it('should remove the related lessons', async () => {

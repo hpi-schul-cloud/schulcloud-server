@@ -1,6 +1,6 @@
 // todo test?
 
-const updateManyResultDAO2BO = ({ n, nModified, ok }) => {
+const updateManyResult = ({ n, nModified, ok }) => {
 	// todo is ok === 0 possible or does it throw?
 	if (ok !== 1) {
 		// log/throw
@@ -12,4 +12,4 @@ const filterUserInUserGroups = (userId) => {
 	return { userIds: userId };
 };
 
-module.exports = { updateManyResultDAO2BO, filterUserInUserGroups };
+module.exports = { updateManyResult, filterUserInUserGroups };
