@@ -8,7 +8,7 @@ class MerlinTokenGenerator {
 	}
 
 	async getMerlinCredentials(county = null) {
-		if (county) {
+		if (county && county.merlinUser && county.secretMerlinKey) {
 			return {
 				username: decryptSecretMerlin(county.merlinUser),
 				password: decryptSecretMerlin(county.secretMerlinKey),
