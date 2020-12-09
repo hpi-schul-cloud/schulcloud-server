@@ -5,6 +5,7 @@ const { createLessonContents } = require('../../../../test/services/helpers/serv
 const { equal, toString: idToString } = require('../../../helper/compare').ObjectId;
 const { deleteUserData } = require('./deleteUserData.uc');
 const { ApplicationError } = require('../../../errors');
+
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
@@ -73,16 +74,23 @@ describe(
 			});
 			const teachersLesson = await testObjects.createTestLesson({
 				description: 'a lesson with teachers content',
-				contents: [createLessonContents({ user: teacher._id })],
+				contents: [createLessonContents({ user: teacher._id }), createLessonContents({ user: otherUser._id })],
 			});
-
+			const teachersContent = teachersLesson
+				.toObject()
+				.contents.filter((content) => equal(content.user, teacher._id))
+				.map((content) => content._id);
+			expect(teachersContent).to.be.an('array').of.length(1);
 			const stepResults = await simulateOrchestratedDeletion(teacher._id);
 
 			const lessonResults = stepResults.filter((result) => result.trashBinData.scope === 'lessons');
 			expect(lessonResults.length, 'have one lesson added').to.be.equal(1);
 			const { lessonIds } = lessonResults[0].trashBinData.data;
 			expect(lessonIds.length, 'have one result only').to.equal(1);
-			expect(equal(lessonIds[0], teachersLesson._id), 'is teachers lesson id').to.be.true;
+			expect(equal(lessonIds[0]._id, teachersLesson._id), 'is teachers lesson id').to.be.true;
+			const { contents } = lessonIds[0];
+			expect(contents).to.be.an('array').of.length(1);
+			expect(contents[0]).to.deep.equal(teachersContent[0]);
 		});
 
 		it('should add multiple user related lesson contents to trashbin data', async () => {
@@ -102,7 +110,10 @@ describe(
 			const lessonResults = stepResults.filter((result) => result.trashBinData.scope === 'lessons');
 			expect(lessonResults.length, 'have one lesson added').to.be.equal(1);
 			const { lessonIds } = lessonResults[0].trashBinData.data;
-			expect(lessonIds.map(idToString), 'have our two lesson ids given').to.have.members(teachersLessonIds);
+			expect(
+				lessonIds.map((lesson) => idToString(lesson._id)),
+				'have our two lesson ids given'
+			).to.have.members(teachersLessonIds);
 		});
 
 		it('should add only user related course groups to trashbin data', async () => {

@@ -1,15 +1,22 @@
 const { ApplicationError } = require('../../../errors');
 const { coursesRepo, lessonsRepo, courseGroupsRepo } = require('../repo/index');
-const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
+const { equal, isValid: isValidObjectId, toString: idToString } = require('../../../helper/compare').ObjectId;
 const { debug } = require('../../../logger');
 
-const addLessonsToTrashbinData = (lessons = [], trashBinData) => {
-	const lessonIds = lessons.map((lesson) => lesson._id);
-	Object.assign(trashBinData, { lessonIds });
+const addLessonContentsToTrashbinData = (userId, lessons = [], trashBinData) => {
+	const lessonsWithUserContentsIds = lessons.map((lesson) => {
+		const { _id, contents } = lesson;
+		const usersContentIds = contents.filter((content) => equal(content.user, userId)).map((content) => content._id);
+		return {
+			_id,
+			contents: usersContentIds,
+		};
+	});
+	Object.assign(trashBinData, { lessonIds: lessonsWithUserContentsIds });
 };
 
 const validateParams = (userId) => {
-	// TODO add data into error
+	// TODO add data into error, change to ValidationError
 	if (!isValidObjectId(userId)) throw new ApplicationError('a valid objectId is required', { userId });
 };
 
@@ -22,7 +29,7 @@ const deleteUserDatafromLessons = async (userId) => {
 	debug(`found ${lessons.length} lessons with contents of given user to be removed`, { userId });
 	const data = [];
 	if (lessons.length !== 0) {
-		addLessonsToTrashbinData(lessons, data);
+		addLessonContentsToTrashbinData(userId, lessons, data);
 		const result = await lessonsRepo.deleteUserFromLessonContents(userId);
 		debug(`removed user from ${result.matchedDocuments} lessons`, { userId });
 	}
