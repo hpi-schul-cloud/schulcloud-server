@@ -29,7 +29,6 @@ const prometheus = require('./utils/prometheus');
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
-const versionService = require('./services/versionService');
 
 const setupApp = async () => {
 	const app = express(feathers());
@@ -63,7 +62,6 @@ const setupApp = async () => {
 		.use('/', bodyParser.json({ limit: '10mb' }))
 		.use(bodyParser.urlencoded({ extended: true }))
 		.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
-		.use(versionService)
 		.use(defaultHeaders)
 		.get('/system_info/haproxy', (req, res) => {
 			res.send({ timestamp: new Date().getTime() });
