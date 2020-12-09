@@ -1,5 +1,6 @@
 const http = require('http');
 const Sentry = require('@sentry/node');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
 const { incomingMessageToJson } = reqlib('src/utils');
@@ -38,7 +39,9 @@ const asyncErrorLog = (err, message) => {
 		logger.error(err);
 	}
 	// TODO execute filter must outsource from error pipline
-	Sentry.captureException(err);
+	if (Configuration.has('SENTRY_DSN')) {
+		Sentry.captureException(err);
+	}
 };
 
 module.exports = {
