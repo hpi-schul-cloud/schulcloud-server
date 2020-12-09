@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [25.2.6]
+
+### Removed
+
+- SC-8101 - Sanitization for read operations
+
+### Fixed
+
+- SC-8101 - Make it possible to disable sentry by removing `SENTRY_DSN`
+
 ## [25.2.5]
 
 ### Fixed
@@ -18,13 +28,13 @@ properly closing the session, and using the correct readPreference (everything e
 
 ### Changed
 
-- SC-6727 Change email addresses for tickets for Niedersachsen - fixed after review
+- SC-6727 - Change email addresses for tickets for Niedersachsen - fixed after review
 
 ## [25.2.3]
 
 ### Changed
 
-- SC-6727 Change email addresses for tickets for Niedersachsen
+- SC-6727 - Change email addresses for tickets for Niedersachsen
 
 ## [25.2.2]
 
@@ -36,7 +46,7 @@ properly closing the session, and using the correct readPreference (everything e
 
 ### Fixed
 
-- SC-7714 Fixes script injection issue
+- SC-7714 - Fixes script injection issue
 
 ## [25.2.0]
 
@@ -65,7 +75,7 @@ properly closing the session, and using the correct readPreference (everything e
 ### Fixed
 
 - fixed README badges
-- SC-6151 fixed a bug that prevented api docu from being accessible
+- SC-6151 - fixed a bug that prevented api docu from being accessible
 
 ## [25.1.13] - 2020-11-12
 
