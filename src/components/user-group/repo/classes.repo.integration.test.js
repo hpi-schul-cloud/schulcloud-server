@@ -7,7 +7,7 @@ const { classesRepo } = require('.');
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-describe.only('class repo', () => {
+describe('class repo', () => {
 	let app;
 	let server;
 

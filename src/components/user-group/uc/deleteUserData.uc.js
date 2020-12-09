@@ -3,7 +3,7 @@ const { classesRepo } = require('../repo/index');
 const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
 const { debug } = require('../../../logger');
 
-const validateParams = (userId) => {	
+const validateParams = (userId) => {
 	if (!isValidObjectId(userId)) throw new ValidationError('a valid objectId is required', { userId });
 };
 
@@ -19,7 +19,7 @@ const deleteUserDataFromClasses = async (userId) => {
 
 	const classes = await classesRepo.getClassesForUser(userId);
 	debug(`found ${classes.length} classes with contents of given user to be removed`, { userId });
-	const data = [];
+	const data = {};
 	if (classes.length !== 0) {
 		addClassesToTrashbinData(classes, data);
 		const result = await classesRepo.removeUserFromClasses(userId);
