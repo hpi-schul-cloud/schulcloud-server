@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+### Unreleased
+
+- SC-8060 - increase unit test coverage for lernstore counties
+
 ## [25.3.2]
 
 ### Added
