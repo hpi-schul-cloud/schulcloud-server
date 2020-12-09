@@ -1,24 +1,19 @@
 const { classesRepo } = require('../repo');
 
 const getClassesForStudent = async (userId) => {
-	return classesRepo.getClassesForStudent(userId);
+	return classesRepo.findClassesByStudent(userId);
 };
 
 const getClassesForTeacher = async (userId) => {
-	return classesRepo.getClassesForTeacher(userId);
+	return classesRepo.findClassesByTeacher(userId);
 };
 
-const removeStudentFromClasses = async (userId, classIds) => {
-	return classesRepo.removeStudentFromClasses(userId, classIds);
-};
-
-const removeTeacherFromClasses = async (userId, classIds) => {
-	return classesRepo.removeTeacherFromClasses(userId, classIds);
+const removeUserFromClasses = async (userId, classIds) => {
+	return classesRepo.removeUserFromClasses(userId, classIds);
 };
 
 module.exports = {
 	getClassesForStudent,
 	getClassesForTeacher,
-	removeStudentFromClasses,
-	removeTeacherFromClasses,
+	removeUserFromClasses,
 };
