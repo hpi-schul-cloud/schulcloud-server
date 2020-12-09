@@ -1,7 +1,7 @@
 {
 	"ignore": ["**/*.test.js", "**/*.test.ts", "**/*.spec.ts", ".git", "node_modules"],
 	"watch": ["src", "config", "public"],
-	"ext": "js,json,ts",
+	"ext": "js,json,ts,yml,yaml",
 	"verbose": true,
 	"delay": "2500"
 }

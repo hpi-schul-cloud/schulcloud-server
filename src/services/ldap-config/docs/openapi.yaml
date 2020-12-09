@@ -1,0 +1,109 @@
+security:
+  - jwtBearer: []
+info:
+  title: Schul-Cloud LDAP-Config Service API
+  description:
+    This is the API specification for the Schul-Cloud LDAP-Config service.
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+servers:
+  - url: /ldap-config/
+components:
+  parameters:
+    id:
+      name: _id
+      required: true
+      description: database id of a system config object
+      in: path
+      schema:
+        pattern: '^[0-9a-f]{24}$'
+    verifyOnly:
+      name: verifyOnly
+      description: run only verification without saving the data (default = false)
+      in: query
+      schema:
+        type: boolean
+    activate:
+      name: activate
+      description: value to set as system.ldapConfig.active (default = true)
+      in: query
+      schema:
+        type: boolean
+  schemas:
+    dn:
+      type: string
+      pattern: ^(?:[A-Za-z][\w-]*|\d+(?:\.\d+)*)=(?:#(?:[\dA-Fa-f]{2})+|(?:[^,=\+<>#;\\"]|\\[,=\+<>#;\\"]|\\[\dA-Fa-f]{2})*|"(?:[^\\"]|\\[,=\+<>#;\\"]|\\[\dA-Fa-f]{2})*")(?:\+(?:[A-Za-z][\w-]*|\d+(?:\.\d+)*)=(?:#(?:[\dA-Fa-f]{2})+|(?:[^,=\+<>#;\\"]|\\[,=\+<>#;\\"]|\\[\dA-Fa-f]{2})*|"(?:[^\\"]|\\[,=\+<>#;\\"]|\\[\dA-Fa-f]{2})*"))*(?:(,|;;)(?:[A-Za-z][\w-]*|\d+(?:\.\d+)*)=(?:#(?:[\dA-Fa-f]{2})+|(?:[^,=\+<>#;\\"]|\\[,=\+<>#;\\"]|\\[\dA-Fa-f]{2})*|"(?:[^\\"]|\\[,=\+<>#;\\"]|\\[\dA-Fa-f]{2})*")(?:\+(?:[A-Za-z][\w-]*|\d+(?:\.\d+)*)=(?:#(?:[\dA-Fa-f]{2})+|(?:[^,=\+<>#;\\"]|\\[,=\+<>#;\\"]|\\[\dA-Fa-f]{2})*|"(?:[^\\"]|\\[,=\+<>#;\\"]|\\[\dA-Fa-f]{2})*"))*)*$
+    ldapUrl:
+      type: string
+      pattern: ^ldaps:\/\/[\w\.-]+\.[a-z]+(:\d+)?$
+    emptyString:
+      type: string
+      pattern: ^$
+paths:
+  /:
+    post:
+      tags:
+        - ldap-config
+      parameters:
+        - $ref: '#/components/parameters/activate'
+        - $ref: '#/components/parameters/verifyOnly'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas/post.requestBody.yaml'
+      responses:
+        '201':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/verify.response.yaml'
+        '403':
+          description: the requesting user is not allowed to access this system
+  '/{_id}':
+    get:
+      tags:
+        - ldap-config
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: returns the LDAP config of the given system id
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/get.response.yaml'
+        '403':
+          description: the requesting user is not allowed to access this system
+    patch:
+      tags:
+        - ldap-config
+      parameters:
+        - $ref: '#/components/parameters/activate'
+        - $ref: '#/components/parameters/verifyOnly'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas/patch.requestBody.yaml'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/verify.response.yaml'
+
+
+openapi: 3.0.2
+tags:
+  - name: ldap-config
+    description: A service to get, validate, patch, and activate LDAP configurations.
