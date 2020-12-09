@@ -51,6 +51,7 @@ const etherpad = require('./etherpad');
 const storageProvider = require('./storageProvider');
 const activation = require('./activation');
 const config = require('./config');
+const version = require('./versionService');
 const docs = require('./docs');
 
 module.exports = function initializeServices() {
@@ -110,6 +111,7 @@ module.exports = function initializeServices() {
 	app.configure(storageProvider);
 	app.configure(activation);
 	app.configure(config);
+	app.configure(version);
 
 	// initialize events
 	newsEvents.configure(app);

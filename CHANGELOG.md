@@ -11,6 +11,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8060 - increase unit test coverage for lernstore counties
 
+## [25.3.4]
+
+### Changed
+
+- SC-7998 - use default service setup for /version
+
 ## [25.3.3] (pick from 25.2)
 
 ### Removed
