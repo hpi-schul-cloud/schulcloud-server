@@ -1,17 +1,23 @@
 const { FileModel } = require('./db');
 
+const searchQuery = (userId) => ({
+	permissions: {
+		$elemMatch: {
+			refId: userId,
+		}
+	}
+});
+
+const getFileById = async (id) => FileModel.findById(id).lean().exec();
+
 /**
  * @param {*} userId
  * @return {data} filePermissions
  */
-const getFilePermissionsByUserId = async (userId) => {
+const getFilesWithUserPermissionsByUserId = async (userId) => {
 	return FileModel.aggregate([
 		{
-			$match: {
-				permissions: {
-					$elemMatch: { refId: userId },
-				},
-			},
+			$match: searchQuery(userId),
 		},
 		{
 			$project: {
@@ -33,14 +39,14 @@ const getFilePermissionsByUserId = async (userId) => {
  * @return {boolean} success
  */
 const removeFilePermissionsByUserId = async (userId) => {
-	const searchQuery = { permissions: { $elemMatch: { refId: userId } } };
 	const updateQuery = { $pull: { permissions: { refId: userId } } };
-	const result = await FileModel.updateMany(searchQuery, updateQuery).lean().exec();
+	const result = await FileModel.updateMany(searchQuery(userId), updateQuery).lean().exec();
 	const success = result.ok === 1 && result.n === result.nModified;
 	return success;
 };
 
 module.exports = {
-	getFilePermissionsByUserId,
+	getFileById,
+	getFilesWithUserPermissionsByUserId,
 	removeFilePermissionsByUserId,
 };

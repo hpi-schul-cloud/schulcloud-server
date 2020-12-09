@@ -5,11 +5,11 @@ const repo = require('../../repo/files.repo');
  * @param {BSON|BSONString} userId
  */
 const removePermissionsThatUserCanAccess = async (userId) => {
-	const filePermissions = await repo.getFilePermissionsByUserId(userId);
-	const trashBinData = filePermissions.map((fp) => ({
+	const filePermissions = await repo.getFilesWithUserPermissionsByUserId(userId);
+	const trashBinData = {
 		scope: 'filePermission',
-		data: fp,
-	}));
+		data: filePermissions,
+	};
 
 	const complete = await repo.removeFilePermissionsByUserId(userId);
 

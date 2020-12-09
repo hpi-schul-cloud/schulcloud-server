@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 
-const { FileModel } = require('../repo/db');
+const { filesRepo } = require('../repo');
 
 describe('fileStorageFacade', () => {
 	let server;
@@ -24,15 +24,14 @@ describe('fileStorageFacade', () => {
 			await testObjects.createTestFile({ owner: user });
 
 			const deleteFunctions = app.facade('/fileStorage/v2').deleteUserData;
+			expect(deleteFunctions).to.be.an('array').that.is.not.empty;
 			for (const deleteFunction of deleteFunctions) {
 				// eslint-disable-next-line no-await-in-loop
 				const result = await deleteFunction(user._id);
 				expect(result.complete).to.be.true;
-				expect(result.trashBinData).to.be.an('array');
-				result.trashBinData.forEach((data) => {
-					expect(data).to.haveOwnProperty('scope');
-					expect(data.data).to.be.an('object');
-				});
+				expect(result.trashBinData).to.be.an('object');
+				expect(result.trashBinData).to.haveOwnProperty('scope');
+				expect(result.trashBinData).to.haveOwnProperty('data');
 			}
 		});
 
@@ -41,12 +40,13 @@ describe('fileStorageFacade', () => {
 			const file = await testObjects.createTestFile({ owner: user });
 
 			const deleteFunctions = app.facade('/fileStorage/v2').deleteUserData;
+			expect(deleteFunctions).to.be.an('array').that.is.not.empty;
 			for (const deleteFunction of deleteFunctions) {
 				// eslint-disable-next-line no-await-in-loop
 				await deleteFunction(user._id);
 			}
 
-			const result = await FileModel.findById(file._id).lean().exec();
+			const result = await filesRepo.getFileById(file._id);
 
 			expect(result.permissions.some((permission) => permission.refId.toString() === user._id.toString())).to.be.false;
 		});

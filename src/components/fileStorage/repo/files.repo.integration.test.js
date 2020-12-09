@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const { FileModel } = require('./db');
 
-const { getFilePermissionsByUserId, removeFilePermissionsByUserId } = require('./files.repo');
+const { getFileById, getFilesWithUserPermissionsByUserId, removeFilePermissionsByUserId } = require('./files.repo');
 
 describe('files.repo.integration.test', () => {
 	let fileTestUtils;
@@ -22,7 +22,27 @@ describe('files.repo.integration.test', () => {
 		await server.close();
 	});
 
-	describe('getFilePermissionsByUserId', () => {
+	describe('getFileById', () => {
+		it('when file with given id exists the file gets returned', async () => {
+			const fileOwnerId = generateObjectId();
+			const file = await fileTestUtils.create({ owner: fileOwnerId });
+
+			const result = await getFileById(file._id);
+
+			expect(result._id).to.eql(file._id);
+			expect(result.owner).to.eql(fileOwnerId);
+		});
+
+		it('when file with given id does not exist null gets returned', async () => {
+			const randomId = generateObjectId();
+
+			const result = await getFileById(randomId);
+
+			expect(result).to.be.null;
+		});
+	});
+
+	describe('getFilesWithUserPermissionsByUserId', () => {
 		it('when there is a file shared with the user, only the users permissions are returned', async () => {
 			const userId = generateObjectId();
 			const fileOwnerId = generateObjectId();
@@ -32,7 +52,7 @@ describe('files.repo.integration.test', () => {
 			const additonalPermissions = [userToBeDeletedPermission, otherPermission];
 			await fileTestUtils.create({ owner: fileOwnerId, additonalPermissions });
 
-			const result = await getFilePermissionsByUserId(userId);
+			const result = await getFilesWithUserPermissionsByUserId(userId);
 			expect(result).to.be.an('array').with.lengthOf(1);
 			expect(result[0].permissions.every((permission) => permission.refId.toString() === userId.toString())).to.be.true;
 		});
@@ -46,14 +66,14 @@ describe('files.repo.integration.test', () => {
 			const fileToBeFound = await fileTestUtils.create({ owner: fileOwnerId, additonalPermissions });
 			await fileTestUtils.create({ owner: fileOwnerId });
 
-			const result = await getFilePermissionsByUserId(userId);
+			const result = await getFilesWithUserPermissionsByUserId(userId);
 			expect(result).to.be.an('array').with.lengthOf(1);
 			expect(result[0]._id).to.eql(fileToBeFound._id);
 		});
 
 		it('when there is no file shared with the user, the result is empty', async () => {
 			const userId = generateObjectId();
-			const result = await getFilePermissionsByUserId(userId);
+			const result = await getFilesWithUserPermissionsByUserId(userId);
 			expect(result).to.be.an('array').that.is.empty;
 		});
 	});
