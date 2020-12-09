@@ -51,6 +51,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 - SC-7915 - facade locator
 - SC-7571 - solved performance issues - bulk QR-code generation
 - SC-6294 - Introduce Typescript in schulcloud-server
+- SC-7543 - Adds ldap-config service to create, load, and patch LDAP-configs (replaces /ldap endpoints for new client)
 - SC-7028 - Add Course Component API Specification document
 - SC-7476 - Prevent hash generation if user has account
 - SC-6692 - Added Lern-Store counties support for Niedersachsen (Merlin)
@@ -72,6 +73,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 - SC-5900 - Move Synapse synchronization logic into server
 - SC-7499 - Fixes documentation for edu sharing endpoints
 - SC-7872 - Fix audience of the jwt to new organisation name.
+- SC-7543 - deprecates `GET /ldap/:id` and `PATCH /ldap/:id` routes 
 - SC-7868 - Move external request helpers to more present file location
 - SC-7474 pull docker container for tests if commit id exists on docker hub
 
