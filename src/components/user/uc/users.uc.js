@@ -1,8 +1,8 @@
 const { ObjectId } = require('mongoose').Types;
 const { BadRequest, Forbidden } = require('../../../errors');
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
-const { hasRole } = require('./userRoles.uc');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { facadeLocator } = require('../../../utils/facadeLocator');
 const errorUtils = require('../../../errors/utils');
 
 const userHaveSameSchool = async (userId, otherUserId) => {
@@ -38,31 +38,19 @@ const getUserData = async (id) => {
 /**
  *
  * @param {*} userId
- * @param {*} app instance of app to get facades from
  * @param {*} deleteUserFacades e.g. ['/registrationPin/v2', '/fileStorage/v2']
  */
-const deleteUserRelatedData = async (userId, app, deleteUserFacades = []) => {
+const deleteUserRelatedData = async (userId, deleteUserFacades = []) => {
 	for (const facadeName of deleteUserFacades) {
-		const facade = app.facade(facadeName);
-		if (typeof facade.deleteUserData === 'function') {
+		const facade = facadeLocator.facade(facadeName);
+		for (const deleteFn of facade.deleteUserData) {
 			try {
 				// eslint-disable-next-line no-await-in-loop
-				const trash = await facade.deleteUserData(userId);
+				const trash = await deleteFn(userId);
 				// eslint-disable-next-line no-await-in-loop
 				await trashbinRepo.updateTrashbinByUserId(userId, trash.data);
 			} catch (error) {
-				errorUtils.asyncErrorLog(error, `failed to delete user data for facade ${facadeName}`);
-			}
-		} else if (Array.isArray(facade.deleteUserData)) {
-			for (const deleteFn of facade.deleteUserData) {
-				try {
-					// eslint-disable-next-line no-await-in-loop
-					const trash = await deleteFn(userId);
-					// eslint-disable-next-line no-await-in-loop
-					await trashbinRepo.updateTrashbinByUserId(userId, trash.data);
-				} catch (error) {
-					errorUtils.asyncErrorLog(error, `failed to delete user data for facade ${facadeName}#${deleteFn.name}`);
-				}
+				errorUtils.asyncErrorLog(error, `failed to delete user data for facade ${facadeName}#${deleteFn.name}`);
 			}
 		}
 	}
@@ -84,18 +72,28 @@ const replaceUserWithTombstone = async (id) => {
 	return { success: true };
 };
 
-const checkPermissions = async (id, roleName, { account }) => {
-	const conditionPromises = await Promise.all([userHaveSameSchool(id, account.userId), hasRole(id, roleName)]);
-	if (conditionPromises.every((v) => v === true)) {
-		return true;
+const checkPermissions = async (id, roleName, permissionAction, { account }) => {
+	const userToBeDeleted = await userRepo.getUserWithRoles(id);
+	const currentUser = await userRepo.getUserWithRoles(account.userId);
+	const neededPermission = `${roleName}_${permissionAction}`;
+
+	let grantPermission = true;
+	// the deleted user's role fits the rolename for the route
+	grantPermission = grantPermission && userToBeDeleted.roles.some((role) => role.name.toUpperCase() === roleName);
+	// users must be on same school
+	grantPermission = grantPermission && equalIds(userToBeDeleted.schoolId, currentUser.schoolId);
+	// current user must have the permission
+	grantPermission =
+		grantPermission &&
+		currentUser.roles.some((role) => role.permissions.some((permission) => permission === neededPermission));
+
+	// TODO check full coverage of delete permissions for all of the users roles
+	if (!grantPermission) {
+		throw new Forbidden(`You don't have permissions to perform this action`);
 	}
-	throw new Forbidden(`You don't have permissions to perform this action`);
 };
 
-const deleteUser = async (id, roleName, { account, app }) => {
-	await checkPermissions(id, roleName, { account });
-	// const fileStorage = app.facade('/fileStorage/v2');
-
+const deleteUser = async (id) => {
 	const userAccountData = await getUserData(id);
 	const user = userAccountData.find(({ scope }) => scope === 'user').data;
 
@@ -103,7 +101,7 @@ const deleteUser = async (id, roleName, { account, app }) => {
 
 	await replaceUserWithTombstone(id);
 	try {
-		const registrationPinFacade = app.facade('/registrationPin/v2');
+		const registrationPinFacade = facadeLocator.facade('/registrationPin/v2');
 		const registrationPinTrash = await registrationPinFacade.deleteRegistrationPinsByEmail(user.email);
 		await trashbinRepo.updateTrashbinByUserId(user.id, registrationPinTrash.data); // TODO unnecessary for PINs?
 	} catch (error) {
@@ -111,7 +109,7 @@ const deleteUser = async (id, roleName, { account, app }) => {
 	}
 
 	// this is an async function, but we don't need to wait for it, because we don't give any errors information back to the user
-	deleteUserRelatedData(user.id, app, []).catch((error) => {
+	deleteUserRelatedData(user.id, []).catch((error) => {
 		errorUtils.asyncErrorLog(error, 'deleteUserRelatedData failed');
 	});
 };

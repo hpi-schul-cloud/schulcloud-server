@@ -1,4 +1,4 @@
-const userUc = require('./users.uc');
+// const userUc = require('./users.uc');
 const userRolesUc = require('./userRoles.uc');
 
 class UserFacade {
@@ -6,9 +6,10 @@ class UserFacade {
 		this.app = app;
 	}
 
-	async deleteUser(id, roleName, params) {
-		return userUc.deleteUser(id, roleName, { ...params, app: this.app });
-	}
+	// async deleteUser(id, roleName, params) {
+	// 	await userUc.checkPermissions(id, this.roleName, 'DELETE', { ...params });
+	// 	return userUc.deleteUser(id);
+	// }
 
 	async userHasRole(userId, roleName) {
 		return userRolesUc.hasRole(userId, roleName);
