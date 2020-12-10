@@ -1,6 +1,6 @@
 const http = require('http');
 const Sentry = require('@sentry/node');
-const { Configuration } = require('@hpi-schul-cloud/commons');
+const { Configuration } = require('@schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
 const { incomingMessageToJson } = reqlib('src/utils');
