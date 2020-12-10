@@ -14,6 +14,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8030 - Setup orchestrator for deleting concept
 - SC-8060 - increase unit test coverage for lernstore counties
 - SC-8179 - repaired unit test
+- SC-8020 - adds collections filter to edu-sharing service
+
 
 ## [25.3.5]
 

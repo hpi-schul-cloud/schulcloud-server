@@ -63,6 +63,35 @@ describe('EduSharing service', () => {
 			chai.expect(response.total).to.gte(1);
 			request.post.restore();
 			request.get.restore();
+			postStub.reset();
+		} catch (err) {
+			throw new Error(err);
+		}
+	});
+
+	it('should search for a collection', async () => {
+		try {
+			const user = await testObjects.createTestUser({ roles: ['teacher'] });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+
+			// cookie already set
+			// sinon.stub(request, 'get').returns(MockAuth);
+
+			const postStub = sinon.stub(request, 'post');
+			postStub.onCall(0).returns(MockNodes);
+
+			params.query = { collection: 'a4808865-da94-4884-bdba-0ad66070e83b' };
+			const response = await eduSharingService.find(params);
+
+			chai
+				.expect(postStub.getCalls()[0].args[0].body)
+				.contains(
+					`{"property":"cclom:relation","values":["{'kind': 'ispartof', 'resource': {'identifier': ['a4808865-da94-4884-bdba-0ad66070e83b']}}"]`
+				);
+			chai.expect(response.total).to.gte(1);
+
+			request.post.restore();
+			postStub.reset();
 		} catch (err) {
 			throw new Error(err);
 		}

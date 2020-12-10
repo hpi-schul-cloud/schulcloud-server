@@ -441,6 +441,11 @@
 			"type": "string",
 			"description": "JSON stringified with credentials for merlin counties, used by Lern-Store"
 		},
+		"FEATURE_ES_COLLECTIONS_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "When enabled, collections will be searchable in Lern-Store"
+		},
 		"SILENT_ERROR_ENABLED": {
 			"type": "boolean",
 			"default": false,
