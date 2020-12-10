@@ -144,10 +144,6 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle unexpected inputs', async () => {
-			// cleanup null and undefined matched homeworks
-			const result = await db.cleanupUnexpectedHomeworks();
-			expect(result.ok, 'but cleanup before must work').to.equal(1);
-
 			const userId = testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: userId });
@@ -223,7 +219,7 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle unexpected inputs', async () => {
-			// cleanup null and undefined matched homeworks
+			// cleanup null and undefined matched homeworks, because seed data include invalid data
 			const result = await db.cleanupUnexpectedHomeworks();
 			expect(result.ok, 'but cleanup before must work').to.equal(1);
 
@@ -273,7 +269,7 @@ describe('in "task.repo" the function', () => {
 			} = await createHomeworks(testHelper);
 
 			const result = await deletePrivateHomeworksFromUser(userId);
-			expect(result).to.eql({ success: 1, modified: 3, count: 3 });
+			expect(result).to.eql({ success: 1, modified: 3 });
 
 			// all homeworks that should not deleted
 			const [dbResultPublic, dbResultOtherPrivate] = await Promise.all([
@@ -297,7 +293,7 @@ describe('in "task.repo" the function', () => {
 
 			await testHelper.createTestHomework({ teacherId: userId });
 			const result = await deletePrivateHomeworksFromUser(userId);
-			expect(result).to.eql({ success: 1, modified: 0, count: 0 });
+			expect(result).to.eql({ success: 1, modified: 0 });
 		});
 
 		it('should handle no user matched without errors', async () => {
@@ -306,24 +302,28 @@ describe('in "task.repo" the function', () => {
 
 			await testHelper.createTestHomework({ teacherId: otherUserId });
 			const result = await deletePrivateHomeworksFromUser(userId);
-			expect(result).to.eql({ success: 1, modified: 0, count: 0 });
+			expect(result).to.eql({ success: 1, modified: 0 });
 		});
 
 		it('should handle unexpected inputs', async () => {
-			// cleanup null and undefined matched homeworks
-			const result = await db.cleanupUnexpectedHomeworks();
-			expect(result.ok, 'but cleanup before must work').to.equal(1);
-
 			const userId = testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: userId });
 
 			// must execute step by step that errors not mixed
-			const resultNull = await deletePrivateHomeworksFromUser(null);
-			expect(resultNull, 'when input is null').to.eql({ success: 1, modified: 0, count: 0 });
+			try {
+				await deletePrivateHomeworksFromUser(null);
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is null').to.equal('The parameter "userId" is not defined.');
+			}
 
-			const resultUndefined = await deletePrivateHomeworksFromUser(undefined);
-			expect(resultUndefined, 'when input is undefined').to.eql({ success: 1, modified: 0, count: 0 });
+			try {
+				await deletePrivateHomeworksFromUser(undefined);
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is undefined').to.equal('The parameter "userId" is not defined.');
+			}
 
 			try {
 				await deletePrivateHomeworksFromUser('123');
@@ -363,7 +363,7 @@ describe('in "task.repo" the function', () => {
 			} = await createHomeworks(testHelper);
 
 			const result = await replaceUserInPublicHomeworks(userId, replaceUserId);
-			expect(result).to.eql({ success: 1, modified: 3, count: 3 });
+			expect(result).to.eql({ success: 1, modified: 3 });
 
 			const [dbResultUser, dbResultOther, dbResultReplaceUser] = await Promise.all([
 				db.findHomeworks(userId),
@@ -393,7 +393,7 @@ describe('in "task.repo" the function', () => {
 
 			await testHelper.createTestHomework({ teacherId: userId, private: true });
 			const result = await replaceUserInPublicHomeworks(userId, replaceUserId);
-			expect(result).to.eql({ success: 1, modified: 0, count: 0 });
+			expect(result).to.eql({ success: 1, modified: 0 });
 		});
 
 		it('should handle no user matched without errors', async () => {
@@ -403,25 +403,29 @@ describe('in "task.repo" the function', () => {
 
 			await testHelper.createTestHomework({ teacherId: otherUserId });
 			const result = await replaceUserInPublicHomeworks(userId, replaceUserId);
-			expect(result).to.eql({ success: 1, modified: 0, count: 0 });
+			expect(result).to.eql({ success: 1, modified: 0 });
 		});
 
 		it('should handle unexpected first parameter inputs', async () => {
-			// cleanup null and undefined matched homeworks
-			const result = await db.cleanupUnexpectedHomeworks();
-			expect(result.ok, 'but cleanup before must work').to.equal(1);
-
 			const replaceUserId = testHelper.generateObjectId();
 			const userId = testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: userId });
 
 			// must execute step by step that errors not mixed
-			const resultNull = await replaceUserInPublicHomeworks(null, replaceUserId);
-			expect(resultNull, 'when input is null').to.eql({ success: 1, modified: 0, count: 0 });
+			try {
+				await replaceUserInPublicHomeworks(null, replaceUserId);
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is null').to.equal('The parameter "userId" is not defined.');
+			}
 
-			const resultUndefined = await replaceUserInPublicHomeworks(undefined, replaceUserId);
-			expect(resultUndefined, 'when input is undefined').to.eql({ success: 1, modified: 0, count: 0 });
+			try {
+				await replaceUserInPublicHomeworks(undefined, replaceUserId);
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is undefined').to.equal('The parameter "userId" is not defined.');
+			}
 
 			try {
 				await replaceUserInPublicHomeworks('123', replaceUserId);
@@ -443,28 +447,16 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle unexpected second parameter inputs', async () => {
-			// cleanup null and undefined matched homeworks
-			const result = await db.cleanupUnexpectedHomeworks();
-			expect(result.ok, 'but cleanup before must work').to.equal(1);
-
 			const userId = testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: userId });
 
 			// must execute step by step that errors not mixed
 			const resultNull = await replaceUserInPublicHomeworks(userId, null);
-			expect(resultNull, 'when input is null').to.eql({
-				success: 1,
-				modified: 1,
-				count: 1,
-			});
-
-			// cleanup null and undefined matched homeworks
-			const result2 = await db.cleanupUnexpectedHomeworks();
-			expect(result2.ok, 'but cleanup before must work').to.equal(1);
+			expect(resultNull, 'when input is null').to.eql({ success: 1, modified: 1 });
 
 			const resultUndefined = await replaceUserInPublicHomeworks(userId, undefined);
-			expect(resultUndefined, 'when input is undefined').to.eql({ success: 1, modified: 0, count: 0 });
+			expect(resultUndefined, 'when input is undefined').to.eql({ success: 1, modified: 0 });
 
 			try {
 				await replaceUserInPublicHomeworks(userId, '123');
@@ -602,7 +594,7 @@ describe('in "task.repo" the function', () => {
 				otherGroupSubmissionProm,
 			]);
 			const status = await removeGroupSubmissionsConnectionsForUser(userId);
-			expect(status).to.eql({ success: 1, modified: 3, count: 3 });
+			expect(status).to.eql({ success: 1, modified: 3 });
 
 			const result = await db.findGroupSubmissions(userId);
 			expect(result.some(matchId(groupAlone)), 'where user is alone in group').to.be.false;
@@ -615,7 +607,7 @@ describe('in "task.repo" the function', () => {
 
 			await testHelper.createTestSubmission({ studentId: userId });
 			const result = await removeGroupSubmissionsConnectionsForUser(userId);
-			expect(result).to.eql({ success: 1, modified: 0, count: 0 });
+			expect(result).to.eql({ success: 1, modified: 0 });
 		});
 
 		it('should handle no user matched without errors', async () => {
@@ -624,7 +616,7 @@ describe('in "task.repo" the function', () => {
 
 			await testHelper.createTestSubmission({ studentId: otherUserId, teamMebers: [otherUserId] });
 			const result = await removeGroupSubmissionsConnectionsForUser(userId);
-			expect(result).to.eql({ success: 1, modified: 0, count: 0 });
+			expect(result).to.eql({ success: 1, modified: 0 });
 		});
 
 		it('should handle unexpected inputs', async () => {
@@ -633,11 +625,19 @@ describe('in "task.repo" the function', () => {
 			await testHelper.createTestSubmission({ studentId: userId, teamMebers: [userId] });
 
 			// must execute step by step that errors not mixed
-			const resultNull = await removeGroupSubmissionsConnectionsForUser(null);
-			expect(resultNull, 'when input is null').to.eql({ success: 1, modified: 0, count: 0 });
+			try {
+				await removeGroupSubmissionsConnectionsForUser(null);
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is null').to.equal('The parameter "userId" is not defined.');
+			}
 
-			const resultUndefined = await removeGroupSubmissionsConnectionsForUser(undefined);
-			expect(resultUndefined, 'when input is undefined').to.eql({ success: 1, modified: 0, count: 0 });
+			try {
+				await removeGroupSubmissionsConnectionsForUser(undefined);
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is undefined').to.equal('The parameter "userId" is not defined.');
+			}
 
 			try {
 				await removeGroupSubmissionsConnectionsForUser('123');
