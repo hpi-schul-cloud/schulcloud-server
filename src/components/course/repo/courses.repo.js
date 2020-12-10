@@ -20,9 +20,8 @@ const filterCourseMember = (userId) => ({
 
 // converter DAO 2 BO
 
-const courseIdWithUserProjection2BO = ({ _id, student, substituteTeacher, teacher }) => ({
+const courseIdWithUserProjectionTO = ({ _id, student, substituteTeacher, teacher }) => ({
 	_id,
-	id: idToString(_id),
 	student: student === true,
 	teacher: teacher === true,
 	substituteTeacher: substituteTeacher === true,
@@ -57,7 +56,7 @@ const getCoursesWithUser = async (userId) => {
 			},
 		])
 		.exec();
-	return result.map(courseIdWithUserProjection2BO);
+	return result.map(courseIdWithUserProjectionTO);
 };
 
 const deleteUserFromCourseRelations = async (userId) => {

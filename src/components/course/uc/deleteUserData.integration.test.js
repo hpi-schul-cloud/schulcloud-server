@@ -31,8 +31,6 @@ const createTestData = async () => {
 	return { otherUser, teacher, substituteTeacher, student, school, course };
 };
 
-// TODO mock the repositoriy calls
-
 describe(
 	'when removing user data in courses',
 	withApp(async () => {
@@ -47,8 +45,8 @@ describe(
 			).to.be.true;
 
 			expect(
-				stepResults.every((result) => result.trashBinData.data.length === 0),
-				'all steps have no data added'
+				stepResults.every((result) => result.trashBinData.data !== undefined),
+				'all steps have data defined'
 			).to.be.true;
 
 			expect(
@@ -85,12 +83,12 @@ describe(
 
 			const lessonResults = stepResults.filter((result) => result.trashBinData.scope === 'lessons');
 			expect(lessonResults.length, 'have one lesson added').to.be.equal(1);
-			const { lessonIds } = lessonResults[0].trashBinData.data;
+			const lessonIds = lessonResults[0].trashBinData.data;
 			expect(lessonIds.length, 'have one result only').to.equal(1);
-			expect(equal(lessonIds[0]._id, teachersLesson._id), 'is teachers lesson id').to.be.true;
-			const { contents } = lessonIds[0];
-			expect(contents).to.be.an('array').of.length(1);
-			expect(contents[0]).to.deep.equal(teachersContent[0]);
+			expect(equal(lessonIds[0].lessonId, teachersLesson._id), 'is teachers lesson id').to.be.true;
+			const { contentIds } = lessonIds[0];
+			expect(contentIds).to.be.an('array').of.length(1);
+			expect(contentIds[0]).to.deep.equal(teachersContent[0]);
 		});
 
 		it('should add multiple user related lesson contents to trashbin data', async () => {
@@ -109,9 +107,9 @@ describe(
 
 			const lessonResults = stepResults.filter((result) => result.trashBinData.scope === 'lessons');
 			expect(lessonResults.length, 'have one lesson added').to.be.equal(1);
-			const { lessonIds } = lessonResults[0].trashBinData.data;
+			const lessonIds = lessonResults[0].trashBinData.data;
 			expect(
-				lessonIds.map((lesson) => idToString(lesson._id)),
+				lessonIds.map((lesson) => idToString(lesson.lessonId)),
 				'have our two lesson ids given'
 			).to.have.members(teachersLessonIds);
 		});
@@ -164,8 +162,8 @@ describe(
 			const haveUserCoursesInTrashBin = async (userId, type, userCourseIds) => {
 				const stepResults = await simulateOrchestratedDeletion(userId);
 				const coursesResults = stepResults.filter((result) => result.trashBinData.scope === 'courses');
-				expect(coursesResults.length, 'have one courses item added').to.be.equal(1);
-				const { courseIds } = coursesResults[0].trashBinData.data;
+				expect(coursesResults, 'have one courses item added').to.be.an('array').of.length(1);
+				const courseIds = coursesResults[0].trashBinData.data;
 				expect(courseIds[type]).to.be.an('array').of.length(userCourseIds.length);
 				expect(courseIds[type].map(idToString), 'contain all users course groups').to.have.members(
 					userCourseIds,

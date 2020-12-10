@@ -5,13 +5,13 @@ class CoursesFacade {
 		this.app = app;
 	}
 
-	async deleteUserData(userIdForDeletion, userContext) {
+	async deleteUserData() {
 		// TODO permissions
 		// userFromSameSchool(userContext.currentUserId, userIdForDeletion);
 		// userHasPermission(userContext.currentUserId, 'DELETE_USER');
 
 		// TODO let nobody change the given userId behind facade, assign it
-		return deleteUserUc.deleteUserData(userIdForDeletion);
+		return deleteUserUc.deleteUserData();
 	}
 }
 

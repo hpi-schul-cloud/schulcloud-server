@@ -6,7 +6,7 @@ module.exports = {
 	recursive: true,
 	package: './package.json',
 	slow: 75,
-	timeout: 20000000,
+	timeout: 2000,
 	'watch-files': ['test/*', 'src/*', 'config/*'],
 	spec: ['./{,!(node_modules)/**/}*.test.js', './{,!(node_modules)/**/}*.test.ts'], // ts files needs to be added too
 };

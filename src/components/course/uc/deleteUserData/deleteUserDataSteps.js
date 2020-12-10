@@ -4,15 +4,15 @@ const { equal, isValid: isValidObjectId, toString: idToString } = require('../..
 const { debug } = require('../../../../logger');
 
 const addLessonContentsToTrashbinData = (userId, lessons = [], trashBinData) => {
-	const lessonsWithUserContentsIds = lessons.map((lesson) => {
-		const { _id, contents } = lesson;
+	const lessonIdsWithUserContentsIds = lessons.map((lesson) => {
+		const { _id: lessonId, contents } = lesson;
 		const usersContentIds = contents.filter((content) => equal(content.user, userId)).map((content) => content._id);
 		return {
-			_id,
-			contents: usersContentIds,
+			lessonId,
+			contentIds: usersContentIds,
 		};
 	});
-	Object.assign(trashBinData, { lessonIds: lessonsWithUserContentsIds });
+	Object.assign(trashBinData, lessonIdsWithUserContentsIds);
 };
 
 const validateParams = (userId) => {
@@ -41,13 +41,13 @@ const addCoursesToData = (coursesAggreate = [], data) => {
 	const student = coursesAggreate.filter((course) => course.student).map((course) => course._id);
 	const teacher = coursesAggreate.filter((course) => course.teacher).map((course) => course._id);
 	const substituteTeacher = coursesAggreate.filter((course) => course.substituteTeacher).map((course) => course._id);
-	Object.assign(data, { courseIds: { student, teacher, substituteTeacher } });
+	Object.assign(data, { student, teacher, substituteTeacher });
 };
 
 const deleteUserDataFromCourses = async (userId) => {
 	validateParams(userId);
 
-	const data = [];
+	const data = {};
 	const courses = await coursesRepo.getCoursesWithUser(userId);
 	let complete = true;
 	if (courses.length !== 0) {
@@ -59,7 +59,7 @@ const deleteUserDataFromCourses = async (userId) => {
 
 const addCourseGroupData = (courseGroupdata = [], data) => {
 	const courseGroupIds = courseGroupdata.map((courseGroup) => courseGroup._id);
-	Object.assign(data, courseGroupIds);
+	data.push(...courseGroupIds);
 };
 
 const deleteUserDataFromCourseGroups = async (userId) => {
