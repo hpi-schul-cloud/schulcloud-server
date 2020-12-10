@@ -110,24 +110,16 @@ class LDAPSchoolSyncer extends Syncer {
 
 	createUserAndAccount(idmUser) {
 		return this.app
-			.service('registrationPins')
+			.service('users')
 			.create({
+				firstName: idmUser.firstName,
+				lastName: idmUser.lastName,
+				schoolId: this.school._id,
 				email: idmUser.email,
-				verified: true,
-				silent: true,
+				ldapDn: idmUser.ldapDn,
+				ldapId: idmUser.ldapUUID,
+				roles: idmUser.roles,
 			})
-			.then((registrationPin) =>
-				this.app.service('users').create({
-					pin: registrationPin.pin,
-					firstName: idmUser.firstName,
-					lastName: idmUser.lastName,
-					schoolId: this.school._id,
-					email: idmUser.email,
-					ldapDn: idmUser.ldapDn,
-					ldapId: idmUser.ldapUUID,
-					roles: idmUser.roles,
-				})
-			)
 			.then((user) =>
 				accountModel.create({
 					userId: user._id,
