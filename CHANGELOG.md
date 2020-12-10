@@ -34,6 +34,7 @@ properly closing the session, and using the correct readPreference (everything e
 ### Added
 
 - SC-7734 - Added a hook that takes care of merlin content to generate valid urls for users
+- SC-7483 - Updating terms of use for all users for each instance separately
 
 ## [25.3.1]
 
