@@ -92,6 +92,8 @@ describe('in "task.repo" the function', () => {
 		app = await appPromise;
 		testHelper = testObjects(app);
 		server = await app.listen(0);
+		// cleanup unexpected homework states that create from other tests and not cleanup, or added by seed
+		await db.cleanupUnexpectedHomeworks();
 	});
 
 	afterEach(async () => {
@@ -216,10 +218,6 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle unexpected inputs', async () => {
-			// cleanup null and undefined matched homeworks, because seed data include invalid data
-			const result = await db.cleanupUnexpectedHomeworks();
-			expect(result.ok, 'but cleanup before must work').to.equal(1);
-
 			// must execute step by step that errors not mixed
 			const resultNull = await findPublicHomeworksFromUser(null);
 			expect(resultNull, 'when input is null').to.be.an('array').with.lengthOf(0);
