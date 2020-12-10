@@ -11,6 +11,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8060 - increase unit test coverage for lernstore counties
 
+## [25.3.5]
+
+### Changed
+
+- SC-8149 - no longer require a registrationPin for internal calls
+
 ## [25.3.4]
 
 ### Changed
