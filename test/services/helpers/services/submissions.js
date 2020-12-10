@@ -9,7 +9,7 @@ const create = (opt) => async (data) => {
 
 	const submission = await submissionModel.create(data);
 	createdSubmissions.push(submission._id);
-	return submission;
+	return submission.toObject();
 };
 
 const cleanup = () => {

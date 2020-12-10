@@ -65,8 +65,12 @@ const replaceUserInPublicHomeworks = async (userId, replaceUserId) => {
 
 /** Submissions */
 
-const groupSubmissionQuery = (userId) => ({ $and: [{ teamMembers: userId }, { teamMembers: { $ne: null } }] });
-const singleSubmissionQuery = (userId) => ({ $and: [{ studentId: userId }, { teamMembers: null }] });
+const groupSubmissionQuery = (userId) => ({
+	$and: [{ teamMembers: userId }, { teamMembers: { $exists: true, $not: { $size: 0 } } }],
+});
+const singleSubmissionQuery = (userId) => ({
+	$and: [{ studentId: userId }, { teamMembers: { $exists: true, $size: 0 } }],
+});
 
 /**
  * @param {BSON|BsonString} userId
@@ -93,7 +97,7 @@ const removeGroupSubmissionsConnectionsForUser = async (userId) => {
 
 const deleteSingleSubmissionsFromUser = async (userId) => {
 	validateUserIdIsNotUnexpectedInput(userId);
-	const result = await SubmissionModel.removeMany(singleSubmissionQuery(userId)).lean().exec();
+	const result = await SubmissionModel.deleteMany(singleSubmissionQuery(userId)).lean().exec();
 	return mapStatus(result);
 };
 

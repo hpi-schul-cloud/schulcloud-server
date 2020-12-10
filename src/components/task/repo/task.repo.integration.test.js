@@ -71,12 +71,14 @@ const createHomeworks = async (testHelper) => {
 	};
 };
 
+// TODO: simplify to find all and in test match id
 const groupSubmissionQuery = (userId) => ({ $and: [{ teamMembers: userId }, { teamMembers: { $ne: null } }] });
 const matchId = (ressource) => ({ _id }) => _id.toString() === ressource._id.toString();
 
 const db = {};
 db.findHomeworks = (userId) => HomeworkModel.find({ teacherId: userId }).lean().exec();
 db.findGroupSubmissions = (userId) => SubmissionModel.find(groupSubmissionQuery(userId)).lean().exec();
+db.findSubmissions = (userId) => SubmissionModel.find({ stundentId: userId }).lean().exec();
 db.cleanupUnexpectedHomeworks = () =>
 	HomeworkModel.deleteMany({ $or: [{ teacherId: null }, { teacherId: undefined }] })
 		.lean()
@@ -144,10 +146,6 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle unexpected inputs', async () => {
-			const userId = testHelper.generateObjectId();
-
-			await testHelper.createTestHomework({ teacherId: userId });
-
 			// must execute step by step that errors not mixed
 			const resultNull = await findPrivateHomeworksFromUser(null);
 			expect(resultNull, 'when input is null').to.be.an('array').with.lengthOf(0);
@@ -223,12 +221,7 @@ describe('in "task.repo" the function', () => {
 			const result = await db.cleanupUnexpectedHomeworks();
 			expect(result.ok, 'but cleanup before must work').to.equal(1);
 
-			const userId = testHelper.generateObjectId();
-
-			await testHelper.createTestHomework({ teacherId: userId });
-
 			// must execute step by step that errors not mixed
-			// TODO: how to validate if no homework exist and add by other test that can match, for all unexpected input tests
 			const resultNull = await findPublicHomeworksFromUser(null);
 			expect(resultNull, 'when input is null').to.be.an('array').with.lengthOf(0);
 
@@ -306,10 +299,6 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle unexpected inputs', async () => {
-			const userId = testHelper.generateObjectId();
-
-			await testHelper.createTestHomework({ teacherId: userId });
-
 			// must execute step by step that errors not mixed
 			try {
 				await deletePrivateHomeworksFromUser(null);
@@ -411,7 +400,6 @@ describe('in "task.repo" the function', () => {
 			const userId = testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: userId });
-
 			// must execute step by step that errors not mixed
 			try {
 				await replaceUserInPublicHomeworks(null, replaceUserId);
@@ -450,7 +438,6 @@ describe('in "task.repo" the function', () => {
 			const userId = testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: userId });
-
 			// must execute step by step that errors not mixed
 			const resultNull = await replaceUserInPublicHomeworks(userId, null);
 			expect(resultNull, 'when input is null').to.eql({ success: 1, modified: 1 });
@@ -539,10 +526,6 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle unexpected inputs', async () => {
-			const userId = testHelper.generateObjectId();
-
-			await testHelper.createTestSubmission({ studentId: userId, teamMebers: [userId] });
-
 			// must execute step by step that errors not mixed
 			const resultNull = await findGroupSubmissionsFromUser(null);
 			expect(resultNull, 'when input is null').to.be.an('array').with.lengthOf(0);
@@ -620,10 +603,6 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle unexpected inputs', async () => {
-			const userId = testHelper.generateObjectId();
-
-			await testHelper.createTestSubmission({ studentId: userId, teamMebers: [userId] });
-
 			// must execute step by step that errors not mixed
 			try {
 				await removeGroupSubmissionsConnectionsForUser(null);
@@ -659,7 +638,136 @@ describe('in "task.repo" the function', () => {
 		});
 	});
 
-	// TODO: findSingleSubmissionsFromUser
+	describe('findSingleSubmissionsFromUser', () => {
+		it('should find all submissions', async () => {
+			const userId = testHelper.generateObjectId();
+			const otherUserId = testHelper.generateObjectId();
 
-	// TODO: deleteSingleSubmissionsFromUser
+			const submissionProm = testHelper.createTestSubmission({ studentId: userId });
+			const otherSubmissionProm = testHelper.createTestSubmission({ studentId: otherUserId });
+
+			const [submission] = await Promise.all([submissionProm, otherSubmissionProm]);
+
+			const result = await findSingleSubmissionsFromUser(userId);
+			expect(result).to.be.an('array').with.lengthOf(1);
+			expect(result.some(matchId(submission))).to.be.true;
+		});
+
+		it('should handle no submission exist without errors', async () => {
+			const userId = testHelper.generateObjectId();
+			const otherUserId = testHelper.generateObjectId();
+
+			await testHelper.createTestSubmission({ studentId: otherUserId });
+			const result = await findSingleSubmissionsFromUser(userId);
+			expect(result).to.be.an('array').with.lengthOf(0);
+		});
+
+		it('should handle no user matched without errors', async () => {
+			const userId = testHelper.generateObjectId();
+			const otherUserId = testHelper.generateObjectId();
+
+			await testHelper.createTestSubmission({ studentId: otherUserId });
+			const result = await findSingleSubmissionsFromUser(userId);
+			expect(result).to.be.an('array').with.lengthOf(0);
+		});
+
+		it('should handle unexpected inputs', async () => {
+			// must execute step by step that errors not mixed
+			const resultNull = await findSingleSubmissionsFromUser(null);
+			expect(resultNull, 'when input is null').to.be.an('array').with.lengthOf(0);
+
+			const resultUndefined = await findSingleSubmissionsFromUser(undefined);
+			expect(resultUndefined, 'when input is undefined').to.be.an('array').with.lengthOf(0);
+
+			try {
+				await findSingleSubmissionsFromUser('123');
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "123" at path "studentId" for model "submission"'
+				);
+			}
+
+			try {
+				await findSingleSubmissionsFromUser(() => {});
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "studentId" for model "submission"'
+				);
+			}
+		});
+	});
+
+	describe('deleteSingleSubmissionsFromUser', () => {
+		it('should remove all submissions', async () => {
+			const userId = testHelper.generateObjectId();
+			const otherUserId = testHelper.generateObjectId();
+
+			const submissionProm = testHelper.createTestSubmission({ studentId: userId });
+			const otherSubmissionProm = testHelper.createTestSubmission({ studentId: otherUserId });
+
+			const [submission, otherSubmission] = await Promise.all([submissionProm, otherSubmissionProm]);
+
+			const result = await deleteSingleSubmissionsFromUser(userId);
+			expect(result).to.eql({ success: 1, modified: 1 });
+
+			const dbResult = await db.findSubmissions(userId);
+			expect(dbResult.some(matchId(submission))).to.be.false;
+			expect(dbResult.some(matchId(otherSubmission))).to.be.false;
+		});
+
+		it('should handle no submission exist without errors', async () => {
+			const userId = testHelper.generateObjectId();
+			const otherUserId = testHelper.generateObjectId();
+
+			await testHelper.createTestSubmission({ studentId: otherUserId });
+			const result = await deleteSingleSubmissionsFromUser(userId);
+			expect(result).to.eql({ success: 1, modified: 0 });
+		});
+
+		it('should handle no user matched without errors', async () => {
+			const userId = testHelper.generateObjectId();
+			const otherUserId = testHelper.generateObjectId();
+
+			await testHelper.createTestSubmission({ studentId: otherUserId });
+			const result = await deleteSingleSubmissionsFromUser(userId);
+			expect(result).to.eql({ success: 1, modified: 0 });
+		});
+
+		it('should handle unexpected inputs', async () => {
+			// must execute step by step that errors not mixed
+			try {
+				await deleteSingleSubmissionsFromUser(null);
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is null').to.equal('The parameter "userId" is not defined.');
+			}
+
+			try {
+				await deleteSingleSubmissionsFromUser(undefined);
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is undefined').to.equal('The parameter "userId" is not defined.');
+			}
+
+			try {
+				await deleteSingleSubmissionsFromUser('123');
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "123" at path "studentId" for model "submission"'
+				);
+			}
+
+			try {
+				await deleteSingleSubmissionsFromUser(() => {});
+				throw new Error('test failed');
+			} catch (err) {
+				expect(err.message, 'when input is not bson string').to.equal(
+					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "studentId" for model "submission"'
+				);
+			}
+		});
+	});
 });
