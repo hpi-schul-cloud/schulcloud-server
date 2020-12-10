@@ -464,7 +464,7 @@
 		"FEATURE_PROMETHEUS_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Enable prometheus api metrics, if enabled, PROMETHEUS must be defined."
+			"description": "Feature flag to enable prometheus api metrics"
 		},
 		"FEATURE_SHOW_VERSION_ENABLED": {
 			"type": "boolean",
@@ -475,23 +475,33 @@
 			"type": "object",
 			"description": "Prometheus metrics options used by prometheus-api-metrics",
 			"properties": {
-				"METRICS_PATH": {
-					"type": "string",
-					"default": "/metrics",
-					"description": "public metrics route",
-					"pattern": ".*(?<!/)$"
+				"COLLECT_DEFAULT_METRICS": {
+					"type": "boolean",
+					"default": true,
+					"description": "include default nodejs (heap-/eventloop/...) and process related metrics"
 				},
-				"DURATION_BUCKETS_SECONDS": {
-					"type": "array",
-					"items": {
-						"type": "number",
-						"minimum": 0
-					},
-					"default": [0.01, 0.05, 0.1, 0.2, 0.5, 0.75, 1, 3, 5, 8, 15, 30, 60, 120],
-					"description": "Times to define buckets by seconds which contain all requests with max. the given amount of time. Must be in ascending order. "
+				"INCLUDE_STATUS_CODE": {
+					"type": "boolean",
+					"default": true,
+					"description": "include http status code for http_request_duration_seconds metric"
+				},
+				"INCLUDE_METHOD": {
+					"type": "boolean",
+					"default": true,
+					"description": "include http method type for http_request_duration_seconds metric"
+				},
+				"INCLUDE_PATH": {
+					"type": "boolean",
+					"default": true,
+					"description": "include path with id's replaced for http_request_duration_seconds metric"
+				},
+				"METRIC_TYPE": {
+					"type": "string",
+					"enum": ["summary", "histogram"],
+					"description": "metric types supported for http_request_duration_seconds metric"
 				}
 			},
-			"required": ["METRICS_PATH", "DURATION_BUCKETS_SECONDS"]
+			"required": ["COLLECT_DEFAULT_METRICS", "INCLUDE_STATUS_CODE", "INCLUDE_METHOD", "INCLUDE_PATH", "METRIC_TYPE"]
 		},
 		"REQUEST_TIMEOUT": {
 			"type": "integer",
