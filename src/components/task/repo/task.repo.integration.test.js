@@ -71,14 +71,13 @@ const createHomeworks = async (testHelper) => {
 	};
 };
 
-// TODO: simplify to find all and in test match id
-const groupSubmissionQuery = (userId) => ({ $and: [{ teamMembers: userId }, { teamMembers: { $ne: null } }] });
 const matchId = (ressource) => ({ _id }) => _id.toString() === ressource._id.toString();
 
 const db = {};
 db.findHomeworks = (userId) => HomeworkModel.find({ teacherId: userId }).lean().exec();
-db.findGroupSubmissions = (userId) => SubmissionModel.find(groupSubmissionQuery(userId)).lean().exec();
+db.findGroupSubmissions = (userId) => SubmissionModel.find({ teamMembers: userId }).lean().exec();
 db.findSubmissions = (userId) => SubmissionModel.find({ stundentId: userId }).lean().exec();
+// TODO find solution without cleanup it before
 db.cleanupUnexpectedHomeworks = () =>
 	HomeworkModel.deleteMany({ $or: [{ teacherId: null }, { teacherId: undefined }] })
 		.lean()
