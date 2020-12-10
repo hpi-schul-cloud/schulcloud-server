@@ -3,12 +3,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const { connect, close } = require('../src/utils/database');
 const { countySchema } = require('../src/services/federalState/countyModel.js');
 const { encryptSecretMerlin } = require('../src/services/edusharing/helpers');
-
-const countiesNi = require('./helpers/secret_counties_Ni.json');
-
-if (Configuration.get('FEATURE_ES_MERLIN_ENABLED') === false) {
-	throw new Error('FEATURE_ES_MERLIN_ENABLED is false');
-}
+const logger = require('../src/logger');
 
 const federalStateId = '0000b186816abba584714c58'; // Niedersachsen
 
@@ -41,7 +36,23 @@ const updateSchoolCounty = async (county) => {
 	}
 };
 
+// eslint-disable-next-line consistent-return
 const importMerlinCredentials = async () => {
+	let countiesNi;
+	try {
+		// eslint-disable-next-line global-require
+		countiesNi = require('./helpers/secret_counties_Ni.json');
+	} catch (err) {
+		logger.error('migration will be skipped: could not find ./helpers/secret_counties_Ni_.json');
+		return null;
+	}
+	if (Configuration.get('FEATURE_ES_MERLIN_ENABLED') === false) {
+		logger.error('migration will be skipped: flag FEATURE_ES_MERLIN_ENABLED is not set to true');
+		return null;
+	}
+	if (Configuration.has('SECRET_ES_MERLIN_KEY') === false) {
+		throw new Error('You need to set env SECRET_ES_MERLIN_KEY to encrypt');
+	}
 	const federalState = await federalStateModel.findById(federalStateId);
 	const counties = [];
 	if (federalState.counties.length) {
