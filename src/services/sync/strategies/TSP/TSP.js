@@ -64,14 +64,8 @@ const getEmail = (user) => `${getUsername(user)}@schul-cloud.org`;
 const createUserAndAccount = async (app, userOptions, roles, systemId) => {
 	const username = getUsername(userOptions);
 	const email = getEmail(userOptions);
-	const { pin } = await app.service('registrationPins').create({
-		email,
-		verified: true,
-		silent: true,
-	});
 	const user = await app.service('users').create({
 		...userOptions,
-		pin,
 		email,
 		roles,
 	});
