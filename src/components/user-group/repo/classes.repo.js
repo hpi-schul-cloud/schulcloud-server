@@ -1,6 +1,6 @@
 const { classModel } = require('../../../services/user-group/model');
-const { GeneralError, BadRequest } = require('../../../errors');
-const { toString: idToString } = require('../../../helper/compare').ObjectId;
+const { ValidationError, BadRequest } = require('../../../errors');
+const { isValid: isValidObjectId, toString: idToString } = require('../../../helper/compare').ObjectId;
 
 const getUserQuery = (userId, classRole) => {
 	if (classRole === 'student') {
@@ -11,6 +11,10 @@ const getUserQuery = (userId, classRole) => {
 	}
 
 	throw new BadRequest(`User role ${classRole} is not valid role for classes`);
+};
+
+const validateRemoveUserFromClassesParams = (userId) => {
+	if (!isValidObjectId(userId)) throw new ValidationError('a valid objectId is required', { userId });
 };
 
 const filterClassMember = (userId) => ({
@@ -87,6 +91,7 @@ const findClassesByTeacher = async (teacherId) => {
  * @returns: {Object} Update Many Result Object
  */
 const removeUserFromClasses = async (userId) => {
+	validateRemoveUserFromClassesParams(userId);
 	const filter = filterClassMember(userId);
 	const updateResult = await classModel.updateMany(filter, { $pull: { teacherIds: userId, userIds: userId } }).exec();
 

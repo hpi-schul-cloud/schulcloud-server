@@ -31,7 +31,7 @@ const deleteUserDataFromClasses = async (userId) => {
 
 // public
 const deleteUserData = () => {
-	return deleteUserDataFromClasses;
+	return [deleteUserDataFromClasses];
 };
 
 module.exports = { deleteUserData };

@@ -3,6 +3,8 @@ const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 const { classesRepo } = require('.');
+const { toString: idToString } = require('../../../helper/compare').ObjectId;
+const { ValidationError } = require('../../../errors');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -90,7 +92,6 @@ describe('class repo', () => {
 
 			const result = await classesRepo.removeUserFromClasses(student._id);
 
-			expect(result.n).to.be.equal(1);
 			expect(result.nModified).to.be.equal(1);
 		});
 
@@ -102,7 +103,7 @@ describe('class repo', () => {
 			await classesRepo.removeUserFromClasses(student._id);
 			const result = await classesRepo.findClassById(testClass._id);
 
-			expect(result.userIds).to.not.include(student._id);
+			expect(result.userIds.map(idToString)).to.not.include(idToString(student._id));
 		});
 
 		it('the class should not contain the teacher after delete', async () => {
@@ -113,16 +114,23 @@ describe('class repo', () => {
 			await classesRepo.removeUserFromClasses(teacher._id);
 			const result = await classesRepo.findClassById(testClass._id);
 
-			expect(result.teacherIds).to.not.include(teacher._id);
+			expect(result.teacherIds.map(idToString)).to.not.include(idToString(teacher._id));
 		});
 
-		it("when the function is called with valid classes which don't contain the user, it throws a bad request error", async () => {
+		it('should throw ValidationError if called with no userId', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool();
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			await testObjects.createTestClass({ teacherIds: [teacher._id], schoolId });
+
+			expect(classesRepo.removeUserFromClasses()).to.eventually.throw(new ValidationError());
+		});
+
+		it('should not modify anything if called for user with no class assigned', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
 
 			const result = await classesRepo.removeUserFromClasses(student._id);
 
-			expect(result.n).to.be.equal(0);
 			expect(result.nModified).to.be.equal(0);
 		});
 	});

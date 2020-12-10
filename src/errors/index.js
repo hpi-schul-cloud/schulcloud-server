@@ -220,9 +220,7 @@ class ApplicationError extends Error {
 	}
 }
 
-class ValidationError extends ApplicationError {
-
-}
+class ValidationError extends ApplicationError {}
 
 class SilentError extends ApplicationError {
 	constructor(message) {

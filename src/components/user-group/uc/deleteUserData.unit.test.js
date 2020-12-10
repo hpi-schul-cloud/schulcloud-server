@@ -43,13 +43,15 @@ describe('delete class user data usecase', () => {
 	describe('delete class user data uc', () => {
 		it('should return a function', async () => {
 			const deleteUserDataFromClasses = deleteUserData.deleteUserData();
-			expect(deleteUserDataFromClasses).to.be.a('function');
+			expect(deleteUserDataFromClasses).to.be.an('Array');
+			expect(deleteUserDataFromClasses.length).to.be.equal(1);
+			expect(deleteUserDataFromClasses[0]).to.be.a('function');
 		});
 
 		it('should return a valid result (trashbin) object', async () => {
 			const { getClassesStub, removeClassesStub } = initStubs({ classId: CLASS_ID, isStudent: true, isTeacher: true });
 
-			const deleteUserDataFromClasses = deleteUserData.deleteUserData();
+			const deleteUserDataFromClasses = deleteUserData.deleteUserData()[0];
 			const result = await deleteUserDataFromClasses(USER_ID);
 			getClassesStub.restore();
 			removeClassesStub.restore();
@@ -70,7 +72,7 @@ describe('delete class user data usecase', () => {
 		it('should return an empty result (trashbin) object, for user with no class assigned', async () => {
 			const { getClassesStub, removeClassesStub } = initStubs({});
 
-			const deleteUserDataFromClasses = deleteUserData.deleteUserData();
+			const deleteUserDataFromClasses = deleteUserData.deleteUserData()[0];
 			const result = await deleteUserDataFromClasses(USER_ID_WITH_NO_CLASS);
 			getClassesStub.restore();
 			removeClassesStub.restore();
@@ -82,7 +84,7 @@ describe('delete class user data usecase', () => {
 		});
 
 		it('should throw an error if called with an invalid ObjectId', () => {
-			const deleteUserDataFromClasses = deleteUserData.deleteUserData();
+			const deleteUserDataFromClasses = deleteUserData.deleteUserData()[0];
 			expect(deleteUserDataFromClasses('NOT_AN_ID')).to.eventually.throw(new ValidationError());
 		});
 	});
