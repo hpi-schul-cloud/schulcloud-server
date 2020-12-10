@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [25.3.5]
+
+### Changed
+
+- SC-8149 - no longer require a registrationPin for internal calls
+
 ## [25.3.4]
 
 ### Changed
