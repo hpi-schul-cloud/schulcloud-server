@@ -11,7 +11,7 @@ const {
 } = require('../repo/task.repo');
 
 const checkStatus = (status) => {
-	if (status.success !== 1 || status.count !== status.modified) {
+	if (status.success !== 1) { // || status.count !== status.modified
 		// TODO: who is really look into logs for this?
 		logger.warning('User deletion task has some miss matches.', status);
 	}

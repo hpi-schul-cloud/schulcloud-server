@@ -3,8 +3,19 @@ const { SubmissionModel, HomeworkModel } = require('../db');
 const mapStatus = ({ ok, deletedCount, n, nModified }) => ({
 	success: ok,
 	modified: deletedCount === undefined ? nModified : deletedCount,
-	count: n,
+	// count: n,
 });
+
+/**
+ * 	delete/modified operations should not allow null and undefined matches
+ * @param {BSON|BsonString} userId
+ * @throw {Error} for undefined and null
+ */
+const validateUserIdIsNotUnexpectedInput = (userId) => {
+	if (!userId || userId === null) {
+		throw new Error('The parameter "userId" is not defined.', userId);
+	}
+};
 
 /** Homeworks */
 const privateHomeworkQuery = (userId) => ({ private: true, teacherId: userId });
@@ -35,6 +46,7 @@ const findPublicHomeworksFromUser = async (userId, select) => {
  * @return {Boolean}
  */
 const deletePrivateHomeworksFromUser = async (userId) => {
+	validateUserIdIsNotUnexpectedInput(userId);
 	const result = await HomeworkModel.deleteMany(privateHomeworkQuery(userId)).lean().exec();
 	return mapStatus(result);
 };
@@ -44,6 +56,7 @@ const deletePrivateHomeworksFromUser = async (userId) => {
  * @return {Boolean}
  */
 const replaceUserInPublicHomeworks = async (userId, replaceUserId) => {
+	validateUserIdIsNotUnexpectedInput(userId);
 	const result = await HomeworkModel.updateMany(publicHomeworkQuery(userId), { $set: { teacherId: replaceUserId } })
 		.lean()
 		.exec();
@@ -71,6 +84,7 @@ const findSingleSubmissionsFromUser = async (userId, select) => {
 };
 
 const removeGroupSubmissionsConnectionsForUser = async (userId) => {
+	validateUserIdIsNotUnexpectedInput(userId);
 	const result = await SubmissionModel.updateMany(groupSubmissionQuery(userId), { $pull: { teamMembers: userId } })
 		.lean()
 		.exec();
@@ -78,6 +92,7 @@ const removeGroupSubmissionsConnectionsForUser = async (userId) => {
 };
 
 const deleteSingleSubmissionsFromUser = async (userId) => {
+	validateUserIdIsNotUnexpectedInput(userId);
 	const result = await SubmissionModel.removeMany(singleSubmissionQuery(userId)).lean().exec();
 	return mapStatus(result);
 };
