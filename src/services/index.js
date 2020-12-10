@@ -34,6 +34,7 @@ const consent = require('./consent');
 const oauth2 = require('./oauth2');
 const roster = require('./roster');
 const ldap = require('./ldap');
+const ldapConfig = require('./ldap-config');
 const sync = require('./sync');
 const datasources = require('./datasources');
 const rocketChat = require('./rocketChat');
@@ -50,6 +51,7 @@ const etherpad = require('./etherpad');
 const storageProvider = require('./storageProvider');
 const activation = require('./activation');
 const config = require('./config');
+const version = require('./versionService');
 const docs = require('./docs');
 
 module.exports = function initializeServices() {
@@ -90,6 +92,7 @@ module.exports = function initializeServices() {
 	app.configure(pseudonym);
 	app.configure(consent);
 	app.configure(ldap);
+	app.configure(ldapConfig);
 	app.configure(sync);
 	app.configure(me);
 	app.configure(help);
@@ -108,6 +111,7 @@ module.exports = function initializeServices() {
 	app.configure(storageProvider);
 	app.configure(activation);
 	app.configure(config);
+	app.configure(version);
 
 	// initialize events
 	newsEvents.configure(app);
