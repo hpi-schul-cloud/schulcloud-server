@@ -5,14 +5,6 @@ class RegistrationPinFacade {
 		this.app = app;
 	}
 
-	async getRegistrationPinsForUser(email) {
-		return registrationPinUc.getRegistrationPinsForUser(email);
-	}
-
-	async deleteRegistrationPins(pinIds) {
-		return registrationPinUc.deleteRegistrationPins(pinIds);
-	}
-
 	async deleteRegistrationPinsByEmail(email) {
 		return registrationPinUc.deleteRegistrationPinsByMail(email);
 	}
