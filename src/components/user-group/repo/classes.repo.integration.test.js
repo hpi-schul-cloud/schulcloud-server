@@ -9,7 +9,7 @@ const { ValidationError } = require('../../../errors');
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-describe.only('class repo', () => {
+describe('class repo', () => {
 	let app;
 	let server;
 
