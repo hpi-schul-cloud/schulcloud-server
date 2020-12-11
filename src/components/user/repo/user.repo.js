@@ -29,11 +29,10 @@ const replaceUserWithTombstone = async (id, replaceData = {}) => {
 	return getUser(id);
 };
 
-const getUserRoles = async (_id) => {
+const getUserWithRoles = async (_id) => {
 	const user = await User.findOne({
 		_id,
 	})
-		.select('roles')
 		.populate('roles')
 		.lean()
 		.exec();
@@ -41,11 +40,11 @@ const getUserRoles = async (_id) => {
 		throw new NotFound('no such user');
 	}
 
-	return user.roles;
+	return user;
 };
 
 module.exports = {
 	getUser,
-	getUserRoles,
+	getUserWithRoles,
 	replaceUserWithTombstone,
 };
