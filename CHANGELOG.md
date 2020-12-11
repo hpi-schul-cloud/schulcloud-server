@@ -10,6 +10,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Unreleased
 
 - SC-8060 - increase unit test coverage for lernstore counties
+- SC-8179 - repaired unit test
 
 ## [25.3.5]
 
