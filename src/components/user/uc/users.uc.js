@@ -72,22 +72,45 @@ const replaceUserWithTombstone = async (id) => {
 	return { success: true };
 };
 
+/**
+ * Checks if the user defined by param3.account.userId has the right to perform the action defined in permissionAction on the user defined in id
+ *
+ * @param {*} id ID of the user to be effected by the request
+ * @param {*} roleName the role name that the effected user should have
+ * @param {*} permissionAction the action that is to be performed (CREATE, EDIT, DELETE)
+ * @param {*} param3 needs to contain account.userId, which is the ID of the user issuing the request
+ */
 const checkPermissions = async (id, roleName, permissionAction, { account }) => {
-	const userToBeDeleted = await userRepo.getUserWithRoles(id);
+	const userToBeEffected = await userRepo.getUserWithRoles(id);
 	const currentUser = await userRepo.getUserWithRoles(account.userId);
-	const neededPermission = `${roleName}_${permissionAction}`;
 
 	let grantPermission = true;
-	// the deleted user's role fits the rolename for the route
-	grantPermission = grantPermission && userToBeDeleted.roles.some((role) => role.name.toUpperCase() === roleName);
+	// the effected user's role fits the rolename for the route
+	grantPermission = grantPermission && userToBeEffected.roles.some((role) => role.name.toUpperCase() === roleName);
 	// users must be on same school
-	grantPermission = grantPermission && equalIds(userToBeDeleted.schoolId, currentUser.schoolId);
-	// current user must have the permission
-	grantPermission =
-		grantPermission &&
-		currentUser.roles.some((role) => role.permissions.some((permission) => permission === neededPermission));
+	grantPermission = grantPermission && equalIds(userToBeEffected.schoolId, currentUser.schoolId);
 
-	// TODO check full coverage of delete permissions for all of the users roles
+	// current user must have the permission
+	userToBeEffected.roles.forEach((userRoleToBeEffected) => {
+		if (userRoleToBeEffected.name === 'student') {
+			grantPermission =
+				grantPermission &&
+				currentUser.roles.some((role) =>
+					role.permissions.some((permission) => permission === `STUDENT_${permissionAction}`)
+				);
+		}
+		if (userRoleToBeEffected.name === 'teacher') {
+			grantPermission =
+				grantPermission &&
+				currentUser.roles.some((role) =>
+					role.permissions.some((permission) => permission === `TEACHER_${permissionAction}`)
+				);
+		}
+		if (userRoleToBeEffected.name === 'administrator') {
+			grantPermission = grantPermission && currentUser.roles.some((role) => role.name === 'superhero');
+		}
+	});
+
 	if (!grantPermission) {
 		throw new Forbidden(`You don't have permissions to perform this action`);
 	}
