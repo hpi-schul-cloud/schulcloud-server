@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "25.3.0",
+	"version": "25.4.0",
 	"homepage": "https://schul-cloud.org",
 	"main": "src/",
 	"keywords": [
@@ -75,7 +75,7 @@
 		"disposable-email-domains": "^1.0.56",
 		"es6-promisify": "^6.0.1",
 		"express": "^4.14.0",
-		"express-openapi-validator": "^4.2.0",
+		"express-openapi-validator": "^4.7.0",
 		"feathers-hooks-common": "^5.0.3",
 		"feathers-mongoose": "^6.3.0",
 		"feathers-swagger": "^1.1.0",

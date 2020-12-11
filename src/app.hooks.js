@@ -139,7 +139,9 @@ const leadTimeDetection = (context) => {
 			}
 			const error = new SlowQuery(`Slow query warning at route ${context.path}`, info);
 			logger.error(error);
-			Sentry.captureException(error);
+			if (Configuration.has('SENTRY_DSN')) {
+				Sentry.captureException(error);
+			}
 		}
 	}
 };
@@ -157,8 +159,8 @@ function setupAppHooks(app) {
 
 	const after = {
 		all: [],
-		find: [iff(isProvider('external'), [sanitizeDataHook])],
-		get: [iff(isProvider('external'), [sanitizeDataHook])],
+		find: [],
+		get: [],
 		create: [],
 		update: [],
 		patch: [],

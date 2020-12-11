@@ -1,9 +1,23 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const request = require('request-promise-native');
+const { getCounty, decryptSecretMerlin } = require('../helpers');
 
 class MerlinTokenGenerator {
 	setup(app) {
 		this.app = app;
+	}
+
+	async getMerlinCredentials(county = null) {
+		if (county && county.merlinUser && county.secretMerlinKey) {
+			return {
+				username: decryptSecretMerlin(county.merlinUser),
+				password: decryptSecretMerlin(county.secretMerlinKey),
+			};
+		}
+		return {
+			username: Configuration.get('SECRET_ES_MERLIN_USERNAME'),
+			password: Configuration.get('SECRET_ES_MERLIN_PW'),
+		};
 	}
 
 	async FIND(data) {
@@ -11,14 +25,20 @@ class MerlinTokenGenerator {
 		if (!Configuration.get('FEATURE_ES_MERLIN_ENABLED')) {
 			return Configuration.get('ES_MERLIN_AUTH_URL');
 		}
-		const url = await this.getMerlinUrl(merlinReference);
+		const { schoolId } = data.authentication.payload;
+		const county = await getCounty(schoolId);
+
+		const url = await this.getMerlinUrl(merlinReference, county);
 		return url;
 	}
 
-	async getMerlinUrl(ref) {
+	async getMerlinUrl(ref, county) {
 		const merlinUri = Configuration.get('ES_MERLIN_AUTH_URL');
 		const query = `?nbc&identifier=${ref}`;
 		const url = merlinUri + query;
+
+		const credentials = await this.getMerlinCredentials(county);
+
 		const options = {
 			method: 'POST',
 			url,
@@ -26,8 +46,8 @@ class MerlinTokenGenerator {
 				'Content-Type': 'application/x-www-form-urlencoded',
 			},
 			form: {
-				username: Configuration.get('SECRET_ES_MERLIN_USERNAME'),
-				password: Configuration.get('SECRET_ES_MERLIN_PW'),
+				username: credentials.username,
+				password: credentials.password,
 			},
 		};
 		try {
