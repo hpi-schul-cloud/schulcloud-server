@@ -11,6 +11,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8060 - increase unit test coverage for lernstore counties
 
+## [25.3.5]
+
+### Changed
+
+- SC-8149 - no longer require a registrationPin for internal calls
+
 ## [25.3.4]
 
 ### Changed
@@ -34,6 +40,7 @@ properly closing the session, and using the correct readPreference (everything e
 ### Added
 
 - SC-7734 - Added a hook that takes care of merlin content to generate valid urls for users
+- SC-7483 - Updating terms of use for all users for each instance separately
 
 ## [25.3.1]
 
