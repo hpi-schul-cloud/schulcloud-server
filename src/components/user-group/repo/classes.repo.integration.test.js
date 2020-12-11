@@ -3,13 +3,13 @@ const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 const { classesRepo } = require('.');
-const { toString: idToString } = require('../../../helper/compare').ObjectId;
+const { equal: equalIds, toString: idToString } = require('../../../helper/compare').ObjectId;
 const { ValidationError } = require('../../../errors');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-describe('class repo', () => {
+describe.only('class repo', () => {
 	let app;
 	let server;
 
@@ -34,7 +34,7 @@ describe('class repo', () => {
 			const classes = await classesRepo.getClassesForUser(user._id);
 
 			expect(classes.length, 'only one class expected').to.be.equal(1);
-			expect(classes[0]._id).to.deep.equal(testClass._id);
+			expect(equalIds(classes[0]._id, testClass._id)).to.be.true;
 			expect(classes[0].student, 'Student role expected').to.be.true;
 			expect(classes[0].teacher, 'Teacher role expected').to.be.true;
 		});
@@ -54,7 +54,7 @@ describe('class repo', () => {
 
 			const classes = await classesRepo.findClassesByTeacher(teacher._id);
 
-			expect(classes[0]._id).to.deep.equal(testClass._id);
+			expect(equalIds(classes[0]._id, testClass._id)).to.be.true;
 			expect(classes[0].teacherIds[0]).to.deep.equal(teacher._id);
 		});
 
@@ -73,7 +73,7 @@ describe('class repo', () => {
 
 			const classes = await classesRepo.findClassesByStudent(student._id);
 
-			expect(classes[0]._id).to.deep.equal(testClass._id);
+			expect(equalIds(classes[0]._id, testClass._id)).to.be.true;
 			expect(classes[0].userIds[0]).to.deep.equal(student._id);
 		});
 
