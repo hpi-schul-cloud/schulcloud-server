@@ -5,7 +5,7 @@ class ClassesFacade {
 		this.app = app;
 	}
 
-	async deleteUserData(userContext) {
+	async deleteUserData(params) {
 		// TODO permissions
 		// userFromSameSchool(userContext.currentUserId, userIdForDeletion);
 		// userHasPermission(userContext.currentUserId, 'DELETE_USER');

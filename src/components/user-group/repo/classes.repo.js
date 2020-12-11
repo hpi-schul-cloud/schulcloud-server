@@ -35,9 +35,8 @@ const classIdWithUserProjection2BO = ({ _id, student, teacher }) => ({
 	teacher: teacher === true,
 });
 
-const findClassesByUserAndClassRole = (userId, classRole) => {
-	return classModel.find(getUserQuery(userId, classRole)).lean().exec();
-};
+const findClassesByUserAndClassRole = (userId, classRole) =>
+	classModel.find(getUserQuery(userId, classRole)).lean().exec();
 
 // PUBLIC
 /**
