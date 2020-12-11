@@ -62,8 +62,7 @@ describe('user service v2', function test() {
 				.set('Authorization', token)
 				.set('Content-type', 'application/json');
 			const response = await request.send();
-			expect(response.status).to.equal(200);
-			expect(response.body.userId).to.deep.equal(user._id.toString());
+			expect(response.status).to.equal(204);
 		});
 
 		it('when a teacher deletes a student, then it throws Forbidden', async () => {
@@ -131,7 +130,7 @@ describe('user service v2', function test() {
 				.set('Authorization', token)
 				.set('Content-type', 'application/json');
 			const response = await request.send();
-			expect(response.status).to.equal(200);
+			expect(response.status).to.equal(204);
 
 			const checkUser = await usersModelService.get(deleteUser._id);
 			expect(checkUser.fullName).to.equal('DELETED USER');
