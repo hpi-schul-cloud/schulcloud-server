@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { FileModel } = require('./db');
+const { filesRepo } = require('.');
 
 const { getFileById, getFilesWithUserPermissionsByUserId, removeFilePermissionsByUserId } = require('./files.repo');
 
@@ -90,7 +90,7 @@ describe('files.repo.integration.test', () => {
 			const result = await removeFilePermissionsByUserId(userId);
 			expect(result).to.be.true;
 
-			const sharedFileCheck = await FileModel.findById(sharedFile._id).lean().exec();
+			const sharedFileCheck = await filesRepo.getFileById(sharedFile._id);
 			expect(sharedFileCheck.permissions.some((permission) => permission.refId.toString() === userId.toString())).to.be
 				.false;
 		});

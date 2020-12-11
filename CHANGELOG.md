@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-7827 - Add deletion concept handling for file permissions.
 - SC-8030 - Setup orchestrator for deleting concept
 - SC-8060 - increase unit test coverage for lernstore counties
 - SC-8179 - repaired unit test
@@ -80,7 +81,6 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 - SC-4667 - Only request and compare LDAP entities that have changed since the last sync (using operational attribute modifyTimestamp with fallback)
 - SC-4667 - Add optional `forceFullSync` option (as get param or json payload) to force a full LDAP sync
 - SC-7499 - add API Specification for public services
-- SC-7827 - Add deletion concept handling for file permissions.
 - SC-7915 - facade locator
 - SC-7571 - solved performance issues - bulk QR-code generation
 - SC-6294 - Introduce Typescript in schulcloud-server
