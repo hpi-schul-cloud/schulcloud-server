@@ -43,7 +43,11 @@ const addShareTokenIfCourseShareable = async (context) => {
 // Generate a new url for material that have merlin as source.
 // The url expires after 2 hours
 const convertMerlinUrl = async (context) => {
-	const hasSchool = context.params?.authentication?.payload?.schoolId;
+	const hasSchool =
+		context.params &&
+		context.params.authentication &&
+		context.params.authentication.payload &&
+		context.params.authentication.payload.schoolId;
 	if (Configuration.get('FEATURE_ES_MERLIN_ENABLED') === false || !hasSchool) {
 		return context;
 	}
