@@ -8,11 +8,16 @@ class MerlinTokenGenerator {
 	}
 
 	async getMerlinCredentials(county = null) {
-		if (county && county.merlinUser && county.secretMerlinKey) {
-			return {
-				username: decryptSecretMerlin(county.merlinUser),
-				password: decryptSecretMerlin(county.secretMerlinKey),
-			};
+		if (county) {
+			const countyCredentials = JSON.parse(Configuration.get('SECRET_ES_MERLIN_COUNTIES_CREDENTIALS')).find(
+				(c) => c.countyId === county.countyId
+			);
+			if (countyCredentials) {
+				return {
+					username: countyCredentials.merlinUser,
+					password: countyCredentials.secretMerlinKey,
+				};
+			}
 		}
 		return {
 			username: Configuration.get('SECRET_ES_MERLIN_USERNAME'),
