@@ -284,9 +284,7 @@
 		"antaresKey" : "NI",
 		"_id": {"$oid":"5fa55eb53f472a2d986c8812"},
 		"countyId": 3256,
-		"name": "Nienburg/Weser",
-		"merlinUser": "dummy-EncryptedMerlinUser",
-		"secretMerlinKey": "dummy-encryptedMerlinKey"
+		"name": "Nienburg/Weser"
 	},
 	"fileStorageType": "awsS3",
 	"currentYear": {
@@ -302,3 +300,4 @@
 	"rssFeeds": [],
 	"__v": 0
 }]
+
