@@ -83,7 +83,7 @@ db.cleanupUnexpectedHomeworks = () =>
 		.lean()
 		.exec();
 
-describe('in "task.repo" the function', () => {
+describe.only('in "task.repo" the function', () => {
 	let app;
 	let server;
 	let testHelper;
@@ -111,9 +111,9 @@ describe('in "task.repo" the function', () => {
 			const result = await findPrivateHomeworksFromUser(userId);
 
 			expect(result).to.be.an('array').with.lengthOf(3);
-			expect(result.some(matchId(privateH)), 'find private not added homework').to.be.true;
-			expect(result.some(matchId(privateLessonH)), 'find private lesson homework').to.be.true;
-			expect(result.some(matchId(privateCourseH)), 'find private course homework').to.be.true;
+			expect(result.some(matchId(privateH)), 'when find private not added homework').to.be.true;
+			expect(result.some(matchId(privateLessonH)), 'when find private lesson homework').to.be.true;
+			expect(result.some(matchId(privateCourseH)), 'when find private course homework').to.be.true;
 		});
 
 		it('should work with select as second parameter', async () => {

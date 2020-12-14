@@ -11,7 +11,8 @@ const {
 } = require('../repo/task.repo');
 
 const checkStatus = (status) => {
-	if (status.success !== 1) { // || status.count !== status.modified
+	if (status.success !== 1) {
+		// || status.count !== status.modified
 		// TODO: who is really look into logs for this?
 		logger.warning('User deletion task has some miss matches.', status);
 	}
@@ -32,12 +33,13 @@ const deletePrivateSubmissions = async (userId) => {
 	};
 
 	// TODO: complete should from type boolean and false until it is finished by the executed instance
-	return { trashbinData, complete: undefined };
+	return { trashbinData, complete: true };
 };
 
 const removeConnectionToSharedSubmissions = async (userId) => {
-	const result = await findGroupSubmissionsFromUser(userId, ['_id', 'teamMembers']);
-	//TODO: teamMembers include more then they should, fix this and add test for it
+	// the location to adding the user teamMember by restore is impilict exist
+	const result = await findGroupSubmissionsFromUser(userId, ['_id']);
+
 	if (result.length > 0) {
 		const status = await removeGroupSubmissionsConnectionsForUser(userId);
 		checkStatus(status);
@@ -49,7 +51,7 @@ const removeConnectionToSharedSubmissions = async (userId) => {
 		data: result,
 	};
 
-	return { trashbinData, complete: undefined };
+	return { trashbinData, complete: true };
 };
 
 const deletePrivateUserHomeworks = async (userId) => {
@@ -66,11 +68,12 @@ const deletePrivateUserHomeworks = async (userId) => {
 		data: result,
 	};
 
-	return { trashbinData, complete: undefined };
+	return { trashbinData, complete: true };
 };
 
 const removeConnectionToSharedHomeworks = async (userId, replaceUserId) => {
-	const result = await findPublicHomeworksFromUser(userId, ['_id', 'teacherId']);
+	// the location to adding the user teacherId by restore is impilict exist
+	const result = await findPublicHomeworksFromUser(userId, ['_id']);
 
 	if (result.length > 0) {
 		const status = await replaceUserInPublicHomeworks(userId, replaceUserId);
@@ -83,7 +86,7 @@ const removeConnectionToSharedHomeworks = async (userId, replaceUserId) => {
 		data: result,
 	};
 
-	return { trashbinData, complete: undefined };
+	return { trashbinData, complete: true };
 };
 
 const deleteUserRelatedData = () => [
@@ -93,4 +96,4 @@ const deleteUserRelatedData = () => [
 	removeConnectionToSharedHomeworks,
 ];
 
-module.exports = deleteUserRelatedData;
+module.exports = { deleteUserRelatedData };
