@@ -377,6 +377,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 ### Added
 
 - SC-7841 - remove deleted user from classes
+- OPS-1559 - Added Enhance build pipeline
 - SC-7836 - Removing registration pin by removing the user
 - SC-7838 - move pseudonyms to trashbin
 - SC-7142 - Counties/Kreise added to federal states.
