@@ -19,10 +19,14 @@ const validateParams = (userId) => {
 	if (!isValidObjectId(userId)) throw new ValidationError('a valid objectId is required', { userId });
 };
 
+/**
+ * Removes a users relation from lessons and resolves with the related lessons in data of trashBinData.
+ * complete may indicate that all batches have been succeded
+ * @param {String|ObjectId} userId
+ */
 const deleteUserDatafromLessons = async (userId) => {
 	validateParams(userId);
-	// delete user from lesson contents
-	// see mapUser, seems not to be required anywhere (can be deleted)
+
 	const data = [];
 	let complete = true;
 	const lessons = await lessonsRepo.getLessonsWithUserInContens(userId);
@@ -43,6 +47,11 @@ const addCoursesToData = (coursesAggreate = [], data) => {
 	Object.assign(data, { student, teacher, substituteTeacher });
 };
 
+/**
+ * Removes a users relations from courses and resolves with the related courses in data of trashBinData.
+ * complete may indicate that all batches have been succeded
+ * @param {String|ObjectId} userId
+ */
 const deleteUserDataFromCourses = async (userId) => {
 	validateParams(userId);
 
@@ -64,6 +73,11 @@ const addCourseGroupData = (courseGroupdata = [], data) => {
 	data.push(...courseGroupIds);
 };
 
+/**
+ * Removes a users relations from course groups and resolves with the related course groups in data of trashBinData.
+ * complete may indicate that all batches have been succeded
+ * @param {*} userId
+ */
 const deleteUserDataFromCourseGroups = async (userId) => {
 	validateParams(userId);
 	const data = [];
