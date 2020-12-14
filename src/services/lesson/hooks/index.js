@@ -74,7 +74,7 @@ const setPosition = async (context) => {
 const mapUsers = (context) => {
 	if (context.data && context.data.contents) {
 		context.data.contents = (context.data.contents || []).map((item) => {
-			item.user = item.user || context.params.account.userId; // TODO why is the current user added here?
+			item.user = item.user || context.params.account.userId;
 			return item;
 		});
 	}
@@ -167,7 +167,7 @@ const populateWhitelist = {
 };
 
 exports.before = () => ({
-	all: [authenticate('jwt')],
+	all: [authenticate('jwt'), mapUsers],
 	find: [
 		hasPermission('TOPIC_VIEW'),
 		iff(isProvider('external'), validateLessonFind),
@@ -180,7 +180,6 @@ exports.before = () => ({
 		iff(isProvider('external'), restrictToUsersCoursesLessons),
 	],
 	create: [
-		mapUsers,
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
 		injectUserId,
 		checkCorrectCourseOrTeamId,
@@ -188,7 +187,6 @@ exports.before = () => ({
 		iff(isProvider('external'), preventPopulate),
 	],
 	update: [
-		mapUsers,
 		iff(isProvider('external'), preventPopulate),
 		permitGroupOperation,
 		ifNotLocal(checkCorrectCourseOrTeamId),
@@ -196,7 +194,6 @@ exports.before = () => ({
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 	],
 	patch: [
-		mapUsers,
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 		permitGroupOperation,
 		ifNotLocal(checkCorrectCourseOrTeamId),

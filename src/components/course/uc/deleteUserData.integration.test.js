@@ -4,22 +4,14 @@ const { withApp, testObjects, appPromise } = require('../../../../test/utils/wit
 const { createLessonContents } = require('../../../../test/services/helpers/services')(appPromise).lessons;
 const { equal, toString: idToString } = require('../../../helper/compare').ObjectId;
 const { deleteUserData } = require('./deleteUserData.uc');
-const { ApplicationError } = require('../../../errors');
+const { ValidationError } = require('../../../errors');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-const simulateOrchestratedDeletion = (userId) => {
-	return Promise.all(
-		deleteUserData().map((step) => {
-			return step(userId);
-		})
-	);
-};
+const simulateOrchestratedDeletion = (userId) => Promise.all(deleteUserData().map((step) => step(userId)));
 
-const repeat = (times, promiseFn) => {
-	return Promise.all([...Array(times)].map(() => promiseFn()));
-};
+const repeat = (times, promiseFn) => Promise.all([...Array(times)].map(() => promiseFn()));
 
 const createTestData = async () => {
 	const school = await testObjects.createTestSchool();
@@ -59,7 +51,7 @@ describe(
 			const deleteUserDataSteps = deleteUserData();
 			expect(deleteUserDataSteps.length !== 0, 'have steps').to.be.true;
 			deleteUserDataSteps.forEach((step) => {
-				expect(step()).to.eventually.throw(ApplicationError);
+				expect(step()).to.eventually.throw(ValidationError);
 			});
 		});
 

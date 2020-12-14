@@ -24,7 +24,6 @@ describe('when removing user data from course component receive multiple steps',
 		expect(deleteUserData()).to.be.an('array').with.length.greaterThan(0);
 	});
 
-	// TODO move to other file? Where to locate steps
 	describe('test uc internal steps', () => {
 		describe('when remove user relations from courses', () => {
 			const USER_ID = new ObjectId();

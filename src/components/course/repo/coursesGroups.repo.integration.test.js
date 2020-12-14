@@ -83,7 +83,6 @@ describe(
 
 			const result = await courseGroupsRepo.deleteUserFromUserGroups(idToString(testUser._id));
 			expect(result.modifiedDocuments, 'one course group has been modified only').to.be.equal(1);
-			expect(result.matchedDocuments, 'one course group has been matched only').to.be.equal(1);
 
 			const courseGroup = await courseGroupsRepo.getCourseGroupById(testCourseGroup._id);
 			const userIds = courseGroup.userIds.map(idToString);

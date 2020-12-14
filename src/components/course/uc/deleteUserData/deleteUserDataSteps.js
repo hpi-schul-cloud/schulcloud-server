@@ -1,6 +1,6 @@
-const { ApplicationError } = require('../../../../errors');
+const { ValidationError } = require('../../../../errors');
 const { coursesRepo, lessonsRepo, courseGroupsRepo } = require('../../repo/index');
-const { equal, isValid: isValidObjectId, toString: idToString } = require('../../../../helper/compare').ObjectId;
+const { equal, isValid: isValidObjectId } = require('../../../../helper/compare').ObjectId;
 const { debug } = require('../../../../logger');
 
 const addLessonContentsToTrashbinData = (userId, lessons = [], trashBinData) => {
@@ -16,25 +16,24 @@ const addLessonContentsToTrashbinData = (userId, lessons = [], trashBinData) => 
 };
 
 const validateParams = (userId) => {
-	// TODO add data into error, change to ValidationError
-	if (!isValidObjectId(userId)) throw new ApplicationError('a valid objectId is required', { userId });
+	if (!isValidObjectId(userId)) throw new ValidationError('a valid objectId is required', { userId });
 };
 
 const deleteUserDatafromLessons = async (userId) => {
 	validateParams(userId);
-	debug(`deleting user mentions in lesson contents started`, { userId });
 	// delete user from lesson contents
 	// see mapUser, seems not to be required anywhere (can be deleted)
+	const data = [];
+	let complete = true;
 	const lessons = await lessonsRepo.getLessonsWithUserInContens(userId);
 	debug(`found ${lessons.length} lessons with contents of given user to be removed`, { userId });
-	const data = [];
 	if (lessons.length !== 0) {
 		addLessonContentsToTrashbinData(userId, lessons, data);
 		const result = await lessonsRepo.deleteUserFromLessonContents(userId);
-		debug(`removed user from ${result.matchedDocuments} lessons`, { userId });
+		complete = result.success;
+		debug(`removed user from ${result.modifiedDocuments} lessons`, { userId });
 	}
-	debug(`deleting user mentions in lesson contents finished`, { userId });
-	return { trashBinData: { scope: 'lessons', data }, complete: true };
+	return { trashBinData: { scope: 'lessons', data }, complete };
 };
 
 const addCoursesToData = (coursesAggreate = [], data) => {
@@ -48,10 +47,13 @@ const deleteUserDataFromCourses = async (userId) => {
 	validateParams(userId);
 
 	const data = {};
-	const courses = await coursesRepo.getCoursesWithUser(userId);
 	let complete = true;
+	const courses = await coursesRepo.getCoursesWithUser(userId);
+	debug(`found ${courses.length} courses of given user to be removed`, { userId });
 	if (courses.length !== 0) {
-		complete = await coursesRepo.deleteUserFromCourseRelations(userId).success;
+		const result = await coursesRepo.deleteUserFromCourseRelations(userId);
+		debug(`removed user from ${result.modifiedDocuments} courses`, { userId });
+		complete = result.success;
 		addCoursesToData(courses, data);
 	}
 	return { trashBinData: { scope: 'courses', data }, complete };
@@ -65,13 +67,17 @@ const addCourseGroupData = (courseGroupdata = [], data) => {
 const deleteUserDataFromCourseGroups = async (userId) => {
 	validateParams(userId);
 	const data = [];
+	let complete = true;
 	const courseGroups = await courseGroupsRepo.getCourseGroupsWithUser(userId);
+	debug(`found ${courseGroups.length} course groups of given user to be removed`, { userId });
 	if (courseGroups.length !== 0) {
-		await courseGroupsRepo.deleteUserFromUserGroups(userId);
+		const result = await courseGroupsRepo.deleteUserFromUserGroups(userId);
+		debug(`removed user from ${result.modifiedDocuments} course groups`, { userId });
+		complete = result.success;
 		addCourseGroupData(courseGroups, data);
 	}
 
-	return { trashBinData: { scope: 'courseGroups', data }, complete: true };
+	return { trashBinData: { scope: 'courseGroups', data }, complete };
 };
 
 module.exports = { deleteUserDataFromCourses, deleteUserDataFromCourseGroups, deleteUserDatafromLessons };

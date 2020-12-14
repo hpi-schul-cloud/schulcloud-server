@@ -1,6 +1,5 @@
 const { courseModel } = require('../../../services/user-group/model');
-const { updateManyResult } = require('./helper');
-const { toString: idToString } = require('../../../helper/compare').ObjectId;
+const { updateManyResult } = require('../../helper/repo.helper');
 
 // filter
 

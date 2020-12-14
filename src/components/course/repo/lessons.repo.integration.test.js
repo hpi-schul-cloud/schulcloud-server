@@ -38,7 +38,6 @@ describe(
 
 			// delete user from lesson contents
 			const result = await lessonsRepo.deleteUserFromLessonContents(courseTeacher._id);
-			expect(result.matchedDocuments, 'only one lesson should match').to.equal(1);
 			expect(result.modifiedDocuments, 'only one lesson should be modified').to.equal(1);
 
 			// the user has been removed

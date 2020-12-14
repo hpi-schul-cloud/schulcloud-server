@@ -6,11 +6,7 @@ class CoursesFacade {
 	}
 
 	async deleteUserData() {
-		// TODO permissions
-		// userFromSameSchool(userContext.currentUserId, userIdForDeletion);
-		// userHasPermission(userContext.currentUserId, 'DELETE_USER');
-
-		// TODO let nobody change the given userId behind facade, assign it
+		// does not check permissions!
 		return deleteUserUc.deleteUserData();
 	}
 }

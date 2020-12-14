@@ -1,3 +1,5 @@
+const { error } = require('../../logger');
+
 /**
  * Converts an mongoose update many result to an internal TO
  * @param {*} param0
@@ -7,7 +9,7 @@
  */
 const updateManyResult = ({ ok, n, nModified }) => {
 	if (ok !== 1) {
-		// TODO warn/throw
+		error('mongoose updateMany has failed', { ok, n, nModified });
 	}
 	return { success: ok === 1, modifiedDocuments: nModified };
 };

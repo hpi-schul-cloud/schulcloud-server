@@ -1,17 +1,13 @@
 const { courseGroupModel } = require('../../../services/user-group/model');
-const { updateManyResult } = require('./helper');
+const { updateManyResult } = require('../../helper/repo.helper');
 
 // converter DAO 2 BO
 
-const courseGroupToBO = (courseGroupDAO) => {
-	return { ...courseGroupDAO };
-};
+const courseGroupToBO = (courseGroupDAO) => ({ ...courseGroupDAO });
 
 // filter
 
-const filterUserInUserGroups = (userId) => {
-	return { userIds: userId };
-};
+const filterUserInUserGroups = (userId) => ({ userIds: userId });
 
 // public members
 

@@ -38,7 +38,7 @@ describe(
 			const result = await coursesRepo.getCoursesWithUser(student._id);
 
 			expect(result.length, 'one result found only').to.equal(1);
-			expect(equal(result[0].id, course._id), 'result matches created course').to.be.true;
+			expect(equal(result[0]._id, course._id), 'result matches created course').to.be.true;
 			checkUserRoleInCourse(result[0], { student: true, teacher: false, substituteTeacher: false });
 		});
 
@@ -49,7 +49,7 @@ describe(
 			const result = await coursesRepo.getCoursesWithUser(teacher._id);
 
 			expect(result.length, 'one result found only').to.equal(1);
-			expect(equal(result[0].id, course._id), 'result matches created course').to.be.true;
+			expect(equal(result[0]._id, course._id), 'result matches created course').to.be.true;
 			checkUserRoleInCourse(result[0], { student: false, teacher: true, substituteTeacher: false });
 		});
 
@@ -60,7 +60,7 @@ describe(
 			const result = await coursesRepo.getCoursesWithUser(substituteTeacher._id);
 
 			expect(result.length, 'one result found only').to.equal(1);
-			expect(equal(result[0].id, course._id), 'result matches created course').to.be.true;
+			expect(equal(result[0]._id, course._id), 'result matches created course').to.be.true;
 			checkUserRoleInCourse(result[0], { student: false, teacher: false, substituteTeacher: true });
 		});
 
@@ -89,13 +89,13 @@ describe(
 			const result = await coursesRepo.getCoursesWithUser(user._id);
 			expect(result.length, 'three results found').to.equal(3);
 
-			const resultIds = result.map((res) => res.id);
+			const resultIds = result.map((res) => idToString(res._id));
 			expect(resultIds).to.have.members(
 				[idToString(studentCourse._id), idToString(teacherCourse._id), idToString(substitutionTeacherCourse._id)],
 				'expected Course ids missing'
 			);
 
-			const resultStudentCourse = result.find((res) => equal(res.id, studentCourse._id));
+			const resultStudentCourse = result.find((res) => equal(res._id, studentCourse._id));
 			checkUserRoleInCourse(resultStudentCourse, { student: true, teacher: false, substituteTeacher: false });
 
 			const hasSubstitutionIds = teacherCourse.substitutionIds.length > 0;
@@ -104,14 +104,14 @@ describe(
 				'user might not be added to substitution teachers because it has been added to teachers'
 			).to.be.false;
 			expect(equal(teacherCourse.teacherIds[0], user._id), 'user is added to teachers').to.be.true;
-			const resultTeacherCourse = result.find((res) => equal(res.id, teacherCourse._id));
+			const resultTeacherCourse = result.find((res) => equal(res._id, teacherCourse._id));
 			checkUserRoleInCourse(resultTeacherCourse, {
 				student: false,
 				teacher: true,
 				substituteTeacher: hasSubstitutionIds,
 			});
 
-			const resultSubstitutionTeacherCourse = result.find((res) => equal(res.id, substitutionTeacherCourse._id));
+			const resultSubstitutionTeacherCourse = result.find((res) => equal(res._id, substitutionTeacherCourse._id));
 			checkUserRoleInCourse(resultSubstitutionTeacherCourse, {
 				student: false,
 				teacher: false,
@@ -135,7 +135,6 @@ describe(
 			});
 
 			const result = await coursesRepo.deleteUserFromCourseRelations(student._id);
-			expect(result.matchedDocuments, 'two courses should match').to.equal(2);
 			expect(result.modifiedDocuments, 'two courses should be modified').to.equal(2);
 
 			// the user has been removed
