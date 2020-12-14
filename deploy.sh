@@ -24,9 +24,6 @@ catch() {
   fi
 }
 
-# Testing
-TRAVIS_BRANCH="master"
-
 # extract GIT_FLOW_BRANCH from TRAVIS_BRANCH
 if [[ "$TRAVIS_BRANCH" == "master" ]]
 then
