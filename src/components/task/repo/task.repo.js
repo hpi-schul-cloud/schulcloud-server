@@ -1,6 +1,6 @@
 const { SubmissionModel, HomeworkModel } = require('../db');
 
-const mapStatus = ({ ok, deletedCount, n, nModified }) => ({
+const mapStatus = ({ ok, deletedCount, nModified }) => ({
 	success: ok,
 	modified: deletedCount === undefined ? nModified : deletedCount,
 	// count: n,
@@ -78,6 +78,7 @@ const singleSubmissionQuery = (userId) => ({
  * @return {Array}
  */
 const findGroupSubmissionsFromUser = async (userId, select) => {
+	// TODO allow all select type, convert this and/or use .select()
 	const result = await SubmissionModel.find(groupSubmissionQuery(userId), select).lean().exec();
 	return result;
 };
