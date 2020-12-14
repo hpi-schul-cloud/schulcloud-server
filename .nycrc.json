@@ -1,6 +1,6 @@
 {
 	"extension": [".js", ".ts"],
-	"reporter": ["text", "html"],
+	"reporter": ["text-summary", "html"],
 	"include": ["src"],
 	"all": true
 }

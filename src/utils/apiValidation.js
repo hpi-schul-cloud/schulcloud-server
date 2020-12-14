@@ -286,6 +286,9 @@ const registerApiValidation = async (app, apiSpec) => {
 				ignorePaths,
 				validateRequests: true,
 				validateResponses,
+				$refParser: {
+					mode: 'dereference',
+				},
 			})
 		);
 	}

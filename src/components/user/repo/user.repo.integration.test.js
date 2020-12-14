@@ -74,15 +74,15 @@ describe('user repository', () => {
 		});
 	});
 
-	describe('getUserRoles', () => {
+	describe('getUserWithRoles', () => {
 		it('when called with a valid userid, then it returns an array of populated roles', async () => {
 			const user = await testObjects.createTestUser({ roles: ['teacher', 'administrator'] });
 
-			const result = await userRepo.getUserRoles(user._id);
+			const result = await userRepo.getUserWithRoles(user._id);
 
-			expect(Array.isArray(result)).to.be.true;
-			expect(result.length).to.equal(2);
-			result.forEach((role) => {
+			expect(Array.isArray(result.roles)).to.be.true;
+			expect(result.roles.length).to.equal(2);
+			result.roles.forEach((role) => {
 				expect(role).to.haveOwnProperty('name');
 				expect(role).to.haveOwnProperty('permissions');
 			});

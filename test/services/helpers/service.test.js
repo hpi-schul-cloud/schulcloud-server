@@ -18,7 +18,7 @@ const isMailbodyValid = ({ platform, platformId, to, subject, text, html, attach
 
 const getNotificationMock = (expectedData = {}) =>
 	new Promise((resolve) => {
-		nock(config.services.notification)
+		nock(config.NOTIFICATION_URI)
 			.post('/mails')
 			.reply(200, (uri, requestBody) => {
 				Object.entries(expectedData).forEach(([key, value]) => {
@@ -102,7 +102,7 @@ describe('Mail Service', async () => {
 
 	describe('invalid emails', () => {
 		beforeEach(() => {
-			nock(config.services.notification).post('/mails').replyWithError('invalid data send');
+			nock(config.NOTIFICATION_URI).post('/mails').replyWithError('invalid data send');
 		});
 		it('should throw if notification server returns error', async () => {
 			try {
