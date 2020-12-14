@@ -6,8 +6,8 @@ const searchQuery = (userId) => ({
 	permissions: {
 		$elemMatch: {
 			refId: userId,
-		}
-	}
+		},
+	},
 });
 
 const getFileById = async (id) => FileModel.findById(id).lean().exec();
@@ -16,8 +16,8 @@ const getFileById = async (id) => FileModel.findById(id).lean().exec();
  * @param {*} userId
  * @return {data} filePermissions
  */
-const getFilesWithUserPermissionsByUserId = async (userId) => {
-	return FileModel.aggregate([
+const getFilesWithUserPermissionsByUserId = async (userId) =>
+	FileModel.aggregate([
 		{
 			$match: searchQuery(userId),
 		},
@@ -34,7 +34,6 @@ const getFilesWithUserPermissionsByUserId = async (userId) => {
 			},
 		},
 	]);
-};
 
 /**
  * @param {*} userId
