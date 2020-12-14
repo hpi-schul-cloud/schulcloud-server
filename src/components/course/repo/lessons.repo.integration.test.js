@@ -1,7 +1,9 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
-const { withApp, testObjects } = require('../../../../test/utils/withApp.test');
+const appPromise = require('../../../app');
+const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
+
 const lessonsRepo = require('./lessons.repo');
 
 const { equal } = require('../../../helper/compare').ObjectId;
@@ -29,34 +31,46 @@ const getTestObjects = async () => {
 	return { courseTeacher, lesson };
 };
 
-describe(
-	'when having a user in lesson contents',
-	withApp(() => {
-		it('should remove the user related lesson contents', async () => {
-			// create test objects
-			const { courseTeacher } = await getTestObjects();
+describe('when having a user in lesson contents', () => {
+	let app;
+	let server;
 
-			// delete user from lesson contents
-			const result = await lessonsRepo.deleteUserFromLessonContents(courseTeacher._id);
-			expect(result.modifiedDocuments, 'only one lesson should be modified').to.equal(1);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
 
-			// the user has been removed
-			const matchesAfter = await lessonsRepo.getLessonsWithUserInContens(courseTeacher._id);
-			expect(matchesAfter.length, 'all results have been removed').to.equal(0);
-		});
+	afterEach(async () => {
+		await testObjects.cleanup();
+	});
 
-		it('should return the related lessons', async () => {
-			// create test objects
-			const { courseTeacher, lesson } = await getTestObjects();
+	after(async () => {
+		await server.close();
+	});
+	it('should remove the user related lesson contents', async () => {
+		// create test objects
+		const { courseTeacher } = await getTestObjects();
 
-			// check the filter finds the lesson created
-			const matches = await lessonsRepo.getLessonsWithUserInContens(courseTeacher._id);
-			expect(matches.length, 'one result found only').to.equal(1);
-			expect(equal(matches[0]._id, lesson._id), 'result matches created lesson').to.be.true;
-			expect(
-				matches[0].contents.some((content) => equal(content.user, courseTeacher._id)),
-				'the related lesson has the user in contents'
-			).to.be.true;
-		});
-	})
-);
+		// delete user from lesson contents
+		const result = await lessonsRepo.deleteUserFromLessonContents(courseTeacher._id);
+		expect(result.modifiedDocuments, 'only one lesson should be modified').to.equal(1);
+
+		// the user has been removed
+		const matchesAfter = await lessonsRepo.getLessonsWithUserInContens(courseTeacher._id);
+		expect(matchesAfter.length, 'all results have been removed').to.equal(0);
+	});
+
+	it('should return the related lessons', async () => {
+		// create test objects
+		const { courseTeacher, lesson } = await getTestObjects();
+
+		// check the filter finds the lesson created
+		const matches = await lessonsRepo.getLessonsWithUserInContens(courseTeacher._id);
+		expect(matches.length, 'one result found only').to.equal(1);
+		expect(equal(matches[0]._id, lesson._id), 'result matches created lesson').to.be.true;
+		expect(
+			matches[0].contents.some((content) => equal(content.user, courseTeacher._id)),
+			'the related lesson has the user in contents'
+		).to.be.true;
+	});
+});
