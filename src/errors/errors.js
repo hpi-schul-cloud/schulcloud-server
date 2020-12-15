@@ -2,12 +2,15 @@
 const { INTERNAL_SERVER_ERROR, ASSERTION_ERROR } = require('./commonErrorTypes');
 
 class ApplicationError extends Error {
-	constructor(errorType, cause, params) {
-		super(errorType.code);
+	/**
+	 * Abstraction for concrete implementations of business errors
+	 */
+	constructor({ type, title, defaultMessage }, cause, params) {
+		super(type);
 		this.name = this.constructor.name;
 		this.cause = cause;
-		this.title = errorType.title;
-		this.defaultMessage = errorType.defaultMessage;
+		this.title = title;
+		this.defaultMessage = defaultMessage; // todo rename to detail (as defined?)
 		this.params = params;
 		Error.captureStackTrace(this, this.constructor);
 	}
@@ -23,12 +26,19 @@ class SilentError extends ApplicationError {}
 
 class DocumentNotFound extends ApplicationError {}
 
+/**
+ * Error for api request validation
+ */
 class ValidationError extends ApplicationError {
 	constructor(errorType, validationErrors) {
 		super(errorType, undefined, validationErrors);
 	}
 }
 
+/**
+ * Error for parameter assertions.
+ * @see {validationErrors} in src/common/validation/validationHelper.js
+ */
 class AssertionError extends ApplicationError {
 	constructor(validationErrors) {
 		super(ASSERTION_ERROR, undefined, validationErrors);
