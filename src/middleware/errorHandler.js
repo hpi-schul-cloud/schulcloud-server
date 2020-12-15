@@ -6,6 +6,8 @@ const OpenApiValidator = require('express-openapi-validator');
 
 const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention, BadRequest } = require('../errors');
 const { convertToFeathersError, cleanupIncomingMessage } = require('../errors/utils');
+const { isApplicationError, isFeathersError } = require('../errors/errorUtils');
+const { ValidationError, DocumentNotFound, AssertionError, InternalServerError } = require('../errors');
 
 const logger = require('../logger');
 
@@ -153,6 +155,42 @@ const filterSecrets = (error, req, res, next) => {
 	next(error);
 };
 
+const createErrorDetailTO = (status, type, title, detail, customFields) => {
+	return { status, type, title, detail, ...customFields };
+};
+
+const getErrorResponseFromBusinessError = (businessError) => {
+	const customFields = {};
+	let status = 500;
+	const { message: type, title, defaultMessage: detail } = businessError;
+	if (businessError instanceof ValidationError || businessError instanceof AssertionError) {
+		status = 400;
+		Object.assign(customFields, { validation_errors: businessError.validationErrors });
+	} else if (businessError instanceof DocumentNotFound) {
+		status = 404;
+	}
+	return createErrorDetailTO(status, type, title, detail, customFields);
+};
+
+const getErrorResponse = (error, req, res, next) => {
+	let errorDetail;
+	if (isApplicationError(error)) {
+		// Application Errors
+		errorDetail = getErrorResponseFromBusinessError(error);
+	} else if (isFeathersError(error)) {
+		// Framework Errors
+		const { code, className: type, name: title, message: detail } = error;
+		errorDetail = createErrorDetailTO(code, type, title, detail);
+	} else {
+		// Unhandled Errors
+		const unhandledError = new InternalServerError(error);
+		const { message: type, title, defaultMessage: detail } = unhandledError;
+		errorDetail = createErrorDetailTO(500, type, title, detail);
+	}
+
+	res.status(errorDetail.status).json(errorDetail);
+};
+
 const saveResponseFilter = (error) => ({
 	name: error.name,
 	message: error.message instanceof Error && error.message.message ? error.message.message : error.message,
@@ -201,15 +239,6 @@ const skipErrorLogging = (error, req, res, next) => {
 	}
 };
 
-const returnAsJson = express.errorHandler({
-	html: (error, req, res) => {
-		sendError(res, error);
-	},
-	json: (error, req, res) => {
-		sendError(res, error);
-	},
-});
-
 const addTraceId = (error, req, res, next) => {
 	error.traceId = (req.headers || {}).requestId || error.traceId;
 	next(error);
@@ -219,13 +248,13 @@ const errorHandler = (app) => {
 	app.use(addTraceId);
 	app.use(filterSecrets);
 	app.use(Sentry.Handlers.errorHandler());
-	app.use(handleValidationError);
+	app.use(handleValidationError); // TODO
 	// TODO make skipErrorLogging configruable if middleware is added
-	app.use(skipErrorLogging);
-	app.use(formatAndLogErrors);
+	app.use(skipErrorLogging); // TODO
+	app.use(formatAndLogErrors); // TODO
 	// TODO make handleSilentError configruable if middleware is added
 	// Configuration.get('SILENT_ERROR_ENABLED')
 	app.use(handleSilentError);
-	app.use(returnAsJson);
+	app.use(getErrorResponse); // TODO
 };
 module.exports = errorHandler;
