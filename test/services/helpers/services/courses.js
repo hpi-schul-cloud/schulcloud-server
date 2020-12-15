@@ -11,6 +11,7 @@ const removeManyCourses = (ids) =>
 const createTestCourse = (appPromise, opt) => async ({
 	// required fields for base group
 	name = 'testCourse',
+	description = 'testCourseDescription',
 	schoolId = opt.schoolId,
 	userIds = [],
 	classIds = [],
@@ -25,6 +26,7 @@ const createTestCourse = (appPromise, opt) => async ({
 	const course = await app.service('courses').create({
 		// required fields for course
 		name,
+		description,
 		schoolId,
 		userIds,
 		classIds,

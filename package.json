@@ -39,7 +39,7 @@
 		"coverage-codecov": "cross-env NODE_ENV=test nyc report --reporter=text-lcov | codecov --pipe",
 		"mocha": "cross-env NODE_ENV=test ts-mocha --exit",
 		"mocha-watch": "cross-env NODE_ENV=test ts-mocha",
-		"mocha-inspect": "cross-env NODE_ENV=test ts-mocha --inspect-brk --inspect --timeout 60000 --exit",
+		"mocha-inspect": "cross-env NODE_ENV=test ts-mocha --inspect-brk --inspect --no-timeout --exit",
 		"migration": "migrate --config ./config/migrate.js",
 		"migration-sync": "migrate list --autosync --config ./config/migrate.js",
 		"migration-list": "migrate list --config ./config/migrate.js",
