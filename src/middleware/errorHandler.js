@@ -56,7 +56,7 @@ const getRequestInfo = (req) => {
 const formatAndLogErrors = (error, req, res, next) => {
 	if (error) {
 		// sanitize
-		const err = convertToFeathersError(error);
+		const err = convertToFeathersError(error); // TODO remove
 		const requestInfo = getRequestInfo(req);
 		// type is override by logger for logging type
 		err.errorType = err.type;
@@ -65,7 +65,7 @@ const formatAndLogErrors = (error, req, res, next) => {
 		cleanupIncomingMessage(err.errors);
 		// for tests level is set to emerg, set LOG_LEVEL=debug for see it
 		// Logging the error object won't print error's stack trace. You need to ask for it specifically
-		logger.error({ ...err, ...requestInfo });
+		logger.error({ ...err, ...requestInfo }); // TODO do not unpack all params
 	}
 	next(error);
 };
