@@ -1,6 +1,7 @@
 const { classModel } = require('../../../services/user-group/model');
 const { ValidationError, BadRequest } = require('../../../errors');
 const { isValid: isValidObjectId, toString: idToString } = require('../../../helper/compare').ObjectId;
+const { updateManyResult } = require('../../helper/repo.helper');
 
 const getUserQuery = (userId, classRole) => {
 	if (classRole === 'student') {
@@ -94,7 +95,7 @@ const removeUserFromClasses = async (userId) => {
 	const filter = filterClassMember(userId);
 	const updateResult = await classModel.updateMany(filter, { $pull: { teacherIds: userId, userIds: userId } }).exec();
 
-	return updateResult; // TODO updateManyResultDAO2BO(updateResult);
+	return updateManyResult(updateResult);
 };
 
 const findClassById = (classId) => {
