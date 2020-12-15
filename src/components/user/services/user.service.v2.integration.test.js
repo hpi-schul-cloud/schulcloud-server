@@ -82,6 +82,22 @@ describe('user service v2', function test() {
 			expect(response.status).to.equal(403);
 		});
 
+		it.only('should throw assertion error', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool();
+			// const params = await testObjects.generateRequestParamsFromUser(admin);
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const token = await testObjects.generateJWTFromUser(teacher);
+			const request = chai
+				.request(app)
+				.delete(`/users/v2/admin/student/`)
+				.set('Accept', 'application/json')
+				.set('Authorization', token)
+				.set('Content-type', 'application/json');
+			const response = await request.send();
+			expect(response.status).to.equal(403);
+		});
+
 		it('when an admin deletes a non-existing user, then it throws Not-Found', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const notFoundId = ObjectId();

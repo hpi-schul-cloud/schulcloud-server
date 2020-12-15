@@ -3,6 +3,15 @@ const featherErrors = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
 const logger = require('../logger');
 
+const {
+	ApplicationError,
+	ValidationError,
+	SilentError,
+	AssertionError,
+	DocumentNotFound,
+	InternalServerError,
+} = require('./errors');
+
 const setDefaultMessage = (className) => `Error of type ${className}`;
 
 const resolvedTraceId = (ref, message, additional) => {
@@ -210,30 +219,6 @@ class UnhandledException extends featherErrors.GeneralError {
 	}
 }
 
-// TODO we should look into it in context of new architecture
-// ..at the moment it is only copy paste to this place.
-class ApplicationError extends Error {
-	constructor(message) {
-		super(message);
-		this.name = this.constructor.name;
-		Error.captureStackTrace(this, this.constructor);
-	}
-}
-
-class ValidationError extends ApplicationError {}
-
-class SilentError extends ApplicationError {
-	constructor(message) {
-		super(message);
-		this.code = 600;
-		this.type = 'ApplicationError';
-		this.className = 'silent-error';
-		this.data = {};
-		this.errors = {};
-		const uid = ObjectId();
-		this.traceId = uid.toString();
-	}
-}
 // take from ldap
 class NoClientInstanceError extends Error {}
 
@@ -260,6 +245,9 @@ const errorsByCode = {
 module.exports = {
 	ApplicationError,
 	ValidationError,
+	DocumentNotFound,
+	InternalServerError,
+	AssertionError,
 	FeathersError: featherErrors.FeathersError,
 	FeathersNotAuthenticated: featherErrors.NotAuthenticated,
 	BadRequest,
