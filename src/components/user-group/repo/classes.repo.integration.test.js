@@ -92,7 +92,7 @@ describe('class repo', () => {
 
 			const result = await classesRepo.removeUserFromClasses(student._id);
 
-			expect(result.nModified).to.be.equal(1);
+			expect(result.modifiedDocuments).to.be.equal(1);
 		});
 
 		it('the class should not contain the student after delete', async () => {
@@ -131,7 +131,7 @@ describe('class repo', () => {
 
 			const result = await classesRepo.removeUserFromClasses(student._id);
 
-			expect(result.nModified).to.be.equal(0);
+			expect(result.modifiedDocuments).to.be.equal(0);
 		});
 	});
 });
