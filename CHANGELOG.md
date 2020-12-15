@@ -6,7 +6,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
-## [25.2.4]
 
 ## Unreleased
 
@@ -40,7 +39,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8101 - Make it possible to disable sentry by removing `SENTRY_DSN`
 - OPS-1735 - Fixes transaction handling in file service by using the mongoose transaction helper,
-properly closing the session, and using the correct readPreference (everything except primary fails)
+  properly closing the session, and using the correct readPreference (everything except primary fails)
 
 ## [25.3.2]
 
@@ -109,7 +108,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 - SC-5900 - Move Synapse synchronization logic into server
 - SC-7499 - Fixes documentation for edu sharing endpoints
 - SC-7872 - Fix audience of the jwt to new organisation name.
-- SC-7543 - deprecates `GET /ldap/:id` and `PATCH /ldap/:id` routes 
+- SC-7543 - deprecates `GET /ldap/:id` and `PATCH /ldap/:id` routes
 - SC-7868 - Move external request helpers to more present file location
 - SC-7474 pull docker container for tests if commit id exists on docker hub
 
@@ -153,7 +152,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 ### Fixed
 
 - OPS-1735 - Fixes transaction handling in file service by using the mongoose transaction helper,
-properly closing the session, and using the correct readPreference (everything except primary fails)
+  properly closing the session, and using the correct readPreference (everything except primary fails)
 
 ## [25.2.4]
 
