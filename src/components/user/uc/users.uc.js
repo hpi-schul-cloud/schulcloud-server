@@ -40,13 +40,13 @@ const getUserData = async (id) => {
  * @param {*} userId
  * @param {*} deleteUserFacades e.g. ['/registrationPin/v2', '/fileStorage/v2']
  */
-const deleteUserRelatedData = async (userId, deleteUserFacades = []) => {
+const deleteUserRelatedData = async (userId, schoolTombstoneUserId, deleteUserFacades = []) => {
 	for (const facadeName of deleteUserFacades) {
 		const facade = facadeLocator.facade(facadeName);
 		for (const deleteFn of facade.deleteUserData) {
 			try {
 				// eslint-disable-next-line no-await-in-loop
-				const trash = await deleteFn(userId);
+				const trash = await deleteFn(userId, schoolTombstoneUserId);
 				// eslint-disable-next-line no-await-in-loop
 				await trashbinRepo.updateTrashbinByUserId(userId, trash.data);
 			} catch (error) {
@@ -117,9 +117,21 @@ const checkPermissions = async (id, roleName, permissionAction, { account }) => 
 	return context;
 };
 
+const getOrCreateTombstoneUserId = async (schoolId, user) => {
+	const school = await facadeLocator.facade('/school/v2').getSchool(schoolId);
+	if (school.tombstoneUserId) {
+		return school.tombstoneUserId;
+	}
+	const tombstoneSchool = await facadeLocator.facade('/school/v2').getTombstoneSchool();
+	const schoolTombstoneUser = await userRepo.createTombstoneUser(schoolId, tombstoneSchool._id);
+	await facadeLocator.facade('/school/v2').updateSchool(schoolId, { tombstoneUserId: schoolTombstoneUser._id }, user);
+	return schoolTombstoneUser;
+}
+
 const deleteUser = async (id) => {
 	const userAccountData = await getUserData(id);
 	const user = userAccountData.find(({ scope }) => scope === 'user').data;
+	const schoolTombstoneUserId = await getOrCreateTombstoneUserId(user.schoolId, user);
 
 	await createUserTrashbin(id, userAccountData);
 
@@ -133,7 +145,7 @@ const deleteUser = async (id) => {
 	}
 
 	// this is an async function, but we don't need to wait for it, because we don't give any errors information back to the user
-	deleteUserRelatedData(user.id, []).catch((error) => {
+	deleteUserRelatedData(user.id, schoolTombstoneUserId, []).catch((error) => {
 		errorUtils.asyncErrorLog(error, 'deleteUserRelatedData failed');
 	});
 };
@@ -147,4 +159,5 @@ module.exports = {
 	getUserData,
 	replaceUserWithTombstone,
 	userHaveSameSchool,
+	getOrCreateTombstoneUserId,
 };
