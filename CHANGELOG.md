@@ -18,6 +18,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8179 - repaired unit test
 - SC-7763 - adds searchable feature flag for lernstore 
 
+### Removed
+
+- SC-8233 - Removed attribute and member as required attributes for the LDAP-config service
+
 ## [25.3.5]
 
 ### Changed
