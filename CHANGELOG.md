@@ -18,6 +18,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8060 - increase unit test coverage for lernstore counties
 - SC-8179 - repaired unit test
 - SC-7763 - adds searchable feature flag for lernstore 
+- SC-8020 - adds collections filter to edu-sharing service
 
 ## [25.3.5]
 
