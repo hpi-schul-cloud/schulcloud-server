@@ -109,4 +109,28 @@ describe('EduSharing service', () => {
 			chai.expect(err.message).to.equal('This content is not available for your school');
 		}
 	});
+
+	it('should search with searchable flag', async () => {
+		try {
+			const user = await testObjects.createTestUser({ roles: ['teacher'] });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+
+			// cookie already set
+			// sinon.stub(request, 'get').returns(MockAuth);
+
+			const postStub = sinon.stub(request, 'post');
+			postStub.onCall(0).returns(MockNodes);
+
+			params.query = { searchQuery: 'foo' };
+			const response = await eduSharingService.find(params);
+
+			chai.expect(postStub.getCalls()[0].args[0].body).contains(`{"property":"ccm:hpi_searchable","values":["1"]}`);
+			chai.expect(response.total).to.gte(1);
+
+			request.post.restore();
+			postStub.reset();
+		} catch (err) {
+			throw new Error(err);
+		}
+	});
 });
