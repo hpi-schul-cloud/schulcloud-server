@@ -7,7 +7,7 @@ const testObjects = require('../../../../test/services/helpers/testObjects')(app
 chai.use(chaiHttp);
 const { expect } = chai;
 
-describe('user service v2', function test() {
+describe.only('user service v2', function test() {
 	let app;
 	let server;
 	let accountModelService;
