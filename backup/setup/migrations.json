@@ -872,5 +872,16 @@
 		"$date": "2020-11-05T11:16:03.243Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fd9fe1082bcbec8c407c42a"
+	},
+	"state": "up",
+	"name": "create-school-for-deleted-users",
+	"createdAt": {
+		"$date": "2020-12-16T12:31:12.749Z"
+	},
+	"__v": 0
 }]
 
