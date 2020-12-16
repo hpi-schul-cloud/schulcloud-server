@@ -18,6 +18,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8179 - repaired unit test
 - SC-7763 - adds searchable feature flag for lernstore 
 
+### Fixed
+
+- SC-8230 - fix deletion of teachers via new route
+
 ## [25.3.5]
 
 ### Changed
