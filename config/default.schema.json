@@ -446,6 +446,11 @@
 			"default": false,
 			"description": "When enabled, only content having searchable flag will be returned by Lern-Store"
 		},
+		"FEATURE_ES_COLLECTIONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "When enabled, collections will be searchable in Lern-Store"
+		},
 		"SILENT_ERROR_ENABLED": {
 			"type": "boolean",
 			"default": false,
