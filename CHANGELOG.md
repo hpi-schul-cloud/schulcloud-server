@@ -7,11 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## Unreleased
+
+### Added
+
+- SC-7825 - Remove user relations from courses
+- SC-7827 - Add deletion concept handling for file permissions.
+- SC-8030 - Setup orchestrator for deleting concept
+- SC-8060 - increase unit test coverage for lernstore counties
+- SC-8179 - repaired unit test
+- SC-7763 - adds searchable feature flag for lernstore 
+
+## [25.3.5]
+
+### Changed
+
+- SC-8149 - no longer require a registrationPin for internal calls
+
+## [25.3.4]
+
+### Changed
+
+- SC-7998 - use default service setup for /version
+
+## [25.3.3] (pick from 25.2)
+
+### Removed
+
+- SC-8101 - Sanitization for read operations
+
+### Fixed
+
+- SC-8101 - Make it possible to disable sentry by removing `SENTRY_DSN`
+- OPS-1735 - Fixes transaction handling in file service by using the mongoose transaction helper,
+  properly closing the session, and using the correct readPreference (everything except primary fails)
+
 ## [25.3.2]
 
 ### Added
 
 - SC-7734 - Added a hook that takes care of merlin content to generate valid urls for users
+- SC-7483 - Updating terms of use for all users for each instance separately
 
 ## [25.3.1]
 
@@ -23,6 +59,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 
 ### Added
 
+- SC-7841 - remove deleted user from classes
 - SC-7836 - Removing registration pin by removing the user
 - SC-7838 - move pseudonyms to trashbin
 - SC-7142 - Counties/Kreise added to federal states.
@@ -72,7 +109,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 - SC-5900 - Move Synapse synchronization logic into server
 - SC-7499 - Fixes documentation for edu sharing endpoints
 - SC-7872 - Fix audience of the jwt to new organisation name.
-- SC-7543 - deprecates `GET /ldap/:id` and `PATCH /ldap/:id` routes 
+- SC-7543 - deprecates `GET /ldap/:id` and `PATCH /ldap/:id` routes
 - SC-7868 - Move external request helpers to more present file location
 - SC-7474 pull docker container for tests if commit id exists on docker hub
 
@@ -101,17 +138,34 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 
 - SC-7413 - Cleanup UnhandledRejection code that is handled from winston now
 
+## [25.2.6]
+
+### Removed
+
+- SC-8101 - Sanitization for read operations
+
+### Fixed
+
+- SC-8101 - Make it possible to disable sentry by removing `SENTRY_DSN`
+
+## [25.2.5]
+
+### Fixed
+
+- OPS-1735 - Fixes transaction handling in file service by using the mongoose transaction helper,
+  properly closing the session, and using the correct readPreference (everything except primary fails)
+
 ## [25.2.4]
 
 ### Changed
 
-- SC-6727 Change email addresses for tickets for Niedersachsen - fixed after review
+- SC-6727 - Change email addresses for tickets for Niedersachsen - fixed after review
 
 ## [25.2.3]
 
 ### Changed
 
-- SC-6727 Change email addresses for tickets for Niedersachsen
+- SC-6727 - Change email addresses for tickets for Niedersachsen
 
 ## [25.2.2]
 
@@ -123,7 +177,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 
 ### Fixed
 
-- SC-7714 Fixes script injection issue
+- SC-7714 - Fixes script injection issue
 
 ## [25.2.0]
 
@@ -152,7 +206,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 - SC-6510, fix a minor syntax error when exporting module
 - Update commons to 1.2.7: print configuration on startup, introduce hierarchical configuration file setup
 - Support asynchronous calls during server startup
-- SC-7091 Migration to enable the Matrix Messenger for all schools that had RocketChat enabled before
+- SC-7091 - Migration to enable the Matrix Messenger for all schools that had RocketChat enabled before
 
 ### Fixed
 

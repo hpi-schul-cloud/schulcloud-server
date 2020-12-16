@@ -419,6 +419,11 @@
 			"description": "The password for edu-sharing api access",
 			"default": ""
 		},
+		"FEATURE_ES_MERLIN_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "When enabled, the merlin referene will generate a valid url"
+		},
 		"SECRET_ES_MERLIN_USERNAME": {
 			"type": "string",
 			"description": "The username for Merlin login, used for edusharing"
@@ -427,20 +432,19 @@
 			"type": "string",
 			"description": "The password for Merlin login, used for edusharing"
 		},
-		"SECRET_ES_MERLIN_KEY": {
-			"type": "string",
-			"description": "Synchronous encryption key used to secure merlin counties credentials. Only used with FEATURE_ES_MERLIN_ENABLED=true",
-			"pattern": ".{16}.*"
-		},
 		"ES_MERLIN_AUTH_URL": {
 			"type": "string",
 			"description": "Connection url for Merlin content",
 			"default": "http://merlin.nibis.de/auth.php"
 		},
-		"FEATURE_ES_MERLIN_ENABLED": {
+		"SECRET_ES_MERLIN_COUNTIES_CREDENTIALS": {
+			"type": "string",
+			"description": "JSON stringified with credentials for merlin counties, used by Lern-Store"
+		},
+		"FEATURE_ES_SEARCHABLE_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "When enabled, the merlin referene will generate a valid url"
+			"description": "When enabled, only content having searchable flag will be returned by Lern-Store"
 		},
 		"SILENT_ERROR_ENABLED": {
 			"type": "boolean",
@@ -555,6 +559,7 @@
 	"allOf": [
 		{
 			"$ref": "#/definitions/FEATURE_PROMETHEUS_ENABLED",
+			"$ref": "#/definitions/FEATURE_ES_MERLIN_ENABLED",
 			"$ref": "#/definitions/ANTIVIRUS"
 		}
 	],
@@ -590,7 +595,7 @@
 		},
 		"FEATURE_ES_MERLIN_ENABLED": {
 			"if": {
-				"proprieties": {
+				"properties": {
 					"FEATURE_ES_MERLIN_ENABLED": {
 						"const": true
 					}
@@ -598,10 +603,10 @@
 			},
 			"then": {
 				"required": [
-					"ES_MERLIN_AUTH_URL",
 					"SECRET_ES_MERLIN_USERNAME",
 					"SECRET_ES_MERLIN_PW",
-					"SECRET_ES_MERLIN_KEY"
+					"ES_MERLIN_AUTH_URL",
+					"SECRET_ES_MERLIN_COUNTIES_CREDENTIALS"
 				]
 			}
 		}

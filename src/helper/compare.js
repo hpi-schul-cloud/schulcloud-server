@@ -29,6 +29,14 @@ const ObjectId = {
 		const idAsString = typeof id === 'string' ? id : String(id);
 		return /^[0-9a-f]{24}$/.test(idAsString);
 	},
+	/**
+	 * Converts a database given id to it's string represenation
+	 * @param {ObjectId|String} id
+	 * @returns {String} string representation of the given object id
+	 */
+	toString(id) {
+		return String(id);
+	},
 };
 
 module.exports = { ObjectId };

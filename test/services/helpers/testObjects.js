@@ -1,3 +1,5 @@
+const { ObjectId: generateObjectId } = require('mongoose').Types;
+
 const logger = require('../../../src/logger/index');
 
 const serviceHelpers = require('./services');
@@ -141,6 +143,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		createTestFile: files.create,
 		createTestHomework: homeworks.create,
 		createTestLesson: lessons.create,
+		lessons,
 		createTestRegistrationPin: registrationPins.create,
 		createTestProblem: problems.create,
 		createTestPseudonym: pseudonyms.create,
@@ -159,11 +162,13 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		generateJWTFromUser: login.generateJWTFromUser,
 		createdUserIds: warn('@deprecated use info() instead', users.info),
 		teams,
+		files,
 		classes,
 		createTestTeamWithOwner,
 		info,
 		setupUser,
 		options: opt,
 		randomGen,
+		generateObjectId,
 	};
 };

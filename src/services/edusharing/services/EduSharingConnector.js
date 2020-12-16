@@ -209,6 +209,13 @@ class EduSharingConnector {
 				});
 			}
 
+			if (Configuration.get('FEATURE_ES_SEARCHABLE_ENABLED')) {
+				criterias.push({
+					property: 'ccm:hpi_searchable',
+					values: ['1'],
+				});
+			}
+
 			const options = {
 				method: 'POST',
 				url,
