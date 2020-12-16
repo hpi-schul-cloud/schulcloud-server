@@ -443,7 +443,7 @@
 		},
 		"FEATURE_ES_SEARCHABLE_ENABLED": {
 			"type": "boolean",
-			"default": true,
+			"default": false,
 			"description": "When enabled, only content having searchable flag will be returned by Lern-Store"
 		},
 		"SILENT_ERROR_ENABLED": {
