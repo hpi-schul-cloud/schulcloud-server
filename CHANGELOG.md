@@ -11,12 +11,14 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-8229 - Added invalid DN error to ldap-config service error handling
 - SC-7825 - Remove user relations from courses
 - SC-7827 - Add deletion concept handling for file permissions.
 - SC-8030 - Setup orchestrator for deleting concept
 - SC-8060 - increase unit test coverage for lernstore counties
 - SC-8179 - repaired unit test
 - SC-7763 - adds searchable feature flag for lernstore 
+- SC-8020 - adds collections filter to edu-sharing service
 
 ### Fixed
 
