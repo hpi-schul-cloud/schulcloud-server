@@ -20,7 +20,14 @@ const deleteRegistrationPins = async (registrationPinIds) => {
 	return registrationPinIds;
 };
 
+const deleteRegistrationPinsByEmail = async (email) => {
+	const registrationPins = getRegistrationPinsForUser(email);
+	deleteRegistrationPins(registrationPins.map((registrationPin) => registrationPin._id));
+	return registrationPins;
+}
+
 module.exports = {
 	getRegistrationPinsForUser,
 	deleteRegistrationPins,
+	deleteRegistrationPinsByEmail,
 };

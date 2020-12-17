@@ -1,8 +1,7 @@
 info:
   title: Schul-Cloud Legacy API
-  description:
-    This is the API specification for the Schul-Cloud legacy API.
-    
+  description: This is the API specification for the Schul-Cloud legacy API.
+
   contact:
     name: support
     email: info@hpi-schul-cloud.de
@@ -14,9 +13,13 @@ servers:
   - url: /legacy/v1/
 
 paths:
+  /ldap-config:
+    $ref: '../ldap-config/docs/openapi.yaml#/paths/~1'
+  '/ldap-config/{_id}':
+    $ref: '../ldap-config/docs/openapi.yaml#/paths/~1{_id}'
   /me:
     $ref: '../me/docs/openapi.yaml#/paths/~1me'
   /version:
-    $ref: '../versionService/openapi.yaml#/paths/~1version'
+    $ref: '../versionService/docs/openapi.yaml#/paths/~1version'
 
 openapi: 3.0.2
