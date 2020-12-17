@@ -1,5 +1,5 @@
 const hooks = require('feathers-hooks-common');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
@@ -13,7 +13,7 @@ const cache = new Cache(1);
 cache.addMessageProvider(new StatusAdapter(), Configuration.get('FEATURE_ALERTS_STATUS_ENABLED'));
 
 /**
- * Service to get an array of alert messages from added Message Providers (e.g: status.schul-cloud.org)
+ * Service to get an array of alert messages from added Message Providers (e.g: status.hpi-schul-cloud.de)
  */
 class AlertService {
 	async find() {
@@ -24,10 +24,10 @@ class AlertService {
 module.exports = function alert() {
 	const app = this;
 
+	app.use('/alert/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+
 	app.use('/alert', new AlertService());
 	const service = app.service('/alert');
-
-	app.use('/alert/api', staticContent(path.join(__dirname, '/docs')));
 
 	service.hooks({
 		before: {

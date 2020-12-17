@@ -1,6 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { Forbidden, GeneralError, BadRequest, Conflict } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, BadRequest, GeneralError, Conflict } = reqlib('src/errors');
 
 const globalHooks = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
@@ -212,7 +214,7 @@ const preventNoTeamMember = (context) => {
 	if (!(context.data.submission || {}).teamMembers) {
 		context.data.teamMembers = [context.params.account.userId];
 	}
-	if (context.method == 'update' && (!context.data.teamMembers || context.data.teamMembers.length == 0)) {
+	if (context.method === 'update' && (!context.data.teamMembers || context.data.teamMembers.length === 0)) {
 		return Promise.reject(
 			new Conflict({
 				message: 'Abgaben ohne TeamMember sind nicht erlaubt!',
@@ -384,7 +386,7 @@ const hasDeletePermission = (context) => {
 
 const hasViewPermission = async (context, submission, currentUserId) => {
 	// user is submitter
-	const submissionUserId = submission.studentId.toString();
+	// const submissionUserId = submission.studentId.toString();
 	if (equalIds(submission.studentId, currentUserId)) {
 		return submission;
 	}

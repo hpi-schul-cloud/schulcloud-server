@@ -1,7 +1,9 @@
 const rp = require('request-promise-native');
 const rpErrors = require('request-promise-core/errors');
-const { BadRequest, Conflict } = require('@feathersjs/errors');
-const { Configuration } = require('@schul-cloud/commons');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest, Conflict } = reqlib('src/errors');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const logger = require('../../../logger');
 
@@ -36,7 +38,6 @@ class EtherpadClient {
 			createOrGetGroup: 'Could not create/get this group.',
 			createOrGetAuthor: 'Could not create/get this author.',
 			getActiveSessions: 'Could not get active sessions for this author/group combination.',
-			createSession: 'Could not create a session for this author/group combination.',
 		};
 	}
 
@@ -73,10 +74,6 @@ class EtherpadClient {
 		}
 	}
 
-	handleEtherpadError(err, message) {
-		throw new BadRequest(message, err);
-	}
-
 	createOrGetAuthor(params) {
 		return rp(
 			this.createSettings(
@@ -88,7 +85,7 @@ class EtherpadClient {
 		)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
-				this.handleEtherpadError(err, this.err.createOrGetAuthor);
+				throw new BadRequest(this.err.createOrGetAuthor, err);
 			});
 	}
 
@@ -103,7 +100,7 @@ class EtherpadClient {
 		)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
-				this.handleEtherpadError(err, this.err.createOrGetGroup);
+				throw new BadRequest(this.err.createOrGetGroup, err);
 			});
 	}
 
@@ -118,7 +115,7 @@ class EtherpadClient {
 		)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
-				this.handleEtherpadError(err, this.err.getActiveSessions);
+				throw new BadRequest(this.err.getActiveSessions, err);
 			});
 	}
 
@@ -133,7 +130,7 @@ class EtherpadClient {
 		)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
-				this.handleEtherpadError(err, this.err.createSession);
+				throw new BadRequest(this.err.createSession, err);
 			});
 	}
 
@@ -160,7 +157,7 @@ class EtherpadClient {
 					return response;
 				})
 				.catch((err) => {
-					this.handleEtherpadError(err, this.err.copyOldPadToGroupPad);
+					throw new BadRequest(this.err.copyOldPadToGroupPad, err);
 				});
 		}
 		return rp(
@@ -183,7 +180,7 @@ class EtherpadClient {
 						},
 					};
 				}
-				this.handleEtherpadError(err, this.err.createOrGetGroupPad);
+				throw new BadRequest(this.err.createOrGetGroupPad, err);
 			});
 	}
 }

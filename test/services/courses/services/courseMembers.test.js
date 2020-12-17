@@ -1,17 +1,21 @@
 const { expect } = require('chai');
-const { Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
 
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
+const { Forbidden } = reqlib('src/errors');
 
-const courseMembersService = app.service('/courses/:scopeId/members');
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
 
 describe('course scope members service', () => {
+	let app;
+	let courseMembersService;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		courseMembersService = app.service('/courses/:scopeId/members');
+		server = app.listen(0);
 	});
 
 	after((done) => {

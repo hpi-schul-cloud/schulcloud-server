@@ -3,7 +3,7 @@ const fs = require('fs').promises;
 const { bgWhite } = require('chalk');
 const { ObjectId } = require('mongoose').Types;
 const { randomBytes } = require('crypto');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const logger = require('../src/logger');
 const etherpadClient = require('../src/services/etherpad/utils/EtherpadClient.js');

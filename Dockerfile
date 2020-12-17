@@ -7,10 +7,11 @@ RUN apk update && apk upgrade && apk add --no-cache git make python tzdata curl
 COPY ./package.json .
 COPY ./package-lock.json .
 
-RUN npm install 
+RUN npm ci
 #--only=production
 
 COPY . .
+RUN npm run build
 #COPY ./localtime /etc/localtime
 ENV TZ=Europe/Berlin
 

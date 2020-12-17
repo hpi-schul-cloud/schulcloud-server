@@ -43,7 +43,7 @@ describe('fileStorage services', () => {
 	let directoryService;
 
 	before(async function before() {
-		this.timeout(10000);
+		this.timeout(20000);
 
 		mockery.enable({
 			warnOnUnregistered: false,
@@ -54,7 +54,7 @@ describe('fileStorage services', () => {
 		mockery.registerMock('../strategies/awsS3', AWSStrategy);
 
 		// eslint-disable-next-line global-require
-		app = require('../../../src/app');
+		app = await require('../../../src/app');
 		server = await app.listen(0);
 
 		fileStorageService = app.service('/fileStorage/');

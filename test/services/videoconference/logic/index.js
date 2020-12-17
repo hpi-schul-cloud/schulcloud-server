@@ -27,7 +27,7 @@ describe('videoconference logic', () => {
 		expect(response.messageKey[0]).to.equal(MESSAGE_KEYS.NOT_FOUND);
 	});
 
-	describe('create meeting', async () => {
+	describe('create meeting', () => {
 		let randomId;
 
 		before('create a first meeting', async () => {

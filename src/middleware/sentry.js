@@ -1,5 +1,5 @@
 const Sentry = require('@sentry/node');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { sha } = require('../helper/version');
 const { version } = require('../../package.json');
 
@@ -112,7 +112,6 @@ module.exports = (app) => {
 			release,
 			//	debug: true,
 			sampleRate: Configuration.get('SENTRY_SAMPLE_RATE'),
-			//	captureUnhandledRejections: true,
 			beforeSend(event, hint) {
 				const modifiedEvent = runMiddlewares(event, hint);
 				return modifiedEvent;

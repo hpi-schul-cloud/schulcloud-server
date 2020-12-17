@@ -1,8 +1,11 @@
+// eslint-disable-next-line max-classes-per-file
 const service = require('feathers-mongoose');
-const { Forbidden, NotFound, BadRequest } = require('@feathersjs/errors');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 const { ObjectId } = require('mongoose').Types;
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, NotFound, BadRequest } = reqlib('src/errors');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const logger = require('../../logger/index');
 const newsDocs = require('./docs');
@@ -458,9 +461,9 @@ module.exports = function news() {
 	const newsService = new NewsService();
 	newsService.docs = newsDocs;
 	// use /news to access a user's news
+	app.use('/news/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/news', newsService);
 	app.service('news').hooks(hooks);
-	app.use('/news/api', staticContent(path.join(__dirname, '/docs')));
 
 	// use /newsModel to directly access the model from other services
 	// (external requests are blocked)

@@ -17,9 +17,8 @@ module.exports = (app) => {
 	});
 
 	const name = 'base64Files';
+	app.use(`/${name}/api`, staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use(name, base64FileService, seDownloadHeaders);
 	const base64Files = app.service(name);
 	base64Files.hooks(hooks);
-
-	app.use(`/${name}/api`, staticContent(path.join(__dirname, '/docs')));
 };

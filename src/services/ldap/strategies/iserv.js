@@ -1,4 +1,5 @@
 const AbstractLDAPStrategy = require('./interface.js');
+const { filterForModifiedEntities } = require('./deltaSyncUtils');
 
 /**
  * iServ-specific LDAP functionality
@@ -29,9 +30,9 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
 	 */
 	getUsers() {
 		const options = {
-			filter: 'objectClass=person',
+			filter: filterForModifiedEntities(this.config.lastModifyTimestamp, 'objectClass=person'),
 			scope: 'sub',
-			attributes: ['givenName', 'sn', 'dn', 'uuid', 'uid', 'mail', 'objectClass', 'memberOf'],
+			attributes: ['givenName', 'sn', 'dn', 'uuid', 'uid', 'mail', 'objectClass', 'memberOf', 'modifyTimestamp'],
 		};
 		const searchString = `ou=users,${this.config.rootPath}`;
 		return this.app
@@ -77,6 +78,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
 						ldapDn: obj.dn,
 						ldapUUID: obj.uuid,
 						ldapUID: obj.uid,
+						modifyTimestamp: obj.modifyTimestamp,
 					});
 				});
 				return results;

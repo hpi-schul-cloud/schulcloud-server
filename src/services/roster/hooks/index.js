@@ -1,4 +1,6 @@
-const errors = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 const oauth2 = require('../../oauth2/hooks');
 
 module.exports = {
@@ -11,7 +13,7 @@ module.exports = {
 					context.params.tokenInfo = introspection;
 					return context;
 				}
-				throw new errors.BadRequest('Access token invalid');
+				throw new BadRequest('Access token invalid');
 			})
 			.catch((error) => {
 				throw new Error(error);
@@ -24,7 +26,7 @@ module.exports = {
 		) {
 			return context;
 		}
-		throw new errors.BadRequest('No permissions for the user');
+		throw new BadRequest('No permissions for the user');
 	},
 
 	stripIframe: (context) => {
@@ -71,6 +73,6 @@ module.exports = {
 			)
 		)
 			return context;
-		throw new errors.BadRequest('Current user is not part of group');
+		throw new BadRequest('Current user is not part of group');
 	},
 };

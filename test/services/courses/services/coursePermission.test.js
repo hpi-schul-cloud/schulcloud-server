@@ -1,21 +1,14 @@
 const { expect } = require('chai');
-const { Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
 
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const { Forbidden } = reqlib('src/errors');
 
-const coursePermissionService = app.service('/courses/:scopeId/userPermissions');
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 
-describe('CoursePermissionService', async () => {
-	let server;
-
-	before((done) => {
-		server = app.listen(0, done);
-	});
-
-	after((done) => {
-		server.close(done);
-	});
+describe('CoursePermissionService', () => {
+	let app;
+	let coursePermissionService;
 
 	const studentPermissions = [
 		...new Set(
@@ -106,7 +99,12 @@ describe('CoursePermissionService', async () => {
 	const substitutionIds = [];
 	const schoolId = '599ec14d8e4e364ec18ff46c';
 
+	let server;
+
 	before(async () => {
+		app = await appPromise;
+		coursePermissionService = app.service('/courses/:scopeId/userPermissions');
+		server = await app.listen(0);
 		const studentOne = await testObjects.createTestUser({
 			firstName: 'Hans',
 			lastName: 'Wurst',
@@ -153,7 +151,10 @@ describe('CoursePermissionService', async () => {
 		});
 	});
 
-	after(testObjects.cleanup);
+	after(async () => {
+		await testObjects.cleanup;
+		await server.close();
+	});
 
 	it('registered the service', () => {
 		expect(coursePermissionService).to.not.equal(undefined);

@@ -1,4 +1,6 @@
-const { Forbidden, BadRequest, NotFound } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, BadRequest, NotFound } = reqlib('src/errors');
 const bcrypt = require('bcryptjs');
 const { ObjectId } = require('mongoose').Types;
 const { checkPasswordStrength } = require('../../../utils/passwordHelpers');
@@ -41,7 +43,7 @@ const validateCredentials = async (hook) => {
 	if (client) {
 		return hook;
 	}
-	return Promise.reject();
+	return Promise.reject(new Error());
 };
 
 const trimPassword = (hook) => {
@@ -73,7 +75,7 @@ const validatePassword = (hook) => {
 	}
 
 	return Promise.all([
-		globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'STUDENT_CREATE'),
+		globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'STUDENT_EDIT'),
 		globalHooks.hasRoleNoHook(hook, hook.id, 'student', true),
 		globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'ADMIN_VIEW'),
 		globalHooks.hasRoleNoHook(hook, hook.id, 'teacher', true),
@@ -292,6 +294,25 @@ const validateUserName = async (context) => {
 	return context;
 };
 
+const restrictToSameSchool = async (context) => {
+	const { query } = context.params;
+	const userIsSuperhero = await globalHooks.hasRoleNoHook(context, context.params.account.userId, 'superhero');
+	if (userIsSuperhero) return context;
+
+	if (query.userId) {
+		const { schoolId: currentUserSchoolId } = await globalHooks.getUser(context);
+		const { schoolId: requestedUserSchoolId } = await context.app.service('users').get(query.userId);
+
+		if (!equalIds(currentUserSchoolId, requestedUserSchoolId)) {
+			throw new Forbidden('You are not allowed to request this information');
+		}
+
+		return context;
+	}
+
+	throw new BadRequest('The request query should include a valid userId');
+};
+
 module.exports = {
 	sanitizeUsername,
 	validateUserName,
@@ -306,4 +327,5 @@ module.exports = {
 	securePatching,
 	filterToRelated,
 	restrictToUsersSchool,
+	restrictToSameSchool,
 };

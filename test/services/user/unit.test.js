@@ -2,17 +2,29 @@ const assert = require('assert');
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 
-const { Configuration } = require('@schul-cloud/commons');
-const app = require('../../../src/app');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const appPromise = require('../../../src/app');
 
-const userService = app.service('users');
-const registrationPinService = app.service('registrationPins');
 const { registrationPinModel } = require('../../../src/services/user/model');
 
-const publicTeachersService = app.service('publicTeachers');
-const testObjects = require('../helpers/testObjects')(app);
+const testObjects = require('../helpers/testObjects')(appPromise);
 
 describe('registrationPin Service', () => {
+	let app;
+	let registrationPinService;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		registrationPinService = app.service('registrationPins');
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await server.close();
+		await testObjects.cleanup();
+	});
+
 	let pin = null;
 	const email = 'test.adresse@schul-cloud.org';
 	it('registered the registrationPin Service', () => {
@@ -59,6 +71,10 @@ describe('registrationPin Service', () => {
 });
 
 describe('publicTeachers service', () => {
+	let app;
+	let userService;
+	let publicTeachersService;
+
 	let testStudent = {};
 	let testTeacher = {};
 	let testTeacherDisabled = {};
@@ -69,6 +85,9 @@ describe('publicTeachers service', () => {
 	const schoolId = new ObjectId().toString();
 
 	before(async () => {
+		app = await appPromise;
+		userService = app.service('users');
+		publicTeachersService = app.service('publicTeachers');
 		server = await app.listen(0);
 
 		testStudent = await testObjects.createTestUser({

@@ -1,27 +1,30 @@
 const assert = require('assert');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
 chai.use(chaiHttp);
 
 describe('link service', () => {
+	let app;
 	let server;
+	let service;
 
-	before((done) => {
-		server = app.listen(3031, done);
+	before(async () => {
+		app = await appPromise;
+		service = app.service('link');
+		server = await app.listen(3031);
 	});
 
 	after((done) => {
 		server.close(done);
 	});
 
-	const service = app.service('link');
 	it('registered the links service', () => {
 		assert.ok(service);
 	});
 
-	it(`generates a link of length ${service.Model.linkLength} that has the correct target set`, function test() {
+	it(`generates a link that has the correct target set`, function test() {
 		this.timeout(10000);
 
 		const url = 'localhost:3031/';

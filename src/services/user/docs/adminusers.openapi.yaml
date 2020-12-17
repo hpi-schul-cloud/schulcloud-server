@@ -1,0 +1,511 @@
+security:
+  - jwtBearer: []
+info:
+  title: Schul-Cloud User Service API
+  description:
+    This is the API specification for the Schul-Cloud User service.
+    
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+servers:
+  - url: /users/admin/
+components:
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    user_admin_base:
+      description: Data Transfer Object containing userdata
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: 'email'
+        birthday:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        schoolId:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        sendRegistration:
+          type: boolean
+        generateRegistrationLink:
+          type: boolean
+    user_admin:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/user_admin_base'
+        - required:
+          - firstName
+          - lastName
+          - email
+    user_admin_list:
+      description: TODO
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/user_admin'
+        total:
+          type: integer
+        limit:
+          type: integer
+        skip:
+          type: integer
+paths:
+  /students:
+    get:
+      parameters:
+        - description: Number of results to return
+          in: query
+          name: $limit
+          schema:
+            type: integer
+        - description: Number of results to skip
+          in: query
+          name: $skip
+          schema:
+            type: integer
+        - description: Property to sort results
+          in: query
+          name: $sort
+          schema:
+            type: object
+        - description: Regex to search for in firstName, lastName, and emails.
+          in: query
+          name: searchQuery
+          schema:
+            type: string
+        - description: Query parameters to filter
+          in: query
+          name: firstName
+          schema:
+            type: string
+        - description: Query parameters to filter
+          in: query
+          name: lastName
+          schema:
+            type: string
+        - description: Query parameters to filter
+          in: query
+          name: createdAt
+          schema:
+            anyOf:
+              - type: string
+              - type: object
+        - description: Query parameters to filter
+          in: query
+          name: consentStatus
+          schema:
+            anyOf:
+              - type: string
+              - type: object
+        - description: Array of user ids to filter
+          in: query
+          name: users
+          schema:
+            anyOf:
+              - type: string
+              - type: array
+              - type: object
+        - description: Array of classes to filter
+          in: query
+          name: classes
+          schema:
+            anyOf:
+              - type: string
+              - type: array
+              - type: object
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_admin_list'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Retrieves a list of all resources from the service.
+      summary: ''
+      tags:
+        - users
+      security: []
+    post:
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_admin'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Creates a new resource with data.
+      summary: ''
+      tags:
+        - users
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user_admin'
+  '/students/{id}':
+    get:
+      parameters:
+        - in: path
+          name: id
+          description: ID of admin to return
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_admin'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Retrieves a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - users
+      security: []
+    put:
+      parameters:
+        - in: path
+          name: id
+          description: ID of admin to update
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_admin'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - users
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user_admin'
+    patch:
+      parameters:
+        - in: path
+          name: id
+          description: ID of admin to update
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_admin'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - users
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user_admin_base'
+    delete:
+      parameters:
+        - in: path
+          name: id
+          description: ID of admin to remove
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_admin'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Removes the resource with id.
+      summary: ''
+      tags:
+        - users
+      security: []
+  /teachers:
+    get:
+      parameters:
+        - description: Number of results to return
+          in: query
+          name: $limit
+          schema:
+            type: integer
+        - description: Number of results to skip
+          in: query
+          name: $skip
+          schema:
+            type: integer
+        - description: Property to sort results
+          in: query
+          name: $sort
+          schema:
+            type: object
+        - description: Regex to search for in firstName, lastName, and emails.
+          in: query
+          name: searchQuery
+          schema:
+            type: string
+        - description: Query parameters to filter
+          in: query
+          name: firstName
+          schema:
+            type: string
+        - description: Query parameters to filter
+          in: query
+          name: lastName
+          schema:
+            type: string
+        - description: Query parameters to filter
+          in: query
+          name: createdAt
+          schema:
+            anyOf:
+              - type: string
+              - type: object
+        - description: Query parameters to filter
+          in: query
+          name: consentStatus
+          schema:
+            anyOf:
+              - type: string
+              - type: object
+        - description: Array of user ids to filter
+          in: query
+          name: users
+          schema:
+            anyOf:
+              - type: string
+              - type: array
+              - type: object
+        - description: Array of classes to filter
+          in: query
+          name: classes
+          schema:
+            anyOf:
+              - type: string
+              - type: array
+              - type: object
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_admin_list'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Retrieves a list of all resources from the service.
+      summary: ''
+      tags:
+        - users
+      security: []
+    post:
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_admin'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Creates a new resource with data.
+      summary: ''
+      tags:
+        - users
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user_admin'
+  '/teachers/{id}':
+    get:
+      parameters:
+        - in: path
+          name: id
+          description: ID of admin to return
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_admin'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Retrieves a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - users
+      security: []
+    put:
+      parameters:
+        - in: path
+          name: id
+          description: ID of admin to update
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_admin'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - users
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user_admin'
+    patch:
+      parameters:
+        - in: path
+          name: id
+          description: ID of admin to update
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_admin'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - users
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user_admin_base'
+    delete:
+      parameters:
+        - in: path
+          name: id
+          description: ID of admin to remove
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_admin'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Removes the resource with id.
+      summary: ''
+      tags:
+        - users
+      security: []
+openapi: 3.0.2

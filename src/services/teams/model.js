@@ -13,7 +13,7 @@ const TEAM_FEATURES = {
 
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
-		name: { type: String, required: true },
+		name: { type: String, required: true, trim: true },
 		schoolId: { type: Schema.Types.ObjectId, required: true, ref: 'school' },
 		userIds: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 	};
@@ -48,7 +48,7 @@ const teamsSchema = getUserGroupSchema({
 	// @override
 	userIds: [teamUserSchema],
 	invitedUserIds: [teamInvitedUserSchema],
-	description: { type: String, default: '' },
+	description: { type: String, default: '', trim: true },
 	classIds: [{ type: Schema.Types.ObjectId, ref: 'class' }],
 	color: { type: String, default: '#ACACAC' },
 	features: [{ type: String, enum: Object.values(TEAM_FEATURES) }],

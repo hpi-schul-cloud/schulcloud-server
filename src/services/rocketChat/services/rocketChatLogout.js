@@ -1,6 +1,8 @@
-const { BadRequest } = require('@feathersjs/errors');
 const request = require('request-promise-native');
+const reqlib = require('app-root-path').require;
 
+const { BadRequest } = reqlib('src/errors');
+const logger = reqlib('src/logger');
 const { getRequestOptions } = require('../helpers');
 const { userModel } = require('../model');
 const docs = require('../docs');
@@ -29,7 +31,7 @@ class RocketChatLogout {
 			}
 			return 'success';
 		} catch (error) {
-			throw new BadRequest('could not log out user');
+			throw new BadRequest('could not log out user', error);
 		}
 	}
 
@@ -38,7 +40,12 @@ class RocketChatLogout {
 	 * @param {*} context
 	 */
 	onAuthenticationRemoved(context) {
-		this.get(context.userId);
+		this.get(context.userId).catch((err) => {
+			// catch it, but is used as event and async from request.
+			// do not throw this error up
+			// TODO create an eventErrorHandler for it, that log and send it to Sentry
+			logger.error('onAuthenticationRemoved', err);
+		});
 	}
 
 	/**

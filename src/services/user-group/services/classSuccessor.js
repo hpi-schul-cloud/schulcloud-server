@@ -1,5 +1,6 @@
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
 
+const { Forbidden, BadRequest } = reqlib('src/errors');
 const SchoolYearFacade = require('../../school/logic/year');
 const logger = require('../../../logger');
 const { classModel } = require('../model');

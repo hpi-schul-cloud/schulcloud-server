@@ -1,62 +1,77 @@
 const Sentry = require('@sentry/node');
 const express = require('@feathersjs/express');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const jwt = require('jsonwebtoken');
+const OpenApiValidator = require('express-openapi-validator');
 
-const { requestError } = require('../logger/systemLogger');
-const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
+const reqlib = require('app-root-path').require;
+
+const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention, BadRequest } = reqlib('src/errors');
+const { convertToFeathersError, cleanupIncomingMessage } = reqlib('src/errors/utils');
+
 const logger = require('../logger');
-const { SilentError } = require('./errors');
 
 const MAX_LEVEL_FILTER = 12;
 
-const logRequestInfosInErrorCase = (error, req, res, next) => {
-	if (error) {
+const getRequestInfo = (req) => {
+	const info = {
+		url: req.originalUrl,
+		data: req.body,
+		method: req.method,
+	};
+
+	try {
 		let decodedJWT;
-		try {
+		if (req.headers.authorization) {
 			decodedJWT = jwt.decode(req.headers.authorization.replace('Bearer ', ''));
-		} catch (err) {
-			decodedJWT = {};
 		}
 
-		requestError(req, (decodedJWT || {}).userId, error);
+		if (decodedJWT && decodedJWT.accountId) {
+			info.user = {
+				accountId: decodedJWT.accountId,
+				userId: decodedJWT.userId,
+			};
+			if (decodedJWT.support === true) {
+				info.support = {
+					supportJWT: true,
+					supportUserId: decodedJWT.supportUserId,
+				};
+			}
+		} else if (req.headers.authorization) {
+			info.user = 'Can not decode jwt.';
+		} else {
+			info.user = 'No jwt is set.';
+		}
+	} catch (err) {
+		// Maybe we found a better solution, but we can not display the full error message with stack trace
+		// it can contain jwt informations
+		info.user = err.message;
 	}
-	next(error);
+
+	return info;
 };
 
-const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
+const formatAndLogErrors = (error, req, res, next) => {
 	if (error) {
-		// clear data and add requestId
-		error.data = showRequestId
-			? {
-					requestId: req.headers.requestId,
-			  }
-			: {};
+		// sanitize
+		const err = convertToFeathersError(error);
+		const requestInfo = getRequestInfo(req);
+		// type is override by logger for logging type
+		err.errorType = err.type;
 
-		// delete response informations for extern express applications
-		delete error.response;
-		if (error.options) {
-			// can include jwts if error it throw by extern micro services
-			delete error.options.headers;
-		}
-		logger.error({ ...error });
-
-		// if exist delete it
-		delete error.stack;
-		delete error.catchedError;
+		// nested in errors
+		cleanupIncomingMessage(err.errors);
+		// for tests level is set to emerg, set LOG_LEVEL=debug for see it
+		// Logging the error object won't print error's stack trace. You need to ask for it specifically
+		logger.error({ ...err, ...requestInfo });
 	}
 	next(error);
 };
-
-const returnAsJson = express.errorHandler({
-	html: (error, req, res) => {
-		res.json(error);
-	},
-});
 
 // map to lower case and test as lower case
 const secretDataKeys = (() =>
 	[
+		'headers',
 		'password',
 		'passwort',
 		'new_password',
@@ -81,6 +96,8 @@ const secretDataKeys = (() =>
 		'birthday',
 		'description',
 		'gradeComment',
+		'_csrf',
+		'searchUserPassword',
 	].map((k) => k.toLocaleLowerCase()))();
 
 const filterSecretValue = (key, value) => {
@@ -125,8 +142,32 @@ const filterQuery = (url) => {
 	return newUrl;
 };
 
+// important that it is not sent to sentry, or added it to logs
+const filterSecrets = (error, req, res, next) => {
+	if (error) {
+		// req.url = filterQuery(req.url);
+		// originalUrl is used by sentry
+		req.originalUrl = filterQuery(req.originalUrl);
+		req.body = filter(req.body);
+		error.data = filter(error.data);
+		error.options = filter(error.options);
+	}
+	next(error);
+};
+
+const saveResponseFilter = (error) => ({
+	name: error.name,
+	message: error.message instanceof Error && error.message.message ? error.message.message : error.message,
+	code: error.code,
+	traceId: error.traceId,
+});
+
+const sendError = (res, error) => {
+	res.status(error.code).json(saveResponseFilter(error));
+};
+
 const handleSilentError = (error, req, res, next) => {
-	if (error.catchedError.name === SilentError.name) {
+	if (error instanceof SilentError || (error && error.error instanceof SilentError)) {
 		if (Configuration.get('SILENT_ERROR_ENABLED')) {
 			res.append('x-silent-error', true);
 		}
@@ -136,30 +177,57 @@ const handleSilentError = (error, req, res, next) => {
 	}
 };
 
-// important that it is not send to sentry, or add it to logs
-const filterSecrets = (error, req, res, next) => {
-	if (error) {
-		// req.url = filterQuery(req.url);
-		// originalUrl is used by sentry
-		req.originalUrl = filterQuery(req.originalUrl);
-		req.body = filter(req.body);
-		error.data = filter(error.data);
-		error.catchedError = filter(error.catchedError);
-		error.options = filter(error.options);
+const handleValidationError = (error, req, res, next) => {
+	// todo: handle other validation errors so they are formatted properly
+	let err = error;
+	if (error instanceof OpenApiValidator.error.NotFound) {
+		err = new PageNotFound(error);
+	} else if (err instanceof OpenApiValidator.error.BadRequest) {
+		err = new BadRequest(error);
 	}
+	next(err);
+};
+
+const skipErrorLogging = (error, req, res, next) => {
+	if (
+		error instanceof PageNotFound ||
+		error.code === 405 ||
+		error instanceof AutoLogout ||
+		error instanceof BruteForcePrevention
+	) {
+		logger.debug(error);
+		logger.warning(error.name);
+		sendError(res, error);
+	} else {
+		next(error);
+	}
+};
+
+const returnAsJson = express.errorHandler({
+	html: (error, req, res) => {
+		sendError(res, error);
+	},
+	json: (error, req, res) => {
+		sendError(res, error);
+	},
+});
+
+const addTraceId = (error, req, res, next) => {
+	error.traceId = (req.headers || {}).requestId || error.traceId;
 	next(error);
 };
 
 const errorHandler = (app) => {
+	app.use(addTraceId);
 	app.use(filterSecrets);
-	if (NODE_ENV !== ENVIRONMENTS.TEST) {
-		app.use(logRequestInfosInErrorCase);
-	}
-
 	app.use(Sentry.Handlers.errorHandler());
+	app.use(handleValidationError);
+	// TODO make skipErrorLogging configruable if middleware is added
+	app.use(skipErrorLogging);
+	app.use(formatAndLogErrors);
+	// TODO make handleSilentError configruable if middleware is added
+	// Configuration.get('SILENT_ERROR_ENABLED')
 	app.use(handleSilentError);
-	app.use(formatAndLogErrors(NODE_ENV !== ENVIRONMENTS.TEST));
 	app.use(returnAsJson);
 };
-
 module.exports = errorHandler;

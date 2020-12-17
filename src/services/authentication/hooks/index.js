@@ -1,6 +1,8 @@
-const { TooManyRequests } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BruteForcePrevention } = reqlib('src/errors');
 const { discard } = require('feathers-hooks-common');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const {
 	getRedisClient,
 	redisSetAsync,
@@ -47,7 +49,7 @@ const bruteForceCheck = async (context) => {
 			if (account.lasttriedFailedLogin) {
 				const timeDifference = (Date.now() - account.lasttriedFailedLogin) / 1000;
 				if (timeDifference < allowedTimeDifference) {
-					throw new TooManyRequests('Brute Force Prevention!', {
+					throw new BruteForcePrevention('Brute Force Prevention!', {
 						timeToWait: allowedTimeDifference - Math.ceil(timeDifference),
 					});
 				}
@@ -207,7 +209,7 @@ const hooks = {
 		remove: [removeProvider],
 	},
 	after: {
-		all: [discard('account.password')],
+		all: [discard('account.password'), globalHooks.transformToDataTransferObject],
 		create: [bruteForceReset, addJwtToWhitelist],
 		remove: [populateResult, removeJwtFromWhitelist],
 	},

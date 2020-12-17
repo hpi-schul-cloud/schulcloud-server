@@ -1,5 +1,6 @@
-const logger = require('../../../logger');
+const reqlib = require('app-root-path').require;
 
+const { NotFound } = reqlib('src/errors');
 const { FileModel } = require('../model');
 const { userModel } = require('../../user/model');
 const RoleModel = require('../../role/model');
@@ -21,8 +22,7 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 		});
 		sortedTeamRoles = sortRoles(teamRoles);
 	} catch (error) {
-		logger.error(error);
-		return Promise.reject();
+		return Promise.reject(error);
 	}
 
 	return new Promise((resolve, reject) => {
@@ -66,7 +66,7 @@ const checkMemberStatus = ({ file, user }) => {
 const checkPermissions = (permission) => async (user, file) => {
 	const fileObject = await getFile(file);
 	if (fileObject === undefined || fileObject === null) {
-		throw new Error('File does not exist.', { user, file, permission });
+		throw new NotFound('File does not exist.', { user, file, permission });
 	}
 	const {
 		permissions,

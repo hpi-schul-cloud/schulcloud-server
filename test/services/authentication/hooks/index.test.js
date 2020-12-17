@@ -1,12 +1,12 @@
 const mockery = require('mockery');
 const { expect } = require('chai');
-const commons = require('@schul-cloud/commons');
+const commons = require('@hpi-schul-cloud/commons');
 
 const { Configuration } = commons;
 const redisMock = require('../../../utils/redis/redisMock');
 
 describe('authentication hooks', function test() {
-	this.timeout(10000);
+	this.timeout(20000);
 	let redisHelper;
 	let addJwtToWhitelist;
 	let removeJwtFromWhitelist;
@@ -16,7 +16,7 @@ describe('authentication hooks', function test() {
 	let testObjects;
 
 	before(async () => {
-		configBefore = Configuration.toObject();
+		configBefore = Configuration.toObject({ plainSecrets: true });
 
 		mockery.enable({
 			warnOnReplace: false,
@@ -24,7 +24,7 @@ describe('authentication hooks', function test() {
 			useCleanCache: true,
 		});
 		mockery.registerMock('redis', redisMock);
-		mockery.registerMock('@schul-cloud/commons', commons);
+		mockery.registerMock('@hpi-schul-cloud/commons', commons);
 
 		delete require.cache[require.resolve('../../../../src/app')];
 		delete require.cache[require.resolve('../../../../src/utils/redis')];
@@ -34,7 +34,7 @@ describe('authentication hooks', function test() {
 		/* eslint-disable global-require */
 
 		redisHelper = require('../../../../src/utils/redis');
-		app = require('../../../../src/app');
+		app = await require('../../../../src/app');
 		server = await app.listen(0);
 		testObjects = require('../../helpers/testObjects')(app);
 		({ addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/services/authentication/hooks'));

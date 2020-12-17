@@ -1,8 +1,5 @@
 const { expect } = require('chai');
 const assert = require('assert');
-const { Configuration } = require('@schul-cloud/commons');
-
-const app = require('../../../../src/app');
 const { encryptSecret, decryptSecret } = require('../../../../src/services/system/hooks/searchUserPasswordEncryption');
 
 describe('Search User Password Encryption Hook', () => {

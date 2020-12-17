@@ -1,19 +1,21 @@
 const mockery = require('mockery');
-const commons = require('@schul-cloud/commons');
+const { expect } = require('chai');
+const { ObjectId } = require('mongoose').Types;
+const commons = require('@hpi-schul-cloud/commons');
 const rabbitmqMock = require('./rabbitmqMock');
 const { ACTIONS } = require('../../../src/services/messengerSync/producer');
 
 const { Configuration } = commons;
 
 describe('service', function test() {
-	this.timeout(10000); // give require app enough time
+	this.timeout(20000); // give require app enough time
 	let configBefore;
 	let server;
 	let app;
 	let testObjects;
 
-	before((done) => {
-		configBefore = Configuration.toObject(); // deep copy current config
+	before(async () => {
+		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 		Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
 		mockery.enable({
@@ -21,14 +23,14 @@ describe('service', function test() {
 			warnOnUnregistered: false,
 			useCleanCache: true,
 		});
-		mockery.registerMock('@schul-cloud/commons', commons);
+		mockery.registerMock('@hpi-schul-cloud/commons', commons);
 		mockery.registerMock('amqplib', rabbitmqMock.amqplib);
 
 		// eslint-disable-next-line global-require
-		app = require('../../../src/app');
+		app = await require('../../../src/app');
 		// eslint-disable-next-line global-require
 		testObjects = require('../helpers/testObjects')(app);
-		server = app.listen(0, done);
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -43,62 +45,87 @@ describe('service', function test() {
 	});
 
 	it('reject invalid messages', async () => {
-		const school = await testObjects.createTestSchool({ features: ['messenger'] });
-		const users = await Promise.all([
-			testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id }),
-			testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id }),
-			testObjects.createTestUser({ roles: ['student'], schoolId: school._id }),
-		]);
-
 		let msg = {};
-		rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
-		// > reject
+		let success;
+
+		success = await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		expect(success).to.be.false; // > reject
 
 		msg = {
 			action: 'invalid',
 		};
-		rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
-		// > reject
+		success = await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		expect(success).to.be.false; // > reject
 
+		// SYNC_SCHOOL
 		msg = {
 			action: ACTIONS.SYNC_SCHOOL,
 		};
-		rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
-		// > reject (schoolId)
+		success = await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		expect(success).to.be.false; // > reject (schoolId)
 
 		msg = {
 			action: ACTIONS.SYNC_SCHOOL,
 			schoolId: 'invalid',
 		};
-		rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
-		// > reject (schoolId)
+		success = await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		expect(success).to.be.false; // > reject (schoolId)
 
 		msg = {
 			action: ACTIONS.SYNC_SCHOOL,
-			schoolId: school._id,
+			schoolId: new ObjectId(),
 		};
-		rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
-		// > reject (fullSync)
+		success = await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		expect(success).to.be.false; // > reject (fullSync)
 
+		// SYNC_USER
 		msg = {
 			action: ACTIONS.SYNC_USER,
 		};
-		rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
-		// > reject (userId)
+		success = await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		expect(success).to.be.false; // > reject (userId)
 
 		msg = {
 			action: ACTIONS.SYNC_USER,
 			userId: 'invalid',
 		};
-		rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
-		// > reject (userId)
+		success = await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		expect(success).to.be.false; // > reject (userId)
 
 		msg = {
 			action: ACTIONS.SYNC_USER,
-			userId: users[0]._id,
+			userId: new ObjectId(),
 		};
-		rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
-		// > reject (what)
+		success = await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		expect(success).to.be.false; // > reject (what)
+
+		// DELETE_TEAM
+		msg = {
+			action: ACTIONS.DELETE_TEAM,
+		};
+		success = await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		expect(success).to.be.false; // > reject (teamId)
+
+		msg = {
+			action: ACTIONS.DELETE_TEAM,
+			teamId: 'invalid',
+		};
+		success = await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		expect(success).to.be.false; // > reject (teamId)
+
+		// DELETE_COURSE
+		msg = {
+			action: ACTIONS.DELETE_COURSE,
+		};
+		success = await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		expect(success).to.be.false; // > reject (courseId)
+
+		msg = {
+			action: ACTIONS.DELETE_COURSE,
+			courseId: 'invalid',
+		};
+		success = await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		expect(success).to.be.false; // > reject (courseId)
 	});
 
 	it('sync school', async () => {
@@ -114,7 +141,8 @@ describe('service', function test() {
 			schoolId: school._id,
 			fullSync: true,
 		};
-		rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		const success = await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		expect(success).to.be.true;
 	});
 
 	it('sync user', async () => {
@@ -130,6 +158,32 @@ describe('service', function test() {
 			userId: users[0]._id,
 			fullSync: true,
 		};
-		await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		const success = await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		expect(success).to.be.true;
+	});
+
+	it('delete team', async () => {
+		const school = await testObjects.createTestSchool({ features: ['messenger'] });
+		const { team } = await testObjects.createTestTeamWithOwner({ roles: ['teacher'], schoolId: school._id });
+
+		const msg = {
+			action: ACTIONS.DELETE_TEAM,
+			teamId: team._id,
+		};
+		const success = await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		expect(success).to.be.true;
+	});
+
+	it('delete course', async () => {
+		const school = await testObjects.createTestSchool({ features: ['messenger'] });
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
+		const course = await testObjects.createTestCourse({ teacherIds: [teacher._id], schoolId: school._id });
+
+		const msg = {
+			action: ACTIONS.DELETE_COURSE,
+			courseId: course._id,
+		};
+		const success = await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		expect(success).to.be.true;
 	});
 });

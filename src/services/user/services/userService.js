@@ -1,7 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
-// const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
-// const logger = require('../../../logger');
 const {
 	modelServices: { prepareInternalParams },
 } = require('../../../utils');
@@ -110,7 +108,7 @@ const userHooks = {
 		create: [
 			checkJwt(),
 			iff(isProvider('external'), preventPopulate),
-			pinIsVerified,
+			iff(isProvider('external'), pinIsVerified),
 			iff(isProvider('external'), restrictToCurrentSchool),
 			iff(isProvider('external'), enforceRoleHierarchyOnCreate),
 			sanitizeData,

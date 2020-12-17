@@ -1,8 +1,10 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const { BadRequest, NotFound } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest, NotFound } = reqlib('src/errors');
 const { setupUser, deleteUser } = require('../helper/helper.user');
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 const {
 	ifSuperhero,
 	getSessionUser,
@@ -14,10 +16,12 @@ const {
 const { teamUserModel } = require('../../../../src/services/teams/model');
 
 describe('hook helpers', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {

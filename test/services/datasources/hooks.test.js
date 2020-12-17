@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 const { updatedBy, createdBy, protectFields, validateParams } = require('../../../src/services/datasources/hooks');
 
 describe('datasources hooks', () => {

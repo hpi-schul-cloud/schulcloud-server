@@ -1,7 +1,10 @@
 const fs = require('fs');
 const url = require('url');
 const rp = require('request-promise-native');
-const { Forbidden, BadRequest, NotFound, GeneralError } = require('@feathersjs/errors');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, NotFound, BadRequest, GeneralError } = reqlib('src/errors');
 
 const hooks = require('./hooks');
 const swaggerDocs = require('./docs');
@@ -25,22 +28,14 @@ const { teamsModel } = require('../teams/model');
 const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 const logger = require('../../logger');
-const { KEEP_ALIVE } = require('../../../config/globals');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const {
 	FILE_PREVIEW_SERVICE_URI,
 	FILE_PREVIEW_CALLBACK_URI,
 	ENABLE_THUMBNAIL_GENERATION,
-	FILE_SECURITY_CHECK_SERVICE_URI,
 	FILE_SECURITY_CHECK_MAX_FILE_SIZE,
-	FILE_SECURITY_SERVICE_USERNAME,
-	FILE_SECURITY_SERVICE_PASSWORD,
-	ENABLE_FILE_SECURITY_CHECK,
-	API_HOST,
 	SECURITY_CHECK_SERVICE_PATH,
 } = require('../../../config/globals');
-
-const FILE_SECURITY_CHECK_CALLBACK_URI = url.resolve(API_HOST, SECURITY_CHECK_SERVICE_PATH);
 
 const sanitizeObj = (obj) => {
 	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
@@ -90,7 +85,7 @@ const prepareThumbnailGeneration = (file, strategy, userId, { name: dataName }, 
  * @returns {Promise} Promise that rejects with errors or resolves with no data otherwise
  */
 const prepareSecurityCheck = (file, userId, strategy) => {
-	if (ENABLE_FILE_SECURITY_CHECK === 'true') {
+	if (Configuration.get('ENABLE_FILE_SECURITY_CHECK') === true) {
 		if (file.size > FILE_SECURITY_CHECK_MAX_FILE_SIZE) {
 			return FileModel.updateOne(
 				{ _id: file._id },
@@ -109,22 +104,26 @@ const prepareSecurityCheck = (file, userId, strategy) => {
 				flatFileName: file.storageFileName,
 				localFileName: file.storageFileName,
 				download: true,
-				Expires: 3600 * 24,
 			})
-			.then((signedUrl) =>
-				rp.post({
-					url: FILE_SECURITY_CHECK_SERVICE_URI,
+			.then((signedUrl) => {
+				const params = {
+					url: Configuration.get('FILE_SECURITY_CHECK_SERVICE_URI'),
 					auth: {
-						user: FILE_SECURITY_SERVICE_USERNAME,
-						pass: FILE_SECURITY_SERVICE_PASSWORD,
+						user: Configuration.get('FILE_SECURITY_SERVICE_USERNAME'),
+						pass: Configuration.get('FILE_SECURITY_SERVICE_PASSWORD'),
 					},
 					body: {
 						download_uri: signedUrl,
-						callback_uri: url.resolve(FILE_SECURITY_CHECK_CALLBACK_URI, file.securityCheck.requestToken),
+						callback_uri: url.resolve(
+							Configuration.get('API_HOST'),
+							`${SECURITY_CHECK_SERVICE_PATH}${file.securityCheck.requestToken}`
+						),
 					},
 					json: true,
-				})
-			);
+				};
+				const send = rp.post(params);
+				return send;
+			});
 	}
 	return Promise.resolve();
 };
@@ -302,7 +301,7 @@ const fileStorageService = {
 					if (teamMember) {
 						return resolve();
 					}
-					return reject();
+					return reject(new Error());
 				});
 			}
 
@@ -781,7 +780,7 @@ const newFileService = {
 			)
 			.then((signedUrl) => {
 				const headers = signedUrl.header;
-				if (KEEP_ALIVE) {
+				if (Configuration.get('KEEP_ALIVE')) {
 					headers.Connection = 'Keep-Alive';
 				}
 				return rp({

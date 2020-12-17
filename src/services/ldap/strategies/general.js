@@ -1,4 +1,5 @@
 const AbstractLDAPStrategy = require('./interface.js');
+const { filterForModifiedEntities } = require('./deltaSyncUtils');
 
 /**
  * General LDAP functionality
@@ -27,7 +28,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 * @memberof GeneralLDAPStrategy
 	 */
-	getUsers() {
+	async getUsers() {
 		const {
 			userAttributeNameMapping,
 			userPathAdditions,
@@ -37,10 +38,9 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 
 		const requiredAttributes = [userAttributeNameMapping.uuid, userAttributeNameMapping.mail];
 		const requiredFilters = requiredAttributes.map((attr) => `(${attr}=*)`).join('');
-		const filter = `(&(objectClass=person)${requiredFilters})`;
 
 		const options = {
-			filter,
+			filter: filterForModifiedEntities(this.config.lastModifyTimestamp, `(&(objectClass=person)${requiredFilters})`),
 			scope: 'sub',
 			attributes: [
 				userAttributeNameMapping.givenName,
@@ -49,6 +49,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 				userAttributeNameMapping.uuid,
 				userAttributeNameMapping.uid,
 				userAttributeNameMapping.mail,
+				'modifyTimestamp',
 				roleType === 'group' ? 'memberOf' : userAttributeNameMapping.role,
 			],
 		};
@@ -61,73 +62,76 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 			searchArray[index] = searchString === '' ? this.config.rootPath : `${searchString},${this.config.rootPath}`;
 		});
 
-		const promises = searchArray.map((searchPath) =>
-			this.app.service('ldap').searchCollection(this.config, searchPath, options, rawAttributes)
-		);
-		return Promise.all(promises)
-			.then((results) => results.reduce((all, result) => all.concat(result)), [])
-			.then((data) => {
-				const results = [];
-				data.forEach((obj) => {
-					const roles = [];
-					if (roleType === 'group') {
-						if (!Array.isArray(obj.memberOf)) {
-							obj.memberOf = [obj.memberOf];
-						}
-						if (obj.memberOf.includes(roleAttributeNameMapping.roleStudent)) {
-							roles.push('student');
-						}
-						if (obj.memberOf.includes(roleAttributeNameMapping.roleTeacher)) {
-							roles.push('teacher');
-						}
-						if (obj.memberOf.includes(roleAttributeNameMapping.roleAdmin)) {
-							roles.push('administrator');
-						}
-						if (obj.memberOf.includes(roleAttributeNameMapping.roleNoSc)) {
-							return;
-						}
-					} else {
-						if (obj[userAttributeNameMapping.role] === roleAttributeNameMapping.roleStudent) {
-							roles.push('student');
-						}
-						if (obj[userAttributeNameMapping.role] === roleAttributeNameMapping.roleTeacher) {
-							roles.push('teacher');
-						}
-						if (obj[userAttributeNameMapping.role] === roleAttributeNameMapping.roleAdmin) {
-							roles.push('administrator');
-						}
-						if (obj[userAttributeNameMapping.role] === roleAttributeNameMapping.roleNoSc) {
-							return;
-						}
-					}
+		let ldapUsers = [];
+		for (const searchPath of searchArray) {
+			ldapUsers = ldapUsers.concat(
+				// eslint-disable-next-line no-await-in-loop
+				await this.app.service('ldap').searchCollection(this.config, searchPath, options, rawAttributes)
+			);
+		}
 
-					if (roles.length === 0) {
-						return;
-					}
+		const results = [];
+		ldapUsers.forEach((obj) => {
+			const roles = [];
+			if (roleType === 'group') {
+				if (!Array.isArray(obj.memberOf)) {
+					obj.memberOf = [obj.memberOf];
+				}
+				if (obj.memberOf.includes(roleAttributeNameMapping.roleStudent)) {
+					roles.push('student');
+				}
+				if (obj.memberOf.includes(roleAttributeNameMapping.roleTeacher)) {
+					roles.push('teacher');
+				}
+				if (obj.memberOf.includes(roleAttributeNameMapping.roleAdmin)) {
+					roles.push('administrator');
+				}
+				if (obj.memberOf.includes(roleAttributeNameMapping.roleNoSc)) {
+					return;
+				}
+			} else {
+				if (obj[userAttributeNameMapping.role] === roleAttributeNameMapping.roleStudent) {
+					roles.push('student');
+				}
+				if (obj[userAttributeNameMapping.role] === roleAttributeNameMapping.roleTeacher) {
+					roles.push('teacher');
+				}
+				if (obj[userAttributeNameMapping.role] === roleAttributeNameMapping.roleAdmin) {
+					roles.push('administrator');
+				}
+				if (obj[userAttributeNameMapping.role] === roleAttributeNameMapping.roleNoSc) {
+					return;
+				}
+			}
 
-					let firstName = obj[userAttributeNameMapping.givenName];
-					if (!firstName) {
-						if (roles.includes('administrator')) {
-							firstName = 'Admin';
-						} else if (roles.includes('teacher')) {
-							firstName = 'Lehrkraft';
-						} else {
-							firstName = 'Schüler:in';
-						}
-					}
+			if (roles.length === 0) {
+				return;
+			}
 
-					results.push({
-						email: obj[userAttributeNameMapping.mail],
-						firstName,
-						lastName: obj[userAttributeNameMapping.sn],
-						roles,
-						ldapDn: obj[userAttributeNameMapping.dn],
-						ldapUUID: obj[userAttributeNameMapping.uuid],
-						ldapUID: obj[userAttributeNameMapping.uid],
-					});
-				});
-				return results;
+			let firstName = obj[userAttributeNameMapping.givenName];
+			if (!firstName) {
+				if (roles.includes('administrator')) {
+					firstName = 'Admin';
+				} else if (roles.includes('teacher')) {
+					firstName = 'Lehrkraft';
+				} else {
+					firstName = 'Schüler:in';
+				}
+			}
+
+			results.push({
+				email: obj[userAttributeNameMapping.mail],
+				firstName,
+				lastName: obj[userAttributeNameMapping.sn],
+				roles,
+				ldapDn: obj[userAttributeNameMapping.dn],
+				ldapUUID: obj[userAttributeNameMapping.uuid],
+				ldapUID: obj[userAttributeNameMapping.uid],
+				modifyTimestamp: obj.modifyTimestamp,
 			});
+		});
+
+		return results;
 	}
 
 	/**
@@ -141,12 +145,16 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 
 		if (classPathAdditions !== '') {
 			const options = {
-				filter: `${classAttributeNameMapping.description}=*`,
+				filter: filterForModifiedEntities(
+					this.config.lastModifyTimestamp,
+					`${classAttributeNameMapping.description}=*`
+				),
 				scope: 'sub',
 				attributes: [
 					classAttributeNameMapping.dn,
 					classAttributeNameMapping.description,
 					classAttributeNameMapping.uniqueMember,
+					'modifyTimestamp',
 				],
 			};
 			const searchString = `${classPathAdditions},${this.config.rootPath}`;
@@ -158,6 +166,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 						className: obj[classAttributeNameMapping.description],
 						ldapDn: obj[classAttributeNameMapping.dn],
 						uniqueMembers: obj[classAttributeNameMapping.uniqueMember],
+						modifyTimestamp: obj.modifyTimestamp,
 					}))
 				);
 		}

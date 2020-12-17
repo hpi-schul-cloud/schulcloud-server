@@ -3,15 +3,15 @@ security:
 info:
   title: Schul-Cloud Account Service API
   description:
-    This is the API specification for the Schul-Cloud Account service.
-    
+    This is the API specification for the HPI Schul-Cloud Account service.
   contact:
     name: support
-    email: info@schul-cloud.org
+    email: info@hpi-schul-cloud.de
   license:
     name: GPL-3.0
-    url: 'https://github.com/schul-cloud/schulcloud-server/blob/master/LICENSE'
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
   version: 1.0.0
+
 components:
   securitySchemes:
     jwtBearer:
@@ -19,388 +19,13 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
-    accountModel:
-      description: TODO
-    accountModel_list:
-      description: TODO
-    accounts:
-      description: TODO
-    accounts_list:
-      description: TODO
     jwtTimer:
-      description: TODO
-    supportJWT:
-      description: TODO
-    confirm:
-      description: TODO
+      type: object
+      properties:
+        ttl:
+          type: integer
 
 paths:
-  /accountModel:
-    get:
-      parameters:
-        - description: Number of results to return
-          in: query
-          name: $limit
-          schema:
-            type: integer
-        - description: Number of results to skip
-          in: query
-          name: $skip
-          schema:
-            type: integer
-        - description: Property to sort results
-          in: query
-          name: $sort
-          style: deepObject
-          schema:
-            type: object
-        - description: Query parameters to filter
-          in: query
-          name: filter
-          style: form
-          explode: true
-          schema:
-            $ref: '#/components/schemas/accountModel'
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/accountModel_list'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Retrieves a list of all resources from the service.
-      summary: ''
-      tags:
-        - accountModel
-      security: []
-    post:
-      parameters: []
-      responses:
-        '201':
-          description: created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/accountModel'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Creates a new resource with data.
-      summary: ''
-      tags:
-        - accountModel
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/accountModel'
-  '/accountModel/{_id}':
-    get:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of accountModel to return
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/accountModel'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Retrieves a single resource with the given id from the service.
-      summary: ''
-      tags:
-        - accountModel
-      security: []
-    put:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of accountModel to update
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/accountModel'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Updates the resource identified by id using data.
-      summary: ''
-      tags:
-        - accountModel
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/accountModel'
-    patch:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of accountModel to update
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/accountModel'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Updates the resource identified by id using data.
-      summary: ''
-      tags:
-        - accountModel
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/accountModel'
-    delete:
-      parameters:
-        - in: path
-          name: _id
-          description: ID of accountModel to remove
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/accountModel'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Removes the resource with id.
-      summary: ''
-      tags:
-        - accountModel
-      security: []
-  /accounts:
-    get:
-      parameters:
-        - description: Number of results to return
-          in: query
-          name: $limit
-          schema:
-            type: integer
-        - description: Number of results to skip
-          in: query
-          name: $skip
-          schema:
-            type: integer
-        - description: Property to sort results
-          in: query
-          name: $sort
-          style: deepObject
-          schema:
-            type: object
-        - description: Query parameters to filter
-          in: query
-          name: filter
-          style: form
-          explode: true
-          schema:
-            $ref: '#/components/schemas/accounts'
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/accounts_list'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Retrieves a list of all resources from the service.
-      summary: ''
-      tags:
-        - accounts
-      security: []
-    post:
-      parameters: []
-      responses:
-        '201':
-          description: created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/accounts'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Creates a new resource with data.
-      summary: ''
-      tags:
-        - accounts
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/accounts'
-  '/accounts/{id}':
-    get:
-      parameters:
-        - in: path
-          name: id
-          description: ID of accounts to return
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/accounts'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Retrieves a single resource with the given id from the service.
-      summary: ''
-      tags:
-        - accounts
-      security: []
-    put:
-      parameters:
-        - in: path
-          name: id
-          description: ID of accounts to update
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/accounts'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Updates the resource identified by id using data.
-      summary: ''
-      tags:
-        - accounts
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/accounts'
-    patch:
-      parameters:
-        - in: path
-          name: id
-          description: ID of accounts to update
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/accounts'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Updates the resource identified by id using data.
-      summary: ''
-      tags:
-        - accounts
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/accounts'
-    delete:
-      parameters:
-        - in: path
-          name: id
-          description: ID of accounts to remove
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/accounts'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Removes the resource with id.
-      summary: ''
-      tags:
-        - accounts
-      security: []
   /accounts/jwtTimer:
     get:
       parameters: []
@@ -414,13 +39,12 @@ paths:
         '405':
           description: feature is disabled on this instance
       description: >-
-        returns the remaining seconds the JWT used to authenticate this request
-        is whitelisted. throws an 405 error if the instance does not have
-        support for JWT whitelisting
+        returns the remaining seconds the JWT is whitelisted.
       summary: get ttl of the jwt
       tags:
         - accounts
-      security: []
+      security:
+        - jwtBearer: []
     post:
       parameters: []
       responses:
@@ -433,71 +57,15 @@ paths:
         '405':
           description: feature is disabled on this instance
       description: >-
-        resets the remaining time the JWT used to authenticate this request is
-        whitelisted, and returns the value it was reset to. throws an 405 error
-        if the instance does not have support for JWT whitelisting
-      summary: reset jwt ttl
+        resets the remaining time the JWT whitelisted, and returns the new value.
+      summary: reset ttl of the jwt
       tags:
         - accounts
-      security: []
+      security:
+        - jwtBearer: []
       requestBody:
         content:
           {}
         description: no request body required
-  /accounts/supportJWT:
-    post:
-      parameters: []
-      responses:
-        '201':
-          description: created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/supportJWT'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Creates a new resource with data.
-      summary: ''
-      tags:
-        - accounts
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/supportJWT'
-  /accounts/confirm:
-    post:
-      parameters: []
-      responses:
-        '201':
-          description: created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/confirm'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Creates a new resource with data.
-      summary: ''
-      tags:
-        - accounts
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/confirm'
+
 openapi: 3.0.2
-tags:
-  - name: accountModel
-    description: An accountModel service.
-  - name: accounts
-    description: An accounts service.
-  

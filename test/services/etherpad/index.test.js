@@ -1,7 +1,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const freeport = require('freeport');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const decode = require('jwt-decode');
 const logger = require('../../../src/logger');
 const MockServer = require('./MockServer');
@@ -39,9 +39,9 @@ describe('Etherpad services', () => {
 	let testHelpers;
 	let configBefore;
 
-	before((done) => {
-		configBefore = Configuration.toObject();
-		freeport((err, port) => {
+	before(() => {
+		configBefore = Configuration.toObject({ plainSecrets: true });
+		freeport(async (err, port) => {
 			if (err) {
 				logger.warning('freeport:', err);
 			}
@@ -52,11 +52,11 @@ describe('Etherpad services', () => {
 			Configuration.set('ETHERPAD_API_KEY', 'someapikey');
 
 			// eslint-disable-next-line global-require
-			app = require('../../../src/app');
+			app = await require('../../../src/app');
 			server = app.listen(0);
 			testHelpers = testObjects(app);
 
-			const mock = MockServer(mockUrl, Configuration.get('ETHERPAD_API_PATH'), done);
+			const mock = await MockServer(mockUrl, Configuration.get('ETHERPAD_API_PATH'));
 			mockServer = mock.server;
 		});
 	});

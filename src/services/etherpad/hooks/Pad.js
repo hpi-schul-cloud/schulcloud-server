@@ -1,7 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { disallow } = require('feathers-hooks-common');
-const { Forbidden } = require('@feathersjs/errors');
-const { Configuration } = require('@schul-cloud/commons');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden } = reqlib('src/errors');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');

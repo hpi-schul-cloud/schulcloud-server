@@ -1,13 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
-const {
-	Forbidden,
-	BadRequest,
-	Conflict,
-	NotImplemented,
-	NotFound,
-	MethodNotAllowed,
-	NotAcceptable,
-} = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, NotFound, BadRequest, Conflict, NotImplemented, MethodNotAllowed, NotAcceptable } = reqlib(
+	'src/errors'
+);
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { SC_SHORT_TITLE } = require('../../../../config/globals');
 

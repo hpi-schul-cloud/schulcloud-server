@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const nock = require('nock');
 
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 const { NODE_ENV, SMTP_SENDER } = require('../../../config/globals');
 
 // eslint-disable-next-line import/no-dynamic-require
@@ -18,7 +18,7 @@ const isMailbodyValid = ({ platform, platformId, to, subject, text, html, attach
 
 const getNotificationMock = (expectedData = {}) =>
 	new Promise((resolve) => {
-		nock(config.services.notification)
+		nock(config.NOTIFICATION_URI)
 			.post('/mails')
 			.reply(200, (uri, requestBody) => {
 				Object.entries(expectedData).forEach(([key, value]) => {
@@ -30,7 +30,8 @@ const getNotificationMock = (expectedData = {}) =>
 			});
 	});
 
-describe('Mail Service', () => {
+describe('Mail Service', async () => {
+	const app = await appPromise;
 	const mailService = app.service('/mails');
 
 	afterEach(() => {
@@ -101,7 +102,7 @@ describe('Mail Service', () => {
 
 	describe('invalid emails', () => {
 		beforeEach(() => {
-			nock(config.services.notification).post('/mails').replyWithError('invalid data send');
+			nock(config.NOTIFICATION_URI).post('/mails').replyWithError('invalid data send');
 		});
 		it('should throw if notification server returns error', async () => {
 			try {

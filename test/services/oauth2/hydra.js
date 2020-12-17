@@ -4,19 +4,19 @@ const chaiHttp = require('chai-http');
 const oauth2 = require('simple-oauth2');
 const request = require('request-promise-native');
 
-const app = require('../../../src/app');
-const logger = require('../../../src/logger');
-
-const baseUrlService = app.service('oauth2/baseUrl');
-const clientsService = app.service('oauth2/clients');
-const loginService = app.service('oauth2/loginRequest');
-const introspectService = app.service('oauth2/introspect');
-const consentService = app.service('oauth2/auth/sessions/consent');
-const toolService = app.service('ltiTools');
+const appPromise = require('../../../src/app');
 
 chai.use(chaiHttp);
 
 describe('oauth2 service', function oauthTest() {
+	let app;
+	let baseUrlService;
+	let clientsService;
+	let loginService;
+	let introspectService;
+	let consentService;
+	let toolService;
+	let server;
 	this.timeout(10000);
 
 	const testUser2 = {
@@ -71,68 +71,61 @@ describe('oauth2 service', function oauthTest() {
 	let loginRequest1 = null;
 	let loginRequest2 = null;
 
-	before((done) => {
+	before(async () => {
+		app = await appPromise;
+		baseUrlService = app.service('oauth2/baseUrl');
+		clientsService = app.service('oauth2/clients');
+		loginService = app.service('oauth2/loginRequest');
+		introspectService = app.service('oauth2/introspect');
+		consentService = app.service('oauth2/auth/sessions/consent');
+		toolService = app.service('ltiTools');
 		this.timeout(10000);
-		toolService.create(testTool1).then(() => {
-			toolService.create(testTool2).then(() => {
-				clientsService
-					.create(testClient2)
-					.then((client) => {
-						const oauth = oauth2.create({
-							client: {
-								id: client.client_id,
-								secret: client.client_secret,
-							},
-							auth: {
-								tokenHost: 'http://localhost:9000',
-								tokenPath: '/oauth2/token',
-								authorizePath: '/oauth2/auth',
-							},
-						});
-						const authorizationUri = oauth.authorizationCode.authorizeURL({
-							redirect_uri: client.redirect_uris[0],
-							scope: 'openid',
-							state: '12345678',
-						});
-						request({
-							uri: authorizationUri,
-							method: 'GET',
-							followRedirect: false,
-						}).catch((res) => {
-							const position = res.error.indexOf('login_challenge=') + 'login_challenge'.length + 1;
-							loginRequest1 = res.error.substr(position, 32);
-							request({
-								uri: authorizationUri,
-								method: 'GET',
-								followRedirect: false,
-							}).catch((res2) => {
-								const position2 = res2.error.indexOf('login_challenge=') + 'login_challenge'.length + 1;
-								loginRequest2 = res2.error.substr(position2, 32);
-								done();
-							});
-						});
-					})
-					.catch((err) => {
-						logger.warning('Can not execute oauth2 before all hook.', err);
-						done();
-					});
-			});
+		await toolService.create(testTool1);
+		await toolService.create(testTool2);
+
+		const client = await clientsService.create(testClient2);
+		const oauth = oauth2.create({
+			client: {
+				id: client.client_id,
+				secret: client.client_secret,
+			},
+			auth: {
+				tokenHost: 'http://localhost:9000',
+				tokenPath: '/oauth2/token',
+				authorizePath: '/oauth2/auth',
+			},
 		});
+		const authorizationUri = oauth.authorizationCode.authorizeURL({
+			redirect_uri: client.redirect_uris[0],
+			scope: 'openid',
+			state: '12345678',
+		});
+		await request({
+			uri: authorizationUri,
+			method: 'GET',
+			followRedirect: false,
+		}).catch((res) => {
+			const position = res.error.indexOf('login_challenge=') + 'login_challenge'.length + 1;
+			loginRequest1 = res.error.substr(position, 32);
+		});
+		await request({
+			uri: authorizationUri,
+			method: 'GET',
+			followRedirect: false,
+		}).catch((res2) => {
+			const position2 = res2.error.indexOf('login_challenge=') + 'login_challenge'.length + 1;
+			loginRequest2 = res2.error.substr(position2, 32);
+		});
+		server = await app.listen();
 	});
 
-	after((done) => {
-		Promise.all([
+	after(async () => {
+		await Promise.all([
 			toolService.remove(testTool1._id),
 			toolService.remove(testTool2._id),
 			clientsService.remove(testClient2.client_id),
-		])
-			.then(() => {
-				done();
-			})
-			.catch((err) => {
-				logger.warning('Can not execute oauth2 after all hook.', err);
-				done();
-			});
+		]);
+		await server.close();
 	});
 
 	it('is registered', () => {

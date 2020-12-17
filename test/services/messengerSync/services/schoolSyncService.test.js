@@ -1,19 +1,19 @@
 const { expect } = require('chai');
 const mockery = require('mockery');
-const commons = require('@schul-cloud/commons');
+const commons = require('@hpi-schul-cloud/commons');
 const rabbitmqMock = require('../rabbitmqMock');
 
 const { Configuration } = commons;
 
 describe('service', function test() {
-	this.timeout(10000); // give require app enough time
+	this.timeout(20000); // give require app enough time
 	let configBefore;
 	let server;
 	let app;
 	let testObjects;
 
-	before((done) => {
-		configBefore = Configuration.toObject(); // deep copy current config
+	before(async () => {
+		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 		Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
 		mockery.enable({
@@ -21,14 +21,15 @@ describe('service', function test() {
 			warnOnUnregistered: false,
 			useCleanCache: true,
 		});
-		mockery.registerMock('@schul-cloud/commons', commons);
+		mockery.registerMock('@hpi-schul-cloud/commons', commons);
 		mockery.registerMock('amqplib', rabbitmqMock.amqplib);
 
 		// eslint-disable-next-line global-require
-		app = require('../../../../src/app');
+		app = await require('../../../../src/app');
 		// eslint-disable-next-line global-require
 		testObjects = require('../../helpers/testObjects')(app);
-		server = app.listen(0, done);
+		server = await app.listen(0);
+		rabbitmqMock.reset();
 	});
 
 	after((done) => {

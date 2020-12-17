@@ -11,12 +11,12 @@ module.exports = (app) => {
 	const groupRoute = '/etherpad/groups';
 	const authorRoute = '/etherpad/authors';
 
+	app.use('/etherpad/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+
 	app.use(padsRoute, new Pad());
 	app.use(sessionRoute, new Session());
 	app.use(groupRoute, new Group());
 	app.use(authorRoute, new Author());
-
-	app.use('/etherpad/api', staticContent(path.join(__dirname, '/docs')));
 
 	const pads = app.service(padsRoute);
 	const session = app.service(sessionRoute);

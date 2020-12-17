@@ -2,18 +2,18 @@ const chai = require('chai');
 const { URL } = require('url');
 const logger = require('../../../src/logger');
 
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 const { schoolModel: School, schoolGroupModel: SchoolGroup } = require('../../../src/services/school/model');
 const globals = require('../../../config/globals');
 
-const { cleanup } = require('../helpers/testObjects')(app);
-const { create: createSchool } = require('../helpers/services/schools')(app);
+const { cleanup } = require('../helpers/testObjects')(appPromise);
+const { create: createSchool } = require('../helpers/services/schools')(appPromise);
 
 const { expect } = chai;
 
 let defaultSchool;
 
-describe('school logic', async () => {
+describe('school logic', () => {
 	before('create school with group', async () => {
 		const schoolGroupId = await new SchoolGroup({ name: 'defaultSchoolGroup' }).save();
 		defaultSchool = await createSchool({ schoolGroupId });

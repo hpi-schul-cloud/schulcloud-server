@@ -1,4 +1,6 @@
-const SystemSyncer = require('./SystemSyncer');
+const asyncPool = require('tiny-async-pool');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const Syncer = require('./Syncer');
 const LDAPSchoolSyncer = require('./LDAPSchoolSyncer');
 
 const SchoolYearFacade = require('../../school/logic/year.js');
@@ -9,12 +11,18 @@ const SchoolYearFacade = require('../../school/logic/year.js');
  * @class LDAPSyncer
  * @implements {Syncer}
  */
-class LDAPSyncer extends SystemSyncer {
-	constructor(app, stats, logger, system) {
-		super(app, stats, logger, system);
+class LDAPSyncer extends Syncer {
+	constructor(app, stats, logger, system, options = {}) {
+		super(app, stats, logger);
+		this.system = system;
+		this.options = options;
 		this.stats = Object.assign(this.stats, {
 			schools: {},
 		});
+	}
+
+	prefix() {
+		return this.system.alias;
 	}
 
 	/**
@@ -22,15 +30,41 @@ class LDAPSyncer extends SystemSyncer {
 	 */
 	async steps() {
 		await super.steps();
+		await this.attemptRun();
 		const schools = await this.getSchools();
 		const activeSchools = schools.filter((s) => !s.inMaintenance);
-		for (const school of activeSchools) {
-			const stats = await new LDAPSchoolSyncer(this.app, {}, this.logger, this.system, school).sync();
-			if (stats.success !== true) {
-				this.stats.errors.push(`LDAP sync failed for school "${school.name}" (${school._id}).`);
+		const nextSchoolSync = async (school) => {
+			try {
+				const stats = await new LDAPSchoolSyncer(this.app, {}, this.logger, this.system, school, this.options).sync();
+				if (
+					!this.stats.modifyTimestamp &&
+					(stats.users.updated !== 0 ||
+						stats.users.created !== 0 ||
+						stats.classes.updated !== 0 ||
+						stats.classes.created !== 0) &&
+					stats.modifyTimestamp
+				) {
+					// persist the largest modifyTimestamp of the first updated school for the next delta sync
+					this.stats.modifyTimestamp = stats.modifyTimestamp;
+				}
+
+				if (stats.success !== true) {
+					this.stats.errors.push(`LDAP sync failed for school "${school.name}" (${school._id}).`);
+				}
+				this.stats.schools[school.ldapSchoolIdentifier] = stats;
+			} catch (err) {
+				// We need to catch errors here, so that the async pool will not reject early without
+				// running all sync processes
+				this.logger.error('Uncaught LDAP sync error', { error: err, systemId: this.system._id, schoolId: school._id });
+				this.stats.errors.push(
+					`LDAP sync failed for school "${school.name}" (${school._id}) with error "${err.message}".`
+				);
 			}
-			this.stats.schools[school.ldapSchoolIdentifier] = stats;
-		}
+		};
+		const poolSize = Configuration.get('LDAP_SCHOOL_SYNCER_POOL_SIZE');
+		this.logger.info(`Running LDAP school sync with pool size ${poolSize}`);
+		await asyncPool(poolSize, activeSchools, nextSchoolSync);
+		await this.persistRun();
 		return this.stats;
 	}
 
@@ -98,6 +132,54 @@ class LDAPSyncer extends SystemSyncer {
 			this.logInfo(`Created ${newSchools} new schools and updated ${updates} schools`);
 			return Promise.resolve(res);
 		});
+	}
+
+	/**
+	 * Updates the lastSyncAttempt attribute of the system's ldapConfig.
+	 * This is very useful for second-level User-Support.
+	 * @async
+	 */
+	async attemptRun() {
+		const now = Date.now();
+		this.logger.debug(`Setting system.ldapConfig.lastSyncAttempt = ${now}`);
+		const update = {
+			'ldapConfig.lastSyncAttempt': now,
+		};
+		await this.app.service('systems').patch(this.system._id, update);
+		this.logger.debug('System stats updated.');
+	}
+
+	/**
+	 * Updates relevant attributes of the system's ldapConfig if the sync was successful.
+	 * This is necessary for (future) delta syncs and second-level User-Support.
+	 * @async
+	 */
+	async persistRun() {
+		this.logger.debug('System-Sync done. Updating system stats...');
+		if (this.successful()) {
+			const update = {};
+			if (this.stats.modifyTimestamp) {
+				update['ldapConfig.lastModifyTimestamp'] = this.stats.modifyTimestamp; // requirement for next delta sync
+			}
+
+			// The following is not strictly necessary for delta sync, but very handy for the second-level
+			// User-Support:
+			const now = Date.now();
+			if (this.options.forceFullSync || !this.system.ldapConfig.lastModifyTimestamp) {
+				// if there is no lastModifyTimestamp present, this must have been a full sync
+				update['ldapConfig.lastSuccessfulFullSync'] = now;
+			} else {
+				update['ldapConfig.lastSuccessfulPartialSync'] = now;
+			}
+
+			this.logger.debug(`Setting these values: ${JSON.stringify(update)}.`);
+			await this.app.service('systems').patch(this.system._id, update);
+			this.logger.debug('System stats updated.');
+		} else {
+			// The sync attempt was persisted before the run (see #attemptRun) in order to
+			// record the run even if there are uncaught errors. Nothing to do here...
+			this.logger.debug('Not successful. Skipping...');
+		}
 	}
 }
 

@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
-const errors = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, MethodNotAllowed } = reqlib('src/errors');
 const globalHooks = require('../../../hooks');
 const Hydra = require('../hydra.js');
 
@@ -91,12 +93,12 @@ const injectConsentRequest = (hook) =>
 
 const validateSubject = (hook) => {
 	if (hook.params.consentRequest.subject === hook.params.account.userId.toString()) return hook;
-	throw new errors.Forbidden("You want to patch another user's consent");
+	throw new Forbidden("You want to patch another user's consent");
 };
 
 const managesOwnConsents = (hook) => {
 	if (hook.id === hook.params.account.userId.toString()) return hook;
-	throw new errors.Forbidden("You want to manage another user's consents");
+	throw new Forbidden("You want to manage another user's consents");
 };
 
 exports.hooks = {
@@ -120,7 +122,7 @@ exports.hooks = {
 		before: {
 			create: [
 				globalHooks.ifNotLocal(() => {
-					throw new errors.MethodNotAllowed();
+					throw new MethodNotAllowed();
 				}),
 			],
 		},

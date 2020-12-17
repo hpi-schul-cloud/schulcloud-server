@@ -1,7 +1,9 @@
-const { BadRequest } = require('@feathersjs/errors');
 const { disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const bcrypt = require('bcryptjs');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 const { passwordsMatch } = require('../../../utils/passwordHelpers');
 
 const addUserForcedToChangePasswordFlag = (context) => {

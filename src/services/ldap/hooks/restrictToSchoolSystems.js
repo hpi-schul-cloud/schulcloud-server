@@ -1,4 +1,6 @@
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, BadRequest } = reqlib('src/errors');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 /**

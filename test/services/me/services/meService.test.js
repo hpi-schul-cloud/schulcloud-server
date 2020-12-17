@@ -1,16 +1,19 @@
 const assert = require('assert');
 const { expect } = require('chai');
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 
-const meService = app.service('/me');
-const testObjects = require('../../helpers/testObjects')(app);
+const testObjects = require('../../helpers/testObjects')(appPromise);
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 describe('me service', () => {
+	let app;
+	let meService;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		meService = app.service('legacy/v1/me');
+		server = await app.listen(0);
 	});
 
 	after((done) => {

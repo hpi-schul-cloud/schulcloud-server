@@ -1,6 +1,7 @@
-const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const request = require('request-promise-native');
+const reqlib = require('app-root-path').require;
 
+const { Forbidden, BadRequest } = reqlib('src/errors');
 const { getRequestOptions } = require('../helpers');
 const { userModel } = require('../model');
 const docs = require('../docs');

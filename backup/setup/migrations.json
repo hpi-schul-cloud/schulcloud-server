@@ -776,12 +776,100 @@
 },
 {
 	"_id": {
+		"$oid": "5f735acf026e67ed1ca47e97"
+	},
+	"state": "up",
+	"name": "copy-parents-data-into-children-entities-and-delete-parent-users",
+	"createdAt": {
+		"$date": "2020-09-25T08:29:24.938Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5f75eaf7f46a125480ba2d12"
 	},
 	"state": "up",
 	"name": "addIndexesForSlowQueries",
 	"createdAt": {
 		"$date": "2020-10-01T14:43:03.652Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f993fb6ae0d8251a7a049e5"
+	},
+	"state": "up",
+	"name": "search_index",
+	"createdAt": {
+		"$date": "2020-10-14T16:44:10.245Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f9adffc788a4f97487fa014"
+	},
+	"state": "up",
+	"name": "add-messenger-one-to-one-permissions",
+	"createdAt": {
+		"$date": "2020-10-15T11:39:34.065Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f993fb6ae0d8251a7a049e6"
+	},
+	"state": "up",
+	"name": "syncUserIndex",
+	"createdAt": {
+		"$date": "2020-10-15T11:46:01.84Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f901d78bfeb05502414011f"
+	},
+	"state": "up",
+	"name": "rocketchat-to-matrix-messenger",
+	"createdAt": {
+		"$date": "2020-10-19T13:36:11.772Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f91453639a2a8ca44687c2d"
+	},
+	"state": "up",
+	"name": "disableLernStoreForStudentsinNI_SH",
+	"createdAt": {
+		"$date": "2020-10-21T17:36:19.189Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5f9926b16c32c64b1c31f707"
+	},
+	"state": "up",
+	"name": "addIndexForUserEmail",
+	"createdAt": {
+		"$date": "2020-10-28T08:07:13.544Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa3def3d21e804a816dc1b5"
+	},
+	"state": "up",
+	"name": "seedFederalStatesWithCounties",
+	"createdAt": {
+		"$date": "2020-11-05T11:16:03.243Z"
 	},
 	"__v": 0
 }]

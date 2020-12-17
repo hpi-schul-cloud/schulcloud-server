@@ -1,10 +1,10 @@
 const { promisify } = require('util');
 const redis = require('redis');
 const jwt = require('jsonwebtoken');
-const { GeneralError, BadRequest } = require('@feathersjs/errors');
-const commons = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const reqlib = require('app-root-path').require;
 
-const { Configuration } = commons;
+const { BadRequest, GeneralError } = reqlib('src/errors');
 
 let redisClient = false;
 

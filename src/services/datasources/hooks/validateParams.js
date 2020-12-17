@@ -1,4 +1,6 @@
-const { BadRequest } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 
 /**
  * validates the contents of the params.

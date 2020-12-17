@@ -1,40 +1,66 @@
 const { expect } = require('chai');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
-const { buildAddUserMessage, messengerIsActivatedForSchool } = require('../../../src/services/messengerSync/utils');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
+const {
+	buildAddUserMessage,
+	buildDeleteCourseMessage,
+	buildDeleteTeamMessage,
+	expandContentIds,
+	messengerIsActivatedForSchool,
+} = require('../../../src/services/messengerSync/utils');
 
 describe('messenger synchronizer utils', () => {
+	let app;
 	let server;
-	before((done) => {
-		server = app.listen(0, done);
+	let configBefore;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+		configBefore = Configuration.toObject();
+
+		Configuration.set('MATRIX_MESSENGER__SERVERNAME', 'fake.server');
 	});
 
 	after((done) => {
 		server.close(done);
 		testObjects.cleanup();
+		Configuration.parse(configBefore);
 	});
 
-	/* {
-	method: 'adduser',
-    school:{
-		id: 1223435,
-		has_allhands_channel : true,
-		name: "Peanuts High"
-    },
-    user: {
-        id: 1234566@matrix.schul-cloud.org,
-        name: "Joe Cool"",
-		is_school_admin: true,
-		is_school_teacher: true,
-    },
-    room: {
-		id: 1234566,
-		name: 'Mathe 6b',
-		type: 'course',
-		is_moderator: false,
-		bidirectional: true
-    }
-} */
+	/*
+	{
+		"method": "adduser",
+		"welcome": {
+			"text": "Welcome to messenger"
+		},
+		"user": {
+			"id": "@sso_0000d224816abba584714c9c:matrix.server.com",
+			"name": "Marla Mathe",
+			"email": "(optional)",
+			"password": "(optional)"
+		},
+		"rooms": [
+			{
+			"type": "(optional, default: room)",
+			"id": "0000dcfbfb5c7a3f00bf21ab",
+			"name": "Mathe",
+			"description": "Kurs",
+			"bidirectional": false,
+			"is_moderator": false
+			}
+		]
+	}
+
+	{
+		"method": "removeRoom",
+		"room": {
+			"type": "(optional, default: 'room')",
+			"id": "Ab01234"
+		}
+	}
+	*/
 
 	describe('buildAddUserMessage', () => {
 		it('builds a correct object for teacher with course', async () => {
@@ -43,25 +69,40 @@ describe('messenger synchronizer utils', () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 			const course = await testObjects.createTestCourse({ teacherIds: [teacher._id], schoolId: school._id });
 			const result = await buildAddUserMessage({ userId: teacher._id, courses: [course] });
-			expect(result.method).to.equal('adduser');
 
-			expect(result.school.id).to.equal(school._id.toString());
-			expect(result.school.has_allhands_channel).to.equal(true);
-			expect(result.school).to.haveOwnProperty('name');
+			// method
+			expect(result.method).to.equal('addUser');
 
+			// user
 			expect(result.user).to.haveOwnProperty('name');
 			expect(result.user).to.haveOwnProperty('id');
-			expect(result.user.is_school_admin).to.equal(false);
-			expect(result.user.is_school_teacher).to.equal(true);
 
+			// message
+			expect(result).not.to.haveOwnProperty('welcome');
+
+			// rooms
 			expect(Array.isArray(result.rooms)).to.equal(true);
-			expect(result.rooms.length).to.eq(1);
+			expect(result.rooms.length).to.eq(3);
 			const room = result.rooms[0];
 			expect(room.id).to.equal(course._id.toString());
 			expect(room.type).to.equal('course');
 			expect(room.bidirectional).to.equal(false);
 			expect(room.is_moderator).to.equal(true);
 			expect(room).to.haveOwnProperty('name');
+
+			const newsRoom = result.rooms[1];
+			expect(newsRoom.id).to.equal(school._id.toString());
+			expect(newsRoom.type).to.equal('news');
+			expect(newsRoom.bidirectional).to.equal(false);
+			expect(newsRoom.is_moderator).to.equal(true);
+			expect(newsRoom).to.haveOwnProperty('name');
+
+			const teachersRoom = result.rooms[2];
+			expect(teachersRoom.id).to.equal(school._id.toString());
+			expect(teachersRoom.type).to.equal('teachers');
+			expect(teachersRoom.bidirectional).to.equal(true);
+			expect(teachersRoom.is_moderator).to.equal(false);
+			expect(teachersRoom).to.haveOwnProperty('name');
 		});
 
 		it('builds a correct object for teacher with team', async () => {
@@ -69,25 +110,35 @@ describe('messenger synchronizer utils', () => {
 			const school = await testObjects.createTestSchool({ features: ['messenger', 'messengerSchoolRoom'] });
 			const { user, team } = await testObjects.createTestTeamWithOwner({ roles: ['teacher'], schoolId: school._id });
 			const result = await buildAddUserMessage({ userId: user._id, teams: [team] });
-			expect(result.method).to.equal('adduser');
-
-			expect(result.school.id).to.equal(school._id.toString());
-			expect(result.school.has_allhands_channel).to.equal(true);
-			expect(result.school).to.haveOwnProperty('name');
+			expect(result.method).to.equal('addUser');
 
 			expect(result.user).to.haveOwnProperty('name');
 			expect(result.user).to.haveOwnProperty('id');
-			expect(result.user.is_school_admin).to.equal(false);
-			expect(result.user.is_school_teacher).to.equal(true);
+
+			expect(result).not.to.haveOwnProperty('welcome');
 
 			expect(Array.isArray(result.rooms)).to.equal(true);
-			expect(result.rooms.length).to.eq(1);
+			expect(result.rooms.length).to.eq(3);
 			const room = result.rooms[0];
 			expect(room.id).to.equal(team._id.toString());
 			expect(room.type).to.equal('team');
 			expect(room.bidirectional).to.equal(false);
 			expect(room.is_moderator).to.equal(true);
 			expect(room).to.haveOwnProperty('name');
+
+			const newsRoom = result.rooms[1];
+			expect(newsRoom.id).to.equal(school._id.toString());
+			expect(newsRoom.type).to.equal('news');
+			expect(newsRoom.bidirectional).to.equal(false);
+			expect(newsRoom.is_moderator).to.equal(true);
+			expect(newsRoom).to.haveOwnProperty('name');
+
+			const teachersRoom = result.rooms[2];
+			expect(teachersRoom.id).to.equal(school._id.toString());
+			expect(teachersRoom.type).to.equal('teachers');
+			expect(teachersRoom.bidirectional).to.equal(true);
+			expect(teachersRoom.is_moderator).to.equal(false);
+			expect(teachersRoom).to.haveOwnProperty('name');
 		});
 
 		it('builds a correct object for schoolSync with allhands disabled', async () => {
@@ -99,19 +150,24 @@ describe('messenger synchronizer utils', () => {
 				testObjects.createTestCourse({ teacherIds: [user._id], schoolId: school._id }),
 			]);
 			const result = await buildAddUserMessage({ userId: user._id, fullSync: true });
-			expect(result.method).to.equal('adduser');
-
-			expect(result.school.id).to.equal(school._id.toString());
-			expect(result.school.has_allhands_channel).to.equal(false);
-			expect(result.school).to.haveOwnProperty('name');
+			expect(result.method).to.equal('addUser');
 
 			expect(result.user).to.haveOwnProperty('name');
 			expect(result.user).to.haveOwnProperty('id');
-			expect(result.user.is_school_admin).to.equal(false);
-			expect(result.user.is_school_teacher).to.equal(true);
 
 			expect(Array.isArray(result.rooms)).to.equal(true);
-			expect(result.rooms.length).to.eq(3);
+			expect(result.rooms.length).to.eq(4);
+
+			expect(result.rooms[0].type).to.equal('course');
+			expect(result.rooms[1].type).to.equal('course');
+			expect(result.rooms[2].type).to.equal('team');
+
+			const teachersRoom = result.rooms[3];
+			expect(teachersRoom.id).to.equal(school._id.toString());
+			expect(teachersRoom.type).to.equal('teachers');
+			expect(teachersRoom.bidirectional).to.equal(true);
+			expect(teachersRoom.is_moderator).to.equal(false);
+			expect(teachersRoom).to.haveOwnProperty('name');
 		});
 
 		it('builds a correct object for admin without course or team', async () => {
@@ -119,19 +175,22 @@ describe('messenger synchronizer utils', () => {
 			const school = await testObjects.createTestSchool({ features: ['messenger'] });
 			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
 			const result = await buildAddUserMessage({ userId: admin._id, fullSync: true });
-			expect(result.method).to.equal('adduser');
-
-			expect(result.school.id).to.equal(school._id.toString());
-			expect(result.school.has_allhands_channel).to.equal(false);
-			expect(result.school).to.haveOwnProperty('name');
+			expect(result.method).to.equal('addUser');
 
 			expect(result.user).to.haveOwnProperty('name');
 			expect(result.user).to.haveOwnProperty('id');
-			expect(result.user.is_school_admin).to.equal(true);
-			expect(result.user.is_school_teacher).to.equal(false);
+
+			expect(result).not.to.haveOwnProperty('welcome');
 
 			expect(Array.isArray(result.rooms)).to.equal(true);
-			expect(result.rooms.length).to.eq(0);
+			expect(result.rooms.length).to.eq(1);
+
+			const teachersRoom = result.rooms[0];
+			expect(teachersRoom.id).to.equal(school._id.toString());
+			expect(teachersRoom.type).to.equal('teachers');
+			expect(teachersRoom.bidirectional).to.equal(true);
+			expect(teachersRoom.is_moderator).to.equal(true);
+			expect(teachersRoom).to.haveOwnProperty('name');
 		});
 
 		it('builds a correct object for student with courses', async () => {
@@ -145,19 +204,16 @@ describe('messenger synchronizer utils', () => {
 			]);
 
 			const result = await buildAddUserMessage({ userId: student._id, fullSync: true });
-			expect(result.method).to.equal('adduser');
-
-			expect(result.school.id).to.equal(school._id.toString());
-			expect(result.school.has_allhands_channel).to.equal(false);
-			expect(result.school).to.haveOwnProperty('name');
+			expect(result.method).to.equal('addUser');
 
 			expect(result.user).to.haveOwnProperty('name');
 			expect(result.user).to.haveOwnProperty('id');
-			expect(result.user.is_school_admin).to.equal(false);
-			expect(result.user.is_school_teacher).to.equal(false);
 
 			expect(Array.isArray(result.rooms)).to.equal(true);
 			expect(result.rooms.length).to.eq(2);
+
+			expect(result.rooms[0].type).to.equal('course');
+			expect(result.rooms[1].type).to.equal('course');
 		});
 
 		it('builds a correct object for student with write access in course', async () => {
@@ -169,16 +225,10 @@ describe('messenger synchronizer utils', () => {
 			const course = await testObjects.createTestCourse(courseProps);
 
 			const result = await buildAddUserMessage({ userId: student._id, fullSync: true });
-			expect(result.method).to.equal('adduser');
-
-			expect(result.school.id).to.equal(school._id.toString());
-			expect(result.school.has_allhands_channel).to.equal(false);
-			expect(result.school).to.haveOwnProperty('name');
+			expect(result.method).to.equal('addUser');
 
 			expect(result.user).to.haveOwnProperty('name');
 			expect(result.user).to.haveOwnProperty('id');
-			expect(result.user.is_school_admin).to.equal(false);
-			expect(result.user.is_school_teacher).to.equal(false);
 
 			expect(Array.isArray(result.rooms)).to.equal(true);
 			expect(result.rooms.length).to.eq(1);
@@ -188,6 +238,83 @@ describe('messenger synchronizer utils', () => {
 			expect(room.bidirectional).to.equal(true);
 			expect(room.is_moderator).to.equal(false);
 			expect(room).to.haveOwnProperty('name');
+		});
+
+		it('builds correct welcome messages', async () => {
+			const school = await testObjects.createTestSchool({ features: ['messenger'] });
+			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
+			const { user } = await testObjects.createTestTeamWithOwner({ roles: ['teacher'], schoolId: school._id });
+
+			// only student message
+			const studentWelcomeMessage = 'Welcome Student';
+			Configuration.set('MATRIX_MESSENGER__WELCOME_MESSAGE_STUDENT', studentWelcomeMessage);
+
+			const resultStudent1 = await buildAddUserMessage({ userId: student._id, fullSync: true });
+			expect(resultStudent1.welcome.text).to.equal(studentWelcomeMessage);
+
+			const resultTeacher1 = await buildAddUserMessage({ userId: user._id, fullSync: true });
+			expect(resultTeacher1.welcome.text).to.equal(studentWelcomeMessage);
+
+			const resultAdmin1 = await buildAddUserMessage({ userId: admin._id, fullSync: true });
+			expect(resultAdmin1.welcome.text).to.equal(studentWelcomeMessage);
+
+			// with teacher message
+			const teacherWelcomeMessage = 'Welcome Teacher';
+			Configuration.set('MATRIX_MESSENGER__WELCOME_MESSAGE_TEACHER', teacherWelcomeMessage);
+
+			const resultStudent2 = await buildAddUserMessage({ userId: student._id, fullSync: true });
+			expect(resultStudent2.welcome.text).to.equal(studentWelcomeMessage);
+
+			const resultTeacher2 = await buildAddUserMessage({ userId: user._id, fullSync: true });
+			expect(resultTeacher2.welcome.text).to.equal(teacherWelcomeMessage);
+
+			const resultAdmin2 = await buildAddUserMessage({ userId: admin._id, fullSync: true });
+			expect(resultAdmin2.welcome.text).to.equal(studentWelcomeMessage);
+
+			// with admin message
+			const adminWelcomeMessage = 'Welcome Admin';
+			Configuration.set('MATRIX_MESSENGER__WELCOME_MESSAGE_ADMIN', adminWelcomeMessage);
+
+			const resultStudent3 = await buildAddUserMessage({ userId: student._id, fullSync: true });
+			expect(resultStudent3.welcome.text).to.equal(studentWelcomeMessage);
+
+			const resultTeacher3 = await buildAddUserMessage({ userId: user._id, fullSync: true });
+			expect(resultTeacher3.welcome.text).to.equal(teacherWelcomeMessage);
+
+			const resultAdmin3 = await buildAddUserMessage({ userId: admin._id, fullSync: true });
+			expect(resultAdmin3.welcome.text).to.equal(adminWelcomeMessage);
+
+			// only admin message
+			Configuration.remove('MATRIX_MESSENGER__WELCOME_MESSAGE_STUDENT');
+			Configuration.remove('MATRIX_MESSENGER__WELCOME_MESSAGE_TEACHER');
+
+			const resultStudent4 = await buildAddUserMessage({ userId: student._id, fullSync: true });
+			expect(resultStudent4).not.to.haveOwnProperty('welcome');
+
+			const resultTeacher4 = await buildAddUserMessage({ userId: user._id, fullSync: true });
+			expect(resultTeacher4).not.to.haveOwnProperty('welcome');
+
+			const resultAdmin4 = await buildAddUserMessage({ userId: admin._id, fullSync: true });
+			expect(resultAdmin4.welcome.text).to.equal(adminWelcomeMessage);
+		});
+	});
+
+	describe('buildDeleteCourseMessage', () => {
+		it('builds a correct object', async () => {
+			const result = await buildDeleteCourseMessage({ courseId: 'someCourse' });
+			expect(result.method).to.equal('removeRoom');
+			expect(result.room.type).to.equal('course');
+			expect(result.room.id).to.equal('someCourse');
+		});
+	});
+
+	describe('buildDeleteTeamMessage', () => {
+		it('builds a correct object', async () => {
+			const result = await buildDeleteTeamMessage({ teamId: 'someTeam' });
+			expect(result.method).to.equal('removeRoom');
+			expect(result.room.type).to.equal('team');
+			expect(result.room.id).to.equal('someTeam');
 		});
 	});
 
@@ -199,7 +326,8 @@ describe('messenger synchronizer utils', () => {
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 
 			// act
-			const result = await messengerIsActivatedForSchool({ userId: user._id });
+			const data = await expandContentIds({ userId: user._id });
+			const result = messengerIsActivatedForSchool(data.school);
 
 			// assert
 			expect(result).to.equal(true);
@@ -212,7 +340,8 @@ describe('messenger synchronizer utils', () => {
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 
 			// act
-			const result = await messengerIsActivatedForSchool({ userId: user._id });
+			const data = await expandContentIds({ userId: user._id });
+			const result = messengerIsActivatedForSchool(data.school);
 
 			// assert
 			expect(result).to.equal(false);
@@ -224,7 +353,8 @@ describe('messenger synchronizer utils', () => {
 			const school = await testObjects.createTestSchool({ features: ['messenger'] });
 
 			// act
-			const result = await messengerIsActivatedForSchool({ schoolId: school._id });
+			const data = await expandContentIds({ schoolId: school._id });
+			const result = messengerIsActivatedForSchool(data.school);
 
 			// assert
 			expect(result).to.equal(true);
@@ -236,7 +366,8 @@ describe('messenger synchronizer utils', () => {
 			const school = await testObjects.createTestSchool({ features: [] });
 
 			// act
-			const result = await messengerIsActivatedForSchool({ schoolId: school._id });
+			const data = await expandContentIds({ schoolId: school._id });
+			const result = messengerIsActivatedForSchool(data.school);
 
 			// assert
 			expect(result).to.equal(false);

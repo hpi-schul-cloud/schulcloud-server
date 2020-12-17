@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { connect, close } = require('../src/utils/database');
 const logger = require('../src/logger');
 

@@ -1,4 +1,6 @@
-const { Forbidden, BadRequest } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { Forbidden, BadRequest } = reqlib('src/errors');
 const { warning } = require('../../logger/index');
 const { teamRolesToHook } = require('./hooks');
 const { isArrayWithElement, isDefined, bsonIdToString } = require('./hooks/collection');
@@ -94,6 +96,7 @@ exports.extractOne = (find, key) => {
 	if (find.total !== 1 && isArrayWithElement(find.data)) {
 		throw new BadRequest('Can not extract one from find data.');
 	}
+	// eslint-disable-next-line no-param-reassign
 	find = isDefined(key) ? find.data[0][key] : find.data[0];
 	return Promise.resolve(find);
 };

@@ -1,6 +1,8 @@
-const { BadRequest } = require('@feathersjs/errors');
 const service = require('feathers-mongoose');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 
 const HOST = Configuration.get('HOST');
 const _TYPE = ['before', 'after'];

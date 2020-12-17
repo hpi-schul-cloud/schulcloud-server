@@ -1,8 +1,9 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const sinon = require('sinon');
+const reqlib = require('app-root-path').require;
 
-const { SilentError } = require('../../../../src/middleware/errors');
+const { SilentError } = reqlib('src/errors');
 const passwordRecovery = require('../../../../src/services/passwordRecovery/model');
 const { ChangePasswordService } = require('../../../../src/services/passwordRecovery/services/ChangePasswordService');
 

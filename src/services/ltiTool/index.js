@@ -13,6 +13,8 @@ const hooks = require('./hooks');
 module.exports = function () {
 	const app = this;
 
+	app.use('/ltiTools/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+
 	const options = {
 		Model: ltiTool,
 		paginate: {
@@ -25,8 +27,6 @@ module.exports = function () {
 	app.use('/ltiTools', service(options));
 	const ltiToolService = app.service('/ltiTools');
 	ltiToolService.hooks(hooks);
-
-	app.use('/ltiTools/api', staticContent(path.join(__dirname, '/docs')));
 
 	app.use('/tools/:id/link', {
 		create(data, params) {

@@ -1,5 +1,6 @@
-const { Forbidden } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
 
+const { Forbidden } = reqlib('src/errors');
 const { equal: compareIds } = require('../../../helper/compare').ObjectId;
 const { ScopePermissionService } = require('../../helpers/scopePermissions');
 

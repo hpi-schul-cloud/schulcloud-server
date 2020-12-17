@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const leanVirtuals = require('mongoose-lean-virtuals');
-const { enableAuditLog } = require('../../utils/database');
+const {
+	database: { enableAuditLog },
+	Cache,
+} = require('../../utils');
 
 const { Schema } = mongoose;
 
@@ -17,6 +20,9 @@ const rolesDisplayName = {
 	expert: 'Experte',
 };
 
+const oneHour = 60 * 60 * 1000;
+const cache = new Cache({ name: 'roles', clearInterval: oneHour });
+
 const roleSchema = new Schema(
 	{
 		name: { type: String, required: true },
@@ -29,14 +35,35 @@ const roleSchema = new Schema(
 		timestamps: true,
 	}
 );
+// https://mongoosejs.com/docs/middleware.html
+const mongooseOperationsForClearCache = [
+	'findOneAndDelete',
+	'findOneAndRemove',
+	'findOneAndUpdate',
+	'deleteMany',
+	'deleteOne',
+	'remove',
+	'updateOne',
+	'updateMany',
+];
+
+mongooseOperationsForClearCache.forEach((operation) => {
+	roleSchema.post(operation, { query: true, document: true }, () => {
+		cache.clear();
+	});
+});
 
 roleSchema.methods.getPermissions = function getPermissions() {
 	return roleModel.resolvePermissions([this._id]); // fixme
 };
 
+/**
+ * @param {CoreMongooseArray} roleIds
+ */
 roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
 	const processedRoleIds = [];
 	const permissions = new Set();
+	const cacheIndex = cache.createMongooseIndex(roleIds);
 
 	function resolveSubRoles(roleId) {
 		return roleModel
@@ -58,8 +85,14 @@ roleSchema.statics.resolvePermissions = function resolvePermissions(roleIds) {
 				return Promise.all(promises);
 			});
 	}
-
-	return Promise.all(roleIds.map((id) => resolveSubRoles(id))).then(() => permissions);
+	if (cache.get(cacheIndex)) {
+		return Promise.resolve(cache.get(cacheIndex));
+	}
+	const promises = roleIds.map((id) => resolveSubRoles(id));
+	return Promise.all(promises).then(() => {
+		cache.update(cacheIndex, permissions);
+		return permissions;
+	});
 };
 
 roleSchema.virtual('displayName').get(function get() {

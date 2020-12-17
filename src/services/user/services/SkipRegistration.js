@@ -1,4 +1,6 @@
-const { BadRequest } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 
 /**
  * validate that request data is complete and valid.
@@ -69,14 +71,21 @@ const updateConsent = (data, targetUserId, app) => {
 };
 
 /**
- * removes the importhash from a user, and sets a birthday if one is given, as if the user just went through
- * registration.
+ * removes the importhash from a user if parent consent was given,
+ * sets birthday if given,
+ * as if the user just went through registration.
  * @param {Object} data the request data, may contain a birthday.
  * @param {ObjectId} targetUserId the id of the user to be updated.
  * @param {App} app the app object.
  */
-const updateUser = (data, targetUserId, app) =>
-	app.service('users').patch(targetUserId, { birthday: data.birthday, $unset: { importHash: '' } });
+const updateUser = (data, targetUserId, app) => {
+	const needsParentConsent = !data.parent_privacyConsent || !data.parent_termsOfUseConsent;
+	if (needsParentConsent) {
+		app.service('users').patch(targetUserId, { birthday: data.birthday });
+	} else {
+		app.service('users').patch(targetUserId, { birthday: data.birthday, $unset: { importHash: '' } });
+	}
+};
 
 class SkipRegistrationService {
 	constructor() {

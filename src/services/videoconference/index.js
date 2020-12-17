@@ -1,24 +1,21 @@
-const { BadRequest, Forbidden, NotFound, GeneralError, FeathersError } = require('@feathersjs/errors');
+// eslint-disable-next-line max-classes-per-file
 const lodash = require('lodash');
-const { Configuration } = require('@schul-cloud/commons');
-
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+const reqlib = require('app-root-path').require;
 
+const { Forbidden, NotFound, BadRequest, GeneralError } = reqlib('src/errors');
+const { isFeatherError } = reqlib('src/errors/utils');
 const { SCHOOL_FEATURES } = require('../school/model');
-
 const videoconferenceHooks = require('./hooks');
-
 const { getUser } = require('../../hooks');
-
 const { joinMeeting, getMeetingInfo } = require('./logic');
-
 const {
 	copyPropertyNameIfIncludedInValuesFromSourceToTarget,
 	isValidNotFoundResponse,
 	isValidFoundResponse,
 } = require('./logic/utils');
-
 const server = require('./logic/server');
 const {
 	ROLES,
@@ -477,7 +474,7 @@ class CreateVideoconferenceService {
 				joinUrl
 			);
 		} catch (error) {
-			if (error instanceof FeathersError) {
+			if (isFeatherError(error)) {
 				throw error;
 			}
 			throw new GeneralError('join meeting link generation failed', { errors: error });
@@ -486,10 +483,9 @@ class CreateVideoconferenceService {
 }
 
 module.exports = function setup(app) {
+	app.use('/videoconference/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/videoconference', new CreateVideoconferenceService(app));
 	app.use('/videoconference/:scopeName', new GetVideoconferenceService(app));
 	const videoConferenceServices = [app.service('/videoconference'), app.service('/videoconference/:scopeName')];
 	videoConferenceServices.forEach((service) => service.hooks(videoconferenceHooks));
-
-	app.use('/videoconference/api', staticContent(path.join(__dirname, '/docs')));
 };

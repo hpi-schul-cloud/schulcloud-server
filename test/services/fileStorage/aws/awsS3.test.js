@@ -4,6 +4,10 @@ const { expect } = require('chai');
 const mockery = require('mockery');
 const mockAws = require('./s3.mock');
 const logger = require('../../../../src/logger');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const appPromise = require('../../../../src/app');
+
+const testObjects = require('../../helpers/testObjects')(appPromise);
 
 chai.use(chaiHttp);
 
@@ -16,7 +20,9 @@ describe('AWS file storage strategy', () => {
 
 	const ShouldFail = new Error('It succeeded but should have returned an error.');
 
-	before((done) => {
+	let configBefore = {};
+
+	before(async () => {
 		// Enable mockery to mock objects
 		mockery.enable({
 			warnOnUnregistered: false,
@@ -30,15 +36,22 @@ describe('AWS file storage strategy', () => {
 			},
 		});
 
+		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
+		Configuration.set('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED', true);
+		Configuration.set('S3_KEY', '1234567891234567');
+
+		await testObjects.createTestStorageProvider({ secretAccessKey: '123456789' });
+
 		delete require.cache[require.resolve('../../../../src/services/fileStorage/strategies/awsS3')];
 		const AWSStrategy = require('../../../../src/services/fileStorage/strategies/awsS3');
 		aws = new AWSStrategy();
-		done();
 	});
 
-	after(() => {
+	after(async () => {
 		mockery.deregisterAll();
 		mockery.disable();
+		await testObjects.cleanup();
+		Configuration.reset(configBefore);
 	});
 
 	describe('create', () => {

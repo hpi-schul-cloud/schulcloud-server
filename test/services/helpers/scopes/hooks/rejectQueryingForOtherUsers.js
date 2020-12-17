@@ -1,6 +1,8 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const { Forbidden, BadRequest } = require('@feathersjs/errors');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest, Forbidden } = reqlib('src/errors');
 const {
 	rejectQueryingOtherUsers,
 } = require('../../../../../src/services/helpers/scopePermissions/hooks/rejectQueryingForOtherUsers');

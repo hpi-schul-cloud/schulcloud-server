@@ -1,8 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { Forbidden } = require('@feathersjs/errors');
 const { iff, isProvider, discard, disallow, keepInArray, keep } = require('feathers-hooks-common');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const reqlib = require('app-root-path').require;
 
+const { Forbidden } = reqlib('src/errors');
 const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
@@ -155,6 +156,7 @@ const updatesChat = (key, data) => {
 		SCHOOL_FEATURES.MESSENGER,
 		SCHOOL_FEATURES.MESSENGER_SCHOOL_ROOM,
 		SCHOOL_FEATURES.VIDEOCONFERENCE,
+		SCHOOL_FEATURES.MESSENGER_STUDENT_ROOM_CREATE,
 	];
 	return updatesArray(key) && chatFeatures.indexOf(data[key].features) !== -1;
 };
@@ -204,6 +206,71 @@ const isNotAuthenticated = async (context) => {
 	return !((context.params.headers || {}).authorization || (context.params.account && context.params.account.userId));
 };
 
+const validateOfficialSchoolNumber = async (context) => {
+	if (context && context.data && context.data.officialSchoolNumber) {
+		const { officialSchoolNumber } = context.data;
+		const schools = await context.app.service('schools').find({
+			query: {
+				_id: context.id,
+				$populate: 'federalState',
+				$limit: 1,
+			},
+		});
+		const currentSchool = schools.data[0];
+		if (!currentSchool) {
+			throw new Error(`Internal error`);
+		}
+		if (currentSchool.officialSchoolNumber) {
+			throw new Error(`This school already have an officialSchoolNumber`);
+		}
+		// eg: 'BE-16593' or '16593'
+		const officialSchoolNumberFormat = RegExp('\\D{0,2}-*\\d{5}$');
+		if (!officialSchoolNumberFormat.test(officialSchoolNumber)) {
+			throw new Error(`
+			School number is incorrect.\n The format should be 'AB-12345' or '12345' (without the quotations)
+			`);
+		}
+	}
+	return context;
+};
+
+// school County
+const validateCounty = async (context) => {
+	if (context && context.data && context.data.county) {
+		const schools = await context.app.service('schools').find({
+			query: {
+				_id: context.id,
+				$populate: 'federalState',
+				$limit: 1,
+			},
+		});
+		const currentSchool = schools.data[0];
+		if (!currentSchool) {
+			throw new Error(`Internal error`);
+		}
+
+		const { county } = context.data;
+		if (
+			!currentSchool.federalState.counties.length ||
+			!currentSchool.federalState.counties.some((c) => c._id.toString() === county.toString())
+		) {
+			throw new Error(`The state doesn't not have a matching county`);
+		}
+		/* Tries to replace the existing county with a new one */
+		if (currentSchool.county && JSON.stringify(currentSchool.county) !== JSON.stringify(county)) {
+			throw new Error(`This school already have a county`);
+		}
+		context.data.county = currentSchool.federalState.counties.find((c) => {
+			return c._id.toString() === county.toString();
+		});
+	}
+	// checks for empty value and deletes it from context
+	if (context && context.data && Object.keys(context.data).includes('county') && !context.data.county) {
+		delete context.data.county;
+	}
+	return context;
+};
+
 exports.before = {
 	all: [globalHooks.authenticateWhenJWTExist],
 	find: [],
@@ -213,18 +280,24 @@ exports.before = {
 		globalHooks.hasPermission('SCHOOL_CREATE'),
 		setDefaultFileStorageType,
 		setCurrentYearIfMissing,
+		validateOfficialSchoolNumber,
+		validateCounty,
 	],
 	update: [
 		authenticate('jwt'),
 		globalHooks.hasPermission('SCHOOL_EDIT'),
 		globalHooks.ifNotLocal(globalHooks.lookupSchool),
 		globalHooks.ifNotLocal(restrictToUserSchool),
+		validateOfficialSchoolNumber,
+		validateCounty,
 	],
 	patch: [
 		authenticate('jwt'),
 		globalHooks.ifNotLocal(hasEditPermissions),
 		globalHooks.ifNotLocal(globalHooks.lookupSchool),
 		globalHooks.ifNotLocal(restrictToUserSchool),
+		validateOfficialSchoolNumber,
+		validateCounty,
 	],
 	/* It is disabled for the moment, is added with new "Löschkonzept"
     remove: [authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
@@ -235,7 +308,7 @@ exports.before = {
 exports.after = {
 	all: [
 		// todo: remove id if possible (shouldnt exist)
-		iff(isNotAuthenticated, keep('name', 'purpose', 'systems', '_id', 'id', 'language')),
+		iff(isNotAuthenticated, keep('name', 'purpose', 'systems', '_id', 'id', 'language', 'timezone')),
 		iff(
 			populateInQuery,
 			keepInArray('systems', [

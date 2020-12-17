@@ -1,13 +1,16 @@
 const assert = require('assert');
 const mockery = require('mockery');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 const mockAws = require('../fileStorage/aws/s3.mock');
 
-const testObjects = require('../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const testObjects = require('../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
 
-describe('wopi service', () => {
+describe('wopi service', function test() {
+	this.timeout(10000);
+	let app;
 	const testUserId = '599ec14d8e4e364ec18ff46d';
+	let server;
 
 	const testFile = {
 		_id: '597860e9667a0659ed0b0006',
@@ -39,34 +42,25 @@ describe('wopi service', () => {
 		schoolId: '5f2987e020834114b8efd6f6',
 	};
 
-	before(function execute(done) {
-		this.timeout(10000);
+	before(async () => {
+		app = await appPromise;
 		// Enable mockery to mock objects
 		mockery.enable({
 			warnOnUnregistered: false,
 		});
 
 		mockery.registerMock('aws-sdk', mockAws);
+		server = await app.listen(0);
 
 		delete require.cache[require.resolve('../../../src/services/fileStorage/strategies/awsS3')];
-		app
-			.service('files')
-			.create(testFile)
-			.then(() => {
-				done();
-			});
+		await app.service('files').create(testFile);
 	});
 
-	after(function execute(done) {
-		this.timeout(10000);
-		app
-			.service('files')
-			.remove(testFile._id)
-			.then(() => {
-				mockery.deregisterAll();
-				mockery.disable();
-				done();
-			});
+	after(async () => {
+		await app.service('files').remove(testFile._id);
+		await server.close();
+		mockery.deregisterAll();
+		mockery.disable();
 	});
 
 	it('registered the wopiFileInfoService correctly', () => {

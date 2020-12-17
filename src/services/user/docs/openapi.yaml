@@ -7,10 +7,10 @@ info:
     
   contact:
     name: support
-    email: info@schul-cloud.org
+    email: info@hpi-schul-cloud.de
   license:
     name: GPL-3.0
-    url: 'https://github.com/schul-cloud/schulcloud-server/blob/master/LICENSE'
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
   version: 1.0.0
 components:
   securitySchemes:
@@ -45,10 +45,86 @@ components:
       description: TODO
     firstLogin:
       description: TODO
+    userAdminBase:
+      description: Data Transfer Object containing userdata
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: 'email'
+        birthday:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        schoolId:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        sendRegistration:
+          type: boolean
+        generateRegistrationLink:
+          type: boolean
+    userAdmin:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/userAdminBase'
+        - required:
+          - firstName
+          - lastName
+          - email
     admin:
-      description: TODO
+      description: Data Transfer Object containing userdata
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: 'email'
+        birthday:
+          type: string
+          format: 'date'
+        roles:
+          type: array
+          items:
+            type: string
+        schoolId:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        sendRegistration:
+          type: boolean
+        generateRegistrationLink:
+          type: boolean
     admin_list:
       description: TODO
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/userAdmin'
+        total:
+          type: integer
+        limit:
+          type: integer
+        skip:
+          type: integer
+
     mail:
       description: TODO
     qrRegistrationLink:
@@ -134,7 +210,7 @@ paths:
           name: _id
           description: ID of usersModel to return
           schema:
-            type: integer
+            type: string
           required: true
       responses:
         '200':
@@ -938,16 +1014,53 @@ paths:
         - description: Property to sort results
           in: query
           name: $sort
-          style: deepObject
           schema:
             type: object
+        - description: Regex to search for in firstName, lastName, and emails.
+          in: query
+          name: searchQuery
+          schema:
+            type: string
         - description: Query parameters to filter
           in: query
-          name: filter
-          style: form
-          explode: true
+          name: firstName
           schema:
-            $ref: '#/components/schemas/admin'
+            type: string
+        - description: Query parameters to filter
+          in: query
+          name: lastName
+          schema:
+            type: string
+        - description: Query parameters to filter
+          in: query
+          name: createdAt
+          schema:
+            anyOf:
+              - type: string
+              - type: object
+        - description: Query parameters to filter
+          in: query
+          name: consentStatus
+          schema:
+            anyOf:
+              - type: string
+              - type: object
+        - description: Array of user ids to filter
+          in: query
+          name: users
+          schema:
+            anyOf:
+              - type: string
+              - type: array
+              - type: object
+        - description: Array of classes to filter
+          in: query
+          name: classes
+          schema:
+            anyOf:
+              - type: string
+              - type: array
+              - type: object
       responses:
         '200':
           description: success
@@ -972,7 +1085,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '500':
@@ -987,7 +1100,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/admin'
+              $ref: '#/components/schemas/userAdmin'
   '/users/admin/students/{id}':
     get:
       parameters:
@@ -995,7 +1108,7 @@ paths:
           name: id
           description: ID of admin to return
           schema:
-            type: integer
+            type: string
           required: true
       responses:
         '200':
@@ -1003,7 +1116,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '404':
@@ -1021,7 +1134,7 @@ paths:
           name: id
           description: ID of admin to update
           schema:
-            type: integer
+            type: string
           required: true
       responses:
         '200':
@@ -1029,7 +1142,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '404':
@@ -1046,14 +1159,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/admin'
+              $ref: '#/components/schemas/userAdmin'
     patch:
       parameters:
         - in: path
           name: id
           description: ID of admin to update
           schema:
-            type: integer
+            type: string
           required: true
       responses:
         '200':
@@ -1061,7 +1174,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '404':
@@ -1078,14 +1191,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/admin'
+              $ref: '#/components/schemas/userAdminBase'
     delete:
       parameters:
         - in: path
           name: id
           description: ID of admin to remove
           schema:
-            type: integer
+            type: string
           required: true
       responses:
         '200':
@@ -1093,7 +1206,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '404':
@@ -1121,16 +1234,53 @@ paths:
         - description: Property to sort results
           in: query
           name: $sort
-          style: deepObject
           schema:
             type: object
+        - description: Regex to search for in firstName, lastName, and emails.
+          in: query
+          name: searchQuery
+          schema:
+            type: string
         - description: Query parameters to filter
           in: query
-          name: filter
-          style: form
-          explode: true
+          name: firstName
           schema:
-            $ref: '#/components/schemas/admin'
+            type: string
+        - description: Query parameters to filter
+          in: query
+          name: lastName
+          schema:
+            type: string
+        - description: Query parameters to filter
+          in: query
+          name: createdAt
+          schema:
+            anyOf:
+              - type: string
+              - type: object
+        - description: Query parameters to filter
+          in: query
+          name: consentStatus
+          schema:
+            anyOf:
+              - type: string
+              - type: object
+        - description: Array of user ids to filter
+          in: query
+          name: users
+          schema:
+            anyOf:
+              - type: string
+              - type: array
+              - type: object
+        - description: Array of classes to filter
+          in: query
+          name: classes
+          schema:
+            anyOf:
+              - type: string
+              - type: array
+              - type: object
       responses:
         '200':
           description: success
@@ -1155,7 +1305,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '500':
@@ -1170,7 +1320,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/admin'
+              $ref: '#/components/schemas/userAdmin'
   '/users/admin/teachers/{id}':
     get:
       parameters:
@@ -1178,7 +1328,7 @@ paths:
           name: id
           description: ID of admin to return
           schema:
-            type: integer
+            type: string
           required: true
       responses:
         '200':
@@ -1186,7 +1336,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '404':
@@ -1204,7 +1354,7 @@ paths:
           name: id
           description: ID of admin to update
           schema:
-            type: integer
+            type: string
           required: true
       responses:
         '200':
@@ -1212,7 +1362,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '404':
@@ -1229,14 +1379,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/admin'
+              $ref: '#/components/schemas/userAdmin'
     patch:
       parameters:
         - in: path
           name: id
           description: ID of admin to update
           schema:
-            type: integer
+            type: string
           required: true
       responses:
         '200':
@@ -1244,7 +1394,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '404':
@@ -1261,14 +1411,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/admin'
+              $ref: '#/components/schemas/userAdminBase'
     delete:
       parameters:
         - in: path
           name: id
           description: ID of admin to remove
           schema:
-            type: integer
+            type: string
           required: true
       responses:
         '200':
@@ -1276,7 +1426,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/admin'
+                $ref: '#/components/schemas/userAdmin'
         '401':
           description: not authenticated
         '404':

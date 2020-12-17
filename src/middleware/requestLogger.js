@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-const queryString = require('querystring');
+const queryString = require('qs');
 const { DISPLAY_REQUEST_LEVEL } = require('../../config/globals');
 /*
 	log request information

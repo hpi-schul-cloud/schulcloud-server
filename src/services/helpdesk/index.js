@@ -15,6 +15,8 @@ if (BODYPARSER_JSON_LIMIT === undefined) {
 module.exports = function () {
 	const app = this;
 
+	app.use('/helpdesk/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+
 	const options = {
 		Model: problemModel,
 		paginate: {
@@ -27,6 +29,4 @@ module.exports = function () {
 	app.use('/helpdesk', service(options));
 	const helpdeskService = app.service('/helpdesk');
 	helpdeskService.hooks(hooks);
-
-	app.use('/helpdesk/api', staticContent(path.join(__dirname, '/docs')));
 };

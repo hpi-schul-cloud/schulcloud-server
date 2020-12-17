@@ -1,11 +1,12 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
 chai.use(chaiHttp);
 
-const getAccessToken = ({ username, password }) =>
-	new Promise((resolve, reject) => {
+const getAccessToken = async ({ username, password }) => {
+	const app = await appPromise;
+	return new Promise((resolve, reject) => {
 		chai
 			.request(app)
 			.post('/authentication')
@@ -22,6 +23,7 @@ const getAccessToken = ({ username, password }) =>
 				}
 			});
 	});
+};
 
 exports.getAccessToken = getAccessToken;
 

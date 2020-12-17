@@ -1,3 +1,4 @@
 {
-	"secretMatches": ["SECRET", "KEY", "SALT", "PASSWORD", "DSN", "REDIS_URI"]
+	"secretMatches": ["SECRET", "KEY", "SALT", "PASSWORD", "DSN", "REDIS_URI"],
+	"printHierarchy": false
 }

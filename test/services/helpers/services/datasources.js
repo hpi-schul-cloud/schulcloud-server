@@ -1,13 +1,14 @@
 let createdDatasourceIds = [];
 const { datasourceModel } = require('../../../../src/services/datasources/model');
 
-const createTestDatasource = (app, opt) => async ({
+const createTestDatasource = (appPromise, opt) => async ({
 	name = 'testDatasource',
 	schoolId = opt.schoolId,
 	config = {},
 	// manual cleanup, e.g. when testing delete:
 	manualCleanup = false,
 } = {}) => {
+	const app = await appPromise;
 	if (!config.target) {
 		throw new Error('datasource requires a config with a target! No the testobjects cant do that for you...');
 	}

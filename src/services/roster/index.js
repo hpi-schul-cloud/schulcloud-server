@@ -8,6 +8,8 @@ const oauth2 = require('../oauth2/hooks');
 module.exports = function roster() {
 	const app = this;
 
+	app.use('/roster/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+
 	app.use('/roster', {
 		find() {
 			return Promise.resolve('Roster interface available');
@@ -168,6 +170,4 @@ module.exports = function roster() {
 
 	app.use('/roster/groups', groupsHandler);
 	app.service('/roster/groups').hooks(groupsHooks);
-
-	app.use('/roster/api', staticContent(path.join(__dirname, '/docs')));
 };

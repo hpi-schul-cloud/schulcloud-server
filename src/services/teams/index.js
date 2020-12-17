@@ -1,10 +1,11 @@
+// eslint-disable-next-line max-classes-per-file
 const service = require('feathers-mongoose');
-
-const { BadRequest, GeneralError, NotFound } = require('@feathersjs/errors');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+const reqlib = require('app-root-path').require;
 
+const { NotFound, BadRequest, GeneralError } = reqlib('src/errors');
 const hooks = require('./hooks');
 const { warning } = require('../../logger/index');
 const { teamsModel } = require('./model');
@@ -466,6 +467,8 @@ module.exports = function setup() {
 		lean: { virtuals: true },
 	};
 
+	app.use('/teams/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+
 	app.use('/teams', service(options));
 	app.use('/teams/extern/get', new Get());
 	app.use('/teams/extern/add', new Add());
@@ -479,8 +482,6 @@ module.exports = function setup() {
 		accept: app.service('/teams/extern/accept'),
 		remove: app.service('/teams/extern/remove'),
 	};
-
-	app.use('/teams/api', staticContent(path.join(__dirname, '/docs')));
 
 	teamsServices.hooks({
 		before: hooks.before,

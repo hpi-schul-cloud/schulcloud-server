@@ -1,21 +1,26 @@
 const { expect } = require('chai');
+const sinon = require('sinon');
 const assert = require('assert');
 
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 const { enforceRoleHierarchyOnCreate, checkUniqueEmail } = require('../../../../src/services/user/hooks/userService');
+const { generateRequestParams } = require('../../helpers/services/login')(appPromise);
 
 const {
 	removeStudentFromCourses,
 	removeStudentFromClasses,
 	generateRegistrationLink,
+	decorateUsers,
 } = require('../../../../src/services/user/hooks/userService');
 
 describe('removeStudentFromCourses', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -65,10 +70,12 @@ describe('removeStudentFromCourses', () => {
 });
 
 describe('removeStudentFromClasses', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -118,14 +125,16 @@ describe('removeStudentFromClasses', () => {
 });
 
 describe('generateRegistrationLink', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	afterEach(async () => {
@@ -175,6 +184,27 @@ describe('generateRegistrationLink', () => {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(400);
 			expect(err.message).to.equal(expectedErrorMessage);
+		}
+	});
+
+	it('verify if hash is not generated when user already has an account', async () => {
+		const registrationLinkService = app.service('registrationlink');
+		const email = `max${Date.now()}@mustermann.de`;
+		const user = await testObjects.createTestUser({
+			email,
+			firstName: 'Max',
+			lastName: 'Mustermann',
+			roles: 'student',
+		});
+		const username = user.email;
+		const password = 'Schulcloud1!';
+		await testObjects.createTestAccount({ username, password }, 'local', user);
+		await generateRequestParams({ username, password });
+		try {
+			await registrationLinkService.create({ toHash: user.email });
+			expect.fail('Should have failed with BadRequest');
+		} catch (error) {
+			expect(error.message).to.equal('Fehler beim Generieren des Hashes. BadRequest: User already has an account.');
 		}
 	});
 
@@ -230,13 +260,16 @@ describe('generateRegistrationLink', () => {
 });
 
 describe('enforceRoleHierarchyOnCreate', () => {
+	let app;
 	let server;
-	before((done) => {
-		server = app.listen(0, done);
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	afterEach(async () => {
@@ -261,7 +294,7 @@ describe('enforceRoleHierarchyOnCreate', () => {
 									return Promise.resolve(createdRole);
 								}
 								// eslint-disable-next-line prefer-promise-reject-errors
-								return Promise.reject('not found');
+								return Promise.reject(new Error('not found'));
 							},
 						};
 					}
@@ -375,10 +408,12 @@ describe('enforceRoleHierarchyOnCreate', () => {
 });
 
 describe('checkUniqueEmail', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -454,5 +489,31 @@ describe('checkUniqueEmail', () => {
 		} catch (error) {
 			assert.fail(`expected promise resolved, but error was '${error.message}'`);
 		}
+	});
+});
+
+describe('decorateUsers', () => {
+	const service = {
+		find: sinon.spy(),
+	};
+
+	// const serviceSpy = sinon.spy(service, 'find');
+	const hookMock = {
+		app: {
+			// eslint-disable-next-line no-unused-vars
+			service(url) {
+				return service;
+			},
+		},
+		result: {
+			constructor: {
+				name: '',
+			},
+		},
+	};
+
+	it('should call roles service exactly once', async () => {
+		await decorateUsers(hookMock);
+		assert(service.find.calledOnce);
 	});
 });

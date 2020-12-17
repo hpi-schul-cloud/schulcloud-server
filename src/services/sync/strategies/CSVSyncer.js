@@ -1,11 +1,13 @@
 const { parse } = require('papaparse');
 const stripBOM = require('strip-bom');
 const { mix } = require('mixwith');
-const { Configuration } = require('@schul-cloud/commons');
+const { Forbidden } = require('@feathersjs/errors');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const Syncer = require('./Syncer');
 const ClassImporter = require('./mixins/ClassImporter');
 const { SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
+const { equal } = require('../../../helper/compare').ObjectId;
 
 const ATTRIBUTES = [
 	{ name: 'namePrefix', aliases: ['nameprefix', 'prefix', 'title', 'affix'] },
@@ -118,7 +120,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		const actions = Object.values(clusteredRecords).map((record) => async () => {
 			try {
 				const enrichedRecord = await this.enrichUserData(record);
-				const [user, isUserCreated] = await this.createOrUpdateUser(enrichedRecord);
+				const [user, isUserCreated] = await this.createOrUpdateUser(enrichedRecord, this.options.schoolId);
 				if (importClasses) {
 					const isNewClassAssigned = await this.createClasses(enrichedRecord, user);
 					if (!isUserCreated && isNewClassAssigned) this.stats.users.updated += 1;
@@ -280,25 +282,34 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		return this.app.service('registrationlink').create(params);
 	}
 
-	async createOrUpdateUser(record) {
-		const userId = await this.findUserIdForRecord(record);
-		if (userId === null) {
+	async createOrUpdateUser(record, schoolId) {
+		const user = await this.findUserForRecord(record);
+
+		if (user === null) {
 			return [await this.createUser(record), true];
 		}
+
+		if (!equal(user.schoolId, schoolId)) {
+			// Give the feedback that the user exist. But can only execute by admins and is an important information.
+			throw new Forbidden('User is not on your school.');
+		}
 		this.stats.users.successful += 1;
-		return [await this.app.service('users').get(userId), false];
+		// TODO the already requested user, or createt user, is request it again -> please combine methodes for performance
+		return [await this.app.service('users').get(user._id), false];
 	}
 
-	async findUserIdForRecord(record) {
+	async findUserForRecord(record) {
 		const users = await this.app.service('users').find(
 			{
 				query: {
 					email: record.email,
 					$populate: 'roles',
+					$select: ['_id', 'roles', 'schoolId'],
 				},
 				paginate: false,
 				lean: true,
 			},
+			// x-api-key is override user scope permissions please carful at this point
 			this.requestParams
 		);
 		if (users.length >= 1) {
@@ -306,7 +317,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			if (record.roles && !existingUser.roles.some((r) => r.name === record.roles[0])) {
 				throw new Error('Cannot change user roles.');
 			}
-			return existingUser._id;
+			return existingUser;
 		}
 		return null;
 	}

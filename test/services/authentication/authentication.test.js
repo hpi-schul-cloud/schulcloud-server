@@ -1,26 +1,30 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const jwt = require('jsonwebtoken');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 
-const accountService = app.service('accounts');
-
-const { logger } = app;
 const should = chai.should();
 
 chai.use(chaiHttp);
 
 describe('start server', () => {
+	let app;
+	let accountService;
+	let logger;
+
 	let server;
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		({ logger } = app);
+		accountService = app.service('accounts');
+		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
-		testObjects.cleanup();
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
 	});
 
 	describe('General login service', () => {

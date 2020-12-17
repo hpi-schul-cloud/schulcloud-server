@@ -1,16 +1,22 @@
 const accountModel = require('../../account/model');
-const SystemSyncer = require('./SystemSyncer');
+const Syncer = require('./Syncer');
 
 /**
  * Implements syncing schools from LDAP servers based on the Syncer interface
  * @class LDAPSyncer
  * @implements {Syncer}
  */
-class LDAPSchoolSyncer extends SystemSyncer {
-	constructor(app, stats, logger, system, school) {
-		super(app, stats, logger, system);
+class LDAPSchoolSyncer extends Syncer {
+	constructor(app, stats, logger, system, school, options = {}) {
+		super(app, stats, logger);
+		this.system = system;
 		this.school = school;
+		this.options = options;
+		if (options.forceFullSync) {
+			delete this.system.ldapConfig.lastModifyTimestamp;
+		}
 		this.stats = Object.assign(this.stats, {
+			modifyTimestamp: this.system.ldapConfig.lastModifyTimestamp || '0',
 			name: this.school.name,
 			users: {
 				created: 0,
@@ -29,7 +35,7 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	 * @see {Syncer#prefix}
 	 */
 	prefix() {
-		return `${super.prefix()} | ${this.school.name}`;
+		return `${this.system.alias} | ${this.school.name}`;
 	}
 
 	/**
@@ -47,7 +53,9 @@ class LDAPSchoolSyncer extends SystemSyncer {
 		const ldapUsers = await this.app.service('ldap').getUsers(this.system.ldapConfig, this.school);
 		this.logInfo(`Creating and updating ${ldapUsers.length} users...`);
 		for (const ldapUser of ldapUsers) {
-			await this.createOrUpdateUser(ldapUser, this.school);
+			// eslint-disable-next-line no-await-in-loop
+			await this.createOrUpdateUser(ldapUser);
+			this.updateModifyTimestampMaximum(ldapUser.modifyTimestamp);
 		}
 
 		this.logInfo(
@@ -67,6 +75,10 @@ class LDAPSchoolSyncer extends SystemSyncer {
 				`updated ${this.stats.classes.updated} classes. ` +
 				`Skipped errors: ${this.stats.classes.errors}.`
 		);
+	}
+
+	updateModifyTimestampMaximum(date) {
+		if (date && this.stats.modifyTimestamp < date) this.stats.modifyTimestamp = date;
 	}
 
 	createOrUpdateUser(idmUser) {
@@ -98,24 +110,16 @@ class LDAPSchoolSyncer extends SystemSyncer {
 
 	createUserAndAccount(idmUser) {
 		return this.app
-			.service('registrationPins')
+			.service('users')
 			.create({
+				firstName: idmUser.firstName,
+				lastName: idmUser.lastName,
+				schoolId: this.school._id,
 				email: idmUser.email,
-				verified: true,
-				silent: true,
+				ldapDn: idmUser.ldapDn,
+				ldapId: idmUser.ldapUUID,
+				roles: idmUser.roles,
 			})
-			.then((registrationPin) =>
-				this.app.service('users').create({
-					pin: registrationPin.pin,
-					firstName: idmUser.firstName,
-					lastName: idmUser.lastName,
-					schoolId: this.school._id,
-					email: idmUser.email,
-					ldapDn: idmUser.ldapDn,
-					ldapId: idmUser.ldapUUID,
-					roles: idmUser.roles,
-				})
-			)
 			.then((user) =>
 				accountModel.create({
 					userId: user._id,
@@ -162,7 +166,10 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	async createClassesFromLdapData(data, school) {
 		for (const ldapClass of data) {
 			try {
+				this.updateModifyTimestampMaximum(ldapClass.modifyTimestamp);
+				// eslint-disable-next-line no-await-in-loop
 				const klass = await this.getOrCreateClassFromLdapData(ldapClass, school);
+				// eslint-disable-next-line no-await-in-loop
 				await this.populateClassUsers(ldapClass, klass, school);
 			} catch (err) {
 				this.stats.classes.errors += 1;

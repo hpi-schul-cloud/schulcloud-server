@@ -1,6 +1,8 @@
-const { NotFound, GeneralError } = require('@feathersjs/errors');
+// eslint-disable-next-line max-classes-per-file
 const _ = require('lodash');
+const reqlib = require('app-root-path').require;
 
+const { NotFound, GeneralError } = reqlib('src/errors');
 const { homeworkModel } = require('../../homework/model');
 const { FileModel } = require('../../fileStorage/model');
 const lessonModel = require('../model');

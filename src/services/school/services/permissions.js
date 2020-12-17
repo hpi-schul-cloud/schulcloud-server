@@ -1,6 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { BadRequest } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
+const reqlib = require('app-root-path').require;
+
+const { BadRequest } = reqlib('src/errors');
 const globalHooks = require('../../../hooks');
 const { lookupSchool, restrictToCurrentSchool } = require('../../../hooks');
 

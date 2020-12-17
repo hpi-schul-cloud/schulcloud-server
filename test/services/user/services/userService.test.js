@@ -1,22 +1,27 @@
 const assert = require('assert');
 const { expect } = require('chai');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { ObjectId } = require('mongoose').Types;
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 
-const userService = app.service('users');
-const classesService = app.service('classes');
-const coursesService = app.service('courses');
-const testObjects = require('../../helpers/testObjects')(app);
+const testObjects = require('../../helpers/testObjects')(appPromise);
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const testGenericErrorMessage = 'Der angefragte Nutzer ist unbekannt!';
 
 describe('user service', () => {
+	let userService;
+	let classesService;
+	let coursesService;
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		userService = app.service('users');
+		classesService = app.service('classes');
+		coursesService = app.service('courses');
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -336,16 +341,6 @@ describe('user service', () => {
 			}
 		});
 
-		it('does not allow teachers to find parents', async () => {
-			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-			const parent = await testObjects.createTestUser({ roles: ['parent'] });
-
-			const teacherParams = await testObjects.generateRequestParamsFromUser(teacher);
-			teacherParams.query = {};
-			const result = await app.service('users').find(teacherParams);
-			expect(result.data.some((r) => equalIds(r._id, parent._id))).to.be.false;
-		});
-
 		it('does not allow students who may not create teams list other users', async () => {
 			const student = await testObjects.createTestUser({ roles: ['student'] });
 			const studentParams = await testObjects.generateRequestParamsFromUser(student);
@@ -372,16 +367,6 @@ describe('user service', () => {
 
 			const studentResults = await app.service('users').find(studentParams);
 			expect(studentResults.data).to.be.not.empty;
-		});
-
-		it('allows access to parents by superheroes', async () => {
-			const hero = await testObjects.createTestUser({ roles: ['superhero'] });
-			const parent = await testObjects.createTestUser({ roles: ['parent'] });
-
-			const params = await testObjects.generateRequestParamsFromUser(hero);
-			params.query = {};
-			const result = await app.service('users').find(params);
-			expect(result.data.some((r) => equalIds(r._id, parent._id))).to.be.true;
 		});
 	});
 
