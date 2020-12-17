@@ -5,8 +5,8 @@ class HelpdeskFacade {
 		this.app = app;
 	}
 
-	async deleteUserData(userId) {
-		return helpdeskUC.deleteProblemsForUser(userId);
+	async deleteUserData() {
+		return helpdeskUC.deleteProblemsForUser();
 	}
 }
 

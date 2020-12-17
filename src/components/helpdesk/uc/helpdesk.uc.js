@@ -1,9 +1,9 @@
 const { problemRepo } = require('../repo/index');
-const { validateUserId } = require('../../helper/uc.helper');
+const { validateObjectId } = require('../../helper/uc.helper');
 const { debug } = require('../../../logger');
 
 const deleteProblemsForUser = async (userId) => {
-	validateUserId(userId);
+	validateObjectId(userId);
 	let complete = true;
 	const problems = await problemRepo.getProblemsForUser(userId);
 	debug(`found ${problems.length} helpdesk problems for the user to be removed`, { userId });
@@ -16,6 +16,9 @@ const deleteProblemsForUser = async (userId) => {
 	return { trashBinData: { scope: 'problems', data: problems }, complete };
 };
 
+const deleteUserData = () => [deleteProblemsForUser];
+
 module.exports = {
 	deleteProblemsForUser,
+	deleteUserData,
 };

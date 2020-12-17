@@ -9,11 +9,11 @@ const { problemRepo } = require('../repo');
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-const USER_ID = 'USER_ID';
-
+const USER_ID = new ObjectId();
+const PROBLEM_ID = new ObjectId();
 const createTestProblem = (userId = USER_ID) => {
 	return {
-		_id: 'PROBLEM_ID',
+		_id: PROBLEM_ID,
 		type: 'contactAdmin',
 		subject: 'Dies ist ein Titel',
 		currentState: 'Dies ist der CurrentState',
@@ -36,20 +36,38 @@ describe('helpdesk usecase', () => {
 		getProblemsStub.restore();
 	});
 
+	describe('deleteUserData', () => {
+		it('should recive a function form use case which resolves in an array', () => {
+			expect(helpdeskUC.deleteUserData).to.be.an('function');
+			expect(helpdeskUC.deleteUserData()).to.be.an('array').with.length.greaterThan(0);
+		});
+	});
+
 	describe('deleteProblemsForUser', () => {
-		it('when an authorized admin calls the function, it succeeds', async () => {
-			const userId = new ObjectId();
-			const result = await helpdeskUC.deleteProblemsForUser(userId);
+		it('when called with valid user id it should return successful result', async () => {
+			const result = await helpdeskUC.deleteUserData()[0](USER_ID);
 
 			expect(result.complete).to.deep.equal(true);
 			expect(result.trashBinData).to.be.an('object');
 			expect(result.trashBinData.scope).to.be.equal('problems');
-			expect(result.trashBinData.data.length).to.be.equal(1);
+			expect(result.trashBinData.data[0]._id.toString()).to.be.equal(PROBLEM_ID.toString());
+		});
+
+		it('when called with valid user without problems should return successful result', async () => {
+			const USER_WITHOUT_PROBLEMS_ID = new ObjectId();
+
+			getProblemsStub.callsFake(() => []);
+			const result = await helpdeskUC.deleteUserData()[0](USER_WITHOUT_PROBLEMS_ID);
+
+			expect(result.complete).to.deep.equal(true);
+			expect(result.trashBinData).to.be.an('object');
+			expect(result.trashBinData.scope).to.be.equal('problems');
+			expect(result.trashBinData.data.length).to.be.equal(0);
 		});
 
 		it('when the function is called with an invalid id, then it fails', async () => {
 			const userId = 'NOT_FOUND_USER';
-			expect(() => helpdeskUC.deleteProblemsForUser(userId), "if user wasn't found it should fail").to.throw;
+			expect(() => helpdeskUC.deleteUserData()[0](userId), "if user wasn't found it should fail").to.throw;
 		});
 	});
 });
