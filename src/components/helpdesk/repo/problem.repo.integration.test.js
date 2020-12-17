@@ -38,11 +38,14 @@ describe('problem repo', () => {
 		it('when problem is deleted, it should be gone from db', async () => {
 			const user = await testObjects.createTestUser();
 			await testObjects.createTestProblem(user);
-			await problemRepo.deleteProblemsForUser(user._id);
+			const userId = user._id;
 
-			const result = await problemRepo.getProblemsForUser(user._id);
+			let userProblems = await problemRepo.getProblemsForUser(userId);
+			expect(userProblems.length).to.be.equal(1);
+			await problemRepo.deleteProblemsForUser(userId);
 
-			expect(result.length).to.be.equal(0);
+			userProblems = await problemRepo.getProblemsForUser(userId);
+			expect(userProblems.length).to.be.equal(0);
 		});
 
 		it('when the function is called with invalid id, it throws an error', async () => {
