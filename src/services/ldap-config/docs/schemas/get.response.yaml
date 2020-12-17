@@ -77,9 +77,6 @@ properties:
             type: string
       classAttributeNameMapping:
         type: object
-        required:
-          - description
-          - uniqueMember
         properties:
           description:
             type: string
