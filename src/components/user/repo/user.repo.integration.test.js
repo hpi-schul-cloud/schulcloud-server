@@ -94,7 +94,7 @@ describe('user repository', () => {
 
 	describe('createTombstoneUser', () => {
 		it('should return a user object', async () => {
-			const school = testObjects.createTestSchool();
+			const school = await testObjects.createTestSchool();
 
 			const tombstoneUser = await userRepo.createTombstoneUser(school._id, TOMBSTONE_SCHOOL_ID);
 
