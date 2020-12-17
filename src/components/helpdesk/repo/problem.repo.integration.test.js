@@ -39,16 +39,16 @@ describe('problem repo', () => {
 	describe('deleteProblems', () => {
 		it('when problem is deleted, it should return deleted problem ids', async () => {
 			const user = await testObjects.createTestUser();
-			const problem = await testObjects.createTestProblem(TEST_PROBLEM_PARAMS, user);
-			const result = await problemRepo.deleteProblems([problem._id]);
-			expect(result.length).to.be.equal(1);
-			expect(result[0]).to.be.equal(problem._id);
+			await testObjects.createTestProblem(TEST_PROBLEM_PARAMS, user);
+			const result = await problemRepo.deleteProblemsForUser(user._id);
+			expect(result.success).to.be.equal(true);
+			expect(result.deletedDocuments).to.be.equal(1);
 		});
 
 		it('when problem is deleted, it should be gone from db', async () => {
 			const user = await testObjects.createTestUser();
-			const problem = await testObjects.createTestProblem(TEST_PROBLEM_PARAMS, user);
-			await problemRepo.deleteProblems([problem._id]);
+			await testObjects.createTestProblem(TEST_PROBLEM_PARAMS, user);
+			await problemRepo.deleteProblemsForUser(user._id);
 
 			const result = await problemModel.find({ userId: user._id }).lean().exec();
 
@@ -57,7 +57,7 @@ describe('problem repo', () => {
 
 		it('when the function is called with invalid id, it throws an error', async () => {
 			const notExistedId = new ObjectId();
-			expect(problemRepo.deleteProblems([notExistedId])).to.eventually.throw(new GeneralError());
+			expect(problemRepo.deleteProblemsForUser(notExistedId)).to.eventually.throw(new GeneralError());
 		});
 	});
 

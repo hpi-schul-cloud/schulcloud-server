@@ -1,34 +1,24 @@
 const problemModel = require('../../../services/helpdesk/model');
-const { GeneralError } = require('../../../errors');
+const { deleteManyResult } = require('../../helper/repo.helper');
 
+/**
+ * Return helpdesk problems for userId
+ * @param {String|ObjectId} userId
+ */
 const getProblemsForUser = async (userId) => {
 	return problemModel.find({ userId }).lean().exec();
 };
 
-const deleteProblems = async (problemIds) => {
-	const deleteResult = await problemModel
-		.deleteMany({
-			_id: {
-				$in: problemIds,
-			},
-		})
-		.lean()
-		.exec();
-	if (deleteResult.n !== deleteResult.ok || deleteResult.ok !== problemIds.length) {
-		throw new GeneralError('db error during deleting problems');
-	}
-	return problemIds;
-};
-
+/**
+ * Removes all helpdesk problems for userId
+ * @param {String|ObjectId} userId
+ */
 const deleteProblemsForUser = async (userId) => {
-	const problems = await getProblemsForUser(userId);
-	const problemIds = problems.map((problem) => problem._id);
-	await deleteProblems(problemIds);
-	return problems;
+	const deleteResult = await problemModel.deleteMany({ userId }).lean().exec();
+	return deleteManyResult(deleteResult);
 };
 
 module.exports = {
 	getProblemsForUser,
-	deleteProblems,
 	deleteProblemsForUser,
 };
