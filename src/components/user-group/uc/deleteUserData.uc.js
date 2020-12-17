@@ -3,10 +3,10 @@ const { classesRepo } = require('../repo/index');
 const { trashBinResult } = require('../../helper/uc.helper');
 const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
 const { debug } = require('../../../logger');
-const validationHelper = require('../../../common/validation/validationHelper');
+const assertionErrorHelper = require('../../../errors/helper/assertionErrorHelper');
 
 const validateParams = (userId) => {
-	if (!isValidObjectId(userId)) throw new AssertionError(validationHelper.missingParameters({ userId }));
+	if (!isValidObjectId(userId)) throw new AssertionError(assertionErrorHelper.missingParameters({ userId }));
 };
 
 const addClassesToTrashbinData = (classes = [], data) => {

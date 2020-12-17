@@ -12,7 +12,7 @@ const INTERNAL_SERVER_ERROR = {
 const ASSERTION_ERROR = {
 	type: 'ASSERTION_ERROR',
 	title: 'Assertion error',
-	defaultMessage: 'Argument validation failed',
+	defaultMessage: 'Parameter validation error',
 };
 module.exports = {
 	INTERNAL_SERVER_ERROR,
