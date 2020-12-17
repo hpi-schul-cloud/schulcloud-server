@@ -12,6 +12,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-8206 - Add school tombstone for deleting concept
 - SC-7825 - Remove user relations from courses
 - SC-7827 - Add deletion concept handling for file permissions.
 - SC-8030 - Setup orchestrator for deleting concept
