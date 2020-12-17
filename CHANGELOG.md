@@ -24,6 +24,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8230 - fix deletion of teachers via new route
 
+### Removed
+
+- SC-8233 - Removed attribute and member as required attributes for the LDAP-config service
+
 ## [25.3.5]
 
 ### Changed
