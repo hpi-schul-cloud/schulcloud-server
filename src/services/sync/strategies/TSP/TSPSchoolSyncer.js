@@ -4,14 +4,7 @@ const Syncer = require('../Syncer');
 const ClassImporter = require('../mixins/ClassImporter');
 const { equal: sameObjectId } = require('../../../../helper/compare').ObjectId;
 
-const {
-	TspApi,
-	config: TSP_CONFIG,
-	ENTITY_SOURCE,
-	SOURCE_ID_ATTRIBUTE,
-	createUserAndAccount,
-	shortenedRegistrationProcess,
-} = require('./TSP');
+const { TspApi, config: TSP_CONFIG, ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE, createUserAndAccount } = require('./TSP');
 
 const { switchSchool, getInvalidatedUuid } = require('./SchoolChange');
 
@@ -327,9 +320,6 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				'teacher',
 				systemId
 			);
-			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
-				await shortenedRegistrationProcess(this.app, teacher);
-			}
 			this.stats.users.teachers.created += 1;
 			return teacher;
 		} catch (err) {
@@ -434,9 +424,6 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				'student',
 				systemId
 			);
-			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
-				await shortenedRegistrationProcess(this.app, student);
-			}
 			this.stats.users.students.created += 1;
 			return student;
 		} catch (err) {
