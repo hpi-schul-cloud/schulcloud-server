@@ -1,374 +1,269 @@
 {
-  "nodes": [
-    {
-      "remote": null,
-      "content": {
-        "url": "https://mv-repo.schul-cloud.org/edu-sharing/components/render/9ff3ee4e-e679-4576-bad7-0eeb9b174716",
-        "hash": "-36173364",
-        "version": "1.0"
+  "node": {
+    "remote": null,
+    "content": {
+      "url": "https://mv-repo.schul-cloud.org/edu-sharing/components/render/fa971666-ecf8-4e39-a57c-4fe6e7291847",
+      "hash": null,
+      "version": "1.0"
+    },
+    "license": {
+      "icon": "https://mv-repo.schul-cloud.org/edu-sharing/ccimages/licenses/none.svg",
+      "url": null
+    },
+    "isDirectory": false,
+    "commentCount": 0,
+    "rating": {
+      "overall": {
+        "sum": 0.0,
+        "count": 0,
+        "rating": 0.0
       },
-      "license": {
-        "icon": "https://mv-repo.schul-cloud.org/edu-sharing/ccimages/licenses/none.svg",
-        "url": null
-      },
-      "isDirectory": false,
-      "commentCount": 0,
-      "rating": {
-        "overall": {
-          "sum": 0.0,
-          "count": 0,
-          "rating": 0.0
-        },
-        "user": 0.0,
-        "affiliation": {}
-      },
-      "ref": {
-        "repo": "mv-repo.schul-cloud.org",
-        "id": "9ff3ee4e-e679-4576-bad7-0eeb9b174716",
-        "archived": false,
-        "isHomeRepo": true
-      },
-      "parent": {
-        "repo": "mv-repo.schul-cloud.org",
-        "id": "1afa239f-b4ec-4e0f-b7bc-de50453ec7c2",
-        "archived": false,
-        "isHomeRepo": true
-      },
-      "type": "ccm:io",
-      "aspects": [
-        "cclom:lifecycle",
-        "cclom:technical",
-        "ccm:eduscope",
-        "ccm:iometadata",
-        "cm:versionable",
-        "ccm:usageaspect",
-        "sys:referenceable",
-        "sys:localized",
-        "cclom:schema",
-        "ccm:basemetadata",
-        "cm:metadataset",
-        "ccm:licenses",
-        "ccm:commonlicenses",
-        "cclom:rights",
-        "cm:thumbnailed",
-        "cclom:meta-metadata",
-        "cm:auditable",
-        "ccm:lomreplication",
-        "cclom:general",
-        "ccm:educontext"
+      "user": 0.0,
+      "affiliation": {}
+    },
+    "ref": {
+      "repo": "mv-repo.schul-cloud.org",
+      "id": "fa971666-ecf8-4e39-a57c-4fe6e7291847",
+      "archived": false,
+      "isHomeRepo": true
+    },
+    "parent": {
+      "repo": "mv-repo.schul-cloud.org",
+      "id": "486bc4b9-1920-4b53-b53c-e7e4982c5dd4",
+      "archived": false,
+      "isHomeRepo": true
+    },
+    "type": "ccm:io",
+    "aspects": [
+      "cclom:lifecycle",
+      "cclom:technical",
+      "ccm:permission_history",
+      "ccm:eduscope",
+      "ccm:iometadata",
+      "cm:versionable",
+      "ccm:tracking",
+      "ccm:usageaspect",
+      "sys:referenceable",
+      "sys:localized",
+      "cclom:schema",
+      "ccm:basemetadata",
+      "cm:metadataset",
+      "ccm:licenses",
+      "ccm:commonlicenses",
+      "cclom:rights",
+      "cm:thumbnailed",
+      "cclom:meta-metadata",
+      "cm:auditable",
+      "ccm:lomreplication",
+      "cclom:general",
+      "ccm:educontext"
+    ],
+    "name": "dummy title_1606238808463",
+    "title": "dummy title",
+    "metadataset": "mds_oeh",
+    "repositoryType": "ALFRESCO",
+    "createdAt": "2020-11-24T17:26:48Z",
+    "createdBy": {
+      "profile": null,
+      "firstName": "Administrator",
+      "lastName": "Edu-Sharing",
+      "mailbox": "admin@mv-repo.schul-cloud.org"
+    },
+    "modifiedAt": "2020-11-24T17:26:49Z",
+    "modifiedBy": {
+      "profile": null,
+      "firstName": "Administrator",
+      "lastName": "Edu-Sharing",
+      "mailbox": "admin@mv-repo.schul-cloud.org"
+    },
+    "access": [
+      "ReadAll",
+      "Comment",
+      "Feedback",
+      "AddChildren",
+      "ChangePermissions",
+      "Write",
+      "Delete",
+      "CCPublish"
+    ],
+    "downloadUrl": "https://mv-repo.schul-cloud.org/edu-sharing/eduservlet/download?nodeId=fa971666-ecf8-4e39-a57c-4fe6e7291847",
+    "properties": {
+      "ccm:replicationsourcehash": [
+        "-1016214847907732070"
       ],
-      "name": "Schulen öffnen wieder - oder auch nicht #corona _ Vlog #244_1599351044306",
-      "title": "Schulen öffnen wieder - oder auch nicht #corona | Vlog #244",
-      "metadataset": "mds_oeh",
-      "repositoryType": "ALFRESCO",
-      "createdAt": "2020-09-06T00:10:44Z",
-      "createdBy": {
-        "profile": null,
-        "firstName": "Administrator",
-        "lastName": "Edu-Sharing",
-        "mailbox": "admin@mv-repo.schul-cloud.org"
-      },
-      "modifiedAt": "2020-09-06T00:10:45Z",
-      "modifiedBy": {
-        "profile": null,
-        "firstName": "Administrator",
-        "lastName": "Edu-Sharing",
-        "mailbox": "admin@mv-repo.schul-cloud.org"
-      },
-      "access": [
-        "ReadAll",
-        "Comment",
-        "Feedback"
+      "ccm:original": [
+        "fa971666-ecf8-4e39-a57c-4fe6e7291847"
       ],
-      "downloadUrl": "https://mv-repo.schul-cloud.org/edu-sharing/eduservlet/download?nodeId=9ff3ee4e-e679-4576-bad7-0eeb9b174716",
-      "properties": {
-        "ccm:lifecyclecontributer_authorVCARD_ORG": [
-          ""
-        ],
-        "ccm:replicationsourcehash": [
-          "0.1.12020-08-28T14:22:32Z"
-        ],
-        "ccm:lifecyclecontributer_authorVCARD_TITLE": [
-          ""
-        ],
-        "ccm:original": [
-          "9ff3ee4e-e679-4576-bad7-0eeb9b174716"
-        ],
-        "cm:created": [
-          "1599351044312"
-        ],
-        "virtual:commentcount": [
-          "0"
-        ],
-        "cclom:size": [
-          "1061"
-        ],
-        "cclom:version": [
-          "1.0"
-        ],
-        "virtual:usagecount": [
-          "0"
-        ],
-        "ccm:objecttype": [
-          "MATERIAL"
-        ],
-        "sys:node-uuid": [
-          "9ff3ee4e-e679-4576-bad7-0eeb9b174716"
-        ],
-        "ccm:replicationsource": [
-          "oeh_spider"
-        ],
-        "ccm:lifecyclecontributer_authorVCARD_SURNAME": [
-          ""
-        ],
-        "ccm:taxonid_DISPLAYNAME": [
-          "Allgemein",
-          "Politik",
-          "Geschichte",
-          "Deutsch",
-          "Mathematik",
-          "Englisch"
-        ],
-        "ccm:lifecyclecontributer_authorVCARD_URL": [
-          ""
-        ],
-        "virtual:childobjectcount": [
-          "0"
-        ],
-        "ccm:educationalintendedenduserrole_DISPLAYNAME": [
-          "Lerner/in",
-          "Lehrer/in"
-        ],
-        "ccm:replicationsourceuuid": [
-          "ea93e76a-3230-553e-9664-ad21f798ba2a"
-        ],
-        "cclom:title": [
-          "Schulen öffnen wieder - oder auch nicht #corona | Vlog #244"
-        ],
-        "ccm:lifecyclecontributer_authorVCARD_COUNTRY": [
-          ""
-        ],
-        "ccm:lifecyclecontributer_author": [
-          "BEGIN:VCARD\r\nVERSION:3.0\r\nFN:\r\nN:;;;;\r\nURL:\r\nEND:VCARD\r\n"
-        ],
-        "ccm:lifecyclecontributer_authorVCARD_REGION": [
-          ""
-        ],
-        "sys:store-protocol": [
-          "workspace"
-        ],
-        "ccm:lifecyclecontributer_authorVCARD_STREET": [
-          ""
-        ],
-        "ccm:lifecyclecontributer_authorVCARD_PLZ": [
-          ""
-        ],
-        "sys:store-identifier": [
-          "SpacesStore"
-        ],
-        "ccm:version_comment": [
-          "PREVIEW_CHANGED"
-        ],
-        "cclom:format": [
-          "application/octet-stream"
-        ],
-        "ccm:educationallearningresourcetype": [
-          "http://w3id.org/openeduhub/vocabs/learningResourceType/video"
-        ],
-        "ccm:create_version": [
-          "false"
-        ],
-        "cm:modifiedISO8601": [
-          "2020-09-06T00:10:45.111Z"
-        ],
-        "sys:node-dbid": [
-          "2522974"
-        ],
-        "ccm:wwwurl": [
-          "https://www.youtube.com/watch?v=jolBuuyFeQM"
-        ],
-        "cm:edu_metadataset": [
-          "mds_oeh"
-        ],
-        "ccm:objecttype_DISPLAYNAME": [
-          "Material"
-        ],
-        "ccm:replicationsourceorigin": [
-          "youtube_spider"
-        ],
-        "cm:creator": [
-          "admin"
-        ],
-        "cm:autoVersion": [
-          "false"
-        ],
-        "virtual:permalink": [
-          "https://mv-repo.schul-cloud.org/edu-sharing/components/render/9ff3ee4e-e679-4576-bad7-0eeb9b174716/1.0"
-        ],
-        "cm:versionLabel": [
-          "1.0"
-        ],
-        "cm:versionable": [
-          "true"
-        ],
-        "ccm:lifecyclecontributer_authorVCARD_GIVENNAME": [
-          ""
-        ],
-        "cm:created_LONG": [
-          "1599351044312"
-        ],
-        "ccm:lifecyclecontributer_authorVCARD_TEL": [
-          ""
-        ],
-        "virtual:primaryparent_nodeid": [
-          "1afa239f-b4ec-4e0f-b7bc-de50453ec7c2"
-        ],
-        "ccm:replicationsourceid": [
-          "fae00c8e-150b-4444-bc98-2eb5a12648bc"
-        ],
-        "ccm:lifecyclecontributer_authorVCARD_CITY": [
-          ""
-        ],
-        "cm:createdISO8601": [
-          "2020-09-06T00:10:44.312Z"
-        ],
-        "cclom:general_description": [
-          "JETZT ERHÄLTLICH: \"Referate mit Stil. Von der Themenfindung bis zur Bewertung\" von Miriam Müller\nhttps://amzn.to/2rN75YH\n\neBook: https://amzn.to/2rLmRUV\n\nEs geht endlich wieder weiter! Die Schulen öffnen wieder. Naja, erst mal nur für die Abschlussklassen und die oberen Klassenstufen, aber immerhin. Es ist ein Anfang in der #coronakrise. Und er ist genauso unsicher, wie alles andere. Denn bloß weil am 4. Mai der Unterricht wieder losgehen soll, heißt das nicht, dass das auch tatsächlich geschieht. Wer weiß was bis dahin noch alles passiert.\n\nViel Spaß beim Lernen!\n\n***\n\nWillst du schoolseasy unterstützen?\n\nhttp://www.paypal.me/schoolseasy\n\n***\n\nMehr Infos\n\nZusammenfassung der aktuellen Planung https://www.tagesschau.de/inland/corona-schulen-101.html [Stand: 16.04.2020]\n\nWas brauchen Schulen bis zum Schulstart? https://www.sueddeutsche.de/gesundheit/gesundheit-frankfurt-am-main-gewerkschaft-waschbecken-und-seife-fuer-jeden-klassenraum-dpa.urn-newsml-dpa-com-20090101-200416-99-720953 [Stand: 16.04.2020]\n\n***\n\nDirekt zum Kanal: http://www.youtube.com/schoolseasy\n\nschoolseasy Podcast: http://www.schoolseasy.de/blog\n\nFacebook: http://www.facebook.com/schoolseasy\n\nWebsite: http://www.schoolseasy.de\n\n***\n\nNoch mehr Vlogs: https://www.youtube.com/playlist?list=PLT9X9x5fyMJKTjK1vHTIIpfPUjK3sEmLG"
-        ],
-        "cm:modified": [
-          "1599351045111"
-        ],
-        "cm:edu_forcemetadataset": [
-          "true"
-        ],
-        "ccm:taxonid": [
-          "http://w3id.org/openeduhub/vocabs/discipline/720",
-          "http://w3id.org/openeduhub/vocabs/discipline/480",
-          "http://w3id.org/openeduhub/vocabs/discipline/240",
-          "http://w3id.org/openeduhub/vocabs/discipline/120",
-          "http://w3id.org/openeduhub/vocabs/discipline/380",
-          "http://w3id.org/openeduhub/vocabs/discipline/20001"
-        ],
-        "cm:modifier": [
-          "admin"
-        ],
-        "ccm:educationallearningresourcetype_DISPLAYNAME": [
-          "Video"
-        ],
-        "cm:autoVersionOnUpdateProps": [
-          "false"
-        ],
-        "cclom:location": [
-          "https://www.youtube.com/watch?v=jolBuuyFeQM"
-        ],
-        "ccm:educationalintendedenduserrole": [
-          "http://w3id.org/openeduhub/vocabs/intendedEndUserRole/learner",
-          "http://w3id.org/openeduhub/vocabs/intendedEndUserRole/teacher"
-        ],
-        "ccm:educontextname": [
-          "default"
-        ],
-        "ccm:lifecyclecontributer_authorFN": [
-          ""
-        ],
-        "ccm:lifecyclecontributer_authorVCARD_EMAIL": [
-          ""
-        ],
-        "cm:modified_LONG": [
-          "1599351045111"
-        ],
-        "cm:automaticUpdate": [
-          "true"
-        ],
-        "cm:name": [
-          "Schulen öffnen wieder - oder auch nicht #corona _ Vlog #244_1599351044306"
-        ],
-        "cm:initialVersion": [
-          "false"
-        ],
-        "cclom:general_keyword": [
-          "schoolseasy",
-          "Bildung",
-          "Schule",
-          "lernen",
-          "Unterricht",
-          "kostenlos",
-          "einfach",
-          "Spaß",
-          "Freude",
-          "online",
-          "Internet",
-          "Gymnasium",
-          "verständlich",
-          "Übungen",
-          "Lösungen",
-          "Nachhilfe",
-          "Erklärvideo",
-          "Lernvideo",
-          "Vlog",
-          "Meinung",
-          "Erfahrung",
-          "Haltung",
-          "pro",
-          "kontra",
-          "gut",
-          "schlecht",
-          "contra",
-          "Schulschließung",
-          "Schulöffnung",
-          "schließen",
-          "geschlossen",
-          "öffnen",
-          "offen",
-          "Corona",
-          "COVID-19",
-          "Gesundheit",
-          "Schüler",
-          "Sicherheit",
-          "Hygiene",
-          "Abschluss",
-          "Prüfung",
-          "Abschlussklassen",
-          "Klassen",
-          "Abschlussprüfung",
-          "Abi",
-          "Abitur",
-          "wieder",
-          "Konferenz",
-          "Mundschutz",
-          "Bus",
-          "Zug",
-          "Klassenzimmer",
-          "Regeln",
-          "Gesetze",
-          "Abstand",
-          "Lehrer"
-        ]
-      },
-      "mimetype": "application/octet-stream",
-      "mediatype": "link",
-      "size": "1061",
-      "preview": {
-        "isIcon": false,
-        "isGenerated": true,
-        "width": null,
-        "height": null
-      },
-      "iconURL": "https://mv-repo.schul-cloud.org/edu-sharing/themes/default/images/common/mime-types/svg/link.svg",
-      "collection": null,
-      "owner": {
-        "profile": null,
-        "firstName": "Administrator",
-        "lastName": "Edu-Sharing",
-        "mailbox": "admin@mv-repo.schul-cloud.org"
-      }
+      "ccm:ph_modified": [
+        "1606238809247"
+      ],
+      "cm:created": [
+        "1606238808469"
+      ],
+      "virtual:commentcount": [
+        "0"
+      ],
+      "cclom:version": [
+        "1.0"
+      ],
+      "ccm:tracking_views": [
+        "1"
+      ],
+      "virtual:usagecount": [
+        "0"
+      ],
+      "ccm:objecttype": [
+        "MATERIAL"
+      ],
+      "sys:node-uuid": [
+        "fa971666-ecf8-4e39-a57c-4fe6e7291847"
+      ],
+      "ccm:replicationsource": [
+        "merlin_spider"
+      ],
+      "ccm:taxonid_DISPLAYNAME": [
+        "Biologie",
+        "Gesundheit"
+      ],
+      "virtual:childobjectcount": [
+        "0"
+      ],
+      "ccm:replicationsourceuuid": [
+        "c37be66c-121d-5aba-b562-ae56dba1edd7"
+      ],
+      "cclom:title": [
+        "dummy title"
+      ],
+      "ccm:ph_modifiedISO8601": [
+        "2020-11-24T17:26:49.247Z"
+      ],
+      "sys:store-protocol": [
+        "workspace"
+      ],
+      "sys:store-identifier": [
+        "SpacesStore"
+      ],
+      "ccm:version_comment": [
+        "PREVIEW_CHANGED"
+      ],
+      "ccm:create_version": [
+        "true"
+      ],
+      "cm:modifiedISO8601": [
+        "2020-11-24T17:26:49.411Z"
+      ],
+      "sys:node-dbid": [
+        "2570955"
+      ],
+      "ccm:wwwurl": [
+        "http://merlin.nibis.de/auth.php?identifier=FWU-05511494"
+      ],
+      "cm:edu_metadataset": [
+        "mds_oeh"
+      ],
+      "ccm:objecttype_DISPLAYNAME": [
+        "Material"
+      ],
+      "cm:creator": [
+        "admin"
+      ],
+      "cm:autoVersion": [
+        "false"
+      ],
+      "virtual:permalink": [
+        "https://mv-repo.schul-cloud.org/edu-sharing/components/render/fa971666-ecf8-4e39-a57c-4fe6e7291847/1.0"
+      ],
+      "cm:versionLabel": [
+        "1.0"
+      ],
+      "cm:versionable": [
+        "true"
+      ],
+      "cm:created_LONG": [
+        "1606238808469"
+      ],
+      "virtual:primaryparent_nodeid": [
+        "486bc4b9-1920-4b53-b53c-e7e4982c5dd4"
+      ],
+      "ccm:replicationsourceid": [
+        "FWU-05511494"
+      ],
+      "ccm:replicationsource_DISPLAYNAME": [
+        "Merlin"
+      ],
+      "cm:createdISO8601": [
+        "2020-11-24T17:26:48.469Z"
+      ],
+      "ccm:ph_action": [
+        "PERMISSION_ADD"
+      ],
+      "cclom:general_description": [
+        "dummy description"
+      ],
+      "cm:modified": [
+        "1606238809411"
+      ],
+      "cm:edu_forcemetadataset": [
+        "true"
+      ],
+      "ccm:taxonid": [
+        "http://w3id.org/openeduhub/vocabs/discipline/080",
+        "http://w3id.org/openeduhub/vocabs/discipline/260"
+      ],
+      "cm:modifier": [
+        "admin"
+      ],
+      "cm:autoVersionOnUpdateProps": [
+        "false"
+      ],
+      "cclom:location": [
+        "http://merlin.nibis.de/auth.php?identifier=FWU-05511494"
+      ],
+      "ccm:educontextname": [
+        "default"
+      ],
+      "ccm:ph_modified_LONG": [
+        "1606238809247"
+      ],
+      "cm:modified_LONG": [
+        "1606238809411"
+      ],
+      "cm:automaticUpdate": [
+        "true"
+      ],
+      "cm:name": [
+        "dummy title_1606238808463"
+      ],
+      "ccm:ph_invited": [
+        "GROUP_public"
+      ],
+      "ccm:ph_users": [
+        "admin"
+      ],
+      "ccm:ph_history": [
+        ""
+      ],
+      "cm:initialVersion": [
+        "false"
+      ]
+    },
+    "mimetype": null,
+    "mediatype": "link",
+    "size": null,
+    "preview": {
+      "isIcon": false,
+      "isGenerated": true,
+      "url": "https://mv-repo.schul-cloud.org/edu-sharing/preview?nodeId=fa971666-ecf8-4e39-a57c-4fe6e7291847&storeProtocol=workspace&storeId=SpacesStore&dontcache=1607443356988",
+      "width": null,
+      "height": null
+    },
+    "iconURL": "https://mv-repo.schul-cloud.org/edu-sharing/themes/default/images/common/mime-types/svg/link.svg",
+    "collection": null,
+    "owner": {
+      "profile": null,
+      "firstName": "Administrator",
+      "lastName": "Edu-Sharing",
+      "mailbox": "admin@mv-repo.schul-cloud.org"
     }
-  ],
-  "pagination": {
-    "total": 377,
-    "from": 0,
-    "count": 12
-  },
-  "facettes": null,
-  "ignored": null
+  }
 }

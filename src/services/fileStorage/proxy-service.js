@@ -1,6 +1,7 @@
 const fs = require('fs');
 const url = require('url');
 const rp = require('request-promise-native');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
 const { Forbidden, NotFound, BadRequest, GeneralError } = reqlib('src/errors');
@@ -27,7 +28,6 @@ const { teamsModel } = require('../teams/model');
 const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 const logger = require('../../logger');
-const { KEEP_ALIVE } = require('../../../config/globals');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const {
 	FILE_PREVIEW_SERVICE_URI,
@@ -36,7 +36,6 @@ const {
 	FILE_SECURITY_CHECK_MAX_FILE_SIZE,
 	SECURITY_CHECK_SERVICE_PATH,
 } = require('../../../config/globals');
-const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const sanitizeObj = (obj) => {
 	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
@@ -781,7 +780,7 @@ const newFileService = {
 			)
 			.then((signedUrl) => {
 				const headers = signedUrl.header;
-				if (KEEP_ALIVE) {
+				if (Configuration.get('KEEP_ALIVE')) {
 					headers.Connection = 'Keep-Alive';
 				}
 				return rp({

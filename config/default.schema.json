@@ -153,12 +153,7 @@
 		"MATRIX_MESSENGER": {
 			"type": "object",
 			"description": "Matrix messenger properties, required always to be defined",
-			"required": [
-				"URI",
-				"SERVERNAME",
-				"SECRET",
-				"STUDENT_ROOM_CREATION"
-			],
+			"required": ["URI", "SERVERNAME", "SECRET", "STUDENT_ROOM_CREATION"],
 			"properties": {
 				"URI": {
 					"type": "string",
@@ -411,17 +406,10 @@
 			"description": "The password for edu-sharing api access",
 			"default": ""
 		},
-		"ES_GRANT_TYPE": {
-			"type": "string",
-			"description": "The grant_type for edu-sharing api access"
-		},
-		"ES_OAUTH_SECRET": {
-			"type": "string",
-			"description": "The oauth for edu-sharing api access"
-		},
-		"ES_CLIENT_ID": {
-			"type": "string",
-			"description": "The client id for edu-sharing api access"
+		"FEATURE_ES_MERLIN_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "When enabled, the merlin referene will generate a valid url"
 		},
 		"SECRET_ES_MERLIN_USERNAME": {
 			"type": "string",
@@ -436,10 +424,9 @@
 			"description": "Connection url for Merlin content",
 			"default": "http://merlin.nibis.de/auth.php"
 		},
-		"FEATURE_ES_MERLIN_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "When enabled, the merlin referene will generate a valid url"
+		"SECRET_ES_MERLIN_COUNTIES_CREDENTIALS": {
+			"type": "string",
+			"description": "JSON stringified with credentials for merlin counties, used by Lern-Store"
 		},
 		"SILENT_ERROR_ENABLED": {
 			"type": "boolean",
@@ -511,7 +498,7 @@
 			"default": 1,
 			"description": "Determines how many school syncers will be run in parallel (at most) during the LDAP sync."
 		},
-		"MEMORY_INTERVAL_TIME" : {
+		"MEMORY_INTERVAL_TIME": {
 			"type": "integer",
 			"default": 0,
 			"description": "Is the time for logging memory metrics to log in >secounds<. Default 0 will disable the logging."
@@ -520,6 +507,16 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enabled that every request is logged with the information route and method"
+		},
+		"JWT_AUD": {
+			"type": "string",
+			"default": "https://hpi-schul-cloud.de",
+			"description": "It is the organisation web point that is created the jwt and where questions can addressed."
+		},
+		"KEEP_ALIVE": {
+			"type": "boolean",
+			"default": false,
+			"description": "For external request it can set the keep alive header to let open the connection for short period."
 		},
 		"SUPPORT_PROBLEM_EMAIL_ADDRESS": {
 			"type": "string",
@@ -544,6 +541,7 @@
 	"allOf": [
 		{
 			"$ref": "#/definitions/FEATURE_PROMETHEUS_ENABLED",
+			"$ref": "#/definitions/FEATURE_ES_MERLIN_ENABLED",
 			"$ref": "#/definitions/ANTIVIRUS"
 		}
 	],
@@ -574,6 +572,23 @@
 					"FILE_SECURITY_SERVICE_USERNAME",
 					"FILE_SECURITY_SERVICE_PASSWORD",
 					"API_HOST"
+				]
+			}
+		},
+		"FEATURE_ES_MERLIN_ENABLED": {
+			"if": {
+				"properties": {
+					"FEATURE_ES_MERLIN_ENABLED": {
+						"const": true
+					}
+				}
+			},
+			"then": {
+				"required": [
+					"SECRET_ES_MERLIN_USERNAME",
+					"SECRET_ES_MERLIN_PW",
+					"ES_MERLIN_AUTH_URL",
+					"SECRET_ES_MERLIN_COUNTIES_CREDENTIALS"
 				]
 			}
 		}

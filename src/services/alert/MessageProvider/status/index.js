@@ -1,6 +1,6 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const logger = require('../../../../logger');
-const statusApi = require('./statusApi');
+const { statusApi } = require('../../../../externalServices');
 
 const dict = {
 	default: 1,

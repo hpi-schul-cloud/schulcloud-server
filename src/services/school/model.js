@@ -8,6 +8,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const { getDocumentBaseDir } = require('./logic/school');
 const { enableAuditLog } = require('../../utils/database');
 const externalSourceSchema = require('../../helper/externalSourceSchema');
+const { countySchema } = require('../federalState/countyModel');
 
 const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
@@ -61,6 +62,7 @@ const schoolSchema = new Schema(
 			enum: ['', 'school', 'schoolGroup'],
 		},
 		officialSchoolNumber: { type: String },
+		county: { type: countySchema },
 		systems: [{ type: Schema.Types.ObjectId, ref: 'system' }],
 		federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },
 		createdAt: { type: Date, default: Date.now },

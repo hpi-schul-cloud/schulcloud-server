@@ -1614,6 +1614,9 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.users.failed).to.equal(2);
 			expect(stats.errors.length).to.equal(2);
 			expect(stats.errors[0].message).to.equal(
+				'Fehler beim Generieren des Hashes. BadRequest: User already has an account.'
+			);
+			expect(stats.errors[1].message).to.equal(
 				'Es existiert bereits ein Nutzer mit dieser E-Mail-Adresse, jedoch mit einer anderen Rolle.'
 			);
 		});
