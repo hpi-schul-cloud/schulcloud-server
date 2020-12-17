@@ -167,7 +167,7 @@ const getErrorResponseFromBusinessError = (businessError) => {
 	const { message: type, title, defaultMessage: detail } = businessError;
 	if (businessError instanceof ValidationError || businessError instanceof AssertionError) {
 		status = 400;
-		Object.assign(customFields, { validation_errors: businessError.validationErrors });
+		Object.assign(customFields, { validation_errors: businessError.params });
 	} else if (businessError instanceof DocumentNotFound) {
 		status = 404;
 	}

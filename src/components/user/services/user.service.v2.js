@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const userUC = require('../uc/users.uc');
 const { AssertionError } = require('../../../errors');
-const { missingParameters } = require('../../../common/validation/validationHelper');
+const { missingParameters } = require('../../../errors/helper/assertionErrorHelper');
 
 class UserServiceV2 {
 	constructor(roleNameSubject) {
