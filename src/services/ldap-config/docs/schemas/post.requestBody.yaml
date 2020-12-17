@@ -83,9 +83,6 @@ properties:
             type: string
       classAttributeNameMapping:
         type: object
-        required:
-          - description
-          - uniqueMember
         additionalProperties: false
         properties:
           description:
