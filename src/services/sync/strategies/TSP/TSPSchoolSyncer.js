@@ -288,8 +288,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'update-teacher',
 				entity: tspTeacher.lehrerUid,
-				message:
-					`Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}"` + ' konnte nicht aktualisiert werden.',
+				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}" konnte nicht aktualisiert werden.`,
 			});
 			return null;
 		}
@@ -328,7 +327,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'create-teacher',
 				entity: tspTeacher.lehrerUid,
-				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}"` + ' konnte nicht erstellt werden.',
+				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}" konnte nicht erstellt werden.`,
 			});
 			return null;
 		}
@@ -432,8 +431,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'create-student',
 				entity: tspStudent.schuelerUid,
-				message:
-					`Schüler "${tspStudent.schuelerVorname} ${tspStudent.schuelerNachname}"` + ' konnte nicht erstellt werden.',
+				message: `Schüler "${tspStudent.schuelerVorname} ${tspStudent.schuelerNachname}" konnte nicht erstellt werden.`,
 			});
 			return null;
 		}
