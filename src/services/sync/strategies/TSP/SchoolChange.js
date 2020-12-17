@@ -74,6 +74,7 @@ const grantAccessToSharedFiles = async (app, oldUser, newUser) => {
 };
 
 const switchSchool = async (app, currentUser, createUserMethod) => {
+	// TODO align error handling to create/update user try/catch
 	await invalidateUser(app, currentUser);
 	const newUser = await createUserMethod();
 	await Promise.all([
