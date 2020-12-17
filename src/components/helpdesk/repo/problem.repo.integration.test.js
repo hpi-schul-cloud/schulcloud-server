@@ -29,16 +29,17 @@ describe('problem repo', () => {
 	describe('deleteProblems', () => {
 		it('when problem is deleted, it should return deleted problem ids', async () => {
 			const user = await testObjects.createTestUser();
-			await testObjects.createTestProblem(user);
-			const result = await problemRepo.deleteProblemsForUser(user._id);
+			const userId = user._id;
+			await testObjects.createTestProblem({ userId });
+			const result = await problemRepo.deleteProblemsForUser(userId);
 			expect(result.success).to.be.equal(true);
 			expect(result.deletedDocuments).to.be.equal(1);
 		});
 
 		it('when problem is deleted, it should be gone from db', async () => {
 			const user = await testObjects.createTestUser();
-			await testObjects.createTestProblem(user);
 			const userId = user._id;
+			await testObjects.createTestProblem({ userId });
 
 			let userProblems = await problemRepo.getProblemsForUser(userId);
 			expect(userProblems.length).to.be.equal(1);
@@ -57,10 +58,11 @@ describe('problem repo', () => {
 	describe('getProblemsForUser', () => {
 		it('when the function is called with user id, it should return list of problems ', async () => {
 			const user = await testObjects.createTestUser();
-			const testProblem = await testObjects.createTestProblem(user);
-			const problems = await problemRepo.getProblemsForUser(user._id);
+			const userId = user._id;
+			const testProblem = await testObjects.createTestProblem({ userId });
+			const problems = await problemRepo.getProblemsForUser(userId);
 			expect(problems[0]._id).to.deep.equal(testProblem._id);
-			expect(problems[0].userId).to.deep.equal(user._id);
+			expect(problems[0].userId).to.deep.equal(userId);
 		});
 
 		it('when the function is called with user id, for which problems dont exist, then it should return empty array', async () => {

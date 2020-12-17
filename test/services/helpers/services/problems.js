@@ -2,18 +2,26 @@ const problemModel = require('../../../../src/services/helpdesk/model');
 
 let createdproblemsIds = [];
 
-const TEST_PROBLEM_PARAMS = {
-	type: 'contactAdmin',
-	_id: '5836bb5664582c35df3bc214',
-	subject: 'Dies ist ein Titel',
-	currentState: 'Dies ist der CurrentState',
-	targetState: 'Dies ist der TargetState',
-	schoolId: '5836bb5664582c35df3bc000',
-};
-const createTestProblem = async (user, problemParameters = TEST_PROBLEM_PARAMS) => {
-	problemParameters.userId = user._id;
-
-	const problem = await problemModel.create(problemParameters);
+const createTestProblem = async ({
+	userId,
+	type = 'contactAdmin',
+	_id = '5836bb5664582c35df3bc214',
+	subject = 'Dies ist ein Titel',
+	currentState = 'Dies ist der CurrentState',
+	targetState = 'Dies ist der TargetState',
+	schoolId = '5836bb5664582c35df3bc000',
+	...other
+}) => {
+	const problem = await problemModel.create({
+		userId,
+		type,
+		_id,
+		subject,
+		currentState,
+		targetState,
+		schoolId,
+		...other,
+	});
 	createdproblemsIds.push(problem._id.toString());
 	return problem;
 };
