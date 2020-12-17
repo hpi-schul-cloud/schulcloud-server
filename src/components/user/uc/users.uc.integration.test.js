@@ -27,9 +27,9 @@ describe.only('user use case', () => {
 
 			const getOrCreateTombstoneUserIdSpy = sinon.spy(userRepo, 'createTombstoneUser');
 
-			await getOrCreateTombstoneUserId(school, user);
-			await getOrCreateTombstoneUserId(school, user);
-			await getOrCreateTombstoneUserId(school, user);
+			await getOrCreateTombstoneUserId(school._id, user);
+			await getOrCreateTombstoneUserId(school._id, user);
+			await getOrCreateTombstoneUserId(school._id, user);
 
 			expect(getOrCreateTombstoneUserIdSpy.callCount).to.eql(1);
 		});
