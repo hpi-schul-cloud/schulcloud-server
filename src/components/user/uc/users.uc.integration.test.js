@@ -6,7 +6,7 @@ const testObjects = require('../../../../test/services/helpers/testObjects')(app
 const { getOrCreateTombstoneUserId } = require('./users.uc');
 const userRepo = require('../repo/user.repo');
 
-describe.only('user use case', () => {
+describe('user use case', () => {
 	let app;
 	let server;
 
