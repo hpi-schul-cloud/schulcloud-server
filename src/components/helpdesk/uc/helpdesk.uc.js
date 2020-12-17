@@ -19,6 +19,5 @@ const deleteProblemsForUser = async (userId) => {
 const deleteUserData = () => [deleteProblemsForUser];
 
 module.exports = {
-	deleteProblemsForUser,
 	deleteUserData,
 };
