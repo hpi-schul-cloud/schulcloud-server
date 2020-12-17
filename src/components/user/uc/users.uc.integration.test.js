@@ -1,0 +1,37 @@
+const sinon = require('sinon');
+const { expect } = require('chai');
+const appPromise = require('../../../app');
+const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
+
+const { getOrCreateTombstoneUserId } = require('./users.uc');
+const userRepo = require('../repo/user.repo');
+
+describe.only('user use case', () => {
+	let app;
+	let server;
+
+	before(async () => {
+		delete require.cache[require.resolve('../../../../src/app')];
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await server.close();
+	});
+
+	describe('getOrCreateTombstoneUserId', () => {
+		it('should create the tombstone user only once per school', async () => {
+			const school = await testObjects.createTestSchool();
+			const user = await testObjects.createTestUser({ schoolId: school._id });
+
+			const getOrCreateTombstoneUserIdSpy = sinon.spy(userRepo, 'createTombstoneUser');
+
+			await getOrCreateTombstoneUserId(school, user);
+			await getOrCreateTombstoneUserId(school, user);
+			await getOrCreateTombstoneUserId(school, user);
+
+			expect(getOrCreateTombstoneUserIdSpy.callCount).to.eql(1);
+		});
+	});
+});
