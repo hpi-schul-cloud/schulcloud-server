@@ -21,6 +21,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7763 - adds searchable feature flag for lernstore 
 - SC-8020 - adds collections filter to edu-sharing service
 
+### Removed
+
+- SC-8233 - Removed attribute and member as required attributes for the LDAP-config service
+
 ## [25.3.5]
 
 ### Changed
