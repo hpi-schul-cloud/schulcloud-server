@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const commons = require('@schul-cloud/commons');
+const commons = require('@hpi-schul-cloud/commons');
 
 const { Configuration } = commons;
 const nock = require('nock');
@@ -64,7 +64,7 @@ describe('MessengerTokenService', function test() {
 			before(() => {
 				configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 				Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
-				Configuration.set('MATRIX_SECRET', 'secret');
+				Configuration.set('MATRIX_MESSENGER__SECRET', 'secret');
 			});
 
 			after(() => {
@@ -72,7 +72,9 @@ describe('MessengerTokenService', function test() {
 			});
 
 			it('can fail', async () => {
-				nock(Configuration.get('MATRIX_URI')).post('/_matrix/client/r0/login').reply(403, 'Invalid Password');
+				nock(Configuration.get('MATRIX_MESSENGER__URI'))
+					.post('/_matrix/client/r0/login')
+					.reply(403, 'Invalid Password');
 				const school = await testObjects.createTestSchool({ features: ['messenger'] });
 				const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
 
@@ -91,7 +93,7 @@ describe('MessengerTokenService', function test() {
 			});
 
 			it('should succeed', async () => {
-				nock(Configuration.get('MATRIX_URI')).post('/_matrix/client/r0/login').reply(200, {
+				nock(Configuration.get('MATRIX_MESSENGER__URI')).post('/_matrix/client/r0/login').reply(200, {
 					access_token: 'token',
 					device_id: 'DEVICE',
 					home_server: 'messenger.schule',
@@ -103,7 +105,35 @@ describe('MessengerTokenService', function test() {
 				return service.create({}, params).then((response) => {
 					expect(response).not.to.be.undefined;
 					expect(response.userId).to.equals(`@sso_${student._id}:messenger.schule`);
-					expect(response.homeserverUrl).to.equals(Configuration.get('MATRIX_URI'));
+					expect(response.homeserverUrl).to.equals(Configuration.get('MATRIX_MESSENGER__URI'));
+					expect(response.accessToken).to.equals('token');
+					expect(response.deviceId).to.equals('DEVICE');
+					expect(response.servername).to.equals('messenger.schule');
+				});
+			});
+
+			it('should succeed with custom homeserverUrl', async () => {
+				const customHomeserverUrl = 'https://matrix-server.url';
+				nock(Configuration.get('MATRIX_MESSENGER__URI'))
+					.post('/_matrix/client/r0/login')
+					.reply(200, {
+						access_token: 'token',
+						device_id: 'DEVICE',
+						home_server: 'messenger.schule',
+						well_known: {
+							'm.homeserver': {
+								base_url: customHomeserverUrl,
+							},
+						},
+					});
+				const school = await testObjects.createTestSchool({ features: ['messenger'] });
+				const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
+
+				const params = await testObjects.generateRequestParamsFromUser(student);
+				return service.create({}, params).then((response) => {
+					expect(response).not.to.be.undefined;
+					expect(response.userId).to.equals(`@sso_${student._id}:messenger.schule`);
+					expect(response.homeserverUrl).to.equals(customHomeserverUrl);
 					expect(response.accessToken).to.equals('token');
 					expect(response.deviceId).to.equals('DEVICE');
 					expect(response.servername).to.equals('messenger.schule');

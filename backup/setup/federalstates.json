@@ -2,6 +2,26 @@
 	"_id": {
 		"$oid": "0000b186816abba584714c50"
 	},
+	"counties" : [
+        {
+            "antaresKey" : "S",
+            "_id": {"$oid": "5fa55eb53f472a2d986c87ba"},
+            "countyId" : 8111,
+            "name" : "Stuttgart"
+        },
+        {
+            "antaresKey" : "BB",
+            "_id": {"$oid": "5fa55eb53f472a2d986c87bb"},
+            "countyId" : 8115,
+            "name" : "Böblingen"
+        },
+        {
+            "antaresKey" : "ES",
+            "_id": {"$oid": "5fa55eb53f472a2d986c87bc"},
+            "countyId" : 8116,
+            "name" : "Esslingen"
+        }
+	],
 	"name": "Baden-Württemberg",
 	"abbreviation": "BW",
 	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Coat_of_arms_of_Baden-W%C3%BCrttemberg_%28lesser%29.svg/430px-Coat_of_arms_of_Baden-W%C3%BCrttemberg_%28lesser%29.svg.png",
@@ -29,6 +49,20 @@
 	"_id": {
 		"$oid": "0000b186816abba584714c53"
 	},
+	"counties" : [
+        {
+            "antaresKey" : "BRB",
+            "_id" : {"$oid":"5fa55eb53f472a2d986c8812"},
+            "countyId" : 12051,
+            "name" : "Brandenburg an der Havel"
+        },
+        {
+            "antaresKey" : "CB",
+            "_id" : {"$oid":"5fa55eb53f472a2d986c8813"},
+            "countyId" : 12052,
+            "name" : "Cottbus"
+        }
+	],
 	"name": "Brandenburg",
 	"abbreviation": "BB",
 	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Brandenburg_Wappen.svg/354px-Brandenburg_Wappen.svg.png",
@@ -77,7 +111,15 @@
 	"name": "Niedersachsen",
 	"abbreviation": "NI",
 	"logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Coat_of_arms_of_Lower_Saxony.svg/593px-Coat_of_arms_of_Lower_Saxony.svg.png",
-	"__v": 0
+	"__v": 0,
+	"counties" : [
+		{
+			"antaresKey" : "NI",
+			"_id": {"$oid":"5fa55eb53f472a2d986c8812"},
+			"countyId": 3256,
+			"name": "Nienburg/Weser"
+		}
+	]
 },
 {
 	"_id": {

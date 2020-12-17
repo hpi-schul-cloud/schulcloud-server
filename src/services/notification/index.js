@@ -1,10 +1,11 @@
+// eslint-disable-next-line max-classes-per-file
 const request = require('request-promise-native');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
+const queryString = require('qs');
 
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const hooks = require('./hooks/index');
-
-const { REQUEST_TIMEOUT } = require('../../../config/globals');
 
 /**
  * maps jsonapi properties of a response to fit anything but jsonapi
@@ -15,11 +16,6 @@ const mapResponseProps = (response) => {
 	response.id = response.data.id;
 	return response;
 };
-
-const toQueryString = (paramsObject) =>
-	Object.keys(paramsObject)
-		.map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(paramsObject[key])}`)
-		.join('&');
 
 class MessageService {
 	constructor(options) {
@@ -38,7 +34,7 @@ class MessageService {
 			},
 			body: Object.assign(data, { serviceUrl: serviceUrls.notification }),
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT'),
 		};
 
 		return request(options).then((response) => response);
@@ -54,7 +50,7 @@ class MessageService {
 				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT'),
 		};
 
 		return request(options).then((message) => message);
@@ -80,7 +76,7 @@ class DeviceService {
 				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT'),
 		};
 
 		return request(options).then((devices) => devices);
@@ -99,7 +95,7 @@ class DeviceService {
 			},
 			body: data,
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT'),
 		};
 
 		return request(options).then((response) => mapResponseProps(response));
@@ -113,7 +109,7 @@ class DeviceService {
 			uri: `${serviceUrls.notification}/devices/${id}?token=${userId}`,
 			method: 'DELETE',
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT'),
 		};
 
 		return request(options).then((message) => message);
@@ -141,7 +137,7 @@ class CallbackService {
 			},
 			body: data,
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT'),
 		};
 
 		return request(options).then((response) => response);
@@ -167,7 +163,7 @@ class NotificationService {
 				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT'),
 		};
 
 		return request(options).then((message) => message);
@@ -179,12 +175,12 @@ class NotificationService {
 		const userId = (params.account || {}).userId || params.payload.userId;
 
 		const options = {
-			uri: `${serviceUrls.notification}/notifications/` + `?user=${userId}&${toQueryString(params.query)}`,
+			uri: `${serviceUrls.notification}/notifications/?user=${userId}&${queryString.stringify(params.query)}`,
 			headers: {
 				token: userId,
 			},
 			json: true,
-			timeout: REQUEST_TIMEOUT,
+			timeout: Configuration.get('REQUEST_TIMEOUT'),
 		};
 
 		return request(options).then((message) => message);

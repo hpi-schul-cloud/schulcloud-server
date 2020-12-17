@@ -50,3 +50,6 @@ version
 
 # patch files
 *.patch
+
+# typescript build
+build

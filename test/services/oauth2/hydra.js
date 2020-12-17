@@ -5,7 +5,6 @@ const oauth2 = require('simple-oauth2');
 const request = require('request-promise-native');
 
 const appPromise = require('../../../src/app');
-const logger = require('../../../src/logger');
 
 chai.use(chaiHttp);
 
@@ -81,48 +80,41 @@ describe('oauth2 service', function oauthTest() {
 		consentService = app.service('oauth2/auth/sessions/consent');
 		toolService = app.service('ltiTools');
 		this.timeout(10000);
-		await toolService.create(testTool1).then(() => {
-			toolService.create(testTool2).then(() => {
-				clientsService
-					.create(testClient2)
-					.then((client) => {
-						const oauth = oauth2.create({
-							client: {
-								id: client.client_id,
-								secret: client.client_secret,
-							},
-							auth: {
-								tokenHost: 'http://localhost:9000',
-								tokenPath: '/oauth2/token',
-								authorizePath: '/oauth2/auth',
-							},
-						});
-						const authorizationUri = oauth.authorizationCode.authorizeURL({
-							redirect_uri: client.redirect_uris[0],
-							scope: 'openid',
-							state: '12345678',
-						});
-						request({
-							uri: authorizationUri,
-							method: 'GET',
-							followRedirect: false,
-						}).catch((res) => {
-							const position = res.error.indexOf('login_challenge=') + 'login_challenge'.length + 1;
-							loginRequest1 = res.error.substr(position, 32);
-							request({
-								uri: authorizationUri,
-								method: 'GET',
-								followRedirect: false,
-							}).catch((res2) => {
-								const position2 = res2.error.indexOf('login_challenge=') + 'login_challenge'.length + 1;
-								loginRequest2 = res2.error.substr(position2, 32);
-							});
-						});
-					})
-					.catch((err) => {
-						logger.warning('Can not execute oauth2 before all hook.', err);
-					});
-			});
+		await toolService.create(testTool1);
+		await toolService.create(testTool2);
+
+		const client = await clientsService.create(testClient2);
+		const oauth = oauth2.create({
+			client: {
+				id: client.client_id,
+				secret: client.client_secret,
+			},
+			auth: {
+				tokenHost: 'http://localhost:9000',
+				tokenPath: '/oauth2/token',
+				authorizePath: '/oauth2/auth',
+			},
+		});
+		const authorizationUri = oauth.authorizationCode.authorizeURL({
+			redirect_uri: client.redirect_uris[0],
+			scope: 'openid',
+			state: '12345678',
+		});
+		await request({
+			uri: authorizationUri,
+			method: 'GET',
+			followRedirect: false,
+		}).catch((res) => {
+			const position = res.error.indexOf('login_challenge=') + 'login_challenge'.length + 1;
+			loginRequest1 = res.error.substr(position, 32);
+		});
+		await request({
+			uri: authorizationUri,
+			method: 'GET',
+			followRedirect: false,
+		}).catch((res2) => {
+			const position2 = res2.error.indexOf('login_challenge=') + 'login_challenge'.length + 1;
+			loginRequest2 = res2.error.substr(position2, 32);
 		});
 		server = await app.listen();
 	});

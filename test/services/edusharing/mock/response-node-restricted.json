@@ -1,0 +1,273 @@
+{
+  "node": {
+    "remote": null,
+    "content": {
+      "url": "https://mv-repo.schul-cloud.org/edu-sharing/components/render/fa971666-ecf8-4e39-a57c-4fe6e7291847",
+      "hash": null,
+      "version": "1.0"
+    },
+    "license": {
+      "icon": "https://mv-repo.schul-cloud.org/edu-sharing/ccimages/licenses/none.svg",
+      "url": null
+    },
+    "isDirectory": false,
+    "commentCount": 0,
+    "rating": {
+      "overall": {
+        "sum": 0.0,
+        "count": 0,
+        "rating": 0.0
+      },
+      "user": 0.0,
+      "affiliation": {}
+    },
+    "ref": {
+      "repo": "mv-repo.schul-cloud.org",
+      "id": "fa971666-ecf8-4e39-a57c-4fe6e7291847",
+      "archived": false,
+      "isHomeRepo": true
+    },
+    "parent": {
+      "repo": "mv-repo.schul-cloud.org",
+      "id": "486bc4b9-1920-4b53-b53c-e7e4982c5dd4",
+      "archived": false,
+      "isHomeRepo": true
+    },
+    "type": "ccm:io",
+    "aspects": [
+      "cclom:lifecycle",
+      "cclom:technical",
+      "ccm:permission_history",
+      "ccm:eduscope",
+      "ccm:iometadata",
+      "cm:versionable",
+      "ccm:tracking",
+      "ccm:usageaspect",
+      "sys:referenceable",
+      "sys:localized",
+      "cclom:schema",
+      "ccm:basemetadata",
+      "cm:metadataset",
+      "ccm:licenses",
+      "ccm:commonlicenses",
+      "cclom:rights",
+      "cm:thumbnailed",
+      "cclom:meta-metadata",
+      "cm:auditable",
+      "ccm:lomreplication",
+      "cclom:general",
+      "ccm:educontext"
+    ],
+    "name": "dummy title_1606238808463",
+    "title": "dummy title",
+    "metadataset": "mds_oeh",
+    "repositoryType": "ALFRESCO",
+    "createdAt": "2020-11-24T17:26:48Z",
+    "createdBy": {
+      "profile": null,
+      "firstName": "Administrator",
+      "lastName": "Edu-Sharing",
+      "mailbox": "admin@mv-repo.schul-cloud.org"
+    },
+    "modifiedAt": "2020-11-24T17:26:49Z",
+    "modifiedBy": {
+      "profile": null,
+      "firstName": "Administrator",
+      "lastName": "Edu-Sharing",
+      "mailbox": "admin@mv-repo.schul-cloud.org"
+    },
+    "access": [
+      "ReadAll",
+      "Comment",
+      "Feedback",
+      "AddChildren",
+      "ChangePermissions",
+      "Write",
+      "Delete",
+      "CCPublish"
+    ],
+    "downloadUrl": "https://mv-repo.schul-cloud.org/edu-sharing/eduservlet/download?nodeId=fa971666-ecf8-4e39-a57c-4fe6e7291847",
+    "properties": {
+      "ccm:replicationsourcehash": [
+        "-1016214847907732070"
+      ],
+      "ccm:original": [
+        "fa971666-ecf8-4e39-a57c-4fe6e7291847"
+      ],
+      "ccm:ph_modified": [
+        "1606238809247"
+      ],
+      "cm:created": [
+        "1606238808469"
+      ],
+      "virtual:commentcount": [
+        "0"
+      ],
+      "cclom:version": [
+        "1.0"
+      ],
+      "ccm:tracking_views": [
+        "1"
+      ],
+      "virtual:usagecount": [
+        "0"
+      ],
+      "ccm:objecttype": [
+        "MATERIAL"
+      ],
+      "sys:node-uuid": [
+        "fa971666-ecf8-4e39-a57c-4fe6e7291847"
+      ],
+      "ccm:replicationsource": [
+        "merlin_spider"
+      ],
+      "ccm:taxonid_DISPLAYNAME": [
+        "Biologie",
+        "Gesundheit"
+      ],
+      "virtual:childobjectcount": [
+        "0"
+      ],
+      "ccm:replicationsourceuuid": [
+        "c37be66c-121d-5aba-b562-ae56dba1edd7"
+      ],
+      "cclom:title": [
+        "dummy title"
+      ],
+      "ccm:ph_modifiedISO8601": [
+        "2020-11-24T17:26:49.247Z"
+      ],
+      "sys:store-protocol": [
+        "workspace"
+      ],
+      "sys:store-identifier": [
+        "SpacesStore"
+      ],
+      "ccm:version_comment": [
+        "PREVIEW_CHANGED"
+      ],
+      "ccm:create_version": [
+        "true"
+      ],
+      "cm:modifiedISO8601": [
+        "2020-11-24T17:26:49.411Z"
+      ],
+      "sys:node-dbid": [
+        "2570955"
+      ],
+      "ccm:wwwurl": [
+        "http://merlin.nibis.de/auth.php?identifier=FWU-05511494"
+      ],
+      "cm:edu_metadataset": [
+        "mds_oeh"
+      ],
+      "ccm:objecttype_DISPLAYNAME": [
+        "Material"
+      ],
+      "cm:creator": [
+        "admin"
+      ],
+      "cm:autoVersion": [
+        "false"
+      ],
+      "virtual:permalink": [
+        "https://mv-repo.schul-cloud.org/edu-sharing/components/render/fa971666-ecf8-4e39-a57c-4fe6e7291847/1.0"
+      ],
+      "cm:versionLabel": [
+        "1.0"
+      ],
+      "cm:versionable": [
+        "true"
+      ],
+      "cm:created_LONG": [
+        "1606238808469"
+      ],
+      "virtual:primaryparent_nodeid": [
+        "486bc4b9-1920-4b53-b53c-e7e4982c5dd4"
+      ],
+      "ccm:replicationsourceid": [
+        "FWU-05511494"
+      ],
+      "ccm:replicationsource_DISPLAYNAME": [
+        "Merlin"
+      ],
+      "cm:createdISO8601": [
+        "2020-11-24T17:26:48.469Z"
+      ],
+      "ccm:ph_action": [
+        "PERMISSION_ADD"
+      ],
+      "cclom:general_description": [
+        "dummy description"
+      ],
+      "cm:modified": [
+        "1606238809411"
+      ],
+      "cm:edu_forcemetadataset": [
+        "true"
+      ],
+      "ccm:taxonid": [
+        "http://w3id.org/openeduhub/vocabs/discipline/080",
+        "http://w3id.org/openeduhub/vocabs/discipline/260"
+      ],
+      "cm:modifier": [
+        "admin"
+      ],
+      "cm:autoVersionOnUpdateProps": [
+        "false"
+      ],
+      "cclom:location": [
+        "http://merlin.nibis.de/auth.php?identifier=FWU-05511494"
+      ],
+      "ccm:educontextname": [
+        "default"
+      ],
+      "ccm:ph_modified_LONG": [
+        "1606238809247"
+      ],
+      "cm:modified_LONG": [
+        "1606238809411"
+      ],
+      "cm:automaticUpdate": [
+        "true"
+      ],
+      "cm:name": [
+        "dummy title_1606238808463"
+      ],
+      "ccm:ph_invited": [
+        "GROUP_county-3459",
+        "GROUP_county-3404",
+        "GROUP_LowerSaxony-private",
+        "GROUP_county-3456",
+        "GROUP_county-3256"
+      ],
+      "ccm:ph_users": [
+        "admin"
+      ],
+      "ccm:ph_history": [
+        ""
+      ],
+      "cm:initialVersion": [
+        "false"
+      ]
+    },
+    "mimetype": null,
+    "mediatype": "link",
+    "size": null,
+    "preview": {
+      "isIcon": false,
+      "isGenerated": true,
+      "url": "https://mv-repo.schul-cloud.org/edu-sharing/preview?nodeId=fa971666-ecf8-4e39-a57c-4fe6e7291847&storeProtocol=workspace&storeId=SpacesStore&dontcache=1607443356988",
+      "width": null,
+      "height": null
+    },
+    "iconURL": "https://mv-repo.schul-cloud.org/edu-sharing/themes/default/images/common/mime-types/svg/link.svg",
+    "collection": null,
+    "owner": {
+      "profile": null,
+      "firstName": "Administrator",
+      "lastName": "Edu-Sharing",
+      "mailbox": "admin@mv-repo.schul-cloud.org"
+    }
+  }
+}

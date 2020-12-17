@@ -3,10 +3,11 @@ const CryptoJS = require('crypto-js');
 const reqlib = require('app-root-path').require;
 
 const { NotFound, BadRequest, GeneralError } = reqlib('src/errors');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const aws = require('aws-sdk');
 const pathUtil = require('path');
 const fs = require('fs');
+const mongoose = require('mongoose');
 const logger = require('../../../logger');
 const { schoolModel } = require('../../school/model');
 const { StorageProviderModel } = require('../../storageProvider/model');
@@ -44,53 +45,45 @@ const getConfig = (provider) => {
 };
 
 const chooseProvider = async (schoolId) => {
-	let session = null;
 	let providers = [];
-	try {
-		session = await StorageProviderModel.db.startSession();
-		session.startTransaction();
+	let provider;
+	const session = await mongoose.startSession();
+	await session.withTransaction(
+		async () => {
+			// We need to figure out if we run in a replicaset, because DB-calls with transaction
+			// will fail if not run in a replicaset.
+			const effectiveSession = session.clientOptions.replicaSet ? session : undefined;
+			providers = await StorageProviderModel.find({ isShared: true })
+				.sort({ freeBuckets: -1 })
+				.limit(1)
+				.session(effectiveSession)
+				.lean()
+				.exec();
 
-		providers = await StorageProviderModel.find({ isShared: true })
-			.sort({ freeBuckets: -1 })
-			.limit(1)
-			.session(session)
-			.lean()
-			.exec();
-	} catch (err) {
-		/* with no replica set (in local dev env), first request of transaction will fail -> we set session to
-		undefined and repeat first request */
-		if (err.errmsg === 'Transaction numbers are only allowed on a replica set member or mongos') {
-			session = undefined;
-			providers = await StorageProviderModel.find({ isShared: true }).sort({ freeBuckets: -1 }).limit(1).lean().exec();
-		} else {
-			throw err;
-		}
-	}
+			if (!Array.isArray(providers) || providers.length === 0) throw new Error('No available provider found.');
+			provider = providers[0];
 
-	if (!Array.isArray(providers) || providers.length === 0) throw new Error('No available provider found.');
-	const provider = providers[0];
-
-	await StorageProviderModel.findByIdAndUpdate(provider._id, { $inc: { freeBuckets: -1 } })
-		.session(session)
-		.lean()
-		.exec();
-	await schoolModel
-		.findByIdAndUpdate(schoolId, { $set: { storageProvider: provider._id } })
-		.session(session)
-		.lean()
-		.exec();
-
-	logger.warning(provider);
-
-	if (session) await session.commitTransaction();
-
+			await Promise.all([
+				StorageProviderModel.findByIdAndUpdate(provider._id, { $inc: { freeBuckets: -1 } })
+					.session(effectiveSession)
+					.lean()
+					.exec(),
+				schoolModel
+					.findByIdAndUpdate(schoolId, { $set: { storageProvider: provider._id } })
+					.session(effectiveSession)
+					.lean()
+					.exec(),
+			]);
+		},
+		{ readPreference: 'primary' } // transactions will only work with readPreference = 'primary'
+	);
+	session.endSession();
 	return provider;
 };
 
-const FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED = Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED');
 // begin legacy
 let awsConfig = {};
-if (!FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED) {
+if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === false) {
 	try {
 		//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
 		/* eslint-disable global-require, no-unused-expressions */
@@ -114,7 +107,7 @@ const createAWSObject = async (schoolId) => {
 
 	if (school === null) throw new NotFound('School not found.');
 
-	if (FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED) {
+	if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === true) {
 		const S3_KEY = Configuration.get('S3_KEY');
 		if (!school.storageProvider) {
 			school.storageProvider = await chooseProvider(schoolId);
@@ -405,7 +398,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						const params = {
 							Bucket: safeAwsObject.bucket,
 							Key: flatFileName,
-							Expires: 60,
+							Expires: Configuration.get('STORAGE_SIGNED_URL_EXPIRE'),
 							ContentType: fileType,
 							Metadata: header,
 						};
@@ -436,7 +429,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					const params = {
 						Bucket: awsObject.bucket,
 						Key: flatFileName,
-						Expires: 60,
+						Expires: Configuration.get('STORAGE_SIGNED_URL_EXPIRE'),
 					};
 					const getBoolean = (value) => value === true || value === 'true';
 					if (getBoolean(download)) {

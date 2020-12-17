@@ -56,11 +56,17 @@ module.exports = {
 	},
 	overrides: [
 		{
-			files: ['*.test.js'],
+			files: ['*.test.js', '*.test.ts'],
 			rules: {
 				'no-unused-expressions': 'off',
 				'global-require': 'warn',
 			},
+		},
+		{
+			files: ['*.ts'],
+			parser: '@typescript-eslint/parser',
+			plugins: ['@typescript-eslint'],
+			extends: ['plugin:@typescript-eslint/recommended', 'prettier/@typescript-eslint', 'plugin:prettier/recommended'],
 		},
 	],
 };

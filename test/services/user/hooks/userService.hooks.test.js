@@ -1,14 +1,17 @@
 const { expect } = require('chai');
+const sinon = require('sinon');
 const assert = require('assert');
 
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 const { enforceRoleHierarchyOnCreate, checkUniqueEmail } = require('../../../../src/services/user/hooks/userService');
+const { generateRequestParams } = require('../../helpers/services/login')(appPromise);
 
 const {
 	removeStudentFromCourses,
 	removeStudentFromClasses,
 	generateRegistrationLink,
+	decorateUsers,
 } = require('../../../../src/services/user/hooks/userService');
 
 describe('removeStudentFromCourses', () => {
@@ -181,6 +184,27 @@ describe('generateRegistrationLink', () => {
 			expect(err.message).to.not.equal('should have failed');
 			expect(err.code).to.equal(400);
 			expect(err.message).to.equal(expectedErrorMessage);
+		}
+	});
+
+	it('verify if hash is not generated when user already has an account', async () => {
+		const registrationLinkService = app.service('registrationlink');
+		const email = `max${Date.now()}@mustermann.de`;
+		const user = await testObjects.createTestUser({
+			email,
+			firstName: 'Max',
+			lastName: 'Mustermann',
+			roles: 'student',
+		});
+		const username = user.email;
+		const password = 'Schulcloud1!';
+		await testObjects.createTestAccount({ username, password }, 'local', user);
+		await generateRequestParams({ username, password });
+		try {
+			await registrationLinkService.create({ toHash: user.email });
+			expect.fail('Should have failed with BadRequest');
+		} catch (error) {
+			expect(error.message).to.equal('Fehler beim Generieren des Hashes. BadRequest: User already has an account.');
 		}
 	});
 
@@ -465,5 +489,31 @@ describe('checkUniqueEmail', () => {
 		} catch (error) {
 			assert.fail(`expected promise resolved, but error was '${error.message}'`);
 		}
+	});
+});
+
+describe('decorateUsers', () => {
+	const service = {
+		find: sinon.spy(),
+	};
+
+	// const serviceSpy = sinon.spy(service, 'find');
+	const hookMock = {
+		app: {
+			// eslint-disable-next-line no-unused-vars
+			service(url) {
+				return service;
+			},
+		},
+		result: {
+			constructor: {
+				name: '',
+			},
+		},
+	};
+
+	it('should call roles service exactly once', async () => {
+		await decorateUsers(hookMock);
+		assert(service.find.calledOnce);
 	});
 });

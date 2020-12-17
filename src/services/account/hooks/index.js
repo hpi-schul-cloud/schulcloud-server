@@ -75,7 +75,7 @@ const validatePassword = (hook) => {
 	}
 
 	return Promise.all([
-		globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'STUDENT_CREATE'),
+		globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'STUDENT_EDIT'),
 		globalHooks.hasRoleNoHook(hook, hook.id, 'student', true),
 		globalHooks.hasPermissionNoHook(hook, hook.params.account.userId, 'ADMIN_VIEW'),
 		globalHooks.hasRoleNoHook(hook, hook.id, 'teacher', true),

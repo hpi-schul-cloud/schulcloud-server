@@ -50,6 +50,7 @@ const User = mongoose.model(
 		},
 		parents: [
 			{
+				_id: false,
 				firstName: { type: String, required: true },
 				lastName: { type: String, required: true },
 				email: { type: String, required: true, lowercase: true },
@@ -76,13 +77,13 @@ const getIds = (docs) => docs.map((doc) => doc._id);
 
 const getParentRole = async () => RoleModel.findOne({ name: 'parent' }).lean().exec();
 
-const findAllParents = (parentRole) => User.find({ roles: parentRole._id });
+const findBulkParents = (parentRole, limit) => User.find({ roles: parentRole._id }).limit(limit).lean().exec();
 
 const deleteParentUsersByIds = async (ids) => {
 	const result = await User.deleteMany({
 		_id: { $in: ids },
 	}).exec();
-	info(`${result.deletedCount} users deleted.`);
+	info(`${result.deletedCount} parent users deleted.`);
 };
 
 const getStudentsForParent = async (parent) => {
@@ -92,8 +93,8 @@ const getStudentsForParent = async (parent) => {
 };
 
 const updateStudentsParentData = async (studentIds, parent) => {
-	return User.updateMany(
-		{ _id: { $in: [studentIds] } },
+	await User.updateMany(
+		{ _id: { $in: studentIds } },
 		{
 			$set: {
 				parents: [
@@ -104,78 +105,105 @@ const updateStudentsParentData = async (studentIds, parent) => {
 					},
 				],
 			},
+		}
+	);
+
+	await User.updateMany(
+		{ _id: { $in: studentIds }, 'consent.parentConsents': { $exists: true } },
+		{
 			$unset: { 'consent.parentConsents.$[].parentId': '' },
 		}
 	);
 };
 
-const migrateParentsToStudents = async () => {
-	const parentIdsToDelete = [];
+const bulkMigrateParentsToStudents = async () => {
 	const parentRole = await getParentRole();
-	const cursor = findAllParents(parentRole).cursor();
-	for (let parent = await cursor.next(); parent != null; parent = await cursor.next()) {
-		const students = await getStudentsForParent(parent);
-		const studentIds = getIds(students);
-		await updateStudentsParentData(studentIds, parent);
-		parentIdsToDelete.push(parent._id);
-	}
-
-	let amountOfParentsLeftToDelete = parentIdsToDelete.length;
-
+	let continueBulkProcess = true;
 	const limit = 500;
-	while (amountOfParentsLeftToDelete !== 0) {
-		const parentsToDelete = amountOfParentsLeftToDelete < limit ? amountOfParentsLeftToDelete : limit;
-		await deleteParentUsersByIds(parentIdsToDelete.splice(0, parentsToDelete));
-		amountOfParentsLeftToDelete -= parentsToDelete;
+
+	while (continueBulkProcess) {
+		const parentIdsToDelete = [];
+		const parents = await findBulkParents(parentRole, limit);
+		if (!parents.length) {
+			info('No more parents to process.');
+			continueBulkProcess = false;
+		} else {
+			info(`${parents.length} parents will be processed...`);
+			for (const parent of parents) {
+				const students = await getStudentsForParent(parent);
+				const studentIds = getIds(students);
+				await updateStudentsParentData(studentIds, parent);
+				parentIdsToDelete.push(parent._id);
+			}
+			await deleteParentUsersByIds(parentIdsToDelete);
+		}
 	}
 
 	info(`Removing role: ${parentRole.name}`);
 	await RoleModel.deleteOne({ _id: parentRole._id });
 };
 
-const findAllStudentsWithParentData = () => User.find({ parents: { $elemMatch: { email: { $ne: null } } } });
+const findBulkStudentsWithParentData = (limit) =>
+	User.find({ parents: { $elemMatch: { email: { $ne: null } } } })
+		.limit(limit)
+		.lean()
+		.exec();
 
-const migrateParentsFromStudents = async () => {
+const bulkMigrateParentsFromStudents = async () => {
+	let continueBulkProcess = true;
+	const limit = 500;
 	const parentRole = await RoleModel.create({ name: 'parent' });
-	const cursor = findAllStudentsWithParentData().cursor();
-	for (let student = await cursor.next(); student != null; student = await cursor.next()) {
-		const parent = await User.findOneAndUpdate(
-			{
-				email: student.parents[0].email,
-				roles: parentRole._id,
-			},
-			{
-				$set: {
-					firstName: student.parents[0].firstName,
-					lastName: student.parents[0].lastName,
-					email: student.parents[0].email,
-					schoolId: student.schoolId,
-					children: [student._id],
-					roles: [parentRole._id],
-				},
-			},
-			{
-				upsert: true,
-				new: true,
+
+	while (continueBulkProcess) {
+		const students = await findBulkStudentsWithParentData(limit);
+		if (!students.length) {
+			info('No more students to process.');
+			continueBulkProcess = false;
+		} else {
+			info(`${students.length} students will be processed...`);
+			for (const student of students) {
+				const parent = await User.findOneAndUpdate(
+					{
+						email: student.parents[0].email,
+						roles: parentRole._id,
+					},
+					{
+						$set: {
+							firstName: student.parents[0].firstName,
+							lastName: student.parents[0].lastName,
+							email: student.parents[0].email,
+							schoolId: student.schoolId,
+							roles: [parentRole._id],
+						},
+						$push: {
+							children: student._id,
+						},
+					},
+					{
+						upsert: true,
+						new: true,
+					}
+				);
+				await OldUser.updateOne({ _id: student._id }, { $set: { parents: [parent._id] } });
+				await OldUser.updateOne(
+					{ _id: student._id, 'consent.parentConsents': { $exists: true } },
+					{ $set: { 'consent.parentConsents.$[].parentId': parent._id } }
+				);
 			}
-		);
-		await OldUser.updateOne(
-			{ _id: student._id },
-			{ $set: { parents: [parent._id], 'consent.parentConsents.$[].parentId': parent._id } }
-		);
+		}
 	}
 };
 
 module.exports = {
 	up: async function up() {
 		await connect();
-		await migrateParentsToStudents();
+		await bulkMigrateParentsToStudents();
 		await close();
 	},
 
 	down: async function down() {
 		await connect();
-		await migrateParentsFromStudents();
+		await bulkMigrateParentsFromStudents();
 		await close();
 	},
 };

@@ -1,6 +1,6 @@
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const moment = require('moment');
 const reqlib = require('app-root-path').require;
 
@@ -138,24 +138,33 @@ const validateEmailAndPin = (hook) => {
 
 const checkTimeWindow = async (hook) => {
 	const minimalTimeDifference = moment.duration(5, 'minutes').asMilliseconds();
-	const { importHash } = hook.data;
-
-	if (!importHash) {
-		throw new BadRequest('importHash missing');
-	}
-	const user = await hook.app.service('users/linkImport').get(importHash);
-	if (!user.userId) {
-		throw new BadRequest('invalid importHash');
-	}
-
-	const result = await hook.app.service('registrationPinsModel').find({ query: { importHash } });
-	if (result.data.length > 1) {
-		throw new BadRequest('registration pin is ambiguous');
-	}
-	if (result.data.length === 0) {
+	const { importHash, silent } = hook.data || {};
+	if (silent) {
 		return Promise.resolve(hook);
 	}
-	const registrationPin = result.data[0];
+
+	let registrationPins;
+	if ((hook.params.account || {}).userId) {
+		const user = await hook.app.service('users').get(hook.params.account.userId);
+		registrationPins = await hook.app.service('registrationPinsModel').find({ query: { email: user.email } });
+	} else {
+		if (!importHash) {
+			throw new BadRequest('importHash missing');
+		}
+		const user = await hook.app.service('users/linkImport').get(importHash);
+		if (!user.userId) {
+			throw new BadRequest('invalid importHash');
+		}
+		registrationPins = await hook.app.service('registrationPinsModel').find({ query: { importHash } });
+	}
+
+	if (registrationPins.data.length > 1) {
+		throw new BadRequest('registration pin is ambiguous');
+	}
+	if (registrationPins.data.length === 0) {
+		return Promise.resolve(hook);
+	}
+	const registrationPin = registrationPins.data[0];
 	const timeDifference = new Date() - registrationPin.updatedAt;
 	if (timeDifference < minimalTimeDifference) {
 		throw new TooManyRequests('too many pin creation requests', {
@@ -171,7 +180,7 @@ exports.before = {
 	get: disallow('external'),
 	create: [
 		globalHooks.blockDisposableEmail('email'),
-		iff(isProvider('external'), checkTimeWindow),
+		iff(isProvider('external'), [globalHooks.authenticateWhenJWTExist, checkTimeWindow]),
 		removeOldPins,
 		generatePin,
 	],

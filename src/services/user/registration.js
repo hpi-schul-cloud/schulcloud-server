@@ -1,4 +1,4 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
 const { BadRequest } = reqlib('src/errors');
@@ -12,13 +12,6 @@ const logger = require('../../logger');
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../../config/globals');
 
 const permissionsAllowedToLogin = ['student', 'expert', 'administrator', 'teacher'];
-
-const formatBirthdate1 = (datestamp) => {
-	if (datestamp === undefined) return false;
-
-	const d = datestamp.split('.');
-	return `${d[1]}.${d[0]}.${d[2]}`;
-};
 
 const appendParent = (user, data) => {
 	const parent = {
@@ -41,13 +34,12 @@ const populateUser = (app, data) => {
 		parents: [],
 	};
 
-	if (data.parent_email) {
-		appendParent(user, data);
+	if (data.birthDate) {
+		user.birthday = new Date(data.birthDate);
 	}
 
-	const formatedBirthday = formatBirthdate1(data.birthDate);
-	if (formatedBirthday) {
-		user.birthday = new Date(formatedBirthday);
+	if (data.parent_email) {
+		appendParent(user, data);
 	}
 
 	if (data.classId) user.classId = data.classId;

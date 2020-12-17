@@ -48,6 +48,28 @@ describe('homework service', function test() {
 			expect(hw).to.haveOwnProperty('_id');
 		});
 
+		it('can create a simple homework for a lesson', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool();
+			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const { _id: courseId } = await testObjects.createTestCourse({ schoolId, teacherIds: [user._id] });
+			const { _id: lessonId } = await testObjects.createTestLesson({ courseId, schoolId });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+			const hw = await homeworkService.create(
+				{
+					teacherId: user._id,
+					name: 'Testaufgabe',
+					description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
+					availableDate: '2017-09-28T11:47:46.622Z',
+					dueDate: '2030-11-16T12:47:00.000Z',
+					private: true,
+					courseId,
+					lessonId,
+				},
+				params
+			);
+			expect(hw).to.haveOwnProperty('_id');
+		});
+
 		it('can not create homework for foreign school', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const { _id: foreignSchoolId } = await testObjects.createTestSchool();

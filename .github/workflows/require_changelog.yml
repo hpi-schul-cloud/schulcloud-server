@@ -20,20 +20,20 @@ jobs:
           paths: ^CHANGELOG.md
       - name: set defaults
         run: |
-          echo "::set-env name=FEATURE_OR_RELEASE_OR_HOTFIX::false"
+          echo "FEATURE_OR_RELEASE_OR_HOTFIX=false" >> $GITHUB_ENV
       - name: enable check if this is a feature pr
         if: startsWith(github.head_ref, 'feature')
         run: |
-          echo "::set-env name=FEATURE_OR_RELEASE_OR_HOTFIX::true"
+          echo "FEATURE_OR_RELEASE_OR_HOTFIX=true" >> $GITHUB_ENV
       - name: enable check if this is a release pr
         if: startsWith(github.head_ref, 'release')
         run: |
-          echo "::set-env name=FEATURE_OR_RELEASE_OR_HOTFIX::true"
+          echo "FEATURE_OR_RELEASE_OR_HOTFIX=true" >> $GITHUB_ENV
       - name: enable check if this is a hotfix pr
         if: startsWith(github.head_ref, 'hotfix')
         run: |
-          echo "::set-env name=FEATURE_OR_HOTFIX::true"
-      - name: Changelog updates have been found
+          echo "FEATURE_OR_RELEASE_OR_HOTFIX=true" >> $GITHUB_ENV
+      - name: Changelog updates required but missing
         if: steps.changed.outputs.matched != 'true' && env.FEATURE_OR_RELEASE_OR_HOTFIX == 'true'
         run: |
           echo ${{ steps.changed.outputs.matched }}

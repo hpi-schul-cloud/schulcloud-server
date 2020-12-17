@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const mockery = require('mockery');
-const commons = require('@schul-cloud/commons');
+const commons = require('@hpi-schul-cloud/commons');
 const rabbitmqMock = require('../rabbitmqMock');
 
 const { Configuration } = commons;
@@ -21,7 +21,7 @@ describe('service', function test() {
 			warnOnUnregistered: false,
 			useCleanCache: true,
 		});
-		mockery.registerMock('@schul-cloud/commons', commons);
+		mockery.registerMock('@hpi-schul-cloud/commons', commons);
 		mockery.registerMock('amqplib', rabbitmqMock.amqplib);
 
 		// eslint-disable-next-line global-require
@@ -29,6 +29,7 @@ describe('service', function test() {
 		// eslint-disable-next-line global-require
 		testObjects = require('../../helpers/testObjects')(app);
 		server = await app.listen(0);
+		rabbitmqMock.reset();
 	});
 
 	after((done) => {

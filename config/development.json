@@ -1,0 +1,10 @@
+{
+    "$schema": "./default.schema.json",
+    "REQUEST_TIMEOUT": 600000,
+    "FEATURE_API_VALIDATION_ENABLED": true,
+    "FEATURE_API_RESPONSE_VALIDATION_ENABLED": true,
+    "API_HOST": "http://host.docker.internal:3030",
+    "FILE_SECURITY_CHECK_SERVICE_URI": "http://localhost:8081/scan/file",
+    "FILE_SECURITY_SERVICE_USERNAME": "antivirus",
+    "FILE_SECURITY_SERVICE_PASSWORD": "password"
+}

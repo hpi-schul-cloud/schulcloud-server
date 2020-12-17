@@ -34,6 +34,7 @@ const consent = require('./consent');
 const oauth2 = require('./oauth2');
 const roster = require('./roster');
 const ldap = require('./ldap');
+const ldapConfig = require('./ldap-config');
 const sync = require('./sync');
 const datasources = require('./datasources');
 const rocketChat = require('./rocketChat');
@@ -43,12 +44,15 @@ const help = require('./help');
 const database = require('../utils/database');
 const alert = require('./alert');
 const videoconference = require('./videoconference');
+const messenger = require('./messenger');
 const messengerSync = require('./messengerSync');
 const nexboard = require('./nexboard');
 const etherpad = require('./etherpad');
 const storageProvider = require('./storageProvider');
 const activation = require('./activation');
 const config = require('./config');
+const version = require('./versionService');
+const docs = require('./docs');
 
 module.exports = function initializeServices() {
 	const app = this;
@@ -56,6 +60,7 @@ module.exports = function initializeServices() {
 	database.connect();
 
 	// register services
+	app.configure(docs);
 	app.configure(authentication);
 	app.configure(analytics);
 	app.configure(base64Files);
@@ -87,6 +92,7 @@ module.exports = function initializeServices() {
 	app.configure(pseudonym);
 	app.configure(consent);
 	app.configure(ldap);
+	app.configure(ldapConfig);
 	app.configure(sync);
 	app.configure(me);
 	app.configure(help);
@@ -98,12 +104,14 @@ module.exports = function initializeServices() {
 	app.configure(edusharing);
 	app.configure(webuntis);
 	app.configure(videoconference);
+	app.configure(messenger);
 	app.configure(messengerSync);
 	app.configure(nexboard);
 	app.configure(etherpad);
 	app.configure(storageProvider);
 	app.configure(activation);
 	app.configure(config);
+	app.configure(version);
 
 	// initialize events
 	newsEvents.configure(app);

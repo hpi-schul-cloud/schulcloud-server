@@ -1,3 +1,5 @@
+const { ObjectId: generateObjectId } = require('mongoose').Types;
+
 const logger = require('../../../src/logger/index');
 
 const serviceHelpers = require('./services');
@@ -25,6 +27,9 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		homeworks,
 		lessons,
 		login,
+		registrationPins,
+		ltiTools,
+		pseudonyms,
 		storageProviders,
 		submissions,
 		teams,
@@ -44,7 +49,10 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 				classes,
 				courses,
 				courseGroups,
+				ltiTools,
+				pseudonyms,
 				teams,
+				registrationPins,
 				roles,
 				schools,
 				schoolGroups,
@@ -78,6 +86,9 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		files: files.info,
 		homeworks: homeworks.info,
 		lessons: lessons.info,
+		registrationPins: registrationPins.info,
+		ltiTools: ltiTools.info,
+		pseudonyms: pseudonyms.info,
 		schoolGroups: schoolGroups.info,
 		schools: schools.info,
 		storageProviders: storageProviders.info,
@@ -114,6 +125,9 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		}
 	};
 
+	const rnd = () => Math.round(Math.random() * 10000);
+	const randomGen = () => `${Date.now()}_${rnd()}`;
+
 	return {
 		createTestAccount: accounts.create,
 		createTestActivation: activation.create,
@@ -126,6 +140,10 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		createTestFile: files.create,
 		createTestHomework: homeworks.create,
 		createTestLesson: lessons.create,
+		lessons,
+		createTestRegistrationPin: registrationPins.create,
+		createTestPseudonym: pseudonyms.create,
+		createTestLtiTool: ltiTools.create,
 		createTestRole: roles.create,
 		createTestSchool: schools.create,
 		createTestSchoolGroup: schoolGroups.create,
@@ -137,12 +155,16 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,
 		generateRequestParamsFromUser: login.generateRequestParamsFromUser,
+		generateJWTFromUser: login.generateJWTFromUser,
 		createdUserIds: warn('@deprecated use info() instead', users.info),
 		teams,
+		files,
 		classes,
 		createTestTeamWithOwner,
 		info,
 		setupUser,
 		options: opt,
+		randomGen,
+		generateObjectId,
 	};
 };

@@ -15,7 +15,6 @@ module.exports = function () {
 		},
 		lean: false,
 	};
-
 	app.use('/pseudonym/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/pseudonym', service(options));
 

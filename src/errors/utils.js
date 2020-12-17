@@ -1,8 +1,11 @@
 const http = require('http');
+const Sentry = require('@sentry/node');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const reqlib = require('app-root-path').require;
 
 const { incomingMessageToJson } = reqlib('src/utils');
 
+const logger = require('../logger');
 const { errorsByCode } = require('./index.js');
 
 const isFeatherError = (error) => error.type === 'FeathersError';
@@ -28,8 +31,22 @@ const cleanupIncomingMessage = (error = {}) => {
 	}
 };
 
+// TODO please rename if you found a better name
+const asyncErrorLog = (err, message) => {
+	if (message) {
+		logger.error(message, err);
+	} else {
+		logger.error(err);
+	}
+	// TODO execute filter must outsource from error pipline
+	if (Configuration.has('SENTRY_DSN')) {
+		Sentry.captureException(err);
+	}
+};
+
 module.exports = {
 	isFeatherError,
 	convertToFeathersError,
 	cleanupIncomingMessage,
+	asyncErrorLog,
 };

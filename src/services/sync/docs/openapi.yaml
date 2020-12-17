@@ -23,34 +23,29 @@ components:
       description: TODO
     sync_list:
       description: TODO
+      type: array
+      items:
+        type: object
+        properties:
+          errors:
+            type: array
+            items: 
+              type: object
+          success:
+            type: boolean
+        additionalProperties: true
 
 paths:
   /sync:
     get:
       parameters:
-        - description: Number of results to return
+        - description: the syncer to run.
           in: query
-          name: $limit
+          name: target
           schema:
-            type: integer
-        - description: Number of results to skip
-          in: query
-          name: $skip
-          schema:
-            type: integer
-        - description: Property to sort results
-          in: query
-          name: $sort
-          style: deepObject
-          schema:
-            type: object
-        - description: Query parameters to filter
-          in: query
-          name: filter
-          style: form
-          explode: true
-          schema:
-            $ref: '#/components/schemas/sync'
+            type: string
+          example: ldap
+          required: true
       responses:
         '200':
           description: success
@@ -62,35 +57,45 @@ paths:
           description: not authenticated
         '500':
           description: general error
-      description: Retrieves a list of all resources from the service.
+      description: Trigger a Sync without data.
       summary: ''
       tags:
         - sync
-      security: []
+      security:
+        - jwtBearer: []
     post:
-      parameters: []
+      parameters:
+        - description: target syncer
+          in: query
+          name: target
+          schema:
+            type: string
+          example: ldap
+          required: true
       responses:
         '201':
           description: created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/sync'
+                $ref: '#/components/schemas/sync_list'
         '401':
           description: not authenticated
         '500':
           description: general error
-      description: Creates a new resource with data.
+      description: Trigger a Sync with data.
       summary: ''
       tags:
         - sync
-      security: []
+      security:
+        - jwtBearer: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/sync'
+              type: object
+              additionalProperties: true
   
 openapi: 3.0.2
 tags:

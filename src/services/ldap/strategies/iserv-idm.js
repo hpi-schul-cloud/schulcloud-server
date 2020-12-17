@@ -1,4 +1,5 @@
 const AbstractLDAPStrategy = require('./interface.js');
+const { filterForModifiedEntities } = require('./deltaSyncUtils');
 
 /**
  * iServ-IDM-specific LDAP functionality
@@ -15,7 +16,7 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 			scope: 'sub',
 			attributes: ['description', 'o', 'dc', 'dn'],
 		};
-		const schools = await this.app.service('ldap').searchCollection(this.config, '', options);
+		const schools = await this.app.service('ldap').searchCollection(this.config, this.config.rootPath || '', options);
 		return schools.map((idmSchool) => ({
 			ldapOu: idmSchool.dn,
 			displayName: idmSchool.description || idmSchool.o,
@@ -28,10 +29,11 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 */
 	async getUsers(school) {
+		const requiredAttributes = '(objectClass=person)(sn=*)(uuid=*)(uid=*)(mail=*)(cn=*)';
 		const options = {
-			filter: '(&(objectClass=person)(sn=*)(uuid=*)(uid=*)(mail=*)(cn=*))',
+			filter: filterForModifiedEntities(this.config.lastModifyTimestamp, `(&${requiredAttributes})`),
 			scope: 'sub',
-			attributes: ['givenName', 'sn', 'dn', 'uuid', 'cn', 'mail', 'objectClass', 'memberOf'],
+			attributes: ['givenName', 'sn', 'dn', 'uuid', 'cn', 'mail', 'objectClass', 'memberOf', 'modifyTimestamp'],
 		};
 		const searchString = `ou=users,${school.ldapSchoolIdentifier}`;
 		const data = await this.app.service('ldap').searchCollection(this.config, searchString, options);
@@ -73,6 +75,7 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 					ldapDn: obj.dn,
 					ldapUUID: obj.uuid,
 					ldapUID: obj.cn,
+					modifyTimestamp: obj.modifyTimestamp,
 				});
 			}
 		});
@@ -85,9 +88,9 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 	 */
 	async getClasses(school) {
 		const options = {
-			filter: 'description=*',
+			filter: filterForModifiedEntities(this.config.lastModifyTimestamp, `(description=*)`),
 			scope: 'sub',
-			attributes: ['dn', 'description', 'member'],
+			attributes: ['dn', 'description', 'member', 'modifyTimestamp'],
 		};
 		const searchString = `ou=groups,${school.ldapSchoolIdentifier}`;
 		const data = await this.app.service('ldap').searchCollection(this.config, searchString, options);
@@ -96,6 +99,7 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 			className: obj.description,
 			ldapDn: obj.dn,
 			uniqueMembers: obj.member,
+			modifyTimestamp: obj.modifyTimestamp,
 		}));
 	}
 }

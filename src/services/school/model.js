@@ -4,10 +4,11 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { getDocumentBaseDir } = require('./logic/school');
 const { enableAuditLog } = require('../../utils/database');
 const externalSourceSchema = require('../../helper/externalSourceSchema');
+const { countySchema } = require('../federalState/countyModel');
 
 const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
@@ -16,8 +17,9 @@ const SCHOOL_FEATURES = {
 	ROCKET_CHAT: 'rocketChat',
 	VIDEOCONFERENCE: 'videoconference',
 	MESSENGER: 'messenger',
-	STUDENTVISIBILITY: 'studentVisibility', // depricated
+	STUDENTVISIBILITY: 'studentVisibility', // deprecated
 	MESSENGER_SCHOOL_ROOM: 'messengerSchoolRoom',
+	MESSENGER_STUDENT_ROOM_CREATE: 'messengerStudentRoomCreate',
 };
 
 const defaultFeatures = [];
@@ -60,6 +62,7 @@ const schoolSchema = new Schema(
 			enum: ['', 'school', 'schoolGroup'],
 		},
 		officialSchoolNumber: { type: String },
+		county: { type: countySchema },
 		systems: [{ type: Schema.Types.ObjectId, ref: 'system' }],
 		federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },
 		createdAt: { type: Date, default: Date.now },
@@ -73,6 +76,7 @@ const schoolSchema = new Schema(
 		purpose: { type: String },
 		rssFeeds: [{ type: rssFeedSchema }],
 		language: { type: String },
+		timezone: { type: String },
 		features: {
 			type: [String],
 			default: defaultFeatures,
