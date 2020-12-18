@@ -19,6 +19,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8179 - repaired unit test
 - SC-7763 - adds searchable feature flag for lernstore 
 - SC-8020 - adds collections filter to edu-sharing service
+- SC-8260 - new team indexes and migration to add this
 
 ### Fixed
 
