@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [25.3.X]
+
+### Changed
+
+- SC-8209 - prevent sync from stopping if error occurs for a single student
+
 ## [25.3.5]
 
 ### Changed
