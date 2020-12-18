@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## [25.3.6]
+
+### Fixed
+
+- SC-8235 - repaired reigstration link for students
+
 ## [25.3.5]
 
 ### Changed
@@ -29,7 +35,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8101 - Make it possible to disable sentry by removing `SENTRY_DSN`
 - OPS-1735 - Fixes transaction handling in file service by using the mongoose transaction helper,
-properly closing the session, and using the correct readPreference (everything except primary fails)
+  properly closing the session, and using the correct readPreference (everything except primary fails)
 
 ## [25.3.2]
 
@@ -122,7 +128,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 ### Fixed
 
 - OPS-1735 - Fixes transaction handling in file service by using the mongoose transaction helper,
-properly closing the session, and using the correct readPreference (everything except primary fails)
+  properly closing the session, and using the correct readPreference (everything except primary fails)
 
 ## [25.2.4]
 
