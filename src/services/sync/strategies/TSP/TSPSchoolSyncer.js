@@ -4,14 +4,7 @@ const Syncer = require('../Syncer');
 const ClassImporter = require('../mixins/ClassImporter');
 const { equal: sameObjectId } = require('../../../../helper/compare').ObjectId;
 
-const {
-	TspApi,
-	config: TSP_CONFIG,
-	ENTITY_SOURCE,
-	SOURCE_ID_ATTRIBUTE,
-	createUserAndAccount,
-	shortenedRegistrationProcess,
-} = require('./TSP');
+const { TspApi, config: TSP_CONFIG, ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE, createUserAndAccount } = require('./TSP');
 
 const { switchSchool, getInvalidatedUuid } = require('./SchoolChange');
 
@@ -295,8 +288,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'update-teacher',
 				entity: tspTeacher.lehrerUid,
-				message:
-					`Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}"` + ' konnte nicht aktualisiert werden.',
+				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}" konnte nicht aktualisiert werden.`,
 			});
 			return null;
 		}
@@ -327,9 +319,6 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				'teacher',
 				systemId
 			);
-			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
-				await shortenedRegistrationProcess(this.app, teacher);
-			}
 			this.stats.users.teachers.created += 1;
 			return teacher;
 		} catch (err) {
@@ -338,7 +327,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'create-teacher',
 				entity: tspTeacher.lehrerUid,
-				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}"` + ' konnte nicht erstellt werden.',
+				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}" konnte nicht erstellt werden.`,
 			});
 			return null;
 		}
@@ -434,9 +423,6 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				'student',
 				systemId
 			);
-			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
-				await shortenedRegistrationProcess(this.app, student);
-			}
 			this.stats.users.students.created += 1;
 			return student;
 		} catch (err) {
@@ -445,8 +431,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'create-student',
 				entity: tspStudent.schuelerUid,
-				message:
-					`Schüler "${tspStudent.schuelerVorname} ${tspStudent.schuelerNachname}"` + ' konnte nicht erstellt werden.',
+				message: `Schüler "${tspStudent.schuelerVorname} ${tspStudent.schuelerNachname}" konnte nicht erstellt werden.`,
 			});
 			return null;
 		}
