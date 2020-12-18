@@ -1,0 +1,60 @@
+import { expect } from 'chai';
+import { createHook } from '../helper/helper.hook';
+import createEmailText from '../../../../src/services/teams/hooks/mail-text.js';
+import appPromise from '../../../../src/app';
+
+describe('Team mail-text helper', async () => {
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after((done) => {
+		server.close(done);
+	});
+
+	describe('createEmailText', () => {
+		let hook;
+
+		before(() => {
+			hook = createHook(app, {
+				method: 'patch',
+				type: 'after',
+			});
+		});
+
+		it.skip('should work for new expert', () => {
+			const hookCopy = { ...hook };
+			const addClass = app.service('/teams/extern/add');
+			const formatResult = addClass._response;
+			const user = {
+				firstname: '<firstname>',
+				lastname: '<lastname>',
+				email: '<email>',
+				importHash: '<hash>',
+			};
+
+			const linkData = {
+				link: '<link>',
+				target: '<target>',
+				hash: '<hash>',
+				shortLink: '<shortLink>',
+			};
+
+			hookCopy.result = formatResult({
+				linkData,
+				user,
+				isUserCreated: true,
+				isResend: false,
+				email: user.email,
+			});
+
+			console.log(createEmailText(hookCopy, user));
+			expect(createEmailText(hookCopy, user)).to.equal({});
+			// todo check all results ..
+		});
+	});
+});
