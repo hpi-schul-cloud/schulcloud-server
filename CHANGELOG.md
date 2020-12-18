@@ -9,6 +9,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+
 ### Added
 
 - SC-8229 - Added invalid DN error to ldap-config service error handling
