@@ -8,7 +8,9 @@ const EduSharingResponse = require('./EduSharingResponse');
 const { getCounty } = require('../helpers');
 
 const ES_METADATASET =
-	Configuration.get('FEATURE_ES_MERLIN_ENABLED') || Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED')
+	Configuration.get('FEATURE_ES_MERLIN_ENABLED') ||
+	Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') ||
+	Configuration.get('FEATURE_ES_SEARCHABLE_ENABLED')
 		? 'mds_oeh'
 		: 'mds';
 const ES_ENDPOINTS = {
@@ -217,7 +219,7 @@ class EduSharingConnector {
 				});
 			}
 
-			if (Configuration.get('FEATURE_ES_SEARCHABLE_ENABLED')) {
+			if (Configuration.get('FEATURE_ES_SEARCHABLE_ENABLED') && !collection) {
 				criterias.push({
 					property: 'ccm:hpi_searchable',
 					values: ['1'],
