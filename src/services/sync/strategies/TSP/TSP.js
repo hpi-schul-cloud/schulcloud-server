@@ -79,9 +79,7 @@ const createTSPConsent = () => {
  * During the user creation process, the age of the users is unknown.
  * we just take a random date
  */
-const createBirthDay = () => {
-	return new Date();
-};
+const createBirthDay = () => new Date();
 
 /**
  * Registers a user and creates an account
