@@ -1,4 +1,4 @@
-const schoolRepo = require('../repo/schoolRepo');
+const schoolRepo = require('../repo/school.repo');
 const { SCHOOL_OF_DELETE_USERS_NAME } = require('../repo/db');
 
 const getSchool = async (id) => {
