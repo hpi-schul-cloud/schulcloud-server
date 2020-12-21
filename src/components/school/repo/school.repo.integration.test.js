@@ -6,12 +6,10 @@ const testObjects = require('../../../../test/services/helpers/testObjects')(app
 const schoolRepo = require('./school.repo');
 const { NotFound } = require('../../../errors');
 
-const { ObjectId } = require('mongoose').Types;
-
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-describe.only('school repository', () => {
+describe('school repository', () => {
 	let app;
 	let server;
 
@@ -80,6 +78,27 @@ describe.only('school repository', () => {
 	});
 
 	describe('updateSchool', () => {
-		it('should update schools by id with new attribute', async () => {});
+		it('should update schools by id with new attribute', async () => {
+			const school = await testObjects.createTestSchool();
+			const patch = { officialSchoolNumber: 'a value' };
+			const expectedSchool = { ...school, ...patch };
+			delete expectedSchool.updatedAt;
+
+			expect(school.officialSchoolNumber).to.be.undefined;
+
+			const updatedSchool = await schoolRepo.updateSchool(school._id, patch);
+			delete updatedSchool.updatedAt;
+			expect(updatedSchool).to.deep.equal(expectedSchool);
+		});
+		it('should update schools by id with existing attribute', async () => {
+			const school = await testObjects.createTestSchool();
+			const patch = { name: 'updated school name' };
+			const expectedSchool = { ...school, ...patch };
+			delete expectedSchool.updatedAt;
+
+			const updatedSchool = await schoolRepo.updateSchool(school._id, patch);
+			delete updatedSchool.updatedAt;
+			expect(updatedSchool).to.deep.equal(expectedSchool);
+		});
 	});
 });

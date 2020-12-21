@@ -14,7 +14,7 @@ const findSchools = async (selectCriteria) => {
 };
 
 const updateSchool = async (schoolId, schoolPatch) => {
-	return School.findByIdAndUpdate(schoolId, schoolPatch, { new: true });
+	return School.findByIdAndUpdate(schoolId, schoolPatch, { new: true }).lean().exec();
 };
 
 module.exports = {
