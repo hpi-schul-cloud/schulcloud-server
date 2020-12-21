@@ -14,10 +14,10 @@ const updateSchool = async (schoolId, schoolPatch) => {
 	return schoolRepo.updateSchool(schoolId, schoolPatch);
 };
 
-const checkPermissions = async (id, permissionToCheck, user) => {
+const checkPermissions = (schoolId, permissionToCheck, user) => {
 	let grantPermission = true;
 	// same school?
-	grantPermission = grantPermission && user.schoolId === id;
+	grantPermission = grantPermission && user.schoolId === schoolId;
 
 	// user has permission
 	grantPermission =
