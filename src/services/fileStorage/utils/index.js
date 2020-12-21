@@ -7,6 +7,8 @@ const createCorrectStrategy = require('./createCorrectStrategy');
 
 const { createPermission, createDefaultPermissions } = require('./createDefaultPermissions');
 
+const updateParentDirectories = require('./updateParentDirectories')
+
 module.exports = {
 	canWrite,
 	canRead,
@@ -18,4 +20,5 @@ module.exports = {
 	createCorrectStrategy,
 	createPermission,
 	createDefaultPermissions,
+	updateParentDirectories
 };

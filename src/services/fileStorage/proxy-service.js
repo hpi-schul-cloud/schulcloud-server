@@ -20,6 +20,7 @@ const {
 	createCorrectStrategy,
 	createDefaultPermissions,
 	createPermission,
+	updateParentDirectories
 } = require('./utils');
 const { FileModel, SecurityCheckStatusTypes } = require('./model');
 const RoleModel = require('../role/model');
@@ -197,6 +198,7 @@ const fileStorageService = {
 				.then((file) => {
 					prepareSecurityCheck(file, userId, strategy).catch(asyncErrorHandler);
 					prepareThumbnailGeneration(file, strategy, userId, data, props).catch(asyncErrorHandler);
+					updateParentDirectories(file._id).catch(asyncErrorHandler)
 					return Promise.resolve(file);
 				})
 				.catch((err) => {
@@ -271,7 +273,9 @@ const fileStorageService = {
 				]);
 			})
 			.then(([file]) => createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName))
-			.then(() => fileInstance.remove().lean().exec())
+			.then(() => {
+				return fileInstance.remove().lean().exec().then(() => { updateParentDirectories(_id) });
+			})
 			.catch((err) => err);
 	},
 	/**
@@ -329,7 +333,8 @@ const fileStorageService = {
 		}
 
 		return permissionPromise()
-			.then(() => FileModel.update({ _id }, update).exec())
+			.then(() => updateParentDirectories(_id))
+			.then(() => FileModel.update({ _id }, update).exec().then(() => { updateParentDirectories(_id) }))
 			.catch((err) => new Forbidden(err));
 	},
 };
@@ -581,7 +586,7 @@ const directoryService = {
 						owner,
 						parent,
 						userId,
-					}).then((_data) => (_data ? Promise.resolve(_data) : FileModel.create(props)))
+					}).then((_data) => (_data ? Promise.resolve(_data) : FileModel.create(props)).then((file) => { updateParentDirectories(file._id) }))
 				)
 				.catch((err) => new Forbidden(err));
 		}
@@ -669,7 +674,9 @@ const directoryService = {
 				}
 				return FileModel.find({ parent: _id }).remove().lean().exec();
 			})
-			.then(() => fileInstance.remove().lean().exec())
+			.then(() => {
+				return fileInstance.remove().lean().exec().then(() => { updateParentDirectories(_id) });
+			})
 			.catch((err) => new Forbidden(err));
 	},
 };
@@ -699,7 +706,7 @@ const renameService = {
 				if (!obj) {
 					return new NotFound('The given directory/file was not found!');
 				}
-				return FileModel.update({ _id }, { name: newName }).exec();
+				return FileModel.update({ _id }, { name: newName }).exec().then(() => { updateParentDirectories(_id) });
 			})
 			.catch((err) => new Forbidden(err));
 	},
