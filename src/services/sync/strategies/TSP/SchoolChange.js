@@ -85,6 +85,7 @@ const switchSchool = async (app, currentUser, createUserMethod) => {
 		return newUser;
 	} catch (err) {
 		logError(`Something went wrong during switching school for user: ${err}`);
+		return null;
 	}
 };
 

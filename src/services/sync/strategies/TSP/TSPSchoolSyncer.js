@@ -146,15 +146,19 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			// create teachers and add them to the mapping (teacherUID => User)
 			for (const tspTeacher of schoolTeachers) {
 				const teacher = await this.createOrUpdateTeacher(tspTeacher, school);
-				teacherMapping[tspTeacher.lehrerUid] = teacher;
+				if (teacher !== null) {
+					teacherMapping[tspTeacher.lehrerUid] = teacher;
+				}
 			}
 
 			this.logInfo('Syncing students...');
 			// create students and add them to the mapping (classUid => [User])
 			for (const tspStudent of schoolStudents) {
 				const student = await this.createOrUpdateStudent(tspStudent, school);
-				classMapping[tspStudent.klasseId] = classMapping[tspStudent.klasseId] || [];
-				classMapping[tspStudent.klasseId].push(student._id);
+				if (student !== null) {
+					classMapping[tspStudent.klasseId] = classMapping[tspStudent.klasseId] || [];
+					classMapping[tspStudent.klasseId].push(student._id);
+				}
 			}
 
 			this.logInfo('Syncing classes...');
@@ -265,16 +269,16 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * @async
 	 */
 	async updateTeacher(user, tspTeacher) {
-		const equal =
-			(user.namePrefix === tspTeacher.lehrerTitel || (!user.namePrefix && !tspTeacher.namePrefix)) &&
-			user.firstName === tspTeacher.lehrerVorname &&
-			user.lastName === tspTeacher.lehrerNachname;
-		if (equal) {
-			this.stats.users.teachers.unchanged += 1;
-			return user;
-		}
-
 		try {
+			const equal =
+				(user.namePrefix === tspTeacher.lehrerTitel || (!user.namePrefix && !tspTeacher.namePrefix)) &&
+				user.firstName === tspTeacher.lehrerVorname &&
+				user.lastName === tspTeacher.lehrerNachname;
+			if (equal) {
+				this.stats.users.teachers.unchanged += 1;
+				return user;
+			}
+
 			const teacher = await this.app.service('users').patch(user._id, {
 				namePrefix: tspTeacher.lehrerTitel,
 				firstName: tspTeacher.lehrerVorname,
@@ -372,13 +376,13 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * @async
 	 */
 	async updateStudent(user, tspStudent) {
-		const equal = user.firstName === tspStudent.schuelerVorname && user.lastName === tspStudent.schuelerNachname;
-		if (equal) {
-			this.stats.users.students.unchanged += 1;
-			return user;
-		}
-
 		try {
+			const equal = user.firstName === tspStudent.schuelerVorname && user.lastName === tspStudent.schuelerNachname;
+			if (equal) {
+				this.stats.users.students.unchanged += 1;
+				return user;
+			}
+
 			const student = await this.app.service('users').patch(user._id, {
 				firstName: tspStudent.schuelerVorname,
 				lastName: tspStudent.schuelerNachname,
