@@ -727,7 +727,8 @@ const renameService = {
 			.catch((err) => new Forbidden(err));
 
 		filePromise
-			.then(() => updateParentDirectories(_id)).catch((error) => {
+			.then(() => updateParentDirectories(_id))
+			.catch((error) => {
 				logger.error(error);
 			});
 
