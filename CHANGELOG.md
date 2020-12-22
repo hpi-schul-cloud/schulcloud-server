@@ -13,6 +13,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-8283 - update 'updatedAt' of parent directories when resources are modified
 - SC-8229 - Added invalid DN error to ldap-config service error handling
 - SC-7825 - Remove user relations from courses
 - SC-7827 - Add deletion concept handling for file permissions.
