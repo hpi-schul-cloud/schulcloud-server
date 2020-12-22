@@ -212,6 +212,7 @@ const fileStorageService = {
 			.then((file) => {
 				prepareSecurityCheck(file, userId, strategy).catch(asyncErrorHandler);
 				prepareThumbnailGeneration(file, strategy, userId, data, props).catch(asyncErrorHandler);
+				updateParentDirectories(file._id).catch(asyncErrorHandler);
 				return Promise.resolve(file);
 			});
 	},
@@ -273,9 +274,8 @@ const fileStorageService = {
 				]);
 			})
 			.then(([file]) => createCorrectStrategy(fileStorageType).deleteFile(userId, file.storageFileName))
-			.then(() => {
-				return fileInstance.remove().lean().exec().then(() => { updateParentDirectories(_id) });
-			})
+			.then(() => updateParentDirectories(_id))
+			.then(() => fileInstance.remove().lean().exec())
 			.catch((err) => err);
 	},
 	/**
@@ -332,10 +332,14 @@ const fileStorageService = {
 			update.$unset = { parent: '' };
 		}
 
-		return permissionPromise()
+		const updatePromise = permissionPromise()
 			.then(() => updateParentDirectories(_id))
-			.then(() => FileModel.update({ _id }, update).exec().then(() => { updateParentDirectories(_id) }))
+			.then(() => FileModel.update({ _id }, update).exec())
 			.catch((err) => new Forbidden(err));
+
+		updatePromise.then(() => { updateParentDirectories(_id) })
+
+		return updatePromise
 	},
 };
 
@@ -579,16 +583,20 @@ const directoryService = {
 		// check for create permissions if it is a subdirectory
 
 		if (parent) {
-			return canCreate(userId, parent)
+			const filePromise = canCreate(userId, parent)
 				.then(() =>
 					this.directoryExists({
 						name,
 						owner,
 						parent,
 						userId,
-					}).then((_data) => (_data ? Promise.resolve(_data) : FileModel.create(props)).then((file) => { updateParentDirectories(file._id) }))
-				)
+					}))
+				.then((_data) => (_data ? Promise.resolve(_data) : FileModel.create(props)))
 				.catch((err) => new Forbidden(err));
+
+			filePromise.then((file) => updateParentDirectories(file._id))
+
+			return filePromise;
 		}
 
 		return this.directoryExists({
@@ -674,9 +682,8 @@ const directoryService = {
 				}
 				return FileModel.find({ parent: _id }).remove().lean().exec();
 			})
-			.then(() => {
-				return fileInstance.remove().lean().exec().then(() => { updateParentDirectories(_id) });
-			})
+			.then(() => updateParentDirectories(_id))
+			.then(() => fileInstance.remove().lean().exec())
 			.catch((err) => new Forbidden(err));
 	},
 };
@@ -700,15 +707,19 @@ const renameService = {
 
 		const _id = id;
 
-		return canWrite(userId, _id)
+		const filePromise = canWrite(userId, _id)
 			.then(() => FileModel.findOne({ _id }).exec())
 			.then((obj) => {
 				if (!obj) {
 					return new NotFound('The given directory/file was not found!');
 				}
-				return FileModel.update({ _id }, { name: newName }).exec().then(() => { updateParentDirectories(_id) });
+				return FileModel.update({ _id }, { name: newName }).exec();
 			})
 			.catch((err) => new Forbidden(err));
+
+		filePromise.then(() => updateParentDirectories(_id))
+
+		return filePromise
 	},
 };
 
