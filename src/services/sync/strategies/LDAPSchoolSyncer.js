@@ -94,17 +94,16 @@ class LDAPSchoolSyncer extends Syncer {
 					this.stats.users.updated += 1;
 					return this.checkForUserChangesAndUpdate(idmUser, users.data[0]);
 				}
-				return this.createUserAndAccount(idmUser)
-					.then((res) => {
-						this.stats.users.created += 1;
-						return res;
-					})
-					.catch((err) => {
-						this.stats.users.errors += 1;
-						this.stats.errors.push(err);
-						this.logError('User creation error', err);
-						return {};
-					});
+				return this.createUserAndAccount(idmUser).then((res) => {
+					this.stats.users.created += 1;
+					return res;
+				});
+			})
+			.catch((err) => {
+				this.stats.users.errors += 1;
+				this.stats.errors.push(err);
+				this.logError('User creation error', err);
+				return {};
 			});
 	}
 

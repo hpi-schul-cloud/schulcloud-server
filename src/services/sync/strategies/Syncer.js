@@ -60,6 +60,21 @@ class Syncer {
 			this.stats.errors.push(err);
 		}
 		this.stats.success = this.successful();
+		if (this.stats.success !== true) {
+			try {
+				this.logError(`Sync failed with ${this.stats.errors.length} errors:`);
+				this.stats.errors.forEach((err, i) => {
+					if (err && err.type && err.entity) {
+						const { type, entity } = err; // ignore message, might contain sensitive data
+						this.logError(`Error ${i}:`, { err: { type, entity } });
+					} else {
+						this.logError(`Error ${i}:`, { err });
+					}
+				});
+			} catch (err) {
+				this.logError('Failed to report errors...', err);
+			}
+		}
 		const aggregated = Syncer.aggregateStats(this.stats);
 		this.logInfo('Finished syncing', aggregated);
 		return this.stats;

@@ -74,14 +74,19 @@ const grantAccessToSharedFiles = async (app, oldUser, newUser) => {
 };
 
 const switchSchool = async (app, currentUser, createUserMethod) => {
-	await invalidateUser(app, currentUser);
-	const newUser = await createUserMethod();
-	await Promise.all([
-		grantAccessToPrivateFiles(app, currentUser, newUser),
-		grantAccessToSharedFiles(app, currentUser, newUser),
-	]);
-	await deleteUser(app, currentUser);
-	return newUser;
+	try {
+		await invalidateUser(app, currentUser);
+		const newUser = await createUserMethod();
+		await Promise.all([
+			grantAccessToPrivateFiles(app, currentUser, newUser),
+			grantAccessToSharedFiles(app, currentUser, newUser),
+		]);
+		await deleteUser(app, currentUser);
+		return newUser;
+	} catch (err) {
+		logError(`Something went wrong during switching school for user: ${err}`);
+		return null;
+	}
 };
 
 module.exports = {
