@@ -41,7 +41,7 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [
-		async context => {
+		async (context) => {
 			await updateParentDirectories(context.id);
 			return context;
 		},

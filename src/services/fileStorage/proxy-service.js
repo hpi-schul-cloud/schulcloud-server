@@ -337,7 +337,9 @@ const fileStorageService = {
 			.then(() => FileModel.update({ _id }, update).exec())
 			.catch((err) => new Forbidden(err));
 
-		updatePromise.then(() => updateParentDirectories(_id));
+		updatePromise.then(() => updateParentDirectories(_id)).catch((error) => {
+			logger.error(error);
+		});
 
 		return updatePromise;
 	},
@@ -590,11 +592,14 @@ const directoryService = {
 						owner,
 						parent,
 						userId,
-					}))
+					}),
+				)
 				.then((_data) => (_data ? Promise.resolve(_data) : FileModel.create(props)))
 				.catch((err) => new Forbidden(err));
 
-			filePromise.then((file) => updateParentDirectories(file._id));
+			filePromise.then((file) => updateParentDirectories(file._id)).catch((error) => {
+				logger.error(error);
+			});
 
 			return filePromise;
 		}
@@ -717,9 +722,11 @@ const renameService = {
 			})
 			.catch((err) => new Forbidden(err));
 
-		filePromise.then(() => updateParentDirectories(_id));
+		filePromise.then(() => updateParentDirectories(_id)).catch((error) => {
+			logger.error(error);
+		});
 
-		return filePromise
+		return filePromise;
 	},
 };
 
