@@ -3,7 +3,7 @@ const { discard } = require('feathers-hooks-common');
 
 const globalHooks = require('../../../hooks');
 const { canRead } = require('../utils/filePermissionHelper');
-const updateParentDirectories = require('../utils/updateParentDirectories')
+const updateParentDirectories = require('../utils/updateParentDirectories');
 
 const restrictToCurrentUser = (hook) => {
 	const {
@@ -40,9 +40,11 @@ exports.after = {
 	get: [],
 	create: [],
 	update: [],
-	patch: [async context => {
-		await updateParentDirectories(context.id)
-		return context
-	}],
+	patch: [
+		async context => {
+			await updateParentDirectories(context.id);
+			return context;
+		},
+	],
 	remove: [],
 };

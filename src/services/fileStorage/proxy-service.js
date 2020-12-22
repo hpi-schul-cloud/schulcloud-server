@@ -20,7 +20,7 @@ const {
 	createCorrectStrategy,
 	createDefaultPermissions,
 	createPermission,
-	updateParentDirectories
+	updateParentDirectories,
 } = require('./utils');
 const { FileModel, SecurityCheckStatusTypes } = require('./model');
 const RoleModel = require('../role/model');
@@ -198,7 +198,7 @@ const fileStorageService = {
 				.then((file) => {
 					prepareSecurityCheck(file, userId, strategy).catch(asyncErrorHandler);
 					prepareThumbnailGeneration(file, strategy, userId, data, props).catch(asyncErrorHandler);
-					updateParentDirectories(file._id).catch(asyncErrorHandler)
+					updateParentDirectories(file._id).catch(asyncErrorHandler);
 					return Promise.resolve(file);
 				})
 				.catch((err) => {
@@ -337,9 +337,9 @@ const fileStorageService = {
 			.then(() => FileModel.update({ _id }, update).exec())
 			.catch((err) => new Forbidden(err));
 
-		updatePromise.then(() => { updateParentDirectories(_id) })
+		updatePromise.then(() => updateParentDirectories(_id));
 
-		return updatePromise
+		return updatePromise;
 	},
 };
 
@@ -594,7 +594,7 @@ const directoryService = {
 				.then((_data) => (_data ? Promise.resolve(_data) : FileModel.create(props)))
 				.catch((err) => new Forbidden(err));
 
-			filePromise.then((file) => updateParentDirectories(file._id))
+			filePromise.then((file) => updateParentDirectories(file._id));
 
 			return filePromise;
 		}
@@ -717,7 +717,7 @@ const renameService = {
 			})
 			.catch((err) => new Forbidden(err));
 
-		filePromise.then(() => updateParentDirectories(_id))
+		filePromise.then(() => updateParentDirectories(_id));
 
 		return filePromise
 	},
