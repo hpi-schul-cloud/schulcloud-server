@@ -338,7 +338,8 @@ const fileStorageService = {
 			.catch((err) => new Forbidden(err));
 
 		updatePromise
-			.then(() => updateParentDirectories(_id)).catch((error) => {
+			.then(() => updateParentDirectories(_id))
+			.catch((error) => {
 				logger.error(error);
 			});
 
@@ -599,7 +600,8 @@ const directoryService = {
 				.catch((err) => new Forbidden(err));
 
 			filePromise
-				.then((file) => updateParentDirectories(file._id)).catch((error) => {
+				.then((file) => updateParentDirectories(file._id))
+				.catch((error) => {
 					logger.error(error);
 				});
 
