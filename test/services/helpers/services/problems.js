@@ -5,7 +5,6 @@ let createdproblemsIds = [];
 const createTestProblem = async ({
 	userId,
 	type = 'contactAdmin',
-	_id = '5836bb5664582c35df3bc214',
 	subject = 'Dies ist ein Titel',
 	currentState = 'Dies ist der CurrentState',
 	targetState = 'Dies ist der TargetState',
@@ -15,7 +14,6 @@ const createTestProblem = async ({
 	const problem = await problemModel.create({
 		userId,
 		type,
-		_id,
 		subject,
 		currentState,
 		targetState,

@@ -3,6 +3,7 @@ const { ObjectId } = require('mongoose').Types;
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const helpdeskUC = require('./helpdesk.uc');
+const { ValidationError } = require('../../../errors');
 
 const { problemRepo } = require('../repo');
 
@@ -11,17 +12,15 @@ chai.use(chaiAsPromised);
 
 const USER_ID = new ObjectId();
 const PROBLEM_ID = new ObjectId();
-const createTestProblem = (userId = USER_ID) => {
-	return {
-		_id: PROBLEM_ID,
-		type: 'contactAdmin',
-		subject: 'Dies ist ein Titel',
-		currentState: 'Dies ist der CurrentState',
-		targetState: 'Dies ist der TargetState',
-		schoolId: '5836bb5664582c35df3bc000',
-		userId,
-	};
-};
+const createTestProblem = (userId = USER_ID) => ({
+	_id: PROBLEM_ID,
+	type: 'contactAdmin',
+	subject: 'Dies ist ein Titel',
+	currentState: 'Dies ist der CurrentState',
+	targetState: 'Dies ist der TargetState',
+	schoolId: '5836bb5664582c35df3bc000',
+	userId,
+});
 
 let getProblemsStub;
 
@@ -67,7 +66,7 @@ describe('helpdesk usecase', () => {
 
 		it('when the function is called with an invalid id, then it fails', async () => {
 			const userId = 'NOT_FOUND_USER';
-			expect(() => helpdeskUC.deleteUserData()[0](userId), "if user wasn't found it should fail").to.throw;
+			expect(helpdeskUC.deleteUserData()[0](userId)).to.eventually.throw(ValidationError);
 		});
 	});
 });

@@ -39,14 +39,21 @@ describe('problem repo', () => {
 		it('when problem is deleted, it should be gone from db', async () => {
 			const user = await testObjects.createTestUser();
 			const userId = user._id;
-			await testObjects.createTestProblem({ userId });
+			const problemUser1 = await testObjects.createTestProblem({ userId });
+
+			const user2 = await testObjects.createTestUser();
+			const userId2 = user2._id;
+			const problemUser2 = await testObjects.createTestProblem({ userId: userId2 });
 
 			let userProblems = await problemRepo.getProblemsForUser(userId);
-			expect(userProblems.length).to.be.equal(1);
+			expect(userProblems[0]._id.toString()).to.be.equal(problemUser1._id.toString());
 			await problemRepo.deleteProblemsForUser(userId);
 
 			userProblems = await problemRepo.getProblemsForUser(userId);
 			expect(userProblems.length).to.be.equal(0);
+
+			const userProblems2 = await problemRepo.getProblemsForUser(userId2);
+			expect(userProblems2[0]._id.toString()).to.be.equal(problemUser2._id.toString());
 		});
 
 		it('when the function is called with invalid id, it throws an error', async () => {
@@ -67,6 +74,11 @@ describe('problem repo', () => {
 
 		it('when the function is called with user id, for which problems dont exist, then it should return empty array', async () => {
 			const user = await testObjects.createTestUser();
+
+			const user2 = await testObjects.createTestUser();
+			const userId2 = user2._id;
+			await testObjects.createTestProblem({ userId: userId2 });
+
 			const problems = await problemRepo.getProblemsForUser(user._id);
 			expect(problems.length).to.be.equal(0);
 		});
