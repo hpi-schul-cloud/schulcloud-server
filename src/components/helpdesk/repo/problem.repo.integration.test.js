@@ -39,14 +39,14 @@ describe('problem repo', () => {
 		it('when problem is deleted, it should be gone from db', async () => {
 			const user = await testObjects.createTestUser();
 			const userId = user._id;
-			await testObjects.createTestProblem({ userId });
+			const problemUser1 = await testObjects.createTestProblem({ userId });
 
 			const user2 = await testObjects.createTestUser();
 			const userId2 = user2._id;
-			await testObjects.createTestProblem({ userId: userId2 });
+			const problemUser2 = await testObjects.createTestProblem({ userId: userId2 });
 			let userProblems = await problemRepo.getProblemsForUser(userId);
 			expect(userProblems).to.be.an('array').of.length(1);
-			expect(userProblems[0]._id.toString()).to.be.equal(problemUser1._id.toString());	
+			expect(userProblems[0]._id.toString()).to.be.equal(problemUser1._id.toString());
 			await problemRepo.deleteProblemsForUser(userId);
 
 			userProblems = await problemRepo.getProblemsForUser(userId);
