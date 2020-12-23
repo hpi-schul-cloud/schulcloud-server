@@ -46,6 +46,7 @@ describe('problem repo', () => {
 			await testObjects.createTestProblem({ userId: userId2 });
 			let userProblems = await problemRepo.getProblemsForUser(userId);
 			expect(userProblems).to.be.an('array').of.length(1);
+			expect(userProblems[0]._id.toString()).to.be.equal(problemUser1._id.toString());	
 			await problemRepo.deleteProblemsForUser(userId);
 
 			userProblems = await problemRepo.getProblemsForUser(userId);
