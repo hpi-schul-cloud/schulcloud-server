@@ -53,6 +53,7 @@ describe('problem repo', () => {
 
 			const userProblems2 = await problemRepo.getProblemsForUser(userId2);
 			expect(userProblems2).to.be.an('array').of.length(1);
+			expect(userProblems2[0]._id.toString()).to.be.equal(problemUser2._id.toString());
 		});
 
 		it('when the function is called with invalid id, it throws an error', async () => {
