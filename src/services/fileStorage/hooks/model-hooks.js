@@ -24,6 +24,11 @@ const restrictToCurrentUser = (hook) => {
 	});
 };
 
+const updateParents = async (hook) => {
+	await updateParentDirectories(hook.id)
+	return hook
+}
+
 exports.before = {
 	all: [authenticate('jwt')],
 	find: [globalHooks.hasPermission('FILESTORAGE_VIEW')],
@@ -40,11 +45,6 @@ exports.after = {
 	get: [],
 	create: [],
 	update: [],
-	patch: [
-		async (context) => {
-			await updateParentDirectories(context.id);
-			return context;
-		},
-	],
+	patch: [updateParents],
 	remove: [],
 };
