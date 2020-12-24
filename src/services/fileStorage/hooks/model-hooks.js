@@ -25,9 +25,9 @@ const restrictToCurrentUser = (hook) => {
 };
 
 const updateParents = async (hook) => {
-	await updateParentDirectories(hook.id)
-	return hook
-}
+	await updateParentDirectories(hook.id);
+	return hook;
+};
 
 exports.before = {
 	all: [authenticate('jwt')],
