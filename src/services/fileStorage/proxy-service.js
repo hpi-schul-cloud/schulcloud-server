@@ -187,34 +187,32 @@ const fileStorageService = {
 		const strategy = createCorrectStrategy(fileStorageType);
 		// create db entry for new file
 		// check for create permissions on parent
+
+		let filePromise;
 		if (parent) {
-			return canCreate(userId, parent)
-				.then(() =>
-					FileModel.findOne(props)
-						.lean()
-						.exec()
-						.then((modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
-				)
-				.then((file) => {
-					prepareSecurityCheck(file, userId, strategy).catch(asyncErrorHandler);
-					prepareThumbnailGeneration(file, strategy, userId, data, props).catch(asyncErrorHandler);
-					updateParentDirectories(file._id).catch(asyncErrorHandler);
-					return Promise.resolve(file);
-				})
+			filePromise = canCreate(userId, parent)
+				.then(() => FileModel.findOne(props).lean().exec())
+				.then((modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
 				.catch((err) => {
 					throw new Forbidden(err);
 				});
+		} else {
+			filePromise = FileModel.findOne(props)
+				.exec()
+				.then((modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)));
 		}
 
-		return FileModel.findOne(props)
-			.exec()
-			.then((modelData) => (modelData ? Promise.resolve(modelData) : FileModel.create(props)))
-			.then((file) => {
-				prepareSecurityCheck(file, userId, strategy).catch(asyncErrorHandler);
-				prepareThumbnailGeneration(file, strategy, userId, data, props).catch(asyncErrorHandler);
-				updateParentDirectories(file._id).catch(asyncErrorHandler);
-				return Promise.resolve(file);
-			});
+		filePromise
+			.then((file) =>
+				Promise.all([
+					prepareSecurityCheck(file, userId, strategy),
+					prepareThumbnailGeneration(file, strategy, userId, data, props),
+					updateParentDirectories(file._id),
+				])
+			)
+			.catch(asyncErrorHandler);
+
+		return filePromise;
 	},
 
 	/**
