@@ -15,6 +15,6 @@ const updateParentDirectories = async (resourceID) => {
 			await teamsModel.updateOne({ _id: file.owner }, { updatedAt: new Date().toISOString() }).exec();
 		}
 	}
-}
+};
 
 module.exports = updateParentDirectories;
