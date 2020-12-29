@@ -5,6 +5,8 @@ const globalHooks = require('../../../hooks');
 const { canRead } = require('../utils/filePermissionHelper');
 const updateParentDirectories = require('../utils/updateParentDirectories');
 
+const { asyncErrorLog } = require('../../../errors/utils');
+
 const restrictToCurrentUser = (hook) => {
 	const {
 		params: {
@@ -24,8 +26,10 @@ const restrictToCurrentUser = (hook) => {
 	});
 };
 
-const updateParents = async (hook) => {
-	await updateParentDirectories(hook.id);
+const updateParents = (hook) => {
+	updateParentDirectories(hook.id).catch((error) => {
+		asyncErrorLog(error, 'Failed to update parent directories.');
+	});
 	return hook;
 };
 
