@@ -13,6 +13,7 @@ function obtainAccessToken(userId, homeserverApiUri, secret) {
 
 	const payload = {
 		type: 'm.login.password',
+		initial_device_display_name: 'hpi-schul-cloud (embed)',
 		user: userId,
 		password,
 	};
