@@ -125,7 +125,7 @@ const getOrCreateTombstoneUserId = async (schoolId, user) => {
 	const schoolTombstoneUser = await userRepo.createTombstoneUser(schoolId, tombstoneSchool._id);
 	await facadeLocator.facade('/school/v2').updateSchool(schoolId, { tombstoneUserId: schoolTombstoneUser._id }, user);
 	return schoolTombstoneUser;
-}
+};
 
 const deleteUser = async (id) => {
 	const userAccountData = await getUserData(id);

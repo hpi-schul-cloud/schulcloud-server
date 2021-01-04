@@ -42,8 +42,8 @@ describe('school.uc', () => {
 			};
 			const permissionToCheck = 'SCHOOL_EDIT';
 			expect(schoolUc.checkPermissions(schoolId, permissionToCheck, user)).to.be.false;
-        });
-        it('should fail for missing permission', () => {
+		});
+		it('should fail for missing permission', () => {
 			const schoolId = 'dummySchoolId123';
 			const permissionToCheck = 'SCHOOL_EDIT';
 			const user = {
