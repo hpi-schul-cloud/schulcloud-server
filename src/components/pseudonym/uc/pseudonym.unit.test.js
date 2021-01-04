@@ -46,6 +46,7 @@ describe('pseudonym usecase', () => {
 			expect(result.complete).to.deep.equal(true);
 			expect(result.trashBinData).to.be.an('object');
 			expect(result.trashBinData.scope).to.be.equal('pseudonyms');
+			expect(result.trashBinData.data).to.be.an('array').of.length(1);
 			expect(result.trashBinData.data[0]._id.toString()).to.be.equal(PSEUDONYM_ID.toString());
 		});
 
@@ -58,7 +59,7 @@ describe('pseudonym usecase', () => {
 			expect(result.complete).to.deep.equal(true);
 			expect(result.trashBinData).to.be.an('object');
 			expect(result.trashBinData.scope).to.be.equal('pseudonyms');
-			expect(result.trashBinData.data.length).to.be.equal(0);
+			expect(result.trashBinData.data).to.be.an('array').of.length(0);
 		});
 
 		it('when the function is called with an invalid id, then it fails', async () => {
