@@ -9,9 +9,15 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.5.0]
+
 ### Added
 
+<<<<<<< HEAD
 - SC-8206 - Add school tombstone for deleting concept
+=======
+- SC-7835 - Add deletion concept handling for helpdesk problems
+>>>>>>> develop
 - SC-8229 - Added invalid DN error to ldap-config service error handling
 - SC-7825 - Remove user relations from courses
 - SC-7827 - Add deletion concept handling for file permissions.
@@ -25,6 +31,32 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Removed
 
 - SC-8233 - Removed attribute and member as required attributes for the LDAP-config service
+
+## [25.4.1]
+
+- Update from 25.3.9 into master
+
+## [25.3.9]
+
+- SC-8198 continue school sync on user issues
+
+## [25.3.8]
+
+### Changed
+
+- SC-8198 - handle eventually consistent database in THR sync
+
+## [25.3.7] - 2020-12-18
+
+### Changed
+
+- SC-8209 - prevent sync from stopping if error occurs for a single student
+
+## [25.3.6]
+
+### Fixed
+
+- SC-8235 - repaired reigstration link for students
 
 ## [25.3.5]
 
