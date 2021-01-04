@@ -32,10 +32,11 @@ class QrRegistrationLinks {
 		return { save, patchUser, host };
 	}
 
-	async getUserDetails(userIdChunk) {
+	getUserDetails(userIdChunk) {
 		return this.userModelService.find({
 			query: {
 				_id: userIdChunk,
+				$populate: 'roles',
 			},
 		});
 	}
@@ -47,7 +48,7 @@ class QrRegistrationLinks {
 				this.registrationLinkService
 					.create({
 						...regLinkServiceParams,
-						role: user.roles[0],
+						role: user.roles[0].name,
 						schoolId: user.schoolId,
 						toHash: user.email,
 						hash: user.importHash,

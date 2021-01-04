@@ -7,10 +7,8 @@
 	"services": {
 		"calendar": "CALENDAR_URI",
 		"content": "CONTENT_URI",
-		"notification": "NOTIFICATION_URI",
 		"hydra": "HYDRA_URI",
 		"web": "HOST"
 	},
-	"NOTIFICATION_PLATFORM": "NOTIFICATION_PLATFORM",
 	"FEATURE_SHOW_VERSION_ENABLED": true
 }

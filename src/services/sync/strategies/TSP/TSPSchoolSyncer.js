@@ -4,14 +4,7 @@ const Syncer = require('../Syncer');
 const ClassImporter = require('../mixins/ClassImporter');
 const { equal: sameObjectId } = require('../../../../helper/compare').ObjectId;
 
-const {
-	TspApi,
-	config: TSP_CONFIG,
-	ENTITY_SOURCE,
-	SOURCE_ID_ATTRIBUTE,
-	createUserAndAccount,
-	shortenedRegistrationProcess,
-} = require('./TSP');
+const { TspApi, config: TSP_CONFIG, ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE, createUserAndAccount } = require('./TSP');
 
 const { switchSchool, getInvalidatedUuid } = require('./SchoolChange');
 
@@ -153,15 +146,19 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			// create teachers and add them to the mapping (teacherUID => User)
 			for (const tspTeacher of schoolTeachers) {
 				const teacher = await this.createOrUpdateTeacher(tspTeacher, school);
-				teacherMapping[tspTeacher.lehrerUid] = teacher;
+				if (teacher !== null) {
+					teacherMapping[tspTeacher.lehrerUid] = teacher;
+				}
 			}
 
 			this.logInfo('Syncing students...');
 			// create students and add them to the mapping (classUid => [User])
 			for (const tspStudent of schoolStudents) {
 				const student = await this.createOrUpdateStudent(tspStudent, school);
-				classMapping[tspStudent.klasseId] = classMapping[tspStudent.klasseId] || [];
-				classMapping[tspStudent.klasseId].push(student._id);
+				if (student !== null) {
+					classMapping[tspStudent.klasseId] = classMapping[tspStudent.klasseId] || [];
+					classMapping[tspStudent.klasseId].push(student._id);
+				}
 			}
 
 			this.logInfo('Syncing classes...');
@@ -272,16 +269,16 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * @async
 	 */
 	async updateTeacher(user, tspTeacher) {
-		const equal =
-			(user.namePrefix === tspTeacher.lehrerTitel || (!user.namePrefix && !tspTeacher.namePrefix)) &&
-			user.firstName === tspTeacher.lehrerVorname &&
-			user.lastName === tspTeacher.lehrerNachname;
-		if (equal) {
-			this.stats.users.teachers.unchanged += 1;
-			return user;
-		}
-
 		try {
+			const equal =
+				(user.namePrefix === tspTeacher.lehrerTitel || (!user.namePrefix && !tspTeacher.namePrefix)) &&
+				user.firstName === tspTeacher.lehrerVorname &&
+				user.lastName === tspTeacher.lehrerNachname;
+			if (equal) {
+				this.stats.users.teachers.unchanged += 1;
+				return user;
+			}
+
 			const teacher = await this.app.service('users').patch(user._id, {
 				namePrefix: tspTeacher.lehrerTitel,
 				firstName: tspTeacher.lehrerVorname,
@@ -295,8 +292,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'update-teacher',
 				entity: tspTeacher.lehrerUid,
-				message:
-					`Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}"` + ' konnte nicht aktualisiert werden.',
+				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}" konnte nicht aktualisiert werden.`,
 			});
 			return null;
 		}
@@ -327,9 +323,6 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				'teacher',
 				systemId
 			);
-			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
-				await shortenedRegistrationProcess(this.app, teacher);
-			}
 			this.stats.users.teachers.created += 1;
 			return teacher;
 		} catch (err) {
@@ -338,7 +331,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'create-teacher',
 				entity: tspTeacher.lehrerUid,
-				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}"` + ' konnte nicht erstellt werden.',
+				message: `Lehrer "${tspTeacher.lehrerVorname} ${tspTeacher.lehrerNachname}" konnte nicht erstellt werden.`,
 			});
 			return null;
 		}
@@ -383,13 +376,13 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 	 * @async
 	 */
 	async updateStudent(user, tspStudent) {
-		const equal = user.firstName === tspStudent.schuelerVorname && user.lastName === tspStudent.schuelerNachname;
-		if (equal) {
-			this.stats.users.students.unchanged += 1;
-			return user;
-		}
-
 		try {
+			const equal = user.firstName === tspStudent.schuelerVorname && user.lastName === tspStudent.schuelerNachname;
+			if (equal) {
+				this.stats.users.students.unchanged += 1;
+				return user;
+			}
+
 			const student = await this.app.service('users').patch(user._id, {
 				firstName: tspStudent.schuelerVorname,
 				lastName: tspStudent.schuelerNachname,
@@ -434,9 +427,6 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 				'student',
 				systemId
 			);
-			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
-				await shortenedRegistrationProcess(this.app, student);
-			}
 			this.stats.users.students.created += 1;
 			return student;
 		} catch (err) {
@@ -445,8 +435,7 @@ class TSPSchoolSyncer extends mix(Syncer).with(ClassImporter) {
 			this.stats.errors.push({
 				type: 'create-student',
 				entity: tspStudent.schuelerUid,
-				message:
-					`Schüler "${tspStudent.schuelerVorname} ${tspStudent.schuelerNachname}"` + ' konnte nicht erstellt werden.',
+				message: `Schüler "${tspStudent.schuelerVorname} ${tspStudent.schuelerNachname}" konnte nicht erstellt werden.`,
 			});
 			return null;
 		}
