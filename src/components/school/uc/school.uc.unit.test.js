@@ -1,6 +1,5 @@
 const chai = require('chai');
 const schoolUc = require('./school.uc');
-const { Forbidden } = require('../../../errors');
 
 const { expect } = chai;
 
