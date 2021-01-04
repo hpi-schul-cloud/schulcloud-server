@@ -7,12 +7,16 @@ const { expect } = chai;
 const appPromise = require('../../../src/app');
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
-const { schoolModel: School, yearModel: YearModel } = require('../../../src/services/school/model');
+const {
+	schoolModel: School,
+	yearModel: YearModel,
+	SCHOOL_OF_DELETE_USERS_NAME,
+} = require('../../../src/services/school/model');
 
 const testObjects = require('../helpers/testObjects')(appPromise);
 const { create: createSchool, info: createdSchoolIds } = require('../helpers/services/schools')(appPromise);
 
-describe('school service', () => {
+describe.only('school service', () => {
 	let app;
 	let server;
 
@@ -62,14 +66,16 @@ describe('school service', () => {
 			const result = await schoolService.find(params);
 			const expectedFields = ['purpose', 'name', '_id', 'id', 'systems', 'years', 'isTeamCreationByStudentsEnabled'];
 			const notExpectedFields = ['fileStorageType', 'documentBaseDir', 'inMaintenance', 'currentYear', 'federalState'];
-			result.data.forEach((school) => {
-				expectedFields.forEach((field) => {
-					expect(school).to.haveOwnProperty(field);
+			result.data
+				.filter((school) => school.name !== SCHOOL_OF_DELETE_USERS_NAME)
+				.forEach((school) => {
+					expectedFields.forEach((field) => {
+						expect(school).to.haveOwnProperty(field);
+					});
+					notExpectedFields.forEach((field) => {
+						expect(school).to.not.haveOwnProperty(field);
+					});
 				});
-				notExpectedFields.forEach((field) => {
-					expect(school).to.not.haveOwnProperty(field);
-				});
-			});
 		});
 		it('should be possible to see all fields if the call is done from the server', async () => {
 			const params = { provider: undefined };
@@ -89,28 +95,34 @@ describe('school service', () => {
 				// 'federalState', // there is a school in the test database that doesn't have this field
 			];
 
-			result.data.forEach((school) => {
-				expectedFields.forEach((field) => {
-					expect(school).to.haveOwnProperty(field);
+			result.data
+				.filter((school) => school.name !== SCHOOL_OF_DELETE_USERS_NAME)
+				.forEach((school) => {
+					expectedFields.forEach((field) => {
+						expect(school).to.haveOwnProperty(field);
+					});
 				});
-			});
 		});
 		it('load the school results with pagination', async () => {
 			const result = await schoolService.find();
-			result.data.forEach((school) => {
-				compareSchoolYears(school.years.schoolYears, defaultYears);
-				expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
-			});
+			result.data
+				.filter((school) => school.name !== SCHOOL_OF_DELETE_USERS_NAME)
+				.forEach((school) => {
+					compareSchoolYears(school.years.schoolYears, defaultYears);
+					expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
+				});
 		});
 
 		it('load the school results without pagination', async () => {
 			const result = await schoolService.find({
 				paginate: false,
 			});
-			result.forEach((school) => {
-				compareSchoolYears(school.years.schoolYears, defaultYears);
-				expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
-			});
+			result
+				.filter((school) => school.name !== SCHOOL_OF_DELETE_USERS_NAME)
+				.forEach((school) => {
+					compareSchoolYears(school.years.schoolYears, defaultYears);
+					expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
+				});
 		});
 
 		it('create school with timezone', async () => {

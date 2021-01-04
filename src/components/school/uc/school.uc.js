@@ -1,4 +1,5 @@
 const schoolRepo = require('../repo/school.repo');
+const { Forbidden } = require('../../../errors');
 const { SCHOOL_OF_DELETE_USERS_NAME } = require('../repo/db');
 
 const getSchool = async (id) => schoolRepo.getSchool(id);
@@ -13,14 +14,16 @@ const updateSchool = async (schoolId, schoolPatch) => schoolRepo.updateSchool(sc
 const checkPermissions = (schoolId, permissionToCheck, user) => {
 	let grantPermission = true;
 	// same school?
-	grantPermission = grantPermission && user.schoolId === schoolId;
+	grantPermission = grantPermission && user.schoolId.toString() === schoolId.toString();
 
 	// user has permission
 	grantPermission =
 		grantPermission &&
 		user.roles.some((role) => role.permissions.some((permission) => permission === permissionToCheck));
 
-	return grantPermission;
+	if (!grantPermission) {
+		throw new Forbidden(`You don't have permissions to perform this action`);
+	}
 };
 
 module.exports = {
