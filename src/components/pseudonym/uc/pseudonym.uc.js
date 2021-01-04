@@ -5,7 +5,7 @@ const getPseudonymsForUser = async (userId) => {
 };
 
 const deletePseudonyms = async (pseudonymsIds) => {
-	return pseudonymRepo.deletePseudonyms(pseudonymsIds);
+	return pseudonymRepo.deletePseudonymsForUser(pseudonymsIds);
 };
 
 module.exports = {

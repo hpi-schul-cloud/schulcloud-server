@@ -1,25 +1,27 @@
 const Pseudonym = require('../../../services/pseudonym/model');
-const { GeneralError } = require('../../../errors');
+const { deleteManyResult } = require('../../helper/repo.helper');
+const { validateObjectId } = require('../../helper/uc.helper');
 
+/**
+ * Return pseudonyms for userId
+ * @param userId
+ */
 const getPseudonymsForUser = async (userId) => {
+	validateObjectId(userId);
 	return Pseudonym.find({ userId }).lean().exec();
 };
 
-const deletePseudonyms = async (pseudonymIds) => {
-	const deleteResult = await Pseudonym.deleteMany({
-		_id: {
-			$in: pseudonymIds,
-		},
-	})
-		.lean()
-		.exec();
-	if (deleteResult.n !== deleteResult.ok || deleteResult.ok !== pseudonymIds.length) {
-		throw new GeneralError('db error during deleting pseudonyms');
-	}
-	return pseudonymIds;
+/**
+ * Removes all pseudonyms for userId
+ * @param {String|ObjectId} userId
+ */
+const deletePseudonymsForUser = async (userId) => {
+	validateObjectId(userId);
+	const deleteResult = await Pseudonym.deleteMany({ userId }).lean().exec();
+	return deleteManyResult(deleteResult);
 };
 
 module.exports = {
 	getPseudonymsForUser,
-	deletePseudonyms,
+	deletePseudonymsForUser,
 };
