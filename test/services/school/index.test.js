@@ -62,23 +62,22 @@ describe.only('school service', () => {
 					authorization: undefined,
 				},
 				account: undefined,
+				sort: { id: 1 },
 			};
 			const result = await schoolService.find(params);
 			const expectedFields = ['purpose', 'name', '_id', 'id', 'systems', 'years', 'isTeamCreationByStudentsEnabled'];
 			const notExpectedFields = ['fileStorageType', 'documentBaseDir', 'inMaintenance', 'currentYear', 'federalState'];
-			result.data
-				.filter((school) => school.name !== SCHOOL_OF_DELETE_USERS_NAME)
-				.forEach((school) => {
-					expectedFields.forEach((field) => {
-						expect(school).to.haveOwnProperty(field);
-					});
-					notExpectedFields.forEach((field) => {
-						expect(school).to.not.haveOwnProperty(field);
-					});
+			result.data.forEach((school) => {
+				expectedFields.forEach((field) => {
+					expect(school).to.haveOwnProperty(field);
 				});
+				notExpectedFields.forEach((field) => {
+					expect(school).to.not.haveOwnProperty(field);
+				});
+			});
 		});
 		it('should be possible to see all fields if the call is done from the server', async () => {
-			const params = { provider: undefined };
+			const params = { provider: undefined, sort: { id: 1 } };
 
 			const result = await schoolService.find(params);
 			const expectedFields = [
@@ -95,34 +94,30 @@ describe.only('school service', () => {
 				// 'federalState', // there is a school in the test database that doesn't have this field
 			];
 
-			result.data
-				.filter((school) => school.name !== SCHOOL_OF_DELETE_USERS_NAME)
-				.forEach((school) => {
-					expectedFields.forEach((field) => {
-						expect(school).to.haveOwnProperty(field);
-					});
+			result.data.forEach((school) => {
+				expectedFields.forEach((field) => {
+					expect(school).to.haveOwnProperty(field);
 				});
+			});
 		});
 		it('load the school results with pagination', async () => {
-			const result = await schoolService.find();
-			result.data
-				.filter((school) => school.name !== SCHOOL_OF_DELETE_USERS_NAME)
-				.forEach((school) => {
-					compareSchoolYears(school.years.schoolYears, defaultYears);
-					expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
-				});
+			const result = await schoolService.find({ sort: { id: 1 } });
+			result.data.forEach((school) => {
+				compareSchoolYears(school.years.schoolYears, defaultYears);
+				expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
+			});
 		});
 
 		it('load the school results without pagination', async () => {
 			const result = await schoolService.find({
 				paginate: false,
+
+				sort: { id: 1 },
 			});
-			result
-				.filter((school) => school.name !== SCHOOL_OF_DELETE_USERS_NAME)
-				.forEach((school) => {
-					compareSchoolYears(school.years.schoolYears, defaultYears);
-					expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
-				});
+			result.forEach((school) => {
+				compareSchoolYears(school.years.schoolYears, defaultYears);
+				expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
+			});
 		});
 
 		it('create school with timezone', async () => {
