@@ -9,13 +9,10 @@ const getSchool = async (_id) => {
 	return school;
 };
 
-const findSchools = async (selectCriteria) => {
-	return School.find(selectCriteria).lean().exec();
-};
+const findSchools = async (selectCriteria) => School.find(selectCriteria).lean().exec();
 
-const updateSchool = async (schoolId, schoolPatch) => {
-	return School.findByIdAndUpdate(schoolId, schoolPatch, { new: true }).lean().exec();
-};
+const updateSchool = async (schoolId, schoolPatch) =>
+	School.findByIdAndUpdate(schoolId, schoolPatch, { new: true }).lean().exec();
 
 module.exports = {
 	getSchool,
