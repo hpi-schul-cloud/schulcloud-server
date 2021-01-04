@@ -23,7 +23,7 @@ describe('user use case', () => {
 	describe('getOrCreateTombstoneUserId', () => {
 		it('should create the tombstone user only once per school', async () => {
 			const school = await testObjects.createTestSchool();
-			const user = await testObjects.createTestUser({ schoolId: school._id });
+			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
 
 			const getOrCreateTombstoneUserIdSpy = sinon.spy(userRepo, 'createTombstoneUser');
 

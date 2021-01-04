@@ -1,5 +1,6 @@
 const chai = require('chai');
 const schoolUc = require('./school.uc');
+const { Forbidden } = require('../../../errors');
 
 const { expect } = chai;
 
@@ -19,7 +20,7 @@ describe('school.uc', () => {
 					},
 				],
 			};
-			expect(schoolUc.checkPermissions(schoolId, permissionToCheck, user)).to.be.true;
+			expect(() => schoolUc.checkPermissions(schoolId, permissionToCheck, user)).to.not.throw;
 		});
 		it('should fail for empty user permissions', () => {
 			const schoolId = 'dummySchoolId123';
@@ -32,7 +33,9 @@ describe('school.uc', () => {
 				],
 			};
 			const permissionToCheck = 'SCHOOL_EDIT';
-			expect(schoolUc.checkPermissions(schoolId, permissionToCheck, user)).to.be.false;
+			expect(() => schoolUc.checkPermissions(schoolId, permissionToCheck, user)).to.throw(
+				`You don't have permissions to perform this action`
+			);
 		});
 		it('should fail for empty user roles', () => {
 			const schoolId = 'dummySchoolId123';
@@ -41,7 +44,9 @@ describe('school.uc', () => {
 				roles: [],
 			};
 			const permissionToCheck = 'SCHOOL_EDIT';
-			expect(schoolUc.checkPermissions(schoolId, permissionToCheck, user)).to.be.false;
+			expect(() => schoolUc.checkPermissions(schoolId, permissionToCheck, user)).to.throw(
+				`You don't have permissions to perform this action`
+			);
 		});
 		it('should fail for missing permission', () => {
 			const schoolId = 'dummySchoolId123';
@@ -57,7 +62,9 @@ describe('school.uc', () => {
 					},
 				],
 			};
-			expect(schoolUc.checkPermissions(schoolId, permissionToCheck, user)).to.be.false;
+			expect(() => schoolUc.checkPermissions(schoolId, permissionToCheck, user)).to.throw(
+				`You don't have permissions to perform this action`
+			);
 		});
 		it('should fail for different schools', () => {
 			const schoolId = 'dummySchoolId123';
@@ -73,7 +80,9 @@ describe('school.uc', () => {
 					},
 				],
 			};
-			expect(schoolUc.checkPermissions(schoolId, permissionToCheck, user)).to.be.false;
+			expect(() => schoolUc.checkPermissions(schoolId, permissionToCheck, user)).to.throw(
+				`You don't have permissions to perform this action`
+			);
 		});
 	});
 });

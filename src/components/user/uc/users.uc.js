@@ -80,9 +80,8 @@ const replaceUserWithTombstone = async (id) => {
  * @param {*} permissionAction the action that is to be performed (CREATE, EDIT, DELETE)
  * @param {*} param3 needs to contain account.userId, which is the ID of the user issuing the request
  */
-const checkPermissions = async (id, roleName, permissionAction, { account }) => {
+const checkPermissions = async (id, roleName, permissionAction, { user: currentUser }) => {
 	const userToBeEffected = await userRepo.getUserWithRoles(id);
-	const currentUser = await userRepo.getUserWithRoles(account.userId);
 
 	let grantPermission = true;
 	// the effected user's role fits the rolename for the route
@@ -127,10 +126,10 @@ const getOrCreateTombstoneUserId = async (schoolId, user) => {
 	return schoolTombstoneUser;
 };
 
-const deleteUser = async (id) => {
+const deleteUser = async (id, { user: loggedinUser }) => {
 	const userAccountData = await getUserData(id);
 	const user = userAccountData.find(({ scope }) => scope === 'user').data;
-	const schoolTombstoneUserId = await getOrCreateTombstoneUserId(user.schoolId, user);
+	const schoolTombstoneUserId = await getOrCreateTombstoneUserId(user.schoolId, loggedinUser);
 
 	await createUserTrashbin(id, userAccountData);
 
