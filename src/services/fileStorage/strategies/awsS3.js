@@ -526,12 +526,11 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 	async moveFilesToTrash(schoolId, fileIds) {
 		// TODO error handling
 		const { s3, bucket } = await createAWSObject(schoolId);
-		// TODO split into x copy operations at once
 
 		const parallelRequests = 100; // we can experiment with inc-/decreasing this. Max 1000 for the delete request
-		for(let processedFiles = 0; processedFiles < fileIds.length; processedFiles+= parallelRequests) {
-
-			const fileIdSubset = fileIds.slice(processedFilesPage, processedFilesPage + parallelRequests);
+		for (let processedFiles = 0; processedFiles < fileIds.length; processedFiles += parallelRequests) {
+			const fileIdSubset = fileIds.slice(processedFiles, processedFiles + parallelRequests);
+			// eslint-disable-next-line no-await-in-loop
 			const copyResult = await Promise.all(
 				fileIdSubset.map((fileId) => {
 					const copyParams = {
@@ -554,6 +553,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					})),
 				},
 			};
+			// eslint-disable-next-line no-await-in-loop
 			const deleteResult = await s3.deleteObjects(deleteParams).promise();
 		}
 	}
