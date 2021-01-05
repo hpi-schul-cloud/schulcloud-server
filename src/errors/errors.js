@@ -22,7 +22,12 @@ class InternalServerError extends ApplicationError {
 	}
 }
 
-class SilentError extends ApplicationError {}
+class SilentError extends ApplicationError {
+	constructor(cause) {
+		// hide the real cause - is not a part of any response object
+		super(INTERNAL_SERVER_ERROR, cause);
+	}
+}
 
 class DocumentNotFound extends ApplicationError {}
 

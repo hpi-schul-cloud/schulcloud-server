@@ -14,7 +14,15 @@ const ASSERTION_ERROR = {
 	title: 'Assertion error',
 	defaultMessage: 'Parameter validation error',
 };
+
+const API_VALIDATION_ERROR = {
+	type: 'API_VALIDATION_ERROR',
+	title: 'API Validation Error',
+	defaultMessage: 'API Validation failed',
+}
+
 module.exports = {
 	INTERNAL_SERVER_ERROR,
 	ASSERTION_ERROR,
+	API_VALIDATION_ERROR,
 };

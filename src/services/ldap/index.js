@@ -150,7 +150,7 @@ module.exports = function LDAPService() {
 
 				client.on('error', (e) => {
 					logger.error('Error during LDAP operation', { error: e });
-					reject(new LDAPConnectionError('LDAP error', e));
+					reject(new LDAPConnectionError(e));
 				});
 
 				client.on('connect', () => {
