@@ -4,11 +4,10 @@ const jwt = require('jsonwebtoken');
 const OpenApiValidator = require('express-openapi-validator');
 
 const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention } = require('../errors');
-
-const { convertToFeathersError, cleanupIncomingMessage } = require('../errors/utils');
-const { isApplicationError, isFeathersError, isSilentError } = require('../errors/errorUtils');
 const { ValidationError, DocumentNotFound, AssertionError, InternalServerError } = require('../errors');
+const { API_VALIDATION_ERROR } = require('../errors/commonErrorTypes');
 
+const { isApplicationError, isFeatherError, isSilentError, cleanupIncomingMessage } = require('../errors/utils');
 const logger = require('../logger');
 
 const MAX_LEVEL_FILTER = 12;
@@ -51,30 +50,44 @@ const getRequestInfo = (req) => {
 	return info;
 };
 
+const getErrorLogData = (error) => {
+	let errorLogData;
+	if (isApplicationError(error) || isFeatherError(error)) {
+		// Application and Feathers Errors - sanitized by filterSecrets
+		// type is override by logger for logging type
+		errorLogData = { ...error, errorType: error.type };
+		// nested in errors
+		cleanupIncomingMessage(errorLogData.errors);
+	} else {
+		// Unhandled Errors
+		errorLogData = new InternalServerError(error); // TODO or just error?
+	}
+	return errorLogData;
+};
+
+const skipErrorLogging = (error) => {
+	return (
+		error instanceof PageNotFound ||
+		error.code === 405 ||
+		error instanceof AutoLogout ||
+		error instanceof BruteForcePrevention
+	);
+};
+
 const formatAndLogErrors = (error, req, res, next) => {
 	if (error) {
-		if (
-			error instanceof PageNotFound ||
-			error.code === 405 ||
-			error instanceof AutoLogout ||
-			error instanceof BruteForcePrevention
-		) {
+		if (skipErrorLogging(error)) {
 			logger.debug(error);
 			logger.warning(error.name);
 			return next(error);
 		}
 
-		// sanitize
-		const err = convertToFeathersError(error); // TODO remove
+		const errorLogData = getErrorLogData(error);
 		const requestInfo = getRequestInfo(req);
-		// type is override by logger for logging type
-		err.errorType = err.type;
 
-		// nested in errors
-		cleanupIncomingMessage(err.errors);
 		// for tests level is set to emerg, set LOG_LEVEL=debug for see it
 		// Logging the error object won't print error's stack trace. You need to ask for it specifically
-		logger.error({ ...err, ...requestInfo }); // TODO do not unpack all params
+		logger.error({ ...errorLogData, ...requestInfo }); // TODO do not unpack all params
 	}
 	next(error);
 };
@@ -162,6 +175,7 @@ const filterSecrets = (error, req, res, next) => {
 		req.body = filter(req.body);
 		error.data = filter(error.data);
 		error.options = filter(error.options);
+		error.params = filter(error.params);
 	}
 	next(error);
 };
@@ -195,7 +209,7 @@ const getErrorResponse = (error, req, res, next) => {
 	if (isApplicationError(error)) {
 		// Application Errors
 		errorDetail = getErrorResponseFromBusinessError(error);
-	} else if (isFeathersError(error)) {
+	} else if (isFeatherError(error)) {
 		// Framework Errors
 		const { code, className: type, name: title, message: detail } = error;
 		errorDetail = createErrorDetailTO(code, type, title, detail);
@@ -209,22 +223,11 @@ const getErrorResponse = (error, req, res, next) => {
 	res.status(errorDetail.status).json(errorDetail);
 };
 
-const saveResponseFilter = (error) => ({
-	name: error.name,
-	message: error.message instanceof Error && error.message.message ? error.message.message : error.message,
-	code: error.code,
-	traceId: error.traceId,
-});
-
-const sendError = (res, error) => {
-	res.status(error.code).json(saveResponseFilter(error));
-};
-
-const handleValidationError = (error, req, res, next) => {
+const convertOpenApiValidationError = (error) => {
 	// todo: handle other validation errors so they are formatted properly
 	let err = error;
 	if (error instanceof OpenApiValidator.error.NotFound) {
-		logger.debug("Open API Validation path is missing!");
+		logger.debug('Open API Validation path is missing!');
 		err = new PageNotFound(error);
 	} else if (err instanceof OpenApiValidator.error.BadRequest) {
 		err = new ValidationError(API_VALIDATION_ERROR, err.errors);
@@ -247,7 +250,7 @@ const errorHandler = (app) => {
 	app.use(filterSecrets);
 	app.use(Sentry.Handlers.errorHandler());
 	app.use(convertExternalLibraryErrors);
-	app.use(formatAndLogErrors); 
+	app.use(formatAndLogErrors);
 	app.use(getErrorResponse);
 };
 module.exports = errorHandler;

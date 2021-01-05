@@ -17,17 +17,17 @@ class ApplicationError extends Error {
 }
 
 class InternalServerError extends ApplicationError {
-	constructor(cause) {
-		super(INTERNAL_SERVER_ERROR, cause);
+	constructor(cause, params) {
+		super(INTERNAL_SERVER_ERROR, cause, params);
 	}
 }
 
 class SilentError extends ApplicationError {
-	constructor(cause) {
+	constructor(message) {
 		// hide the real cause - is not a part of any response object
-		super(INTERNAL_SERVER_ERROR, cause);
+		super({ type: message });
 	}
-    
+
 	/**
 	 * A silent error is thrown when we not want to report it to a user via REST. Instead this property content is returned in case of success and error.
 	 */

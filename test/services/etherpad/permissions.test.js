@@ -92,7 +92,7 @@ describe('Etherpad Permission Check: Teacher', () => {
 			accessToken,
 		});
 
-		expect(body.status).to.equal(0);
+		expect(body.code).to.equal(0);
 	});
 
 	it('should not be able to create pad in foreign course', async () => {
