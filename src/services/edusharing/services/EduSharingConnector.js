@@ -1,8 +1,7 @@
 const request = require('request-promise-native');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, GeneralError } = reqlib('src/errors');
+const { Forbidden, GeneralError } = require('../../../errors');
 const logger = require('../../../logger');
 const EduSharingResponse = require('./EduSharingResponse');
 const { getCounty } = require('../helpers');

@@ -1,7 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const reqlib = require('app-root-path').require;
 
-const { BadRequest } = reqlib('src/errors');
+const { BadRequest } = require('../../../errors');
 const { hasPermission, restrictToCurrentSchool } = require('../../../hooks');
 
 class QrRegistrationLinks {

@@ -1,7 +1,6 @@
-const reqlib = require('app-root-path').require;
 const LDAPConnectionError = require('../ldap/LDAPConnectionError');
 
-const { NotAuthenticated } = reqlib('src/errors');
+const { NotAuthenticated } = require('../../errors');
 
 const errorHandlers = [
 	{
