@@ -16,7 +16,7 @@ const {
 const testObjects = require('../helpers/testObjects')(appPromise);
 const { create: createSchool, info: createdSchoolIds } = require('../helpers/services/schools')(appPromise);
 
-describe.only('school service', () => {
+describe('school service', () => {
 	let app;
 	let server;
 
