@@ -91,7 +91,7 @@ describe('Etherpad Permission Check: Students', () => {
 			accessToken,
 		});
 
-		expect(body.code).to.equal(0);
+		expect(body.status).to.equal(0);
 	});
 
 	it('should not be able to create session for foreign course', async () => {
@@ -109,7 +109,7 @@ describe('Etherpad Permission Check: Students', () => {
 			accessToken,
 		});
 
-		expect(body.code).to.equal(403);
+		expect(body.status).to.equal(403);
 	});
 
 	it('should not be able to create a pad', async () => {
@@ -133,6 +133,6 @@ describe('Etherpad Permission Check: Students', () => {
 			accessToken,
 		});
 
-		expect(body.code).to.equal(403);
+		expect(body.status).to.equal(403);
 	});
 });
