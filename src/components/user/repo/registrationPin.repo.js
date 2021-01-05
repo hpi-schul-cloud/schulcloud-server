@@ -1,33 +1,27 @@
 const { registrationPinModel } = require('../../../services/user/model');
-const { GeneralError } = require('../../../errors');
+const { deleteManyResult } = require('../../helper/repo.helper');
+const { validateEmail } = require('../../helper/uc.helper');
 
+/**
+ * Return pseudonyms for email
+ * @param email
+ */
 const getRegistrationPinsForUser = async (email) => {
+	validateEmail(email);
 	return registrationPinModel.find({ email }).lean().exec();
 };
 
-const deleteRegistrationPins = async (registrationPinIds) => {
-	const deleteResult = await registrationPinModel
-		.deleteMany({
-			_id: {
-				$in: registrationPinIds,
-			},
-		})
-		.lean()
-		.exec();
-	if (deleteResult.n !== deleteResult.ok || deleteResult.ok !== registrationPinIds.length) {
-		throw new GeneralError('db error during deleting registration pin');
-	}
-	return registrationPinIds;
-};
-
+/**
+ * Removes all registration pins for given email
+ * @param {String|ObjectId} email
+ */
 const deleteRegistrationPinsByEmail = async (email) => {
-	const registrationPins = getRegistrationPinsForUser(email);
-	deleteRegistrationPins(registrationPins.map((registrationPin) => registrationPin._id));
-	return registrationPins;
-}
+	validateEmail(email);
+	const deleteResult = await registrationPinModel.deleteMany({ email }).lean().exec();
+	return deleteManyResult(deleteResult);
+};
 
 module.exports = {
 	getRegistrationPinsForUser,
-	deleteRegistrationPins,
 	deleteRegistrationPinsByEmail,
 };

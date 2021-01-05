@@ -10,6 +10,6 @@ class PseudonymFacade {
 	}
 }
 
-module.exports = function setupProblemsFacade(app) {
+module.exports = function setupUsersFacade(app) {
 	app.registerFacade('/pseudonym/v2', new PseudonymFacade());
 };

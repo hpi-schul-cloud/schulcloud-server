@@ -1,10 +1,9 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 const { pseudonymRepo } = require('.');
-const { GeneralError, ValidationError } = require('../../../errors');
+const { ValidationError } = require('../../../errors');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -61,8 +60,7 @@ describe('pseudonym repo', () => {
 		});
 
 		it('when the function is called with invalid id, it throws an error', async () => {
-			const notExistedId = new ObjectId();
-			expect(pseudonymRepo.deletePseudonymsForUser(notExistedId)).to.eventually.throw(GeneralError);
+			expect(pseudonymRepo.deletePseudonymsForUser('invalid')).to.eventually.be.rejectedWith(ValidationError);
 		});
 	});
 
@@ -86,7 +84,7 @@ describe('pseudonym repo', () => {
 		});
 
 		it('when the function is called with invalid user id, it should return an error', async () => {
-			expect(pseudonymRepo.getPseudonymsForUser('INVALID_USER_ID')).to.eventually.throw(ValidationError);
+			expect(pseudonymRepo.getPseudonymsForUser('INVALID_USER_ID')).to.eventually.be.rejectedWith(ValidationError);
 		});
 	});
 });
