@@ -10,7 +10,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 ### Added
-- SC-8029 - Add deletion concept handling for pseudonyms
+- SC-8029 - Add deletion concept handling for pseudonyms and registration pins
 
 ## [25.5.0]
 

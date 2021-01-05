@@ -11,8 +11,6 @@ const validateEmail = (email) => {
 	if (!re.test(email)) throw new ValidationError('email is invalid', { email });
 };
 
-const trashBinResult = ({ scope, data, complete }) => {
-	return { trashBinData: { scope, data }, complete };
-};
+const trashBinResult = ({ scope, data, complete }) => ({ trashBinData: { scope, data }, complete });
 
 module.exports = { validateObjectId, validateEmail, trashBinResult };

@@ -68,9 +68,9 @@ describe('registration pin repo', () => {
 		});
 
 		it('when the function is called with invalid email, it throws an error', async () => {
-			expect(
-				registrationPinRepo.deleteRegistrationPinsByEmail('nonvalidemail')
-			).to.eventually.be.rejectedWith(ValidationError);
+			expect(registrationPinRepo.deleteRegistrationPinsByEmail('nonvalidemail')).to.eventually.be.rejectedWith(
+				ValidationError
+			);
 		});
 	});
 
