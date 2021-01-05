@@ -4,7 +4,7 @@ const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 const { classesRepo } = require('.');
 const { equal: equalIds, toString: idToString } = require('../../../helper/compare').ObjectId;
-const { ValidationError } = require('../../../errors');
+const { AssertionError } = require('../../../errors');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -117,12 +117,12 @@ describe('class repo', () => {
 			expect(result.teacherIds.map(idToString)).to.not.include(idToString(teacher._id));
 		});
 
-		it('should throw ValidationError if called with no userId', async () => {
+		it('should throw AssertionError if called with no userId', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 			await testObjects.createTestClass({ teacherIds: [teacher._id], schoolId });
 
-			expect(classesRepo.removeUserFromClasses()).to.eventually.throw(new ValidationError());
+			expect(classesRepo.removeUserFromClasses()).to.eventually.throw(new AssertionError());
 		});
 
 		it('should not modify anything if called for user with no class assigned', async () => {

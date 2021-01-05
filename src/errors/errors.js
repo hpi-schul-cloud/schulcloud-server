@@ -23,6 +23,11 @@ class InternalServerError extends ApplicationError {
 }
 
 class SilentError extends ApplicationError {
+	constructor(cause) {
+		// hide the real cause - is not a part of any response object
+		super(INTERNAL_SERVER_ERROR, cause);
+	}
+    
 	/**
 	 * A silent error is thrown when we not want to report it to a user via REST. Instead this property content is returned in case of success and error.
 	 */

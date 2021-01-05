@@ -55,6 +55,17 @@ const getRequestInfo = (req) => {
 
 const formatAndLogErrors = (error, req, res, next) => {
 	if (error) {
+		if (
+			error instanceof PageNotFound ||
+			error.code === 405 ||
+			error instanceof AutoLogout ||
+			error instanceof BruteForcePrevention
+		) {
+			logger.debug(error);
+			logger.warning(error.name);
+			return next(error);
+		}
+
 		// sanitize
 		const err = convertToFeathersError(error); // TODO remove
 		const requestInfo = getRequestInfo(req);
@@ -215,26 +226,17 @@ const handleValidationError = (error, req, res, next) => {
 	// todo: handle other validation errors so they are formatted properly
 	let err = error;
 	if (error instanceof OpenApiValidator.error.NotFound) {
+		logger.debug("Open API Validation path is missing!");
 		err = new PageNotFound(error);
 	} else if (err instanceof OpenApiValidator.error.BadRequest) {
-		err = new BadRequest(error);
+		err = new ValidationError(API_VALIDATION_ERROR, err.errors);
 	}
-	next(err);
+	return err;
 };
 
-const skipErrorLogging = (error, req, res, next) => {
-	if (
-		error instanceof PageNotFound ||
-		error.code === 405 ||
-		error instanceof AutoLogout ||
-		error instanceof BruteForcePrevention
-	) {
-		logger.debug(error);
-		logger.warning(error.name);
-		sendError(res, error);
-	} else {
-		next(error);
-	}
+const convertExternalLibraryErrors = (error, req, res, next) => {
+	const err = convertOpenApiValidationError(error);
+	next(err);
 };
 
 const addTraceId = (error, req, res, next) => {
@@ -246,12 +248,8 @@ const errorHandler = (app) => {
 	app.use(addTraceId);
 	app.use(filterSecrets);
 	app.use(Sentry.Handlers.errorHandler());
-	app.use(handleValidationError); // TODO
-	// TODO make skipErrorLogging configruable if middleware is added
-	app.use(skipErrorLogging); // TODO
-	app.use(formatAndLogErrors); // TODO
-	// TODO make handleSilentError configruable if middleware is added
-	// Configuration.get('SILENT_ERROR_ENABLED')
-	app.use(getErrorResponse); // TODO
+	app.use(convertExternalLibraryErrors);
+	app.use(formatAndLogErrors); 
+	app.use(getErrorResponse);
 };
 module.exports = errorHandler;
