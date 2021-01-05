@@ -360,7 +360,7 @@ describe('errors', () => {
 		const err = new SilentError(message);
 		expect(err instanceof Error).to.be.true;
 		expect(err instanceof ApplicationError).to.be.true;
-		expect(err.cause, 'Use parameter one').to.equal(message);
+		expect(err.message, 'Use parameter one').to.equal(message);
 		expect(err.name, 'should the name of constructor').to.equal('SilentError');
 	});
 
