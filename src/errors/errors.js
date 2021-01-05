@@ -22,7 +22,14 @@ class InternalServerError extends ApplicationError {
 	}
 }
 
-class SilentError extends ApplicationError {}
+class SilentError extends ApplicationError {
+	/**
+	 * A silent error is thrown when we not want to report it to a user via REST. Instead this property content is returned in case of success and error.
+	 */
+	static get RESPONSE_CONTENT() {
+		return { success: 'success' };
+	}
+}
 
 class DocumentNotFound extends ApplicationError {}
 

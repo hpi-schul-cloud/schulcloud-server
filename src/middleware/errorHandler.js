@@ -1,12 +1,12 @@
 const Sentry = require('@sentry/node');
-const express = require('@feathersjs/express');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const jwt = require('jsonwebtoken');
 const OpenApiValidator = require('express-openapi-validator');
 
 const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention, BadRequest } = require('../errors');
+
 const { convertToFeathersError, cleanupIncomingMessage } = require('../errors/utils');
-const { isApplicationError, isFeathersError } = require('../errors/errorUtils');
+const { isApplicationError, isFeathersError, isSilentError } = require('../errors/errorUtils');
 const { ValidationError, DocumentNotFound, AssertionError, InternalServerError } = require('../errors');
 
 const logger = require('../logger');
@@ -174,6 +174,13 @@ const getErrorResponseFromBusinessError = (businessError) => {
 
 const getErrorResponse = (error, req, res, next) => {
 	let errorDetail;
+	if (isSilentError(error)) {
+		if (Configuration.get('SILENT_ERROR_ENABLED') === true) {
+			res.append('x-silent-error', true); // TODO is removed in production?
+		}
+		// do not return this as error via REST
+		return res.status(200).json(SilentError.RESPONSE_CONTENT);
+	}
 	if (isApplicationError(error)) {
 		// Application Errors
 		errorDetail = getErrorResponseFromBusinessError(error);
@@ -200,17 +207,6 @@ const saveResponseFilter = (error) => ({
 
 const sendError = (res, error) => {
 	res.status(error.code).json(saveResponseFilter(error));
-};
-
-const handleSilentError = (error, req, res, next) => {
-	if (error instanceof SilentError || (error && error.error instanceof SilentError)) {
-		if (Configuration.get('SILENT_ERROR_ENABLED')) {
-			res.append('x-silent-error', true);
-		}
-		res.status(200).json({ success: 'success' });
-	} else {
-		next(error);
-	}
 };
 
 const handleValidationError = (error, req, res, next) => {
@@ -254,7 +250,6 @@ const errorHandler = (app) => {
 	app.use(formatAndLogErrors); // TODO
 	// TODO make handleSilentError configruable if middleware is added
 	// Configuration.get('SILENT_ERROR_ENABLED')
-	app.use(handleSilentError);
 	app.use(getErrorResponse); // TODO
 };
 module.exports = errorHandler;
