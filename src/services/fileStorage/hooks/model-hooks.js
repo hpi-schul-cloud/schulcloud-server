@@ -48,7 +48,7 @@ exports.after = {
 	find: [restrictToCurrentUser],
 	get: [],
 	create: [],
-	update: [],
+	update: [updateParents],
 	patch: [updateParents],
 	remove: [],
 };

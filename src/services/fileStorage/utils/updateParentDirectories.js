@@ -6,7 +6,7 @@ const updateParentDirectories = async (resourceID) => {
 	const file = await FileModel.findById(resourceID).lean().exec();
 	if (file) {
 		const parentID = file.parent;
-		if (parentID || file.refOwnerModel === 'user') {
+		if (parentID) {
 			await FileModel.updateOne({ _id: parentID }, { updatedAt: new Date().toISOString() }).exec();
 			await updateParentDirectories(parentID);
 		} else if (file.refOwnerModel === 'course') {
