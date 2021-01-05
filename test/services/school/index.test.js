@@ -7,16 +7,12 @@ const { expect } = chai;
 const appPromise = require('../../../src/app');
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
-const {
-	schoolModel: School,
-	yearModel: YearModel,
-	SCHOOL_OF_DELETE_USERS_NAME,
-} = require('../../../src/services/school/model');
+const { schoolModel: School, yearModel: YearModel } = require('../../../src/services/school/model');
 
 const testObjects = require('../helpers/testObjects')(appPromise);
 const { create: createSchool, info: createdSchoolIds } = require('../helpers/services/schools')(appPromise);
 
-describe.only('school service', () => {
+describe('school service', () => {
 	let app;
 	let server;
 
@@ -62,7 +58,7 @@ describe.only('school service', () => {
 					authorization: undefined,
 				},
 				account: undefined,
-				sort: { id: 1 },
+				query: { $sort: { _id: 1 } },
 			};
 			const result = await schoolService.find(params);
 			const expectedFields = ['purpose', 'name', '_id', 'id', 'systems', 'years', 'isTeamCreationByStudentsEnabled'];
@@ -77,7 +73,7 @@ describe.only('school service', () => {
 			});
 		});
 		it('should be possible to see all fields if the call is done from the server', async () => {
-			const params = { provider: undefined, sort: { id: 1 } };
+			const params = { provider: undefined, query: { $sort: { _id: 1 } } };
 
 			const result = await schoolService.find(params);
 			const expectedFields = [
@@ -101,7 +97,7 @@ describe.only('school service', () => {
 			});
 		});
 		it('load the school results with pagination', async () => {
-			const result = await schoolService.find({ sort: { id: 1 } });
+			const result = await schoolService.find({ query: { $sort: { _id: 1 } } });
 			result.data.forEach((school) => {
 				compareSchoolYears(school.years.schoolYears, defaultYears);
 				expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
@@ -111,8 +107,7 @@ describe.only('school service', () => {
 		it('load the school results without pagination', async () => {
 			const result = await schoolService.find({
 				paginate: false,
-
-				sort: { id: 1 },
+				query: { $sort: { _id: 1 } },
 			});
 			result.forEach((school) => {
 				compareSchoolYears(school.years.schoolYears, defaultYears);
