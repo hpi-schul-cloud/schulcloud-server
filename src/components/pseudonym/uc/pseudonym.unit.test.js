@@ -63,8 +63,7 @@ describe('pseudonym usecase', () => {
 		});
 
 		it('when the function is called with an invalid id, then it fails', async () => {
-			const userId = 'NOT_FOUND_USER';
-			expect(pseudonymUC.deleteUserData()[0](userId)).to.eventually.throw(ValidationError);
+			expect(pseudonymUC.deleteUserData()[0]('invalid')).to.eventually.be.rejectedWith(ValidationError);
 		});
 	});
 });
