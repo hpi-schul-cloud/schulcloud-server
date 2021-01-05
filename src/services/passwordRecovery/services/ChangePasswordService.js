@@ -1,5 +1,4 @@
 const local = require('@feathersjs/authentication-local');
-const reqlib = require('app-root-path').require;
 
 const { BadRequest, GeneralError, SilentError } = reqlib('src/errors');
 const logger = require('../../../logger/index');

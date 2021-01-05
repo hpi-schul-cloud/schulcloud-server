@@ -1,9 +1,8 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const { ObjectId } = require('mongoose').Types;
-const reqlib = require('app-root-path').require;
 
-const { BadRequest } = reqlib('src/errors');
+const { BadRequest } = require('../../../../../src/errors');
 const { lookupScope } = require('../../../../../src/services/helpers/scopePermissions/hooks/lookupScope');
 
 chai.use(chaiAsPromised);
