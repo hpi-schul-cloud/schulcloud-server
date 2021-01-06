@@ -40,6 +40,17 @@ const getAWSS3 = async (storageProvider) => {
 	return new aws.S3(getConfig(storageProvider));
 };
 
+const getSchoolsWithoutBuckets = (schoolIds, providerBuckets) => {
+	const schoolsWithoutBuckets = [];
+	for (const schoolId of schoolIds) {
+		const bucketExists = providerBuckets.indexOf(`bucket-${schoolId.toString()}`) >= 0;
+		if (!bucketExists) {
+			schoolsWithoutBuckets.push(schoolId);
+		}
+	}
+	return schoolsWithoutBuckets;
+};
+
 module.exports = {
 	up: async function up() {
 		await connect();
@@ -69,13 +80,7 @@ module.exports = {
 					if (err) error(err, err.stack);
 					else {
 						const providerBuckets = data.Buckets.map((b) => b.Name);
-						const schoolsWithoutBuckets = [];
-						for (const schoolId of schoolIds) {
-							const bucketExists = providerBuckets.indexOf(`bucket-${schoolId.toString()}`) >= 0;
-							if (!bucketExists) {
-								schoolsWithoutBuckets.push(schoolId);
-							}
-						}
+						const schoolsWithoutBuckets = getSchoolsWithoutBuckets(schoolIds, providerBuckets);
 
 						info(providerBuckets);
 					}
