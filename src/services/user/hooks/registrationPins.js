@@ -54,7 +54,7 @@ Dein ${SC_SHORT_TITLE}-Team`;
 	throw new BadRequest('Die angegebene Rolle ist ungültig.', { role });
 }
 
-const checkAndVerifyPin = (hook) => {
+const checkAndVerifyPin = async (hook) => {
 	if (hook.result.data.length === 0) {
 		return hook;
 	}
@@ -71,13 +71,9 @@ const checkAndVerifyPin = (hook) => {
 		}
 		if (firstDataItem.pin) {
 			if (firstDataItem.pin === hook.params.query.pin) {
-				return hook.app
-					.service('registrationPins')
-					.patch(firstDataItem._id, { verified: true })
-					.then((result) => {
-						hook.result.data = [result];
-						return hook;
-					});
+				const modifiedData = await hook.app.service('registrationPins').patch(firstDataItem._id, { verified: true });
+				hook.result.data = [modifiedData];
+				return hook;
 			}
 			throw new BadRequest(
 				'Der eingegebene Code ist ungültig oder konnte nicht bestätigt werden. Bitte versuche es erneut.'
