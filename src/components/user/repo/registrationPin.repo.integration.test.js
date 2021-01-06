@@ -62,9 +62,9 @@ describe('registration pin repo', () => {
 		});
 
 		it('when the function is called with valid email, it returns empty result object', async () => {
-			const expectedResult = { success: true, deletedDocuments: 0 };
 			const result = await registrationPinRepo.deleteRegistrationPinsByEmail('valid@email.com');
-			expect(result).to.be.equal(expectedResult);
+			expect(result.success).to.be.equal(true);
+			expect(result.deletedDocuments).to.be.equal(0);
 		});
 
 		it('when the function is called with invalid email, it throws an error', async () => {
