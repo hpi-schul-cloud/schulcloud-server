@@ -8,8 +8,9 @@ const fileRepo = require('../repo/files.repo');
 const { GeneralError } = require('../../../errors');
 
 describe('deletedUserData.uc.unit', () => {
+	afterEach(sinon.restore);
+
 	describe('removePermissionsThatUserCanAccess', () => {
-		afterEach(sinon.restore);
 
 		it('when the function is called with valid user id, then it returns with valid trash bin format', async () => {
 			const userId = new ObjectId();
@@ -64,4 +65,23 @@ describe('deletedUserData.uc.unit', () => {
 			expect(removePermissionsThatUserCanAccess(userId)).to.be.rejected;
 		});
 	});
+
+	describe('removePersonalFiles', () => {
+		it('when the function is called with valid user id, then it returns with valid trash bin format', async () => {
+		});
+		it('when the function is called with a user id, which is not connected with a file, the result is empty', async () => {
+			const userId = new ObjectId();
+			const removeFilePermissionStub = sinon.stub(fileRepo, 'removePersonalFilesByUserId');
+			removeFilePermissionStub.withArgs(userId).returns(true);
+			const getFilePermissionStub = sinon.stub(fileRepo, 'getPersonalFilesByUserId');
+			getFilePermissionStub.withArgs(userId).returns([]);
+
+			const result = await removePermissionsThatUserCanAccess(userId);
+
+			expect(result.complete).to.be.true;
+			expect(result.trashBinData).to.be.an('object');
+			expect(result.trashBinData).to.haveOwnProperty('scope');
+			expect(result.trashBinData).to.haveOwnProperty('data');
+		});
+	}
 });

@@ -556,6 +556,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			// eslint-disable-next-line no-await-in-loop
 			const deleteResult = await s3.deleteObjects(deleteParams).promise();
 		}
+		return true;
 	}
 }
 

@@ -13,6 +13,16 @@ const searchQuery = (userId) => ({
 
 const getFileById = async (id) => FileModel.findById(id).lean().exec();
 
+
+/**
+ * @param {*} userId
+ * @return {data} personal files of the user
+ */
+const getPersonalFilesByUserId = async (userId) => {
+	// ToDo: Implement this method
+	return [];
+};
+
 /**
  * @param {*} userId
  * @return {data} filePermissions
