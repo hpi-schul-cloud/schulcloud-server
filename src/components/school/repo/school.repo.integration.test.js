@@ -39,8 +39,8 @@ describe('school repository', () => {
 
 		it('should throw error if school with given id does not exist', async () => {
 			const notExistingId = testObjects.generateObjectId();
-
-			await expect(schoolRepo.getSchool(notExistingId)).to.be.rejectedWith(NotFound);
+			const school = await schoolRepo.getSchool(notExistingId);
+			expect(school).to.be.null;
 		});
 	});
 

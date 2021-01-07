@@ -1,13 +1,9 @@
 const { schoolModel: School } = require('../../../services/school/model');
 
 const { SCHOOL_OF_DELETE_USERS } = require('./db');
-const { NotFound } = require('../../../errors');
 
 const getSchool = async (_id) => {
 	const school = await School.findById(_id).lean().exec();
-	if (school == null) {
-		throw new NotFound('no school for this id');
-	}
 	return school;
 };
 
