@@ -111,7 +111,7 @@ describe('Etherpad Permission Check: Teacher', () => {
 			accessToken,
 		});
 
-		expect(body.status).to.equal(403);
+		expect(body.code).to.equal(403);
 	});
 
 	it('should not be able to create session for foreign course', async () => {
@@ -129,6 +129,6 @@ describe('Etherpad Permission Check: Teacher', () => {
 			accessToken,
 		});
 
-		expect(body.status).to.equal(403);
+		expect(body.code).to.equal(403);
 	});
 });

@@ -33,8 +33,8 @@ describe('Feathers application tests', () => {
 		it('shows a 404 JSON error without stack trace', async () => {
 			const res = await chai.request(app).get('/path/to/nowhere').set('content-type', 'application/json');
 			assert.equal(res.status, 404);
-			assert.equal(res.body.status, 404);
-			assert.equal(res.body.detail, 'Page not found.');
+			assert.equal(res.body.code, 404);
+			assert.equal(res.body.message, 'Page not found.');
 			assert.equal(res.body.title, 'PageNotFound');
 		});
 
