@@ -22,7 +22,7 @@ const SCHOOL_FEATURES = {
 	MESSENGER_STUDENT_ROOM_CREATE: 'messengerStudentRoomCreate',
 };
 
-const SCHOOL_OF_DELETE_USERS_NAME = 'graveyard school (tombstone users only)';
+const SCHOOL_OF_DELETE_USERS = { name: 'graveyard school (tombstone users only)', purpose: 'tombstone' };
 
 const defaultFeatures = [];
 
@@ -166,7 +166,7 @@ const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 
 module.exports = {
 	SCHOOL_FEATURES,
-	SCHOOL_OF_DELETE_USERS_NAME,
+	SCHOOL_OF_DELETE_USERS,
 	schoolSchema,
 	schoolModel,
 	schoolGroupModel,
