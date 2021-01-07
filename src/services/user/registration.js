@@ -215,8 +215,6 @@ const registerUser = function register(data, params, app) {
 				})
 				.then((result) => {
 					// check pin
-					logger.info('####################### result');
-					logger.info(result);
 					if (result.data.length !== 1 || result.data[0].verified !== true) {
 						return Promise.reject(
 							new Error('Der eingegebene Code konnte leider nicht verfiziert werden. Versuch es doch noch einmal.')
