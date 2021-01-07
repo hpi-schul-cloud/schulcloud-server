@@ -5,6 +5,7 @@ const moment = require('moment');
 const reqlib = require('app-root-path').require;
 
 const { Forbidden, BadRequest, TooManyRequests } = reqlib('src/errors');
+const logger = require('../../logg');
 const { NODE_ENV, ENVIRONMENTS, SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../model').registrationPinModel;
@@ -69,9 +70,13 @@ const checkAndVerifyPin = async (hook) => {
 			// already verified
 			return hook;
 		}
+		logger.info('#################### firstDataItem');
+		logger.info(firstDataItem);
 		if (firstDataItem.pin) {
 			if (firstDataItem.pin === hook.params.query.pin) {
 				const modifiedData = await hook.app.service('registrationPins').patch(firstDataItem._id, { verified: true });
+				logger.info('#################### modifiedData');
+				logger.info(modifiedData);
 				hook.result.data = [modifiedData];
 				return hook;
 			}
