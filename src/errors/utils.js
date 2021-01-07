@@ -45,7 +45,6 @@ const asyncErrorLog = (err, message) => {
 
 module.exports = {
 	isFeatherError,
-	convertToFeathersError,
 	cleanupIncomingMessage,
 	asyncErrorLog,
 };
