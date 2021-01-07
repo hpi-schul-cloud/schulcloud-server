@@ -65,48 +65,44 @@ const getBucketsPerProvider = async (storageProviders) => {
 	const bucketsForProvider = {};
 	for (const provider of storageProviders) {
 		// eslint-disable-next-line no-await-in-loop
-		bucketsForProvider[provider] = await getBuckets(provider);
+		bucketsForProvider[provider._id] = await getBuckets(provider);
 	}
 	return bucketsForProvider;
 };
 
 const getProviderForSchool = (bucketsForProvider, school) => {
-	for (const provider in bucketsForProvider) {
-		if (Object.prototype.hasOwnProperty.call(bucketsForProvider, provider)) {
-			const buckets = bucketsForProvider[provider];
-			const bucketExists = buckets.indexOf(`bucket-${school.toString()}`) >= 0;
-			if (bucketExists) return provider;
-		}
+	for (const [provider, buckets] of Object.entries(bucketsForProvider)) {
+		const bucketExists = buckets.indexOf(`bucket-${school.toString()}`) >= 0;
+		if (bucketExists) return provider;
 	}
 	return undefined;
 };
 
 const updateProvidersForSchools = async (foundSchoolsPerProvider) => {
-	for (const provider in foundSchoolsPerProvider) {
-		if (Object.prototype.hasOwnProperty.call(foundSchoolsPerProvider, provider)) {
-			const schools = foundSchoolsPerProvider[provider];
-			if (provider !== EMPTY_PROVIDER) {
-				// eslint-disable-next-line no-await-in-loop
-				const result = await SchoolModel.updateMany({ $in: schools }, { $set: { storageProvider: provider } });
-				info(`${schools.length} schools successfully updated for provider ${provider}: ${result}`);
-			} else {
-				warn(`${schools.length} schools couldn't be assigned to any provider`);
-			}
+	for (const [provider, schools] of Object.entries(foundSchoolsPerProvider)) {
+		if (provider !== EMPTY_PROVIDER) {
+			// eslint-disable-next-line no-await-in-loop
+			const result = await SchoolModel.updateMany(
+				{
+					id: { $in: schools },
+				},
+				{ $set: { storageProvider: provider } }
+			).exec();
+			info(`${schools.length} schools successfully updated for provider ${provider}: ${result}`);
+		} else {
+			warn(`${schools.length} schools couldn't be assigned to any provider`);
 		}
 	}
 };
 
 const getSchoolsWithWrongProviders = (bucketsPerProvider, schoolsByProvider) => {
-	const schoolsWithoutBuckets = [];
-	for (const provider in bucketsPerProvider) {
-		if (Object.prototype.hasOwnProperty.call(bucketsPerProvider, provider)) {
-			const buckets = bucketsPerProvider[provider];
-			const providerSchools = schoolsByProvider.filter((s) => s._id === provider);
-			if (providerSchools.length > 0) {
-				const schoolsWithoutBucketsForProvider = getSchoolsWithoutBucketsForProvider(providerSchools, buckets);
-				info(`Found ${schoolsWithoutBucketsForProvider.length} for provider ${provider}`);
-				schoolsWithoutBuckets.concat(schoolsWithoutBucketsForProvider);
-			}
+	let schoolsWithoutBuckets = [];
+	for (const [provider, buckets] of Object.entries(bucketsPerProvider)) {
+		const providerSchools = schoolsByProvider.filter((s) => s._id === provider);
+		if (providerSchools.length > 0) {
+			const schoolsWithoutBucketsForProvider = getSchoolsWithoutBucketsForProvider(providerSchools, buckets);
+			info(`Found ${schoolsWithoutBucketsForProvider.length} for provider ${provider}`);
+			schoolsWithoutBuckets = schoolsWithoutBuckets.concat(schoolsWithoutBucketsForProvider);
 		}
 	}
 	return schoolsWithoutBuckets;
@@ -119,11 +115,9 @@ const findProvidersForSchools = (schoolsWithoutBuckets, bucketsPerProvider) => {
 		if (provider === undefined) {
 			provider = EMPTY_PROVIDER;
 		}
-		const schoolsForProvider = foundSchoolsPerProvider[provider];
-		if (schoolsForProvider === undefined) {
-			foundSchoolsPerProvider[provider] = schoolsForProvider;
-		}
+		const schoolsForProvider = foundSchoolsPerProvider[provider] || [];
 		schoolsForProvider.push(school);
+		foundSchoolsPerProvider[provider] = schoolsForProvider;
 	}
 	return foundSchoolsPerProvider;
 };
@@ -146,11 +140,15 @@ module.exports = {
 		// 3. find schools with wrong providers assigned
 		const schoolsWithWrongProviders = getSchoolsWithWrongProviders(bucketsPerProvider, schoolsByProvider);
 
-		// 3.1 try to find buckets by another providers
-		const foundSchoolsPerProvider = findProvidersForSchools(schoolsWithWrongProviders, bucketsPerProvider);
+		if (schoolsWithWrongProviders.length === 0) {
+			info(`There aren't any school with wrong providers were found`);
+		} else {
+			// 3.1 try to find buckets by another providers
+			const foundSchoolsPerProvider = findProvidersForSchools(schoolsWithWrongProviders, bucketsPerProvider);
 
-		// 3.2. update schools by found providers
-		await updateProvidersForSchools(foundSchoolsPerProvider);
+			// 3.2. update schools by found providers
+			await updateProvidersForSchools(foundSchoolsPerProvider);
+		}
 
 		// ////////////////////////////////////////////////////
 		await close();
