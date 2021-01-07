@@ -71,8 +71,9 @@ const checkAndVerifyPin = async (hook) => {
 		}
 		if (firstDataItem.pin) {
 			if (firstDataItem.pin === hook.params.query.pin) {
-				const modifiedData = await hook.app.service('registrationPins').patch(firstDataItem._id, { verified: true });
-				hook.result.data = [modifiedData];
+				await hook.app.service('registrationPins').patch(firstDataItem._id, { verified: true });
+				// do not use result of patch, because mongodb can return a old version if not updated on all cluster nodes.
+				hook.result.data[0].verified = true;
 				return hook;
 			}
 			throw new BadRequest(
