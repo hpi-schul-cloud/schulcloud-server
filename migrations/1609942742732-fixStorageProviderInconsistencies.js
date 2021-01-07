@@ -125,7 +125,6 @@ const findProvidersForSchools = (schoolsWithoutBuckets, bucketsPerProvider) => {
 module.exports = {
 	up: async function up() {
 		await connect();
-		// ////////////////////////////////////////////////////
 		// 0. get all storage providers from the database
 		const storageProviders = await StorageProviderModel.find().lean().exec();
 
@@ -150,17 +149,12 @@ module.exports = {
 			await updateProvidersForSchools(foundSchoolsPerProvider);
 		}
 
-		// ////////////////////////////////////////////////////
 		await close();
 	},
 
-	down: async function down() {
-		await connect();
-		// ////////////////////////////////////////////////////
-		// Implement the necessary steps to roll back the migration here.
-
-		// ////////////////////////////////////////////////////
-		await close();
+	down: (done) => {
+		info('This migration is idempotent. Nothing should be reseted');
+		done();
 	},
 };
 
