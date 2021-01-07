@@ -60,7 +60,7 @@ const getErrorLogData = (error) => {
 		cleanupIncomingMessage(errorLogData.errors);
 	} else {
 		// Unhandled Errors
-		errorLogData = new InternalServerError(error); // TODO or just error?
+		errorLogData = error;
 	}
 	return errorLogData;
 };
@@ -149,7 +149,7 @@ const filterDeep = (newData, level = 0) => {
 	return newData;
 };
 
-const filter = (data) => filterDeep({ ...data });
+const filter = (data = {}) => filterDeep({ ...data });
 
 const secretQueryKeys = (() => ['accessToken', 'access_token'].map((k) => k.toLocaleLowerCase()))();
 const filterQuery = (url) => {
@@ -180,21 +180,21 @@ const filterSecrets = (error, req, res, next) => {
 	next(error);
 };
 
-const createErrorDetailTO = (status, type, title, detail, customFields) => {
-	return { status, type, title, detail, ...customFields };
+const createErrorDetailTO = (code, type, title, message, customFields = {}) => {
+	return { code, type, title, message, ...customFields };
 };
 
 const getErrorResponseFromBusinessError = (businessError) => {
 	const customFields = {};
-	let status = 500;
-	const { message: type, title, defaultMessage: detail } = businessError;
+	let code = 500;
+	const { message: type, title, defaultMessage: message } = businessError;
 	if (businessError instanceof ValidationError || businessError instanceof AssertionError) {
-		status = 400;
+		code = 400;
 		Object.assign(customFields, { validation_errors: businessError.params });
 	} else if (businessError instanceof DocumentNotFound) {
-		status = 404;
+		code = 404;
 	}
-	return createErrorDetailTO(status, type, title, detail, customFields);
+	return createErrorDetailTO(code, type, title, message, customFields);
 };
 
 const getErrorResponse = (error, req, res, next) => {
@@ -211,16 +211,16 @@ const getErrorResponse = (error, req, res, next) => {
 		errorDetail = getErrorResponseFromBusinessError(error);
 	} else if (isFeatherError(error)) {
 		// Framework Errors
-		const { code, className: type, name: title, message: detail } = error;
-		errorDetail = createErrorDetailTO(code, type, title, detail);
+		const { code, className: type, name: title, message } = error;
+		errorDetail = createErrorDetailTO(code, type, title, message);
 	} else {
 		// Unhandled Errors
 		const unhandledError = new InternalServerError(error);
-		const { message: type, title, defaultMessage: detail } = unhandledError;
-		errorDetail = createErrorDetailTO(500, type, title, detail);
+		const { message: type, title, defaultMessage: message } = unhandledError;
+		errorDetail = createErrorDetailTO(500, type, title, message);
 	}
 
-	res.status(errorDetail.status).json(errorDetail);
+	res.status(errorDetail.code).json(errorDetail);
 };
 
 const convertOpenApiValidationError = (error) => {

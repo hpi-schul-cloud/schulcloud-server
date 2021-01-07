@@ -45,7 +45,7 @@ describe('legacy forward', () => {
 	it('when a non-existing route is called, then the server responds with 404', async () => {
 		const request = chai.request(app).get('/this/route/does/not/exist');
 		const result = await request.send();
-		expect(result.body.status).to.equal(404);
+		expect(result.body.code).to.equal(404);
 	});
 
 	it('when a service without basepath is called, then the server respons with 200', async () => {

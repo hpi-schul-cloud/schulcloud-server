@@ -244,7 +244,7 @@ describe('Nexboard services', () => {
 			accessToken,
 		});
 
-		expect(body.status).to.equal(403);
+		expect(body.code).to.equal(403);
 	});
 
 	it('Get should need TOOL_VIEW permission.', async () => {
@@ -271,7 +271,7 @@ describe('Nexboard services', () => {
 			accessToken,
 		});
 
-		expect(body.status).to.equal(403);
+		expect(body.code).to.equal(403);
 	});
 
 	it('Create should need TOOL_CREATE permission.', async () => {
@@ -295,7 +295,7 @@ describe('Nexboard services', () => {
 			accessToken,
 		});
 
-		expect(body.status).to.equal(403);
+		expect(body.code).to.equal(403);
 	});
 
 	it('Patch should be blocked.', async () => {
@@ -319,7 +319,7 @@ describe('Nexboard services', () => {
 			accessToken,
 		});
 
-		expect(body.status).to.equal(405);
+		expect(body.code).to.equal(405);
 	});
 
 	it('DELETE should be blocked.', async () => {
@@ -336,7 +336,7 @@ describe('Nexboard services', () => {
 			accessToken,
 		});
 
-		expect(body.status).to.equal(405);
+		expect(body.code).to.equal(405);
 	});
 
 	it('UPDATE should be blocked.', async () => {
@@ -360,6 +360,6 @@ describe('Nexboard services', () => {
 			accessToken,
 		});
 
-		expect(body.status).to.equal(405);
+		expect(body.code).to.equal(405);
 	});
 });

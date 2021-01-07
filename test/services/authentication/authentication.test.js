@@ -188,7 +188,7 @@ describe('start server', () => {
 
 									// Bad Request
 									should.equal(res.status, 400);
-									should.equal(res.body.detail, 'EMAIL_DOMAIN_BLOCKED');
+									should.equal(res.body.message, 'EMAIL_DOMAIN_BLOCKED');
 
 									resolve();
 								});
