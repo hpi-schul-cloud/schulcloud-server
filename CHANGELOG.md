@@ -8,12 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
 ## Unreleased
+- SC-8206 - Add school tombstone for deleting concept
 
 ## [25.5.0]
 
 ### Added
 
-- SC-8206 - Add school tombstone for deleting concept
 - SC-7835 - Add deletion concept handling for helpdesk problems
 - SC-8229 - Added invalid DN error to ldap-config service error handling
 - SC-7825 - Remove user relations from courses

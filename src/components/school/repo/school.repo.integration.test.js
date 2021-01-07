@@ -4,6 +4,7 @@ const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 const schoolRepo = require('./school.repo');
+const { SCHOOL_OF_DELETE_USERS } = require('./db');
 const { NotFound } = require('../../../errors');
 
 chai.use(chaiAsPromised);
@@ -43,60 +44,25 @@ describe('school repository', () => {
 		});
 	});
 
-	describe('findSchools', () => {
-		it('should find schools by given name', async () => {
-			const SchoolToBeFoundName = 'School to be found';
-			const [school1, school2, school3] = await Promise.all([
-				testObjects.createTestSchool({ name: SchoolToBeFoundName }),
-				testObjects.createTestSchool({ name: SchoolToBeFoundName }),
-				testObjects.createTestSchool({ name: 'otherName' }),
-			]);
+	describe('getTombstoneSchool', () => {
+		it('should return tombstone school', async () => {
+			const result = await schoolRepo.getTombstoneSchool();
 
-			const result = await schoolRepo.findSchools({ name: SchoolToBeFoundName });
-
-			expect(result).to.be.an('array').of.length(2);
-			expect(result.map((school) => school._id.toString()))
-				.to.include(school1._id.toString())
-				.and.to.include(school2._id.toString())
-				.and.not.to.include(school3._id.toString());
-		});
-
-		it('should return all schools if select criteria is left out', async () => {
-			const [school1, school2, school3] = await Promise.all([
-				testObjects.createTestSchool(),
-				testObjects.createTestSchool(),
-				testObjects.createTestSchool(),
-			]);
-
-			const result = await schoolRepo.findSchools({});
-
-			expect(result.map((school) => school._id.toString()))
-				.to.include(school1._id.toString())
-				.and.to.include(school2._id.toString())
-				.and.to.include(school3._id.toString());
+			expect(result.purpose).to.be.equal(SCHOOL_OF_DELETE_USERS.purpose);
+			expect(result.name).to.be.equal(SCHOOL_OF_DELETE_USERS.name);
 		});
 	});
 
-	describe('updateSchool', () => {
-		it('should update schools by id with new attribute', async () => {
+	describe('setTombstoneUser', () => {
+		it('should update schools by id with tombstone user', async () => {
 			const school = await testObjects.createTestSchool();
-			const patch = { officialSchoolNumber: 'a value' };
-			const expectedSchool = { ...school, ...patch };
+			const tombstoneUser = await testObjects.createTestUser();
+			const expectedSchool = { ...school, tombstoneUserId: tombstoneUser._id };
 			delete expectedSchool.updatedAt;
 
 			expect(school.officialSchoolNumber).to.be.undefined;
 
-			const updatedSchool = await schoolRepo.updateSchool(school._id, patch);
-			delete updatedSchool.updatedAt;
-			expect(updatedSchool).to.deep.equal(expectedSchool);
-		});
-		it('should update schools by id with existing attribute', async () => {
-			const school = await testObjects.createTestSchool();
-			const patch = { name: 'updated school name' };
-			const expectedSchool = { ...school, ...patch };
-			delete expectedSchool.updatedAt;
-
-			const updatedSchool = await schoolRepo.updateSchool(school._id, patch);
+			const updatedSchool = await schoolRepo.setTombstoneUser(school._id, tombstoneUser._id);
 			delete updatedSchool.updatedAt;
 			expect(updatedSchool).to.deep.equal(expectedSchool);
 		});

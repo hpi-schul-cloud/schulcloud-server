@@ -10,9 +10,8 @@ class SchoolFacade {
 		return schoolUc.getTombstoneSchool();
 	}
 
-	async updateSchool(schoolId, schoolPatch, user) {
-		schoolUc.checkPermissions(schoolId, 'SCHOOL_EDIT', user);
-		return schoolUc.updateSchool(schoolId, schoolPatch);
+	async setTombstoneUser(schoolId, schoolPatch) {
+		return schoolUc.setTombstoneUser(schoolId, schoolPatch);
 	}
 }
 

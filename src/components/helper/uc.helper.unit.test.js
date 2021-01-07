@@ -1,5 +1,5 @@
 const chai = require('chai');
-const schoolUc = require('./school.uc');
+const { checkPermissions } = require('./uc.helper');
 
 const { expect } = chai;
 
@@ -19,7 +19,7 @@ describe('school.uc', () => {
 					},
 				],
 			};
-			expect(() => schoolUc.checkPermissions(schoolId, permissionToCheck, user)).to.not.throw;
+			expect(() => checkPermissions(schoolId, permissionToCheck, user)).to.not.throw;
 		});
 		it('should fail for empty user permissions', () => {
 			const schoolId = 'dummySchoolId123';
@@ -32,7 +32,7 @@ describe('school.uc', () => {
 				],
 			};
 			const permissionToCheck = 'SCHOOL_EDIT';
-			expect(() => schoolUc.checkPermissions(schoolId, permissionToCheck, user)).to.throw(
+			expect(() => checkPermissions(schoolId, permissionToCheck, user)).to.throw(
 				`You don't have permissions to perform this action`
 			);
 		});
@@ -43,7 +43,7 @@ describe('school.uc', () => {
 				roles: [],
 			};
 			const permissionToCheck = 'SCHOOL_EDIT';
-			expect(() => schoolUc.checkPermissions(schoolId, permissionToCheck, user)).to.throw(
+			expect(() => checkPermissions(schoolId, permissionToCheck, user)).to.throw(
 				`You don't have permissions to perform this action`
 			);
 		});
@@ -61,7 +61,7 @@ describe('school.uc', () => {
 					},
 				],
 			};
-			expect(() => schoolUc.checkPermissions(schoolId, permissionToCheck, user)).to.throw(
+			expect(() => checkPermissions(schoolId, permissionToCheck, user)).to.throw(
 				`You don't have permissions to perform this action`
 			);
 		});
@@ -79,7 +79,7 @@ describe('school.uc', () => {
 					},
 				],
 			};
-			expect(() => schoolUc.checkPermissions(schoolId, permissionToCheck, user)).to.throw(
+			expect(() => checkPermissions(schoolId, permissionToCheck, user)).to.throw(
 				`You don't have permissions to perform this action`
 			);
 		});

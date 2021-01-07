@@ -119,7 +119,7 @@ describe('user service v2', function test() {
 			});
 			const { _id: schoolId } = school;
 
-			const token = await getPermissionToken(schoolId, ['STUDENT_DELETE', 'SCHOOL_EDIT']);
+			const token = await getPermissionToken(schoolId, ['STUDENT_DELETE']);
 
 			const deleteUser = await testObjects.createTestUser({ roles: ['student'], schoolId });
 
