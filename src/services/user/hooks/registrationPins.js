@@ -5,7 +5,7 @@ const moment = require('moment');
 const reqlib = require('app-root-path').require;
 
 const { Forbidden, BadRequest, TooManyRequests } = reqlib('src/errors');
-const logger = require('../../logg');
+const logger = require('../../../logger');
 const { NODE_ENV, ENVIRONMENTS, SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../model').registrationPinModel;
