@@ -149,7 +149,7 @@ const filterDeep = (newData, level = 0) => {
 	return newData;
 };
 
-const filter = (data = {}) => filterDeep({ ...data });
+const filter = (data) => filterDeep({ ...data });
 
 const secretQueryKeys = (() => ['accessToken', 'access_token'].map((k) => k.toLocaleLowerCase()))();
 const filterQuery = (url) => {
@@ -197,6 +197,9 @@ const getErrorResponseFromBusinessError = (businessError) => {
 	return createErrorDetailTO(code, type, title, message, customFields);
 };
 
+const getMessageFromUnhandledError = (error) =>
+	error.message instanceof Error && error.message.message ? error.message.message : error.message;
+
 const getErrorResponse = (error, req, res, next) => {
 	let errorDetail;
 	if (isSilentError(error)) {
@@ -215,8 +218,9 @@ const getErrorResponse = (error, req, res, next) => {
 		errorDetail = createErrorDetailTO(code, type, title, message);
 	} else {
 		// Unhandled Errors
+		const message = getMessageFromUnhandledError(error);
 		const unhandledError = new InternalServerError(error);
-		const { message: type, title, defaultMessage: message } = unhandledError;
+		const { message: type, title } = unhandledError;
 		errorDetail = createErrorDetailTO(500, type, title, message);
 	}
 
