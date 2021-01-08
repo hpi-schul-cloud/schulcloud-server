@@ -5,7 +5,9 @@ const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const toArray = (data) => (Array.isArray(data) ? data : [data]);
 
-// rewrite tool id if there is a origin tool (content-specific pseudonym)
+/**
+ * rewrite tool id if there is a origin tool (content-specific pseudonym)
+ */
 const replaceToolWithOrigin = (hook) => {
 	if (!hook.params.query.toolId) return hook;
 	return hook.app
@@ -17,7 +19,9 @@ const replaceToolWithOrigin = (hook) => {
 		});
 };
 
-// looks for user and tool combinations that aren't existing and creates them
+/**
+ * looks for user and tool combinations that aren't existing and creates them
+ */
 const createMissingPseudonyms = (hook) => {
 	if (!hook.params.query.toolId || !hook.params.query.userId) return hook;
 	const toolIds = toArray(hook.params.query.toolId);
@@ -40,9 +44,12 @@ const createMissingPseudonyms = (hook) => {
 		});
 };
 
-// restricts the return pseudonyms to the users the current user is allowed to retrieve
-const filterValidUsers = (context) => {
+/**
+ * restricts the return pseudonyms to the users the loggedin user shares a course with
+ */
+const filterPseudonyms = (context) => {
 	const currentUserId = context.params.account.userId;
+	/** courseUserIds are all users which share a course with the current user */
 	let courseUserIds = [currentUserId];
 	return context.app
 		.service('courses')
@@ -83,7 +90,7 @@ const populateUsername = (context) => {
 };
 
 exports.before = {
-	all: [authenticate('jwt')],
+	all: [authenticate('jwt')], //ToDo: Permissions?
 	find: [replaceToolWithOrigin],
 	get: [disallow()],
 	create: [globalHooks.ifNotLocal(disallow())],
@@ -94,7 +101,7 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [createMissingPseudonyms, globalHooks.ifNotLocal(filterValidUsers), populateUsername],
+	find: [createMissingPseudonyms, globalHooks.ifNotLocal(filterPseudonyms), populateUsername],
 	get: [],
 	create: [],
 	update: [],
