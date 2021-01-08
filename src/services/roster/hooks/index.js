@@ -62,17 +62,18 @@ module.exports = {
 				},
 			})
 			.then((originTools) =>
-				toolService.find({
-					query: {
-						originTool: originTools.data[0]._id,
-					},
-				})
-			)
-			.then((tools) => {
-				context.params.toolIds = [originTools.data[0]._id]; // don't forget actual requested tool id
-				context.params.toolIds = context.params.toolIds.concat(tools.data.map((tool) => tool._id));
-				return context;
-			});
+				toolService
+					.find({
+						query: {
+							originTool: originTools.data[0]._id,
+						},
+					})
+					.then((tools) => {
+						context.params.toolIds = [originTools.data[0]._id]; // don't forget actual requested tool id
+						context.params.toolIds = context.params.toolIds.concat(tools.data.map((tool) => tool._id));
+						return context;
+					})
+			);
 	},
 
 	groupContainsUser: (context) => {

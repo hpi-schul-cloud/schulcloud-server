@@ -1,7 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { disallow } = require('feathers-hooks-common');
+const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
-const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { equal: equalIds, isValid } = require('../../../helper/compare').ObjectId;
+const { preventPopulate } = require('../../../hooks');
+const { ApplicationError } = require('../../../errors');
 
 const toArray = (data) => (Array.isArray(data) ? data : [data]);
 
@@ -20,32 +22,34 @@ const replaceToolWithOrigin = (hook) => {
 };
 
 /**
- * looks for user and tool combinations that aren't existing and creates them
+ * looks for user and tool combinations that aren't existing, creates them and adds them into result.data
  */
-const createMissingPseudonyms = (hook) => {
-	if (!hook.params.query.toolId || !hook.params.query.userId) return hook;
-	const toolIds = toArray(hook.params.query.toolId);
-	const userIds = toArray(hook.params.query.userId);
+const createMissingPseudonyms = (context) => {
+	// prevent pseudonym creation when only pseudonym is given
+	if (!context.params.query.toolId || !context.params.query.userId) return context;
+	const toolIds = toArray(context.params.query.toolId);
+	const userIds = toArray(context.params.query.userId);
 	const missingPseudonyms = [];
 	for (const userId of userIds) {
 		for (const toolId of toolIds) {
-			if (!hook.result.data.find((entry) => equalIds(entry.userId, userId) && equalIds(entry.toolId, toolId))) {
+			if (!context.result.data.find((entry) => equalIds(entry.userId, userId) && equalIds(entry.toolId, toolId))) {
+				// collect missing pseudonyms for user and tool
 				missingPseudonyms.push({ userId, toolId });
 			}
 		}
 	}
-	if (!missingPseudonyms.length) return hook;
-	return hook.app
+	if (!missingPseudonyms.length) return context;
+	return context.app
 		.service('pseudonym')
 		.create(missingPseudonyms)
 		.then((results) => {
-			hook.result.data = hook.result.data.concat(results);
-			return hook;
+			context.result.data = context.result.data.concat(results);
+			return context;
 		});
 };
 
 /**
- * restricts the return pseudonyms to the users the loggedin user shares a course with
+ * restricts the returned pseudonyms to the users the authenticated user shares a course with
  */
 const filterPseudonyms = (context) => {
 	const currentUserId = context.params.account.userId;
@@ -72,14 +76,28 @@ const filterPseudonyms = (context) => {
 		});
 };
 
+const haveExacltyOneResult = (data) => {
+	return data && data.length === 1 && data[0].userId;
+};
+
+/**
+ * Enrichs the first result with the users firstName and lastName
+ * @param {*} context
+ */
 const populateUsername = (context) => {
-	if (!context.result.data[0]) return context;
+	if (!haveExacltyOneResult(context.result.data)) {
+		return context;
+	}
+	// expect pseudonym given and having one result given
 	return context.app
 		.service('users')
 		.get(context.result.data[0].userId)
 		.then((response) => {
+			const { userId, toolId, pseudonym } = context.result.data[0];
 			context.result.data[0] = {
-				...context.result.data[0]._doc, // eslint-disable-line no-underscore-dangle
+				userId,
+				toolId,
+				pseudonym,
 				user: {
 					firstName: response.firstName,
 					lastName: response.lastName,
@@ -89,9 +107,35 @@ const populateUsername = (context) => {
 		});
 };
 
+const validatePseudonym = (pseudonym) => {
+	if (typeof pseudonym === 'string' && pseudonym.length) return;
+	throw new ApplicationError('invalid pseudonym');
+};
+
+const validateUserAndTool = (userId, toolId) => {
+	if (isValid(userId) && isValid(toolId)) return;
+	throw new ApplicationError('invalid userId/toolId');
+};
+
+const validateParams = (context) => {
+	// at least one parameter is required to be given:
+	// pseudonym should resolve with one item
+	// userId and toolId resolves with multiple items
+	const { pseudonym, userId, toolId } = context.params.query;
+	// we have given either a pseudonym or userId and toolId
+	if (pseudonym) {
+		validatePseudonym(pseudonym);
+		context.params.query = { pseudonym };
+	} else {
+		validateUserAndTool(userId, toolId);
+		context.params.query = { userId, toolId };
+	}
+	return context;
+};
+
 exports.before = {
-	all: [authenticate('jwt')], //ToDo: Permissions?
-	find: [replaceToolWithOrigin],
+	all: [authenticate('jwt')],
+	find: [validateParams, replaceToolWithOrigin, iff(isProvider('external'), preventPopulate)],
 	get: [disallow()],
 	create: [globalHooks.ifNotLocal(disallow())],
 	update: [disallow()],
