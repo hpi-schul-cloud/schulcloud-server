@@ -4,6 +4,12 @@ const { BadRequest } = reqlib('src/errors');
 const oauth2 = require('../../oauth2/hooks');
 
 module.exports = {
+	/**
+	 * Authentication with oauth2 authorization token via Bearer/header from external tool (bettermarks)
+	 * against hydra via internal oauth2 proxy service
+	 * sets context.params.tokenInfo with oauth user information
+	 * @param {*} context
+	 */
 	tokenIsActive: (context) =>
 		context.app
 			.service('/oauth2/introspect')
@@ -16,19 +22,28 @@ module.exports = {
 				throw new BadRequest('Access token invalid');
 			})
 			.catch((error) => {
-				throw new Error(error);
+				throw error; // TODO remove?
 			}),
 
+	/**
+	 * expects obfuscated_subject to match external pseudonym from route.user or
+	 * sub to match internal user id
+	 * @param {*} context
+	 */
 	userIsMatching: (context) => {
 		if (
 			context.params.tokenInfo.obfuscated_subject === decodeURIComponent(context.params.route.user) ||
-			context.params.tokenInfo.sub === context.params.user
+			context.params.tokenInfo.sub === context.params.user // TODO when is this true?
 		) {
 			return context;
 		}
 		throw new BadRequest('No permissions for the user');
 	},
 
+	/**
+	 * extracts plain pseudonym when receiving full iframe code in pseudonym
+	 * @param {*} context
+	 */
 	stripIframe: (context) => {
 		const regEx = /oauth2\/username\/(.*?)"/;
 		const pseudonym = context.params.route.user;
@@ -47,18 +62,17 @@ module.exports = {
 				},
 			})
 			.then((originTools) =>
-				toolService
-					.find({
-						query: {
-							originTool: originTools.data[0]._id,
-						},
-					})
-					.then((tools) => {
-						context.params.toolIds = [originTools.data[0]._id]; // don't forget actual requested tool id
-						context.params.toolIds = context.params.toolIds.concat(tools.data.map((tool) => tool._id));
-						return context;
-					})
-			);
+				toolService.find({
+					query: {
+						originTool: originTools.data[0]._id,
+					},
+				})
+			)
+			.then((tools) => {
+				context.params.toolIds = [originTools.data[0]._id]; // don't forget actual requested tool id
+				context.params.toolIds = context.params.toolIds.concat(tools.data.map((tool) => tool._id));
+				return context;
+			});
 	},
 
 	groupContainsUser: (context) => {
