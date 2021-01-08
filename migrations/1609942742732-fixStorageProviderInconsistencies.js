@@ -4,7 +4,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const CryptoJS = require('crypto-js');
 
 // eslint-disable-next-line no-unused-vars
-const { info, warn } = require('../src/logger');
+const { info, warning } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
@@ -84,13 +84,13 @@ const updateProvidersForSchools = async (foundSchoolsPerProvider) => {
 			// eslint-disable-next-line no-await-in-loop
 			const result = await SchoolModel.updateMany(
 				{
-					id: { $in: schools },
+					_id: { $in: schools },
 				},
 				{ $set: { storageProvider: provider } }
 			).exec();
 			info(`${schools.length} schools successfully updated for provider ${provider}: ${result}`);
 		} else {
-			warn(`${schools.length} schools couldn't be assigned to any provider`);
+			warning(`${schools.length} schools couldn't be assigned to any provider`);
 		}
 	}
 };
