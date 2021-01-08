@@ -18,7 +18,7 @@ module.exports = function roster() {
 
 	/**
 	 * Takes a pseudonym from params and resolves with depseudonymization iframe content.
-	 * @param params.route.user pseudonym string
+	 * @param {string} params.route.user pseudonym from the given user
 	 * @param params.pseudonym // TODO from hooks?
 	 * @returns data.user_id pseudonym
 	 * @returns data.type first given user role name // TODO should take most significant role
@@ -74,6 +74,13 @@ module.exports = function roster() {
 	app.use(metaRoute, metadataHandler);
 	app.service(metaRoute).hooks(metadataHooks);
 
+	/**
+	 * Takes a pseudonym and toolIds from params and resolves with courses the user is part of
+	 * and which are using the tools specified by the toolIds
+	 * @param {string} params.pseudonym The pseudonym of the given user
+	 * @param params.toolIds Ids of the given tools
+	 * @returns Array of course data including the group id, the group name, and the number of students
+	 */
 	const userGroupsHandler = {
 		find(params) {
 			return app // TODO extract method
@@ -126,6 +133,12 @@ module.exports = function roster() {
 	app.use(userGroupRoute, userGroupsHandler);
 	app.service(userGroupRoute).hooks(userGroupsHooks);
 
+	/**
+	 * Takes a course id and returns the pseudonyms of the group members
+	 * @param id ID of the given course
+	 * @returns {Array} data.students student ids and pseudonyms of students which are enrolled in the course
+	 * @returns {Array} data.teacers teacher ids and pseudonyms of teachers which are enrolled in the course
+	 */
 	const groupsHandler = {
 		get(id, params) {
 			const courseService = app.service('courses');
@@ -141,19 +154,20 @@ module.exports = function roster() {
 						return { errors: { description: 'Group not found' } };
 					}
 					const course = courses.data[0];
-					const pseudoService = app.service('pseudonym');
+					const pseudonymService = app.service('pseudonym');
 					return Promise.all([
-						pseudoService.find({
+						pseudonymService.find({
 							query: {
 								userId: course.userIds,
 								toolId: params.toolIds[0],
 							},
 						}),
-						pseudoService.find({
+						pseudonymService.find({
 							query: {
 								userId: course.teacherIds,
 								toolId: params.toolIds[0],
 							},
+						//Todo: Add substitute teachers?
 						}),
 					]).then(([users, teachers]) => ({
 						data: {

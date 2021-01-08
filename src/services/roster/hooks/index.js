@@ -79,7 +79,7 @@ module.exports = {
 		if (!context.result.data) return context;
 		const users = context.result.data.students.concat(context.result.data.teachers);
 		if (
-			users.find(
+			users.some(
 				(user) =>
 					user.user_id ===
 						oauth2.getSubject(context.params.tokenInfo.obfuscated_subject, context.app.settings.services.web) ||
