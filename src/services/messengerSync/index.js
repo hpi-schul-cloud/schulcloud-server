@@ -1,7 +1,6 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const reqlib = require('app-root-path').require;
 
-const { GeneralError } = reqlib('src/errors');
+const { GeneralError } = require('../../errors');
 const eventListener = require('./eventListener');
 const producer = require('./producer');
 const consumer = require('./consumer');

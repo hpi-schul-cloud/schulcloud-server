@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Changed
+
+- SC-8380 removed reqlib, replaced by normal require to keep referenced types known
+
 ## [25.5.0]
 
 ### Added
