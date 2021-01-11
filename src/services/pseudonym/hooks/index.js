@@ -135,7 +135,7 @@ const validateParams = (context) => {
 
 exports.before = {
 	all: [authenticate('jwt')],
-	find: [validateParams, replaceToolWithOrigin, iff(isProvider('external'), preventPopulate)],
+	find: [validateParams, replaceToolWithOrigin, iff(isProvider('external'), globalHooks.ifNotLocal(preventPopulate))],
 	get: [disallow()],
 	create: [globalHooks.ifNotLocal(disallow())],
 	update: [disallow()],
