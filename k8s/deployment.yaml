@@ -30,13 +30,13 @@ spec:
             containerPort: 3030
           livenessProbe:
             httpGet:
-              path: /version
+              path: /ping
               port: 3030
             initialDelaySeconds: 15
             timeoutSeconds: 15
           readinessProbe:
             httpGet:
-              path: /version
+              path: /ping
               port: 3030
             initialDelaySeconds: 5
             timeoutSeconds: 3

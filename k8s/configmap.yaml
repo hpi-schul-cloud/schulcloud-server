@@ -6,3 +6,4 @@ data:
   THIS_SERVICE: $SERVICE_NAME
   BRANCH: $NAMESPACE
   DB_URL: mongodb://10.141.10.250:27017/schulcloud
+  NODE_ENV: production
