@@ -7,6 +7,7 @@ data:
   BRANCH: $NAMESPACE
   DB_URL: mongodb://10.141.10.250:27017/schulcloud
   NODE_ENV: production
+  PORT: '3030'
   # for running backup.js to setup database
   MONGO_HOST: '10.141.10.250'
   MONGO_DATABASE: schulcloud

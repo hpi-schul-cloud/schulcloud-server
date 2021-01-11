@@ -1,6 +1,6 @@
 {
 	"$schema": "./default.schema.json",
-	"host": "localhost",
+	"host": "0.0.0.0",
 	"port": "PORT",
 	"mongodb": "MONGO_URI",
 	"public": "../public/",

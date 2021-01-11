@@ -32,7 +32,7 @@ spec:
             httpGet:
               path: /ping
               port: 3030
-            initialDelaySeconds: 15
+            initialDelaySeconds: 60
             timeoutSeconds: 15
           readinessProbe:
             httpGet:
