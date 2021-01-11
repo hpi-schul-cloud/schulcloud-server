@@ -5,10 +5,11 @@ const REQUIRED_PARAMENTER_MISSING = 'REQUIRED_PARAMENTER_MISSING';
  * @param {Object} options of missing parameters
  * @returns {Array} of validation errors
  */
-const missingParameters = (options) => {
-	const validationErrors = Object.keys(options).map((key) => {
-		return { param: key, error: REQUIRED_PARAMENTER_MISSING };
-	});
+const missingParameters = (parameterNames) => {
+	const validationErrors = Object.keys(parameterNames).map((key) => ({
+		param: key,
+		error: REQUIRED_PARAMENTER_MISSING,
+	}));
 
 	return validationErrors;
 };

@@ -10,7 +10,7 @@ const {
 	AssertionError,
 	DocumentNotFound,
 	InternalServerError,
-} = require('./errors');
+} = require('./applicationErrors');
 
 const setDefaultMessage = (className) => `Error of type ${className}`;
 
