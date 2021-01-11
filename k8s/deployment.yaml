@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $SERVICE_NAME
+  labels:
+    app: $SERVICE_NAME
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: $SERVICE_NAME
+  template:
+    metadata:
+      name: $SERVICE_NAME
+      labels:
+        app: $SERVICE_NAME
+        tier: web
+    spec:
+      containers:
+        - name: $SERVICE_NAME
+          image: $BUILD_IMAGE
+          imagePullPolicy: Always
+          envFrom:
+          - configMapRef:
+              name: environment-variables
+          ports:
+          - name: web
+            containerPort: 3030
+          livenessProbe:
+            httpGet:
+              path: /version
+              port: 3030
+            initialDelaySeconds: 15
+            timeoutSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /version
+              port: 3030
+            initialDelaySeconds: 5
+            timeoutSeconds: 3

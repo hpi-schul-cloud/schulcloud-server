@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: environment-variables
+data:
+  THIS_SERVICE: $SERVICE_NAME
+  BRANCH: $NAMESPACE
