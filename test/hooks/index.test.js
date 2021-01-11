@@ -1,7 +1,6 @@
 const { expect } = require('chai');
-const reqlib = require('app-root-path').require;
 
-const { BadRequest } = reqlib('src/errors');
+const { BadRequest } = require('../../src/errors');
 const { lookupSchool } = require('../../src/hooks');
 
 const appPromise = require('../../src/app');
