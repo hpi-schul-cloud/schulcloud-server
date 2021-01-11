@@ -1,6 +1,5 @@
 const { problemRepo } = require('../repo/index');
-const { trashBinResult } = require('../../helper/uc.helper');
-const { validateObjectId } = require('../../helper/uc.helper');
+const { validateObjectId, trashBinResult } = require('../../helper/validation.helper');
 const { debug } = require('../../../logger');
 
 const deleteProblemsForUser = async (userId) => {

@@ -1,13 +1,13 @@
 const { registrationPinModel } = require('../../../services/user/model');
 const { deleteManyResult } = require('../../helper/repo.helper');
-const { validateEmail } = require('../../helper/uc.helper');
+const { validateRequired } = require('../../helper/validation.helper');
 
 /**
  * Return pseudonyms for email
  * @param email
  */
 const getRegistrationPinsForUser = async (email) => {
-	validateEmail(email);
+	validateRequired(email);
 	return registrationPinModel.find({ email }).lean().exec();
 };
 
@@ -16,7 +16,7 @@ const getRegistrationPinsForUser = async (email) => {
  * @param {String|ObjectId} email
  */
 const deleteRegistrationPinsByEmail = async (email) => {
-	validateEmail(email);
+	validateRequired(email);
 	const deleteResult = await registrationPinModel.deleteMany({ email }).lean().exec();
 	return deleteManyResult(deleteResult);
 };

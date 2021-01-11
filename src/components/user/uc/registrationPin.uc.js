@@ -1,6 +1,6 @@
 const { registrationPinRepo } = require('../repo/index');
 const { trashBinResult } = require('../../helper/uc.helper');
-const { validateEmail } = require('../../helper/uc.helper');
+const { validateEmail } = require('../../helper/validation.helper');
 const { debug } = require('../../../logger');
 
 const deleteRegistrationPinsForUser = async (email) => {

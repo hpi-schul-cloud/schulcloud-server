@@ -1,5 +1,5 @@
 const { pseudonymRepo } = require('../repo/index');
-const { validateObjectId, trashBinResult } = require('../../helper/uc.helper');
+const { validateObjectId, trashBinResult } = require('../../helper/validation.helper');
 const { debug } = require('../../../logger');
 
 const deletePseudonymsForUser = async (userId) => {

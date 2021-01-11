@@ -1,6 +1,6 @@
 const Pseudonym = require('../../../services/pseudonym/model');
 const { deleteManyResult } = require('../../helper/repo.helper');
-const { validateObjectId } = require('../../helper/uc.helper');
+const { validateObjectId } = require('../../helper/validation.helper');
 
 /**
  * Return pseudonyms for userId
