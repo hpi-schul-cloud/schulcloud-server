@@ -3,7 +3,7 @@ FROM node:lts-alpine
 
 WORKDIR /schulcloud-server
 # RSS-Cron starten
-RUN apk update && apk upgrade && apk add --no-cache git make python tzdata curl
+RUN apk update && apk upgrade && apk add --no-cache git make python tzdata curl mongodb-tools
 COPY ./package.json .
 COPY ./package-lock.json .
 
