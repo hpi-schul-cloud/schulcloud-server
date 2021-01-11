@@ -5,7 +5,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const { incomingMessageToJson } = require('../utils');
 
 const logger = require('../logger');
-const { ApplicationError, SilentError } = require('./errors');
+const { ApplicationError, SilentError } = require('./index');
 
 const isFeatherError = (error) => error.type === 'FeathersError';
 

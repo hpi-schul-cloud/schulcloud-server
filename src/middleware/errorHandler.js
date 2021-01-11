@@ -5,7 +5,7 @@ const OpenApiValidator = require('express-openapi-validator');
 
 const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention } = require('../errors');
 const { ValidationError, DocumentNotFound, AssertionError, InternalServerError } = require('../errors');
-const { API_VALIDATION_ERROR } = require('../errors/commonErrorTypes');
+const { API_VALIDATION_ERROR_TYPE } = require('../errors/commonErrorTypes');
 
 const { isApplicationError, isFeatherError, isSilentError, cleanupIncomingMessage } = require('../errors/utils');
 const logger = require('../logger');
@@ -65,14 +65,11 @@ const getErrorLogData = (error) => {
 	return errorLogData;
 };
 
-const skipErrorLogging = (error) => {
-	return (
-		error instanceof PageNotFound ||
-		error.code === 405 ||
-		error instanceof AutoLogout ||
-		error instanceof BruteForcePrevention
-	);
-};
+const skipErrorLogging = (error) =>
+	error instanceof PageNotFound ||
+	error.code === 405 ||
+	error instanceof AutoLogout ||
+	error instanceof BruteForcePrevention;
 
 const formatAndLogErrors = (error, req, res, next) => {
 	if (error) {
@@ -87,9 +84,9 @@ const formatAndLogErrors = (error, req, res, next) => {
 
 		// for tests level is set to emerg, set LOG_LEVEL=debug for see it
 		// Logging the error object won't print error's stack trace. You need to ask for it specifically
-		logger.error({ ...errorLogData, ...requestInfo }); // TODO do not unpack all params
+		logger.error({ ...errorLogData, ...requestInfo });
 	}
-	next(error);
+	return next(error);
 };
 
 // map to lower case and test as lower case
@@ -177,12 +174,16 @@ const filterSecrets = (error, req, res, next) => {
 		error.options = filter(error.options);
 		error.params = filter(error.params);
 	}
-	next(error);
+	return next(error);
 };
 
-const createErrorDetailTO = (code, type, title, message, customFields = {}) => {
-	return { code, type, title, message, ...customFields };
-};
+const createErrorDetailTO = (code, type, title, message, customFields = {}) => ({
+	code,
+	type,
+	title,
+	message,
+	...customFields,
+});
 
 const getErrorResponseFromBusinessError = (businessError) => {
 	const customFields = {};
@@ -224,7 +225,7 @@ const getErrorResponse = (error, req, res, next) => {
 		errorDetail = createErrorDetailTO(500, type, title, message);
 	}
 
-	res.status(errorDetail.code).json(errorDetail);
+	return res.status(errorDetail.code).json(errorDetail);
 };
 
 const convertOpenApiValidationError = (error) => {
@@ -234,19 +235,19 @@ const convertOpenApiValidationError = (error) => {
 		logger.debug('Open API Validation path is missing!');
 		err = new PageNotFound(error);
 	} else if (err instanceof OpenApiValidator.error.BadRequest) {
-		err = new ValidationError(API_VALIDATION_ERROR, err.errors);
+		err = new ValidationError(API_VALIDATION_ERROR_TYPE, err.errors);
 	}
 	return err;
 };
 
 const convertExternalLibraryErrors = (error, req, res, next) => {
 	const err = convertOpenApiValidationError(error);
-	next(err);
+	return next(err);
 };
 
 const addTraceId = (error, req, res, next) => {
 	error.traceId = (req.headers || {}).requestId || error.traceId;
-	next(error);
+	return next(error);
 };
 
 const errorHandler = (app) => {

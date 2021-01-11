@@ -4,14 +4,7 @@ const mongoose = require('mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
-const {
-	Forbidden,
-	NotFound,
-	BadRequest,
-	GeneralError,
-	NotAuthenticated,
-	NoClientInstanceError,
-} = require('../../errors');
+const { Forbidden, NotFound, BadRequest, NotAuthenticated, NoClientInstanceError } = require('../../errors');
 const LDAPConnectionError = require('./LDAPConnectionError');
 
 const hooks = require('./hooks');

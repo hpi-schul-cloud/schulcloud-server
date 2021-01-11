@@ -1,6 +1,11 @@
 /* eslint-disable max-classes-per-file */
-const { INTERNAL_SERVER_ERROR, ASSERTION_ERROR } = require('./commonErrorTypes');
+const { INTERNAL_SERVER_ERROR_TYPE, ASSERTION_ERROR_TYPE } = require('./commonErrorTypes');
 
+/**
+ * A base Class for all application specific (not-framework related) errors
+ * Please do not use this class directly - please use one of the subclass below
+ * @abstract
+ */
 class ApplicationError extends Error {
 	/**
 	 * Abstraction for concrete implementations of business errors
@@ -10,7 +15,7 @@ class ApplicationError extends Error {
 		this.name = this.constructor.name;
 		this.cause = cause;
 		this.title = title;
-		this.defaultMessage = defaultMessage; // todo rename to detail (as defined?)
+		this.defaultMessage = defaultMessage;
 		this.params = params;
 		Error.captureStackTrace(this, this.constructor);
 	}
@@ -18,7 +23,7 @@ class ApplicationError extends Error {
 
 class InternalServerError extends ApplicationError {
 	constructor(cause, params) {
-		super(INTERNAL_SERVER_ERROR, cause, params);
+		super(INTERNAL_SERVER_ERROR_TYPE, cause, params);
 	}
 }
 
@@ -53,7 +58,7 @@ class ValidationError extends ApplicationError {
  */
 class AssertionError extends ApplicationError {
 	constructor(validationErrors) {
-		super(ASSERTION_ERROR, undefined, validationErrors);
+		super(ASSERTION_ERROR_TYPE, undefined, validationErrors);
 	}
 }
 
