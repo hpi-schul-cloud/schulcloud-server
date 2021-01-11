@@ -19,7 +19,7 @@ module.exports = function roster() {
 	/**
 	 * Takes a pseudonym from params and resolves with depseudonymization iframe content.
 	 * @param {string} params.route.user pseudonym from the given user
-	 * @param params.pseudonym // TODO from hooks?
+	 * @param params.pseudonym
 	 * @returns data.user_id pseudonym
 	 * @returns data.type first given user role name // TODO should take most significant role
 	 * @returns data.username depseudonymization iframe html-code
@@ -35,7 +35,7 @@ module.exports = function roster() {
 				})
 				.then((pseudonym) => {
 					if (!pseudonym.total) {
-						return { errors: { description: 'User not found by token' } }; // TODO does bettermarks evaluate this?
+						return { errors: { description: 'User not found by token' } };
 					}
 					const { userId } = pseudonym.data[0];
 					return app
@@ -52,7 +52,9 @@ module.exports = function roster() {
 								data: {
 									user_id: params.route.user,
 									username: oauth2.getSubject(params.pseudonym, app.settings.services.web),
-									type: user.roles[0].name,
+									type: user.roles.map((role) => role.name).some((roleName) => roleName === 'teacher')
+										? 'teacher'
+										: 'student',
 								},
 							};
 						});
@@ -83,7 +85,7 @@ module.exports = function roster() {
 	 */
 	const userGroupsHandler = {
 		find(params) {
-			return app // TODO extract method
+			return app
 				.service('pseudonym')
 				.find({
 					query: {
@@ -92,7 +94,7 @@ module.exports = function roster() {
 				})
 				.then((pseudonym) => {
 					if (!pseudonym.data[0]) {
-						return Promise.reject(new Error('User not found by token')); // TODO should match L38
+						return { errors: { description: 'User not found by token' } };
 					}
 
 					const { userId } = pseudonym.data[0];
@@ -101,14 +103,13 @@ module.exports = function roster() {
 						.find({
 							query: {
 								ltiToolIds: { $in: params.toolIds },
-								$or: [{ userIds: userId }, { teacherIds: userId }], // TODO substitutionIds missing
+								$or: [{ userIds: userId }, { teacherIds: userId }, { substitutionIds: userId }],
 							},
 						})
 						.then((courses) => ({
 							// all users courses with given tool enabled
 							data: {
 								groups: courses.data.map((course) => ({
-									// TODO add in datasecurity docu
 									group_id: course._id.toString(),
 									name: course.name,
 									student_count: course.userIds.length,
@@ -164,10 +165,9 @@ module.exports = function roster() {
 						}),
 						pseudonymService.find({
 							query: {
-								userId: course.teacherIds,
+								userId: course.teacherIds.concat(course.substitutionIds),
 								toolId: params.toolIds[0],
 							},
-						//Todo: Add substitute teachers?
 						}),
 					]).then(([users, teachers]) => ({
 						data: {

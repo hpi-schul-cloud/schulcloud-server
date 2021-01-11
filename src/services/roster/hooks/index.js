@@ -22,7 +22,7 @@ module.exports = {
 				throw new BadRequest('Access token invalid');
 			})
 			.catch((error) => {
-				throw error; // TODO remove?
+				throw error;
 			}),
 
 	/**
@@ -33,7 +33,7 @@ module.exports = {
 	userIsMatching: (context) => {
 		if (
 			context.params.tokenInfo.obfuscated_subject === decodeURIComponent(context.params.route.user) ||
-			context.params.tokenInfo.sub === context.params.user // TODO when is this true?
+			context.params.tokenInfo.sub === context.params.user
 		) {
 			return context;
 		}
