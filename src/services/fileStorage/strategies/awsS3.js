@@ -1,13 +1,12 @@
 const { promisify } = require('es6-promisify');
 const CryptoJS = require('crypto-js');
-const reqlib = require('app-root-path').require;
 
-const { NotFound, BadRequest, GeneralError } = reqlib('src/errors');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const aws = require('aws-sdk');
 const pathUtil = require('path');
 const fs = require('fs');
 const mongoose = require('mongoose');
+const { NotFound, BadRequest, GeneralError } = require('../../../errors');
 const logger = require('../../../logger');
 const { schoolModel } = require('../../school/model');
 const { StorageProviderModel } = require('../../storageProvider/model');

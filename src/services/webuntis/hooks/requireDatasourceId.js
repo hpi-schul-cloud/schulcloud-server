@@ -1,6 +1,4 @@
-const reqlib = require('app-root-path').require;
-
-const { NotFound, BadRequest } = reqlib('src/errors');
+const { NotFound, BadRequest } = require('../../../errors');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const requireDatasourceId = async (context) => {

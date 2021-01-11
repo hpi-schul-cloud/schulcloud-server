@@ -2,9 +2,8 @@
 const { iff, isProvider } = require('feathers-hooks-common');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const Sentry = require('@sentry/node');
-const reqlib = require('app-root-path').require;
 
-const { AutoLogout, SlowQuery } = reqlib('src/errors');
+const { AutoLogout, SlowQuery } = require('./errors');
 const logger = require('./logger');
 const {
 	sanitizeHtml: { sanitizeDeep },
