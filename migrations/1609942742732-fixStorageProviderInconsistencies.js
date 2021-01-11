@@ -78,6 +78,12 @@ const getProviderForSchool = (bucketsForProvider, school) => {
 	return undefined;
 };
 
+const printSchoolsForProvider = async (foundSchoolsPerProvider) => {
+	for (const [provider, schools] of Object.entries(foundSchoolsPerProvider)) {
+		info(`For provider ${provider} found schools: ${JSON.stringify(schools)}`);
+	}
+};
+
 const updateProvidersForSchools = async (foundSchoolsPerProvider) => {
 	for (const [provider, schools] of Object.entries(foundSchoolsPerProvider)) {
 		if (provider !== EMPTY_PROVIDER) {
@@ -88,6 +94,7 @@ const updateProvidersForSchools = async (foundSchoolsPerProvider) => {
 				},
 				{ $set: { storageProvider: provider } }
 			).exec();
+
 			info(`${schools.length} schools successfully updated for provider ${provider}: ${result}`);
 		} else {
 			warning(`${schools.length} schools couldn't be assigned to any provider`);
@@ -98,7 +105,7 @@ const updateProvidersForSchools = async (foundSchoolsPerProvider) => {
 const getSchoolsWithWrongProviders = (bucketsPerProvider, schoolsByProvider) => {
 	let schoolsWithoutBuckets = [];
 	for (const [provider, buckets] of Object.entries(bucketsPerProvider)) {
-		const providerSchools = schoolsByProvider.filter((s) => s._id === provider);
+		const providerSchools = schoolsByProvider.filter((s) => s._id !== null && s._id.toString() === provider);
 		if (providerSchools.length > 0) {
 			const schoolsWithoutBucketsForProvider = getSchoolsWithoutBucketsForProvider(providerSchools, buckets);
 			info(`Found ${schoolsWithoutBucketsForProvider.length} for provider ${provider}`);
