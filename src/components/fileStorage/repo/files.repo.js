@@ -2,6 +2,7 @@ const { FileModel } = require('./db');
 const { AssertionError } = require('../../../errors');
 const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
 const missingParameters = require('../../../errors/helper/assertionErrorHelper');
+const { updateManyResult } = require('../../helper/repo.helper');
 
 const searchQuery = (userId) => ({
 	permissions: {
@@ -44,8 +45,7 @@ const removeFilePermissionsByUserId = async (userId) => {
 	if (!isValidObjectId(userId)) throw new AssertionError(missingParameters({ userId }));
 	const updateQuery = { $pull: { permissions: { refId: userId } } };
 	const result = await FileModel.updateMany(searchQuery(userId), updateQuery).lean().exec();
-	const success = result.ok === 1 && result.n === result.nModified;
-	// ToDo: Use helper method to convert Mongoose batch results to uniform format
+	const { success } = updateManyResult(result);
 	return success;
 };
 

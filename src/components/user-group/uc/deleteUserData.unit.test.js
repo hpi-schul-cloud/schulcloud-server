@@ -34,7 +34,7 @@ const initStubs = ({ classId, isStudent, isTeacher }) => {
 	getClassesStub.withArgs(USER_ID).returns(createTestGetClassForUserResult(classId, isStudent, isTeacher));
 
 	const removeClassesStub = sinon.stub(classesRepo, 'removeUserFromClasses');
-	removeClassesStub.withArgs(USER_ID).returns({ n: 1, nModified: 1 });
+	removeClassesStub.withArgs(USER_ID).returns({ success: true, modifiedDocuments: 1 });
 
 	return { getClassesStub, removeClassesStub };
 };

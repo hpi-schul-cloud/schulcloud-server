@@ -17,17 +17,18 @@ const addClassesToTrashbinData = (classes = [], data) => {
 const deleteUserDataFromClasses = async (userId) => {
 	validateParams(userId);
 	debug(`deleting user mentions in classes contents started`, { userId });
-
+	let complete = true;
 	const classes = await classesRepo.getClassesForUser(userId);
 	debug(`found ${classes.length} classes with contents of given user to be removed`, { userId });
 	const data = {};
 	if (classes.length !== 0) {
 		addClassesToTrashbinData(classes, data);
 		const result = await classesRepo.removeUserFromClasses(userId);
-		debug(`removed user from ${result.matchedDocuments} classes`, { userId });
+		complete = result.success;
+		debug(`removed user from ${result.modifiedDocuments} classes`, { userId });
 	}
 	debug(`deleting user mentions in classes contents finished`, { userId });
-	return { trashBinData: { scope: 'classes', data }, complete: true };
+	return { trashBinData: { scope: 'classes', data }, complete };
 };
 
 // public
