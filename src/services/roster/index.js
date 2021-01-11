@@ -21,7 +21,7 @@ module.exports = function roster() {
 	 * @param {string} params.route.user pseudonym from the given user
 	 * @param params.pseudonym
 	 * @returns data.user_id pseudonym
-	 * @returns data.type first given user role name // TODO should take most significant role
+	 * @returns data.type first given user role name
 	 * @returns data.username depseudonymization iframe html-code
 	 */
 	const metadataHandler = {
