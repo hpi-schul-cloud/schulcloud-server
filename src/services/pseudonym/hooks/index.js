@@ -113,9 +113,9 @@ const validatePseudonym = (pseudonym) => {
 };
 
 const validateUserAndTool = (userId, toolId) => {
-	const validUserId = Array.isArray(userId) ? userId.all((id) => isValid(id)) : isValid(userId);
-	const validToolId = Array.isArray(toolId) ? toolId.all((id) => isValid(id)) : isValid(toolId);
-	if (validUserId(userId) && validToolId(toolId)) return;
+	const validUserId = Array.isArray(userId) ? userId.every((id) => isValid(id)) : isValid(userId);
+	const validToolId = Array.isArray(toolId) ? toolId.every((id) => isValid(id)) : isValid(toolId);
+	if (validUserId && validToolId) return;
 	throw new ApplicationError('invalid userIds/toolIds');
 };
 
