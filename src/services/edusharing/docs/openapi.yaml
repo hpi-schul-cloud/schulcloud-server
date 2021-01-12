@@ -682,6 +682,11 @@ paths:
           name: searchQuery
           schema:
             type: string
+        - description: Collection parameter to filter
+          in: query
+          name: collection
+          schema:
+            type: string
       responses:
         '200':
           description: success
