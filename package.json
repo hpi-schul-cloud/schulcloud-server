@@ -20,11 +20,12 @@
 	"scripts": {
 		"lint-fix": "eslint . --fix --ignore-path .gitignore",
 		"lint": "eslint . --ignore-path .gitignore",
-		"seed": "node ./backup.js -p setup/ -D schulcloud-test import",
+		"seed": "node ./backup.js -D schulcloud-test drop && node ./backup.js -p setup/ -D schulcloud-test import",
 		"test": "cross-env NODE_ENV=test npm run seed && npm run coverage",
 		"test-inspect": "cross-env NODE_ENV=test npm run seed && npm run mocha-inspect",
 		"backup": "node ./backup.js -b export",
 		"setup": "node ./backup.js -p setup/ import",
+		"reset": "node ./backup.js drop && node ./backup.js -p setup/ import",
 		"build": "npm run build:clean && tsc && npm run copy-files",
 		"build:clean": "shx rm -rf build",
 		"copy-files": "copyfiles src/**/*.yaml build",

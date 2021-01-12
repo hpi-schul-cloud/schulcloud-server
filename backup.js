@@ -172,7 +172,7 @@ const ensureDirectoryExistence = (filePath) => {
  * IMPORT
  ****************************************** */
 
-const importCollection = async ({ collection, filePath, drop = true }) => {
+const importCollection = async ({ collection, filePath }) => {
 	const cmdArgs = [
 		'mongoimport',
 		'--host',
@@ -184,22 +184,60 @@ const importCollection = async ({ collection, filePath, drop = true }) => {
 		collection,
 		filePath,
 		(await getFirstCharFromFile(filePath)) === '[' ? '--jsonArray' : undefined,
-		drop ? '--drop ' : undefined,
 	];
 	const output = await asyncExec(cleanJoin(cmdArgs));
 	return output;
 };
 
+const dropDatabase = async () => {
+	const cmdArgs = [
+		'mongo',
+		'--host',
+		CONFIG.MONGO.URL,
+		'--db',
+		CONFIG.MONGO.DATABASE,
+		...CONFIG.MONGO.CREDENTIALS_ARGS,
+		'--eval',
+		'"db.dropDatabase()"',
+	];
+	const output = await asyncExec(cleanJoin(cmdArgs));
+	return output;
+};
+
+const getCollectionCount = async () => {
+	const cmdArgs = [
+		'mongo',
+		'--host',
+		CONFIG.MONGO.URL,
+		'--db',
+		CONFIG.MONGO.DATABASE,
+		...CONFIG.MONGO.CREDENTIALS_ARGS,
+		'--eval',
+		'"db.getCollectionNames().length"',
+	];
+	const output = await asyncExec(cleanJoin(cmdArgs));
+	return Number.parseInt(output, 10);
+};
+
 const importDirectory = async (directoryPath) => {
+	const databaseCollectionCount = await getCollectionCount();
+
+	if (databaseCollectionCount > 0) {
+		throw new Error('Database is not empty.');
+	}
+
 	const files = await readDir(directoryPath);
+
 	const imports = files.map(async (file) => {
 		const collection = file.split('.').slice(0, -1).join('.');
 		const filePath = path.join(directoryPath, file);
+
 		return importCollection({
 			collection,
 			filePath,
 		}).then(log);
 	});
+
 	const outputs = await Promise.all(imports);
 	return outputs.join('\n');
 };
@@ -273,6 +311,8 @@ const main = async () => {
 		await importDirectory(CONFIG.BACKUP_PATH_IMPORT);
 	} else if (args._[0] === 'export') {
 		await exportBackup(CONFIG.BACKUP_PATH_EXPORT);
+	} else if (args._[0] === 'drop') {
+		await dropDatabase(CONFIG.BACKUP_PATH_EXPORT);
 	} else {
 		throw new Error('invalid argument');
 	}
