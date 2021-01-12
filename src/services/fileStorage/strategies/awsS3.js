@@ -98,11 +98,21 @@ if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === false) {
 }
 // end legacy
 
-const getS3 = (storageProvider) => new aws.S3(getConfig(storageProvider));
+const getS3 = (storageProvider) => {
+	const S3_KEY = Configuration.get('S3_KEY');
+	storageProvider.secretAccessKey = CryptoJS.AES.decrypt(storageProvider.secretAccessKey, S3_KEY).toString(
+		CryptoJS.enc.Utf8
+	);
+	return new aws.S3(getConfig(storageProvider));
+};
 
 const listBuckets = async (awsObject) => {
-	const response = await awsObject.s3.listBuckets().promise();
-	return response.Buckets ? response.Buckets.map((b) => b.Name) : [];
+	try {
+		const response = await awsObject.s3.listBuckets().promise();
+		return response.Buckets ? response.Buckets.map((b) => b.Name) : [];
+	} catch (e) {
+		throw new GeneralError(e);
+	}
 };
 
 const createAWSObject = async (schoolId) => {
@@ -116,14 +126,9 @@ const createAWSObject = async (schoolId) => {
 	if (school === null) throw new NotFound('School not found.');
 
 	if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === true) {
-		const S3_KEY = Configuration.get('S3_KEY');
 		if (!school.storageProvider) {
 			school.storageProvider = await chooseProvider(schoolId);
 		}
-		school.storageProvider.secretAccessKey = CryptoJS.AES.decrypt(
-			school.storageProvider.secretAccessKey,
-			S3_KEY
-		).toString(CryptoJS.enc.Utf8);
 		const s3 = getS3(school.storageProvider);
 		return {
 			s3,
@@ -251,7 +256,7 @@ const reassignProviderForSchool = async (awsObject) => {
 
 const putBucketCors = async (awsObject) => {
 	try {
-		return await awsObject.s3
+		await awsObject.s3
 			.putBucketCors({
 				Bucket: awsObject.bucket,
 				CORSConfiguration: {
@@ -260,14 +265,17 @@ const putBucketCors = async (awsObject) => {
 			})
 			.promise();
 	} catch (err) {
-		throw new GeneralError(`Could not set cors configurations for the bucket ${awsObject.bucket}`, err);
+		// 501 - NotImplemented. Some providers don't support all headers we are using
+		if (err.statusCode !== 501) {
+			throw new Error(err);
+		}
 	}
 };
 
 const createBucket = async (awsObject) => {
 	try {
-		const res = await awsObject.s3.createBucket({ Bucket: awsObject.bucket }).promise();
 		logger.info(`Bucket ${awsObject.bucket} does not exist - creating ... `);
+		const res = await awsObject.s3.createBucket({ Bucket: awsObject.bucket }).promise();
 		await putBucketCors(awsObject);
 		return {
 			message: 'Successfully created s3-bucket!',
@@ -304,9 +312,9 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			return awsObject;
 		} catch (err) {
 			if (err.statusCode === 404) {
-				const response = createBucket(awsObject);
+				const response = await createBucket(awsObject);
 				const newAwsObject = response.data;
-				logger.info(`Bucket ${awsObject.bucket} created ... `);
+				logger.info(`Bucket ${newAwsObject.bucket} created ... `);
 
 				return newAwsObject;
 			}
