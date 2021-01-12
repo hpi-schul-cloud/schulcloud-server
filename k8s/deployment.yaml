@@ -24,7 +24,7 @@ spec:
           imagePullPolicy: Always
           envFrom:
           - configMapRef:
-              name: environment-variables-server
+              name: $SERVICE_NAME-environment-variables
           ports:
           - name: web
             containerPort: 3030
