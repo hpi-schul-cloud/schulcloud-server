@@ -32,7 +32,7 @@ jobs:
     - name: Environment variables
       run: |
         export SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-8)
-        export NAMESPACE=${GITHUB_REF##*/}
+        export NAMESPACE=$(echo ${GITHUB_REF##*/} | sed -e "s/\//-/g" | tr '[:upper:]' '[:lower:]')
         export SERVICE_NAME=${GITHUB_REPOSITORY##*/}
         export BUILD_IMAGE=$REGISTRY_HOSTNAME/${{ secrets.GCP_PROJECT_ID }}/$SERVICE_NAME:$SHORT_SHA
         export HOSTNAME=$NAMESPACE.$STAGING_DOMAIN
