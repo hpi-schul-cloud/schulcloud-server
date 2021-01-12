@@ -5,10 +5,10 @@ metadata:
 data:
   THIS_SERVICE: $SERVICE_NAME
   BRANCH: $NAMESPACE
-  DB_URL: mongodb://10.141.10.250:27017/schulcloud
+  DB_URL: mongodb://10.141.10.250:27017/schulcloud_$NAMESPACE
   NODE_ENV: production
   PORT: '3030'
   LOG_LEVEL: info
   # for running backup.js to setup database
   MONGO_HOST: '10.141.10.250'
-  MONGO_DATABASE: schulcloud
+  MONGO_DATABASE: schulcloud_$NAMESPACE
