@@ -2,10 +2,7 @@ const { schoolModel: School } = require('../../../services/school/model');
 
 const { SCHOOL_OF_DELETE_USERS } = require('./db');
 
-const getSchool = async (_id) => {
-	const school = await School.findById(_id).lean().exec();
-	return school;
-};
+const getSchool = async (_id) => School.findById(_id).lean().exec();
 
 const getTombstoneSchool = async () => School.findOne({ purpose: SCHOOL_OF_DELETE_USERS.purpose }).lean().exec();
 
