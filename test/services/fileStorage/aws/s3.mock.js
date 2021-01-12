@@ -13,14 +13,13 @@ const testHeadObjectReturn = {
 const existedBuckets = [];
 
 const promisify = (response) => {
-	const promise = () => {
-		return new Promise((resolve, reject) => {
+	const promise = () =>
+		new Promise((resolve, reject) => {
 			if (response && response.ErrorCode) {
 				reject(response);
 			}
 			resolve(response);
 		});
-	};
 	return { promise };
 };
 
@@ -49,9 +48,7 @@ const mockAws = {
 				return promisify(response);
 			},
 			listBuckets() {
-				const bucketNames = existedBuckets.map((b) => {
-					return { Name: b };
-				});
+				const bucketNames = existedBuckets.map((b) => ({ Name: b }));
 				const response = { Buckets: bucketNames };
 				return promisify(response);
 			},

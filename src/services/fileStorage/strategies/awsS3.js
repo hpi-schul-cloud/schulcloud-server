@@ -98,9 +98,7 @@ if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === false) {
 }
 // end legacy
 
-const getS3 = (storageProvider) => {
-	return new aws.S3(getConfig(storageProvider));
-};
+const getS3 = (storageProvider) => new aws.S3(getConfig(storageProvider));
 
 const listBuckets = async (awsObject) => {
 	const response = await awsObject.s3.listBuckets().promise();
@@ -126,7 +124,7 @@ const createAWSObject = async (schoolId) => {
 			school.storageProvider.secretAccessKey,
 			S3_KEY
 		).toString(CryptoJS.enc.Utf8);
-		const s3 = await getS3(school.storageProvider);
+		const s3 = getS3(school.storageProvider);
 		return {
 			s3,
 			bucket: `bucket-${schoolId}`,
