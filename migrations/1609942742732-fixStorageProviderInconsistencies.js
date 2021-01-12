@@ -75,10 +75,11 @@ const getProviderForSchool = (bucketsForProvider, school) => {
 		const bucketExists = buckets.indexOf(`bucket-${school.toString()}`) >= 0;
 		if (bucketExists) return provider;
 	}
-	return undefined;
+	return EMPTY_PROVIDER;
 };
 
-const printSchoolsForProvider = async (foundSchoolsPerProvider) => {
+// eslint-disable-next-line no-unused-vars
+const printSchoolsForProvider = (foundSchoolsPerProvider) => {
 	for (const [provider, schools] of Object.entries(foundSchoolsPerProvider)) {
 		info(`For provider ${provider} found schools: ${JSON.stringify(schools)}`);
 	}
@@ -118,10 +119,7 @@ const getSchoolsWithWrongProviders = (bucketsPerProvider, schoolsByProvider) => 
 const findProvidersForSchools = (schoolsWithoutBuckets, bucketsPerProvider) => {
 	const foundSchoolsPerProvider = {};
 	for (const school of schoolsWithoutBuckets) {
-		let provider = getProviderForSchool(bucketsPerProvider, school);
-		if (provider === undefined) {
-			provider = EMPTY_PROVIDER;
-		}
+		const provider = getProviderForSchool(bucketsPerProvider, school);
 		const schoolsForProvider = foundSchoolsPerProvider[provider] || [];
 		schoolsForProvider.push(school);
 		foundSchoolsPerProvider[provider] = schoolsForProvider;
