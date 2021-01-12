@@ -10,7 +10,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 ### Added
+
 - SC-8029 - Add deletion concept handling for pseudonyms and registration pins
+
+### Changed
+
+- SC-8380 removed reqlib, replaced by normal require to keep referenced types known
 
 ## [25.5.0]
 

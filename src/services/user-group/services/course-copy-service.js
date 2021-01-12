@@ -1,9 +1,8 @@
 // eslint-disable-next-line max-classes-per-file
 const _ = require('lodash');
 const nanoid = require('nanoid');
-const reqlib = require('app-root-path').require;
 
-const { GeneralError } = reqlib('src/errors');
+const { GeneralError } = require('../../../errors');
 const logger = require('../../../logger');
 const hooks = require('../hooks/copyCourseHook');
 const { courseModel } = require('../model');

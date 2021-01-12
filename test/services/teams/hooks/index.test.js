@@ -1,9 +1,8 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const { authenticate } = require('@feathersjs/authentication');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden } = reqlib('src/errors');
+const { Forbidden } = require('../../../../src/errors');
 const {
 	filterToRelated,
 	rejectDefaultFilePermissionUpdatesIfNotPermitted,
