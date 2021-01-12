@@ -25,7 +25,6 @@ describe('AWS file storage strategy', () => {
 	const ShouldFail = new Error('It succeeded but should have returned an error.');
 
 	let configBefore = {};
-	let getBucketsStub;
 	before(async () => {
 		// Enable mockery to mock objects
 		mockery.enable({
@@ -56,7 +55,6 @@ describe('AWS file storage strategy', () => {
 		mockery.disable();
 		await testObjects.cleanup();
 		Configuration.reset(configBefore);
-		if (getBucketsStub) getBucketsStub.restore();
 	});
 
 	describe('create', () => {
