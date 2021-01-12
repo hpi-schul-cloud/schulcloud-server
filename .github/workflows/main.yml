@@ -22,6 +22,7 @@ env:
   REGISTRY_HOSTNAME: gcr.io
   DEPLOYMENT_NAME: gke-test
   STAGING_DOMAIN: devops-wizard.com
+  HOSTNAME_PREFIX: api
   # GCP_PROJECT_ID: otters-cc
 
 jobs:
@@ -35,7 +36,7 @@ jobs:
         export NAMESPACE=$(echo ${GITHUB_REF##*/} | sed -e "s/\//-/g" | tr '[:upper:]' '[:lower:]')
         export SERVICE_NAME=${GITHUB_REPOSITORY##*/}
         export BUILD_IMAGE=$REGISTRY_HOSTNAME/${{ secrets.GCP_PROJECT_ID }}/$SERVICE_NAME:$SHORT_SHA
-        export HOSTNAME=$NAMESPACE.$STAGING_DOMAIN
+        export HOSTNAME=$HOSTNAME_PREFIX-$NAMESPACE.$STAGING_DOMAIN
         echo "SHORT_SHA=$SHORT_SHA"
         echo "SERVICE_NAME=$SERVICE_NAME"
         echo "NAMESPACE=$NAMESPACE"
