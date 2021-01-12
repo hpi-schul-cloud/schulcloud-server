@@ -33,6 +33,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8233 - Removed attribute and member as required attributes for the LDAP-config service
 
+### Fixed
+
+- SC-8329 - Cluster returns old verison of Pin object after patch
+
 ## [25.4.1]
 
 - Update from 25.3.9 into master
