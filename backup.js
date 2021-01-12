@@ -119,6 +119,8 @@ const CONFIG = {
 	},
 };
 
+log(CONFIG);
+
 /** *****************************************
  * HELPER
  ****************************************** */
@@ -176,7 +178,7 @@ const importCollection = async ({ collection, filePath }) => {
 	const cmdArgs = [
 		'mongoimport',
 		'--host',
-		CONFIG.MONGO.URL,
+		CONFIG.MONGO.HOST,
 		'--db',
 		CONFIG.MONGO.DATABASE,
 		...CONFIG.MONGO.CREDENTIALS_ARGS,
@@ -207,7 +209,7 @@ const getCollectionCount = async () => {
 	];
 	const output = await asyncExec(cleanJoin(cmdArgs));
 	// log('output=', output, typeof output, output.trim(), output.trim().length);
-	return output// Number.parseInt(output.trim(), 10);
+	return output; // Number.parseInt(output.trim(), 10);
 };
 
 const importDirectory = async (directoryPath) => {
