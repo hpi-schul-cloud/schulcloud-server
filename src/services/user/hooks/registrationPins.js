@@ -2,9 +2,8 @@ const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const moment = require('moment');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, BadRequest, TooManyRequests } = reqlib('src/errors');
+const { Forbidden, BadRequest, TooManyRequests } = require('../../../errors');
 const { NODE_ENV, ENVIRONMENTS, SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../model').registrationPinModel;
@@ -54,7 +53,7 @@ Dein ${SC_SHORT_TITLE}-Team`;
 	throw new BadRequest('Die angegebene Rolle ist ungültig.', { role });
 }
 
-const checkAndVerifyPin = (hook) => {
+const checkAndVerifyPin = async (hook) => {
 	if (hook.result.data.length === 0) {
 		return hook;
 	}
@@ -71,13 +70,10 @@ const checkAndVerifyPin = (hook) => {
 		}
 		if (firstDataItem.pin) {
 			if (firstDataItem.pin === hook.params.query.pin) {
-				return hook.app
-					.service('registrationPins')
-					.patch(firstDataItem._id, { verified: true })
-					.then((result) => {
-						hook.result.data = [result];
-						return hook;
-					});
+				await hook.app.service('registrationPins').patch(firstDataItem._id, { verified: true });
+				// do not use result of patch, because mongodb can return a old version if not updated on all cluster nodes.
+				hook.result.data[0].verified = true;
+				return hook;
 			}
 			throw new BadRequest(
 				'Der eingegebene Code ist ungültig oder konnte nicht bestätigt werden. Bitte versuche es erneut.'

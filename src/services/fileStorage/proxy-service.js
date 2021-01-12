@@ -2,9 +2,8 @@ const fs = require('fs');
 const url = require('url');
 const rp = require('request-promise-native');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, NotFound, BadRequest, GeneralError } = reqlib('src/errors');
+const { Forbidden, NotFound, BadRequest, GeneralError } = require('../../errors');
 
 const hooks = require('./hooks');
 const swaggerDocs = require('./docs');

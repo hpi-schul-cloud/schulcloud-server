@@ -1,8 +1,7 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const reqlib = require('app-root-path').require;
 
-const { NotAuthenticated } = reqlib('src/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
+const { NotAuthenticated } = require('../errors');
 const { error } = require('../logger');
 
 const CLIENT_API_KEY = 'CLIENT_API_KEY';

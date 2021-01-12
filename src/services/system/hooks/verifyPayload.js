@@ -1,6 +1,4 @@
-const reqlib = require('app-root-path').require;
-
-const { Forbidden } = reqlib('src/errors');
+const { Forbidden } = require('../../../errors');
 
 module.exports = async (context) => {
 	if (context.data && context.data.ldapConfig && context.data.ldapConfig.provider) {
