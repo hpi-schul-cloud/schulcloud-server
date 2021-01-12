@@ -190,17 +190,9 @@ const importCollection = async ({ collection, filePath }) => {
 };
 
 const dropDatabase = async () => {
-	const cmdArgs = [
-		'mongo',
-		'--host',
-		CONFIG.MONGO.URL,
-		'--db',
-		CONFIG.MONGO.DATABASE,
-		...CONFIG.MONGO.CREDENTIALS_ARGS,
-		'--eval',
-		'"db.dropDatabase()"',
-	];
+	const cmdArgs = ['mongo', '--host', CONFIG.MONGO.URL, '--eval', '"db.dropDatabase()"', CONFIG.MONGO.DATABASE];
 	const output = await asyncExec(cleanJoin(cmdArgs));
+	log(output);
 	return output;
 };
 
@@ -209,21 +201,20 @@ const getCollectionCount = async () => {
 		'mongo',
 		'--host',
 		CONFIG.MONGO.URL,
-		'--db',
-		CONFIG.MONGO.DATABASE,
-		...CONFIG.MONGO.CREDENTIALS_ARGS,
 		'--eval',
 		'"db.getCollectionNames().length"',
+		CONFIG.MONGO.DATABASE,
 	];
 	const output = await asyncExec(cleanJoin(cmdArgs));
-	return Number.parseInt(output, 10);
+	// log('output=', output, typeof output, output.trim(), output.trim().length);
+	return output// Number.parseInt(output.trim(), 10);
 };
 
 const importDirectory = async (directoryPath) => {
 	const databaseCollectionCount = await getCollectionCount();
-
+	log('databaseCollectionCount=', databaseCollectionCount);
 	if (databaseCollectionCount > 0) {
-		throw new Error('Database is not empty.');
+		throw new Error(`Database is not empty it contain ${databaseCollectionCount} collections.`);
 	}
 
 	const files = await readDir(directoryPath);
