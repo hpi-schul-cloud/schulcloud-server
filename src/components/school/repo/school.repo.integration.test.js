@@ -37,7 +37,7 @@ describe('school repository', () => {
 			expect(result).to.eql(school);
 		});
 
-		it('should throw error if school with given id does not exist', async () => {
+		it('should return null if school with given id does not exist', async () => {
 			const notExistingId = testObjects.generateObjectId();
 			const school = await schoolRepo.getSchool(notExistingId);
 			expect(school).to.be.null;
