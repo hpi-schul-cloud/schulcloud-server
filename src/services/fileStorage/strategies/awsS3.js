@@ -254,24 +254,23 @@ const putBucketCors = async (awsObject) =>
 
 const createBucket = async (awsObject) => {
 	let res;
-	let message;
 	try {
 		logger.info(`Bucket ${awsObject.bucket} does not exist - creating ... `);
 		res = await awsObject.s3.createBucket({ Bucket: awsObject.bucket }).promise();
-		message = 'Successfully created s3-bucket!';
 		await putBucketCors(awsObject);
 	} catch (err) {
+		logger.error(`Error by creating the bucket ${awsObject.bucket}: ${err.code} ${err.message}`);
 		if (err.statusCode === 409) {
 			logger.error(`Bucket ${awsObject.bucket} does not exist. 
-							Probably it already exists by another provider. Trying to find by other providers `);
+							Probably it already exists by another provider. Trying to find by other providers. 
+							${err.code} - ${err.message}`);
 			res = await reassignProviderForSchool(awsObject);
-			message = `Successfully reassigned the provider`;
 		} else {
 			throw new GeneralError(`Error by creating the bucket ${err}`);
 		}
 	}
 	return {
-		message,
+		message: 'Successfully created s3-bucket!',
 		data: res,
 		code: 200,
 	};
@@ -292,8 +291,8 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			Bucket: awsObject.bucket,
 		};
 		try {
-			logger.info(`Bucket ${awsObject.bucket} does exist`);
 			await awsObject.s3.headBucket(params).promise();
+			logger.info(`Bucket ${awsObject.bucket} does exist`);
 			return awsObject;
 		} catch (err) {
 			if (err.statusCode === 404) {
