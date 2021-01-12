@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
+## Unreleased
+
+## [25.5.0]
+
+### Added
+
+- SC-8229 - Added invalid DN error to ldap-config service error handling
+- SC-7825 - Remove user relations from courses
+- SC-7827 - Add deletion concept handling for file permissions.
+- SC-8030 - Setup orchestrator for deleting concept
+- SC-8060 - increase unit test coverage for lernstore counties
+- SC-8179 - repaired unit test
+- SC-7763 - adds searchable feature flag for lernstore.
+- SC-8020 - adds collections filter to edu-sharing service
+- SC-8260 - new team indexes and migration to add this
+
+### Removed
+
+- SC-8233 - Removed attribute and member as required attributes for the LDAP-config service
+
+### Fixed
+
+- SC-8329 - Cluster returns old verison of Pin object after patch
+
+## [25.4.1]
+
+- Update from 25.3.9 into master
+
 ## [25.4.1]
 
 - Update from 25.3.9 into master
@@ -62,6 +90,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - SC-7734 - Added a hook that takes care of merlin content to generate valid urls for users
+- SC-7483 - Updating terms of use for all users for each instance separately
 
 ## [25.3.1]
 
@@ -73,6 +102,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 
 ### Added
 
+- SC-7841 - remove deleted user from classes
 - SC-7836 - Removing registration pin by removing the user
 - SC-7838 - move pseudonyms to trashbin
 - SC-7142 - Counties/Kreise added to federal states.
@@ -100,6 +130,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 - SC-7915 - facade locator
 - SC-7571 - solved performance issues - bulk QR-code generation
 - SC-6294 - Introduce Typescript in schulcloud-server
+- SC-7543 - Adds ldap-config service to create, load, and patch LDAP-configs (replaces /ldap endpoints for new client)
 - SC-7028 - Add Course Component API Specification document
 - SC-7476 - Prevent hash generation if user has account
 - SC-6692 - Added Lern-Store counties support for Niedersachsen (Merlin)
@@ -121,7 +152,9 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 - SC-5900 - Move Synapse synchronization logic into server
 - SC-7499 - Fixes documentation for edu sharing endpoints
 - SC-7872 - Fix audience of the jwt to new organisation name.
+- SC-7543 - deprecates `GET /ldap/:id` and `PATCH /ldap/:id` routes
 - SC-7868 - Move external request helpers to more present file location
+- SC-7474 pull docker container for tests if commit id exists on docker hub
 
 ### Fixed
 

@@ -13,6 +13,10 @@ servers:
   - url: /legacy/v1/
 
 paths:
+  /ldap-config:
+    $ref: '../ldap-config/docs/openapi.yaml#/paths/~1'
+  '/ldap-config/{_id}':
+    $ref: '../ldap-config/docs/openapi.yaml#/paths/~1{_id}'
   /me:
     $ref: '../me/docs/openapi.yaml#/paths/~1me'
   /version:
