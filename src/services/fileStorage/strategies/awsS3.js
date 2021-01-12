@@ -14,6 +14,7 @@ const { StorageProviderModel } = require('../../storageProvider/model');
 const UserModel = require('../../user/model');
 const filePermissionHelper = require('../utils/filePermissionHelper');
 const { removeLeadingSlash } = require('../utils/filePathHelper');
+const { updateProviderForSchool, findProviderForSchool } = require('../utils/providerAssignmentHelper');
 const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 
 const HOST = Configuration.get('HOST');
@@ -54,7 +55,7 @@ const chooseProvider = async (schoolId) => {
 			// will fail if not run in a replicaset.
 			const effectiveSession = session.clientOptions.replicaSet ? session : undefined;
 			providers = await StorageProviderModel.find({ isShared: true })
-				.sort({ freeBuckets: -1 })
+				.sort({ freeBuckets: -1, _id: 1 })
 				.limit(1)
 				.session(effectiveSession)
 				.lean()
@@ -97,6 +98,15 @@ if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === false) {
 }
 // end legacy
 
+const getS3 = (storageProvider) => {
+	return new aws.S3(getConfig(storageProvider));
+};
+
+const listBuckets = async (awsObject) => {
+	const response = await awsObject.s3.listBuckets().promise();
+	return response.Buckets ? response.Buckets.map((b) => b.Name) : [];
+};
+
 const createAWSObject = async (schoolId) => {
 	const school = await schoolModel
 		.findOne({ _id: schoolId })
@@ -116,9 +126,9 @@ const createAWSObject = async (schoolId) => {
 			school.storageProvider.secretAccessKey,
 			S3_KEY
 		).toString(CryptoJS.enc.Utf8);
-
+		const s3 = await getS3(school.storageProvider);
 		return {
-			s3: new aws.S3(getConfig(school.storageProvider)),
+			s3,
 			bucket: `bucket-${schoolId}`,
 		};
 	}
@@ -211,6 +221,71 @@ const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 	).then((data) => splitFilesAndDirectories(storageContext, data));
 };
 
+const reassignProviderForSchool = async (awsObject) => {
+	const schoolId = awsObject.bucket.replace('bucket-', '');
+	const storageProviders = await StorageProviderModel.find().lean().exec();
+	const bucketsForProvider = {};
+	for (const provider of storageProviders) {
+		// eslint-disable-next-line no-await-in-loop
+		const config = getS3(provider);
+		const awsObj = { s3: config };
+		// eslint-disable-next-line no-await-in-loop
+		bucketsForProvider[provider._id] = await listBuckets(awsObj);
+	}
+	const correctProvider = findProviderForSchool(bucketsForProvider, schoolId);
+	if (correctProvider !== undefined) {
+		logger.error(`Correct provider for school ${schoolId} could be found ${correctProvider}`);
+		await updateProviderForSchool(correctProvider, schoolId);
+		const newAwsObject = await createAWSObject(schoolId);
+		return {
+			message: `Bucket for the school was found by other provider. Assigned provider ${correctProvider}`,
+			provider: correctProvider,
+			data: newAwsObject,
+			code: 200,
+		};
+	}
+	return {
+		message: 'Bucket for this school was not found by other providers. Provider will remain',
+		data: awsObject,
+		code: 200,
+	};
+};
+
+const putBucketCors = async (awsObject) => {
+	try {
+		return await awsObject.s3
+			.putBucketCors({
+				Bucket: awsObject.bucket,
+				CORSConfiguration: {
+					CORSRules: getCorsRules(),
+				},
+			})
+			.promise();
+	} catch (err) {
+		throw new GeneralError(`Could not set cors configurations for the bucket ${awsObject.bucket}`, err);
+	}
+};
+
+const createBucket = async (awsObject) => {
+	try {
+		const res = await awsObject.s3.createBucket({ Bucket: awsObject.bucket }).promise();
+		logger.info(`Bucket ${awsObject.bucket} does not exist - creating ... `);
+		await putBucketCors(awsObject);
+		return {
+			message: 'Successfully created s3-bucket!',
+			data: res,
+			code: 200,
+		};
+	} catch (err) {
+		if (err.statusCode === 409) {
+			logger.error(`Bucket ${awsObject.bucket} does not exist. 
+							Probably it already exists by another provider. Trying to find by other providers `);
+			return reassignProviderForSchool(awsObject);
+		}
+		throw new GeneralError(`Error by creating the bucket ${err}`);
+	}
+};
+
 class AWSS3Strategy extends AbstractFileStorageStrategy {
 	async create(schoolId) {
 		if (!schoolId) {
@@ -218,76 +293,27 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		}
 
 		const awsObject = await createAWSObject(schoolId);
-		return new Promise((resolve, reject) =>
-			promisify(
-				awsObject.s3.createBucket.bind(awsObject.s3),
-				awsObject.s3
-			)({ Bucket: awsObject.bucket })
-				.then((res) => {
-					/* Sets the CORS configuration for a bucket. */
-					awsObject.s3.putBucketCors(
-						{
-							Bucket: awsObject.bucket,
-							CORSConfiguration: {
-								CORSRules: getCorsRules(),
-							},
-						},
-						(err) => {
-							// define and pass error handler
-							if (err) {
-								logger.warning(err);
-							}
-							reject(err);
-						}
-					);
-					resolve({
-						message: 'Successfully created s3-bucket!',
-						data: res,
-						code: 200,
-					});
-				})
-				.catch((err) => reject(new Error(err)))
-		);
+		return createBucket(awsObject);
 	}
 
-	createIfNotExists(awsObject) {
-		return new Promise((resolve, reject) => {
-			const params = {
-				Bucket: awsObject.bucket,
-			};
-			awsObject.s3.headBucket(params, (err) => {
-				if (err && err.statusCode === 404) {
-					logger.info(`Bucket ${awsObject.bucket} does not exist - creating ... `);
+	async createIfNotExists(awsObject) {
+		const params = {
+			Bucket: awsObject.bucket,
+		};
+		try {
+			logger.info(`Bucket ${awsObject.bucket} does exist`);
+			await awsObject.s3.headBucket(params).promise();
+			return awsObject;
+		} catch (err) {
+			if (err.statusCode === 404) {
+				const response = createBucket(awsObject);
+				const newAwsObject = response.data;
+				logger.info(`Bucket ${awsObject.bucket} created ... `);
 
-					awsObject.s3.createBucket({ Bucket: awsObject.bucket }, (err) => {
-						if (err) {
-							reject(err);
-						}
-
-						logger.info(`Bucket ${awsObject.bucket} created ... `);
-						awsObject.s3.putBucketCors(
-							{
-								Bucket: awsObject.bucket,
-								CORSConfiguration: {
-									CORSRules: getCorsRules(),
-								},
-							},
-							(err) => {
-								if (err) {
-									reject(err);
-								}
-								resolve(awsObject);
-							}
-						);
-					});
-
-					return;
-				}
-
-				logger.info(`Bucket ${awsObject.bucket} does exist`);
-				resolve(awsObject);
-			});
-		});
+				return newAwsObject;
+			}
+			throw new GeneralError(`Could not check the existence of the bucket ${awsObject.bucket} ${err}`);
+		}
 	}
 
 	/** @DEPRECATED * */
