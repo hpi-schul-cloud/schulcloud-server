@@ -107,12 +107,8 @@ const getS3 = (storageProvider) => {
 };
 
 const listBuckets = async (awsObject) => {
-	try {
-		const response = await awsObject.s3.listBuckets().promise();
-		return response.Buckets ? response.Buckets.map((b) => b.Name) : [];
-	} catch (e) {
-		throw new GeneralError(e);
-	}
+	const response = await awsObject.s3.listBuckets().promise();
+	return response.Buckets ? response.Buckets.map((b) => b.Name) : [];
 };
 
 const createAWSObject = async (schoolId) => {
@@ -240,56 +236,45 @@ const reassignProviderForSchool = async (awsObject) => {
 		logger.error(`Correct provider for school ${schoolId} could be found ${correctProvider}`);
 		await updateProviderForSchool(correctProvider, schoolId);
 		const newAwsObject = await createAWSObject(schoolId);
-		return {
-			message: `Bucket for the school was found by other provider. Assigned provider ${correctProvider}`,
-			provider: correctProvider,
-			data: newAwsObject,
-			code: 200,
-		};
+		newAwsObject.provider = correctProvider;
+		return newAwsObject;
 	}
-	return {
-		message: 'Bucket for this school was not found by other providers. Provider will remain',
-		data: awsObject,
-		code: 200,
-	};
+	return awsObject;
 };
 
-const putBucketCors = async (awsObject) => {
-	try {
-		await awsObject.s3
-			.putBucketCors({
-				Bucket: awsObject.bucket,
-				CORSConfiguration: {
-					CORSRules: getCorsRules(),
-				},
-			})
-			.promise();
-	} catch (err) {
-		// 501 - NotImplemented. Some providers don't support all headers we are using
-		if (err.statusCode !== 501) {
-			throw new Error(err);
-		}
-	}
-};
+const putBucketCors = async (awsObject) =>
+	awsObject.s3
+		.putBucketCors({
+			Bucket: awsObject.bucket,
+			CORSConfiguration: {
+				CORSRules: getCorsRules(),
+			},
+		})
+		.promise();
 
 const createBucket = async (awsObject) => {
+	let res;
+	let message;
 	try {
 		logger.info(`Bucket ${awsObject.bucket} does not exist - creating ... `);
-		const res = await awsObject.s3.createBucket({ Bucket: awsObject.bucket }).promise();
+		res = await awsObject.s3.createBucket({ Bucket: awsObject.bucket }).promise();
+		message = 'Successfully created s3-bucket!';
 		await putBucketCors(awsObject);
-		return {
-			message: 'Successfully created s3-bucket!',
-			data: res,
-			code: 200,
-		};
 	} catch (err) {
 		if (err.statusCode === 409) {
 			logger.error(`Bucket ${awsObject.bucket} does not exist. 
 							Probably it already exists by another provider. Trying to find by other providers `);
-			return reassignProviderForSchool(awsObject);
+			res = await reassignProviderForSchool(awsObject);
+			message = `Successfully reassigned the provider`;
+		} else {
+			throw new GeneralError(`Error by creating the bucket ${err}`);
 		}
-		throw new GeneralError(`Error by creating the bucket ${err}`);
 	}
+	return {
+		message,
+		data: res,
+		code: 200,
+	};
 };
 
 class AWSS3Strategy extends AbstractFileStorageStrategy {

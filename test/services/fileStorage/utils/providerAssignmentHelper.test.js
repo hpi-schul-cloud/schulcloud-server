@@ -21,17 +21,21 @@ describe('providerAssignmentHelper', () => {
 	});
 
 	it('find provider for school should return correct provider', async () => {
-		const testStorageProvider = await testObjects.createTestStorageProvider({ secretAccessKey: '123456789' });
-		const testStorageProvider2 = await testObjects.createTestStorageProvider({ secretAccessKey: '123456789' });
-		const testSchool = await testObjects.createTestSchool({ storageProvider: testStorageProvider });
-
-		const schoolId = testSchool._id.toString();
-		const provider2Id = testStorageProvider2._id.toString();
+		const schoolId = 'TEST_SCHOOL';
+		const TEST_PROVIDER = 'TEST_PROVIDER';
 
 		const bucketsPerProvider = {};
-		bucketsPerProvider[provider2Id] = [`bucket-${schoolId}`];
+		bucketsPerProvider[TEST_PROVIDER] = [`bucket-${schoolId}`];
 		const provider = await findProviderForSchool(bucketsPerProvider, schoolId);
-		expect(provider).to.be.equal(provider2Id);
+		expect(provider).to.be.equal(TEST_PROVIDER);
+	});
+
+	it('if provider for school was not found, it should return undefined', async () => {
+		const schoolId = 'TEST_SCHOOL';
+
+		const bucketsPerProvider = {};
+		const provider = await findProviderForSchool(bucketsPerProvider, schoolId);
+		expect(provider).to.be.equal(undefined);
 	});
 
 	it('update provider for school should correctly update the storage provider for given school', async () => {
@@ -44,5 +48,16 @@ describe('providerAssignmentHelper', () => {
 		await updateProviderForSchool(provider2Id, testSchool._id.toString());
 		testSchool = (await schoolModel.findById(testSchool._id)).toObject();
 		expect(testSchool.storageProvider.toString()).to.be.equal(testStorageProvider2._id.toString());
+	});
+
+	it('should not update provider for school if provider was not found', async () => {
+		const testStorageProvider = await testObjects.createTestStorageProvider({ secretAccessKey: '123456789' });
+		let testSchool = await testObjects.createTestSchool({ storageProvider: testStorageProvider });
+
+		const provider2Id = undefined;
+
+		await updateProviderForSchool(provider2Id, testSchool._id.toString());
+		testSchool = (await schoolModel.findById(testSchool._id)).toObject();
+		expect(testSchool.storageProvider.toString()).to.be.equal(testStorageProvider._id.toString());
 	});
 });

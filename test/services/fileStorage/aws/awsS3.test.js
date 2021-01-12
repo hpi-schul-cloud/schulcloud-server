@@ -132,7 +132,7 @@ describe('AWS file storage strategy', () => {
 			// the school should be reassigned to provider with the corresponding bucket
 			const res2 = await aws.create(testSchool._id);
 			testSchool = (await schoolModel.findById(testSchool._id)).toObject();
-			expect(testSchool.storageProvider._id.toString()).to.equal(res2.provider);
+			expect(testSchool.storageProvider._id.toString()).to.equal(res2.data.provider);
 		});
 
 		it('rejects with missing parameters', () =>
