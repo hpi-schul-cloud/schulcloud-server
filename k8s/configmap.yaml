@@ -14,4 +14,4 @@ data:
   MONGO_DATABASE: schulcloud_$NAMESPACE
   JWT_AUD: $STAGING_DOMAIN
   CALENDAR_API_KEY: "123"
-  CALENDAR_URI: http://schulcloud-calendar:3000
+  CALENDAR_URI: http://schulcloud-calendar
