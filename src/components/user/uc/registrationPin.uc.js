@@ -7,7 +7,7 @@ const deleteRegistrationPinsForUser = async (email) => {
 	validateEmail(email);
 	let complete = true;
 	debug(`deleting user related registration pins started`, { email });
-	const registrationPins = await registrationPinRepo.getRegistrationPinsForUser(email);
+	const registrationPins = await registrationPinRepo.getRegistrationPinsByEmail(email);
 	debug(`found ${registrationPins.length} registration pins for the user to be removed`, { email });
 	if (registrationPins.length !== 0) {
 		const result = await registrationPinRepo.deleteRegistrationPinsByEmail(email);

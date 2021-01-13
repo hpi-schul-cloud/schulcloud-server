@@ -12,7 +12,7 @@ chai.use(chaiAsPromised);
 
 const USER_ID = new ObjectId();
 const PSEUDONYM_ID = new ObjectId();
-const createTestPseudonym = (userId = USER_ID) => ({
+const getPseudonymsForUserStub = (userId = USER_ID) => ({
 	_id: PSEUDONYM_ID,
 	toolId: new ObjectId(),
 	pseudonym: 'PSEUDONYM',
@@ -25,7 +25,7 @@ describe('pseudonym usecase', () => {
 	before(async () => {
 		// init stubs
 		getPseudonymsStub = sinon.stub(pseudonymRepo, 'getPseudonymsForUser');
-		getPseudonymsStub.callsFake((userId = USER_ID) => [createTestPseudonym(userId)]);
+		getPseudonymsStub.callsFake((userId = USER_ID) => [getPseudonymsForUserStub(userId)]);
 	});
 
 	after(async () => {
@@ -54,12 +54,14 @@ describe('pseudonym usecase', () => {
 			const USER_WITHOUT_PSEUDONYMS_ID = new ObjectId();
 
 			getPseudonymsStub.callsFake(() => []);
-			const result = await pseudonymUC.deleteUserData()[0](USER_WITHOUT_PSEUDONYMS_ID);
-
-			expect(result.complete).to.deep.equal(true);
-			expect(result.trashBinData).to.be.an('object');
-			expect(result.trashBinData.scope).to.be.equal('pseudonyms');
-			expect(result.trashBinData.data).to.be.an('array').of.length(0);
+			for (const f of pseudonymUC.deleteUserData()) {
+				// eslint-disable-next-line no-await-in-loop
+				const result = await f(USER_WITHOUT_PSEUDONYMS_ID);
+				expect(result.complete).to.deep.equal(true);
+				expect(result.trashBinData).to.be.an('object');
+				expect(result.trashBinData.scope).to.be.equal('pseudonyms');
+				expect(result.trashBinData.data).to.be.an('array').of.length(0);
+			}
 		});
 
 		it('when the function is called with an invalid id, then it fails', async () => {

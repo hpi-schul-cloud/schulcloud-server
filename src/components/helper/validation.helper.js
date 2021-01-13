@@ -7,8 +7,8 @@ const validateObjectId = (objectId) => {
 };
 
 const validateRequired = (...values) => {
-	const hasEmptyValues = values.some((v) => v === null || v === undefined);
-	if (hasEmptyValues) {
+	const hasNullOrUndefinedValues = values.some((v) => v === null || v === undefined);
+	if (hasNullOrUndefinedValues) {
 		throw new ValidationError('Required value is missing');
 	}
 };
