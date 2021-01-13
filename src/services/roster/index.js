@@ -165,7 +165,7 @@ module.exports = function roster() {
 						}),
 						pseudonymService.find({
 							query: {
-								userId: course.teacherIds.concat(course.substitutionIds),
+								userId: course.teacherIds.concat(course.substitutionIds || []),
 								toolId: params.toolIds[0],
 							},
 						}),
