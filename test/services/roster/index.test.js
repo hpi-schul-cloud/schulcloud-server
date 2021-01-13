@@ -57,19 +57,15 @@ describe('roster service', function oauth() {
 			ltiToolIds: [testTool1._id],
 			shareToken: 'xxx',
 		};
-		return Promise.all([toolService.create(testTool1), courseService.create(testCourse)]).then(() =>
-			pseudonymService
-				.find({
-					query: {
-						userId: testUser1._id,
-						toolId: testTool1._id,
-					},
-				})
-				.then((pseudonym) => {
-					pseudonym1 = pseudonym.data[0].pseudonym;
-					return Promise.resolve();
-				})
-		);
+		const [tool, course] = await Promise.all([toolService.create(testTool1), courseService.create(testCourse)]);
+		const pseudonym = await pseudonymService.find({
+			query: {
+				userId: testUser1._id,
+				toolId: testTool1._id,
+			},
+		});
+		pseudonym1 = pseudonym.data[0].pseudonym;
+		return Promise.resolve();
 	});
 
 	after(() =>
