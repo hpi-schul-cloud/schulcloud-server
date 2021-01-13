@@ -1,6 +1,7 @@
 {
     "$schema": "./default.schema.json",
     "REQUEST_TIMEOUT": 600000,
+    "REQUEST_LOGGING_ENABLED": true,
     "FEATURE_API_VALIDATION_ENABLED": true,
     "FEATURE_API_RESPONSE_VALIDATION_ENABLED": true,
     "API_HOST": "http://host.docker.internal:3030",

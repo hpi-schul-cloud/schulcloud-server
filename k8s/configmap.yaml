@@ -9,9 +9,10 @@ data:
   NODE_ENV: production
   PORT: '3030'
   LOG_LEVEL: info
-  # for running backup.js to setup database
-  MONGO_HOST: '10.141.10.250'
-  MONGO_DATABASE: schulcloud_$NAMESPACE
+  REQUEST_LOGGING_ENABLED: "true"
   JWT_AUD: $STAGING_DOMAIN
   CALENDAR_API_KEY: "123"
   CALENDAR_URI: http://schulcloud-calendar
+  # for running backup.js to setup database
+  MONGO_HOST: '10.141.10.250'
+  MONGO_DATABASE: schulcloud_$NAMESPACE
