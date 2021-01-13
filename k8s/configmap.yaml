@@ -12,3 +12,4 @@ data:
   # for running backup.js to setup database
   MONGO_HOST: '10.141.10.250'
   MONGO_DATABASE: schulcloud_$NAMESPACE
+  JWT_AUD: $STAGING_DOMAIN
