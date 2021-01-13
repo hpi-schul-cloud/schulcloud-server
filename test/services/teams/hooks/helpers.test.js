@@ -1,8 +1,7 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const reqlib = require('app-root-path').require;
 
-const { BadRequest, NotFound } = reqlib('src/errors');
+const { BadRequest, NotFound } = require('../../../../src/errors');
 const { setupUser, deleteUser } = require('../helper/helper.user');
 const appPromise = require('../../../../src/app');
 const {

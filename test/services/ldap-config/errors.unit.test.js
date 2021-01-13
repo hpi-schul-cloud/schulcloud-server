@@ -1,7 +1,6 @@
 const { expect } = require('chai');
-const reqlib = require('app-root-path').require;
 
-const { NotAuthenticated } = reqlib('src/errors');
+const { NotAuthenticated } = require('../../../src/errors');
 const LDAPConnectionError = require('../../../src/services/ldap/LDAPConnectionError');
 
 const errorHandlers = require('../../../src/services/ldap-config/errors');
