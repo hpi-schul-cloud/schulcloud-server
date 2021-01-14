@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.5.1]
+### Fixed
+
+- SC-8303 fix wrong assignment from school to storage provider
+
 ## [25.5.0]
 
 ### Added
@@ -34,6 +39,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [25.4.1]
 
 - Update from 25.3.9 into master
+>>>>>>> master
 
 ## [25.4.1]
 
