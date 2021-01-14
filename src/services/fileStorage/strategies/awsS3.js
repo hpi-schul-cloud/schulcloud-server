@@ -39,7 +39,7 @@ const getConfig = (provider, useCors = true) => {
 		region: provider.region,
 		endpointUrl: provider.endpointUrl,
 	});
-	if ( useCors ) {
+	if (useCors) {
 		awsConfig.cors_rules = getCorsRules();
 	}
 	awsConfig.endpoint = new aws.Endpoint(provider.endpointUrl);
