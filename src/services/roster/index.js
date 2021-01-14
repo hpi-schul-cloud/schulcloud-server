@@ -5,6 +5,8 @@ const hooks = require('./hooks');
 const globalHooks = require('../../hooks');
 const oauth2 = require('../oauth2/hooks');
 const { excludeAttributesFromSanitization } = require('../../hooks/sanitizationExceptions');
+const { isValid: isValidObjectId } = require('../../helper/compare').ObjectId;
+const { ApplicationError } = require('../../errors');
 
 module.exports = function roster() {
 	const app = this;
@@ -26,40 +28,35 @@ module.exports = function roster() {
 	 * @returns data.username depseudonymization iframe html-code
 	 */
 	const metadataHandler = {
-		find(params) {
-			return app
-				.service('pseudonym')
-				.find({
-					query: {
-						pseudonym: params.pseudonym,
-					},
-				})
-				.then((pseudonym) => {
-					if (!pseudonym.total) {
-						return { errors: { description: 'User not found by token' } };
-					}
-					const { userId } = pseudonym.data[0];
-					return app
-						.service('users')
-						.find({
-							query: {
-								_id: userId,
-								$populate: ['roles'],
-							},
-						})
-						.then((users) => {
-							const user = users.data[0];
-							return {
-								data: {
-									user_id: params.route.user,
-									username: oauth2.getSubject(params.pseudonym, app.settings.services.web),
-									type: user.roles.map((role) => role.name).some((roleName) => roleName === 'teacher')
-										? 'teacher'
-										: 'student',
-								},
-							};
-						});
-				});
+		async find(params) {
+			const { pseudonym } = params;
+			const userParam = params.route.user;
+
+			const pseudonyms = await app.service('pseudonym').find({
+				query: {
+					pseudonym,
+				},
+			});
+
+			if (!pseudonyms || !pseudonyms.data || pseudonyms.data.length !== 1) {
+				return { errors: { description: 'User not found by token' } };
+			}
+			const { userId } = pseudonyms.data[0];
+			const users = await app.service('users').find({
+				query: {
+					_id: userId,
+					$populate: ['roles'],
+				},
+			});
+
+			const user = users.data[0];
+			return {
+				data: {
+					user_id: userParam,
+					username: oauth2.getSubject(pseudonym, app.settings.services.web),
+					type: user.roles.map((role) => role.name).some((roleName) => roleName === 'teacher') ? 'teacher' : 'student',
+				},
+			};
 		},
 	};
 
@@ -86,39 +83,36 @@ module.exports = function roster() {
 	 * @returns Array of course data including the group id, the group name, and the number of students
 	 */
 	const userGroupsHandler = {
-		find(params) {
-			return app
-				.service('pseudonym')
-				.find({
-					query: {
-						pseudonym: params.pseudonym,
-					},
-				})
-				.then((pseudonym) => {
-					if (!pseudonym.data[0]) {
-						return { errors: { description: 'User not found by token' } };
-					}
+		async find(params) {
+			const pseudonyms = await app.service('pseudonym').find({
+				query: {
+					pseudonym: params.pseudonym,
+				},
+			});
 
-					const { userId } = pseudonym.data[0];
-					return app
-						.service('courses')
-						.find({
-							query: {
-								ltiToolIds: { $in: params.toolIds },
-								$or: [{ userIds: userId }, { teacherIds: userId }, { substitutionIds: userId }],
-							},
-						})
-						.then((courses) => ({
-							// all users courses with given tool enabled
-							data: {
-								groups: courses.data.map((course) => ({
-									group_id: course._id.toString(),
-									name: course.name,
-									student_count: course.userIds.length,
-								})),
-							},
-						}));
-				});
+			if (!pseudonyms || !pseudonyms.data || pseudonyms.data.length !== 1) {
+				return { errors: { description: 'User not found by token' } };
+			}
+			const pseudonym = pseudonyms.data[0];
+			const { userId } = pseudonym;
+
+			const courses = await app.service('courses').find({
+				query: {
+					ltiToolIds: { $in: params.toolIds },
+					$or: [{ userIds: userId }, { teacherIds: userId }, { substitutionIds: userId }],
+				},
+			});
+
+			// all users courses with given tool enabled
+			return {
+				data: {
+					groups: courses.data.map((course) => ({
+						group_id: course._id.toString(),
+						name: course.name,
+						student_count: course.userIds.length,
+					})),
+				},
+			};
 		},
 	};
 
@@ -143,47 +137,59 @@ module.exports = function roster() {
 	 * @returns {Array} data.teacers teacher ids and pseudonyms of teachers which are enrolled in the course
 	 */
 	const groupsHandler = {
-		get(id, params) {
+		async get(id, params) {
 			const courseService = app.service('courses');
-			return courseService
-				.find({
+			const courseId = id;
+			if (!isValidObjectId(courseId)) {
+				throw new ApplicationError('invalid courseId', { courseId });
+			}
+			const { toolIds } = params;
+			if (
+				!Array.isArray(toolIds) ||
+				toolIds.length === 0 ||
+				toolIds.every((toolId) => isValidObjectId(toolId)) === false
+			) {
+				throw new ApplicationError('toolIds must contain at least one valid toolId');
+			}
+			const courses = await courseService.find({
+				query: {
+					_id: courseId,
+					ltiToolIds: { $in: toolIds },
+				},
+			});
+
+			if (!courses.data[0]) {
+				return { errors: { description: 'Group not found' } };
+			}
+			const course = courses.data[0];
+			const pseudonymService = app.service('pseudonym');
+			const [users, teachers] = await Promise.all([
+				pseudonymService.find({
 					query: {
-						_id: id,
-						ltiToolIds: { $in: params.toolIds },
+						userId: course.userIds,
+						toolId: toolIds[0],
 					},
-				})
-				.then((courses) => {
-					if (!courses.data[0]) {
-						return { errors: { description: 'Group not found' } };
-					}
-					const course = courses.data[0];
-					const pseudonymService = app.service('pseudonym');
-					return Promise.all([
-						pseudonymService.find({
-							query: {
-								userId: course.userIds,
-								toolId: params.toolIds[0],
-							},
-						}),
-						pseudonymService.find({
-							query: {
-								userId: course.teacherIds.concat(course.substitutionIds || []),
-								toolId: params.toolIds[0],
-							},
-						}),
-					]).then(([users, teachers]) => ({
-						data: {
-							students: users.data.map((user) => ({
-								user_id: user.pseudonym,
-								username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
-							})),
-							teachers: teachers.data.map((user) => ({
-								user_id: user.pseudonym,
-								username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
-							})),
-						},
-					}));
-				});
+				}),
+				pseudonymService.find({
+					query: {
+						userId: course.teacherIds.concat(course.substitutionIds || []),
+						toolId: toolIds[0],
+					},
+				}),
+			]);
+
+			return {
+				data: {
+					students: users.data.map((user) => ({
+						user_id: user.pseudonym,
+						username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
+					})),
+					teachers: teachers.data.map((user) => ({
+						user_id: user.pseudonym,
+						username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
+					})),
+				},
+			};
 		},
 	};
 	const groupsHooks = {

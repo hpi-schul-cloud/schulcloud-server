@@ -9,7 +9,12 @@ const pseudonymSchema = new Schema(
 	{
 		userId: { type: Schema.Types.ObjectId, ref: 'user' },
 		toolId: { type: Schema.Types.ObjectId, ref: 'ltiTool' },
-		pseudonym: { type: String, required: true, default: uuidv4 },
+		pseudonym: {
+			type: String,
+			required: true,
+			unique: true,
+			default: uuidv4,
+		},
 	},
 	{
 		timestamps: true,
