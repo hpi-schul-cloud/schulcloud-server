@@ -13,6 +13,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8380 removed reqlib, replaced by normal require to keep referenced types known
 
+## 25.5.2
+
+### Fixed
+
+- SC-8189 fix duplicate events by returning updated object at findOneAndUpdate
+
 ## [25.5.1]
 ### Fixed
 
