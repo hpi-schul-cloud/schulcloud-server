@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- SC-5287 -  Fixed OAuth2 rostering
+
 ## [25.5.0]
 
 ### Added

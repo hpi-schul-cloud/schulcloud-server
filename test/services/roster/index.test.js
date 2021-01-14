@@ -116,7 +116,7 @@ describe('roster service', function oauth() {
 				assert.strictEqual(pseudonym1, group.data.teachers[0].user_id);
 				const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
 				const iframe = `<iframe src="http://localhost:3100/oauth2/username/${pseudonym1}" ${properties}></iframe>`;
-				assert.strictEqual(encodeURI(iframe), group.data.teachers[0].username);
+				assert.strictEqual(iframe, group.data.teachers[0].username);
 				done();
 			});
 	});
