@@ -16,7 +16,9 @@ const replaceToolWithOrigin = (hook) => {
 		.service('ltiTools')
 		.get(hook.params.query.toolId)
 		.then((tool) => {
-			hook.params.query.toolId = tool.originTool || hook.params.query.toolId;
+			if (tool.isTemplate === false) {
+				hook.params.query.toolId = tool.originTool;
+			}
 			return hook;
 		});
 };
@@ -137,7 +139,7 @@ const validateParams = (context) => {
 
 exports.before = {
 	all: [authenticate('jwt')],
-	find: [validateParams, replaceToolWithOrigin, iff(isProvider('external'), globalHooks.ifNotLocal(preventPopulate))],
+	find: [validateParams, replaceToolWithOrigin, globalHooks.ifNotLocal(preventPopulate)],
 	get: [disallow()],
 	create: [globalHooks.ifNotLocal(disallow())],
 	update: [disallow()],
