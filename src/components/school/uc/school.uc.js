@@ -2,9 +2,7 @@ const schoolRepo = require('../repo/school.repo');
 
 const getSchool = async (id) => schoolRepo.getSchool(id);
 
-const getTombstoneSchool = async () => {
-	return schoolRepo.getTombstoneSchool();
-};
+const getTombstoneSchool = async () => schoolRepo.getTombstoneSchool();
 
 const setTombstoneUser = async (schoolId, tombstoneUserId) => schoolRepo.setTombstoneUser(schoolId, tombstoneUserId);
 

@@ -1,8 +1,8 @@
 const schoolUc = require('./school.uc');
+const { checkPermissions } = require('../../helper/uc.helper');
 
 class SchoolFacade {
 	async getSchool(id) {
-		// TODO check permission
 		return schoolUc.getSchool(id);
 	}
 
@@ -10,8 +10,9 @@ class SchoolFacade {
 		return schoolUc.getTombstoneSchool();
 	}
 
-	async setTombstoneUser(schoolId, schoolPatch) {
-		return schoolUc.setTombstoneUser(schoolId, schoolPatch);
+	async setTombstoneUser(currentUser, schoolId, tombstoneUserId) {
+		checkPermissions(currentUser, schoolId, ['STUDENT_DELETE', 'TEACHER_DELETE'], 'OR');
+		return schoolUc.setTombstoneUser(schoolId, tombstoneUserId);
 	}
 }
 
