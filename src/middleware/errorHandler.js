@@ -1,12 +1,12 @@
 const Sentry = require('@sentry/node');
 const express = require('@feathersjs/express');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const jwt = require('jsonwebtoken');
 const OpenApiValidator = require('express-openapi-validator');
 
 const reqlib = require('app-root-path').require;
 
-const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention } = reqlib('src/errors');
+const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention, BadRequest } = reqlib('src/errors');
 const { convertToFeathersError, cleanupIncomingMessage } = reqlib('src/errors/utils');
 
 const logger = require('../logger');
@@ -29,7 +29,6 @@ const getRequestInfo = (req) => {
 		if (decodedJWT && decodedJWT.accountId) {
 			info.user = {
 				accountId: decodedJWT.accountId,
-				aud: decodedJWT.aud,
 				userId: decodedJWT.userId,
 			};
 			if (decodedJWT.support === true) {
@@ -98,6 +97,7 @@ const secretDataKeys = (() =>
 		'description',
 		'gradeComment',
 		'_csrf',
+		'searchUserPassword',
 	].map((k) => k.toLocaleLowerCase()))();
 
 const filterSecretValue = (key, value) => {
@@ -179,13 +179,13 @@ const handleSilentError = (error, req, res, next) => {
 
 const handleValidationError = (error, req, res, next) => {
 	// todo: handle other validation errors so they are formatted properly
+	let err = error;
 	if (error instanceof OpenApiValidator.error.NotFound) {
-		// sanitize
-		const err = new PageNotFound(error);
-		next(err);
-	} else {
-		next(error);
+		err = new PageNotFound(error);
+	} else if (err instanceof OpenApiValidator.error.BadRequest) {
+		err = new BadRequest(error);
 	}
+	next(err);
 };
 
 const skipErrorLogging = (error, req, res, next) => {

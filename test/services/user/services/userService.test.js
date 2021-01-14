@@ -1,6 +1,6 @@
 const assert = require('assert');
 const { expect } = require('chai');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../../src/app');
 

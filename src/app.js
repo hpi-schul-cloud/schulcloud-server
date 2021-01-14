@@ -1,7 +1,7 @@
 const express = require('@feathersjs/express');
 const feathers = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const path = require('path');
 const favicon = require('serve-favicon');
 const compress = require('compression');
@@ -17,6 +17,8 @@ const middleware = require('./middleware');
 const setupConfiguration = require('./configuration');
 const sockets = require('./sockets');
 const services = require('./services');
+const components = require('./components');
+
 const requestLog = require('./logger/RequestLogger');
 
 const defaultHeaders = require('./middleware/defaultHeaders');
@@ -26,10 +28,10 @@ const sentry = require('./middleware/sentry');
 const rabbitMq = require('./utils/rabbitmq');
 const prometheus = require('./utils/prometheus');
 
+const { setupFacadeLocator } = require('./utils/facadeLocator');
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
-const versionService = require('./services/versionService');
 
 const setupApp = async () => {
 	const app = express(feathers());
@@ -47,6 +49,7 @@ const setupApp = async () => {
 
 	app.configure(prometheus);
 
+	setupFacadeLocator(app);
 	setupSwagger(app);
 	initializeRedisClient();
 	rabbitMq.setup(app);
@@ -63,7 +66,6 @@ const setupApp = async () => {
 		.use('/', bodyParser.json({ limit: '10mb' }))
 		.use(bodyParser.urlencoded({ extended: true }))
 		.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
-		.use(versionService)
 		.use(defaultHeaders)
 		.get('/system_info/haproxy', (req, res) => {
 			res.send({ timestamp: new Date().getTime() });
@@ -84,13 +86,20 @@ const setupApp = async () => {
 			req.feathers.originalUrl = req.originalUrl;
 			next();
 		});
+
 	if (Configuration.get('REQUEST_LOGGING_ENABLED') === true) {
 		app.use((req, res, next) => {
 			requestLog(`${req.method} ${req.originalUrl}`);
 			next();
 		});
 	}
-	app.configure(services).configure(sockets).configure(middleware).configure(setupAppHooks).configure(errorHandler);
+	app
+		.configure(services)
+		.configure(components)
+		.configure(sockets)
+		.configure(middleware)
+		.configure(setupAppHooks)
+		.configure(errorHandler);
 
 	return app;
 };

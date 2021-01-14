@@ -220,6 +220,8 @@ class ApplicationError extends Error {
 	}
 }
 
+class ValidationError extends ApplicationError {}
+
 class SilentError extends ApplicationError {
 	constructor(message) {
 		super(message);
@@ -257,6 +259,7 @@ const errorsByCode = {
 
 module.exports = {
 	ApplicationError,
+	ValidationError,
 	FeathersError: featherErrors.FeathersError,
 	FeathersNotAuthenticated: featherErrors.NotAuthenticated,
 	BadRequest,

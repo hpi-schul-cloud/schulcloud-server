@@ -3,7 +3,7 @@ const request = require('request-promise-native');
 const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const material = require('./material-model');
 
 const resourcesHooks = require('./hooks/resources');

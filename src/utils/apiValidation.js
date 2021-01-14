@@ -1,5 +1,5 @@
 const OpenApiValidator = require('express-openapi-validator');
-const commons = require('@schul-cloud/commons');
+const commons = require('@hpi-schul-cloud/commons');
 
 const { Configuration } = commons;
 
@@ -286,6 +286,9 @@ const registerApiValidation = async (app, apiSpec) => {
 				ignorePaths,
 				validateRequests: true,
 				validateResponses,
+				$refParser: {
+					mode: 'dereference',
+				},
 			})
 		);
 	}

@@ -99,7 +99,7 @@ components:
                 properties:
                   form:
                     type: string
-                    enum: ['analog', digital', 'update']
+                    enum: ['analog', 'digital', 'update']
                   source:
                     type: string
                   dateOfPrivacyConsent:
@@ -117,7 +117,7 @@ components:
               properties:
                 form:
                   type: string
-                  enum: ['analog', digital', 'update']
+                  enum: ['analog', 'digital', 'update']
                 source:
                   type: string
                 dateOfPrivacyConsent:

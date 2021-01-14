@@ -1,8 +1,8 @@
 const { parse } = require('papaparse');
 const stripBOM = require('strip-bom');
 const { mix } = require('mixwith');
-const { Configuration } = require('@schul-cloud/commons');
 const { Forbidden } = require('@feathersjs/errors');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const Syncer = require('./Syncer');
 const ClassImporter = require('./mixins/ClassImporter');

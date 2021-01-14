@@ -13,7 +13,7 @@ const TEAM_FEATURES = {
 
 const getUserGroupSchema = (additional = {}) => {
 	const schema = {
-		name: { type: String, required: true },
+		name: { type: String, required: true, trim: true },
 		schoolId: { type: Schema.Types.ObjectId, required: true, ref: 'school' },
 		userIds: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 	};
@@ -31,6 +31,8 @@ const teamInvitedUserSchema = new Schema(
 	{ _id: false, timestamps: true }
 );
 
+teamInvitedUserSchema.index({ email: 1 });
+
 const teamUserSchema = new Schema(
 	{
 		userId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
@@ -40,6 +42,8 @@ const teamUserSchema = new Schema(
 	{ _id: false, timestamps: true }
 );
 
+teamInvitedUserSchema.index({ userId: 1, schoolId: 1 });
+
 const teamsSchema = getUserGroupSchema({
 	schoolIds: {
 		type: [{ type: Schema.Types.ObjectId, ref: 'school' }],
@@ -48,12 +52,14 @@ const teamsSchema = getUserGroupSchema({
 	// @override
 	userIds: [teamUserSchema],
 	invitedUserIds: [teamInvitedUserSchema],
-	description: { type: String, default: '' },
-	classIds: [{ type: Schema.Types.ObjectId, ref: 'class' }],
+	description: { type: String, default: '', trim: true },
+	classIds: [{ type: Schema.Types.ObjectId, ref: 'class' }], // make this sense?
 	color: { type: String, default: '#ACACAC' },
 	features: [{ type: String, enum: Object.values(TEAM_FEATURES) }],
 	filePermission: [permissionSchema],
 });
+
+teamsSchema.index({ schoolIds: 1 });
 
 enableAuditLog(teamsSchema);
 
@@ -67,4 +73,5 @@ module.exports = {
 	permissionSchema,
 	teamInvitedUserModel,
 	teamUserModel,
+	teamsSchema,
 };

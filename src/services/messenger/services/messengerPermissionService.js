@@ -1,5 +1,5 @@
 const { disallow } = require('feathers-hooks-common');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { SCHOOL_FEATURES } = require('../../school/model');
 
 class MessengerPermissionService {

@@ -31,6 +31,11 @@
 			"default": false,
 			"description": "To disabled the brute force prevention hooks for by authentication."
 		},
+		"FORCE_SEND_EMAIL": {
+			"type": "boolean",
+			"default": false,
+			"description": "Send mails to notification service, also if not in production mode"
+		},
 		"SYNC_API_KEY": {
 			"type": "string",
 			"default": "example",
@@ -153,12 +158,7 @@
 		"MATRIX_MESSENGER": {
 			"type": "object",
 			"description": "Matrix messenger properties, required always to be defined",
-			"required": [
-				"URI",
-				"SERVERNAME",
-				"SECRET",
-				"STUDENT_ROOM_CREATION"
-			],
+			"required": ["URI", "SERVERNAME", "SECRET", "STUDENT_ROOM_CREATION"],
 			"properties": {
 				"URI": {
 					"type": "string",
@@ -227,6 +227,12 @@
 			"pattern": ".*(?<!/)$",
 			"description": "The client url (should end without a slash)."
 		},
+		"API_HOST": {
+			"type": "string",
+			"format": "uri",
+			"pattern": ".*(?<!/)$",
+			"description": "The server endpoint, for external calls like Antivirus service. When called from docker container, can be http://host.docker.internal:3030"
+		},
 		"FEATURE_ALERTS_STATUS_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -266,6 +272,14 @@
 			"type": "string",
 			"description": "The nexboard 'schul-cloud' userId."
 		},
+		"NOTIFICATION_PLATFORM": {
+			"type": "string",
+			"description": "Set the platform to use in notification service"
+		},
+		"NOTIFICATION_URI": {
+			"type": "string",
+			"description": "Url to the notificaiton service"
+		},
 		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -275,6 +289,30 @@
 			"type": "string",
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
+		},
+		"STORAGE_SIGNED_URL_EXPIRE": {
+			"type": "integer",
+			"default": 60,
+			"description": "Expiration time in seconds for signedUrl used by antivirus"
+		},
+		"ENABLE_FILE_SECURITY_CHECK": {
+			"type": "boolean",
+			"description": "enables antivirus check for files",
+			"default": false
+		},
+		"FILE_SECURITY_CHECK_SERVICE_URI": {
+			"type": "string",
+			"description": "Antivirus file endpoint",
+			"format": "uri",
+			"pattern": ".*(?<!/)$"
+		},
+		"FILE_SECURITY_SERVICE_USERNAME": {
+			"type": "string",
+			"description": "Username for the antivirus service"
+		},
+		"FILE_SECURITY_SERVICE_PASSWORD": {
+			"type": "string",
+			"description": "Password for the antivirus service"
 		},
 		"ADMIN_TOGGLE_STUDENT_VISIBILITY": {
 			"type": "string",
@@ -381,17 +419,10 @@
 			"description": "The password for edu-sharing api access",
 			"default": ""
 		},
-		"ES_GRANT_TYPE": {
-			"type": "string",
-			"description": "The grant_type for edu-sharing api access"
-		},
-		"ES_OAUTH_SECRET": {
-			"type": "string",
-			"description": "The oauth for edu-sharing api access"
-		},
-		"ES_CLIENT_ID": {
-			"type": "string",
-			"description": "The client id for edu-sharing api access"
+		"FEATURE_ES_MERLIN_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "When enabled, the merlin referene will generate a valid url"
 		},
 		"SECRET_ES_MERLIN_USERNAME": {
 			"type": "string",
@@ -406,10 +437,19 @@
 			"description": "Connection url for Merlin content",
 			"default": "http://merlin.nibis.de/auth.php"
 		},
-		"FEATURE_ES_MERLIN_ENABLED": {
+		"SECRET_ES_MERLIN_COUNTIES_CREDENTIALS": {
+			"type": "string",
+			"description": "JSON stringified with credentials for merlin counties, used by Lern-Store"
+		},
+		"FEATURE_ES_SEARCHABLE_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "When enabled, the merlin referene will generate a valid url"
+			"description": "When enabled, only content having searchable flag will be returned by Lern-Store"
+		},
+		"FEATURE_ES_COLLECTIONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "When enabled, collections will be searchable in Lern-Store"
 		},
 		"SILENT_ERROR_ENABLED": {
 			"type": "boolean",
@@ -481,7 +521,7 @@
 			"default": 1,
 			"description": "Determines how many school syncers will be run in parallel (at most) during the LDAP sync."
 		},
-		"MEMORY_INTERVAL_TIME" : {
+		"MEMORY_INTERVAL_TIME": {
 			"type": "integer",
 			"default": 0,
 			"description": "Is the time for logging memory metrics to log in >secounds<. Default 0 will disable the logging."
@@ -490,6 +530,26 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enabled that every request is logged with the information route and method"
+		},
+		"JWT_AUD": {
+			"type": "string",
+			"default": "https://hpi-schul-cloud.de",
+			"description": "It is the organisation web point that is created the jwt and where questions can addressed."
+		},
+		"KEEP_ALIVE": {
+			"type": "boolean",
+			"default": false,
+			"description": "For external request it can set the keep alive header to let open the connection for short period."
+		},
+		"SUPPORT_PROBLEM_EMAIL_ADDRESS": {
+			"type": "string",
+			"default": "ticketsystem@schul-cloud.org",
+			"description": "Email address used for reporting a problem"
+		},
+		"SUPPORT_WISH_EMAIL_ADDRESS": {
+			"type": "string",
+			"default": "ticketsystem@schul-cloud.org",
+			"description": "Email address used for reporting a wish"
 		}
 	},
 	"required": [
@@ -503,7 +563,9 @@
 	],
 	"allOf": [
 		{
-			"$ref": "#/definitions/FEATURE_PROMETHEUS_ENABLED"
+			"$ref": "#/definitions/FEATURE_PROMETHEUS_ENABLED",
+			"$ref": "#/definitions/FEATURE_ES_MERLIN_ENABLED",
+			"$ref": "#/definitions/ANTIVIRUS"
 		}
 	],
 	"definitions": {
@@ -517,6 +579,40 @@
 			},
 			"then": {
 				"required": ["PROMETHEUS"]
+			}
+		},
+		"ANTIVIRUS": {
+			"if": {
+				"properties": {
+					"ENABLE_FILE_SECURITY_CHECK": {
+						"const": true
+					}
+				}
+			},
+			"then": {
+				"required": [
+					"FILE_SECURITY_CHECK_SERVICE_URI",
+					"FILE_SECURITY_SERVICE_USERNAME",
+					"FILE_SECURITY_SERVICE_PASSWORD",
+					"API_HOST"
+				]
+			}
+		},
+		"FEATURE_ES_MERLIN_ENABLED": {
+			"if": {
+				"properties": {
+					"FEATURE_ES_MERLIN_ENABLED": {
+						"const": true
+					}
+				}
+			},
+			"then": {
+				"required": [
+					"SECRET_ES_MERLIN_USERNAME",
+					"SECRET_ES_MERLIN_PW",
+					"ES_MERLIN_AUTH_URL",
+					"SECRET_ES_MERLIN_COUNTIES_CREDENTIALS"
+				]
 			}
 		}
 	}

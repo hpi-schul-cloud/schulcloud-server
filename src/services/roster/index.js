@@ -17,6 +17,14 @@ module.exports = function roster() {
 		},
 	});
 
+	/**
+	 * Takes a pseudonym from params and resolves with depseudonymization iframe content.
+	 * @param {string} params.route.user pseudonym from the given user
+	 * @param params.pseudonym
+	 * @returns data.user_id pseudonym
+	 * @returns data.type first given user role name
+	 * @returns data.username depseudonymization iframe html-code
+	 */
 	const metadataHandler = {
 		find(params) {
 			return app
@@ -45,7 +53,9 @@ module.exports = function roster() {
 								data: {
 									user_id: params.route.user,
 									username: oauth2.getSubject(params.pseudonym, app.settings.services.web),
-									type: user.roles[0].name,
+									type: user.roles.map((role) => role.name).some((roleName) => roleName === 'teacher')
+										? 'teacher'
+										: 'student',
 								},
 							};
 						});
@@ -64,9 +74,17 @@ module.exports = function roster() {
 		},
 	};
 
-	app.use('/roster/users/:user/metadata', metadataHandler);
-	app.service('/roster/users/:user/metadata').hooks(metadataHooks);
+	const metaRoute = '/roster/users/:user/metadata';
+	app.use(metaRoute, metadataHandler);
+	app.service(metaRoute).hooks(metadataHooks);
 
+	/**
+	 * Takes a pseudonym and toolIds from params and resolves with courses the user is part of
+	 * and which are using the tools specified by the toolIds
+	 * @param {string} params.pseudonym The pseudonym of the given user
+	 * @param params.toolIds Ids of the given tools
+	 * @returns Array of course data including the group id, the group name, and the number of students
+	 */
 	const userGroupsHandler = {
 		find(params) {
 			return app
@@ -78,7 +96,7 @@ module.exports = function roster() {
 				})
 				.then((pseudonym) => {
 					if (!pseudonym.data[0]) {
-						return Promise.reject(new Error('User not found by token'));
+						return { errors: { description: 'User not found by token' } };
 					}
 
 					const { userId } = pseudonym.data[0];
@@ -87,10 +105,11 @@ module.exports = function roster() {
 						.find({
 							query: {
 								ltiToolIds: { $in: params.toolIds },
-								$or: [{ userIds: userId }, { teacherIds: userId }],
+								$or: [{ userIds: userId }, { teacherIds: userId }, { substitutionIds: userId }],
 							},
 						})
 						.then((courses) => ({
+							// all users courses with given tool enabled
 							data: {
 								groups: courses.data.map((course) => ({
 									group_id: course._id.toString(),
@@ -113,10 +132,16 @@ module.exports = function roster() {
 			],
 		},
 	};
+	const userGroupRoute = '/roster/users/:user/groups';
+	app.use(userGroupRoute, userGroupsHandler);
+	app.service(userGroupRoute).hooks(userGroupsHooks);
 
-	app.use('/roster/users/:user/groups', userGroupsHandler);
-	app.service('/roster/users/:user/groups').hooks(userGroupsHooks);
-
+	/**
+	 * Takes a course id and returns the pseudonyms of the group members
+	 * @param id ID of the given course
+	 * @returns {Array} data.students student ids and pseudonyms of students which are enrolled in the course
+	 * @returns {Array} data.teacers teacher ids and pseudonyms of teachers which are enrolled in the course
+	 */
 	const groupsHandler = {
 		get(id, params) {
 			const courseService = app.service('courses');
@@ -132,17 +157,17 @@ module.exports = function roster() {
 						return { errors: { description: 'Group not found' } };
 					}
 					const course = courses.data[0];
-					const pseudoService = app.service('pseudonym');
+					const pseudonymService = app.service('pseudonym');
 					return Promise.all([
-						pseudoService.find({
+						pseudonymService.find({
 							query: {
 								userId: course.userIds,
 								toolId: params.toolIds[0],
 							},
 						}),
-						pseudoService.find({
+						pseudonymService.find({
 							query: {
-								userId: course.teacherIds,
+								userId: course.teacherIds.concat(course.substitutionIds || []),
 								toolId: params.toolIds[0],
 							},
 						}),

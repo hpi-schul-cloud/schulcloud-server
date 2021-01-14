@@ -1,4 +1,4 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { getChannel } = require('../../utils/rabbitmq');
 const { getAllCourseUserIds } = require('../user-group/logic/courses');
 const { teamsModel } = require('../teams/model');
