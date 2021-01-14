@@ -10,6 +10,15 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 - SC-8206 - Add school tombstone for deleting concept
 
+### Changed
+
+- SC-8380 removed reqlib, replaced by normal require to keep referenced types known
+
+## [25.5.1]
+### Fixed
+
+- SC-8303 fix wrong assignment from school to storage provider
+
 ## [25.5.0]
 
 ### Added
@@ -28,6 +37,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Removed
 
 - SC-8233 - Removed attribute and member as required attributes for the LDAP-config service
+
+### Fixed
+
+- SC-8329 - Cluster returns old verison of Pin object after patch
 
 ## [25.4.1]
 

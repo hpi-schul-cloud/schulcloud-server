@@ -1,8 +1,7 @@
 const auth = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
-const reqlib = require('app-root-path').require;
 
-const { MethodNotAllowed, AutoLogout } = reqlib('src/errors');
+const { MethodNotAllowed, AutoLogout } = require('../../../errors');
 const docs = require('./jwtTimerDocs');
 
 const {

@@ -1,8 +1,6 @@
-const reqlib = require('app-root-path').require;
-
-const { BadRequest } = reqlib('src/errors');
 const bcrypt = require('bcryptjs');
 const { promisify } = require('es6-promisify');
+const { BadRequest } = require('../../errors');
 const { userModel } = require('../user/model');
 const { getRandomInt } = require('../../utils/randomNumberGenerator');
 
