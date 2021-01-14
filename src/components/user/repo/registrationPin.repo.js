@@ -1,6 +1,6 @@
 const { registrationPinModel } = require('../../../services/user/model');
 const { deleteManyResult } = require('../../helper/repo.helper');
-const { validateRequired } = require('../../helper/validation.helper');
+const { validateNotEmpty } = require('../../helper/validation.helper');
 
 const byEmailFilter = (email) => ({ email });
 
@@ -9,7 +9,7 @@ const byEmailFilter = (email) => ({ email });
  * @param email
  */
 const getRegistrationPinsByEmail = async (email) => {
-	validateRequired(email);
+	validateNotEmpty(email);
 	return registrationPinModel.find(byEmailFilter(email)).lean().exec();
 };
 
@@ -18,7 +18,7 @@ const getRegistrationPinsByEmail = async (email) => {
  * @param {String|ObjectId} email
  */
 const deleteRegistrationPinsByEmail = async (email) => {
-	validateRequired(email);
+	validateNotEmpty(email);
 	const deleteResult = await registrationPinModel.deleteMany(byEmailFilter(email)).lean().exec();
 	return deleteManyResult(deleteResult);
 };

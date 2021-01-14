@@ -32,6 +32,14 @@ describe('pseudonym usecase', () => {
 		getPseudonymsStub.restore();
 	});
 
+	const getPseudonymDeletionResult = async (userId) => {
+		const deletionSteps = pseudonymUC.deleteUserData();
+		const deletionResults = deletionSteps.map((step) => step(userId));
+		const result = await Promise.all(deletionResults);
+
+		return result.find((r) => r.trashBinData.scope === 'pseudonyms');
+	};
+
 	describe('deleteUserData', () => {
 		it('should recieve a function form use case which resolves in an array', () => {
 			expect(pseudonymUC.deleteUserData).to.be.an('function');
@@ -41,7 +49,7 @@ describe('pseudonym usecase', () => {
 
 	describe('deletePseudonymsForUser', () => {
 		it('when called with valid user id it should return successful result', async () => {
-			const result = await pseudonymUC.deleteUserData()[0](USER_ID);
+			const result = await getPseudonymDeletionResult(USER_ID);
 
 			expect(result.complete).to.deep.equal(true);
 			expect(result.trashBinData).to.be.an('object');
@@ -51,21 +59,17 @@ describe('pseudonym usecase', () => {
 		});
 
 		it('when called with valid user without pseudonyms should return successful result', async () => {
-			const USER_WITHOUT_PSEUDONYMS_ID = new ObjectId();
-
 			getPseudonymsStub.callsFake(() => []);
-			for (const f of pseudonymUC.deleteUserData()) {
-				// eslint-disable-next-line no-await-in-loop
-				const result = await f(USER_WITHOUT_PSEUDONYMS_ID);
-				expect(result.complete).to.deep.equal(true);
-				expect(result.trashBinData).to.be.an('object');
-				expect(result.trashBinData.scope).to.be.equal('pseudonyms');
-				expect(result.trashBinData.data).to.be.an('array').of.length(0);
-			}
+
+			const pseudonymResult = await getPseudonymDeletionResult(USER_ID);
+			expect(pseudonymResult.complete).to.deep.equal(true);
+			expect(pseudonymResult.trashBinData).to.be.an('object');
+			expect(pseudonymResult.trashBinData.scope).to.be.equal('pseudonyms');
+			expect(pseudonymResult.trashBinData.data).to.be.an('array').of.length(0);
 		});
 
 		it('when the function is called with an invalid id, then it fails', async () => {
-			expect(pseudonymUC.deleteUserData()[0]('invalid')).to.eventually.be.rejectedWith(ValidationError);
+			expect(getPseudonymDeletionResult('invalid')).to.eventually.be.rejectedWith(ValidationError);
 		});
 	});
 });
