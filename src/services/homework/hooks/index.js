@@ -1,8 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, GeneralError, NotFound } = reqlib('src/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
+const { Forbidden, GeneralError, NotFound } = require('../../../errors');
 const logger = require('../../../logger');
 
 const globalHooks = require('../../../hooks');

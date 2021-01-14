@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Changed
+
+- SC-8380 removed reqlib, replaced by normal require to keep referenced types known
+
+## [25.5.1]
 ### Fixed
 
 - SC-8303 fix wrong assignment from school to storage provider
@@ -17,6 +22,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-7835 - Add deletion concept handling for helpdesk problems
 - SC-8229 - Added invalid DN error to ldap-config service error handling
 - SC-7825 - Remove user relations from courses
 - SC-7827 - Add deletion concept handling for file permissions.
@@ -34,10 +40,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 - SC-8329 - Cluster returns old verison of Pin object after patch
-
-## [25.4.1]
-
-- Update from 25.3.9 into master
 
 ## [25.4.1]
 

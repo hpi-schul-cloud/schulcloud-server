@@ -4,10 +4,8 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const jwt = require('jsonwebtoken');
 const OpenApiValidator = require('express-openapi-validator');
 
-const reqlib = require('app-root-path').require;
-
-const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention, BadRequest } = reqlib('src/errors');
-const { convertToFeathersError, cleanupIncomingMessage } = reqlib('src/errors/utils');
+const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention, BadRequest } = require('../errors');
+const { convertToFeathersError, cleanupIncomingMessage } = require('../errors/utils');
 
 const logger = require('../logger');
 
