@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-const { INTERNAL_SERVER_ERROR_TYPE, ASSERTION_ERROR_TYPE } = require('./commonErrorTypes');
+const { INTERNAL_SERVER_ERROR_TYPE, ASSERTION_ERROR_TYPE, FORBIDDEN_ERROR_TYPE } = require('./commonErrorTypes');
 
 /**
  * A base Class for all application specific (not-framework related) errors
@@ -21,13 +21,68 @@ class ApplicationError extends Error {
 	}
 }
 
-class InternalServerError extends ApplicationError {
+/**
+ * A base Class for all Technical errors
+ * Please do not use this class directly - please use one of the subclass below
+ * @abstract
+ */
+class TechnicalError extends ApplicationError {}
+
+/**
+ * A base Class for all Business Logic errors
+ * Please do not use this class directly - please use one of the subclass below
+ * @abstract
+ */
+class BusinessError extends ApplicationError {}
+
+// TECHNICAL ERRORS
+/**
+ * An Error wrapper class for all unrecoverable, technical errors
+ */
+class InternalServerError extends TechnicalError {
 	constructor(cause, params) {
 		super(INTERNAL_SERVER_ERROR_TYPE, cause, params);
 	}
 }
 
-class SilentError extends ApplicationError {
+/**
+ * For Resource/Document not found cases
+ */
+class DocumentNotFound extends TechnicalError {}
+
+/**
+ * Error for parameter assertions.
+ * @see {validationErrors} in src/common/validation/validationHelper.js
+ */
+class AssertionError extends TechnicalError {
+	constructor(validationErrors) {
+		super(ASSERTION_ERROR_TYPE, undefined, validationErrors);
+	}
+}
+
+// BUSINESS ERRORS
+/**
+ * Error for any validation error
+ */
+class ValidationError extends BusinessError {
+	constructor(errorType, validationErrors) {
+		super(errorType, undefined, validationErrors);
+	}
+}
+
+/**
+ * For Data Access Permission checks
+ */
+class ForbiddenError extends BusinessError {
+	constructor(requestedResourceId, callerId) {
+		super(FORBIDDEN_ERROR_TYPE, undefined, { requestedResourceId, callerId });
+	}
+}
+
+/**
+ * For brute force prevention
+ */
+class SilentError extends BusinessError {
 	constructor(message) {
 		// hide the real cause - is not a part of any response object
 		super({ type: message });
@@ -41,32 +96,14 @@ class SilentError extends ApplicationError {
 	}
 }
 
-class DocumentNotFound extends ApplicationError {}
-
-/**
- * Error for api request validation
- */
-class ValidationError extends ApplicationError {
-	constructor(errorType, validationErrors) {
-		super(errorType, undefined, validationErrors);
-	}
-}
-
-/**
- * Error for parameter assertions.
- * @see {validationErrors} in src/common/validation/validationHelper.js
- */
-class AssertionError extends ApplicationError {
-	constructor(validationErrors) {
-		super(ASSERTION_ERROR_TYPE, undefined, validationErrors);
-	}
-}
-
 module.exports = {
 	ApplicationError,
+	TechnicalError,
+	BusinessError,
 	InternalServerError,
-	SilentError,
-	DocumentNotFound,
-	ValidationError,
 	AssertionError,
+	DocumentNotFound,
+	SilentError,
+	ValidationError,
+	ForbiddenError,
 };

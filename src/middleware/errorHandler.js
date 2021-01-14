@@ -4,7 +4,14 @@ const jwt = require('jsonwebtoken');
 const OpenApiValidator = require('express-openapi-validator');
 
 const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention } = require('../errors');
-const { ValidationError, DocumentNotFound, AssertionError, InternalServerError } = require('../errors');
+const {
+	BusinessError,
+	TechnicalError,
+	ValidationError,
+	DocumentNotFound,
+	AssertionError,
+	InternalServerError,
+} = require('../errors');
 const { API_VALIDATION_ERROR_TYPE } = require('../errors/commonErrorTypes');
 
 const { isApplicationError, isFeatherError, isSilentError, cleanupIncomingMessage } = require('../errors/utils');
@@ -185,16 +192,24 @@ const createErrorDetailTO = (code, type, title, message, customFields = {}) => (
 	...customFields,
 });
 
-const getErrorResponseFromBusinessError = (businessError) => {
+const getErrorResponseFromBusinessError = (error) => {
 	const customFields = {};
 	let code = 500;
-	const { message: type, title, defaultMessage: message } = businessError;
-	if (businessError instanceof ValidationError || businessError instanceof AssertionError) {
-		code = 400;
-		Object.assign(customFields, { validation_errors: businessError.params });
-	} else if (businessError instanceof DocumentNotFound) {
-		code = 404;
+	const { message: type, title, defaultMessage: message } = error;
+
+	if (error instanceof BusinessError) {
+		if (error instanceof ValidationError) {
+			code = 400;
+			Object.assign(customFields, { validation_errors: error.params });
+		}
+	} else if (error instanceof TechnicalError) {
+		if (error instanceof DocumentNotFound) {
+			code = 404;
+		} else if (error instanceof AssertionError) {
+			Object.assign(customFields, { assertion_errors: error.params });
+		}
 	}
+
 	return createErrorDetailTO(code, type, title, message, customFields);
 };
 
