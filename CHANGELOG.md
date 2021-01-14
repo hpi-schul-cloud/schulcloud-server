@@ -17,6 +17,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8380 removed reqlib, replaced by normal require to keep referenced types known
 
+## [25.5.1]
+### Fixed
+
+- SC-8303 fix wrong assignment from school to storage provider
+
 ## [25.5.0]
 
 ### Added
