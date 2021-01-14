@@ -5,11 +5,14 @@ const logger = require('../logger');
 
 const {
 	ApplicationError,
+	BusinessError,
+	TechnicalError,
 	ValidationError,
 	SilentError,
 	AssertionError,
 	DocumentNotFound,
 	InternalServerError,
+	ForbiddenError,
 } = require('./applicationErrors');
 
 const setDefaultMessage = (className) => `Error of type ${className}`;
@@ -224,10 +227,13 @@ class NoClientInstanceError extends Error {}
 
 module.exports = {
 	ApplicationError,
+	BusinessError,
+	TechnicalError,
 	ValidationError,
 	DocumentNotFound,
 	InternalServerError,
 	AssertionError,
+	ForbiddenError,
 	FeathersError: featherErrors.FeathersError,
 	FeathersNotAuthenticated: featherErrors.NotAuthenticated,
 	BadRequest,

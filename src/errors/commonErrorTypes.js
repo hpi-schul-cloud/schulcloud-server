@@ -21,8 +21,15 @@ const API_VALIDATION_ERROR_TYPE = {
 	defaultMessage: 'API Validation failed',
 };
 
+const FORBIDDEN_ERROR_TYPE = {
+	type: 'FORBIDDED_ERROR_TYPE',
+	title: 'Access Denied',
+	defaultMessage: 'Access Denied for the requested resource',
+};
+
 module.exports = {
 	INTERNAL_SERVER_ERROR_TYPE,
 	ASSERTION_ERROR_TYPE,
 	API_VALIDATION_ERROR_TYPE,
+	FORBIDDEN_ERROR_TYPE,
 };
