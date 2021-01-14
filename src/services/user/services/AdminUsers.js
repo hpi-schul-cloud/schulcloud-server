@@ -5,9 +5,8 @@ const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, BadRequest, GeneralError } = reqlib('src/errors');
+const { Forbidden, BadRequest, GeneralError } = require('../../../errors');
 const logger = require('../../../logger');
 const { createMultiDocumentAggregation } = require('../utils/aggregations');
 const { splitForSearchIndexes } = require('../../../utils/search');

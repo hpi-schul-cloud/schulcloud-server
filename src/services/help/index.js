@@ -3,9 +3,7 @@ const hooks = require('feathers-hooks-common');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
-const reqlib = require('app-root-path').require;
-
-const { NotFound, BadRequest } = reqlib('src/errors');
+const { NotFound, BadRequest } = require('../../errors');
 const { helpDocumentsModel } = require('./model');
 const logger = require('../../logger');
 const { excludeAttributesFromSanitization } = require('../../hooks/sanitizationExceptions');
