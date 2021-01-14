@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const { info, warning } = require('../src/logger');
+const { info, error } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
@@ -92,9 +92,11 @@ const updateProvidersForSchools = async (foundSchoolsPerProvider) => {
 				{ $set: { storageProvider: provider } }
 			).exec();
 
-			info(`${schools.length} schools successfully updated for provider ${provider}: ${JSON.stringify(result)}`);
+			error(
+				`${JSON.stringify(schools)} schools successfully updated for provider ${provider}: ${JSON.stringify(result)}`
+			);
 		} else {
-			warning(`${schools.length} schools couldn't be assigned to any provider`);
+			error(`${JSON.stringify(schools)} schools couldn't be assigned to any provider`);
 		}
 	}
 };
@@ -111,7 +113,7 @@ const getSchoolsWithWrongProviders = (bucketsPerProvider, schoolsByProvider) => 
 		const providerSchools = schoolsByProvider.filter((s) => s._id !== null && s._id.toString() === provider);
 		if (providerSchools.length > 0) {
 			const schoolsWithoutBucketsForProvider = getSchoolsWithoutBucketsForProvider(providerSchools, buckets);
-			info(
+			error(
 				`Found schools with wrong provider buckets ${JSON.stringify(
 					schoolsWithoutBucketsForProvider
 				)} for provider ${provider}`
@@ -147,7 +149,7 @@ module.exports = {
 
 		// 1. call s3 api to list all providerBuckets
 		const bucketsPerProvider = await getBucketsPerProvider(storageProviders);
-		info(`buckets per provider: ${JSON.stringify(bucketsPerProvider)}`);
+		error(`buckets per provider: ${JSON.stringify(bucketsPerProvider)}`);
 
 		// 2. find all schools which are assigned to this provider
 		const schoolsByProvider = await SchoolModel.aggregate([
@@ -158,12 +160,12 @@ module.exports = {
 		const schoolsWithWrongProviders = getSchoolsWithWrongProviders(bucketsPerProvider, schoolsByProvider);
 
 		if (schoolsWithWrongProviders.length === 0) {
-			info(`There aren't any school with wrong providers were found`);
+			error(`There aren't any school with wrong providers were found`);
 		} else {
-			info(`Found schools with wrong providers: ${JSON.stringify(schoolsWithWrongProviders)}`);
+			error(`Found schools with wrong providers: ${JSON.stringify(schoolsWithWrongProviders)}`);
 			// 3.1 try to find buckets by another providers
 			const foundSchoolsPerProvider = findProvidersForSchools(schoolsWithWrongProviders, bucketsPerProvider);
-			info(`Found schools with corrected providers: ${JSON.stringify(foundSchoolsPerProvider)}`);
+			error(`Found schools with corrected providers: ${JSON.stringify(foundSchoolsPerProvider)}`);
 			// 3.2. update schools by found providers
 			await updateProvidersForSchools(foundSchoolsPerProvider);
 		}
