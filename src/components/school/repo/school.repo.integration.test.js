@@ -5,7 +5,6 @@ const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 const schoolRepo = require('./school.repo');
 const { SCHOOL_OF_DELETE_USERS } = require('./db');
-const { NotFound } = require('../../../errors');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
