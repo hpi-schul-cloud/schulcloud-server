@@ -123,7 +123,7 @@ const getOrCreateTombstoneUserId = async (schoolId, user) => {
 	}
 	const tombstoneSchool = await facadeLocator.facade('/school/v2').getTombstoneSchool();
 	const schoolTombstoneUser = await userRepo.createTombstoneUser(schoolId, tombstoneSchool._id);
-	await facadeLocator.facade('/school/v2').setTombstoneUser(schoolId, schoolTombstoneUser._id, user);
+	await facadeLocator.facade('/school/v2').setTombstoneUser(user, schoolId, schoolTombstoneUser._id);
 	return schoolTombstoneUser;
 };
 

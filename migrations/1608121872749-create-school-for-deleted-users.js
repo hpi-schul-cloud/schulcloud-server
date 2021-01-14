@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 // eslint-disable-next-line no-unused-vars
 const { info, error } = require('../src/logger');
 
-const { schoolSchema, SCHOOL_OF_DELETE_USERS } = require('../src/services/school/model');
+const { schoolSchema, SCHOOL_OF_DELETED_USERS } = require('../src/services/school/model');
 
 const { connect, close } = require('../src/utils/database');
 
@@ -22,8 +22,8 @@ module.exports = {
 		// Hint: Access models via this('modelName'), not an imported model to have
 		// access to the correct database connection. Otherwise Mongoose calls never return.
 		await SchoolModel.create({
-			name: SCHOOL_OF_DELETE_USERS.name,
-			purpose: SCHOOL_OF_DELETE_USERS.purpose,
+			name: SCHOOL_OF_DELETED_USERS.name,
+			purpose: SCHOOL_OF_DELETED_USERS.purpose,
 		});
 		// ////////////////////////////////////////////////////
 		await close();
@@ -34,7 +34,7 @@ module.exports = {
 		// ////////////////////////////////////////////////////
 		// Implement the necessary steps to roll back the migration here.
 		await SchoolModel.findOneAndDelete({
-			name: SCHOOL_OF_DELETE_USERS.name,
+			name: SCHOOL_OF_DELETED_USERS.name,
 		});
 		// ////////////////////////////////////////////////////
 		await close();

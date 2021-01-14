@@ -113,7 +113,7 @@ describe('user service v2', function test() {
 			expect(response.status).to.equal(403);
 		});
 
-		it('when a user with STUDENT_DELETE and SCHOOL_EDIT permission deletes a student, then it succeeds', async () => {
+		it('when a user with STUDENT_DELETE permission deletes a student, then it succeeds', async () => {
 			const school = await testObjects.createTestSchool({
 				name: 'testSchool',
 			});

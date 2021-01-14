@@ -17,8 +17,7 @@ const createTombstoneUser = async (schoolId, tombstoneSchoolId) => {
 		lastName: 'Benutzer',
 		schoolId: tombstoneSchoolId,
 	};
-	const createdUser = await User.create(user);
-	return createdUser.toObject();
+	return (await User.create(user)).toObject();
 };
 
 const replaceUserWithTombstone = async (id, replaceData = {}) => {
