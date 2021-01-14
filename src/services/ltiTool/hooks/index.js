@@ -71,14 +71,29 @@ const filterGetBBB = (context) => {
 	}
 };
 
+const restrictToUsersOwnTools = async (context) => {
+	const currentUserId = context.params.account.userId;
+	const coursesOfUser = await context.app.service('courses').find({
+		query: {
+			$or: [{ teacherIds: { $in: [currentUserId] } }, { substitutionIds: { $in: [currentUserId] } }],
+		},
+	});
+	if (
+		coursesOfUser.data.some((course) => course.ltiToolIds.map((id) => id.toString()).includes(context.id.toString()))
+	) {
+		return context;
+	}
+	throw new Forbidden('tool is not part of your courses');
+};
+
 exports.before = {
 	all: [authenticate('jwt')],
 	find: [globalHooks.hasPermission('TOOL_VIEW'), globalHooks.ifNotLocal(populateCurrentSchool)],
 	get: [globalHooks.hasPermission('TOOL_VIEW'), globalHooks.ifNotLocal(populateCurrentSchool)],
 	create: [globalHooks.hasPermission('TOOL_CREATE'), addSecret, setupBBB],
 	update: [globalHooks.hasPermission('TOOL_EDIT')],
-	patch: [globalHooks.hasPermission('TOOL_EDIT')],
-	remove: [globalHooks.hasPermission('TOOL_CREATE')],
+	patch: [globalHooks.hasPermission('TOOL_EDIT'), restrictToUsersOwnTools],
+	remove: [globalHooks.hasPermission('TOOL_CREATE'), restrictToUsersOwnTools],
 };
 
 exports.after = {
@@ -87,6 +102,6 @@ exports.after = {
 	get: [globalHooks.ifNotLocal(protectSecrets), filterGetBBB],
 	create: [],
 	update: [],
-	patch: [],
+	patch: [globalHooks.ifNotLocal(protectSecrets)],
 	remove: [],
 };
