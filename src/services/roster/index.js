@@ -4,6 +4,7 @@ const path = require('path');
 const hooks = require('./hooks');
 const globalHooks = require('../../hooks');
 const oauth2 = require('../oauth2/hooks');
+const { excludeAttributesFromSanitization } = require('../../hooks/sanitizationExceptions');
 const { isValid: isValidObjectId } = require('../../helper/compare').ObjectId;
 const { ApplicationError } = require('../../errors');
 
@@ -65,6 +66,7 @@ module.exports = function roster() {
 				globalHooks.ifNotLocal(hooks.tokenIsActive),
 				globalHooks.ifNotLocal(hooks.userIsMatching),
 				hooks.stripIframe,
+				excludeAttributesFromSanitization('roster/users/:user/metadata', 'username'),
 			],
 		},
 	};
@@ -192,7 +194,11 @@ module.exports = function roster() {
 	};
 	const groupsHooks = {
 		before: {
-			get: [globalHooks.ifNotLocal(hooks.tokenIsActive), hooks.injectOriginToolIds],
+			get: [
+				globalHooks.ifNotLocal(hooks.tokenIsActive),
+				hooks.injectOriginToolIds,
+				excludeAttributesFromSanitization('roster/groups', 'username'),
+			],
 		},
 		after: {
 			get: hooks.groupContainsUser,
