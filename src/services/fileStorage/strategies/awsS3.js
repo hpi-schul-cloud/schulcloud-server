@@ -18,7 +18,7 @@ const { updateProviderForSchool, findProviderForSchool } = require('../utils/pro
 const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 
 const HOST = Configuration.get('HOST');
-
+const BUCKET_NAME_PREFIX = 'bucket-';
 const AbstractFileStorageStrategy = require('./interface.js');
 
 const getCorsRules = () => [
@@ -30,7 +30,7 @@ const getCorsRules = () => [
 	},
 ];
 
-const getConfig = (provider) => {
+const getConfig = (provider, useCors = true) => {
 	const awsConfig = new aws.Config({
 		signatureVersion: 'v4',
 		s3ForcePathStyle: true,
@@ -39,8 +39,10 @@ const getConfig = (provider) => {
 		secretAccessKey: provider.secretAccessKey,
 		region: provider.region,
 		endpointUrl: provider.endpointUrl,
-		cors_rules: getCorsRules(),
 	});
+	if ( useCors ) {
+		awsConfig.cors_rules = getCorsRules();
+	}
 	awsConfig.endpoint = new aws.Endpoint(provider.endpointUrl);
 	return awsConfig;
 };
@@ -98,18 +100,20 @@ if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === false) {
 }
 // end legacy
 
-const getS3 = (storageProvider) => {
+const getS3 = (storageProvider, useCors) => {
 	const S3_KEY = Configuration.get('S3_KEY');
 	storageProvider.secretAccessKey = CryptoJS.AES.decrypt(storageProvider.secretAccessKey, S3_KEY).toString(
 		CryptoJS.enc.Utf8
 	);
-	return new aws.S3(getConfig(storageProvider));
+	return new aws.S3(getConfig(storageProvider, useCors));
 };
 
 const listBuckets = async (awsObject) => {
 	const response = await awsObject.s3.listBuckets().promise();
 	return response.Buckets ? response.Buckets.map((b) => b.Name) : [];
 };
+
+const getBucketName = (schoolId) => `${BUCKET_NAME_PREFIX}${schoolId}`;
 
 const createAWSObject = async (schoolId) => {
 	const school = await schoolModel
@@ -128,7 +132,7 @@ const createAWSObject = async (schoolId) => {
 		const s3 = getS3(school.storageProvider);
 		return {
 			s3,
-			bucket: `bucket-${schoolId}`,
+			bucket: getBucketName(schoolId),
 		};
 	}
 
@@ -139,7 +143,7 @@ const createAWSObject = async (schoolId) => {
 
 	return {
 		s3: new aws.S3(config),
-		bucket: `bucket-${schoolId}`,
+		bucket: getBucketName(schoolId),
 	};
 	// end legacy
 };
@@ -220,12 +224,20 @@ const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 	).then((data) => splitFilesAndDirectories(storageContext, data));
 };
 
+/**
+ * If school was not found by its provider try to find the school bucket by other providers
+ * - Get all storage providers from the database
+ * - Get all buckets from the storage providers
+ * - Try to find the school bucket by other providers
+ * - If school bucket was found by another provider - update the school provider
+ * @param awsObject - {s3, bucket}
+ * @returns {Promise<{s3: *, bucket: string}|{s3: *, bucket: string}|*>}
+ */
 const reassignProviderForSchool = async (awsObject) => {
-	const schoolId = awsObject.bucket.replace('bucket-', '');
+	const schoolId = awsObject.bucket.replace(BUCKET_NAME_PREFIX, '');
 	const storageProviders = await StorageProviderModel.find().lean().exec();
 	const bucketsForProvider = {};
 	for (const provider of storageProviders) {
-		// eslint-disable-next-line no-await-in-loop
 		const config = getS3(provider);
 		const awsObj = { s3: config };
 		// eslint-disable-next-line no-await-in-loop
@@ -252,6 +264,13 @@ const putBucketCors = async (awsObject) =>
 		})
 		.promise();
 
+/**
+ * Creates bucket. If s3 create bucket returns 409 (Conflict)
+ * - it means that the bucket already exists by another provider
+ * - try to find the bucket and reassign it to the correct provider
+ * @param awsObject - {s3, bucket}
+ * @returns {Promise<{code: number, data: *, message: string}>}
+ */
 const createBucket = async (awsObject) => {
 	let res;
 	try {
@@ -266,7 +285,7 @@ const createBucket = async (awsObject) => {
 							${err.code} - ${err.message}`);
 			res = await reassignProviderForSchool(awsObject);
 		} else {
-			throw new GeneralError(`Error by creating the bucket ${err}`);
+			throw err;
 		}
 	}
 	return {
@@ -277,6 +296,10 @@ const createBucket = async (awsObject) => {
 };
 
 class AWSS3Strategy extends AbstractFileStorageStrategy {
+	connect(storageProvider, useCors) {
+		return getS3(storageProvider, useCors);
+	}
+
 	async create(schoolId) {
 		if (!schoolId) {
 			throw new BadRequest('No school id parameter given.');
@@ -284,6 +307,10 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 		const awsObject = await createAWSObject(schoolId);
 		return createBucket(awsObject);
+	}
+
+	async listBucketsNames(awsObject) {
+		return listBuckets(awsObject);
 	}
 
 	async createIfNotExists(awsObject) {
@@ -302,7 +329,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 				return newAwsObject;
 			}
-			throw new GeneralError(`Could not check the existence of the bucket ${awsObject.bucket} ${err}`);
+			throw err;
 		}
 	}
 

@@ -1,12 +1,10 @@
 const mongoose = require('mongoose');
-const aws = require('aws-sdk');
-const { Configuration } = require('@hpi-schul-cloud/commons');
-const CryptoJS = require('crypto-js');
 
-// eslint-disable-next-line no-unused-vars
 const { info, warning } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
+
+const AWSStrategie = require('../src/services/fileStorage/strategies/awsS3');
 
 const { storageProviderSchema } = require('../src/services/storageProvider/model');
 const { schoolSchema } = require('../src/services/school/model');
@@ -19,35 +17,24 @@ const SchoolModel = mongoose.model('schools34838583553', schoolSchema, 'schools'
 
 const EMPTY_PROVIDER = 'NOT_FOUND';
 
-const getConfig = (provider) => {
-	const awsConfig = new aws.Config({
-		signatureVersion: 'v4',
-		s3ForcePathStyle: true,
-		sslEnabled: true,
-		accessKeyId: provider.accessKeyId,
-		secretAccessKey: provider.secretAccessKey,
-		region: provider.region,
-		endpointUrl: provider.endpointUrl,
-	});
-	awsConfig.endpoint = new aws.Endpoint(provider.endpointUrl);
-	return awsConfig;
+/**
+ * Retrieves all bucket names for provider
+ * @param provider
+ * @returns {Promise<void>} - bucket names
+ */
+const getBucketsNamesForProvider = async (provider) => {
+	const awsStrategie = new AWSStrategie();
+	const s3 = awsStrategie.connect(provider, false);
+	const aWSObject = { s3 };
+	return awsStrategie.listBucketsNames(aWSObject);
 };
 
-const getAWSS3 = async (storageProvider) => {
-	const S3_KEY = Configuration.get('S3_KEY');
-
-	storageProvider.secretAccessKey = CryptoJS.AES.decrypt(storageProvider.secretAccessKey, S3_KEY).toString(
-		CryptoJS.enc.Utf8
-	);
-	return new aws.S3(getConfig(storageProvider));
-};
-
-const getBuckets = async (provider) => {
-	const s3 = await getAWSS3(provider);
-	const response = await s3.listBuckets().promise();
-	return response.Buckets ? response.Buckets.map((b) => b.Name) : [];
-};
-
+/**
+ * Gets schools without buckets in the provider
+ * @param providerSchools - schools with provider
+ * @param buckets - buckets by provider
+ * @returns {[]} - schools without buckets
+ */
 const getSchoolsWithoutBucketsForProvider = (providerSchools, buckets) => {
 	const schoolsWithThisProvider = providerSchools[0].schools;
 	const schoolIds = schoolsWithThisProvider.map((s) => s._id);
@@ -61,15 +48,26 @@ const getSchoolsWithoutBucketsForProvider = (providerSchools, buckets) => {
 	return schoolsWithoutBuckets;
 };
 
+/**
+ * Get buckets for all storage providers
+ * @param storageProviders
+ * @returns {Promise<{}>} - map {provider: [buckets]}
+ */
 const getBucketsPerProvider = async (storageProviders) => {
 	const bucketsForProvider = {};
 	for (const provider of storageProviders) {
 		// eslint-disable-next-line no-await-in-loop
-		bucketsForProvider[provider._id] = await getBuckets(provider);
+		bucketsForProvider[provider._id] = await getBucketsNamesForProvider(provider);
 	}
 	return bucketsForProvider;
 };
 
+/**
+ * Search for schoolId by every provider. Comparing schoolId with bucket name
+ * @param bucketsForProvider
+ * @param school
+ * @returns {string}
+ */
 const getProviderForSchool = (bucketsForProvider, school) => {
 	for (const [provider, buckets] of Object.entries(bucketsForProvider)) {
 		const bucketExists = buckets.indexOf(`bucket-${school.toString()}`) >= 0;
@@ -78,13 +76,11 @@ const getProviderForSchool = (bucketsForProvider, school) => {
 	return EMPTY_PROVIDER;
 };
 
-// eslint-disable-next-line no-unused-vars
-const printSchoolsForProvider = (foundSchoolsPerProvider) => {
-	for (const [provider, schools] of Object.entries(foundSchoolsPerProvider)) {
-		info(`For provider ${provider} found schools: ${JSON.stringify(schools)}`);
-	}
-};
-
+/**
+ * Update provider for schools in the list
+ * @param foundSchoolsPerProvider - {correct provider: [schools]}
+ * @returns {Promise<void>} update result
+ */
 const updateProvidersForSchools = async (foundSchoolsPerProvider) => {
 	for (const [provider, schools] of Object.entries(foundSchoolsPerProvider)) {
 		if (provider !== EMPTY_PROVIDER) {
@@ -96,26 +92,42 @@ const updateProvidersForSchools = async (foundSchoolsPerProvider) => {
 				{ $set: { storageProvider: provider } }
 			).exec();
 
-			info(`${schools.length} schools successfully updated for provider ${provider}: ${result}`);
+			info(`${schools.length} schools successfully updated for provider ${provider}: ${JSON.stringify(result)}`);
 		} else {
 			warning(`${schools.length} schools couldn't be assigned to any provider`);
 		}
 	}
 };
 
+/**
+ * For each provider try to find bucket for the school. If the bucket was not found add it to the output array
+ * @param bucketsPerProvider - map {provider: [buckets]}
+ * @param schoolsByProvider - map {provider: [schools]}
+ * @returns [] - schoolsWithoutBuckets by their own provider
+ */
 const getSchoolsWithWrongProviders = (bucketsPerProvider, schoolsByProvider) => {
 	let schoolsWithoutBuckets = [];
 	for (const [provider, buckets] of Object.entries(bucketsPerProvider)) {
 		const providerSchools = schoolsByProvider.filter((s) => s._id !== null && s._id.toString() === provider);
 		if (providerSchools.length > 0) {
 			const schoolsWithoutBucketsForProvider = getSchoolsWithoutBucketsForProvider(providerSchools, buckets);
-			info(`Found ${schoolsWithoutBucketsForProvider.length} for provider ${provider}`);
+			info(
+				`Found schools with wrong provider buckets ${JSON.stringify(
+					schoolsWithoutBucketsForProvider
+				)} for provider ${provider}`
+			);
 			schoolsWithoutBuckets = schoolsWithoutBuckets.concat(schoolsWithoutBucketsForProvider);
 		}
 	}
 	return schoolsWithoutBuckets;
 };
 
+/**
+ * For each school without bucket try to find provider
+ * @param schoolsWithoutBuckets - schools which don't have buckets by their provider
+ * @param bucketsPerProvider - map {provider: [buckets]}
+ * @returns {{}} - map {provider: [schools]}
+ */
 const findProvidersForSchools = (schoolsWithoutBuckets, bucketsPerProvider) => {
 	const foundSchoolsPerProvider = {};
 	for (const school of schoolsWithoutBuckets) {
@@ -135,6 +147,7 @@ module.exports = {
 
 		// 1. call s3 api to list all providerBuckets
 		const bucketsPerProvider = await getBucketsPerProvider(storageProviders);
+		info(`buckets per provider: ${JSON.stringify(bucketsPerProvider)}`);
 
 		// 2. find all schools which are assigned to this provider
 		const schoolsByProvider = await SchoolModel.aggregate([
@@ -147,9 +160,10 @@ module.exports = {
 		if (schoolsWithWrongProviders.length === 0) {
 			info(`There aren't any school with wrong providers were found`);
 		} else {
+			info(`Found schools with wrong providers: ${JSON.stringify(schoolsWithWrongProviders)}`);
 			// 3.1 try to find buckets by another providers
 			const foundSchoolsPerProvider = findProvidersForSchools(schoolsWithWrongProviders, bucketsPerProvider);
-
+			info(`Found schools with corrected providers: ${JSON.stringify(foundSchoolsPerProvider)}`);
 			// 3.2. update schools by found providers
 			await updateProvidersForSchools(foundSchoolsPerProvider);
 		}

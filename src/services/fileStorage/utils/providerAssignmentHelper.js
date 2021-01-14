@@ -2,6 +2,13 @@ const { ObjectId } = require('mongoose').Types;
 const { info, warning } = require('../../../logger');
 const { schoolModel } = require('../../school/model');
 
+/**
+ * Try to find provider for the school. Compare the schoolId with bucket name
+ * If found return provider
+ * @param bucketsForProvider - map {provider: [buckets]}
+ * @param school
+ * @returns {string|undefined}
+ */
 const findProviderForSchool = (bucketsForProvider, school) => {
 	for (const [provider, buckets] of Object.entries(bucketsForProvider)) {
 		const bucketExists = buckets.indexOf(`bucket-${school.toString()}`) >= 0;
@@ -10,6 +17,12 @@ const findProviderForSchool = (bucketsForProvider, school) => {
 	return undefined;
 };
 
+/**
+ * Update provider for school
+ * @param provider
+ * @param schoolId
+ * @returns {Promise<void>}
+ */
 const updateProviderForSchool = async (provider, schoolId) => {
 	if (provider !== undefined) {
 		const result = await schoolModel
