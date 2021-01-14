@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## 25.5.2
+
+### Fixed
+
+- SC-8189 fix duplicate events by returning updated object at findOneAndUpdate
+
 ## [25.5.1]
 ### Fixed
 
