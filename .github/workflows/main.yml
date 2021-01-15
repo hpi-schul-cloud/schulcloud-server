@@ -53,11 +53,11 @@ jobs:
         echo "HOSTNAME=$HOSTNAME" >> $GITHUB_ENV
         echo "STAGING_DOMAIN=$STAGING_DOMAIN" >> $GITHUB_ENV
 
-        echo "SMTP=${{secrets.SMTP}}" >> $GITHUB_ENV
-        echo "S3_KEY=${{secrets.S3_KEY}}" >> $GITHUB_ENV
-        echo "AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}" >> $GITHUB_ENV
-        echo "AWS_ACCESS_KEY=${{secrets.AWS_ACCESS_KEY}}" >> $GITHUB_ENV
-        echo "AUTHENTICATION=${{secrets.AUTHENTICATION}}" >> $GITHUB_ENV
+        echo "SECRET_SMTP=${{secrets.SMTP}}" >> $GITHUB_ENV
+        echo "SECRET_S3_KEY=${{secrets.S3_KEY}}" >> $GITHUB_ENV
+        echo "SECRET_AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}" >> $GITHUB_ENV
+        echo "SECRET_AWS_ACCESS_KEY=${{secrets.AWS_ACCESS_KEY}}" >> $GITHUB_ENV
+        echo "SECRET_AUTHENTICATION=${{secrets.AUTHENTICATION}}" >> $GITHUB_ENV
     - name: Checkout
       uses: actions/checkout@v2
 

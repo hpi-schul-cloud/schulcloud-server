@@ -21,11 +21,11 @@ data:
   ALERT_STATUS_API_URL: https://status.hpi-schul-cloud.de/api/v1
   ALERT_STATUS_URL: https://status.hpi-schul-cloud.de
   #API_HOST: https://api.staging.hpi-schul-cloud.org
-  AUTHENTICATION: $AUTHENTICATION
-  AWS_ACCESS_KEY: $AWS_ACCESS_KEY
+  AUTHENTICATION: $SECRET_AUTHENTICATION
+  AWS_ACCESS_KEY: $SECRET_AWS_ACCESS_KEY
   AWS_ENDPOINT_URL: https://s3.hidrive.strato.com
   AWS_REGION: eu-central-1
-  AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+  AWS_SECRET_ACCESS_KEY: $SECRET_AWS_SECRET_ACCESS_KEY
   #CLIENT_API_KEY: 
   CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS: "16"
   #CONTENT_URI: https://content.schul-cloud.org
@@ -94,7 +94,7 @@ data:
   #ROCKET_CHAT_ADMIN_ID: 
   #ROCKET_CHAT_ADMIN_TOKEN:
   #ROCKET_CHAT_URI: https://chat.staging.hpi-schul-cloud.org
-  S3_KEY: $S3_KEY
+  S3_KEY: $SECRET_S3_KEY
   SC_DOMAIN: $STAGING_DOMAIN
   #SC_SHORT_TITLE: Niedersächsische Bildungscloud
   #SC_THEME: n21
@@ -107,11 +107,12 @@ data:
   #SHLVL: 1
   SHOW_VERSION: "1"
   #SKIP_CONDITIONS_CONSENT: 
-  SMTP: $SMTP
+  SMTP: $SECRET_SMTP
   SMTP_SENDER: staging-noreply@hpi-schul-cloud.de
   STUDENT_TEAM_CREATION: disabled
   #SYNC_API_KEY:
   TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION: opt-in
-  TZ: Europe/Berlin
   #VIDEOCONFERENCE_HOST: https://bbb.staging.messenger.schule/bigbluebutton
   #VIDEOCONFERENCE_SALT:
+  TZ: Europe/Berlin
+
