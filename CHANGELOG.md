@@ -8,11 +8,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
 ## Unreleased
+### Fixed
+
+- SC-8322 prevent wrong assignment from school to storage provider
 
 ### Changed
 
 - SC-8380 removed reqlib, replaced by normal require to keep referenced types known
 - SC-8213 error handling concept
+
+## 25.5.2
+
+### Fixed
+
+- SC-8189 fix duplicate events by returning updated object at findOneAndUpdate
+
+## [25.5.1]
+### Fixed
+
+- SC-8303 fix wrong assignment from school to storage provider
 
 ## [25.5.0]
 

@@ -26,6 +26,9 @@ const persistCourseTimesEvent = (hook) => {
 							$set: {
 								'times.$.eventId': event._id,
 							},
+						},
+						{
+							returnNewDocument: true,
 						}
 					)
 				);
