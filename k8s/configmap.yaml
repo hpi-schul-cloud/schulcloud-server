@@ -27,7 +27,7 @@ data:
   AWS_REGION: eu-central-1
   AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
   #CLIENT_API_KEY: 
-  CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS: 16
+  CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS: "16"
   #CONTENT_URI: https://content.schul-cloud.org
   #DATABASE_AUDIT: True
   #DATABASE__AUDIT: True
@@ -54,7 +54,7 @@ data:
   #ETHERPAD_OLD_PAD_DOMAIN: etherpad.staging.hpi-schul-cloud.org
   #ETHERPAD_OLD_PAD_URI: https://etherpad.staging.hpi-schul-cloud.org/p
   #ETHERPAD_URI: https://staging.hpi-schul-cloud.org/etherpad/api/1.2.14
-  FEATURE_ALERTS_STATUS_ENABLED: true
+  FEATURE_ALERTS_STATUS_ENABLED: "true"
   #FEATURE_ES_COLLECTIONS_ENABLED: true
   #FEATURE_ES_MERLIN_ENABLED: true
   #FEATURE_ES_SEARCHABLE_ENABLED: true
@@ -72,12 +72,12 @@ data:
   #IGNORE_DISCOVERABILITY: true
   #JWT_TIMEOUT_SECONDS: 7200
   #JWT_WHITELIST_ACCEPT_ALL: false
-  KEEP_ALIVE: true
+  KEEP_ALIVE: "true"
   #LDAP_PASSWORD_ENCRYPTION_KEY: 
   #LDAP_SCHOOL_SYNCER_POOL_SIZE: 1
   #LDAP_SYSTEM_SYNCER_POOL_SIZE: 2
   #LERNSTORE_MODE: EDUSHARING
-  LOGIN_BLOCK_TIME: 15
+  LOGIN_BLOCK_TIME: "15"
   #MATRIX_MESSENGER__SECRET: 
   #MATRIX_MESSENGER__SERVERNAME: staging.messenger.schule
   #MATRIX_MESSENGER__URI: https://matrix.staging.messenger.schule
@@ -105,7 +105,7 @@ data:
   #SENTRY_DSN: 
   #SENTRY_SAMPLE_RATE: 1.0
   #SHLVL: 1
-  SHOW_VERSION: 1
+  SHOW_VERSION: "1"
   #SKIP_CONDITIONS_CONSENT: 
   SMTP: $SMTP
   SMTP_SENDER: staging-noreply@hpi-schul-cloud.de
@@ -114,4 +114,4 @@ data:
   TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION: opt-in
   TZ: Europe/Berlin
   #VIDEOCONFERENCE_HOST: https://bbb.staging.messenger.schule/bigbluebutton
-  #VIDEOCONFERENCE_SALT: 
+  #VIDEOCONFERENCE_SALT:
