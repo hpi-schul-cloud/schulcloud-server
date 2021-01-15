@@ -53,6 +53,7 @@ const activation = require('./activation');
 const config = require('./config');
 const version = require('./versionService');
 const docs = require('./docs');
+const wallet = require('./wallet');
 
 module.exports = function initializeServices() {
 	const app = this;
@@ -112,6 +113,7 @@ module.exports = function initializeServices() {
 	app.configure(activation);
 	app.configure(config);
 	app.configure(version);
+	app.configure(wallet);
 
 	// initialize events
 	newsEvents.configure(app);

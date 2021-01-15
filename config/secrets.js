@@ -33,6 +33,7 @@ const secrets = {
 			},
 		],
 	},
+	IDAS_API_KEY : "<insert API Key here ;) >",
 	authentication: AUTHENTICATION,
 };
 
