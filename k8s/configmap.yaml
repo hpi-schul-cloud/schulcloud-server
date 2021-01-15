@@ -21,7 +21,7 @@ data:
   ALERT_STATUS_API_URL: https://status.hpi-schul-cloud.de/api/v1
   ALERT_STATUS_URL: https://status.hpi-schul-cloud.de
   CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS: "16"
-  AUTHENTICATION: $SECRET_AUTHENTICATION
+  AUTHENTICATION: "$SECRET_AUTHENTICATION"
   AWS_ACCESS_KEY: $SECRET_AWS_ACCESS_KEY
   AWS_ENDPOINT_URL: https://s3.hidrive.strato.com
   AWS_REGION: eu-central-1
