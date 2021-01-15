@@ -14,7 +14,10 @@ const convertToFeathersError = (error) => {
 	if (isFeatherError(error)) {
 		return error;
 	}
-	const code = error.code || error.statusCode || 500;
+	let code = error.code || error.statusCode || 500;
+	if (!(typeof errorsByCode[code] === 'function')) {
+		code = 500;
+	}
 	return new errorsByCode[code](error);
 };
 
