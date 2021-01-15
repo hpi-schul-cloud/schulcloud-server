@@ -93,7 +93,7 @@ describe('ltiTool service', () => {
 			await testObjects.createTestCourse({ userIds: [student._id], ltiToolIds: [tool._id] });
 
 			const params = await generateRequestParamsFromUser(student);
-			await app.service('ltiTools').delete(tool._id, params);
+			await app.service('ltiTools').remove(tool._id, params);
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
@@ -107,7 +107,7 @@ describe('ltiTool service', () => {
 		await testObjects.createTestCourse({ teacherIds: [teacher._id], ltiToolIds: [tool._id] });
 
 		const params = await generateRequestParamsFromUser(teacher);
-		const result = await app.service('ltiTools').delete(tool._id, params);
+		const result = await app.service('ltiTools').remove(tool._id, params);
 		expect(result).to.not.be.undefined;
 	});
 
@@ -119,7 +119,7 @@ describe('ltiTool service', () => {
 			await testObjects.createTestCourse({ teacherIds: [courseTeacher._id], ltiToolIds: [tool._id] });
 
 			const params = await generateRequestParamsFromUser(otherTeacher);
-			await app.service('ltiTools').delete(tool._id, params);
+			await app.service('ltiTools').remove(tool._id, params);
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
