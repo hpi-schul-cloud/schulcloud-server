@@ -4,7 +4,7 @@ const testObjects = require('../helpers/testObjects')(appPromise);
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
 
 
-describe.only('ltiTool service', () => {
+describe('ltiTool service', () => {
 	let app;
 	let server;
 
