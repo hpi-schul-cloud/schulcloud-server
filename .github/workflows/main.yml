@@ -35,20 +35,29 @@ jobs:
         export SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-8)
         export NAMESPACE=$(echo ${GITHUB_REF##*/} | sed -e "s/\//-/g" | tr '[:upper:]' '[:lower:]')
         export SERVICE_NAME=${GITHUB_REPOSITORY##*/}
-        export BUILD_IMAGE=$REGISTRY_HOSTNAME/${{ secrets.GCP_PROJECT_ID }}/$SERVICE_NAME:$SHORT_SHA
         export HOSTNAME=$HOSTNAME_PREFIX-$NAMESPACE.$STAGING_DOMAIN
+
+        export BUILD_IMAGE=$REGISTRY_HOSTNAME/${{ secrets.GCP_PROJECT_ID }}/$SERVICE_NAME:$SHORT_SHA
+        
         echo "SHORT_SHA=$SHORT_SHA"
         echo "SERVICE_NAME=$SERVICE_NAME"
         echo "NAMESPACE=$NAMESPACE"
-        echo "BUILD_IMAGE=$BUILD_IMAGE"
         echo "HOSTNAME=$HOSTNAME"
+        echo "STAGING_DOMAIN=$STAGING_DOMAIN"
+        echo "BUILD_IMAGE=$BUILD_IMAGE"
         
         echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
         echo "SERVICE_NAME=$SERVICE_NAME" >> $GITHUB_ENV
         echo "NAMESPACE=$NAMESPACE" >> $GITHUB_ENV
         echo "BUILD_IMAGE=$BUILD_IMAGE" >> $GITHUB_ENV
         echo "HOSTNAME=$HOSTNAME" >> $GITHUB_ENV
-        
+        echo "STAGING_DOMAIN=$STAGING_DOMAIN" >> $GITHUB_ENV
+
+        echo "SMTP=${{secrets.SMTP}}" >> $GITHUB_ENV
+        echo "S3_KEY=${{secrets.S3_KEY}}" >> $GITHUB_ENV
+        echo "AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}" >> $GITHUB_ENV
+        echo "AWS_ACCESS_KEY=${{secrets.AWS_ACCESS_KEY}}" >> $GITHUB_ENV
+        echo "AUTHENTICATION=${{secrets.AUTHENTICATION}}" >> $GITHUB_ENV
     - name: Checkout
       uses: actions/checkout@v2
 
