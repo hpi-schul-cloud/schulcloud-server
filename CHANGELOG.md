@@ -12,6 +12,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8322 prevent wrong assignment from school to storage provider
 
+### Added
+
+- SC-8029 - Add deletion concept handling for pseudonyms and registration pins
+
 ### Changed
 
 - SC-8380 removed reqlib, replaced by normal require to keep referenced types known
