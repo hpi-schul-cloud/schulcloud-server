@@ -108,8 +108,13 @@ const getS3 = (storageProvider, useCors) => {
 };
 
 const listBuckets = async (awsObject) => {
-	const response = await awsObject.s3.listBuckets().promise();
-	return response.Buckets ? response.Buckets.map((b) => b.Name) : [];
+	try {
+		const response = await awsObject.s3.listBuckets().promise();
+		return response.Buckets ? response.Buckets.map((b) => b.Name) : [];
+	} catch (e) {
+		logger.warning('Could not retrieve buckets for provider', e);
+		return [];
+	}
 };
 
 const getBucketName = (schoolId) => `${BUCKET_NAME_PREFIX}${schoolId}`;
@@ -289,7 +294,7 @@ const createBucket = async (awsObject) => {
 		return awsObject;
 	} catch (err) {
 		logger.error(`Error by creating the bucket ${awsObject.bucket}: ${err.code} ${err.message}`);
-		if (err.statusCode === 409) {
+		if (err.statusCode === 409 || err.statusCode === 403) {
 			logger.error(`Bucket ${awsObject.bucket} does not exist. 
 							Probably it already exists by another provider. Trying to find by other providers. 
 							${err.code} - ${err.message}`);
@@ -331,7 +336,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			logger.info(`Bucket ${awsObject.bucket} does exist`);
 			return awsObject;
 		} catch (err) {
-			if (err.statusCode === 404) {
+			if (err.statusCode === 404 || err.statusCode === 403) {
 				const response = await createBucket(awsObject);
 				logger.info(`Bucket ${response.bucket} created ... `);
 
