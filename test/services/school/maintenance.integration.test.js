@@ -214,7 +214,7 @@ describe('school maintenance mode', () => {
 				);
 
 				await expect(maintenanceService.create({ maintenance: true }, adminParams)).to.eventually.be.fulfilled;
-			}).timeout(5000);
+			});
 		});
 	});
 

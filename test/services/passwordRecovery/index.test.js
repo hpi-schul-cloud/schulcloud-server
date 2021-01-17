@@ -31,9 +31,9 @@ describe('passwordRecovery service', () => {
 		await passwordRecoveryService.create({ username: recoveryUsername });
 	});
 
-	after((done) => {
-		testObjects.cleanup();
-		server.close(done);
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
 	});
 
 	it('should work for existing email addresses', () => {

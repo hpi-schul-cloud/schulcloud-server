@@ -8,8 +8,6 @@ chai.use(chaiHttp);
 const { expect } = chai;
 
 describe('IServ single-sign-on', function () {
-	this.timeout(5000);
-
 	let mockSystem = null;
 
 	function createIServMockServer() {

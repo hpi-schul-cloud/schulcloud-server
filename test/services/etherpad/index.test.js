@@ -62,6 +62,7 @@ describe('Etherpad services', () => {
 	});
 
 	after(async () => {
+		await testHelpers.cleanup();
 		await mockServer.close();
 		await server.close();
 		Configuration.reset(configBefore);

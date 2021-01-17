@@ -114,6 +114,7 @@ const checkPermissions = async (id, roleName, permissionAction, { account }) => 
 	if (!grantPermission) {
 		throw new Forbidden(`You don't have permissions to perform this action`);
 	}
+	return context;
 };
 
 const deleteUser = async (id) => {

@@ -9,7 +9,6 @@ describe('homework service', function test() {
 	let homeworkService;
 	let homeworkCopyService;
 	let server;
-	this.timeout(10000);
 
 	after(async () => {
 		await testObjects.cleanup();

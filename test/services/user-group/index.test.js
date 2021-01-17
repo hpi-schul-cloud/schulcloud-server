@@ -69,7 +69,7 @@ describe('classes service', () => {
 					expect(classes.reduce((agg, cur) => agg && data.some((d) => equalIds(d._id, cur._id)), true)).to.equal(true);
 				})
 			);
-		}).timeout(4000);
+		});
 
 		it('should allow students to only find classes they participate in', async () => {
 			const studentUser = await testObjects.createTestUser({ roles: ['student'] });

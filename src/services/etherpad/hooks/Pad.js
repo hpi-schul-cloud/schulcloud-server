@@ -23,6 +23,7 @@ const restrictOldPadsToCourse = async (context) => {
 		if (foundLessons.total < 1) {
 			throw new Error('Forbidden');
 		}
+		return context;
 	} catch (err) {
 		logger.error('Forbidden to access pad: ', err);
 		throw new Forbidden('Forbidden to access pad');

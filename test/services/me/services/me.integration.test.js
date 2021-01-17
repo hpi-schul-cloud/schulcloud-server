@@ -12,7 +12,6 @@ describe('me service integration tests', function test() {
 	let server;
 	let configBefore;
 	let testObjects;
-	this.timeout(10000);
 
 	before(async () => {
 		delete require.cache[require.resolve('../../../../src/app')];

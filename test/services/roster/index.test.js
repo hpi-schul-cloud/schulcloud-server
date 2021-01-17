@@ -16,7 +16,6 @@ describe('roster service', function oauth() {
 	let toolService;
 	let courseService;
 
-	this.timeout(10000);
 	let server;
 
 	let testUser1;

@@ -1,0 +1,19 @@
+{
+  "diff": true,
+  "extension": [
+    "js",
+    "ts"
+  ],
+  "recursive": true,
+  "package": "./package.json",
+  "slow": 75,
+  "timeout": 20000,
+  "watch-files": [
+    "test/*",
+    "src/*",
+    "config/*"
+  ],
+  "spec": [
+    "{test,src}/**/*.test.{js,ts}"
+  ]
+}

@@ -3,7 +3,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { Forbidden } = require('../../../errors');
 const { hasPermission } = require('../../../hooks');
 const { getScopePermissions } = require('../../helpers/scopePermissions/hooks/checkScopePermissions');
-
+const logger = require('../../../logger')
 /**
  * Returns true if the user making the request has the required permissions
  * in all courses which reference the given material.
@@ -30,6 +30,7 @@ const hasMaterialAccess = async (context, id, permissions) => {
 			userPermissions = await getScopePermissions(context.app, context.params.account.userId, scope);
 		} catch (err) {
 			// the course scope throws Forbidden if the user is not in the course (?!)
+			logger.debug(err.message);
 			userPermissions = [];
 		}
 		access = access && permissions.every((permission) => userPermissions.includes(permission));

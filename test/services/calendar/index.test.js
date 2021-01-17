@@ -7,8 +7,6 @@ const mockery = require('mockery');
 const requestMock = require('./mock/mockResponses');
 
 describe('calendar service', function () {
-	this.timeout(20000); // for slow require(app) call
-
 	let app = null;
 	let calendarService = null;
 

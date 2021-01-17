@@ -5,11 +5,17 @@ const appPromise = require('../../../src/app');
 describe('resolve/users service', () => {
 	let app;
 	let service;
+	let server;
 
 	before(async () => {
 		app = await appPromise;
+		server = await app.listen(0);
 		service = app.service('resolve/users');
 	});
+
+	after(async () => {
+		await server.close();
+	})
 
 	it('registered the resolve/users service', () => {
 		assert.ok(service);

@@ -160,7 +160,7 @@ describe('SkipRegistration integration', () => {
 				scenarioParams
 			);
 			expect(result).to.equal('success');
-		}).timeout(6000);
+		});
 
 		it('succeeds for admin skipping teacher registration', async () => {
 			let targetUser = await testObjects.createTestUser({
@@ -184,7 +184,7 @@ describe('SkipRegistration integration', () => {
 				scenarioParams
 			);
 			expect(result).to.equal('success');
-		}).timeout(6000);
+		});
 
 		it('succeeds for admin skipping student registration', async () => {
 			let targetUser = await testObjects.createTestUser({
@@ -209,7 +209,7 @@ describe('SkipRegistration integration', () => {
 				scenarioParams
 			);
 			expect(result).to.equal('success');
-		}).timeout(6000);
+		});
 	});
 
 	describe('route for multiple users', () => {
@@ -318,5 +318,5 @@ describe('SkipRegistration integration', () => {
 		expect(Array.isArray(result)).to.equal(true);
 		expect(result[0].success).to.equal(true);
 		expect(result[1].success).to.eq(true);
-	}).timeout(6000);
+	});
 });

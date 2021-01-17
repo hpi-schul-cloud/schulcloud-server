@@ -25,8 +25,6 @@ function runWorker() {
 }
 
 describe('RSS Feed Crawler Integration', function () {
-	this.timeout(10000)
-	
 	const mockPort = 3039;
 	let mockServer;
 

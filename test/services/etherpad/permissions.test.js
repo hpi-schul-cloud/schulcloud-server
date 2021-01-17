@@ -62,6 +62,7 @@ describe('Etherpad Permission Check: Teacher', () => {
 	});
 
 	after(async () => {
+		await testHelpers.cleanup();
 		await mockServer.close();
 		await server.close();
 		Configuration.reset(configBefore);

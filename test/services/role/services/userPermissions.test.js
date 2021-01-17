@@ -90,9 +90,9 @@ describe('userPermissions', () => {
 		accountTestUserOther = await testObjects.createTestAccount(dataTestUserOther, null, otherUser);
 	});
 
-	after((done) => {
-		testObjects.cleanup();
-		server.close(done);
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
 	});
 
 	it('registered the service', () => {

@@ -13,7 +13,6 @@ const createRequestParamsForAdmin = async (testObjects, schoolFeatures) => {
 };
 
 describe('MessengerConfigService', function test() {
-	this.timeout(30000);
 	let configBefore;
 	let app;
 	let server;

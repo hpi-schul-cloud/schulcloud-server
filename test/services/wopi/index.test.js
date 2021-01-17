@@ -7,7 +7,6 @@ const testObjects = require('../helpers/testObjects')(appPromise);
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
 
 describe('wopi service', function test() {
-	this.timeout(10000);
 	let app;
 	const testUserId = '599ec14d8e4e364ec18ff46d';
 	let server;

@@ -21,7 +21,6 @@ describe('ltiTool service', () => {
 	before(async function before() {
 		app = await appPromise;
 		ltiToolService = app.service('ltiTools');
-		this.timeout(10000);
 		await ltiToolService.create(testTool);
 	});
 

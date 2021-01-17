@@ -6,14 +6,17 @@ const testObjects = require('../helpers/testObjects')(appPromise);
 describe('lesson copy service', () => {
 	let app;
 	let lessonCopyService;
+	let server;
 
 	before(async () => {
 		app = await appPromise;
+		server = await app.listen(0);
 		lessonCopyService = app.service('lessons/copy');
 	});
 
 	after(async () => {
-		testObjects.cleanup();
+		await testObjects.cleanup();
+		await server.close();
 	});
 
 	it('can copy a lesson within a course', async () => {

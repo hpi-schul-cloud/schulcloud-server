@@ -208,7 +208,6 @@ describe('Account Service', () => {
 				expect(err.message).to.equal("Provider 'rest' can not call 'update'. (disallow)");
 			} finally {
 				await accountService.remove(account._id);
-				await userService.remove(user._id);
 			}
 		});
 	});
@@ -248,7 +247,6 @@ describe('Account Service', () => {
 				assert.equal(exception.message, 'Dein Passwort stimmt mit dem Pattern nicht überein.');
 			} finally {
 				await accountService.remove(account._id);
-				await userService.remove(user._id);
 			}
 		});
 
@@ -275,12 +273,11 @@ describe('Account Service', () => {
 				assert.equal(exception.message, 'Dein Passwort ist nicht korrekt!');
 			} finally {
 				await accountService.remove(account._id);
-				await userService.remove(user._id);
 			}
 		});
 
 		it('should successfully patch activated to true', async () => {
-			user = await testObjects.createTestUser();
+			const user = await testObjects.createTestUser();
 			const accountDetails = {
 				username: user.email,
 				password: 'ca4t9fsfr3dsd',
@@ -331,7 +328,6 @@ describe('Account Service', () => {
 				expect(err.message).to.equal('You have not the permissions to change other users');
 			} finally {
 				await accountService.remove(account._id);
-				await userService.remove(user._id);
 			}
 		});
 
@@ -363,7 +359,6 @@ describe('Account Service', () => {
 				expect(err.message).to.equal('this account doesnt exist');
 			} finally {
 				await accountService.remove(account._id);
-				await userService.remove(user._id);
 			}
 		});
 

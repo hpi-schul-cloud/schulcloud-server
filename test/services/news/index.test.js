@@ -19,12 +19,15 @@ describe('news service', () => {
 		newsService = app.service('news');
 	});
 
+	after(async () => {
+		await cleanup();
+	})
+
 	it('registers correctly', () => {
 		expect(app.service('news')).to.not.equal(undefined);
 	});
 
 	describe('integration tests', function integrationTests() {
-		this.timeout(5000);
 		let server;
 
 		before((done) => {

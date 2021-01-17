@@ -314,7 +314,6 @@ describe('CSVSyncer Integration', () => {
 		const TEACHER_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de', 'e@f.de'];
 
 		before(async function before() {
-			this.timeout(5000);
 			await Promise.all(EXISTING_CLASSES.map((klass) => createClass([...klass, SCHOOL_ID])));
 
 			const user = await createUser({
@@ -1094,8 +1093,6 @@ describe('CSVSyncer Integration', () => {
 		const STUDENT_EMAILS = ['a@b.de', 'b@c.de', 'c@d.de', 'd@e.de'];
 
 		before(async function before() {
-			this.timeout(5000);
-
 			const school1 = await createSchool({
 				currentYear: await createYear(),
 			});

@@ -51,7 +51,6 @@ async function createSubmission(
 
 describe('submission service', function test() {
 	let app;
-	this.timeout(4000);
 	let server;
 
 	before(async () => {
@@ -60,6 +59,7 @@ describe('submission service', function test() {
 	});
 
 	after(async () => {
+		await testObjects.cleanup();
 		await server.close();
 	});
 

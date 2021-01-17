@@ -6,7 +6,6 @@ const appPromise = require('../../../src/app');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
 describe('helpdesk service', function test() {
-	this.timeout(10000);
 	let app;
 	let helpdeskService;
 	let logger;

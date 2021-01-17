@@ -24,8 +24,9 @@ describe('user service', () => {
 		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		testObjects.cleanup();
+		await server.close();
 	});
 
 	it('registered the users service', () => {

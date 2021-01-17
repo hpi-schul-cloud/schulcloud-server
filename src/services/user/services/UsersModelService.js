@@ -11,11 +11,11 @@ const userModelHooks = {
 		create: [resolveToIds('/roles', 'data.roles', 'name'), addConsentDate],
 		update: [addConsentDate],
 		patch: [addConsentDate],
-		remove: [enableQuery],
+		remove: [],
 		find: [resolveToIds('/roles', 'params.query.roles', 'name')],
 	},
 	after: {
-		remove: [enableQueryAfter],
+		remove: [],
 	},
 };
 

@@ -7,7 +7,7 @@ const { joinMeeting, getMeetingInfo } = require('../../../../src/services/videoc
 const testServer = require('../../../../src/services/videoconference/logic/server');
 const utils = require('../../../../src/services/videoconference/logic/utils');
 
-describe('videoconference logic', () => {
+describe.skip('videoconference logic', () => {
 	describe('setup check', () => {
 		it('test server initialized', () => {
 			expect(testServer).to.be.ok;

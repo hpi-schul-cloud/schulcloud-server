@@ -34,7 +34,6 @@ describe('course scope members service', () => {
 		let studentParams;
 
 		before(async function before() {
-			this.timeout(5000);
 			teacher = await testObjects.createTestUser();
 			teacherParams = await generateRequestParamsFromUser(teacher);
 			student = await testObjects.createTestUser();
@@ -101,7 +100,6 @@ describe('course scope members service', () => {
 		const toIdString = (item) => item._id.toString();
 
 		before(async function before() {
-			this.timeout(8000);
 			teachers = [await testObjects.createTestUser(), await testObjects.createTestUser()];
 			substitutionTeachers = [await testObjects.createTestUser()];
 			students = [

@@ -59,7 +59,6 @@ const createTests = (token, whitelist, ignorelist) => {
 				it(`${method}`, async function run() {
 					// needed for post authentication otherwise too many requests error
 					if (route === 'authentication' && method === 'post') {
-						this.timeout(20000);
 						await sleep(15000);
 					}
 					if (method === 'find') {

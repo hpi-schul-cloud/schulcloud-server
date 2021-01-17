@@ -8,7 +8,6 @@ const { ACTIONS } = require('../../../src/services/messengerSync/producer');
 const { Configuration } = commons;
 
 describe('service', function test() {
-	this.timeout(20000); // give require app enough time
 	let configBefore;
 	let server;
 	let app;

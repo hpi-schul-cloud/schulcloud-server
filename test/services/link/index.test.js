@@ -25,8 +25,6 @@ describe('link service', () => {
 	});
 
 	it(`generates a link that has the correct target set`, function test() {
-		this.timeout(10000);
-
 		const url = 'localhost:3031/';
 		return service
 			.create({ target: url })

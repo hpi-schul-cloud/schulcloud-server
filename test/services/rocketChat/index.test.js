@@ -40,6 +40,7 @@ describe('rocket.chat user service', () => {
 	});
 
 	after(async () => {
+		await testObjects.cleanup();
 		await server.close();
 	});
 

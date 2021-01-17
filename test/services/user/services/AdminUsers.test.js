@@ -83,7 +83,7 @@ describe('AdminUsersService', () => {
 		expect(searchClass(result.data, '2A')).to.be.true;
 	});
 
-	it('request muliple users by id', async () => {
+	it('request multiple users by id', async () => {
 		const admin = await testObjects.createTestUser({ roles: ['administrator'] }).catch((err) => {
 			logger.warning('Can not create admin', err);
 		});

@@ -6,7 +6,6 @@ const rabbitmqMock = require('../rabbitmqMock');
 const { Configuration } = commons;
 
 describe('service', function test() {
-	this.timeout(20000); // give require app enough time
 	let configBefore;
 	let server;
 	let app;
@@ -32,13 +31,13 @@ describe('service', function test() {
 		rabbitmqMock.reset();
 	});
 
-	after((done) => {
+	after(async () => {
 		Configuration.parse(configBefore);
 		mockery.deregisterAll();
 		mockery.disable();
 
-		server.close(done);
-		testObjects.cleanup();
+		await server.close();
+		await testObjects.cleanup();
 	});
 
 	it('admin can trigger a schoolSync', async () => {

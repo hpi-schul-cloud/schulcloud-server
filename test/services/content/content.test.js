@@ -9,7 +9,6 @@ const readFile = promisify(fs.readFile);
 const path = require('path');
 
 describe('content service', function () {
-	this.timeout(20000); // for slow require(app) call
 	const requestMock = (options) => readFile(requestToFilename(options)).then((data) => JSON.parse(data));
 
 	let app = null;

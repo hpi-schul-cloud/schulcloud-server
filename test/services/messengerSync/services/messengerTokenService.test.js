@@ -12,7 +12,6 @@ const {
 
 describe('MessengerTokenService', function test() {
 	let app;
-	this.timeout(10000);
 	let server;
 
 	before(async () => {

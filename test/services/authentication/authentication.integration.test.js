@@ -12,7 +12,6 @@ describe('authentication service integration tests', function test() {
 	let server;
 	let configBefore;
 	let testObjects;
-	this.timeout(10000);
 
 	before(async () => {
 		delete require.cache[require.resolve('../../../src/app')];
@@ -28,6 +27,7 @@ describe('authentication service integration tests', function test() {
 	});
 
 	after(async () => {
+		await testObjects.cleanup();
 		await server.close();
 		Configuration.reset(configBefore);
 	});

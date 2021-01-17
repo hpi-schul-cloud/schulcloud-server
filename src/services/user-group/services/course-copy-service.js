@@ -76,6 +76,7 @@ class CourseCopyService {
 			throw new GeneralError('Can not fetch data to copy this course.', err);
 		});
 
+		// todo: very unsecure => use other possibilities to deep copy: insertMany() || MongoDB transactions
 		await Promise.all(
 			lessons.map((lesson) =>
 				createLesson(this.app, {
@@ -90,6 +91,7 @@ class CourseCopyService {
 			throw new GeneralError('Can not copy one or many lessons.', err);
 		});
 
+		// todo: very unsecure => use other possibilities to deep copy: insertMany() || MongoDB transactions
 		await Promise.all(
 			homeworks.map((homework) => {
 				// homeworks that are part of a lesson are copied in LessonCopyService

@@ -23,7 +23,10 @@ describe('material service', () => {
 		server = await app.listen(0);
 	});
 
-	after(() => server.close());
+	after(async () => {
+		await cleanup();
+		await server.close();
+	});
 
 	it('registered the material service', () => {
 		assert.ok(app.service('materials'));
@@ -43,10 +46,6 @@ describe('material service', () => {
 		let materialA;
 		let materialB;
 
-		before((done) => {
-			server = app.listen(0, done);
-		});
-
 		before(async () => {
 			[materialA, materialB] = await Promise.all([
 				Material.create({
@@ -60,27 +59,29 @@ describe('material service', () => {
 					url: 'Bbaz',
 				}),
 			]);
-		});
 
-		before(async () => {
 			[studentA, studentB] = await Promise.all([
 				createTestUser({ roles: 'student' }),
 				createTestUser({ roles: 'student' }),
 			]);
+
 			[teacherA, teacherB] = await Promise.all([
 				createTestUser({ roles: 'teacher' }),
 				createTestUser({ roles: 'teacher' }),
 			]);
+
 			[studentAParams, studentBParams, teacherAParams, teacherBParams] = await Promise.all([
 				generateRequestParamsFromUser(studentA),
 				generateRequestParamsFromUser(studentB),
 				generateRequestParamsFromUser(teacherA),
 				generateRequestParamsFromUser(teacherB),
 			]);
+
 			[courseA, courseB] = await Promise.all([
 				createTestCourse({ teacherIds: [teacherA], userIds: [studentA] }),
 				createTestCourse({ teacherIds: [teacherB], userIds: [studentB] }),
 			]);
+
 			await Promise.all([
 				createTestLesson({ courseId: courseA._id, materialIds: [materialA] }),
 				createTestLesson({ courseId: courseB._id, materialIds: [materialB] }),
@@ -163,7 +164,5 @@ describe('material service', () => {
 				_id: { $in: [materialA._id, materialB._id] },
 			});
 		});
-
-		after(cleanup);
 	});
 });

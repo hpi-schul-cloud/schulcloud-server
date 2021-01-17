@@ -151,7 +151,7 @@ describe('CoursePermissionService', () => {
 	});
 
 	after(async () => {
-		await testObjects.cleanup;
+		await testObjects.cleanup();
 		await server.close();
 	});
 

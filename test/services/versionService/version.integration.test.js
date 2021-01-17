@@ -11,7 +11,6 @@ describe('version service integration tests', function test() {
 	let app;
 	let server;
 	let configBefore;
-	this.timeout(20000);
 
 	before(async () => {
 		delete require.cache[require.resolve('../../../src/app')];

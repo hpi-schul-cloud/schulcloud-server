@@ -11,7 +11,6 @@ describe('pseudonym service', function pseudonymTest() {
 	let pseudonymService;
 	let toolService;
 	let server;
-	this.timeout(10000);
 
 	const testTool1 = {
 		_id: '5a79cb15c3874f9aea14daa5',
