@@ -33,7 +33,7 @@ describe('course scope members service', () => {
 		let teacherParams;
 		let studentParams;
 
-		before(async () => {
+		before(async function before() {
 			teacher = await testObjects.createTestUser();
 			teacherParams = await generateRequestParamsFromUser(teacher);
 			student = await testObjects.createTestUser();

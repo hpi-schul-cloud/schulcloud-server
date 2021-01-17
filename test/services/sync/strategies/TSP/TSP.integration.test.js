@@ -13,8 +13,8 @@ describe('TSP API integration tests', () => {
 
     before(async () => {
         app = await appPromise;
-        server = await app.listen(0);
-        tog = new TestObjectsGenerator(app);
+        server = awaitapp.listen(0);
+    tog = new TestObjectsGenerator(app);
     });
 
     after(async () => {
@@ -40,8 +40,7 @@ describe('TSP API integration tests', () => {
 
         after(async () => {
             await tog.cleanup();
-        });
-    });
+    });});
 
     describe('#createUserAndAccount', () => {
         it('should create an activated user and account based on the given details', async () => {
@@ -57,7 +56,7 @@ describe('TSP API integration tests', () => {
             const roles = ['administrator', 'teacher'];
             const systemId = (await tog.createTestSystem())._id;
             const createdUser = await createUserAndAccount(app, userDetails, roles, systemId);
-            tog.createdEntityIds.users.push(createdUser._id);
+            tog.createdEntityIds.users.push(createdUser._id.toString());
 
             expect(createdUser).to.be.ok;
             expect(createdUser.source).to.equal('tsp');
