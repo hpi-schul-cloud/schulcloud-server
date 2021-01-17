@@ -10,7 +10,7 @@ Master: [![codecov](https://codecov.io/gh/hpi-schul-cloud/schulcloud-server/bran
 
 Codacy: [![Codacy Badge](https://app.codacy.com/project/badge/Grade/c1d53a69d04346fb867f9360b1679422)](https://www.codacy.com/gh/hpi-schul-cloud/schulcloud-server/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=hpi-schul-cloud/schulcloud-server&amp;utm_campaign=Badge_Grade)
 
-[![Version](https://img.shields.io/github/release/hpi-schul-cloud/schulcloud-server.svg)](https://github.com/schulcloud/schulcloud-server/releases)
+[![Version](https://img.shields.io/github/release/hpi-schul-cloud/schulcloud-server.svg)](https://github.com/schulcloud/hpi-schul-cloud/releases)
 
 Swagger UI documentation when running the server locally, it is served at [http://localhost:3030/docs/](http://localhost:3030/docs/).
 
