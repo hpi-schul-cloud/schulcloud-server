@@ -1,9 +1,8 @@
 const http = require('http');
 const Sentry = require('@sentry/node');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const reqlib = require('app-root-path').require;
 
-const { incomingMessageToJson } = reqlib('src/utils');
+const { incomingMessageToJson } = require('../utils');
 
 const logger = require('../logger');
 const { errorsByCode } = require('./index.js');
@@ -14,8 +13,8 @@ const convertToFeathersError = (error) => {
 	if (isFeatherError(error)) {
 		return error;
 	}
-	const code = error.code || error.statusCode || 500;
-	return new errorsByCode[code](error);
+	const code = error.statusCode || error.code || 500;
+	return errorsByCode[code] ? new errorsByCode[code](error) : new errorsByCode[500](error);
 };
 
 const cleanupIncomingMessage = (error = {}) => {

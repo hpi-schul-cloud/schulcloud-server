@@ -8,9 +8,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
 ## Unreleased
+### Fixed
+
+- SC-8322 prevent wrong assignment from school to storage provider
 
 ### Added
 
+- SC-8029 - Add deletion concept handling for pseudonyms and registration pins
+
+### Changed
+
+- SC-8380 removed reqlib, replaced by normal require to keep referenced types known
+
+## 25.5.2
+
+### Fixed
+
+- SC-8189 fix duplicate events by returning updated object at findOneAndUpdate
+
+## [25.5.1]
+### Fixed
+
+- SC-8303 fix wrong assignment from school to storage provider
+
+## [25.5.0]
+
+### Added
+
+- SC-7835 - Add deletion concept handling for helpdesk problems
 - SC-8229 - Added invalid DN error to ldap-config service error handling
 - SC-7825 - Remove user relations from courses
 - SC-7827 - Add deletion concept handling for file permissions.
@@ -24,6 +49,36 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Removed
 
 - SC-8233 - Removed attribute and member as required attributes for the LDAP-config service
+
+### Fixed
+
+- SC-8329 - Cluster returns old verison of Pin object after patch
+
+## [25.4.1]
+
+- Update from 25.3.9 into master
+
+## [25.3.9]
+
+- SC-8198 continue school sync on user issues
+
+## [25.3.8]
+
+### Changed
+
+- SC-8198 - handle eventually consistent database in THR sync
+
+## [25.3.7] - 2020-12-18
+
+### Changed
+
+- SC-8209 - prevent sync from stopping if error occurs for a single student
+
+## [25.3.6]
+
+### Fixed
+
+- SC-8235 - repaired reigstration link for students
 
 ## [25.3.5]
 

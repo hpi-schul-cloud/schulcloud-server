@@ -3,9 +3,15 @@ const ldap = require('ldapjs');
 const mongoose = require('mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, NotFound, BadRequest, GeneralError, NotAuthenticated, NoClientInstanceError } = reqlib('src/errors');
+const {
+	Forbidden,
+	NotFound,
+	BadRequest,
+	GeneralError,
+	NotAuthenticated,
+	NoClientInstanceError,
+} = require('../../errors');
 const LDAPConnectionError = require('./LDAPConnectionError');
 
 const hooks = require('./hooks');

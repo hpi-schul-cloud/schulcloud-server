@@ -1,8 +1,7 @@
 const request = require('request-promise-native');
-const reqlib = require('app-root-path').require;
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
-const { GeneralError } = reqlib('src/errors');
+const { GeneralError } = require('../../errors');
 const logger = require('../../logger');
 
 const { SMTP_SENDER, NODE_ENV, ENVIRONMENTS } = require('../../../config/globals');
