@@ -1,4 +1,4 @@
-# Schul-Cloud Server
+# HPI Schul-Cloud Server
 
 Based on [Node.js](https://nodejs.org/en/) and [Feathers](https://feathersjs.com/)
 
