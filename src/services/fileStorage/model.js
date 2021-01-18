@@ -97,7 +97,6 @@ const fileSchema = new Schema({
 	creator: {
 		type: Schema.Types.ObjectId,
 		ref: 'user',
-		index: true,
 	},
 	permissions: [permissionSchema],
 	lockId: { type: Schema.Types.ObjectId, ref: 'user' },
@@ -107,14 +106,18 @@ const fileSchema = new Schema({
 
 enableAuditLog(fileSchema);
 
+/*
+query list with bigges impact of database load
+schulcloud.files               find         {"name": 1, "parent": 1}  -> 1
+*/
+fileSchema.index({ name: 'text', parent: 1 }); // ok = 1
+fileSchema.index({ creator: 1 }); // ?
 // make file-model searchable
-fileSchema.index({ name: 'text' });
-
+fileSchema.index({ name: 'text' }); // ?
 // Index on permissions to speed up shared-files queries
-fileSchema.index({ 'permissions.refId': 1, 'permissions.refPermModel': 1 });
-
+fileSchema.index({ 'permissions.refId': 1, 'permissions.refPermModel': 1 }); // ?
 // Speed up directory listings
-fileSchema.index({ owner: 1, parent: 1 });
+fileSchema.index({ owner: 1, parent: 1 }); // ?
 
 const FileModel = mongoose.model('file', fileSchema);
 const FilePermissionModel = mongoose.model('filePermissionModel', permissionSchema);

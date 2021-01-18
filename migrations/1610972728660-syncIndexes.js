@@ -8,6 +8,7 @@ const { courseGroupModel } = require('../src/services/user-group/model');
 const { schoolModel } = require('../src/services/school/model');
 const { homeworkModel, submissionModel } = require('../src/services/homework/model');
 const { newsModel } = require('../src/services/news/model');
+const { FileModel } = require('../src/services/fileStorage/model');
 
 module.exports = {
 	up: async function up() {
@@ -30,6 +31,8 @@ module.exports = {
 		await newsModel.syncIndexes();
 		logger.info('Updating submissions indexes...');
 		await submissionModel.syncIndexes();
+		logger.info('Updating files indexes...');
+		await FileModel.syncIndexes();
 
 		logger.info('Done.');
 		await close();
@@ -55,6 +58,8 @@ module.exports = {
 		await newsModel.syncIndexes();
 		logger.info('Updating submissions indexes...');
 		await submissionModel.syncIndexes();
+		logger.info('Updating files indexes...');
+		await FileModel.syncIndexes();
 
 		logger.info('Done.');
 		await close();
