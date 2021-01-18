@@ -1,5 +1,6 @@
 const axios = require('axios');
 const logger = require('../../logger');
+const setHeaders = require('./hooks/setResponseHeader')
 const hooks = require('./hooks');
 
 const apiToken = require('../../../config/secrets').IDAS_API_KEY;
@@ -106,6 +107,7 @@ class Service {
 		let qrcode = await axios.post(
 			"https://daad.idas.solutions/api/v1/RelationshipTemplates/" + templateID + '/Token', {},
 			{
+					responseType: 'arraybuffer',
 					headers: {
 						"Accept": "image/*",
 						"X-API-KEY": apiToken,
@@ -122,7 +124,7 @@ class Service {
 module.exports = function () {
 	const app = this;
 
-	app.use('wallet/', new Service());
+	app.use('wallet/', new Service(), setHeaders);
 
 	const me = app.service('wallet/');
 	me.hooks(hooks);
