@@ -93,8 +93,8 @@ exports.before = {
 	get: [globalHooks.hasPermission('TOOL_VIEW'), globalHooks.ifNotLocal(populateCurrentSchool)],
 	create: [globalHooks.hasPermission('TOOL_CREATE'), addSecret, setupBBB],
 	update: [globalHooks.hasPermission('TOOL_EDIT')],
-	patch: [globalHooks.hasPermission('TOOL_EDIT'), restrictToUsersOwnTools],
-	remove: [globalHooks.hasPermission('TOOL_CREATE'), restrictToUsersOwnTools],
+	patch: [globalHooks.hasPermission('TOOL_EDIT'), globalHooks.ifNotLocal(restrictToUsersOwnTools)],
+	remove: [globalHooks.hasPermission('TOOL_CREATE'), globalHooks.ifNotLocal(restrictToUsersOwnTools)],
 };
 
 exports.after = {
