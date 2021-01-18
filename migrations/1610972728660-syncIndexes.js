@@ -6,7 +6,7 @@ const LessonModel = require('../src/services/lesson/model');
 const RoleModel = require('../src/services/role/model');
 const { courseGroupModel } = require('../src/services/user-group/model');
 const { schoolModel } = require('../src/services/school/model');
-const { homeworkModel } = require('../src/services/homework/model');
+const { homeworkModel, submissionModel } = require('../src/services/homework/model');
 const { newsModel } = require('../src/services/news/model');
 
 module.exports = {
@@ -28,6 +28,8 @@ module.exports = {
 		await homeworkModel.syncIndexes();
 		logger.info('Updating news indexes...');
 		await newsModel.syncIndexes();
+		logger.info('Updating submissions indexes...');
+		await submissionModel.syncIndexes();
 
 		logger.info('Done.');
 		await close();
@@ -51,6 +53,8 @@ module.exports = {
 		await homeworkModel.syncIndexes();
 		logger.info('Updating news indexes...');
 		await newsModel.syncIndexes();
+		logger.info('Updating submissions indexes...');
+		await submissionModel.syncIndexes();
 
 		logger.info('Done.');
 		await close();
