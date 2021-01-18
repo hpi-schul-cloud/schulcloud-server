@@ -4,11 +4,13 @@ const logger = require('../src/logger');
 const { TeamModel } = require('../src/services/teams/model');
 const LessonModel = require('../src/services/lesson/model');
 const RoleModel = require('../src/services/role/model');
-const { courseGroupModel } = require('../src/services/user-group/model');
+const { courseGroupModel, classModel } = require('../src/services/user-group/model');
 const { schoolModel } = require('../src/services/school/model');
 const { homeworkModel, submissionModel } = require('../src/services/homework/model');
 const { newsModel } = require('../src/services/news/model');
 const { FileModel } = require('../src/services/fileStorage/model');
+const { userModel } = require('../src/services/user/model/index');
+const VideoConferenceModel = require('../src/services/videoconference/model');
 
 module.exports = {
 	up: async function up() {
@@ -33,6 +35,12 @@ module.exports = {
 		await submissionModel.syncIndexes();
 		logger.info('Updating files indicies...');
 		await FileModel.syncIndexes();
+		logger.info('Updating user indicies...');
+		await userModel.syncIndexes();
+		logger.info('Updating videoConference indicies...');
+		await VideoConferenceModel.syncIndexes();
+		logger.info('Updating class indicies...');
+		await classModel.syncIndexes();
 
 		logger.info('Done.');
 		await close();
@@ -60,6 +68,10 @@ module.exports = {
 		await submissionModel.syncIndexes();
 		logger.info('Updating files indicies...');
 		await FileModel.syncIndexes();
+		logger.info('Updating user indicies...');
+		await userModel.syncIndexes();
+		logger.info('Updating videoConference indicies...');
+		await VideoConferenceModel.syncIndexes();
 
 		logger.info('Done.');
 		await close();
