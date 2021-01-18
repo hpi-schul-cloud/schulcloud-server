@@ -53,7 +53,7 @@ homeworkSchema.index({ lessonId: 1 }); // ok = 4
 homeworkSchema.index({ archived: 1, schoolId: 1 }); // ok = 3
 
 const submissionSchema = new Schema({
-	schoolId: { type: Schema.Types.ObjectId, required: true, index: true },
+	schoolId: { type: Schema.Types.ObjectId, required: true },
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 	comment: { type: String },
@@ -63,16 +63,23 @@ const submissionSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		required: true,
 		ref: 'homework',
-		index: true,
 	},
 	studentId: { type: Schema.Types.ObjectId, required: true, ref: 'user' },
 	teamMembers: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
 	courseGroupId: { type: Schema.Types.ObjectId, ref: 'courseGroup' },
-	fileIds: [{ type: Schema.Types.ObjectId, ref: 'file', index: true }],
-	gradeFileIds: [{ type: Schema.Types.ObjectId, ref: 'file', index: true }],
+	fileIds: [{ type: Schema.Types.ObjectId, ref: 'file' }],
+	gradeFileIds: [{ type: Schema.Types.ObjectId, ref: 'file' }],
 });
 
-submissionSchema.index({ studentId: 1, teamMembers: 1 });
+/*
+query list with bigges impact of database load
+schulcloud.submissions         find         {"$and": [{"teamMembers": 1}, {"studentId": {"$ne": 1}}] -> 1
+*/
+submissionSchema.index({ schoolId: 1 }); // ?
+submissionSchema.index({ homeworkId: 1 }); // ?
+submissionSchema.index({ fileIds: 1 }); // ?
+submissionSchema.index({ gradeFileIds: 1 }); // ?
+submissionSchema.index({ studentId: 1, teamMembers: 1 }); // ok = 1
 
 enableAuditLog(homeworkSchema);
 enableAuditLog(submissionSchema);
