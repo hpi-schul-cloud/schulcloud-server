@@ -4,7 +4,7 @@ const logger = require('../src/logger');
 const { TeamModel } = require('../src/services/teams/model');
 const LessonModel = require('../src/services/lesson/model');
 const RoleModel = require('../src/services/role/model');
-const { courseGroupModel, classModel } = require('../src/services/user-group/model');
+const { courseGroupModel, classModel, courseModel } = require('../src/services/user-group/model');
 const { schoolModel } = require('../src/services/school/model');
 const { homeworkModel, submissionModel } = require('../src/services/homework/model');
 const { newsModel } = require('../src/services/news/model');
@@ -43,6 +43,8 @@ module.exports = {
 		await classModel.syncIndexes();
 		logger.info('Updating registrationPin indicies...');
 		await registrationPinModel.syncIndexes();
+		logger.info('Updating course indicies...');
+		await courseModel.syncIndexes();
 
 		logger.info('Done.');
 		await close();
@@ -76,6 +78,8 @@ module.exports = {
 		await VideoConferenceModel.syncIndexes();
 		logger.info('Updating registrationPin indicies...');
 		await registrationPinModel.syncIndexes();
+		logger.info('Updating course indicies...');
+		await courseModel.syncIndexes();
 
 		logger.info('Done.');
 		await close();

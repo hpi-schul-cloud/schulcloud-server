@@ -104,6 +104,17 @@ const courseGroupSchema = getUserGroupSchema({
 	courseId: { type: Schema.Types.ObjectId, required: true, ref: 'course' },
 });
 
+/*
+query list with biggest impact of database load
+schulcloud.coursegroups        find         {"$and": [{"courseId": 1}], "courseId": 1, "schoolId": 1} -> 1
+schulcloud.coursegroups        find         {"userIds": 1} -> 2
+*/
+
+// _directly set in getUserGroupSchema_
+// schema.index({ schoolId: 1 });
+// schema.index({ userIds: 1 });
+courseGroupSchema.index({ schoolId: 1, courseId: 1 }); // ok = 1
+
 const classSchema = getUserGroupSchema({
 	teacherIds: [{ type: Schema.Types.ObjectId, ref: 'user', required: true }],
 	invitationLink: { type: String },
