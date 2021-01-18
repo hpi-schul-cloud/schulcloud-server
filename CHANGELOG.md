@@ -21,16 +21,23 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8380 removed reqlib, replaced by normal require to keep referenced types known
 - SC-8213 error handling concept
 
-## 25.5.2
+
+## [25.5.3]
+
+### Added
+
+- SC-8420 - Migration for sync new indexes.
+
+## [25.5.2]
 
 ### Fixed
 
-- SC-8189 fix duplicate events by returning updated object at findOneAndUpdate
+- SC-8189 - fix duplicate events by returning updated object at findOneAndUpdate
 
 ## [25.5.1]
 ### Fixed
 
-- SC-8303 fix wrong assignment from school to storage provider
+- SC-8303 - fix wrong assignment from school to storage provider
 
 ## [25.5.0]
 

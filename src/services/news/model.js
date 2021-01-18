@@ -65,11 +65,14 @@ const newsHistorySchema = new Schema({
 	title: { type: String, required: true },
 	content: { type: String, required: true },
 	displayAt: { type: Date, default: Date.now },
-
 	creatorId: { type: Schema.Types.ObjectId, ref: 'user' },
 	createdAt: { type: Date, default: Date.now },
 	parentId: { type: Schema.Types.ObjectId, ref: 'news' },
 });
+
+// important to set both set it work with generic target/Model reference
+newsSchema.index({ schoolId: 1, target: 1 });
+newsSchema.index({ schoolId: 1, target: 1, targetModel: 1 });
 
 enableAuditLog(newsSchema);
 enableAuditLog(newsHistorySchema);

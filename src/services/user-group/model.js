@@ -13,7 +13,7 @@ const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: { type: String, required: true },
 		schoolId: { type: Schema.Types.ObjectId, required: true, index: true },
-		userIds: [{ type: Schema.Types.ObjectId, ref: 'user' }],
+		userIds: [{ type: Schema.Types.ObjectId, ref: 'user', index: true }],
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now },
 	};
@@ -68,6 +68,9 @@ const courseSchema = getUserGroupSchema({
 courseSchema.index({ userIds: 1 });
 courseSchema.index({ teacherIds: 1 });
 courseSchema.index({ substitutionIds: 1 });
+// shareToken and untilDate
+// externalSourceSchema >externalSource include also onw index
+// schoolId
 
 courseSchema.plugin(mongooseLeanVirtuals);
 
