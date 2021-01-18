@@ -31,8 +31,6 @@ const teamInvitedUserSchema = new Schema(
 	{ _id: false, timestamps: true }
 );
 
-teamInvitedUserSchema.index({ email: 1 });
-
 const teamUserSchema = new Schema(
 	{
 		userId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
@@ -41,9 +39,6 @@ const teamUserSchema = new Schema(
 	},
 	{ _id: false, timestamps: true }
 );
-
-teamUserSchema.index({ userId: 1 });
-teamUserSchema.index({ schoolId: 1 });
 
 const teamsSchema = getUserGroupSchema({
 	schoolIds: {
@@ -60,7 +55,18 @@ const teamsSchema = getUserGroupSchema({
 	filePermission: [permissionSchema],
 });
 
-teamsSchema.index({ schoolIds: 1 });
+/*
+query list with bigges impact of database load
+schulcloud.teams               find         {"userIds.userId": 1} -> 1
+schulcloud.teams               find         {"userIds": {"$elemMatch": {"userId": 1}}} -> 2
+schulcloud.teams               find         {"invitedUserIds": {"$elemMatch": {"email": 1}}}  -> 3
+*/
+teamInvitedUserSchema.index({ email: 1 }); // ok = 3
+
+teamUserSchema.index({ userId: 1 }); // ok = 1 , 2
+teamUserSchema.index({ schoolId: 1 }); // ?
+
+teamsSchema.index({ schoolIds: 1 }); // ?
 
 enableAuditLog(teamsSchema);
 

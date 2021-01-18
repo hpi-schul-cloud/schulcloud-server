@@ -12,26 +12,26 @@ const { FileModel } = require('../src/services/fileStorage/model');
 
 module.exports = {
 	up: async function up() {
-		logger.info('Sync indexes...');
+		logger.info('Sync indicies...');
 		await connect();
 
-		logger.info('Updating team indexes...');
+		logger.info('Updating team indicies...');
 		await TeamModel.syncIndexes();
-		logger.info('Updating lesson indexes...');
+		logger.info('Updating lesson indicies...');
 		await LessonModel.syncIndexes();
-		logger.info('Updating role indexes...');
+		logger.info('Updating role indicies...');
 		await RoleModel.syncIndexes();
-		logger.info('Updating courseGroup indexes...');
+		logger.info('Updating courseGroup indicies...');
 		await courseGroupModel.syncIndexes();
-		logger.info('Updating school indexes...');
+		logger.info('Updating school indicies...');
 		await schoolModel.syncIndexes();
-		logger.info('Updating homework indexes...');
+		logger.info('Updating homework indicies...');
 		await homeworkModel.syncIndexes();
-		logger.info('Updating news indexes...');
+		logger.info('Updating news indicies...');
 		await newsModel.syncIndexes();
-		logger.info('Updating submissions indexes...');
+		logger.info('Updating submissions indicies...');
 		await submissionModel.syncIndexes();
-		logger.info('Updating files indexes...');
+		logger.info('Updating files indicies...');
 		await FileModel.syncIndexes();
 
 		logger.info('Done.');
@@ -42,23 +42,23 @@ module.exports = {
 		logger.info('Sync indexes...');
 		await connect();
 
-		logger.info('Updating team indexes...');
+		logger.info('Updating team indicies...');
 		await TeamModel.syncIndexes();
-		logger.info('Updating lesson indexes...');
+		logger.info('Updating lesson indicies...');
 		await LessonModel.syncIndexes();
-		logger.info('Updating role indexes...');
+		logger.info('Updating role indicies...');
 		await RoleModel.syncIndexes();
-		logger.info('Updating courseGroup indexes...');
+		logger.info('Updating courseGroup indicies...');
 		await courseGroupModel.syncIndexes();
-		logger.info('Updating school indexes...');
+		logger.info('Updating school indicies...');
 		await schoolModel.syncIndexes();
-		logger.info('Updating homework indexes...');
+		logger.info('Updating homework indicies...');
 		await homeworkModel.syncIndexes();
-		logger.info('Updating news indexes...');
+		logger.info('Updating news indicies...');
 		await newsModel.syncIndexes();
-		logger.info('Updating submissions indexes...');
+		logger.info('Updating submissions indicies...');
 		await submissionModel.syncIndexes();
-		logger.info('Updating files indexes...');
+		logger.info('Updating files indicies...');
 		await FileModel.syncIndexes();
 
 		logger.info('Done.');
