@@ -108,9 +108,9 @@ enableAuditLog(fileSchema);
 
 /*
 query list with bigges impact of database load
-schulcloud.files               find         {"name": 1, "parent": 1}  -> 1
+schulcloud.files               find         {"name": 1, "parent": 1}  -> 1 is split up in parent and name to try it out
 */
-fileSchema.index({ name: 'text', parent: 1 }); // ok = 1
+fileSchema.index({ parent: 1 }); // ok = 1
 fileSchema.index({ creator: 1 }); // ?
 // make file-model searchable
 fileSchema.index({ name: 'text' }); // ?

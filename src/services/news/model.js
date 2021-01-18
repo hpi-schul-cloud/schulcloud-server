@@ -70,9 +70,18 @@ const newsHistorySchema = new Schema({
 	parentId: { type: Schema.Types.ObjectId, ref: 'news' },
 });
 
+/*
+query list with biggest impact of database load
+schulcloud.news                find         
+{"$or": [{"schoolId": 1, "target": 1}, {"target": 1, "targetModel": 1}], "displayAt": 1} -> 1
+
+TODO: Should look into the query, it put to many of the same request inside it.
+*/
 // important to set both set it work with generic target/Model reference
-newsSchema.index({ schoolId: 1, target: 1 });
-newsSchema.index({ schoolId: 1, target: 1, targetModel: 1 });
+newsSchema.index({ schoolId: 1, target: 1 }); // ok or = 1
+newsSchema.index({ schoolId: 1, target: 1, targetModel: 1 }); // ?
+newsSchema.index({ target: 1, targetModel: 1 }); // ok or = 1
+newsSchema.index({ displayAt: 1 }); // ok or = 1
 
 enableAuditLog(newsSchema);
 enableAuditLog(newsHistorySchema);
