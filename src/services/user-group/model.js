@@ -51,12 +51,11 @@ const courseSchema = getUserGroupSchema({
 	ltiToolIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
 	color: { type: String, required: true, default: '#ACACAC' },
 	startDate: { type: Date },
-	untilDate: { type: Date, index: true },
+	untilDate: { type: Date },
 	shareToken: {
 		type: String,
 		unique: true,
 		sparse: true,
-		index: true,
 	},
 	times: [timeSchema],
 	// optional information if this course is a copy from other
@@ -65,12 +64,21 @@ const courseSchema = getUserGroupSchema({
 	...externalSourceSchema,
 });
 
-courseSchema.index({ userIds: 1 });
-courseSchema.index({ teacherIds: 1 });
-courseSchema.index({ substitutionIds: 1 });
-// shareToken and untilDate
-// externalSourceSchema >externalSource include also onw index
-// schoolId
+/*
+query list with biggest impact of database load
+
+*/
+// _directly set in getUserGroupSchema_
+// schema.index({ schoolId: 1 });
+// schema.index({ userIds: 1 });
+// _ from externalSourceSchema
+// schema.index({ source: 1 });
+// - - - - - - - - - - - - - - - - -
+courseSchema.index({ userIds: 1 }); // ?
+courseSchema.index({ teacherIds: 1 }); // ?
+courseSchema.index({ substitutionIds: 1 }); // ?
+courseSchema.index({ shareToken: 1 }); // ?
+courseSchema.index({ untilDate: 1 }); // ?
 
 courseSchema.plugin(mongooseLeanVirtuals);
 
@@ -111,6 +119,18 @@ const classSchema = getUserGroupSchema({
 	successor: { type: Schema.Types.ObjectId, ref: 'classes' },
 	...externalSourceSchema,
 });
+
+/*
+query list with biggest impact of database load
+schulcloud.classes             find         {"$or": [{"userIds": 1}, {"teacherIds": 1}]} -> 1
+*/
+// _directly set in getUserGroupSchema_
+// schema.index({ schoolId: 1 });
+// schema.index({ userIds: 1 });
+// _ from externalSourceSchema
+// schema.index({ source: 1 });
+// - - - - - - - - - - - - - - - - -
+classSchema.index({ teacherIds: 1 }); // ok or = 1
 
 classSchema.plugin(mongooseLeanVirtuals);
 
