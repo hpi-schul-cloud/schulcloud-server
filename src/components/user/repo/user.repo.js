@@ -12,7 +12,7 @@ const getUser = async (_id) => {
 const createTombstoneUser = async (schoolId, tombstoneSchoolId) => {
 	// no school id so this user does not come up in find schools users
 	const user = {
-		email: `tombstone-${schoolId.toString()}@hpi-schul-cloud.org`,
+		email: `tombstone-${schoolId.toString()}@hpi-schul-cloud`,
 		firstName: 'Gelöschter',
 		lastName: 'Benutzer',
 		schoolId: tombstoneSchoolId,
