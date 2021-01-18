@@ -9,7 +9,7 @@ const { schoolModel } = require('../src/services/school/model');
 const { homeworkModel, submissionModel } = require('../src/services/homework/model');
 const { newsModel } = require('../src/services/news/model');
 const { FileModel } = require('../src/services/fileStorage/model');
-const { userModel } = require('../src/services/user/model/index');
+const { userModel, registrationPinModel } = require('../src/services/user/model/index');
 const VideoConferenceModel = require('../src/services/videoconference/model');
 
 module.exports = {
@@ -41,6 +41,8 @@ module.exports = {
 		await VideoConferenceModel.syncIndexes();
 		logger.info('Updating class indicies...');
 		await classModel.syncIndexes();
+		logger.info('Updating registrationPin indicies...');
+		await registrationPinModel.syncIndexes();
 
 		logger.info('Done.');
 		await close();
@@ -72,6 +74,8 @@ module.exports = {
 		await userModel.syncIndexes();
 		logger.info('Updating videoConference indicies...');
 		await VideoConferenceModel.syncIndexes();
+		logger.info('Updating registrationPin indicies...');
+		await registrationPinModel.syncIndexes();
 
 		logger.info('Done.');
 		await close();
