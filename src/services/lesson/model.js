@@ -40,6 +40,8 @@ const lessonSchema = new Schema(
 	}
 );
 
+lessonSchema.index({ courseId: 1, courseGroupId: 1 });
+
 enableAuditLog(lessonSchema);
 
 const lessonModel = mongoose.model('lesson', lessonSchema);

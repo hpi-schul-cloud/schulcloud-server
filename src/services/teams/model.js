@@ -42,7 +42,8 @@ const teamUserSchema = new Schema(
 	{ _id: false, timestamps: true }
 );
 
-teamInvitedUserSchema.index({ userId: 1, schoolId: 1 });
+teamUserSchema.index({ userId: 1 });
+teamUserSchema.index({ schoolId: 1 });
 
 const teamsSchema = getUserGroupSchema({
 	schoolIds: {

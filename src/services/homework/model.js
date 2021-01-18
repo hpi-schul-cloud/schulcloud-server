@@ -32,6 +32,8 @@ const homeworkSchema = new Schema({
 	archived: [{ type: Schema.Types.ObjectId, ref: 'user' }],
 });
 
+homeworkSchema.index({ teacherIds: 1 });
+
 const submissionSchema = new Schema({
 	schoolId: { type: Schema.Types.ObjectId, required: true, index: true },
 	createdAt: { type: Date, default: Date.now },
