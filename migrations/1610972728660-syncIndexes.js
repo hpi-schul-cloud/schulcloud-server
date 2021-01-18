@@ -55,7 +55,7 @@ module.exports = {
 		await connect();
 
 		logger.info('Updating team indicies...');
-		await TeamModel.syncIndexes();
+		await teamsModel.syncIndexes();
 		logger.info('Updating lesson indicies...');
 		await LessonModel.syncIndexes();
 		logger.info('Updating role indicies...');

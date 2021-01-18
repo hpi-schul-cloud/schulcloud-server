@@ -115,7 +115,8 @@ schulcloud.users               find         {"firstName": 1, "lastName": 1} -> 5
 */
 
 userSchema.index({ importHash: 1 }); // ok = 1
-userSchema.index({ email: 1 }); // ok = 2 / 3
+userSchema.index({ email: 1 }); // ok = 2
+userSchema.index({ _id: 1, email: 1 }); // ok = 2
 userSchema.index({ firstName: 1, lastName: 1 }); // ok = 5
 
 userSchema.index({ ldapDn: 1 }); // ?
