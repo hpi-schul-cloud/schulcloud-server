@@ -77,7 +77,7 @@ query list with biggest impact of database load
 courseSchema.index({ userIds: 1 }); // ?
 courseSchema.index({ teacherIds: 1 }); // ?
 courseSchema.index({ substitutionIds: 1 }); // ?
-courseSchema.index({ shareToken: 1 }); // ?
+courseSchema.index({ shareToken: 1 }, { sparse: true, unique: true }); // ?
 courseSchema.index({ untilDate: 1 }); // ?
 
 courseSchema.plugin(mongooseLeanVirtuals);

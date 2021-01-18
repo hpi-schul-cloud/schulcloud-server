@@ -1,7 +1,7 @@
 const { connect, close } = require('../src/utils/database');
 const logger = require('../src/logger');
 
-const { TeamModel } = require('../src/services/teams/model');
+const { teamsModel } = require('../src/services/teams/model');
 const LessonModel = require('../src/services/lesson/model');
 const RoleModel = require('../src/services/role/model');
 const { courseGroupModel, classModel, courseModel } = require('../src/services/user-group/model');
@@ -18,7 +18,7 @@ module.exports = {
 		await connect();
 
 		logger.info('Updating team indicies...');
-		await TeamModel.syncIndexes();
+		await teamsModel.syncIndexes();
 		logger.info('Updating lesson indicies...');
 		await LessonModel.syncIndexes();
 		logger.info('Updating role indicies...');
