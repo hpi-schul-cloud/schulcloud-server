@@ -57,7 +57,7 @@ describe('roster service', function oauth() {
 			ltiToolIds: [testTool1._id],
 			shareToken: 'xxx',
 		};
-		const [tool, course] = await Promise.all([toolService.create(testTool1), courseService.create(testCourse)]);
+		await Promise.all([toolService.create(testTool1), courseService.create(testCourse)]);
 		const pseudonym = await pseudonymService.find({
 			query: {
 				userId: testUser1._id,
