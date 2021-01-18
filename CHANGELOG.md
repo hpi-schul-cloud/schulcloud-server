@@ -8,11 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
 ## Unreleased
+### Fixed
+
+- SC-8322 prevent wrong assignment from school to storage provider
+
+### Added
+
+- SC-8029 - Add deletion concept handling for pseudonyms and registration pins
 - SC-8206 - Add school tombstone for deleting concept
 
 ### Changed
 
 - SC-8380 removed reqlib, replaced by normal require to keep referenced types known
+
+## 25.5.2
+
+### Fixed
+
+- SC-8189 fix duplicate events by returning updated object at findOneAndUpdate
 
 ## [25.5.1]
 ### Fixed

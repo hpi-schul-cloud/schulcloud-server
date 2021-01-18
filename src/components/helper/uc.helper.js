@@ -3,6 +3,7 @@ const { ValidationError } = require('../../errors');
 const { Forbidden } = require('../../errors');
 const { isValid: isValidObjectId } = require('../../helper/compare').ObjectId;
 
+const trashBinResult = ({ scope, data, complete }) => ({ trashBinData: { scope, data }, complete });
 const validPermissionOperators = ['AND', 'OR'];
 
 const validateObjectId = (objectId) => {
@@ -36,4 +37,5 @@ const checkPermissions = (user, schoolId, permissionsToCheck, permissionOperator
 	}
 };
 
-module.exports = { validateObjectId, checkPermissions };
+module.exports = { validateObjectId, checkPermissions, trashBinResult };
+

@@ -1,5 +1,6 @@
 const { ValidationError } = require('../../../errors');
 const { classesRepo } = require('../repo/index');
+const { trashBinResult } = require('../../helper/uc.helper');
 const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
 const { debug } = require('../../../logger');
 
@@ -27,7 +28,7 @@ const deleteUserDataFromClasses = async (userId) => {
 		debug(`removed user from ${result.modifiedDocuments} classes`, { userId });
 	}
 	debug(`deleting user mentions in classes contents finished`, { userId });
-	return { trashBinData: { scope: 'classes', data }, complete };
+	return trashBinResult({ scope: 'classes', data, complete });
 };
 
 // public
