@@ -66,6 +66,7 @@ teamInvitedUserSchema.index({ email: 1 }); // ok = 3
 teamUserSchema.index({ userId: 1 }); // ok = 1 , 2
 teamUserSchema.index({ schoolId: 1 }); // ?
 
+teamsSchema.index({ schoolId: 1 }); // ?
 teamsSchema.index({ schoolIds: 1 }); // ?
 
 enableAuditLog(teamsSchema);
