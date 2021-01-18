@@ -901,7 +901,7 @@
 	},
     "state" : "up",
     "name" : "syncIndexes",
-    "createdAt" :  {
+    "createdAt" : {
 		"$date": "2021-01-18T12:25:28.660Z"
 	},
     "__v" : 0
