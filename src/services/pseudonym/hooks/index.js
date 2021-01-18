@@ -1,5 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { iff, isProvider, disallow } = require('feathers-hooks-common');
+const { disallow } = require('feathers-hooks-common');
 const globalHooks = require('../../../hooks');
 const { equal: equalIds, isValid } = require('../../../helper/compare').ObjectId;
 const { preventPopulate } = require('../../../hooks');
@@ -78,9 +78,7 @@ const filterPseudonyms = (context) => {
 		});
 };
 
-const haveExacltyOneResult = (data) => {
-	return data && data.length === 1 && data[0].userId;
-};
+const haveExacltyOneResult = (data) => data && data.length === 1 && data[0].userId;
 
 /**
  * Enrichs the first result with the users firstName and lastName
