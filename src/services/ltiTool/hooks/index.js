@@ -4,6 +4,7 @@ const reqlib = require('app-root-path').require;
 const { Forbidden } = reqlib('src/errors');
 const { SCHOOL_FEATURES } = require('../../school/model');
 const globalHooks = require('../../../hooks');
+const { isSuperheroUser } = require('../../../helper/userHelpers');
 const { isValid } = require('../../../helper/compare').ObjectId;
 const { populateCurrentSchool } = require('../../../hooks/index');
 
@@ -74,6 +75,7 @@ const filterGetBBB = (context) => {
 
 const restrictToUsersOwnTools = async (context) => {
 	const currentUserId = context.params.account.userId;
+	if (isSuperheroUser(context.app, currentUserId)) return context;
 	const coursesOfUser = await context.app.service('courses').find({
 		query: {
 			$or: [{ teacherIds: { $in: [currentUserId] } }, { substitutionIds: { $in: [currentUserId] } }],
