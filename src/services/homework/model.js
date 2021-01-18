@@ -44,7 +44,7 @@ schulcloud.homeworks           find         {"$or": [{"teacherId": 1}, {"courseI
 homeworkSchema.index({ dueDate: 1 }); // ok or = 5
 homeworkSchema.index({ courseId: 1 }); // ok or = 6
 homeworkSchema.index({ fileIds: 1 }); // ?
-homeworkSchema.index({ private: 1 }); // ok = 2
+homeworkSchema.index({ _id: 1, private: 1 }); // ok = 2
 homeworkSchema.index({ schoolId: 1 }); // ok or = 5
 homeworkSchema.index({ archived: 1 }); // ok or = 5
 homeworkSchema.index({ archived: 1, courseId: 1 }); // ok = 1
