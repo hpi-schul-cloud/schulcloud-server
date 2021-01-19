@@ -22,7 +22,7 @@ const API_VALIDATION_ERROR_TYPE = {
 };
 
 const FORBIDDEN_ERROR_TYPE = {
-	type: 'FORBIDDED_ERROR_TYPE',
+	type: 'FORBIDDEN_ERROR',
 	title: 'Access Denied',
 	defaultMessage: 'Access Denied for the requested resource',
 };
