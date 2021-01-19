@@ -24,10 +24,8 @@ describe('ltiTool service', () => {
 		await ltiToolService.create(testTool);
 	});
 
-	after((done) => {
-		ltiToolService.remove(testTool).then((result) => {
-			done();
-		});
+	after(async () => {
+		await ltiToolService.remove(testTool);
 	});
 
 	it('registered the ltiTools service', () => {

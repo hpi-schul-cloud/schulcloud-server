@@ -32,15 +32,15 @@ describe('service', function test() {
 		server = await app.listen(0);
 	});
 
-	after((done) => {
+	after(async () => {
 		rabbitmqMock.reset();
 
 		Configuration.parse(configBefore);
 		mockery.deregisterAll();
 		mockery.disable();
 
-		server.close(done);
-		testObjects.cleanup();
+		await testObjects.cleanup();
+		await server.close();
 	});
 
 	it('reject invalid messages', async () => {

@@ -30,12 +30,12 @@ describe('news service', () => {
 	describe('integration tests', function integrationTests() {
 		let server;
 
-		before((done) => {
-			server = app.listen(0, done);
+		before(async () => {
+			server = await app.listen(0);
 		});
 
-		after((done) => {
-			server.close(done);
+		after(async () => {
+			await server.close();
 		});
 
 		describe('GET', () => {

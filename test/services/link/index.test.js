@@ -16,8 +16,8 @@ describe('link service', () => {
 		server = await app.listen(3031);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	it('registered the links service', () => {

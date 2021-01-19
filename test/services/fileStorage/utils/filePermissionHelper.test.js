@@ -22,7 +22,7 @@ chai.use(chaiAsPromised);
 
 describe('filePermissionHelper', () => {
 	describe('checkPermissions function should', () => {
-		before((done) => {
+		before(async () => {
 			const promises = [
 				FileModel.create(fixtures.files),
 				userModel.create(fixtures.users),
@@ -31,12 +31,10 @@ describe('filePermissionHelper', () => {
 				homeworkModel.create(fixtures.homeworks),
 			];
 
-			Promise.all(promises)
-				.then(() => done())
-				.catch(() => done());
+			await Promise.all(promises);
 		});
 
-		after((done) => {
+		after(async () => {
 			const promises = [
 				...fixtures.files.map((_) => FileModel.findByIdAndRemove(_._id).exec()),
 				...fixtures.users.map((_) => userModel.findByIdAndRemove(_._id).exec()),
@@ -45,9 +43,7 @@ describe('filePermissionHelper', () => {
 				...fixtures.homeworks.map((_) => homeworkModel.findByIdAndRemove(_._id).exec()),
 			];
 
-			Promise.all(promises)
-				.then(() => done())
-				.catch(() => done());
+			await Promise.all(promises);
 		});
 
 		it('does not let access files for no owner, member or shared file', (done) => {

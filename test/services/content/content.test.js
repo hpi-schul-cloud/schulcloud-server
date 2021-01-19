@@ -30,10 +30,9 @@ describe('content service', function () {
 		searchService = app.service('content/search');
 	});
 
-	after((done) => {
+	after(() => {
 		mockery.deregisterAll();
 		mockery.disable();
-		done();
 	});
 
 	it('registered the resources service', () => {

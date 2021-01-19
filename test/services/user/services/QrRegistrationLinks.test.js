@@ -22,8 +22,8 @@ describe('qrRegistrationLinks service tests', () => {
 		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	const postRegistrationLinks = (requestParams, userIds, roleName = 'teacher', selectionType = 'inclusive') =>

@@ -99,12 +99,9 @@ describe('fileStorage services', () => {
 
 		const created = [];
 
-		after((done) => {
+		after(async () => {
 			const promises = created.map((id) => FileModel.findByIdAndRemove(id));
-
-			Promise.all(promises)
-				.then(() => done())
-				.catch(() => done());
+			await Promise.all(promises);
 		});
 
 		it('registered the fileStorage service', () => {

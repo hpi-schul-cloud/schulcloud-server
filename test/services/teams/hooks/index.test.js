@@ -21,8 +21,8 @@ describe('Team service hook tests.', () => {
 		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	describe.skip('sendInfo', () => {});

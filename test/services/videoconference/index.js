@@ -294,8 +294,8 @@ describe.skip('videoconference service', function slowServiceTests() {
         });
     });
 
-    after((done) => {
-        server.close(done);
+    after(async () => {
+        await server.close();
     });
     after('cleanup', testObjects.cleanup);
 });

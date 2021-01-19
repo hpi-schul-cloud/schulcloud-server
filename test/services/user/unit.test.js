@@ -122,8 +122,8 @@ describe('publicTeachers service', () => {
 		params = await testObjects.generateRequestParamsFromUser(teacherFromDifferentSchool);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	after(testObjects.cleanup);

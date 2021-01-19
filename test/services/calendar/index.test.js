@@ -23,10 +23,9 @@ describe('calendar service', function () {
 		calendarService = await app.service('calendar');
 	});
 
-	after((done) => {
+	after(() => {
 		mockery.deregisterAll();
 		mockery.disable();
-		done();
 	});
 
 	it('registered the calendar service', () => {

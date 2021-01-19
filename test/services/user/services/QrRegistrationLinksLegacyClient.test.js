@@ -14,8 +14,8 @@ describe('qrRegistrationLinksLegacyClient service tests', () => {
 		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	const createRegistrationLinks = (requestParams, classId, role) =>

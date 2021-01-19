@@ -14,8 +14,8 @@ describe('SkipRegistration integration', () => {
 		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	describe('route for single user', () => {

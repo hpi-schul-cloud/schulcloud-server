@@ -26,8 +26,8 @@ describe('consent service', () => {
 		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	afterEach(async () => {

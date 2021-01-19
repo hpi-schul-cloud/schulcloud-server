@@ -34,17 +34,9 @@ describe('helpdesk service', function test() {
 		await helpdeskService.create(testProblem);
 	});
 
-	after((done) => {
+	after(async () => {
 		app.use('/mails', originalMailService);
-		helpdeskService
-			.remove(testProblem)
-			.then((result) => {
-				done();
-			})
-			.catch((error) => {
-				logger.info(`Could not remove: ${error}`);
-				done();
-			});
+		await helpdeskService.remove(testProblem);
 	});
 
 	it('registered the helpdesk service', () => {
