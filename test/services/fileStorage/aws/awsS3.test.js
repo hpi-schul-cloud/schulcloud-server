@@ -137,7 +137,6 @@ describe('AWS file storage strategy', () => {
 			} catch (err) {
 				expect(err).to.not.be.undefined;
 				expect(err.code).to.equal(500);
-				expect(err.message).to.equal('Storage provider was updated. Please refresh the page and try again.');
 				expectedProviderId = err.provider;
 			}
 			testSchool = (await schoolModel.findById(testSchool._id)).toObject();
