@@ -31,7 +31,7 @@ describe('pseudonym repo', () => {
 		it('when pseudonym is deleted, it should return deleted pseudonym ids', async () => {
 			const user = await testObjects.createTestUser();
 			const ltiTool = await testObjects.createTestLtiTool();
-			const pseudonym = await testObjects.createTestPseudonym({ pseudonym: 'PSEUDONYM' }, ltiTool, user);
+			const pseudonym = await testObjects.createTestPseudonym({}, ltiTool, user);
 			const result = await pseudonymRepo.deletePseudonyms([pseudonym._id]);
 			expect(result.length).to.be.equal(1);
 			expect(result[0]).to.be.equal(pseudonym._id);
@@ -40,7 +40,7 @@ describe('pseudonym repo', () => {
 		it('when pseudonym is deleted, it should be gone from db', async () => {
 			const user = await testObjects.createTestUser();
 			const ltiTool = await testObjects.createTestLtiTool();
-			const pseudonym = await testObjects.createTestPseudonym({ pseudonym: 'PSEUDONYM' }, ltiTool, user);
+			const pseudonym = await testObjects.createTestPseudonym({}, ltiTool, user);
 			await pseudonymRepo.deletePseudonyms([pseudonym._id]);
 
 			const result = await Pseudonym.find({ userId: user._id }).lean().exec();
