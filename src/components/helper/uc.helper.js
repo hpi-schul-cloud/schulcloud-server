@@ -1,8 +1,3 @@
-const { ValidationError } = require('../../errors');
-const { isValid: isValidObjectId } = require('../../helper/compare').ObjectId;
+const trashBinResult = ({ scope, data, complete }) => ({ trashBinData: { scope, data }, complete });
 
-const validateObjectId = (objectId) => {
-	if (!isValidObjectId(objectId)) throw new ValidationError('a valid objectId is required', { objectId });
-};
-
-module.exports = { validateObjectId };
+module.exports = { trashBinResult };
