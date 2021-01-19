@@ -1,6 +1,6 @@
 const problemModel = require('../../../services/helpdesk/model');
 const { deleteManyResult } = require('../../helper/repo.helper');
-const { validateObjectId } = require('../../helper/uc.helper');
+const { validateObjectId } = require('../../helper/validation.helper');
 
 /**
  * Return helpdesk problems for userId

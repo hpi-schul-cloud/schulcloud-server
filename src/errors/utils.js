@@ -13,8 +13,8 @@ const convertToFeathersError = (error) => {
 	if (isFeatherError(error)) {
 		return error;
 	}
-	const code = error.code || error.statusCode || 500;
-	return new errorsByCode[code](error);
+	const code = error.statusCode || error.code || 500;
+	return errorsByCode[code] ? new errorsByCode[code](error) : new errorsByCode[500](error);
 };
 
 const cleanupIncomingMessage = (error = {}) => {

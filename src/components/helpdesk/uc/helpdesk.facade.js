@@ -6,10 +6,10 @@ class HelpdeskFacade {
 	}
 
 	async deleteUserData() {
-		return helpdeskUC.deleteProblemsForUser();
+		return helpdeskUC.deleteUserData();
 	}
 }
 
-module.exports = function setupProblemsFacade(app) {
+module.exports = function setupFacade(app) {
 	app.registerFacade('/helpdesk/v2', new HelpdeskFacade());
 };
