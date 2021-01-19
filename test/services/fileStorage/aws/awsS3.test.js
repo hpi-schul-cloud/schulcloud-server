@@ -4,8 +4,8 @@ const chaiAsPromised = require('chai-as-promised');
 
 const { expect } = require('chai');
 const mockery = require('mockery');
-
 const { Configuration } = require('@hpi-schul-cloud/commons');
+
 const mockAws = require('./s3.mock');
 const appPromise = require('../../../../src/app');
 
@@ -130,9 +130,18 @@ describe('AWS file storage strategy', () => {
 			expect(testSchool.storageProvider._id.toString()).to.equal(testStorageProvider._id.toString());
 			// 2. call: create bucket for school should lead to 409 unique bucket name error and
 			// the school should be reassigned to provider with the corresponding bucket
-			const res2 = await aws.create(testSchool._id);
+			let expectedProviderId;
+			try {
+				await aws.create(testSchool._id);
+				throw ShouldFail;
+			} catch (err) {
+				expect(err).to.not.be.undefined;
+				expect(err.code).to.equal(500);
+				expect(err.message).to.equal('Storage provider was updated. Please refresh the page and try again.');
+				expectedProviderId = err.provider;
+			}
 			testSchool = (await schoolModel.findById(testSchool._id)).toObject();
-			expect(testSchool.storageProvider._id.toString()).to.equal(res2.data.provider);
+			expect(testSchool.storageProvider._id.toString()).to.equal(expectedProviderId);
 		});
 
 		it('rejects with missing parameters', () =>
