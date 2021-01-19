@@ -13,12 +13,13 @@ describe('ltiTool service', () => {
 		server = await app.listen(0);
 	});
 
-	afterEach(async () => {
-		await testObjects.cleanup();
+	after(async () => {
+		await ltiToolService.remove(testTool);
+		await server.close();
 	});
 
-	after(async () => {
-		await server.close();
+	afterEach(async () => {
+		await testObjects.cleanup();
 	});
 
 	it('registered the ltiTools service', () => {

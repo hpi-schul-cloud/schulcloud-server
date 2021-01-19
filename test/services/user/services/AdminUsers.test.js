@@ -19,8 +19,7 @@ describe('AdminUsersService', () => {
 
     before(async () => {
         app = await appPromise;
-        tog = new TestObjectGenerator(app);
-        accountService = app.service('/accounts');
+        tog = new TestObjectGenerator(app);accountService = app.service('/accounts');
         adminStudentsService = app.service('/users/admin/students');
         adminTeachersService = app.service('/users/admin/teachers');
         server = await app.listen(0);
@@ -192,25 +191,32 @@ describe('AdminUsersService', () => {
     it('sorts students correctly', async () => {
         const teacher = await tog.createTestUser({ roles: ['teacher'] });
 
-        const student1 = await tog.createTestUser({
-            firstName: 'Max',
-            roles: ['student'],
-            consent: {
-                userConsent: {
-                    form: 'digital',
-                    privacyConsent: true,
-                    termsOfUseConsent: true,
-                },
-                parentConsents: [
-                    {
-                        form: 'digital',
-                        privacyConsent: true,
-                        termsOfUseConsent: true,
+        const student1 = await tog
+                .createTestUser({
+                    firstName: 'Max',
+                    roles: ['student'],
+                    consent: {
+                        userConsent: {
+                            form: 'digital',
+                            privacyConsent: true,
+                            termsOfUseConsent: true,
+                        },
+                        parentConsents: [
+                            {
+                                form: 'digital',
+                                privacyConsent: true,
+                                termsOfUseConsent: true,
+                            },
+                        ],
                     },
-                ],
-            },
-        });
-        const student2 = await tog.createTestUser({ firstName: 'Moritz', roles: ['student'], });
+
+                });
+        const student2 = await tog
+                .createTestUser({
+                    firstName: 'Moritz',
+                    roles: ['student'],
+
+                });
 
         expect(teacher).to.not.be.undefined;
         expect(student1).to.not.be.undefined;
@@ -424,8 +430,7 @@ describe('AdminUsersService', () => {
     it('does not allow student user creation if school is external', async () => {
         const schoolService = app.service('/schools');
         const serviceCreatedSchool = await schoolService.create({ name: 'test', ldapSchoolIdentifier: 'testId' });
-        tog.createdEntityIds.schools.push(serviceCreatedSchool._id);
-        const { _id: schoolId } = serviceCreatedSchool;
+        tog.createdEntityIds.schools.push(serviceCreatedSchool._id);const { _id: schoolId } = serviceCreatedSchool;
         const { user: admin } = await tog.createTestUserAndAccount({ roles: ['administrator'], schoolId });
         const params = await tog.generateRequestParamsFromUser(admin);
         const mockData = {
@@ -851,8 +856,7 @@ describe('AdminUsersService', () => {
             schoolId: school._id,
         };
         const otherStudent = await adminStudentsService.create(otherStudentData, params);
-        tog.createdEntityIds.users.push(otherStudent._id);
-        params.query = {
+        tog.createdEntityIds.users.push(otherStudent._id);params.query = {
             ...params.query,
             _ids: [otherStudent._id, 'wrong type'],
         };
@@ -909,6 +913,7 @@ describe('AdminUsersService', () => {
             });
             // given
             const { user, account } = await tog.createTestUserAndAccount({ roles: ['student'], schoolId: school._id });
+
             expect(user.email).equals(account.username);
 
             // when
@@ -1109,7 +1114,9 @@ describe('AdminUsersService', () => {
         };
         const result = await adminStudentsService.find(params);
 
-        const resultIds = result.data.map((user) => user._id.toString());
+        const resultIds =
+        result.data.map((user) => user._id.toString());
+
 
         expect(result.data).to.not.be.undefined;
         expect(result.data[0].firstName).to.equal(student0.firstName);
@@ -1156,7 +1163,9 @@ describe('AdminUsersService', () => {
         };
         const result = await adminStudentsService.find(params);
 
-        const resultIds = result.data.map((user) => user._id.toString());
+        const resultIds =
+        result.data.map((user) => user._id.toString());
+
 
         expect(result.data).to.not.be.undefined;
         expect(result.data[0].firstName).to.equal(student0.firstName);
@@ -1203,7 +1212,9 @@ describe('AdminUsersService', () => {
         };
         const result = await adminStudentsService.find(params);
 
-        const resultIds = result.data.map((user) => user._id.toString());
+        const resultIds =
+        result.data.map((user) => user._id.toString());
+
 
         expect(result.data).to.not.be.undefined;
         expect(result.data[0].firstName).to.equal(student0.firstName);
