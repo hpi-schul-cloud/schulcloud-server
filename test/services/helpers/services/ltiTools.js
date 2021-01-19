@@ -1,21 +1,33 @@
 let createdltiToolsIds = [];
 
-const defaultParams = {
-	name: 'LTI Tools',
-	url: 'http://lti.tools/test/tp.php',
-	key: 'jisc.ac.uk',
-	secret: 'secret',
-	logo_url: '',
-	lti_message_type: 'basic-lti-launch-request',
-	lti_version: 'LTI-1p0',
-	resource_link_id: '0',
-};
 // should rewrite
-const createTestLtiTool = (appPromise) => async (ltiToolParameters = defaultParams) => {
+const createTestLtiTool = (appPromise) => async ({
+	name = 'LTI Tools',
+	url = 'http://lti.tools/test/tp.php',
+	key = 'jisc.ac.uk',
+	secret = 'secret',
+	logo_url = '',
+	lti_message_type = 'basic-lti-launch-request',
+	lti_version = 'LTI-1p0',
+	resource_link_id = '0',
+	isTemplate = null,
+	originTool = null,
+} = {}) => {
 	const app = await appPromise;
 	return app
 		.service('ltiTools')
-		.create(ltiToolParameters)
+		.create({
+			name,
+			url,
+			key,
+			secret,
+			logo_url,
+			lti_message_type,
+			lti_version,
+			resource_link_id,
+			isTemplate,
+			originTool,
+		})
 		.then((ltiTool) => {
 			createdltiToolsIds.push(ltiTool._id.toString());
 			return ltiTool;
