@@ -1,9 +1,8 @@
 const rp = require('request-promise-native');
 const rpErrors = require('request-promise-core/errors');
-const reqlib = require('app-root-path').require;
 
-const { BadRequest, Conflict } = reqlib('src/errors');
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const { BadRequest, Conflict } = require('../../../errors');
 
 const logger = require('../../../logger');
 

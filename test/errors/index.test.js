@@ -1,5 +1,4 @@
 const { expect } = require('chai');
-const reqlib = require('app-root-path').require;
 
 const {
 	BadRequest,
@@ -29,8 +28,9 @@ const {
 	UnhandledException,
 	ApplicationError,
 	FeathersError,
-} = reqlib('src/errors');
-const logger = reqlib('src/logger');
+} = require('../../src/errors');
+
+const logger = require('../../src/logger');
 
 describe('errors', () => {
 	const message = 'Something go wrong.';

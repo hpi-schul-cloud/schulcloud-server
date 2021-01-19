@@ -2,10 +2,8 @@ const assert = require('assert');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
-const reqlib = require('app-root-path').require;
-
-const { BadRequest } = reqlib('src/errors');
 const { expect } = require('chai');
+const { BadRequest } = require('../../../src/errors');
 const appPromise = require('../../../src/app');
 const globals = require('../../../config/globals');
 
