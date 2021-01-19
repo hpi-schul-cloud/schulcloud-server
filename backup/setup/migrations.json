@@ -897,6 +897,17 @@
 },
 {
 	"_id": {
+		"$oid": "600562e9789110143f06ccc2"
+	},
+	"state": "up",
+	"name": "update-pseudonym-indexes",
+	"createdAt": {
+		"$date": "2021-01-18T10:24:39.712Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "60057e386ce08725808ccba0"
 	},
 	"state": "up",
