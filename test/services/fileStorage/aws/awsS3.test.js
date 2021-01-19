@@ -18,10 +18,6 @@ chai.use(chaiAsPromised);
 describe('AWS file storage strategy', () => {
 	let aws;
 
-	const options = {
-		schoolId: '5f2987e020834114b8efd6f8',
-	};
-
 	const ShouldFail = new Error('It succeeded but should have returned an error.');
 
 	let configBefore = {};
@@ -59,7 +55,8 @@ describe('AWS file storage strategy', () => {
 
 	describe('create', () => {
 		it('creates a bucket for the given school', async () => {
-			const res = await aws.create(options.schoolId);
+			const testSchool = await testObjects.createTestSchool();
+			const res = await aws.create(testSchool._id);
 			expect(res).to.not.be.undefined;
 			expect(res.message).to.be.equal('Successfully created s3-bucket!');
 		});
