@@ -113,18 +113,19 @@ class Service {
 						"X-API-KEY": apiToken,
 				}
 			}
+		).then(response => Buffer.from(response.data, 'binary').toString('base64')
 		).catch((error) => {
 			logger.error(error)
 		})
 
-		return qrcode.data;
+		return qrcode;
 	}
 }
 
 module.exports = function () {
 	const app = this;
 
-	app.use('wallet/', new Service(), setHeaders);
+	app.use('wallet/', new Service());
 
 	const me = app.service('wallet/');
 	me.hooks(hooks);
