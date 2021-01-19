@@ -75,7 +75,8 @@ const filterGetBBB = (context) => {
 
 const restrictToUsersOwnTools = async (context) => {
 	const currentUserId = context.params.account.userId;
-	if (isSuperheroUser(context.app, currentUserId)) return context;
+	const isSuperhero = await isSuperheroUser(context.app, currentUserId);
+	if (isSuperhero) return context;
 	const coursesOfUser = await context.app.service('courses').find({
 		query: {
 			$or: [{ teacherIds: { $in: [currentUserId] } }, { substitutionIds: { $in: [currentUserId] } }],
