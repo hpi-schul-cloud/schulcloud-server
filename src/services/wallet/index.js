@@ -27,98 +27,121 @@ class Service {
 	}
 
 	async create(data, params) {
-		/*
 		let res = await axios.post(
 			"https://daad.idas.solutions/api/v1/RelationshipTemplates",
 			{
+				"maxNumberOfRelationships": 1,
+				"expiresAt": new Date(Date.now() + 1000*60*30).toISOString(),
+				"content": {
+					"@type": "RelationshipTemplateContent",
+					"attributes": [
+						{
+							"name": "Thing.name",
+							"value": "DAAD"
+						},
+						{
+							"name": "Corporation.legalName",
+							"value": "Deutscher Akademischer Austauschdienst e.V."
+						},
+						{
+							"name": "Corporation.vatID",
+							"value": "DE122276332"
+						},
+						{
+							"name": "Corporation.address",
+							"value":
+								"{\"addressName\":\"\",\"type\":\"official\",\"street\":\"Kennedyallee\",\"houseNo\":\"50\",\"zipCode\":\"53175\",\"city\":\"Bonn\",\"country\":\"Deutschland\"}"
+						},
+						{
+							"name": "Comm.phone",
+							"value": "+49 2288820"
+						},
+						{
+							"name": "Comm.email",
+							"value": "info@daad.de"
+						},
+						{
+							"name": "Comm.website",
+							"value": "https://www.daad.de"
+						}
+					],
+					"request": {
+						"create": [
+							{"attribute":"Thing.name", "value":"Xana Quispe"},
+							{"attribute":"Person.givenName", "value":"Xana"},
+							{"attribute":"Person.familyName", "value":"Quispe"},
+							{"attribute":"Person.gender", "value":"f"},
+							{"attribute":"Comm.email", "value":"xana.quispe@mymail.brazil"}
+						],
+						"authorizations": [
+							{
+								"id": "marketing",
+								"title": "Ich interessiere mich für Neuigkeiten run um das Angebot des DAAD",
+								"duration": "Bis auf Widerruf",
+								"default": true,
+								"required": false
+							}
+						]
+					},
+					"privacy": {
+						"text": "Ja, ich habe die Datenschutzerklärung des DAAD gelesen und akzeptiere diese hiermit.",
+						"required": true,
+						"activeConsent": true,
+						"link":"https://www.mydaad.de/de/datenschutz/"
+					}
+				}
+			},
+			{
 				headers: {
 					"X-API-KEY": apiToken,
-				},
-				body: {
-					"maxNumberOfRelationships": 1,
-					"expiresAt": "2022-05-25T11:05:02.924Z",
-					"content": {
-						"@type": "RelationshipTemplateContent",
-						"attributes": [
-							{
-								"name": "Thing.name",
-								"value": "DAAD"
-							},
-							{
-								"name": "Corporation.legalName",
-								"value": "Deutscher Akademischer Austauschdienst e.V."
-							},
-							{
-								"name": "Corporation.vatID",
-								"value": "DE122276332"
-							},
-							{
-								"name": "Corporation.address",
-								"value":
-									"{\"addressName\":\"\",\"type\":\"official\",\"street\":\"Kennedyallee\",\"houseNo\":\"50\",\"zipCode\":\"53175\",\"city\":\"Bonn\",\"country\":\"Deutschland\"}"
-							},
-							{
-								"name": "Comm.phone",
-								"value": "+49 2288820"
-							},
-							{
-								"name": "Comm.email",
-								"value": "info@daad.de"
-							},
-							{
-								"name": "Comm.website",
-								"value": "https://www.daad.de"
-							}
-						],
-						"request": {
-							"create": [
-								{"attribute":"Thing.name", "value":"Xana Quispe"},
-								{"attribute":"Person.givenName", "value":"Xana"},
-								{"attribute":"Person.familyName", "value":"Quispe"},
-								{"attribute":"Person.gender", "value":"f"},
-								{"attribute":"Comm.email", "value":"xana.quispe@mymail.brazil"}
-							],
-							"authorizations": [
-								{
-									"id": "marketing",
-									"title": "Ich interessiere mich für Neuigkeiten run um das Angebot des DAAD",
-									"duration": "Bis auf Widerruf",
-									"default": true,
-									"required": false
-								}
-							]
-						},
-						"privacy": {
-							"text": "Ja, ich habe die Datenschutzerklärung des DAAD gelesen und akzeptiere diese hiermit.",
-							"required": true,
-							"activeConsent": true,
-							"link":"https://www.mydaad.de/de/datenschutz/"
-						}
-					}
 				}
 			}
 		).catch((error) => {
 			logger.error('Couldnt post wallet-relationshipTemplates')
 		})
-		*/
 
-		let templateID = "RLTwucrenjpfRKPVK220";// res.data.result.id;
+		let templateID = res.data.result.id;
 
-		let qrcode = await axios.post(
+		return await axios.post(
 			"https://daad.idas.solutions/api/v1/RelationshipTemplates/" + templateID + '/Token', {},
 			{
-					responseType: 'arraybuffer',
-					headers: {
-						"Accept": "image/*",
-						"X-API-KEY": apiToken,
+				responseType: 'arraybuffer',
+				headers: {
+					"Accept": "image/*",
+					"X-API-KEY": apiToken,
 				}
 			}
 		).then(response => Buffer.from(response.data, 'binary').toString('base64')
 		).catch((error) => {
-			logger.error(error)
+			logger.error(error);
+		});
+	}
+
+	async update(id, data, params) {
+		const requests = await axios.get("https://daad.idas.solutions/api/v1/RelationshipRequests/OpenIncoming", {
+			headers: {
+				"X-API-KEY": apiToken
+			}
 		})
 
-		return qrcode;
+		logger.info(requests.data.result);
+
+		if (requests.data.result.length) {
+			const requestID = requests.data.result[0].id;
+
+			const relationship = await axios.put("https://daad.idas.solutions/api/v1/RelationshipRequests/" + requestID + "/Accept", {
+					content: {}
+				},
+				{
+					headers: {
+						"X-API-KEY": apiToken
+					}
+				});
+
+			logger.info(relationship.data.result);
+
+			return relationship.data.result;
+		}
 	}
 }
 
