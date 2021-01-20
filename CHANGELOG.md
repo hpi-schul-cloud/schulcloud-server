@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.5.6]
+
+### Fixed
+- SC-8410 - Verify ldap connection reads the first page of users only to avoid timeouts
+
 ## [25.5.5]
 
 ### Fixed
