@@ -73,38 +73,33 @@ exports.hasRole = (context, userId, roleName) => {
 };
 
 /**
- * @param  {string, array[string]} inputPermissions
+ * @param  {string|string[]} inputPermissions
  * @returns resolves if the current user has ANY of the given permissions
  */
-const hasPermission = (inputPermissions) => {
+const hasPermission = (inputPermissions) => async (context) => {
+    const {
+        params: { account, provider },
+        app,
+    } = context;
+
+    // If it was an internal call then skip this context
+    if (!provider) {
+        return context;
+    }
+
+    if (!account && !account.userId) {
+        throw new Forbidden('Can not read account data');
+    }
+
+    // Otherwise check for user permissions
     const permissionNames = typeof inputPermissions==='string' ? [inputPermissions]:inputPermissions;
+    const { permissions = [] } = await app.service('users').get(account.userId);
 
-    return (context) => {
-        const {
-            params: { account, provider },
-            app,
-        } = context;
-        // If it was an internal call then skip this context
-        if (!provider) {
-            return Promise.resolve(context);
-        }
-
-        if (!account && !account.userId) {
-            throw new Forbidden('Can not read account data');
-        }
-
-        // Otherwise check for user permissions
-        return app
-                .service('users')
-                .get(account.userId)
-                .then(({ permissions = [] }) => {
-                    const hasAnyPermission = permissionNames.some((perm) => permissions.includes(perm));
-                    if (!hasAnyPermission) {
-                        throw new Forbidden(`You don't have one of the permissions: ${permissionNames.join(', ')}.`);
-                    }
-                    return Promise.resolve(context);
-                });
-    };
+    const hasAnyPermission = permissionNames.some((perm) => permissions.includes(perm));
+    if (!hasAnyPermission) {
+        throw new Forbidden(`You don't have one of the permissions: ${permissionNames.join(', ')}.`);
+    }
+    return context;
 };
 
 /**
@@ -112,7 +107,7 @@ const hasPermission = (inputPermissions) => {
  * When the hook funtkion is called, it requires an account object in params
  *
  * @param {string} inputPermission
- * @return {funktion} - feathers hook function requires context as an attribute
+ * @return {function} - feathers hook function requires context as an attribute
  */
 // TODO: should accept and check multiple permissions
 exports.hasSchoolPermission = (inputPermission) => async (context) => {
@@ -161,7 +156,7 @@ exports.hasSchoolPermission = (inputPermission) => async (context) => {
 };
 
 /**
- * @param  {string, array[string]} permissions
+ * @param  {string|string[]} permissions
  * @returns resolves if the current user has ALL of the given permissions
  */
 exports.hasAllPermissions = (permissions) => {
