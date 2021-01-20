@@ -87,7 +87,7 @@ describe('courses copy service', () => {
         chai.expect(courseName).to.equal('Deutsch 10a');
     });
 
-    it('creates a course copy through shareToken', async () => {
+    it.skip('creates a course copy through shareToken', async () => {
         const course = await shareCourseService.create({
             shareToken,
             courseName: 'testCourse 76',
