@@ -3,7 +3,7 @@ const { expect } = require('chai');
 const mongoose = require('mongoose');
 const url = require('url');
 const { ROLES, RESPONSE_STATUS, MESSAGE_KEYS } = require('../../../../src/services/videoconference/logic/constants');
-const { joinMeeting, getMeetingInfo } = require('../../../../src/services/videoconference/logic');
+const { joinMeeting, getMeetingInfo, sanitize } = require('../../../../src/services/videoconference/logic');
 const testServer = require('../../../../src/services/videoconference/logic/server');
 const utils = require('../../../../src/services/videoconference/logic/utils');
 
@@ -68,6 +68,18 @@ describe('videoconference logic', () => {
 			);
 			expect(attendeeUrl).to.be.not.empty;
 			expect(url.parse(attendeeUrl)).to.be.ok;
+		});
+	});
+
+	describe('when a malformed username or room name is given', () => {
+		it('should sanitize non numerical characters in room names', () => {
+			expect(sanitize("0-9A-Za-zÀ-ÖØ-öø-ÿ.-=_'`´ ")).to.equal("0-9A-Za-zÀ-ÖØ-öø-ÿ.-=_'`´ ");
+			expect(sanitize("Mathe's Pêtér")).to.equal("Mathe's Pêtér");
+			expect(sanitize('jid328iu d3LD83f uidw!"§$%&/()=?{}[^]]|<>')).to.equal('jid328iu d3LD83f uidw=');
+			expect(sanitize('Max Mustermann')).to.equal('Max Mustermann');
+			expect(sanitize('Some "Quoted" (Text)')).to.equal('Some Quoted Text');
+			expect(sanitize('René')).to.equal('René');
+			expect(sanitize('øÜÖÄüöäáÁÀàûÛ')).to.equal('øÜÖÄüöäáÁÀàûÛ');
 		});
 	});
 });
