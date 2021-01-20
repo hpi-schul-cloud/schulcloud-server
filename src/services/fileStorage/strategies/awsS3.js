@@ -251,9 +251,9 @@ const reassignProviderForSchool = async (awsObject) => {
 	if (correctProvider !== undefined) {
 		logger.error(`Correct provider for school ${schoolId} could be found ${correctProvider}`);
 		await updateProviderForSchool(correctProvider, schoolId);
-		const newAwsObject = await createAWSObject(schoolId);
-		newAwsObject.provider = correctProvider;
-		return newAwsObject;
+		const err = new GeneralError('Upload failed. Please refresh the page and try again.');
+		err.provider = correctProvider;
+		throw err;
 	}
 	return awsObject;
 };
