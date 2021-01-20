@@ -1,9 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { disallow } = require('feathers-hooks-common');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden } = reqlib('src/errors');
+const { Forbidden } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const { lookupSchool } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;

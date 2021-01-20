@@ -16,6 +16,8 @@
 	"FEATURE_ES_MERLIN_ENABLED": true,
 	"SECRET_ES_MERLIN_USERNAME": "merlin-username",
 	"SECRET_ES_MERLIN_PW": "merlin-pass",
-	"SECRET_ES_MERLIN_KEY": "abcdefabcdefabcdefa",
+	"SECRET_ES_MERLIN_COUNTIES_CREDENTIALS": "[{\"countyId\":3256,\"merlinUser\":\"dummy\",\"secretMerlinKey\":\"dummy\"}]",
+	"FEATURE_ES_SEARCHABLE_ENABLED": true,
+	"FEATURE_ES_COLLECTIONS_ENABLED": true,
 	"LERNSTORE_MODE": "EDUSHARING"
 }

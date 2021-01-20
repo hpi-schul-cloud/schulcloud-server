@@ -1,6 +1,4 @@
-const reqlib = require('app-root-path').require;
-
-const { Forbidden } = reqlib('src/errors');
+const { Forbidden } = require('../../../errors');
 
 /**
  * Check if user id from route is the same like in authenticaiton payload

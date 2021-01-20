@@ -864,7 +864,7 @@
 },
 {
 	"_id": {
-		"$oid": "5fa3def3d21e804a816dc1b5"
+		"$oid": "5ff5c5f9096da22f7ce586c8"
 	},
 	"state": "up",
 	"name": "seedFederalStatesWithCounties",
@@ -875,12 +875,45 @@
 },
 {
 	"_id": {
-		"$oid": "5fce1cde80e541b219058c1a"
+		"$oid": "5ffffbabd26eac720ca4f407"
 	},
 	"state": "up",
-	"name": "merlin_credentials",
+	"name": "syncTeamIndexes",
 	"createdAt": {
-		"$date": "2020-11-30T12:25:19.373Z"
+		"$date": "2020-12-17T14:07:08.384Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "60005b6190b75e5f285960a4"
+	},
+	"state": "up",
+	"name": "fixStorageProviderInconsistencies",
+	"createdAt": {
+		"$date": "2021-01-06T14:19:02.732Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "600562e9789110143f06ccc2"
+	},
+	"state": "up",
+	"name": "update-pseudonym-indexes",
+	"createdAt": {
+		"$date": "2021-01-18T10:24:39.712Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "60057e386ce08725808ccba0"
+	},
+	"state": "up",
+	"name": "syncIndexes",
+	"createdAt": {
+		"$date": "2021-01-18T12:25:28.66Z"
 	},
 	"__v": 0
 }]

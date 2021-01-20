@@ -7,11 +7,104 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
-### Unreleased
+## Unreleased
 
-## Added
+### Fixed
+
+- SC-8322 prevent wrong assignment from school to storage provider
+
+### Added
+
+- SC-8029 - Add deletion concept handling for pseudonyms and registration pins
 - SC-7825 - Deletion concept for user data in tasks
+
+### Changed
+
+- SC-8380 removed reqlib, replaced by normal require to keep referenced types known
+- SC-8213 error handling concept
+- SC-4576 - sanitize bbb room and member names
+
+## [25.5.4]
+
+### Added
+
+- SC-8358 - bettermarks: show hint for safari users
+- SC-8412 - update swagger documentation of pseudonym/roster/ltitools
+
+### Fixed
+
+- SC-5287 - Fixed OAuth2 rostering
+- SC-5287 - Repair Bettermark's depseudonymization
+- SC-8313 - Bettermarks: depseudonymization iframe needs to use Storage Access API in Safari
+- SC-8379 - Secure ltiTools route
+- SC-8315 - bettermarks: security check and production configuration
+
+## [25.5.3]
+
+### Added
+
+- SC-8420 - Migration for sync new indexes.
+
+## [25.5.2]
+
+### Fixed
+
+- SC-8189 - fix duplicate events by returning updated object at findOneAndUpdate
+
+## [25.5.1]
+
+### Fixed
+
+- SC-8303 - fix wrong assignment from school to storage provider
+
+## [25.5.0]
+
+### Added
+
+- SC-7835 - Add deletion concept handling for helpdesk problems
+- SC-8229 - Added invalid DN error to ldap-config service error handling
+- SC-7825 - Remove user relations from courses
+- SC-7827 - Add deletion concept handling for file permissions.
+- SC-8030 - Setup orchestrator for deleting concept
 - SC-8060 - increase unit test coverage for lernstore counties
+- SC-8179 - repaired unit test
+- SC-7763 - adds searchable feature flag for lernstore.
+- SC-8020 - adds collections filter to edu-sharing service
+- SC-8260 - new team indexes and migration to add this
+
+### Removed
+
+- SC-8233 - Removed attribute and member as required attributes for the LDAP-config service
+
+### Fixed
+
+- SC-8329 - Cluster returns old verison of Pin object after patch
+
+## [25.4.1]
+
+- Update from 25.3.9 into master
+
+## [25.3.9]
+
+- SC-8198 continue school sync on user issues
+
+## [25.3.8]
+
+### Changed
+
+- SC-8198 - handle eventually consistent database in THR sync
+
+## [25.3.7] - 2020-12-18
+
+### Changed
+
+- SC-8209 - prevent sync from stopping if error occurs for a single student
+
+## [25.3.6]
+
+### Fixed
+
+- SC-8235 - repaired reigstration link for students
 
 ## [25.3.5]
 
@@ -35,7 +128,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8101 - Make it possible to disable sentry by removing `SENTRY_DSN`
 - OPS-1735 - Fixes transaction handling in file service by using the mongoose transaction helper,
-properly closing the session, and using the correct readPreference (everything except primary fails)
+  properly closing the session, and using the correct readPreference (everything except primary fails)
 
 ## [25.3.2]
 
@@ -54,6 +147,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 
 ### Added
 
+- SC-7841 - remove deleted user from classes
 - SC-7836 - Removing registration pin by removing the user
 - SC-7838 - move pseudonyms to trashbin
 - SC-7142 - Counties/Kreise added to federal states.
@@ -103,7 +197,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 - SC-5900 - Move Synapse synchronization logic into server
 - SC-7499 - Fixes documentation for edu sharing endpoints
 - SC-7872 - Fix audience of the jwt to new organisation name.
-- SC-7543 - deprecates `GET /ldap/:id` and `PATCH /ldap/:id` routes 
+- SC-7543 - deprecates `GET /ldap/:id` and `PATCH /ldap/:id` routes
 - SC-7868 - Move external request helpers to more present file location
 - SC-7474 pull docker container for tests if commit id exists on docker hub
 
@@ -147,7 +241,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 ### Fixed
 
 - OPS-1735 - Fixes transaction handling in file service by using the mongoose transaction helper,
-properly closing the session, and using the correct readPreference (everything except primary fails)
+  properly closing the session, and using the correct readPreference (everything except primary fails)
 
 ## [25.2.4]
 

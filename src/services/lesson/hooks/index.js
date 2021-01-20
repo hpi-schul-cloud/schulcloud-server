@@ -1,10 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
-const reqlib = require('app-root-path').require;
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
-const { NotFound, BadRequest } = reqlib('src/errors');
 const nanoid = require('nanoid');
 const { iff, isProvider } = require('feathers-hooks-common');
+const { NotFound, BadRequest } = require('../../../errors');
 const { equal } = require('../../../helper/compare').ObjectId;
 const {
 	injectUserId,
@@ -43,12 +42,12 @@ const addShareTokenIfCourseShareable = async (context) => {
 // Generate a new url for material that have merlin as source.
 // The url expires after 2 hours
 const convertMerlinUrl = async (context) => {
-	const hasSchool =
+	const schoolId =
 		context.params &&
 		context.params.authentication &&
 		context.params.authentication.payload &&
 		context.params.authentication.payload.schoolId;
-	if (Configuration.get('FEATURE_ES_MERLIN_ENABLED') === false || !hasSchool) {
+	if (Configuration.get('FEATURE_ES_MERLIN_ENABLED') === false || !schoolId) {
 		return context;
 	}
 

@@ -1,7 +1,6 @@
-const reqlib = require('app-root-path').require;
 const LDAPConnectionError = require('../ldap/LDAPConnectionError');
 
-const { NotAuthenticated } = reqlib('src/errors');
+const { NotAuthenticated } = require('../../errors');
 
 const errorHandlers = [
 	{
@@ -15,7 +14,7 @@ const errorHandlers = [
 		message: (error) => `${error.data.code}: ${error.data.message}`,
 	},
 	{
-		match: (error) => error.lde_message === 'No Such Object',
+		match: (error) => error.lde_message === 'No Such Object' || error.lde_message === 'invalid DN',
 		type: 'WRONG_SEARCH_PATH',
 		message: () => 'Wrong search or base path',
 	},
