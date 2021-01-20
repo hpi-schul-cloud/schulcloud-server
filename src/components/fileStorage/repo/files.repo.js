@@ -1,6 +1,7 @@
 const { FileModel } = require('./db');
-const { ValidationError } = require('../../../errors');
+const { AssertionError } = require('../../../errors');
 const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
+const missingParameters = require('../../../errors/helper/assertionErrorHelper');
 const { updateManyResult } = require('../../helper/repo.helper');
 
 const searchQuery = (userId) => ({
@@ -41,7 +42,7 @@ const getFilesWithUserPermissionsByUserId = async (userId) =>
  * @return {boolean} success
  */
 const removeFilePermissionsByUserId = async (userId) => {
-	if (!isValidObjectId(userId)) throw new ValidationError(`${userId} is not a valid objectId`);
+	if (!isValidObjectId(userId)) throw new AssertionError(missingParameters({ userId }));
 	const updateQuery = { $pull: { permissions: { refId: userId } } };
 	const result = await FileModel.updateMany(searchQuery(userId), updateQuery).lean().exec();
 	const { success } = updateManyResult(result);
