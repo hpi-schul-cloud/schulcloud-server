@@ -102,7 +102,7 @@ class Service {
 
 		let templateID = res.data.result.id;
 
-		return await axios.post(
+		const qrcode =  await axios.post(
 			"https://daad.idas.solutions/api/v1/RelationshipTemplates/" + templateID + '/Token', {},
 			{
 				responseType: 'arraybuffer',
@@ -115,6 +115,11 @@ class Service {
 		).catch((error) => {
 			logger.error(error);
 		});
+
+		return {
+			templateID,
+			qrcode
+		}
 	}
 
 	async update(id, data, params) {
@@ -126,6 +131,10 @@ class Service {
 
 		logger.info(requests.data.result);
 
+		const templateID = data.templateID;
+		logger.info(templateID);
+
+		//TODO: Filter relationshipTemplateID = templateID
 		if (requests.data.result.length) {
 			const requestID = requests.data.result[0].id;
 
@@ -138,10 +147,60 @@ class Service {
 					}
 				});
 
-			logger.info(relationship.data.result);
+			logger.info(relationship.data.result.relationshipId);
 
-			return relationship.data.result;
+			return relationship.data.result.relationshipId;
 		}
+	}
+
+	async patch (id, data, params) {
+		//TODO: multipart/form-data has to be used
+		const file = await axios.post("https://daad.idas.solutions/api/v1/Files", {
+			title: data.title,
+			description: data.description,
+			expiresAt: new Date(Date.now() + 1000*60*60*24*10).toISOString(),
+			file: data.file
+		}, {
+			headers: {
+				"X-API-KEY": apiToken
+			}
+		})
+
+		logger.info(file.data.result)
+
+		const fileID = file.data.result.id;
+
+		const relationship = await axios.get("https://daad.idas.solutions/api/v1/Relationships/" + data.relationshipID, {
+			headers: {
+				"X-API-KEY": apiToken
+			}
+		})
+
+		logger.info(relationship.data.result)
+
+		const recipientID = relationship.data.result.from;
+
+		const message = await axios.post("https://daad.idas.solutions/api/v1/Messages", {
+			recipients: [
+				recipientID
+			],
+			content: {
+				"@type": "Attribute",
+				"name": "dc.languageAssessmentDe",
+				"value": "{\"value\":\"B1\",\"source\":\"DAAD\"}"
+			},
+			attachments: [
+				fileID
+			]
+		}, {
+			headers: {
+				"X-API-KEY": apiToken
+			}
+		});
+
+		logger.info(message.data.result);
+
+		return message.data.result;
 	}
 }
 
