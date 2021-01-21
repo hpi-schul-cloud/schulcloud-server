@@ -2,6 +2,7 @@ const assert = require('assert');
 const chai = require('chai');
 const sinon = require('sinon');
 const request = require('request-promise-native');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
 const MockNode = JSON.stringify(require('../mock/response-node.json'));
 const MockNodeRestricted = JSON.stringify(require('../mock/response-node-restricted.json'));
@@ -9,7 +10,6 @@ const MockNodes = JSON.stringify(require('../mock/response-nodes.json'));
 const MockAuth = require('../mock/response-auth.json');
 const EduSharingResponse = require('../../../../src/services/edusharing/services/EduSharingResponse');
 const testObjects = require('../../helpers/testObjects')(appPromise);
-const { Configuration } = require('@hpi-schul-cloud/commons');
 
 describe('EduSharing service', () => {
 	let app;
@@ -35,10 +35,10 @@ describe('EduSharing service', () => {
 
 	it('search with an empty query', async () => {
 		try {
-			const student = await testObjects.createTestUser({roles: ['student']});
+			const student = await testObjects.createTestUser({ roles: ['student'] });
 			const paramsStudent = await testObjects.generateRequestParamsFromUser(student);
 
-			paramsStudent.query = {searchQuery: ''};
+			paramsStudent.query = { searchQuery: '' };
 			const response = await eduSharingService.find(paramsStudent);
 
 			chai.expect(JSON.stringify(response)).to.equal(JSON.stringify(eduSharingResponse));
@@ -49,16 +49,16 @@ describe('EduSharing service', () => {
 
 	it('search with params', async () => {
 		try {
-			const student = await testObjects.createTestUser({roles: ['student']});
+			const student = await testObjects.createTestUser({ roles: ['student'] });
 			const paramsStudent = await testObjects.generateRequestParamsFromUser(student);
 
 			sinon.stub(request, 'get').returns(MockAuth);
 
 			const postStub = sinon.stub(request, 'post');
-			postStub.onCall(0).throws({statusCode: 403, message: 'Stubbing request fail'});
+			postStub.onCall(0).throws({ statusCode: 403, message: 'Stubbing request fail' });
 			postStub.onCall(1).returns(MockNodes);
 
-			paramsStudent.query = {searchQuery: 'foo'};
+			paramsStudent.query = { searchQuery: 'foo' };
 			const response = await eduSharingService.find(paramsStudent);
 
 			chai.expect(response.total).to.gte(1);
@@ -72,7 +72,7 @@ describe('EduSharing service', () => {
 
 	it('should search for a collection', async () => {
 		try {
-			const user = await testObjects.createTestUser({roles: ['teacher']});
+			const user = await testObjects.createTestUser({ roles: ['teacher'] });
 			const params = await testObjects.generateRequestParamsFromUser(user);
 
 			// cookie already set
@@ -81,7 +81,7 @@ describe('EduSharing service', () => {
 			const postStub = sinon.stub(request, 'post');
 			postStub.onCall(0).returns(MockNodes);
 
-			params.query = {collection: 'a4808865-da94-4884-bdba-0ad66070e83b'};
+			params.query = { collection: 'a4808865-da94-4884-bdba-0ad66070e83b' };
 			const response = await eduSharingService.find(params);
 
 			chai
@@ -100,14 +100,14 @@ describe('EduSharing service', () => {
 
 	it('should get a node', async () => {
 		try {
-			const user = await testObjects.createTestUser({roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899'});
+			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });
 			const params = await testObjects.generateRequestParamsFromUser(user);
 			const getStub = sinon.stub(request, 'get');
 
 			// cookie already set
 			// getStub.onCall(1).returns(MockAuth);
 			getStub.onCall(0).returns(MockNode);
-			const mockImg = {body: 'dummyImage'};
+			const mockImg = { body: 'dummyImage' };
 			getStub.onCall(1).returns(mockImg);
 
 			const response = await eduSharingService.get('dummyNodeId', params);
@@ -121,7 +121,7 @@ describe('EduSharing service', () => {
 
 	it('should fail to get a restricted node', async () => {
 		try {
-			const user = await testObjects.createTestUser({roles: ['teacher']});
+			const user = await testObjects.createTestUser({ roles: ['teacher'] });
 			const params = await testObjects.generateRequestParamsFromUser(user);
 			const getStub = sinon.stub(request, 'get');
 
@@ -142,7 +142,7 @@ describe('EduSharing service', () => {
 
 	it('should search with searchable flag', async () => {
 		try {
-			const user = await testObjects.createTestUser({roles: ['teacher']});
+			const user = await testObjects.createTestUser({ roles: ['teacher'] });
 			const params = await testObjects.generateRequestParamsFromUser(user);
 
 			// cookie already set
@@ -151,7 +151,7 @@ describe('EduSharing service', () => {
 			const postStub = sinon.stub(request, 'post');
 			postStub.onCall(0).returns(MockNodes);
 
-			params.query = {searchQuery: 'foo'};
+			params.query = { searchQuery: 'foo' };
 			const response = await eduSharingService.find(params);
 
 			chai.expect(postStub.getCalls()[0].args[0].body).contains(`{"property":"ccm:hpi_searchable","values":["1"]}`);
@@ -167,7 +167,6 @@ describe('EduSharing service', () => {
 
 describe('EduSharing config flags', () => {
 	let app;
-	let eduSharingResponse;
 	let eduSharingService;
 	let server;
 	let originalConfiguration;
@@ -176,7 +175,6 @@ describe('EduSharing config flags', () => {
 		originalConfiguration = Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED');
 		app = await appPromise;
 		eduSharingService = app.service('edu-sharing');
-		eduSharingResponse = new EduSharingResponse();
 		server = await app.listen(0);
 	});
 
@@ -192,9 +190,6 @@ describe('EduSharing config flags', () => {
 
 			const user = await testObjects.createTestUser({ roles: ['teacher'] });
 			const params = await testObjects.generateRequestParamsFromUser(user);
-
-			// cookie already set
-			// sinon.stub(request, 'get').returns(MockAuth);
 
 			const postStub = sinon.stub(request, 'post');
 			postStub.onCall(0).returns(MockNodes);
