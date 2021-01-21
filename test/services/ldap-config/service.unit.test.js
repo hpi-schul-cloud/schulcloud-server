@@ -133,12 +133,12 @@ describe('LdapConfigService', () => {
 		afterEach(() => sinon.restore());
 
 		it('should throw if something unexpected happens', async () => {
-			mockLdapService.getUsers = sinon.fake.rejects(new Error('unexpected'));
+			mockLdapService.verifyConfig = sinon.fake.rejects(new Error('unexpected'));
 			expect(instance.verifyConfig({ foo: 'bar' })).to.be.rejectedWith(Error);
 		});
 
 		it('should handle known errors', async () => {
-			mockLdapService.getUsers = sinon.fake.rejects(new NotAuthenticated('Wrong credentials'));
+			mockLdapService.verifyConfig = sinon.fake.rejects(new NotAuthenticated('Wrong credentials'));
 			const result = await instance.verifyConfig({ foo: 'bar' });
 			expect(result.ok).to.equal(false);
 			expect(result.errors).to.be.instanceOf(Array).and.to.have.length(1);
@@ -147,7 +147,7 @@ describe('LdapConfigService', () => {
 		});
 
 		it('should set ok to true if everything worked', async () => {
-			mockLdapService.getUsers = sinon.fake.resolves([]);
+			mockLdapService.verifyConfig = sinon.fake.resolves([]);
 			mockLdapService.getClasses = sinon.fake.resolves([]);
 			const result = await instance.verifyConfig({ foo: 'bar' });
 			expect(result.ok).to.equal(true);
@@ -155,7 +155,7 @@ describe('LdapConfigService', () => {
 		});
 
 		it('should generate stats based on ldap output', async () => {
-			mockLdapService.getUsers = sinon.fake.resolves([1, 2]);
+			mockLdapService.verifyConfig = sinon.fake.resolves([1, 2]);
 			mockLdapService.getClasses = sinon.fake.resolves([3, 4]);
 			sinon.replace(LdapConfigService, 'generateUserStats', sinon.fake.returns({ value: 1 }));
 			sinon.replace(LdapConfigService, 'generateClassStats', sinon.fake.returns({ value: 2 }));
