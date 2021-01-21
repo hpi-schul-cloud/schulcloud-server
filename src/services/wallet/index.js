@@ -154,15 +154,18 @@ class Service {
 	}
 
 	async patch (id, data, params) {
+		logger.info(data);
+
+		const relationshipId = data.get('relationshipId');
+
+		data.remove("relationshipId")
+
+		/*
 		//TODO: multipart/form-data has to be used
-		const file = await axios.post("https://daad.idas.solutions/api/v1/Files", {
-			title: data.title,
-			description: data.description,
-			expiresAt: new Date(Date.now() + 1000*60*60*24*10).toISOString(),
-			file: data.file
-		}, {
+		const file = await axios.post("https://daad.idas.solutions/api/v1/Files", data, {
 			headers: {
-				"X-API-KEY": apiToken
+				"X-API-KEY": apiToken,
+				"Content-Type": "multipart/form-data"
 			}
 		})
 
@@ -170,7 +173,7 @@ class Service {
 
 		const fileID = file.data.result.id;
 
-		const relationship = await axios.get("https://daad.idas.solutions/api/v1/Relationships/" + data.relationshipID, {
+		const relationship = await axios.get("https://daad.idas.solutions/api/v1/Relationships/" + relationshipId, {
 			headers: {
 				"X-API-KEY": apiToken
 			}
@@ -201,6 +204,8 @@ class Service {
 		logger.info(message.data.result);
 
 		return message.data.result;
+
+		 */
 	}
 }
 
