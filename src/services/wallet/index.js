@@ -11,21 +11,6 @@ class Service {
 		this.app = app;
 	}
 
-	async find(id, params) {
-		let res =  await axios.get(
-			"https://daad.idas.solutions/api/v1/RelationshipTemplates",
-			{
-				headers : {
-					"X-API-KEY": apiToken,
-				}
-			})
-		.catch((err) => {
-			logger.error('Couldnt get wallet-relationshipTemplate')
-		}
-		);
-		return res.data;
-	}
-
 	async create(data, params) {
 		let res = await axios.post(
 			"https://daad.idas.solutions/api/v1/RelationshipTemplates",
@@ -156,9 +141,11 @@ class Service {
 	async patch (id, data, params) {
 		logger.info(data);
 
-		const relationshipId = data.get('relationshipId');
+		logger.info(data.toJSON());
 
-		data.remove("relationshipId")
+		//const relationshipId = data.get('relationshipId');
+
+		//data.remove("relationshipId")
 
 		/*
 		//TODO: multipart/form-data has to be used
@@ -212,7 +199,17 @@ class Service {
 module.exports = function () {
 	const app = this;
 
-	app.use('wallet/', new Service());
+	const multer = require("multer");
+	const file = multer()
+
+	app.use('/wallet', new Service());
+	/*
+	app.post('/wallet/file', file.single('file'), (req, res, next) => {
+		logger.info(req);
+		logger.info(req.file);
+		logger.info(req.body);
+	})
+	*/
 
 	const me = app.service('wallet/');
 	me.hooks(hooks);

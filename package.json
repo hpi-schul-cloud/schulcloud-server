@@ -98,6 +98,7 @@
 		"mongoose-lean-virtuals": "^0.6.2",
 		"mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
 		"moodle-client": "^0.5.2",
+		"multer": "^1.4.2",
 		"nanoid": "^2.0.3",
 		"oauth-1.0a": "^2.2.6",
 		"papaparse": "^5.1.1",
