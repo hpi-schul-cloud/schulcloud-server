@@ -43,7 +43,6 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 		return this.getUsersInternal(true);
 	}
 
-
 	async getUsersInternal(verifyOnly = false) {
 		const {
 			userAttributeNameMapping,
