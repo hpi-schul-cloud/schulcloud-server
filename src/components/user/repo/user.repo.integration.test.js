@@ -101,7 +101,7 @@ describe('user repository', () => {
 			expect(tombstoneUser).to.be.an('object');
 			expect(tombstoneUser).to.contain.keys('email', 'firstName', 'lastName', 'schoolId');
 
-			expect(tombstoneUser.email).to.equal(`tombstone-${school._id.toString()}@hpi-schul-cloud`);
+			expect(tombstoneUser.email).to.equal(`tombstone-${school._id.toString()}@hpi-schul-cloud.de`);
 			expect(tombstoneUser.firstName).to.equal('Gelöschter');
 			expect(tombstoneUser.lastName).to.equal('Benutzer');
 			expect(tombstoneUser.schoolId.toString()).to.equal(TOMBSTONE_SCHOOL_ID);
