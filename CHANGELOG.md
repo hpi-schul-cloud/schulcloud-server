@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.5.6]
+
+### Fixed
+
+- SC-8444 - resolve eventual consistency in course shareToken generation
+
 ## [25.5.5]
 
 ### Fixed
