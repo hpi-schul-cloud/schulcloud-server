@@ -1,7 +1,6 @@
 const { Types } = require('mongoose').Schema;
-const reqlib = require('app-root-path').require;
 
-const { Forbidden } = reqlib('src/errors');
+const { Forbidden } = require('../errors');
 
 const equals = (v1, v2) => {
 	if (v1 instanceof Types.ObjectId) {

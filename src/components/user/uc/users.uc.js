@@ -126,9 +126,9 @@ const deleteUser = async (id) => {
 	try {
 		const registrationPinFacade = facadeLocator.facade('/registrationPin/v2');
 		const registrationPinTrash = await registrationPinFacade.deleteRegistrationPinsByEmail(user.email);
-		await trashbinRepo.updateTrashbinByUserId(user.id, registrationPinTrash.data); // TODO unnecessary for PINs?
+		await trashbinRepo.updateTrashbinByUserId(user._id, registrationPinTrash.data); // TODO unnecessary for PINs?
 	} catch (error) {
-		errorUtils.asyncErrorLog(error, `failed to delete registration pin for user ${user.id}`);
+		errorUtils.asyncErrorLog(error, `failed to delete registration pin for user ${user._id}`);
 	}
 
 	// this is an async function, but we don't need to wait for it, because we don't give any errors information back to the user

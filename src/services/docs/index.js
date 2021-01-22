@@ -1,8 +1,7 @@
-const reqlib = require('app-root-path').require;
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
-const { registerApiValidation } = reqlib('src/utils/apiValidation');
+const { registerApiValidation } = require('../../utils/apiValidation');
 
 module.exports = (app) => {
 	registerApiValidation(app, path.join(__dirname, '/openapi.yaml'));
