@@ -196,6 +196,17 @@ class Service {
 	}
 }
 
+class FileService {
+
+	setup(app) {
+		this.app = app;
+	}
+	async create(data, params){
+		logger.info(data.files);
+		return data
+	}
+}
+
 module.exports = function () {
 	const app = this;
 
@@ -203,14 +214,19 @@ module.exports = function () {
 	const file = multer()
 
 	app.use('/wallet', new Service());
-	/*
-	app.post('/wallet/file', file.single('file'), (req, res, next) => {
-		logger.info(req);
-		logger.info(req.file);
-		logger.info(req.body);
-	})
-	*/
+	
 
-	const me = app.service('wallet/');
-	me.hooks(hooks);
+	app.use('/wallet/file', 
+		file.single('file'), 
+		function (req, res, next) {
+			req.feathers.files = req.files;
+			next();
+		},   
+		new FileService());
+	
+
+	const wallet = app.service('wallet/');
+	wallet.hooks(hooks);
+	const fileService = app.service('wallet/file');
+	fileService.hooks(hooks);
 };
