@@ -58,6 +58,7 @@ describe('school service', () => {
 					authorization: undefined,
 				},
 				account: undefined,
+				query: { $sort: { _id: 1 } },
 			};
 			const result = await schoolService.find(params);
 			const expectedFields = ['purpose', 'name', '_id', 'id', 'systems', 'years', 'isTeamCreationByStudentsEnabled'];
@@ -72,7 +73,7 @@ describe('school service', () => {
 			});
 		});
 		it('should be possible to see all fields if the call is done from the server', async () => {
-			const params = { provider: undefined };
+			const params = { provider: undefined, query: { $sort: { _id: 1 } } };
 
 			const result = await schoolService.find(params);
 			const expectedFields = [
@@ -96,7 +97,7 @@ describe('school service', () => {
 			});
 		});
 		it('load the school results with pagination', async () => {
-			const result = await schoolService.find();
+			const result = await schoolService.find({ query: { $sort: { _id: 1 } } });
 			result.data.forEach((school) => {
 				compareSchoolYears(school.years.schoolYears, defaultYears);
 				expect(school.isTeamCreationByStudentsEnabled).to.be.not.undefined;
@@ -106,6 +107,7 @@ describe('school service', () => {
 		it('load the school results without pagination', async () => {
 			const result = await schoolService.find({
 				paginate: false,
+				query: { $sort: { _id: 1 } },
 			});
 			result.forEach((school) => {
 				compareSchoolYears(school.years.schoolYears, defaultYears);
