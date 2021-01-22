@@ -14,6 +14,10 @@ class Service {
 	}
 
 	async create(data, params) {
+		const userId = params.account.userId;
+
+		const user = await this.app.service('users').get(userId);
+
 		let res = await axios.post(
 			"https://daad.idas.solutions/api/v1/RelationshipTemplates",
 			{
@@ -54,11 +58,10 @@ class Service {
 					],
 					"request": {
 						"create": [
-							{"attribute":"Thing.name", "value":"Xana Quispe"},
-							{"attribute":"Person.givenName", "value":"Xana"},
-							{"attribute":"Person.familyName", "value":"Quispe"},
-							{"attribute":"Person.gender", "value":"f"},
-							{"attribute":"Comm.email", "value":"xana.quispe@mymail.brazil"}
+							{"attribute":"Thing.name", "value": user.fullName},
+							{"attribute":"Person.givenName", "value": user.firstName},
+							{"attribute":"Person.familyName", "value": user.lastName},
+							{"attribute":"Comm.email", "value": user.email}
 						],
 						"authorizations": [
 							{
