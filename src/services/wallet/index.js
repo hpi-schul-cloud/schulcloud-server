@@ -156,14 +156,13 @@ class WalletFileService {
 
 	async create(data, params) {
 		logger.info(data);
+		logger.info(data.files);
 
-		const form = new FormData()
+		const form = new FormData();
 
-		logger.info(form.getHeaders())
+		logger.info(form.getHeaders());
 
-		//const relationshipId = data.get('relationshipId');
-
-		//data.remove("relationshipId")
+		return data;
 
 		/*
 		//TODO: multipart/form-data has to be used
@@ -177,6 +176,11 @@ class WalletFileService {
 		logger.info(file.data.result)
 
 		const fileID = file.data.result.id;
+
+		const userId = params.account.userId;
+		const user = await this.app.service('users').get(userId);
+
+		const relationshipId = user.relationshipId;
 
 		const relationship = await axios.get("https://daad.idas.solutions/api/v1/Relationships/" + relationshipId, {
 			headers: {
@@ -214,17 +218,6 @@ class WalletFileService {
 	}
 }
 
-class FileService {
-
-	setup(app) {
-		this.app = app;
-	}
-	async create(data, params){
-		logger.info(data.files);
-		return data
-	}
-}
-
 module.exports = function () {
 	const app = this;
 
@@ -232,37 +225,17 @@ module.exports = function () {
 	const file = multer()
 
 	app.use('/wallet', new Service());
-<<<<<<< HEAD
-	
-
-	app.use('/wallet/file', 
-		file.single('file'), 
-		function (req, res, next) {
-			req.feathers.files = req.files;
-			next();
-		},   
-		new FileService());
-	
-
-	const wallet = app.service('wallet/');
-	wallet.hooks(hooks);
-	const fileService = app.service('wallet/file');
-	fileService.hooks(hooks);
-=======
 	const walletService = app.service('/wallet');
 	walletService.hooks(hooks);
 
-	app.use('/wallet/files', new WalletFileService());
+	app.use('/wallet/files',
+		file.single('file'),
+		function (req, res, next) {
+			req.feathers.files = req.files;
+			next();
+		},
+		new WalletFileService());
+
 	const walletFileService = app.service('/wallet/files');
 	walletFileService.hooks(hooks);
-
-	/*
-	app.post('/wallet/file', file.single('file'), (req, res, next) => {
-		logger.info(req);
-		logger.info(req.file);
-		logger.info(req.body);
-	})
-	*/
-
->>>>>>> 4eb6d7f0901b9e4e9d930f96ce64512461618bbe
 };

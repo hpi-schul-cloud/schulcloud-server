@@ -44,6 +44,8 @@ const userSchema = new Schema(
 
 		birthday: { type: Date },
 
+		relationshipId: { type: String },
+
 		importHash: { type: String, index: true },
 		// inviteHash:{type:String},
 		parents: [
