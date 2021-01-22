@@ -13,7 +13,7 @@ const { expect, assert } = chai;
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-const USER_ID = 'USER_ID';
+const USER_ID = new ObjectId();
 const CURRENT_USER_ID = 'CURRENT_USER_ID';
 const CURRENT_SCHOOL_ID = new ObjectId();
 
