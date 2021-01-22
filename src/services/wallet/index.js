@@ -137,11 +137,15 @@ class Service {
 			return relationship.data.result.relationshipId;
 		}
 	}
+}
 
-	async patch (id, data, params) {
+class WalletFileService {
+	setup(app) {
+		this.app = app
+	}
+
+	async create(data, params) {
 		logger.info(data);
-
-		logger.info(data.toJSON());
 
 		//const relationshipId = data.get('relationshipId');
 
@@ -203,6 +207,13 @@ module.exports = function () {
 	const file = multer()
 
 	app.use('/wallet', new Service());
+	const walletService = app.service('/wallet');
+	walletService.hooks(hooks);
+
+	app.use('/wallet/files', new WalletFileService());
+	const walletFileService = app.service('/wallet/files');
+	walletFileService.hooks(hooks);
+
 	/*
 	app.post('/wallet/file', file.single('file'), (req, res, next) => {
 		logger.info(req);
@@ -211,6 +222,4 @@ module.exports = function () {
 	})
 	*/
 
-	const me = app.service('wallet/');
-	me.hooks(hooks);
 };
