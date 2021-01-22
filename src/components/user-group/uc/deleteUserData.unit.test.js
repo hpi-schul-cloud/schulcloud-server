@@ -5,7 +5,7 @@ const chaiAsPromised = require('chai-as-promised');
 const deleteUserData = require('./deleteUserData.uc');
 
 const { classesRepo } = require('../repo/index');
-const { ValidationError } = require('../../../errors');
+const { AssertionError } = require('../../../errors');
 const { toString: idToString } = require('../../../helper/compare').ObjectId;
 
 const { expect } = chai;
@@ -85,7 +85,7 @@ describe('delete class user data usecase', () => {
 
 		it('should throw an error if called with an invalid ObjectId', () => {
 			const deleteUserDataFromClasses = deleteUserData.deleteUserData()[0];
-			expect(deleteUserDataFromClasses('NOT_AN_ID')).to.eventually.throw(new ValidationError());
+			expect(deleteUserDataFromClasses('NOT_AN_ID')).to.eventually.throw(new AssertionError());
 		});
 	});
 });

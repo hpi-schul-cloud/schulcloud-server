@@ -8,29 +8,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
 ## Unreleased
+
 ### Fixed
 
+- SC-8390 - Lern-Store collections feature flag was not excluding collections in search
 - SC-8322 prevent wrong assignment from school to storage provider
 
 ### Added
 
 - SC-8029 - Add deletion concept handling for pseudonyms and registration pins
 - SC-6950 - Add access for superhero to change kreisid and officialSchoolNumber
+- SC-8206 - Add school tombstone for deleting concept
 
 ### Changed
 
 - SC-8380 removed reqlib, replaced by normal require to keep referenced types known
+- SC-8213 error handling concept
+- SC-4576 - sanitize bbb room and member names
+- SC-8300 Added user information to LDAP Sync in case of errors
 
-## 25.5.2
+## [25.5.4]
+
+### Added
+
+- SC-8358 - bettermarks: show hint for safari users
+- SC-8412 - update swagger documentation of pseudonym/roster/ltitools
 
 ### Fixed
 
-- SC-8189 fix duplicate events by returning updated object at findOneAndUpdate
+- SC-5287 - Fixed OAuth2 rostering
+- SC-5287 - Repair Bettermark's depseudonymization
+- SC-8313 - Bettermarks: depseudonymization iframe needs to use Storage Access API in Safari
+- SC-8379 - Secure ltiTools route
+- SC-8315 - bettermarks: security check and production configuration
+
+## [25.5.3]
+
+### Added
+
+- SC-8420 - Migration for sync new indexes.
+
+## [25.5.2]
+
+### Fixed
+
+- SC-8189 - fix duplicate events by returning updated object at findOneAndUpdate
 
 ## [25.5.1]
+
 ### Fixed
 
-- SC-8303 fix wrong assignment from school to storage provider
+- SC-8303 - fix wrong assignment from school to storage provider
 
 ## [25.5.0]
 
