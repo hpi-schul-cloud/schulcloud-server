@@ -132,7 +132,8 @@ const deleteUser = async (id) => {
 	}
 
 	// this is an async function, but we don't need to wait for it, because we don't give any errors information back to the user
-	deleteUserRelatedData(user.id, []).catch((error) => {
+	const facades = ['/helpdesk/v2', '/pseudonym/v2'];
+	deleteUserRelatedData(user._id, facades).catch((error) => {
 		errorUtils.asyncErrorLog(error, 'deleteUserRelatedData failed');
 	});
 };

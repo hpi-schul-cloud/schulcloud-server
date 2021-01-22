@@ -18,7 +18,7 @@ const deleteProblemsForUser = async (userId) => {
 	return trashBinResult({ scope: 'problems', data: problems, complete });
 };
 
-const deleteUserData = () => [deleteProblemsForUser];
+const deleteUserData = [deleteProblemsForUser];
 
 module.exports = {
 	deleteUserData,
