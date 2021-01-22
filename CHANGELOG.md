@@ -15,6 +15,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-7937 - Allow adding multiple materials to lesson
 - SC-8029 - Add deletion concept handling for pseudonyms and registration pins
 
 ### Changed
