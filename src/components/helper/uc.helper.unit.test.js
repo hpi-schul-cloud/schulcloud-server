@@ -4,7 +4,7 @@ const { checkPermissions } = require('./uc.helper');
 
 const { expect } = chai;
 
-describe('school.uc', () => {
+describe('uc.helper', () => {
 	describe('checkPermissions', () => {
 		describe('single needed permission', () => {
 			it('should return true for valid permission', () => {
@@ -88,7 +88,7 @@ describe('school.uc', () => {
 		});
 	});
 	describe('multiple needed permissions', () => {
-		it('should fail invalid permission operator', () => {
+		it('should fail on invalid permission operator', () => {
 			const schoolId = 'dummySchoolId123';
 			const permissionToCheck = ['SCHOOL_EDIT'];
 			const user = {
@@ -103,7 +103,7 @@ describe('school.uc', () => {
 				],
 			};
 			expect(() => checkPermissions(user, schoolId, permissionToCheck, 'XOR')).to.throw(
-				`no such permission operator`
+				`ASSERTION_ERROR`
 			);
 		});
 		it('should return true for valid multiple need permissions in one role', () => {

@@ -1,14 +1,7 @@
-const { ValidationError } = require('../../errors');
-
-const { Forbidden } = require('../../errors');
-const { isValid: isValidObjectId } = require('../../helper/compare').ObjectId;
+const { Forbidden, AssertionError } = require('../../errors');
 
 const trashBinResult = ({ scope, data, complete }) => ({ trashBinData: { scope, data }, complete });
 const validPermissionOperators = ['AND', 'OR'];
-
-const validateObjectId = (objectId) => {
-	if (!isValidObjectId(objectId)) throw new ValidationError('a valid objectId is required', { objectId });
-};
 
 const checkPermissions = (user, schoolId, permissionsToCheck, permissionOperator = 'AND') => {
 	let grantPermission = true;
@@ -16,7 +9,7 @@ const checkPermissions = (user, schoolId, permissionsToCheck, permissionOperator
 	grantPermission = grantPermission && user.schoolId.toString() === schoolId.toString();
 
 	if (!validPermissionOperators.includes(permissionOperator)) {
-		throw new Error('no such permission operator');
+		throw new AssertionError('no such permission operator');
 	}
 
 	// user has permission
@@ -37,5 +30,5 @@ const checkPermissions = (user, schoolId, permissionsToCheck, permissionOperator
 	}
 };
 
-module.exports = { validateObjectId, checkPermissions, trashBinResult };
+module.exports = { checkPermissions, trashBinResult };
 
