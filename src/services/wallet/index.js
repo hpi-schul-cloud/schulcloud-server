@@ -1,9 +1,11 @@
 const axios = require('axios');
+const FormData = require('form-data');
 const logger = require('../../logger');
-const setHeaders = require('./hooks/setResponseHeader')
 const hooks = require('./hooks');
 
 const apiToken = require('../../../config/secrets').IDAS_API_KEY;
+
+const { GeneralError } = require('../../errors')
 
 class Service {
 
@@ -12,6 +14,10 @@ class Service {
 	}
 
 	async create(data, params) {
+		const userId = params.account.userId;
+
+		const user = await this.app.service('users').get(userId);
+
 		let res = await axios.post(
 			"https://daad.idas.solutions/api/v1/RelationshipTemplates",
 			{
@@ -52,11 +58,10 @@ class Service {
 					],
 					"request": {
 						"create": [
-							{"attribute":"Thing.name", "value":"Xana Quispe"},
-							{"attribute":"Person.givenName", "value":"Xana"},
-							{"attribute":"Person.familyName", "value":"Quispe"},
-							{"attribute":"Person.gender", "value":"f"},
-							{"attribute":"Comm.email", "value":"xana.quispe@mymail.brazil"}
+							{"attribute":"Thing.name", "value": user.fullName},
+							{"attribute":"Person.givenName", "value": user.firstName},
+							{"attribute":"Person.familyName", "value": user.lastName},
+							{"attribute":"Comm.email", "value": user.email}
 						],
 						"authorizations": [
 							{
@@ -83,6 +88,7 @@ class Service {
 			}
 		).catch((error) => {
 			logger.error('Couldnt post wallet-relationshipTemplates')
+			throw new GeneralError("Couldn't create new relationship template!")
 		})
 
 		let templateID = res.data.result.id;
@@ -99,6 +105,7 @@ class Service {
 		).then(response => Buffer.from(response.data, 'binary').toString('base64')
 		).catch((error) => {
 			logger.error(error);
+			throw new GeneralError("Couldn't create QR-Code for relationship template!")
 		});
 
 		return {
@@ -119,9 +126,10 @@ class Service {
 		const templateID = data.templateID;
 		logger.info(templateID);
 
-		//TODO: Filter relationshipTemplateID = templateID
-		if (requests.data.result.length) {
-			const requestID = requests.data.result[0].id;
+		const matchingRequest = requests.data.result.find(request => request.relationshipTemplateId === templateID);
+
+		if (matchingRequest) {
+			const requestID = matchingRequest.id;
 
 			const relationship = await axios.put("https://daad.idas.solutions/api/v1/RelationshipRequests/" + requestID + "/Accept", {
 					content: {}
@@ -135,13 +143,23 @@ class Service {
 			logger.info(relationship.data.result.relationshipId);
 
 			return relationship.data.result.relationshipId;
+		} else {
+			return undefined;
 		}
 	}
+}
 
-	async patch (id, data, params) {
+class WalletFileService {
+	setup(app) {
+		this.app = app
+	}
+
+	async create(data, params) {
 		logger.info(data);
 
-		logger.info(data.toJSON());
+		const form = new FormData()
+
+		logger.info(form.getHeaders())
 
 		//const relationshipId = data.get('relationshipId');
 
@@ -214,6 +232,7 @@ module.exports = function () {
 	const file = multer()
 
 	app.use('/wallet', new Service());
+<<<<<<< HEAD
 	
 
 	app.use('/wallet/file', 
@@ -229,4 +248,21 @@ module.exports = function () {
 	wallet.hooks(hooks);
 	const fileService = app.service('wallet/file');
 	fileService.hooks(hooks);
+=======
+	const walletService = app.service('/wallet');
+	walletService.hooks(hooks);
+
+	app.use('/wallet/files', new WalletFileService());
+	const walletFileService = app.service('/wallet/files');
+	walletFileService.hooks(hooks);
+
+	/*
+	app.post('/wallet/file', file.single('file'), (req, res, next) => {
+		logger.info(req);
+		logger.info(req.file);
+		logger.info(req.body);
+	})
+	*/
+
+>>>>>>> 4eb6d7f0901b9e4e9d930f96ce64512461618bbe
 };
