@@ -33,7 +33,7 @@ describe('pseudonym usecase', () => {
 	});
 
 	const getPseudonymDeletionResult = async (userId) => {
-		const deletionSteps = pseudonymUC.deleteUserData();
+		const deletionSteps = pseudonymUC.deleteUserData;
 		const deletionResults = deletionSteps.map((step) => step(userId));
 		const result = await Promise.all(deletionResults);
 
@@ -41,9 +41,9 @@ describe('pseudonym usecase', () => {
 	};
 
 	describe('deleteUserData', () => {
-		it('should recieve a function form use case which resolves in an array', () => {
-			expect(pseudonymUC.deleteUserData).to.be.an('function');
-			expect(pseudonymUC.deleteUserData()).to.be.an('array').with.length.greaterThan(0);
+		it('should recieve an array of functions form use case', () => {
+			expect(pseudonymUC.deleteUserData).to.be.an('array').with.length.greaterThan(0);
+			expect(pseudonymUC.deleteUserData[0]).to.be.an('function');
 		});
 	});
 
