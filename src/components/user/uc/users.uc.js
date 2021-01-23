@@ -47,8 +47,10 @@ const deleteUserRelatedData = async (userId, deleteUserFacades = []) => {
 			try {
 				// eslint-disable-next-line no-await-in-loop
 				const trash = await deleteFn(userId);
-				// eslint-disable-next-line no-await-in-loop
-				await trashbinRepo.updateTrashbinByUserId(userId, trash.data);
+				if (trash.trashBinData.data.length > 0) {
+					// eslint-disable-next-line no-await-in-loop
+					await trashbinRepo.updateTrashbinByUserId(userId, [trash.trashBinData]);
+				}
 			} catch (error) {
 				errorUtils.asyncErrorLog(error, `failed to delete user data for facade ${facadeName}#${deleteFn.name}`);
 			}
@@ -132,7 +134,7 @@ const deleteUser = async (id) => {
 	}
 
 	// this is an async function, but we don't need to wait for it, because we don't give any errors information back to the user
-	const facades = ['/helpdesk/v2', '/pseudonym/v2'];
+	const facades = ['/pseudonym/v2', '/helpdesk/v2'];
 	deleteUserRelatedData(user._id, facades).catch((error) => {
 		errorUtils.asyncErrorLog(error, 'deleteUserRelatedData failed');
 	});
