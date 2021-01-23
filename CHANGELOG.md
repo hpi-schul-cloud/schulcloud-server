@@ -17,12 +17,26 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - SC-8029 - Add deletion concept handling for pseudonyms and registration pins
+- SC-8206 - Add school tombstone for deleting concept
 
 ### Changed
 
 - SC-8380 removed reqlib, replaced by normal require to keep referenced types known
 - SC-8213 error handling concept
 - SC-4576 - sanitize bbb room and member names
+- SC-8300 Added user information to LDAP Sync in case of errors
+
+## [25.5.6]
+
+### Fixed
+
+- SC-8444 - resolve eventual consistency in course shareToken generation
+
+## [25.5.5]
+
+### Fixed
+
+- SC-8303 - fix wrong assignment from school to storage provider
 
 ## [25.5.4]
 

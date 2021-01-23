@@ -81,6 +81,11 @@ const facadeStubs = {
 	'/registrationPin/v2': {
 		deleteRegistrationPinsByEmail: [sinon.stub().returns(trashBinExample2)],
 	},
+	'/school/v2': {
+		getSchool: sinon.stub().returns({ name: 'dummy school', tombstoneUserId: 'dummy-id' }),
+		// getTombstoneSchool
+		// updateSchool
+	},
 };
 
 let getUserStub;
@@ -145,12 +150,12 @@ describe('users usecase', () => {
 
 	describe('deleteUserRelatedData', () => {
 		it('should not throw for empty facade list', () => {
-			expect(userUC.deleteUserRelatedData('12', [])).to.not.be.rejected;
+			expect(userUC.deleteUserRelatedData('12', 'tombstoneUserId', [])).to.not.be.rejected;
 		});
 
 		it('should update trashbin correctly if facade.deleteUser is a function', async () => {
 			const testUserId = '12';
-			await userUC.deleteUserRelatedData(testUserId, ['facade1']);
+			await userUC.deleteUserRelatedData(testUserId, 'tombstoneUserId', ['facade1']);
 
 			const deleteUserStub = facadeStubs.facade1.deleteUserData[0];
 			expect(deleteUserStub.callCount).to.be.equal(1);
@@ -163,7 +168,7 @@ describe('users usecase', () => {
 
 		it('should update trashbin correctly if facade.deleteUser is an array of functions', async () => {
 			const testUserId = '12';
-			await userUC.deleteUserRelatedData(testUserId, ['facade2']);
+			await userUC.deleteUserRelatedData(testUserId, 'tombstoneUserId', ['facade2']);
 
 			const deleteUserStubs = facadeStubs.facade2.deleteUserData;
 			expect(deleteUserStubs[0].callCount).to.be.equal(1);
@@ -182,7 +187,7 @@ describe('users usecase', () => {
 
 		it('should update trashbin correctly for multiple facades', async () => {
 			const testUserId = '12';
-			await userUC.deleteUserRelatedData(testUserId, ['facade1', 'facade2']);
+			await userUC.deleteUserRelatedData(testUserId, 'tombstoneUserId', ['facade1', 'facade2']);
 
 			expect(updateTrashbinByUserIdStub.callCount).to.be.equal(3);
 			expect(
@@ -202,7 +207,7 @@ describe('users usecase', () => {
 		it('should not throw errors if facades throw, but log facade errors', async () => {
 			const testUserId = '12';
 			try {
-				await userUC.deleteUserRelatedData(testUserId, ['errorFacade1', 'errorFacade2']);
+				await userUC.deleteUserRelatedData(testUserId, 'tombstoneUserId', ['errorFacade1', 'errorFacade2']);
 			} catch (error) {
 				assert.fail('deleteUserRelatedData should not have throw');
 			}

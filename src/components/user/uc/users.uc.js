@@ -40,7 +40,7 @@ const getUserData = async (id) => {
  * @param {*} userId
  * @param {*} deleteUserFacades e.g. ['/registrationPin/v2', '/fileStorage/v2']
  */
-const deleteUserRelatedData = async (userId, deleteUserFacades = []) => {
+const deleteUserRelatedData = async (userId, schoolTombstoneUserId, deleteUserFacades = []) => {
 	for (const facadeName of deleteUserFacades) {
 		const facade = facadeLocator.facade(facadeName);
 		for (const deleteFn of facade.deleteUserData) {
@@ -82,9 +82,8 @@ const replaceUserWithTombstone = async (id) => {
  * @param {*} permissionAction the action that is to be performed (CREATE, EDIT, DELETE)
  * @param {*} param3 needs to contain account.userId, which is the ID of the user issuing the request
  */
-const checkPermissions = async (id, roleName, permissionAction, { account }) => {
+const checkPermissions = async (id, roleName, permissionAction, { user: currentUser }) => {
 	const userToBeEffected = await userRepo.getUserWithRoles(id);
-	const currentUser = await userRepo.getUserWithRoles(account.userId);
 
 	let grantPermission = true;
 	// the effected user's role fits the rolename for the route
@@ -118,9 +117,21 @@ const checkPermissions = async (id, roleName, permissionAction, { account }) => 
 	}
 };
 
-const deleteUser = async (id) => {
+const getOrCreateTombstoneUserId = async (schoolId, user) => {
+	const school = await facadeLocator.facade('/school/v2').getSchool(schoolId);
+	if (school.tombstoneUserId) {
+		return school.tombstoneUserId;
+	}
+	const tombstoneSchool = await facadeLocator.facade('/school/v2').getTombstoneSchool();
+	const schoolTombstoneUser = await userRepo.createTombstoneUser(schoolId, tombstoneSchool._id);
+	await facadeLocator.facade('/school/v2').setTombstoneUser(user, schoolId, schoolTombstoneUser._id);
+	return schoolTombstoneUser;
+};
+
+const deleteUser = async (id, { user: loggedinUser }) => {
 	const userAccountData = await getUserData(id);
 	const user = userAccountData.find(({ scope }) => scope === 'user').data;
+	const schoolTombstoneUserId = await getOrCreateTombstoneUserId(user.schoolId, loggedinUser);
 
 	await createUserTrashbin(id, userAccountData);
 
@@ -135,7 +146,7 @@ const deleteUser = async (id) => {
 
 	// this is an async function, but we don't need to wait for it, because we don't give any errors information back to the user
 	const facades = ['/pseudonym/v2', '/helpdesk/v2'];
-	deleteUserRelatedData(user._id, facades).catch((error) => {
+	deleteUserRelatedData(user.id, schoolTombstoneUserId, facades).catch((error) => {
 		errorUtils.asyncErrorLog(error, 'deleteUserRelatedData failed');
 	});
 };
@@ -149,4 +160,5 @@ module.exports = {
 	getUserData,
 	replaceUserWithTombstone,
 	userHaveSameSchool,
+	getOrCreateTombstoneUserId,
 };
