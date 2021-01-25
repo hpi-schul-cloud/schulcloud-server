@@ -18,7 +18,7 @@ const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS, SC_DOMAIN } = require('../../../.
  * @returns {Promise }
  */
 const mapRoleFilterQuery = (hook) => {
-	if (hook.params.query.roles) {
+	if (hook.params.query && hook.params.query.roles) {
 		const rolesFilter = hook.params.query.roles;
 		hook.params.query.roles = {};
 		hook.params.query.roles.$in = rolesFilter;
