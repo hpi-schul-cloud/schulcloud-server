@@ -16,6 +16,9 @@ RUN npm ci
 
 COPY . .
 RUN npm run build
+
+RUN node ./backup.js -p setup/ --url ${MONGO_HOST}:27017 --database ${MONGO_DATABASE} import
+
 ENV TZ=Europe/Berlin
 
 CMD ["npm", "start"]

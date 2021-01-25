@@ -203,13 +203,14 @@ const getCollectionCount = async () => {
 		'mongo',
 		'--host',
 		CONFIG.MONGO.URL,
+		'--quiet',
 		'--eval',
 		'"db.getCollectionNames().length"',
 		CONFIG.MONGO.DATABASE,
 	];
 	const output = await asyncExec(cleanJoin(cmdArgs));
 	// log('output=', output, typeof output, output.trim(), output.trim().length);
-	return output; // Number.parseInt(output.trim(), 10);
+	return output.trim(); // Number.parseInt(output.trim(), 10);
 };
 
 const importDirectory = async (directoryPath) => {
