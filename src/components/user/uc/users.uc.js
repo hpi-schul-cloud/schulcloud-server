@@ -118,20 +118,23 @@ const checkPermissions = async (id, roleName, permissionAction, { user: currentU
 };
 
 const getOrCreateTombstoneUserId = async (schoolId, user) => {
-	const school = await facadeLocator.facade('/school/v2').getSchool(schoolId);
+	const schoolFacade = facadeLocator.facade('/school/v2');
+	const school = await schoolFacade.getSchool(schoolId);
 	if (school.tombstoneUserId) {
 		return school.tombstoneUserId;
 	}
-	const tombstoneSchool = await facadeLocator.facade('/school/v2').getTombstoneSchool();
-	const schoolTombstoneUser = await userRepo.createTombstoneUser(schoolId, tombstoneSchool._id);
-	await facadeLocator.facade('/school/v2').setTombstoneUser(user, schoolId, schoolTombstoneUser._id);
-	return schoolTombstoneUser;
+	const tombstoneSchool = await schoolFacade.getTombstoneSchool();
+	if (tombstoneSchool) {
+		const schoolTombstoneUser = await userRepo.createTombstoneUser(schoolId, tombstoneSchool._id);
+		await schoolFacade.setTombstoneUser(user, schoolId, schoolTombstoneUser._id);
+		return schoolTombstoneUser;
+	}
+	return undefined;
 };
 
 const deleteUser = async (id, { user: loggedinUser }) => {
 	const userAccountData = await getUserData(id);
 	const user = userAccountData.find(({ scope }) => scope === 'user').data;
-	const schoolTombstoneUserId = await getOrCreateTombstoneUserId(user.schoolId, loggedinUser);
 
 	await createUserTrashbin(id, userAccountData);
 
@@ -144,9 +147,10 @@ const deleteUser = async (id, { user: loggedinUser }) => {
 		errorUtils.asyncErrorLog(error, `failed to delete registration pin for user ${user._id}`);
 	}
 
+	const schoolTombstoneUserId = await getOrCreateTombstoneUserId(user.schoolId, loggedinUser);
 	// this is an async function, but we don't need to wait for it, because we don't give any errors information back to the user
-	const facades = ['/pseudonym/v2', '/helpdesk/v2'];
-	deleteUserRelatedData(user.id, schoolTombstoneUserId, facades).catch((error) => {
+	const facades = ['/pseudonym/v2', '/helpdesk/v2', '/fileStorage/v2', '/classes/v2'];
+	deleteUserRelatedData(user._id, schoolTombstoneUserId, facades).catch((error) => {
 		errorUtils.asyncErrorLog(error, 'deleteUserRelatedData failed');
 	});
 };

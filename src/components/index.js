@@ -3,6 +3,7 @@ const fileStorageComponent = require('./fileStorage');
 const helpdeskComponent = require('./helpdesk');
 const pseudonymComponent = require('./pseudonym');
 const courseComponent = require('./course');
+const userGroupComponent = require('./user-group');
 const schoolComponent = require('./school');
 
 module.exports = (app) => {
@@ -12,4 +13,5 @@ module.exports = (app) => {
 	app.configure(pseudonymComponent);
 	app.configure(courseComponent);
 	app.configure(schoolComponent);
+	app.configure(userGroupComponent);
 };
