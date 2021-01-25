@@ -1,6 +1,9 @@
 const { Forbidden, AssertionError } = require('../../errors');
 
-const trashBinResult = ({ scope, data, complete }) => ({ trashBinData: { scope, data }, complete });
+const trashBinResult = ({ scope, data, complete }) => {
+	return { trashBinData: [{ scope, data }], complete };
+};
+
 const validPermissionOperators = ['AND', 'OR'];
 
 const checkPermissions = (user, schoolId, permissionsToCheck, permissionOperator = 'AND') => {
@@ -31,4 +34,3 @@ const checkPermissions = (user, schoolId, permissionsToCheck, permissionOperator
 };
 
 module.exports = { checkPermissions, trashBinResult };
-
