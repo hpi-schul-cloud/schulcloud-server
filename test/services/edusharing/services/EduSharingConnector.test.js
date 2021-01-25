@@ -11,7 +11,7 @@ const MockAuth = require('../mock/response-auth.json');
 const EduSharingResponse = require('../../../../src/services/edusharing/services/EduSharingResponse');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
-describe('EduSharing service', () => {
+describe('EduSharing FIND', () => {
 	let app;
 	let eduSharingResponse;
 	let eduSharingService;
@@ -27,6 +27,10 @@ describe('EduSharing service', () => {
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
+	});
+
+	afterEach(async () => {
+		sinon.verifyAndRestore();
 	});
 
 	it('registered the service', async () => {
@@ -62,9 +66,6 @@ describe('EduSharing service', () => {
 			const response = await eduSharingService.find(paramsStudent);
 
 			chai.expect(response.total).to.gte(1);
-			request.post.restore();
-			request.get.restore();
-			postStub.reset();
 		} catch (err) {
 			throw new Error(err);
 		}
@@ -90,53 +91,8 @@ describe('EduSharing service', () => {
 					`{"property":"ccm:hpi_lom_relation","values":["{'kind': 'ispartof', 'resource': {'identifier': ['a4808865-da94-4884-bdba-0ad66070e83b']}}"]`
 				);
 			chai.expect(response.total).to.gte(1);
-
-			request.post.restore();
-			postStub.reset();
 		} catch (err) {
 			throw new Error(err);
-		}
-	});
-
-	it('should get a node', async () => {
-		try {
-			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });
-			const params = await testObjects.generateRequestParamsFromUser(user);
-			const getStub = sinon.stub(request, 'get');
-
-			// cookie already set
-			// getStub.onCall(1).returns(MockAuth);
-			getStub.onCall(0).returns(MockNode);
-			const mockImg = { body: 'dummyImage' };
-			getStub.onCall(1).returns(mockImg);
-
-			const response = await eduSharingService.get('dummyNodeId', params);
-			chai.expect(response.title).to.equal('dummy title');
-			request.get.restore();
-			getStub.reset();
-		} catch (err) {
-			throw new Error(err);
-		}
-	});
-
-	it('should fail to get a restricted node', async () => {
-		try {
-			const user = await testObjects.createTestUser({ roles: ['teacher'] });
-			const params = await testObjects.generateRequestParamsFromUser(user);
-			const getStub = sinon.stub(request, 'get');
-
-			// cookie already set
-			// getStub.onCall(1).returns(MockAuth);
-			getStub.onCall(0).returns(MockNodeRestricted);
-
-			await eduSharingService.get('dummyNodeId', params);
-			request.get.restore();
-			getStub.reset();
-			throw new Error('should have failed');
-		} catch (err) {
-			chai.expect(err.message).to.not.equal('should have failed');
-			chai.expect(err.code).to.equal(403);
-			chai.expect(err.message).to.equal('This content is not available for your school');
 		}
 	});
 
@@ -156,11 +112,62 @@ describe('EduSharing service', () => {
 
 			chai.expect(postStub.getCalls()[0].args[0].body).contains(`{"property":"ccm:hpi_searchable","values":["1"]}`);
 			chai.expect(response.total).to.gte(1);
-
-			request.post.restore();
-			postStub.reset();
 		} catch (err) {
 			throw new Error(err);
+		}
+	});
+
+	it('should fail to get a node with invalid uuid', async () => {
+		try {
+			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+			await eduSharingService.get('dummyNodeId', params);
+			throw new Error('should have failed');
+		} catch (err) {
+			chai.expect(err.message).to.not.equal('should have failed');
+			chai.expect(err.code).to.equal(404);
+			chai.expect(err.message).to.equal('Invalid node id');
+		}
+	});
+
+	it('should get a node', async () => {
+		try {
+			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+			const postStub = sinon.stub(request, 'post');
+
+			// cookie already set
+			// getStub.onCall(1).returns(MockAuth);
+			postStub.onCall(0).returns(MockNode);
+			const mockImg = { body: 'dummyImage' };
+			postStub.onCall(1).returns(mockImg);
+
+			const response = await eduSharingService.get('9ff3ee4e-e679-4576-bad7-0eeb9b174716', params);
+			chai.expect(response.title).to.equal('dummy title');
+			chai
+				.expect(postStub.getCalls()[0].args[0].body)
+				.contains(`{"property":"ccm:replicationsourceuuid","values":["9ff3ee4e-e679-4576-bad7-0eeb9b174716"]`);
+		} catch (err) {
+			throw new Error(err);
+		}
+	});
+
+	it('should fail to get a restricted node', async () => {
+		try {
+			const user = await testObjects.createTestUser({ roles: ['teacher'] });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+			const postStub = sinon.stub(request, 'post');
+			sinon.stub(request, 'get').returns(MockAuth);
+			// cookie already set
+			// getStub.onCall(1).returns(MockAuth);
+			postStub.onCall(0).returns(MockNodeRestricted);
+
+			await eduSharingService.get('9ff3ee4e-e679-4576-bad7-0eeb9b174716', params);
+			throw new Error('should have failed');
+		} catch (err) {
+			chai.expect(err.message).to.not.equal('should have failed');
+			chai.expect(err.code).to.equal(403);
+			chai.expect(err.message).to.equal('This content is not available for your school');
 		}
 	});
 });
@@ -184,6 +191,10 @@ describe('EduSharing config flags', () => {
 		await server.close();
 	});
 
+	afterEach(async () => {
+		sinon.verifyAndRestore();
+	});
+
 	it('should search with collections flag disabled', async () => {
 		try {
 			Configuration.set('FEATURE_ES_COLLECTIONS_ENABLED', false);
@@ -201,9 +212,6 @@ describe('EduSharing config flags', () => {
 				.expect(postStub.getCalls()[0].args[0].body)
 				.contains(`{"property":"ccm:hpi_lom_general_aggregationlevel","values":["1"]}`);
 			chai.expect(response.total).to.gte(1);
-
-			request.post.restore();
-			postStub.reset();
 		} catch (err) {
 			throw new Error(err);
 		}
