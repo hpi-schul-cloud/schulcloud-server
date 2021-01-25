@@ -217,7 +217,7 @@ const importDirectory = async (directoryPath) => {
 	const databaseCollectionCount = await getCollectionCount();
 	log('databaseCollectionCount=', databaseCollectionCount);
 	if (databaseCollectionCount > 0) {
-		throw new Error(`Database is not empty it contain ${databaseCollectionCount} collections.`);
+		throw new Error(`Not seeding database because it is not empty, ${databaseCollectionCount} collections exist.`);
 	}
 
 	const files = await readDir(directoryPath);
