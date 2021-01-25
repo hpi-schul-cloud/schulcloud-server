@@ -394,6 +394,24 @@ describe('school service', () => {
 			}
 			expect(result.officialSchoolNumber).to.be.equal(schoolNumber);
 		});
+		it('should succeed to update officialSchoolNumber if school already have one and user is a superhero', async () => {
+			const school = await testObjects.createTestSchool({ officialSchoolNumber: 'uw-42069' });
+			const admin = await testObjects.createTestUser({
+				schoolId: school._id,
+				roles: ['superhero'],
+			});
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+
+			const schoolNumber = 'BA-13371';
+			let result;
+
+			try {
+				result = await app.service('/schools').patch(school._id, { officialSchoolNumber: schoolNumber }, params);
+			} catch (err) {
+				throw new Error('should not have failed', err);
+			}
+			expect(result.officialSchoolNumber).to.be.equal(schoolNumber);
+		});
 		it('should fail to update county if state does not have the provided county ', async () => {
 			const school = await testObjects.createTestSchool({ federalState: '0000b186816abba584714c53' });
 			const admin = await testObjects.createTestUser({

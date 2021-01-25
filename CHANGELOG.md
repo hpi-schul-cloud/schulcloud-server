@@ -18,6 +18,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-7937 - Allow adding multiple materials to lesson
 - SC-8029 - Add deletion concept handling for pseudonyms and registration pins
+- SC-6950 - Add access for superhero to change kreisid and officialSchoolNumber
 - SC-8206 - Add school tombstone for deleting concept
 
 ### Changed
@@ -26,6 +27,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8213 error handling concept
 - SC-4576 - sanitize bbb room and member names
 - SC-8300 Added user information to LDAP Sync in case of errors
+
+## [25.5.6]
+
+### Fixed
+
+- SC-8444 - resolve eventual consistency in course shareToken generation
+
+## [25.5.5]
+
+### Fixed
+
+- SC-8303 - fix wrong assignment from school to storage provider
 
 ## [25.5.4]
 
