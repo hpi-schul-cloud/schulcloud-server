@@ -1,6 +1,4 @@
-const reqlib = require('app-root-path').require;
-
-const { ApplicationError } = reqlib('src/errors');
+const { ApplicationError } = require('../../errors');
 
 class LDAPConnectionError extends ApplicationError {
 	constructor(message, data = {}) {

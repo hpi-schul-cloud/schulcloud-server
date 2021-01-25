@@ -7,5 +7,6 @@
     "API_HOST": "http://host.docker.internal:3030",
     "FILE_SECURITY_CHECK_SERVICE_URI": "http://localhost:8081/scan/file",
     "FILE_SECURITY_SERVICE_USERNAME": "antivirus",
-    "FILE_SECURITY_SERVICE_PASSWORD": "password"
+    "FILE_SECURITY_SERVICE_PASSWORD": "password",
+    "REQUEST_LOGGING_ENABLED": true
 }

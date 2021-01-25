@@ -8,6 +8,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
 ## Unreleased
+### Fixed
+
+- SC-8322 prevent wrong assignment from school to storage provider
+
+### Added
+
+- SC-8029 - Add deletion concept handling for pseudonyms and registration pins
+
+### Changed
+
+- SC-8380 removed reqlib, replaced by normal require to keep referenced types known
+
+
+## [25.5.3]
+
+### Added
+
+- SC-8420 - Migration for sync new indexes.
+
+## [25.5.2]
+
+### Fixed
+
+- SC-8189 - fix duplicate events by returning updated object at findOneAndUpdate
+
+## [25.5.1]
+### Fixed
+
+- SC-8303 - fix wrong assignment from school to storage provider
 
 ## [25.5.0]
 
@@ -27,6 +56,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Removed
 
 - SC-8233 - Removed attribute and member as required attributes for the LDAP-config service
+
+### Fixed
+
+- SC-8329 - Cluster returns old verison of Pin object after patch
 
 ## [25.4.1]
 
