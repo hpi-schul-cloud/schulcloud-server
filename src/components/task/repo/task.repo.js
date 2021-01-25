@@ -1,8 +1,23 @@
+const _ = require('lodash');
 const { SubmissionModel, HomeworkModel } = require('../db');
 
 const { updateManyResult, deleteManyResult } = require('../../helper/repo.helper');
 
-const { validateObjectId } = require('../../helper/validation.helper');
+const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
+const { missingParameters } = require('../../../errors/helper/assertionErrorHelper');
+const { AssertionError } = require('../../../errors');
+
+const validateObjectId = (objectId) => {
+	const missingProps = {};
+	for (const prop in objectId) {
+		if (!isValidObjectId(objectId[prop])) {
+			missingProps[prop] = objectId[prop];
+		}
+	}
+	if (!_.isEmpty(missingProps)) {
+		throw new AssertionError(missingParameters({ ...missingProps }));
+	}
+};
 
 /** Homeworks */
 const privateHomeworkQuery = (userId) => ({ private: true, teacherId: userId });
@@ -43,7 +58,7 @@ const findPublicHomeworkIdsByUser = async (userId) => {
  * @return {Boolean}
  */
 const deletePrivateHomeworksFromUser = async (userId) => {
-	validateObjectId(userId);
+	validateObjectId({ userId });
 	const result = await HomeworkModel.deleteMany(privateHomeworkQuery(userId)).lean().exec();
 	return deleteManyResult(result);
 };
@@ -53,7 +68,7 @@ const deletePrivateHomeworksFromUser = async (userId) => {
  * @return {Boolean}
  */
 const replaceUserInPublicHomeworks = async (userId, replaceUserId) => {
-	validateObjectId(userId);
+	validateObjectId({ userId, replaceUserId });
 	const result = await HomeworkModel.updateMany(publicHomeworkQuery(userId), { $set: { teacherId: replaceUserId } })
 		.lean()
 		.exec();
@@ -61,7 +76,7 @@ const replaceUserInPublicHomeworks = async (userId, replaceUserId) => {
 };
 
 const replaceUserInArchivedHomeworks = async (userId, replaceUserId) => {
-	validateObjectId(userId);
+	validateObjectId({ userId, replaceUserId });
 	const result = await HomeworkModel.updateMany(archivedHomeworkQuery(userId), { $set: { archived: replaceUserId } })
 		.lean()
 		.exec();
@@ -90,7 +105,7 @@ const findGroupSubmissionIdsByUser = async (userId) => {
 const findSingleSubmissionsByUser = async (userId) => SubmissionModel.find(singleSubmissionQuery(userId)).lean().exec();
 
 const removeGroupSubmissionsConnectionsForUser = async (userId) => {
-	validateObjectId(userId);
+	validateObjectId({ userId });
 	const result = await SubmissionModel.updateMany(groupSubmissionQuery(userId), { $pull: { teamMembers: userId } })
 		.lean()
 		.exec();
@@ -98,7 +113,7 @@ const removeGroupSubmissionsConnectionsForUser = async (userId) => {
 };
 
 const deleteSingleSubmissionsFromUser = async (userId) => {
-	validateObjectId(userId);
+	validateObjectId({ userId });
 	const result = await SubmissionModel.deleteMany(singleSubmissionQuery(userId)).lean().exec();
 	return deleteManyResult(result);
 };

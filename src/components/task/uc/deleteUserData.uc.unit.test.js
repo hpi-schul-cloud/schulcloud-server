@@ -21,7 +21,7 @@ chai.use(chaiAsPromised);
 const getExpectedUpdateMany = (modifiedDocuments) => ({ success: true, modifiedDocuments });
 const getExpectedDeleteMany = (deletedDocuments) => ({ success: true, deletedDocuments });
 
-describe.only('in "deleteUserData.uc" the function', () => {
+describe('in "deleteUserData.uc" the function', () => {
 	describe('deleteUserData', () => {
 		const notExistingUserId = new ObjectId();
 		const userId = new ObjectId();
