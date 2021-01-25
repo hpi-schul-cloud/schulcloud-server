@@ -51,10 +51,21 @@ class LDAPSchoolSyncer extends Syncer {
 	async getUserData() {
 		this.logInfo('Getting users...');
 		const ldapUsers = await this.app.service('ldap').getUsers(this.system.ldapConfig, this.school);
+		const userData = await this.app.service('usersModel').find({
+			query: {
+				schoolId: this.school._id,
+				$populate: ['roles'],
+				$limit: 5000, // 5000 is max because of definition in model
+			},
+		});
+		const userMap = new Map();
+		userData.data.forEach((user) => {
+			userMap.set(user.ldapId, user);
+		});
 		this.logInfo(`Creating and updating ${ldapUsers.length} users...`);
 		for (const ldapUser of ldapUsers) {
 			// eslint-disable-next-line no-await-in-loop
-			await this.createOrUpdateUser(ldapUser);
+			await this.createOrUpdateUser(ldapUser, userMap);
 			this.updateModifyTimestampMaximum(ldapUser.modifyTimestamp);
 		}
 
@@ -81,7 +92,13 @@ class LDAPSchoolSyncer extends Syncer {
 		if (date && this.stats.modifyTimestamp < date) this.stats.modifyTimestamp = date;
 	}
 
-	createOrUpdateUser(idmUser) {
+	createOrUpdateUser(idmUser, userMap) {
+		const dbUser = userMap.get(idmUser.ldapUUID);
+		if (dbUser) {
+			this.stats.users.updated += 1;
+			return this.checkForUserChangesAndUpdate(idmUser, dbUser);
+		}
+		// not found because it is a new user or not loaded from DB because of pagination
 		return this.app
 			.service('usersModel')
 			.find({
@@ -168,7 +185,7 @@ class LDAPSchoolSyncer extends Syncer {
 				schoolId: school._id,
 				$populate: ['roles'],
 				$select: ['_id', 'roles', 'ldapDn'],
-				$limit: 10000,
+				$limit: 5000, // 5000 is max because of definition in model
 			},
 		});
 		const userMap = new Map();
@@ -231,7 +248,8 @@ class LDAPSchoolSyncer extends Syncer {
 		}
 		ldapClass.uniqueMembers.forEach(async (member) => {
 			let user = userMap.get(member);
-			if (!user) { // user from other school or user was excluded from import
+			// user from other school or user was excluded from import or user not loaded because of pagination
+			if (!user) {
 				const userData = await this.app.service('usersModel').find({
 					query: {
 						ldapDn: { $in: ldapClass.uniqueMembers },
