@@ -8,10 +8,9 @@ class AddMaterialService {
 
 	async create(data, params) {
 		if (Array.isArray(data)) {
-			await Promise.all(data.map(async (material) => this.createOne(material, params)));
-		} else {
-			await this.createOne(data, params);
+			return Promise.all(data.map(async (material) => this.createOne(material, params)));
 		}
+		return this.createOne(data, params);
 	}
 
 	async createOne(data, params) {
