@@ -2,6 +2,8 @@ const chai = require('chai');
 
 const testObjects = require('../../../../test/services/helpers/testObjects');
 const { SubmissionModel, HomeworkModel } = require('../db');
+const { AssertionError } = require('../../../errors');
+
 const {
 	findPrivateHomeworksByUser,
 	deletePrivateHomeworksFromUser,
@@ -21,6 +23,9 @@ const { expect } = chai;
 
 const getExpectedUpdateMany = (modifiedDocuments) => ({ success: true, modifiedDocuments });
 const getExpectedDeleteMany = (deletedDocuments) => ({ success: true, deletedDocuments });
+const getExpectedAssertionError = (paramName) => ({
+	assertion_errors: { param: paramName, code: 'REQUIRED_PARAMENTER_MISSING' },
+});
 
 const createHomeworks = async (testHelper) => {
 	const userId = testHelper.generateObjectId();
@@ -296,37 +301,19 @@ describe.only('in "task.repo" the function', () => {
 
 		it('should handle unexpected inputs', async () => {
 			// must execute step by step that errors not mixed
-			try {
-				await deletePrivateHomeworksFromUser(null);
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is null').to.equal('The parameter "userId" is not defined.');
-			}
 
-			try {
-				await deletePrivateHomeworksFromUser(undefined);
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is undefined').to.equal('The parameter "userId" is not defined.');
-			}
-
-			try {
-				await deletePrivateHomeworksFromUser('123');
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "123" at path "teacherId" for model "homework"'
-				);
-			}
-
-			try {
-				await deletePrivateHomeworksFromUser(() => {});
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "teacherId" for model "homework"'
-				);
-			}
+			expect(deletePrivateHomeworksFromUser(null))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(deletePrivateHomeworksFromUser(undefined))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(deletePrivateHomeworksFromUser('123'))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(deletePrivateHomeworksFromUser(() => {}))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
 		});
 	});
 
@@ -396,38 +383,19 @@ describe.only('in "task.repo" the function', () => {
 			const userId = testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ teacherId: userId });
-			// must execute step by step that errors not mixed
-			try {
-				await replaceUserInPublicHomeworks(null, replaceUserId);
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is null').to.equal('The parameter "userId" is not defined.');
-			}
 
-			try {
-				await replaceUserInPublicHomeworks(undefined, replaceUserId);
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is undefined').to.equal('The parameter "userId" is not defined.');
-			}
-
-			try {
-				await replaceUserInPublicHomeworks('123', replaceUserId);
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "123" at path "teacherId" for model "homework"'
-				);
-			}
-
-			try {
-				await replaceUserInPublicHomeworks(() => {}, replaceUserId);
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "teacherId" for model "homework"'
-				);
-			}
+			expect(replaceUserInPublicHomeworks(null, replaceUserId))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(replaceUserInPublicHomeworks(undefined, replaceUserId))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(replaceUserInPublicHomeworks('123', replaceUserId))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(replaceUserInPublicHomeworks(() => {}, replaceUserId))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
 		});
 
 		it('should handle unexpected second parameter inputs', async () => {
@@ -435,29 +403,19 @@ describe.only('in "task.repo" the function', () => {
 
 			await testHelper.createTestHomework({ teacherId: userId });
 			// must execute step by step that errors not mixed
-			const resultNull = await replaceUserInPublicHomeworks(userId, null);
-			expect(resultNull, 'when input is null').to.eql(getExpectedUpdateMany(1));
 
-			const resultUndefined = await replaceUserInPublicHomeworks(userId, undefined);
-			expect(resultUndefined, 'when input is undefined').to.eql(getExpectedUpdateMany(0));
-
-			try {
-				await replaceUserInPublicHomeworks(userId, '123');
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "123" at path "teacherId"'
-				);
-			}
-
-			try {
-				await replaceUserInPublicHomeworks(userId, () => {});
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "teacherId"'
-				);
-			}
+			expect(replaceUserInPublicHomeworks(userId, null))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('replaceUserId'));
+			expect(replaceUserInPublicHomeworks(userId, undefined))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('replaceUserId'));
+			expect(replaceUserInPublicHomeworks(userId, '123'))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('replaceUserId'));
+			expect(replaceUserInPublicHomeworks(userId, () => {}))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('replaceUserId'));
 		});
 	});
 
@@ -587,37 +545,19 @@ describe.only('in "task.repo" the function', () => {
 
 		it('should handle unexpected inputs', async () => {
 			// must execute step by step that errors not mixed
-			try {
-				await removeGroupSubmissionsConnectionsForUser(null);
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is null').to.equal('The parameter "userId" is not defined.');
-			}
 
-			try {
-				await removeGroupSubmissionsConnectionsForUser(undefined);
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is undefined').to.equal('The parameter "userId" is not defined.');
-			}
-
-			try {
-				await removeGroupSubmissionsConnectionsForUser('123');
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "123" at path "teamMembers" for model "submission"'
-				);
-			}
-
-			try {
-				await removeGroupSubmissionsConnectionsForUser(() => {});
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "teamMembers" for model "submission"'
-				);
-			}
+			expect(removeGroupSubmissionsConnectionsForUser(null))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(removeGroupSubmissionsConnectionsForUser(undefined))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(removeGroupSubmissionsConnectionsForUser('123'))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(removeGroupSubmissionsConnectionsForUser(() => {}))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
 		});
 	});
 
@@ -723,37 +663,19 @@ describe.only('in "task.repo" the function', () => {
 
 		it('should handle unexpected inputs', async () => {
 			// must execute step by step that errors not mixed
-			try {
-				await deleteSingleSubmissionsFromUser(null);
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is null').to.equal('The parameter "userId" is not defined.');
-			}
 
-			try {
-				await deleteSingleSubmissionsFromUser(undefined);
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is undefined').to.equal('The parameter "userId" is not defined.');
-			}
-
-			try {
-				await deleteSingleSubmissionsFromUser('123');
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "123" at path "studentId" for model "submission"'
-				);
-			}
-
-			try {
-				await deleteSingleSubmissionsFromUser(() => {});
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "studentId" for model "submission"'
-				);
-			}
+			expect(deleteSingleSubmissionsFromUser(null))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(deleteSingleSubmissionsFromUser(undefined))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(deleteSingleSubmissionsFromUser('123'))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(deleteSingleSubmissionsFromUser(() => {}))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
 		});
 	});
 
@@ -778,27 +700,18 @@ describe.only('in "task.repo" the function', () => {
 		});
 
 		it('should handle unexpected inputs', async () => {
-			// must execute step by step that errors not mixed
-			try {
-				const resultNull = await findArchivedHomeworkIdsByUser(null);
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is null').to.equal('The parameter "userId" is not defined.');
-			}
+			const resultNull = await findArchivedHomeworkIdsByUser(null);
+			expect(resultNull, 'when input is null').to.be.an('array').with.lengthOf(0);
 
-			try {
-				const resultUndefined = await findArchivedHomeworkIdsByUser(undefined);
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is null').to.equal('The parameter "userId" is not defined.');
-			}
+			const resultUndefined = await findArchivedHomeworkIdsByUser(undefined);
+			expect(resultUndefined, 'when input is undefined').to.be.an('array').with.lengthOf(0);
 
 			try {
 				await findArchivedHomeworkIdsByUser('123');
 				throw new Error('test failed');
 			} catch (err) {
 				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "123" at path "archived" for model "homework"'
+					'Cast to ObjectId failed for value "123" at path "teamMembers" for model "submission"'
 				);
 			}
 
@@ -807,7 +720,7 @@ describe.only('in "task.repo" the function', () => {
 				throw new Error('test failed');
 			} catch (err) {
 				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "archived" for model "homework"'
+					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "teamMembers" for model "submission"'
 				);
 			}
 		});
@@ -857,37 +770,18 @@ describe.only('in "task.repo" the function', () => {
 
 			await testHelper.createTestHomework({ archived: userId });
 			// must execute step by step that errors not mixed
-			try {
-				await replaceUserInArchivedHomeworks(null, replaceUserId);
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is null').to.equal('The parameter "userId" is not defined.');
-			}
-
-			try {
-				await replaceUserInArchivedHomeworks(undefined, replaceUserId);
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is undefined').to.equal('The parameter "userId" is not defined.');
-			}
-
-			try {
-				await replaceUserInArchivedHomeworks('123', replaceUserId);
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "123" at path "archived" for model "homework"'
-				);
-			}
-
-			try {
-				await replaceUserInArchivedHomeworks(() => {}, replaceUserId);
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "archived" for model "homework"'
-				);
-			}
+			expect(replaceUserInArchivedHomeworks(null, replaceUserId))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(replaceUserInArchivedHomeworks(undefined, replaceUserId))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(replaceUserInArchivedHomeworks('123', replaceUserId))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(replaceUserInArchivedHomeworks(() => {}, replaceUserId))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
 		});
 
 		it('should handle unexpected second parameter inputs', async () => {
@@ -895,29 +789,18 @@ describe.only('in "task.repo" the function', () => {
 
 			await testHelper.createTestHomework({ archived: userId });
 			// must execute step by step that errors not mixed
-			const resultNull = await replaceUserInArchivedHomeworks(userId, null);
-			expect(resultNull, 'when input is null').to.eql(getExpectedUpdateMany(1));
-
-			const resultUndefined = await replaceUserInArchivedHomeworks(userId, undefined);
-			expect(resultUndefined, 'when input is undefined').to.eql(getExpectedUpdateMany(0));
-
-			try {
-				await replaceUserInArchivedHomeworks(userId, '123');
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to [ObjectId] failed for value "["123"]" at path "archived"'
-				);
-			}
-
-			try {
-				await replaceUserInArchivedHomeworks(userId, () => {});
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to [ObjectId] failed for value "[null]" at path "archived"'
-				);
-			}
+			expect(replaceUserInArchivedHomeworks(userId, null))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('replaceUserId'));
+			expect(replaceUserInArchivedHomeworks(userId, undefined))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('replaceUserId'));
+			expect(replaceUserInArchivedHomeworks(userId, '123'))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('replaceUserId'));
+			expect(replaceUserInArchivedHomeworks(userId, () => {}))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('replaceUserId'));
 		});
 	});
 });
