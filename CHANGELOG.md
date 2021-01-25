@@ -16,6 +16,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-8482 - Deletion concept orchestration integration
 - SC-8029 - Add deletion concept handling for pseudonyms and registration pins
 - SC-8206 - Add school tombstone for deleting concept
 
