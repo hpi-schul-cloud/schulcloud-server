@@ -1,92 +1,82 @@
-const logger = require('../../../logger');
-const {
-	findPrivateHomeworksFromUser,
-	deletePrivateHomeworksFromUser,
-	findPublicHomeworksFromUser,
-	replaceUserInPublicHomeworks,
-	findGroupSubmissionsFromUser,
-	findSingleSubmissionsFromUser,
-	removeGroupSubmissionsConnectionsForUser,
-	deleteSingleSubmissionsFromUser,
-} = require('../repo/task.repo');
+const taskRepo = require('../repo/task.repo');
 
-const checkStatus = (status) => {
-	if (status.success !== 1) {
-		// || status.count !== status.modified
-		// TODO: who is really look into logs for this?
-		logger.warning('User deletion task has some miss matches.', status);
-	}
-};
+const { trashBinResult } = require('../../helper/uc.helper');
+
+const { validateObjectId } = require('../../helper/validation.helper');
+
+const addSubmissionToData = (submissions, data) => {};
+
+const addPrivateHomeworksToData = (privateHomeworks, data) => {};
 
 const deletePrivateSubmissions = async (userId) => {
-	const result = await findSingleSubmissionsFromUser(userId);
-
+	validateObjectId(userId);
+	const result = await taskRepo.findSingleSubmissionsByUser(userId);
+	const data = [];
+	let complete = true;
 	if (result.length > 0) {
-		const status = await deleteSingleSubmissionsFromUser(userId);
-		checkStatus(status);
+		data.push(...result);
+		const status = await taskRepo.deleteSingleSubmissionsFromUser(userId);
+		complete = status.success;
 	}
 
-	const trashbinData = {
-		scope: 'submissions',
-		type: 'private',
-		data: result,
-	};
-
-	// TODO: complete should from type boolean and false until it is finished by the executed instance
-	return { trashbinData, complete: true };
+	return trashBinResult({ scope: 'submissions-private', data, complete });
 };
 
 const removeConnectionToSharedSubmissions = async (userId) => {
+	validateObjectId(userId);
 	// the location to adding the user teamMember by restore is impilict exist
-	const result = await findGroupSubmissionsFromUser(userId, ['_id']);
-
+	const result = await taskRepo.findGroupSubmissionIdsByUser(userId);
+	let complete = true;
 	if (result.length > 0) {
-		const status = await removeGroupSubmissionsConnectionsForUser(userId);
-		checkStatus(status);
+		const status = await taskRepo.removeGroupSubmissionsConnectionsForUser(userId);
+		complete = status.success;
 	}
 
-	const trashbinData = {
-		scope: 'submissions',
-		type: 'shared',
-		data: result,
-	};
-
-	return { trashbinData, complete: true };
+	return trashBinResult({ scope: 'submissions-shared', data: result, complete });
 };
 
 const deletePrivateUserHomeworks = async (userId) => {
-	const result = await findPrivateHomeworksFromUser(userId);
-
+	validateObjectId(userId);
+	const result = await taskRepo.findPrivateHomeworksByUser(userId);
+	let complete = true;
+	const data = [];
 	if (result.length > 0) {
-		const status = await deletePrivateHomeworksFromUser(userId);
-		checkStatus(status);
+		const status = await taskRepo.deletePrivateHomeworksFromUser(userId);
+		complete = status.success;
+		data.push(...result);
+		addPrivateHomeworksToData(result, data);
 	}
 
-	const trashbinData = {
-		scope: 'homeworks',
-		type: 'private',
-		data: result,
-	};
-
-	return { trashbinData, complete: true };
+	return trashBinResult({ scope: 'homeworks-private', data, complete });
 };
 
 const removeConnectionToSharedHomeworks = async (userId, replaceUserId) => {
+	validateObjectId(userId);
+	validateObjectId(replaceUserId);
 	// the location to adding the user teacherId by restore is impilict exist
-	const result = await findPublicHomeworksFromUser(userId, ['_id']);
+	const result = await taskRepo.findPublicHomeworkIdsByUser(userId);
+	let complete = true;
 
 	if (result.length > 0) {
-		const status = await replaceUserInPublicHomeworks(userId, replaceUserId);
-		checkStatus(status);
+		const status = await taskRepo.replaceUserInPublicHomeworks(userId, replaceUserId);
+		complete = status.success;
 	}
 
-	const trashbinData = {
-		scope: 'homeworks',
-		type: 'shared',
-		data: result,
-	};
+	return trashBinResult({ scope: 'homeworks-shared', data: result, complete });
+};
 
-	return { trashbinData, complete: true };
+const removeConnectionToArchivedHomeworks = async (userId, replaceUserId) => {
+	validateObjectId(userId);
+	validateObjectId(replaceUserId);
+	const result = await taskRepo.findArchivedHomeworkIdsByUser(userId);
+	let complete = true;
+
+	if (result.length > 0) {
+		const status = await taskRepo.replaceUserInArchivedHomeworks(userId, replaceUserId);
+		complete = status.success;
+	}
+
+	return trashBinResult({ scope: 'homeworks-archived', data: result, complete });
 };
 
 const deleteUserRelatedData = () => [
@@ -94,6 +84,7 @@ const deleteUserRelatedData = () => [
 	removeConnectionToSharedSubmissions,
 	deletePrivateUserHomeworks,
 	removeConnectionToSharedHomeworks,
+	removeConnectionToArchivedHomeworks,
 ];
 
 module.exports = { deleteUserRelatedData };
