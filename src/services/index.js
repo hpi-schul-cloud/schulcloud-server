@@ -51,6 +51,7 @@ const storageProvider = require('./storageProvider');
 const activation = require('./activation');
 const config = require('./config');
 const docs = require('./docs');
+const syncApi = require('../components/syncapi');
 
 module.exports = function initializeServices() {
 	const app = this;
@@ -108,7 +109,8 @@ module.exports = function initializeServices() {
 	app.configure(storageProvider);
 	app.configure(activation);
 	app.configure(config);
-
+    app.configure(syncApi);
+    
 	// initialize events
 	newsEvents.configure(app);
 	teamEvents.configure(app);

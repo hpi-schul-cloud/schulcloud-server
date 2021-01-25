@@ -1,0 +1,438 @@
+openapi: 3.0.2
+security:
+  - jwtBearer: [ ]
+info:
+  title: Schul-Cloud Sync API Service
+  description: Sync API Service
+  version: 1.0.0
+  contact:
+    name: support
+    email: info@schul-cloud.org
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/schul-cloud/schulcloud-server/blob/master/LICENSE'
+
+servers:
+  - url: '/syncapi/v1'
+
+components:
+  schemas:
+    guid:
+      type: string
+      pattern: '^[0-9a-f]{24}$'
+    userModel:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/guid'
+        accountEnabled:
+          type: boolean
+          example: true
+          description: 'true if account is active, otherwise false'
+        birthday:
+          type: string
+          format: date-time
+          example: '1234-02-01T00:00:00'
+          description: 'Birthday of the user (UTC)'
+        displayName:
+          type: string
+          example: 'Tom Engel'
+          description: 'Displayed name of the user'
+        givenName:
+          type: string
+          example: 'Tom'
+          description: 'Forename of the user'
+        role:
+          type: string
+          example: 'TEACHER'
+          description: 'Role of the user e.g. STUDENT, TEACHER, ADMIN'
+        surname:
+          type: string
+          example: 'Engel'
+          description: 'Surname of the user'
+        userPrincipalName:
+          type: string
+          format: email
+          example: 'tom.engel@musterschule.de'
+          description: 'unique principal name / email'
+    userModel__post:
+      type: object
+      properties:
+        accountEnabled:
+          type: boolean
+        birthday:
+          type: string
+          format: date-time
+        displayName:
+          type: string
+        givenName:
+          type: string
+        role:
+          type: string
+        surname:
+          type: string
+        userPrincipalName:
+          type: string
+    userModel__patch:
+      type: object
+      properties:
+        birthday:
+          type: string
+          format: date-time
+        displayName:
+          type: string
+          example: 'John Doe'
+        givenName:
+          type: string
+          example: 'John'
+        surname:
+          type: string
+          example: 'Doe'
+        userPrincipalName:
+          type: string
+          format: email
+          example: 'john.doe@example.com'
+
+    groupModel:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/guid'
+        description:
+          type: string
+          example: 'Die Klasse 1a.'
+        displayName:
+          type: string
+          example: '1a'
+        groupType:
+          type: string
+          enum: [CLASS]
+
+paths:
+  /users:
+    get:
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/userModel'
+        401:
+          description: not authenticated
+        404:
+          description: not found
+        500:
+          description: general error
+      description: Retrieves a list of all resources from the service.
+      tags:
+        - userModel
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userModel__post'
+      responses:
+        201:
+          description: succes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userModel'
+        401:
+          description: not athenticated
+        404:
+          description: not found
+        500:
+          description: general error
+      description: Creates a user with the provided properties
+      tags:
+        - userModel
+    patch:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userModel__patch'
+      responses:
+        204:
+          description: success
+        401:
+          description: not authenticated
+        500:
+          description: general error
+      tags:
+        - userModel
+  /users/{userId}:
+      get:
+        tags:
+          - userModel
+        parameters:
+          - name: userId
+            in: path
+            description: unique UserId
+            required: true
+            schema:
+              $ref: '#/components/schemas/guid'
+        responses:
+          200:
+            description: success
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/userModel'
+          401:
+            description: not authenticated
+          404:
+            description: not found
+          500:
+            description: general error
+      delete:
+        tags:
+          - userModel
+        parameters:
+          - name: userId
+            in: path
+            description: unique UserId
+            required: true
+            schema:
+              $ref: '#/components/schemas/guid'
+        responses:
+          204:
+            description: success
+          401:
+            description: not authenticated
+          404:
+            description: not found
+  /groups:
+    get:
+      description: List all groups
+      tags:
+        - groupModel
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/groupModel'
+        401:
+          description: not authenticated
+        404:
+          description: not found
+        500:
+          description: general error
+    post:
+      description: Create one group.
+      tags:
+        - groupModel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                groupeType:
+                  type: string
+                  enum: [CLASS]
+      responses:
+        201:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  displayName:
+                    type: string
+                  groupType:
+                    type: string
+                    enum: [CLASS]
+        401:
+          description: not authenticated
+        404:
+          description: not found
+        500:
+          description: general error
+  /groups/{groupId}:
+    get:
+      description: Call up a specific group information using the group Id
+      tags:
+        - groupModel
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          description: unique GrouId
+          schema:
+            $ref: '#/components/schemas/guid'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/groupModel'
+        401:
+          description: not authenticated
+        404:
+          description: not found
+        500:
+          description: general error
+    patch:
+      description: Update properties of a group
+      tags:
+        - groupModel
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/guid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                displayName:
+                  type: string
+      responses:
+        204:
+          description: success
+        401:
+          description: not authenticated
+        404:
+          description: not found
+        500:
+          description: general error
+    delete:
+      description: 'Delete a group'
+      tags:
+        - groupModel
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/guid'
+      responses:
+        204:
+          description: success
+        401:
+          description: not authenticated
+        404:
+          description: not found
+        500:
+          description: general error
+  /groups/{groupId}/members:
+    get:
+      tags:
+        - groupModel
+      description: List all members of a group
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/guid'
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                properties:
+                  value:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/userModel'
+        401:
+          description: not authenticated
+        404:
+          description: not found
+        500:
+          description: general error
+    post:
+      tags:
+        - groupModel
+      description: 'add member to a group'
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/guid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                '@odata.id':
+                   type: string
+                   example: 'BASE_ADDRESS/users/{userId}'
+      responses:
+        204:
+          description: success
+        401:
+          description: not authenticated
+        404:
+          description: not found
+        500:
+          description: general error
+  /groups/{groupId}/members/{userId}:
+    delete:
+      tags:
+        - groupModel
+      description: 'remove a user from a relation'
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/guid'
+        - name: userId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/guid'
+      responses:
+        204:
+          description: no content
+        401:
+          description: not authenticated
+        404:
+          description: not found
+        500:
+          description: general error
+
+tags:
+  - name: userModel
+    description: A usersModel service.
+  - name: groupModel
+    description: A groupmodel service.
+
