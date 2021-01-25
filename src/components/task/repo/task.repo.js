@@ -1,42 +1,39 @@
 const { SubmissionModel, HomeworkModel } = require('../db');
 
-const mapStatus = ({ ok, deletedCount, nModified }) => ({
-	success: ok,
-	modified: deletedCount === undefined ? nModified : deletedCount,
-	// count: n,
-});
+const { updateManyResult, deleteManyResult } = require('../../helper/repo.helper');
 
-/**
- * 	delete/modified operations should not allow null and undefined matches
- * @param {BSON|BsonString} userId
- * @throw {Error} for undefined and null
- */
-const validateUserIdIsNotUnexpectedInput = (userId) => {
-	if (!userId || userId === null) {
-		throw new Error('The parameter "userId" is not defined.', userId);
-	}
-};
+const { validateObjectId } = require('../../helper/validation.helper');
 
 /** Homeworks */
 const privateHomeworkQuery = (userId) => ({ private: true, teacherId: userId });
 const publicHomeworkQuery = (userId) => ({ private: false, teacherId: userId });
+const archivedHomeworkQuery = (userId) => ({ archived: userId });
 
 /**
  * @param {BSON|BsonString} userId
- * @param {Array|String|StringList|MongooseSelectObject} [select]
  * @return {Array}
  */
-const findPrivateHomeworksFromUser = async (userId, select) => {
-	const result = await HomeworkModel.find(privateHomeworkQuery(userId), select).lean().exec();
+const findPrivateHomeworksByUser = async (userId) => {
+	const result = await HomeworkModel.find(privateHomeworkQuery(userId)).lean().exec();
 	return result;
 };
 
 /**
  * @param {BSON|BsonString} userId
- * @param {Array|String|StringList|MongooseSelectObject} [select]
  * @return {Array}
  */
-const findPublicHomeworksFromUser = async (userId, select) => {
+const findArchivedHomeworkIdsByUser = async (userId) => {
+	const select = ['_id'];
+	const result = await HomeworkModel.find(archivedHomeworkQuery(userId), select).lean().exec();
+	return result;
+};
+
+/**
+ * @param {BSON|BsonString} userId
+ * @return {Array}
+ */
+const findPublicHomeworkIdsByUser = async (userId) => {
+	const select = ['_id'];
 	const result = await HomeworkModel.find(publicHomeworkQuery(userId), select).lean().exec();
 	return result;
 };
@@ -46,9 +43,9 @@ const findPublicHomeworksFromUser = async (userId, select) => {
  * @return {Boolean}
  */
 const deletePrivateHomeworksFromUser = async (userId) => {
-	validateUserIdIsNotUnexpectedInput(userId);
+	validateObjectId(userId);
 	const result = await HomeworkModel.deleteMany(privateHomeworkQuery(userId)).lean().exec();
-	return mapStatus(result);
+	return deleteManyResult(result);
 };
 
 /**
@@ -56,11 +53,19 @@ const deletePrivateHomeworksFromUser = async (userId) => {
  * @return {Boolean}
  */
 const replaceUserInPublicHomeworks = async (userId, replaceUserId) => {
-	validateUserIdIsNotUnexpectedInput(userId);
+	validateObjectId(userId);
 	const result = await HomeworkModel.updateMany(publicHomeworkQuery(userId), { $set: { teacherId: replaceUserId } })
 		.lean()
 		.exec();
-	return mapStatus(result);
+	return updateManyResult(result);
+};
+
+const replaceUserInArchivedHomeworks = async (userId, replaceUserId) => {
+	validateObjectId(userId);
+	const result = await HomeworkModel.updateMany(archivedHomeworkQuery(userId), { $set: { archived: replaceUserId } })
+		.lean()
+		.exec();
+	return updateManyResult(result);
 };
 
 /** Submissions */
@@ -74,41 +79,39 @@ const singleSubmissionQuery = (userId) => ({
 
 /**
  * @param {BSON|BsonString} userId
- * @param {Array|String|StringList|MongooseSelectObject} [select]
  * @return {Array}
  */
-const findGroupSubmissionsFromUser = async (userId, select) => {
-	// TODO allow all select type, convert this and/or use .select()
+const findGroupSubmissionIdsByUser = async (userId) => {
+	const select = ['_id'];
 	const result = await SubmissionModel.find(groupSubmissionQuery(userId), select).lean().exec();
 	return result;
 };
 
-const findSingleSubmissionsFromUser = async (userId, select) => {
-	const result = await SubmissionModel.find(singleSubmissionQuery(userId), select).lean().exec();
-	return result;
-};
+const findSingleSubmissionsByUser = async (userId) => SubmissionModel.find(singleSubmissionQuery(userId)).lean().exec();
 
 const removeGroupSubmissionsConnectionsForUser = async (userId) => {
-	validateUserIdIsNotUnexpectedInput(userId);
+	validateObjectId(userId);
 	const result = await SubmissionModel.updateMany(groupSubmissionQuery(userId), { $pull: { teamMembers: userId } })
 		.lean()
 		.exec();
-	return mapStatus(result);
+	return updateManyResult(result);
 };
 
 const deleteSingleSubmissionsFromUser = async (userId) => {
-	validateUserIdIsNotUnexpectedInput(userId);
+	validateObjectId(userId);
 	const result = await SubmissionModel.deleteMany(singleSubmissionQuery(userId)).lean().exec();
-	return mapStatus(result);
+	return deleteManyResult(result);
 };
 
 module.exports = {
-	findPrivateHomeworksFromUser,
-	findPublicHomeworksFromUser,
+	findPrivateHomeworksByUser,
+	findPublicHomeworkIdsByUser,
 	deletePrivateHomeworksFromUser,
 	replaceUserInPublicHomeworks,
-	findGroupSubmissionsFromUser,
-	findSingleSubmissionsFromUser,
+	findGroupSubmissionIdsByUser,
+	findSingleSubmissionsByUser,
 	removeGroupSubmissionsConnectionsForUser,
 	deleteSingleSubmissionsFromUser,
+	findArchivedHomeworkIdsByUser,
+	replaceUserInArchivedHomeworks,
 };
