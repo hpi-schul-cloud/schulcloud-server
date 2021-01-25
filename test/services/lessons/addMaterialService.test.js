@@ -70,7 +70,8 @@ describe('addMaterial Service', function test() {
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = {};
 		params.route = { lessonId: lesson._id };
-		const { _id: materialId } = await app.service('/lessons/:lessonId/material').create(
+
+		const response = await app.service('/lessons/:lessonId/material').create(
 			[
 				{
 					title: 'testTitle1',
@@ -88,7 +89,8 @@ describe('addMaterial Service', function test() {
 		const result = await app.service('lessons').get(lesson._id);
 		expect(result).to.not.be.undefined;
 		expect(result).to.haveOwnProperty('materialIds');
-		expect(result.materialIds[0].toString()).to.equal(materialId.toString());
+		expect(result.materialIds[0].toString()).to.equal(response[0]._id.toString());
+		expect(result.materialIds[1].toString()).to.equal(response[1]._id.toString());
 	});
 
 	it('adds the material to the lesson in courseGroup', async () => {
