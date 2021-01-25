@@ -34,6 +34,7 @@ components:
           format: 'email'
         birthday:
           type: string
+          nullable: true
         roles:
           type: array
           items:

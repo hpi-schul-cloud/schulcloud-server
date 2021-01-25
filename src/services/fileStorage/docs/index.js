@@ -506,7 +506,7 @@ module.exports = {
 						example: {
 							signedUrl: {
 								url:
-									'https://dev-storage.schul-cloud.org:9001/bucket-5f2987e020834114b8efd6f8/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
+									'https://<url>:<port>/bucket-5f2987e020834114b8efd6f8/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
 								header: {
 									'Content-Type': 'image/gif',
 									'x-amz-meta-name': '24-1.gif',
@@ -547,7 +547,7 @@ module.exports = {
 						example: {
 							signedUrl: {
 								url:
-									'https://dev-storage.schul-cloud.org:9001/bucket-5f2987e020834114b8efd6f8/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
+									'https://<url>:<port>/bucket-5f2987e020834114b8efd6f8/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
 							},
 						},
 					},
@@ -579,7 +579,7 @@ module.exports = {
 						example: {
 							signedUrl: {
 								url:
-									'https://dev-storage.schul-cloud.org:9001/bucket-5f2987e020834114b8efd6f8/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
+									'https://<url>:<port>/bucket-5f2987e020834114b8efd6f8/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
 							},
 						},
 					},

@@ -49,11 +49,25 @@ const teamsSchema = getUserGroupSchema({
 	userIds: [teamUserSchema],
 	invitedUserIds: [teamInvitedUserSchema],
 	description: { type: String, default: '', trim: true },
-	classIds: [{ type: Schema.Types.ObjectId, ref: 'class' }],
+	classIds: [{ type: Schema.Types.ObjectId, ref: 'class' }], // make this sense?
 	color: { type: String, default: '#ACACAC' },
 	features: [{ type: String, enum: Object.values(TEAM_FEATURES) }],
 	filePermission: [permissionSchema],
 });
+
+/*
+query list with bigges impact of database load
+schulcloud.teams               find         {"userIds.userId": 1} -> 1
+schulcloud.teams               find         {"userIds": {"$elemMatch": {"userId": 1}}} -> 2
+schulcloud.teams               find         {"invitedUserIds": {"$elemMatch": {"email": 1}}}  -> 3
+*/
+teamInvitedUserSchema.index({ email: 1 }); // ok = 3
+
+teamUserSchema.index({ userId: 1 }); // ok = 1 , 2
+teamUserSchema.index({ schoolId: 1 }); // ?
+
+teamsSchema.index({ schoolId: 1 }); // ?
+teamsSchema.index({ schoolIds: 1 }); // ?
 
 enableAuditLog(teamsSchema);
 
@@ -67,4 +81,5 @@ module.exports = {
 	permissionSchema,
 	teamInvitedUserModel,
 	teamUserModel,
+	teamsSchema,
 };
