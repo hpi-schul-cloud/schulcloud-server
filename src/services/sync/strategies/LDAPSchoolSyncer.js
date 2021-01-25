@@ -163,13 +163,25 @@ class LDAPSchoolSyncer extends Syncer {
 	}
 
 	async createClassesFromLdapData(data, school) {
+		const userData = await this.app.service('usersModel').find({
+			query: {
+				schoolId: school._id,
+				$populate: ['roles'],
+				$select: ['_id', 'roles', 'ldapDn'],
+				$limit: 10000,
+			},
+		});
+		const userMap = new Map();
+		userData.data.forEach((user) => {
+			userMap.set(user.ldapDn, user);
+		});
 		for (const ldapClass of data) {
 			try {
 				this.updateModifyTimestampMaximum(ldapClass.modifyTimestamp);
 				// eslint-disable-next-line no-await-in-loop
 				const klass = await this.getOrCreateClassFromLdapData(ldapClass, school);
 				// eslint-disable-next-line no-await-in-loop
-				await this.populateClassUsers(ldapClass, klass, school);
+				await this.populateClassUsers(ldapClass, klass, userMap);
 			} catch (err) {
 				this.stats.classes.errors += 1;
 				this.stats.errors.push(err);
@@ -206,7 +218,7 @@ class LDAPSchoolSyncer extends Syncer {
 		return this.app.service('classes').patch(existingClass._id, { name: data.className });
 	}
 
-	async populateClassUsers(ldapClass, currentClass) {
+	async populateClassUsers(ldapClass, currentClass, userMap) {
 		const students = [];
 		const teachers = [];
 		if (ldapClass.uniqueMembers === undefined) {
@@ -217,23 +229,32 @@ class LDAPSchoolSyncer extends Syncer {
 			// if there is only one member, ldapjs doesn't give us an array here
 			ldapClass.uniqueMembers = [ldapClass.uniqueMembers];
 		}
-		const userData = await this.app.service('usersModel').find({
-			query: {
-				ldapDn: { $in: ldapClass.uniqueMembers },
-				$populate: ['roles'],
-			},
-		});
-		userData.data.forEach((user) => {
-			user.roles.forEach((role) => {
-				if (role.name === 'student') students.push(user._id);
-				if (role.name === 'teacher') teachers.push(user._id);
-			});
+		ldapClass.uniqueMembers.forEach(async (member) => {
+			let user = userMap.get(member);
+			if (!user) { // user from other school or user was excluded from import
+				const userData = await this.app.service('usersModel').find({
+					query: {
+						ldapDn: { $in: ldapClass.uniqueMembers },
+						$populate: ['roles'],
+						$select: ['_id', 'roles', 'ldapDn'],
+					},
+				});
+				userData.data.forEach((userDb) => {
+					userMap.set(userDb.ldapDn, userDb);
+				});
+				user = userMap.get(member);
+			}
+			if (user) {  // user might not be in DB if user was excluded from import
+				user.roles.forEach((role) => {
+					if (role.name === 'student') students.push(user._id);
+					if (role.name === 'teacher') teachers.push(user._id);
+				});
+			}
 		});
 
 		if (students.length > 0 || teachers.length > 0) {
 			await this.app.service('classes').patch(currentClass._id, { userIds: students, teacherIds: teachers });
 		}
-		return Promise.resolve();
 	}
 }
 
