@@ -138,7 +138,7 @@ class LdapConfigService {
 			classes: {},
 		};
 		try {
-			const users = await ldap.getUsers(config);
+			const users = await ldap.verifyConfig(config);
 			result.users = LdapConfigService.generateUserStats(users);
 			if (LdapConfigService.shouldVerifyClasses(config)) {
 				const classes = await ldap.getClasses(config);
