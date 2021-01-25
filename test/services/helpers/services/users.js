@@ -43,18 +43,22 @@ const createTestUser = (appPromise, opt) => async ({
 };
 
 const cleanup = (appPromise) => async () => {
-    const app = await appPromise;
     if (createdUserIds.length===0) {
         return;
     }
 
-    for (const id of createdUserIds) {
-        try {
-            await app.service('users').remove(id);
-        } catch (e) {
-            throw e;
-        }
-    }
+    const app = await appPromise;
+    const service = app.service('users');
+    await Promise.all(createdUserIds.map(id => {
+        return service.remove(id);
+    }));
+    // for (const id of createdUserIds) {
+    //     try {
+    //         await .remove(id);
+    //     } catch (e) {
+    //         throw e;
+    //     }
+    // }
     createdUserIds = [];
 };
 

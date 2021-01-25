@@ -2,21 +2,24 @@ const { expect } = require('chai');
 const logger = require('../../../../src/logger/index');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
+const TestObjectGenerator = require('../../helpers/TestObjectsGenerator');
 const accountModel = require('../../../../src/services/account/model');
 
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const testGenericErrorMessage = 'You don\'t have one of the permissions: STUDENT_LIST.';
 
-describe('AdminUsersService', () => {
+describe.only('AdminUsersService', () => {
     let app;
     let server;
     let accountService;
     let adminStudentsService;
     let adminTeachersService;
+    let tog;
 
     before(async () => {
         app = await appPromise;
+        tog = new TestObjectGenerator(app);
         accountService = app.service('/accounts');
         adminStudentsService = app.service('/users/admin/students');
         adminTeachersService = app.service('/users/admin/teachers');
@@ -28,7 +31,7 @@ describe('AdminUsersService', () => {
     });
 
     afterEach(async () => {
-        await testObjects.cleanup();
+        await tog.cleanup();
     });
 
     it('is properly registered', () => {
@@ -36,16 +39,16 @@ describe('AdminUsersService', () => {
     });
 
     it('builds class display names correctly', async () => {
-        const teacher = await testObjects.createTestUser({ roles: ['teacher'] }).catch((err) => {
+        const teacher = await tog.createTestUser({ roles: ['teacher'] }).catch((err) => {
             logger.warning('Can not create teacher', err);
         });
-        const student = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
+        const student = await tog.createTestUser({ roles: ['student'] }).catch((err) => {
             logger.warning('Can not create student', err);
         });
 
         expect(teacher).to.not.be.undefined;
         expect(student).to.not.be.undefined;
-        const testClass = await testObjects.createTestClass({
+        const testClass = await tog.createTestClass({
             name: 'staticName',
             userIds: [student._id],
             teacherIds: [teacher._id],
@@ -84,20 +87,20 @@ describe('AdminUsersService', () => {
     });
 
     it('request multiple users by id', async () => {
-        const admin = await testObjects.createTestUser({ roles: ['administrator'] }).catch((err) => {
+        const admin = await tog.createTestUser({ roles: ['administrator'] }).catch((err) => {
             logger.warning('Can not create admin', err);
         });
-        const params = await testObjects.generateRequestParamsFromUser(admin);
+        const params = await tog.generateRequestParamsFromUser(admin);
 
-        const student1 = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
+        const student1 = await tog.createTestUser({ roles: ['student'] }).catch((err) => {
             logger.warning('Can not create student', err);
         });
 
-        const student2 = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
+        const student2 = await tog.createTestUser({ roles: ['student'] }).catch((err) => {
             logger.warning('Can not create student', err);
         });
 
-        const student3 = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
+        const student3 = await tog.createTestUser({ roles: ['student'] }).catch((err) => {
             logger.warning('Can not create student', err);
         });
 
@@ -113,9 +116,9 @@ describe('AdminUsersService', () => {
     });
 
     // https://ticketsystem.schul-cloud.org/browse/SC-5076
-    it('student can not administrate students', async () => {
-        const student = await testObjects.createTestUser({ roles: ['student'] });
-        const params = await testObjects.generateRequestParamsFromUser(student);
+    it.only('student can not administrate students', async () => {
+        const student = await tog.createTestUser({ roles: ['student'] });
+        const params = await tog.generateRequestParamsFromUser(student);
         params.query = {};
         try {
             await adminStudentsService.find(params);
@@ -128,16 +131,16 @@ describe('AdminUsersService', () => {
     });
 
     it('teacher can administrate students', async () => {
-        const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-        const params = await testObjects.generateRequestParamsFromUser(teacher);
+        const teacher = await tog.createTestUser({ roles: ['teacher'] });
+        const params = await tog.generateRequestParamsFromUser(teacher);
         params.query = {};
         const result = await adminStudentsService.find(params);
         expect(result).to.not.be.undefined;
     });
 
     it('only shows current classes', async () => {
-        const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-        const student = await testObjects.createTestUser({ firstName: 'Max', roles: ['student'] });
+        const teacher = await tog.createTestUser({ roles: ['teacher'] });
+        const student = await tog.createTestUser({ firstName: 'Max', roles: ['student'] });
         const currentSchool = await app.service('schools').get(teacher.schoolId);
 
         const { currentYear } = currentSchool;
@@ -145,7 +148,7 @@ describe('AdminUsersService', () => {
 
         const classPromises = [];
         classPromises.push(
-                testObjects.createTestClass({
+                tog.createTestClass({
                     name: 'classFromThisYear',
                     userIds: [student._id],
                     teacherIds: [teacher._id],
@@ -153,7 +156,7 @@ describe('AdminUsersService', () => {
                 })
         );
         classPromises.push(
-                testObjects.createTestClass({
+                tog.createTestClass({
                     name: 'classFromLastYear',
                     userIds: [student._id],
                     teacherIds: [teacher._id],
@@ -161,7 +164,7 @@ describe('AdminUsersService', () => {
                 })
         );
         classPromises.push(
-                testObjects.createTestClass({
+                tog.createTestClass({
                     name: 'classWithoutYear',
                     userIds: [student._id],
                     teacherIds: [teacher._id],
@@ -187,51 +190,39 @@ describe('AdminUsersService', () => {
     });
 
     it('sorts students correctly', async () => {
-        const teacher = await testObjects.createTestUser({ roles: ['teacher'] }).catch((err) => {
-            logger.warning('Can not create teacher', err);
-        });
-        const student1 = await testObjects
-                .createTestUser({
-                    firstName: 'Max',
-                    roles: ['student'],
-                    consent: {
-                        userConsent: {
-                            form: 'digital',
-                            privacyConsent: true,
-                            termsOfUseConsent: true,
-                        },
-                        parentConsents: [
-                            {
-                                form: 'digital',
-                                privacyConsent: true,
-                                termsOfUseConsent: true,
-                            },
-                        ],
+        const teacher = await tog.createTestUser({ roles: ['teacher'] });
+
+        const student1 = await tog.createTestUser({
+            firstName: 'Max',
+            roles: ['student'],
+            consent: {
+                userConsent: {
+                    form: 'digital',
+                    privacyConsent: true,
+                    termsOfUseConsent: true,
+                },
+                parentConsents: [
+                    {
+                        form: 'digital',
+                        privacyConsent: true,
+                        termsOfUseConsent: true,
                     },
-                })
-                .catch((err) => {
-                    logger.warning('Can not create student', err);
-                });
-        const student2 = await testObjects
-                .createTestUser({
-                    firstName: 'Moritz',
-                    roles: ['student'],
-                })
-                .catch((err) => {
-                    logger.warning('Can not create student', err);
-                });
+                ],
+            },
+        });
+        const student2 = await tog.createTestUser({ firstName: 'Moritz', roles: ['student'], });
 
         expect(teacher).to.not.be.undefined;
         expect(student1).to.not.be.undefined;
         expect(student2).to.not.be.undefined;
 
-        const testClass1 = await testObjects.createTestClass({
+        const testClass1 = await tog.createTestClass({
             name: '1a',
             userIds: [student1._id],
             teacherIds: [teacher._id],
         });
         expect(testClass1).to.not.be.undefined;
-        const testClass2 = await testObjects.createTestClass({
+        const testClass2 = await tog.createTestClass({
             name: '2B',
             userIds: [student1._id],
             teacherIds: [teacher._id],
@@ -268,13 +259,13 @@ describe('AdminUsersService', () => {
     });
 
     it('filters students correctly', async () => {
-        const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-        const studentWithoutConsents = await testObjects.createTestUser({ roles: ['student'] });
+        const teacher = await tog.createTestUser({ roles: ['teacher'] });
+        const studentWithoutConsents = await tog.createTestUser({ roles: ['student'] });
 
         const currentDate = new Date();
         const birthday = new Date();
         birthday.setFullYear(currentDate.getFullYear() - 15);
-        const studentWithParentConsent = await testObjects.createTestUser({
+        const studentWithParentConsent = await tog.createTestUser({
             roles: ['student'],
             birthday,
             consent: {
@@ -288,7 +279,7 @@ describe('AdminUsersService', () => {
             },
         });
 
-        const studentWithConsents = await testObjects.createTestUser({
+        const studentWithConsents = await tog.createTestUser({
             roles: ['student'],
             consent: {
                 userConsent: {
@@ -335,11 +326,11 @@ describe('AdminUsersService', () => {
 
     it('can filter by creation date', async () => {
         const dateBefore = new Date();
-        const findUser = await testObjects.createTestUser({ roles: ['student'] });
-        const actingUser = await testObjects.createTestUser({ roles: ['administrator'] });
+        const findUser = await tog.createTestUser({ roles: ['student'] });
+        const actingUser = await tog.createTestUser({ roles: ['administrator'] });
         const dateAfter = new Date();
-        await testObjects.createTestUser({ roles: ['student'] });
-        const params = await testObjects.generateRequestParamsFromUser(actingUser);
+        await tog.createTestUser({ roles: ['student'] });
+        const params = await tog.generateRequestParamsFromUser(actingUser);
         params.query = { createdAt: { $gte: dateBefore, $lte: dateAfter } };
 
         const result = await adminStudentsService.find(params);
@@ -348,10 +339,10 @@ describe('AdminUsersService', () => {
     });
 
     it('can filter by creation date as ISO string', async () => {
-        const findUser = await testObjects.createTestUser({ roles: ['student'] });
-        const actingUser = await testObjects.createTestUser({ roles: ['administrator'] });
-        await testObjects.createTestUser({ roles: ['student'] });
-        const params = await testObjects.generateRequestParamsFromUser(actingUser);
+        const findUser = await tog.createTestUser({ roles: ['student'] });
+        const actingUser = await tog.createTestUser({ roles: ['administrator'] });
+        await tog.createTestUser({ roles: ['student'] });
+        const params = await tog.generateRequestParamsFromUser(actingUser);
         params.query = { createdAt: findUser.createdAt };
 
         const result = await adminStudentsService.find(params);
@@ -361,11 +352,11 @@ describe('AdminUsersService', () => {
 
     it('can filter by creation date as ISO string with range', async () => {
         const dateBefore = new Date();
-        const findUser = await testObjects.createTestUser({ roles: ['student'] });
-        const actingUser = await testObjects.createTestUser({ roles: ['administrator'] });
+        const findUser = await tog.createTestUser({ roles: ['student'] });
+        const actingUser = await tog.createTestUser({ roles: ['administrator'] });
         const dateAfter = new Date();
-        await testObjects.createTestUser({ roles: ['student'] });
-        const params = await testObjects.generateRequestParamsFromUser(actingUser);
+        await tog.createTestUser({ roles: ['student'] });
+        const params = await tog.generateRequestParamsFromUser(actingUser);
         params.query = {
             createdAt: {
                 $gte: dateBefore.toISOString(),
@@ -382,9 +373,7 @@ describe('AdminUsersService', () => {
         const limit = 1;
         let skip = 0;
 
-        const teacher = await testObjects.createTestUser({ roles: ['teacher'] }).catch((err) => {
-            logger.warning('Can not create teacher', err);
-        });
+        const teacher = await tog.createTestUser({ roles: ['teacher'] });
 
         expect(teacher).to.not.be.undefined;
 
@@ -417,13 +406,13 @@ describe('AdminUsersService', () => {
     it('birthday date in DD.MM.YYYY format', async () => {
         // given
         const birthdayMock = new Date(2000, 0, 1, 20, 45, 30);
-        const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-        const mockStudent = await testObjects.createTestUser({
+        const teacher = await tog.createTestUser({ roles: ['teacher'] });
+        const mockStudent = await tog.createTestUser({
             firstName: 'Lukas',
             birthday: birthdayMock,
             roles: ['student'],
         });
-        const params = await testObjects.generateRequestParamsFromUser(teacher);
+        const params = await tog.generateRequestParamsFromUser(teacher);
         // when
         const students = (await adminStudentsService.find(params)).data;
 
@@ -436,8 +425,8 @@ describe('AdminUsersService', () => {
         const schoolService = app.service('/schools');
         const serviceCreatedSchool = await schoolService.create({ name: 'test', ldapSchoolIdentifier: 'testId' });
         const { _id: schoolId } = serviceCreatedSchool;
-        const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
-        const params = await testObjects.generateRequestParamsFromUser(admin);
+        const admin = await tog.createTestUser({ roles: ['administrator'], schoolId });
+        const params = await tog.generateRequestParamsFromUser(admin);
         const mockData = {
             firstName: 'testFirst',
             lastName: 'testLast',
@@ -454,8 +443,8 @@ describe('AdminUsersService', () => {
     });
 
     it('does not allow user creation if email already exists', async () => {
-        const admin = await testObjects.createTestUser({ roles: ['administrator'] });
-        const params = await testObjects.generateRequestParamsFromUser(admin);
+        const admin = await tog.createTestUser({ roles: ['administrator'] });
+        const params = await tog.generateRequestParamsFromUser(admin);
         const mockData = {
             firstName: 'testFirst',
             lastName: 'testLast',
@@ -464,7 +453,8 @@ describe('AdminUsersService', () => {
             schoolId: admin.schoolId,
         };
         // creates first student with unique data
-        await adminStudentsService.create(mockData, params);
+        const firstStudent = await adminStudentsService.create(mockData, params);
+        tog.createdEntityIds().users.push(firstStudent._id);
         // creates second student with existent data
         try {
             await adminStudentsService.create(mockData, params);
@@ -476,8 +466,8 @@ describe('AdminUsersService', () => {
     });
 
     it('does not allow user creation if email is disposable', async () => {
-        const admin = await testObjects.createTestUser({ roles: ['administrator'] });
-        const params = await testObjects.generateRequestParamsFromUser(admin);
+        const admin = await tog.createTestUser({ roles: ['administrator'] });
+        const params = await tog.generateRequestParamsFromUser(admin);
         const mockData = {
             firstName: 'testFirst',
             lastName: 'testLast',
@@ -500,11 +490,11 @@ describe('AdminUsersService', () => {
             name: 'studentListPerm',
             permissions: ['STUDENT_LIST'],
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['studentListPerm'],
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
+        const params = await tog.generateRequestParamsFromUser(testUser);
         const { data } = await adminStudentsService.find(params);
         expect(data).to.not.have.lengthOf(0);
     });
@@ -514,11 +504,11 @@ describe('AdminUsersService', () => {
             name: 'noStudentListPerm',
             permissions: [],
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['noStudentListPerm'],
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
+        const params = await tog.generateRequestParamsFromUser(testUser);
 
         try {
             await adminStudentsService.find(params);
@@ -537,13 +527,13 @@ describe('AdminUsersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['studentListPerm'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
-        const student = await testObjects.createTestUser({
+        const params = await tog.generateRequestParamsFromUser(testUser);
+        const student = await tog.createTestUser({
             firstName: 'Hans',
             roles: ['student'],
             schoolId: school._id,
@@ -561,13 +551,13 @@ describe('AdminUsersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['noStudentListPerm'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
-        const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
+        const params = await tog.generateRequestParamsFromUser(testUser);
+        const student = await tog.createTestUser({ roles: ['student'], schoolId: school._id });
 
         try {
             await adminStudentsService.get(student._id, params);
@@ -589,9 +579,9 @@ describe('AdminUsersService', () => {
         const otherSchool = await testObjects.createTestSchool({
             name: 'testSchool2',
         });
-        const testUSer = await testObjects.createTestUser({ roles: ['studentListPerm'], schoolId: school._id });
-        const params = await testObjects.generateRequestParamsFromUser(testUSer);
-        const student = await testObjects.createTestUser({ roles: ['student'], schoolId: otherSchool._id });
+        const testUSer = await tog.createTestUser({ roles: ['studentListPerm'], schoolId: school._id });
+        const params = await tog.generateRequestParamsFromUser(testUSer);
+        const student = await tog.createTestUser({ roles: ['student'], schoolId: otherSchool._id });
         const user = await adminStudentsService.get(student._id, params);
         expect(user).to.be.empty;
     });
@@ -604,13 +594,13 @@ describe('AdminUsersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             lastName: 'lastTestUser',
             roles: ['studentCreatePerm'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
+        const params = await tog.generateRequestParamsFromUser(testUser);
         const studentData = {
             firstName: 'testCreateStudent',
             lastName: 'lastTestCreateStudent',
@@ -620,6 +610,7 @@ describe('AdminUsersService', () => {
         };
         const student = await adminStudentsService.create(studentData, params);
         expect(student).to.not.be.undefined;
+        testObjects.createdUserIds.push(student._id);
         expect(student.firstName).to.equals('testCreateStudent');
     });
 
@@ -631,13 +622,13 @@ describe('AdminUsersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['noStudentCreatePerm'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
-        const studentData = await testObjects.createTestUser({
+        const params = await tog.generateRequestParamsFromUser(testUser);
+        const studentData = await tog.createTestUser({
             firstName: 'testCreateStudent',
             roles: ['student'],
         });
@@ -659,12 +650,12 @@ describe('AdminUsersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['studentDeletePerm'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
+        const params = await tog.generateRequestParamsFromUser(testUser);
         const studentData = {
             firstName: 'testDeleteStudent',
             lastName: 'lastTestDeleteStudent',
@@ -678,11 +669,11 @@ describe('AdminUsersService', () => {
             _ids: [student._id],
         };
         const deletedStudent = await adminStudentsService.remove(null, params);
-        expect(deletedStudent).to.not.be.undefined;
-        expect(deletedStudent.firstName).to.equals('testDeleteStudent');
+        expect(deletedStudent).to.be.an.instanceof(Array).and.have.lengthOf(1);
+        expect(deletedStudent[0].firstName).to.equals('testDeleteStudent');
     });
 
-    it('users without STUDENT_DELETE permission cannnot access the REMOVE method', async () => {
+    it('users without STUDENT_DELETE permission can not access the REMOVE method', async () => {
         await testObjects.createTestRole({
             name: 'noStudentDeletePerm',
             permissions: ['STUDENT_CREATE'],
@@ -690,12 +681,12 @@ describe('AdminUsersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['noStudentDeletePerm'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
+        const params = await tog.generateRequestParamsFromUser(testUser);
         const studentData = {
             firstName: 'testDeleteStudent',
             lastName: 'lastDeleteStudent',
@@ -704,6 +695,7 @@ describe('AdminUsersService', () => {
             schoolId: school._id,
         };
         const student = await adminStudentsService.create(studentData, params);
+        testObjects.createdUserIds.push(student._id);
         params.query = {
             ...params.query,
             _ids: [],
@@ -724,13 +716,13 @@ describe('AdminUsersService', () => {
         const otherSchool = await testObjects.createTestSchool({
             name: 'testSchool2',
         });
-        const testUSer = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
-        const params = await testObjects.generateRequestParamsFromUser(testUSer);
-        const studentOne = await testObjects.createTestUser({
+        const testUSer = await tog.createTestUser({ roles: ['administrator'], schoolId: school._id });
+        const params = await tog.generateRequestParamsFromUser(testUSer);
+        const studentOne = await tog.createTestUser({
             roles: ['student'],
             schoolId: otherSchool._id,
         });
-        const studentTwo = await testObjects.createTestUser({
+        const studentTwo = await tog.createTestUser({
             roles: ['student'],
             schoolId: otherSchool._id,
         });
@@ -751,12 +743,12 @@ describe('AdminUsersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['administrator'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
+        const params = await tog.generateRequestParamsFromUser(testUser);
 
         const studentDetails = {
             firstName: 'testDeleteStudent',
@@ -764,7 +756,7 @@ describe('AdminUsersService', () => {
             email: `testDeleteStudent${Date.now()}@tested.de`,
             schoolId: school._id,
         };
-        const student = await testObjects.createTestUser(studentDetails);
+        const student = await tog.createTestUser({ ...studentDetails, manualCleanup: true });
 
         const accountDetails = {
             username: `testDeleteStudent${Date.now()}@tested.de`,
@@ -782,8 +774,8 @@ describe('AdminUsersService', () => {
         expect(deletedAccount.username).to.equals(studentAccount.username);
 
         const deletedStudent = await adminStudentsService.remove(null, params);
-        expect(deletedStudent).to.not.be.undefined;
-        expect(deletedStudent.firstName).to.equals('testDeleteStudent');
+        expect(deletedStudent).to.be.instanceof(Array).and.have.lengthOf(1);
+        expect(deletedStudent[0].firstName).to.equals('testDeleteStudent');
 
         try {
             await app.service('accountModel').get(studentAccount._id);
@@ -794,8 +786,8 @@ describe('AdminUsersService', () => {
     });
 
     it('REMOVE requests must include _ids or id', async () => {
-        const testUSer = await testObjects.createTestUser({ roles: ['administrator'] });
-        const params = await testObjects.generateRequestParamsFromUser(testUSer);
+        const testUser = await tog.createTestUser({ roles: ['administrator'], manualCleanup: true });
+        const params = await tog.generateRequestParamsFromUser(testUser);
         // empty query without _ids key
         params.query = {};
         try {
@@ -808,8 +800,8 @@ describe('AdminUsersService', () => {
     });
 
     it('_ids must be of array type', async () => {
-        const testUSer = await testObjects.createTestUser({ roles: ['administrator'] });
-        const params = await testObjects.generateRequestParamsFromUser(testUSer);
+        const user = await tog.createTestUser({ roles: ['administrator'] });
+        const params = await tog.generateRequestParamsFromUser(user);
         params.query = {
             ...params.query,
             _ids: 'this is the wrong type',
@@ -827,12 +819,12 @@ describe('AdminUsersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['administrator'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
+        const params = await tog.generateRequestParamsFromUser(testUser);
         const studentData = {
             firstName: 'validDeleteStudent',
             lastName: 'lastValidDeleteStudent',
@@ -847,8 +839,8 @@ describe('AdminUsersService', () => {
         };
 
         const deletedStudent = await adminStudentsService.remove(null, params);
-        expect(deletedStudent).to.not.be.undefined;
-        expect(deletedStudent.firstName).to.equals('validDeleteStudent');
+        expect(deletedStudent).to.be.instanceof(Array).and.have.lengthOf(1);
+        expect(deletedStudent[0].firstName).to.equals('validDeleteStudent');
 
         const otherStudentData = {
             firstName: 'otherValidDeleteStudent',
@@ -858,6 +850,7 @@ describe('AdminUsersService', () => {
             schoolId: school._id,
         };
         const otherStudent = await adminStudentsService.create(otherStudentData, params);
+        tog.createdEntityIds().users.push(otherStudent._id);
         params.query = {
             ...params.query,
             _ids: [otherStudent._id, 'wrong type'],
@@ -876,11 +869,11 @@ describe('AdminUsersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUSer = await testObjects.createTestUser({
+        const testUSer = await tog.createTestUser({
             roles: ['administrator'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUSer);
+        const params = await tog.generateRequestParamsFromUser(testUSer);
         params.query = {
             ...params.query,
             _ids: [],
@@ -914,7 +907,7 @@ describe('AdminUsersService', () => {
                 name: 'testSchool1',
             });
             // given
-            const user = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
+            const user = await tog.createTestUser({ roles: ['student'], schoolId: school._id });
             const accountDetails = {
                 username: user.email,
                 password: 'password',
@@ -924,8 +917,8 @@ describe('AdminUsersService', () => {
             expect(user.email).equals(account.username);
 
             // when
-            const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
-            const params = await testObjects.generateRequestParamsFromUser(teacher);
+            const teacher = await tog.createTestUser({ roles: ['teacher'], schoolId: school._id });
+            const params = await tog.generateRequestParamsFromUser(teacher);
             params.query = {};
             await adminStudentsService.patch(user._id.toString(), { email: 'foo@bar.baz' }, params);
 
@@ -941,7 +934,7 @@ describe('AdminUsersService', () => {
             const system = await testObjects.createTestSystem();
             const username = 'hans-kunz';
             // given
-            const user = await testObjects.createTestUser({ roles: [role], schoolId: school._id });
+            const user = await tog.createTestUser({ roles: [role], schoolId: school._id });
             const accountDetails = {
                 username,
                 password: 'password',
@@ -952,8 +945,8 @@ describe('AdminUsersService', () => {
 
             try {
                 // when
-                const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
-                const params = await testObjects.generateRequestParamsFromUser(admin);
+                const admin = await tog.createTestUser({ roles: ['administrator'], schoolId: school._id });
+                const params = await tog.generateRequestParamsFromUser(admin);
                 params.query = {};
                 await service[type](
                         user._id.toString(),
@@ -988,10 +981,10 @@ describe('AdminUsersService', () => {
                 name: 'testSchool2',
             });
 
-            const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
-            const student = await testObjects.createTestUser({ roles: [role], schoolId: otherSchool._id });
+            const admin = await tog.createTestUser({ roles: ['administrator'], schoolId: school._id });
+            const student = await tog.createTestUser({ roles: [role], schoolId: otherSchool._id });
 
-            const params = await testObjects.generateRequestParamsFromUser(admin);
+            const params = await tog.generateRequestParamsFromUser(admin);
             params.query = {};
 
             try {
@@ -1023,8 +1016,8 @@ describe('AdminUsersService', () => {
             const userMail = 'test@affe.de';
             const newUserName = 'Monkey';
 
-            const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
-            const user = await testObjects.createTestUser({
+            const admin = await tog.createTestUser({ roles: ['administrator'], schoolId: school._id });
+            const user = await tog.createTestUser({
                 roles: [role],
                 email: userMail,
                 schoolId: school._id,
@@ -1039,7 +1032,7 @@ describe('AdminUsersService', () => {
                     user
             );
             expect(user.email).equals(account.username);
-            const otherUser = await testObjects.createTestUser({
+            const otherUser = await tog.createTestUser({
                 roles: ['teacher'],
                 email: 'cool@affe.de',
                 schoolId: school._id,
@@ -1055,7 +1048,7 @@ describe('AdminUsersService', () => {
             );
             expect(otherUser.email).equals(otherAccount.username);
 
-            const params = await testObjects.generateRequestParamsFromUser(admin);
+            const params = await tog.generateRequestParamsFromUser(admin);
             params.query = {};
 
             try {
@@ -1090,41 +1083,38 @@ describe('AdminUsersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             roles: ['administrator'],
             schoolId: school._id,
         });
-        const student0 = await testObjects.createTestUser({
+        const student0 = await tog.createTestUser({
             roles: ['student'],
             schoolId: school._id,
         });
-        const student1 = await testObjects.createTestUser({
+        const student1 = await tog.createTestUser({
             roles: ['student'],
             schoolId: school._id,
         });
-        const student2 = await testObjects.createTestUser({
+        const student2 = await tog.createTestUser({
             roles: ['student'],
             firstName: 'Lars',
             lastName: 'Ulrich',
             schoolId: school._id,
         });
-        const student3 = await testObjects.createTestUser({
+        const student3 = await tog.createTestUser({
             roles: ['student'],
             firstName: 'James',
             lastName: 'Hetfield',
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
+        const params = await tog.generateRequestParamsFromUser(testUser);
         params.query = {
             ...params.query,
             searchQuery: student0.firstName,
         };
         const result = await adminStudentsService.find(params);
 
-        const resultIds = [];
-        result.data.forEach((user) => {
-            resultIds.push(user._id.toString());
-        });
+        const resultIds = result.data.map((user) => user._id.toString());
 
         expect(result.data).to.not.be.undefined;
         expect(result.data[0].firstName).to.equal(student0.firstName);
@@ -1140,41 +1130,38 @@ describe('AdminUsersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             roles: ['administrator'],
             schoolId: school._id,
         });
-        const student0 = await testObjects.createTestUser({
+        const student0 = await tog.createTestUser({
             roles: ['student'],
             schoolId: school._id,
         });
-        const student1 = await testObjects.createTestUser({
+        const student1 = await tog.createTestUser({
             roles: ['student'],
             schoolId: school._id,
         });
-        const student2 = await testObjects.createTestUser({
+        const student2 = await tog.createTestUser({
             roles: ['student'],
             firstName: 'Lars',
             lastName: 'Ulrich',
             schoolId: school._id,
         });
-        const student3 = await testObjects.createTestUser({
+        const student3 = await tog.createTestUser({
             roles: ['student'],
             firstName: 'James',
             lastName: 'Hetfield',
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
+        const params = await tog.generateRequestParamsFromUser(testUser);
         params.query = {
             ...params.query,
             searchQuery: student0.lastName,
         };
         const result = await adminStudentsService.find(params);
 
-        const resultIds = [];
-        result.data.forEach((user) => {
-            resultIds.push(user._id.toString());
-        });
+        const resultIds = result.data.map((user) => user._id.toString());
 
         expect(result.data).to.not.be.undefined;
         expect(result.data[0].firstName).to.equal(student0.firstName);
@@ -1190,41 +1177,38 @@ describe('AdminUsersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             roles: ['administrator'],
             schoolId: school._id,
         });
-        const student0 = await testObjects.createTestUser({
+        const student0 = await tog.createTestUser({
             roles: ['student'],
             schoolId: school._id,
         });
-        const student1 = await testObjects.createTestUser({
+        const student1 = await tog.createTestUser({
             roles: ['student'],
             schoolId: school._id,
         });
-        const student2 = await testObjects.createTestUser({
+        const student2 = await tog.createTestUser({
             roles: ['student'],
             firstName: 'Lars',
             lastName: 'Ulrich',
             schoolId: school._id,
         });
-        const student3 = await testObjects.createTestUser({
+        const student3 = await tog.createTestUser({
             roles: ['student'],
             firstName: 'James',
             lastName: 'Hetfield',
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
+        const params = await tog.generateRequestParamsFromUser(testUser);
         params.query = {
             ...params.query,
             searchQuery: `${student0.firstName} ${student0.lastName}`,
         };
         const result = await adminStudentsService.find(params);
 
-        const resultIds = [];
-        result.data.forEach((user) => {
-            resultIds.push(user._id.toString());
-        });
+        const resultIds = result.data.map((user) => user._id.toString());
 
         expect(result.data).to.not.be.undefined;
         expect(result.data[0].firstName).to.equal(student0.firstName);
@@ -1264,8 +1248,8 @@ describe('AdminTeachersService', () => {
 
     // https://ticketsystem.schul-cloud.org/browse/SC-5076
     xit('student can not administrate teachers', async () => {
-        const student = await testObjects.createTestUser({ roles: ['student'] });
-        const params = await testObjects.generateRequestParamsFromUser(student);
+        const student = await tog.createTestUser({ roles: ['student'] });
+        const params = await tog.generateRequestParamsFromUser(student);
         params.query = {};
         try {
             await adminTeachersService.find(params);
@@ -1285,9 +1269,9 @@ describe('AdminTeachersService', () => {
         const otherSchool = await testObjects.createTestSchool({
             name: 'testSchool2',
         });
-        const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
-        const otherTeacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: otherSchool._id });
-        const params = await testObjects.generateRequestParamsFromUser(teacher);
+        const teacher = await tog.createTestUser({ roles: ['teacher'], schoolId: school._id });
+        const otherTeacher = await tog.createTestUser({ roles: ['teacher'], schoolId: otherSchool._id });
+        const params = await tog.generateRequestParamsFromUser(teacher);
         params.query = {};
         const resultOk = (
                 await adminTeachersService.find({
@@ -1306,11 +1290,11 @@ describe('AdminTeachersService', () => {
     });
 
     it('filters teachers correctly', async () => {
-        const teacherWithoutConsent = await testObjects.createTestUser({
+        const teacherWithoutConsent = await tog.createTestUser({
             birthday: '1992-03-04',
             roles: ['teacher'],
         });
-        const teacherWithConsent = await testObjects.createTestUser({
+        const teacherWithConsent = await tog.createTestUser({
             birthday: '1991-03-04',
             roles: ['teacher'],
         });
@@ -1352,8 +1336,8 @@ describe('AdminTeachersService', () => {
         const schoolService = app.service('/schools');
         const serviceCreatedSchool = await schoolService.create({ name: 'test', ldapSchoolIdentifier: 'testId' });
         const { _id: schoolId } = serviceCreatedSchool;
-        const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
-        const params = await testObjects.generateRequestParamsFromUser(admin);
+        const admin = await tog.createTestUser({ roles: ['administrator'], schoolId });
+        const params = await tog.generateRequestParamsFromUser(admin);
         const mockData = {
             firstName: 'testFirst',
             lastName: 'testLast',
@@ -1370,8 +1354,8 @@ describe('AdminTeachersService', () => {
     });
 
     it('does not allow user creation if email already exists', async () => {
-        const admin = await testObjects.createTestUser({ roles: ['administrator'] });
-        const params = await testObjects.generateRequestParamsFromUser(admin);
+        const admin = await tog.createTestUser({ roles: ['administrator'] });
+        const params = await tog.generateRequestParamsFromUser(admin);
         const mockData = {
             firstName: 'testFirst',
             lastName: 'testLast',
@@ -1380,7 +1364,8 @@ describe('AdminTeachersService', () => {
             schoolId: admin.schoolId,
         };
         // creates first teacher with unique data
-        await adminTeachersService.create(mockData, params);
+        const teacher = await adminTeachersService.create(mockData, params);
+        testObjects.info().users.push(teacher._id);
         // creates second teacher with existent data
         try {
             await adminTeachersService.create(mockData, params);
@@ -1392,8 +1377,8 @@ describe('AdminTeachersService', () => {
     });
 
     it('does not allow user creation if email is disposable', async () => {
-        const admin = await testObjects.createTestUser({ roles: ['administrator'] });
-        const params = await testObjects.generateRequestParamsFromUser(admin);
+        const admin = await tog.createTestUser({ roles: ['administrator'] });
+        const params = await tog.generateRequestParamsFromUser(admin);
         const mockData = {
             firstName: 'testFirst',
             lastName: 'testLast',
@@ -1416,11 +1401,11 @@ describe('AdminTeachersService', () => {
             name: 'teacherListPerm',
             permissions: ['TEACHER_LIST'],
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['teacherListPerm'],
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
+        const params = await tog.generateRequestParamsFromUser(testUser);
         const { data } = await adminTeachersService.find(params);
         expect(data).to.not.have.lengthOf(0);
     });
@@ -1430,11 +1415,11 @@ describe('AdminTeachersService', () => {
             name: 'noTeacherListPerm',
             permissions: [],
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['noTeacherListPerm'],
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
+        const params = await tog.generateRequestParamsFromUser(testUser);
 
         try {
             await adminTeachersService.find(params);
@@ -1453,13 +1438,13 @@ describe('AdminTeachersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['teacherListPerm'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
-        const teacher = await testObjects.createTestUser({
+        const params = await tog.generateRequestParamsFromUser(testUser);
+        const teacher = await tog.createTestUser({
             firstName: 'Affenmesserkamppf',
             roles: ['teacher'],
             schoolId: school._id,
@@ -1477,13 +1462,13 @@ describe('AdminTeachersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['noTeacherListPerm'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
-        const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
+        const params = await tog.generateRequestParamsFromUser(testUser);
+        const teacher = await tog.createTestUser({ roles: ['teacher'], schoolId: school._id });
 
         try {
             await adminTeachersService.get(teacher._id, params);
@@ -1505,9 +1490,9 @@ describe('AdminTeachersService', () => {
         const otherSchool = await testObjects.createTestSchool({
             name: 'testSchool2',
         });
-        const testUSer = await testObjects.createTestUser({ roles: ['teacherListPerm'], schoolId: school._id });
-        const params = await testObjects.generateRequestParamsFromUser(testUSer);
-        const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: otherSchool._id });
+        const testUSer = await tog.createTestUser({ roles: ['teacherListPerm'], schoolId: school._id });
+        const params = await tog.generateRequestParamsFromUser(testUSer);
+        const teacher = await tog.createTestUser({ roles: ['teacher'], schoolId: otherSchool._id });
         const user = await adminTeachersService.get(teacher._id, params);
         expect(user).to.be.empty;
     });
@@ -1520,13 +1505,13 @@ describe('AdminTeachersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             lastName: 'lastTestUser',
             roles: ['teacherCreatePerm'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
+        const params = await tog.generateRequestParamsFromUser(testUser);
         const teacherData = {
             firstName: 'testCreateTeacher',
             lastName: 'lastTestCreateTeacher',
@@ -1547,13 +1532,13 @@ describe('AdminTeachersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['noTeacherCreatePerm'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
-        const teacherData = await testObjects.createTestUser({
+        const params = await tog.generateRequestParamsFromUser(testUser);
+        const teacherData = await tog.createTestUser({
             firstName: 'testCreateTeacher',
             roles: ['teacher'],
         });
@@ -1575,12 +1560,12 @@ describe('AdminTeachersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['teacherDeletePerm'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
+        const params = await tog.generateRequestParamsFromUser(testUser);
         const teacherData = {
             firstName: 'testDeleteTeacher',
             lastName: 'lastTestDeleteTeacher',
@@ -1606,12 +1591,12 @@ describe('AdminTeachersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['noTeacherDeletePerm'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
+        const params = await tog.generateRequestParamsFromUser(testUser);
         const teacherData = {
             firstName: 'testDeleteTeacher',
             lastName: 'lastDeleteTeacher',
@@ -1640,13 +1625,13 @@ describe('AdminTeachersService', () => {
         const otherSchool = await testObjects.createTestSchool({
             name: 'testSchool2',
         });
-        const testUSer = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
-        const params = await testObjects.generateRequestParamsFromUser(testUSer);
-        const teacherOne = await testObjects.createTestUser({
+        const testUSer = await tog.createTestUser({ roles: ['administrator'], schoolId: school._id });
+        const params = await tog.generateRequestParamsFromUser(testUSer);
+        const teacherOne = await tog.createTestUser({
             roles: ['teacher'],
             schoolId: otherSchool._id,
         });
-        const teacherTwo = await testObjects.createTestUser({
+        const teacherTwo = await tog.createTestUser({
             roles: ['teacher'],
             schoolId: otherSchool._id,
         });
@@ -1667,12 +1652,12 @@ describe('AdminTeachersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['administrator'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
+        const params = await tog.generateRequestParamsFromUser(testUser);
 
         const teacherDetails = {
             firstName: 'testDeleteTeacher',
@@ -1680,7 +1665,7 @@ describe('AdminTeachersService', () => {
             email: 'testDeleteTeacher@tested.de',
             schoolId: school._id,
         };
-        const teacher = await testObjects.createTestUser(teacherDetails);
+        const teacher = await tog.createTestUser(teacherDetails);
 
         const accountDetails = {
             username: 'testDeleteTeacher@tested.de',
@@ -1710,8 +1695,8 @@ describe('AdminTeachersService', () => {
     });
 
     it('REMOVE requests must include _ids or id', async () => {
-        const testUSer = await testObjects.createTestUser({ roles: ['administrator'] });
-        const params = await testObjects.generateRequestParamsFromUser(testUSer);
+        const testUSer = await tog.createTestUser({ roles: ['administrator'] });
+        const params = await tog.generateRequestParamsFromUser(testUSer);
         // empty query without _ids key
         params.query = {};
         try {
@@ -1724,8 +1709,8 @@ describe('AdminTeachersService', () => {
     });
 
     it('_ids must be of array type', async () => {
-        const testUSer = await testObjects.createTestUser({ roles: ['administrator'] });
-        const params = await testObjects.generateRequestParamsFromUser(testUSer);
+        const testUSer = await tog.createTestUser({ roles: ['administrator'] });
+        const params = await tog.generateRequestParamsFromUser(testUSer);
         params.query = {
             ...params.query,
             _ids: 'this is the wrong type',
@@ -1743,12 +1728,12 @@ describe('AdminTeachersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await testObjects.createTestUser({
+        const testUser = await tog.createTestUser({
             firstName: 'testUser',
             roles: ['administrator'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUser);
+        const params = await tog.generateRequestParamsFromUser(testUser);
         const teacherData = {
             firstName: 'validDeleteTeacher',
             lastName: 'lastValidDeleteTeacher',
@@ -1792,11 +1777,11 @@ describe('AdminTeachersService', () => {
         const school = await testObjects.createTestSchool({
             name: 'testSchool',
         });
-        const testUSer = await testObjects.createTestUser({
+        const testUSer = await tog.createTestUser({
             roles: ['administrator'],
             schoolId: school._id,
         });
-        const params = await testObjects.generateRequestParamsFromUser(testUSer);
+        const params = await tog.generateRequestParamsFromUser(testUSer);
         params.query = {
             ...params.query,
             _ids: [],

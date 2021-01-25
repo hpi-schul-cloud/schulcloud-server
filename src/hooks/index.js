@@ -104,7 +104,7 @@ const hasPermission = (inputPermissions) => async (context) => {
 
 /**
  * Test a permission again a user request.
- * When the hook funtkion is called, it requires an account object in params
+ * When the hook function is called, it requires an account object in params
  *
  * @param {string} inputPermission
  * @return {function} - feathers hook function requires context as an attribute

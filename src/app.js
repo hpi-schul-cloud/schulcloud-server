@@ -33,7 +33,7 @@ const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
 
-const setupApp = async () => {
+const setupApp = () => {
 	const app = express(feathers());
 	app.disable('x-powered-by');
 

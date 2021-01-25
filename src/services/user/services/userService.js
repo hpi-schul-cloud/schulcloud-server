@@ -70,8 +70,8 @@ class UserService {
 		return this.app.service('usersModel').patch(id, data, prepareInternalParams(params));
 	}
 
-	async remove(id, params) {
-		return await this.app.service('usersModel').remove(id, prepareInternalParams(params));
+	remove(id, params) {
+		return this.app.service('usersModel').remove(id, prepareInternalParams(params));
 	}
 
 	async setup(app) {

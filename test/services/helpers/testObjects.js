@@ -66,7 +66,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
                         storageProviders,
                         files,
                     ]
-                            .map((factory) => factory.cleanup())
+                            .map((factory) => factory.cleanup(app))
             );
             logger.info('[TestObjects] cleanup data.');
         } catch (e) {
