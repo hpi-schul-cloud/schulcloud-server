@@ -19,9 +19,9 @@ const { expect } = chai;
 chai.use(chaiAsPromised);
 
 describe('when removing user data from course component receive multiple steps', async () => {
-	it('should reecive a function form use case which resolves in an array', () => {
-		expect(deleteUserData).to.be.an('function');
-		expect(deleteUserData()).to.be.an('array').with.length.greaterThan(0);
+	it('should recieve a function form use case which resolves in an array', () => {
+		expect(deleteUserData).to.be.an('array').with.length.greaterThan(0);
+		expect(deleteUserData[0]).to.be.an('function');
 	});
 
 	describe('test uc internal steps', () => {
