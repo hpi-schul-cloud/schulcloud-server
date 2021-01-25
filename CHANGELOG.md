@@ -12,7 +12,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## [25.5.6]
 
 ### Fixed
+
 - SC-8410 - Verify ldap connection reads the first page of users only to avoid timeouts
+- SC-8444 - resolve eventual consistency in course shareToken generation
 
 ## [25.5.5]
 
