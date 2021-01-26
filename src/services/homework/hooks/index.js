@@ -55,6 +55,7 @@ function isGraded(submission) {
  * @returns {Boolean}
  */
 const isPrivateHomeworkOwner = (userId, homework) => {
+	// changed logic, added private check beside owner-check
 	const result = homework.private === true && equalIds(userId, homework.teacherId) === true;
 	return result;
 };
@@ -84,12 +85,16 @@ const isCourseHomeworkTeacher = (userId, homework) => {
 	return isTeacherInHomeworksCourse;
 };
 
-function isTeacher(userId, homework) {
-	let isTeacherCheck = equalIds(homework.teacherId, userId);
-	if (!isTeacherCheck && !homework.private) {
-		isTeacherCheck = isCourseHomeworkTeacher(userId, homework);
+/**
+ * allow deletion of homework for owners in their private homeworks or for (substitution-)teachers in course homeworks
+ * @param {*} userId
+ * @param {*} homework
+ */
+function hasHomeworkPermission(userId, homework) {
+	if (isPrivateHomeworkOwner(userId, homework) === true || isCourseHomeworkTeacher(userId, homework) === true) {
+		return true;
 	}
-	return isTeacherCheck;
+	return false;
 }
 
 const hasViewPermissionBefore = (hook) => {
@@ -154,7 +159,7 @@ const addStats = (hook) => {
 			data = data.map((e) => {
 				const copy = JSON.parse(JSON.stringify(e)); // don't know why, but without this line it's not working :/
 
-				if (!isTeacher(hook.params.account.userId, copy)) {
+				if (!hasHomeworkPermission(hook.params.account.userId, copy)) {
 					const currentSubmissions = submissions.data.filter((s) => equalIds(copy._id, s.homeworkId));
 					const filteredSubmission = currentSubmissions.filter(
 						(submission) =>
@@ -179,7 +184,7 @@ const addStats = (hook) => {
 					!copy.private &&
 					((((copy.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) &&
 						copy.publicSubmissions) ||
-						isTeacher(hook.params.account.userId, copy))
+						hasHomeworkPermission(hook.params.account.userId, copy))
 				) {
 					const NumberOfCourseMembers = ((copy.courseId || {}).userIds || []).length;
 					const currentSubmissions = submissions.data.filter((s) => equalIds(copy._id, s.homeworkId));
@@ -208,7 +213,7 @@ const addStats = (hook) => {
 						gradePercentage: gradePerc != Infinity ? gradePerc.toFixed(2) : undefined,
 						averageGrade: getAverageRating(currentSubmissions),
 					};
-					copy.isTeacher = isTeacher(hook.params.account.userId, copy);
+					copy.isTeacher = hasHomeworkPermission(hook.params.account.userId, copy);
 				}
 				return copy;
 			});
@@ -257,7 +262,7 @@ const hasPatchPermission = (hook) => {
 
 			// if user is a student of that course and the only
 			// difference of in the archived array is the current student it, let it pass.
-			if (isTeacher(hook.params.account.userId, homework)) {
+			if (hasHomeworkPermission(hook.params.account.userId, homework)) {
 				return hook;
 			}
 			throw new Forbidden();
@@ -316,11 +321,7 @@ const restrictHomeworkDeletion = async (context) => {
 
 	if (homeworkWithPopulatedCourse === null) throw new NotFound();
 
-	// allow deletion of homework for owners in their private homeworks only
-	if (isPrivateHomeworkOwner(userId, homeworkWithPopulatedCourse)) return context;
-
-	// allow deletion of homeworks in courses for (substitute-)/teachers in related course
-	if (isCourseHomeworkTeacher(userId, homeworkWithPopulatedCourse)) return context;
+	if (hasHomeworkPermission(userId, homeworkWithPopulatedCourse)) return context;
 
 	throw new Forbidden('homework deletion failed', { homeworkId, userId });
 };
