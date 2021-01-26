@@ -700,29 +700,18 @@ describe.only('in "task.repo" the function', () => {
 		});
 
 		it('should handle unexpected inputs', async () => {
-			const resultNull = await findArchivedHomeworkIdsByUser(null);
-			expect(resultNull, 'when input is null').to.be.an('array').with.lengthOf(0);
-
-			const resultUndefined = await findArchivedHomeworkIdsByUser(undefined);
-			expect(resultUndefined, 'when input is undefined').to.be.an('array').with.lengthOf(0);
-
-			try {
-				await findArchivedHomeworkIdsByUser('123');
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "123" at path "teamMembers" for model "submission"'
-				);
-			}
-
-			try {
-				await findArchivedHomeworkIdsByUser(() => {});
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "teamMembers" for model "submission"'
-				);
-			}
+			expect(findArchivedHomeworkIdsByUser(null))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(findArchivedHomeworkIdsByUser(undefined))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(findArchivedHomeworkIdsByUser('123'))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+			expect(findArchivedHomeworkIdsByUser(() => {}))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
 		});
 	});
 
