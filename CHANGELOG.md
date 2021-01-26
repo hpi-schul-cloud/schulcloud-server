@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.5.7]
+
+## Added
+
+- SC-8489 - Added permission check for homework deletion
+
 ## [25.5.6]
 
 ### Fixed
