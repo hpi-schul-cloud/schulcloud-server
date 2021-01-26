@@ -6,7 +6,7 @@ const { ObjectId } = require('mongoose').Types;
 // const chaiAsPromised = require('chai-as-promised');
 const { deleteUserRelatedData } = require('./deleteUserData.uc');
 const repo = require('../repo/task.repo');
-const { equal, toString: idToString } = require('../../../helper/compare').ObjectId;
+const { toString: idToString } = require('../../../helper/compare').ObjectId;
 // const testObjects = require('../../../../test/services/helpers/testObjects');
 
 const { expect } = chai;
@@ -74,9 +74,7 @@ describe.only('in "deleteUserData.uc" the function', () => {
 				expect(result.trashBinData).to.haveOwnProperty('scope');
 				expect(result.trashBinData).to.haveOwnProperty('data');
 				expect(result.trashBinData.scope).to.be.equal('submissions-private');
-				expect(result.trashBinData.data.map((sm) => idToString(sm._id))).to.have.members(
-					privateSubmissions.map((hw) => idToString(hw._id))
-				);
+				expect(result.trashBinData.data).to.have.members(privateSubmissions);
 			});
 
 			// user not exist
@@ -195,9 +193,7 @@ describe.only('in "deleteUserData.uc" the function', () => {
 				expect(result.trashBinData).to.haveOwnProperty('scope');
 				expect(result.trashBinData).to.haveOwnProperty('data');
 				expect(result.trashBinData.scope).to.be.equal('homeworks-private');
-				expect(result.trashBinData.data.map((hw) => idToString(hw._id))).to.have.members(
-					privateHomeworks.map((hw) => idToString(hw._id))
-				);
+				expect(result.trashBinData.data).to.have.members(privateHomeworks);
 			});
 
 			// user not exist
