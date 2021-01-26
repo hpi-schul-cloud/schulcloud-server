@@ -76,7 +76,7 @@ then
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/%-*/}
 	JIRA_TICKET_ID=$JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID
 	
-	echo JIRA_TICKET_ID=$JIRA_TICKET_ID
+	echo JIRA_TICKET_ID="$JIRA_TICKET_ID"
 	
 	# export DOCKERTAG=naming convention feature-<Jira id>-latest
 	export DOCKERTAG="${GIT_FLOW_BRANCH}_${JIRA_TICKET_ID}_latest"
@@ -107,8 +107,8 @@ function buildandpush {
 	# If branch is develop, add and push additional docker tags
 	if [ "$TRAVIS_BRANCH" = "develop" ]
 	then
-		docker tag "schulcloud/schulcloud-server:$DOCKERTAG" schulcloud/schulcloud-server:"$( echo $TRAVIS_BRANCH | tr -s "[:punct:]" "-" | tr -s "[:upper:]" "[:lower:]" )" + "_v" + "$( jq -r '.version' package.json )" + "_" + "$( date +"%y%m%d%H%M" )"
-		docker push schulcloud/schulcloud-server:"$( echo $TRAVIS_BRANCH | tr -s "[:punct:]" "-" | tr -s "[:upper:]" "[:lower:]" )" + "_v" + "$( jq -r '.version' package.json )" + "_" + "$( date +"%y%m%d%H%M" )"
+		docker tag "schulcloud/schulcloud-server:$DOCKERTAG" schulcloud/schulcloud-server:"$( echo "$TRAVIS_BRANCH" | tr -s "[:punct:]" "-" | tr -s "[:upper:]" "[:lower:]" )" + "_v" + "$( jq -r '.version' package.json )" + "_" + "$( date +"%y%m%d%H%M" )"
+		docker push schulcloud/schulcloud-server:"$( echo "$TRAVIS_BRANCH" | tr -s "[:punct:]" "-" | tr -s "[:upper:]" "[:lower:]" )" + "_v" + "$( jq -r '.version' package.json )" + "_" + "$( date +"%y%m%d%H%M" )"
 	fi
 
 	# If branch is feature, add and push additional docker tags
