@@ -19,5 +19,4 @@ RUN npm run build
 
 ENV TZ=Europe/Berlin
 
-CMD ["npm", "start"]
-# CMD ["./startup.sh"]
+CMD ["/bin/sh", "startup.sh"]
