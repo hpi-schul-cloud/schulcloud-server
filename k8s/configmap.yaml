@@ -14,9 +14,6 @@ data:
   JWT_AUD: $STAGING_DOMAIN
   CALENDAR_API_KEY: "123"
   CALENDAR_URI: http://schulcloud-calendar
-  # for running backup.js to setup database. TODO: Check if they are still needed.
-  MONGO_HOST: "10.141.10.250"
-  MONGO_DATABASE: schulcloud_$NAMESPACE
   # tested list
   ADMIN_TOGGLE_STUDENT_VISIBILITY: enabled
   ALERT_STATUS_API_URL: https://status.hpi-schul-cloud.de/api/v1
