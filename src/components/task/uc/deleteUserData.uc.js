@@ -4,10 +4,6 @@ const { trashBinResult } = require('../../helper/uc.helper');
 
 const { validateObjectId } = require('../../helper/validation.helper');
 
-const addSubmissionToData = (submissions, data) => {};
-
-const addPrivateHomeworksToData = (privateHomeworks, data) => {};
-
 const deletePrivateSubmissions = async (userId) => {
 	validateObjectId(userId);
 	const result = await taskRepo.findSingleSubmissionsByUser(userId);
@@ -44,7 +40,6 @@ const deletePrivateUserHomeworks = async (userId) => {
 		const status = await taskRepo.deletePrivateHomeworksFromUser(userId);
 		complete = status.success;
 		data.push(...result);
-		addPrivateHomeworksToData(result, data);
 	}
 
 	return trashBinResult({ scope: 'homeworks-private', data, complete });
