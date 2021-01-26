@@ -94,7 +94,7 @@ const CONFIG = {
 		return path.join(this.BASE_PATH, args['--path'] || getTimestamp());
 	},
 	MONGO: {
-		URL: DB_URL || args['--url'] || '127.0.0.1:27017/schulcloud',
+		URL: DB_URL || args['--url'] || 'mongodb://127.0.0.1:27017/schulcloud',
 		USERNAME: MONGO_USERNAME || args['--username'],
 		PASSWORD: MONGO_PASSWORD || args['--password'],
 		get CREDENTIALS_ARGS() {
@@ -168,7 +168,7 @@ const ensureDirectoryExistence = (filePath) => {
 const importCollection = async ({ collection, filePath }) => {
 	const cmdArgs = [
 		'mongoimport',
-		`--uri="mongodb://${CONFIG.MONGO.URL}"`,
+		`--uri="${CONFIG.MONGO.URL}"`,
 		...CONFIG.MONGO.CREDENTIALS_ARGS,
 		'--collection',
 		collection,
@@ -229,7 +229,7 @@ const importDirectory = async (directoryPath) => {
 const exportCollection = async ({ collection, filePath }) => {
 	const cmdArgs = [
 		'mongoexport',
-		`--uri="mongodb://${CONFIG.MONGO.URL}"`,
+		`--uri="${CONFIG.MONGO.URL}"`,
 		...CONFIG.MONGO.CREDENTIALS_ARGS,
 		'--collection',
 		collection,
