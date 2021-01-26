@@ -9,6 +9,17 @@ const getUser = async (_id) => {
 	return user;
 };
 
+const createTombstoneUser = async (schoolId, tombstoneSchoolId) => {
+	// no school id so this user does not come up in find schools users
+	const user = {
+		email: `tombstone-${schoolId.toString()}@hpi-schul-cloud.de`,
+		firstName: 'Gelöschter',
+		lastName: 'Benutzer',
+		schoolId: tombstoneSchoolId,
+	};
+	return (await User.create(user)).toObject();
+};
+
 const replaceUserWithTombstone = async (id, replaceData = {}) => {
 	const replaceResult = await User.replaceOne(
 		{ _id: id },
@@ -29,11 +40,10 @@ const replaceUserWithTombstone = async (id, replaceData = {}) => {
 	return getUser(id);
 };
 
-const getUserRoles = async (_id) => {
+const getUserWithRoles = async (_id) => {
 	const user = await User.findOne({
 		_id,
 	})
-		.select('roles')
 		.populate('roles')
 		.lean()
 		.exec();
@@ -41,11 +51,12 @@ const getUserRoles = async (_id) => {
 		throw new NotFound('no such user');
 	}
 
-	return user.roles;
+	return user;
 };
 
 module.exports = {
 	getUser,
-	getUserRoles,
+	getUserWithRoles,
 	replaceUserWithTombstone,
+	createTombstoneUser,
 };

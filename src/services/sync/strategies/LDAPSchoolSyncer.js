@@ -94,40 +94,31 @@ class LDAPSchoolSyncer extends Syncer {
 					this.stats.users.updated += 1;
 					return this.checkForUserChangesAndUpdate(idmUser, users.data[0]);
 				}
-				return this.createUserAndAccount(idmUser)
-					.then((res) => {
-						this.stats.users.created += 1;
-						return res;
-					})
-					.catch((err) => {
-						this.stats.users.errors += 1;
-						this.stats.errors.push(err);
-						this.logError('User creation error', err);
-						return {};
-					});
+				return this.createUserAndAccount(idmUser).then((res) => {
+					this.stats.users.created += 1;
+					return res;
+				});
+			})
+			.catch((err) => {
+				this.stats.users.errors += 1;
+				this.stats.errors.push(err);
+				this.logError(`User creation error for ${idmUser.firstName} ${idmUser.lastName} (${idmUser.email})`, err);
+				return {};
 			});
 	}
 
 	createUserAndAccount(idmUser) {
 		return this.app
-			.service('registrationPins')
+			.service('users')
 			.create({
+				firstName: idmUser.firstName,
+				lastName: idmUser.lastName,
+				schoolId: this.school._id,
 				email: idmUser.email,
-				verified: true,
-				silent: true,
+				ldapDn: idmUser.ldapDn,
+				ldapId: idmUser.ldapUUID,
+				roles: idmUser.roles,
 			})
-			.then((registrationPin) =>
-				this.app.service('users').create({
-					pin: registrationPin.pin,
-					firstName: idmUser.firstName,
-					lastName: idmUser.lastName,
-					schoolId: this.school._id,
-					email: idmUser.email,
-					ldapDn: idmUser.ldapDn,
-					ldapId: idmUser.ldapUUID,
-					roles: idmUser.roles,
-				})
-			)
 			.then((user) =>
 				accountModel.create({
 					userId: user._id,

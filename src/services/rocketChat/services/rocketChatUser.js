@@ -1,7 +1,6 @@
 const request = require('request-promise-native');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, BadRequest } = reqlib('src/errors');
+const { Forbidden, BadRequest } = require('../../../errors');
 const { getRequestOptions, makeStringRCConform } = require('../helpers');
 const { SCHOOL_FEATURES } = require('../../school/model');
 const docs = require('../docs');

@@ -60,6 +60,9 @@ class Syncer {
 			this.stats.errors.push(err);
 		}
 		this.stats.success = this.successful();
+		if (this.stats.success !== true) {
+			this.logError(`Sync failed with ${this.stats.errors.length} errors:`);
+		}
 		const aggregated = Syncer.aggregateStats(this.stats);
 		this.logInfo('Finished syncing', aggregated);
 		return this.stats;

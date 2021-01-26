@@ -1,3 +1,5 @@
+const { ObjectId: generateObjectId } = require('mongoose').Types;
+
 const logger = require('../../../src/logger/index');
 
 const serviceHelpers = require('./services');
@@ -27,6 +29,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		login,
 		registrationPins,
 		ltiTools,
+		problems,
 		pseudonyms,
 		storageProviders,
 		submissions,
@@ -48,6 +51,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 				courses,
 				courseGroups,
 				ltiTools,
+				problems,
 				pseudonyms,
 				teams,
 				registrationPins,
@@ -86,6 +90,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		lessons: lessons.info,
 		registrationPins: registrationPins.info,
 		ltiTools: ltiTools.info,
+		problems: problems.info,
 		pseudonyms: pseudonyms.info,
 		schoolGroups: schoolGroups.info,
 		schools: schools.info,
@@ -138,7 +143,9 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		createTestFile: files.create,
 		createTestHomework: homeworks.create,
 		createTestLesson: lessons.create,
+		lessons,
 		createTestRegistrationPin: registrationPins.create,
+		createTestProblem: problems.create,
 		createTestPseudonym: pseudonyms.create,
 		createTestLtiTool: ltiTools.create,
 		createTestRole: roles.create,
@@ -155,11 +162,13 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		generateJWTFromUser: login.generateJWTFromUser,
 		createdUserIds: warn('@deprecated use info() instead', users.info),
 		teams,
+		files,
 		classes,
 		createTestTeamWithOwner,
 		info,
 		setupUser,
 		options: opt,
 		randomGen,
+		generateObjectId,
 	};
 };

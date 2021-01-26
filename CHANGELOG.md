@@ -6,11 +6,179 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
+
+## Unreleased
+
+### Fixed
+
+- SC-8390 - Lern-Store collections feature flag was not excluding collections in search
+- SC-8322 prevent wrong assignment from school to storage provider
+
+### Added
+
+- SC-8482 - Deletion concept orchestration integration
+- SC-8029 - Add deletion concept handling for pseudonyms and registration pins
+- SC-6950 - Add access for superhero to change kreisid and officialSchoolNumber
+- SC-8206 - Add school tombstone for deleting concept
+
+### Changed
+
+- SC-8380 removed reqlib, replaced by normal require to keep referenced types known
+- SC-8213 error handling concept
+- SC-4576 - sanitize bbb room and member names
+- SC-8300 Added user information to LDAP Sync in case of errors
+
+## [25.5.8]
+
+### Changed
+
+- SC-8480 - Return GeneralError if unknown error code is given to error pipeline
+
+## [25.5.7]
+
+## Added
+
+- SC-8489 - Added permission check for homework deletion
+
+
+## [25.5.6]
+
+### Fixed
+
+- SC-8410 - Verify ldap connection reads the first page of users only to avoid timeouts
+- SC-8444 - resolve eventual consistency in course shareToken generation
+
+## [25.5.5]
+
+### Fixed
+
+- SC-8303 - fix wrong assignment from school to storage provider
+
+## [25.5.4]
+
+### Added
+
+- SC-8358 - bettermarks: show hint for safari users
+- SC-8412 - update swagger documentation of pseudonym/roster/ltitools
+
+### Fixed
+
+- SC-5287 - Fixed OAuth2 rostering
+- SC-5287 - Repair Bettermark's depseudonymization
+- SC-8313 - Bettermarks: depseudonymization iframe needs to use Storage Access API in Safari
+- SC-8379 - Secure ltiTools route
+- SC-8315 - bettermarks: security check and production configuration
+
+## [25.5.3]
+
+### Added
+
+- SC-8420 - Migration for sync new indexes.
+
+## [25.5.2]
+
+### Fixed
+
+- SC-8189 - fix duplicate events by returning updated object at findOneAndUpdate
+
+## [25.5.1]
+
+### Fixed
+
+- SC-8303 - fix wrong assignment from school to storage provider
+
+## [25.5.0]
+
+### Added
+
+- SC-7835 - Add deletion concept handling for helpdesk problems
+- SC-8229 - Added invalid DN error to ldap-config service error handling
+- SC-7825 - Remove user relations from courses
+- SC-7827 - Add deletion concept handling for file permissions.
+- SC-8030 - Setup orchestrator for deleting concept
+- SC-8060 - increase unit test coverage for lernstore counties
+- SC-8179 - repaired unit test
+- SC-7763 - adds searchable feature flag for lernstore.
+- SC-8020 - adds collections filter to edu-sharing service
+- SC-8260 - new team indexes and migration to add this
+
+### Removed
+
+- SC-8233 - Removed attribute and member as required attributes for the LDAP-config service
+
+### Fixed
+
+- SC-8329 - Cluster returns old verison of Pin object after patch
+
+## [25.4.1]
+
+- Update from 25.3.9 into master
+
+## [25.3.9]
+
+- SC-8198 continue school sync on user issues
+
+## [25.3.8]
+
+### Changed
+
+- SC-8198 - handle eventually consistent database in THR sync
+
+## [25.3.7] - 2020-12-18
+
+### Changed
+
+- SC-8209 - prevent sync from stopping if error occurs for a single student
+
+## [25.3.6]
+
+### Fixed
+
+- SC-8235 - repaired reigstration link for students
+
+## [25.3.5]
+
+### Changed
+
+- SC-8149 - no longer require a registrationPin for internal calls
+
+## [25.3.4]
+
+### Changed
+
+- SC-7998 - use default service setup for /version
+
+## [25.3.3] (pick from 25.2)
+
+### Removed
+
+- SC-8101 - Sanitization for read operations
+
+### Fixed
+
+- SC-8101 - Make it possible to disable sentry by removing `SENTRY_DSN`
+- OPS-1735 - Fixes transaction handling in file service by using the mongoose transaction helper,
+  properly closing the session, and using the correct readPreference (everything except primary fails)
+
+## [25.3.2]
+
+### Added
+
+- SC-7734 - Added a hook that takes care of merlin content to generate valid urls for users
+- SC-7483 - Updating terms of use for all users for each instance separately
+
+## [25.3.1]
+
+### Fixed
+
+SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-parent-users is broken
+
 ## [25.3.0]
 
 ### Added
 
 - OPS-1499 - Add feature to CI Pipeline and provide team based HPI Schul-Cloud instances
+- SC-7841 - remove deleted user from classes
 - SC-7836 - Removing registration pin by removing the user
 - SC-7838 - move pseudonyms to trashbin
 - SC-7142 - Counties/Kreise added to federal states.
@@ -38,8 +206,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7915 - facade locator
 - SC-7571 - solved performance issues - bulk QR-code generation
 - SC-6294 - Introduce Typescript in schulcloud-server
+- SC-7543 - Adds ldap-config service to create, load, and patch LDAP-configs (replaces /ldap endpoints for new client)
 - SC-7028 - Add Course Component API Specification document
 - SC-7476 - Prevent hash generation if user has account
+- SC-6692 - Added Lern-Store counties support for Niedersachsen (Merlin)
 
 ### Changed
 
@@ -58,7 +228,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-5900 - Move Synapse synchronization logic into server
 - SC-7499 - Fixes documentation for edu sharing endpoints
 - SC-7872 - Fix audience of the jwt to new organisation name.
+- SC-7543 - deprecates `GET /ldap/:id` and `PATCH /ldap/:id` routes
 - SC-7868 - Move external request helpers to more present file location
+- SC-7474 pull docker container for tests if commit id exists on docker hub
 
 ### Fixed
 
@@ -85,17 +257,34 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-7413 - Cleanup UnhandledRejection code that is handled from winston now
 
+## [25.2.6]
+
+### Removed
+
+- SC-8101 - Sanitization for read operations
+
+### Fixed
+
+- SC-8101 - Make it possible to disable sentry by removing `SENTRY_DSN`
+
+## [25.2.5]
+
+### Fixed
+
+- OPS-1735 - Fixes transaction handling in file service by using the mongoose transaction helper,
+  properly closing the session, and using the correct readPreference (everything except primary fails)
+
 ## [25.2.4]
 
 ### Changed
 
-- SC-6727 Change email addresses for tickets for Niedersachsen - fixed after review
+- SC-6727 - Change email addresses for tickets for Niedersachsen - fixed after review
 
 ## [25.2.3]
 
 ### Changed
 
-- SC-6727 Change email addresses for tickets for Niedersachsen
+- SC-6727 - Change email addresses for tickets for Niedersachsen
 
 ## [25.2.2]
 
@@ -107,7 +296,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
-- SC-7714 Fixes script injection issue
+- SC-7714 - Fixes script injection issue
 
 ## [25.2.0]
 
@@ -136,7 +325,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-6510, fix a minor syntax error when exporting module
 - Update commons to 1.2.7: print configuration on startup, introduce hierarchical configuration file setup
 - Support asynchronous calls during server startup
-- SC-7091 Migration to enable the Matrix Messenger for all schools that had RocketChat enabled before
+- SC-7091 - Migration to enable the Matrix Messenger for all schools that had RocketChat enabled before
 
 ### Fixed
 

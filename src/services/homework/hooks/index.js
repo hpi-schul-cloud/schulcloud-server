@@ -1,12 +1,11 @@
 const { authenticate } = require('@feathersjs/authentication');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, GeneralError, NotFound } = reqlib('src/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
+const { Forbidden, GeneralError, NotFound, NotAuthenticated } = require('../../../errors');
 const logger = require('../../../logger');
 
 const globalHooks = require('../../../hooks');
-const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { equal: equalIds, isValid: isValidId } = require('../../../helper/compare').ObjectId;
 
 const getAverageRating = function getAverageRating(submissions) {
 	// Durchschnittsnote berechnen
@@ -47,17 +46,54 @@ function isGraded(submission) {
 		(submission.gradeFileIds && submission.gradeFileIds.length > 0)
 	);
 }
-function isTeacher(userId, homework) {
-	const user = userId.toString();
-	let isTeacherCheck = equalIds(homework.teacherId, userId);
-	if (!isTeacherCheck && !homework.private) {
-		const isCourseTeacher = (homework.courseId.teacherIds || []).some((teacherId) => equalIds(teacherId, user));
-		const isCourseSubstitution = (homework.courseId.substitutionIds || []).some((substitutionId) =>
-			equalIds(substitutionId, user)
-		);
-		isTeacherCheck = isCourseTeacher || isCourseSubstitution;
+
+/**
+ * Resolves with true, if the user id given matches the teacherId (which is the case for students too) AND the private flag is set true.
+ * @param {String|ObjectId} userId
+ * @param {*} homework
+ * @returns {Boolean}
+ */
+const isPrivateHomeworkOwner = (userId, homework) => {
+	// changed logic, added private check beside owner-check
+	const result = homework.private === true && equalIds(userId, homework.teacherId) === true;
+	return result;
+};
+
+/**
+ * for non-private homework, resolves with true when the userId is part of the homeworks courses teacherIds or courses substitutionIds
+ * requires a homework with populated course in courseId to be given
+ * @param {ObjectId|String} userId
+ * @param {Object} homework
+ * @param {[ObjectId]} homework.courseId.teacherIds
+ * @param {[ObjectId]} homework.courseId.substitutionIds
+ * @returns {Boolean} isTeacherInHomeworksCourse
+ */
+const isCourseHomeworkTeacher = (userId, homework) => {
+	if (!isValidId(userId)) throw new GeneralError('missing valid userId', { userId });
+	if (!homework || !homework.courseId) throw new GeneralError('course id (populated) in homework');
+
+	// do not check courseTeacher for private homework
+	if (homework.private === true) return false;
+
+	const isCourseTeacher = (homework.courseId.teacherIds || []).some((teacherId) => equalIds(teacherId, userId));
+	const isCourseSubstitution = (homework.courseId.substitutionIds || []).some((substitutionId) =>
+		equalIds(substitutionId, userId)
+	);
+
+	const isTeacherInHomeworksCourse = isCourseTeacher === true || isCourseSubstitution === true;
+	return isTeacherInHomeworksCourse;
+};
+
+/**
+ * allow deletion of homework for owners in their private homeworks or for (substitution-)teachers in course homeworks
+ * @param {*} userId
+ * @param {*} homework
+ */
+function hasHomeworkPermission(userId, homework) {
+	if (isPrivateHomeworkOwner(userId, homework) === true || isCourseHomeworkTeacher(userId, homework) === true) {
+		return true;
 	}
-	return isTeacherCheck;
+	return false;
 }
 
 const hasViewPermissionBefore = (hook) => {
@@ -122,7 +158,7 @@ const addStats = (hook) => {
 			data = data.map((e) => {
 				const copy = JSON.parse(JSON.stringify(e)); // don't know why, but without this line it's not working :/
 
-				if (!isTeacher(hook.params.account.userId, copy)) {
+				if (!hasHomeworkPermission(hook.params.account.userId, copy)) {
 					const currentSubmissions = submissions.data.filter((s) => equalIds(copy._id, s.homeworkId));
 					const filteredSubmission = currentSubmissions.filter(
 						(submission) =>
@@ -147,7 +183,7 @@ const addStats = (hook) => {
 					!copy.private &&
 					((((copy.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) &&
 						copy.publicSubmissions) ||
-						isTeacher(hook.params.account.userId, copy))
+						hasHomeworkPermission(hook.params.account.userId, copy))
 				) {
 					const NumberOfCourseMembers = ((copy.courseId || {}).userIds || []).length;
 					const currentSubmissions = submissions.data.filter((s) => equalIds(copy._id, s.homeworkId));
@@ -176,7 +212,7 @@ const addStats = (hook) => {
 						gradePercentage: gradePerc != Infinity ? gradePerc.toFixed(2) : undefined,
 						averageGrade: getAverageRating(currentSubmissions),
 					};
-					copy.isTeacher = isTeacher(hook.params.account.userId, copy);
+					copy.isTeacher = hasHomeworkPermission(hook.params.account.userId, copy);
 				}
 				return copy;
 			});
@@ -225,7 +261,7 @@ const hasPatchPermission = (hook) => {
 
 			// if user is a student of that course and the only
 			// difference of in the archived array is the current student it, let it pass.
-			if (isTeacher(hook.params.account.userId, homework)) {
+			if (hasHomeworkPermission(hook.params.account.userId, homework)) {
 				return hook;
 			}
 			throw new Forbidden();
@@ -269,6 +305,25 @@ const hasCreatePermission = async (context) => {
 	}
 	context.data = data;
 };
+const restrictHomeworkDeletion = async (context) => {
+	// expect authenticated user
+	const { userId } = context.params.account;
+	if (isValidId(userId) !== true) throw new NotAuthenticated('missing a valid authenticated user id', { userId });
+	// expect homeworkId given
+	const homeworkId = context.id;
+	if (isValidId(homeworkId) !== true) throw new NotFound('missing a valid homework id', { homeworkId });
+
+	// expect homework to be deleted to exist
+	const homeworkWithPopulatedCourse = await context.app
+		.service('homework')
+		.get(homeworkId, { query: { $populate: ['courseId'] } });
+
+	if (homeworkWithPopulatedCourse === null) throw new NotFound();
+
+	if (hasHomeworkPermission(userId, homeworkWithPopulatedCourse)) return context;
+
+	throw new Forbidden('homework deletion failed', { homeworkId, userId });
+};
 
 exports.before = () => ({
 	all: [authenticate('jwt')],
@@ -291,7 +346,11 @@ exports.before = () => ({
 		]),
 	],
 	remove: [
-		iff(isProvider('external'), [globalHooks.hasPermission('HOMEWORK_CREATE'), globalHooks.permitGroupOperation]),
+		iff(isProvider('external'), [
+			globalHooks.hasPermission('HOMEWORK_CREATE'),
+			globalHooks.permitGroupOperation,
+			restrictHomeworkDeletion,
+		]),
 	],
 });
 

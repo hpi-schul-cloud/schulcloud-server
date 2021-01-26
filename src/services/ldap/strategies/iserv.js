@@ -87,6 +87,17 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
 
 	/**
 	 * @public
+	 * @see AbstractLDAPStrategy#verifyConfig
+	 * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
+	 * (Array) roles = ['teacher', 'student', 'administrator']
+	 * @memberof GeneralLDAPStrategy
+	 */
+	verifyConfig(school) {
+		return this.getUsers(school);
+	}
+
+	/**
+	 * @public
 	 * @see AbstractLDAPStrategy#getClasses
 	 * @returns {Array} Array of Objects containing className, ldapDn, uniqueMembers
 	 * @memberof iServLDAPStrategy

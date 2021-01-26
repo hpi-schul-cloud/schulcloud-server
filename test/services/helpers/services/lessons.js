@@ -2,6 +2,20 @@ const LessonModel = require('../../../../src/services/lesson/model');
 
 let createdLessons = [];
 
+const createLessonContents = ({
+	user,
+	component = 'text',
+	title = 'a content title',
+	content = {},
+	hidden = false,
+} = {}) => ({
+	user,
+	component,
+	title,
+	content,
+	hidden,
+});
+
 const create = async ({
 	name = 'testLesson',
 	description = 'lorem ipsum',
@@ -43,4 +57,5 @@ module.exports = {
 	create,
 	cleanup,
 	info: () => createdLessons,
+	createLessonContents,
 };

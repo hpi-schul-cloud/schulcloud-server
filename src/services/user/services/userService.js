@@ -108,7 +108,7 @@ const userHooks = {
 		create: [
 			checkJwt(),
 			iff(isProvider('external'), preventPopulate),
-			pinIsVerified,
+			iff(isProvider('external'), pinIsVerified),
 			iff(isProvider('external'), restrictToCurrentSchool),
 			iff(isProvider('external'), enforceRoleHierarchyOnCreate),
 			sanitizeData,
