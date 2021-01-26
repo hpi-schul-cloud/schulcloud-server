@@ -15,10 +15,10 @@ const ASSERTION_ERROR_TYPE = {
 	defaultMessage: 'Parameter validation error',
 };
 
-const API_VALIDATION_ERROR_TYPE = {
-	type: 'API_VALIDATION_ERROR',
-	title: 'API Validation Error',
-	defaultMessage: 'API Validation failed',
+const VALIDATION_ERROR_TYPE = {
+	type: 'VALIDATION_ERROR',
+	title: 'Validation Error',
+	defaultMessage: 'Validation failed',
 };
 
 const FORBIDDEN_ERROR_TYPE = {
@@ -30,6 +30,6 @@ const FORBIDDEN_ERROR_TYPE = {
 module.exports = {
 	INTERNAL_SERVER_ERROR_TYPE,
 	ASSERTION_ERROR_TYPE,
-	API_VALIDATION_ERROR_TYPE,
+	VALIDATION_ERROR_TYPE,
 	FORBIDDEN_ERROR_TYPE,
 };

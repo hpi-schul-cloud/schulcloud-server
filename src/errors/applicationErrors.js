@@ -1,5 +1,10 @@
 /* eslint-disable max-classes-per-file */
-const { INTERNAL_SERVER_ERROR_TYPE, ASSERTION_ERROR_TYPE, FORBIDDEN_ERROR_TYPE } = require('./commonErrorTypes');
+const {
+	INTERNAL_SERVER_ERROR_TYPE,
+	ASSERTION_ERROR_TYPE,
+	VALIDATION_ERROR_TYPE,
+	FORBIDDEN_ERROR_TYPE,
+} = require('./commonErrorTypes');
 
 /**
  * A base Class for all application specific (not-framework related) errors
@@ -65,8 +70,8 @@ class AssertionError extends TechnicalError {
  * Error for any validation error
  */
 class ValidationError extends BusinessError {
-	constructor(errorType, validationErrors) {
-		super(errorType, undefined, validationErrors);
+	constructor(cause, validationErrors) {
+		super(VALIDATION_ERROR_TYPE, cause, validationErrors);
 	}
 }
 

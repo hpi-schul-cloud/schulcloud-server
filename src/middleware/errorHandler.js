@@ -12,7 +12,6 @@ const {
 	AssertionError,
 	InternalServerError,
 } = require('../errors');
-const { API_VALIDATION_ERROR_TYPE } = require('../errors/commonErrorTypes');
 
 const { isApplicationError, isFeatherError, isSilentError, cleanupIncomingMessage } = require('../errors/utils');
 const logger = require('../logger');
@@ -250,7 +249,7 @@ const convertOpenApiValidationError = (error) => {
 		logger.debug('Open API Validation path is missing!');
 		err = new PageNotFound(error);
 	} else if (err instanceof OpenApiValidator.error.BadRequest) {
-		err = new ValidationError(API_VALIDATION_ERROR_TYPE, err.errors);
+		err = new ValidationError('OpenAPI validation failed', err.errors);
 	}
 	return err;
 };
