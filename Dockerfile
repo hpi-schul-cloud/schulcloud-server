@@ -16,6 +16,7 @@ RUN npm ci
 
 COPY . .
 RUN npm run build
+
 ENV TZ=Europe/Berlin
 
-CMD ["npm", "start"]
+CMD ["/bin/sh", "startup.sh"]
