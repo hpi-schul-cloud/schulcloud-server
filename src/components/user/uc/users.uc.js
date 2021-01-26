@@ -137,8 +137,7 @@ const deleteUser = async (id, { user: loggedinUser }) => {
 	await replaceUserWithTombstone(id);
 	try {
 		const registrationPinFacade = facadeLocator.facade('/registrationPin/v2');
-		const registrationPinTrash = await registrationPinFacade.deleteRegistrationPinsByEmail(user.email);
-		await trashbinRepo.updateTrashbinByUserId(user._id, registrationPinTrash.data); // TODO unnecessary for PINs?
+		await registrationPinFacade.deleteRegistrationPinsByEmail(user.email);
 	} catch (error) {
 		errorUtils.asyncErrorLog(error, `failed to delete registration pin for user ${user._id}`);
 	}
