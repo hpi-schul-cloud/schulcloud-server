@@ -38,6 +38,7 @@ const findPrivateHomeworksByUser = async (userId) => {
  * @return {Array}
  */
 const findArchivedHomeworkIdsByUser = async (userId) => {
+	validateObjectId({ userId });
 	const select = ['_id'];
 	const result = await HomeworkModel.find(archivedHomeworkQuery(userId), select).lean().exec();
 	return result;
