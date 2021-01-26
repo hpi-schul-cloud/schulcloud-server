@@ -55,7 +55,7 @@ describe.only('AdminUsersService', () => {
         });
         expect(testClass).to.not.be.undefined;
 
-        const gradeLevelClass = await testObjects
+        const gradeLevelClass = await tog
                 .createTestClass({
                     name: 'A',
                     userIds: [student._id],
@@ -87,7 +87,7 @@ describe.only('AdminUsersService', () => {
     });
 
     it('request multiple users by id', async () => {
-        const admin = await tog.createTestUser({ roles: ['administrator'] }).catch((err) => {
+        const { user: admin } = await tog.createTestUserAndAccount({ roles: ['administrator'] }).catch((err) => {
             logger.warning('Can not create admin', err);
         });
         const params = await tog.generateRequestParamsFromUser(admin);
@@ -116,9 +116,9 @@ describe.only('AdminUsersService', () => {
     });
 
     // https://ticketsystem.schul-cloud.org/browse/SC-5076
-    it.only('student can not administrate students', async () => {
-        const student = await tog.createTestUser({ roles: ['student'] });
-        const params = await tog.generateRequestParamsFromUser(student);
+    it('student can not administrate students', async () => {
+        const { user } = await tog.createTestUserAndAccount({ roles: ['student'] });
+        const params = await tog.generateRequestParamsFromUser(user);
         params.query = {};
         try {
             await adminStudentsService.find(params);
@@ -131,7 +131,7 @@ describe.only('AdminUsersService', () => {
     });
 
     it('teacher can administrate students', async () => {
-        const teacher = await tog.createTestUser({ roles: ['teacher'] });
+        const { user: teacher } = await tog.createTestUserAndAccount({ roles: ['teacher'] });
         const params = await tog.generateRequestParamsFromUser(teacher);
         params.query = {};
         const result = await adminStudentsService.find(params);
@@ -327,7 +327,7 @@ describe.only('AdminUsersService', () => {
     it('can filter by creation date', async () => {
         const dateBefore = new Date();
         const findUser = await tog.createTestUser({ roles: ['student'] });
-        const actingUser = await tog.createTestUser({ roles: ['administrator'] });
+        const { user: actingUser } = await tog.createTestUserAndAccount({ roles: ['administrator'] });
         const dateAfter = new Date();
         await tog.createTestUser({ roles: ['student'] });
         const params = await tog.generateRequestParamsFromUser(actingUser);
@@ -340,7 +340,7 @@ describe.only('AdminUsersService', () => {
 
     it('can filter by creation date as ISO string', async () => {
         const findUser = await tog.createTestUser({ roles: ['student'] });
-        const actingUser = await tog.createTestUser({ roles: ['administrator'] });
+        const { user: actingUser } = await tog.createTestUserAndAccount({ roles: ['administrator'] });
         await tog.createTestUser({ roles: ['student'] });
         const params = await tog.generateRequestParamsFromUser(actingUser);
         params.query = { createdAt: findUser.createdAt };
@@ -353,7 +353,7 @@ describe.only('AdminUsersService', () => {
     it('can filter by creation date as ISO string with range', async () => {
         const dateBefore = new Date();
         const findUser = await tog.createTestUser({ roles: ['student'] });
-        const actingUser = await tog.createTestUser({ roles: ['administrator'] });
+        const { user: actingUser } = await tog.createTestUserAndAccount({ roles: ['administrator'] });
         const dateAfter = new Date();
         await tog.createTestUser({ roles: ['student'] });
         const params = await tog.generateRequestParamsFromUser(actingUser);
@@ -406,7 +406,7 @@ describe.only('AdminUsersService', () => {
     it('birthday date in DD.MM.YYYY format', async () => {
         // given
         const birthdayMock = new Date(2000, 0, 1, 20, 45, 30);
-        const teacher = await tog.createTestUser({ roles: ['teacher'] });
+        const { user: teacher } = await tog.createTestUserAndAccount({ roles: ['teacher'] });
         const mockStudent = await tog.createTestUser({
             firstName: 'Lukas',
             birthday: birthdayMock,
@@ -424,8 +424,9 @@ describe.only('AdminUsersService', () => {
     it('does not allow student user creation if school is external', async () => {
         const schoolService = app.service('/schools');
         const serviceCreatedSchool = await schoolService.create({ name: 'test', ldapSchoolIdentifier: 'testId' });
+        tog.createdEntityIds.schools.push(serviceCreatedSchool._id);
         const { _id: schoolId } = serviceCreatedSchool;
-        const admin = await tog.createTestUser({ roles: ['administrator'], schoolId });
+        const { user: admin } = await tog.createTestUserAndAccount({ roles: ['administrator'], schoolId });
         const params = await tog.generateRequestParamsFromUser(admin);
         const mockData = {
             firstName: 'testFirst',
@@ -443,7 +444,7 @@ describe.only('AdminUsersService', () => {
     });
 
     it('does not allow user creation if email already exists', async () => {
-        const admin = await tog.createTestUser({ roles: ['administrator'] });
+        const { user: admin } = await tog.createTestUserAndAccount({ roles: ['administrator'] });
         const params = await tog.generateRequestParamsFromUser(admin);
         const mockData = {
             firstName: 'testFirst',
@@ -454,7 +455,7 @@ describe.only('AdminUsersService', () => {
         };
         // creates first student with unique data
         const firstStudent = await adminStudentsService.create(mockData, params);
-        tog.createdEntityIds().users.push(firstStudent._id);
+        tog.createdEntityIds.users.push(firstStudent._id);
         // creates second student with existent data
         try {
             await adminStudentsService.create(mockData, params);
@@ -466,7 +467,7 @@ describe.only('AdminUsersService', () => {
     });
 
     it('does not allow user creation if email is disposable', async () => {
-        const admin = await tog.createTestUser({ roles: ['administrator'] });
+        const { user: admin } = await tog.createTestUserAndAccount({ roles: ['administrator'] });
         const params = await tog.generateRequestParamsFromUser(admin);
         const mockData = {
             firstName: 'testFirst',
@@ -486,11 +487,11 @@ describe.only('AdminUsersService', () => {
     });
 
     it('users with STUDENT_LIST permission can access the FIND method', async () => {
-        await testObjects.createTestRole({
+        await tog.createTestRole({
             name: 'studentListPerm',
             permissions: ['STUDENT_LIST'],
         });
-        const testUser = await tog.createTestUser({
+        const { user: testUser } = await tog.createTestUserAndAccount({
             firstName: 'testUser',
             roles: ['studentListPerm'],
         });
@@ -500,11 +501,11 @@ describe.only('AdminUsersService', () => {
     });
 
     it('users without STUDENT_LIST permission cannot access the FIND method', async () => {
-        await testObjects.createTestRole({
+        await tog.createTestRole({
             name: 'noStudentListPerm',
             permissions: [],
         });
-        const testUser = await tog.createTestUser({
+        const { user: testUser } = await tog.createTestUserAndAccount({
             firstName: 'testUser',
             roles: ['noStudentListPerm'],
         });
@@ -520,14 +521,14 @@ describe.only('AdminUsersService', () => {
     });
 
     it('users with STUDENT_LIST permission can access the GET method', async () => {
-        await testObjects.createTestRole({
+        await tog.createTestRole({
             name: 'studentListPerm',
             permissions: ['STUDENT_LIST'],
         });
-        const school = await testObjects.createTestSchool({
+        const school = await tog.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await tog.createTestUser({
+        const { user: testUser } = await tog.createTestUserAndAccount({
             firstName: 'testUser',
             roles: ['studentListPerm'],
             schoolId: school._id,
@@ -544,14 +545,14 @@ describe.only('AdminUsersService', () => {
     });
 
     it('users without STUDENT_LIST permission cannot access the GET method', async () => {
-        await testObjects.createTestRole({
+        await tog.createTestRole({
             name: 'noStudentListPerm',
             permissions: [],
         });
-        const school = await testObjects.createTestSchool({
+        const school = await tog.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await tog.createTestUser({
+        const { user: testUser } = await tog.createTestUserAndAccount({
             firstName: 'testUser',
             roles: ['noStudentListPerm'],
             schoolId: school._id,
@@ -569,32 +570,32 @@ describe.only('AdminUsersService', () => {
     });
 
     it('users cannot GET students from foreign schools', async () => {
-        await testObjects.createTestRole({
+        await tog.createTestRole({
             name: 'studentListPerm',
             permissions: ['STUDENT_LIST'],
         });
-        const school = await testObjects.createTestSchool({
+        const school = await tog.createTestSchool({
             name: 'testSchool1',
         });
-        const otherSchool = await testObjects.createTestSchool({
+        const otherSchool = await tog.createTestSchool({
             name: 'testSchool2',
         });
-        const testUSer = await tog.createTestUser({ roles: ['studentListPerm'], schoolId: school._id });
-        const params = await tog.generateRequestParamsFromUser(testUSer);
+        const { user: testUser } = await tog.createTestUserAndAccount({ roles: ['studentListPerm'], schoolId: school._id });
+        const params = await tog.generateRequestParamsFromUser(testUser);
         const student = await tog.createTestUser({ roles: ['student'], schoolId: otherSchool._id });
         const user = await adminStudentsService.get(student._id, params);
         expect(user).to.be.empty;
     });
 
     it('users with STUDENT_CREATE permission can access the CREATE method', async () => {
-        await testObjects.createTestRole({
+        await tog.createTestRole({
             name: 'studentCreatePerm',
             permissions: ['STUDENT_CREATE'],
         });
-        const school = await testObjects.createTestSchool({
+        const school = await tog.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await tog.createTestUser({
+        const { user: testUser } = await tog.createTestUserAndAccount({
             firstName: 'testUser',
             lastName: 'lastTestUser',
             roles: ['studentCreatePerm'],
@@ -610,19 +611,19 @@ describe.only('AdminUsersService', () => {
         };
         const student = await adminStudentsService.create(studentData, params);
         expect(student).to.not.be.undefined;
-        testObjects.createdUserIds.push(student._id);
+        tog.createdEntityIds.users.push(student._id);
         expect(student.firstName).to.equals('testCreateStudent');
     });
 
     it('users without STUDENT_CREATE permission cannot access the CREATE method', async () => {
-        await testObjects.createTestRole({
+        await tog.createTestRole({
             name: 'noStudentCreatePerm',
             permissions: [],
         });
-        const school = await testObjects.createTestSchool({
+        const school = await tog.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await tog.createTestUser({
+        const { user: testUser } = await tog.createTestUserAndAccount({
             firstName: 'testUser',
             roles: ['noStudentCreatePerm'],
             schoolId: school._id,
@@ -643,17 +644,17 @@ describe.only('AdminUsersService', () => {
     });
 
     it('users with STUDENT_DELETE permission can access the REMOVE method', async () => {
-        await testObjects.createTestRole({
+        await tog.createTestRole({
             name: 'studentDeletePerm',
             permissions: ['STUDENT_CREATE', 'STUDENT_DELETE'],
         });
-        const school = await testObjects.createTestSchool({
+        const school = await tog.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await tog.createTestUser({
+        const { user: testUser } = await tog.createTestUserAndAccount({
             firstName: 'testUser',
             roles: ['studentDeletePerm'],
-            schoolId: school._id,
+            schoolId: school._id
         });
         const params = await tog.generateRequestParamsFromUser(testUser);
         const studentData = {
@@ -674,14 +675,14 @@ describe.only('AdminUsersService', () => {
     });
 
     it('users without STUDENT_DELETE permission can not access the REMOVE method', async () => {
-        await testObjects.createTestRole({
+        await tog.createTestRole({
             name: 'noStudentDeletePerm',
             permissions: ['STUDENT_CREATE'],
         });
-        const school = await testObjects.createTestSchool({
+        const school = await tog.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await tog.createTestUser({
+        const { user: testUser } = await tog.createTestUserAndAccount({
             firstName: 'testUser',
             roles: ['noStudentDeletePerm'],
             schoolId: school._id,
@@ -695,7 +696,7 @@ describe.only('AdminUsersService', () => {
             schoolId: school._id,
         };
         const student = await adminStudentsService.create(studentData, params);
-        testObjects.createdUserIds.push(student._id);
+        tog.createdEntityIds.users.push(student._id);
         params.query = {
             ...params.query,
             _ids: [],
@@ -710,14 +711,14 @@ describe.only('AdminUsersService', () => {
     });
 
     it('users cannot REMOVE students from foreign schools', async () => {
-        const school = await testObjects.createTestSchool({
+        const school = await tog.createTestSchool({
             name: 'testSchool1',
         });
-        const otherSchool = await testObjects.createTestSchool({
+        const otherSchool = await tog.createTestSchool({
             name: 'testSchool2',
         });
-        const testUSer = await tog.createTestUser({ roles: ['administrator'], schoolId: school._id });
-        const params = await tog.generateRequestParamsFromUser(testUSer);
+        const { user: testUser } = await tog.createTestUserAndAccount({ roles: ['administrator'], schoolId: school._id });
+        const params = await tog.generateRequestParamsFromUser(testUser);
         const studentOne = await tog.createTestUser({
             roles: ['student'],
             schoolId: otherSchool._id,
@@ -740,10 +741,10 @@ describe.only('AdminUsersService', () => {
     });
 
     it('REMOVED users should also have their account deleted', async () => {
-        const school = await testObjects.createTestSchool({
+        const school = await tog.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await tog.createTestUser({
+        const { user: testUser } = await tog.createTestUserAndAccount({
             firstName: 'testUser',
             roles: ['administrator'],
             schoolId: school._id,
@@ -786,7 +787,7 @@ describe.only('AdminUsersService', () => {
     });
 
     it('REMOVE requests must include _ids or id', async () => {
-        const testUser = await tog.createTestUser({ roles: ['administrator'], manualCleanup: true });
+        const { user: testUser } = await tog.createTestUserAndAccount({ roles: ['administrator'] });
         const params = await tog.generateRequestParamsFromUser(testUser);
         // empty query without _ids key
         params.query = {};
@@ -800,7 +801,7 @@ describe.only('AdminUsersService', () => {
     });
 
     it('_ids must be of array type', async () => {
-        const user = await tog.createTestUser({ roles: ['administrator'] });
+        const { user } = await tog.createTestUserAndAccount({ roles: ['administrator'] });
         const params = await tog.generateRequestParamsFromUser(user);
         params.query = {
             ...params.query,
@@ -816,10 +817,10 @@ describe.only('AdminUsersService', () => {
     });
 
     it('_ids elements must be a valid objectId', async () => {
-        const school = await testObjects.createTestSchool({
+        const school = await tog.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await tog.createTestUser({
+        const { user: testUser } = await tog.createTestUserAndAccount({
             firstName: 'testUser',
             roles: ['administrator'],
             schoolId: school._id,
@@ -850,7 +851,7 @@ describe.only('AdminUsersService', () => {
             schoolId: school._id,
         };
         const otherStudent = await adminStudentsService.create(otherStudentData, params);
-        tog.createdEntityIds().users.push(otherStudent._id);
+        tog.createdEntityIds.users.push(otherStudent._id);
         params.query = {
             ...params.query,
             _ids: [otherStudent._id, 'wrong type'],
@@ -866,14 +867,14 @@ describe.only('AdminUsersService', () => {
     });
 
     it('id can be both object and string type', async () => {
-        const school = await testObjects.createTestSchool({
+        const school = await tog.createTestSchool({
             name: 'testSchool',
         });
-        const testUSer = await tog.createTestUser({
+        const { user: testUser } = await tog.createTestUserAndAccount({
             roles: ['administrator'],
             schoolId: school._id,
         });
-        const params = await tog.generateRequestParamsFromUser(testUSer);
+        const params = await tog.generateRequestParamsFromUser(testUser);
         params.query = {
             ...params.query,
             _ids: [],
@@ -899,25 +900,19 @@ describe.only('AdminUsersService', () => {
 
     describe('patch and update', () => {
         afterEach(async () => {
-            await testObjects.cleanup();
+            await tog.cleanup();
         });
 
         it('updates account username if user email is updated', async () => {
-            const school = await testObjects.createTestSchool({
+            const school = await tog.createTestSchool({
                 name: 'testSchool1',
             });
             // given
-            const user = await tog.createTestUser({ roles: ['student'], schoolId: school._id });
-            const accountDetails = {
-                username: user.email,
-                password: 'password',
-                userId: user._id,
-            };
-            const account = await testObjects.createTestAccount(accountDetails, false, user);
+            const { user, account } = await tog.createTestUserAndAccount({ roles: ['student'], schoolId: school._id });
             expect(user.email).equals(account.username);
 
             // when
-            const teacher = await tog.createTestUser({ roles: ['teacher'], schoolId: school._id });
+            const { user: teacher } = await tog.createTestUserAndAccount({ roles: ['teacher'], schoolId: school._id });
             const params = await tog.generateRequestParamsFromUser(teacher);
             params.query = {};
             await adminStudentsService.patch(user._id.toString(), { email: 'foo@bar.baz' }, params);
@@ -928,10 +923,10 @@ describe.only('AdminUsersService', () => {
         });
 
         const doNotUpdateAccountIfSystemIdIsSet = (role, type, service) => async () => {
-            const school = await testObjects.createTestSchool({
+            const school = await tog.createTestSchool({
                 name: 'testSchool1',
             });
-            const system = await testObjects.createTestSystem();
+            const system = await tog.createTestSystem();
             const username = 'hans-kunz';
             // given
             const user = await tog.createTestUser({ roles: [role], schoolId: school._id });
@@ -974,10 +969,10 @@ describe.only('AdminUsersService', () => {
                 doNotUpdateAccountIfSystemIdIsSet('teacher', 'patch', adminTeachersService));
 
         const updateFromDifferentSchool = (role, type, service) => async () => {
-            const school = await testObjects.createTestSchool({
+            const school = await tog.createTestSchool({
                 name: 'testSchool1',
             });
-            const otherSchool = await testObjects.createTestSchool({
+            const otherSchool = await tog.createTestSchool({
                 name: 'testSchool2',
             });
 
@@ -1009,7 +1004,7 @@ describe.only('AdminUsersService', () => {
                 updateFromDifferentSchool('teacher', 'patch', adminTeachersService));
 
         const useEmailTwice = (role, type, service) => async () => {
-            const school = await testObjects.createTestSchool({
+            const school = await tog.createTestSchool({
                 name: 'testSchool1',
             });
 
@@ -1022,7 +1017,7 @@ describe.only('AdminUsersService', () => {
                 email: userMail,
                 schoolId: school._id,
             });
-            const account = await testObjects.createTestAccount(
+            const account = await tog.createTestAccount(
                     {
                         username: user.email,
                         password: 'password',
@@ -1037,7 +1032,7 @@ describe.only('AdminUsersService', () => {
                 email: 'cool@affe.de',
                 schoolId: school._id,
             });
-            const otherAccount = await testObjects.createTestAccount(
+            const otherAccount = await tog.createTestAccount(
                     {
                         username: otherUser.email,
                         password: 'password',
@@ -1080,10 +1075,10 @@ describe.only('AdminUsersService', () => {
     });
 
     it('can search the user data by firstName', async () => {
-        const school = await testObjects.createTestSchool({
+        const school = await tog.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await tog.createTestUser({
+        const { user: testUser } = await tog.createTestUserAndAccount({
             roles: ['administrator'],
             schoolId: school._id,
         });
@@ -1127,10 +1122,10 @@ describe.only('AdminUsersService', () => {
     });
 
     it('can search the user data by lastName', async () => {
-        const school = await testObjects.createTestSchool({
+        const school = await tog.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await tog.createTestUser({
+        const { user: testUser } = await tog.createTestUserAndAccount({
             roles: ['administrator'],
             schoolId: school._id,
         });
@@ -1174,10 +1169,10 @@ describe.only('AdminUsersService', () => {
     });
 
     it('can search the user data by firstName + lastName', async () => {
-        const school = await testObjects.createTestSchool({
+        const school = await tog.createTestSchool({
             name: 'testSchool',
         });
-        const testUser = await tog.createTestUser({
+        const { user: testUser } = await tog.createTestUserAndAccount({
             roles: ['administrator'],
             schoolId: school._id,
         });

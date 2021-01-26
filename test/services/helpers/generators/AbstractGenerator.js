@@ -1,14 +1,16 @@
 module.exports = class AbstractGenerator {
     constructor(app) {
-        if (new.target === AbstractGenerator) {
-            throw new TypeError("Cannot construct Abstract instances directly");
+        if (new.target===AbstractGenerator) {
+            throw new TypeError('Cannot construct Abstract instances directly');
         }
         this._app = app;
         this._createdEntitiesIds = [];
     }
 
     async create(data) {
-        throw new Error('NotImplemented');
+        const result = await this._service.create(data);
+        this._createdEntitiesIds.push(result._id);
+        return result;
     }
 
     get created() {

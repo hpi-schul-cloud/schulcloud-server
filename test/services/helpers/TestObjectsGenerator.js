@@ -1,7 +1,4 @@
-// const { Users } = require('./generators/Users');
-// const { Accounts } = require('./generators/Accounts');
-
-const { Users, Accounts, Classes } = require('./generators');
+const { Users, Accounts, Classes, Schools, Roles, Systems } = require('./generators');
 
 class TestObjectsGenerator {
     constructor(app) {
@@ -12,22 +9,51 @@ class TestObjectsGenerator {
         this._generators = {
             users: new Users(this._app),
             accounts: new Accounts(this._app),
-            classes: new Classes(this._app)
+            classes: new Classes(this._app),
+            schools: new Schools(this._app),
+            roles: new Roles(this._app),
+            systems: new Systems(this._app),
         };
     }
 
-    // get users() {
-    //     return this._generators.users;
-    // }
-    //
+    async _generateJWT(username, password) {
+        const result = await this._app.service('authentication').create(
+                {
+                    strategy: 'local',
+                    username,
+                    password,
+                },
+                {
+                    headers: {
+                        'content-type': 'application/json',
+                    },
+                    provider: 'rest',
+                }
+        );
+
+        return result.accessToken;
+    }
+
+    get createdEntityIds() {
+        return {
+            users: this._generators.users.created,
+            accounts: this._generators.accounts.created,
+            schools: this._generators.schools.created,
+            roles: this._generators.roles.created
+        };
+    }
 
     async createTestUser(data) {
-        return this._generators.users.create({ ...data, schoolId: this._schoolId });
+        return this._generators.users.create({ schoolId: this._schoolId, ...data });
     }
 
     async createTestAccountForUser(data) {
         const credentials = { username: data.email, password: data.email };
         return this._generators.accounts.create(credentials, 'local', data);
+    }
+
+    async createTestAccount(data, system, user) {
+        return this._generators.accounts.create(data, system, user);
     }
 
     /**
@@ -45,22 +71,36 @@ class TestObjectsGenerator {
         return this._generators.classes.create({ ...data, schoolId: this._schoolId });
     }
 
+    async createTestSchool(data) {
+        return this._generators.schools.create(data);
+    }
+
+    async createTestRole(data) {
+        return this._generators.roles.create(data);
+    }
+
+    async createTestSystem(data) {
+        return this._generators.systems.create(data);
+    }
+
+    async generateRequestParamsFromUser(user) {
+        return {
+            account: { userId: user._id },
+            query: {},
+            authentication: {
+                accessToken: await this._generateJWT(user.email, user.email),
+                strategy: 'jwt',
+            },
+            provider: 'rest',
+        };
+    }
+
     /**
      * remove all created entities from db
      * @returns {Promise<void>}
      */
     async cleanup() {
         await Promise.all(Object.values(this._generators).map((factory) => factory.cleanup()));
-    }
-
-    async generateRequestParamsFromUser(user) {
-        return { account: { userId: user._id }, query: {} };
-    }
-
-    createdEntityIds() {
-        return {
-            users: this._generators.users.created,
-        };
     }
 }
 
