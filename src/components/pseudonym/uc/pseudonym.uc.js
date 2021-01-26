@@ -18,7 +18,7 @@ const deletePseudonymsForUser = async (userId) => {
 	return trashBinResult({ scope: 'pseudonyms', data: pseudonyms, complete });
 };
 
-const deleteUserData = () => [deletePseudonymsForUser];
+const deleteUserData = [deletePseudonymsForUser];
 
 module.exports = {
 	deleteUserData,
