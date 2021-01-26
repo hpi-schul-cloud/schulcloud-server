@@ -9,7 +9,7 @@ const { log } = console;
 const { env } = process;
 const {
 	BASE_PATH = 'backup/',
-	DB_URL = '127.0.0.1:27017/schulcloud',
+	DB_URL,
 	MONGO_USERNAME,
 	MONGO_PASSWORD,
 	// some values are overridden by args
@@ -94,7 +94,7 @@ const CONFIG = {
 		return path.join(this.BASE_PATH, args['--path'] || getTimestamp());
 	},
 	MONGO: {
-		URL: args['--url'] || DB_URL,
+		URL: DB_URL || args['--url'] || '127.0.0.1:27017/schulcloud',
 		USERNAME: MONGO_USERNAME || args['--username'],
 		PASSWORD: MONGO_PASSWORD || args['--password'],
 		get CREDENTIALS_ARGS() {
