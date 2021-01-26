@@ -168,7 +168,7 @@ const ensureDirectoryExistence = (filePath) => {
 const importCollection = async ({ collection, filePath }) => {
 	const cmdArgs = [
 		'mongoimport',
-		`--uri=mongodb://${CONFIG.MONGO.URL}`,
+		`--uri="mongodb://${CONFIG.MONGO.URL}"`,
 		...CONFIG.MONGO.CREDENTIALS_ARGS,
 		'--collection',
 		collection,
@@ -180,7 +180,7 @@ const importCollection = async ({ collection, filePath }) => {
 };
 
 const dropDatabase = async () => {
-	const cmdArgs = ['mongo', CONFIG.MONGO.URL, '--eval', '"db.dropDatabase()"'];
+	const cmdArgs = ['mongo', `"${CONFIG.MONGO.URL}"`, '--eval', '"db.dropDatabase()"'];
 	const output = await asyncExec(cleanJoin(cmdArgs));
 	log(output);
 	return output;
@@ -189,7 +189,7 @@ const dropDatabase = async () => {
 const getCollectionCount = async () => {
 	const cmdArgs = [
 		'mongo',
-		CONFIG.MONGO.URL,
+		`"${CONFIG.MONGO.URL}"`,
 		'--quiet',
 		'--eval',
 		'"db.getCollectionNames().length"'
@@ -229,7 +229,7 @@ const importDirectory = async (directoryPath) => {
 const exportCollection = async ({ collection, filePath }) => {
 	const cmdArgs = [
 		'mongoexport',
-		`--uri=mongodb://${CONFIG.MONGO.URL}`,
+		`--uri="mongodb://${CONFIG.MONGO.URL}"`,
 		...CONFIG.MONGO.CREDENTIALS_ARGS,
 		'--collection',
 		collection,
@@ -249,7 +249,7 @@ const getCollectionsToExport = async () => {
 	if (!collections) {
 		const cmdArgs = [
 			'mongo',
-			`${CONFIG.MONGO.URL}`,
+			`"${CONFIG.MONGO.URL}"`,
 			...CONFIG.MONGO.CREDENTIALS_ARGS,
 			'--quiet',
 			'--eval',
