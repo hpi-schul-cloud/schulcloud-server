@@ -28,10 +28,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-4576 - sanitize bbb room and member names
 - SC-8300 Added user information to LDAP Sync in case of errors
 
+## [25.5.7]
+
+## Added
+
+- SC-8489 - Added permission check for homework deletion
+
 ## [25.5.6]
 
 ### Fixed
 
+- SC-8410 - Verify ldap connection reads the first page of users only to avoid timeouts
 - SC-8444 - resolve eventual consistency in course shareToken generation
 
 ## [25.5.5]
