@@ -150,6 +150,7 @@ describe('LdapConfigService', () => {
 			return {
 				setup: () => {},
 				getUsers: sinon.fake.resolves(fakeUsers),
+				verifyConfig: sinon.fake.resolves(fakeUsers),
 				getClasses: sinon.fake.resolves(fakeClasses),
 				disconnect: sinon.fake.resolves(),
 			};
@@ -222,7 +223,7 @@ describe('LdapConfigService', () => {
 		});
 
 		it('should catch common errors', async () => {
-			ldapServiceMock.getUsers = sinon.fake.rejects(new LDAPConnectionError());
+			ldapServiceMock.verifyConfig = sinon.fake.rejects(new LDAPConnectionError());
 			app.use('ldap', ldapServiceMock);
 
 			const result = await app
@@ -291,6 +292,7 @@ describe('LdapConfigService', () => {
 			return {
 				setup: () => {},
 				getUsers: sinon.fake.resolves(fakeUsers),
+				verifyConfig: sinon.fake.resolves(fakeUsers),
 				getClasses: sinon.fake.resolves(fakeClasses),
 				disconnect: sinon.fake.resolves(),
 			};
