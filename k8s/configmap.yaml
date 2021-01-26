@@ -5,7 +5,8 @@ metadata:
 data:
   THIS_SERVICE: $SERVICE_NAME
   BRANCH: $NAMESPACE
-  DB_URL: mongodb://10.141.10.250:27017/schulcloud_$NAMESPACE
+  # Add &ssl=true to DB_URL
+  DB_URL: mongodb://10.141.10.112,10.141.10.150,10.141.10.125/schulcloud_$NAMESPACE?replicaSet=myReplicaSet&readPreference=secondary
   NODE_ENV: production
   PORT: "3030"
   LOG_LEVEL: info
@@ -13,7 +14,7 @@ data:
   JWT_AUD: $STAGING_DOMAIN
   CALENDAR_API_KEY: "123"
   CALENDAR_URI: http://schulcloud-calendar
-  # for running backup.js to setup database
+  # for running backup.js to setup database. TODO: Check if they are still needed.
   MONGO_HOST: "10.141.10.250"
   MONGO_DATABASE: schulcloud_$NAMESPACE
   # tested list

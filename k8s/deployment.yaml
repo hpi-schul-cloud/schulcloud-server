@@ -18,6 +18,16 @@ spec:
         app: $SERVICE_NAME
         tier: web
     spec:
+      hostAliases:
+        - hostnames:
+          - mongo-test-01
+          ip: 10.141.10.150
+        - hostnames:
+          - mongo-test-02
+          ip: 10.141.10.112
+        - hostnames:
+          - mongo-test-03
+          ip: 10.141.10.125
       containers:
         - name: $SERVICE_NAME
           image: $BUILD_IMAGE
