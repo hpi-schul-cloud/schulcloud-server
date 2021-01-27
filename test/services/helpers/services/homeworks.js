@@ -7,7 +7,7 @@ const create = (opt) => async (data) => {
 	data.name = data.name || 'testHomework';
 	data.availableDate = data.availableDate || new Date();
 	data.teacherId = data.teacherId || opt.generateObjectId();
-	data.private = data.private || false;
+	data.private = data.private || null;
 
 	const homework = await homeworkModel.create(data);
 	createdHomeworks.push(homework._id);

@@ -29,6 +29,7 @@ const archivedHomeworkQuery = (userId) => ({ archived: userId });
  * @return {Array}
  */
 const findPrivateHomeworksByUser = async (userId) => {
+	validateObjectId({ userId });
 	const result = await HomeworkModel.find(privateHomeworkQuery(userId)).lean().exec();
 	return result;
 };
@@ -49,6 +50,7 @@ const findArchivedHomeworkIdsByUser = async (userId) => {
  * @return {Array}
  */
 const findPublicHomeworkIdsByUser = async (userId) => {
+	validateObjectId({ userId });
 	const select = ['_id'];
 	const result = await HomeworkModel.find(publicHomeworkQuery(userId), select).lean().exec();
 	return result;
