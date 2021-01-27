@@ -72,7 +72,10 @@
         "teacher" : {
             "STUDENT_LIST" : true
         }
-    }
+	},
+	"storageProvider": {
+		"$oid": "6011614740bb5700223b5b8f"
+	}
 },
 {
 	"_id": {
