@@ -16,7 +16,6 @@ data:
   CALENDAR_URI: http://schulcloud-calendar
   CLIENT_API_KEY: "123" #secret
   REDIS_URI: redis://schulcloud-server-redis-master:6379
-  JWT_TIMEOUT_SECONDS: "60"
   # tested list
   ADMIN_TOGGLE_STUDENT_VISIBILITY: enabled
   ALERT_STATUS_API_URL: https://status.hpi-schul-cloud.de/api/v1
@@ -81,6 +80,7 @@ data:
   # HOST: https://staging.hpi-schul-cloud.org
   # HYDRA_URI: http://hydra-host:4445
   # IGNORE_DISCOVERABILITY: true
+  # JWT_TIMEOUT_SECONDS: "7200"
   # JWT_WHITELIST_ACCEPT_ALL: false
   # LDAP_PASSWORD_ENCRYPTION_KEY
   # LDAP_SCHOOL_SYNCER_POOL_SIZE: 1
