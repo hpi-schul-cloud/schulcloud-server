@@ -12,8 +12,9 @@ data:
   LOG_LEVEL: info
   REQUEST_LOGGING_ENABLED: "true"
   JWT_AUD: $STAGING_DOMAIN
-  CALENDAR_API_KEY: "123"
+  CALENDAR_API_KEY: "123" #secret
   CALENDAR_URI: http://schulcloud-calendar
+  CLIENT_API_KEY: "123" #secret
   # tested list
   ADMIN_TOGGLE_STUDENT_VISIBILITY: enabled
   ALERT_STATUS_API_URL: https://status.hpi-schul-cloud.de/api/v1
