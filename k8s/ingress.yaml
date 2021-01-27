@@ -9,10 +9,10 @@ items:
     annotations:
       kubernetes.io/ingress.class: "nginx"
   spec:
-#    tls:
-#    - hosts:
-#      - $HOSTNAME
-#      secretName: wildcard-domain-io
+   tls:
+   - hosts:
+     - $HOSTNAME
+     secretName: $CERT_NAME
     rules:
     - host: $HOSTNAME
       http:
