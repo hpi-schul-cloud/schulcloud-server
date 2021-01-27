@@ -36,6 +36,8 @@ data:
   STUDENT_TEAM_CREATION: disabled
   TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION: opt-in
   TZ: Europe/Berlin
+  # Feature flags
+  FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED: 'true'
   # API_HOST: https://api.staging.hpi-schul-cloud.org
   # CLIENT_API_KEY
   # CONTENT_URI: https://content.schul-cloud.org
@@ -70,7 +72,6 @@ data:
   # FEATURE_LERNSTORE_ENABLED: true
   # FEATURE_MATRIX_MESSENGER_ENABLED: true
   # FEATURE_MORGAN_LOG_ENABLED: false
-  # FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED: true
   # FEATURE_RABBITMQ_ENABLED: true
   # FEATURE_VIDEOCONFERENCE_ENABLED: true
   # FILE_SECURITY_CHECK_SERVICE_URI: http://webserver:8080/scan/file
