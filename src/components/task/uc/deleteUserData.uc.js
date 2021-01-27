@@ -7,15 +7,13 @@ const { validateObjectId } = require('../../helper/validation.helper');
 const deletePrivateSubmissions = async (userId) => {
 	validateObjectId(userId);
 	const result = await taskRepo.findUserSubmissionsByUser(userId);
-	const data = [];
 	let complete = true;
 	if (result.length > 0) {
-		data.push(...result);
 		const status = await taskRepo.deleteSingleSubmissionsFromUser(userId);
 		complete = status.success;
 	}
 
-	return trashBinResult({ scope: 'submissions-private', data, complete });
+	return trashBinResult({ scope: 'submissions-private', data: result, complete });
 };
 
 const removeConnectionToSharedSubmissions = async (userId) => {
@@ -35,14 +33,12 @@ const deletePrivateUserHomeworks = async (userId) => {
 	validateObjectId(userId);
 	const result = await taskRepo.findPrivateHomeworksByUser(userId);
 	let complete = true;
-	const data = [];
 	if (result.length > 0) {
 		const status = await taskRepo.deletePrivateHomeworksFromUser(userId);
 		complete = status.success;
-		data.push(...result);
 	}
 
-	return trashBinResult({ scope: 'homeworks-private', data, complete });
+	return trashBinResult({ scope: 'homeworks-private', data: result, complete });
 };
 
 const removeConnectionToSharedHomeworks = async (userId, replaceUserId) => {
@@ -60,14 +56,13 @@ const removeConnectionToSharedHomeworks = async (userId, replaceUserId) => {
 	return trashBinResult({ scope: 'homeworks-shared', data: result, complete });
 };
 
-const removeConnectionToArchivedHomeworks = async (userId, replaceUserId) => {
+const removeConnectionToArchivedHomeworks = async (userId) => {
 	validateObjectId(userId);
-	validateObjectId(replaceUserId);
 	const result = await taskRepo.findArchivedHomeworkIdsByUser(userId);
 	let complete = true;
 
 	if (result.length > 0) {
-		const status = await taskRepo.removeUserInArchivedHomeworks(userId, replaceUserId);
+		const status = await taskRepo.removeUserInArchivedHomeworks(userId);
 		complete = status.success;
 	}
 

@@ -21,74 +21,62 @@ chai.use(chaiAsPromised);
 const getExpectedUpdateMany = (modifiedDocuments) => ({ success: true, modifiedDocuments });
 const getExpectedDeleteMany = (deletedDocuments) => ({ success: true, deletedDocuments });
 
+const checkExpectedTrashbinResultFormat = (result) => {
+	expect(result.complete).to.be.true;
+	expect(result.trashBinData).to.be.an('object');
+	expect(result.trashBinData).to.haveOwnProperty('scope');
+	expect(result.trashBinData).to.haveOwnProperty('data');
+};
+
 describe('in "deleteUserData.uc" the function', () => {
 	describe('deleteUserData', () => {
-		const userId = new ObjectId();
 		const replaceUserId = new ObjectId();
 
 		// true result
 		it('should return a function that return an array.', async () => {
 			const result = deleteUserRelatedData();
 			expect(result).to.be.an('array').with.lengthOf(5);
-			expect(result[0], 'where first element is a function').to.be.a('function');
-			expect(result[1], 'where second element is a function').to.be.a('function');
-			expect(result[2], 'where third element is a function').to.be.a('function');
-			expect(result[3], 'where fourth element is a function').to.be.a('function');
-			expect(result[4], 'where fourth element is a function').to.be.a('function');
+			for (const deleteFun of result) {
+				expect(deleteFun, 'where first element is a function').to.be.a('function');
+			}
 		});
 
 		describe('deletePrivateSubmissions', () => {
-			const initStubs = ({ studentId }) => {
+			beforeEach(() => {
+				this.userId = new ObjectId();
 				const deleteSingleSubmissionsFromUserStub = sinon.stub(repo, 'deleteSingleSubmissionsFromUser');
-				const privateSubmissions = [
-					{ _id: new ObjectId(), studentId },
-					{ _id: new ObjectId(), studentId },
+				this.privateSubmissions = [
+					{ _id: new ObjectId(), studentId: this.userId },
+					{ _id: new ObjectId(), studentId: this.userId },
 				];
-				deleteSingleSubmissionsFromUserStub.withArgs(userId).returns(getExpectedDeleteMany(2));
+				deleteSingleSubmissionsFromUserStub.withArgs(this.userId).returns(getExpectedDeleteMany(2));
 
 				const findSingleSubmissionIdsByUserStub = sinon.stub(repo, 'findUserSubmissionsByUser');
 				findSingleSubmissionIdsByUserStub.callsFake(() => []);
-				findSingleSubmissionIdsByUserStub.withArgs(userId).returns(privateSubmissions);
+				findSingleSubmissionIdsByUserStub.withArgs(this.userId).returns(this.privateSubmissions);
+			});
 
-				return { findSingleSubmissionIdsByUserStub, deleteSingleSubmissionsFromUserStub, privateSubmissions };
-			};
+			afterEach(sinon.restore);
 
 			// true work
 			it('should return deleted private submissions', async () => {
-				// given
-				const {
-					findSingleSubmissionIdsByUserStub,
-					deleteSingleSubmissionsFromUserStub,
-					privateSubmissions,
-				} = initStubs({
-					studentId: userId,
-				});
 				// when
 				const { deletePrivateSubmissions } = mapByName(deleteUserRelatedData());
-				const result = await deletePrivateSubmissions(userId);
-				findSingleSubmissionIdsByUserStub.restore();
-				deleteSingleSubmissionsFromUserStub.restore();
+				const result = await deletePrivateSubmissions(this.userId);
+
 				// then
-				expect(result.complete).to.be.true;
-				expect(result.trashBinData).to.be.an('object');
-				expect(result.trashBinData).to.haveOwnProperty('scope');
-				expect(result.trashBinData).to.haveOwnProperty('data');
+				checkExpectedTrashbinResultFormat(result);
 				expect(result.trashBinData.scope).to.be.equal('submissions-private');
-				expect(result.trashBinData.data).to.have.members(privateSubmissions);
+				expect(result.trashBinData.data).to.have.members(this.privateSubmissions);
 			});
 
 			// user not exist
 			it('should return empty data if there is no shared submission', async () => {
 				// given
 				const otherUserId = new ObjectId();
-				const { findSingleSubmissionIdsByUserStub, deleteSingleSubmissionsFromUserStub } = initStubs({
-					studentId: userId,
-				});
 				// when
 				const { deletePrivateSubmissions } = mapByName(deleteUserRelatedData());
 				const result = await deletePrivateSubmissions(otherUserId);
-				findSingleSubmissionIdsByUserStub.restore();
-				deleteSingleSubmissionsFromUserStub.restore();
 				// then
 				expect(result.complete).to.be.true;
 				expect(result.trashBinData.data).to.be.an('array').that.is.empty;
@@ -97,47 +85,36 @@ describe('in "deleteUserData.uc" the function', () => {
 		});
 
 		describe('removeConnectionToSharedSubmissions', () => {
-			const initStubs = ({ teamMember }) => {
+			beforeEach(() => {
+				this.userId = new ObjectId();
 				const removeGroupSubmissionsConnectionsForUserStub = sinon.stub(
 					repo,
 					'removeGroupSubmissionsConnectionsForUser'
 				);
-				const sharedSubmissions = [
-					{ _id: new ObjectId(), teamMembers: teamMember },
-					{ _id: new ObjectId(), teamMembers: teamMember },
+				this.sharedSubmissions = [
+					{ _id: new ObjectId(), teamMembers: this.userId },
+					{ _id: new ObjectId(), teamMembers: this.userId },
 				];
-				removeGroupSubmissionsConnectionsForUserStub.withArgs(userId).returns(getExpectedUpdateMany(2));
+				removeGroupSubmissionsConnectionsForUserStub.withArgs(this.userId).returns(getExpectedUpdateMany(2));
 
 				const findGroupSubmissionIdsByUserStub = sinon.stub(repo, 'findGroupSubmissionIdsByUser');
 				findGroupSubmissionIdsByUserStub.callsFake(() => []);
-				findGroupSubmissionIdsByUserStub.withArgs(userId).returns(sharedSubmissions.map((hw) => hw._id));
+				findGroupSubmissionIdsByUserStub.withArgs(this.userId).returns(this.sharedSubmissions.map((hw) => hw._id));
+			});
 
-				return { findGroupSubmissionIdsByUserStub, removeGroupSubmissionsConnectionsForUserStub, sharedSubmissions };
-			};
+			afterEach(sinon.restore);
 
 			// true work
 			it('should return shared submissions the user is removed from', async () => {
-				// given
-				const {
-					findGroupSubmissionIdsByUserStub,
-					removeGroupSubmissionsConnectionsForUserStub,
-					sharedSubmissions,
-				} = initStubs({
-					teamMember: userId,
-				});
 				// when
 				const { removeConnectionToSharedSubmissions } = mapByName(deleteUserRelatedData());
-				const result = await removeConnectionToSharedSubmissions(userId);
-				findGroupSubmissionIdsByUserStub.restore();
-				removeGroupSubmissionsConnectionsForUserStub.restore();
+				const result = await removeConnectionToSharedSubmissions(this.userId);
+
 				// then
-				expect(result.complete).to.be.true;
-				expect(result.trashBinData).to.be.an('object');
-				expect(result.trashBinData).to.haveOwnProperty('scope');
-				expect(result.trashBinData).to.haveOwnProperty('data');
+				checkExpectedTrashbinResultFormat(result);
 				expect(result.trashBinData.scope).to.be.equal('submissions-shared');
 				expect(result.trashBinData.data.map(idToString)).to.have.members(
-					sharedSubmissions.map((hw) => idToString(hw._id))
+					this.sharedSubmissions.map((hw) => idToString(hw._id))
 				);
 			});
 
@@ -145,14 +122,10 @@ describe('in "deleteUserData.uc" the function', () => {
 			it('should return empty data if there is no shared submission', async () => {
 				// given
 				const otherUserId = new ObjectId();
-				const { findGroupSubmissionIdsByUserStub, removeGroupSubmissionsConnectionsForUserStub } = initStubs({
-					teamMember: userId,
-				});
 				// when
 				const { removeConnectionToSharedSubmissions } = mapByName(deleteUserRelatedData());
 				const result = await removeConnectionToSharedSubmissions(otherUserId);
-				findGroupSubmissionIdsByUserStub.restore();
-				removeGroupSubmissionsConnectionsForUserStub.restore();
+
 				// then
 				expect(result.complete).to.be.true;
 				expect(result.trashBinData.data).to.be.an('array').that.is.empty;
@@ -161,53 +134,40 @@ describe('in "deleteUserData.uc" the function', () => {
 		});
 
 		describe('deletePrivateUserHomeworks', () => {
-			const initStubs = ({ teacherId }) => {
+			beforeEach(() => {
+				this.userId = new ObjectId();
 				const deletePrivateHomeworksFromUserStub = sinon.stub(repo, 'deletePrivateHomeworksFromUser');
-				const privateHomeworks = [
-					{ _id: new ObjectId(), teacherId, private: true },
-					{ _id: new ObjectId(), teacherId, private: true },
+				this.privateHomeworks = [
+					{ _id: new ObjectId(), teacherId: this.userId, private: true },
+					{ _id: new ObjectId(), teacherId: this.userId, private: true },
 				];
-				deletePrivateHomeworksFromUserStub.withArgs(userId).returns(getExpectedDeleteMany(2));
+				deletePrivateHomeworksFromUserStub.withArgs(this.userId).returns(getExpectedDeleteMany(2));
 
 				const findPrivateHomeworksByUserStub = sinon.stub(repo, 'findPrivateHomeworksByUser');
 				findPrivateHomeworksByUserStub.callsFake(() => []);
-				findPrivateHomeworksByUserStub.withArgs(userId).returns(privateHomeworks);
+				findPrivateHomeworksByUserStub.withArgs(this.userId).returns(this.privateHomeworks);
+			});
 
-				return { findPrivateHomeworksByUserStub, deletePrivateHomeworksFromUserStub, privateHomeworks };
-			};
+			afterEach(sinon.restore);
 
 			// true work
 			it('should return deleted private homeworks', async () => {
-				// given
-				const { findPrivateHomeworksByUserStub, deletePrivateHomeworksFromUserStub, privateHomeworks } = initStubs({
-					teacherId: userId,
-				});
 				// when
 				const { deletePrivateUserHomeworks } = mapByName(deleteUserRelatedData());
-				const result = await deletePrivateUserHomeworks(userId);
-				findPrivateHomeworksByUserStub.restore();
-				deletePrivateHomeworksFromUserStub.restore();
+				const result = await deletePrivateUserHomeworks(this.userId);
 				// then
-				expect(result.complete).to.be.true;
-				expect(result.trashBinData).to.be.an('object');
-				expect(result.trashBinData).to.haveOwnProperty('scope');
-				expect(result.trashBinData).to.haveOwnProperty('data');
+				checkExpectedTrashbinResultFormat(result);
 				expect(result.trashBinData.scope).to.be.equal('homeworks-private');
-				expect(result.trashBinData.data).to.have.members(privateHomeworks);
+				expect(result.trashBinData.data).to.have.members(this.privateHomeworks);
 			});
 
 			// user not exist
 			it('should return empty data if there is no private homeworks', async () => {
 				// given
 				const otherUserId = new ObjectId();
-				const { findPrivateHomeworksByUserStub, deletePrivateHomeworksFromUserStub } = initStubs({
-					teacherId: userId,
-				});
 				// when
 				const { deletePrivateUserHomeworks } = mapByName(deleteUserRelatedData());
 				const result = await deletePrivateUserHomeworks(otherUserId);
-				findPrivateHomeworksByUserStub.restore();
-				deletePrivateHomeworksFromUserStub.restore();
 				// then
 				expect(result.complete).to.be.true;
 				expect(result.trashBinData.data).to.be.an('array').that.is.empty;
@@ -216,40 +176,33 @@ describe('in "deleteUserData.uc" the function', () => {
 		});
 
 		describe('removeConnectionToSharedHomeworks', () => {
-			const initStubs = ({ teacherId }) => {
+			beforeEach(() => {
+				this.userId = new ObjectId();
 				const replaceUserInPublicHomeworksStub = sinon.stub(repo, 'replaceUserInPublicHomeworks');
-				const sharedHomeworks = [
-					{ _id: new ObjectId(), teacherId, private: false },
-					{ _id: new ObjectId(), teacherId, private: false },
+				this.sharedHomeworks = [
+					{ _id: new ObjectId(), teacherId: this.userId, private: false },
+					{ _id: new ObjectId(), teacherId: this.userId, private: false },
 				];
-				replaceUserInPublicHomeworksStub.withArgs(userId, replaceUserId).returns(getExpectedUpdateMany(2));
+				replaceUserInPublicHomeworksStub.withArgs(this.userId, replaceUserId).returns(getExpectedUpdateMany(2));
 
 				const findPublicHomeworkIdsByUserStub = sinon.stub(repo, 'findPublicHomeworkIdsByUser');
 				findPublicHomeworkIdsByUserStub.callsFake(() => []);
-				findPublicHomeworkIdsByUserStub.withArgs(userId).returns(sharedHomeworks.map((hw) => hw._id));
+				findPublicHomeworkIdsByUserStub.withArgs(this.userId).returns(this.sharedHomeworks.map((hw) => hw._id));
+			});
 
-				return { findPublicHomeworkIdsByUserStub, replaceUserInPublicHomeworksStub, sharedHomeworks };
-			};
+			afterEach(sinon.restore);
 
 			// true work
 			it('should return shared homework ids the user is removed from', async () => {
-				// given
-				const { findPublicHomeworkIdsByUserStub, replaceUserInPublicHomeworksStub, sharedHomeworks } = initStubs({
-					teacherId: userId,
-				});
 				// when
 				const { removeConnectionToSharedHomeworks } = mapByName(deleteUserRelatedData());
-				const result = await removeConnectionToSharedHomeworks(userId, replaceUserId);
-				findPublicHomeworkIdsByUserStub.restore();
-				replaceUserInPublicHomeworksStub.restore();
+				const result = await removeConnectionToSharedHomeworks(this.userId, replaceUserId);
+
 				// then
-				expect(result.complete).to.be.true;
-				expect(result.trashBinData).to.be.an('object');
-				expect(result.trashBinData).to.haveOwnProperty('scope');
-				expect(result.trashBinData).to.haveOwnProperty('data');
+				checkExpectedTrashbinResultFormat(result);
 				expect(result.trashBinData.scope).to.be.equal('homeworks-shared');
 				expect(result.trashBinData.data.map(idToString)).to.have.members(
-					sharedHomeworks.map((hw) => idToString(hw._id))
+					this.sharedHomeworks.map((hw) => idToString(hw._id))
 				);
 			});
 
@@ -257,14 +210,9 @@ describe('in "deleteUserData.uc" the function', () => {
 			it('should return empty data if there is no shared homeworks', async () => {
 				// given
 				const otherUserId = new ObjectId();
-				const { findPublicHomeworkIdsByUserStub, replaceUserInPublicHomeworksStub } = initStubs({
-					teacherId: userId,
-				});
 				// when
 				const { removeConnectionToSharedHomeworks } = mapByName(deleteUserRelatedData());
 				const result = await removeConnectionToSharedHomeworks(otherUserId, replaceUserId);
-				findPublicHomeworkIdsByUserStub.restore();
-				replaceUserInPublicHomeworksStub.restore();
 				// then
 				expect(result.complete).to.be.true;
 				expect(result.trashBinData.data).to.be.an('array').that.is.empty;
@@ -273,40 +221,33 @@ describe('in "deleteUserData.uc" the function', () => {
 		});
 
 		describe('removeConnectionToArchivedHomeworks', () => {
-			const initStubs = ({ archived }) => {
+			beforeEach(() => {
+				this.userId = new ObjectId();
 				const replaceUserInArchivedHomeworksStub = sinon.stub(repo, 'removeUserInArchivedHomeworks');
-				const archivedHomeworks = [
-					{ _id: new ObjectId(), archived },
-					{ _id: new ObjectId(), archived },
+				this.archivedHomeworks = [
+					{ _id: new ObjectId(), archived: this.userId },
+					{ _id: new ObjectId(), archived: this.userId },
 				];
-				replaceUserInArchivedHomeworksStub.withArgs(userId, replaceUserId).returns(getExpectedUpdateMany(2));
+				replaceUserInArchivedHomeworksStub.withArgs(this.userId).returns(getExpectedUpdateMany(2));
 
 				const findArchivedHomeworkIdsByUserStub = sinon.stub(repo, 'findArchivedHomeworkIdsByUser');
 				findArchivedHomeworkIdsByUserStub.callsFake(() => []);
-				findArchivedHomeworkIdsByUserStub.withArgs(userId).returns(archivedHomeworks.map((hw) => hw._id));
+				findArchivedHomeworkIdsByUserStub.withArgs(this.userId).returns(this.archivedHomeworks.map((hw) => hw._id));
+			});
 
-				return { findArchivedHomeworkIdsByUserStub, replaceUserInArchivedHomeworksStub, archivedHomeworks };
-			};
+			afterEach(sinon.restore);
 
 			// true work
 			it('should return updated archived submissions', async () => {
-				// given
-				const { findArchivedHomeworkIdsByUserStub, replaceUserInArchivedHomeworksStub, archivedHomeworks } = initStubs({
-					archived: userId,
-				});
 				// when
 				const { removeConnectionToArchivedHomeworks } = mapByName(deleteUserRelatedData());
-				const result = await removeConnectionToArchivedHomeworks(userId, replaceUserId);
-				findArchivedHomeworkIdsByUserStub.restore();
-				replaceUserInArchivedHomeworksStub.restore();
+				const result = await removeConnectionToArchivedHomeworks(this.userId);
+
 				// then
-				expect(result.complete).to.be.true;
-				expect(result.trashBinData).to.be.an('object');
-				expect(result.trashBinData).to.haveOwnProperty('scope');
-				expect(result.trashBinData).to.haveOwnProperty('data');
+				checkExpectedTrashbinResultFormat(result);
 				expect(result.trashBinData.scope).to.be.equal('homeworks-archived');
 				expect(result.trashBinData.data.map(idToString)).to.have.members(
-					archivedHomeworks.map((hw) => idToString(hw._id))
+					this.archivedHomeworks.map((hw) => idToString(hw._id))
 				);
 			});
 
@@ -314,14 +255,10 @@ describe('in "deleteUserData.uc" the function', () => {
 			it('should return empty data if not archived submissions', async () => {
 				// given
 				const otherUserId = new ObjectId();
-				const { findArchivedHomeworkIdsByUserStub, replaceUserInArchivedHomeworksStub } = initStubs({
-					archived: userId,
-				});
 				// when
 				const { removeConnectionToArchivedHomeworks } = mapByName(deleteUserRelatedData());
-				const result = await removeConnectionToArchivedHomeworks(otherUserId, replaceUserId);
-				findArchivedHomeworkIdsByUserStub.restore();
-				replaceUserInArchivedHomeworksStub.restore();
+				const result = await removeConnectionToArchivedHomeworks(otherUserId);
+
 				// then
 				expect(result.complete).to.be.true;
 				expect(result.trashBinData.data).to.be.an('array').that.is.empty;

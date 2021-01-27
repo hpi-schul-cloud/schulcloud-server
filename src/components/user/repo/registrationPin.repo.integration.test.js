@@ -1,7 +1,7 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../app');
-const testObjects = require('../../../../test/services/helpers/testObjects');
+const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 const { registrationPinRepo } = require('.');
 const { ValidationError } = require('../../../errors');
 
