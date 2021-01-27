@@ -10,6 +10,7 @@ spec:
   ports:
   - name: redis
     port: 6379
+    protocol: TCP
     targetPort: 6379
   selector:
     app: $SERVICE_NAME-redis

@@ -26,7 +26,7 @@ spec:
           image: redis:6.0.10-alpine3.12
           resources:
             requests:
-              cpu: 100m
-              memory: 100Mi
+              cpu: 1000m
+              memory: 1000Mi
           ports:
           - containerPort: 6379
