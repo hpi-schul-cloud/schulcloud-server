@@ -875,6 +875,17 @@
 },
 {
 	"_id": {
+		"$oid": "5fd9fe1082bcbec8c407c42a"
+	},
+	"state": "up",
+	"name": "create-school-for-deleted-users",
+	"createdAt": {
+		"$date": "2020-12-16T12:31:12.749Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "5ffffbabd26eac720ca4f407"
 	},
 	"state": "up",
@@ -892,6 +903,28 @@
 	"name": "fixStorageProviderInconsistencies",
 	"createdAt": {
 		"$date": "2021-01-06T14:19:02.732Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "600562e9789110143f06ccc2"
+	},
+	"state": "up",
+	"name": "update-pseudonym-indexes",
+	"createdAt": {
+		"$date": "2021-01-18T10:24:39.712Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "60057e386ce08725808ccba0"
+	},
+	"state": "up",
+	"name": "syncIndexes",
+	"createdAt": {
+		"$date": "2021-01-18T12:25:28.66Z"
 	},
 	"__v": 0
 }]
