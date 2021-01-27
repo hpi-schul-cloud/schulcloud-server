@@ -114,8 +114,8 @@ jobs:
         cat k8s/ingress.yaml | envsubst
         cat k8s/ingress.yaml | envsubst | kubectl apply -n $NAMESPACE -f -
 
-        # kubectl get secret $CERT_NAME -o json \
-        # | jq 'del(.metadata["namespace","creationTimestamp","resourceVersion","selfLink","uid"])' \
-        # | kubectl apply -n $NAMESPACE -f -
+        kubectl get secret $CERT_NAME -o json \
+        | jq 'del(.metadata["namespace","creationTimestamp","resourceVersion","selfLink","uid"])' \
+        | kubectl apply -n $NAMESPACE -f -
         
         kubectl rollout status deployment/$SERVICE_NAME -n $NAMESPACE
