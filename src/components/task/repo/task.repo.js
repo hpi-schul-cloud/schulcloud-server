@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const { SubmissionModel, HomeworkModel } = require('../db');
+const { SubmissionModel, HomeworkModel } = require('./db');
 
 const { updateManyResult, deleteManyResult } = require('../../helper/repo.helper');
 
@@ -7,7 +7,7 @@ const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId
 const { missingParameters } = require('../../../errors/helper/assertionErrorHelper');
 const { AssertionError } = require('../../../errors');
 
-const validateObjectId = (objectId) => {
+const validateObjectId = ({ ...objectId }) => {
 	const missingProps = {};
 	for (const prop in objectId) {
 		if (!isValidObjectId(objectId[prop])) {
@@ -21,7 +21,7 @@ const validateObjectId = (objectId) => {
 
 /** Homeworks */
 const privateHomeworkQuery = (userId) => ({ private: true, teacherId: userId });
-const publicHomeworkQuery = (userId) => ({ private: false, teacherId: userId });
+const publicHomeworkQuery = (userId) => ({ private: { $ne: true }, teacherId: userId });
 const archivedHomeworkQuery = (userId) => ({ archived: userId });
 
 /**
@@ -76,9 +76,9 @@ const replaceUserInPublicHomeworks = async (userId, replaceUserId) => {
 	return updateManyResult(result);
 };
 
-const replaceUserInArchivedHomeworks = async (userId, replaceUserId) => {
-	validateObjectId({ userId, replaceUserId });
-	const result = await HomeworkModel.updateMany(archivedHomeworkQuery(userId), { $set: { archived: replaceUserId } })
+const removeUserInArchivedHomeworks = async (userId) => {
+	validateObjectId({ userId });
+	const result = await HomeworkModel.updateMany(archivedHomeworkQuery(userId), { $pull: { archived: userId } })
 		.lean()
 		.exec();
 	return updateManyResult(result);
@@ -89,7 +89,7 @@ const replaceUserInArchivedHomeworks = async (userId, replaceUserId) => {
 const groupSubmissionQuery = (userId) => ({
 	$and: [{ teamMembers: userId }, { teamMembers: { $exists: true, $not: { $size: 0 } } }],
 });
-const singleSubmissionQuery = (userId) => ({
+const userSubmissionQuery = (userId) => ({
 	$and: [{ studentId: userId }, { teamMembers: { $exists: true, $size: 0 } }],
 });
 
@@ -103,7 +103,7 @@ const findGroupSubmissionIdsByUser = async (userId) => {
 	return result;
 };
 
-const findSingleSubmissionsByUser = async (userId) => SubmissionModel.find(singleSubmissionQuery(userId)).lean().exec();
+const findUserSubmissionsByUser = async (userId) => SubmissionModel.find(userSubmissionQuery(userId)).lean().exec();
 
 const removeGroupSubmissionsConnectionsForUser = async (userId) => {
 	validateObjectId({ userId });
@@ -115,7 +115,7 @@ const removeGroupSubmissionsConnectionsForUser = async (userId) => {
 
 const deleteSingleSubmissionsFromUser = async (userId) => {
 	validateObjectId({ userId });
-	const result = await SubmissionModel.deleteMany(singleSubmissionQuery(userId)).lean().exec();
+	const result = await SubmissionModel.deleteMany(userSubmissionQuery(userId)).lean().exec();
 	return deleteManyResult(result);
 };
 
@@ -125,9 +125,9 @@ module.exports = {
 	deletePrivateHomeworksFromUser,
 	replaceUserInPublicHomeworks,
 	findGroupSubmissionIdsByUser,
-	findSingleSubmissionsByUser,
+	findUserSubmissionsByUser,
 	removeGroupSubmissionsConnectionsForUser,
 	deleteSingleSubmissionsFromUser,
 	findArchivedHomeworkIdsByUser,
-	replaceUserInArchivedHomeworks,
+	removeUserInArchivedHomeworks,
 };
