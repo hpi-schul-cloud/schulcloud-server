@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.5.9]
+
+### Fixed
+
+- SC-8503 - Clicking on task in BRB and THR shows pencil page
+
 ## [25.5.8]
 
 ### Changed
@@ -20,7 +26,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Added
 
 - SC-8489 - Added permission check for homework deletion
-
 
 ## [25.5.6]
 
