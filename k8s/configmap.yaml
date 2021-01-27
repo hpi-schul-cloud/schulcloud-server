@@ -31,8 +31,8 @@ data:
   S3_KEY: $SECRET_S3_KEY
   SC_DOMAIN: $STAGING_DOMAIN
   SHOW_VERSION: "1"
-  SMTP: $SECRET_SMTP
-  SMTP_SENDER: staging-noreply@hpi-schul-cloud.de
+  #SMTP: $SECRET_SMTP
+  #SMTP_SENDER: staging-noreply@hpi-schul-cloud.de
   STUDENT_TEAM_CREATION: disabled
   TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION: opt-in
   TZ: Europe/Berlin
