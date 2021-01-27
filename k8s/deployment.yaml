@@ -50,3 +50,11 @@ spec:
               port: 3030
             initialDelaySeconds: 5
             timeoutSeconds: 3
+        - name: $SERVICE_NAME-redis
+          image: redis:redis:6.0.10-alpine3.12
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          ports:
+          - containerPort: 6379
