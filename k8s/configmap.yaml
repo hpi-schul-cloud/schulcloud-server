@@ -5,7 +5,8 @@ metadata:
 data:
   THIS_SERVICE: $SERVICE_NAME
   BRANCH: $NAMESPACE
-  DB_URL: mongodb://10.141.10.250:27017/schulcloud_$NAMESPACE
+  # Add &ssl=true to DB_URL
+  DB_URL: mongodb://10.141.10.112,10.141.10.150,10.141.10.125/schulcloud_$NAMESPACE?replicaSet=myReplicaSet&readPreference=secondary
   NODE_ENV: production
   PORT: "3030"
   LOG_LEVEL: info
@@ -14,9 +15,6 @@ data:
   CALENDAR_API_KEY: "123" #secret
   CALENDAR_URI: http://schulcloud-calendar
   CLIENT_API_KEY: "123" #secret
-  # for running backup.js to setup database
-  MONGO_HOST: "10.141.10.250"
-  MONGO_DATABASE: schulcloud_$NAMESPACE
   # tested list
   ADMIN_TOGGLE_STUDENT_VISIBILITY: enabled
   ALERT_STATUS_API_URL: https://status.hpi-schul-cloud.de/api/v1

@@ -9,11 +9,7 @@ const { log } = console;
 const { env } = process;
 const {
 	BASE_PATH = 'backup/',
-	MONGO_HOST = '127.0.0.1',
-	MONGO_PORT = '27017',
-	// URL defaults to HOST and PORT from above
-	MONGO_URL,
-	MONGO_DATABASE,
+	DB_URL,
 	MONGO_USERNAME,
 	MONGO_PASSWORD,
 	// some values are overridden by args
@@ -98,12 +94,7 @@ const CONFIG = {
 		return path.join(this.BASE_PATH, args['--path'] || getTimestamp());
 	},
 	MONGO: {
-		HOST: MONGO_HOST,
-		PORT: MONGO_PORT,
-		get URL() {
-			return MONGO_URL || args['--url'] || `${this.HOST}:${this.PORT}`;
-		},
-		DATABASE: MONGO_DATABASE || args['--database'] || 'schulcloud',
+		URL: DB_URL || args['--url'] || 'mongodb://127.0.0.1:27017/schulcloud',
 		USERNAME: MONGO_USERNAME || args['--username'],
 		PASSWORD: MONGO_PASSWORD || args['--password'],
 		get CREDENTIALS_ARGS() {
@@ -177,10 +168,7 @@ const ensureDirectoryExistence = (filePath) => {
 const importCollection = async ({ collection, filePath }) => {
 	const cmdArgs = [
 		'mongoimport',
-		'--host',
-		CONFIG.MONGO.HOST,
-		'--db',
-		CONFIG.MONGO.DATABASE,
+		`--uri="${CONFIG.MONGO.URL}"`,
 		...CONFIG.MONGO.CREDENTIALS_ARGS,
 		'--collection',
 		collection,
@@ -192,7 +180,7 @@ const importCollection = async ({ collection, filePath }) => {
 };
 
 const dropDatabase = async () => {
-	const cmdArgs = ['mongo', '--host', CONFIG.MONGO.URL, '--eval', '"db.dropDatabase()"', CONFIG.MONGO.DATABASE];
+	const cmdArgs = ['mongo', `"${CONFIG.MONGO.URL}"`, '--eval', '"db.dropDatabase()"'];
 	const output = await asyncExec(cleanJoin(cmdArgs));
 	log(output);
 	return output;
@@ -201,12 +189,10 @@ const dropDatabase = async () => {
 const getCollectionCount = async () => {
 	const cmdArgs = [
 		'mongo',
-		'--host',
-		CONFIG.MONGO.URL,
+		`"${CONFIG.MONGO.URL}"`,
 		'--quiet',
 		'--eval',
-		'"db.getCollectionNames().length"',
-		CONFIG.MONGO.DATABASE,
+		'"db.getCollectionNames().length"'
 	];
 	const output = await asyncExec(cleanJoin(cmdArgs));
 	// log('output=', output, typeof output, output.trim(), output.trim().length);
@@ -243,10 +229,7 @@ const importDirectory = async (directoryPath) => {
 const exportCollection = async ({ collection, filePath }) => {
 	const cmdArgs = [
 		'mongoexport',
-		'--host',
-		CONFIG.MONGO.URL,
-		'--db',
-		CONFIG.MONGO.DATABASE,
+		`--uri="${CONFIG.MONGO.URL}"`,
 		...CONFIG.MONGO.CREDENTIALS_ARGS,
 		'--collection',
 		collection,
@@ -257,7 +240,7 @@ const exportCollection = async ({ collection, filePath }) => {
 		args['--pretty'] ? '--pretty' : undefined,
 	];
 	const res = await asyncExec(cleanJoin(cmdArgs));
-	log(`Exported ${CONFIG.MONGO.DATABASE}/${collection} into ${filePath}`);
+	log(`Exported ${CONFIG.MONGO.URL}/${collection} into ${filePath}`);
 	return res;
 };
 
@@ -266,7 +249,7 @@ const getCollectionsToExport = async () => {
 	if (!collections) {
 		const cmdArgs = [
 			'mongo',
-			`${CONFIG.MONGO.URL}/${CONFIG.MONGO.DATABASE}`,
+			`"${CONFIG.MONGO.URL}"`,
 			...CONFIG.MONGO.CREDENTIALS_ARGS,
 			'--quiet',
 			'--eval',

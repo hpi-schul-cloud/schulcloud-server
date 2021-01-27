@@ -20,7 +20,7 @@
 	"scripts": {
 		"lint-fix": "eslint . --fix --ignore-path .gitignore",
 		"lint": "eslint . --ignore-path .gitignore",
-		"seed": "node ./backup.js -D schulcloud-test drop && node ./backup.js -p setup/ -D schulcloud-test import",
+		"seed": "node ./backup.js --url mongodb://127.0.0.1:27017/schulcloud-test drop && node ./backup.js -p setup/ --url mongodb://127.0.0.1:27017/schulcloud-test import",
 		"test": "cross-env NODE_ENV=test npm run seed && npm run coverage",
 		"test-inspect": "cross-env NODE_ENV=test npm run seed && npm run mocha-inspect",
 		"backup": "node ./backup.js -b export",
