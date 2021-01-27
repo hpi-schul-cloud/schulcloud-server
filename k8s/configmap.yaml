@@ -11,8 +11,9 @@ data:
   LOG_LEVEL: info
   REQUEST_LOGGING_ENABLED: "true"
   JWT_AUD: $STAGING_DOMAIN
-  CALENDAR_API_KEY: "123"
+  CALENDAR_API_KEY: "123" #secret
   CALENDAR_URI: http://schulcloud-calendar
+  CLIENT_API_KEY: "123" #secret
   # for running backup.js to setup database
   MONGO_HOST: "10.141.10.250"
   MONGO_DATABASE: schulcloud_$NAMESPACE
