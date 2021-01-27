@@ -21,7 +21,7 @@ chai.use(chaiAsPromised);
 const getExpectedUpdateMany = (modifiedDocuments) => ({ success: true, modifiedDocuments });
 const getExpectedDeleteMany = (deletedDocuments) => ({ success: true, deletedDocuments });
 
-describe.only('in "deleteUserData.uc" the function', () => {
+describe('in "deleteUserData.uc" the function', () => {
 	describe('deleteUserData', () => {
 		const userId = new ObjectId();
 		const replaceUserId = new ObjectId();
@@ -46,7 +46,7 @@ describe.only('in "deleteUserData.uc" the function', () => {
 				];
 				deleteSingleSubmissionsFromUserStub.withArgs(userId).returns(getExpectedDeleteMany(2));
 
-				const findSingleSubmissionIdsByUserStub = sinon.stub(repo, 'findSingleSubmissionsByUser');
+				const findSingleSubmissionIdsByUserStub = sinon.stub(repo, 'findUserSubmissionsByUser');
 				findSingleSubmissionIdsByUserStub.callsFake(() => []);
 				findSingleSubmissionIdsByUserStub.withArgs(userId).returns(privateSubmissions);
 
@@ -274,7 +274,7 @@ describe.only('in "deleteUserData.uc" the function', () => {
 
 		describe('removeConnectionToArchivedHomeworks', () => {
 			const initStubs = ({ archived }) => {
-				const replaceUserInArchivedHomeworksStub = sinon.stub(repo, 'replaceUserInArchivedHomeworks');
+				const replaceUserInArchivedHomeworksStub = sinon.stub(repo, 'removeUserInArchivedHomeworks');
 				const archivedHomeworks = [
 					{ _id: new ObjectId(), archived },
 					{ _id: new ObjectId(), archived },
@@ -289,7 +289,7 @@ describe.only('in "deleteUserData.uc" the function', () => {
 			};
 
 			// true work
-			it('should return deleted archived submissions', async () => {
+			it('should return updated archived submissions', async () => {
 				// given
 				const { findArchivedHomeworkIdsByUserStub, replaceUserInArchivedHomeworksStub, archivedHomeworks } = initStubs({
 					archived: userId,

@@ -6,7 +6,7 @@ const { validateObjectId } = require('../../helper/validation.helper');
 
 const deletePrivateSubmissions = async (userId) => {
 	validateObjectId(userId);
-	const result = await taskRepo.findSingleSubmissionsByUser(userId);
+	const result = await taskRepo.findUserSubmissionsByUser(userId);
 	const data = [];
 	let complete = true;
 	if (result.length > 0) {
@@ -67,7 +67,7 @@ const removeConnectionToArchivedHomeworks = async (userId, replaceUserId) => {
 	let complete = true;
 
 	if (result.length > 0) {
-		const status = await taskRepo.replaceUserInArchivedHomeworks(userId, replaceUserId);
+		const status = await taskRepo.removeUserInArchivedHomeworks(userId, replaceUserId);
 		complete = status.success;
 	}
 

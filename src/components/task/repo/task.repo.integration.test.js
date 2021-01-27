@@ -1,7 +1,7 @@
 const chai = require('chai');
 
 const testObjects = require('../../../../test/services/helpers/testObjects');
-const { SubmissionModel, HomeworkModel } = require('../db');
+const { SubmissionModel, HomeworkModel } = require('./db');
 const { AssertionError } = require('../../../errors');
 
 const {
@@ -10,11 +10,11 @@ const {
 	findPublicHomeworkIdsByUser,
 	replaceUserInPublicHomeworks,
 	findGroupSubmissionIdsByUser,
-	findSingleSubmissionsByUser,
+	findUserSubmissionsByUser,
 	removeGroupSubmissionsConnectionsForUser,
 	deleteSingleSubmissionsFromUser,
 	findArchivedHomeworkIdsByUser,
-	replaceUserInArchivedHomeworks,
+	removeUserInArchivedHomeworks,
 } = require('./task.repo');
 const { equal, toString: idToString } = require('../../../helper/compare').ObjectId;
 const appPromise = require('../../../app');
@@ -45,10 +45,14 @@ const createHomeworks = async (testHelper) => {
 	const promOtherPrivateLesson = testHelper.createTestHomework({ teacherId: otherUserId, private: true, lessonId });
 	const promOtherPrivateCourse = testHelper.createTestHomework({ teacherId: otherUserId, private: true, courseId });
 
-	const promArchivedCourse = testHelper.createTestHomework({ archived: userId, courseId });
-	const promArchivedLesson = testHelper.createTestHomework({ archived: userId, lessonId });
-	const promOtherArchivedCourse = testHelper.createTestHomework({ archived: otherUserId, courseId });
-	const promOtheArchivedLesson = testHelper.createTestHomework({ archived: otherUserId, lessonId });
+	const additionalUserId = testHelper.generateObjectId();
+	const promArchivedCourse = testHelper.createTestHomework({ archived: [userId, additionalUserId], courseId });
+	const promArchivedLesson = testHelper.createTestHomework({ archived: [userId, additionalUserId], lessonId });
+	const promOtherArchivedCourse = testHelper.createTestHomework({
+		archived: [otherUserId, additionalUserId],
+		courseId,
+	});
+	const promOtheArchivedLesson = testHelper.createTestHomework({ archived: [otherUserId, additionalUserId], lessonId });
 
 	const [
 		privateH,
@@ -112,7 +116,7 @@ db.cleanupUnexpectedHomeworks = () =>
 		.lean()
 		.exec();
 
-describe.only('in "task.repo" the function', () => {
+describe('in "task.repo" the function', () => {
 	let app;
 	let server;
 	let testHelper;
@@ -270,8 +274,10 @@ describe.only('in "task.repo" the function', () => {
 				db.findHomeworks(userId),
 				db.findHomeworks(otherUserId),
 			]);
-			// public homework still exist
+			// check if the private homework have really been deleted i.e.
+			// only public homework still exist
 			expect(dbResultPublic).to.be.an('array').with.lengthOf(3);
+			expect(dbResultPublic.every((hw) => hw.private !== true)).to.be.true; // false or null is ok
 			expect(dbResultPublic.some(matchId(publicH))).to.be.true;
 			expect(dbResultPublic.some(matchId(publicLessonH))).to.be.true;
 			expect(dbResultPublic.some(matchId(publicCourseH))).to.be.true;
@@ -285,7 +291,8 @@ describe.only('in "task.repo" the function', () => {
 		it('should handle no private homeworks exist without errors', async () => {
 			const userId = testHelper.generateObjectId();
 
-			await testHelper.createTestHomework({ teacherId: userId });
+			await testHelper.createTestHomework({ private: false, teacherId: userId });
+			await testHelper.createTestHomework({ private: null, teacherId: userId });
 			const result = await deletePrivateHomeworksFromUser(userId);
 			expect(result).to.eql(getExpectedDeleteMany(0));
 		});
@@ -571,7 +578,7 @@ describe.only('in "task.repo" the function', () => {
 			// submission of other user
 			await testHelper.createTestSubmission({ studentId: otherUserId });
 
-			const result = await findSingleSubmissionsByUser(userId);
+			const result = await findUserSubmissionsByUser(userId);
 			expect(result).to.be.an('array').with.lengthOf(2);
 			expect(result.map((sm) => idToString(sm._id))).to.have.members([
 				idToString(submission._id),
@@ -584,7 +591,7 @@ describe.only('in "task.repo" the function', () => {
 			const otherUserId = testHelper.generateObjectId();
 
 			await testHelper.createTestSubmission({ studentId: otherUserId });
-			const result = await findSingleSubmissionsByUser(userId);
+			const result = await findUserSubmissionsByUser(userId);
 			expect(result).to.be.an('array').with.lengthOf(0);
 		});
 
@@ -593,20 +600,20 @@ describe.only('in "task.repo" the function', () => {
 			const otherUserId = testHelper.generateObjectId();
 
 			await testHelper.createTestSubmission({ studentId: otherUserId });
-			const result = await findSingleSubmissionsByUser(userId);
+			const result = await findUserSubmissionsByUser(userId);
 			expect(result).to.be.an('array').with.lengthOf(0);
 		});
 
 		it('should handle unexpected inputs', async () => {
 			// must execute step by step that errors not mixed
-			const resultNull = await findSingleSubmissionsByUser(null);
+			const resultNull = await findUserSubmissionsByUser(null);
 			expect(resultNull, 'when input is null').to.be.an('array').with.lengthOf(0);
 
-			const resultUndefined = await findSingleSubmissionsByUser(undefined);
+			const resultUndefined = await findUserSubmissionsByUser(undefined);
 			expect(resultUndefined, 'when input is undefined').to.be.an('array').with.lengthOf(0);
 
 			try {
-				await findSingleSubmissionsByUser('123');
+				await findUserSubmissionsByUser('123');
 				throw new Error('test failed');
 			} catch (err) {
 				expect(err.message, 'when input is not bson string').to.equal(
@@ -615,7 +622,7 @@ describe.only('in "task.repo" the function', () => {
 			}
 
 			try {
-				await findSingleSubmissionsByUser(() => {});
+				await findUserSubmissionsByUser(() => {});
 				throw new Error('test failed');
 			} catch (err) {
 				expect(err.message, 'when input is not bson string').to.equal(
@@ -717,26 +724,18 @@ describe.only('in "task.repo" the function', () => {
 
 	describe('replaceUserInArchivedHomeworks', () => {
 		it('should replace user in archived homeworks in all contexts', async () => {
-			const replaceUserId = testHelper.generateObjectId();
-			const { userId, otherUserId, archivedC, archivedL, otherArchivedC, otherArchivedL } = await createHomeworks(
-				testHelper
-			);
+			const { userId, otherUserId, otherArchivedC, otherArchivedL } = await createHomeworks(testHelper);
 
-			const result = await replaceUserInArchivedHomeworks(userId, replaceUserId);
+			const result = await removeUserInArchivedHomeworks(userId);
 			expect(result).to.eql(getExpectedUpdateMany(2));
 
-			const [dbResultUser, dbResultOther, dbResultReplaceUser] = await Promise.all([
+			const [dbResultUser, dbResultOther] = await Promise.all([
 				db.findArchivedHomework(userId),
 				db.findArchivedHomework(otherUserId),
-				db.findArchivedHomework(replaceUserId),
 			]);
 			// there is no archived homework with the user
 			expect(dbResultUser).to.be.an('array').with.lengthOf(0);
 
-			// archived user is replaced
-			expect(dbResultReplaceUser).to.be.an('array').with.lengthOf(2);
-			expect(dbResultReplaceUser.some(matchId(archivedC))).to.be.true;
-			expect(dbResultReplaceUser.some(matchId(archivedL))).to.be.true;
 			// homeworks from other users are not touched
 			expect(dbResultOther).to.be.an('array').with.lengthOf(2);
 			expect(dbResultOther.some(matchId(otherArchivedC))).to.be.true;
@@ -744,52 +743,31 @@ describe.only('in "task.repo" the function', () => {
 		});
 
 		it('should handle no matching archived homeworks exist without errors', async () => {
-			const replaceUserId = testHelper.generateObjectId();
 			const userId = testHelper.generateObjectId();
 			const otherUserId = testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ archived: otherUserId, private: true });
-			const result = await replaceUserInArchivedHomeworks(userId, replaceUserId);
+			const result = await removeUserInArchivedHomeworks(userId);
 			expect(result).to.eql(getExpectedUpdateMany(0));
 		});
 
 		it('should handle unexpected first parameter inputs', async () => {
-			const replaceUserId = testHelper.generateObjectId();
 			const userId = testHelper.generateObjectId();
 
 			await testHelper.createTestHomework({ archived: userId });
 			// must execute step by step that errors not mixed
-			expect(replaceUserInArchivedHomeworks(null, replaceUserId))
+			expect(removeUserInArchivedHomeworks(null))
 				.to.eventually.throw(AssertionError)
 				.with.property(getExpectedAssertionError('userId'));
-			expect(replaceUserInArchivedHomeworks(undefined, replaceUserId))
+			expect(removeUserInArchivedHomeworks(undefined))
 				.to.eventually.throw(AssertionError)
 				.with.property(getExpectedAssertionError('userId'));
-			expect(replaceUserInArchivedHomeworks('123', replaceUserId))
+			expect(removeUserInArchivedHomeworks('123'))
 				.to.eventually.throw(AssertionError)
 				.with.property(getExpectedAssertionError('userId'));
-			expect(replaceUserInArchivedHomeworks(() => {}, replaceUserId))
+			expect(removeUserInArchivedHomeworks(() => {}))
 				.to.eventually.throw(AssertionError)
 				.with.property(getExpectedAssertionError('userId'));
-		});
-
-		it('should handle unexpected second parameter inputs', async () => {
-			const userId = testHelper.generateObjectId();
-
-			await testHelper.createTestHomework({ archived: userId });
-			// must execute step by step that errors not mixed
-			expect(replaceUserInArchivedHomeworks(userId, null))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('replaceUserId'));
-			expect(replaceUserInArchivedHomeworks(userId, undefined))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('replaceUserId'));
-			expect(replaceUserInArchivedHomeworks(userId, '123'))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('replaceUserId'));
-			expect(replaceUserInArchivedHomeworks(userId, () => {}))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('replaceUserId'));
 		});
 	});
 });
