@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $SERVICE_NAME-redis-master
+  labels:
+    app: $SERVICE_NAME-redis
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: $SERVICE_NAME-redis
+      role: master
+      tier: backend
+  template:
+    metadata:
+      name: $SERVICE_NAME-redis
+      labels:
+        app: $SERVICE_NAME-redis
+        role: master
+        tier: backend
+    spec:
+      containers:
+        - name: $SERVICE_NAME-redis
+          image: redis:6.0.10-alpine3.12
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 1000Mi
+          ports:
+          - containerPort: 6379
