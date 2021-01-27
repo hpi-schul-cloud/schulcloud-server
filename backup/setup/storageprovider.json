@@ -10,7 +10,7 @@
         "accessKeyId":"<AWS_ACCESS_KEY_ID>",
         "secretAccessKey":"<AWS_SECRET_ACCESS_KEY>",
         "maxBuckets":200,
-        "freeBuckets":200,
+        "freeBuckets":199,
         "createdAt":{
             "$date":"2021-01-27T12:49:11.681+00:00"
         },
