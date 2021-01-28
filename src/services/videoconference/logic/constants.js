@@ -1,3 +1,8 @@
+const { SC_DOMAIN } = require('../../../../config/globals');
+
+/** Key to separate different Instances on BBB LB */
+exports.ORIGIN_SERVER_NAME = SC_DOMAIN;
+
 const roles = { MODERATOR: 'moderator', ATTENDEE: 'attendee' };
 exports.ROLES = roles;
 
