@@ -33,7 +33,7 @@ data:
   SC_DOMAIN: $STAGING_DOMAIN
   SHOW_VERSION: "1"
   NOTIFICATION_PLATFORM: schul-cloud
-  NOTIFICATION_URI: http://notification-service
+  NOTIFICATION_URI: http://node-notification-service
   #SMTP: $SECRET_SMTP
   #SMTP_SENDER: staging-noreply@hpi-schul-cloud.de
   STUDENT_TEAM_CREATION: disabled
