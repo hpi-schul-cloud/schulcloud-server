@@ -22,7 +22,7 @@ const pseudonymSchema = new Schema(
 );
 
 pseudonymSchema.index({ pseudonym: 1 }, { unique: true });
-pseudonymSchema.index({ userId: 1, toolId: 1 });
+pseudonymSchema.index({ userId: 1, toolId: 1 }, { unique: true });
 
 pseudonymSchema.plugin(idValidator);
 enableAuditLog(pseudonymSchema);

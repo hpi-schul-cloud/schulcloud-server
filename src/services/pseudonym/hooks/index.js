@@ -26,7 +26,7 @@ const replaceToolWithOrigin = (hook) => {
 /**
  * looks for user and tool combinations that aren't existing, creates them and adds them into result.data
  */
-const createMissingPseudonyms = (context) => {
+const createMissingPseudonyms = async (context) => {
 	// prevent pseudonym creation when only pseudonym is given
 	if (!context.params.query.toolId || !context.params.query.userId) return context;
 	const toolIds = toArray(context.params.query.toolId);
@@ -41,13 +41,17 @@ const createMissingPseudonyms = (context) => {
 		}
 	}
 	if (!missingPseudonyms.length) return context;
-	return context.app
-		.service('pseudonym')
-		.create(missingPseudonyms)
-		.then((results) => {
-			context.result.data = context.result.data.concat(results);
-			return context;
-		});
+
+	for (const missingPseudonym of missingPseudonyms) {
+		try {
+			// eslint-disable-next-line no-await-in-loop
+			const pseudonym = await context.app.service('pseudonym').create(missingPseudonym);
+			context.result.data = context.result.data.concat(pseudonym);
+		} catch (err) {
+			if (err.code === 409) continue;
+		}
+	}
+	return context;
 };
 
 /**
