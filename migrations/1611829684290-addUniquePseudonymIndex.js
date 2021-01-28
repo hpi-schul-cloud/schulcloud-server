@@ -8,11 +8,9 @@ const { connect, close } = require('../src/utils/database');
 // https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
 
 const syncIndexes = async () => {
-	await connect();
 	alert('start updating pseudonym indexes...');
 	await pseudonymModel.syncIndexes();
 	alert('finished updating pseudonym indexes...');
-	await close();
 };
 
 module.exports = {
@@ -26,6 +24,8 @@ module.exports = {
 	},
 
 	down: async function down() {
+		await connect();
 		await syncIndexes();
+		await close();
 	},
 };
