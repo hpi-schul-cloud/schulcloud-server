@@ -3,7 +3,6 @@ const chai = require('chai');
 const appPromise = require('../../../src/app');
 const TestObjectGenerator = require('../helpers/TestObjectsGenerator');
 const { NotAuthenticated, NotFound } = require('../../../src/errors');
-const testObjects = require('../helpers/testObjects')(appPromise);
 
 const { expect } = chai;
 
@@ -157,28 +156,28 @@ describe('homework service', () => {
         });
     });
 
-	describe('when DELETE a task (homework)', async () => {
+    describe('when DELETE a task (homework)', async () => {
 		const createPrivateTestData = async () => {
-			const user = await testObjects.createTestUser({ roles: ['teacher'] });
-			const homework = await testObjects.createTestHomework({
-				teacherId: user._id,
-				name: 'Testaufgabe',
-				description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
-				availableDate: Date.now(),
-				dueDate: '2030-11-16T12:47:00.000Z',
-				private: true,
-				lessonId: null,
-				courseId: null,
-			});
-			return { user, homework };
+        const { user } = await tog.createTestUserAndAccount({ roles: ['teacher'] });
+        const homework = await tog.createTestHomework({
+            teacherId: user._id,
+            name: 'Testaufgabe',
+            description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
+            availableDate: Date.now(),
+            dueDate: '2030-11-16T12:47:00.000Z',
+            private: true,
+
+            lessonId: null,
+            courseId: null,
+        });return { user, homework };
 		};
 
 		it('should remove a users private task', async () => {
 			const { user, homework } = await createPrivateTestData();
-			const params = await testObjects.generateRequestParamsFromUser(user);
-			params.query = {};
-			const result = await homeworkService.remove(homework._id, params);
-			expect(result._id).to.deep.equal(homework._id);
+        const params = await tog.generateRequestParamsFromUser(user);
+        params.query = {};
+        const result = await homeworkService.remove(homework._id, params);
+        expect(result._id).to.deep.equal(homework._id);
 			expect(homeworkService.get(homework._id, params)).to.be.rejectedWith(NotFound);
 		});
 		it('should not allow to remove other users private tasks', async () => {
@@ -202,8 +201,8 @@ describe('homework service', () => {
 			const otherStudent = await testObjects.createTestUser({ roles: ['student'] });
 			const course = await testObjects.createTestCourse({
 				teacherIds: [teacher._id],
-				substitutionIds: [substituteTeacher._id],
-				userIds: [student._id],
+        substitutionIds: [substituteTeacher._id],
+            userIds: [student._id],
 			});
 			const homework = await testObjects.createTestHomework({
 				teacherId: teacher._id,
@@ -222,12 +221,12 @@ describe('homework service', () => {
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			params.query = {};
 			expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(NotAuthenticated);
-		});
+            });
 		it('should not allow homework removal by any student', async () => {
 			const { otherStudent, homework } = await createCourseTestData();
 			const params = await testObjects.generateRequestParamsFromUser(otherStudent);
-			params.query = {};
-			expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(NotAuthenticated);
+        params.query = {};
+            expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(NotAuthenticated);
 		});
 		it('should not allow homework removal by any teacher', async () => {
 			const { otherTeacher, homework } = await createCourseTestData();
@@ -248,10 +247,10 @@ describe('homework service', () => {
 			const params = await testObjects.generateRequestParamsFromUser(substituteTeacher);
 			params.query = {};
 			const result = await homeworkService.remove(homework._id, params);
-			expect(result._id).to.deep.equal(homework._id);
+            expect(result._id).to.deep.equal(homework._id);
 			expect(homeworkService.get(homework._id, params)).to.be.rejectedWith(NotFound);
-		});
-	});
+        });
+    });
 
     it('FIND only my own tasks', async () => {
         const { user } = await tog.createTestUserAndAccount({ roles: ['teacher'] });
