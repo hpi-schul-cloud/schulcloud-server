@@ -48,7 +48,7 @@ const createMissingPseudonyms = async (context) => {
 			const pseudonym = await context.app.service('pseudonym').create(missingPseudonym);
 			context.result.data = context.result.data.concat(pseudonym);
 		} catch (err) {
-			if (err.code === 409) continue; // the pseudonym already exist and can be skipped
+			if (err.code === 409) continue; // the pseudonym already exists and can be skipped
 			throw err;
 		}
 	}
