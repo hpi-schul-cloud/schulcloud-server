@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.5.10]
+
+- SC-8506 - add origin server name to bbb create and join requests
+
 ## [25.5.9]
 
 ### Fixed
