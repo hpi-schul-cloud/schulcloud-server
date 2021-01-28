@@ -90,14 +90,14 @@ class QrRegistrationLinks {
 
 	getValidUserIds(data) {
 		const { selectionType, userIds: inputUserIds, schoolId, roleName } = data;
-		if (roleName !== 'student' && roleName !== 'teacher') {
+		if (roleName && roleName !== 'student' && roleName !== 'teacher') {
 			throw new BadRequest('The given role is not supported');
 		}
 
 		const userIds = this.isInclusive(selectionType) ? inputUserIds : { $nin: inputUserIds };
 		return this.userModelService
 			.find({
-				query: { _id: userIds, roles: [roleName], schoolId },
+				query: { _id: userIds, schoolId },
 				paginate: false,
 			})
 			.then((users) => users.map((user) => String(user.id)));
