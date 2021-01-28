@@ -12,6 +12,23 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 - SC-8477 LDAP-Sync: Speed up class sync by holding all the school's users in map while creating/populating classes
 - SC-8477 LDAP-Sync: Speed up user sync by holding all the school's users in map while syncing new users
+## [25.5.9]
+
+### Fixed
+
+- SC-8503 - Clicking on task in BRB and THR shows pencil page
+
+## [25.5.8]
+
+### Changed
+
+- SC-8480 - Return GeneralError if unknown error code is given to error pipeline
+
+## [25.5.7]
+
+## Added
+
+- SC-8489 - Added permission check for homework deletion
 
 ## [25.5.6]
 
