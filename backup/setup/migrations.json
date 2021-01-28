@@ -932,7 +932,7 @@
 	"_id": {
 		"$oid": "601291b4dde43251a883c422"
 	},
-	"state": "down",
+	"state": "up",
 	"name": "addUniquePseudonymIndex",
 	"createdAt": {
 		"$date": "2021-01-28T10:28:04.29Z"
