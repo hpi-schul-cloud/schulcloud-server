@@ -2,6 +2,7 @@ const axios = require('axios');
 const FormData = require('form-data');
 const logger = require('../../logger');
 const hooks = require('./hooks');
+const formidable = require("formidable");
 
 const apiToken = require('../../../config/secrets').IDAS_API_KEY;
 
@@ -155,13 +156,13 @@ class WalletFileService {
 	}
 
 	async create(data, params) {
-		logger.info(data);
+		/*logger.info(data);
 		logger.info(data.files);
 
 		const form = new FormData();
 
 		logger.info(form.getHeaders());
-
+*/
 		return data;
 
 		/*
@@ -222,20 +223,34 @@ module.exports = function () {
 	const app = this;
 
 	const multer = require("multer");
-	const file = multer()
+	const fileMiddleware = multer();
+
+	app.use('/wallet/files', (req, res, next) => {
+		console.log(req.headers['content-type']);
+		console.log(req.body);
+		console.log(req.body.toString());
+		next();
+	});
+
+	app.use('/wallet/files',
+		fileMiddleware.single('file'),
+		function (req, res, next) {
+			// console.log(req)
+			console.log(req.file);
+			console.log(req.body);
+
+			// req.feathers.files = req.files;
+
+			next();
+		},
+		new WalletFileService());
 
 	app.use('/wallet', new Service());
 	const walletService = app.service('/wallet');
 	walletService.hooks(hooks);
 
-	app.use('/wallet/files',
-		file.single('file'),
-		function (req, res, next) {
-			req.feathers.files = req.files;
-			next();
-		},
-		new WalletFileService());
 
-	const walletFileService = app.service('/wallet/files');
-	walletFileService.hooks(hooks);
+
+	// const walletFileService = app.service('/wallet/files');
+	// walletFileService.hooks(hooks);
 };
