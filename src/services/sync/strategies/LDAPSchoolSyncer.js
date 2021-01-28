@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 const accountModel = require('../../account/model');
 const Syncer = require('./Syncer');
 
