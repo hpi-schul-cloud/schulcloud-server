@@ -28,6 +28,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-4576 - sanitize bbb room and member names
 - SC-8300 Added user information to LDAP Sync in case of errors
 
+## [25.5.10]
+
+- SC-8506 - add origin server name to bbb create and join requests
+
 ## [25.5.9]
 
 ### Fixed
