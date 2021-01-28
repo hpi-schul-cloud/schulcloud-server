@@ -97,7 +97,7 @@ class QrRegistrationLinks {
 		const userIds = this.isInclusive(selectionType) ? inputUserIds : { $nin: inputUserIds };
 		return this.userModelService
 			.find({
-				query: { _id: userIds, schoolId },
+				query: { _id: userIds, roles: [roleName], schoolId },
 				paginate: false,
 			})
 			.then((users) => users.map((user) => String(user.id)));
