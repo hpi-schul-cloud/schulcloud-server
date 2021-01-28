@@ -5,10 +5,11 @@ module.exports = class AbstractGenerator {
         }
         this._app = app;
         this._createdEntitiesIds = [];
+        this._service = undefined;
     }
 
-    async create(data) {
-        const result = await this._service.create(data);
+    async create(data, params = {}) {
+        const result = await this._service.create(data, params);
         this._createdEntitiesIds.push(result._id);
         return result;
     }
@@ -17,15 +18,19 @@ module.exports = class AbstractGenerator {
         return this._createdEntitiesIds;
     }
 
+    get rawService() {
+        return this._service;
+    }
+
     /**
      * default implementation for cleanup
      * @returns {Promise<void>}
      */
-    async cleanup() {
+    async cleanup(params) {
         if (this._createdEntitiesIds.length===0) {
             return;
         }
-        await Promise.all(this._createdEntitiesIds.map(id => this._service.remove(id)));
+        await Promise.all(this._createdEntitiesIds.map(id => this._service.remove(id, params)));
         this._createdEntitiesIds = [];
     }
 };

@@ -1,9 +1,10 @@
-const { Users, Accounts, Classes, Schools, Roles, Systems } = require('./generators');
+const {
+    Users, Accounts, Classes, Schools, Roles, Systems, Homeworks, Courses, Submissions, Lessons
+} = require('./generators');
 
 class TestObjectsGenerator {
     constructor(app) {
         this._app = app;
-        this._createdUserIds = [];
         this._schoolId = '5f2987e020834114b8efd6f8';
 
         this._generators = {
@@ -13,6 +14,10 @@ class TestObjectsGenerator {
             schools: new Schools(this._app),
             roles: new Roles(this._app),
             systems: new Systems(this._app),
+            homeworks: new Homeworks(this._app),
+            courses: new Courses(this._app),
+            submissions: new Submissions(this._app),
+            lessons: new Lessons(this._app),
         };
     }
 
@@ -68,7 +73,7 @@ class TestObjectsGenerator {
     }
 
     async createTestClass(data) {
-        return this._generators.classes.create({ ...data, schoolId: this._schoolId });
+        return this._generators.classes.create({ schoolId: this._schoolId, ...data });
     }
 
     async createTestSchool(data) {
@@ -81,6 +86,22 @@ class TestObjectsGenerator {
 
     async createTestSystem(data) {
         return this._generators.systems.create(data);
+    }
+
+    async createTestHomework(data) {
+        return this._generators.homeworks.create({ schoolId: this._schoolId, ...data });
+    }
+
+    async createTestCourse(data) {
+        return this._generators.courses.create({ schoolId: this._schoolId, ...data });
+    }
+
+    async createTestSubmission(data) {
+        return this._generators.submissions.create({ schoolId: this._schoolId, ...data });
+    }
+
+    async createTestLesson(data, params = {}) {
+        return this._generators.lessons.create({ schoolId: this._schoolId, ...data }, params);
     }
 
     async generateRequestParamsFromUser(user) {
@@ -100,7 +121,19 @@ class TestObjectsGenerator {
      * @returns {Promise<void>}
      */
     async cleanup() {
-        await Promise.all(Object.values(this._generators).map((factory) => factory.cleanup()));
+        // just a temporary workaround
+        // this should be removed, when we completely reset (teardown) the in-memory-database
+        const { user: admin } = await this.createTestUserAndAccount({
+            roles: ['superhero', 'teacher'],
+            manualCleanup: true
+        });
+        const params = await this.generateRequestParamsFromUser(admin);
+        params.provider = ['server'];
+
+        await Promise.all(Object.values(this._generators).reverse().map((factory) => factory.cleanup(params)));
+
+        // cleanup temporary user
+        await this._generators.users.rawService.remove(admin._id);
     }
 }
 
