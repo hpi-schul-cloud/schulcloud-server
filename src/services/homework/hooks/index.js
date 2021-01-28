@@ -53,9 +53,9 @@ function isGraded(submission) {
  * @param {*} homework
  * @returns {Boolean}
  */
-const isPrivateHomeworkOwner = (userId, homework) => {
+const isHomeworkOwner = (userId, homework) => {
 	// changed logic, added private check beside owner-check
-	const result = homework.private === true && equalIds(userId, homework.teacherId) === true;
+	const result = equalIds(userId, homework.teacherId) === true;
 	return result;
 };
 
@@ -72,9 +72,6 @@ const isCourseHomeworkTeacher = (userId, homework) => {
 	if (!isValidId(userId)) throw new GeneralError('missing valid userId', { userId });
 	if (!homework || !homework.courseId) throw new GeneralError('course id (populated) in homework');
 
-	// do not check courseTeacher for private homework
-	if (homework.private === true) return false;
-
 	const isCourseTeacher = (homework.courseId.teacherIds || []).some((teacherId) => equalIds(teacherId, userId));
 	const isCourseSubstitution = (homework.courseId.substitutionIds || []).some((substitutionId) =>
 		equalIds(substitutionId, userId)
@@ -90,10 +87,11 @@ const isCourseHomeworkTeacher = (userId, homework) => {
  * @param {*} homework
  */
 function hasHomeworkPermission(userId, homework) {
-	if (isPrivateHomeworkOwner(userId, homework) === true || isCourseHomeworkTeacher(userId, homework) === true) {
-		return true;
+	let hasPermission = isHomeworkOwner(userId, homework) === true;
+	if (!hasPermission && !homework.private) {
+		hasPermission = isCourseHomeworkTeacher(userId, homework) === true;
 	}
-	return false;
+	return hasPermission;
 }
 
 const hasViewPermissionBefore = (hook) => {

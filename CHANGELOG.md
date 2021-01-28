@@ -29,6 +29,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-4576 - sanitize bbb room and member names
 - SC-8300 Added user information to LDAP Sync in case of errors
 
+## [25.5.9]
+
+### Fixed
+
+- SC-8503 - Clicking on task in BRB and THR shows pencil page
+
 ## [25.5.8]
 
 ### Changed
