@@ -32,6 +32,8 @@ data:
   # S3_KEY: $SECRET_S3_KEY
   SC_DOMAIN: $STAGING_DOMAIN
   SHOW_VERSION: "1"
+  NOTIFICATION_PLATFORM: schul-cloud
+  NOTIFICATION_URI: http://notification-service
   #SMTP: $SECRET_SMTP
   #SMTP_SENDER: staging-noreply@hpi-schul-cloud.de
   STUDENT_TEAM_CREATION: disabled
@@ -96,8 +98,6 @@ data:
   # MEMORY_INTERVAL_TIME: 0
   # MONGO_URI: mongodb://mongo-1.schul-cloud.org:30040,mongo-2.schul-cloud.org:30040,mongo-3.schul-cloud.org:30040/schulcloud?replicaSet: staging&ssl: true&readPreference: secondary
   # NODE_OPTIONS: --max-old-space-size: 2048
-  # NOTIFICATION_PLATFORM: schul-cloud
-  # NOTIFICATION_URI: http://notification-service:3031
   # RABBITMQ_URI: amqp://staging_insights_rabbitmq:5672
   # ROCKET_CHAT_ADMIN_ID
   # ROCKET_CHAT_ADMIN_TOKEN
