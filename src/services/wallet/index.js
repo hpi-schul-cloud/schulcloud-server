@@ -158,11 +158,14 @@ class WalletFileService {
 	async create(data, params) {
 
 		const form = new FormData();
-		form.append('file', params.file.buffer, {filename: data.title});
+		form.append('file', params.file.buffer, {
+			filename: params.file.originalname,
+			contentType: params.file.mimetype,
+		});
 		form.append('title', data.title);
 		form.append('expiresAt', new Date(Date.now() + 1000*60*60).toISOString())
 		form.append('description', data.description);
-		
+
 		const file = await axios.post("https://daad.idas.solutions/api/v1/Files",
 			form, 
 			{
