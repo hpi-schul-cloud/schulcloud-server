@@ -8,6 +8,7 @@ const Homeworks = require('./Homeworks');
 const Courses = require('./Courses');
 const Submissions = require('./Submissions');
 const Lessons = require('./Lessons');
+const RegistrationPins = require('./RegistrationPins');
 
 module.exports = {
     Users,
@@ -20,4 +21,16 @@ module.exports = {
     Courses,
     Submissions,
     Lessons,
+    RegistrationPins,
+};
+
+module.exports.Consents = (app) => {
+    class GenericGenerator extends require('./AbstractGenerator') {
+        constructor(app) {
+            super(app);
+            this._service = app.service('consents');
+        }
+    }
+
+    return new GenericGenerator(app);
 };

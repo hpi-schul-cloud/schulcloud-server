@@ -1,5 +1,16 @@
 const {
-    Users, Accounts, Classes, Schools, Roles, Systems, Homeworks, Courses, Submissions, Lessons
+    Users,
+    Accounts,
+    Classes,
+    Schools,
+    Roles,
+    Systems,
+    Homeworks,
+    Courses,
+    Submissions,
+    Lessons,
+    RegistrationPins,
+    Consents
 } = require('./generators');
 
 class TestObjectsGenerator {
@@ -18,6 +29,7 @@ class TestObjectsGenerator {
             courses: new Courses(this._app),
             submissions: new Submissions(this._app),
             lessons: new Lessons(this._app),
+            registrationPins: new RegistrationPins(this._app),
         };
     }
 
@@ -44,7 +56,8 @@ class TestObjectsGenerator {
             users: this._generators.users.created,
             accounts: this._generators.accounts.created,
             schools: this._generators.schools.created,
-            roles: this._generators.roles.created
+            roles: this._generators.roles.created,
+            registrationPins: this._generators.registrationPins.created,
         };
     }
 
@@ -128,7 +141,8 @@ class TestObjectsGenerator {
             manualCleanup: true
         });
         const params = await this.generateRequestParamsFromUser(admin);
-        params.provider = ['server'];
+        // params.provider = ['server'];
+        params.provider = undefined;
 
         await Promise.all(Object.values(this._generators).reverse().map((factory) => factory.cleanup(params)));
 
