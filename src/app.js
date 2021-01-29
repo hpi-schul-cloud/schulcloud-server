@@ -65,7 +65,7 @@ const setupApp = async () => {
 		.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
 		.use('/', bodyParser.json({ limit: '10mb' }))
 		.use(bodyParser.urlencoded({ extended: true }))
-		.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
+		.use(bodyParser.raw({ type: (req) => !req.headers['content-type'].includes('multipart/form-data'), limit: '10mb' }))
 		.use(defaultHeaders)
 		.get('/system_info/haproxy', (req, res) => {
 			res.send({ timestamp: new Date().getTime() });
