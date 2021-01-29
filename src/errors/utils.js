@@ -5,17 +5,9 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const { incomingMessageToJson } = require('../utils');
 
 const logger = require('../logger');
-const { errorsByCode } = require('./index.js');
+const { ApplicationError, SilentError } = require('./index');
 
 const isFeatherError = (error) => error.type === 'FeathersError';
-
-const convertToFeathersError = (error) => {
-	if (isFeatherError(error)) {
-		return error;
-	}
-	const code = error.statusCode || error.code || 500;
-	return errorsByCode[code] ? new errorsByCode[code](error) : new errorsByCode[500](error);
-};
 
 const cleanupIncomingMessage = (error = {}) => {
 	if (error.response instanceof http.IncomingMessage) {
@@ -43,9 +35,13 @@ const asyncErrorLog = (err, message) => {
 	}
 };
 
+const isSilentError = (error) => error instanceof SilentError || (error && error.error instanceof SilentError); // TODO why checking error.error here
+const isApplicationError = (error) => error instanceof ApplicationError;
+
 module.exports = {
 	isFeatherError,
-	convertToFeathersError,
 	cleanupIncomingMessage,
 	asyncErrorLog,
+	isSilentError,
+	isApplicationError,
 };

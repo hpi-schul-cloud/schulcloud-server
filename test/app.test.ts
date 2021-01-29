@@ -35,7 +35,7 @@ describe('Feathers application tests', () => {
 			assert.equal(res.status, 404);
 			assert.equal(res.body.code, 404);
 			assert.equal(res.body.message, 'Page not found.');
-			assert.equal(res.body.name, 'PageNotFound');
+			assert.equal(res.body.title, 'PageNotFound');
 		});
 
 		it('serves swagger api docs', async () => {

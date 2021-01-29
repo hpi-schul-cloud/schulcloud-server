@@ -8,12 +8,13 @@ const userUC = require('./users.uc');
 const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
 const errorUtils = require('../../../errors/utils');
 const { facadeLocator } = require('../../../utils/facadeLocator');
+const { trashBinResult } = require('../../helper/uc.helper');
 
 const { expect, assert } = chai;
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-const USER_ID = 'USER_ID';
+const USER_ID = new ObjectId();
 const CURRENT_USER_ID = 'CURRENT_USER_ID';
 const CURRENT_SCHOOL_ID = new ObjectId();
 
@@ -61,14 +62,9 @@ const createTestTrashbin = (userId = USER_ID) => {
 	};
 };
 
-const trashBinExample1 = {
-	complete: true,
-	data: [{ scope: 'scope1', trashbinData: 'some Info' }],
-};
-const trashBinExample2 = {
-	complete: true,
-	data: [{ scope: 'scope1', trashbinData: 'some Info' }],
-};
+const trashBinExample1 = trashBinResult({ scope: 'scope1', data: 'some Info', complete: true });
+const trashBinExample2 = trashBinResult({ scope: 'scope1', data: 'some Info', complete: true });
+
 const facadeStubs = {
 	facade1: {
 		deleteUserData: [sinon.stub().returns(trashBinExample1)],
@@ -80,6 +76,11 @@ const facadeStubs = {
 	errorFacade2: { deleteUserData: [sinon.stub().throws('another error'), sinon.stub().throws('error again')] },
 	'/registrationPin/v2': {
 		deleteRegistrationPinsByEmail: [sinon.stub().returns(trashBinExample2)],
+	},
+	'/school/v2': {
+		getSchool: sinon.stub().returns({ name: 'dummy school', tombstoneUserId: 'dummy-id' }),
+		// getTombstoneSchool
+		// updateSchool
 	},
 };
 
@@ -145,25 +146,25 @@ describe('users usecase', () => {
 
 	describe('deleteUserRelatedData', () => {
 		it('should not throw for empty facade list', () => {
-			expect(userUC.deleteUserRelatedData('12', [])).to.not.be.rejected;
+			expect(userUC.deleteUserRelatedData('12', 'tombstoneUserId', [])).to.not.be.rejected;
 		});
 
 		it('should update trashbin correctly if facade.deleteUser is a function', async () => {
 			const testUserId = '12';
-			await userUC.deleteUserRelatedData(testUserId, ['facade1']);
+			await userUC.deleteUserRelatedData(testUserId, 'tombstoneUserId', ['facade1']);
 
 			const deleteUserStub = facadeStubs.facade1.deleteUserData[0];
 			expect(deleteUserStub.callCount).to.be.equal(1);
 			expect(deleteUserStub.calledWith(testUserId), 'deleteUser not called with correct userId').to.be.true;
 			expect(
-				updateTrashbinByUserIdStub.calledWith(testUserId, trashBinExample1.data),
+				updateTrashbinByUserIdStub.calledWith(testUserId, trashBinExample1.trashBinData),
 				'updateTrashbinByUser not called with correct params'
 			).to.be.true;
 		});
 
 		it('should update trashbin correctly if facade.deleteUser is an array of functions', async () => {
 			const testUserId = '12';
-			await userUC.deleteUserRelatedData(testUserId, ['facade2']);
+			await userUC.deleteUserRelatedData(testUserId, 'tombstoneUserId', ['facade2']);
 
 			const deleteUserStubs = facadeStubs.facade2.deleteUserData;
 			expect(deleteUserStubs[0].callCount).to.be.equal(1);
@@ -171,30 +172,30 @@ describe('users usecase', () => {
 			expect(deleteUserStubs[0].calledWith(testUserId), 'deleteUser not called with correct userId').to.be.true;
 			expect(deleteUserStubs[1].calledWith(testUserId), 'deleteUser not called with correct userId').to.be.true;
 			expect(
-				updateTrashbinByUserIdStub.calledWith(testUserId, trashBinExample1.data),
+				updateTrashbinByUserIdStub.calledWith(testUserId, trashBinExample1.trashBinData),
 				'updateTrashbinByUser not called with correct params'
 			).to.be.true;
 			expect(
-				updateTrashbinByUserIdStub.calledWith(testUserId, trashBinExample2.data),
+				updateTrashbinByUserIdStub.calledWith(testUserId, trashBinExample2.trashBinData),
 				'updateTrashbinByUser not called with correct params'
 			).to.be.true;
 		});
 
 		it('should update trashbin correctly for multiple facades', async () => {
 			const testUserId = '12';
-			await userUC.deleteUserRelatedData(testUserId, ['facade1', 'facade2']);
+			await userUC.deleteUserRelatedData(testUserId, 'tombstoneUserId', ['facade1', 'facade2']);
 
 			expect(updateTrashbinByUserIdStub.callCount).to.be.equal(3);
 			expect(
-				updateTrashbinByUserIdStub.getCall(0).calledWithExactly(testUserId, trashBinExample1.data),
+				updateTrashbinByUserIdStub.getCall(0).calledWithExactly(testUserId, trashBinExample1.trashBinData),
 				'updateTrashbinByUser not called with correct params #1'
 			).to.be.true;
 			expect(
-				updateTrashbinByUserIdStub.getCall(1).calledWithExactly(testUserId, trashBinExample1.data),
+				updateTrashbinByUserIdStub.getCall(1).calledWithExactly(testUserId, trashBinExample1.trashBinData),
 				'updateTrashbinByUser not called with correct params #2'
 			).to.be.true;
 			expect(
-				updateTrashbinByUserIdStub.getCall(2).calledWithExactly(testUserId, trashBinExample2.data),
+				updateTrashbinByUserIdStub.getCall(2).calledWithExactly(testUserId, trashBinExample2.trashBinData),
 				'updateTrashbinByUser not called with correct params #3'
 			).to.be.true;
 		});
@@ -202,7 +203,7 @@ describe('users usecase', () => {
 		it('should not throw errors if facades throw, but log facade errors', async () => {
 			const testUserId = '12';
 			try {
-				await userUC.deleteUserRelatedData(testUserId, ['errorFacade1', 'errorFacade2']);
+				await userUC.deleteUserRelatedData(testUserId, 'tombstoneUserId', ['errorFacade1', 'errorFacade2']);
 			} catch (error) {
 				assert.fail('deleteUserRelatedData should not have throw');
 			}
