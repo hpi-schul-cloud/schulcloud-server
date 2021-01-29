@@ -43,7 +43,7 @@ class ChangePasswordService {
 		} catch (err) {
 			throw new GeneralError('passwordRecovery unexpected error', err);
 		}
-		return { success: 'success' };
+		return SilentError.RESPONSE_CONTENT;
 	}
 }
 

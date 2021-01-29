@@ -1,11 +1,12 @@
-const { ValidationError } = require('../../../errors');
+const { AssertionError } = require('../../../errors');
 const { classesRepo } = require('../repo/index');
 const { trashBinResult } = require('../../helper/uc.helper');
 const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
 const { debug } = require('../../../logger');
+const assertionErrorHelper = require('../../../errors/helper/assertionErrorHelper');
 
 const validateParams = (userId) => {
-	if (!isValidObjectId(userId)) throw new ValidationError('a valid objectId is required', { userId });
+	if (!isValidObjectId(userId)) throw new AssertionError(assertionErrorHelper.missingParameters({ userId }));
 };
 
 const addClassesToTrashbinData = (classes = [], data) => {
@@ -32,6 +33,6 @@ const deleteUserDataFromClasses = async (userId) => {
 };
 
 // public
-const deleteUserData = () => [deleteUserDataFromClasses];
+const deleteUserData = [deleteUserDataFromClasses];
 
 module.exports = { deleteUserData };

@@ -2,9 +2,8 @@ security:
   - jwtBearer: []
 info:
   title: Schul-Cloud Roster Service API
-  description:
-    This is the API specification for the Schul-Cloud Roster service.
-    
+  description: This is the API specification for the Schul-Cloud Roster service.
+
   contact:
     name: support
     email: info@hpi-schul-cloud.de
@@ -19,56 +18,81 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
-    roster:
-      description: TODO
-    roster_list:
-      description: TODO
-    users:
-      description: TODO
-    users_list:
-      description: TODO
-    groups:
-      description: TODO
-
+    user_roster_metadata:
+      description: Roster metadata of a user
+      properties:
+        data:
+          type: object
+          properties:
+            user_id:
+              type: string
+              pattern: '[a-f0-9]{24}'
+            username:
+              type: string
+            'type':
+              type: string
+              enum:
+                - teacher
+                - student
+    usergroup_roster_metadata:
+      description: Roster metadata for a user groups
+      type: object
+      properties:
+        group_id:
+          type: string
+          pattern: '[a-f0-9]{24}'
+          description: course id reference
+        name:
+          type: string
+          description: course name
+        student_count:
+          type: integer
+          minimum: 1
+    usergroups_roster_metadata:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            groups:
+              type: array
+              items:
+                $ref: '#/components/schemas/usergroup_roster_metadata'
+    usergroup_user_roster_metadata:
+      type: object
+      properties:
+        user_id:
+          type: string
+          description: users pseudonym
+        username:
+          type: string
+          description: iframe html data with client url to display username in browsers
+    groups_roster_metadata:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            students:
+              type: array
+              items:
+                $ref: '#/components/schemas/usergroup_user_roster_metadata'
+            teachers:
+              items:
+                $ref: '#/components/schemas/usergroup_user_roster_metadata'
 paths:
   /roster:
     get:
-      parameters:
-        - description: Number of results to return
-          in: query
-          name: $limit
-          schema:
-            type: integer
-        - description: Number of results to skip
-          in: query
-          name: $skip
-          schema:
-            type: integer
-        - description: Property to sort results
-          in: query
-          name: $sort
-          style: deepObject
-          schema:
-            type: object
-        - description: Query parameters to filter
-          in: query
-          name: filter
-          style: form
-          explode: true
-          schema:
-            $ref: '#/components/schemas/roster'
+      parameters: []
       responses:
         '200':
           description: success
           content:
-            application/json:
+            text/plain:
               schema:
-                $ref: '#/components/schemas/roster_list'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Retrieves a list of all resources from the service.
+                type: string
+                example: Roster interface available
+      description: Health check for roster service.
       summary: ''
       tags:
         - roster
@@ -82,41 +106,22 @@ paths:
             type: string
           required: true
           description: user parameter
-        - description: Number of results to return
-          in: query
-          name: $limit
+        - in: query
+          name: pseudonym
           schema:
-            type: integer
-        - description: Number of results to skip
-          in: query
-          name: $skip
-          schema:
-            type: integer
-        - description: Property to sort results
-          in: query
-          name: $sort
-          style: deepObject
-          schema:
-            type: object
-        - description: Query parameters to filter
-          in: query
-          name: filter
-          style: form
-          explode: true
-          schema:
-            $ref: '#/components/schemas/users'
+            type: string
+          required: true
+          description: user pseudonym
       responses:
         '200':
           description: success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/users_list'
-        '401':
-          description: not authenticated
+                $ref: '#/components/schemas/user_roster_metadata'
         '500':
           description: general error
-      description: Retrieves a list of all resources from the service.
+      description: Retrieves user metadata for roster.
       summary: ''
       tags:
         - roster
@@ -130,38 +135,25 @@ paths:
             type: string
           required: true
           description: user parameter
-        - description: Number of results to return
-          in: query
-          name: $limit
+        - in: query
+          name: toolId
           schema:
-            type: integer
-        - description: Number of results to skip
-          in: query
-          name: $skip
+            type: string
+          required: true
+          description: tool id
+        - in: query
+          name: pseudonym
           schema:
-            type: integer
-        - description: Property to sort results
-          in: query
-          name: $sort
-          style: deepObject
-          schema:
-            type: object
-        - description: Query parameters to filter
-          in: query
-          name: filter
-          style: form
-          explode: true
-          schema:
-            $ref: '#/components/schemas/users'
+            type: string
+          required: true
+          description: user pseudonym
       responses:
         '200':
           description: success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/users_list'
-        '401':
-          description: not authenticated
+                $ref: '#/components/schemas/usergroups_roster_metadata'
         '500':
           description: general error
       description: Retrieves a list of all resources from the service.
@@ -184,9 +176,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/groups'
-        '401':
-          description: not authenticated
+                $ref: '#/components/schemas/groups_roster_metadata'
         '404':
           description: not found
         '500':
@@ -196,7 +186,7 @@ paths:
       tags:
         - roster
       security: []
-  
+
 openapi: 3.0.2
 tags:
   - name: roster
