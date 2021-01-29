@@ -155,12 +155,14 @@ class WalletFileService {
 	}
 
 	async create(data, params) {
-		console.log(data);
-		console.log(params.file);
 
 		const form = new FormData();
+		form.append('title', data.title);
+		form.append('description', data.description);
+		form.append('file', params.file.buffer.toString('binary'));
 
 		logger.info(form.getHeaders());
+		logger.info(JSON.stringify(form));
 
 		return data;
 
@@ -231,8 +233,8 @@ module.exports = function () {
 	app.use('/wallet/files',
 		fileMiddleware.single('file'),
 		function (req, res, next) {
-			console.log(req.file);
-			console.log(req.body);
+			//console.log(req.file);
+			//console.log(req.body);
 
 			req.feathers.file = req.file;
 
