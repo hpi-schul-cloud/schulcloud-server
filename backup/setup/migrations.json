@@ -927,5 +927,16 @@
 		"$date": "2021-01-18T12:25:28.66Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "601291b4dde43251a883c422"
+	},
+	"state": "up",
+	"name": "addUniquePseudonymIndex",
+	"createdAt": {
+		"$date": "2021-01-28T10:28:04.29Z"
+	},
+	"__v": 0
 }]
 
