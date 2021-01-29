@@ -9,6 +9,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.5.12]
+
+### Fixed
+
+- SC-8499 - Change order of migrations
+
+
 ## [25.5.11]
 
 ### Fixed
