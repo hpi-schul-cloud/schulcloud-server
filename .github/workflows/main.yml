@@ -12,9 +12,9 @@ name: Build and Deploy to GKE
 on:
   push:
     branches: 
-      - '*'
-  pull_request:
-    branches: [ development ]
+      - '**'
+  # pull_request:
+  #   branches: [ development ]
 
 # Environment variables available to all jobs and steps in this workflow
 env:
@@ -33,7 +33,11 @@ jobs:
     - name: Environment variables
       run: |
         export SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-8)
-        export NAMESPACE=$(echo ${GITHUB_REF##*/} | sed -e "s/\//-/g" | tr '[:upper:]' '[:lower:]')
+        
+        # GITHUB_HEAD_REF for Pull-Requests. GITHUB_REF for pushes.
+        [[ -z "$GITHUB_HEAD_REF" ]] && GITHUB_BRANCH_NAME=${GITHUB_REF#refs/heads/} || GITHUB_BRANCH_NAME=${GITHUB_HEAD_REF#refs/heads/}
+        export NAMESPACE=$(echo ${GITHUB_BRANCH_NAME} | sed -e "s/\//-/g" | tr '[:upper:]' '[:lower:]')
+        
         export SERVICE_NAME=${GITHUB_REPOSITORY##*/}
         export HOSTNAME=$HOSTNAME_PREFIX-$NAMESPACE.$STAGING_DOMAIN
         export CERT_NAME=wildcard-${STAGING_DOMAIN/./-}
