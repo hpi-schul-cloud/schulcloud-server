@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.5.13]
+
+### Changed
+
+- SC-8462 - Add logging for homework deletion
+
 ## [25.5.12]
 
 ### Fixed
