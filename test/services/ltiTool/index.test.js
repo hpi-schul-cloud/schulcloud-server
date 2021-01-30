@@ -7,14 +7,15 @@ const { generateRequestParamsFromUser } = require('../helpers/services/login')(a
 describe('ltiTool service', () => {
 	let app;
 	let server;
+	let ltiToolService;
 
 	before(async () => {
 		app = await appPromise;
+		ltiToolService = app.service('ltiTools');
 		server = await app.listen(0);
 	});
 
 	after(async () => {
-		await ltiToolService.remove(testTool);
 		await server.close();
 	});
 
@@ -23,7 +24,7 @@ describe('ltiTool service', () => {
 	});
 
 	it('registered the ltiTools service', () => {
-		expect(app.service('ltiTools')).to.be.ok;
+		expect(ltiToolService).to.be.ok;
 	});
 
 	it('students can not patch the tools in their own courses', async () => {
@@ -33,7 +34,7 @@ describe('ltiTool service', () => {
 			await testObjects.createTestCourse({ userIds: [student._id], ltiToolIds: [tool._id] });
 
 			const params = await generateRequestParamsFromUser(student);
-			await app.service('ltiTools').patch(tool._id, { name: 'toolChanged' }, params);
+			await ltiToolService.patch(tool._id, { name: 'toolChanged' }, params);
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
@@ -47,7 +48,7 @@ describe('ltiTool service', () => {
 		await testObjects.createTestCourse({ teacherIds: [teacher._id], ltiToolIds: [tool._id] });
 
 		const params = await generateRequestParamsFromUser(teacher);
-		const result = await app.service('ltiTools').patch(tool._id, { name: 'toolChanged' }, params);
+		const result = await ltiToolService.patch(tool._id, { name: 'toolChanged' }, params);
 		expect(result.name).to.equal('toolChanged');
 	});
 
@@ -57,7 +58,7 @@ describe('ltiTool service', () => {
 		await testObjects.createTestCourse({ substitutionIds: [substitutionTeacher._id], ltiToolIds: [tool._id] });
 
 		const params = await generateRequestParamsFromUser(substitutionTeacher);
-		const result = await app.service('ltiTools').patch(tool._id, { name: 'toolChanged' }, params);
+		const result = await ltiToolService.patch(tool._id, { name: 'toolChanged' }, params);
 		expect(result.name).to.equal('toolChanged');
 	});
 
@@ -69,7 +70,7 @@ describe('ltiTool service', () => {
 			await testObjects.createTestCourse({ teacherIds: [courseTeacher._id], ltiToolIds: [tool._id] });
 
 			const params = await generateRequestParamsFromUser(otherTeacher);
-			await app.service('ltiTools').patch(tool._id, { name: 'toolChanged' }, params);
+			await ltiToolService.patch(tool._id, { name: 'toolChanged' }, params);
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
@@ -83,7 +84,7 @@ describe('ltiTool service', () => {
 		await testObjects.createTestCourse({ teacherIds: [teacher._id], ltiToolIds: [tool._id] });
 
 		const params = await generateRequestParamsFromUser(teacher);
-		const result = await app.service('ltiTools').patch(tool._id, { name: 'toolChanged' }, params);
+		const result = await ltiToolService.patch(tool._id, { name: 'toolChanged' }, params);
 		expect(result.secret).to.be.undefined;
 	});
 
@@ -94,7 +95,7 @@ describe('ltiTool service', () => {
 			await testObjects.createTestCourse({ userIds: [student._id], ltiToolIds: [tool._id] });
 
 			const params = await generateRequestParamsFromUser(student);
-			await app.service('ltiTools').remove(tool._id, params);
+			await ltiToolService.remove(tool._id, params);
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
@@ -108,7 +109,7 @@ describe('ltiTool service', () => {
 		await testObjects.createTestCourse({ teacherIds: [teacher._id], ltiToolIds: [tool._id] });
 
 		const params = await generateRequestParamsFromUser(teacher);
-		const result = await app.service('ltiTools').remove(tool._id, params);
+		const result = await ltiToolService.remove(tool._id, params);
 		expect(result).to.not.be.undefined;
 	});
 
@@ -120,7 +121,7 @@ describe('ltiTool service', () => {
 			await testObjects.createTestCourse({ teacherIds: [courseTeacher._id], ltiToolIds: [tool._id] });
 
 			const params = await generateRequestParamsFromUser(otherTeacher);
-			await app.service('ltiTools').remove(tool._id, params);
+			await ltiToolService.remove(tool._id, params);
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
