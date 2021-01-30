@@ -5,6 +5,10 @@ class Systems extends AbstractGenerator {
         super(app);
         this._service = app.service('systems');
     }
+
+    async create(data = { url: '', type: 'moodle' }) {
+        return super.create(data);
+    }
 }
 
 Object.freeze(Systems);

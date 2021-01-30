@@ -9,8 +9,7 @@ const {
     Courses,
     Submissions,
     Lessons,
-    RegistrationPins,
-    Consents
+    RegistrationPins
 } = require('./generators');
 
 class TestObjectsGenerator {
