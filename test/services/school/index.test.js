@@ -6,7 +6,7 @@ const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 const app = require('../../../src/app');
 const TestObjectsGenerator = require('../helpers/TestObjectsGenerator');
 
-describe.only('school service', () => {
+describe.only('schools service', () => {
     let server;
     let tog;
     let schoolService;
@@ -35,17 +35,18 @@ describe.only('school service', () => {
         expect(app.service('gradeLevels')).to.not.be.null;
     });
 
-    const compareSchoolYears = (schoolYears, defaultYears) => {
-        schoolYears.forEach((resultYear, idx) => {
-            const defaultYear = defaultYears[idx];
-            expect(resultYear.name).to.be.equal(defaultYear.name);
-        });
-    };
 
-    describe('create school with or without year', () => {
+    describe('CREATE', () => {
         let defaultYears = null;
         let sampleYear;
         let sampleSchoolData;
+
+        const compareSchoolYears = (schoolYears, defaultYears) => {
+            schoolYears.forEach((resultYear, idx) => {
+                const defaultYear = defaultYears[idx];
+                expect(resultYear.name).to.be.equal(defaultYear.name);
+            });
+        };
 
         before('load data and set samples', async () => {
             defaultYears = await YearModel.find().sort('name').lean().exec();
@@ -195,7 +196,7 @@ describe.only('school service', () => {
         });
     });
 
-    describe('patch schools', () => {
+    describe('PATCH', () => {
         it('administrator can patch his own school', async () => {
             const school = await tog.createTestSchool({});
             const { user: admin } = await tog.createTestUserAndAccount({

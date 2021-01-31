@@ -5,7 +5,6 @@ const path = require('path');
 
 const schoolModels = require('./model');
 const hooks = require('./hooks');
-const schoolGroupHooks = require('./hooks/schoolGroup.hooks');
 const { SchoolMaintenanceService } = require('./maintenance');
 const { HandlePermissions, handlePermissionsHooks } = require('./services/permissions');
 
@@ -32,18 +31,7 @@ module.exports = function schoolServices() {
 	app.use('/schools/:schoolId/maintenance', new SchoolMaintenanceService());
 
 	/* schoolGroup service */
-	app.use(
-		'/schoolGroup',
-		service({
-			Model: schoolModels.schoolGroupModel,
-			paginate: {
-				default: 500,
-				max: 5000,
-			},
-		})
-	);
-	const schoolGroupService = app.service('/schoolGroup');
-	schoolGroupService.hooks(schoolGroupHooks);
+
 
 	/* year Service */
 	app.use(

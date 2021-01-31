@@ -111,13 +111,6 @@ if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
 	schoolSchema.index({ 'sourceOptions.$**': 1 });
 }
 
-const schoolGroupSchema = new Schema(
-	{
-		name: { type: String, required: true },
-	},
-	{ timestamps: true }
-);
-
 /**
  * Determine if school is in maintenance mode ("Schuljahreswechsel"):
  * 		inMaintenanceSince not set: maintenance mode is disabled (false)
@@ -155,12 +148,11 @@ const gradeLevelSchema = new Schema({
 });
 
 enableAuditLog(schoolSchema);
-enableAuditLog(schoolGroupSchema);
 enableAuditLog(yearSchema);
 enableAuditLog(gradeLevelSchema);
 
 const schoolModel = mongoose.model('school', schoolSchema);
-const schoolGroupModel = mongoose.model('schoolGroup', schoolGroupSchema);
+
 const yearModel = mongoose.model('year', yearSchema);
 const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 
@@ -169,7 +161,6 @@ module.exports = {
 	SCHOOL_OF_DELETED_USERS,
 	schoolSchema,
 	schoolModel,
-	schoolGroupModel,
 	yearModel,
 	customYearSchema,
 	gradeLevelModel,
