@@ -4,7 +4,7 @@ const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { BadRequest } = require('../../../errors');
 const { hasPermission, restrictToCurrentSchool } = require('../../../hooks');
 const { requestFullSchoolSync } = require('../producer');
-const { SCHOOL_FEATURES } = require('../../school/model');
+const { SCHOOL_FEATURES } = require('../../school/schools.model');
 
 class MessengerSchoolSync {
 	constructor(options) {

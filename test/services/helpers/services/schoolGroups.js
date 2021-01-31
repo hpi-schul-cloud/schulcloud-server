@@ -1,4 +1,4 @@
-const { schoolGroupModel } = require('../../../../src/services/school/model');
+const { schoolGroupModel } = require('../../../../src/services/school/schools.model');
 
 let createdSchoolGroups = [];
 

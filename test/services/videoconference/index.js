@@ -6,8 +6,8 @@ const testObjects = require('../helpers/testObjects')(appPromise);
 
 const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
 
-const { schoolModel: Schools } = require('../../../src/services/school/model');
-const { SCHOOL_FEATURES } = require('../../../src/services/school/model');
+const { schoolModel: Schools } = require('../../../src/services/school/schools.model');
+const { SCHOOL_FEATURES } = require('../../../src/services/school/schools.model');
 const { PERMISSIONS: VIDEOCONFERENCE_PERMISSIONS } = require('../../../src/services/videoconference/logic/constants');
 const Roles = require('../../../src/services/role/model');
 

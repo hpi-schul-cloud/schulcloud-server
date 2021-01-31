@@ -1,4 +1,4 @@
-const { schoolModel: School } = require('../../../services/school/model');
+const { schoolModel: School } = require('../../../services/school/schools.model');
 
 const { SCHOOL_OF_DELETED_USERS } = require('./db');
 

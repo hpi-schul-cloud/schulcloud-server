@@ -7,7 +7,7 @@ const sinon = require('sinon');
 const fixtures = require('./fixtures');
 
 const { FileModel } = require('../../../src/services/fileStorage/model');
-const { schoolModel } = require('../../../src/services/school/model');
+const { schoolModel } = require('../../../src/services/school/schools.model');
 const { userModel } = require('../../../src/services/user/model');
 const RoleModel = require('../../../src/services/role/model');
 const { teamsModel } = require('../../../src/services/teams/model');

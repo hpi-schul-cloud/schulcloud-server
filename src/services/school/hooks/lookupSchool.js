@@ -1,5 +1,5 @@
 const { NotFound, BadRequest } = require('../../../errors');
-const { schoolModel: School } = require('../model');
+const { schoolModel: School } = require('../schools.model');
 
 /**
  * Add school object referenced in route to params

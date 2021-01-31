@@ -5,7 +5,7 @@ const path = require('path');
 
 const hooks = require('./hooks/index');
 const swaggerDocs = require('./docs');
-const schoolModel = require('../school/model');
+const schoolModel = require('../school/schools.model');
 const userModel = require('../user/model');
 const accountModel = require('../account/model');
 const homeworkModel = require('../homework/model');

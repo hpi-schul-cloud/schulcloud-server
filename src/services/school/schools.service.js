@@ -4,7 +4,7 @@ const { static: staticContent } = require('@feathersjs/express');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const schoolModels = require('./schools.model');
-const hooks = require('./hooks');
+const hooks = require('./schools.hooks');
 const { SchoolMaintenanceService } = require('./maintenance');
 const { HandlePermissions, handlePermissionsHooks } = require('./services/permissions');
 

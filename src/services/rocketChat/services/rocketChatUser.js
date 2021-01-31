@@ -2,7 +2,7 @@ const request = require('request-promise-native');
 
 const { Forbidden, BadRequest } = require('../../../errors');
 const { getRequestOptions, makeStringRCConform } = require('../helpers');
-const { SCHOOL_FEATURES } = require('../../school/model');
+const { SCHOOL_FEATURES } = require('../../school/schools.model');
 const docs = require('../docs');
 const { userModel } = require('../model');
 const logger = require('../../../logger');

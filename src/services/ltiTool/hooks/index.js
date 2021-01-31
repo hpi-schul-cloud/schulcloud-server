@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 
 const { Forbidden } = require('../../../errors');
-const { SCHOOL_FEATURES } = require('../../school/model');
+const { SCHOOL_FEATURES } = require('../../school/schools.model');
 const globalHooks = require('../../../hooks');
 const { isSuperheroUser } = require('../../../helper/userHelpers');
 const { isValid } = require('../../../helper/compare').ObjectId;

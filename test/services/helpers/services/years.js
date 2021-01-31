@@ -1,4 +1,4 @@
-const { yearModel: Year } = require('../../../../src/services/school/model');
+const { yearModel: Year } = require('../../../../src/services/school/schools.model');
 const yearLogic = require('../../../../src/services/school/logic/year');
 
 let createdYears = [];

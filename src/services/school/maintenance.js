@@ -1,5 +1,5 @@
 const hooks = require('./hooks/maintenance.hooks');
-const { schoolModel: School, yearModel: Years } = require('./model');
+const { schoolModel: School, yearModel: Years } = require('./schools.model');
 const SchoolYearFacade = require('./logic/year');
 
 const ldapSystemFilter = (s) => s.type === 'ldap' && s.ldapConfig && s.ldapConfig.active === true;

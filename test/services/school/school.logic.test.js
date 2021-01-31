@@ -3,7 +3,7 @@ const { URL } = require('url');
 const logger = require('../../../src/logger');
 
 const appPromise = require('../../../src/app');
-const { schoolModel: School, schoolGroupModel: SchoolGroup } = require('../../../src/services/school/model');
+const { schoolModel: School, schoolGroupModel: SchoolGroup } = require('../../../src/services/school/schools.model');
 const globals = require('../../../config/globals');
 
 const { cleanup } = require('../helpers/testObjects')(appPromise);

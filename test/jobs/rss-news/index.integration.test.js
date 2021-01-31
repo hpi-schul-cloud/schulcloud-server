@@ -4,7 +4,7 @@ const path = require('path');
 const http = require('http');
 const { exec } = require('child_process');
 
-const { schoolModel } = require('../../../src/services/school/model');
+const { schoolModel } = require('../../../src/services/school/schools.model');
 const { newsModel } = require('../../../src/services/news/model');
 
 

@@ -10,7 +10,7 @@ const mockAws = require('./s3.mock');
 const appPromise = require('../../../../src/app');
 
 const testObjects = require('../../helpers/testObjects')(appPromise);
-const { schoolModel } = require('../../../../src/services/school/model');
+const { schoolModel } = require('../../../../src/services/school/schools.model');
 
 chai.use(chaiHttp);
 chai.use(chaiAsPromised);

@@ -1,4 +1,4 @@
-const School = require('../../../../src/services/school/model').schoolModel;
+const School = require('../../../../src/services/school/schools.model').schoolModel;
 
 let createdSchoolIds = [];
 

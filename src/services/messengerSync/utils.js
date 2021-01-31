@@ -1,6 +1,6 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { userModel, displayName } = require('../user/model');
-const { schoolModel, SCHOOL_FEATURES } = require('../school/model');
+const { schoolModel, SCHOOL_FEATURES } = require('../school/schools.model');
 const roleModel = require('../role/model');
 const { courseModel, COURSE_FEATURES } = require('../user-group/model');
 const { teamsModel, TEAM_FEATURES } = require('../teams/model');

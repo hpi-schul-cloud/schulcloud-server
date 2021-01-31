@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongoose').Types;
 const { info, warning } = require('../../../logger');
-const { schoolModel } = require('../../school/model');
+const { schoolModel } = require('../../school/schools.model');
 
 /**
  * Try to find provider for the school. Compare the schoolId with bucket name

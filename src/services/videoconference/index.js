@@ -6,7 +6,7 @@ const path = require('path');
 
 const { Forbidden, NotFound, BadRequest, GeneralError } = require('../../errors');
 const { isFeatherError } = require('../../errors/utils');
-const { SCHOOL_FEATURES } = require('../school/model');
+const { SCHOOL_FEATURES } = require('../school/schools.model');
 const videoconferenceHooks = require('./hooks');
 const { getUser } = require('../../hooks');
 const { joinMeeting, getMeetingInfo } = require('./logic');
@@ -29,7 +29,7 @@ const {
 const CLIENT_HOST = Configuration.get('HOST');
 
 const VideoconferenceModel = require('./model');
-const { schoolModel: Schools } = require('../school/model');
+const { schoolModel: Schools } = require('../school/schools.model');
 
 const { ObjectId } = require('../../helper/compare');
 
