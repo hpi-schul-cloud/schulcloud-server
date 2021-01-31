@@ -4,20 +4,17 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const { schoolModel: School, yearModel: YearModel } = require('../../../src/services/school/model');
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
-const appPromise = require('../../../src/app');
+const app = require('../../../src/app');
 const TestObjectsGenerator = require('../helpers/TestObjectsGenerator');
 
 describe.only('school service', () => {
-    let app;
     let server;
     let tog;
     let schoolService;
 
     before(async () => {
-        app = await appPromise;
-        schoolService = app.service('/schools');
-
         server = await app.listen();
+        schoolService = app.service('/schools');
         tog = new TestObjectsGenerator(app);
     });
 
@@ -26,8 +23,10 @@ describe.only('school service', () => {
         await server.close();
     });
 
-    it('registered the schools services', () => {
+    it('registered services', () => {
         expect(schoolService).to.not.be.null;
+        expect(app.service('years')).to.not.be.null;
+        expect(app.service('gradeLevels')).to.not.be.null;
     });
 
     const compareSchoolYears = (schoolYears, defaultYears) => {
@@ -449,24 +448,5 @@ describe.only('school service', () => {
             const result = await schoolService.patch(school._id, { county: countyId }, params);
             expect(result.county._id.toString()).to.be.eq(countyId);
         });
-    });
-});
-
-describe('years service', () => {
-    let app;
-    let server;
-
-    before(async () => {
-        app = await appPromise;
-        server = await app.listen();
-    });
-
-    after(async () => {
-        await server.close();
-    });
-
-    it('registered the years services', () => {
-        expect(app.service('years')).to.not.be.null;
-        expect(app.service('gradeLevels')).to.not.be.null;
     });
 });
