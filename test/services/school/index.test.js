@@ -1,7 +1,6 @@
 const { expect } = require('chai');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
-const { schoolModel: School, yearModel: YearModel } = require('../../../src/services/school/model');
 const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 
 const app = require('../../../src/app');
@@ -11,10 +10,17 @@ describe.only('school service', () => {
     let server;
     let tog;
     let schoolService;
+    let SchoolModel;
+    let yearsService;
+    let YearModel;
 
     before(async () => {
         server = await app.listen();
         schoolService = app.service('/schools');
+        SchoolModel = schoolService.Model;
+        yearsService = app.service('years');
+        YearModel = yearsService.Model;
+
         tog = new TestObjectsGenerator(app);
     });
 
@@ -25,7 +31,7 @@ describe.only('school service', () => {
 
     it('registered services', () => {
         expect(schoolService).to.not.be.null;
-        expect(app.service('years')).to.not.be.null;
+        expect(yearsService).to.not.be.null;
         expect(app.service('gradeLevels')).to.not.be.null;
     });
 
@@ -45,7 +51,7 @@ describe.only('school service', () => {
             defaultYears = await YearModel.find().sort('name').lean().exec();
             sampleYear = defaultYears[0];
             const school = await tog.createTestSchool();
-            sampleSchoolData = await School.findById(school._id).lean().exec();
+            sampleSchoolData = await SchoolModel.findById(school._id).lean().exec();
             delete sampleSchoolData._id;
         });
 
