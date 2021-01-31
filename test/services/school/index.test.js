@@ -11,10 +11,13 @@ describe.only('school service', () => {
     let app;
     let server;
     let tog;
+    let schoolService;
 
     before(async () => {
         app = await appPromise;
-        server = await app.listen(0);
+        schoolService = app.service('/schools');
+
+        server = await app.listen();
         tog = new TestObjectsGenerator(app);
     });
 
@@ -38,10 +41,8 @@ describe.only('school service', () => {
         let defaultYears = null;
         let sampleYear;
         let sampleSchoolData;
-        let schoolService;
 
         before('load data and set samples', async () => {
-            schoolService = app.service('/schools');
             defaultYears = await YearModel.find().sort('name').lean().exec();
             sampleYear = defaultYears[0];
             const school = await tog.createTestSchool();
@@ -198,7 +199,7 @@ describe.only('school service', () => {
             });
             const params = await tog.generateRequestParamsFromUser(admin);
 
-            const result = await app.service('/schools').patch(school._id, { features: ['rocketChat'] }, params);
+            const result = await schoolService.patch(school._id, { features: ['rocketChat'] }, params);
             expect(result).to.not.be.undefined;
             expect(result.features).to.include('rocketChat');
         });
@@ -213,7 +214,7 @@ describe.only('school service', () => {
             const params = await tog.generateRequestParamsFromUser(admin);
 
             try {
-                await app.service('/schools').patch(otherSchool._id, { features: ['rocketChat'] }, params);
+                await schoolService.patch(otherSchool._id, { features: ['rocketChat'] }, params);
                 throw new Error('should have failed');
             } catch (err) {
                 expect(err.message).to.not.equal('should have failed');
@@ -246,7 +247,7 @@ describe.only('school service', () => {
             const params = await tog.generateRequestParamsFromUser(admin);
 
             const body = { $push: { features: 'rocketChat' } };
-            const result = await app.service('/schools').patch(school._id, body, params);
+            const result = await schoolService.patch(school._id, body, params);
             expect(result).to.not.be.undefined;
             expect(result.features).to.include('rocketChat');
         });
@@ -261,7 +262,7 @@ describe.only('school service', () => {
             const params = await tog.generateRequestParamsFromUser(admin);
 
             const body = { $push: { features: 'rocketChat' } };
-            const result = await app.service('/schools').patch(school._id, body, params);
+            const result = await schoolService.patch(school._id, body, params);
             expect(result).to.not.be.undefined;
             expect(result.features).to.not.include('rocketChat');
         });
@@ -279,7 +280,7 @@ describe.only('school service', () => {
             const params = await tog.generateRequestParamsFromUser(admin);
 
             const body = { $push: { features: 'rocketChat' } };
-            const result = await app.service('/schools').patch(school._id, body, params);
+            const result = await schoolService.patch(school._id, body, params);
             expect(result).to.not.be.undefined;
             expect(result.features).to.include('rocketChat');
         });
@@ -288,19 +289,19 @@ describe.only('school service', () => {
             const school = await tog.createTestSchool({});
 
             Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
-            let result = await app.service('/schools').get(school._id);
+            let result = await schoolService.get(school._id);
             expect(result.isTeamCreationByStudentsEnabled).to.be.true;
 
             Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
-            result = await app.service('/schools').get(school._id);
+            result = await schoolService.get(school._id);
             expect(result.isTeamCreationByStudentsEnabled).to.be.false;
 
             Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
-            result = await app.service('/schools').get(school._id);
+            result = await schoolService.get(school._id);
             expect(result.isTeamCreationByStudentsEnabled).to.be.false;
 
             Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
-            result = await app.service('/schools').get(school._id);
+            result = await schoolService.get(school._id);
             expect(result.isTeamCreationByStudentsEnabled).to.be.true;
         });
 
@@ -310,19 +311,19 @@ describe.only('school service', () => {
             expect(school.enableStudentTeamCreation).to.be.true;
 
             Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
-            let result = await app.service('/schools').get(school._id);
+            let result = await schoolService.get(school._id);
             expect(result.isTeamCreationByStudentsEnabled).to.be.true;
 
             Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
-            result = await app.service('/schools').get(school._id);
+            result = await schoolService.get(school._id);
             expect(result.isTeamCreationByStudentsEnabled).to.be.false;
 
             Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
-            result = await app.service('/schools').get(school._id);
+            result = await schoolService.get(school._id);
             expect(result.isTeamCreationByStudentsEnabled).to.be.true;
 
             Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
-            result = await app.service('/schools').get(school._id);
+            result = await schoolService.get(school._id);
             expect(result.isTeamCreationByStudentsEnabled).to.be.true;
         });
 
@@ -332,19 +333,19 @@ describe.only('school service', () => {
             expect(school.enableStudentTeamCreation).to.be.false;
 
             Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
-            let result = await app.service('/schools').get(school._id);
+            let result = await schoolService.get(school._id);
             expect(result.isTeamCreationByStudentsEnabled).to.be.true;
 
             Configuration.set('STUDENT_TEAM_CREATION', 'disabled');
-            result = await app.service('/schools').get(school._id);
+            result = await schoolService.get(school._id);
             expect(result.isTeamCreationByStudentsEnabled).to.be.false;
 
             Configuration.set('STUDENT_TEAM_CREATION', 'opt-in');
-            result = await app.service('/schools').get(school._id);
+            result = await schoolService.get(school._id);
             expect(result.isTeamCreationByStudentsEnabled).to.be.false;
 
             Configuration.set('STUDENT_TEAM_CREATION', 'opt-out');
-            result = await app.service('/schools').get(school._id);
+            result = await schoolService.get(school._id);
             expect(result.isTeamCreationByStudentsEnabled).to.be.false;
         });
 
@@ -357,7 +358,7 @@ describe.only('school service', () => {
             const params = await tog.generateRequestParamsFromUser(admin);
 
             try {
-                await app.service('/schools').patch(school._id, { officialSchoolNumber: 'foo' }, params);
+                await schoolService.patch(school._id, { officialSchoolNumber: 'foo' }, params);
             } catch (err) {
                 expect(err).to.not.equal(undefined);
                 expect(err.message).to.include('School number is incorrect');
@@ -374,7 +375,7 @@ describe.only('school service', () => {
             const params = await tog.generateRequestParamsFromUser(admin);
 
             try {
-                await app.service('/schools').patch(school._id, { officialSchoolNumber: 'vb-54321' }, params);
+                await schoolService.patch(school._id, { officialSchoolNumber: 'vb-54321' }, params);
             } catch (err) {
                 expect(err).to.not.equal(undefined);
                 expect(err.message).to.include('School number is incorrect');
@@ -394,7 +395,7 @@ describe.only('school service', () => {
             let result;
 
             try {
-                result = await app.service('/schools').patch(school._id, { officialSchoolNumber: schoolNumber }, params);
+                result = await schoolService.patch(school._id, { officialSchoolNumber: schoolNumber }, params);
             } catch (err) {
                 throw new Error('should not have failed', err);
             }
@@ -413,7 +414,7 @@ describe.only('school service', () => {
             let result;
 
             try {
-                result = await app.service('/schools').patch(school._id, { officialSchoolNumber: schoolNumber }, params);
+                result = await schoolService.patch(school._id, { officialSchoolNumber: schoolNumber }, params);
             } catch (err) {
                 throw new Error('should not have failed', err);
             }
@@ -429,7 +430,7 @@ describe.only('school service', () => {
             const params = await tog.generateRequestParamsFromUser(admin);
 
             try {
-                await app.service('/schools').patch(school._id, { county: '123' }, params);
+                await schoolService.patch(school._id, { county: '123' }, params);
             } catch (err) {
                 expect(err).to.not.equal(undefined);
                 expect(err.message).to.include(`The state doesn't not have a matching county`);
@@ -445,7 +446,7 @@ describe.only('school service', () => {
             });
             const params = await tog.generateRequestParamsFromUser(admin);
             const countyId = '5fa55eb53f472a2d986c8812';
-            const result = await app.service('/schools').patch(school._id, { county: countyId }, params);
+            const result = await schoolService.patch(school._id, { county: countyId }, params);
             expect(result.county._id.toString()).to.be.eq(countyId);
         });
     });
