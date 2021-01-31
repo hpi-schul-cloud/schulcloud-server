@@ -11,7 +11,7 @@ const globalHooks = require('../../../hooks');
 const { fileStorageTypes, SCHOOL_FEATURES } = require('../model');
 const getFileStorageStrategy = require('../../fileStorage/strategies').createStrategy;
 
-const { yearModel: Year } = require('../model');
+const { yearModel: Year } = require('../../years/years.model');
 const SchoolYearFacade = require('../logic/year');
 
 let years = null;

@@ -30,24 +30,6 @@ module.exports = function schoolServices() {
 
 	app.use('/schools/:schoolId/maintenance', new SchoolMaintenanceService());
 
-	/* schoolGroup service */
-
-
-	/* year Service */
-	app.use(
-		'/years',
-		service({
-			Model: schoolModels.yearModel,
-			paginate: {
-				default: 500,
-				max: 5000,
-			},
-			lean: true,
-		})
-	);
-	const yearService = app.service('/years');
-	yearService.hooks(hooks);
-
 	/* gradeLevel Service */
 	app.use(
 		'/gradeLevels',

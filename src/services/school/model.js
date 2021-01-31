@@ -132,28 +132,15 @@ schoolSchema.virtual('isExternal').get(function get() {
 	return !!this.ldapSchoolIdentifier || !!this.source;
 });
 
-const yearSchema = new Schema({
-	name: {
-		type: String,
-		required: true,
-		match: /^[0-9]{4}\/[0-9]{2}$/,
-		unique: true,
-	},
-	startDate: { type: Date, required: true },
-	endDate: { type: Date, required: true },
-});
-
 const gradeLevelSchema = new Schema({
 	name: { type: String, required: true },
 });
 
 enableAuditLog(schoolSchema);
-enableAuditLog(yearSchema);
 enableAuditLog(gradeLevelSchema);
 
 const schoolModel = mongoose.model('school', schoolSchema);
 
-const yearModel = mongoose.model('year', yearSchema);
 const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 
 module.exports = {
@@ -161,7 +148,6 @@ module.exports = {
 	SCHOOL_OF_DELETED_USERS,
 	schoolSchema,
 	schoolModel,
-	yearModel,
 	customYearSchema,
 	gradeLevelModel,
 	fileStorageTypes,
