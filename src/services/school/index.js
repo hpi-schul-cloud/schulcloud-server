@@ -30,21 +30,6 @@ module.exports = function schoolServices() {
 
 	app.use('/schools/:schoolId/maintenance', new SchoolMaintenanceService());
 
-	/* gradeLevel Service */
-	app.use(
-		'/gradeLevels',
-		service({
-			Model: schoolModels.gradeLevelModel,
-			paginate: {
-				default: 500,
-				max: 5000,
-			},
-			lean: true,
-		})
-	);
-	const gradeLevelService = app.service('/gradeLevels');
-	gradeLevelService.hooks(hooks);
-
 	const ADMIN_TOGGLE_STUDENT_VISIBILITY = Configuration.get('ADMIN_TOGGLE_STUDENT_VISIBILITY');
 
 	if (ADMIN_TOGGLE_STUDENT_VISIBILITY !== 'disabled') {

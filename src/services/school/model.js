@@ -132,16 +132,9 @@ schoolSchema.virtual('isExternal').get(function get() {
 	return !!this.ldapSchoolIdentifier || !!this.source;
 });
 
-const gradeLevelSchema = new Schema({
-	name: { type: String, required: true },
-});
 
 enableAuditLog(schoolSchema);
-enableAuditLog(gradeLevelSchema);
-
 const schoolModel = mongoose.model('school', schoolSchema);
-
-const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 
 module.exports = {
 	SCHOOL_FEATURES,
@@ -149,6 +142,5 @@ module.exports = {
 	schoolSchema,
 	schoolModel,
 	customYearSchema,
-	gradeLevelModel,
 	fileStorageTypes,
 };

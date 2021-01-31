@@ -55,6 +55,7 @@ const version = require('./versionService');
 const docs = require('./docs');
 const schoolGroup = require('./school-group/school-group.service');
 const years = require('./years/years.service');
+const gradeLevels = require('./grade-levels/grade-levels.service');
 
 module.exports = function initializeServices() {
     const app = this;
@@ -114,8 +115,9 @@ module.exports = function initializeServices() {
     app.configure(activation);
     app.configure(config);
     app.configure(version);
-    app.configure(schoolGroup)
-    app.configure(years)
+    app.configure(schoolGroup);
+    app.configure(years);
+    app.configure(gradeLevels);
 
     // initialize events
     newsEvents.configure(app);
