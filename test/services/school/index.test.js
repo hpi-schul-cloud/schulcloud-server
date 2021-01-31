@@ -1,4 +1,3 @@
-const assert = require('assert');
 const { expect } = require('chai');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
@@ -25,7 +24,7 @@ describe.only('school service', () => {
     });
 
     it('registered the schools services', () => {
-        assert.ok(app.service('schools'));
+        expect(app.service('schools')).to.not.be.null;
     });
 
     const compareSchoolYears = (schoolYears, defaultYears) => {
@@ -466,7 +465,7 @@ describe('years service', () => {
     });
 
     it('registered the years services', () => {
-        assert.ok(app.service('years'));
-        assert.ok(app.service('gradeLevels'));
+        expect(app.service('years')).to.not.be.null;
+        expect(app.service('gradeLevels')).to.not.be.null;
     });
 });
