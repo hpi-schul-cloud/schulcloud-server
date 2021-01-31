@@ -27,7 +27,7 @@ describe.only('school service', () => {
     });
 
     it('registered the schools services', () => {
-        expect(app.service('schools')).to.not.be.null;
+        expect(schoolService).to.not.be.null;
     });
 
     const compareSchoolYears = (schoolYears, defaultYears) => {
