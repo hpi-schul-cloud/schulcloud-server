@@ -104,7 +104,7 @@ data:
   # ROCKET_CHAT_ADMIN_TOKEN
   # ROCKET_CHAT_URI: https://chat.staging.hpi-schul-cloud.org
   # SC_SHORT_TITLE: Niedersächsische Bildungscloud
-  # SC_THEME: n21
+  SC_THEME: brb
   # SC_TITLE: Niedersächsische Bildungscloud
   # SECRET_ES_MERLIN_COUNTIES_CREDENTIALS
   # SECRET_ES_MERLIN_PW:
