@@ -17,6 +17,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-7937 - Allow adding multiple materials to lesson
 - SC-8482 - Deletion concept orchestration integration
 - SC-8029 - Add deletion concept handling for pseudonyms and registration pins
 - SC-6950 - Add access for superhero to change kreisid and officialSchoolNumber
