@@ -63,6 +63,7 @@ jobs:
         echo "AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}}" >> $GITHUB_ENV
         echo "SECRET_AUTHENTICATION=${{secrets.AUTHENTICATION}}" >> $GITHUB_ENV
         echo "SECRET_S3_KEY=${{secrets.S3_KEY}}" >> $GITHUB_ENV
+        echo "SECRET_IDAS_API_KEY=${{secrets.IDAS_API_KEY}}" >> $GITHUB_ENV
     - name: Checkout
       uses: actions/checkout@v2
 
