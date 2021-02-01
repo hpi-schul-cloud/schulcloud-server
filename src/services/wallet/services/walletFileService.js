@@ -19,58 +19,63 @@ class WalletFileService {
 		form.append('expiresAt', new Date(Date.now() + 1000 * 60 * 60).toISOString());
 		form.append('description', data.description);
 
-		const file = await axios
-			.post('https://daad.idas.solutions/api/v1/Files', form, {
+		try {
+			const file = await axios
+				.post('https://daad.idas.solutions/api/v1/Files', form, {
+					headers: {
+						...form.getHeaders(),
+						'X-API-KEY': apiToken,
+					},
+				})
+				.catch((error) => {
+					logger.error(error.response);
+				});
+
+			logger.info(file.data.result);
+
+			const fileID = file.data.result.id;
+
+			const { userId } = params.account;
+			const user = await this.app.service('users').get(userId);
+
+			const { relationshipId } = user;
+			logger.info(`RelationshipID: ${relationshipId}`);
+			const relationship = await axios.get(`https://daad.idas.solutions/api/v1/Relationships/${relationshipId}`, {
 				headers: {
-					...form.getHeaders(),
 					'X-API-KEY': apiToken,
 				},
-			})
-			.catch((error) => {
-				logger.error(error.response);
 			});
 
-		logger.info(file.data.result);
+			logger.info(relationship.data.result);
 
-		const fileID = file.data.result.id;
+			const recipientID = relationship.data.result.from;
 
-		const { userId } = params.account;
-		const user = await this.app.service('users').get(userId);
-
-		const { relationshipId } = user;
-		logger.info(`RelationshipID: ${relationshipId}`);
-		const relationship = await axios.get(`https://daad.idas.solutions/api/v1/Relationships/${relationshipId}`, {
-			headers: {
-				'X-API-KEY': apiToken,
-			},
-		});
-
-		logger.info(relationship.data.result);
-
-		const recipientID = relationship.data.result.from;
-
-		const message = await axios.post(
-			'https://daad.idas.solutions/api/v1/Messages',
-			{
-				recipients: [recipientID],
-				content: {
-					// Only dummy data, should be real data if used in production
-					'@type': 'Attribute',
-					name: 'dc.languageAssessmentDe',
-					value: '{"value":"B1","source":"DAAD"}',
+			const message = await axios.post(
+				'https://daad.idas.solutions/api/v1/Messages',
+				{
+					recipients: [recipientID],
+					content: {
+						// Only dummy data, should be real data if used in production
+						'@type': 'Attribute',
+						name: 'dc.languageAssessmentDe',
+						value: '{"value":"B1","source":"DAAD"}',
+					},
+					attachments: [fileID],
 				},
-				attachments: [fileID],
-			},
-			{
-				headers: {
-					'X-API-KEY': apiToken,
-				},
-			}
-		);
+				{
+					headers: {
+						'X-API-KEY': apiToken,
+					},
+				}
+			);
 
-		logger.info(message.data.result);
+			logger.info(message.data.result);
 
-		return message.data.result;
+			return message.data.result;
+		} catch (error) {
+			logger.error(error);
+			return null;
+		}
 	}
 }
 

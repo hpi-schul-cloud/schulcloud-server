@@ -149,7 +149,7 @@ class WalletService {
 			return relationship.data.result.relationshipId;
 		}
 
-		return undefined;
+		return null;
 	}
 }
 
