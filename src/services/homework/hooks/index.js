@@ -323,6 +323,14 @@ const restrictHomeworkDeletion = async (context) => {
 	throw new Forbidden('homework deletion failed', { homeworkId, userId });
 };
 
+const logDeletionAttempt = (context) => {
+	logger.alert(`user ${context.params.account.userId} tries to delete homework ${context.id}`);
+};
+
+const logDeletionPermit = (context) => {
+	logger.alert(`user ${context.params.account.userId} permitted to delete homework ${context.id}`);
+};
+
 exports.before = () => ({
 	all: [authenticate('jwt')],
 	find: [
@@ -347,7 +355,9 @@ exports.before = () => ({
 		iff(isProvider('external'), [
 			globalHooks.hasPermission('HOMEWORK_CREATE'),
 			globalHooks.permitGroupOperation,
+			logDeletionAttempt,
 			restrictHomeworkDeletion,
+			logDeletionPermit,
 		]),
 	],
 });

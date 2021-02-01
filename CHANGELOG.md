@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-8514 - QR Code generation fails
 - SC-8390 - Lern-Store collections feature flag was not excluding collections in search
 - SC-8322 prevent wrong assignment from school to storage provider
 
@@ -21,6 +22,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8029 - Add deletion concept handling for pseudonyms and registration pins
 - SC-6950 - Add access for superhero to change kreisid and officialSchoolNumber
 - SC-8206 - Add school tombstone for deleting concept
+- SC-7825 - Deletion concept for user data in tasks
 
 ### Changed
 
@@ -28,6 +30,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8213 error handling concept
 - SC-4576 - sanitize bbb room and member names
 - SC-8300 Added user information to LDAP Sync in case of errors
+
+## [25.5.13]
+
+### Changed
+
+- SC-8462 - Add logging for homework deletion
+
+## [25.5.12]
+
+### Fixed
+
+- SC-8499 - Change order of migrations
 
 ## [25.5.11]
 
