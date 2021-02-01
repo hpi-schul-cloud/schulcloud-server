@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-8514 - QR Code generation fails
 - SC-8390 - Lern-Store collections feature flag was not excluding collections in search
 - SC-8322 prevent wrong assignment from school to storage provider
 
@@ -27,6 +28,28 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8213 error handling concept
 - SC-4576 - sanitize bbb room and member names
 - SC-8300 Added user information to LDAP Sync in case of errors
+
+## [25.5.13]
+
+### Changed
+
+- SC-8462 - Add logging for homework deletion
+
+## [25.5.12]
+
+### Fixed
+
+- SC-8499 - Change order of migrations
+
+## [25.5.11]
+
+### Fixed
+
+- SC-8499 - Prevent duplicated pseudonyms
+
+## [25.5.10]
+
+- SC-8506 - add origin server name to bbb create and join requests
 
 ## [25.5.9]
 

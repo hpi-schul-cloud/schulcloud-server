@@ -1,0 +1,22 @@
+[
+    {
+        "_id":{
+            "$oid":"6011614740bb5700223b5b8f"
+        },
+        "isShared":true,
+        "region":"eu-central-1",
+        "type":"S3",
+        "endpointUrl":"https://s3.hidrive.strato.com",
+        "accessKeyId":"<AWS_ACCESS_KEY_ID>",
+        "secretAccessKey":"<AWS_SECRET_ACCESS_KEY>",
+        "maxBuckets":200,
+        "freeBuckets":199,
+        "createdAt":{
+            "$date":"2021-01-27T12:49:11.681+00:00"
+        },
+        "updatedAt":{
+            "$date": "2021-01-27T12:49:11.681+00:00"
+        },
+        "__v": 0
+    }
+]

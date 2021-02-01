@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $SERVICE_NAME
+  labels:
+    app: $SERVICE_NAME
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: $SERVICE_NAME
+  template:
+    metadata:
+      name: $SERVICE_NAME
+      labels:
+        app: $SERVICE_NAME
+        tier: web
+    spec:
+      hostAliases:
+        - hostnames:
+          - mongo-test-01
+          ip: 10.141.10.150
+        - hostnames:
+          - mongo-test-02
+          ip: 10.141.10.112
+        - hostnames:
+          - mongo-test-03
+          ip: 10.141.10.125
+      containers:
+        - name: $SERVICE_NAME
+          image: $BUILD_IMAGE
+          imagePullPolicy: Always
+          envFrom:
+          - configMapRef:
+              name: $SERVICE_NAME-environment-variables
+          ports:
+          - name: web
+            containerPort: 3030
+          livenessProbe:
+            httpGet:
+              path: /version
+              port: 3030
+            initialDelaySeconds: 60
+            timeoutSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /version
+              port: 3030
+            initialDelaySeconds: 5
+            timeoutSeconds: 3

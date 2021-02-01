@@ -1,20 +1,22 @@
 # if node version is changed, also adapt .nvmrc file 
-FROM node:lts-alpine
+FROM node:lts-buster
 
 WORKDIR /schulcloud-server
 # RSS-Cron starten
-RUN apk update && apk upgrade && apk add --no-cache git make python tzdata curl
+RUN \
+wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | apt-key add - && \
+echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" >> /etc/apt/sources.list.d/mongodb-org-4.4.list && \
+apt-get update -y && \ 
+apt-get install -y git make python tzdata curl mongodb-org-shell mongodb-org-tools
+
 COPY ./package.json .
 COPY ./package-lock.json .
 
 RUN npm ci
-#--only=production
 
 COPY . .
 RUN npm run build
-#COPY ./localtime /etc/localtime
+
 ENV TZ=Europe/Berlin
 
-#ENTRYPOINT crontab ./crontab && crond
-#CMD npm start
-CMD ./startup.sh
+CMD ["/bin/sh", "startup.sh"]

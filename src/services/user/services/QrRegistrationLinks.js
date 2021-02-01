@@ -90,7 +90,7 @@ class QrRegistrationLinks {
 
 	getValidUserIds(data) {
 		const { selectionType, userIds: inputUserIds, schoolId, roleName } = data;
-		if (roleName !== 'student' && roleName !== 'teacher') {
+		if (roleName && roleName !== 'student' && roleName !== 'teacher') {
 			throw new BadRequest('The given role is not supported');
 		}
 

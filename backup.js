@@ -9,11 +9,7 @@ const { log } = console;
 const { env } = process;
 const {
 	BASE_PATH = 'backup/',
-	MONGO_HOST = '127.0.0.1',
-	MONGO_PORT = '27017',
-	// URL defaults to HOST and PORT from above
-	MONGO_URL,
-	MONGO_DATABASE,
+	DB_URL,
 	MONGO_USERNAME,
 	MONGO_PASSWORD,
 	// some values are overridden by args
@@ -98,12 +94,7 @@ const CONFIG = {
 		return path.join(this.BASE_PATH, args['--path'] || getTimestamp());
 	},
 	MONGO: {
-		HOST: MONGO_HOST,
-		PORT: MONGO_PORT,
-		get URL() {
-			return MONGO_URL || args['--url'] || `${this.HOST}:${this.PORT}`;
-		},
-		DATABASE: MONGO_DATABASE || args['--database'] || 'schulcloud',
+		URL: DB_URL || args['--url'] || 'mongodb://127.0.0.1:27017/schulcloud',
 		USERNAME: MONGO_USERNAME || args['--username'],
 		PASSWORD: MONGO_PASSWORD || args['--password'],
 		get CREDENTIALS_ARGS() {
@@ -118,6 +109,8 @@ const CONFIG = {
 		},
 	},
 };
+
+log(CONFIG);
 
 /** *****************************************
  * HELPER
@@ -172,34 +165,59 @@ const ensureDirectoryExistence = (filePath) => {
  * IMPORT
  ****************************************** */
 
-const importCollection = async ({ collection, filePath, drop = true }) => {
+const importCollection = async ({ collection, filePath }) => {
 	const cmdArgs = [
 		'mongoimport',
-		'--host',
-		CONFIG.MONGO.URL,
-		'--db',
-		CONFIG.MONGO.DATABASE,
+		`--uri="${CONFIG.MONGO.URL}"`,
 		...CONFIG.MONGO.CREDENTIALS_ARGS,
 		'--collection',
 		collection,
 		filePath,
 		(await getFirstCharFromFile(filePath)) === '[' ? '--jsonArray' : undefined,
-		drop ? '--drop ' : undefined,
 	];
 	const output = await asyncExec(cleanJoin(cmdArgs));
 	return output;
 };
 
+const dropDatabase = async () => {
+	const cmdArgs = ['mongo', `"${CONFIG.MONGO.URL}"`, '--eval', '"db.dropDatabase()"'];
+	const output = await asyncExec(cleanJoin(cmdArgs));
+	log(output);
+	return output;
+};
+
+const getCollectionCount = async () => {
+	const cmdArgs = [
+		'mongo',
+		`"${CONFIG.MONGO.URL}"`,
+		'--quiet',
+		'--eval',
+		'"db.getCollectionNames().length"'
+	];
+	const output = await asyncExec(cleanJoin(cmdArgs));
+	// log('output=', output, typeof output, output.trim(), output.trim().length);
+	return output.trim(); // Number.parseInt(output.trim(), 10);
+};
+
 const importDirectory = async (directoryPath) => {
+	const databaseCollectionCount = await getCollectionCount();
+	log('databaseCollectionCount=', databaseCollectionCount);
+	if (databaseCollectionCount > 0) {
+		throw new Error(`Not seeding database because it is not empty, ${databaseCollectionCount} collections exist.`);
+	}
+
 	const files = await readDir(directoryPath);
+
 	const imports = files.map(async (file) => {
 		const collection = file.split('.').slice(0, -1).join('.');
 		const filePath = path.join(directoryPath, file);
+
 		return importCollection({
 			collection,
 			filePath,
 		}).then(log);
 	});
+
 	const outputs = await Promise.all(imports);
 	return outputs.join('\n');
 };
@@ -211,10 +229,7 @@ const importDirectory = async (directoryPath) => {
 const exportCollection = async ({ collection, filePath }) => {
 	const cmdArgs = [
 		'mongoexport',
-		'--host',
-		CONFIG.MONGO.URL,
-		'--db',
-		CONFIG.MONGO.DATABASE,
+		`--uri="${CONFIG.MONGO.URL}"`,
 		...CONFIG.MONGO.CREDENTIALS_ARGS,
 		'--collection',
 		collection,
@@ -225,7 +240,7 @@ const exportCollection = async ({ collection, filePath }) => {
 		args['--pretty'] ? '--pretty' : undefined,
 	];
 	const res = await asyncExec(cleanJoin(cmdArgs));
-	log(`Exported ${CONFIG.MONGO.DATABASE}/${collection} into ${filePath}`);
+	log(`Exported ${CONFIG.MONGO.URL}/${collection} into ${filePath}`);
 	return res;
 };
 
@@ -234,7 +249,7 @@ const getCollectionsToExport = async () => {
 	if (!collections) {
 		const cmdArgs = [
 			'mongo',
-			`${CONFIG.MONGO.URL}/${CONFIG.MONGO.DATABASE}`,
+			`"${CONFIG.MONGO.URL}"`,
 			...CONFIG.MONGO.CREDENTIALS_ARGS,
 			'--quiet',
 			'--eval',
@@ -273,6 +288,8 @@ const main = async () => {
 		await importDirectory(CONFIG.BACKUP_PATH_IMPORT);
 	} else if (args._[0] === 'export') {
 		await exportBackup(CONFIG.BACKUP_PATH_EXPORT);
+	} else if (args._[0] === 'drop') {
+		await dropDatabase(CONFIG.BACKUP_PATH_EXPORT);
 	} else {
 		throw new Error('invalid argument');
 	}

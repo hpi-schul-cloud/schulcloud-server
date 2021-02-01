@@ -1,0 +1,118 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: $SERVICE_NAME-environment-variables
+data:
+  THIS_SERVICE: $SERVICE_NAME
+  BRANCH: $NAMESPACE
+  # Add &ssl=true to DB_URL
+  DB_URL: mongodb://10.141.10.112,10.141.10.150,10.141.10.125/schulcloud_$NAMESPACE?replicaSet=myReplicaSet&readPreference=secondary
+  NODE_ENV: production
+  PORT: "3030"
+  LOG_LEVEL: info
+  REQUEST_LOGGING_ENABLED: "true"
+  JWT_AUD: $STAGING_DOMAIN
+  CALENDAR_API_KEY: "123" #secret
+  CALENDAR_URI: http://schulcloud-calendar
+  CLIENT_API_KEY: "123" #secret
+  REDIS_URI: redis://schulcloud-server-redis-master:6379
+  # tested list
+  ADMIN_TOGGLE_STUDENT_VISIBILITY: enabled
+  ALERT_STATUS_API_URL: https://status.hpi-schul-cloud.de/api/v1
+  ALERT_STATUS_URL: https://status.hpi-schul-cloud.de
+  CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS: "16"
+  AUTHENTICATION: "$SECRET_AUTHENTICATION"
+  AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+  AWS_ENDPOINT_URL: https://s3.hidrive.strato.com
+  AWS_REGION: eu-central-1
+  AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+  FEATURE_ALERTS_STATUS_ENABLED: "true"
+  KEEP_ALIVE: "true"
+  LOGIN_BLOCK_TIME: "15"
+  S3_KEY: $SECRET_S3_KEY
+  SC_DOMAIN: $STAGING_DOMAIN
+  SHOW_VERSION: "1"
+  NOTIFICATION_PLATFORM: schul-cloud
+  NOTIFICATION_URI: http://node-notification-service
+  #SMTP: $SECRET_SMTP
+  #SMTP_SENDER: staging-noreply@hpi-schul-cloud.de
+  STUDENT_TEAM_CREATION: disabled
+  TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION: opt-in
+  TZ: Europe/Berlin
+  # Feature flags
+  FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED: 'true'
+  # API_HOST: https://api.staging.hpi-schul-cloud.org
+  # CLIENT_API_KEY
+  # CONTENT_URI: https://content.schul-cloud.org
+  # DATABASE_AUDIT: True
+  # DATABASE__AUDIT: True
+  # DATABASE__PASSWORD
+  # DATABASE__URL: mongodb://mongo-1.schul-cloud.org:30040,mongo-2.schul-cloud.org:30040,mongo-3.schul-cloud.org:30040/schulcloud?replicaSet: staging&ssl: true&readPreference: secondary
+  # DATABASE__USERNAME: schulcloud
+  # DB_PASSWORD
+  # DB_USERNAME: schulcloud
+  # DISPLAY_REQUEST_LEVEL: -1
+  # DOCUMENT_BASE_DIR: https://s3.hidrive.strato.com/schul-cloud-hpi/
+  # ENABLE_FILE_SECURITY_CHECK: true
+  # ES_CLIENT_ID
+  # ES_DOMAIN: https://mv-repo.schul-cloud.org
+  # ES_GRANT_TYPE
+  # ES_MERLIN_AUTH_URL: http://merlin.nibis.de/auth.php
+  # ES_OAUTH_SECRET
+  # ES_PASSWORD
+  # ES_USER: admin
+  # ETHERPAD_API_KEY 
+  # ETHERPAD_API_PATH: /api/1.2.14
+  # ETHERPAD_COOKIE__EXPIRES_SECONDS: 7200
+  # ETHERPAD_ETHERPAD_COOKIE_RELEASE_THRESHOLD: 7200
+  # ETHERPAD_NEW_PAD_URI: https://staging.hpi-schul-cloud.org/etherpad/p
+  # ETHERPAD_OLD_PAD_DOMAIN: etherpad.staging.hpi-schul-cloud.org
+  # ETHERPAD_OLD_PAD_URI: https://etherpad.staging.hpi-schul-cloud.org/p
+  # ETHERPAD_URI: https://staging.hpi-schul-cloud.org/etherpad/api/1.2.14
+  # FEATURE_ES_COLLECTIONS_ENABLED: true
+  # FEATURE_ES_MERLIN_ENABLED: true
+  # FEATURE_ES_SEARCHABLE_ENABLED: true
+  # FEATURE_LERNSTORE_ENABLED: true
+  # FEATURE_MATRIX_MESSENGER_ENABLED: true
+  # FEATURE_MORGAN_LOG_ENABLED: false
+  # FEATURE_RABBITMQ_ENABLED: true
+  # FEATURE_VIDEOCONFERENCE_ENABLED: true
+  # FILE_SECURITY_CHECK_SERVICE_URI: http://webserver:8080/scan/file
+  # FILE_SECURITY_SERVICE_PASSWORD
+  # FILE_SECURITY_SERVICE_USERNAME
+  # HOST: https://staging.hpi-schul-cloud.org
+  # HYDRA_URI: http://hydra-host:4445
+  # IGNORE_DISCOVERABILITY: true
+  # JWT_TIMEOUT_SECONDS: "7200"
+  # JWT_WHITELIST_ACCEPT_ALL: false
+  # LDAP_PASSWORD_ENCRYPTION_KEY
+  # LDAP_SCHOOL_SYNCER_POOL_SIZE: 1
+  # LDAP_SYSTEM_SYNCER_POOL_SIZE: 2
+  # LERNSTORE_MODE: EDUSHARING
+  # MATRIX_MESSENGER__SECRET
+  # MATRIX_MESSENGER__SERVERNAME: staging.messenger.schule
+  # MATRIX_MESSENGER__URI: https://matrix.staging.messenger.schule
+  # MATRIX_MESSENGER__WELCOME_MESSAGE_ADMIN: Willkommen im Messenger der HPI Schul-Cloud!\nDu bist neu hier und möchtest gerne mehr über die Grundfunktionen des Messengers erfahren? Dann schaue dir [DIESE ANLEITUNG](https://docs.schul-cloud.org/pages/viewpage.action?pageId: 113650243) an.\nWir wünschen euch einen konstruktiven und respektvollen Austausch untereinander!\nEuer HPI Schul-Cloud Team 🙂
+  # MATRIX_MESSENGER__WELCOME_MESSAGE_STUDENT: Willkommen im Messenger der HPI Schul-Cloud!\nDu bist neu hier und möchtest gerne mehr über die Grundfunktionen des Messengers erfahren? Dann schaue dir [DIESE ANLEITUNG](https://docs.schul-cloud.org/pages/viewpage.action?pageId: 113651573) an.\nWir wünschen euch einen konstruktiven und respektvollen Austausch untereinander!\nEuer HPI Schul-Cloud Team 🙂
+  # MATRIX_MESSENGER__WELCOME_MESSAGE_TEACHER: Willkommen im Messenger der HPI Schul-Cloud!\nDu bist neu hier und möchtest gerne mehr über die Grundfunktionen des Messengers erfahren? Dann schaue dir [DIESE ANLEITUNG](https://docs.schul-cloud.org/pages/viewpage.action?pageId: 113650243) an.\nWir wünschen euch einen konstruktiven und respektvollen Austausch untereinander!\nEuer HPI Schul-Cloud Team 🙂
+  # MEMORY_INTERVAL_TIME: 0
+  # MONGO_URI: mongodb://mongo-1.schul-cloud.org:30040,mongo-2.schul-cloud.org:30040,mongo-3.schul-cloud.org:30040/schulcloud?replicaSet: staging&ssl: true&readPreference: secondary
+  # NODE_OPTIONS: --max-old-space-size: 2048
+  # RABBITMQ_URI: amqp://staging_insights_rabbitmq:5672
+  # ROCKET_CHAT_ADMIN_ID
+  # ROCKET_CHAT_ADMIN_TOKEN
+  # ROCKET_CHAT_URI: https://chat.staging.hpi-schul-cloud.org
+  # SC_SHORT_TITLE: Niedersächsische Bildungscloud
+  # SC_THEME: n21
+  # SC_TITLE: Niedersächsische Bildungscloud
+  # SECRET_ES_MERLIN_COUNTIES_CREDENTIALS
+  # SECRET_ES_MERLIN_PW:
+  # SECRET_ES_MERLIN_USERNAME:
+  # SENTRY_DSN: 
+  # SENTRY_SAMPLE_RATE: 1.0
+  # SHLVL: 1
+  # SKIP_CONDITIONS_CONSENT 
+  # SYNC_API_KEY
+  # VIDEOCONFERENCE_HOST: https://bbb.staging.messenger.schule/bigbluebutton
+  # VIDEOCONFERENCE_SALT
+
