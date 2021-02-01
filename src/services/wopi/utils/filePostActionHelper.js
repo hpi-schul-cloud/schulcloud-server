@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const reqlib = require('app-root-path').require;
 
-const { NotImplemented } = reqlib('src/errors');
+const { NotImplemented } = require('../../../errors');
 const { FileModel } = require('../../fileStorage/model');
 
 /**

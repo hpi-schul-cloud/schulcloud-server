@@ -1,6 +1,4 @@
-const reqlib = require('app-root-path').require;
-
-const { Forbidden } = reqlib('src/errors');
+const { Forbidden } = require('../../../errors');
 const { equal: compareIds } = require('../../../helper/compare').ObjectId;
 const { ScopePermissionService } = require('../../helpers/scopePermissions');
 

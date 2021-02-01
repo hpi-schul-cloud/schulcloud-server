@@ -1,7 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden } = reqlib('src/errors');
+const { Forbidden } = require('../../../errors');
 const { hasPermission } = require('../../../hooks');
 const { getScopePermissions } = require('../../helpers/scopePermissions/hooks/checkScopePermissions');
 

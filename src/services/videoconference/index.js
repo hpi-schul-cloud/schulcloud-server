@@ -3,10 +3,9 @@ const lodash = require('lodash');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, NotFound, BadRequest, GeneralError } = reqlib('src/errors');
-const { isFeatherError } = reqlib('src/errors/utils');
+const { Forbidden, NotFound, BadRequest, GeneralError } = require('../../errors');
+const { isFeatherError } = require('../../errors/utils');
 const { SCHOOL_FEATURES } = require('../school/model');
 const videoconferenceHooks = require('./hooks');
 const { getUser } = require('../../hooks');

@@ -46,31 +46,6 @@ describe('pseudonym service', function pseudonymTest() {
 		expect(pseudonymModelTO.pseudonym.length).to.be.greaterThan(0);
 	};
 
-	// const testTool1 = {
-	// 	_id: '5a79cb15c3874f9aea14daa5',
-	// 	name: 'test1',
-	// 	url: 'https://tool.com?pseudonym={PSEUDONYM}',
-	// 	isLocal: true,
-	// 	isTemplate: true,
-	// 	resource_link_id: 1,
-	// 	lti_version: '1p0',
-	// 	lti_message_type: 'basic-start-request',
-	// 	secret: '1',
-	// 	key: '1',
-	// };
-	// const testTool2 = {
-	// 	_id: '5a79cb15c3874f9aea14daa6',
-	// 	originTool: '5a79cb15c3874f9aea14daa5',
-	// 	name: 'test2',
-	// 	url: 'https://tool.com?pseudonym={PSEUDONYM}',
-	// 	isLocal: true,
-	// 	resource_link_id: 1,
-	// 	lti_version: '1p0',
-	// 	lti_message_type: 'basic-start-request',
-	// 	secret: '1',
-	// 	key: '1',
-	// };
-
 	before(async () => {
 		app = await appPromise;
 		server = await app.listen(0);
