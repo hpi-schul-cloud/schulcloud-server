@@ -54,6 +54,7 @@ class WalletFileService {
 			{
 				recipients: [recipientID],
 				content: {
+					// Only dummy data, should be real data if used in production
 					'@type': 'Attribute',
 					name: 'dc.languageAssessmentDe',
 					value: '{"value":"B1","source":"DAAD"}',
