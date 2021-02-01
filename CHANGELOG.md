@@ -22,6 +22,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8029 - Add deletion concept handling for pseudonyms and registration pins
 - SC-6950 - Add access for superhero to change kreisid and officialSchoolNumber
 - SC-8206 - Add school tombstone for deleting concept
+- SC-7825 - Deletion concept for user data in tasks
 
 ### Changed
 
