@@ -40,6 +40,15 @@ const lessonSchema = new Schema(
 	}
 );
 
+/*
+query list with bigges impact of database load
+schulcloud.lessons             find         {"courseId": 1} 
+schulcloud.lessons             find         {"courseGroupId": 1}
+schulcloud.lessons             count        {"courseId": 1}        
+*/
+lessonSchema.index({ courseId: 1 });
+lessonSchema.index({ courseGroupId: 1 });
+
 enableAuditLog(lessonSchema);
 
 const lessonModel = mongoose.model('lesson', lessonSchema);

@@ -1,0 +1,41 @@
+type: object
+description: schema for request body of patch request
+required:
+  - ok
+  - users
+  - classes
+properties:
+  ok:
+    type: boolean
+  error:
+    type: array
+    items:
+      type: object
+      required:
+        - type
+        - message
+      properties:
+        type:
+          type: string
+        message:
+          type: string
+  users:
+    type: object
+    properties:
+      total:
+        type: integer
+      admin:
+        type: integer
+      teacher:
+        type: integer
+      student:
+        type: integer
+      sample:
+        type: object
+  classes:
+    type: object
+    properties:
+      total:
+        type: integer
+      sample:
+        type: object

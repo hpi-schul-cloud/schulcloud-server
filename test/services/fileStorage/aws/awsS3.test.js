@@ -1,22 +1,27 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const chaiAsPromised = require('chai-as-promised');
+
 const { expect } = require('chai');
 const mockery = require('mockery');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+
 const mockAws = require('./s3.mock');
-const logger = require('../../../../src/logger');
+const appPromise = require('../../../../src/app');
+
+const testObjects = require('../../helpers/testObjects')(appPromise);
+const { schoolModel } = require('../../../../src/services/school/model');
 
 chai.use(chaiHttp);
+chai.use(chaiAsPromised);
 
 describe('AWS file storage strategy', () => {
 	let aws;
 
-	const options = {
-		schoolId: '5f2987e020834114b8efd6f8',
-	};
-
 	const ShouldFail = new Error('It succeeded but should have returned an error.');
 
-	before((done) => {
+	let configBefore = {};
+	before(async () => {
 		// Enable mockery to mock objects
 		mockery.enable({
 			warnOnUnregistered: false,
@@ -30,28 +35,31 @@ describe('AWS file storage strategy', () => {
 			},
 		});
 
+		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
+		Configuration.set('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED', true);
+		Configuration.set('S3_KEY', '1234567891234567');
+
+		await testObjects.createTestStorageProvider({ secretAccessKey: '123456789' });
+
 		delete require.cache[require.resolve('../../../../src/services/fileStorage/strategies/awsS3')];
 		const AWSStrategy = require('../../../../src/services/fileStorage/strategies/awsS3');
 		aws = new AWSStrategy();
-		done();
 	});
 
-	after(() => {
+	after(async () => {
 		mockery.deregisterAll();
 		mockery.disable();
+		await testObjects.cleanup();
+		Configuration.reset(configBefore);
 	});
 
 	describe('create', () => {
-		it('creates a bucket for the given school', () =>
-			aws
-				.create(options.schoolId)
-				.then((res) => {
-					expect(res).to.not.be.undefined;
-					expect(res.message).to.be.equal('Successfully created s3-bucket!');
-				})
-				.catch((err) => {
-					logger.warning('aws.create error', err);
-				}));
+		it('creates a bucket for the given school', async () => {
+			const testSchool = await testObjects.createTestSchool();
+			const res = await aws.create(testSchool._id);
+			expect(res).to.not.be.undefined;
+			expect(res.message).to.be.equal('Successfully created s3-bucket!');
+		});
 
 		it('rejects if no school id is given', () =>
 			aws
@@ -108,6 +116,29 @@ describe('AWS file storage strategy', () => {
 					expect(res).to.not.be.undefined;
 					expect(res).to.be.equal('successfully created signed url');
 				}));
+
+		it('wrong provider assigned', async () => {
+			const testStorageProvider = await testObjects.createTestStorageProvider({ secretAccessKey: '1' });
+
+			let testSchool = await testObjects.createTestSchool({ storageProvider: testStorageProvider });
+			// 1. call: create bucket for school should be successfull
+			const res = await aws.create(testSchool._id);
+			expect(res.message).to.be.equal('Successfully created s3-bucket!');
+			expect(testSchool.storageProvider._id.toString()).to.equal(testStorageProvider._id.toString());
+			// 2. call: create bucket for school should lead to 409 unique bucket name error and
+			// the school should be reassigned to provider with the corresponding bucket
+			let expectedProviderId;
+			try {
+				await aws.create(testSchool._id);
+				throw ShouldFail;
+			} catch (err) {
+				expect(err).to.not.be.undefined;
+				expect(err.code).to.equal(500);
+				expectedProviderId = err.provider;
+			}
+			testSchool = (await schoolModel.findById(testSchool._id)).toObject();
+			expect(testSchool.storageProvider._id.toString()).to.equal(expectedProviderId);
+		});
 
 		it('rejects with missing parameters', () =>
 			aws

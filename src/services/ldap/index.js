@@ -3,9 +3,9 @@ const ldap = require('ldapjs');
 const mongoose = require('mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, NotFound, BadRequest, GeneralError, NotAuthenticated, NoClientInstanceError } = reqlib('src/errors');
+const { Forbidden, NotFound, BadRequest, NotAuthenticated, NoClientInstanceError } = require('../../errors');
+const LDAPConnectionError = require('./LDAPConnectionError');
 
 const hooks = require('./hooks');
 
@@ -34,6 +34,9 @@ module.exports = function LDAPService() {
 			// only needed to register as a feathers service
 		}
 
+		/**
+		 * @deprecated
+		 */
 		get(id, params) {
 			return app
 				.service('systems')
@@ -60,7 +63,10 @@ module.exports = function LDAPService() {
 				});
 		}
 
-		/** Used for activation only */
+		/**
+		 * Used for activation only
+		 * @deprecated
+		 */
 		async patch(systemId, payload, context) {
 			const systemService = await app.service('systems');
 			const userService = await app.service('users');
@@ -143,7 +149,7 @@ module.exports = function LDAPService() {
 
 				client.on('error', (e) => {
 					logger.error('Error during LDAP operation', { error: e });
-					reject(new GeneralError('LDAP error', e));
+					reject(new LDAPConnectionError(e));
 				});
 
 				client.on('connect', () => {
@@ -215,12 +221,13 @@ module.exports = function LDAPService() {
 		 * @return {Promise[Array[Object]]} resolves with array of objects
 		 * matching the query, rejects with error otherwise
 		 */
-		searchCollection(config, searchString, options = {}, rawAttributes = []) {
+		searchCollection(config, searchString, options = {}, rawAttributes = [], firstPageOnly = false) {
 			// Paging to avoid 'max size limit exceeded' issue
 			const optionsWithPaging = {
 				...options,
 				paged: {
 					pageSize: 100,
+					pagePause: firstPageOnly,
 				},
 			};
 
@@ -233,6 +240,11 @@ module.exports = function LDAPService() {
 								reject(err);
 							}
 							res.on('error', reject);
+							res.on('page', (result) => {
+								if (firstPageOnly) {
+									resolve(objects);
+								}
+							});
 							res.on('searchEntry', (entry) => {
 								const result = entry.object;
 								rawAttributes.forEach((element) => {
@@ -288,6 +300,17 @@ module.exports = function LDAPService() {
 		 */
 		getUsers(config, school) {
 			return getLDAPStrategy(app, config).getUsers(school);
+		}
+
+		/**
+		 * Returns all users at a school on the LDAP server
+		 * @param {LdapConfig} config the ldapConfig
+		 * @param {School} school the school object
+		 * @return {Promise[Object]} resolves with all user objects or rejects
+		 * with error
+		 */
+		verifyConfig(config, school) {
+			return getLDAPStrategy(app, config).verifyConfig(school);
 		}
 
 		/**

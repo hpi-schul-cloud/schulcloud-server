@@ -8,6 +8,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const { getDocumentBaseDir } = require('./logic/school');
 const { enableAuditLog } = require('../../utils/database');
 const externalSourceSchema = require('../../helper/externalSourceSchema');
+const { countySchema } = require('../federalState/countyModel');
 
 const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
@@ -20,6 +21,8 @@ const SCHOOL_FEATURES = {
 	MESSENGER_SCHOOL_ROOM: 'messengerSchoolRoom',
 	MESSENGER_STUDENT_ROOM_CREATE: 'messengerStudentRoomCreate',
 };
+
+const SCHOOL_OF_DELETED_USERS = { name: 'graveyard school (tombstone users only)', purpose: 'tombstone' };
 
 const defaultFeatures = [];
 
@@ -61,6 +64,7 @@ const schoolSchema = new Schema(
 			enum: ['', 'school', 'schoolGroup'],
 		},
 		officialSchoolNumber: { type: String },
+		county: { type: countySchema },
 		systems: [{ type: Schema.Types.ObjectId, ref: 'system' }],
 		federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },
 		createdAt: { type: Date, default: Date.now },
@@ -89,12 +93,18 @@ const schoolSchema = new Schema(
 		inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below),
 		storageProvider: { type: mongoose.Schema.Types.ObjectId, ref: 'storageprovider' },
 		permissions: { type: Object },
+		tombstoneUserId: {
+			type: Schema.Types.ObjectId,
+			ref: 'user',
+		},
 		...externalSourceSchema,
 	},
 	{
 		timestamps: true,
 	}
 );
+
+schoolSchema.index({ purpose: 1 });
 
 if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
 	// to speed up lookups during TSP sync
@@ -156,6 +166,7 @@ const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 
 module.exports = {
 	SCHOOL_FEATURES,
+	SCHOOL_OF_DELETED_USERS,
 	schoolSchema,
 	schoolModel,
 	schoolGroupModel,

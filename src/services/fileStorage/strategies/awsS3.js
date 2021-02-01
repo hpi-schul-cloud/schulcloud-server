@@ -1,22 +1,23 @@
 const { promisify } = require('es6-promisify');
 const CryptoJS = require('crypto-js');
-const reqlib = require('app-root-path').require;
 
-const { NotFound, BadRequest, GeneralError } = reqlib('src/errors');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const aws = require('aws-sdk');
 const pathUtil = require('path');
 const fs = require('fs');
+const mongoose = require('mongoose');
+const { NotFound, BadRequest, GeneralError } = require('../../../errors');
 const logger = require('../../../logger');
 const { schoolModel } = require('../../school/model');
 const { StorageProviderModel } = require('../../storageProvider/model');
 const UserModel = require('../../user/model');
 const filePermissionHelper = require('../utils/filePermissionHelper');
 const { removeLeadingSlash } = require('../utils/filePathHelper');
+const { updateProviderForSchool, findProviderForSchool } = require('../utils/providerAssignmentHelper');
 const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 
 const HOST = Configuration.get('HOST');
-
+const BUCKET_NAME_PREFIX = 'bucket-';
 const AbstractFileStorageStrategy = require('./interface.js');
 
 const getCorsRules = () => [
@@ -28,7 +29,7 @@ const getCorsRules = () => [
 	},
 ];
 
-const getConfig = (provider) => {
+const getConfig = (provider, useCors = true) => {
 	const awsConfig = new aws.Config({
 		signatureVersion: 'v4',
 		s3ForcePathStyle: true,
@@ -37,60 +38,54 @@ const getConfig = (provider) => {
 		secretAccessKey: provider.secretAccessKey,
 		region: provider.region,
 		endpointUrl: provider.endpointUrl,
-		cors_rules: getCorsRules(),
 	});
+	if (useCors) {
+		awsConfig.cors_rules = getCorsRules();
+	}
 	awsConfig.endpoint = new aws.Endpoint(provider.endpointUrl);
 	return awsConfig;
 };
 
 const chooseProvider = async (schoolId) => {
-	let session = null;
 	let providers = [];
-	try {
-		session = await StorageProviderModel.db.startSession();
-		session.startTransaction();
+	let provider;
+	const session = await mongoose.startSession();
+	await session.withTransaction(
+		async () => {
+			// We need to figure out if we run in a replicaset, because DB-calls with transaction
+			// will fail if not run in a replicaset.
+			const effectiveSession = session.clientOptions.replicaSet ? session : undefined;
+			providers = await StorageProviderModel.find({ isShared: true })
+				.sort({ freeBuckets: -1, _id: 1 })
+				.limit(1)
+				.session(effectiveSession)
+				.lean()
+				.exec();
 
-		providers = await StorageProviderModel.find({ isShared: true })
-			.sort({ freeBuckets: -1 })
-			.limit(1)
-			.session(session)
-			.lean()
-			.exec();
-	} catch (err) {
-		/* with no replica set (in local dev env), first request of transaction will fail -> we set session to
-		undefined and repeat first request */
-		if (err.errmsg === 'Transaction numbers are only allowed on a replica set member or mongos') {
-			session = undefined;
-			providers = await StorageProviderModel.find({ isShared: true }).sort({ freeBuckets: -1 }).limit(1).lean().exec();
-		} else {
-			throw err;
-		}
-	}
+			if (!Array.isArray(providers) || providers.length === 0) throw new Error('No available provider found.');
+			provider = providers[0];
 
-	if (!Array.isArray(providers) || providers.length === 0) throw new Error('No available provider found.');
-	const provider = providers[0];
-
-	await StorageProviderModel.findByIdAndUpdate(provider._id, { $inc: { freeBuckets: -1 } })
-		.session(session)
-		.lean()
-		.exec();
-	await schoolModel
-		.findByIdAndUpdate(schoolId, { $set: { storageProvider: provider._id } })
-		.session(session)
-		.lean()
-		.exec();
-
-	logger.warning(provider);
-
-	if (session) await session.commitTransaction();
-
+			await Promise.all([
+				StorageProviderModel.findByIdAndUpdate(provider._id, { $inc: { freeBuckets: -1 } })
+					.session(effectiveSession)
+					.lean()
+					.exec(),
+				schoolModel
+					.findByIdAndUpdate(schoolId, { $set: { storageProvider: provider._id } })
+					.session(effectiveSession)
+					.lean()
+					.exec(),
+			]);
+		},
+		{ readPreference: 'primary' } // transactions will only work with readPreference = 'primary'
+	);
+	session.endSession();
 	return provider;
 };
 
-const FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED = Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED');
 // begin legacy
 let awsConfig = {};
-if (!FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED) {
+if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === false) {
 	try {
 		//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
 		/* eslint-disable global-require, no-unused-expressions */
@@ -104,6 +99,26 @@ if (!FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED) {
 }
 // end legacy
 
+const getS3 = (storageProvider, useCors) => {
+	const S3_KEY = Configuration.get('S3_KEY');
+	storageProvider.secretAccessKey = CryptoJS.AES.decrypt(storageProvider.secretAccessKey, S3_KEY).toString(
+		CryptoJS.enc.Utf8
+	);
+	return new aws.S3(getConfig(storageProvider, useCors));
+};
+
+const listBuckets = async (awsObject) => {
+	try {
+		const response = await awsObject.s3.listBuckets().promise();
+		return response.Buckets ? response.Buckets.map((b) => b.Name) : [];
+	} catch (e) {
+		logger.warning('Could not retrieve buckets for provider', e);
+		return [];
+	}
+};
+
+const getBucketName = (schoolId) => `${BUCKET_NAME_PREFIX}${schoolId}`;
+
 const createAWSObject = async (schoolId) => {
 	const school = await schoolModel
 		.findOne({ _id: schoolId })
@@ -114,19 +129,14 @@ const createAWSObject = async (schoolId) => {
 
 	if (school === null) throw new NotFound('School not found.');
 
-	if (FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED) {
-		const S3_KEY = Configuration.get('S3_KEY');
+	if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === true) {
 		if (!school.storageProvider) {
 			school.storageProvider = await chooseProvider(schoolId);
 		}
-		school.storageProvider.secretAccessKey = CryptoJS.AES.decrypt(
-			school.storageProvider.secretAccessKey,
-			S3_KEY
-		).toString(CryptoJS.enc.Utf8);
-
+		const s3 = getS3(school.storageProvider);
 		return {
-			s3: new aws.S3(getConfig(school.storageProvider)),
-			bucket: `bucket-${schoolId}`,
+			s3,
+			bucket: getBucketName(schoolId),
 		};
 	}
 
@@ -137,7 +147,7 @@ const createAWSObject = async (schoolId) => {
 
 	return {
 		s3: new aws.S3(config),
-		bucket: `bucket-${schoolId}`,
+		bucket: getBucketName(schoolId),
 	};
 	// end legacy
 };
@@ -218,83 +228,122 @@ const getFileMetadata = (storageContext, awsObjects, bucketName, s3) => {
 	).then((data) => splitFilesAndDirectories(storageContext, data));
 };
 
+/**
+ * If school was not found by its provider try to find the school bucket by other providers
+ * - Get all storage providers from the database
+ * - Get all buckets from the storage providers
+ * - Try to find the school bucket by other providers
+ * - If school bucket was found by another provider - update the school provider
+ * @param awsObject - {s3, bucket}
+ * @returns {Promise<{s3: *, bucket: string}|{s3: *, bucket: string}|*>}
+ */
+const reassignProviderForSchool = async (awsObject) => {
+	const schoolId = awsObject.bucket.replace(BUCKET_NAME_PREFIX, '');
+	const storageProviders = await StorageProviderModel.find().lean().exec();
+	const bucketsForProvider = {};
+	for (const provider of storageProviders) {
+		const config = getS3(provider);
+		const awsObj = { s3: config };
+		// eslint-disable-next-line no-await-in-loop
+		bucketsForProvider[provider._id] = await listBuckets(awsObj);
+	}
+	const correctProvider = findProviderForSchool(bucketsForProvider, schoolId);
+	if (correctProvider !== undefined) {
+		logger.error(`Correct provider for school ${schoolId} could be found ${correctProvider}`);
+		await updateProviderForSchool(correctProvider, schoolId);
+		const err = new GeneralError('Upload failed. Please refresh the page and try again.');
+		err.provider = correctProvider;
+		throw err;
+	}
+	return awsObject;
+};
+
+const putBucketCors = async (awsObject) => {
+	try {
+		await awsObject.s3
+			.putBucketCors({
+				Bucket: awsObject.bucket,
+				CORSConfiguration: {
+					CORSRules: getCorsRules(),
+				},
+			})
+			.promise();
+	} catch (e) {
+		// not implemented
+		// min.io doesn't support this function
+		if (e.statusCode !== 501) {
+			throw e;
+		}
+	}
+
+}
+
+
+/**
+ * Creates bucket. If s3 create bucket returns 409 (Conflict)
+ * - it means that the bucket already exists by another provider
+ * - try to find the bucket and reassign it to the correct provider
+ * @param awsObject - {s3, bucket}
+ * @returns {Promise<{code: number, data: *, message: string}>}
+ */
+const createBucket = async (awsObject) => {
+	try {
+		logger.info(`Bucket ${awsObject.bucket} does not exist - creating ... `);
+		await awsObject.s3.createBucket({ Bucket: awsObject.bucket }).promise();
+		await putBucketCors(awsObject);
+		return awsObject;
+	} catch (err) {
+		logger.error(`Error by creating the bucket ${awsObject.bucket}: ${err.code} ${err.message}`);
+		if (err.statusCode === 409 || err.statusCode === 403) {
+			logger.error(`Bucket ${awsObject.bucket} does not exist. 
+							Probably it already exists by another provider. Trying to find by other providers. 
+							${err.code} - ${err.message}`);
+			return reassignProviderForSchool(awsObject);
+		}
+		throw err;
+	}
+};
+
 class AWSS3Strategy extends AbstractFileStorageStrategy {
+	connect(storageProvider, useCors) {
+		return getS3(storageProvider, useCors);
+	}
+
 	async create(schoolId) {
 		if (!schoolId) {
 			throw new BadRequest('No school id parameter given.');
 		}
 
 		const awsObject = await createAWSObject(schoolId);
-		return new Promise((resolve, reject) =>
-			promisify(
-				awsObject.s3.createBucket.bind(awsObject.s3),
-				awsObject.s3
-			)({ Bucket: awsObject.bucket })
-				.then((res) => {
-					/* Sets the CORS configuration for a bucket. */
-					awsObject.s3.putBucketCors(
-						{
-							Bucket: awsObject.bucket,
-							CORSConfiguration: {
-								CORSRules: getCorsRules(),
-							},
-						},
-						(err) => {
-							// define and pass error handler
-							if (err) {
-								logger.warning(err);
-							}
-							reject(err);
-						}
-					);
-					resolve({
-						message: 'Successfully created s3-bucket!',
-						data: res,
-						code: 200,
-					});
-				})
-				.catch((err) => reject(new Error(err)))
-		);
+		const data = await createBucket(awsObject);
+		return {
+			message: 'Successfully created s3-bucket!',
+			data,
+			code: 200,
+		};
 	}
 
-	createIfNotExists(awsObject) {
-		return new Promise((resolve, reject) => {
-			const params = {
-				Bucket: awsObject.bucket,
-			};
-			awsObject.s3.headBucket(params, (err) => {
-				if (err && err.statusCode === 404) {
-					logger.info(`Bucket ${awsObject.bucket} does not exist - creating ... `);
+	async listBucketsNames(awsObject) {
+		return listBuckets(awsObject);
+	}
 
-					awsObject.s3.createBucket({ Bucket: awsObject.bucket }, (err) => {
-						if (err) {
-							reject(err);
-						}
+	async createIfNotExists(awsObject) {
+		const params = {
+			Bucket: awsObject.bucket,
+		};
+		try {
+			await awsObject.s3.headBucket(params).promise();
+			logger.info(`Bucket ${awsObject.bucket} does exist`);
+			return awsObject;
+		} catch (err) {
+			if (err.statusCode === 404 || err.statusCode === 403) {
+				const response = await createBucket(awsObject);
+				logger.info(`Bucket ${response.bucket} created ... `);
 
-						logger.info(`Bucket ${awsObject.bucket} created ... `);
-						awsObject.s3.putBucketCors(
-							{
-								Bucket: awsObject.bucket,
-								CORSConfiguration: {
-									CORSRules: getCorsRules(),
-								},
-							},
-							(err) => {
-								if (err) {
-									reject(err);
-								}
-								resolve(awsObject);
-							}
-						);
-					});
-
-					return;
-				}
-
-				logger.info(`Bucket ${awsObject.bucket} does exist`);
-				resolve(awsObject);
-			});
-		});
+				return response;
+			}
+			throw err;
+		}
 	}
 
 	/** @DEPRECATED * */
@@ -405,7 +454,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 						const params = {
 							Bucket: safeAwsObject.bucket,
 							Key: flatFileName,
-							Expires: 60,
+							Expires: Configuration.get('STORAGE_SIGNED_URL_EXPIRE'),
 							ContentType: fileType,
 							Metadata: header,
 						};
@@ -436,7 +485,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 					const params = {
 						Bucket: awsObject.bucket,
 						Key: flatFileName,
-						Expires: 60,
+						Expires: Configuration.get('STORAGE_SIGNED_URL_EXPIRE'),
 					};
 					const getBoolean = (value) => value === true || value === 'true';
 					if (getBoolean(download)) {

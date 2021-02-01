@@ -53,6 +53,35 @@ const getUsername = (user) => {
 const getEmail = (user) => `${getUsername(user)}@schul-cloud.org`;
 
 /**
+ * Create a consent if the user is created via TSP sync.
+ * In this case, the consent process was already handled from the TSP side.
+ * During the user creation process, the age of the users is unknown.
+ * Therfore, we create a user and a parent consent in any case.
+ */
+const createTSPConsent = () => {
+	const currentDate = Date.now();
+	const tspConsent = {
+		form: 'digital',
+		source: 'tsp-sync',
+		privacyConsent: true,
+		termsOfUseConsent: true,
+		dateOfPrivacyConsent: currentDate,
+		dateOfTermsOfUseConsent: currentDate,
+	};
+
+	return {
+		userConsent: tspConsent,
+		parentConsents: [tspConsent],
+	};
+};
+
+/**
+ * During the user creation process, the age of the users is unknown.
+ * we just take a random date
+ */
+const createBirthDay = () => new Date();
+
+/**
  * Registers a user and creates an account
  * @param {Object} app the Feathers app
  * @param {Object} userOptions options to be provided to the user service
@@ -64,17 +93,18 @@ const getEmail = (user) => `${getUsername(user)}@schul-cloud.org`;
 const createUserAndAccount = async (app, userOptions, roles, systemId) => {
 	const username = getUsername(userOptions);
 	const email = getEmail(userOptions);
-	const { pin } = await app.service('registrationPins').create({
-		email,
-		verified: true,
-		silent: true,
-	});
-	const user = await app.service('users').create({
+	let userData = {
 		...userOptions,
-		pin,
 		email,
 		roles,
-	});
+	};
+	if (Configuration.get('FEATURE_TSP_AUTO_CONSENT_ENABLED') === true) {
+		const birthday = createBirthDay();
+		const consent = createTSPConsent();
+		// ignore userToConsent from consent utils
+		userData = { ...userData, birthday, consent };
+	}
+	const user = await app.service('users').create(userData);
 	await accountModel.create({
 		userId: user._id,
 		username,
@@ -82,49 +112,6 @@ const createUserAndAccount = async (app, userOptions, roles, systemId) => {
 		activated: true,
 	});
 	return user;
-};
-
-/**
- * Create a consent if the user is created via TSP sync.
- * In this case, the consent process was already handled from the TSP side.
- * @param {Object} app the Feathers app
- * @param {User} student the student created via TSP sync
- * @async
- */
-const createTSPConsent = async (app, student) => {
-	const currentDate = Date.now();
-	const tspConsent = {
-		form: 'digital',
-		source: 'tsp-sync',
-		privacyConsent: true,
-		termsOfUseConsent: true,
-		dateOfPrivacyConsent: currentDate,
-		dateOfTermsOfUseConsent: currentDate,
-	};
-
-	/**
-	 * During the user creation process, the age of the users is unknown.
-	 * Therfore, we create a user and a parent consent in any case.
-	 */
-	await app.service('consents').create({
-		userId: student._id,
-		userConsent: tspConsent,
-		parentConsents: [tspConsent],
-	});
-};
-
-/**
- * Add a dummy birthday if the user is created via TSP sync.
- * In this case, the consent process was already handled from the TSP side and the birthday is not needed.
- * @param {Object} app the Feathers app
- * @param {User} user the user created via TSP sync
- * @async
- */
-const addDummyBirthday = async (app, user) => app.service('users').patch(user._id, { birthday: new Date() });
-
-const shortenedRegistrationProcess = async (app, student) => {
-	await createTSPConsent(app, student);
-	await addDummyBirthday(app, student);
 };
 
 /**
@@ -258,7 +245,6 @@ module.exports = {
 	getUsername,
 	getEmail,
 	createUserAndAccount,
-	shortenedRegistrationProcess,
 	findSchool,
 	encryptToken,
 	decryptToken,

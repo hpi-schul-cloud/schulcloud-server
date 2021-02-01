@@ -1,8 +1,7 @@
 const assert = require('assert');
 const { expect } = require('chai');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden } = reqlib('src/errors');
+const { Forbidden } = require('../../../src/errors');
 
 const appPromise = require('../../../src/app');
 const Material = require('../../../src/services/content/material-model');

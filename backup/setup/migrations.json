@@ -861,5 +861,82 @@
 		"$date": "2020-10-28T08:07:13.544Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ff5c5f9096da22f7ce586c8"
+	},
+	"state": "up",
+	"name": "seedFederalStatesWithCounties",
+	"createdAt": {
+		"$date": "2020-11-05T11:16:03.243Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fd9fe1082bcbec8c407c42a"
+	},
+	"state": "up",
+	"name": "create-school-for-deleted-users",
+	"createdAt": {
+		"$date": "2020-12-16T12:31:12.749Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5ffffbabd26eac720ca4f407"
+	},
+	"state": "up",
+	"name": "syncTeamIndexes",
+	"createdAt": {
+		"$date": "2020-12-17T14:07:08.384Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "60005b6190b75e5f285960a4"
+	},
+	"state": "up",
+	"name": "fixStorageProviderInconsistencies",
+	"createdAt": {
+		"$date": "2021-01-06T14:19:02.732Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "600562e9789110143f06ccc2"
+	},
+	"state": "up",
+	"name": "update-pseudonym-indexes",
+	"createdAt": {
+		"$date": "2021-01-18T10:24:39.712Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "601291b4dde43251a883c422"
+	},
+	"state": "up",
+	"name": "addUniquePseudonymIndex",
+	"createdAt": {
+		"$date": "2021-01-18T12:25:27.66Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "60057e386ce08725808ccba0"
+	},
+	"state": "up",
+	"name": "syncIndexes",
+	"createdAt": {
+		"$date": "2021-01-18T12:25:28.66Z"
+	},
+	"__v": 0
 }]
 

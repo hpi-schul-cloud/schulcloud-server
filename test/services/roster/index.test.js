@@ -58,19 +58,15 @@ describe('roster service', function oauth() {
 			ltiToolIds: [testTool1._id],
 			shareToken: 'xxx',
 		};
-		return Promise.all([toolService.create(testTool1), courseService.create(testCourse)]).then(() =>
-			pseudonymService
-				.find({
-					query: {
-						userId: testUser1._id,
-						toolId: testTool1._id,
-					},
-				})
-				.then((pseudonym) => {
-					pseudonym1 = pseudonym.data[0].pseudonym;
-					return Promise.resolve();
-				})
-		);
+		await Promise.all([toolService.create(testTool1), courseService.create(testCourse)]);
+		const pseudonym = await pseudonymService.find({
+			query: {
+				userId: testUser1._id,
+				toolId: testTool1._id,
+			},
+		});
+		pseudonym1 = pseudonym.data[0].pseudonym;
+		return Promise.resolve();
 	});
 
 	after(() =>
@@ -120,7 +116,7 @@ describe('roster service', function oauth() {
 				assert.strictEqual(pseudonym1, group.data.teachers[0].user_id);
 				const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
 				const iframe = `<iframe src="http://localhost:3100/oauth2/username/${pseudonym1}" ${properties}></iframe>`;
-				assert.strictEqual(encodeURI(iframe), group.data.teachers[0].username);
+				assert.strictEqual(iframe, group.data.teachers[0].username);
 				done();
 			});
 	});

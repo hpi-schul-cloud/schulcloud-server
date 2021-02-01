@@ -28,7 +28,22 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 * @memberof GeneralLDAPStrategy
 	 */
-	async getUsers() {
+	getUsers() {
+		return this.getUsersInternal();
+	}
+
+	/**
+	 * @public
+	 * @see AbstractLDAPStrategy#verifyConfig
+	 * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
+	 * (Array) roles = ['teacher', 'student', 'administrator']
+	 * @memberof GeneralLDAPStrategy
+	 */
+	verifyConfig() {
+		return this.getUsersInternal(true);
+	}
+
+	async getUsersInternal(verifyOnly = false) {
 		const {
 			userAttributeNameMapping,
 			userPathAdditions,
@@ -66,7 +81,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 		for (const searchPath of searchArray) {
 			ldapUsers = ldapUsers.concat(
 				// eslint-disable-next-line no-await-in-loop
-				await this.app.service('ldap').searchCollection(this.config, searchPath, options, rawAttributes)
+				await this.app.service('ldap').searchCollection(this.config, searchPath, options, rawAttributes, verifyOnly)
 			);
 		}
 
