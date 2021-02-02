@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.5.14] - 2020-02-02
+
+### Changed 
+
+- SC-8420 - Fix old missing indexes that migration for new indexes can executed. 25.5.3
+
 ## [25.5.13]
 
 ### Changed
