@@ -145,7 +145,8 @@ userSchema.index(
 			emailSearchValues: 1,
 		},
 		name: 'userSearchIndex',
-		default_language: 'none', // no stop words and no stemming
+		default_language: 'none', // no stop words and no stemming,
+		language_override: 'de',
 	}
 ); // ?
 // maybe the schoolId index is enough ?
