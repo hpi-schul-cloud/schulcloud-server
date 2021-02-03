@@ -96,17 +96,22 @@ module.exports = function roster() {
 			const pseudonym = pseudonyms.data[0];
 			const { userId } = pseudonym;
 
-			const courses = await app.service('courses').find({
+			const userCourses = await app.service('courses').find({
 				query: {
-					ltiToolIds: { $in: params.toolIds },
 					$or: [{ userIds: userId }, { teacherIds: userId }, { substitutionIds: userId }],
+					$populate: ['ltiToolIds'],
 				},
+			});
+
+			const courses = userCourses.data.filter((course) => {
+				const originalToolIds = course.ltiToolIds.map((toolId) => toolId.originTool.toString());
+				return originalToolIds.includes(params.originToolId.toString());
 			});
 
 			// all users courses with given tool enabled
 			return {
 				data: {
-					groups: courses.data.map((course) => ({
+					groups: courses.map((course) => ({
 						group_id: course._id.toString(),
 						name: course.name,
 						student_count: course.userIds.length,
@@ -122,7 +127,7 @@ module.exports = function roster() {
 				globalHooks.ifNotLocal(hooks.tokenIsActive),
 				globalHooks.ifNotLocal(hooks.userIsMatching),
 				hooks.stripIframe,
-				hooks.injectOriginToolIds,
+				hooks.injectOriginToolId,
 			],
 		},
 	};
@@ -143,18 +148,13 @@ module.exports = function roster() {
 			if (!isValidObjectId(courseId)) {
 				throw new ApplicationError('invalid courseId', { courseId });
 			}
-			const { toolIds } = params;
-			if (
-				!Array.isArray(toolIds) ||
-				toolIds.length === 0 ||
-				toolIds.every((toolId) => isValidObjectId(toolId)) === false
-			) {
-				throw new ApplicationError('toolIds must contain at least one valid toolId');
-			}
+
+			const { originToolId } = params;
+
 			const courses = await courseService.find({
 				query: {
 					_id: courseId,
-					ltiToolIds: { $in: toolIds },
+					$populate: ['ltiToolIds'],
 				},
 			});
 
@@ -162,18 +162,21 @@ module.exports = function roster() {
 				return { errors: { description: 'Group not found' } };
 			}
 			const course = courses.data[0];
+			if (!course.ltiToolIds.map((toolId) => toolId.originTool.toString()).includes(originToolId.toString())) {
+				return { errors: { description: 'Group does not contain the tool' } };
+			}
 			const pseudonymService = app.service('pseudonym');
 			const [users, teachers] = await Promise.all([
 				pseudonymService.find({
 					query: {
 						userId: course.userIds,
-						toolId: toolIds[0],
+						toolId: originToolId,
 					},
 				}),
 				pseudonymService.find({
 					query: {
 						userId: course.teacherIds.concat(course.substitutionIds || []),
-						toolId: toolIds[0],
+						toolId: originToolId,
 					},
 				}),
 			]);
@@ -196,7 +199,7 @@ module.exports = function roster() {
 		before: {
 			get: [
 				globalHooks.ifNotLocal(hooks.tokenIsActive),
-				hooks.injectOriginToolIds,
+				hooks.injectOriginToolId,
 				excludeAttributesFromSanitization('roster/groups', 'username'),
 			],
 		},

@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.5.14]
+
+### Fixed
+
+- SC-8571 - New courses does not appear in bettermarks
+
 ## [25.5.13]
 
 ### Changed
