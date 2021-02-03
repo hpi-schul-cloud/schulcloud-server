@@ -32,6 +32,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-4576 - sanitize bbb room and member names
 - SC-8300 Added user information to LDAP Sync in case of errors
 
+## [25.5.15]
+
+### Fixed
+
+- SC-8571 - New courses does not appear in bettermarks
+
 ## [25.5.14] - 2020-02-02
 
 ### Changed 
