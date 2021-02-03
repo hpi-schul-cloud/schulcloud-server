@@ -104,7 +104,8 @@ module.exports = function roster() {
 			});
 
 			const courses = userCourses.data.filter((course) => {
-				const originalToolIds = course.ltiToolIds.map((toolId) => toolId.originTool.toString());
+				course.ltiToolIds = course.ltiToolIds || [];
+				const originalToolIds = course.ltiToolIds.map((toolId) => (toolId.originTool || '').toString());
 				return originalToolIds.includes(params.originToolId.toString());
 			});
 
