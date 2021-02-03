@@ -109,7 +109,7 @@ describe('roster service', function oauth() {
 			assert.strictEqual('teacher', metadata.data.type);
 		}));
 
-	it.only('GET user groups', (done) => {
+	it('GET user groups', (done) => {
 		userGroupsService
 			.find({
 				route: { user: pseudonym1 },
