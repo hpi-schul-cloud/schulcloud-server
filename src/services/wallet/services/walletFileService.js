@@ -35,7 +35,7 @@ class WalletFileService {
 
 			const fileID = file.data.result.id;
 
-			const { userId } = params.account;
+			const userId = data.userId || params.account.userId;
 			const user = await this.app.service('users').get(userId);
 
 			const { relationshipId } = user;
