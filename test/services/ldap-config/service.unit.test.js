@@ -1,8 +1,7 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
-const reqlib = require('app-root-path').require;
 
-const { NotAuthenticated } = reqlib('src/errors');
+const { NotAuthenticated } = require('../../../src/errors');
 
 const LdapConfigService = require('../../../src/services/ldap-config/service');
 

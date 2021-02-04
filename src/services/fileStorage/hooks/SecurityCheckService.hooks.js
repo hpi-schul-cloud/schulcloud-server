@@ -1,7 +1,6 @@
 const { disallow } = require('feathers-hooks-common');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, BadRequest } = reqlib('src/errors');
+const { Forbidden, BadRequest } = require('../../../errors');
 
 const requireId = (context) => {
 	if ([null, undefined].includes(context.id)) {
