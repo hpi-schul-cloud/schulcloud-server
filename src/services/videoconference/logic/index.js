@@ -2,7 +2,7 @@
 // const xml2js = require('xml2js-es6-promise');
 
 const { NotFound, AssertionError } = require('../../../errors');
-const { requiredParametersToBeNonEmtyString } = require('../../../errors/helper/assertionErrorHelper');
+const { requiredParametersToBeNonEmtyString } = require('../../../errors/assertionErrorHelper');
 const { error } = require('../../../logger');
 const { ROLES } = require('./constants');
 const utils = require('./utils');
