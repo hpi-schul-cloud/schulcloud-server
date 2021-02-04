@@ -4,7 +4,7 @@ const { validateEmail } = require('../../helper/validation.helper');
 const { debug } = require('../../../logger');
 
 const deleteRegistrationPinsForUser = async (email) => {
-	validateEmail(email);
+	validateEmail({ email });
 	let complete = true;
 	debug(`deleting user related registration pins started`, { email });
 	const registrationPins = await registrationPinRepo.getRegistrationPinsByEmail(email);

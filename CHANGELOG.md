@@ -27,6 +27,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-8500 - refactoring in error handling
 - SC-8380 removed reqlib, replaced by normal require to keep referenced types known
 - SC-8213 error handling concept
 - SC-4576 - sanitize bbb room and member names
