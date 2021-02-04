@@ -1,7 +1,7 @@
 const { FileModel } = require('./db');
 const { AssertionError } = require('../../../errors');
 const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
-const missingParameters = require('../../../errors/helper/assertionErrorHelper');
+const { missingParameters } = require('../../../errors/assertionErrorHelper');
 const { updateManyResult } = require('../../helper/repo.helper');
 
 const searchQuery = (userId) => ({
