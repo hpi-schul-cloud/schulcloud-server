@@ -10,7 +10,7 @@ module.exports = {
 		alert('remove duplicates process starts.');
 
 		try {
-			const result = await axios({
+			await axios({
 				method: 'delete',
 				url: `${url}/events/duplicates`,
 				timeout: 120000,
