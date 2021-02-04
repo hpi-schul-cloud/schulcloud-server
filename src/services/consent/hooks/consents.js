@@ -1,6 +1,4 @@
-const reqlib = require('app-root-path').require;
-
-const { Forbidden } = reqlib('src/errors');
+const { Forbidden } = require('../../../errors');
 
 exports.restrictToCurrentUser = (context) => {
 	if (

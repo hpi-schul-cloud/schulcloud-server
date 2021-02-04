@@ -1,6 +1,7 @@
 const { classModel } = require('../../../services/user-group/model');
-const { ValidationError, BadRequest } = require('../../../errors');
+const { AssertionError, BadRequest } = require('../../../errors');
 const { isValid: isValidObjectId, toString: idToString } = require('../../../helper/compare').ObjectId;
+const missingParameters = require('../../../errors/assertionErrorHelper');
 const { updateManyResult } = require('../../helper/repo.helper');
 
 const getUserQuery = (userId, classRole) => {
@@ -15,7 +16,7 @@ const getUserQuery = (userId, classRole) => {
 };
 
 const validateRemoveUserFromClassesParams = (userId) => {
-	if (!isValidObjectId(userId)) throw new ValidationError('a valid objectId is required', { userId });
+	if (!isValidObjectId(userId)) throw new AssertionError(missingParameters({ userId }));
 };
 
 const filterClassMember = (userId) => ({

@@ -2,10 +2,9 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const chaiAsPromised = require('chai-as-promised');
 const sinon = require('sinon');
-const reqlib = require('app-root-path').require;
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
-const { Forbidden } = reqlib('src/errors');
+const { Forbidden } = require('../../../src/errors');
 
 const LDAPConnectionError = require('../../../src/services/ldap/LDAPConnectionError');
 const knownGoodConfig = require('./assets/knownGoodConfig.json');
@@ -262,7 +261,11 @@ describe('LdapConfigService', () => {
 				.set('content-type', 'application/json');
 			const response = await request.send(knownBadConfig);
 			expect(response.status).to.equal(400);
-			expect(response.body.message).to.include("request.body should have required property 'rootPath'");
+			expect(response.body.validation_errors).to.deep.include({
+				path: '.body.rootPath',
+				message: "should have required property 'rootPath'",
+				errorCode: 'required.openapi.validation',
+			});
 		});
 	});
 
