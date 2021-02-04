@@ -14,6 +14,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8514 - QR Code generation fails
 - SC-8390 - Lern-Store collections feature flag was not excluding collections in search
 - SC-8322 prevent wrong assignment from school to storage provider
+- SC-8534 fix registration link generation
 
 ### Added
 
@@ -26,10 +27,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-8500 - refactoring in error handling
 - SC-8380 removed reqlib, replaced by normal require to keep referenced types known
 - SC-8213 error handling concept
 - SC-4576 - sanitize bbb room and member names
 - SC-8300 Added user information to LDAP Sync in case of errors
+
+## [25.5.15]
+
+### Fixed
+
+- SC-8571 - New courses does not appear in bettermarks
 
 ## [25.5.14] - 2020-02-02
 
