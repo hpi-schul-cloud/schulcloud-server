@@ -4,6 +4,7 @@ const { alert, error } = require('../src/logger');
 
 module.exports = {
 	up: async function up() {
+		// eslint-disable-next-line no-process-env
 		const url = process.env.CALENDAR_URI;
 		await connect();
 
