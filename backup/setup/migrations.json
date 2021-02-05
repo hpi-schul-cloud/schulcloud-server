@@ -927,5 +927,16 @@
 		"$date": "2021-01-18T12:25:28.66Z"
 	},
 	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "601d40ed70380e6df35f8670"
+	},
+	"state": "up",
+	"name": "remove_event_duplication",
+	"createdAt": {
+		"$date": "2021-02-05T12:58:21.503Z"
+	},
+	"__v": 0
 }]
 
