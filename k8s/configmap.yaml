@@ -34,7 +34,7 @@ data:
   SHOW_VERSION: "1"
   NOTIFICATION_PLATFORM: schul-cloud
   NOTIFICATION_URI: http://node-notification-service
-  IDAS_API_KEY: $SECRET_IDAS_API_KEY
+  IDAS_API_KEY_SECRET: $SECRET_IDAS_API_KEY
   #SMTP: $SECRET_SMTP
   #SMTP_SENDER: staging-noreply@hpi-schul-cloud.de
   STUDENT_TEAM_CREATION: disabled

@@ -12,7 +12,7 @@ class WalletFileService {
 
 		if(!Configuration.has('IDAS_API_KEY_SECRET')){
 			logger.error('IDAS API key not set');
-			return null;
+			return 'IDAS API key not set';
 		}
 		const apiToken = Configuration.get('IDAS_API_KEY_SECRET');
 
