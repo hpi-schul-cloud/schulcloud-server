@@ -1,9 +1,15 @@
 const { expect } = require('chai');
 const { filesRepo } = require('.');
 
-const { getFileById, getFilesWithUserPermissionsByUserId, removeFilePermissionsByUserId } = require('./files.repo');
+const {
+	getFileById,
+	getFilesWithUserPermissionsByUserId,
+	removeFilePermissionsByUserId,
+	getPersonalFilesByUserId,
+	removePersonalFilesByUserId,
+} = require('./files.repo');
 
-describe('files.repo.integration.test', () => {
+describe.only('files.repo.integration.test', () => {
 	let fileTestUtils;
 	let server;
 	let generateObjectId;
@@ -39,6 +45,54 @@ describe('files.repo.integration.test', () => {
 			const result = await getFileById(randomId);
 
 			expect(result).to.be.null;
+		});
+	});
+
+	describe('getPersonalFilesByUserId', () => {
+		it('returns empty array if the given user does not own a file', async () => {
+			const userId = generateObjectId();
+			const fileOwnerId = generateObjectId();
+			await fileTestUtils.create({ owner: fileOwnerId });
+
+			const result = await getPersonalFilesByUserId(userId);
+
+			expect(result).to.be.an('array').of.length(0);
+		});
+
+		it('returns files owned by the given user', async () => {
+			const fileOwnerId = generateObjectId();
+			const file1 = await fileTestUtils.create({ owner: fileOwnerId });
+			const file2 = await fileTestUtils.create({ owner: fileOwnerId });
+
+			const result = await getPersonalFilesByUserId(fileOwnerId);
+
+			expect(result).to.be.an('array').of.length(2);
+			expect(result.map((file) => file._id.toString())).to.includes(file1._id.toString(), file2._id.toString());
+		});
+	});
+
+	describe('removePersonalFilesByUserId', () => {
+		it('returns success and keeps all files if the given user does not own a file', async () => {
+			const userId = generateObjectId();
+			const fileOwnerId = generateObjectId();
+			const otherFile = await fileTestUtils.create({ owner: fileOwnerId });
+
+			const success = await removePersonalFilesByUserId(userId);
+
+			expect(success).to.be.true;
+			expect(await getFileById(otherFile._id)).to.be.not.null;
+		});
+
+		it('returns success and deletes files owned by the given user', async () => {
+			const fileOwnerId = generateObjectId();
+			const file1 = await fileTestUtils.create({ owner: fileOwnerId });
+			const file2 = await fileTestUtils.create({ owner: fileOwnerId });
+
+			const success = await removePersonalFilesByUserId(fileOwnerId);
+
+			expect(success).to.be.true;
+			expect(await getFileById(file1._id)).to.be.null;
+			expect(await getFileById(file2._id)).to.be.null;
 		});
 	});
 

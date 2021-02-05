@@ -1,9 +1,8 @@
 const { FileModel } = require('./db');
-const { ValidationError } = require('../../../errors');
-const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
 const { updateManyResult } = require('../../helper/repo.helper');
+const { validateObjectId } = require('../../helper/uc.helper');
 
-const searchQuery = (userId) => ({
+const permissionSearchQuery = (userId) => ({
 	permissions: {
 		$elemMatch: {
 			refId: userId,
@@ -11,17 +10,32 @@ const searchQuery = (userId) => ({
 	},
 });
 
-const getFileById = async (id) => FileModel.findById(id).lean().exec();
+const personalFileSearchQuery = (userId) => ({
+	refOwnerModel: 'user',
+	owner: userId,
+});
 
+const getFileById = async (id) => FileModel.findById(id).lean().exec();
 
 /**
  * @param {*} userId
  * @return {data} personal files of the user
  */
 const getPersonalFilesByUserId = async (userId) => {
-	// ToDo: Implement this method
-	return [];
+	validateObjectId(userId);
+	return FileModel.find(personalFileSearchQuery(userId)).lean().exec();
 };
+
+/**
+ * @param {*} userId
+ * @return {boolean} success
+ */
+const removePersonalFilesByUserId = async (userId) => {
+	validateObjectId(userId);
+	const deleteResult = await FileModel.deleteMany(personalFileSearchQuery(userId)).lean().exec();
+	const { success } = updateManyResult(deleteResult);
+	return success;
+}
 
 /**
  * @param {*} userId
@@ -30,7 +44,7 @@ const getPersonalFilesByUserId = async (userId) => {
 const getFilesWithUserPermissionsByUserId = async (userId) =>
 	FileModel.aggregate([
 		{
-			$match: searchQuery(userId),
+			$match: permissionSearchQuery(userId),
 		},
 		{
 			$project: {
@@ -51,15 +65,17 @@ const getFilesWithUserPermissionsByUserId = async (userId) =>
  * @return {boolean} success
  */
 const removeFilePermissionsByUserId = async (userId) => {
-	if (!isValidObjectId(userId)) throw new ValidationError(`${userId} is not a valid objectId`);
+	validateObjectId(userId);
 	const updateQuery = { $pull: { permissions: { refId: userId } } };
-	const result = await FileModel.updateMany(searchQuery(userId), updateQuery).lean().exec();
+	const result = await FileModel.updateMany(permissionSearchQuery(userId), updateQuery).lean().exec();
 	const { success } = updateManyResult(result);
 	return success;
 };
 
 module.exports = {
 	getFileById,
+	getPersonalFilesByUserId,
+	removePersonalFilesByUserId,
 	getFilesWithUserPermissionsByUserId,
 	removeFilePermissionsByUserId,
 };

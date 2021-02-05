@@ -83,5 +83,5 @@ describe('deletedUserData.uc.unit', () => {
 			expect(result.trashBinData).to.haveOwnProperty('scope');
 			expect(result.trashBinData).to.haveOwnProperty('data');
 		});
-	}
+	});
 });
