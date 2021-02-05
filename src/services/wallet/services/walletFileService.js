@@ -2,14 +2,21 @@ const axios = require('axios');
 const FormData = require('form-data');
 const logger = require('../../../logger');
 
-const apiToken = require('../../../../config/secrets').IDAS_API_KEY;
-
+const { Configuration } = require('@hpi-schul-cloud/commons');
 class WalletFileService {
 	setup(app) {
 		this.app = app;
 	}
 
 	async create(data, params) {
+
+		if(Configuration.has('IDAS_API_KEY_SECRET')){
+			const apiToken = Configuration.get('IDAS_API_KEY_SECRET');
+		}else{
+			logger.error('IDAS API key not set');
+			return null;
+		}
+
 		const form = new FormData();
 		form.append('file', params.file.buffer, {
 			filename: params.file.originalname,

@@ -1,12 +1,18 @@
 const axios = require('axios');
 
 const logger = require('../../../logger');
-const apiToken = require('../../../../config/secrets').IDAS_API_KEY;
 const { GeneralError } = require('../../../errors');
 
+const { Configuration } = require('@hpi-schul-cloud/commons');
 class WalletService {
 	setup(app) {
 		this.app = app;
+		if(Configuration.has('IDAS_API_KEY_SECRET')){
+			this.apiToken = Configuration.get('IDAS_API_KEY_SECRET');
+		}else{
+			this.apiToken = null
+			logger.info('IDAS API key not set')
+		}
 	}
 
 	async create(data, params) {
@@ -80,7 +86,7 @@ class WalletService {
 				},
 				{
 					headers: {
-						'X-API-KEY': apiToken,
+						'X-API-KEY': this.apiToken,
 					},
 				}
 			)
@@ -99,7 +105,7 @@ class WalletService {
 					responseType: 'arraybuffer',
 					headers: {
 						Accept: 'image/*',
-						'X-API-KEY': apiToken,
+						'X-API-KEY': this.apiToken,
 					},
 				}
 			)
@@ -118,7 +124,7 @@ class WalletService {
 	async update(id, data, params) {
 		const requests = await axios.get('https://daad.idas.solutions/api/v1/RelationshipRequests/OpenIncoming', {
 			headers: {
-				'X-API-KEY': apiToken,
+				'X-API-KEY': this.apiToken,
 			},
 		});
 
@@ -139,7 +145,7 @@ class WalletService {
 				},
 				{
 					headers: {
-						'X-API-KEY': apiToken,
+						'X-API-KEY': this.apiToken,
 					},
 				}
 			);

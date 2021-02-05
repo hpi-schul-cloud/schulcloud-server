@@ -550,6 +550,10 @@
 			"type": "string",
 			"default": "ticketsystem@schul-cloud.org",
 			"description": "Email address used for reporting a wish"
+		},
+		"IDAS_API_KEY_SECRET": {
+			"type": "string",
+			"description": "The IDAS api key for sending requests."
 		}
 	},
 	"required": [
