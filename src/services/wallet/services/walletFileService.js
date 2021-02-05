@@ -10,12 +10,11 @@ class WalletFileService {
 
 	async create(data, params) {
 
-		if(Configuration.has('IDAS_API_KEY_SECRET')){
-			const apiToken = Configuration.get('IDAS_API_KEY_SECRET');
-		}else{
+		if(!Configuration.has('IDAS_API_KEY_SECRET')){
 			logger.error('IDAS API key not set');
 			return null;
 		}
+		const apiToken = Configuration.get('IDAS_API_KEY_SECRET');
 
 		const form = new FormData();
 		form.append('file', params.file.buffer, {

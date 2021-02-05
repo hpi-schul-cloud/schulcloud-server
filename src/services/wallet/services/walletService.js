@@ -7,15 +7,15 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 class WalletService {
 	setup(app) {
 		this.app = app;
-		if(Configuration.has('IDAS_API_KEY_SECRET')){
-			this.apiToken = Configuration.get('IDAS_API_KEY_SECRET');
-		}else{
-			this.apiToken = null
-			logger.info('IDAS API key not set')
-		}
 	}
 
 	async create(data, params) {
+		if(!Configuration.has('IDAS_API_KEY_SECRET')){
+			logger.error('IDAS API key not set');
+			return null;
+		}
+		const apiToken = Configuration.get('IDAS_API_KEY_SECRET');
+		
 		const { userId } = params.account;
 
 		const user = await this.app.service('users').get(userId);
@@ -86,7 +86,7 @@ class WalletService {
 				},
 				{
 					headers: {
-						'X-API-KEY': this.apiToken,
+						'X-API-KEY': apiToken,
 					},
 				}
 			)
@@ -105,7 +105,7 @@ class WalletService {
 					responseType: 'arraybuffer',
 					headers: {
 						Accept: 'image/*',
-						'X-API-KEY': this.apiToken,
+						'X-API-KEY': apiToken,
 					},
 				}
 			)
@@ -122,9 +122,16 @@ class WalletService {
 	}
 
 	async update(id, data, params) {
+
+		if(!Configuration.has('IDAS_API_KEY_SECRET')){
+			logger.error('IDAS API key not set');
+			return null;
+		}
+		const apiToken = Configuration.get('IDAS_API_KEY_SECRET');
+
 		const requests = await axios.get('https://daad.idas.solutions/api/v1/RelationshipRequests/OpenIncoming', {
 			headers: {
-				'X-API-KEY': this.apiToken,
+				'X-API-KEY': apiToken,
 			},
 		});
 
@@ -145,7 +152,7 @@ class WalletService {
 				},
 				{
 					headers: {
-						'X-API-KEY': this.apiToken,
+						'X-API-KEY': apiToken,
 					},
 				}
 			);
