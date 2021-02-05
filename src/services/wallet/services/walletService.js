@@ -85,7 +85,7 @@ class WalletService {
 				}
 			)
 			.catch((error) => {
-				logger.error('Couldnt post wallet-relationshipTemplates');
+				logger.error(JSON.stringify(error))
 				throw new GeneralError("Couldn't create new relationship template!");
 			});
 
