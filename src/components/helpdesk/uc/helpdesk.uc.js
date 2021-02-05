@@ -4,7 +4,7 @@ const { trashBinResult } = require('../../helper/uc.helper');
 const { debug } = require('../../../logger');
 
 const deleteProblemsForUser = async (userId) => {
-	validateObjectId(userId);
+	validateObjectId({ userId });
 	let complete = true;
 	debug(`deleting user related helpdesk problems started`, { userId });
 	const problems = await problemRepo.getProblemsForUser(userId);

@@ -14,20 +14,36 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8514 - QR Code generation fails
 - SC-8390 - Lern-Store collections feature flag was not excluding collections in search
 - SC-8322 prevent wrong assignment from school to storage provider
+- SC-8534 fix registration link generation
 
 ### Added
 
+- SC-7937 - Allow adding multiple materials to lesson
 - SC-8482 - Deletion concept orchestration integration
 - SC-8029 - Add deletion concept handling for pseudonyms and registration pins
 - SC-6950 - Add access for superhero to change kreisid and officialSchoolNumber
 - SC-8206 - Add school tombstone for deleting concept
+- SC-7825 - Deletion concept for user data in tasks
 
 ### Changed
 
+- SC-8500 - refactoring in error handling
 - SC-8380 removed reqlib, replaced by normal require to keep referenced types known
 - SC-8213 error handling concept
 - SC-4576 - sanitize bbb room and member names
 - SC-8300 Added user information to LDAP Sync in case of errors
+
+## [25.5.15]
+
+### Fixed
+
+- SC-8571 - New courses does not appear in bettermarks
+
+## [25.5.14] - 2020-02-02
+
+### Changed 
+
+- SC-8420 - Fix old missing indexes that migration for new indexes can executed. 25.5.3
 
 ## [25.5.13]
 

@@ -7,7 +7,7 @@ const { validateObjectId } = require('../../helper/validation.helper');
  * @param {String|ObjectId} userId
  */
 const getProblemsForUser = async (userId) => {
-	validateObjectId(userId);
+	validateObjectId({ userId });
 	return problemModel.find({ userId }).lean().exec();
 };
 
@@ -16,7 +16,7 @@ const getProblemsForUser = async (userId) => {
  * @param {String|ObjectId} userId
  */
 const deleteProblemsForUser = async (userId) => {
-	validateObjectId(userId);
+	validateObjectId({ userId });
 	const deleteResult = await problemModel.deleteMany({ userId }).lean().exec();
 	return deleteManyResult(deleteResult);
 };

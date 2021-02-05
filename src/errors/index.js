@@ -15,6 +15,20 @@ const {
 	ForbiddenError,
 } = require('./applicationErrors');
 
+class DeletedUserDataError extends ApplicationError {
+	constructor(message, error, data) {
+		super(message);
+		this.code = 601;
+		this.type = 'ApplicationError';
+		this.className = 'deleted-user-data-error';
+		this.data = data;
+		this.errors = error;
+		const uid = ObjectId();
+		this.traceId = uid.toString();
+		Error.captureStackTrace(this, this.constructor);
+	}
+}
+
 const setDefaultMessage = (className) => `Error of type ${className}`;
 
 const resolvedTraceId = (ref, message, additional) => {
@@ -234,6 +248,7 @@ module.exports = {
 	InternalServerError,
 	AssertionError,
 	ForbiddenError,
+	DeletedUserDataError,
 	FeathersError: featherErrors.FeathersError,
 	FeathersNotAuthenticated: featherErrors.NotAuthenticated,
 	BadRequest,

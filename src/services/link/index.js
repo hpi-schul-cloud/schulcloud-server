@@ -94,7 +94,7 @@ module.exports = function setup() {
 			}
 
 			// base link
-			if (data.role === 'student') {
+			if (data.role === 'student' || (data.role.name && data.role.name === 'student')) {
 				linkData.link = `${data.host || Configuration.get('HOST')}/registration/${data.schoolId}`;
 			} else {
 				linkData.link = `${data.host || Configuration.get('HOST')}/registration/${data.schoolId}/byemployee`;

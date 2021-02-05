@@ -9,7 +9,7 @@ const byUserFilter = (userId) => ({ userId });
  * @param userId
  */
 const getPseudonymsForUser = async (userId) => {
-	validateObjectId(userId);
+	validateObjectId({ userId });
 	return Pseudonym.find(byUserFilter(userId)).lean().exec();
 };
 
@@ -18,7 +18,7 @@ const getPseudonymsForUser = async (userId) => {
  * @param {String|ObjectId} userId
  */
 const deletePseudonymsForUser = async (userId) => {
-	validateObjectId(userId);
+	validateObjectId({ userId });
 	const deleteResult = await Pseudonym.deleteMany(byUserFilter(userId)).lean().exec();
 	return deleteManyResult(deleteResult);
 };
