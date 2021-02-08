@@ -56,13 +56,13 @@ data:
   # DOCUMENT_BASE_DIR: https://s3.hidrive.strato.com/schul-cloud-hpi/
   # ENABLE_FILE_SECURITY_CHECK: true
   # ES_CLIENT_ID
-  # ES_DOMAIN: https://mv-repo.schul-cloud.org
+  ES_DOMAIN: https://mv-repo.schul-cloud.org
   # ES_GRANT_TYPE
   # ES_MERLIN_AUTH_URL: http://merlin.nibis.de/auth.php
-  # ES_OAUTH_SECRET
-  # ES_PASSWORD
+  ES_OAUTH_SECRET: $ES_OAUTH_SECRET
+  ES_PASSWORD: $ES_PASSWORD
   # ES_USER: admin
-  # ETHERPAD_API_KEY 
+  # ETHERPAD_API_KEY
   # ETHERPAD_API_PATH: /api/1.2.14
   # ETHERPAD_COOKIE__EXPIRES_SECONDS: 7200
   # ETHERPAD_ETHERPAD_COOKIE_RELEASE_THRESHOLD: 7200
@@ -72,7 +72,7 @@ data:
   # ETHERPAD_URI: https://staging.hpi-schul-cloud.org/etherpad/api/1.2.14
   # FEATURE_ES_COLLECTIONS_ENABLED: true
   # FEATURE_ES_MERLIN_ENABLED: true
-  # FEATURE_ES_SEARCHABLE_ENABLED: true
+  FEATURE_ES_SEARCHABLE_ENABLED: true
   # FEATURE_LERNSTORE_ENABLED: true
   # FEATURE_MATRIX_MESSENGER_ENABLED: true
   # FEATURE_MORGAN_LOG_ENABLED: false
