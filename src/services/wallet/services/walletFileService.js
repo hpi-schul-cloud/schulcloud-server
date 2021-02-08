@@ -32,6 +32,8 @@ class WalletFileService {
 						...form.getHeaders(),
 						'X-API-KEY': apiToken,
 					},
+					maxContentLength: Infinity,
+					maxBodyLength: Infinity,
 				})
 				.catch((error) => {
 					logger.error(error.response);
