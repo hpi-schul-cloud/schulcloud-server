@@ -21,7 +21,7 @@ const sanitize = (text, replacement = '') => {
 	validateIsNonEmptyString(text);
 	// keep only space, upper-/lowercase letters, numbers and accented letters
 	// see https://unicode-table.com/en/#ipa-extensions for ordered characters list
-	const regex = /[^0-9A-Za-zÀ-ÖØ-öø-ÿ.\-=_'`´ ]/g;
+	const regex = /[^0-9A-Za-zÀ-ÖØ-öø-ÿ.\-=_`´ ]/g;
 	const sanitizedText = text.replace(regex, replacement);
 	return sanitizedText;
 };
