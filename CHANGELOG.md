@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Changed
+- OPS-1508 - added limits for cpu and ram to the docker compose files
+
+## [25.6.0] - 2020-02-?
+
 ### Fixed
 
 - SC-8514 - QR Code generation fails
@@ -32,7 +37,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8213 error handling concept
 - SC-4576 - sanitize bbb room and member names
 - SC-8300 Added user information to LDAP Sync in case of errors
-- OPS-1508 - added limits for cpu and ram to the docker compose files
 
 ## [25.5.15]
 
@@ -42,7 +46,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [25.5.14] - 2020-02-02
 
-### Changed 
+### Changed
 
 - SC-8420 - Fix old missing indexes that migration for new indexes can executed. 25.5.3
 

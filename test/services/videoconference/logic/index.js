@@ -7,6 +7,8 @@ const { joinMeeting, getMeetingInfo, sanitize } = require('../../../../src/servi
 const testServer = require('../../../../src/services/videoconference/logic/server');
 const utils = require('../../../../src/services/videoconference/logic/utils');
 
+const ALLOWED_CHARS = '0-9A-Za-zÀ-ÖØ-öø-ÿ.-=_`´ ';
+
 describe('videoconference logic', () => {
 	describe('setup check', () => {
 		it('test server initialized', () => {
@@ -27,7 +29,9 @@ describe('videoconference logic', () => {
 		expect(response.messageKey[0]).to.equal(MESSAGE_KEYS.NOT_FOUND);
 	});
 
-	describe('create meeting', () => {
+	describe('create meeting', function integration() {
+		this.timeout = 5000;
+
 		let randomId;
 
 		before('create a first meeting', async () => {
@@ -69,12 +73,44 @@ describe('videoconference logic', () => {
 			expect(attendeeUrl).to.be.not.empty;
 			expect(url.parse(attendeeUrl)).to.be.ok;
 		});
+
+		it('create meeting works with non-working special chars replaced is working', async () => {
+			// create a new meeting
+			randomId = String(new mongoose.Types.ObjectId());
+			// 	server, meetingName, meetingId, userName, role, params, create,
+			const moderatorUrl = await joinMeeting(
+				testServer,
+				sanitize(`${ALLOWED_CHARS}'@?=)(/&%$§#\\🤘`),
+				randomId,
+				sanitize(`${ALLOWED_CHARS}'@?=)(/&%$§#\\🤘`),
+				ROLES.MODERATOR,
+				{},
+				true
+			);
+			expect(moderatorUrl).to.be.not.empty;
+			expect(url.parse(moderatorUrl)).to.be.ok;
+		});
+
+		it('create meeting fails with chars not replaced', async () => {
+			// create a new meeting
+			randomId = String(new mongoose.Types.ObjectId());
+			// 	server, meetingName, meetingId, userName, role, params, create,
+
+			expect(
+				joinMeeting(testServer, ALLOWED_CHARS, randomId, ALLOWED_CHARS, ROLES.MODERATOR, {}, true)
+			).to.be.not.rejectedWith(Error);
+
+			expect(
+				joinMeeting(testServer, `${ALLOWED_CHARS}'`, randomId, ALLOWED_CHARS, ROLES.MODERATOR, {}, true)
+			).to.be.rejectedWith(Error);
+		});
 	});
 
 	describe('when a malformed username or room name is given', () => {
 		it('should sanitize non numerical characters in room names', () => {
-			expect(sanitize("0-9A-Za-zÀ-ÖØ-öø-ÿ.-=_'`´ ")).to.equal("0-9A-Za-zÀ-ÖØ-öø-ÿ.-=_'`´ ");
-			expect(sanitize("Mathe's Pêtér")).to.equal("Mathe's Pêtér");
+			expect(sanitize(ALLOWED_CHARS), 'should not replace all chars allowed').to.equal(ALLOWED_CHARS);
+			expect(sanitize("'"), 'simple apostrophe fails bbb checksum and should be removed').to.equal('');
+			expect(sanitize('Mathe Pêtér')).to.equal('Mathe Pêtér');
 			expect(sanitize('jid328iu d3LD83f uidw!"§$%&/()=?{}[^]]|<>')).to.equal('jid328iu d3LD83f uidw=');
 			expect(sanitize('Max Mustermann')).to.equal('Max Mustermann');
 			expect(sanitize('Some "Quoted" (Text)')).to.equal('Some Quoted Text');
