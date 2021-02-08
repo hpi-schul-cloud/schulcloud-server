@@ -59,9 +59,9 @@ data:
   ES_DOMAIN: https://mv-repo.schul-cloud.org
   # ES_GRANT_TYPE
   # ES_MERLIN_AUTH_URL: http://merlin.nibis.de/auth.php
-  ES_OAUTH_SECRET: $ES_OAUTH_SECRET
+  # ES_OAUTH_SECRET: $ES_OAUTH_SECRET
   ES_PASSWORD: $ES_PASSWORD
-  # ES_USER: admin
+  ES_USER: admin
   # ETHERPAD_API_KEY
   # ETHERPAD_API_PATH: /api/1.2.14
   # ETHERPAD_COOKIE__EXPIRES_SECONDS: 7200
