@@ -9,9 +9,52 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.5.17] - 2021-02-09
 ### Changed
 - SC-8477 LDAP-Sync: Speed up class sync by holding all the school's users in map while creating/populating classes
 - SC-8477 LDAP-Sync: Speed up user sync by holding all the school's users in map while syncing new users
+=======
+
+## [25.5.16] - 2021-02-08
+
+### Added
+
+- SC-8512 - Creating a migration for duplicated events
+
+## [25.5.15]
+
+### Fixed
+
+- SC-8571 - New courses does not appear in bettermarks
+
+## [25.5.14] - 2021-02-02
+
+### Changed
+
+- SC-8420 - Fix old missing indexes that migration for new indexes can executed. 25.5.3
+
+## [25.5.13]
+
+### Changed
+
+- SC-8462 - Add logging for homework deletion
+
+## [25.5.12]
+
+### Fixed
+
+- SC-8499 - Change order of migrations
+
+## [25.5.11]
+
+### Fixed
+
+- SC-8499 - Prevent duplicated pseudonyms
+
+## [25.5.10]
+
+- SC-8506 - add origin server name to bbb create and join requests
+
 ## [25.5.9]
 
 ### Fixed

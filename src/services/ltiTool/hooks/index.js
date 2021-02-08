@@ -57,7 +57,7 @@ const filterFindBBB = (context) => {
 	}
 	if (hasVideoconferenceItems) {
 		// if school feature disabled, remove bbb tools from results data
-		const { features } = context.params.school;
+		const { features = [] } = context.params.school;
 		if (!features.includes(SCHOOL_FEATURES.VIDEOCONFERENCE)) {
 			context.result.data = context.result.data.filter((tool) => !isBBBTool(tool));
 		}

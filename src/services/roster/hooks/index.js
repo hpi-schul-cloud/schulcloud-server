@@ -51,29 +51,17 @@ module.exports = {
 		return context;
 	},
 
-	injectOriginToolIds: (context) => {
+	injectOriginToolId: async (context) => {
 		if (!context.params.tokenInfo) throw new Error('Token info is missing in params'); // first call isTokenActive
 		const toolService = context.app.service('ltiTools');
-		return toolService
-			.find({
-				query: {
-					oAuthClientId: context.params.tokenInfo.client_id,
-					isLocal: true,
-				},
-			})
-			.then((originTools) =>
-				toolService
-					.find({
-						query: {
-							originTool: originTools.data[0]._id,
-						},
-					})
-					.then((tools) => {
-						context.params.toolIds = [originTools.data[0]._id]; // don't forget actual requested tool id
-						context.params.toolIds = context.params.toolIds.concat(tools.data.map((tool) => tool._id));
-						return context;
-					})
-			);
+		const originTools = await toolService.find({
+			query: {
+				oAuthClientId: context.params.tokenInfo.client_id,
+				isLocal: true,
+			},
+		});
+		context.params.originToolId = originTools.data[0]._id;
+		return context;
 	},
 
 	groupContainsUser: (context) => {
