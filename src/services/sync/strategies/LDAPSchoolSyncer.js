@@ -166,6 +166,8 @@ class LDAPSchoolSyncer extends Syncer {
 	}
 
 	async createClassesFromLdapData(data, school) {
+		// userMap is shared over all calls of populateClassUsers and will contain all users that are loaded while populating the classes
+		// so if user are in multiple classes they will only be loaded once
 		const userMap = new Map();
 		for (const ldapClass of data) {
 			try {
@@ -230,6 +232,8 @@ class LDAPSchoolSyncer extends Syncer {
 			ldapClass.uniqueMembers = [ldapClass.uniqueMembers];
 		}
 
+		// Some users are already in userMap. We don't need to load them again from DB.
+		// We load only users that are missing and add them to the map to not load them again for another class.
 		const usersMissingInMap = [];
 		ldapClass.uniqueMembers.forEach((member) => {
 			const dbUser = userMap.get(member);
