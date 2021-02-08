@@ -4,6 +4,8 @@ const path = require('path');
 const queryString = require('qs');
 
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const courseCalendar = require('./courseCalendar');
+
 const hooks = require('./hooks');
 
 /**
@@ -282,6 +284,8 @@ module.exports = function () {
 	app.use('/calendar', new Service());
 	const contentService = app.service('/calendar');
 	contentService.hooks(hooks);
+
+	app.configure(courseCalendar);
 };
 
 module.exports.Service = Service;
