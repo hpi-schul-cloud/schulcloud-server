@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Changed
+- OPS-1508 - added limits for cpu and ram to the docker compose files
+
+## [25.6.0] - 2020-02-?
+
 ### Fixed
 
 - SC-8514 - QR Code generation fails
@@ -33,15 +38,21 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-4576 - sanitize bbb room and member names
 - SC-8300 Added user information to LDAP Sync in case of errors
 
+## [25.5.16] - 2021-02-08
+
+### Added
+
+- SC-8512 - Creating a migration for duplicated events
+
 ## [25.5.15]
 
 ### Fixed
 
 - SC-8571 - New courses does not appear in bettermarks
 
-## [25.5.14] - 2020-02-02
+## [25.5.14] - 2021-02-02
 
-### Changed 
+### Changed
 
 - SC-8420 - Fix old missing indexes that migration for new indexes can executed. 25.5.3
 
@@ -253,6 +264,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 - SC-7028 - Add Course Component API Specification document
 - SC-7476 - Prevent hash generation if user has account
 - SC-6692 - Added Lern-Store counties support for Niedersachsen (Merlin)
+
 
 ### Changed
 
