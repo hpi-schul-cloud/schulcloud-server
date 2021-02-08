@@ -9,6 +9,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Added
+- SC-8408 - added delete events by scope Id route
+
 ### Changed
 - OPS-1508 - added limits for cpu and ram to the docker compose files
 
