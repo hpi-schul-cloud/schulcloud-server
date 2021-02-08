@@ -32,6 +32,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8213 error handling concept
 - SC-4576 - sanitize bbb room and member names
 - SC-8300 Added user information to LDAP Sync in case of errors
+- OPS-1508 - added limits for cpu and ram to the docker compose files
 
 ## [25.5.15]
 
@@ -253,6 +254,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 - SC-7028 - Add Course Component API Specification document
 - SC-7476 - Prevent hash generation if user has account
 - SC-6692 - Added Lern-Store counties support for Niedersachsen (Merlin)
+
 
 ### Changed
 
