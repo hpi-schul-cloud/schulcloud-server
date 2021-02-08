@@ -166,7 +166,6 @@ class LDAPSchoolSyncer extends Syncer {
 	}
 
 	async createClassesFromLdapData(data, school) {
-
 		const userMap = new Map();
 		for (const ldapClass of data) {
 			try {
@@ -220,7 +219,7 @@ class LDAPSchoolSyncer extends Syncer {
 				if (role.name === 'student') students.push(dbUser._id);
 				if (role.name === 'teacher') teachers.push(dbUser._id);
 			});
-		}
+		};
 
 		if (ldapClass.uniqueMembers === undefined) {
 			// no members means nothing to do here
