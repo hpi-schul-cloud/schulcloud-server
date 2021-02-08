@@ -56,7 +56,7 @@ data:
   # DOCUMENT_BASE_DIR: https://s3.hidrive.strato.com/schul-cloud-hpi/
   # ENABLE_FILE_SECURITY_CHECK: true
   # ES_CLIENT_ID
-  ES_DOMAIN: https://mv-repo.schul-cloud.org
+  # ES_DOMAIN: https://mv-repo.schul-cloud.org
   # ES_GRANT_TYPE
   # ES_MERLIN_AUTH_URL: http://merlin.nibis.de/auth.php
   # ES_OAUTH_SECRET: $ES_OAUTH_SECRET
