@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-8341 - add tombstone school to tombstone user
 - SC-8408 - added delete events by scope Id route
 
 ### Changed
