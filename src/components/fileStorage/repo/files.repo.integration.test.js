@@ -9,7 +9,7 @@ const {
 	removePersonalFilesByUserId,
 } = require('./files.repo');
 
-describe.only('files.repo.integration.test', () => {
+describe('files.repo.integration.test', () => {
 	let fileTestUtils;
 	let server;
 	let generateObjectId;

@@ -9,7 +9,7 @@ const fileRepo = require('../repo/files.repo');
 const fileStrategy = require('../repo/strategies');
 const { GeneralError } = require('../../../errors');
 
-describe.only('deletedUserData.uc.unit', () => {
+describe('deletedUserData.uc.unit', () => {
 	afterEach(sinon.restore);
 
 	describe('removePersonalFiles', () => {
