@@ -285,8 +285,6 @@ module.exports = function () {
 	app.use('/calendar', new Service());
 	const contentService = app.service('/calendar');
 	contentService.hooks(hooks);
-
-
 };
 
 module.exports.Service = Service;
