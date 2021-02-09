@@ -156,15 +156,24 @@ class WalletService {
 				}
 			);
 
+			logger.info(relationship.data.result);
+
 			const { userId } = params.account;
 
 			await this.app.service('users').patch(userId, {
 				relationshipId: relationship.data.result.relationshipId,
 			});
 
-			logger.info(relationship.data.result.relationshipId);
+			// TODO: Implement multiple wallets using walletModel
+			/*
+			await this.app.service('walletModel').create({
+				userId,
+				name: 'DAAD',
+				relationshipId: relationship.data.result.relationshipId,
+			});
 
 			return relationship.data.result.relationshipId;
+			 */
 		}
 
 		return null;
