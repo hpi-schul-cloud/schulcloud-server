@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [25.5.16] - 2021-02-08
 
+
 ### Added
 
 - SC-8512 - Creating a migration for duplicated events
