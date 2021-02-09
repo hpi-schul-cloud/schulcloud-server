@@ -280,12 +280,13 @@ module.exports = function () {
 	const app = this;
 
 	app.use('/calendar/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
-
+	
+	app.configure(courseCalendar);
 	app.use('/calendar', new Service());
 	const contentService = app.service('/calendar');
 	contentService.hooks(hooks);
 
-	app.configure(courseCalendar);
+
 };
 
 module.exports.Service = Service;
