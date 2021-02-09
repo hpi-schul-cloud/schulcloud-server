@@ -1,6 +1,8 @@
 const repo = require('../../repo/files.repo');
 
-const getFileStorageStrategy = require('../../repo/strategies').createStrategy;
+const { moveFilesToTrash } = require('./fileStorageProvider');
+
+const { facadeLocator } = require('../../../../utils/facadeLocator');
 
 /**
  * Delete personal files from the given user
@@ -12,12 +14,12 @@ const removePersonalFiles = async (userId) => {
 		scope: 'files',
 		data: personalFiles,
 	};
-
 	const personalFileIds = personalFiles.map((file) => file._id);
-	const storageType = 'awsS3'; // ToDo: get storage type from school of the given user
-	const fileStorageStrategy = getFileStorageStrategy(storageType);
 
-	const complete = fileStorageStrategy.moveFilesToTrash(personalFileIds) && repo.removePersonalFilesByUserId(userId);
+	const userFacade = facadeLocator.facade('/users/v2');
+	const schoolId = userFacade.getSchoolIdOfUser(userId);
+
+	const complete = repo.removePersonalFilesByUserId(userId) && moveFilesToTrash(schoolId, personalFileIds);
 
 	return { trashBinData, complete };
 };

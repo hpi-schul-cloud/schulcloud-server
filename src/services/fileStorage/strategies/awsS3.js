@@ -523,41 +523,6 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
-	async moveFilesToTrash(schoolId, fileIds) {
-		// TODO error handling
-		const { s3, bucket } = await createAWSObject(schoolId);
-
-		const parallelRequests = 100; // we can experiment with inc-/decreasing this. Max 1000 for the delete request
-		for (let processedFiles = 0; processedFiles < fileIds.length; processedFiles += parallelRequests) {
-			const fileIdSubset = fileIds.slice(processedFiles, processedFiles + parallelRequests);
-			// eslint-disable-next-line no-await-in-loop
-			const copyResult = await Promise.all(
-				fileIdSubset.map((fileId) => {
-					const copyParams = {
-						Bucket: bucket,
-						CopySource: `/${bucket}/${fileId}`,
-						Key: `expiring_${fileId}`,
-						MetadataDirective: 'REPLACE',
-						Metadata: {
-							expires: true,
-						}
-					};
-					return s3.copyObject(copyParams).promise();
-				})
-			);
-			const deleteParams = {
-				Bucket: bucket,
-				Delete: {
-					Objects: fileIdSubset.map((fileId) => ({
-						Key: fileId,
-					})),
-				},
-			};
-			// eslint-disable-next-line no-await-in-loop
-			const deleteResult = await s3.deleteObjects(deleteParams).promise();
-		}
-		return true;
-	}
 }
 
 module.exports = AWSS3Strategy;

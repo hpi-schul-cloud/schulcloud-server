@@ -6,6 +6,10 @@ class UserFacade {
 		this.app = app;
 	}
 
+	async getSchoolIdOfUser(userId) {
+		return userRolesUc.getSchoolIdOfUser(userId);
+	}
+
 	// async deleteUser(id, roleName, params) {
 	// 	await userUc.checkPermissions(id, this.roleName, 'DELETE', { ...params });
 	// 	return userUc.deleteUser(id);
