@@ -1,21 +1,21 @@
 const axios = require('axios');
 
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const logger = require('../../../logger');
 const { GeneralError } = require('../../../errors');
 
-const { Configuration } = require('@hpi-schul-cloud/commons');
 class WalletService {
 	setup(app) {
 		this.app = app;
 	}
 
 	async create(data, params) {
-		if(!Configuration.has('IDAS_API_KEY_SECRET')){
+		if (!Configuration.has('IDAS_API_KEY_SECRET')) {
 			logger.error('IDAS API key not set');
 			return null;
 		}
 		const apiToken = Configuration.get('IDAS_API_KEY_SECRET');
-		
+
 		const { userId } = params.account;
 
 		const user = await this.app.service('users').get(userId);
@@ -91,7 +91,7 @@ class WalletService {
 				}
 			)
 			.catch((error) => {
-				logger.error(JSON.stringify(error))
+				logger.error(JSON.stringify(error));
 				throw new GeneralError("Couldn't create new relationship template!");
 			});
 
@@ -122,8 +122,7 @@ class WalletService {
 	}
 
 	async update(id, data, params) {
-
-		if(!Configuration.has('IDAS_API_KEY_SECRET')){
+		if (!Configuration.has('IDAS_API_KEY_SECRET')) {
 			logger.error('IDAS API key not set');
 			return null;
 		}
@@ -156,6 +155,12 @@ class WalletService {
 					},
 				}
 			);
+
+			const { userId } = params.account;
+
+			await this.app.service('users').patch(userId, {
+				relationshipId: relationship.data.result.relationshipId,
+			});
 
 			logger.info(relationship.data.result.relationshipId);
 
