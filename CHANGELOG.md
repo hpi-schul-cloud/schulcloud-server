@@ -13,23 +13,27 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8341 - add tombstone school to tombstone user
 - SC-8408 - added delete events by scope Id route
+- SC-7937 - Allow adding multiple materials to lesson
 
 ### Changed
 
 - OPS-1508 - added limits for cpu and ram to the docker compose files
+- SC-8500 - refactoring in error handling
 
-## [25.6.0] - 2020-02-?
+### Fixed
+
+- SC-8534 fix registration link generation
+
+## [25.6.0] - 2020-02-09
 
 ### Fixed
 
 - SC-8514 - QR Code generation fails
 - SC-8390 - Lern-Store collections feature flag was not excluding collections in search
 - SC-8322 prevent wrong assignment from school to storage provider
-- SC-8534 fix registration link generation
 
 ### Added
 
-- SC-7937 - Allow adding multiple materials to lesson
 - SC-8482 - Deletion concept orchestration integration
 - SC-8029 - Add deletion concept handling for pseudonyms and registration pins
 - SC-6950 - Add access for superhero to change kreisid and officialSchoolNumber
@@ -38,7 +42,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
-- SC-8500 - refactoring in error handling
 - SC-8380 removed reqlib, replaced by normal require to keep referenced types known
 - SC-8213 error handling concept
 - SC-4576 - sanitize bbb room and member names
