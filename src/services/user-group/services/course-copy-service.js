@@ -1,9 +1,8 @@
 // eslint-disable-next-line max-classes-per-file
 const _ = require('lodash');
 const nanoid = require('nanoid');
-const reqlib = require('app-root-path').require;
 
-const { GeneralError } = reqlib('src/errors');
+const { GeneralError } = require('../../../errors');
 const logger = require('../../../logger');
 const hooks = require('../hooks/copyCourseHook');
 const { courseModel } = require('../model');
@@ -131,7 +130,7 @@ class CourseShareService {
 
 		// Get Course and check for shareToken, if not found create one
 		// Also check the corresponding lessons and add shareToken
-		const course = coursesService.get(id);
+		const course = await coursesService.get(id);
 		if (!course.shareToken) {
 			const lessons = await lessonsService.find({ query: { courseId: id } });
 			for (let i = 0; i < lessons.data.length; i += 1) {
@@ -140,10 +139,9 @@ class CourseShareService {
 				}
 			}
 
-			return this.app
-				.service('/courseModel')
-				.patch(id, { shareToken: nanoid(12) })
-				.then((res) => ({ shareToken: res.shareToken }));
+			const shareToken = nanoid(12);
+			await this.app.service('/courseModel').patch(id, { shareToken });
+			return { shareToken };
 		}
 		return { shareToken: course.shareToken };
 	}

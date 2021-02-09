@@ -1,8 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider } = require('feathers-hooks-common');
-const reqlib = require('app-root-path').require;
 
-const { NotFound, BadRequest } = reqlib('src/errors');
+const { NotFound, BadRequest } = require('../../../errors');
 const { ObjectId } = require('../../../helper/compare');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
 const { equal } = require('../../../helper/compare').ObjectId;
@@ -38,13 +37,9 @@ const restrictToUsersCoursesLessons = async (context) => {
 	if (!userInCourse) throw new NotFound(`no record found for id '${context.params.route.lessonId}'`);
 };
 
-const validateData = async (context) => {
-	if (!context.data) {
-		throw new BadRequest('Data missing');
-	}
-
+const validateRecord = (record) => {
 	['title', 'client', 'url'].forEach((key) => {
-		const value = context.data[key];
+		const value = record[key];
 		if (value === undefined) {
 			throw new BadRequest(`Missing required attribute "${key}"`);
 		}
@@ -52,6 +47,18 @@ const validateData = async (context) => {
 			throw new BadRequest(`Expected "${key}" to be a string`);
 		}
 	});
+};
+
+const validateData = async (context) => {
+	if (!context.data) {
+		throw new BadRequest('Data missing');
+	}
+
+	if (Array.isArray(context.data)) {
+		context.data.forEach((record) => validateRecord(record));
+	} else {
+		validateRecord(context.data);
+	}
 
 	return context;
 };

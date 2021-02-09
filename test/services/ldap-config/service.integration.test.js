@@ -2,10 +2,9 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const chaiAsPromised = require('chai-as-promised');
 const sinon = require('sinon');
-const reqlib = require('app-root-path').require;
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
-const { Forbidden } = reqlib('src/errors');
+const { Forbidden } = require('../../../src/errors');
 
 const LDAPConnectionError = require('../../../src/services/ldap/LDAPConnectionError');
 const knownGoodConfig = require('./assets/knownGoodConfig.json');
@@ -151,6 +150,7 @@ describe('LdapConfigService', () => {
 			return {
 				setup: () => {},
 				getUsers: sinon.fake.resolves(fakeUsers),
+				verifyConfig: sinon.fake.resolves(fakeUsers),
 				getClasses: sinon.fake.resolves(fakeClasses),
 				disconnect: sinon.fake.resolves(),
 			};
@@ -223,7 +223,7 @@ describe('LdapConfigService', () => {
 		});
 
 		it('should catch common errors', async () => {
-			ldapServiceMock.getUsers = sinon.fake.rejects(new LDAPConnectionError());
+			ldapServiceMock.verifyConfig = sinon.fake.rejects(new LDAPConnectionError());
 			app.use('ldap', ldapServiceMock);
 
 			const result = await app
@@ -261,7 +261,11 @@ describe('LdapConfigService', () => {
 				.set('content-type', 'application/json');
 			const response = await request.send(knownBadConfig);
 			expect(response.status).to.equal(400);
-			expect(response.body.message).to.include("request.body should have required property 'rootPath'");
+			expect(response.body.validation_errors).to.deep.include({
+				path: '.body.rootPath',
+				message: "should have required property 'rootPath'",
+				errorCode: 'required.openapi.validation',
+			});
 		});
 	});
 
@@ -288,6 +292,7 @@ describe('LdapConfigService', () => {
 			return {
 				setup: () => {},
 				getUsers: sinon.fake.resolves(fakeUsers),
+				verifyConfig: sinon.fake.resolves(fakeUsers),
 				getClasses: sinon.fake.resolves(fakeClasses),
 				disconnect: sinon.fake.resolves(),
 			};

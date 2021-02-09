@@ -1,8 +1,6 @@
-const reqlib = require('app-root-path').require;
-
-const { Forbidden, BadRequest, NotFound } = reqlib('src/errors');
 const bcrypt = require('bcryptjs');
 const { ObjectId } = require('mongoose').Types;
+const { Forbidden, BadRequest, NotFound } = require('../../../errors');
 const { checkPasswordStrength } = require('../../../utils/passwordHelpers');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const constants = require('../../../utils/constants');
