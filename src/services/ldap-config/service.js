@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
-const reqlib = require('app-root-path').require;
 
 const errorHandlers = require('./errors');
 
-const { Forbidden } = reqlib('src/errors');
+const { Forbidden } = require('../../errors');
 
 class LdapConfigService {
 	setup(app) {
@@ -138,7 +137,7 @@ class LdapConfigService {
 			classes: {},
 		};
 		try {
-			const users = await ldap.getUsers(config);
+			const users = await ldap.verifyConfig(config);
 			result.users = LdapConfigService.generateUserStats(users);
 			if (LdapConfigService.shouldVerifyClasses(config)) {
 				const classes = await ldap.getClasses(config);

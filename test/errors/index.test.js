@@ -1,5 +1,4 @@
 const { expect } = require('chai');
-const reqlib = require('app-root-path').require;
 
 const {
 	BadRequest,
@@ -29,8 +28,9 @@ const {
 	UnhandledException,
 	ApplicationError,
 	FeathersError,
-} = reqlib('src/errors');
-const logger = reqlib('src/logger');
+} = require('../../src/errors');
+
+const logger = require('../../src/logger');
 
 describe('errors', () => {
 	const message = 'Something go wrong.';
@@ -361,13 +361,7 @@ describe('errors', () => {
 		expect(err instanceof Error).to.be.true;
 		expect(err instanceof ApplicationError).to.be.true;
 		expect(err.message, 'Use parameter one').to.equal(message);
-		expect(err.code).to.equal(600);
-		expect(err.type).to.equal('ApplicationError');
-		expect(err.className, 'should the name of constructor as lower case notation').to.equal('silent-error');
 		expect(err.name, 'should the name of constructor').to.equal('SilentError');
-		expect(err.data, 'should empty object').to.eql({});
-		expect(err.errors, 'errors should empty object').to.eql({});
-		expect(err.traceId, 'should contain a non empty string').to.not.undefined;
 	});
 
 	it('new NoClientInstanceError', () => {

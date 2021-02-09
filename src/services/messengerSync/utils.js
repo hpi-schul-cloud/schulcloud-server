@@ -186,7 +186,9 @@ const isCourseModerator = (course, userId) => {
 		return false;
 	}
 
-	return course.teacherIds.concat(course.substitutionIds).some((moderatorId) => ObjectId.equal(moderatorId, userId));
+	return course.teacherIds
+		.concat(course.substitutionIds || [])
+		.some((moderatorId) => ObjectId.equal(moderatorId, userId));
 };
 
 const buildMatrixUserId = (userId) => {
