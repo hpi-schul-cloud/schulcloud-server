@@ -68,13 +68,14 @@ const createUserTrashbin = async (id, data) => {
 	return trashbinRepo.createUserTrashbin(id, data);
 };
 
-const replaceUserWithTombstone = async (id) => {
+const replaceUserWithTombstone = async (id, schoolId) => {
 	const uid = ObjectId();
 	await userRepo.replaceUserWithTombstone(id, {
 		firstName: 'DELETED',
 		lastName: 'USER',
 		email: `${uid}@deleted`,
 		deletedAt: new Date(),
+		schoolId,
 	});
 	await accountRepo.deleteAccountForUserId(id);
 	return { success: true };
@@ -123,28 +124,28 @@ const checkPermissions = async (id, roleName, permissionAction, { user: currentU
 	}
 };
 
-const getOrCreateTombstoneUserId = async (schoolId, user) => {
+const getOrCreateTombstoneUserId = async (schoolId, user, tombstoneSchoolId) => {
 	const schoolFacade = facadeLocator.facade('/school/v2');
+
 	const school = await schoolFacade.getSchool(schoolId);
 	if (school.tombstoneUserId) {
 		return school.tombstoneUserId;
 	}
-	const tombstoneSchool = await schoolFacade.getTombstoneSchool();
-	if (tombstoneSchool) {
-		const schoolTombstoneUser = await userRepo.createTombstoneUser(schoolId, tombstoneSchool._id);
-		await schoolFacade.setTombstoneUser(user, schoolId, schoolTombstoneUser._id);
-		return schoolTombstoneUser;
-	}
-	return undefined;
+	const schoolTombstoneUser = await userRepo.createTombstoneUser(schoolId, tombstoneSchoolId);
+	await schoolFacade.setTombstoneUser(user, schoolId, schoolTombstoneUser._id);
+	return schoolTombstoneUser;
 };
 
 const deleteUser = async (id, { user: loggedinUser }) => {
+	const schoolFacade = facadeLocator.facade('/school/v2');
+
 	const userAccountData = await getUserData(id);
 	const user = userAccountData.find(({ scope }) => scope === 'user').data;
+	const tombstoneSchool = await schoolFacade.getTombstoneSchool();
 
 	await createUserTrashbin(id, userAccountData);
 
-	await replaceUserWithTombstone(id);
+	await replaceUserWithTombstone(id, tombstoneSchool._id);
 	try {
 		const registrationPinFacade = facadeLocator.facade('/registrationPin/v2');
 		await registrationPinFacade.deleteRegistrationPinsByEmail(user.email);
@@ -152,7 +153,7 @@ const deleteUser = async (id, { user: loggedinUser }) => {
 		errorUtils.asyncErrorLog(error, `failed to delete registration pin for user ${user._id}`);
 	}
 
-	const schoolTombstoneUserId = await getOrCreateTombstoneUserId(user.schoolId, loggedinUser);
+	const schoolTombstoneUserId = await getOrCreateTombstoneUserId(user.schoolId, loggedinUser, tombstoneSchool._id);
 	// this is an async function, but we don't need to wait for it, because we don't give any errors information back to the user
 	const facades = ['/pseudonym/v2', '/helpdesk/v2', '/fileStorage/v2', '/classes/v2', '/courses/v2'];
 	deleteUserRelatedData(user._id, schoolTombstoneUserId, facades).catch((error) => {
