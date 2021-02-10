@@ -9,6 +9,18 @@ class WalletService {
 		this.app = app;
 	}
 
+	async get(id, params) {
+		const wallets = this.app.service('/walletModel').find({
+			query: {
+				userId: id,
+			},
+		});
+
+		logger.info(await wallets);
+
+		return wallets;
+	}
+
 	async create(data, params) {
 		if (!Configuration.has('IDAS_API_KEY_SECRET')) {
 			logger.error('IDAS API key not set');
@@ -134,10 +146,7 @@ class WalletService {
 			},
 		});
 
-		logger.info(requests.data.result);
-
 		const { templateID } = data;
-		logger.info(templateID);
 
 		const matchingRequest = requests.data.result.find((request) => request.relationshipTemplateId === templateID);
 
@@ -156,7 +165,7 @@ class WalletService {
 				}
 			);
 
-			logger.info(relationship.data.result);
+			logger.info(relationship.data.result.relationshipId);
 
 			const { userId } = params.account;
 
@@ -164,16 +173,16 @@ class WalletService {
 				relationshipId: relationship.data.result.relationshipId,
 			});
 
-			// TODO: Implement multiple wallets using walletModel
+			// TODO: Name of Wallet has to be dynamic based RelationshipRequest
 			/*
 			await this.app.service('walletModel').create({
 				userId,
 				name: 'DAAD',
 				relationshipId: relationship.data.result.relationshipId,
 			});
+			*/
 
 			return relationship.data.result.relationshipId;
-			 */
 		}
 
 		return null;
