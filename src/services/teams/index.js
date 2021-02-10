@@ -3,9 +3,8 @@ const service = require('feathers-mongoose');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-const reqlib = require('app-root-path').require;
 
-const { NotFound, BadRequest, GeneralError } = reqlib('src/errors');
+const { NotFound, BadRequest, GeneralError } = require('../../errors');
 const hooks = require('./hooks');
 const { warning } = require('../../logger/index');
 const { teamsModel } = require('./model');

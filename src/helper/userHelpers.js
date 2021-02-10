@@ -1,6 +1,4 @@
-const reqlib = require('app-root-path').require;
-
-const { NotFound } = reqlib('src/errors');
+const { NotFound } = require('../errors');
 
 const getUser = (app, userId) =>
 	app

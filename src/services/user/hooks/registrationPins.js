@@ -2,9 +2,8 @@ const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const moment = require('moment');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, BadRequest, TooManyRequests } = reqlib('src/errors');
+const { Forbidden, BadRequest, TooManyRequests } = require('../../../errors');
 const { NODE_ENV, ENVIRONMENTS, SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../model').registrationPinModel;

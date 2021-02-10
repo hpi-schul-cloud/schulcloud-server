@@ -22,6 +22,8 @@ const SCHOOL_FEATURES = {
 	MESSENGER_STUDENT_ROOM_CREATE: 'messengerStudentRoomCreate',
 };
 
+const SCHOOL_OF_DELETED_USERS = { name: 'graveyard school (tombstone users only)', purpose: 'tombstone' };
+
 const defaultFeatures = [];
 
 const rssFeedSchema = new Schema({
@@ -91,6 +93,10 @@ const schoolSchema = new Schema(
 		inMaintenanceSince: { type: Date }, // see schoolSchema#inMaintenance (below),
 		storageProvider: { type: mongoose.Schema.Types.ObjectId, ref: 'storageprovider' },
 		permissions: { type: Object },
+		tombstoneUserId: {
+			type: Schema.Types.ObjectId,
+			ref: 'user',
+		},
 		...externalSourceSchema,
 	},
 	{
@@ -160,6 +166,7 @@ const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 
 module.exports = {
 	SCHOOL_FEATURES,
+	SCHOOL_OF_DELETED_USERS,
 	schoolSchema,
 	schoolModel,
 	schoolGroupModel,
