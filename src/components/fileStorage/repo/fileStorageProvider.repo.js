@@ -1,6 +1,6 @@
 const aws = require('aws-sdk');
-
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const { StorageProviderModel } = require('./db');
 
 const HOST = Configuration.get('HOST');
 
@@ -28,8 +28,31 @@ const getConfig = (provider) => {
 	return awsConfig;
 };
 
-const createStorageProviderInstance = async (storageProvider) => {
-	return new aws.S3(getConfig(storageProvider));
+const getStorageProviderMetaInformation = async (storageProviderId) => {
+	return StorageProviderModel.findById(storageProviderId).lean().exec();
+};
+
+const getLeastUsedStorageProvider = async (session) => {
+	const providers = await StorageProviderModel.find({ isShared: true })
+		.sort({ freeBuckets: -1 })
+		.limit(1)
+		.session(session)
+		.lean()
+		.exec();
+
+	if (!Array.isArray(providers) || providers.length === 0) throw new Error('No available provider found.');
+	return providers[0];
+};
+
+const decreaseFreeBuckets = async (storageProviderId, session) => {
+	return StorageProviderModel.findByIdAndUpdate(storageProviderId, { $inc: { freeBuckets: -1 } })
+		.session(session)
+		.lean()
+		.exec();
+};
+
+const createStorageProviderInstance = async (storageProviderMetaInformation) => {
+	return new aws.S3(getConfig(storageProviderMetaInformation));
 };
 
 const deleteObjects = (storageProvider, params) => {
@@ -42,4 +65,10 @@ const copyObject = (storageProvider, params) => {
 	return storageProviderInstance.copyObject(params).promise();
 };
 
-module.exports = { deleteObjects, copyObject };
+module.exports = {
+	getStorageProviderMetaInformation,
+	deleteObjects,
+	copyObject,
+	getLeastUsedStorageProvider,
+	decreaseFreeBuckets,
+};
