@@ -1,7 +1,6 @@
 const _ = require('lodash');
-const reqlib = require('app-root-path').require;
 
-const { BadRequest } = reqlib('src/errors');
+const { BadRequest } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const ClassModel = require('../model').classModel;
 const CourseModel = require('../model').courseModel;

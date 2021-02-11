@@ -29,6 +29,7 @@ const create = (appPromise) => async ({
 	permissions = undefined,
 	language = 'de',
 	timezone = 'Europe/Berlin',
+	storageProvider = undefined,
 } = {}) => {
 	const app = await appPromise;
 	const school = await app.service('schools').create({
@@ -58,6 +59,7 @@ const create = (appPromise) => async ({
 		permissions,
 		language,
 		timezone,
+		storageProvider,
 	});
 	createdSchoolIds.push(school._id);
 	return school;

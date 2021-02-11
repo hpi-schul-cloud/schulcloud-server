@@ -1,9 +1,8 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const { ObjectId } = require('mongoose').Types;
-const reqlib = require('app-root-path').require;
 
-const { Forbidden } = reqlib('src/errors');
+const { Forbidden } = require('../../../src/errors');
 
 const appPromise = require('../../../src/app');
 const { cleanup } = require('../helpers/testObjects')(appPromise);
