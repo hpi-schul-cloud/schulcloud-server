@@ -9,13 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-## [25.6.1] - 2020-02-11
+## [25.6.2] - 2020-02-11
 
 ### Changed
 - VOR-2 - adjusted business rules for adding team members from external school
-
-
-
 ## [25.6.0] - 2020-02-09
 
 ### Fixed
