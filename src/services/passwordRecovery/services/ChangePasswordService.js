@@ -21,11 +21,14 @@ class ChangePasswordService {
 
 	async create(data = {}) {
 		const { resetId, password } = data;
-		if (!resetId || !password || !ObjectId.isValid(resetId)) {
+
+		if (!resetId || !password || typeof resetId !== 'string') {
 			throw new BadRequest(this.errors.inputValidation);
 		}
 
-		const pwrecover = await this.passwordRecoveryModel.findOne({ token: resetId });
+		const token = resetId.toString();
+
+		const pwrecover = await this.passwordRecoveryModel.findOne({ token });
 		if (!pwrecover) {
 			throw new SilentError(this.errors.notExist);
 		}
@@ -38,7 +41,7 @@ class ChangePasswordService {
 			await Promise.all([
 				this.accountModel.updateOne({ _id: pwrecover.account }, { $set: { password } }).lean().exec(),
 				this.passwordRecoveryModel
-					.updateOne({ token: resetId }, { $set: { changed: true } })
+					.updateOne({ token }, { $set: { changed: true } })
 					.lean()
 					.exec(),
 			]);

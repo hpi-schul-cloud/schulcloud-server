@@ -1,8 +1,9 @@
 const assert = require('assert');
+const { expect } = require('chai');
+
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise);
 const passwordRecovery = require('../../../src/services/passwordRecovery/model');
-
 
 const PORT = 0;
 
@@ -89,10 +90,23 @@ describe('passwordRecovery service', () => {
 			account: savedAccount._id,
 		});
 		const success = await app.service('passwordRecovery/reset').create({
-			accountId: result.account,
 			password: 'schulcloud',
 			resetId: result.token,
 		});
 		assert.ok(success);
+	});
+
+	it('should fail if it is pass not valid token', async () => {
+		const resetId = { $ne: 'X' };
+		const service = app.service('passwordRecovery/reset');
+		try {
+			const result = await service.create({
+				password: 'schulcloud',
+				resetId,
+			});
+			throw new Error('Should fail.', result);
+		} catch (err) {
+			expect(err).equal(service.errors.inputValidation);
+		}
 	});
 });

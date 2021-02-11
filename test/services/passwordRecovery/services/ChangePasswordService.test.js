@@ -14,7 +14,7 @@ describe('ChangePasswordService', () => {
 		sinon.restore();
 	});
 
-	it('should fail if resetId is not a valid objectId', async () => {
+	it.skip('should fail if resetId is not a valid objectId', async () => {
 		const changePasswordService = new ChangePasswordService(passwordRecovery);
 		try {
 			const result = await changePasswordService.create({ resetId: { $ne: 'X' }, password: '123' });
