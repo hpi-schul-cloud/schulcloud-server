@@ -7,7 +7,7 @@ const passwordRecovery = require('../../../src/services/passwordRecovery/model')
 
 const PORT = 0;
 
-describe('passwordRecovery service', () => {
+describe.only('passwordRecovery service', () => {
 	let app;
 	let passwordRecoveryService;
 
@@ -106,7 +106,7 @@ describe('passwordRecovery service', () => {
 			});
 			throw new Error('Should fail.', result);
 		} catch (err) {
-			expect(err).equal(service.errors.inputValidation);
+			expect(err.message).equal(service.errors.inputValidation);
 		}
 	});
 });
