@@ -3,6 +3,7 @@ const local = require('@feathersjs/authentication-local');
 const { BadRequest, GeneralError, SilentError } = require('../../../errors');
 const logger = require('../../../logger/index');
 const globalHooks = require('../../../hooks');
+const { ObjectId } = require('../../../helper/compare');
 
 const MAX_LIVE_TIME = 6 * 60 * 60 * 1000; // 6 hours
 
@@ -12,14 +13,14 @@ class ChangePasswordService {
 		this.accountModel = accountModel;
 	}
 
-	async create(data) {
-		if (Object.keys(data).length < 3) {
+	async create(data = {}) {
+		const { resetId, password } = data;
+		if (!resetId || !password || !ObjectId.isValid(resetId)) {
 			throw new BadRequest('Malformed request body.');
 		}
 
-		const pwrecover = await this.passwordRecoveryModel.findOne({ token: data.resetId });
+		const pwrecover = await this.passwordRecoveryModel.findOne({ token: resetId });
 		if (!pwrecover || pwrecover.changed) {
-			delete data.password;
 			throw new SilentError('Invalid token!');
 		}
 		const time = Date.now() - Date.parse(pwrecover.createdAt);
@@ -29,17 +30,12 @@ class ChangePasswordService {
 		}
 		try {
 			await Promise.all([
-				this.accountModel
-					.updateOne({ _id: pwrecover.account }, { $set: { password: data.password } })
-					.lean()
-					.exec(),
+				this.accountModel.updateOne({ _id: pwrecover.account }, { $set: { password } }).lean().exec(),
 				this.passwordRecoveryModel
-					.updateOne({ token: data.resetId }, { $set: { changed: true } })
+					.updateOne({ token: resetId }, { $set: { changed: true } })
 					.lean()
 					.exec(),
-			]).catch((err) => {
-				throw new GeneralError('passwordRecovery can not patch data', err);
-			});
+			]);
 		} catch (err) {
 			throw new GeneralError('passwordRecovery unexpected error', err);
 		}

@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.6.1] - 2020-02-11
+
+### Fixed
+
+- VOR-1 - Fix passwordRecovery id validation
+
 ## [25.6.0] - 2020-02-09
 
 ### Fixed
