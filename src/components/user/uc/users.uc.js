@@ -124,28 +124,28 @@ const checkPermissions = async (id, roleName, permissionAction, { user: currentU
 	}
 };
 
-const getOrCreateTombstoneUserId = async (schoolId, user, tombstoneSchoolId) => {
+const getOrCreateTombstoneUserId = async (schoolId, user) => {
 	const schoolFacade = facadeLocator.facade('/school/v2');
-
 	const school = await schoolFacade.getSchool(schoolId);
 	if (school.tombstoneUserId) {
 		return school.tombstoneUserId;
 	}
-	const schoolTombstoneUser = await userRepo.createTombstoneUser(schoolId, tombstoneSchoolId);
-	await schoolFacade.setTombstoneUser(user, schoolId, schoolTombstoneUser._id);
-	return schoolTombstoneUser;
+	const tombstoneSchool = await schoolFacade.getTombstoneSchool();
+	if (tombstoneSchool) {
+		const schoolTombstoneUser = await userRepo.createTombstoneUser(schoolId, tombstoneSchool._id);
+		await schoolFacade.setTombstoneUser(user, schoolId, schoolTombstoneUser._id);
+		return schoolTombstoneUser;
+	}
+	return undefined;
 };
 
 const deleteUser = async (id, { user: loggedinUser }) => {
-	const schoolFacade = facadeLocator.facade('/school/v2');
-
 	const userAccountData = await getUserData(id);
 	const user = userAccountData.find(({ scope }) => scope === 'user').data;
-	const tombstoneSchool = await schoolFacade.getTombstoneSchool();
 
 	await createUserTrashbin(id, userAccountData);
 
-	await replaceUserWithTombstone(id, tombstoneSchool._id);
+	await replaceUserWithTombstone(id, user.schoolId);
 	try {
 		const registrationPinFacade = facadeLocator.facade('/registrationPin/v2');
 		await registrationPinFacade.deleteRegistrationPinsByEmail(user.email);
@@ -153,7 +153,7 @@ const deleteUser = async (id, { user: loggedinUser }) => {
 		errorUtils.asyncErrorLog(error, `failed to delete registration pin for user ${user._id}`);
 	}
 
-	const schoolTombstoneUserId = await getOrCreateTombstoneUserId(user.schoolId, loggedinUser, tombstoneSchool._id);
+	const schoolTombstoneUserId = await getOrCreateTombstoneUserId(user.schoolId, loggedinUser);
 	// this is an async function, but we don't need to wait for it, because we don't give any errors information back to the user
 	const facades = ['/pseudonym/v2', '/helpdesk/v2', '/fileStorage/v2', '/classes/v2', '/courses/v2'];
 	deleteUserRelatedData(user._id, schoolTombstoneUserId, facades).catch((error) => {

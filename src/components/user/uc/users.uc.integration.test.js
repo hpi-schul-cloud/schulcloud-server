@@ -1,6 +1,5 @@
 const sinon = require('sinon');
 const { expect } = require('chai');
-const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 
@@ -24,15 +23,14 @@ describe('user use case', () => {
 	describe('getOrCreateTombstoneUserId', () => {
 		it('should create the tombstone user only once per school', async () => {
 			const school = await testObjects.createTestSchool();
-			const tombstoneSchoolId = new ObjectId();
 			let user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
 			user = await userRepo.getUserWithRoles(user._id);
 
 			const getOrCreateTombstoneUserIdSpy = sinon.spy(userRepo, 'createTombstoneUser');
 
-			await getOrCreateTombstoneUserId(school._id, user, tombstoneSchoolId);
-			await getOrCreateTombstoneUserId(school._id, user, tombstoneSchoolId);
-			await getOrCreateTombstoneUserId(school._id, user, tombstoneSchoolId);
+			await getOrCreateTombstoneUserId(school._id, user);
+			await getOrCreateTombstoneUserId(school._id, user);
+			await getOrCreateTombstoneUserId(school._id, user);
 
 			expect(getOrCreateTombstoneUserIdSpy.callCount).to.eql(1);
 		});
