@@ -7,7 +7,7 @@ const passwordRecovery = require('../../../src/services/passwordRecovery/model')
 
 const PORT = 0;
 
-describe.only('passwordRecovery service', () => {
+describe('passwordRecovery service', () => {
 	let app;
 	let passwordRecoveryService;
 
