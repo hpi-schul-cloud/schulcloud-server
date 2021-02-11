@@ -69,16 +69,16 @@ const createUserTrashbin = async (id, data) => {
 };
 
 const replaceUserWithTombstone = async (user) => {
-	const userId = user._id;
+	const { _id, schoolId } = user;
 	const uid = ObjectId();
-	await userRepo.replaceUserWithTombstone(userId, {
+	await userRepo.replaceUserWithTombstone(_id, {
 		firstName: 'DELETED',
 		lastName: 'USER',
 		email: `${uid}@deleted`,
 		deletedAt: new Date(),
-		schoolId: user.schoolId,
+		schoolId,
 	});
-	await accountRepo.deleteAccountForUserId(userId);
+	await accountRepo.deleteAccountForUserId(_id);
 	return { success: true };
 };
 
