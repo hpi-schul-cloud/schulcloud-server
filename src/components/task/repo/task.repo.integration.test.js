@@ -472,8 +472,8 @@ describe('in "task.repo" the function', () => {
 				await findGroupSubmissionIdsByUser(() => {});
 				throw new Error('test failed');
 			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "teamMembers" for model "submission"'
+				expect(err.message, 'when input is not bson string').to.match(
+					/Cast to ObjectId failed for value "\[Function.*\]" at path "teamMembers" for model "submission"/
 				);
 			}
 		});
@@ -603,8 +603,9 @@ describe('in "task.repo" the function', () => {
 				await findUserSubmissionsByUser(() => {});
 				throw new Error('test failed');
 			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "[Function (anonymous)]" at path "studentId" for model "submission"'
+				// err.message.replace('[Function]', '[Function (anonymous)]'); // error message depends on JavaScript engine
+				expect(err.message, 'when input is not bson string').to.match(
+					/Cast to ObjectId failed for value "\[Function.*\]" at path "studentId" for model "submission"/
 				);
 			}
 		});
