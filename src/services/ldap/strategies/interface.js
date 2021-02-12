@@ -80,12 +80,11 @@ class AbstractLDAPStrategy {
 	 * Verify that the connection information is correct
 	 * Works like @see AbstractLDAPStrategy#getUsers , but returns only a subset of the users
 	 *
-	 * @param {School} school the school
 	 * @abstract
 	 * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 */
-	verifyConfig(school) {
+	verifyConfig() {
 		throw new TypeError('Method has to be implemented.');
 	}
 

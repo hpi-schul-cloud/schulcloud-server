@@ -305,12 +305,12 @@ module.exports = function LDAPService() {
 		/**
 		 * Returns all users at a school on the LDAP server
 		 * @param {LdapConfig} config the ldapConfig
-		 * @param {School} school the school object
+		 * @param {verifyFullSync} load all users to verify the config
 		 * @return {Promise[Object]} resolves with all user objects or rejects
 		 * with error
 		 */
-		verifyConfig(config, school) {
-			return getLDAPStrategy(app, config).verifyConfig(school);
+		verifyConfig(config, verifyFullSync) {
+			return getLDAPStrategy(app, config).verifyConfig(verifyFullSync);
 		}
 
 		/**

@@ -39,8 +39,8 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 * @memberof GeneralLDAPStrategy
 	 */
-	verifyConfig() {
-		return this.getUsersInternal(true);
+	verifyConfig(verifyConfig) {
+		return this.getUsersInternal(!verifyConfig);
 	}
 
 	async getUsersInternal(verifyOnly = false) {

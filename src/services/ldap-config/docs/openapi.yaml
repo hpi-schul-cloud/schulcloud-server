@@ -28,6 +28,12 @@ components:
       in: query
       schema:
         type: boolean
+    verifyFullSync:
+      name: verifyFullSync
+      description: load all users from LDAP server for verification (default = false)
+      in: query
+      schema:
+        type: boolean
     activate:
       name: activate
       description: value to set as system.ldapConfig.active (default = true)

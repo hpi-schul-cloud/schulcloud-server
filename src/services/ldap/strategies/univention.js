@@ -40,8 +40,8 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 * @memberof GeneralLDAPStrategy
 	 */
-	verifyConfig(school) {
-		return this.getUsers(school);
+	verifyConfig() {
+		return this.getUsers();
 	}
 
 	/**

@@ -30,8 +30,8 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 * @memberof GeneralLDAPStrategy
 	 */
-	verifyConfiguration(school) {
-		return this.getUsers(school);
+	verifyConfiguration() {
+		return this.getUsers();
 	}
 
 	/**
