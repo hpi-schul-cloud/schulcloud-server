@@ -225,7 +225,12 @@ class EduSharingConnector {
 				});
 			}
 
-			if (Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') && collection) {
+			if (Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') === false) {
+				criterias.push({
+					property: 'ccm:hpi_lom_general_aggregationlevel',
+					values: ['1'],
+				});
+			} else if (collection) {
 				criterias.push({ property: 'ngsearchword', values: ['*'] });
 				criterias.push({
 					property: 'ccm:hpi_lom_relation',

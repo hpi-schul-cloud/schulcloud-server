@@ -2,6 +2,7 @@ const assert = require('assert');
 const chai = require('chai');
 const sinon = require('sinon');
 const request = require('request-promise-native');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
 const MockNode = JSON.stringify(require('../mock/response-node.json'));
 const MockNodeRestricted = JSON.stringify(require('../mock/response-node-restricted.json'));
@@ -154,6 +155,51 @@ describe('EduSharing service', () => {
 			const response = await eduSharingService.find(params);
 
 			chai.expect(postStub.getCalls()[0].args[0].body).contains(`{"property":"ccm:hpi_searchable","values":["1"]}`);
+			chai.expect(response.total).to.gte(1);
+
+			request.post.restore();
+			postStub.reset();
+		} catch (err) {
+			throw new Error(err);
+		}
+	});
+});
+
+describe('EduSharing config flags', () => {
+	let app;
+	let eduSharingService;
+	let server;
+	let originalConfiguration;
+
+	before(async () => {
+		originalConfiguration = Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED');
+		app = await appPromise;
+		eduSharingService = app.service('edu-sharing');
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		Configuration.set('FEATURE_ES_COLLECTIONS_ENABLED', originalConfiguration);
+		await testObjects.cleanup();
+		await server.close();
+	});
+
+	it('should search with collections flag disabled', async () => {
+		try {
+			Configuration.set('FEATURE_ES_COLLECTIONS_ENABLED', false);
+
+			const user = await testObjects.createTestUser({ roles: ['teacher'] });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+
+			const postStub = sinon.stub(request, 'post');
+			postStub.onCall(0).returns(MockNodes);
+
+			params.query = { searchQuery: 'foo' };
+			const response = await eduSharingService.find(params);
+
+			chai
+				.expect(postStub.getCalls()[0].args[0].body)
+				.contains(`{"property":"ccm:hpi_lom_general_aggregationlevel","values":["1"]}`);
 			chai.expect(response.total).to.gte(1);
 
 			request.post.restore();
