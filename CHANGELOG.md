@@ -178,6 +178,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8020 - adds collections filter to edu-sharing service
 - SC-8260 - new team indexes and migration to add this
 
+### Fixed
+
+- SC-8230 - fix deletion of teachers via new route
+
 ### Removed
 
 - SC-8233 - Removed attribute and member as required attributes for the LDAP-config service
