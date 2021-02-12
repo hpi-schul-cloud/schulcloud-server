@@ -1,7 +1,5 @@
-const reqlib = require('app-root-path').require;
-
-const { BadRequest, Forbidden } = reqlib('src/errors');
 const { keepInArray } = require('feathers-hooks-common');
+const { BadRequest, Forbidden } = require('../../../errors');
 const constants = require('../../../utils/constants');
 const { blockDisposableEmail } = require('../../../hooks');
 const { trimPassword } = require('../../account/hooks');

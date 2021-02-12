@@ -1,7 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, BadRequest } = reqlib('src/errors');
+const { Forbidden, BadRequest } = require('../../../errors');
 const { hasPermission } = require('../../../hooks');
 
 const { SC_SHORT_TITLE, SC_TITLE } = require('../../../../config/globals');

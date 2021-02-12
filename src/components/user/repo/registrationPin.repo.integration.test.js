@@ -1,11 +1,9 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 const { registrationPinRepo } = require('.');
-const { registrationPinModel } = require('../../../services/user/model');
-const { GeneralError } = require('../../../errors');
+const { ValidationError } = require('../../../errors');
 
 chai.use(chaiAsPromised);
 
@@ -37,24 +35,42 @@ describe('registration pin repo', () => {
 	describe('deleteRegistrationPinForUser', () => {
 		it('when registration pin is deleted, it should return deleted registration pin ids', async () => {
 			const user = await testObjects.createTestUser();
-			const registrationPin = await testObjects.createTestRegistrationPin(registrationPinParams, user);
-			const result = await registrationPinRepo.deleteRegistrationPins([registrationPin._id]);
-			expect(result.length).to.be.equal(1);
-			expect(result[0]).to.be.equal(registrationPin._id);
+			await testObjects.createTestRegistrationPin(registrationPinParams, user);
+			const result = await registrationPinRepo.deleteRegistrationPinsByEmail(user.email);
+			expect(result.success).to.be.equal(true);
+			expect(result.deletedDocuments).to.be.equal(1);
 		});
 
 		it('when registration pin is deleted, it should be gone from db', async () => {
 			const user = await testObjects.createTestUser();
-			const registrationPin = await testObjects.createTestRegistrationPin(registrationPinParams, user);
-			await registrationPinRepo.deleteRegistrationPins([registrationPin._id]);
+			const registrationPin1 = await testObjects.createTestRegistrationPin(registrationPinParams, user);
 
-			const result = await registrationPinModel.find({ email: user.email }).lean().exec();
-			expect(result.length).to.be.equal(0);
+			const user2 = await testObjects.createTestUser();
+			const registrationPin2 = await testObjects.createTestRegistrationPin(registrationPinParams, user2);
+			let registrationPins = await registrationPinRepo.getRegistrationPinsByEmail(user.email);
+			expect(registrationPins).to.be.an('array').of.length(1);
+			expect(registrationPins[0]._id.toString()).to.be.equal(registrationPin1._id.toString());
+
+			await registrationPinRepo.deleteRegistrationPinsByEmail(user.email);
+
+			registrationPins = await registrationPinRepo.getRegistrationPinsByEmail(user.email);
+			expect(registrationPins).to.be.an('array').of.length(0);
+
+			const userPseudonyms2 = await registrationPinRepo.getRegistrationPinsByEmail(user2.email);
+			expect(userPseudonyms2).to.be.an('array').of.length(1);
+			expect(userPseudonyms2[0]._id.toString()).to.be.equal(registrationPin2._id.toString());
 		});
 
-		it('when the function is called with invalid id, it throws an error', async () => {
-			const notExistedId = new ObjectId();
-			expect(registrationPinRepo.deleteRegistrationPins([notExistedId])).to.eventually.throw(new GeneralError());
+		it('when the function is called with valid email, it returns empty result object', async () => {
+			const result = await registrationPinRepo.deleteRegistrationPinsByEmail('valid_email_without_user@email.com');
+			expect(result.success).to.be.equal(true);
+			expect(result.deletedDocuments).to.be.equal(0);
+		});
+
+		it('when the function is called with empty email, it throws an error', async () => {
+			expect(registrationPinRepo.deleteRegistrationPinsByEmail(undefined)).to.eventually.be.rejectedWith(
+				ValidationError
+			);
 		});
 	});
 
@@ -62,13 +78,13 @@ describe('registration pin repo', () => {
 		it('when the function is called with user email, it should return list of registrationPins', async () => {
 			const user = await testObjects.createTestUser();
 			const testRegistrationPin = await testObjects.createTestRegistrationPin(registrationPinParams, user);
-			const registrationPins = await registrationPinRepo.getRegistrationPinsForUser(user.email);
+			const registrationPins = await registrationPinRepo.getRegistrationPinsByEmail(user.email);
 			expect(registrationPins[0]).to.deep.equal(testRegistrationPin);
 		});
 
 		it('when the function is called with email, for which registration pin doesnt exists, then it should return empty array', async () => {
 			const user = await testObjects.createTestUser();
-			const registrationPins = await registrationPinRepo.getRegistrationPinsForUser(user.email);
+			const registrationPins = await registrationPinRepo.getRegistrationPinsByEmail(user.email);
 			expect(registrationPins.length).to.be.equal(0);
 		});
 	});

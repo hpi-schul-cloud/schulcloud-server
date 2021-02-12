@@ -1,14 +1,15 @@
 const request = require('request-promise-native');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, GeneralError } = reqlib('src/errors');
+const { Forbidden, GeneralError } = require('../../../errors');
 const logger = require('../../../logger');
 const EduSharingResponse = require('./EduSharingResponse');
 const { getCounty } = require('../helpers');
 
 const ES_METADATASET =
-	Configuration.get('FEATURE_ES_MERLIN_ENABLED') || Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED')
+	Configuration.get('FEATURE_ES_MERLIN_ENABLED') ||
+	Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') ||
+	Configuration.get('FEATURE_ES_SEARCHABLE_ENABLED')
 		? 'mds_oeh'
 		: 'mds';
 const ES_ENDPOINTS = {
@@ -217,14 +218,19 @@ class EduSharingConnector {
 				});
 			}
 
-			if (Configuration.get('FEATURE_ES_SEARCHABLE_ENABLED')) {
+			if (Configuration.get('FEATURE_ES_SEARCHABLE_ENABLED') && !collection) {
 				criterias.push({
 					property: 'ccm:hpi_searchable',
 					values: ['1'],
 				});
 			}
 
-			if (Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') && collection) {
+			if (Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') === false) {
+				criterias.push({
+					property: 'ccm:hpi_lom_general_aggregationlevel',
+					values: ['1'],
+				});
+			} else if (collection) {
 				criterias.push({ property: 'ngsearchword', values: ['*'] });
 				criterias.push({
 					property: 'ccm:hpi_lom_relation',

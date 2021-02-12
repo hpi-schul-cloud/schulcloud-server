@@ -4,6 +4,8 @@ const path = require('path');
 const queryString = require('qs');
 
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const courseCalendar = require('./courseCalendar');
+
 const hooks = require('./hooks');
 
 /**
@@ -278,7 +280,8 @@ module.exports = function () {
 	const app = this;
 
 	app.use('/calendar/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
-
+	
+	app.configure(courseCalendar);
 	app.use('/calendar', new Service());
 	const contentService = app.service('/calendar');
 	contentService.hooks(hooks);
