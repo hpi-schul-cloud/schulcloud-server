@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-8341 - add tombstone school to tombstone user
 - SC-8408 - added delete events by scope Id route
 - SC-7937 - Allow adding multiple materials to lesson
 
@@ -22,6 +23,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 - SC-8534 fix registration link generation
+
+## [25.6.2] - 2020-02-11
+
+### Changed
+
+- VOR-2 - adjusted business rules for adding team members from external school
+
+## [25.6.1] - 2020-02-11
+
+- VOR-1 - Fix passwordRecovery id validation
+
+### Fixed
 
 ## [25.6.0] - 2020-02-09
 
@@ -164,6 +177,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7763 - adds searchable feature flag for lernstore.
 - SC-8020 - adds collections filter to edu-sharing service
 - SC-8260 - new team indexes and migration to add this
+
+### Fixed
+
+- SC-8230 - fix deletion of teachers via new route
 
 ### Removed
 
