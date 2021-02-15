@@ -11,7 +11,8 @@ const { linkSchema } = require('../src/services/link/link-model');
 // important lesson(s) and link(s) must write with s, because they are feather services that add the s
 const LessonModel = mongoose.model('lesson613348381637', lessonSchema, 'lessons');
 // TODO: need source and target link collection
-const LinkModel = mongoose.model('link613348381637', linkSchema, 'links');
+const LinkModelOld = mongoose.model('linkOld613348381637', linkSchema, 'linksBackup');
+const LinkModelNew = mongoose.model('linkNew613348381637', linkSchema, 'links');
 
 module.exports = {
 	up: async function up() {
@@ -23,7 +24,7 @@ module.exports = {
 		// example https://hpi-schul-cloud.de/link/CUcACAnvKd
 
 		const $regex = /link\/[A-Za-z0-9]{10}/gm;
-		const lessons = await LessonModel.find({ 'contents.content.text': { $regex } })
+		const lessons = await LinkModelOld.find({ 'contents.content.text': { $regex } })
 			.select({ 'contents.content': 1, _id: 1 })
 			.lean()
 			.exec();
@@ -31,7 +32,7 @@ module.exports = {
 		alert(`Found ${lessons.length} lessons with included file links.`);
 
 		const linkQuery = { target: { $regex: /files\/fileModel/g } };
-		const amount = await LinkModel.find(linkQuery).countDocuments();
+		const amount = await LinkModelOld.find(linkQuery).countDocuments();
 
 		alert(`Found ${amount} total fileModel links.`);
 
@@ -42,7 +43,7 @@ module.exports = {
 		while (looped < amount) {
 			try {
 				alert(`start loop ${looped} < ${amount}`);
-				const links = await LinkModel.find(linkQuery)
+				const links = await LinkModelOld.find(linkQuery)
 					.sort({
 						updatedAt: 1,
 						createdAt: 1,
@@ -81,7 +82,7 @@ module.exports = {
 				// create new link > replace link in lessons > delete old link
 				const createNewLinksPromise = [];
 				machtedLinks.forEach((link) => {
-					const prom = LinkModel.create({
+					const prom = LinkModelNew.create({
 						target: link.target,
 						systemNote: { ticket: 'VOR-3', note: 'migration - new created', oldId: link._id },
 					});
@@ -110,11 +111,8 @@ module.exports = {
 				error(err);
 			}
 		}
-		// lessons.contents.content.text
-		// .url also exist ?
-		// .ressources ?
 
-		// executing
+		// executing lesson fixes
 		const lessonModifiedPromise = [];
 
 		lessons.forEach((lesson) => {
@@ -139,18 +137,18 @@ module.exports = {
 			await Promise.all(promiseChunk);
 			looped2 += chunkSize;
 		}
-
+		/*
 		alert(`Start deleting old links...`);
 		const deletedPromisses = [];
 		deletedLinkTasks.forEach(async (deletedIds) => {
-			const prom = LinkModel.deleteMany({ _id: { $in: deletedIds } })
+			const prom = LinkModelOld.deleteMany({ _id: { $in: deletedIds } })
 				.lean()
 				.exec();
 			deletedPromisses.push(prom);
 		});
 		await Promise.all(deletedPromisses);
 		alert(`...finished!`);
-
+*/
 		await close();
 	},
 
