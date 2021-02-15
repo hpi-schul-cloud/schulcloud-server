@@ -21,6 +21,7 @@ const linkSchema = new Schema({
 	data: { type: Object },
 	target: { type: String, required: true, index: true },
 	createdAt: { type: Date, default: Date.now },
+	systemNote: { type: Object },
 });
 
 enableAuditLog(linkSchema);

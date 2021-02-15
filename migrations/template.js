@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 // eslint-disable-next-line no-unused-vars
-const { alert } = require('../src/logger');
+const { alert, error } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
