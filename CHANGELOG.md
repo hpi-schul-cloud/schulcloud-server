@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`
 
 ## Unreleased
+
+## 25.6.1 - 12-02-21
+### Fixed
+
+- SC-8613 - Added flag to ldap config service to define if to load all users during verification
 ## [25.6.2] - 2020-02-11
 ### Changed
 - VOR-2 - adjusted business rules for adding team members from external school
