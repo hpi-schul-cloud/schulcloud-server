@@ -22,17 +22,18 @@ module.exports = {
 		// [A-Za-z0-9]{10} ==> matched CUcACAnvKd
 		// example https://hpi-schul-cloud.de/link/CUcACAnvKd
 
+		const linkQuery = { target: { $regex: /files\/fileModel/g } };
+		const amountProm = LinkModelOld.find(linkQuery).countDocuments();
+
 		const $regex = /link\/[A-Za-z0-9]{10}/gm;
-		const lessons = await LinkModelOld.find({ 'contents.content.text': { $regex } })
+		const lessonsProm = LessonModel.find({ 'contents.content.text': { $regex } })
 			.select({ 'contents.content': 1, _id: 1 })
 			.lean()
 			.exec();
 
+		const [amount, lessons] = await Promise.all([amountProm, lessonsProm]);
+
 		alert(`Found ${lessons.length} lessons with included file links.`);
-
-		const linkQuery = { target: { $regex: /files\/fileModel/g } };
-		const amount = await LinkModelOld.find(linkQuery).countDocuments();
-
 		alert(`Found ${amount} total fileModel links.`);
 
 		const limit = 500;
@@ -139,7 +140,7 @@ module.exports = {
 		/*
 		alert(`Start deleting old links...`);
 		const deletedPromisses = [];
-		deletedLinkTasks.forEach(async (deletedIds) => {
+		deletedLinkTasks.forEach((deletedIds) => {
 			const prom = LinkModelOld.deleteMany({ _id: { $in: deletedIds } })
 				.lean()
 				.exec();
