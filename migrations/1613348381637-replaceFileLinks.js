@@ -10,7 +10,6 @@ const { linkSchema } = require('../src/services/link/link-model');
 
 // important lesson(s) and link(s) must write with s, because they are feather services that add the s
 const LessonModel = mongoose.model('lesson613348381637', lessonSchema, 'lessons');
-// TODO: need source and target link collection
 const LinkModelOld = mongoose.model('linkOld613348381637', linkSchema, 'linksBackup');
 const LinkModelNew = mongoose.model('linkNew613348381637', linkSchema, 'links');
 
@@ -18,7 +17,6 @@ module.exports = {
 	up: async function up() {
 		await connect();
 		alert(`Migrations replaceFileLinks is starting...`);
-		// Can materialIds effected?
 		// Use regex to get only matched fields
 		// /files/fileModel/
 		// [A-Za-z0-9]{10} ==> matched CUcACAnvKd
