@@ -20,6 +20,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - OPS-1508 - added limits for cpu and ram to the docker compose files
 - SC-8500 - refactoring in error handling
 
+## [26.0.0]
+
 ### Fixed
 
 - SC-8534 fix registration link generation
@@ -35,6 +37,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - VOR-1 - Fix passwordRecovery id validation
 
 ### Fixed
+
+- VOR-1 - Fix passwordRecovery id validation
 
 ## [25.6.0] - 2020-02-09
 
