@@ -10,20 +10,9 @@ const { linkSchema } = require('../src/services/link/link-model');
 
 // important lesson(s) and link(s) must write with s, because they are feather services that add the s
 const LessonModel = mongoose.model('lesson613348381637', lessonSchema, 'lessons');
+// TODO: need source and target link collection
 const LinkModel = mongoose.model('link613348381637', linkSchema, 'links');
 
-/*
-const handleMatches = (counter, matches) => (linkId, lessonId, content) => {
-	if (content.text && content.text.indexOf(linkId) !== -1) {
-		matches.push({
-			linkId,
-			lessonId: lesson._id,
-			content,
-		});
-		effectedContentEntrys += 1;
-	}
-}
-*/
 module.exports = {
 	up: async function up() {
 		await connect();
@@ -48,6 +37,7 @@ module.exports = {
 
 		const limit = 500;
 		let looped = 0;
+		const deletedLinkTasks = [];
 
 		while (looped < amount) {
 			try {
@@ -71,14 +61,10 @@ module.exports = {
 					const linkId = link._id;
 
 					lessons.forEach((lesson) => {
-						lesson.content.forEach((content, index) => {
-							if (content.text && content.text.indexOf(linkId) !== -1) {
-								matches.push({
-									// linkId,
-									lessonId: lesson._id,
-									index,
-									content,
-								});
+						lesson.contents.forEach((entry) => {
+							if (entry.content && entry.content.text && entry.content.text.indexOf(linkId) !== -1) {
+								entry.IS_MODIFIED = true;
+								matches.push(entry);
 							}
 						});
 					});
@@ -92,10 +78,9 @@ module.exports = {
 				alert(`Effected Links: ${machtedLinks.length}`);
 
 				// all matched must replace with new entry
-				// create new > replace lessons > delete old
+				// create new link > replace link in lessons > delete old link
 				const createNewLinksPromise = [];
 				machtedLinks.forEach((link) => {
-					// test if promise
 					const prom = LinkModel.create({
 						target: link.target,
 						systemNote: { ticket: 'VOR-3', note: 'migration - new created', oldId: link._id },
@@ -104,37 +89,21 @@ module.exports = {
 				});
 
 				alert(`Start creating new links...`);
-				const newLinks = await Promise.all(createNewLinksPromise);
+				const newLinkDocs = await Promise.all(createNewLinksPromise);
 				alert(`...finished!`);
 
-				const replaceLessonContentPromises = [];
-
-				newLinks.forEach((newLink) => {
+				newLinkDocs.forEach((newLink) => {
 					machtedLinks.forEach((oldLink) => {
-						if (newLink.systemNote.oldId.toString() === oldLink._id.toString()) {
-							oldLink.matches.forEach(({ lessonId, content, index }) => {
-								const regex = new RegExp(oldLink._id.toString(), 'g');
-								const newContent = content.replace(regex, newLink._id.toString());
-								const prom = LessonModel.updateOne({ _id: lessonId }, { $set: { [`contents.${index}`]: newContent } })
-									.lean()
-									.exec();
-								replaceLessonContentPromises.push(prom);
+						if (newLink.systemNote.oldId === oldLink._id) {
+							oldLink.matches.forEach((entry) => {
+								const regex = new RegExp(oldLink._id, 'g');
+								entry.content.text = entry.content.text.replace(regex, newLink._id);
 							});
 						}
 					});
 				});
 
-				alert(`Effected content entrys: ${replaceLessonContentPromises.length}`);
-
-				alert(`Start replacing links in content...`);
-				await Promise.all(replaceLessonContentPromises);
-				alert(`...finished!`);
-
-				const deletedIds = machtedLinks.map(({ _id }) => _id.toString());
-
-				alert(`Start deleting old links...`);
-				await LinkModel.deleteMany({ _id: { $in: deletedIds } });
-				alert(`...finished!`);
+				deletedLinkTasks.push(machtedLinks.map(({ _id }) => _id.toString()));
 
 				looped += links.length;
 			} catch (err) {
@@ -144,6 +113,44 @@ module.exports = {
 		// lessons.contents.content.text
 		// .url also exist ?
 		// .ressources ?
+
+		// executing
+		const lessonModifiedPromise = [];
+
+		lessons.forEach((lesson) => {
+			lesson.contents.forEach((content, index) => {
+				if (content.IS_MODIFIED === true) {
+					const prom = LessonModel.updateOne(
+						{ _id: lesson._id },
+						{ $set: { [`contents.${index}.content.text`]: content.text } }
+					)
+						.lean()
+						.exec();
+					lessonModifiedPromise.push(prom);
+				}
+			});
+		});
+
+		let looped2 = 0;
+		const chunkSize = 300;
+
+		while (looped2 < lessonModifiedPromise.length) {
+			const promiseChunk = lessonModifiedPromise.slice(looped2, looped2 + chunkSize);
+			await Promise.all(promiseChunk);
+			looped2 += chunkSize;
+		}
+
+		alert(`Start deleting old links...`);
+		const deletedPromisses = [];
+		deletedLinkTasks.forEach(async (deletedIds) => {
+			const prom = LinkModel.deleteMany({ _id: { $in: deletedIds } })
+				.lean()
+				.exec();
+			deletedPromisses.push(prom);
+		});
+		await Promise.all(deletedPromisses);
+		alert(`...finished!`);
+
 		await close();
 	},
 
