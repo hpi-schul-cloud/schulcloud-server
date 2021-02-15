@@ -17,6 +17,7 @@ const LinkModelNew = mongoose.model('linkNew613348381637', linkSchema, 'links');
 module.exports = {
 	up: async function up() {
 		await connect();
+		alert(`Migrations replaceFileLinks is starting...`);
 		// Can materialIds effected?
 		// Use regex to get only matched fields
 		// /files/fileModel/
@@ -149,6 +150,7 @@ module.exports = {
 		await Promise.all(deletedPromisses);
 		alert(`...finished!`);
 */
+		alert(`...migrations replaceFileLinks is finished!`);
 		await close();
 	},
 
