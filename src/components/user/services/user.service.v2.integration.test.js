@@ -65,6 +65,21 @@ describe('user service v2', function test() {
 			expect(response.status).to.equal(204);
 		});
 
+		it('When an admin deletes a teacher, then it succeeds', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool();
+			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const token = await getAdminToken(schoolId);
+			const request = chai
+				.request(app)
+				.delete(`/users/v2/admin/teacher/${user._id.toString()}`)
+				.query({ userId: user._id.toString() })
+				.set('Accept', 'application/json')
+				.set('Authorization', token)
+				.set('Content-type', 'application/json');
+			const response = await request.send();
+			expect(response.status).to.equal(204);
+		});
+
 		it('when a teacher deletes a student, then it throws Forbidden', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			// const params = await testObjects.generateRequestParamsFromUser(admin);
