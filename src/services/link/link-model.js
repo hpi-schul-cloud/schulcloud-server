@@ -25,7 +25,7 @@ const linkSchema = new Schema({
 
 enableAuditLog(linkSchema);
 
-const linkModel = mongoose.model('link', linkSchema);
-linkModel.linkLength = LINK_LENGTH; // fixme`
+const LinkModel = mongoose.model('link', linkSchema);
+LinkModel.linkLength = LINK_LENGTH; // fixme`
 
-module.exports = linkModel;
+module.exports = { LinkModel, linkSchema };
