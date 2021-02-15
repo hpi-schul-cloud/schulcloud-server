@@ -1,10 +1,9 @@
 const Ajv = require('ajv');
 const { Writable } = require('stream');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, GeneralError } = reqlib('src/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider, validateSchema, disallow } = require('feathers-hooks-common');
+const { Forbidden, GeneralError } = require('../../../errors');
 const { hasPermission } = require('../../../hooks');
 const { getDatasource, restrictToDatasourceSchool } = require('../hooks');
 // const { datasourcesDocs } = require('../docs');

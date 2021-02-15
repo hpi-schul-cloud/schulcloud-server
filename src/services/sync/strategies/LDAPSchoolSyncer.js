@@ -82,7 +82,7 @@ class LDAPSchoolSyncer extends Syncer {
 				} catch (err) {
 					this.stats.users.errors += 1;
 					this.stats.errors.push(err);
-					this.logError('User creation error', err);
+					this.logError(`User creation error for ${ldapUser.firstName} ${ldapUser.lastName} (${ldapUser.email})`, err);
 				}
 			}
 		}

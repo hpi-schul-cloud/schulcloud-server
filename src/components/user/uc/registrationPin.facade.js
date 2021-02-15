@@ -6,7 +6,7 @@ class RegistrationPinFacade {
 	}
 
 	async deleteRegistrationPinsByEmail(email) {
-		return registrationPinUc.deleteRegistrationPinsByMail(email);
+		return registrationPinUc.deleteRegistrationPinsForUser(email);
 	}
 }
 

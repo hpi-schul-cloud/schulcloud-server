@@ -1,7 +1,6 @@
 const { ObjectId } = require('mongoose').Types;
-const reqlib = require('app-root-path').require;
 
-const { BadRequest } = reqlib('src/errors');
+const { BadRequest } = require('../../../../src/errors');
 const rolesModel = require('../../../../src/services/role/model.js');
 const { userModel } = require('../../../../src/services/user/model');
 const accountModel = require('../../../../src/services/account/model.js');

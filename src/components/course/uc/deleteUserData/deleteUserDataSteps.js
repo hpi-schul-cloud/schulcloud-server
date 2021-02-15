@@ -1,4 +1,6 @@
 const { ValidationError } = require('../../../../errors');
+const { trashBinResult } = require('../../../helper/uc.helper');
+
 const { coursesRepo, lessonsRepo, courseGroupsRepo } = require('../../repo/index');
 const { equal, isValid: isValidObjectId } = require('../../../../helper/compare').ObjectId;
 const { debug } = require('../../../../logger');
@@ -37,7 +39,7 @@ const deleteUserDatafromLessons = async (userId) => {
 		complete = result.success;
 		debug(`removed user from ${result.modifiedDocuments} lessons`, { userId });
 	}
-	return { trashBinData: { scope: 'lessons', data }, complete };
+	return trashBinResult({ scope: 'lessons', data, complete });
 };
 
 const addCoursesToData = (coursesAggreate = [], data) => {
@@ -65,7 +67,7 @@ const deleteUserDataFromCourses = async (userId) => {
 		complete = result.success;
 		addCoursesToData(courses, data);
 	}
-	return { trashBinData: { scope: 'courses', data }, complete };
+	return trashBinResult({ scope: 'courses', data, complete });
 };
 
 const addCourseGroupData = (courseGroupdata = [], data) => {
@@ -91,7 +93,7 @@ const deleteUserDataFromCourseGroups = async (userId) => {
 		addCourseGroupData(courseGroups, data);
 	}
 
-	return { trashBinData: { scope: 'courseGroups', data }, complete };
+	return trashBinResult({ scope: 'courseGroups', data, complete });
 };
 
 module.exports = { deleteUserDataFromCourses, deleteUserDataFromCourseGroups, deleteUserDatafromLessons };

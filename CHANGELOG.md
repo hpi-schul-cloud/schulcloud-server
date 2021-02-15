@@ -9,10 +9,39 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-## [25.5.17] - 2021-02-09
+## [25.6.3] - 2020-02-15
+
 ### Changed
 - SC-8477 LDAP-Sync: Speed up class sync by holding all the school's users in map while creating/populating classes
-- SC-8477 LDAP-Sync: Speed up user sync by holding all the school's users in map while syncing new users
+- SC-8477 LDAP-Sync: Speed up user sync by grouping users into chunks and loading the chunks from DB instead of individual users
+## [25.6.2] - 2020-02-11
+### Changed
+- VOR-2 - adjusted business rules for adding team members from external school
+## [25.6.1] - 2020-02-11
+### Fixed
+
+- VOR-1 - Fix passwordRecovery id validation
+## [25.6.0] - 2020-02-09
+### Fixed
+
+- SC-8514 - QR Code generation fails
+- SC-8390 - Lern-Store collections feature flag was not excluding collections in search
+- SC-8322 prevent wrong assignment from school to storage provider
+
+### Added
+
+- SC-8482 - Deletion concept orchestration integration
+- SC-8029 - Add deletion concept handling for pseudonyms and registration pins
+- SC-6950 - Add access for superhero to change kreisid and officialSchoolNumber
+- SC-8206 - Add school tombstone for deleting concept
+- SC-7825 - Deletion concept for user data in tasks
+
+### Changed
+
+- SC-8380 removed reqlib, replaced by normal require to keep referenced types known
+- SC-8213 error handling concept
+- SC-4576 - sanitize bbb room and member names
+- SC-8300 Added user information to LDAP Sync in case of errors
 
 ## [25.5.16] - 2021-02-08
 
@@ -122,6 +151,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-7835 - Add deletion concept handling for helpdesk problems
 - SC-8229 - Added invalid DN error to ldap-config service error handling
 - SC-7825 - Remove user relations from courses
 - SC-7827 - Add deletion concept handling for file permissions.
@@ -139,10 +169,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 - SC-8329 - Cluster returns old verison of Pin object after patch
-
-## [25.4.1]
-
-- Update from 25.3.9 into master
 
 ## [25.4.1]
 

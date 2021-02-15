@@ -1,7 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const reqlib = require('app-root-path').require;
 
-const { BadRequest } = reqlib('src/errors');
+const { BadRequest } = require('../../../errors');
 const { hasPermission, restrictToCurrentSchool } = require('../../../hooks');
 
 class QrRegistrationLinks {
@@ -91,7 +90,7 @@ class QrRegistrationLinks {
 
 	getValidUserIds(data) {
 		const { selectionType, userIds: inputUserIds, schoolId, roleName } = data;
-		if (roleName !== 'student' && roleName !== 'teacher') {
+		if (roleName && roleName !== 'student' && roleName !== 'teacher') {
 			throw new BadRequest('The given role is not supported');
 		}
 
