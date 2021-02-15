@@ -54,7 +54,7 @@ module.exports = {
 					.lean()
 					.exec();
 
-				const machtedLinks = [];
+				const matchedLinks = [];
 				// match lessons
 				// eslint-disable-next-line no-loop-func
 				links.forEach((link) => {
@@ -72,16 +72,16 @@ module.exports = {
 
 					if (matches.length > 0) {
 						link.matches = matches;
-						machtedLinks.push(link);
+						matchedLinks.push(link);
 					}
 				});
 
-				alert(`Effected Links: ${machtedLinks.length}`);
+				alert(`Effected Links: ${matchedLinks.length}`);
 
 				// all matched must replace with new entry
 				// create new link > replace link in lessons > delete old link
 				const createNewLinksPromise = [];
-				machtedLinks.forEach((link) => {
+				matchedLinks.forEach((link) => {
 					const prom = LinkModelNew.create({
 						target: link.target,
 						systemNote: { ticket: 'VOR-3', note: 'migration - new created', oldId: link._id },
@@ -94,7 +94,7 @@ module.exports = {
 				alert(`...finished!`);
 
 				newLinkDocs.forEach((newLink) => {
-					machtedLinks.forEach((oldLink) => {
+					matchedLinks.forEach((oldLink) => {
 						if (newLink.systemNote.oldId === oldLink._id) {
 							oldLink.matches.forEach((entry) => {
 								const regex = new RegExp(oldLink._id, 'g');
@@ -104,7 +104,7 @@ module.exports = {
 					});
 				});
 
-				deletedLinkTasks.push(machtedLinks.map(({ _id }) => _id.toString()));
+				deletedLinkTasks.push(matchedLinks.map(({ _id }) => _id.toString()));
 
 				looped += links.length;
 			} catch (err) {
