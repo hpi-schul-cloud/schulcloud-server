@@ -7,14 +7,14 @@ const path = require('path');
 const { BadRequest } = require('@feathersjs/errors');
 
 const logger = require('../../logger');
-const link = require('./link-model');
+const { LinkModel } = require('./link-model');
 const hooks = require('./hooks');
 
 module.exports = function setup() {
 	const app = this;
 
 	const options = {
-		Model: link,
+		Model: LinkModel,
 		paginate: {
 			default: 10000,
 			max: 10000,
