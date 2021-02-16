@@ -81,7 +81,7 @@ class AbstractLDAPStrategy {
 	 * Works like @see AbstractLDAPStrategy#getUsers , but returns only a subset of the users
 	 *
 	 * @abstract
-	 * @param verifyFullSync boolean, if true all users will be loaded for verification, otherwise only the first 100 records
+	 * @param {boolean} verifyFullSync if true all users will be loaded for verification, otherwise only the first 100 records
 	 * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 */

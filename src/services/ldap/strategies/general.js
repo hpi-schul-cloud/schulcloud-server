@@ -44,7 +44,10 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 		return this.getUsersInternal(!verifyFullSync);
 	}
 
-	async getUsersInternal(verifyOnly = false) {
+	/**
+	 * @param {boolean} firstPageOnly determines if all users should be loaded or only the first page. Default false
+	 */
+	async getUsersInternal(firstPageOnly = false) {
 		const {
 			userAttributeNameMapping,
 			userPathAdditions,
@@ -82,7 +85,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 		for (const searchPath of searchArray) {
 			ldapUsers = ldapUsers.concat(
 				// eslint-disable-next-line no-await-in-loop
-				await this.app.service('ldap').searchCollection(this.config, searchPath, options, rawAttributes, verifyOnly)
+				await this.app.service('ldap').searchCollection(this.config, searchPath, options, rawAttributes, firstPageOnly)
 			);
 		}
 
