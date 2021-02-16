@@ -126,14 +126,25 @@ const classesHooks = {
 		],
 		get: [iff(isProvider('external'), restrictToCurrentSchool), iff(isProvider('external'), restrictToUsersOwnClasses)],
 		create: [hasPermission('CLASS_CREATE'), iff(isProvider('external'), restrictToCurrentSchool)],
-		update: [hasPermission('CLASS_EDIT'), iff(isProvider('external'), restrictToCurrentSchool), prepareGradeLevelUnset],
+		update: [
+			hasPermission('CLASS_EDIT'),
+			iff(isProvider('external'), restrictToCurrentSchool),
+			iff(isProvider('external'), restrictToUsersOwnClasses),
+			prepareGradeLevelUnset,
+		],
 		patch: [
 			hasPermission('CLASS_EDIT'),
 			iff(isProvider('external'), restrictToCurrentSchool),
+			iff(isProvider('external'), restrictToUsersOwnClasses),
 			permitGroupOperation,
 			prepareGradeLevelUnset,
 		],
-		remove: [hasPermission('CLASS_REMOVE'), iff(isProvider('external'), restrictToCurrentSchool), permitGroupOperation],
+		remove: [
+			hasPermission('CLASS_REMOVE'),
+			iff(isProvider('external'), restrictToCurrentSchool),
+			iff(isProvider('external'), restrictToUsersOwnClasses),
+			permitGroupOperation,
+		],
 	},
 	after: {
 		all: [],
