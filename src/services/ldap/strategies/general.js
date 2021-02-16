@@ -36,6 +36,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 	/**
 	 * @public
 	 * @see AbstractLDAPStrategy#verifyConfig
+	 * @param {boolean} verifyFullSync if true all users will be loaded for verification, otherwise only the first 100 records
 	 * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 * @memberof GeneralLDAPStrategy
