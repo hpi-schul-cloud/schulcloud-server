@@ -1,5 +1,6 @@
 const AbstractLDAPStrategy = require('./interface.js');
 const { filterForModifiedEntities } = require('./deltaSyncUtils');
+const { NotImplemented } = require('../../../errors');
 
 /**
  * iServ-specific LDAP functionality
@@ -93,7 +94,7 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
 	 * @memberof GeneralLDAPStrategy
 	 */
 	verifyConfig() {
-		return this.getUsers();
+		throw new NotImplemented('iServLDAPStrategy#verifyConfig is not implemented');
 	}
 
 	/**

@@ -28,7 +28,8 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 * @memberof GeneralLDAPStrategy
 	 */
-	getUsers() {
+	// eslint-disable-next-line no-unused-vars
+	getUsers(school) {
 		return this.getUsersInternal();
 	}
 
@@ -39,8 +40,8 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 * @memberof GeneralLDAPStrategy
 	 */
-	verifyConfig(verifyConfig) {
-		return this.getUsersInternal(!verifyConfig);
+	verifyConfig(verifyFullSync) {
+		return this.getUsersInternal(!verifyFullSync);
 	}
 
 	async getUsersInternal(verifyOnly = false) {
