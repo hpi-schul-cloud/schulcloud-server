@@ -9,18 +9,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-## 25.6.1 - 12-02-21
+## [25.6.4] - 2021-02-16
 ### Fixed
 
 - SC-8613 - Added flag to ldap config service to define if to load all users during verification
-## [25.6.2] - 2020-02-11
+## [25.6.2] - 2021-02-11
 ### Changed
 - VOR-2 - adjusted business rules for adding team members from external school
-## [25.6.1] - 2020-02-11
+## [25.6.1] - 2021-02-11
 ### Fixed
 
 - VOR-1 - Fix passwordRecovery id validation
-## [25.6.0] - 2020-02-09
+## [25.6.0] - 2021-02-09
 ### Fixed
 
 - SC-8514 - QR Code generation fails

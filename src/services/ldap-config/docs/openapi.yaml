@@ -58,6 +58,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/activate'
         - $ref: '#/components/parameters/verifyOnly'
+        - $ref: '#/components/parameters/verifyFullSync'
       requestBody:
         required: true
         content:
@@ -94,6 +95,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/activate'
         - $ref: '#/components/parameters/verifyOnly'
+        - $ref: '#/components/parameters/verifyFullSync'
       requestBody:
         required: true
         content:
