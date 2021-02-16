@@ -33,42 +33,37 @@ describe('classes service', () => {
 
 		afterEach(testObjects.cleanup);
 
-		it('should allow teachers and admins to find all classes', async () => {
-			const teacherUser = await testObjects.createTestUser({ roles: ['teacher'] });
+		it('should allow admins to find all classes', async () => {
 			const adminUser = await testObjects.createTestUser({
 				roles: ['administrator'],
-				schoolId: teacherUser.schoolId,
 			});
 
 			const classes = [
 				await testObjects.createTestClass({
 					name: Math.random(),
 					teacherIds: [adminUser._id],
-					schoolId: teacherUser.schoolId,
+					schoolId: adminUser.schoolId,
 				}),
 				await testObjects.createTestClass({
 					name: Math.random(),
 					teacherIds: [adminUser._id],
-					schoolId: teacherUser.schoolId,
+					schoolId: adminUser.schoolId,
 				}),
 				await testObjects.createTestClass({
 					name: Math.random(),
-					schoolId: teacherUser.schoolId,
+					schoolId: adminUser.schoolId,
 				}),
 			];
 
-			await Promise.all(
-				[teacherUser, adminUser].map(async (role) => {
-					const params = {
-						query: {},
-						...(await generateRequestParamsFromUser(role)),
-					};
-					const { data } = await classesService.find(params);
-					expect(data.length).to.equal(classes.length);
-					// all created classes should be in the response:
-					expect(classes.reduce((agg, cur) => agg && data.some((d) => equalIds(d._id, cur._id)), true)).to.equal(true);
-				})
-			);
+			const params = {
+				query: {},
+				...(await generateRequestParamsFromUser(adminUser)),
+			};
+			const { data } = await classesService.find(params);
+			expect(data.length).to.equal(classes.length);
+			// all created classes should be in the response:
+			expect(classes.reduce((agg, cur) => agg && data.some((d) => equalIds(d._id, cur._id)), true)).to.equal(true);
+
 		}).timeout(4000);
 
 		it('should allow students to only find classes they participate in', async () => {
