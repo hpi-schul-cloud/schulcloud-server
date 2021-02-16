@@ -1,15 +1,27 @@
 const { authenticate } = require('@feathersjs/authentication');
-const globalHooks = require('../../../hooks');
+const { iff, isProvider } = require('feathers-hooks-common');
+const {
+	restrictToCurrentSchool,
+	hasPermission,
+	addCollation,
+	mapPaginationQuery,
+	permitGroupOperation,
+	denyIfNotCurrentSchool,
+} = require('../../../hooks');
 
-const { sortByGradeAndOrName, prepareGradeLevelUnset, saveSuccessor } = require('../hooks/helpers/classHooks');
+const {
+	sortByGradeAndOrName,
+	prepareGradeLevelUnset,
+	saveSuccessor,
+	restrictFINDToUsersOwnClasses,
+	restrictToUsersOwnClasses,
+} = require('../hooks/helpers/classHooks');
+
 const { paginate } = require('../../../utils/array');
 
 const {
 	modelServices: { prepareInternalParams },
 } = require('../../../utils');
-
-const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
-const restrictToUsersOwnClasses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnClasses);
 
 class Classes {
 	constructor(options) {
@@ -105,30 +117,31 @@ const classesHooks = {
 	before: {
 		all: [authenticate('jwt')],
 		find: [
-			globalHooks.hasPermission('CLASS_VIEW'),
-			restrictToCurrentSchool,
-			restrictToUsersOwnClasses,
+			hasPermission('CLASS_VIEW'),
+			iff(isProvider('external'), restrictToCurrentSchool),
+			iff(isProvider('external'), restrictFINDToUsersOwnClasses),
 			sortByGradeAndOrName,
-			globalHooks.addCollation,
-			globalHooks.mapPaginationQuery,
+			addCollation,
+			mapPaginationQuery,
 		],
-		get: [restrictToCurrentSchool, restrictToUsersOwnClasses],
-		create: [globalHooks.hasPermission('CLASS_CREATE'), restrictToCurrentSchool],
-		update: [globalHooks.hasPermission('CLASS_EDIT'), restrictToCurrentSchool, prepareGradeLevelUnset],
+		get: [iff(isProvider('external'), restrictToCurrentSchool), iff(isProvider('external'), restrictToUsersOwnClasses)],
+		create: [hasPermission('CLASS_CREATE'), iff(isProvider('external'), restrictToCurrentSchool)],
+		update: [hasPermission('CLASS_EDIT'), iff(isProvider('external'), restrictToCurrentSchool), prepareGradeLevelUnset],
 		patch: [
-			globalHooks.hasPermission('CLASS_EDIT'),
-			restrictToCurrentSchool,
-			globalHooks.permitGroupOperation,
+			hasPermission('CLASS_EDIT'),
+			iff(isProvider('external'), restrictToCurrentSchool),
+			permitGroupOperation,
 			prepareGradeLevelUnset,
 		],
-		remove: [globalHooks.hasPermission('CLASS_REMOVE'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
+		remove: [hasPermission('CLASS_REMOVE'), iff(isProvider('external'), restrictToCurrentSchool), permitGroupOperation],
 	},
 	after: {
 		all: [],
 		find: [],
 		get: [
-			globalHooks.ifNotLocal(
-				globalHooks.denyIfNotCurrentSchool({
+			iff(
+				isProvider('external'),
+				denyIfNotCurrentSchool({
 					errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
 				})
 			),
