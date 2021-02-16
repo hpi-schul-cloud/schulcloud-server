@@ -1,4 +1,5 @@
 const AbstractLDAPStrategy = require('./interface.js');
+const { NotImplemented } = require('../../../errors');
 
 /**
  * Univention-specific LDAP functionality
@@ -40,8 +41,8 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 * @memberof GeneralLDAPStrategy
 	 */
-	verifyConfig(school) {
-		return this.getUsers(school);
+	verifyConfig() {
+		throw new NotImplemented('UniventionLDAPStrategy#verifyConfig is not implemented');
 	}
 
 	/**
