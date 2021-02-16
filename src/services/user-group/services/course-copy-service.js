@@ -7,7 +7,7 @@ const logger = require('../../../logger');
 const hooks = require('../hooks/copyCourseHook');
 const { courseModel } = require('../model');
 const { homeworkModel } = require('../../homework/model');
-const lessonsModel = require('../../lesson/model');
+const { LessonModel } = require('../../lesson/model');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const createHomework = (homework, courseId, lessonId, userId, app, newTeacherId) =>
@@ -71,7 +71,7 @@ class CourseCopyService {
 
 		const [homeworks, lessons] = await Promise.all([
 			homeworkModel.find({ courseId: sourceCourseId }).populate('lessonId'),
-			lessonsModel.find({ courseId: sourceCourseId }),
+			LessonModel.find({ courseId: sourceCourseId }),
 		]).catch((err) => {
 			throw new GeneralError('Can not fetch data to copy this course.', err);
 		});
@@ -135,7 +135,7 @@ class CourseShareService {
 			const lessons = await lessonsService.find({ query: { courseId: id } });
 			for (let i = 0; i < lessons.data.length; i += 1) {
 				if (!lessons.data[i].shareToken) {
-					lessonsModel.findByIdAndUpdate(lessons.data[i]._id, { shareToken: nanoid(12) }).exec();
+					LessonModel.findByIdAndUpdate(lessons.data[i]._id, { shareToken: nanoid(12) }).exec();
 				}
 			}
 
