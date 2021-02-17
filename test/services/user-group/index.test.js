@@ -63,7 +63,6 @@ describe('classes service', () => {
 			expect(data.length).to.equal(classes.length);
 			// all created classes should be in the response:
 			expect(classes.reduce((agg, cur) => agg && data.some((d) => equalIds(d._id, cur._id)), true)).to.equal(true);
-
 		}).timeout(4000);
 
 		it('should allow students to only find classes they participate in', async () => {

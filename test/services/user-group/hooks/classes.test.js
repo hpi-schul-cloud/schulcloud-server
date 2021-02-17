@@ -171,7 +171,7 @@ describe('class hooks', () => {
 			};
 
 			try {
-				const result = await restrictToUsersOwnClasses(context);
+				await restrictToUsersOwnClasses(context);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.code).to.equal(404);
