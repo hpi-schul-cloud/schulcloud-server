@@ -9,30 +9,30 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-## [25.6.4] - 2020-02-17
+## [25.6.4] - 2021-02-17
 
 ### Changed
 - Reverted Changes for SC-8410 and 
 
-## [25.6.3] - 2020-02-15
+## [25.6.3] - 2021-02-15
 
 ### Security
 
 - VOR-3 - Enable and replace old file links.
 
-## [25.6.2] - 2020-02-11
+## [25.6.2] - 2021-02-11
 
 ### Changed
 
 - VOR-2 - Adjusted business rules for adding team members from external school.
 
-## [25.6.1] - 2020-02-11
+## [25.6.1] - 2021-02-11
 
 ### Fixed
 
 - VOR-1 - Fix passwordRecovery id validation.
 
-## [25.6.0] - 2020-02-09
+## [25.6.0] - 2021-02-09
 
 ### Fixed
 
