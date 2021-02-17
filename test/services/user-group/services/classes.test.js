@@ -160,6 +160,27 @@ describe('classes service', () => {
 			}
 		});
 
+		it("fails to update class to which the teacher doesn't belong", async () => {
+			const { _id: usersSchoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: 'teacher', schoolId: usersSchoolId });
+
+			const anotherClass = await testObjects.createTestClass({ schoolId: usersSchoolId });
+
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			const data = {
+				name: 'overtaken',
+				teacherIds: [],
+				schoolId: usersSchoolId,
+			};
+			try {
+				await app.service('classes').update(anotherClass._id, data, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.code).to.equal(404);
+				expect(err.message).to.be.equal('class not found');
+			}
+		});
+
 		it('fails to patch class on other school', async () => {
 			const { _id: usersSchoolId } = await testObjects.createTestSchool({});
 			const { _id: classSchoolId } = await testObjects.createTestSchool({});
