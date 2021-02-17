@@ -77,7 +77,7 @@ class LdapConfigService {
 	 * @returns {Object} options `{ school: School, activateSystem: Boolean, saveSystem: Boolean}`
 	 */
 	getOptions(params) {
-		const { verifyOnly, activate, verifyFullSync } = params.query || {};
+		const { verifyOnly, activate } = params.query || {};
 
 		const saveSystem = verifyOnly !== true && verifyOnly !== 'true';
 		const activateSystem = activate !== false && activate !== 'false';
@@ -86,7 +86,6 @@ class LdapConfigService {
 			school: params.school,
 			activateSystem,
 			saveSystem,
-			verifyFullSync: verifyFullSync === true || verifyFullSync === 'true'
 		};
 	}
 
@@ -104,7 +103,7 @@ class LdapConfigService {
 		if (systemId && !config.searchUserPassword) {
 			await this.useExisitingPassword(config, systemId);
 		}
-		const verificationResult = await this.verifyConfig(config, options.verifyFullSync);
+		const verificationResult = await this.verifyConfig(config);
 		if (verificationResult.ok && options.saveSystem) {
 			await this.saveConfig(config, systemId, options.school, options.activateSystem);
 		}
@@ -129,7 +128,7 @@ class LdapConfigService {
 	 * @returns {Object} verification result object
 	 * `{ ok: Boolean, errors: [], users: {}, classes: {} }`
 	 */
-	async verifyConfig(config, verifyFullSync) {
+	async verifyConfig(config) {
 		const ldap = this.app.service('ldap');
 		const result = {
 			ok: false,
@@ -138,7 +137,7 @@ class LdapConfigService {
 			classes: {},
 		};
 		try {
-			const users = await ldap.verifyConfig(config, verifyFullSync);
+			const users = await ldap.verifyConfig(config);
 			result.users = LdapConfigService.generateUserStats(users);
 			if (LdapConfigService.shouldVerifyClasses(config)) {
 				const classes = await ldap.getClasses(config);

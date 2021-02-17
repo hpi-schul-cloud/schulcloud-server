@@ -28,27 +28,22 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 * @memberof GeneralLDAPStrategy
 	 */
-	// eslint-disable-next-line no-unused-vars
-	getUsers(school) {
+	getUsers() {
 		return this.getUsersInternal();
 	}
 
 	/**
 	 * @public
 	 * @see AbstractLDAPStrategy#verifyConfig
-	 * @param {boolean} verifyFullSync if true all users will be loaded for verification, otherwise only the first 100 records
 	 * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 * @memberof GeneralLDAPStrategy
 	 */
-	verifyConfig(verifyFullSync) {
-		return this.getUsersInternal(!verifyFullSync);
+	verifyConfig() {
+		return this.getUsersInternal(true);
 	}
 
-	/**
-	 * @param {boolean} firstPageOnly determines if all users should be loaded or only the first page. Default false
-	 */
-	async getUsersInternal(firstPageOnly = false) {
+	async getUsersInternal(verifyOnly = false) {
 		const {
 			userAttributeNameMapping,
 			userPathAdditions,
@@ -86,7 +81,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 		for (const searchPath of searchArray) {
 			ldapUsers = ldapUsers.concat(
 				// eslint-disable-next-line no-await-in-loop
-				await this.app.service('ldap').searchCollection(this.config, searchPath, options, rawAttributes, firstPageOnly)
+				await this.app.service('ldap').searchCollection(this.config, searchPath, options, rawAttributes, verifyOnly)
 			);
 		}
 

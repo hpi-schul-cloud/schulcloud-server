@@ -217,7 +217,6 @@ module.exports = function LDAPService() {
 		 * @param {LdapConfig} config the ldapConfig
 		 * @param {String} searchString the search string
 		 * @param {Object} options search options (scope, filter, attributes,
-		 * @param {boolean} firstPageOnly determines if all users should be loaded or only the first page. Default false
 		 * ...), see `http://ldapjs.org/client.html#search` for details
 		 * @return {Promise[Array[Object]]} resolves with array of objects
 		 * matching the query, rejects with error otherwise
@@ -306,12 +305,12 @@ module.exports = function LDAPService() {
 		/**
 		 * Returns all users at a school on the LDAP server
 		 * @param {LdapConfig} config the ldapConfig
-		 * @param {boolean} verifyFullSync all users to verify the config
+		 * @param {School} school the school object
 		 * @return {Promise[Object]} resolves with all user objects or rejects
 		 * with error
 		 */
-		verifyConfig(config, verifyFullSync) {
-			return getLDAPStrategy(app, config).verifyConfig(verifyFullSync);
+		verifyConfig(config, school) {
+			return getLDAPStrategy(app, config).verifyConfig(school);
 		}
 
 		/**

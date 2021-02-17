@@ -28,12 +28,6 @@ components:
       in: query
       schema:
         type: boolean
-    verifyFullSync:
-      name: verifyFullSync
-      description: load all users from LDAP server for verification (default = false)
-      in: query
-      schema:
-        type: boolean
     activate:
       name: activate
       description: value to set as system.ldapConfig.active (default = true)
@@ -58,7 +52,6 @@ paths:
       parameters:
         - $ref: '#/components/parameters/activate'
         - $ref: '#/components/parameters/verifyOnly'
-        - $ref: '#/components/parameters/verifyFullSync'
       requestBody:
         required: true
         content:
@@ -95,7 +88,6 @@ paths:
       parameters:
         - $ref: '#/components/parameters/activate'
         - $ref: '#/components/parameters/verifyOnly'
-        - $ref: '#/components/parameters/verifyFullSync'
       requestBody:
         required: true
         content:
