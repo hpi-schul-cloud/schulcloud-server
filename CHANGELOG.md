@@ -9,9 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-## [25.6.5] - 2020-02-15
+## [25.6.5] - 2021-02-17
 
 ### Changed
+
 - SC-8477 LDAP-Sync: Speed up class sync by holding all the school's users in map while creating/populating classes
 - SC-8477 LDAP-Sync: Speed up user sync by grouping users into chunks and loading the chunks from DB instead of individual users
 
