@@ -7,8 +7,8 @@ const { connect, close } = require('../src/utils/database');
 const { homeworkSchema } = require('../src/services/homework/model');
 const { linkSchema } = require('../src/services/link/link-model');
 
-// important lesson(s) and link(s) must write with s, because they are feather services that add the s
-const HomeworkModel = mongoose.model('homework613348381638', homeworkSchema, 'homework');
+// important homework and link(s) must write with s, because they are feather services that add the s
+const HomeworkModel = mongoose.model('homework613348381638', homeworkSchema, 'homeworks');
 const LinkModelOld = mongoose.model('linkOld613348381638', linkSchema, 'linksBackup');
 const LinkModelNew = mongoose.model('linkNew613348381638', linkSchema, 'links');
 
@@ -34,7 +34,7 @@ module.exports = {
 
 		const [amount, homework] = await Promise.all([amountProm, homeworkProm]);
 
-		alert(`Found ${homework.length} lessons with included file links.`);
+		alert(`Found ${homework.length} homework with included file links.`);
 		alert(`Found ${amount} total fileModel links.`);
 
 		const limit = 500;
@@ -57,7 +57,7 @@ module.exports = {
 					.exec();
 
 				const matchedLinks = [];
-				// match lessons
+				// match homework
 				// eslint-disable-next-line no-loop-func
 				links.forEach((link) => {
 					const matches = [];
@@ -78,7 +78,7 @@ module.exports = {
 				alert(`Effected Links: ${matchedLinks.length}`);
 
 				// all matched must replace with new entry
-				// create new link > replace link in lessons > delete old link
+				// create new link > replace link in homework > delete old link
 				const createNewLinksPromise = matchedLinks.map((link) => {
 					return LinkModelNew.create({
 						target: link.target,
@@ -110,10 +110,8 @@ module.exports = {
 			}
 		}
 
-		// executing lesson fixes
-		const lessonModifiedPromise = [];
-
-		homework.map((hw) => {
+		// executing homework fixes
+		const homeworkModifiedPromise = homework.map((hw) => {
 			return HomeworkModel.updateOne({ _id: hw._id }, { $set: { description: hw.description } })
 				.lean()
 				.exec();
@@ -121,8 +119,8 @@ module.exports = {
 
 		const chunkSize = 300;
 
-		for (let i = 0; i < lessonModifiedPromise.length; i += chunkSize) {
-			const promiseChunk = lessonModifiedPromise.slice(i, i + chunkSize);
+		for (let i = 0; i < homeworkModifiedPromise.length; i += chunkSize) {
+			const promiseChunk = homeworkModifiedPromise.slice(i, i + chunkSize);
 			// eslint-disable-next-line no-await-in-loop
 			await Promise.all(promiseChunk);
 		}
