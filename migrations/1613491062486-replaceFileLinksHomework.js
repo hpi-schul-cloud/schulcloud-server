@@ -39,7 +39,6 @@ module.exports = {
 
 		const limit = 500;
 		let looped = 0;
-		const deletedLinkTasks = [];
 
 		while (looped < amount) {
 			try {
@@ -101,8 +100,6 @@ module.exports = {
 						}
 					});
 				});
-
-				deletedLinkTasks.push(matchedLinks.map(({ _id }) => _id.toString()));
 
 				looped += links.length;
 			} catch (err) {
