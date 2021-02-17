@@ -79,12 +79,12 @@ module.exports = {
 
 				// all matched must replace with new entry
 				// create new link > replace link in homework > delete old link
-				const createNewLinksPromise = matchedLinks.map((link) => {
-					return LinkModelNew.create({
+				const createNewLinksPromise = matchedLinks.map((link) =>
+					LinkModelNew.create({
 						target: link.target,
 						systemNote: { ticket: 'VOR-3', note: 'migration - new created', oldId: link._id },
-					});
-				});
+					})
+				);
 
 				alert(`Start creating new links...`);
 				// eslint-disable-next-line no-await-in-loop
@@ -111,11 +111,11 @@ module.exports = {
 		}
 
 		// executing homework fixes
-		const homeworkModifiedPromise = homework.map((hw) => {
-			return HomeworkModel.updateOne({ _id: hw._id }, { $set: { description: hw.description } })
+		const homeworkModifiedPromise = homework.map((hw) =>
+			HomeworkModel.updateOne({ _id: hw._id }, { $set: { description: hw.description } })
 				.lean()
-				.exec();
-		});
+				.exec()
+		);
 
 		const chunkSize = 300;
 
