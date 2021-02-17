@@ -196,6 +196,22 @@ describe('classes service', () => {
 			}
 		});
 
+		it("fails to patch class to which the teacher doesn't belong", async () => {
+			const { _id: usersSchoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: 'teacher', schoolId: usersSchoolId });
+
+			const anotherClass = await testObjects.createTestClass({ schoolId: usersSchoolId });
+
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			try {
+				await app.service('classes').patch(anotherClass._id, { name: 'hacked' }, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.code).to.equal(404);
+				expect(err.message).to.be.equal('class not found');
+			}
+		});
+
 		it('fails to remove class on other school', async () => {
 			const { _id: usersSchoolId } = await testObjects.createTestSchool({});
 			const { _id: classSchoolId } = await testObjects.createTestSchool({});
@@ -208,6 +224,22 @@ describe('classes service', () => {
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
 				expect(err.code).to.equal(404);
+			}
+		});
+
+		it("fails to remove class to which the teacher doesn't belong", async () => {
+			const { _id: usersSchoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: 'teacher', schoolId: usersSchoolId });
+
+			const anotherClass = await testObjects.createTestClass({ schoolId: usersSchoolId });
+
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			try {
+				await app.service('classes').remove(anotherClass._id, params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.code).to.equal(404);
+				expect(err.message).to.be.equal('class not found');
 			}
 		});
 	});
