@@ -875,9 +875,9 @@
 },
 {
 	"_id": {
-		"$oid": "5fd9fe1082bcbec8c407c42a"
+		"$oid": "6029be1ddce9313114f7921d"
 	},
-	"state": "up",
+	"state": "down",
 	"name": "create-school-for-deleted-users",
 	"createdAt": {
 		"$date": "2020-12-16T12:31:12.749Z"
@@ -941,9 +941,9 @@
 },
 {
 	"_id": {
-		"$oid": "601d40ed70380e6df35f8670"
+		"$oid": "602beb76d39160053c338bc8"
 	},
-	"state": "up",
+	"state": "down",
 	"name": "remove_event_duplication",
 	"createdAt": {
 		"$date": "2021-02-05T12:58:21.503Z"
@@ -954,7 +954,7 @@
 	"_id": {
 		"$oid": "602beb76d39160053c338bc9"
 	},
-	"state": "down",
+	"state": "up",
 	"name": "replaceFileLinks",
 	"createdAt": {
 		"$date": "2021-02-15T00:19:41.637Z"
@@ -965,7 +965,7 @@
 	"_id": {
 		"$oid": "602beb76d39160053c338bca"
 	},
-	"state": "down",
+	"state": "up",
 	"name": "replaceFileLinksHomework",
 	"createdAt": {
 		"$date": "2021-02-16T15:57:42.486Z"
