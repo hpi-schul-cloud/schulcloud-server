@@ -1,6 +1,5 @@
 const AbstractLDAPStrategy = require('./interface.js');
 const { filterForModifiedEntities } = require('./deltaSyncUtils');
-const { NotImplemented } = require('../../../errors');
 
 /**
  * iServ-specific LDAP functionality
@@ -84,17 +83,6 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
 				});
 				return results;
 			});
-	}
-
-	/**
-	 * @public
-	 * @see AbstractLDAPStrategy#verifyConfig
-	 * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
-	 * (Array) roles = ['teacher', 'student', 'administrator']
-	 * @memberof GeneralLDAPStrategy
-	 */
-	verifyConfig() {
-		throw new NotImplemented('iServLDAPStrategy#verifyConfig is not implemented');
 	}
 
 	/**
