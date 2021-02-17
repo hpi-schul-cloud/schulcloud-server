@@ -15,11 +15,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8634 - Recreate shared links for homework
 
-## [25.6.4] - 2021-02-16
+## [25.6.4] - 2021-02-17
 
-### Fixed
-
-- SC-8613 - Added flag to ldap config service to define if to load all users during verification
+### Changed
+- Reverted Changes for SC-8410 and 
 
 ## [25.6.3] - 2021-02-15
 

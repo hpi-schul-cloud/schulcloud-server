@@ -217,18 +217,16 @@ module.exports = function LDAPService() {
 		 * @param {LdapConfig} config the ldapConfig
 		 * @param {String} searchString the search string
 		 * @param {Object} options search options (scope, filter, attributes,
-		 * @param {boolean} firstPageOnly determines if all users should be loaded or only the first page. Default false
 		 * ...), see `http://ldapjs.org/client.html#search` for details
 		 * @return {Promise[Array[Object]]} resolves with array of objects
 		 * matching the query, rejects with error otherwise
 		 */
-		searchCollection(config, searchString, options = {}, rawAttributes = [], firstPageOnly = false) {
+		searchCollection(config, searchString, options = {}, rawAttributes = []) {
 			// Paging to avoid 'max size limit exceeded' issue
 			const optionsWithPaging = {
 				...options,
 				paged: {
 					pageSize: 100,
-					pagePause: firstPageOnly,
 				},
 			};
 
@@ -241,11 +239,6 @@ module.exports = function LDAPService() {
 								reject(err);
 							}
 							res.on('error', reject);
-							res.on('page', (result) => {
-								if (firstPageOnly) {
-									resolve(objects);
-								}
-							});
 							res.on('searchEntry', (entry) => {
 								const result = entry.object;
 								rawAttributes.forEach((element) => {
@@ -301,17 +294,6 @@ module.exports = function LDAPService() {
 		 */
 		getUsers(config, school) {
 			return getLDAPStrategy(app, config).getUsers(school);
-		}
-
-		/**
-		 * Returns all users at a school on the LDAP server
-		 * @param {LdapConfig} config the ldapConfig
-		 * @param {boolean} verifyFullSync all users to verify the config
-		 * @return {Promise[Object]} resolves with all user objects or rejects
-		 * with error
-		 */
-		verifyConfig(config, verifyFullSync) {
-			return getLDAPStrategy(app, config).verifyConfig(verifyFullSync);
 		}
 
 		/**
