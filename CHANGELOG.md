@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.6.5] - 2021-02-17
+
+### Fixed
+
+- SC-8634 - Recreate shared links for homework
+
 ## [25.6.4] - 2021-02-17
 
 ### Changed
