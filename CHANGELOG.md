@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.6.4] - 2020-02-17
+
+### Changed
+- Reverted Changes for SC-8410 and 
+
 ## [25.6.3] - 2020-02-15
 
 ### Security
