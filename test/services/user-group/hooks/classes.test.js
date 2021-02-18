@@ -7,7 +7,7 @@ const {
 	sortByGradeAndOrName,
 	restrictFINDToUsersOwnClasses,
 	restrictToUsersOwnClasses,
-} = require('../../../../src/services/user-group/hooks/helpers/classHooks');
+} = require('../../../../src/services/user-group/hooks/classes');
 
 describe('class hooks', () => {
 	describe('sorting method', () => {

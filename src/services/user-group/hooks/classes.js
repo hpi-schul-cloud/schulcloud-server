@@ -1,5 +1,5 @@
-const { equal: equalIds } = require('../../../../helper/compare').ObjectId;
-const { NotFound } = require('../../../../errors');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { NotFound } = require('../../../errors');
 
 const prepareGradeLevelUnset = (context) => {
 	if (!context.data.gradeLevel && context.data.name) {
@@ -78,7 +78,6 @@ const restrictToUsersOwnClasses = async (context) => {
 	}
 	return context;
 };
-// create
 
 module.exports = {
 	prepareGradeLevelUnset,

@@ -15,7 +15,7 @@ const {
 	saveSuccessor,
 	restrictFINDToUsersOwnClasses,
 	restrictToUsersOwnClasses,
-} = require('../hooks/helpers/classHooks');
+} = require('../hooks/classes');
 
 const { paginate } = require('../../../utils/array');
 
