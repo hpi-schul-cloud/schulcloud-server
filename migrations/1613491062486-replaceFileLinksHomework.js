@@ -108,11 +108,17 @@ module.exports = {
 		}
 
 		// executing homework fixes
-		const homeworkModifiedPromise = homework.map((hw) =>
-			HomeworkModel.updateOne({ _id: hw._id }, { $set: { description: hw.description } })
-				.lean()
-				.exec()
-		);
+		const homeworkModifiedPromise = [];
+		homework.forEach((hw) => {
+			if (hw.description) {
+				const prom = HomeworkModel.updateOne({ _id: hw._id }, { $set: { description: hw.description } })
+					.lean()
+					.exec();
+				homeworkModifiedPromise.push(prom);
+			} else {
+				error('Cannot be modified:', hw);
+			}
+		});
 
 		const chunkSize = 300;
 
