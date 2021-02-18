@@ -23,7 +23,7 @@ describe.only('classes service', () => {
 		expect(app.service('classes')).to.not.equal(undefined);
 	});
 
-	describe('find route', () => {
+	describe('FIND', () => {
 		it('fails unauthorized request', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool({});
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
