@@ -83,7 +83,35 @@ describe('class hooks', () => {
 				},
 			};
 			const restrictQuery = { $or: [{ userIds: teacher._id }, { teacherIds: teacher._id }] };
-			const expectedQuery = { $and: [restrictQuery, originalQuery] };
+			const expectedQuery = { ...originalQuery, ...restrictQuery };
+
+			const result = await restrictFINDToUsersOwnClasses(context);
+			expect(JSON.stringify(result.params.query)).to.be.deep.equal(JSON.stringify(expectedQuery));
+		});
+
+		it('should extend the query with $or condition with user filter for teacher', async () => {
+			const { _id: usersSchoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: 'teacher', schoolId: usersSchoolId });
+
+			const originalQuery = {
+				key: 'value',
+				$or: [{ key1: 'value1' }, { key2: 'value2' }],
+			};
+
+			const context = {
+				app,
+				params: {
+					account: { userId: teacher._id },
+					query: originalQuery,
+				},
+			};
+			const expectedQuery = {
+				key: 'value',
+				$and: [
+					{ $or: [{ userIds: teacher._id }, { teacherIds: teacher._id }] },
+					{ $or: [{ key1: 'value1' }, { key2: 'value2' }] },
+				],
+			};
 
 			const result = await restrictFINDToUsersOwnClasses(context);
 			expect(JSON.stringify(result.params.query)).to.be.deep.equal(JSON.stringify(expectedQuery));

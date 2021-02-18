@@ -50,9 +50,15 @@ const restrictFINDToUsersOwnClasses = async (context) => {
 	if (skipHook) return context;
 
 	const { _id } = currentUser;
-	const restrictQuery = { $or: [{ userIds: _id }, { teacherIds: _id }] };
-	const originalQuery = context.params.query;
-	context.params.query = { $and: [restrictQuery, originalQuery] };
+	const userRestriction = [{ userIds: _id }, { teacherIds: _id }];
+
+	if (typeof context.params.query.$or === 'undefined') {
+		context.params.query.$or = userRestriction;
+	} else {
+		const orQuery = context.params.query.$or;
+		delete context.params.query.$or;
+		context.params.query.$and = [{ $or: userRestriction }, { $or: orQuery }];
+	}
 
 	return context;
 };

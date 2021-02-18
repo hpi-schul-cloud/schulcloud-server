@@ -68,6 +68,23 @@ describe('classes service', () => {
 		expect(result.data[0].schoolId.toString()).to.eq(schoolId.toString());
 	});
 
+	it('FIND classes with pagination query', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool({});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		await testObjects.createTestClass({ schoolId, teacherIds: [teacher._id] });
+		await testObjects.createTestClass({ schoolId, teacherIds: [teacher._id] });
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+
+		params.query = { $limit: 1, $skip: 0, $or: [{ teacherIds: teacher._id }, { userIds: teacher._id }] };
+
+		const result = await app.service('classes').find(params);
+		expect(result.data).to.not.be.undefined;
+		expect(result.total).to.equal(1);
+		expect(result.data[0]).to.haveOwnProperty('_id');
+		expect(result.data[0]).to.haveOwnProperty('name');
+		expect(result.data[0].schoolId.toString()).to.eq(schoolId.toString());
+	});
+
 	it('PATCH a class', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
