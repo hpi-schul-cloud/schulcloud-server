@@ -32,11 +32,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
-<<<<<<< HEAD
-- Reverted Changes for SC-8410 and 
-=======
 - Reverted Changes for SC-8410
->>>>>>> master
 
 ## [25.6.3] - 2021-02-15
 
