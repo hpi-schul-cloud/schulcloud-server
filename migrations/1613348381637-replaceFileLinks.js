@@ -38,7 +38,6 @@ module.exports = {
 
 		const limit = 500;
 		let looped = 0;
-		const deletedLinkTasks = [];
 
 		while (looped < amount) {
 			try {
@@ -104,8 +103,6 @@ module.exports = {
 					});
 				});
 
-				deletedLinkTasks.push(matchedLinks.map(({ _id }) => _id.toString()));
-
 				looped += links.length;
 			} catch (err) {
 				error(err);
@@ -118,13 +115,17 @@ module.exports = {
 		lessons.forEach((lesson) => {
 			lesson.contents.forEach((content, index) => {
 				if (content.IS_MODIFIED === true) {
-					const prom = LessonModel.updateOne(
-						{ _id: lesson._id },
-						{ $set: { [`contents.${index}.content.text`]: content.text } }
-					)
-						.lean()
-						.exec();
-					lessonModifiedPromise.push(prom);
+					if (content.content.text) {
+						const prom = LessonModel.updateOne(
+							{ _id: lesson._id },
+							{ $set: { [`contents.${index}.content.text`]: content.content.text } }
+						)
+							.lean()
+							.exec();
+						lessonModifiedPromise.push(prom);
+					} else {
+						error('Cannot be modified:', lesson);
+					}
 				}
 			});
 		});
@@ -137,18 +138,7 @@ module.exports = {
 			await Promise.all(promiseChunk);
 			looped2 += chunkSize;
 		}
-		/*
-		alert(`Start deleting old links...`);
-		const deletedPromisses = [];
-		deletedLinkTasks.forEach((deletedIds) => {
-			const prom = LinkModelOld.deleteMany({ _id: { $in: deletedIds } })
-				.lean()
-				.exec();
-			deletedPromisses.push(prom);
-		});
-		await Promise.all(deletedPromisses);
-		alert(`...finished!`);
-*/
+
 		alert(`...migrations replaceFileLinks is finished!`);
 		await close();
 	},
