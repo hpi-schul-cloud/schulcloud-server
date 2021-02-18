@@ -11,6 +11,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [25.6.6] - 2021-02-18
 
+### Security
+
+- SC-8655 - prevent changes to immutable user attributes
+
+## [25.6.6] - 2021-02-18
+
 ### Fixed
 
 - SC-8657 - Recreate shared links for homework
