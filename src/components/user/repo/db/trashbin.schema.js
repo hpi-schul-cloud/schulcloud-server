@@ -12,7 +12,7 @@ const schema = new Schema(
 		},
 		createdAt: {
 			type: Date,
-			expires: 604800
+			expires: 604800,
 		},
 		data: [
 			{
