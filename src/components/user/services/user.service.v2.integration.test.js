@@ -50,128 +50,164 @@ describe('user service v2', function test() {
 	};
 
 	describe('API tests', () => {
-		it('When an admin deletes a student, then it succeeds', async () => {
-			const { _id: schoolId } = await testObjects.createTestSchool();
-			const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
-			const token = await getAdminToken(schoolId);
-			const request = chai
-				.request(app)
-				.delete(`/users/v2/admin/student/${user._id.toString()}`)
-				.query({ userId: user._id.toString() })
-				.set('Accept', 'application/json')
-				.set('Authorization', token)
-				.set('Content-type', 'application/json');
-			const response = await request.send();
-			expect(response.status).to.equal(204);
-		});
+		describe('delete', () => {
+			describe('single user', () => {
+				it('When an admin deletes a student, then it succeeds', async () => {
+					const { _id: schoolId } = await testObjects.createTestSchool();
+					const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
+					const token = await getAdminToken(schoolId);
+					const request = chai
+						.request(app)
+						.delete(`/users/v2/admin/student/${user._id.toString()}`)
+						.query({ userId: user._id.toString() })
+						.set('Accept', 'application/json')
+						.set('Authorization', token)
+						.set('Content-type', 'application/json');
+					const response = await request.send();
+					expect(response.status).to.equal(204);
+				});
 
-		it('When an admin deletes a teacher, then it succeeds', async () => {
-			const { _id: schoolId } = await testObjects.createTestSchool();
-			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-			const token = await getAdminToken(schoolId);
-			const request = chai
-				.request(app)
-				.delete(`/users/v2/admin/teacher/${user._id.toString()}`)
-				.query({ userId: user._id.toString() })
-				.set('Accept', 'application/json')
-				.set('Authorization', token)
-				.set('Content-type', 'application/json');
-			const response = await request.send();
-			expect(response.status).to.equal(204);
-		});
+				it('When an admin deletes a teacher, then it succeeds', async () => {
+					const { _id: schoolId } = await testObjects.createTestSchool();
+					const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+					const token = await getAdminToken(schoolId);
+					const request = chai
+						.request(app)
+						.delete(`/users/v2/admin/teacher/${user._id.toString()}`)
+						.query({ userId: user._id.toString() })
+						.set('Accept', 'application/json')
+						.set('Authorization', token)
+						.set('Content-type', 'application/json');
+					const response = await request.send();
+					expect(response.status).to.equal(204);
+				});
 
-		it('when a teacher deletes a student, then it throws Forbidden', async () => {
-			const { _id: schoolId } = await testObjects.createTestSchool();
-			// const params = await testObjects.generateRequestParamsFromUser(admin);
-			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-			const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
-			const token = await testObjects.generateJWTFromUser(teacher);
-			const request = chai
-				.request(app)
-				.delete(`/users/v2/admin/student/${user._id.toString()}`)
-				.query({ userId: user._id.toString() })
-				.set('Accept', 'application/json')
-				.set('Authorization', token)
-				.set('Content-type', 'application/json');
-			const response = await request.send();
-			expect(response.status).to.equal(403);
-		});
+				it('when a teacher deletes a student, then it throws Forbidden', async () => {
+					const { _id: schoolId } = await testObjects.createTestSchool();
+					// const params = await testObjects.generateRequestParamsFromUser(admin);
+					const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+					const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
+					const token = await testObjects.generateJWTFromUser(teacher);
+					const request = chai
+						.request(app)
+						.delete(`/users/v2/admin/student/${user._id.toString()}`)
+						.query({ userId: user._id.toString() })
+						.set('Accept', 'application/json')
+						.set('Authorization', token)
+						.set('Content-type', 'application/json');
+					const response = await request.send();
+					expect(response.status).to.equal(403);
+				});
 
-		it('when an admin deletes a non-existing user, then it throws Not-Found', async () => {
-			const { _id: schoolId } = await testObjects.createTestSchool();
-			const notFoundId = ObjectId();
-			const token = await getAdminToken(schoolId);
-			const request = chai
-				.request(app)
-				.delete(`/users/v2/admin/student/${notFoundId.toString()}`)
-				.query({ userId: notFoundId.toString() })
-				.set('Accept', 'application/json')
-				.set('Authorization', token)
-				.set('Content-type', 'application/json');
-			const response = await request.send();
-			expect(response.status).to.equal(404);
-		});
+				it('when an admin deletes a non-existing user, then it throws Not-Found', async () => {
+					const { _id: schoolId } = await testObjects.createTestSchool();
+					const notFoundId = ObjectId();
+					const token = await getAdminToken(schoolId);
+					const request = chai
+						.request(app)
+						.delete(`/users/v2/admin/student/${notFoundId.toString()}`)
+						.query({ userId: notFoundId.toString() })
+						.set('Accept', 'application/json')
+						.set('Authorization', token)
+						.set('Content-type', 'application/json');
+					const response = await request.send();
+					expect(response.status).to.equal(404);
+				});
 
-		it('when an admin deletes a student from a different school, then it throws Not-Found', async () => {
-			const { _id: schoolId } = await testObjects.createTestSchool();
-			const { _id: otherSchoolId } = await testObjects.createTestSchool();
-			const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
-			const token = await getAdminToken(otherSchoolId);
-			const request = chai
-				.request(app)
-				.delete(`/users/v2/admin/student/${user._id.toString()}`)
-				.query({ userId: user._id.toString() })
-				.set('Accept', 'application/json')
-				.set('Authorization', token)
-				.set('Content-type', 'application/json');
-			const response = await request.send();
-			expect(response.status).to.equal(403);
-		});
+				it('when an admin deletes a student from a different school, then it throws Not-Found', async () => {
+					const { _id: schoolId } = await testObjects.createTestSchool();
+					const { _id: otherSchoolId } = await testObjects.createTestSchool();
+					const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
+					const token = await getAdminToken(otherSchoolId);
+					const request = chai
+						.request(app)
+						.delete(`/users/v2/admin/student/${user._id.toString()}`)
+						.query({ userId: user._id.toString() })
+						.set('Accept', 'application/json')
+						.set('Authorization', token)
+						.set('Content-type', 'application/json');
+					const response = await request.send();
+					expect(response.status).to.equal(403);
+				});
 
-		it('when a user with STUDENT_DELETE permission deletes a student, then it succeeds', async () => {
-			const school = await testObjects.createTestSchool({
-				name: 'testSchool',
+				it('when a user with STUDENT_DELETE permission deletes a student, then it succeeds', async () => {
+					const school = await testObjects.createTestSchool({
+						name: 'testSchool',
+					});
+					const { _id: schoolId } = school;
+
+					const token = await getPermissionToken(schoolId, ['STUDENT_DELETE']);
+
+					const deleteUser = await testObjects.createTestUser({ roles: ['student'], schoolId });
+
+					const request = chai
+						.request(app)
+						.delete(`/users/v2/admin/student/${deleteUser._id.toString()}`)
+						.set('Accept', 'application/json')
+						.set('Authorization', token)
+						.set('Content-type', 'application/json');
+					const response = await request.send();
+					expect(response.status).to.equal(204);
+
+					const checkUser = await usersModelService.get(deleteUser._id);
+					expect(checkUser.fullName).to.equal('DELETED USER');
+
+					const checkAccount = await accountModelService.find({ query: { userId: deleteUser._id }, paginate: false });
+					expect(checkAccount.length).to.equal(0);
+				});
+
+				it('when a user with STUDENT_DELETE permission deletes a teacher, then it throws Forbidden', async () => {
+					const school = await testObjects.createTestSchool({
+						name: 'testSchool',
+					});
+					const { _id: schoolId } = school;
+
+					const token = await getPermissionToken(schoolId, ['STUDENT_DELETE']);
+
+					const deleteUser = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+
+					const request = chai
+						.request(app)
+						.delete(`/users/v2/admin/teacher/${deleteUser._id.toString()}`)
+						.set('Accept', 'application/json')
+						.set('Authorization', token)
+						.set('Content-type', 'application/json');
+					const response = await request.send();
+					expect(response.status).to.equal(403);
+				});
 			});
-			const { _id: schoolId } = school;
+			describe('multiple users', () => {
+				it('When an admin deletes a list of students, then it succeeds', async () => {
+					const { _id: schoolId } = await testObjects.createTestSchool();
+					const user1 = await testObjects.createTestUser({ roles: ['student'], schoolId });
+					const user2 = await testObjects.createTestUser({ roles: ['student'], schoolId });
+					const user3 = await testObjects.createTestUser({ roles: ['student'], schoolId });
+					const token = await getAdminToken(schoolId);
+					const request = chai
+						.request(app)
+						.delete(`/users/v2/admin/student`)
+						.query({ ids: [user1, user2, user3].map((user) => user._id.toString()) })
+						.set('Accept', 'application/json')
+						.set('Authorization', token)
+						.set('Content-type', 'application/json');
+					const response = await request.send();
+					expect(response.status).to.equal(204);
+				});
 
-			const token = await getPermissionToken(schoolId, ['STUDENT_DELETE']);
-
-			const deleteUser = await testObjects.createTestUser({ roles: ['student'], schoolId });
-
-			const request = chai
-				.request(app)
-				.delete(`/users/v2/admin/student/${deleteUser._id.toString()}`)
-				.set('Accept', 'application/json')
-				.set('Authorization', token)
-				.set('Content-type', 'application/json');
-			const response = await request.send();
-			expect(response.status).to.equal(204);
-
-			const checkUser = await usersModelService.get(deleteUser._id);
-			expect(checkUser.fullName).to.equal('DELETED USER');
-
-			const checkAccount = await accountModelService.find({ query: { userId: deleteUser._id }, paginate: false });
-			expect(checkAccount.length).to.equal(0);
-		});
-
-		it('when a user with STUDENT_DELETE permission deletes a teacher, then it throws Forbidden', async () => {
-			const school = await testObjects.createTestSchool({
-				name: 'testSchool',
+				it('When an admin deletes an empty list of students, then it fails', async () => {
+					const { _id: schoolId } = await testObjects.createTestSchool();
+					const token = await getAdminToken(schoolId);
+					const request = chai
+						.request(app)
+						.delete(`/users/v2/admin/student`)
+						.query({ ids: [] })
+						.set('Accept', 'application/json')
+						.set('Authorization', token)
+						.set('Content-type', 'application/json');
+					const response = await request.send();
+					expect(response.status).to.equal(400);
+				});
 			});
-			const { _id: schoolId } = school;
-
-			const token = await getPermissionToken(schoolId, ['STUDENT_DELETE']);
-
-			const deleteUser = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-
-			const request = chai
-				.request(app)
-				.delete(`/users/v2/admin/teacher/${deleteUser._id.toString()}`)
-				.set('Accept', 'application/json')
-				.set('Authorization', token)
-				.set('Content-type', 'application/json');
-			const response = await request.send();
-			expect(response.status).to.equal(403);
 		});
 	});
 });
