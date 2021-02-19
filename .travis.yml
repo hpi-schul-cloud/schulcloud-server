@@ -52,11 +52,11 @@ jobs:
         - echo "skipping install"
       after_failure:
         - cat /home/travis/.npm/_logs/*debug.log
-    - stage: deploy
+    - stage: build
       if: NOT fork
       script:
-        - ./deploy.sh
-      name: deploy
+        - ./build.sh
+      name: build and push
       language: generic
       env:
         - GIT_SHA=$( git rev-parse HEAD )
