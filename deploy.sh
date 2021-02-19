@@ -53,7 +53,7 @@ echo GIT_FLOW_BRANCH:$GIT_FLOW_BRANCH
 if [ "$TRAVIS_BRANCH" = "master" ] || [ "$GIT_FLOW_BRANCH" = "release" ]
 then
 	export DOCKERTAG="${GIT_FLOW_BRANCH}_v$(jq -r '.version' package.json )_latest"
-elif [ "$GIT_FLOW_BRANCH" = "hotfix" ]
+elif [ "$GIT_FLOW_BRANCH" = "hotfix" || "$GIT_FLOW_BRANCH" = "feature" ]
 then
 	# extract JIRA_TICKET_ID from TRAVIS_BRANCH
 	JIRA_TICKET_ID=${TRAVIS_BRANCH/#hotfix\//}
@@ -67,19 +67,6 @@ then
 	# export DOCKERTAG=naming convention feature-<Jira id>-latest
 	export DOCKERTAG="${GIT_FLOW_BRANCH}_${JIRA_TICKET_ID}_latest"
 
-elif [ "$GIT_FLOW_BRANCH" = "feature" ]
-then
-	# extract JIRA_TICKET_ID from TRAVIS_BRANCH
-	JIRA_TICKET_ID=${TRAVIS_BRANCH/#feature\//}
-	JIRA_TICKET_TEAM=${JIRA_TICKET_ID/%-*/} 
-	JIRA_TICKET_ID=${JIRA_TICKET_ID/#$JIRA_TICKET_TEAM"-"/}
-	JIRA_TICKET_ID=${JIRA_TICKET_ID/%-*/}
-	JIRA_TICKET_ID=$JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID
-	
-	echo JIRA_TICKET_ID="$JIRA_TICKET_ID"
-	
-	# export DOCKERTAG=naming convention feature-<Jira id>-latest
-	export DOCKERTAG="${GIT_FLOW_BRANCH}_${JIRA_TICKET_ID}_latest"
 else
 	# replace special characters in branch name for docker tag
 	export DOCKERTAG="${GIT_FLOW_BRANCH}_latest"
