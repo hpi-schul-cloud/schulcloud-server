@@ -2,13 +2,7 @@ const CryptoJS = require('crypto-js');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const mongoose = require('mongoose'); // ToDo: Remove, currently used to initialize a session
 
-const {
-	copyObject,
-	deleteObjects,
-	getStorageProviderMetaInformation,
-	getLeastUsedStorageProvider,
-	decreaseFreeBuckets,
-} = require('../../repo/fileStorageProvider.repo');
+const fileStorageProviderRepo = require('../../repo/fileStorageProvider.repo');
 
 const { facadeLocator } = require('../../../../utils/facadeLocator');
 
@@ -45,12 +39,12 @@ const chooseProvider = async (schoolId) => {
 			// We need to figure out if we run in a replicaset, because DB-calls with transaction
 			// will fail if not run in a replicaset.
 			const effectiveSession = session.clientOptions.replicaSet ? session : undefined;
-			storageProvider = getLeastUsedStorageProvider(session);
+			storageProvider = fileStorageProviderRepo.getLeastUsedStorageProvider(session);
 
 			const schoolFacade = facadeLocator.facade('school/v2');
 
 			await Promise.all([
-				decreaseFreeBuckets(storageProvider._id, effectiveSession),
+				fileStorageProviderRepo.decreaseFreeBuckets(storageProvider._id, effectiveSession),
 				schoolFacade.setStorageProvider(schoolId, storageProvider._id, effectiveSession),
 			]);
 		},
@@ -67,7 +61,8 @@ const decryptAccessKey = async (secretAccessKey) => {
 
 const getStorageProvider = async (storageProviderId, schoolId) => {
 	const storageProvider =
-		(await getStorageProviderMetaInformation(storageProviderId)) || (await chooseProvider(schoolId));
+		(await fileStorageProviderRepo.getStorageProviderMetaInformation(storageProviderId)) ||
+		(await chooseProvider(schoolId));
 	storageProvider.secretAccessKey = await decryptAccessKey(storageProvider.secretAccessKey);
 	return storageProvider;
 };
@@ -85,13 +80,13 @@ const moveFilesToTrash = async (schoolId, fileIds) => {
 		await Promise.all(
 			fileIdSubset.map((fileId) => {
 				const copyParams = createCopyParamsToMarkAsBeingDeleted(bucket, fileId);
-				return copyObject(storageProvider, copyParams);
+				return fileStorageProviderRepo.copyObject(storageProvider, copyParams);
 			})
 		);
 
 		const deleteParams = createDeleteParams(bucket, fileIdSubset);
 		// eslint-disable-next-line no-await-in-loop
-		await deleteObjects(storageProvider, deleteParams).promise();
+		await fileStorageProviderRepo.deleteObjects(storageProvider, deleteParams).promise();
 	}
 	return true;
 };

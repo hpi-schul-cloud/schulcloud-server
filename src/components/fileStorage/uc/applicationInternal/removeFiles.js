@@ -19,7 +19,8 @@ const removePersonalFiles = async (userId) => {
 	const userFacade = facadeLocator.facade('/users/v2');
 	const schoolId = userFacade.getSchoolIdOfUser(userId);
 
-	const complete = repo.removePersonalFilesByUserId(userId) && moveFilesToTrash(schoolId, personalFileIds);
+	const complete =
+		(await repo.removePersonalFilesByUserId(userId)) && (await moveFilesToTrash(schoolId, personalFileIds));
 
 	return { trashBinData, complete };
 };

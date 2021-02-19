@@ -6,10 +6,15 @@ const { removePermissionsThatUserCanAccess } = require('./applicationInternal/re
 const { removePersonalFiles } = require('./applicationInternal/removeFiles');
 
 const fileRepo = require('../repo/files.repo');
-const fileStrategy = require('../repo/strategies');
+const fileStorageProviderRepo = require('../repo/fileStorageProvider.repo');
 const { GeneralError } = require('../../../errors');
 
 describe('deletedUserData.uc.unit', () => {
+	beforeEach(() => {
+		sinon.stub(fileStorageProviderRepo, 'deleteObjects').returns({ promise: () => Promise.resolve(true) });
+		sinon.stub(fileStorageProviderRepo, 'copyObject').returns({ promise: () => Promise.resolve(true) });
+	});
+
 	afterEach(sinon.restore);
 
 	describe('removePersonalFiles', () => {
@@ -27,8 +32,6 @@ describe('deletedUserData.uc.unit', () => {
 					creator: userId,
 				},
 			]);
-			const createStrategyStub = sinon.stub(fileStrategy, 'createStrategy');
-			createStrategyStub.withArgs('awsS3').returns({ moveFilesToTrash: () => true });
 
 			const result = await removePersonalFiles(userId);
 
@@ -44,8 +47,6 @@ describe('deletedUserData.uc.unit', () => {
 			removePersonalFilesStub.withArgs(userId).returns(true);
 			const getPersonalFilesStub = sinon.stub(fileRepo, 'getPersonalFilesByUserId');
 			getPersonalFilesStub.withArgs(userId).returns([]);
-			const createStrategyStub = sinon.stub(fileStrategy, 'createStrategy');
-			createStrategyStub.withArgs('awsS3').returns({ moveFilesToTrash: () => true });
 
 			const result = await removePersonalFiles(userId);
 

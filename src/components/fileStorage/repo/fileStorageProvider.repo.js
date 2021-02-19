@@ -51,7 +51,7 @@ const decreaseFreeBuckets = async (storageProviderId, session) => {
 		.exec();
 };
 
-const createStorageProviderInstance = async (storageProviderMetaInformation) => {
+const createStorageProviderInstance = (storageProviderMetaInformation) => {
 	return new aws.S3(getConfig(storageProviderMetaInformation));
 };
 
@@ -71,4 +71,5 @@ module.exports = {
 	copyObject,
 	getLeastUsedStorageProvider,
 	decreaseFreeBuckets,
+	createStorageProviderInstance,
 };
