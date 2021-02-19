@@ -17,6 +17,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-8541 - restrict class modifing requests to the teachers, who are inside these classes
 - OPS-1508 - added limits for cpu and ram to the docker compose files
 - SC-8500 - refactoring in error handling
 
