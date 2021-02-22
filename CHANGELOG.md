@@ -19,11 +19,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - OPS-1508 - added limits for cpu and ram to the docker compose files
 - SC-8500 - refactoring in error handling
+- SC-7021 - automatic deletion documents in the trashbins collection after 7 days.
 
 ## [26.0.0]
 
 ### Fixed
 
+- SC-6679 fix text editor table issue
 - SC-8534 fix registration link generation
 
 ## [25.6.2] - 2020-02-11
@@ -58,6 +60,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-8541 - restrict class modifing requests to the teachers, who are inside these classes
 - SC-8380 removed reqlib, replaced by normal require to keep referenced types known
 - SC-8213 error handling concept
 - SC-4576 - sanitize bbb room and member names
@@ -181,6 +184,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7763 - adds searchable feature flag for lernstore.
 - SC-8020 - adds collections filter to edu-sharing service
 - SC-8260 - new team indexes and migration to add this
+
+### Fixed
+
+- SC-8230 - fix deletion of teachers via new route
 
 ### Removed
 
