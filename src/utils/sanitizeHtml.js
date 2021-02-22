@@ -61,7 +61,7 @@ const allowedAttributes = {
 	span: ['style'],
 	table: ['style'],
 	tr: ['style'],
-	td: ['style'],
+	td: ['style', 'colspan', 'rowspan'],
 	th: ['style'],
 	figure: ['style'],
 };
