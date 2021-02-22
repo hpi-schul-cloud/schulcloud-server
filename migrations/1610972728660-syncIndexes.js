@@ -2,7 +2,7 @@ const { connect, close } = require('../src/utils/database');
 const logger = require('../src/logger');
 
 const { teamsModel } = require('../src/services/teams/model');
-const LessonModel = require('../src/services/lesson/model');
+const { LessonModel } = require('../src/services/lesson/model');
 const RoleModel = require('../src/services/role/model');
 const { courseGroupModel, classModel, courseModel } = require('../src/services/user-group/model');
 const { schoolModel } = require('../src/services/school/model');
