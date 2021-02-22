@@ -55,7 +55,7 @@ echo GIT_SHA="$GIT_SHA"
 if [ "$TRAVIS_BRANCH" = "master" ] || [ "$GIT_FLOW_BRANCH" = "release" ]
 then
 	export DOCKERTAG="${GIT_FLOW_BRANCH}_v$(jq -r '.version' package.json )_latest"
-	export DOCKERTAG_SHA="${GIT_FLOW_BRANCH}_v$(jq -r '.version' package.json )_$GIT_SHA"
+	export DOCKERTAG_SHA="${GIT_FLOW_BRANCH}_v$(jq -r '.version' package.json )_${GIT_SHA}"
 
 elif [ "$GIT_FLOW_BRANCH" = "hotfix" || "$GIT_FLOW_BRANCH" = "feature" ]
 then
@@ -70,12 +70,12 @@ then
 	
 	# export DOCKERTAG=naming convention feature-<Jira id>-latest
 	export DOCKERTAG="${GIT_FLOW_BRANCH}_${JIRA_TICKET_ID}_latest"
-	export DOCKERTAG_SHA="${GIT_FLOW_BRANCH}_${JIRA_TICKET_ID}_$GIT_SHA"
+	export DOCKERTAG_SHA="${GIT_FLOW_BRANCH}_${JIRA_TICKET_ID}_${GIT_SHA}"
 elif [ "$GIT_FLOW_BRANCH" = "develop" ]
 then
 	# replace special characters in branch name for docker tag
 	export DOCKERTAG="${GIT_FLOW_BRANCH}_latest"
-	export DOCKERTAG_SHA="${GIT_FLOW_BRANCH}_$GIT_SHA"
+	export DOCKERTAG_SHA="${GIT_FLOW_BRANCH}_${GIT_SHA}"
 
 else
 	# If no condition is met, nothing will be deployed.
