@@ -3,7 +3,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const { expect } = require('chai');
 const { fileStorageProviderRepo } = require('.');
 
-describe.only('fileStorageProvider.repo.integration.test', () => {
+describe('fileStorageProvider.repo.integration.test', () => {
 	let testObjects;
 	let server;
 	let app;

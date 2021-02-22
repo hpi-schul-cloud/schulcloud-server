@@ -2,8 +2,7 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 const { ObjectId } = require('mongoose').Types;
 
-const { removePermissionsThatUserCanAccess } = require('./applicationInternal/removePermissions');
-const { removePersonalFiles } = require('./applicationInternal/removeFiles');
+const { removePermissionsThatUserCanAccess, removePersonalFiles } = require('./deleteUserData.uc').private;
 
 const fileRepo = require('../repo/files.repo');
 const fileStorageProviderRepo = require('../repo/fileStorageProvider.repo');
