@@ -4,7 +4,7 @@ const sanitizeHtml = require('sanitize-html');
 const maxDeep = 12;
 // enable html for all current editors
 const keys = ['content', 'text', 'comment', 'gradeComment', 'description'];
-const paths = ['lessons', 'news', 'newsModel', 'homework', 'submissions'];
+const paths = ['lessons', 'news', 'newsModel', 'homework', 'submissions', 'topics'];
 const saveKeys = ['password', 'secret'];
 const allowedTags = [
 	'h1',
@@ -92,7 +92,7 @@ const htmlTrueOptions = {
 			color: COLOR_REGEX,
 			'background-color': COLOR_REGEX,
 			'text-align': [/^left$/, /^right$/, /^center$/],
-			'vetical-align': [
+			'vertical-align': [
 				/^baseline$/,
 				/^sub$/,
 				/^super$/,
