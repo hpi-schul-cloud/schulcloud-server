@@ -88,7 +88,7 @@ echo DOCKERTAG_SHA="$DOCKERTAG_SHA"
 
 function buildandpush {
 	# build containers
-	docker build -t schulcloud/schulcloud-server:$DOCKERTAG -t schulcloud/schulcloud-server:$GIT_SHA .
+	docker build -t schulcloud/schulcloud-server:$DOCKERTAG -t schulcloud/schulcloud-server:$DOCKERTAG_SHA .
 
 	if [[ "$?" != "0" ]]
 	then
