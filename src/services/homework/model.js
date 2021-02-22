@@ -88,6 +88,7 @@ const homeworkModel = mongoose.model('homework', homeworkSchema);
 const submissionModel = mongoose.model('submission', submissionSchema);
 
 module.exports = {
+	homeworkSchema,
 	homeworkModel,
 	submissionModel,
 	SubmissionSchema: submissionSchema,

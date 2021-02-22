@@ -13,7 +13,7 @@ const { splitForSearchIndexes } = require('../../../utils/search');
 const { hasSchoolPermission, blockDisposableEmail, transformToDataTransferObject } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { validateParams, parseRequestQuery } = require('../hooks/adminUsers.hooks');
-const { sendRegistrationLink } = require('../hooks/userService');
+const { sendRegistrationLink, protectImmutableAttributes } = require('../hooks/userService');
 
 const { userModel } = require('../model');
 
@@ -317,8 +317,8 @@ const adminHookGenerator = (kind) => ({
 		find: [hasSchoolPermission(`${kind}_LIST`)],
 		get: [hasSchoolPermission(`${kind}_LIST`)],
 		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
-		update: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
-		patch: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
+		update: [hasSchoolPermission(`${kind}_EDIT`), protectImmutableAttributes, blockDisposableEmail('email')],
+		patch: [hasSchoolPermission(`${kind}_EDIT`), protectImmutableAttributes, blockDisposableEmail('email')],
 		remove: [hasSchoolPermission(`${kind}_DELETE`), parseRequestQuery, validateParams],
 	},
 	after: {

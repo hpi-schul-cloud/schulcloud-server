@@ -76,19 +76,6 @@ class AbstractLDAPStrategy {
 		throw new TypeError('Method has to be implemented.');
 	}
 
-	/**
-	 * Verify that the connection information is correct
-	 * Works like @see AbstractLDAPStrategy#getUsers , but returns only a subset of the users
-	 *
-	 * @param {School} school the school
-	 * @abstract
-	 * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
-	 * (Array) roles = ['teacher', 'student', 'administrator']
-	 */
-	verifyConfig(school) {
-		throw new TypeError('Method has to be implemented.');
-	}
-
 	/* eslint-enable no-unused-vars */
 }
 
