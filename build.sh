@@ -46,7 +46,7 @@ else
 	echo -e "Event detected. However, branch name pattern does not match requirements to deploy. Expected <branch>/<JIRA-Ticket ID>-<Jira_Summary> but got $TRAVIS_BRANCH"
 	exit 0
 fi
-echo GIT_FLOW_BRANCH:$GIT_FLOW_BRANCH
+echo GIT_FLOW_BRANCH:"$GIT_FLOW_BRANCH"
 echo GIT_SHA="$GIT_SHA"
 
 # export DOCKERTAG=latest
@@ -54,17 +54,31 @@ echo GIT_SHA="$GIT_SHA"
 # OPS-1664
 if [ "$TRAVIS_BRANCH" = "master" ] || [ "$GIT_FLOW_BRANCH" = "release" ]
 then
-	export DOCKERTAG="${GIT_FLOW_BRANCH}_v$(jq -r '.version' package.json )_latest"
-	export DOCKERTAG_SHA="${GIT_FLOW_BRANCH}_v$(jq -r '.version' package.json )_${GIT_SHA}"
+	export DOCKERTAG="${GIT_FLOW_BRANCH}"_v"$(jq -r '.version' package.json )"_latest
+	export DOCKERTAG_SHA="${GIT_FLOW_BRANCH}"_v"$(jq -r '.version' package.json )"_"${GIT_SHA}"
 
-elif [ "$GIT_FLOW_BRANCH" = "hotfix" || "$GIT_FLOW_BRANCH" = "feature" ]
+elif [ "$GIT_FLOW_BRANCH" = "hotfix" ]
 then
 	# extract JIRA_TICKET_ID from TRAVIS_BRANCH
 	JIRA_TICKET_ID=${TRAVIS_BRANCH/#hotfix\//}
 	JIRA_TICKET_TEAM=${JIRA_TICKET_ID/%-*/} 
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/#$JIRA_TICKET_TEAM"-"/}
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/%-*/}
-	JIRA_TICKET_ID=$JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID	
+	JIRA_TICKET_ID="$JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID"
+
+	echo JIRA_TICKET_ID="$JIRA_TICKET_ID"
+	
+	# export DOCKERTAG=naming convention feature-<Jira id>-latest
+	export DOCKERTAG="${GIT_FLOW_BRANCH}_${JIRA_TICKET_ID}_latest"
+	export DOCKERTAG_SHA="${GIT_FLOW_BRANCH}_${JIRA_TICKET_ID}_${GIT_SHA}"
+elif [ "$GIT_FLOW_BRANCH" = "feature" ]
+then
+	# extract JIRA_TICKET_ID from TRAVIS_BRANCH
+	JIRA_TICKET_ID=${TRAVIS_BRANCH/#feature\//}
+	JIRA_TICKET_TEAM=${JIRA_TICKET_ID/%-*/} 
+	JIRA_TICKET_ID=${JIRA_TICKET_ID/#$JIRA_TICKET_TEAM"-"/}
+	JIRA_TICKET_ID=${JIRA_TICKET_ID/%-*/}
+	JIRA_TICKET_ID="$JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID"
 
 	echo JIRA_TICKET_ID="$JIRA_TICKET_ID"
 	
@@ -74,13 +88,8 @@ then
 elif [ "$GIT_FLOW_BRANCH" = "develop" ]
 then
 	# replace special characters in branch name for docker tag
-	export DOCKERTAG="${GIT_FLOW_BRANCH}_latest"
-	export DOCKERTAG_SHA="${GIT_FLOW_BRANCH}_${GIT_SHA}"
-
-else
-	# If no condition is met, nothing will be deployed.
-	echo "Event detected which does not meet any conditions."
-	echo "However, branch name pattern does not match requirements but got $TRAVIS_BRANCH. Building docker image will be skipped."
+	export DOCKERTAG="${GIT_FLOW_BRANCH}"_latest
+	export DOCKERTAG_SHA="${GIT_FLOW_BRANCH}"_"${GIT_SHA}"
 fi
 
 echo DOCKERTAG="$DOCKERTAG"
@@ -88,7 +97,7 @@ echo DOCKERTAG_SHA="$DOCKERTAG_SHA"
 
 function buildandpush {
 	# build containers
-	docker build -t schulcloud/schulcloud-server:$DOCKERTAG -t schulcloud/schulcloud-server:$DOCKERTAG_SHA .
+	docker build -t schulcloud/schulcloud-server:"$DOCKERTAG" -t schulcloud/schulcloud-server:"$DOCKERTAG_SHA" .
 
 	if [[ "$?" != "0" ]]
 	then
@@ -99,8 +108,8 @@ function buildandpush {
 	echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
 	# take those images and push them up to docker hub
-	docker push schulcloud/schulcloud-server:$DOCKERTAG
-	docker push schulcloud/schulcloud-server:$DOCKERTAG_SHA
+	docker push schulcloud/schulcloud-server:"$DOCKERTAG"
+	docker push schulcloud/schulcloud-server:"$DOCKERTAG_SHA"
 }
 # write version file
 printf "%s\n%s\n%s" $TRAVIS_COMMIT $TRAVIS_BRANCH $TRAVIS_COMMIT_MESSAGE > ./version
