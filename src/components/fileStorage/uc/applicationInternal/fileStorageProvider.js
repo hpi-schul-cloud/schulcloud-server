@@ -39,7 +39,7 @@ const chooseProvider = async (schoolId) => {
 			// We need to figure out if we run in a replicaset, because DB-calls with transaction
 			// will fail if not run in a replicaset.
 			const effectiveSession = session.clientOptions.replicaSet ? session : undefined;
-			storageProvider = fileStorageProviderRepo.getLeastUsedStorageProvider(session);
+			storageProvider = fileStorageProviderRepo.getLeastUsedStorageProvider(effectiveSession);
 
 			const schoolFacade = facadeLocator.facade('school/v2');
 
@@ -69,8 +69,8 @@ const getStorageProvider = async (storageProviderId, schoolId) => {
 
 const moveFilesToTrash = async (schoolId, fileIds) => {
 	const schoolFacade = facadeLocator.facade('school/v2');
-	const school = schoolFacade.getSchool(schoolId);
-	const storageProvider = getStorageProvider(school.storageProvider, school._id);
+	const school = await schoolFacade.getSchool(schoolId);
+	const storageProvider = await getStorageProvider(school.storageProvider, school._id);
 	const bucket = storageBucketName(schoolId);
 
 	const parallelRequests = 100; // we can experiment with inc-/decreasing this. Max 1000 for the delete request

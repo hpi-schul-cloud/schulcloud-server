@@ -4,15 +4,6 @@ const { StorageProviderModel } = require('./db');
 
 const HOST = Configuration.get('HOST');
 
-const getCorsRules = () => [
-	{
-		AllowedHeaders: ['*'],
-		AllowedMethods: ['PUT'],
-		AllowedOrigins: [HOST],
-		MaxAgeSeconds: 300,
-	},
-];
-
 const getConfig = (provider) => {
 	const awsConfig = new aws.Config({
 		signatureVersion: 'v4',
@@ -22,7 +13,12 @@ const getConfig = (provider) => {
 		secretAccessKey: provider.secretAccessKey,
 		region: provider.region,
 		endpointUrl: provider.endpointUrl,
-		cors_rules: getCorsRules(),
+		cors_rules: {
+			AllowedHeaders: ['*'],
+			AllowedMethods: ['PUT'],
+			AllowedOrigins: [HOST],
+			MaxAgeSeconds: 300,
+		},
 	});
 	awsConfig.endpoint = new aws.Endpoint(provider.endpointUrl);
 	return awsConfig;

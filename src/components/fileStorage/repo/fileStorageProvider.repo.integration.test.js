@@ -3,7 +3,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const { expect } = require('chai');
 const { fileStorageProviderRepo } = require('.');
 
-describe('fileStorageProvider.repo.integration.test', () => {
+describe.only('fileStorageProvider.repo.integration.test', () => {
 	let testObjects;
 	let server;
 	let app;
@@ -40,6 +40,10 @@ describe('fileStorageProvider.repo.integration.test', () => {
 		});
 	});
 	describe('getLeastUsedStorageProvider', () => {
+		afterEach(async () => {
+			await testObjects.cleanup();
+		});
+
 		it('should return the storage provider with the most free buckets', async () => {
 			const leastUsedStorageProvider = await testObjects.createTestStorageProvider({ isShared: true, freeBuckets: 10 });
 			await Promise.all(
@@ -53,13 +57,19 @@ describe('fileStorageProvider.repo.integration.test', () => {
 			expect(result._id.toString()).to.eq(leastUsedStorageProvider._id.toString());
 		});
 
-		// it('should not return unshared storage provider', async () => {
-		// 	await testObjects.createTestStorageProvider({ isShared: false, freeBuckets: 10 });
-		// 	const sharedStorageProvider = await testObjects.createTestStorageProvider({ isShared: true, freeBuckets: 1 });
+		it('should not return unshared storage provider', async () => {
+			await testObjects.createTestStorageProvider({ isShared: false, freeBuckets: 100 });
+			const sharedStorageProvider = await testObjects.createTestStorageProvider({ isShared: true, freeBuckets: 10 });
 
-		// 	const result = await fileStorageProviderRepo.getLeastUsedStorageProvider();
+			const result = await fileStorageProviderRepo.getLeastUsedStorageProvider();
 
-		// 	expect(result._id.toString()).to.eq(sharedStorageProvider._id.toString());
-		// });
+			expect(result._id.toString()).to.eq(sharedStorageProvider._id.toString());
+		});
+
+		it('should throw an error if no free storage provider can be found', async () => {
+			await testObjects.createTestStorageProvider({ freeBuckets: 0 });
+
+			expect(fileStorageProviderRepo.getLeastUsedStorageProvider()).to.be.rejected;
+		});
 	});
 });
