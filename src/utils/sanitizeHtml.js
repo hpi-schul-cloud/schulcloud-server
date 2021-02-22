@@ -88,10 +88,10 @@ const htmlTrueOptions = {
 	},
 	allowedStyles: {
 		'*': {
-			// Match HEX and RGB
+			// Match HEX and RGB and HSL
 			color: COLOR_REGEX,
 			'background-color': COLOR_REGEX,
-			'text-align': [/^left$/, /^right$/, /^center$/],
+			'text-align': [/^start$/, /^end$/, /^left$/, /^right$/, /^center$/, /^justify$/, /^match-parent$/],
 			'vertical-align': [
 				/^baseline$/,
 				/^sub$/,
@@ -105,6 +105,10 @@ const htmlTrueOptions = {
 			'font-size': SIZE_REGEX,
 			height: SIZE_REGEX,
 			width: SIZE_REGEX,
+			'min-width': SIZE_REGEX,
+			'max-width': SIZE_REGEX,
+			'min-height': SIZE_REGEX,
+			'max-height': SIZE_REGEX,
 			'font-style': [/^\w+$/],
 			border: BORDER_REGEX,
 			'border-top': BORDER_REGEX,
@@ -149,7 +153,7 @@ const normalize = (data, isHTML = false) => {
  * sanitizes data
  * https://www.npmjs.com/package/sanitize-html
  * @param {*} data
- * @param {*} param
+ * @param isHTML
  */
 const sanitize = (data, isHTML = false) =>
 	sanitizeHtml(normalize(data, isHTML), isHTML ? htmlTrueOptions : htmlFalseOptions);
