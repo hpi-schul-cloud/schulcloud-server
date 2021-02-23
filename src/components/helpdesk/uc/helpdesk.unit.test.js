@@ -35,16 +35,24 @@ describe('helpdesk usecase', () => {
 		getProblemsStub.restore();
 	});
 
+	const getProblemsDeletionResult = async (userId) => {
+		const deletionSteps = helpdeskUC.deleteUserData;
+		const deletionResults = deletionSteps.map((step) => step(userId));
+		const result = await Promise.all(deletionResults);
+
+		return result.find((r) => r.trashBinData.scope === 'problems');
+	};
+
 	describe('deleteUserData', () => {
-		it('should recive a function form use case which resolves in an array', () => {
-			expect(helpdeskUC.deleteUserData).to.be.an('function');
-			expect(helpdeskUC.deleteUserData()).to.be.an('array').with.length.greaterThan(0);
+		it('should recieve an array of functions form use case', () => {
+			expect(helpdeskUC.deleteUserData).to.be.an('array').with.length.greaterThan(0);
+			expect(helpdeskUC.deleteUserData[0]).to.be.an('function');
 		});
 	});
 
 	describe('deleteProblemsForUser', () => {
 		it('when called with valid user id it should return successful result', async () => {
-			const result = await helpdeskUC.deleteUserData()[0](USER_ID);
+			const result = await getProblemsDeletionResult(USER_ID);
 
 			expect(result.complete).to.deep.equal(true);
 			expect(result.trashBinData).to.be.an('object');
@@ -56,7 +64,7 @@ describe('helpdesk usecase', () => {
 			const USER_WITHOUT_PROBLEMS_ID = new ObjectId();
 
 			getProblemsStub.callsFake(() => []);
-			const result = await helpdeskUC.deleteUserData()[0](USER_WITHOUT_PROBLEMS_ID);
+			const result = await getProblemsDeletionResult(USER_WITHOUT_PROBLEMS_ID);
 
 			expect(result.complete).to.deep.equal(true);
 			expect(result.trashBinData).to.be.an('object');
@@ -66,7 +74,7 @@ describe('helpdesk usecase', () => {
 
 		it('when the function is called with an invalid id, then it fails', async () => {
 			const userId = 'NOT_FOUND_USER';
-			expect(helpdeskUC.deleteUserData()[0](userId)).to.eventually.throw(ValidationError);
+			expect(getProblemsDeletionResult(userId)).to.eventually.throw(ValidationError);
 		});
 	});
 });
