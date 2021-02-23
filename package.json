@@ -1,8 +1,8 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "25.5.2",
-	"homepage": "https://schul-cloud.org",
+	"version": "26.0.0",
+	"homepage": "https://hpi-schul-cloud.de/",
 	"main": "src/",
 	"keywords": [
 		"feathers"
@@ -40,7 +40,7 @@
 		"coverage-codecov": "cross-env NODE_ENV=test nyc report --reporter=text-lcov | codecov --pipe",
 		"mocha": "cross-env NODE_ENV=test ts-mocha --exit",
 		"mocha-watch": "cross-env NODE_ENV=test ts-mocha",
-		"mocha-inspect": "cross-env NODE_ENV=test ts-mocha --inspect-brk --inspect --no-timeout --exit",
+		"mocha-inspect": "cross-env NODE_ENV=test ts-mocha --inspect --no-timeout --exit",
 		"migration": "migrate --config ./config/migrate.js",
 		"migration-sync": "migrate list --autosync --config ./config/migrate.js",
 		"migration-list": "migrate list --config ./config/migrate.js",
@@ -91,7 +91,7 @@
 		"mixwith": "^0.1.1",
 		"moment": "^2.19.2",
 		"mongodb-uri": "^0.9.7",
-		"mongoose": "~5.10.4",
+		"mongoose": "~5.11.4",
 		"mongoose-diff-history": "git+https://github.com/schul-cloud/mongoose-diff-history.git",
 		"mongoose-history": "^0.8.0",
 		"mongoose-id-validator": "^0.6.0",

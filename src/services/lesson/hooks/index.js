@@ -14,7 +14,7 @@ const {
 	getRestrictPopulatesHook,
 	preventPopulate,
 } = require('../../../hooks');
-const lessonModel = require('../model');
+const { LessonModel } = require('../model');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
 
 // add a shareToken to a lesson if course has a shareToken
@@ -36,7 +36,7 @@ const addShareTokenIfCourseShareable = async (context) => {
 		return context;
 	}
 
-	return lessonModel.findByIdAndUpdate(_id, { shareToken: nanoid(12) }).then(() => context);
+	return LessonModel.findByIdAndUpdate(_id, { shareToken: nanoid(12) }).then(() => context);
 };
 
 // Generate a new url for material that have merlin as source.
@@ -117,7 +117,7 @@ const setPosition = async (context) => {
 	const { courseId, courseGroupId } = context.data;
 	if (courseId || courseGroupId) {
 		const query = courseId ? { courseId } : { courseGroupId };
-		context.data.position = await lessonModel.count(query).exec(); // next free position
+		context.data.position = await LessonModel.count(query).exec(); // next free position
 	}
 
 	return context;
