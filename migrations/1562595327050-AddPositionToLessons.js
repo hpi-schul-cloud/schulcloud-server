@@ -1,6 +1,6 @@
 const logger = require('../src/logger');
 const { connect, close } = require('../src/utils/database');
-const LessonModel = require('../src/services/lesson/model');
+const { LessonModel } = require('../src/services/lesson/model');
 const { OutputLogTemplate, DatabaseTaskTemplate } = require('./helpers');
 
 const isUndefined = (e) => typeof e === 'undefined';
