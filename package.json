@@ -138,7 +138,7 @@
 		"eslint-plugin-import": "^2.18.2",
 		"eslint-plugin-prettier": "^3.1.4",
 		"eslint-plugin-promise": "^4.2.1",
-		"jwt-decode": "^2.2.0",
+		"jwt-decode": "^3.1.2",
 		"mocha": "^8.0.1",
 		"mockery": "^2.0.0",
 		"nock": "^13.0.0",
