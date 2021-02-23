@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 const database = require('../../src/utils/database');
-const lessonsModel = require('../../src/services/lesson/model.js');
+const { LessonModel } = require('../../src/services/lesson/model.js');
 const { FileModel } = require('../../src/services/fileStorage/model.js');
 
 mongoose.Promise = global.Promise;
@@ -81,15 +81,14 @@ const run = async () => {
 	};
 
 	// take lessons
-	let lessons = await lessonsModel
-		.find(
-			{
-				contents: {
-					$not: { $size: 0 },
-				},
+	let lessons = await LessonModel.find(
+		{
+			contents: {
+				$not: { $size: 0 },
 			},
-			{ contents: 1, _id: 1 }
-		)
+		},
+		{ contents: 1, _id: 1 }
+	)
 		.exec()
 		.catch(errorHandler);
 
@@ -139,7 +138,7 @@ const run = async () => {
 						}
 						return c;
 					});
-					return lessonsModel.update({ _id: lesson._id }, { contents: update }).exec().catch(errorHandler);
+					return LessonModel.update({ _id: lesson._id }, { contents: update }).exec().catch(errorHandler);
 				});
 		});
 
