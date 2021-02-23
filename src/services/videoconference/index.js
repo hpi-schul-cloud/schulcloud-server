@@ -23,6 +23,7 @@ const {
 	RESPONSE_STATUS,
 	STATES,
 	CREATE_OPTION_TOGGLES,
+	ORIGIN_SERVER_NAME,
 } = require('./logic/constants');
 
 const CLIENT_HOST = Configuration.get('HOST');
@@ -286,6 +287,8 @@ function getSettings(
 	if (everyAttendeJoinsMuted) {
 		settings.muteOnStart = true;
 	}
+
+	settings['meta_bbb-origin-server-name'] = ORIGIN_SERVER_NAME;
 
 	return { role, settings };
 }

@@ -1,4 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { populateUser } = require('../populateUserHook');
 const userUC = require('../uc/users.uc');
 
 class UserServiceV2 {
@@ -8,7 +9,7 @@ class UserServiceV2 {
 
 	async remove(id, params) {
 		await userUC.checkPermissions(id, this.roleNameSubject, 'DELETE', { ...params });
-		return userUC.deleteUser(id);
+		return userUC.deleteUser(id, { ...params });
 	}
 
 	async setup(app) {
@@ -18,7 +19,7 @@ class UserServiceV2 {
 
 const adminHookGenerator = () => ({
 	before: {
-		all: [authenticate('jwt')],
+		all: [authenticate('jwt'), populateUser],
 	},
 	after: {},
 });

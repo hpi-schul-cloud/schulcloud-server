@@ -227,6 +227,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 					if (CSVSyncer.isValidBirthday(mappedRecord.birthday)) {
 						mappedRecord.birthday = CSVSyncer.convertToDate(mappedRecord.birthday);
 					} else {
+						this.logWarning(`Geburtsdatum fehlerhaft: ${record.firstName},${record.lastName},${mappedRecord.birthday}`);
 						this.stats.errors.push({
 							type: 'user',
 							entity: `${record.firstName},${record.lastName},${record.email},${mappedRecord.birthday}`,
@@ -247,6 +248,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		const recordsByEmail = {};
 		records.forEach(async (record) => {
 			if (recordsByEmail[record.email]) {
+				this.logWarning(`Mehrfachnutzung der E-Mail-Adresse "${record.email}". `);
 				this.stats.errors.push({
 					type: 'user',
 					entity: `${record.firstName},${record.lastName},${record.email}`,
@@ -334,6 +336,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 
 	handleUserError(err, record) {
 		this.stats.users.failed += 1;
+		this.logWarning(`Error while importing user: ${record.firstName},${record.lastName},${record.email}`);
 		if (err.message.startsWith('user validation failed')) {
 			this.stats.errors.push({
 				type: 'user',

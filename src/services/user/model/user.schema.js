@@ -23,14 +23,13 @@ const consentTypes = {
 const userSchema = new Schema(
 	{
 		roles: [{ type: Schema.Types.ObjectId, ref: 'role' }],
-		email: { type: String, required: true, lowercase: true, index: true },
+		email: { type: String, required: true, lowercase: true },
 		emailSearchValues: { type: Schema.Types.Array },
 
 		schoolId: {
 			type: Schema.Types.ObjectId,
 			ref: 'school',
 			required: true,
-			index: true,
 		},
 
 		firstName: { type: String, required: true },
@@ -44,7 +43,7 @@ const userSchema = new Schema(
 
 		birthday: { type: Date },
 
-		importHash: { type: String, index: true },
+		importHash: { type: String },
 		// inviteHash:{type:String},
 		parents: [
 			{
@@ -93,8 +92,8 @@ const userSchema = new Schema(
 		discoverable: { type: Boolean, required: false },
 
 		// optional attributes if user was created during LDAP sync:
-		ldapDn: { type: String, index: true }, // LDAP login username
-		ldapId: { type: String, index: true }, // UUID to identify during the sync
+		ldapDn: { type: String }, // LDAP login username
+		ldapId: { type: String }, // UUID to identify during the sync
 
 		...externalSourceSchema,
 
@@ -106,8 +105,25 @@ const userSchema = new Schema(
 		timestamps: true,
 	}
 );
+/*
+query list with biggest impact of database load
+schulcloud.users               find         {"importHash": 1}  -> 1
+schulcloud.users               find         {"email": 1}   -> 2
+schulcloud.users               find         {"_id": {"$ne": 1}, "email": 1} -> 3
+schulcloud.users               find         {"_id": 1} -> 4 ok
+schulcloud.users               find         {"firstName": 1, "lastName": 1} -> 5
+*/
 
-userSchema.index({ schoolId: 1, roles: -1 });
+userSchema.index({ importHash: 1 }); // ok = 1
+userSchema.index({ email: 1 }); // ok = 2
+userSchema.index({ _id: 1, email: 1 }); // ok = 2
+userSchema.index({ firstName: 1, lastName: 1 }); // ok = 5
+
+userSchema.index({ ldapDn: 1 }); // ?
+userSchema.index({ ldapId: 1 }); // ?
+userSchema.index({ schoolId: 1 }); // ?
+
+userSchema.index({ schoolId: 1, roles: -1 }); // ?
 userSchema.index(
 	{
 		firstName: 'text',
@@ -127,9 +143,10 @@ userSchema.index(
 			emailSearchValues: 1,
 		},
 		name: 'userSearchIndex',
-		default_language: 'none', // no stop words and no stemming
+		default_language: 'none', // no stop words and no stemming,
+		language_override: 'de',
 	}
-);
+); // ?
 // maybe the schoolId index is enough ?
 // https://ticketsystem.schul-cloud.org/browse/SC-3724
 
