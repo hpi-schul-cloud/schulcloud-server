@@ -1,0 +1,71 @@
+security:
+  - jwtBearer: []
+info:
+  title: Schul-Cloud Account Service API
+  description:
+    This is the API specification for the HPI Schul-Cloud Account service.
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+
+components:
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    jwtTimer:
+      type: object
+      properties:
+        ttl:
+          type: integer
+
+paths:
+  /accounts/jwtTimer:
+    get:
+      parameters: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jwtTimer'
+        '405':
+          description: feature is disabled on this instance
+      description: >-
+        returns the remaining seconds the JWT is whitelisted.
+      summary: get ttl of the jwt
+      tags:
+        - accounts
+      security:
+        - jwtBearer: []
+    post:
+      parameters: []
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jwtTimer'
+        '405':
+          description: feature is disabled on this instance
+      description: >-
+        resets the remaining time the JWT whitelisted, and returns the new value.
+      summary: reset ttl of the jwt
+      tags:
+        - accounts
+      security:
+        - jwtBearer: []
+      requestBody:
+        content:
+          {}
+        description: no request body required
+
+openapi: 3.0.2

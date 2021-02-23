@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
-const errors = require('@feathersjs/errors');
+
+const { Forbidden, MethodNotAllowed } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const Hydra = require('../hydra.js');
 
@@ -10,22 +11,30 @@ exports.getSubject = iframeSubject;
 
 const setSubject = (hook) => {
 	if (!hook.params.query.accept) return hook;
-	return hook.app.service('ltiTools').find({
-		query: {
-			oAuthClientId: hook.params.loginRequest.client.client_id,
-			isLocal: true,
-		},
-	}).then((tools) => hook.app.service('pseudonym').find({
-		query: {
-			toolId: tools.data[0]._id,
-			userId: hook.params.account.userId,
-		},
-	}).then((pseudonyms) => {
-		const { pseudonym } = pseudonyms.data[0];
-		if (!hook.data) hook.data = {};
-		hook.data.subject = hook.params.account.userId;
-		hook.data.force_subject_identifier = pseudonym;
-	}));
+	return hook.app
+		.service('ltiTools')
+		.find({
+			query: {
+				oAuthClientId: hook.params.loginRequest.client.client_id,
+				isLocal: true,
+			},
+		})
+		.then((tools) =>
+			hook.app
+				.service('pseudonym')
+				.find({
+					query: {
+						toolId: tools.data[0]._id,
+						userId: hook.params.account.userId,
+					},
+				})
+				.then((pseudonyms) => {
+					const { pseudonym } = pseudonyms.data[0];
+					if (!hook.data) hook.data = {};
+					hook.data.subject = hook.params.account.userId;
+					hook.data.force_subject_identifier = pseudonym;
+				})
+		);
 };
 
 const setIdToken = (hook) => {
@@ -38,57 +47,63 @@ const setIdToken = (hook) => {
 				isLocal: true,
 			},
 		}),
-	]).then(([user, tools]) => hook.app.service('pseudonym').find({
-		query: {
-			toolId: tools.data[0]._id,
-			userId: hook.params.account.userId,
-		},
-	}).then((pseudonyms) => {
-		const { pseudonym } = pseudonyms.data[0];
-		const name = (user.displayName ? user.displayName : `${user.firstName} ${user.lastName}`);
-		const scope = hook.params.consentRequest.requested_scope;
-		hook.data.session = {
-			id_token: {
-				iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
-				email: (scope.includes('email') ? user.email : undefined),
-				name: (scope.includes('profile') ? name : undefined),
-				userId: (scope.includes('profile') ? user._id : undefined),
-				schoolId: user.schoolId,
-			},
-		};
-		return hook;
-	}));
+	]).then(([user, tools]) =>
+		hook.app
+			.service('pseudonym')
+			.find({
+				query: {
+					toolId: tools.data[0]._id,
+					userId: hook.params.account.userId,
+				},
+			})
+			.then((pseudonyms) => {
+				const { pseudonym } = pseudonyms.data[0];
+				const name = user.displayName ? user.displayName : `${user.firstName} ${user.lastName}`;
+				const scope = hook.params.consentRequest.requested_scope;
+				hook.data.session = {
+					id_token: {
+						iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
+						email: scope.includes('email') ? user.email : undefined,
+						name: scope.includes('profile') ? name : undefined,
+						userId: scope.includes('profile') ? user._id : undefined,
+						schoolId: user.schoolId,
+					},
+				};
+				return hook;
+			})
+	);
 };
 
-const injectLoginRequest = (hook) => Hydra(hook.app.settings.services.hydra).getLoginRequest(hook.id)
-	.then((loginRequest) => {
-		hook.params.loginRequest = loginRequest;
-		return hook;
-	});
+const injectLoginRequest = (hook) =>
+	Hydra(hook.app.settings.services.hydra)
+		.getLoginRequest(hook.id)
+		.then((loginRequest) => {
+			hook.params.loginRequest = loginRequest;
+			return hook;
+		});
 
-const injectConsentRequest = (hook) => Hydra(hook.app.settings.services.hydra).getConsentRequest(hook.id)
-	.then((consentRequest) => {
-		hook.params.consentRequest = consentRequest;
-		return hook;
-	});
+const injectConsentRequest = (hook) =>
+	Hydra(hook.app.settings.services.hydra)
+		.getConsentRequest(hook.id)
+		.then((consentRequest) => {
+			hook.params.consentRequest = consentRequest;
+			return hook;
+		});
 
 const validateSubject = (hook) => {
 	if (hook.params.consentRequest.subject === hook.params.account.userId.toString()) return hook;
-	throw new errors.Forbidden("You want to patch another user's consent");
+	throw new Forbidden("You want to patch another user's consent");
 };
 
 const managesOwnConsents = (hook) => {
 	if (hook.id === hook.params.account.userId.toString()) return hook;
-	throw new errors.Forbidden("You want to manage another user's consents");
+	throw new Forbidden("You want to manage another user's consents");
 };
 
 exports.hooks = {
 	clients: {
 		before: {
-			all: [
-				authenticate('jwt'),
-				globalHooks.ifNotLocal(globalHooks.isSuperHero()),
-			],
+			all: [authenticate('jwt'), globalHooks.ifNotLocal(globalHooks.isSuperHero())],
 		},
 	},
 	loginRequest: {
@@ -104,7 +119,11 @@ exports.hooks = {
 	},
 	introspect: {
 		before: {
-			create: [globalHooks.ifNotLocal(() => { throw new errors.MethodNotAllowed(); })],
+			create: [
+				globalHooks.ifNotLocal(() => {
+					throw new MethodNotAllowed();
+				}),
+			],
 		},
 	},
 	consentSessions: {

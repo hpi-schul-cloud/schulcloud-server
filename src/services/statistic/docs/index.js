@@ -19,7 +19,8 @@ module.exports = {
 					type: 'boolean',
 				},
 			],
-			summary: 'Returns the count of a single collection according to the createdAt value of every entry as either 2 arrays or an object containing all values.',
+			summary:
+				'Returns the count of a single collection according to the createdAt value of every entry as either 2 arrays or an object containing all values.',
 		},
 	},
 };

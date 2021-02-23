@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { disallow } = require('feathers-hooks-common');
-const { Forbidden } = require('@feathersjs/errors');
+
+const { Forbidden } = require('../../../errors');
 const EtherpadClient = require('../utils/EtherpadClient');
 
 const logger = require('../../../logger');
@@ -44,18 +45,18 @@ const getSessionInformation = async (context) => {
 	try {
 		const response = await sessionListPromise;
 		// Return existing session from hooks
-		if (typeof (response.data) !== 'undefined' && response.data !== null) {
+		if (typeof response.data !== 'undefined' && response.data !== null) {
 			const responseData = response.data;
 			const unixTimestamp = parseInt(new Date(Date.now()).getTime() / 1000, 10);
 			const foundSessionID = Object.keys(responseData).find((sessionID) => {
 				const diffSeconds = responseData[sessionID].validUntil - unixTimestamp;
 				return (
-					(responseData[sessionID].groupID === context.data.groupID)
-          && (diffSeconds >= EtherpadClient.cookieReleaseThreshold)
+					responseData[sessionID].groupID === context.data.groupID &&
+					diffSeconds >= EtherpadClient.cookieReleaseThreshold
 				);
 			});
 			let validUntil;
-			if (typeof (foundSessionID) !== 'undefined' && foundSessionID !== null) {
+			if (typeof foundSessionID !== 'undefined' && foundSessionID !== null) {
 				const respData = responseData[foundSessionID];
 				({ validUntil } = respData);
 			}
@@ -66,15 +67,15 @@ const getSessionInformation = async (context) => {
 			};
 		}
 
-		if (typeof (context.data.sessionID) === 'undefined' || context.data.sessionID === null) {
+		if (typeof context.data.sessionID === 'undefined' || context.data.sessionID === null) {
 			const { cookieExpiresSeconds } = EtherpadClient;
 			// add cookieExpiresSeconds to current date and convert to timestamp
-			context.data.validUntil = parseInt((new Date(Date.now()).getTime()) / 1000, 10) + cookieExpiresSeconds;
+			context.data.validUntil = parseInt(new Date(Date.now()).getTime() / 1000, 10) + cookieExpiresSeconds;
 
 			const sessionCreatePromise = EtherpadClient.createSession(context.data);
 			const createResponse = await sessionCreatePromise;
 
-			if (typeof (createResponse.data) !== 'undefined' && createResponse.data !== null) {
+			if (typeof createResponse.data !== 'undefined' && createResponse.data !== null) {
 				context.data = {
 					...context.data,
 					sessionID: createResponse.data.sessionID,
@@ -93,11 +94,7 @@ const before = {
 	all: [authenticate('jwt')],
 	find: [disallow()],
 	get: [disallow()],
-	create: [
-		getAuthorData,
-		getGroupData,
-		getSessionInformation,
-	],
+	create: [getAuthorData, getGroupData, getSessionInformation],
 	update: [disallow()],
 	patch: [disallow()],
 	remove: [disallow()],

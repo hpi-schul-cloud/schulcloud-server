@@ -1,14 +1,16 @@
 const assert = require('assert');
 const mockery = require('mockery');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 const mockAws = require('../fileStorage/aws/s3.mock');
 
-const testObjects = require('../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
+const testObjects = require('../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
 
-
-describe('wopi service', () => {
+describe('wopi service', function test() {
+	this.timeout(10000);
+	let app;
 	const testUserId = '599ec14d8e4e364ec18ff46d';
+	let server;
 
 	const testFile = {
 		_id: '597860e9667a0659ed0b0006',
@@ -40,31 +42,25 @@ describe('wopi service', () => {
 		schoolId: '5f2987e020834114b8efd6f6',
 	};
 
-	before(function execute(done) {
-		this.timeout(10000);
+	before(async () => {
+		app = await appPromise;
 		// Enable mockery to mock objects
 		mockery.enable({
 			warnOnUnregistered: false,
 		});
 
 		mockery.registerMock('aws-sdk', mockAws);
+		server = await app.listen(0);
 
 		delete require.cache[require.resolve('../../../src/services/fileStorage/strategies/awsS3')];
-		app.service('files').create(testFile)
-			.then(() => {
-				done();
-			});
+		await app.service('files').create(testFile);
 	});
 
-
-	after(function execute(done) {
-		this.timeout(10000);
-		app.service('files').remove(testFile._id)
-			.then(() => {
-				mockery.deregisterAll();
-				mockery.disable();
-				done();
-			});
+	after(async () => {
+		await app.service('files').remove(testFile._id);
+		await server.close();
+		mockery.deregisterAll();
+		mockery.disable();
 	});
 
 	it('registered the wopiFileInfoService correctly', () => {
@@ -75,9 +71,12 @@ describe('wopi service', () => {
 		assert.ok(app.service('wopi/files/:fileId/contents'));
 	});
 
-	it('GET /wopi/files/:fileId', async () => { // !
+	it('GET /wopi/files/:fileId', async () => {
+		// !
 		const user = await testObjects.createTestUser();
-		const { authentication: { accessToken } } = await generateRequestParamsFromUser(user);
+		const {
+			authentication: { accessToken },
+		} = await generateRequestParamsFromUser(user);
 		const file = await app.service('files').create({
 			owner: user._id,
 			refOwnerModel: 'user',
@@ -86,14 +85,17 @@ describe('wopi service', () => {
 			storageFileName: `${Date.now()}-Test.docx`,
 			permissions: [],
 		});
-		return app.service('wopi/files/:fileId').find({
-			query: { access_token: accessToken },
-			route: { fileId: file._id },
-			account: { userId: testUserId },
-		}).then((result) => {
-			assert.equal(result.BaseFileName, file.name);
-			assert.equal(result.Size, file.size);
-		});
+		return app
+			.service('wopi/files/:fileId')
+			.find({
+				query: { access_token: accessToken },
+				route: { fileId: file._id },
+				account: { userId: testUserId },
+			})
+			.then((result) => {
+				assert.equal(result.BaseFileName, file.name);
+				assert.equal(result.Size, file.size);
+			});
 	});
 
 	it('POST /wopi/files/:fileId Action Delete', () => {
@@ -101,13 +103,18 @@ describe('wopi service', () => {
 		headers['x-wopi-override'] = 'DELETE';
 		headers.authorization = testAccessToken;
 
-		assert.ok(app.service('wopi/files/:fileId').create({}, {
-			account: { userId: testUserId },
-			payload: testUserPayload,
-			headers,
-			fileId: testFile2._id,
-			route: { fileId: testFile2._id },
-		}));
+		assert.ok(
+			app.service('wopi/files/:fileId').create(
+				{},
+				{
+					account: { userId: testUserId },
+					payload: testUserPayload,
+					headers,
+					fileId: testFile2._id,
+					route: { fileId: testFile2._id },
+				}
+			)
+		);
 	});
 
 	it('POST /wopi/files/:fileId No Action', async () => {
@@ -137,7 +144,8 @@ describe('wopi service', () => {
 		}
 	});
 
-	it('POST /wopi/files/:fileId Action Lock and GetLock', async () => { // !
+	it('POST /wopi/files/:fileId Action Lock and GetLock', async () => {
+		// !
 		const user = await testObjects.createTestUser();
 		const file = await app.service('files').create({
 			owner: user._id,
@@ -173,10 +181,12 @@ describe('wopi service', () => {
 	});
 
 	it('GET /wopi/files/:fileId/contents', () => {
-		assert.ok(app.service('wopi/files/:fileId/contents').find({
-			query: { access_token: testAccessToken },
-			route: { fileId: testFile._id },
-			account: { userId: testUserId },
-		}));
+		assert.ok(
+			app.service('wopi/files/:fileId/contents').find({
+				query: { access_token: testAccessToken },
+				route: { fileId: testFile._id },
+				account: { userId: testUserId },
+			})
+		);
 	});
 });

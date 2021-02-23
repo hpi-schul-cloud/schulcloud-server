@@ -1,4 +1,4 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const disposableDomains = require('disposable-email-domains');
 const disposableDomainWildcards = require('disposable-email-domains/wildcard.json');
 
@@ -59,7 +59,6 @@ function isDisposableEmail(email) {
 
 	return isDisposableEmailDomain(domain);
 }
-
 
 module.exports = {
 	hasValidEmailFormat,

@@ -1,11 +1,16 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const app = require('../src/app');
+const appPromise = require('../src/app');
 const { sanitizeDataHook } = require('../src/app.hooks');
-const { sanitizeHtml: { sanitizeDeep } } = require('../src/utils');
 const {
-	cleanup, createTestUser, generateRequestParamsFromUser, createTestSchool,
-} = require('./services/helpers/testObjects')(app);
+	sanitizeHtml: { sanitizeDeep },
+} = require('../src/utils');
+const {
+	cleanup,
+	createTestUser,
+	generateRequestParamsFromUser,
+	createTestSchool,
+} = require('./services/helpers/testObjects')(appPromise);
 
 describe('Sanitization Hook', () => {
 	// TODO: Test if it work for create, post and update
@@ -76,14 +81,15 @@ describe('Sanitization Hook', () => {
 	});
 
 	it('hook does not sanitizes specified attributes', () => {
-		const content = '<blockquote class="test-class">Cite Block</blockquote>'
-			+ '<span class="test-class" style="color:#9c27b0">Text color</span>'
-			+ '<span class="test-class" style="background-color:#cddc39">Text Background</span>'
-			+ 'Tables: <table class="test-class"><th>1</th><th>2</th><tr><td>A</td><td>B</td></tr></table>'
+		const content =
+			'<blockquote class="test-class">Cite Block</blockquote>' +
+			'<span class="test-class" style="color:#9c27b0">Text color</span>' +
+			'<span class="test-class" style="background-color:#cddc39">Text Background</span>' +
+			'Tables: <table class="test-class"><th>1</th><th>2</th><tr><td>A</td><td>B</td></tr></table>' +
 			// eslint-disable-next-line max-len
-			+ 'Video: <video class="test-class" controlslist="nodownload" src="https://www.youtube.com/watch?v=zYo7gLzH8Uk"></video>'
+			'Video: <video class="test-class" controlslist="nodownload" src="https://www.youtube.com/watch?v=zYo7gLzH8Uk"></video>' +
 			// eslint-disable-next-line max-len
-			+ 'Audio: <audio class="test-class" controlslist="nodownload" controls="controls" src="https://www.youtube.com/watch?v=zYo7gLzH8Uk"></audio>';
+			'Audio: <audio class="test-class" controlslist="nodownload" controls="controls" src="https://www.youtube.com/watch?v=zYo7gLzH8Uk"></audio>';
 		const data = {
 			schoolId: '5f2987e020834114b8efd6f8',
 			title: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
@@ -102,8 +108,9 @@ describe('Sanitization Hook', () => {
 		const data = {
 			schoolId: '5f2987e020834114b8efd6f8',
 			title: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
-			content: '<p>SanitizationTest<script>alert("test);</script>'
-				+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+			content:
+				'<p>SanitizationTest<script>alert("test);</script>' +
+				'<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 		};
 
 		const path = 'news';
@@ -132,10 +139,12 @@ describe('Sanitization Hook', () => {
 		const data = {
 			subject: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
 			type: 'problem',
-			currentState: '<p>SanitizationTest<script>alert("test);</script>'
-				+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
-			targetState: '<p>SanitizationTest<script>alert("test);</script>'
-				+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+			currentState:
+				'<p>SanitizationTest<script>alert("test);</script>' +
+				'<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+			targetState:
+				'<p>SanitizationTest<script>alert("test);</script>' +
+				'<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			category: 'dashboard',
 			schoolId: '5f2987e020834114b8efd6f8',
 		};
@@ -194,7 +203,6 @@ describe('Sanitization Hook', () => {
 		expect(result.comment, 'should removed html').to.equal('');
 	});
 
-
 	it('sanitize with encoded entities  - html true route', () => {
 		const data = {
 			comment: '&#60;img onerror="window.location = \'google.com\'" src="x" /&#62;',
@@ -224,8 +232,9 @@ describe('Sanitization Hook', () => {
 		const path = 'submissions';
 		const result = sanitizeDeep(data, path);
 
-		expect(result.comment, 'onerror attribute removed from img tag')
-			.to.equal('&lt;&lt;&lt;<img src="x" />&gt;&gt;&gt;');
+		expect(result.comment, 'onerror attribute removed from img tag').to.equal(
+			'&lt;&lt;&lt;<img src="x" />&gt;&gt;&gt;'
+		);
 	});
 
 	it('sanitize with multi encoded entities  - html false route', () => {
@@ -241,7 +250,8 @@ describe('Sanitization Hook', () => {
 	it('sanitize with multi encoded entities and mixed html - html true route', () => {
 		const data = {
 			// eslint-disable-next-line max-len
-			comment: '&#60;img onerror="window.location = \'google.com\'" src="x" <&#60;&#60;img onerror="window.location = \'google.com\'" src="x" /&#62;&#62;>/&#62;',
+			comment:
+				'&#60;img onerror="window.location = \'google.com\'" src="x" <&#60;&#60;img onerror="window.location = \'google.com\'" src="x" /&#62;&#62;>/&#62;',
 		};
 
 		const path = 'submissions';
@@ -253,7 +263,8 @@ describe('Sanitization Hook', () => {
 	it('sanitize with multi encoded entities and mixed html - html false route', () => {
 		const data = {
 			// eslint-disable-next-line max-len
-			comment: '&#60;img onerror="window.location = \'google.com\'" src="x" <&#60;&#60;img onerror="window.location = \'google.com\'" src="x" /&#62;&#62;>/&#62;',
+			comment:
+				'&#60;img onerror="window.location = \'google.com\'" src="x" <&#60;&#60;img onerror="window.location = \'google.com\'" src="x" /&#62;&#62;>/&#62;',
 		};
 
 		const result = sanitizeDeep(data, '');
@@ -275,8 +286,9 @@ describe('Sanitization Hook', () => {
 	it('sanitize in course, example 1', () => {
 		const data = {
 			name: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
-			description: '<p>SanitizationTest<script>alert("test);</script>'
-				+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+			description:
+				'<p>SanitizationTest<script>alert("test);</script>' +
+				'<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 			color: '#d32f22',
 			teacherIds: ['0000d213816abba584714c0a'],
 			schoolId: '5f2987e020834114b8efd6f8',
@@ -314,8 +326,9 @@ describe('Sanitization Hook', () => {
 					component: 'text',
 					user: '0000d213816abba584714c0a',
 					content: {
-						text: '<p>SanitizationTest<script>alert("test);</script>'
-							+ '<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
+						text:
+							'<p>SanitizationTest<script>alert("test);</script>' +
+							'<a href="javascript:test();">SanitizationTest</a></p>äöüß§$%/()=',
 					},
 				},
 			],
@@ -350,8 +363,10 @@ describe('Sanitization Hook', () => {
 describe('removeObjectIdInData hook', () => {
 	let server;
 	let user;
+	let app;
 
 	before(async () => {
+		app = await appPromise;
 		server = await app.listen(0);
 		user = await createTestUser();
 	});
@@ -366,14 +381,17 @@ describe('removeObjectIdInData hook', () => {
 		const admin = await createTestUser({ roles: ['administrator'], schoolId });
 		const params = await generateRequestParamsFromUser(admin);
 		const _id = new ObjectId();
-		const newUser = await app.service('users').create({
-			_id,
-			firstName: 'Max',
-			lastName: 'Mustermann',
-			email: `max${Date.now()}@mustermann.de`,
-			schoolId,
-			roles: [],
-		}, params);
+		const newUser = await app.service('users').create(
+			{
+				_id,
+				firstName: 'Max',
+				lastName: 'Mustermann',
+				email: `max${Date.now()}@mustermann.de`,
+				schoolId,
+				roles: [],
+			},
+			params
+		);
 		expect(_id.toString()).to.not.equal(newUser._id.toString());
 	});
 

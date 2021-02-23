@@ -1,16 +1,22 @@
 const accountModel = require('../../account/model');
-const SystemSyncer = require('./SystemSyncer');
+const Syncer = require('./Syncer');
 
 /**
  * Implements syncing schools from LDAP servers based on the Syncer interface
  * @class LDAPSyncer
  * @implements {Syncer}
  */
-class LDAPSchoolSyncer extends SystemSyncer {
-	constructor(app, stats, logger, system, school) {
-		super(app, stats, logger, system);
+class LDAPSchoolSyncer extends Syncer {
+	constructor(app, stats, logger, system, school, options = {}) {
+		super(app, stats, logger);
+		this.system = system;
 		this.school = school;
+		this.options = options;
+		if (options.forceFullSync) {
+			delete this.system.ldapConfig.lastModifyTimestamp;
+		}
 		this.stats = Object.assign(this.stats, {
+			modifyTimestamp: this.system.ldapConfig.lastModifyTimestamp || '0',
 			name: this.school.name,
 			users: {
 				created: 0,
@@ -26,15 +32,15 @@ class LDAPSchoolSyncer extends SystemSyncer {
 	}
 
 	/**
-     * @see {Syncer#prefix}
-     */
+	 * @see {Syncer#prefix}
+	 */
 	prefix() {
-		return `${super.prefix()} | ${this.school.name}`;
+		return `${this.system.alias} | ${this.school.name}`;
 	}
 
 	/**
-     * @see {Syncer#steps}
-     */
+	 * @see {Syncer#steps}
+	 */
 	async steps() {
 		await super.steps();
 		await this.getUserData();
@@ -46,13 +52,46 @@ class LDAPSchoolSyncer extends SystemSyncer {
 		this.logInfo('Getting users...');
 		const ldapUsers = await this.app.service('ldap').getUsers(this.system.ldapConfig, this.school);
 		this.logInfo(`Creating and updating ${ldapUsers.length} users...`);
-		for (const ldapUser of ldapUsers) {
-			await this.createOrUpdateUser(ldapUser, this.school);
+
+		const bulkSize = 1000; // 5000 is a hard limit because of definition in user model
+
+		for (let i = 0; i < ldapUsers.length; i += bulkSize) {
+			const ldapUserChunk = ldapUsers.slice(i, i + bulkSize);
+			const ldapUserIds = ldapUserChunk.map((ldapUser) => ldapUser.ldapUUID);
+			// eslint-disable-next-line no-await-in-loop
+			const userData = await this.app.service('usersModel').find({
+				query: {
+					ldapId: { $in: ldapUserIds },
+					$populate: ['roles'],
+					$limit: bulkSize, // needed for bulkSize > 1000 because of default limit
+				},
+			});
+
+			for (const ldapUser of ldapUserChunk) {
+				try {
+					const dbUser = userData.data.find((userToFind) => userToFind.ldapId === ldapUser.ldapUUID);
+					if (dbUser) {
+						// eslint-disable-next-line no-await-in-loop
+						await this.checkForUserChangesAndUpdate(ldapUser, dbUser);
+						this.stats.users.updated += 1;
+					} else {
+						// eslint-disable-next-line no-await-in-loop
+						await this.createUserAndAccount(ldapUser);
+						this.stats.users.created += 1;
+					}
+				} catch (err) {
+					this.stats.users.errors += 1;
+					this.stats.errors.push(err);
+					this.logError(`User creation error for ${ldapUser.firstName} ${ldapUser.lastName} (${ldapUser.email})`, err);
+				}
+			}
 		}
 
-		this.logInfo(`Created ${this.stats.users.created} users, `
-						+ `updated ${this.stats.users.updated} users. `
-						+ `Skipped errors: ${this.stats.users.errors}.`);
+		this.logInfo(
+			`Created ${this.stats.users.created} users, ` +
+				`updated ${this.stats.users.updated} users. ` +
+				`Skipped errors: ${this.stats.users.errors}.`
+		);
 	}
 
 	async getClassData() {
@@ -60,55 +99,37 @@ class LDAPSchoolSyncer extends SystemSyncer {
 		const classes = await this.app.service('ldap').getClasses(this.system.ldapConfig, this.school);
 		this.logInfo(`Creating and updating ${classes.length} classes...`);
 		await this.createClassesFromLdapData(classes, this.school);
-		this.logInfo(`Created ${this.stats.classes.created} classes, `
-						+ `updated ${this.stats.classes.updated} classes. `
-						+ `Skipped errors: ${this.stats.classes.errors}.`);
+		this.logInfo(
+			`Created ${this.stats.classes.created} classes, ` +
+				`updated ${this.stats.classes.updated} classes. ` +
+				`Skipped errors: ${this.stats.classes.errors}.`
+		);
 	}
 
-	createOrUpdateUser(idmUser) {
-		return this.app.service('usersModel').find({
-			query: {
-				ldapId: idmUser.ldapUUID,
-			},
-		}).then((users) => {
-			if (users.total !== 0) {
-				this.stats.users.updated += 1;
-				return this.checkForUserChangesAndUpdate(idmUser, users.data[0]);
-			}
-			return this.createUserAndAccount(idmUser)
-				.then((res) => {
-					this.stats.users.created += 1;
-					return res;
-				})
-				.catch((err) => {
-					this.stats.users.errors += 1;
-					this.stats.errors.push(err);
-					this.logError('User creation error', err);
-					return {};
-				});
-		});
+	updateModifyTimestampMaximum(date) {
+		if (date && this.stats.modifyTimestamp < date) this.stats.modifyTimestamp = date;
 	}
 
 	createUserAndAccount(idmUser) {
-		return this.app.service('registrationPins').create({
-			email: idmUser.email,
-			verified: true,
-			silent: true,
-		}).then((registrationPin) => this.app.service('users').create({
-			pin: registrationPin.pin,
-			firstName: idmUser.firstName,
-			lastName: idmUser.lastName,
-			schoolId: this.school._id,
-			email: idmUser.email,
-			ldapDn: idmUser.ldapDn,
-			ldapId: idmUser.ldapUUID,
-			roles: idmUser.roles,
-		})).then((user) => accountModel.create({
-			userId: user._id,
-			username: (`${this.school.ldapSchoolIdentifier}/${idmUser.ldapUID}`).toLowerCase(),
-			systemId: this.system._id,
-			activated: true,
-		}));
+		return this.app
+			.service('users')
+			.create({
+				firstName: idmUser.firstName,
+				lastName: idmUser.lastName,
+				schoolId: this.school._id,
+				email: idmUser.email,
+				ldapDn: idmUser.ldapDn,
+				ldapId: idmUser.ldapUUID,
+				roles: idmUser.roles,
+			})
+			.then((user) =>
+				accountModel.create({
+					userId: user._id,
+					username: `${this.school.ldapSchoolIdentifier}/${idmUser.ldapUID}`.toLowerCase(),
+					systemId: this.system._id,
+					activated: true,
+				})
+			);
 	}
 
 	checkForUserChangesAndUpdate(idmUser, user) {
@@ -130,26 +151,31 @@ class LDAPSchoolSyncer extends SystemSyncer {
 		// Role
 		updateObject.roles = idmUser.roles;
 
-		return accountModel.update(
-			{ userId: user._id, systemId: this.system._id },
-			{
-				username: (`${this.school.ldapSchoolIdentifier}/${idmUser.ldapUID}`).toLowerCase(),
-				userId: user._id,
-				systemId: this.system._id,
-				activated: true,
-			},
-			{ upsert: true },
-		).then((_) => this.app.service('users').patch(
-			user._id,
-			updateObject,
-		));
+		return accountModel
+			.update(
+				{ userId: user._id, systemId: this.system._id },
+				{
+					username: `${this.school.ldapSchoolIdentifier}/${idmUser.ldapUID}`.toLowerCase(),
+					userId: user._id,
+					systemId: this.system._id,
+					activated: true,
+				},
+				{ upsert: true }
+			)
+			.then((_) => this.app.service('users').patch(user._id, updateObject));
 	}
 
 	async createClassesFromLdapData(data, school) {
+		// userMap is shared over all calls of populateClassUsers and will contain all users that are loaded while populating the classes
+		// so if user are in multiple classes they will only be loaded once
+		const userMap = new Map();
 		for (const ldapClass of data) {
 			try {
+				this.updateModifyTimestampMaximum(ldapClass.modifyTimestamp);
+				// eslint-disable-next-line no-await-in-loop
 				const klass = await this.getOrCreateClassFromLdapData(ldapClass, school);
-				await this.populateClassUsers(ldapClass, klass, school);
+				// eslint-disable-next-line no-await-in-loop
+				await this.populateClassUsers(ldapClass, klass, userMap);
 			} catch (err) {
 				this.stats.classes.errors += 1;
 				this.stats.errors.push(err);
@@ -183,15 +209,20 @@ class LDAPSchoolSyncer extends SystemSyncer {
 			return existingClass;
 		}
 
-		return this.app.service('classes').patch(
-			existingClass._id,
-			{ name: data.className },
-		);
+		return this.app.service('classes').patch(existingClass._id, { name: data.className });
 	}
 
-	async populateClassUsers(ldapClass, currentClass) {
+	async populateClassUsers(ldapClass, currentClass, userMap) {
 		const students = [];
 		const teachers = [];
+
+		const addUserToRoleGroup = (dbUser) => {
+			dbUser.roles.forEach((role) => {
+				if (role.name === 'student') students.push(dbUser._id);
+				if (role.name === 'teacher') teachers.push(dbUser._id);
+			});
+		};
+
 		if (ldapClass.uniqueMembers === undefined) {
 			// no members means nothing to do here
 			return;
@@ -200,29 +231,33 @@ class LDAPSchoolSyncer extends SystemSyncer {
 			// if there is only one member, ldapjs doesn't give us an array here
 			ldapClass.uniqueMembers = [ldapClass.uniqueMembers];
 		}
-		const userData = await this.app.service('usersModel').find(
-			{
-				query:
-				{
-					ldapDn: { $in: ldapClass.uniqueMembers },
-					$populate: ['roles'],
-				},
+
+		// Some users are already in userMap. We don't need to load them again from DB.
+		// We load only users that are missing and add them to the map to not load them again for another class.
+		const usersMissingInMap = [];
+		ldapClass.uniqueMembers.forEach((member) => {
+			const dbUser = userMap.get(member);
+			if (dbUser) {
+				addUserToRoleGroup(dbUser);
+			} else {
+				usersMissingInMap.push(member);
+			}
+		});
+		const userData = await this.app.service('usersModel').find({
+			query: {
+				ldapDn: { $in: usersMissingInMap },
+				$populate: ['roles'],
+				$select: ['_id', 'roles', 'ldapDn'],
 			},
-		);
-		userData.data.forEach((user) => {
-			user.roles.forEach((role) => {
-				if (role.name === 'student') students.push(user._id);
-				if (role.name === 'teacher') teachers.push(user._id);
-			});
+		});
+		userData.data.forEach((dbUser) => {
+			userMap.set(dbUser.ldapDn, dbUser);
+			addUserToRoleGroup(dbUser);
 		});
 
 		if (students.length > 0 || teachers.length > 0) {
-			await this.app.service('classes').patch(
-				currentClass._id,
-				{ userIds: students, teacherIds: teachers },
-			);
+			await this.app.service('classes').patch(currentClass._id, { userIds: students, teacherIds: teachers });
 		}
-		return Promise.resolve();
 	}
 }
 

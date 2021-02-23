@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { BadRequest } = require('@feathersjs/errors');
-const { hasPermission } = require('../../../hooks');
+
+const { BadRequest } = require('../../../errors');
+const { hasPermission, restrictToCurrentSchool } = require('../../../hooks');
 
 class QrRegistrationLinks {
 	constructor(userModel) {
@@ -11,40 +12,95 @@ class QrRegistrationLinks {
 	}
 
 	async create(data) {
-		let { userIds } = data;
 		try {
-			userIds = await this.getUsersIdsWithoutAccount(userIds);
-			if (!userIds.length) {
+			const validUserIds = await this.getValidUserIds(data);
+			const userWithoutAccount = await this.getUsersIdsWithoutAccount(validUserIds);
+			if (!userWithoutAccount.length) {
 				return [];
 			}
-			return this.generateQrRegistrationLinks(userIds);
+			const regLinkServiceParams = this.getRegistrationLinkServiceParams(data);
+			const result = await this.generateQrRegistrationLinks(userWithoutAccount, regLinkServiceParams);
+			return result;
 		} catch (err) {
 			throw new BadRequest(this.err.failed, err);
 		}
 	}
 
-	async generateQrRegistrationLinks(userIds) {
-		const qrRegistrationLinks = [];
-		for (const userId of userIds) {
-			const user = await this.getUserInfo(userId);
-			const { shortLink } = await this.registrationLinkService.create({
-				role: user.roles[0],
-				save: true,
-				patchUser: true,
-				schoolId: user.schoolId,
-				toHash: user.email,
-			});
-			qrRegistrationLinks.push({
-				qrContent: shortLink,
-				title: `${user.firstName} ${user.lastName}`,
-				description: 'Zum Registrieren bitte den Link öffnen.',
-			});
+	getRegistrationLinkServiceParams(data) {
+		const { save = true, patchUser = true, host } = data;
+		return { save, patchUser, host };
+	}
+
+	getUserDetails(userIdChunk) {
+		return this.userModelService.find({
+			query: {
+				_id: userIdChunk,
+				$populate: 'roles',
+			},
+		});
+	}
+
+	async getHashLinks(userDetailList, regLinkServiceParams) {
+		const promiseList = [];
+		for (const user of userDetailList) {
+			promiseList.push(
+				this.registrationLinkService
+					.create({
+						...regLinkServiceParams,
+						role: user.roles[0].name,
+						schoolId: user.schoolId,
+						toHash: user.email,
+						hash: user.importHash,
+					})
+					.then(({ shortLink, hash }) => {
+						return {
+							hash,
+							email: user.email,
+							qrContent: shortLink,
+							firstName: user.firstName,
+							lastName: user.lastName,
+							title: `${user.firstName} ${user.lastName}`,
+							description: 'Zum Registrieren bitte den Link öffnen.',
+						};
+					})
+			);
 		}
+		const result = await Promise.all(promiseList);
+		return result;
+	}
+
+	async getUserHashes(userIdChunk, regLinkServiceParams) {
+		const userDetailList = await this.getUserDetails(userIdChunk);
+		return this.getHashLinks(userDetailList.data, regLinkServiceParams);
+	}
+
+	async generateQrRegistrationLinks(userIds, regLinkServiceParams) {
+		const qrRegistrationLinks = [];
+		const chunkSize = 100;
+		for (let index = 0; index < userIds.length; index += chunkSize) {
+			const temparray = userIds.slice(index, index + chunkSize);
+			// it is a bulk call - therefore it is OK to wait
+			// eslint-disable-next-line no-await-in-loop
+			const partResult = await this.getUserHashes(temparray, regLinkServiceParams);
+			qrRegistrationLinks.push(...partResult);
+		}
+
 		return qrRegistrationLinks;
 	}
 
-	getUserInfo(userId) {
-		return this.app.service('usersModel').get(userId);
+	getValidUserIds(data) {
+		const { selectionType, userIds: inputUserIds, schoolId, roleName } = data;
+		if (roleName && roleName !== 'student' && roleName !== 'teacher') {
+			throw new BadRequest('The given role is not supported');
+		}
+
+		const userIds = this.isInclusive(selectionType) ? inputUserIds : { $nin: inputUserIds };
+		return this.userModelService
+			.find({
+				query: { _id: userIds, roles: [roleName], schoolId },
+				paginate: false,
+			})
+			.then((users) => users.map((user) => String(user.id)));
 	}
 
 	async getUsersIdsWithoutAccount(userIds) {
@@ -62,16 +118,21 @@ class QrRegistrationLinks {
 		}, []);
 	}
 
+	isInclusive(selectionType) {
+		return selectionType === 'inclusive';
+	}
+
 	setup(app) {
 		this.app = app;
 		this.accountService = app.service('/accounts');
 		this.registrationLinkService = app.service('/registrationlink');
+		this.userModelService = app.service('usersModel');
 	}
 }
 
 const qrRegistrationLinksHooks = {
 	before: {
-		all: [authenticate('jwt'), hasPermission(['STUDENT_LIST', 'TEACHER_LIST'])],
+		all: [authenticate('jwt'), hasPermission(['STUDENT_LIST', 'TEACHER_LIST']), restrictToCurrentSchool],
 	},
 };
 

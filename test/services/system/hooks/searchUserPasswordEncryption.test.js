@@ -1,8 +1,5 @@
 const { expect } = require('chai');
 const assert = require('assert');
-const { Configuration } = require('@schul-cloud/commons');
-
-const app = require('../../../../src/app');
 const { encryptSecret, decryptSecret } = require('../../../../src/services/system/hooks/searchUserPasswordEncryption');
 
 describe('Search User Password Encryption Hook', () => {
@@ -30,9 +27,11 @@ describe('Search User Password Encryption Hook', () => {
 		};
 
 		context = await encryptSecret(context);
-		context.result = [{
-			ldapConfig: { searchUserPassword: context.data.ldapConfig.searchUserPassword },
-		}];
+		context.result = [
+			{
+				ldapConfig: { searchUserPassword: context.data.ldapConfig.searchUserPassword },
+			},
+		];
 		context = await decryptSecret(context);
 
 		expect(context.result[0].ldapConfig.searchUserPassword).to.equal('DummyPW12!');

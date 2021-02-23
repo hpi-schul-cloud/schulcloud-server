@@ -1,0 +1,787 @@
+security:
+  - jwtBearer: []
+info:
+  title: Schul-Cloud Edu-Sharing Service API
+  description:
+    This is the API specification for the Schul-Cloud Edu-Sharing service.
+    
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+components:
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    edu-sharing:
+      description: Retrieves content of a resource from the service.
+      type: object
+      required:
+        - id
+      properties:
+        remote:
+          type: object
+          properties:
+            repository:
+              type: object
+              properties:
+                repositoryType:
+                  type: string
+                renderingSupported:
+                  type: boolean
+                  example: false
+                id:
+                    type: string
+                title:
+                    type: string
+                icon:
+                    type: string
+                logo:
+                    type: string
+                isHomeRepo:
+                    type: boolean
+                    example: false
+            id:
+              type: string
+        content:
+          type: object
+          properties:
+            url:
+              type: string
+              example: https://mv-repo.schul-cloud.org/edu-sharing/components/render/da0eea6f-bf91-491a-9433-574bada66590
+            hash:
+              type: string
+              format: nullable
+            version:
+              type: string
+              example: 1.0
+        license:
+          type: object
+          properties:
+            icon:
+              type: string
+              example: https://mv-repo.schul-cloud.org/edu-sharing/ccimages/licenses/cc-by-nc-sa.svg
+            url:
+              type: string
+              example: https://creativecommons.org/licenses/by-nc-sa/3.0/deed.en
+        isDirectory:
+          type: boolean
+        commentCount:
+          type: number
+        rating:
+          type: object
+          properties:
+            overall:
+              type: object
+              properties:
+                sum:
+                  type: number
+                  example: 0
+                count:
+                  type: number
+                  example: 0
+                rating:
+                  type: number
+                  example: 0
+            user:
+              type: number
+              example: 0
+            affiliation:
+              type: object
+        ref:
+          type: object
+          properties:
+            repo:
+              type: string
+              example: mv-repo.schul-cloud.org
+            id:
+              type: string
+              example: da0eea6f-bf91-491a-9433-574bada66590
+            archived:
+              type: boolean
+            isHomeRepo:
+              type: boolean
+        parent:
+          type: object
+          properties:
+            repo:
+              type: string
+              example: mv-repo.schul-cloud.org
+            id:
+              type: string
+              example: 2972021d-70ef-4f15-a8a3-408a210f641c
+            archived:
+              type: boolean
+            isHomeRepo:
+              type: boolean
+        type:
+          type: string
+          example: ccm:io
+        aspects:
+          type: array
+          items:
+            type: string
+            example: cclom:lifecycle
+        name:
+          type: string
+          example: Rationale Zahlen sortieren
+        title:
+          type: string
+          example: Rationale Zahlen sortieren
+        metadataset:
+          type: string
+          example: default
+        repositoryType:
+          type: string
+          example: ALFRESCO
+        createdAt:
+          type: string
+          format: date-time
+          example: '2020-01-29T13:17:52Z'
+        createdBy:
+          type: object
+          properties:
+            profile:
+              type: object
+              properties:
+                primaryAffiliation:
+                    type: string
+                skills:
+                    type: array
+                    items:
+                        type: string
+                types:
+                    type: array
+                    items:
+                        type: string
+                firstName:
+                    type: string
+                lastName:
+                    type: string
+                email:
+                    type: string
+                avatar:
+                    type: string
+                about:
+                    type: string
+            firstName:
+              type: string
+              example: Administrator
+            lastName:
+              type: string
+              example: Edu-Sharing
+            mailbox:
+              type: string
+              example: admin@mv-repo.schul-cloud.org
+        modifiedAt:
+          type: string
+          format: date-time
+          example: '2020-01-29T14:14:34Z'
+        modifiedBy:
+          type: object
+          properties:
+            profile:
+              type: object
+              properties:
+                primaryAffiliation:
+                    type: string
+                skills:
+                    type: array
+                    items:
+                        type: string
+                types:
+                    type: array
+                    items:
+                        type: string
+                firstName:
+                    type: string
+                lastName:
+                    type: string
+                email:
+                    type: string
+                avatar:
+                    type: string
+                about:
+                    type: string
+            firstName:
+              type: string
+              example: Administrator
+            lastName:
+              type: string
+              example: Edu-Sharing
+            mailbox:
+              type: string
+              example: admin@mv-repo.schul-cloud.org
+        access:
+          type: array
+          items:
+            type: string
+            example: ReadAll
+        downloadUrl:
+          type: string
+          example: 'https://mv-repo.schul-cloud.org/edu-sharing/eduservlet/download?nodeId=da0eea6f-bf91-491a-9433-574bada66590'
+        properties:
+          type: object
+          properties:
+            ccm:original:
+              type: array
+              items:
+                type: string
+                example: 'da0eea6f-bf91-491a-9433-574bada66590'
+            cm:created:
+              type: array
+              items:
+                type: string
+                example: '1580303872944'
+            ccm:replicationsourcetimestamp:
+              type: array
+              items:
+                type: string
+                format: date-time
+                example: '2020-01-29T13:01:41Z'
+            virtual:commentcount:
+              type: array
+              items:
+                type: string
+                example: 0
+            cclom:version:
+              type: array
+              items:
+                type: string
+                example: 1.0
+            ccm:taxonentry:
+              type: array
+              items:
+                type: string
+                example: Mathematik
+            cclom:general_language:
+              type: array
+              items:
+                type: string
+                example:
+            virtual:licenseicon:
+              type: array
+              items:
+                type: string
+                example: 'https://mv-repo.schul-cloud.org/edu-sharing/ccimages/licenses/cc-by-nc-sa.svg'
+            virtual:usagecount:
+              type: array
+              items:
+                type: string
+                example: 0
+            sys:node-uuid:
+              type: array
+              items:
+                type: string
+                example: da0eea6f-bf91-491a-9433-574bada66590
+            ccm:lifecyclecontributer_publisher:
+              type: array
+              items:
+                type: string
+                example:
+            ccm:replicationsourcetimestampFORMATED:
+              type: array
+              items:
+                type: string
+                example: 29. Januar 2020
+            ccm:replicationsource:
+              type: array
+              items:
+                type: string
+                example: Khan Academy
+            ccm:metadatacontributer_provider:
+              type: array
+              items:
+                type: string
+                example: Khan Academy
+            ccm:taxonid_DISPLAYNAME:
+              type: array
+              items:
+                type: string
+                example: 120
+            ccm:educationalcontext_DISPLAYNAME:
+              type: array
+              items:
+                type: string
+                example: Mathematik
+            virtual:childobjectcount:
+              type: array
+              items:
+                type: string
+                example: 0
+            virtual:licenseurl:
+              type: array
+              items:
+                type: string
+                example: 'https://creativecommons.org/licenses/by-nc-sa/3.0/deed.de'
+            cclom:status:
+              type: array
+              items:
+                type: string
+                example: final
+            ccm:educationalintendedenduserrole_DISPLAYNAME:
+              type: array
+              items:
+                type: string
+                example: learner
+            cclom:title:
+              type: array
+              items:
+                type: string
+                example: Rationale Zahlen sortieren
+            sys:store-protocol:
+              type: array
+              items:
+                type: string
+                example: workspace
+            sys:store-identifier:
+              type: array
+              items:
+                type: string
+                example: SpacesStore
+            cclom:format:
+              type: array
+              items:
+                type: string
+                example: video
+            ccm:educationallearningresourcetype:
+              type: array
+              items:
+                type: string
+                example: web page
+            ccm:create_version:
+              type: array
+              items:
+                type: string
+                example: false
+            cm:modifiedISO8601:
+              type: array
+              items:
+                type: string
+                example: '2020-01-29T14:14:34.397Z'
+            sys:node-dbid:
+              type: array
+              items:
+                type: string
+                example: 3566
+            ccm:wwwurl:
+              type: array
+              items:
+                type: string
+                example: 'https://de.khanacademy.org/video/ordering-rational-numbers'
+            cm:edu_metadataset:
+              type: array
+              items:
+                type: string
+                example: default
+            cm:creator:
+              type: array
+              items:
+                type: string
+                example: admin
+            cm:autoVersion:
+              type: array
+              items:
+                type: string
+                example: false
+            virtual:permalink:
+              type: array
+              items:
+                type: string
+                example: 'https://mv-repo.schul-cloud.org/edu-sharing/components/render/da0eea6f-bf91-491a-9433-574bada66590/1.0'
+            cclom:copyright_and_other_restrictions:
+              type: array
+              items:
+                type: string
+                example: true
+            cm:versionLabel:
+              type: array
+              items:
+                type: string
+                example: 1.0
+            cclom:aggregationlevel:
+              type: array
+              items:
+                type: string
+                example: 1
+            cm:versionable:
+              type: array
+              items:
+                type: string
+                example: true
+            cm:created_LONG:
+              type: array
+              items:
+                type: string
+                example: '1580303872944'
+            ccm:thumbnailurl:
+              type: array
+              items:
+                type: string
+                example: 'https://img.youtube.com/vi/i1i2_9wg6N8/maxresdefault.jpg'
+            virtual:primaryparent_nodeid:
+              type: array
+              items:
+                type: string
+                example: '2972021d-70ef-4f15-a8a3-408a210f641c'
+            ccm:replicationsourceid:
+              type: array
+              items:
+                type: string
+                example: x02e55120
+            cm:createdISO8601:
+              type: array
+              items:
+                type: string
+                example: '2020-01-29T13:17:52.944Z'
+            cclom:general_description:
+              type: array
+              items:
+                type: string
+                example: 'Sal ordnet 7/3 -5/2 0 -2 -12/4 und -325 vom kleinsten bis zum größten Term.'
+            cm:modified:
+              type: array
+              items:
+                type: string
+                example: '1580307274397'
+            cm:edu_forcemetadataset:
+              type: array
+              items:
+                type: string
+                example: false
+            ccm:taxonid:
+              type: array
+              items:
+                type: string
+                example: 120
+            cclom:rights_description:
+              type: array
+              items:
+                type: string
+                example: CC BY-NC-SA (KA default)
+            cm:title:
+              type: array
+              items:
+                type: string
+                example: Rationale Zahlen sortieren
+            cm:modifier:
+              type: array
+              items:
+                type: string
+                example: admin
+            ccm:educationallearningresourcetype_DISPLAYNAME:
+              type: array
+              items:
+                type: string
+                example: web page
+            cm:autoVersionOnUpdateProps:
+              type: array
+              items:
+                type: string
+                example: false
+            cclom:location:
+              type: array
+              items:
+                type: string
+                example: 'https://de.khanacademy.org/video/ordering-rational-numbers'
+            ccm:educationalintendedenduserrole:
+              type: array
+              items:
+                type: string
+                example: learner
+            ccm:educationalcontext:
+              type: array
+              items:
+                type: string
+                example: Mathematik
+            cclom:structure:
+              type: array
+              items:
+                type: string
+                example: atomic
+            cm:modified_LONG:
+              type: array
+              items:
+                type: string
+                example: '1580307274397'
+            cm:automaticUpdate:
+              type: array
+              items:
+                type: string
+                example: true
+            cm:name:
+              type: array
+              items:
+                type: string
+                example: Rationale Zahlen sortieren
+            cm:initialVersion:
+              type: array
+              items:
+                type: string
+                example: false
+            cclom:general_keyword:
+              type: array
+              items:
+                type: string
+                example: Negative Zahlen
+            ccm:commonlicense_key:
+              type: array
+              items:
+                type: string
+                example: CC_BY_NC_SA
+        mimetype:
+          type: string
+          example: video
+        mediatype:
+          type: string
+          example: file-video
+        size:
+          type: string
+        preview:
+          type: object
+          properties:
+            isIcon:
+              type: boolean
+            isGenerated:
+              type: boolean
+            url:
+              type: string
+              example: 'https://mv-repo.schul-cloud.org/edu-sharing/preview?nodeId=da0eea6f-bf91-491a-9433-574bada66590&storeProtocol=workspace&storeId=SpacesStore&dontcache=1605002990310'
+            width:
+              type: string
+            height:
+              type: string
+        iconURL:
+          type: string
+          example: 'https://mv-repo.schul-cloud.org/edu-sharing/themes/default/images/common/mime-types/svg/file-video.svg'
+        collection:
+          type: object
+        owner:
+          type: object
+          properties:
+            profile:
+              type: object
+              properties:
+                primaryAffiliation:
+                    type: string
+                skills:
+                    type: array
+                    items:
+                        type: string
+                types:
+                    type: array
+                    items:
+                        type: string
+                firstName:
+                    type: string
+                lastName:
+                    type: string
+                email:
+                    type: string
+                avatar:
+                    type: string
+                about:
+                    type: string
+            firstName:
+              type: string
+              example: Administrator
+            lastName:
+              type: string
+              example: Edu-Sharing
+            mailbox:
+              type: string
+              example: admin@mv-repo.schul-cloud.org
+
+    edu-sharing_list:
+      description: Retrieves a list of resources from the service
+      properties:
+        total:
+          type: number
+        limit:
+          type: number
+        skip:
+          type: number
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/edu-sharing'
+    merlin:
+      description: Retrieves a Merlin link from the service
+      type: string
+      example: 'http://live.download.nibis.de/refid=2255/cKt8LNyhTzW2WCXQXcPGOPJggWyePsAVMc0CuM5z0gfBVyYWqX0KGI5zWmI-JNBZhQ_NGfU5jeR4rTTuiOAjZVWHImzZO-vRQYuDCkpyeQ../8f5925918fa7f9c96f3da6aaad9d897d'
+    401:
+      properties:
+        name:
+          type: string
+          example: 'GeneralError'
+        message:
+          type: string
+          example: 'Edu-Sharing Request failed'
+        code:
+          type: number
+          example: 401
+        traceId:
+          type: string
+          example: '0faa0000000c181b0e40aff'
+    404:
+      properties:
+        name:
+          type: string
+          example: 'PageNotFound'
+        message:
+          type: string
+          example: 'Page not found.'
+        code:
+          type: number
+          example: 404
+        traceId:
+          type: string
+          example: '0faa0000000c181b0e40aff'
+    500:
+      properties:
+        name:
+          type: string
+          example: 'GeneralError'
+        message:
+          type: string
+          example: 'Edu-Sharing Request failed'
+        code:
+          type: number
+          example: 500
+        traceId:
+          type: string
+          example: '0faa0000000c181b0e40aff'
+
+paths:
+  /edu-sharing:
+    get:
+      parameters:
+        - description: Number of results to return
+          in: query
+          name: $limit
+          schema:
+            type: number
+        - description: Number of results to skip
+          in: query
+          name: $skip
+          schema:
+            type: number
+        - description: Property to sort results
+          in: query
+          name: sortProperties
+          schema:
+            type: string
+        - description: Query parameters to filter
+          in: query
+          name: searchQuery
+          schema:
+            type: string
+        - description: Collection parameter to filter
+          in: query
+          name: collection
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/edu-sharing_list'
+        '401':
+          description: not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '500':
+          description: general error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/500'
+      description: Retrieves a list of all resources from the service.
+      summary: ''
+      tags:
+        - edu-sharing
+      security: []
+  /edu-sharing/{id}:
+    get:
+      parameters:
+        - in: path
+          name: id
+          description: ID of edu-sharing to return
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/edu-sharing'
+        '401':
+          description: not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+        '500':
+          description: general error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/500'
+      description: Retrieves a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - edu-sharing
+      security: []
+  /edu-sharing/merlinToken/{merlinReference}:
+    get:
+      parameters:
+        - in: path
+          name: merlinReference
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/merlin'
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+        '500':
+          description: general error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/500'
+
+      description: Retrieves a url to a merlin resource from the server
+      tags:
+        - edu-sharing
+openapi: 3.0.2
+tags:
+  - name: edu-sharing
+    description: An edu-sharing service.

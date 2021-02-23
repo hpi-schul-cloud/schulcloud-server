@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const { NotImplemented } = require('@feathersjs/errors');
+
+const { NotImplemented } = require('../../../errors');
 const { FileModel } = require('../../fileStorage/model');
 
 /**
@@ -19,22 +20,24 @@ const deleteFile = (file, payload, account, app) => {
 };
 
 /** https://wopirest.readthedocs.io/en/latest/files/Lock.html
-  * https://wopirest.readthedocs.io/en/latest/files/RefreshLock.html
-  * adoption: the lockId was checked in a hook before
-  */
+ * https://wopirest.readthedocs.io/en/latest/files/RefreshLock.html
+ * adoption: the lockId was checked in a hook before
+ */
 const lock = (file) => {
 	file.lockId = mongoose.Types.ObjectId();
-	return FileModel.update({ _id: file._id }, file).exec().then(() => Promise.resolve({ lockId: file.lockId }));
+	return FileModel.update({ _id: file._id }, file)
+		.exec()
+		.then(() => Promise.resolve({ lockId: file.lockId }));
 };
 
 /** https://wopirest.readthedocs.io/en/latest/files/GetLock.html */
-const getLock = (file) => FileModel.findOne({ _id: file._id })
-	.exec()
-	.then(() => Promise.resolve({ lockId: file.lockId }));
+const getLock = (file) =>
+	FileModel.findOne({ _id: file._id })
+		.exec()
+		.then(() => Promise.resolve({ lockId: file.lockId }));
 
 /** https://wopirest.readthedocs.io/en/latest/files/Unlock.html */
 const unlock = (file) => FileModel.update({ _id: file._id }, { $unset: { lockId: 1 } }).exec();
-
 
 /** https://wopirest.readthedocs.io/en/latest/files/RenameFile.html */
 const renameFile = (file, payload, account, app) => {
@@ -56,7 +59,6 @@ const shareUrl = () => {
 const putUserInfo = () => {
 	throw new NotImplemented('This function is currently not implemented!');
 };
-
 
 const actionHeaderMap = {
 	DELETE: deleteFile,

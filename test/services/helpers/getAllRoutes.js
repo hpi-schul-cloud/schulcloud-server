@@ -1,40 +1,24 @@
-const app = require('../../../src/app');
+const _ = require('lodash');
+const appPromise = require('../../../src/app');
 
-const getAllRoutes = () => {
-	const convert = {};
-	let paths;
-	try {
-		({ docs: { paths } } = app);
-	} catch (err) {
-		throw new Error(err);
-	}
+const removeLeadingSlash = (str) => str.replace(/^\//, '');
+const removeTrailingSlash = (str) => str.replace(/\/$/, '');
+const escapeUrlParameter = (url) => url.replace(/\/:([^/]*)?($|\/)/, '/{$1}/');
 
-	Object.keys(paths).forEach((path) => {
-		const methods = Object.keys(paths[path]);
-		const modle = path.indexOf('/{_id}') > -1;
+const getAllRoutes = async () => {
+	const app = await appPromise;
+	// eslint-disable-next-line no-underscore-dangle
+	const routes = app._router.stack.filter((x) => x.route && x.route.path && x.route.path !== '*').map((x) => x.route);
+	const groupedRoutes = _.groupBy(routes, (r) => r.path.replace(/\/:__feathersId$/, ''));
+	return Object.fromEntries(
+		Object.entries(groupedRoutes).map(([unescapedRoute, group]) => {
+			const route = removeTrailingSlash(escapeUrlParameter(unescapedRoute));
+			const name = removeLeadingSlash(route);
+			const methods = _.uniq(group.map((r) => Object.keys(r.methods).filter((k) => r.methods[k])).flat());
 
-		if (!(path.includes('/{_id}') || path.includes('/{id}'))) {
-			const index = methods.indexOf('get');
-			if (index !== -1) {
-				methods[index] = 'find';
-			}
-		}
-
-		const route = path.replace('/{id}', '').replace('/{_id}', '').substr(1);
-
-		if (convert[route]) {
-			convert[route].methods = convert[route].methods.concat(methods);
-			if (modle) convert[route].modle = modle;
-		} else {
-			convert[route] = {
-				modle,
-				methods,
-			};
-		}
-		convert[route].route = `/${route}`;
-		convert[route].name = route;
-	});
-	return convert;
+			return [name, { methods, route, name }];
+		})
+	);
 };
 
 module.exports = getAllRoutes;

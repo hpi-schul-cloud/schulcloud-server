@@ -1,4 +1,4 @@
-const errors = require('@feathersjs/errors');
+const { BadRequest } = require('../../../errors');
 const AWSStrategy = require('./awsS3');
 
 const strategies = {
@@ -7,7 +7,7 @@ const strategies = {
 
 const createStrategy = (fileStorageType) => {
 	const strategy = strategies[fileStorageType];
-	if (!strategy) throw new errors.BadRequest('No file storage provided');
+	if (!strategy) throw new BadRequest('No file storage provided');
 	return new strategy();
 };
 

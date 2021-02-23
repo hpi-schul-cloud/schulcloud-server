@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const uuid = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 const { enableAuditLog } = require('../../utils/database');
 
@@ -20,7 +20,7 @@ const permissionSchema = new Schema(
 		create: { type: Boolean, default: true },
 		delete: { type: Boolean, default: true },
 	},
-	{ _id: false },
+	{ _id: false }
 );
 
 enableAuditLog(permissionSchema);
@@ -56,11 +56,21 @@ const SecurityCheckStatusTypes = Object.freeze({
 const fileSchema = new Schema({
 	isDirectory: { type: Boolean, default: false }, // should be required
 	name: { type: String, required: true },
-	size: { type: Number, required() { return !this.isDirectory; } },
+	size: {
+		type: Number,
+		required() {
+			return !this.isDirectory;
+		},
+	},
 	type: { type: String }, // todo add required but then wopi fails
-	storageFileName: { type: String, required() { return !this.isDirectory; } },
+	storageFileName: {
+		type: String,
+		required() {
+			return !this.isDirectory;
+		},
+	},
 	thumbnail: { type: String },
-	thumbnailRequestToken: { type: String, default: uuid },
+	thumbnailRequestToken: { type: String, default: uuidv4 },
 	securityCheck: {
 		status: {
 			type: String,
@@ -68,7 +78,7 @@ const fileSchema = new Schema({
 			default: SecurityCheckStatusTypes.PENDING,
 		},
 		reason: { type: String, default: 'not yet scanned' },
-		requestToken: { type: String, default: uuid },
+		requestToken: { type: String, default: uuidv4 },
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now },
 	},
@@ -87,7 +97,6 @@ const fileSchema = new Schema({
 	creator: {
 		type: Schema.Types.ObjectId,
 		ref: 'user',
-		index: true,
 	},
 	permissions: [permissionSchema],
 	lockId: { type: Schema.Types.ObjectId, ref: 'user' },
@@ -97,17 +106,25 @@ const fileSchema = new Schema({
 
 enableAuditLog(fileSchema);
 
+/*
+query list with bigges impact of database load
+schulcloud.files               find         {"name": 1, "parent": 1}  -> 1 is split up in parent and name to try it out
+*/
+fileSchema.index({ parent: 1 }); // ok = 1
+fileSchema.index({ creator: 1 }); // ?
 // make file-model searchable
-fileSchema.index({ name: 'text' });
-
+fileSchema.index({ name: 'text' }); // ?
 // Index on permissions to speed up shared-files queries
-fileSchema.index({ 'permissions.refId': 1, 'permissions.refPermModel': 1 });
+fileSchema.index({ 'permissions.refId': 1, 'permissions.refPermModel': 1 }); // ?
+// Speed up directory listings
+fileSchema.index({ owner: 1, parent: 1 }); // ?
 
 const FileModel = mongoose.model('file', fileSchema);
 const FilePermissionModel = mongoose.model('filePermissionModel', permissionSchema);
 
 module.exports = {
 	FileModel,
+	FileSchema: fileSchema,
 	SecurityCheckStatusTypes,
 	permissionSchema,
 	FilePermissionModel,

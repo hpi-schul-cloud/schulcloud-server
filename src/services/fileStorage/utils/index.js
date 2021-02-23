@@ -1,14 +1,6 @@
-const {
-	canWrite,
-	canRead,
-	canCreate,
-	canDelete,
-} = require('./filePermissionHelper');
+const { canWrite, canRead, canCreate, canDelete } = require('./filePermissionHelper');
 
-const {
-	returnFileType,
-	generateFileNameSuffix: generateFlatFileName,
-} = require('./filePathHelper');
+const { returnFileType, generateFileNameSuffix: generateFlatFileName } = require('./filePathHelper');
 
 const copyFile = require('./copyFile');
 const createCorrectStrategy = require('./createCorrectStrategy');

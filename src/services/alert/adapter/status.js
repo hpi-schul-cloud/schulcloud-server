@@ -1,4 +1,4 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const Status = require('../MessageProvider/status');
 const Adapter = require('./index');
 const Message = require('./message');

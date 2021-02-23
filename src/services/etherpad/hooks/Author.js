@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { disallow } = require('feathers-hooks-common');
-const { Forbidden } = require('@feathersjs/errors');
+
+const { Forbidden } = require('../../../errors');
 const { injectUserId, getUser } = require('../../../hooks');
 
 const logger = require('../../../logger');
@@ -19,10 +20,7 @@ const before = {
 	all: [authenticate('jwt')],
 	find: [disallow()],
 	get: [disallow()],
-	create: [
-		injectUserId,
-		getUserData,
-	],
+	create: [injectUserId, getUserData],
 	update: [disallow()],
 	patch: [disallow()],
 	remove: [disallow()],

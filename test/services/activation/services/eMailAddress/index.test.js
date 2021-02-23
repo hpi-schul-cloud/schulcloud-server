@@ -7,12 +7,8 @@ const nock = require('nock');
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-const app = require('../../../../../src/app');
-const {
-	createTestUser,
-	createTestAccount,
-	cleanup,
-} = require('../../../helpers/testObjects')(app);
+const appPromise = require('../../../../../src/app');
+const { createTestUser, createTestAccount, cleanup } = require('../../../helpers/testObjects')(appPromise);
 
 const util = require('../../../../../src/services/activation/utils/generalUtils');
 const customUtils = require('../../../../../src/services/activation/utils/customStrategyUtils');
@@ -23,25 +19,27 @@ const mockData = {
 	email: 'testmail@schul-cloud.org123',
 };
 
-const getNotificationMock = (expectedData = {}) => new Promise((resolve) => {
-	nock(config.services.notification)
-		.post('/mails')
-		.reply(200,
-			(uri, requestBody) => {
+const getNotificationMock = (expectedData = {}) =>
+	new Promise((resolve) => {
+		nock(config.NOTIFICATION_URI)
+			.post('/mails')
+			.reply(200, (uri, requestBody) => {
 				Object.entries(expectedData).forEach(([key, value]) => {
 					expect(requestBody[key]).to.eql(value);
 				});
 				resolve(true);
 				return 'Message queued';
 			});
-});
+	});
 
 describe('activation/services/eMailAddress EMailAdresseActivationService', () => {
+	let app;
 	let server;
 	let activationService;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 		activationService = app.service(`activation/${mockData.keyword}`);
 	});
 

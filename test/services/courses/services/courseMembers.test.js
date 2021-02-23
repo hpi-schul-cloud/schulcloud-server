@@ -1,17 +1,20 @@
 const { expect } = require('chai');
-const { Forbidden } = require('@feathersjs/errors');
 
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
-const { generateRequestParamsFromUser } = require('../../helpers/services/login')(app);
+const { Forbidden } = require('../../../../src/errors');
 
-const courseMembersService = app.service('/courses/:scopeId/members');
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
+const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise);
 
 describe('course scope members service', () => {
+	let app;
+	let courseMembersService;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		courseMembersService = app.service('/courses/:scopeId/members');
+		server = app.listen(0);
 	});
 
 	after((done) => {
@@ -53,14 +56,10 @@ describe('course scope members service', () => {
 			const response = await courseMembersService.find({ route: { scopeId: course._id } });
 			for (const userId in response) {
 				if (userId === teacher._id.toString()) {
-					expect(response[userId]).to.include.members([
-						'COURSE_EDIT', 'COURSE_DELETE', 'SCOPE_PERMISSIONS_VIEW',
-					]);
+					expect(response[userId]).to.include.members(['COURSE_EDIT', 'COURSE_DELETE', 'SCOPE_PERMISSIONS_VIEW']);
 				} else if (userId === student._id.toString()) {
 					expect(response[userId]).to.include.members(['HOMEWORK_VIEW', 'COURSE_VIEW']);
-					expect(response[userId]).to.not.include.members([
-						'COURSE_EDIT', 'COURSE_DELETE', 'SCOPE_PERMISSIONS_VIEW',
-					]);
+					expect(response[userId]).to.not.include.members(['COURSE_EDIT', 'COURSE_DELETE', 'SCOPE_PERMISSIONS_VIEW']);
 				}
 			}
 		});
@@ -103,16 +102,17 @@ describe('course scope members service', () => {
 
 		before(async function before() {
 			this.timeout(8000);
-			teachers = [
-				await testObjects.createTestUser(),
-				await testObjects.createTestUser(),
-			];
+			teachers = [await testObjects.createTestUser(), await testObjects.createTestUser()];
 			substitutionTeachers = [await testObjects.createTestUser()];
 			students = [
-				await testObjects.createTestUser(), await testObjects.createTestUser(),
-				await testObjects.createTestUser(), await testObjects.createTestUser(),
-				await testObjects.createTestUser(), await testObjects.createTestUser(),
-				await testObjects.createTestUser(), await testObjects.createTestUser(),
+				await testObjects.createTestUser(),
+				await testObjects.createTestUser(),
+				await testObjects.createTestUser(),
+				await testObjects.createTestUser(),
+				await testObjects.createTestUser(),
+				await testObjects.createTestUser(),
+				await testObjects.createTestUser(),
+				await testObjects.createTestUser(),
 			];
 			course = await testObjects.createTestCourse({
 				teacherIds: teachers.map(toId),
@@ -128,8 +128,7 @@ describe('course scope members service', () => {
 
 		it('returns all members', async () => {
 			const response = await courseMembersService.find({ route: { scopeId: course._id } });
-			expect(Object.keys(response).length)
-				.to.equal(teachers.length + substitutionTeachers.length + students.length);
+			expect(Object.keys(response).length).to.equal(teachers.length + substitutionTeachers.length + students.length);
 			expect(Object.keys(response)).to.include.members(teachers.map(toIdString));
 			expect(Object.keys(response)).to.include.members(substitutionTeachers.map(toIdString));
 			expect(Object.keys(response)).to.include.members(students.map(toIdString));

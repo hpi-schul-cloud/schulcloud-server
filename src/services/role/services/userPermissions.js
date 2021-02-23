@@ -12,7 +12,6 @@ const filterPermissions = (userRoles, schoolPermissions) => {
 	return permissions;
 };
 
-
 class UserPermissions {
 	async get(id, params) {
 		const user = await this.app.service('users').get(id);

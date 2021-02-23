@@ -1,7 +1,7 @@
 const chai = require('chai');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 
-const testObjects = require('../helpers/testObjects')(app);
+const testObjects = require('../helpers/testObjects')(appPromise);
 
 const { expect } = chai;
 
@@ -11,19 +11,20 @@ const otherSchool = {
 
 let authenticator;
 
-const testAccess = (endpoint) => () => {
-	const request = chai.request(app)
+const testAccess = (endpoint) => async () => {
+	const app = await appPromise;
+	const request = chai
+		.request(app)
 		.get(endpoint)
 		.set('Accept', 'application/json')
 		.set('content-type', 'application/x-www-form-urlencoded');
-	return authenticator.authenticate(request)
-		.then((response) => {
-			const { data } = response.body;
-			expect(data).to.have.lengthOf(1);
+	return authenticator.authenticate(request).then((response) => {
+		const { data } = response.body;
+		expect(data).to.have.lengthOf(1);
 
-			const schoolIds = data.map((d) => d.schoolId);
-			expect(schoolIds).to.not.contain(otherSchool.id);
-		});
+		const schoolIds = data.map((d) => d.schoolId);
+		expect(schoolIds).to.not.contain(otherSchool.id);
+	});
 };
 
 describe('access control', () => {

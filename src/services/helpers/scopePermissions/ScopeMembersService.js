@@ -10,12 +10,12 @@ const { lookupScope, checkScopePermissions } = require('./hooks');
  */
 class ScopeMembersService extends ScopeService {
 	/**
-     * Custom set of hooks.
-     * @static
-     * @returns Object<FeathersHooksCollection>
+	 * Custom set of hooks.
+	 * @static
+	 * @returns Object<FeathersHooksCollection>
 	 * @override ScopeService#hooks
-     * @memberof ScopeMembersService
-     */
+	 * @memberof ScopeMembersService
+	 */
 	static hooks() {
 		return {
 			before: {
@@ -29,13 +29,13 @@ class ScopeMembersService extends ScopeService {
 	}
 
 	/**
-     * Implements the route
-     * @param {Object} params Feathers request params
-     * @returns {Array<ObjectId>} a list of userIds
-     * @memberof ScopeMembersService
-     */
+	 * Implements the route
+	 * @param {Object} params Feathers request params
+	 * @returns {Array<ObjectId>} a list of userIds
+	 * @memberof ScopeMembersService
+	 */
 	async find(params) {
-		const members = await this.handler.apply(this, [params]) || [];
+		const members = (await this.handler.apply(this, [params])) || [];
 		return members;
 	}
 }

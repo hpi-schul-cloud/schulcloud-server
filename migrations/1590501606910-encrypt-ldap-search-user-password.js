@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const CryptoJS = require('crypto-js');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { connect, close } = require('../src/utils/database');
 
@@ -21,21 +21,27 @@ module.exports = {
 		const systems = await systemModel.find({});
 
 		info('Start encrypting searchUserPasswords of "systems"');
-		await Promise.all(systems.map((system) => {
-			if (system.type !== 'ldap') return Promise.resolve();
+		await Promise.all(
+			systems.map((system) => {
+				if (system.type !== 'ldap') return Promise.resolve();
 
-			const encryptedPW = CryptoJS.AES
-				.encrypt(system.ldapConfig.searchUserPassword, Configuration.get('LDAP_PASSWORD_ENCRYPTION_KEY'))
-				.toString();
-			const newLdapConfig = { ...system.ldapConfig };
-			newLdapConfig.searchUserPassword = encryptedPW;
-			info(`Encrypting searchUserPassword of system { id: ${system.id}), alias: ${system.alias} }`);
-			return systemModel.updateOne({
-				_id: system._id,
-			}, {
-				ldapConfig: newLdapConfig,
-			});
-		}));
+				const encryptedPW = CryptoJS.AES.encrypt(
+					system.ldapConfig.searchUserPassword,
+					Configuration.get('LDAP_PASSWORD_ENCRYPTION_KEY')
+				).toString();
+				const newLdapConfig = { ...system.ldapConfig };
+				newLdapConfig.searchUserPassword = encryptedPW;
+				info(`Encrypting searchUserPassword of system { id: ${system.id}), alias: ${system.alias} }`);
+				return systemModel.updateOne(
+					{
+						_id: system._id,
+					},
+					{
+						ldapConfig: newLdapConfig,
+					}
+				);
+			})
+		);
 		info('Finished encrypting searchUserPasswords of "systems"');
 
 		await close();
@@ -50,20 +56,26 @@ module.exports = {
 		const systems = await systemModel.find();
 
 		info('Start decrypting searchUserPasswords of "systems"');
-		await Promise.all(systems.map((system) => {
-			if (system.type !== 'ldap') return Promise.resolve();
-			const decryptedPW = CryptoJS.AES
-				.decrypt(system.ldapConfig.searchUserPassword, Configuration.get('LDAP_PASSWORD_ENCRYPTION_KEY'))
-				.toString();
-			const newLdapConfig = { ...system.ldapConfig };
-			newLdapConfig.searchUserPassword = decryptedPW;
+		await Promise.all(
+			systems.map((system) => {
+				if (system.type !== 'ldap') return Promise.resolve();
+				const decryptedPW = CryptoJS.AES.decrypt(
+					system.ldapConfig.searchUserPassword,
+					Configuration.get('LDAP_PASSWORD_ENCRYPTION_KEY')
+				).toString();
+				const newLdapConfig = { ...system.ldapConfig };
+				newLdapConfig.searchUserPassword = decryptedPW;
 
-			return systemModel.update({
-				_id: system._id,
-			}, {
-				ldapConfig: newLdapConfig,
-			});
-		}));
+				return systemModel.update(
+					{
+						_id: system._id,
+					},
+					{
+						ldapConfig: newLdapConfig,
+					}
+				);
+			})
+		);
 		info('Finished decrypting searchUserPasswords of "systems"');
 
 		await close();

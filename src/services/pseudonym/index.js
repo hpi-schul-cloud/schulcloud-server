@@ -1,4 +1,7 @@
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const Pseudonym = require('./model');
 const hooks = require('./hooks');
 
@@ -12,7 +15,7 @@ module.exports = function () {
 		},
 		lean: false,
 	};
-
+	app.use('/pseudonym/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/pseudonym', service(options));
 
 	const pseudonymService = app.service('/pseudonym');

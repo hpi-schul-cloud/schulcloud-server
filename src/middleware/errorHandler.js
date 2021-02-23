@@ -1,85 +1,132 @@
 const Sentry = require('@sentry/node');
-const express = require('@feathersjs/express');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const jwt = require('jsonwebtoken');
+const OpenApiValidator = require('express-openapi-validator');
 
-const { requestError } = require('../logger/systemLogger');
-const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
+const { SilentError, PageNotFound, AutoLogout, BruteForcePrevention } = require('../errors');
+const {
+	BusinessError,
+	TechnicalError,
+	ValidationError,
+	DocumentNotFound,
+	AssertionError,
+	InternalServerError,
+} = require('../errors');
+const { API_VALIDATION_ERROR_TYPE } = require('../errors/commonErrorTypes');
+
+const { isApplicationError, isFeatherError, isSilentError, cleanupIncomingMessage } = require('../errors/utils');
 const logger = require('../logger');
-const { SilentError } = require('./errors');
 
 const MAX_LEVEL_FILTER = 12;
 
-const logRequestInfosInErrorCase = (error, req, res, next) => {
-	if (error) {
+const getRequestInfo = (req) => {
+	const info = {
+		url: req.originalUrl,
+		data: req.body,
+		method: req.method,
+	};
+
+	try {
 		let decodedJWT;
-		try {
+		if (req.headers.authorization) {
 			decodedJWT = jwt.decode(req.headers.authorization.replace('Bearer ', ''));
-		} catch (err) {
-			decodedJWT = {};
 		}
 
-		requestError(req, (decodedJWT || {}).userId, error);
+		if (decodedJWT && decodedJWT.accountId) {
+			info.user = {
+				accountId: decodedJWT.accountId,
+				userId: decodedJWT.userId,
+			};
+			if (decodedJWT.support === true) {
+				info.support = {
+					supportJWT: true,
+					supportUserId: decodedJWT.supportUserId,
+				};
+			}
+		} else if (req.headers.authorization) {
+			info.user = 'Can not decode jwt.';
+		} else {
+			info.user = 'No jwt is set.';
+		}
+	} catch (err) {
+		// Maybe we found a better solution, but we can not display the full error message with stack trace
+		// it can contain jwt informations
+		info.user = err.message;
 	}
-	next(error);
+
+	return info;
 };
 
-const formatAndLogErrors = (showRequestId) => (error, req, res, next) => {
+const getErrorLogData = (error) => {
+	let errorLogData;
+	if (isApplicationError(error) || isFeatherError(error)) {
+		// Application and Feathers Errors - sanitized by filterSecrets
+		// type is override by logger for logging type
+		errorLogData = { ...error, errorType: error.type };
+		// nested in errors
+		cleanupIncomingMessage(errorLogData.errors);
+	} else {
+		// Unhandled Errors
+		errorLogData = error;
+	}
+	return errorLogData;
+};
+
+const skipErrorLogging = (error) =>
+	error instanceof PageNotFound ||
+	error.code === 405 ||
+	error instanceof AutoLogout ||
+	error instanceof BruteForcePrevention;
+
+const formatAndLogErrors = (error, req, res, next) => {
 	if (error) {
-		// clear data and add requestId
-		error.data = showRequestId ? {
-			requestId: req.headers.requestId,
-		} : {};
-
-		// delete response informations for extern express applications
-		delete error.response;
-		if (error.options) {
-			// can include jwts if error it throw by extern micro services
-			delete error.options.headers;
+		if (skipErrorLogging(error)) {
+			logger.debug(error);
+			logger.warning(error.name);
+			return next(error);
 		}
-		logger.error({ ...error });
 
-		// if exist delete it
-		delete error.stack;
-		delete error.catchedError;
+		const errorLogData = getErrorLogData(error);
+		const requestInfo = getRequestInfo(req);
+
+		// for tests level is set to emerg, set LOG_LEVEL=debug for see it
+		// Logging the error object won't print error's stack trace. You need to ask for it specifically
+		logger.error({ ...errorLogData, ...requestInfo });
 	}
-	next(error);
+	return next(error);
 };
-
-const returnAsJson = express.errorHandler({
-	html: (error, req, res) => {
-		res.json(error);
-	},
-});
 
 // map to lower case and test as lower case
-const secretDataKeys = (() => [
-	'password',
-	'passwort',
-	'new_password',
-	'new-password',
-	'oauth-password',
-	'current-password',
-	'passwort_1',
-	'passwort_2',
-	'password_1',
-	'password_2',
-	'password-1',
-	'password-2',
-	'password_verification',
-	'password_control',
-	'PASSWORD_HASH',
-	'password_new',
-	'accessToken',
-	'ticket',
-	'firstName',
-	'lastName',
-	'email',
-	'birthday',
-	'description',
-	'gradeComment',
-].map((k) => k.toLocaleLowerCase())
-)();
+const secretDataKeys = (() =>
+	[
+		'headers',
+		'password',
+		'passwort',
+		'new_password',
+		'new-password',
+		'oauth-password',
+		'current-password',
+		'passwort_1',
+		'passwort_2',
+		'password_1',
+		'password_2',
+		'password-1',
+		'password-2',
+		'password_verification',
+		'password_control',
+		'PASSWORD_HASH',
+		'password_new',
+		'accessToken',
+		'ticket',
+		'firstName',
+		'lastName',
+		'email',
+		'birthday',
+		'description',
+		'gradeComment',
+		'_csrf',
+		'searchUserPassword',
+	].map((k) => k.toLocaleLowerCase()))();
 
 const filterSecretValue = (key, value) => {
 	if (secretDataKeys.includes(key.toLocaleLowerCase())) {
@@ -108,11 +155,7 @@ const filterDeep = (newData, level = 0) => {
 
 const filter = (data) => filterDeep({ ...data });
 
-const secretQueryKeys = (() => [
-	'accessToken',
-	'access_token',
-].map((k) => k.toLocaleLowerCase())
-)();
+const secretQueryKeys = (() => ['accessToken', 'access_token'].map((k) => k.toLocaleLowerCase()))();
 const filterQuery = (url) => {
 	let newUrl = url;
 	secretQueryKeys.forEach((key) => {
@@ -127,18 +170,7 @@ const filterQuery = (url) => {
 	return newUrl;
 };
 
-const handleSilentError = (error, req, res, next) => {
-	if (error.catchedError.name === SilentError.name) {
-		if (Configuration.get('SILENT_ERROR_ENABLED')) {
-			res.append('x-silent-error', true);
-		}
-		res.status(200).json({ success: 'success' });
-	} else {
-		next(error);
-	}
-};
-
-// important that it is not send to sentry, or add it to logs
+// important that it is not sent to sentry, or added it to logs
 const filterSecrets = (error, req, res, next) => {
 	if (error) {
 		// req.url = filterQuery(req.url);
@@ -146,22 +178,99 @@ const filterSecrets = (error, req, res, next) => {
 		req.originalUrl = filterQuery(req.originalUrl);
 		req.body = filter(req.body);
 		error.data = filter(error.data);
-		error.catchedError = filter(error.catchedError);
 		error.options = filter(error.options);
+		error.params = filter(error.params);
 	}
-	next(error);
+	return next(error);
+};
+
+const createErrorDetailTO = (code, type, title, message, customFields = {}) => ({
+	code,
+	type,
+	title,
+	message,
+	...customFields,
+});
+
+const getErrorResponseFromBusinessError = (error) => {
+	const customFields = {};
+	let code = 500;
+	const { message: type, title, defaultMessage: message } = error;
+
+	if (error instanceof BusinessError) {
+		if (error instanceof ValidationError) {
+			code = 400;
+			Object.assign(customFields, { validation_errors: error.params });
+		}
+	} else if (error instanceof TechnicalError) {
+		if (error instanceof DocumentNotFound) {
+			code = 404;
+		} else if (error instanceof AssertionError) {
+			Object.assign(customFields, { assertion_errors: error.params });
+		}
+	}
+
+	return createErrorDetailTO(code, type, title, message, customFields);
+};
+
+const getMessageFromUnhandledError = (error) =>
+	error.message instanceof Error && error.message.message ? error.message.message : error.message;
+
+const getErrorResponse = (error, req, res, next) => {
+	let errorDetail;
+	if (isSilentError(error)) {
+		if (Configuration.get('SILENT_ERROR_ENABLED') === true) {
+			res.append('x-silent-error', true); // TODO is removed in production?
+		}
+		// do not return this as error via REST
+		return res.status(200).json(SilentError.RESPONSE_CONTENT);
+	}
+	if (isApplicationError(error)) {
+		// Application Errors
+		errorDetail = getErrorResponseFromBusinessError(error);
+	} else if (isFeatherError(error)) {
+		// Framework Errors
+		const { code, className: type, name: title, message } = error;
+		errorDetail = createErrorDetailTO(code, type, title, message);
+	} else {
+		// Unhandled Errors
+		const message = getMessageFromUnhandledError(error);
+		const unhandledError = new InternalServerError(error);
+		const { message: type, title } = unhandledError;
+		errorDetail = createErrorDetailTO(500, type, title, message);
+	}
+
+	return res.status(errorDetail.code).json(errorDetail);
+};
+
+const convertOpenApiValidationError = (error) => {
+	// todo: handle other validation errors so they are formatted properly
+	let err = error;
+	if (error instanceof OpenApiValidator.error.NotFound) {
+		logger.debug('Open API Validation path is missing!');
+		err = new PageNotFound(error);
+	} else if (err instanceof OpenApiValidator.error.BadRequest) {
+		err = new ValidationError(API_VALIDATION_ERROR_TYPE, err.errors);
+	}
+	return err;
+};
+
+const convertExternalLibraryErrors = (error, req, res, next) => {
+	const err = convertOpenApiValidationError(error);
+	return next(err);
+};
+
+const addTraceId = (error, req, res, next) => {
+	error.traceId = (req.headers || {}).requestId || error.traceId;
+	return next(error);
 };
 
 const errorHandler = (app) => {
+	app.use(addTraceId);
 	app.use(filterSecrets);
-	if (NODE_ENV !== ENVIRONMENTS.TEST) {
-		app.use(logRequestInfosInErrorCase);
-	}
-
 	app.use(Sentry.Handlers.errorHandler());
-	app.use(handleSilentError);
-	app.use(formatAndLogErrors(NODE_ENV !== ENVIRONMENTS.TEST));
-	app.use(returnAsJson);
+	app.use(convertExternalLibraryErrors);
+	app.use(formatAndLogErrors);
+	app.use(getErrorResponse);
 };
-
 module.exports = errorHandler;

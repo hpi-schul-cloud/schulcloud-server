@@ -1,19 +1,15 @@
 const Sentry = require('@sentry/node');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { sha } = require('../helper/version');
 const { version } = require('../../package.json');
 
-const {
-	SC_DOMAIN,
-	NODE_ENV,
-	ENVIRONMENTS,
-} = require('../../config/globals');
+const { SC_DOMAIN, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 /**
  * helpers
  */
 const replaceIds = (string) => {
 	if (string) {
-		return string.replace(/[a-f\d]{24}/ig, '__id__');
+		return string.replace(/[a-f\d]{24}/gi, '__id__');
 	}
 	return string;
 };
@@ -28,7 +24,9 @@ const replaceIds = (string) => {
 const removeIdMiddleware = (event) => {
 	if (event && event.request) {
 		// eslint-disable-next-line camelcase
-		const { request: { data, url, query_string } } = event;
+		const {
+			request: { data, url, query_string },
+		} = event;
 		if (data) {
 			event.request.data = replaceIds(data);
 		}
@@ -44,9 +42,7 @@ const removeIdMiddleware = (event) => {
 };
 
 const removeJwtToken = (event) => {
-	if (event && event.request
-		&& event.request.headers
-		&& event.request.headers.authorization) {
+	if (event && event.request && event.request.headers && event.request.headers.authorization) {
 		delete event.request.headers.authorization;
 	}
 	return event;
@@ -54,8 +50,8 @@ const removeJwtToken = (event) => {
 
 const logItMiddleware = (sendToSentry = false) => (event, hint, app) => {
 	app.logger.info(
-		'If you are not in default mode, the error is sent to sentry at this point! '
-		+ 'If you actually want to send a real request to sentry, please modify sendToSentry.',
+		'If you are not in default mode, the error is sent to sentry at this point! ' +
+			'If you actually want to send a real request to sentry, please modify sendToSentry.'
 	);
 	return sendToSentry ? event : null;
 };
@@ -101,7 +97,8 @@ module.exports = (app) => {
 			let modifiedEvent = event; // is no copy, event is also mutated
 
 			for (let i = 0; i < middlewares.length; i += 1) {
-				if (!modifiedEvent) {	// if skip return
+				if (!modifiedEvent) {
+					// if skip return
 					return modifiedEvent;
 				}
 				modifiedEvent = middlewares[i](modifiedEvent, hint, app);
@@ -115,7 +112,6 @@ module.exports = (app) => {
 			release,
 			//	debug: true,
 			sampleRate: Configuration.get('SENTRY_SAMPLE_RATE'),
-			//	captureUnhandledRejections: true,
 			beforeSend(event, hint) {
 				const modifiedEvent = runMiddlewares(event, hint);
 				return modifiedEvent;

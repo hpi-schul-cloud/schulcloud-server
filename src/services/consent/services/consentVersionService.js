@@ -1,28 +1,23 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { BadRequest } = require('@feathersjs/errors');
-const {
-	iff,
-	isProvider,
-	disallow,
-} = require('feathers-hooks-common');
+
+const { iff, isProvider, disallow } = require('feathers-hooks-common');
+const { BadRequest } = require('../../../errors');
+
+const { restrictToCurrentSchool, denyIfNotCurrentSchoolOrEmpty, hasPermission } = require('../../../hooks');
+
+const globals = require('../../../../config/globals');
+const { isSuperheroUser } = require('../../../helper/userHelpers');
 
 const {
-	restrictToCurrentSchool,
-	denyIfNotCurrentSchoolOrEmpty,
-	hasPermission,
-} = require('../../../hooks');
-
-const { modelServices: { prepareInternalParams } } = require('../../../utils');
+	modelServices: { prepareInternalParams },
+} = require('../../../utils');
 
 const ConsentVersionServiceHooks = {
 	before: {
 		all: [authenticate('jwt')],
 		find: [],
 		get: [],
-		create: [iff(isProvider('external'), [
-			hasPermission('SCHOOL_EDIT'),
-			restrictToCurrentSchool,
-		])],
+		create: [iff(isProvider('external'), [hasPermission('SCHOOL_EDIT'), restrictToCurrentSchool])],
 		update: [disallow()],
 		patch: [disallow()],
 		remove: [disallow()],
@@ -31,10 +26,12 @@ const ConsentVersionServiceHooks = {
 		all: [],
 		find: [],
 		get: [
-			iff(isProvider('external'),
+			iff(
+				isProvider('external'),
 				denyIfNotCurrentSchoolOrEmpty({
 					errorMessage: 'The current user is not allowed to list other users!',
-				})),
+				})
+			),
 		],
 		create: [],
 		update: [],
@@ -49,15 +46,22 @@ class ConsentVersionService {
 		this.docs = {};
 	}
 
-	createBase64File(data = {}) {
-		const { schoolId, consentData } = data;
+	// eslint-disable-next-line consistent-return
+	validateConsentUpload(isShdUpload, schoolId) {
+		if (isShdUpload && globals.SC_THEME === 'n21') {
+			throw new BadRequest('SHD consent upload is disabled for NBC instance.');
+		}
+		if (!schoolId && !isShdUpload) {
+			throw new BadRequest('SchoolId is required for school consents.');
+		}
+	}
+
+	createBase64File(consentDocumentData) {
+		const { schoolId, consentData } = consentDocumentData;
 		if (consentData) {
-			if (!schoolId) {
-				return Promise.reject(new BadRequest('SchoolId is required for school consents.'));
-			}
 			return this.app.service('base64Files').create({
 				schoolId,
-				data: consentData,
+				data: consentDocumentData.consentData,
 				filetype: 'pdf',
 				filename: 'Datenschutzerklärung',
 			});
@@ -83,21 +87,21 @@ class ConsentVersionService {
 		return this.app.service('consentVersionsModel').find(prepareInternalParams(querySchoolIdEmpty));
 	}
 
-	async create(data, params) {
-		const base64 = await this.createBase64File(data);
+	async create(consentDocumentData, params) {
+		const isShdUpload = await isSuperheroUser(this.app, params.account.userId);
+		this.validateConsentUpload(isShdUpload, consentDocumentData.schoolId);
+		const base64 = await this.createBase64File(consentDocumentData);
 		if (base64._id) {
-			data.consentDataId = base64._id;
-			delete data.consentData;
+			consentDocumentData.consentDataId = base64._id;
+			delete consentDocumentData.consentData;
 		}
-
-		return this.app.service('consentVersionsModel').create(data, prepareInternalParams(params));
+		return this.app.service('consentVersionsModel').create(consentDocumentData, prepareInternalParams(params));
 	}
 
 	setup(app) {
 		this.app = app;
 	}
 }
-
 
 module.exports = {
 	ConsentVersionService,

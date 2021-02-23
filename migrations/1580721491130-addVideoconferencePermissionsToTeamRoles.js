@@ -3,12 +3,19 @@ const mongoose = require('mongoose');
 const { connect, close } = require('../src/utils/database');
 const { PERMISSIONS } = require('../src/services/videoconference/logic/constants');
 
-const RoleModel = mongoose.model('role3457890456890', new mongoose.Schema({
-	name: { type: String, required: true },
-	permissions: [{ type: String }],
-}, {
-	timestamps: true,
-}), 'roles');
+const RoleModel = mongoose.model(
+	'role3457890456890',
+	new mongoose.Schema(
+		{
+			name: { type: String, required: true },
+			permissions: [{ type: String }],
+		},
+		{
+			timestamps: true,
+		}
+	),
+	'roles'
+);
 
 module.exports = {
 	up: async function up() {
@@ -17,24 +24,26 @@ module.exports = {
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'teammember',
-			}, {
+			},
+			{
 				$addToSet: {
 					permissions: {
 						$each: [PERMISSIONS.JOIN_MEETING],
 					},
 				},
-			},
+			}
 		).exec();
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'teamleader',
-			}, {
+			},
+			{
 				$addToSet: {
 					permissions: {
 						$each: [PERMISSIONS.START_MEETING],
 					},
 				},
-			},
+			}
 		).exec();
 		// /////////////////////////////////////////////////
 		await close();
@@ -47,20 +56,22 @@ module.exports = {
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'teammember',
-			}, {
+			},
+			{
 				$pull: {
 					permissions: { $in: [PERMISSIONS.JOIN_MEETING] },
 				},
-			},
+			}
 		).exec();
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'teamleader',
-			}, {
+			},
+			{
 				$pull: {
 					permissions: { $in: [PERMISSIONS.START_MEETING] },
 				},
-			},
+			}
 		).exec();
 		// ////////////////////////////////////////////////////
 		await close();

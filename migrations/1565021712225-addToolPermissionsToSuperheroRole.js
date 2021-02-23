@@ -6,7 +6,7 @@ module.exports = {
 		await connect();
 		await Roles.updateOne(
 			{ name: 'superhero' },
-			{ $addToSet: { permissions: { $each: ['TOOL_CREATE', 'TOOL_EDIT'] } } },
+			{ $addToSet: { permissions: { $each: ['TOOL_CREATE', 'TOOL_EDIT'] } } }
 		).exec();
 		await close();
 	},
@@ -15,7 +15,7 @@ module.exports = {
 		await connect();
 		await Roles.updateOne(
 			{ name: 'superhero' },
-			{ $pull: { permissions: { $in: ['TOOL_CREATE', 'TOOL_EDIT'] } } },
+			{ $pull: { permissions: { $in: ['TOOL_CREATE', 'TOOL_EDIT'] } } }
 		).exec();
 		await close();
 	},

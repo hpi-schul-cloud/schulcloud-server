@@ -4,12 +4,18 @@ const { info, error } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
-const Roles = mongoose.model('role', new mongoose.Schema({
-	name: { type: String, required: true },
-	permissions: [{ type: String }],
-}, {
-	timestamps: true,
-}));
+const Roles = mongoose.model(
+	'role',
+	new mongoose.Schema(
+		{
+			name: { type: String, required: true },
+			permissions: [{ type: String }],
+		},
+		{
+			timestamps: true,
+		}
+	)
+);
 
 // How to use more than one schema per collection on mongodb
 // https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
@@ -32,7 +38,7 @@ module.exports = {
 						],
 					},
 				},
-			},
+			}
 		).exec();
 		await close();
 	},
@@ -54,7 +60,7 @@ module.exports = {
 						],
 					},
 				},
-			},
+			}
 		).exec();
 		await close();
 	},

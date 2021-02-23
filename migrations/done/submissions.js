@@ -57,10 +57,12 @@ const oldFileSchema = new Schema({
 	type: { type: String },
 	flatFileName: { type: String },
 	thumbnail: { type: String },
-	permissions: [{
-		userId: { type: Schema.Types.ObjectId, ref: 'user' },
-		permissions: [{ type: String, enum: permissionTypes }],
-	}],
+	permissions: [
+		{
+			userId: { type: Schema.Types.ObjectId, ref: 'user' },
+			permissions: [{ type: String, enum: permissionTypes }],
+		},
+	],
 	lockId: { type: Schema.Types.ObjectId },
 	shareToken: { type: String },
 	schoolId: { type: Schema.Types.ObjectId, ref: 'school' },
@@ -87,50 +89,66 @@ const run = async (dry) => {
 		return undefined;
 	};
 
-	const promises = submissionWithFiles
-		.map((sub) => {
-			const submissionPrommies = sub.fileIds
-				.map((id) => oldfileModel.findOne({ _id: id }).lean().exec().catch(errorHandler));
+	const promises = submissionWithFiles.map((sub) => {
+		const submissionPrommies = sub.fileIds.map((id) =>
+			oldfileModel.findOne({ _id: id }).lean().exec().catch(errorHandler)
+		);
 
-			const { teacherId } = sub.homeworkId || {};
+		const { teacherId } = sub.homeworkId || {};
 
-			return Promise.all(submissionPrommies)
-				.then((files) => {
-					const docPromises = files
-						.filter((f) => Boolean(f))
-						.map(convertDocument)
-						.map((d) => FileModel.findOne(d).exec().catch(errorHandler));
+		return Promise.all(submissionPrommies)
+			.then((files) => {
+				const docPromises = files
+					.filter((f) => Boolean(f))
+					.map(convertDocument)
+					.map((d) => FileModel.findOne(d).exec().catch(errorHandler));
 
-					return Promise.all(docPromises);
-				})
-				.then((files) => !teacherId ? Promise.resolve() : Promise.all(
-					files.filter((_) => Boolean(_)).map((file) => dry
-						? Promise.resolve()
-						: FileModel.update({ _id: file._id }, {
-							$set: {
-								permissions: [...file.permissions, {
-									refId: teacherId,
-									refPermModel: 'user',
-									write: false,
-									read: true,
-									create: false,
-									delete: false,
-								}],
-							},
-						}).exec().then(() => file._id)),
-				))
-				.then((fileIds) => {
-					if (!fileIds || !fileIds.length) {
-						return Promise.resolve();
-					}
+				return Promise.all(docPromises);
+			})
+			.then((files) =>
+				!teacherId
+					? Promise.resolve()
+					: Promise.all(
+							files
+								.filter((_) => Boolean(_))
+								.map((file) =>
+									dry
+										? Promise.resolve()
+										: FileModel.update(
+												{ _id: file._id },
+												{
+													$set: {
+														permissions: [
+															...file.permissions,
+															{
+																refId: teacherId,
+																refPermModel: 'user',
+																write: false,
+																read: true,
+																create: false,
+																delete: false,
+															},
+														],
+													},
+												}
+										  )
+												.exec()
+												.then(() => file._id)
+								)
+					  )
+			)
+			.then((fileIds) => {
+				if (!fileIds || !fileIds.length) {
+					return Promise.resolve();
+				}
 
-					console.log(`New fileIds for submissons ${sub._id}`, fileIds);
+				console.log(`New fileIds for submissons ${sub._id}`, fileIds);
 
-					return dry
-						? Promise.resolve()
-						: submissionModel.update({ _id: sub._id }, { fileIds }).exec().catch(errorHandler);
-				});
-		});
+				return dry
+					? Promise.resolve()
+					: submissionModel.update({ _id: sub._id }, { fileIds }).exec().catch(errorHandler);
+			});
+	});
 
 	return Promise.all(promises);
 };

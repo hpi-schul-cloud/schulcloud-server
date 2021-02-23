@@ -1,0 +1,45 @@
+security:
+  - jwtBearer: []
+info:
+  title: HPI Schul-Cloud Config Service API
+  description:
+    This is the API specification for the HPI Schul-Cloud Config service.
+    
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+components:
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    config:
+      description: TODO
+    reset:
+      description: TODO
+
+paths:
+  '/config':
+    get:
+      responses:
+        '200':
+          description: success
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Retrieves a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - config
+  
+openapi: 3.0.2
+tags:
+  - name: config
+    description: A config service.

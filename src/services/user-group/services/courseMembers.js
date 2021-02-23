@@ -14,8 +14,7 @@ const setup = (app) => {
 			.concat(params.scope.teacherIds || [])
 			.concat(params.scope.substitutionIds || []);
 		const results = await Promise.all(
-			ids.map((userId) => getPermissions(params.scope.id, userId)
-				.then((r) => [userId, r])),
+			ids.map((userId) => getPermissions(params.scope.id, userId).then((r) => [userId, r]))
 		);
 		for (const result of results) {
 			members[result[0]] = result[1];

@@ -1,16 +1,21 @@
 const mongoose = require('mongoose');
 const { connect, close } = require('../src/utils/database');
 
-const ConsentModel = mongoose.model('consent', new mongoose.Schema({
-	userConsent: {
-		researchConsent: { type: Boolean },
-		dateOfResearchConsent: { type: Date },
-	},
-	parentConsents: [{
-		researchConsent: { type: Boolean },
-		dateOfResearchConsent: { type: Date },
-	}],
-}));
+const ConsentModel = mongoose.model(
+	'consent',
+	new mongoose.Schema({
+		userConsent: {
+			researchConsent: { type: Boolean },
+			dateOfResearchConsent: { type: Date },
+		},
+		parentConsents: [
+			{
+				researchConsent: { type: Boolean },
+				dateOfResearchConsent: { type: Date },
+			},
+		],
+	})
+);
 
 module.exports = {
 	up: async function up() {
@@ -24,8 +29,10 @@ module.exports = {
 					'parentConsents.0.researchConsent': '',
 					'parentConsents.0.dateOfResearchConsent': '',
 				},
-			},
-		).lean().exec();
+			}
+		)
+			.lean()
+			.exec();
 		await close();
 	},
 	down: async function down() {

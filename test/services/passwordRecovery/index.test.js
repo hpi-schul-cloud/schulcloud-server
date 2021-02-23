@@ -1,13 +1,16 @@
 const assert = require('assert');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
-const passwordRecovery = require('../../../src/services/passwordRecovery/model');
+const { expect } = require('chai');
 
-const passwordRecoveryService = app.service('passwordRecovery');
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
+const passwordRecovery = require('../../../src/services/passwordRecovery/model');
 
 const PORT = 0;
 
 describe('passwordRecovery service', () => {
+	let app;
+	let passwordRecoveryService;
+
 	let server;
 	let savedUser;
 	let savedAccount;
@@ -20,13 +23,13 @@ describe('passwordRecovery service', () => {
 		createdAt: '2017-09-04T12:51:58.49Z',
 	};
 
-	before((done) => {
-		server = app.listen(PORT, async () => {
-			savedUser = await testObjects.createTestUser();
-			savedAccount = await testObjects.createTestAccount(newAccount, null, savedUser);
-			await passwordRecoveryService.create({ username: recoveryUsername });
-			done();
-		});
+	before(async () => {
+		app = await appPromise;
+		passwordRecoveryService = app.service('passwordRecovery');
+		server = await app.listen(0);
+		savedUser = await testObjects.createTestUser();
+		savedAccount = await testObjects.createTestAccount(newAccount, null, savedUser);
+		await passwordRecoveryService.create({ username: recoveryUsername });
 	});
 
 	after((done) => {
@@ -87,10 +90,23 @@ describe('passwordRecovery service', () => {
 			account: savedAccount._id,
 		});
 		const success = await app.service('passwordRecovery/reset').create({
-			accountId: result.account,
 			password: 'schulcloud',
 			resetId: result.token,
 		});
 		assert.ok(success);
+	});
+
+	it('should fail if it is pass not valid token', async () => {
+		const resetId = { $ne: 'X' };
+		const service = app.service('passwordRecovery/reset');
+		try {
+			const result = await service.create({
+				password: 'schulcloud',
+				resetId,
+			});
+			throw new Error('Should fail.', result);
+		} catch (err) {
+			expect(err.message).equal(service.errors.inputValidation);
+		}
 	});
 });

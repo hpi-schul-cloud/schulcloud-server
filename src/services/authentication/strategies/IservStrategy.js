@@ -1,7 +1,8 @@
 const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
-const { NotAuthenticated } = require('@feathersjs/errors');
+
 const { omit } = require('lodash');
 const ClientOAuth2 = require('client-oauth2');
+const { NotAuthenticated } = require('../../../errors');
 const logger = require('../../../logger');
 
 class IservStrategy extends AuthenticationBaseStrategy {
@@ -38,16 +39,14 @@ class IservStrategy extends AuthenticationBaseStrategy {
 	}
 
 	async findEntity(username, systemId, params) {
-		const {
-			entityUsernameField,
-			entitySystemIdField,
-			service,
-			errorMessage,
-		} = this.configuration;
-		const query = await this.getEntityQuery({
-			[entityUsernameField]: username,
-			[entitySystemIdField]: systemId,
-		}, params);
+		const { entityUsernameField, entitySystemIdField, service, errorMessage } = this.configuration;
+		const query = await this.getEntityQuery(
+			{
+				[entityUsernameField]: username,
+				[entitySystemIdField]: systemId,
+			},
+			params
+		);
 
 		const findParams = { ...params, query };
 		const entityService = this.app.service(service);
@@ -121,11 +120,7 @@ class IservStrategy extends AuthenticationBaseStrategy {
 
 		if (client) {
 			const { entity } = this.configuration;
-			const result = await this.findEntity(
-				authentication.username,
-				authentication.systemId,
-				omit(params, 'provider'),
-			);
+			const result = await this.findEntity(authentication.username, authentication.systemId, omit(params, 'provider'));
 
 			return {
 				authentication: { strategy: this.name },

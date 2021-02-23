@@ -8,7 +8,6 @@ const database = require('../../src/utils/database');
 const { FileModel } = require('../../src/services/fileStorage/model.js');
 const RoleModel = require('../../src/services/role/model');
 
-
 const run = async () => {
 	database.connect();
 
@@ -20,33 +19,33 @@ const run = async () => {
 	const directories = await FileModel.find({
 		isDirectory: true,
 		refOwnerModel: 'course',
-	}).exec().catch(errorHandler);
+	})
+		.exec()
+		.catch(errorHandler);
 
 	const { _id: studentRoleId } = await RoleModel.findOne({ name: 'student' }).exec();
 
-	const promises = directories
-		.map((dir) => {
-			const { permissions } = dir;
-			const missing = permissions
-				.filter(({ refPermModel }) => refPermModel === 'role')
-				.every(({ refId }) => refId.toString() !== studentRoleId.toString());
+	const promises = directories.map((dir) => {
+		const { permissions } = dir;
+		const missing = permissions
+			.filter(({ refPermModel }) => refPermModel === 'role')
+			.every(({ refId }) => refId.toString() !== studentRoleId.toString());
 
-			if (missing) {
-				permissions.push({
-					refId: studentRoleId,
-					refPermModel: 'role',
-					write: false,
-					read: true,
-					create: false,
-					delete: false,
-				});
+		if (missing) {
+			permissions.push({
+				refId: studentRoleId,
+				refPermModel: 'role',
+				write: false,
+				read: true,
+				create: false,
+				delete: false,
+			});
 
-				return FileModel
-					.update({ _id: dir._id }, { permissions }).exec().catch(errorHandler);
-			}
+			return FileModel.update({ _id: dir._id }, { permissions }).exec().catch(errorHandler);
+		}
 
-			return Promise.resolve();
-		});
+		return Promise.resolve();
+	});
 
 	return Promise.all(promises);
 };

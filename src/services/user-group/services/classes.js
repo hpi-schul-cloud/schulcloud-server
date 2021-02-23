@@ -1,13 +1,27 @@
 const { authenticate } = require('@feathersjs/authentication');
-const globalHooks = require('../../../hooks');
+const { iff, isProvider } = require('feathers-hooks-common');
+const {
+	restrictToCurrentSchool,
+	hasPermission,
+	addCollation,
+	mapPaginationQuery,
+	permitGroupOperation,
+	denyIfNotCurrentSchool,
+} = require('../../../hooks');
 
-const { sortByGradeAndOrName, prepareGradeLevelUnset, saveSuccessor } = require('../hooks/helpers/classHooks');
+const {
+	sortByGradeAndOrName,
+	prepareGradeLevelUnset,
+	saveSuccessor,
+	restrictFINDToUsersOwnClasses,
+	restrictToUsersOwnClasses,
+} = require('../hooks/classes');
+
 const { paginate } = require('../../../utils/array');
 
-const { modelServices: { prepareInternalParams } } = require('../../../utils');
-
-const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
-const restrictToUsersOwnClasses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnClasses);
+const {
+	modelServices: { prepareInternalParams },
+} = require('../../../utils');
 
 class Classes {
 	constructor(options) {
@@ -24,7 +38,7 @@ class Classes {
 
 		const school = await this.app.service('schools').get(query.schoolId);
 		const years = school.years.schoolYears.map((y) => y._id);
-		if (((query.$sort || {}).year === '-1' || (query.$sort || {}).year === 'desc')) {
+		if ((query.$sort || {}).year === '-1' || (query.$sort || {}).year === 'desc') {
 			years.reverse();
 		}
 		years.push({ $exists: false }); // to find classes that dont have a year
@@ -40,7 +54,6 @@ class Classes {
 
 		const classPromises = years.map((y) => {
 			const yearParams = {
-
 				...params,
 				query: { ...params.query, year: y._id || y },
 			};
@@ -104,46 +117,47 @@ const classesHooks = {
 	before: {
 		all: [authenticate('jwt')],
 		find: [
-			globalHooks.hasPermission('CLASS_VIEW'),
-			restrictToCurrentSchool,
-			restrictToUsersOwnClasses,
+			hasPermission('CLASS_VIEW'),
+			iff(isProvider('external'), restrictToCurrentSchool),
+			iff(isProvider('external'), restrictFINDToUsersOwnClasses),
 			sortByGradeAndOrName,
-			globalHooks.addCollation,
-			globalHooks.mapPaginationQuery,
+			addCollation,
+			mapPaginationQuery,
 		],
-		get: [
-			restrictToCurrentSchool,
-			restrictToUsersOwnClasses,
-		],
-		create: [
-			globalHooks.hasPermission('CLASS_CREATE'),
-			restrictToCurrentSchool,
-		],
+		get: [iff(isProvider('external'), restrictToCurrentSchool), iff(isProvider('external'), restrictToUsersOwnClasses)],
+		create: [hasPermission('CLASS_CREATE'), iff(isProvider('external'), restrictToCurrentSchool)],
 		update: [
-			globalHooks.hasPermission('CLASS_EDIT'),
-			restrictToCurrentSchool,
+			hasPermission('CLASS_EDIT'),
+			iff(isProvider('external'), restrictToCurrentSchool),
+			iff(isProvider('external'), restrictToUsersOwnClasses),
 			prepareGradeLevelUnset,
 		],
 		patch: [
-			globalHooks.hasPermission('CLASS_EDIT'),
-			restrictToCurrentSchool,
-			globalHooks.permitGroupOperation,
+			hasPermission('CLASS_EDIT'),
+			iff(isProvider('external'), restrictToCurrentSchool),
+			iff(isProvider('external'), restrictToUsersOwnClasses),
+			permitGroupOperation,
 			prepareGradeLevelUnset,
 		],
-		remove: [globalHooks.hasPermission('CLASS_REMOVE'), restrictToCurrentSchool, globalHooks.permitGroupOperation],
+		remove: [
+			hasPermission('CLASS_REMOVE'),
+			iff(isProvider('external'), restrictToCurrentSchool),
+			iff(isProvider('external'), restrictToUsersOwnClasses),
+			permitGroupOperation,
+		],
 	},
 	after: {
 		all: [],
 		find: [],
 		get: [
-			globalHooks.ifNotLocal(
-				globalHooks.denyIfNotCurrentSchool({
+			iff(
+				isProvider('external'),
+				denyIfNotCurrentSchool({
 					errorMessage: 'Die angefragte Gruppe gehört nicht zur eigenen Schule!',
-				}),
-			)],
-		create: [
-			saveSuccessor,
+				})
+			),
 		],
+		create: [saveSuccessor],
 		update: [],
 		patch: [],
 		remove: [],

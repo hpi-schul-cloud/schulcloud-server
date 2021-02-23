@@ -1,4 +1,5 @@
-const { expect } = require('chai');
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 
 const { FileModel } = require('../../../../src/services/fileStorage/model');
 const { userModel } = require('../../../../src/services/user/model');
@@ -6,7 +7,6 @@ const RoleModel = require('../../../../src/services/role/model');
 // const { submissionModel } = require('../../../../src/services/homework/model');
 const { courseModel } = require('../../../../src/services/user-group/model');
 const { homeworkModel } = require('../../../../src/services/homework/model');
-
 
 const {
 	canWrite,
@@ -16,6 +16,9 @@ const {
 } = require('../../../../src/services/fileStorage/utils/filePermissionHelper');
 
 const fixtures = require('../fixtures');
+
+const { expect } = chai;
+chai.use(chaiAsPromised);
 
 describe('filePermissionHelper', () => {
 	describe('checkPermissions function should', () => {
@@ -56,13 +59,17 @@ describe('filePermissionHelper', () => {
 		it('let read, write, create and delete user created files', (done) => {
 			const permissionPromises = [
 				canWrite('0000d224816abba584714c8c', '5ca601745d629505e51252d7')
-					.then(() => true).catch(() => undefined),
+					.then(() => true)
+					.catch(() => undefined),
 				canRead('0000d224816abba584714c8c', '5ca601745d629505e51252d7')
-					.then(() => true).catch(() => undefined),
+					.then(() => true)
+					.catch(() => undefined),
 				canCreate('0000d224816abba584714c8c', '5ca601745d629505e51252d7')
-					.then(() => true).catch(() => undefined),
+					.then(() => true)
+					.catch(() => undefined),
 				canDelete('0000d224816abba584714c8c', '5ca601745d629505e51252d7')
-					.then(() => true).catch(() => undefined),
+					.then(() => true)
+					.catch(() => undefined),
 			];
 
 			Promise.all(permissionPromises).then((result) => {
@@ -79,52 +86,36 @@ describe('filePermissionHelper', () => {
 		});
 
 		it('let teacher read his homework file', async () => {
-			expect(canRead(fixtures.users[2]._id, '5ca601745d629505e51252d8'))
-				.to.be.eventually.true;
+			expect(canRead(fixtures.users[2]._id, '5ca601745d629505e51252d8')).to.be.eventually.true;
 		});
 
-
 		it('let student read homework file', async () => {
-			expect(canRead(fixtures.users[0]._id, '5ca601745d629505e51252d8'))
-				.to.be.eventually.true;
+			expect(canRead(fixtures.users[0]._id, '5ca601745d629505e51252d8')).to.be.eventually.true;
 		});
 
 		it('reject student from other course to read homework file', async () => {
-			expect(canRead(fixtures.users[1]._id, '5ca601745d629505e51252d8'))
-				.to.be.rejected;
+			expect(canRead(fixtures.users[1]._id, '5ca601745d629505e51252d8')).to.be.rejected;
 		});
 
 		it('let read, write, create and delete course files for teacher', async () => {
-			expect(canWrite('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28'))
-				.to.be.eventually.true;
-			expect(canRead('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28'))
-				.to.be.eventually.true;
-			expect(canCreate('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28'))
-				.to.be.eventually.true;
-			expect(canDelete('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28'))
-				.to.be.eventually.true;
+			expect(canWrite('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28')).to.be.eventually.true;
+			expect(canRead('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28')).to.be.eventually.true;
+			expect(canCreate('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28')).to.be.eventually.true;
+			expect(canDelete('0000d224816abba584714c8e', '5ca613c4c7f5120b8c5bef28')).to.be.eventually.true;
 		});
 
 		it('let read, write, create and delete course files members', async () => {
-			expect(canWrite('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28'))
-				.to.be.eventually.true;
-			expect(canRead('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28'))
-				.to.be.eventually.true;
-			expect(canCreate('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28'))
-				.to.be.eventually.true;
-			expect(canDelete('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28'))
-				.to.be.eventually.true;
+			expect(canWrite('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28')).to.be.eventually.true;
+			expect(canRead('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28')).to.be.eventually.true;
+			expect(canCreate('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28')).to.be.eventually.true;
+			expect(canDelete('0000d224816abba584714c8c', '5ca613c4c7f5120b8c5bef28')).to.be.eventually.true;
 		});
 
 		it('reject read, write, create and delete course files for non course-member students', async () => {
-			expect(canWrite('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28'))
-				.to.be.eventually.rejected;
-			expect(canRead('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28'))
-				.to.be.eventually.rejected;
-			expect(canCreate('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28'))
-				.to.be.eventually.rejected;
-			expect(canDelete('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28'))
-				.to.be.eventually.rejected;
+			expect(canWrite('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28')).to.be.eventually.rejected;
+			expect(canRead('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28')).to.be.eventually.rejected;
+			expect(canCreate('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28')).to.be.eventually.rejected;
+			expect(canDelete('0000d224816abba584714c8d', '5ca613c4c7f5120b8c5bef28')).to.be.eventually.rejected;
 		});
 	});
 });

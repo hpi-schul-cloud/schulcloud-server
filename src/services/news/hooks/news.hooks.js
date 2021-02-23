@@ -7,7 +7,6 @@ const deleteNewsHistory = async (context) => {
 	return context;
 };
 
-
 const getBoolean = (value) => value === true || value === 'true';
 
 /**

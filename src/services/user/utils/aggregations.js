@@ -1,6 +1,5 @@
 const { ObjectId } = require('mongoose').Types;
 
-
 const convertToIn = (value) => {
 	let list = [];
 	if (Array.isArray(value)) {
@@ -12,7 +11,6 @@ const convertToIn = (value) => {
 	}
 	return list;
 };
-
 
 /**
  * Allows to filter a attribute by a value
@@ -45,7 +43,6 @@ const getParentReducer = (type) => ({
 		input: '$consent.parentConsents',
 		initialValue: false,
 		in: { $or: ['$$value', `$$this.${type}`] },
-
 	},
 });
 
@@ -97,7 +94,6 @@ const getConsentStatusSwitch = () => {
 	const firstLevel = new Date();
 	firstLevel.setFullYear(currentDate.getFullYear() - 14);
 
-
 	return {
 		$switch: {
 			branches: [
@@ -128,11 +124,9 @@ const getConsentStatusSwitch = () => {
 									{ $eq: [getParentReducer('termsOfUseConsent'), true] },
 								],
 							},
-
 						],
 					},
 					then: 'ok',
-
 				},
 				{
 					case: {
@@ -177,7 +171,6 @@ const stageAddSelectProjectWithConsentCreate = (aggregation, select) => {
 	});
 };
 
-
 /**
  * Only select fields which are in select
  */
@@ -189,9 +182,7 @@ const stageSimpleProject = (aggregation, select) => {
 
 const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 	aggregation.push({
-		$lookup:
-		{
-
+		$lookup: {
 			from: 'classes',
 			let: { id: '$_id' },
 			pipeline: [
@@ -209,18 +200,12 @@ const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 											],
 										},
 										{
-											$or: [
-												{ $max: '$gradeLevel' },
-												{ $eq: [{ $type: '$gradeLevel' }, 'missing'] },
-											],
+											$or: [{ $max: '$gradeLevel' }, { $eq: [{ $type: '$gradeLevel' }, 'missing'] }],
 										},
 									],
 								},
 								{
-									$or: [
-										{ $in: ['$$id', '$userIds'] },
-										{ $in: ['$$id', '$teacherIds'] },
-									],
+									$or: [{ $in: ['$$id', '$userIds'] }, { $in: ['$$id', '$teacherIds'] }],
 								},
 							],
 						},
@@ -281,26 +266,22 @@ const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 const stageSort = (aggregation, sort) => {
 	const mSort = {};
 	for (const k in sort) {
-		if (({}).hasOwnProperty.call(sort, k)) mSort[k] = Number(sort[k]);
-	}
-
-	if (typeof sort === 'object' && ({}).hasOwnProperty.call(sort, 'consentStatus')) {
-		mSort.consentSortParam = mSort.consentStatus;
-		delete mSort.consentStatus;
-		stageAddConsentSortParam(aggregation);
-	}
-
-	if (typeof sort === 'object' && ({}).hasOwnProperty.call(sort, 'classes')) {
-		mSort['classesSort.gradeLevel'] = mSort.classes;
-		mSort['classesSort.name'] = mSort.classes;
-		delete mSort.classes;
+		if (k === 'searchQuery') {
+			mSort.score = { $meta: 'textScore' };
+		} else if (k === 'consentStatus') {
+			mSort.consentSortParam = Number(sort[k]);
+			stageAddConsentSortParam(aggregation);
+		} else if (k === 'classes') {
+			const order = Number(sort[k]);
+			mSort['classesSort.gradeLevel'] = order;
+			mSort['classesSort.name'] = order;
+		} else if ({}.hasOwnProperty.call(sort, k)) mSort[k] = Number(sort[k]);
 	}
 
 	aggregation.push({
 		$sort: mSort,
 	});
 };
-
 
 /**
  *	Convert the output to a feathers-mongoose like format:
@@ -327,9 +308,11 @@ const stageFormatWithTotal = (aggregation, limit, skip) => {
 					$limit: limit,
 				},
 			],
-			total: [{
-				$count: 'count',
-			}],
+			total: [
+				{
+					$count: 'count',
+				},
+			],
 		},
 	});
 
@@ -355,23 +338,42 @@ const stageFormatWithTotal = (aggregation, limit, skip) => {
 };
 
 /**
+ * require a amount of quality which reduce the result
+ *
+ * @param {Array} aggregation
+ * @param {Number} amount
+ */
+const stageFilterSearch = (aggregation, amount) => {
+	aggregation.push({ $addFields: { score: { $meta: 'textScore' } } });
+	aggregation.push({ $match: { score: { $gte: amount } } });
+};
+
+/**
  * Creates an Array for an Aggregation pipeline and can handle, select, sort, limit, skip and matches.
  * To filter or sort by consentStatus, it have also to be seleceted first.
  *
  * @param {{select: Array, sort: Object, limit: Int, skip: Int, ...matches}} param0
  */
 const createMultiDocumentAggregation = ({
-	select, sort, limit = 25, skip = 0, consentStatus, classes, schoolYearId, ...match
+	select,
+	sort,
+	limit = 25,
+	skip = 0,
+	consentStatus,
+	classes,
+	schoolYearId,
+	searchQuery,
+	searchFilterGate,
+	...match
 }) => {
 	// eslint-disable-next-line no-param-reassign
 	limit = Number(limit);
 	// eslint-disable-next-line no-param-reassign
 	skip = Number(skip);
-	let isSingleResult = false;
 	if (typeof match._id === 'string') {
-		isSingleResult = true;
 		match._id = ObjectId(match._id);
-	} else if (Array.isArray(match._id)) { // build "$in" Query
+	} else if (Array.isArray(match._id)) {
+		// build "$in" Query
 		const convertToObjectIds = (inArray) => inArray.map((id) => ObjectId(id));
 		match._id = { $in: convertToObjectIds(convertToIn(match._id)) };
 	}
@@ -379,10 +381,21 @@ const createMultiDocumentAggregation = ({
 	const selectSortDiff = Object.getOwnPropertyNames(sort || {}).filter((s) => !select.includes(s));
 	const aggregation = [];
 
+	if (searchQuery) {
+		// to sort by this value, add 'searchQuery' to sort value
+		match.$text = {
+			$search: searchQuery,
+		};
+	}
+
 	if (match) {
 		aggregation.push({
 			$match: match,
 		});
+	}
+
+	if (searchQuery && searchFilterGate) {
+		stageFilterSearch(aggregation, searchFilterGate);
 	}
 
 	if (select) {
@@ -392,7 +405,6 @@ const createMultiDocumentAggregation = ({
 		stageAddConsentStatus(aggregation);
 		if (match.schoolId && schoolYearId) stageLookupClasses(aggregation, match.schoolId, schoolYearId);
 	}
-
 
 	if (consentStatus) {
 		stageBaseFilter(aggregation, 'consentStatus', consentStatus);
@@ -411,10 +423,9 @@ const createMultiDocumentAggregation = ({
 	stageSimpleProject(aggregation, select);
 	// }
 
-	if (!isSingleResult) stageFormatWithTotal(aggregation, limit, skip);
+	if (!match._id || Array.isArray(match._id.$in)) stageFormatWithTotal(aggregation, limit, skip);
 	return aggregation;
 };
-
 
 module.exports = {
 	convertSelect,

@@ -1,4 +1,7 @@
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const { StorageProviderModel } = require('./model');
 const hooks = require('./hooks');
 
@@ -12,6 +15,7 @@ module.exports = (app) => {
 		lean: true,
 	};
 
+	app.use('/storageProvider/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/storageProvider', service(options));
 
 	const storageProviderService = app.service('/storageProvider');

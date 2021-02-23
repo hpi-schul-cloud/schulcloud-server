@@ -1,4 +1,5 @@
 {
+	"$schema": "./default.schema.json",
 	"host": "localhost",
 	"port": 3030,
 	"public": "../public/",
@@ -13,8 +14,20 @@
 	"FORCE_SEND_EMAIL": false,
 	"NOTIFICATION_PLATFORM": false,
 	"BLOCK_DISPOSABLE_EMAIL_DOMAINS": true,
-	"STUDENT_TEAM_CREATION" : "opt-out",
+	"STUDENT_TEAM_CREATION": "opt-out",
 	"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS": 7200,
 	"ADMIN_TOGGLE_STUDENT_VISIBILITY": "enabled",
-	"LERNSTORE_MODE": "DISABLED"
+	"LERNSTORE_MODE": "DISABLED",
+	"PROMETHEUS": {
+		"METRICS_PATH": "/metrics",
+		"DURATION_BUCKETS_SECONDS": [0.01, 0.05, 0.1, 0.2, 0.5, 0.75, 1, 3, 5, 8, 15, 30, 60, 120]
+	},
+	"MATRIX_MESSENGER": {
+		"URI": "https://matrix.messenger.schule",
+		"SERVERNAME": "messenger.schule",
+		"SECRET": "SECRET",
+		"STUDENT_ROOM_CREATION": false
+	},
+	"REQUEST_TIMEOUT": 8000,
+	"FEATURE_SHOW_VERSION_ENABLED": false
 }
