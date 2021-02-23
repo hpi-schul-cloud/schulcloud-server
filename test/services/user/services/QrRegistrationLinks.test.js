@@ -1,7 +1,13 @@
 const { expect } = require('chai');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 const { generateRequestParamsFromUser, generateRequestParams } = require('../../helpers/services/login')(appPromise);
+
+const HOST = Configuration.get('HOST');
+
+const checkQrContentLinkFormat = (schoolId, hash, isStudent) => (contentLink) =>
+	contentLink === `${HOST}/registration/${schoolId}${!isStudent ? '/byemployee' : ''}?importHash=${hash}`;
 
 describe('qrRegistrationLinks service tests', () => {
 	let app;
@@ -52,6 +58,37 @@ describe('qrRegistrationLinks service tests', () => {
 			const res = await postRegistrationLinks(userRequestAuthentication, [testUser1._id], 'student');
 			expect(res.length).to.equal(1);
 		});
+
+		it('should return a valid registration link for a student', async () => {
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+			const student = await testObjects.createTestUser({ roles: ['student'] });
+			const userRequestAuthentication = await generateRequestParamsFromUser(teacher);
+			const res = await postRegistrationLinks(userRequestAuthentication, [student._id], 'student');
+			expect(res.length).to.equal(1);
+			const response = res[0];
+			expect(response.description).to.be.equal('Zum Registrieren bitte den Link öffnen.');
+			expect(response.email).to.be.equal(student.email);
+			expect(response.firstName).to.be.equal(student.firstName);
+			expect(response.lastName).to.be.equal(student.lastName);
+			expect(response.qrContent).satisfies(checkQrContentLinkFormat(student.schoolId.toString(), response.hash, true));
+			expect(response.title).contains(student.firstName).and.contains(student.lastName);
+		});
+
+		it('should return a valid registration link for a teacher', async () => {
+			const admin = await testObjects.createTestUser({ roles: ['administrator'] });
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+			const userRequestAuthentication = await generateRequestParamsFromUser(admin);
+			const res = await postRegistrationLinks(userRequestAuthentication, [teacher._id], 'teacher');
+			expect(res.length).to.equal(1);
+			const response = res[0];
+			expect(response.description).to.be.equal('Zum Registrieren bitte den Link öffnen.');
+			expect(response.email).to.be.equal(teacher.email);
+			expect(response.firstName).to.be.equal(teacher.firstName);
+			expect(response.lastName).to.be.equal(teacher.lastName);
+			expect(response.qrContent).satisfies(checkQrContentLinkFormat(teacher.schoolId.toString(), response.hash, false));
+			expect(response.title).contains(teacher.firstName).and.contains(teacher.lastName);
+		});
+
 		it('should return registration link for 3 users', async () => {
 			const testUser = await testObjects.createTestUser({ roles: ['teacher'] });
 			const testUser2 = await testObjects.createTestUser({ roles: ['teacher'] });

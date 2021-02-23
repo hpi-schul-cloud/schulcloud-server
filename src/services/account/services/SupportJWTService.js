@@ -1,11 +1,10 @@
 /* eslint-disable max-classes-per-file */
 const CryptoJS = require('crypto-js');
-const reqlib = require('app-root-path').require;
 
-const { BadRequest } = reqlib('src/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const { ObjectId } = require('mongoose').Types;
 
+const { BadRequest } = require('../../../errors');
 const { hasPermission } = require('../../../hooks/index');
 const { authenticationSecret, audience: audienceName } = require('../../authentication/logic');
 const accountModel = require('../model');

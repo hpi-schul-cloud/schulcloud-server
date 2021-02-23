@@ -1,8 +1,8 @@
 // const rp = require('request-promise-native');
 // const xml2js = require('xml2js-es6-promise');
-const reqlib = require('app-root-path').require;
 
-const { NotFound } = reqlib('src/errors');
+const { NotFound, AssertionError } = require('../../../errors');
+const { requiredParametersToBeNonEmtyString } = require('../../../errors/assertionErrorHelper');
 const { error } = require('../../../logger');
 const { ROLES } = require('./constants');
 const utils = require('./utils');
@@ -11,6 +11,21 @@ const logErrorAndThrow = (message, response, ErrorClass = Error) => {
 	error(message, response);
 	throw new ErrorClass(message);
 };
+
+const validateIsNonEmptyString = (text) => {
+	if (typeof text !== 'string' || text.length <= 0) {
+		throw new AssertionError(requiredParametersToBeNonEmtyString({ text }));
+	}
+};
+const sanitize = (text, replacement = '') => {
+	validateIsNonEmptyString(text);
+	// keep only space, upper-/lowercase letters, numbers and accented letters
+	// see https://unicode-table.com/en/#ipa-extensions for ordered characters list
+	const regex = /[^0-9A-Za-zÀ-ÖØ-öø-ÿ.\-=_`´ ]/g;
+	const sanitizedText = text.replace(regex, replacement);
+	return sanitizedText;
+};
+exports.sanitize = sanitize;
 
 /**
  * creates a url for attendee or moderator to join a meeting.
@@ -27,7 +42,7 @@ const joinMeeting = (server, meetingName, meetingId, userName, role, params, cre
 			// the meeting does not exist, create it...
 			if (utils.isValidNotFoundResponse(response)) {
 				if (create === true) {
-					return server.administration.create(meetingName, meetingId, params);
+					return server.administration.create(sanitize(meetingName), meetingId, params);
 				}
 				return logErrorAndThrow('meeting room not found, create missing', response, NotFound);
 			}
@@ -61,7 +76,7 @@ const joinMeeting = (server, meetingName, meetingId, userName, role, params, cre
 			if (!Array.isArray(response.meetingID) || !response.meetingID.length) {
 				logErrorAndThrow('invalid meetingID', response);
 			}
-			return server.administration.join(userName, response.meetingID[0], secret, params);
+			return server.administration.join(sanitize(userName), response.meetingID[0], secret, params);
 		});
 exports.joinMeeting = joinMeeting;
 

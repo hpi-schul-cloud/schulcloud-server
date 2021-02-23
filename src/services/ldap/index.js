@@ -3,9 +3,8 @@ const ldap = require('ldapjs');
 const mongoose = require('mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, NotFound, BadRequest, GeneralError, NotAuthenticated, NoClientInstanceError } = reqlib('src/errors');
+const { Forbidden, NotFound, BadRequest, NotAuthenticated, NoClientInstanceError } = require('../../errors');
 const LDAPConnectionError = require('./LDAPConnectionError');
 
 const hooks = require('./hooks');
@@ -150,7 +149,7 @@ module.exports = function LDAPService() {
 
 				client.on('error', (e) => {
 					logger.error('Error during LDAP operation', { error: e });
-					reject(new LDAPConnectionError('LDAP error', e));
+					reject(new LDAPConnectionError(e));
 				});
 
 				client.on('connect', () => {
