@@ -1,0 +1,86 @@
+security:
+  - jwtBearer: []
+info:
+  title: Schul-Cloud Resolve Service API
+  description:
+    This is the API specification for the Schul-Cloud Resolve service.
+    
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+components:
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    scopes:
+      description: TODO
+    users:
+      description: TODO
+
+paths:
+  '/resolve/scopes/{id}':
+    get:
+      parameters:
+        - in: path
+          name: id
+          description: ID of scopes to return
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/scopes'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Retrieves a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - resolve
+      security: []
+  '/resolve/users/{id}':
+    get:
+      parameters:
+        - in: path
+          name: id
+          description: ID of users to return
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/users'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Retrieves a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - resolve
+      security: []
+openapi: 3.0.2
+tags:
+  - name: resolve
+    description: A resolve service.
+    

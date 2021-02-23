@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { disallow } = require('feathers-hooks-common');
-const { Forbidden } = require('@feathersjs/errors');
+
+const { Forbidden } = require('../../../errors');
 
 const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');

@@ -1,5 +1,6 @@
-const { Forbidden } = require('@feathersjs/errors');
 const { Types } = require('mongoose').Schema;
+
+const { Forbidden } = require('../errors');
 
 const equals = (v1, v2) => {
 	if (v1 instanceof Types.ObjectId) {

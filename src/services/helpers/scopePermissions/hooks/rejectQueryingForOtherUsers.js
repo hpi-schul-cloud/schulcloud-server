@@ -1,4 +1,4 @@
-const { Forbidden, BadRequest } = require('@feathersjs/errors');
+const { Forbidden, BadRequest } = require('../../../../errors');
 const { resolveScope } = require('./util/resolveScope');
 
 const rejectQueryingOtherUsers = (context) => {

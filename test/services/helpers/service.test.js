@@ -1,34 +1,26 @@
 const { expect } = require('chai');
 const nock = require('nock');
 
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 const { NODE_ENV, SMTP_SENDER } = require('../../../config/globals');
 
 // eslint-disable-next-line import/no-dynamic-require
 const config = require(`../../../config/${NODE_ENV}.json`); // TODO cleanup
 
-const isMailbodyValid = ({
-	platform,
-	platformId,
-	to,
-	subject,
-	text,
-	html,
-	attachments,
-}) => {
+const isMailbodyValid = ({ platform, platformId, to, subject, text, html, attachments }) => {
 	// file content must be base64 encoded ant therefore of type string
-	const attachmentsAreValid = attachments
-		.every((attachment) => Boolean(typeof attachment.filename === 'string'
-			&& typeof attachment.content === 'string'));
+	const attachmentsAreValid = attachments.every((attachment) =>
+		Boolean(typeof attachment.filename === 'string' && typeof attachment.content === 'string')
+	);
 	const hasRequiredAttributes = Boolean(platform && platformId && to && subject && (text || html));
 	return Boolean(hasRequiredAttributes && attachmentsAreValid);
 };
 
-const getNotificationMock = (expectedData = {}) => new Promise((resolve) => {
-	nock(config.services.notification)
-		.post('/mails')
-		.reply(200,
-			(uri, requestBody) => {
+const getNotificationMock = (expectedData = {}) =>
+	new Promise((resolve) => {
+		nock(config.NOTIFICATION_URI)
+			.post('/mails')
+			.reply(200, (uri, requestBody) => {
 				Object.entries(expectedData).forEach(([key, value]) => {
 					expect(requestBody[key]).to.eql(value);
 				});
@@ -36,9 +28,10 @@ const getNotificationMock = (expectedData = {}) => new Promise((resolve) => {
 				resolve(true);
 				return 'Message queued';
 			});
-});
+	});
 
-describe('Mail Service', () => {
+describe('Mail Service', async () => {
+	const app = await appPromise;
 	const mailService = app.service('/mails');
 
 	afterEach(() => {
@@ -109,9 +102,7 @@ describe('Mail Service', () => {
 
 	describe('invalid emails', () => {
 		beforeEach(() => {
-			nock(config.services.notification)
-				.post('/mails')
-				.replyWithError('invalid data send');
+			nock(config.NOTIFICATION_URI).post('/mails').replyWithError('invalid data send');
 		});
 		it('should throw if notification server returns error', async () => {
 			try {

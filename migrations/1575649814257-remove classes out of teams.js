@@ -35,7 +35,6 @@ module.exports = {
 		const teamsAfter = await Teams.find({ 'classIds.0': { $exists: true } }).exec();
 		info(`By now, ${teamsAfter.length} teams having classes...`);
 
-
 		// ////////////////////////////////////////////////////
 		await close();
 

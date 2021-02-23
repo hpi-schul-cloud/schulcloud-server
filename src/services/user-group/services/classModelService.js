@@ -1,10 +1,8 @@
 const service = require('feathers-mongoose');
-const {
-	iff, isProvider, disallow,
-} = require('feathers-hooks-common');
+const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const auth = require('@feathersjs/authentication');
 
-const {	classModel } = require('../model');
+const { classModel } = require('../model');
 
 const classModelService = service({
 	Model: classModel,
@@ -17,27 +15,13 @@ const classModelService = service({
 
 const classModelServiceHooks = {
 	before: {
-		all: [
-			auth.hooks.authenticate('jwt'),
-		],
-		find: [
-			iff(isProvider('external'), disallow()),
-		],
-		get: [
-			iff(isProvider('external'), disallow()),
-		],
-		create: [
-			iff(isProvider('external'), disallow()),
-		],
-		update: [
-			iff(isProvider('external'), disallow()),
-		],
-		patch: [
-			iff(isProvider('external'), disallow()),
-		],
-		remove: [
-			iff(isProvider('external'), disallow()),
-		],
+		all: [auth.hooks.authenticate('jwt')],
+		find: [iff(isProvider('external'), disallow())],
+		get: [iff(isProvider('external'), disallow())],
+		create: [iff(isProvider('external'), disallow())],
+		update: [iff(isProvider('external'), disallow())],
+		patch: [iff(isProvider('external'), disallow())],
+		remove: [iff(isProvider('external'), disallow())],
 	},
 	after: {
 		all: [],

@@ -1,4 +1,4 @@
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
+const { Forbidden, BadRequest } = require('../../../errors');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 /**
@@ -15,7 +15,7 @@ const restrictToSchoolSystems = (context) => {
 	if (systemIds.some((systemId) => equalIds(systemId, context.id))) {
 		return context;
 	}
-	throw new Forbidden('You\'re not authorized to access this system.');
+	throw new Forbidden("You're not authorized to access this system.");
 };
 
 module.exports = restrictToSchoolSystems;

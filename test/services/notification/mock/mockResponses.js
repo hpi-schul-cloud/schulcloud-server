@@ -11,5 +11,4 @@ const exampleResponse = {
 	},
 };
 
-
 module.exports = (options) => Promise.resolve(exampleResponse);

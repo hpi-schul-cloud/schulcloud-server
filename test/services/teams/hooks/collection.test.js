@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const { BadRequest } = require('@feathersjs/errors');
+
+const { BadRequest } = require('../../../../src/errors');
 const {
 	isArray,
 	isArrayWithElement,

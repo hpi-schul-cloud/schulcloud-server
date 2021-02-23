@@ -4,9 +4,12 @@ const { info, error } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
-const rcUser = mongoose.model('rocketChatUser', new mongoose.Schema({
-	pass: { type: String, required: true },
-}));
+const rcUser = mongoose.model(
+	'rocketChatUser',
+	new mongoose.Schema({
+		pass: { type: String, required: true },
+	})
+);
 
 // How to use more than one schema per collection on mongodb
 // https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
@@ -18,9 +21,15 @@ module.exports = {
 		// Make changes to the database here.
 		// Hint: Access models via this('modelName'), not an imported model to have
 		// access to the correct database connection. Otherwise Mongoose calls never return.
-		await rcUser.updateMany({}, {
-			$unset: { pass: '' },
-		}).lean().exec();
+		await rcUser
+			.updateMany(
+				{},
+				{
+					$unset: { pass: '' },
+				}
+			)
+			.lean()
+			.exec();
 		// ////////////////////////////////////////////////////
 		await close();
 	},

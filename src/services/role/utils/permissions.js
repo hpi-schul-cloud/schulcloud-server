@@ -1,4 +1,4 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const Role = require('../model');
 
 const PERMISSIONS = {
@@ -11,7 +11,6 @@ const PERMISSIONS = {
 const ROLES = {
 	TEACHER: 'teacher',
 };
-
 
 /**
  * Set or remove permission, depending of the env value
@@ -26,28 +25,34 @@ const ROLES = {
 const definePermissions = (env, role, ...permissions) => {
 	if (['opt-out', 'enabled'].includes(Configuration.get(env))) {
 		// set defaul permission
-		Role.update({
-			name: role,
-		},
-		{
-
-			$addToSet: {
-				permissions: {
-					$each: permissions,
+		Role.update(
+			{
+				name: role,
+			},
+			{
+				$addToSet: {
+					permissions: {
+						$each: permissions,
+					},
 				},
 			},
-		}, { multi: true }).exec();
+			{ multi: true }
+		).exec();
 	} else if (['opt-in', 'disabled', undefined].includes(Configuration.get(env))) {
 		// remove defaul permission
-		Role.update({
-			name: role,
-		}, {
-			$pull: {
-				permissions: {
-					$in: permissions,
+		Role.update(
+			{
+				name: role,
+			},
+			{
+				$pull: {
+					permissions: {
+						$in: permissions,
+					},
 				},
 			},
-		}, { multi: true }).exec();
+			{ multi: true }
+		).exec();
 	}
 };
 

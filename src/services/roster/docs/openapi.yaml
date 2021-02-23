@@ -1,0 +1,193 @@
+security:
+  - jwtBearer: []
+info:
+  title: Schul-Cloud Roster Service API
+  description: This is the API specification for the Schul-Cloud Roster service.
+
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+components:
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    user_roster_metadata:
+      description: Roster metadata of a user
+      properties:
+        data:
+          type: object
+          properties:
+            user_id:
+              type: string
+              pattern: '[a-f0-9]{24}'
+            username:
+              type: string
+            'type':
+              type: string
+              enum:
+                - teacher
+                - student
+    usergroup_roster_metadata:
+      description: Roster metadata for a user groups
+      type: object
+      properties:
+        group_id:
+          type: string
+          pattern: '[a-f0-9]{24}'
+          description: course id reference
+        name:
+          type: string
+          description: course name
+        student_count:
+          type: integer
+          minimum: 1
+    usergroups_roster_metadata:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            groups:
+              type: array
+              items:
+                $ref: '#/components/schemas/usergroup_roster_metadata'
+    usergroup_user_roster_metadata:
+      type: object
+      properties:
+        user_id:
+          type: string
+          description: users pseudonym
+        username:
+          type: string
+          description: iframe html data with client url to display username in browsers
+    groups_roster_metadata:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            students:
+              type: array
+              items:
+                $ref: '#/components/schemas/usergroup_user_roster_metadata'
+            teachers:
+              items:
+                $ref: '#/components/schemas/usergroup_user_roster_metadata'
+paths:
+  /roster:
+    get:
+      parameters: []
+      responses:
+        '200':
+          description: success
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Roster interface available
+      description: Health check for roster service.
+      summary: ''
+      tags:
+        - roster
+      security: []
+  '/roster/users/{user}/metadata':
+    get:
+      parameters:
+        - in: path
+          name: user
+          schema:
+            type: string
+          required: true
+          description: user parameter
+        - in: query
+          name: pseudonym
+          schema:
+            type: string
+          required: true
+          description: user pseudonym
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_roster_metadata'
+        '500':
+          description: general error
+      description: Retrieves user metadata for roster.
+      summary: ''
+      tags:
+        - roster
+      security: []
+  '/roster/users/{user}/groups':
+    get:
+      parameters:
+        - in: path
+          name: user
+          schema:
+            type: string
+          required: true
+          description: user parameter
+        - in: query
+          name: toolId
+          schema:
+            type: string
+          required: true
+          description: tool id
+        - in: query
+          name: pseudonym
+          schema:
+            type: string
+          required: true
+          description: user pseudonym
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/usergroups_roster_metadata'
+        '500':
+          description: general error
+      description: Retrieves a list of all resources from the service.
+      summary: ''
+      tags:
+        - roster
+      security: []
+  '/roster/groups/{id}':
+    get:
+      parameters:
+        - in: path
+          name: id
+          description: ID of groups to return
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/groups_roster_metadata'
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Retrieves a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - roster
+      security: []
+
+openapi: 3.0.2
+tags:
+  - name: roster
+    description: A roster service.

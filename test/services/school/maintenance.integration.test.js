@@ -1,30 +1,34 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const { ObjectId } = require('mongoose').Types;
-const { Forbidden } = require('@feathersjs/errors');
 
-const app = require('../../../src/app');
-const { cleanup } = require('../helpers/testObjects')(app);
-const { create: createSchool } = require('../helpers/services/schools')(app);
-const { generateRequestParamsFromUser } = require('../helpers/services/login')(app);
-const { create: createUser } = require('../helpers/services/users')(app);
-const { create: createSystem } = require('../helpers/services/testSystem')(app);
+const { Forbidden } = require('../../../src/errors');
+
+const appPromise = require('../../../src/app');
+const { cleanup } = require('../helpers/testObjects')(appPromise);
+const { create: createSchool } = require('../helpers/services/schools')(appPromise);
+const { generateRequestParamsFromUser } = require('../helpers/services/login')(appPromise);
+const { create: createUser } = require('../helpers/services/users')(appPromise);
+const { create: createSystem } = require('../helpers/services/testSystem')(appPromise);
 const { create: createYear } = require('../helpers/services/years');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
 describe('school maintenance mode', () => {
-	const maintenanceService = app.service('schools/:schoolId/maintenance');
+	let app;
+	let maintenanceService;
 
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		maintenanceService = app.service('schools/:schoolId/maintenance');
+		server = await app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	describe('status route', () => {
@@ -205,11 +209,11 @@ describe('school maintenance mode', () => {
 				adminParams.route = { schoolId: school._id.toString() };
 				adminParams.query = {};
 
-				await expect(maintenanceService.create({ maintenance: true }, teacherParams))
-					.to.eventually.be.rejectedWith(Forbidden);
+				await expect(maintenanceService.create({ maintenance: true }, teacherParams)).to.eventually.be.rejectedWith(
+					Forbidden
+				);
 
-				await expect(maintenanceService.create({ maintenance: true }, adminParams))
-					.to.eventually.be.fulfilled;
+				await expect(maintenanceService.create({ maintenance: true }, adminParams)).to.eventually.be.fulfilled;
 			}).timeout(5000);
 		});
 	});

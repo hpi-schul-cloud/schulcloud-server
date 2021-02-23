@@ -1,7 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { Forbidden } = require('@feathersjs/errors');
+
+const { Forbidden } = require('../../../errors');
 const { SCHOOL_FEATURES } = require('../../school/model');
 const globalHooks = require('../../../hooks');
+const { isSuperheroUser } = require('../../../helper/userHelpers');
 const { isValid } = require('../../../helper/compare').ObjectId;
 const { populateCurrentSchool } = require('../../../hooks/index');
 
@@ -33,7 +35,9 @@ const protectSecrets = (context) => {
 
 const addSecret = (context) => {
 	if (context.data.originTool) {
-		return context.app.service('/ltiTools/').get(context.data.originTool)
+		return context.app
+			.service('/ltiTools/')
+			.get(context.data.originTool)
 			.then((tool) => {
 				context.data.secret = tool.secret;
 				return context;
@@ -52,7 +56,7 @@ const filterFindBBB = (context) => {
 	}
 	if (hasVideoconferenceItems) {
 		// if school feature disabled, remove bbb tools from results data
-		const { features } = context.params.school;
+		const { features = [] } = context.params.school;
 		if (!features.includes(SCHOOL_FEATURES.VIDEOCONFERENCE)) {
 			context.result.data = context.result.data.filter((tool) => !isBBBTool(tool));
 		}
@@ -68,14 +72,31 @@ const filterGetBBB = (context) => {
 	}
 };
 
+const restrictToUsersOwnTools = async (context) => {
+	const currentUserId = context.params.account.userId;
+	const isSuperhero = await isSuperheroUser(context.app, currentUserId);
+	if (isSuperhero) return context;
+	const coursesOfUser = await context.app.service('courses').find({
+		query: {
+			$or: [{ teacherIds: { $in: [currentUserId] } }, { substitutionIds: { $in: [currentUserId] } }],
+		},
+	});
+	if (
+		coursesOfUser.data.some((course) => course.ltiToolIds.map((id) => id.toString()).includes(context.id.toString()))
+	) {
+		return context;
+	}
+	throw new Forbidden('tool is not part of your courses');
+};
+
 exports.before = {
 	all: [authenticate('jwt')],
 	find: [globalHooks.hasPermission('TOOL_VIEW'), globalHooks.ifNotLocal(populateCurrentSchool)],
 	get: [globalHooks.hasPermission('TOOL_VIEW'), globalHooks.ifNotLocal(populateCurrentSchool)],
 	create: [globalHooks.hasPermission('TOOL_CREATE'), addSecret, setupBBB],
 	update: [globalHooks.hasPermission('TOOL_EDIT')],
-	patch: [globalHooks.hasPermission('TOOL_EDIT')],
-	remove: [globalHooks.hasPermission('TOOL_CREATE')],
+	patch: [globalHooks.hasPermission('TOOL_EDIT'), globalHooks.ifNotLocal(restrictToUsersOwnTools)],
+	remove: [globalHooks.hasPermission('TOOL_CREATE'), globalHooks.ifNotLocal(restrictToUsersOwnTools)],
 };
 
 exports.after = {
@@ -84,6 +105,6 @@ exports.after = {
 	get: [globalHooks.ifNotLocal(protectSecrets), filterGetBBB],
 	create: [],
 	update: [],
-	patch: [],
+	patch: [globalHooks.ifNotLocal(protectSecrets)],
 	remove: [],
 };

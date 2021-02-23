@@ -1,5 +1,7 @@
 // const RandExp = require('randexp');
 // const Chance = require('chance');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
 
 const account = require('./model');
 
@@ -54,6 +56,7 @@ class PasswordGenService {
 }
 */
 module.exports = (app) => {
+	app.use('/accounts/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/accountModel', accountModelService);
 	app.service('/accountModel').hooks(accountModelServiceHooks);
 

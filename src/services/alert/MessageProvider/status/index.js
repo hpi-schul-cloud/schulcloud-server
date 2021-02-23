@@ -1,6 +1,6 @@
-const { Configuration } = require('@schul-cloud/commons');
-const api = require('../../../../helper/externalApiRequest');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const logger = require('../../../../logger');
+const { statusApi } = require('../../../../externalServices');
 
 const dict = {
 	default: 1,
@@ -15,6 +15,7 @@ const importance = {
 	ALL_INSTANCES: 0,
 	CURRENT_INSTANCE: 1,
 };
+
 /**
  * Check if Message is instance specific
  * @param {string} instance
@@ -24,7 +25,7 @@ const importance = {
 async function getInstance(instance, componentId) {
 	if (componentId !== 0) {
 		try {
-			const response = await api(Configuration.get('ALERT_STATUS_API_URL')).get(`/components/${componentId}`);
+			const response = await statusApi.getComponent(componentId);
 			if (dict[instance] && response.data.group_id === dict[instance]) {
 				return importance.CURRENT_INSTANCE;
 			}
@@ -35,15 +36,6 @@ async function getInstance(instance, componentId) {
 	} else {
 		return importance.ALL_INSTANCES;
 	}
-}
-
-/**
- * Get all incidents
- * @returns {Promise}
- */
-async function getIncidents() {
-	const response = await api(Configuration.get('ALERT_STATUS_API_URL')).get('/incidents?sort=id');
-	return response;
 }
 
 function compare(a, b) {
@@ -64,7 +56,7 @@ module.exports = {
 	async getData(instance) {
 		if (Configuration.has('ALERT_STATUS_API_URL') && Configuration.has('ALERT_STATUS_URL')) {
 			try {
-				const rawData = await getIncidents();
+				const rawData = await statusApi.getIncidents();
 				const instanceSpecific = [];
 				const noneSpecific = [];
 				for (const element of rawData.data) {
@@ -84,13 +76,16 @@ module.exports = {
 				noneSpecific.sort(compare);
 
 				return instanceSpecific.concat(noneSpecific);
-			} catch (err) { // return null on error
+			} catch (err) {
+				// return null on error
 				logger.error(err);
 				return null;
 			}
 		} else {
 			/* eslint-disable-next-line */
-			logger.error('Alert-MessageProvider: status: ALERT_STATUS_API_URL or ALERT_STATUS_URL is not defined, while FEATURE_ALERTS_STATUS_ENABLED has been enabled!');
+			logger.error(
+				'Alert-MessageProvider: status: ALERT_STATUS_API_URL or ALERT_STATUS_URL is not defined, while FEATURE_ALERTS_STATUS_ENABLED has been enabled!'
+			);
 			return null;
 		}
 	},

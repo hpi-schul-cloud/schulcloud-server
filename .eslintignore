@@ -1,0 +1,6 @@
+# used by codacy and npm run lint but not local prettier
+# keep in sync with .prettierignore
+
+# ignore database dumps, keep format from export
+backup/setup/*.json
+migrations/helpers/*.json

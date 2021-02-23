@@ -1,4 +1,4 @@
-const { NotFound, GeneralError } = require('@feathersjs/errors');
+const { NotFound, GeneralError } = require('../../../errors');
 
 /**
  * Service to find a school belonging an id of unknown type, like from a registration link.
@@ -15,7 +15,9 @@ class RegistrationSchoolService {
 	async getExpertSchoolId() {
 		if (!this.expertSchoolId) {
 			try {
-				this.expertSchoolId = await this.app.service('schools').find({ query: { purpose: 'expert' } })
+				this.expertSchoolId = await this.app
+					.service('schools')
+					.find({ query: { purpose: 'expert' } })
 					.then((schools) => schools.data[0]._id);
 			} catch (err) {
 				throw new GeneralError('Experte: Fehler beim Abfragen der Expertenschule.', err);
@@ -32,9 +34,18 @@ class RegistrationSchoolService {
 	 */
 	async get(id, params) {
 		const promises = [
-			this.app.service('schools').get(id).catch(() => undefined),
-			this.app.service('classes').get(id).catch(() => undefined),
-			this.app.service('teams').get(id).catch(() => undefined),
+			this.app
+				.service('schools')
+				.get(id)
+				.catch(() => undefined),
+			this.app
+				.service('classes')
+				.get(id)
+				.catch(() => undefined),
+			this.app
+				.service('teams')
+				.get(id)
+				.catch(() => undefined),
 		];
 		const [schoolResponse, classResponse, teamResponse] = await Promise.all(promises);
 		let response;

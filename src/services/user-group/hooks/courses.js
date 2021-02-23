@@ -1,5 +1,6 @@
 const _ = require('lodash');
-const { BadRequest } = require('@feathersjs/errors');
+
+const { BadRequest } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const ClassModel = require('../model').classModel;
 const CourseModel = require('../model').courseModel;
@@ -20,15 +21,19 @@ const addWholeClassToCourse = (hook) => {
 	if (requestBody.classIds === undefined) {
 		return hook;
 	}
-	if ((requestBody.classIds || []).length > 0) { // just courses do have a property "classIds"
-		return Promise.all(requestBody.classIds.map((classId) => ClassModel.findById(classId).exec().then((c) => c.userIds))).then(async (studentIds) => {
+	if ((requestBody.classIds || []).length > 0) {
+		// just courses do have a property "classIds"
+		return Promise.all(
+			requestBody.classIds.map((classId) =>
+				ClassModel.findById(classId)
+					.exec()
+					.then((c) => c.userIds)
+			)
+		).then(async (studentIds) => {
 			// flatten deep arrays and remove duplicates
 			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
 
-			await CourseModel.update(
-				{ _id: course._id },
-				{ $addToSet: { userIds: { $each: studentIds } } },
-			).exec();
+			await CourseModel.update({ _id: course._id }, { $addToSet: { userIds: { $each: studentIds } } }).exec();
 			return hook;
 		});
 	}
@@ -47,25 +52,33 @@ const deleteWholeClassFromCourse = (hook) => {
 	if (requestBody.classIds === undefined && requestBody.user === undefined) {
 		return hook;
 	}
-	return CourseModel.findById(courseId).exec().then((course) => {
-		if (!course) return hook;
+	return CourseModel.findById(courseId)
+		.exec()
+		.then((course) => {
+			if (!course) return hook;
 
-		const removedClasses = _.differenceBy(course.classIds, requestBody.classIds, (v) => JSON.stringify(v));
-		if (removedClasses.length < 1) return hook;
-		return Promise.all(removedClasses.map((classId) => ClassModel.findById(classId).exec().then((c) => (c || []).userIds))).then(async (studentIds) => {
-			// flatten deep arrays and remove duplicates
-			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
+			const removedClasses = _.differenceBy(course.classIds, requestBody.classIds, (v) => JSON.stringify(v));
+			if (removedClasses.length < 1) return hook;
+			return Promise.all(
+				removedClasses.map((classId) =>
+					ClassModel.findById(classId)
+						.exec()
+						.then((c) => (c || []).userIds)
+				)
+			).then(async (studentIds) => {
+				// flatten deep arrays and remove duplicates
+				studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
 
-			// remove class students from course DB and from hook body to not patch them back
-			await CourseModel.update(
-				{ _id: course._id },
-				{ $pull: { userIds: { $in: studentIds } } },
-				{ multi: true },
-			).exec();
-			hook.data.userIds = hook.data.userIds.filter((value) => !studentIds.some((id) => equalIds(id, value)));
-			return hook;
+				// remove class students from course DB and from hook body to not patch them back
+				await CourseModel.update(
+					{ _id: course._id },
+					{ $pull: { userIds: { $in: studentIds } } },
+					{ multi: true }
+				).exec();
+				hook.data.userIds = hook.data.userIds.filter((value) => !studentIds.some((id) => equalIds(id, value)));
+				return hook;
+			});
 		});
-	});
 };
 
 /**
@@ -75,9 +88,7 @@ const deleteWholeClassFromCourse = (hook) => {
 const removeSubstitutionDuplicates = (hook) => {
 	const requestBody = hook.data;
 	if (requestBody.substitutionIds && (requestBody.substitutionIds || []).length > 0) {
-		requestBody.substitutionIds = requestBody.substitutionIds.filter(
-			(val) => !requestBody.teacherIds.includes(val),
-		);
+		requestBody.substitutionIds = requestBody.substitutionIds.filter((val) => !requestBody.teacherIds.includes(val));
 	}
 };
 
@@ -94,8 +105,8 @@ const courseInviteHook = async (context) => {
 
 const patchPermissionHook = async (context) => {
 	const query = context.params.query || {};
-	const defaultPermissionHook = (ctx) => Promise.resolve(checkScopePermissions(['COURSE_EDIT'])(ctx))
-		.then((_ctx) => restrictToUsersOwnCourses(_ctx));
+	const defaultPermissionHook = (ctx) =>
+		Promise.resolve(checkScopePermissions(['COURSE_EDIT'])(ctx)).then((_ctx) => restrictToUsersOwnCourses(_ctx));
 
 	if (query.link) {
 		const dbLink = await context.app.service('link').get(query.link); // link is used as "authorization"
@@ -116,8 +127,9 @@ const restrictChangesToArchivedCourse = async (context) => {
 		return context;
 	}
 	// course is expired
-	const disallowedKeys = Object.keys(context.data)
-		.filter((key) => !['untilDate', 'startDate', 'schoolId'].includes(key));
+	const disallowedKeys = Object.keys(context.data).filter(
+		(key) => !['untilDate', 'startDate', 'schoolId'].includes(key)
+	);
 	if (disallowedKeys.length > 0) {
 		return Promise.reject(new BadRequest('This course is archived. To activate it, please change the end date.'));
 	}

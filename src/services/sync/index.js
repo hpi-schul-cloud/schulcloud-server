@@ -1,8 +1,10 @@
-const errors = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
-const {
-	iff, isProvider,
-} = require('feathers-hooks-common');
+const { iff, isProvider } = require('feathers-hooks-common');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
+const { BadRequest } = require('../../errors');
+
 const { hasPermission } = require('../../hooks');
 
 const Syncer = require('./strategies/Syncer');
@@ -23,7 +25,7 @@ module.exports = function setup() {
 
 		async respond(data, params) {
 			if (!params.query || !params.query.target) {
-				throw new errors.BadRequest('No target supplied');
+				throw new BadRequest('No target supplied');
 			}
 			const { target } = params.query;
 			const logger = getSyncLogger(params.logStream);
@@ -49,15 +51,18 @@ module.exports = function setup() {
 		}
 	}
 
+	app.use('/sync/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/sync', new SyncService());
 
 	const syncService = app.service('/sync');
 	syncService.hooks({
 		before: {
-			all: [iff(isProvider('external'), [
-				authenticate('jwt', 'api-key'),
-				iff(((context) => context.account), hasPermission('SYNC_START')),
-			])],
+			all: [
+				iff(isProvider('external'), [
+					authenticate('jwt', 'api-key'),
+					iff((context) => context.account, hasPermission('SYNC_START')),
+				]),
+			],
 		},
 	});
 };

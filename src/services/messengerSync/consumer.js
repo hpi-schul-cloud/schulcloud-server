@@ -1,11 +1,21 @@
-const { Configuration } = require('@schul-cloud/commons');
-const { createChannel } = require('../../utils/rabbitmq');
-const { ACTIONS, requestSyncForEachSchoolUser } = require('./producer');
-const { buildAddUserMessage, messengerIsActivatedForSchool } = require('./utils');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const { getChannel } = require('../../utils/rabbitmq');
+const { ACTIONS, requestSyncForEachSchoolUser, requestRemovalOfRemovedRooms } = require('./producer');
+const {
+	buildAddUserMessage,
+	buildDeleteUserMessage,
+	buildAddCourseMessage,
+	buildDeleteCourseMessage,
+	buildAddTeamMessage,
+	buildDeleteTeamMessage,
+	expandContentIds,
+	messengerIsActivatedForSchool,
+} = require('./utils');
 const logger = require('../../logger');
 const { ObjectId } = require('../../helper/compare');
 
-let channel;
+let channelSendExternal;
+let channelReadInternal;
 
 const validateMessage = (content) => {
 	const errorMsg = `MESSENGER SYNC: invalid message in queue ${Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL')}`;
@@ -31,7 +41,7 @@ const validateMessage = (content) => {
 				logger.error(`${errorMsg}, fullSync flag has to be set for ${ACTIONS.SYNC_SCHOOL}.`, content);
 				return false;
 			}
-			break;
+			return true;
 		}
 
 		case ACTIONS.SYNC_USER: {
@@ -49,7 +59,48 @@ const validateMessage = (content) => {
 				logger.error(`${errorMsg}, one of fullSync/courses/teams has to be provided to sync a user.`, content);
 				return false;
 			}
-			break;
+			return true;
+		}
+
+		case ACTIONS.DELETE_USER: {
+			if (!content.userId) {
+				logger.error(`${errorMsg}, userId is required for ${ACTIONS.DELETE_USER}.`, content);
+				return false;
+			}
+
+			if (!ObjectId.isValid(content.userId)) {
+				logger.error(`${errorMsg}, invalid userId.`, content);
+				return false;
+			}
+			return true;
+		}
+
+		case ACTIONS.SYNC_COURSE:
+		case ACTIONS.DELETE_COURSE: {
+			if (!content.courseId) {
+				logger.error(`${errorMsg}, courseId is required for:`, content);
+				return false;
+			}
+
+			if (!ObjectId.isValid(content.courseId)) {
+				logger.error(`${errorMsg}, invalid courseId.`, content);
+				return false;
+			}
+			return true;
+		}
+
+		case ACTIONS.SYNC_TEAM:
+		case ACTIONS.DELETE_TEAM: {
+			if (!content.teamId) {
+				logger.error(`${errorMsg}, teamId is required for:`, content);
+				return false;
+			}
+
+			if (!ObjectId.isValid(content.teamId)) {
+				logger.error(`${errorMsg}, invalid teamId.`, content);
+				return false;
+			}
+			return true;
 		}
 
 		default: {
@@ -58,24 +109,22 @@ const validateMessage = (content) => {
 			return false;
 		}
 	}
-
-	return true;
 };
 
 const sendToExternalQueue = (message) => {
-	const msgJson = JSON.stringify(message);
-	const msgBuffer = Buffer.from(msgJson);
-	channel.sendToQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), msgBuffer, { persistent: true });
+	channelSendExternal.sendToQueue(message, { persistent: true });
 };
 
 const executeMessage = async (incomingMessage) => {
 	const content = JSON.parse(incomingMessage.content.toString());
+
 	if (!validateMessage(content)) {
 		// message is invalid an can not be retried
 		return false;
 	}
 
-	if (!await messengerIsActivatedForSchool(content)) {
+	await expandContentIds(content);
+	if (!messengerIsActivatedForSchool(content.school)) {
 		// school should not be synced
 		return false;
 	}
@@ -83,11 +132,42 @@ const executeMessage = async (incomingMessage) => {
 	switch (content.action) {
 		case ACTIONS.SYNC_SCHOOL: {
 			await requestSyncForEachSchoolUser(content.schoolId);
+			await requestRemovalOfRemovedRooms(content.schoolId);
 			return true;
 		}
 
 		case ACTIONS.SYNC_USER: {
 			const outgoingMessage = await buildAddUserMessage(content);
+			sendToExternalQueue(outgoingMessage);
+			return true;
+		}
+
+		case ACTIONS.DELETE_USER: {
+			const outgoingMessage = await buildDeleteUserMessage(content);
+			sendToExternalQueue(outgoingMessage);
+			return true;
+		}
+
+		case ACTIONS.SYNC_COURSE: {
+			const outgoingMessage = await buildAddCourseMessage(content);
+			sendToExternalQueue(outgoingMessage);
+			return true;
+		}
+
+		case ACTIONS.DELETE_COURSE: {
+			const outgoingMessage = await buildDeleteCourseMessage(content);
+			sendToExternalQueue(outgoingMessage);
+			return true;
+		}
+
+		case ACTIONS.SYNC_TEAM: {
+			const outgoingMessage = await buildAddTeamMessage(content);
+			sendToExternalQueue(outgoingMessage);
+			return true;
+		}
+
+		case ACTIONS.DELETE_TEAM: {
+			const outgoingMessage = await buildDeleteTeamMessage(content);
 			sendToExternalQueue(outgoingMessage);
 			return true;
 		}
@@ -99,31 +179,27 @@ const executeMessage = async (incomingMessage) => {
 	}
 };
 
-const handleMessage = (incomingMessage) => executeMessage(incomingMessage)
-	.then((success) => {
-		if (success) {
-			channel.ack(incomingMessage);
-		} else {
-			channel.reject(incomingMessage, false);
-		}
-	})
-	.catch((err) => {
-		logger.error('MESSENGER SYNC: error while handling message', err);
-		// retry message once (the second time it is redelivered)
-		return channel.reject(incomingMessage, !incomingMessage.fields.redelivered);
-	});
+const handleMessage = (incomingMessage) =>
+	executeMessage(incomingMessage)
+		.then((success) => {
+			if (success) {
+				channelReadInternal.ackMessage(incomingMessage);
+			} else {
+				channelReadInternal.rejectMessage(incomingMessage, false);
+			}
+			return success;
+		})
+		.catch((err) => {
+			logger.error('MESSENGER SYNC: error while handling message', err);
+			// retry message once (the second time it is redelivered)
+			channelReadInternal.rejectMessage(incomingMessage, !incomingMessage.fields.redelivered);
+			return false;
+		});
 
-const setup = async (app) => {
-	channel = await createChannel();
-
-	await Promise.all([
-		channel.assertQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true }),
-		channel.assertQueue(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), { durable: false }),
-	]);
-	channel.prefetch(Configuration.get('RABBITMQ_MATRIX_CONSUME_CONCURRENCY'));
-	channel.consume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), handleMessage, {
-		noAck: false,
-	});
+const setup = () => {
+	channelSendExternal = getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), { durable: false });
+	channelReadInternal = getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true });
+	channelReadInternal.consumeQueue(handleMessage, { noAck: false });
 };
 
 module.exports = setup;

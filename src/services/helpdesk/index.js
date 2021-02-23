@@ -1,4 +1,7 @@
 const service = require('feathers-mongoose');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const problemModel = require('./model');
 const hooks = require('./hooks');
 const logger = require('../../logger');
@@ -11,6 +14,8 @@ if (BODYPARSER_JSON_LIMIT === undefined) {
 
 module.exports = function () {
 	const app = this;
+
+	app.use('/helpdesk/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	const options = {
 		Model: problemModel,

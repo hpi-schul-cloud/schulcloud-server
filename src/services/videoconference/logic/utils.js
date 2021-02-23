@@ -16,21 +16,21 @@ module.exports = {
 		}
 	},
 	copyPropertyNameIfIncludedInValuesFromSourceToTarget: ({
-		source, propertyName, values, target, sourcePropertyNames = null,
+		source,
+		propertyName,
+		values,
+		target,
+		sourcePropertyNames = null,
 	}) => {
 		const propertyNames = sourcePropertyNames || Object.getOwnPropertyNames(source);
-		if (propertyNames.includes(propertyName)
-			&& Array.isArray(values)
-			&& values.includes(source[propertyName])) {
+		if (propertyNames.includes(propertyName) && Array.isArray(values) && values.includes(source[propertyName])) {
 			target[propertyName] = source[propertyName];
 			return true;
 		}
 		return false;
 	},
-	isValidNotFoundResponse: (response) => response
-		&& Array.isArray(response.messageKey)
-		&& response.messageKey.includes(MESSAGE_KEYS.NOT_FOUND),
-	isValidFoundResponse: (response) => response
-		&& Array.isArray(response.returncode)
-		&& response.returncode.includes(RESPONSE_STATUS.SUCCESS),
+	isValidNotFoundResponse: (response) =>
+		response && Array.isArray(response.messageKey) && response.messageKey.includes(MESSAGE_KEYS.NOT_FOUND),
+	isValidFoundResponse: (response) =>
+		response && Array.isArray(response.returncode) && response.returncode.includes(RESPONSE_STATUS.SUCCESS),
 };

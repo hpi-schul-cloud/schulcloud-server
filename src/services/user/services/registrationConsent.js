@@ -1,4 +1,4 @@
-const { BadRequest } = require('@feathersjs/errors');
+const { BadRequest } = require('../../../errors');
 
 const registrationConsentServiceHooks = {
 	before: {

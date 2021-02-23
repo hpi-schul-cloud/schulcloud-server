@@ -6,5 +6,10 @@ const protectFields = require('./protectFields');
 const validateParams = require('./validateParams');
 
 module.exports = {
-	updatedBy, createdBy, getDatasource, restrictToDatasourceSchool, protectFields, validateParams,
+	updatedBy,
+	createdBy,
+	getDatasource,
+	restrictToDatasourceSchool,
+	protectFields,
+	validateParams,
 };

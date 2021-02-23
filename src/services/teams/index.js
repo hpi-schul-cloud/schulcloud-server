@@ -1,17 +1,15 @@
+// eslint-disable-next-line max-classes-per-file
 const service = require('feathers-mongoose');
-const {
-	BadRequest,
-	GeneralError,
-	NotFound,
-} = require('@feathersjs/errors');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
+const { NotFound, BadRequest, GeneralError } = require('../../errors');
 const hooks = require('./hooks');
 const { warning } = require('../../logger/index');
 const { teamsModel } = require('./model');
 const { userModel } = require('../user/model');
-const {
-	createUserWithRole,
-	removeDuplicatedTeamUsers,
-} = require('./hooks/helpers');
+const { createUserWithRole, removeDuplicatedTeamUsers } = require('./hooks/helpers');
 const {
 	getBasic,
 	extractOne,
@@ -21,17 +19,11 @@ const {
 	removeInvitedUserByEmail,
 	getUpdatedSchoolIdArray,
 } = require('./helpers');
-const {
-	isArray,
-	isDefined,
-	isUndefined,
-	bsonIdToString,
-} = require('./hooks/collection');
+const { isArray, isDefined, isUndefined, bsonIdToString } = require('./hooks/collection');
 const { ScopePermissionService, ScopeListService } = require('../helpers/scopePermissions');
 // const {teamRolesToHook} = require('./hooks');
 // todo docs require
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
-const { Configuration } = require('@schul-cloud/commons');
 
 const HOST = Configuration.get('HOST');
 
@@ -44,8 +36,8 @@ class Get {
 	}
 
 	/**
-     * @param {} params
-     */
+	 * @param {} params
+	 */
 	find(params) {
 		return getSessionUser(this, params).then((sessionUser) => {
 			const { email } = sessionUser;
@@ -69,44 +61,47 @@ class Add {
 	}
 
 	/**
-     * @private
-     * @return {Promise::bsonId||stringId} Expert school id.
-     */
+	 * @private
+	 * @return {Promise::bsonId||stringId} Expert school id.
+	 */
 	_getExpertSchoolId() {
-		return this.app.service('schools').find({ query: { purpose: 'expert' } })
-			.then((schools) => extractOne(schools, '_id')
-				.then((id) => bsonIdToString(id)))
+		return this.app
+			.service('schools')
+			.find({ query: { purpose: 'expert' } })
+			.then((schools) => extractOne(schools, '_id').then((id) => bsonIdToString(id)))
 			.catch((err) => {
 				throw new GeneralError('Experte: Fehler beim Abfragen der Schule.', err);
 			});
 	}
 
 	/**
-     * @private
-     * @return {Promise::bsonId||stringId} Expert role id.
-     */
+	 * @private
+	 * @return {Promise::bsonId||stringId} Expert role id.
+	 */
 	_getExpertRoleId() {
-		return this.app.service('roles')
+		return this.app
+			.service('roles')
 			.find({ query: { name: 'expert' } })
-			.then((roles) => extractOne(roles, '_id')
-				.then((id) => bsonIdToString(id)))
+			.then((roles) => extractOne(roles, '_id').then((id) => bsonIdToString(id)))
 			.catch((err) => {
 				throw new GeneralError('Experte: Fehler beim Abfragen der Rolle.', err);
 			});
 	}
 
 	/**
-     * @private
-     * @param {String} email
-     * @return {Promise::User}
-     */
+	 * @private
+	 * @param {String} email
+	 * @return {Promise::User}
+	 */
 	async _getUsersByEmail(email) {
-		return this.app.service('users').find({
-			query: {
-				email,
-				$populate: [{ path: 'roles' }],
-			},
-		})
+		return this.app
+			.service('users')
+			.find({
+				query: {
+					email,
+					$populate: [{ path: 'roles' }],
+				},
+			})
 			.then((users) => extractOne(users))
 			.catch((err) => {
 				throw err;
@@ -114,13 +109,11 @@ class Add {
 	}
 
 	/**
-     * @private
-     * @param {Object::{esid::String, email::String, teamId::String, importHash::String}} opt
-     * @param {Boolean} isUserCreated default = false
-     */
-	async _generateLink({
-		esid, email, teamId, importHash,
-	}, isUserCreated = false) {
+	 * @private
+	 * @param {Object::{esid::String, email::String, teamId::String, importHash::String}} opt
+	 * @param {Boolean} isUserCreated default = false
+	 */
+	async _generateLink({ esid, email, teamId, importHash }, isUserCreated = false) {
 		if (isUserCreated === false && isUndefined(importHash)) {
 			return Promise.resolve({ shortLink: `${HOST}/teams/${teamId}` });
 		}
@@ -134,7 +127,8 @@ class Add {
 			});
 		}
 
-		return app.service('/expertinvitelink')
+		return app
+			.service('/expertinvitelink')
 			.create({ esid, email })
 			.catch((err) => {
 				throw new GeneralError('Experte: Fehler beim Erstellen des Einladelinks.', err);
@@ -142,16 +136,16 @@ class Add {
 	}
 
 	/**
-     * Use for email invites
-     * @private
-     * @param {Object::{email::String, role::String, teamId::String}} opt
-     * @return {Object::
-     *      schoolId::String,
-     *      isUserCreated::Boolean,
-     *      user::Object::User,
-     *      team::Object::Team,
-     * }}
-     */
+	 * Use for email invites
+	 * @private
+	 * @param {Object::{email::String, role::String, teamId::String}} opt
+	 * @return {Object::
+	 *      schoolId::String,
+	 *      isUserCreated::Boolean,
+	 *      user::Object::User,
+	 *      team::Object::Team,
+	 * }}
+	 */
 	async _collectUserAndLinkData({ email, role, teamId }) {
 		return Promise.all([
 			// eslint-disable-next-line no-underscore-dangle
@@ -161,60 +155,66 @@ class Add {
 			// eslint-disable-next-line no-underscore-dangle
 			this._getExpertRoleId(),
 			getTeam(this, teamId),
-		]).then(async ([user, schoolId, expertRoleId, team]) => {
-			let isUserCreated = false;
-			let isResend = false;
-			let userRoleName;
-			if (isUndefined(user) && role === 'teamexpert') {
-				const newUser = {
-					email, schoolId, roles: [expertRoleId], firstName: 'Experte', lastName: 'Experte',
+		])
+			.then(async ([user, schoolId, expertRoleId, team]) => {
+				let isUserCreated = false;
+				let isResend = false;
+				let userRoleName;
+				if (isUndefined(user) && role === 'teamexpert') {
+					const newUser = {
+						email,
+						schoolId,
+						roles: [expertRoleId],
+						firstName: 'Experte',
+						lastName: 'Experte',
+					};
+					// eslint-disable-next-line no-param-reassign
+					user = await userModel.create(newUser);
+					isUserCreated = true;
+				}
+
+				if (isUserCreated || isDefined(role)) {
+					userRoleName = role;
+				} else {
+					const teamUser = team.invitedUserIds.find((invited) => invited.email === email);
+					isResend = true;
+					userRoleName = (teamUser || {}).role || role;
+				}
+
+				// if role teamadmin by import from teacher over email and
+				// no user exist, the user is undefined
+				if (isUndefined(user)) {
+					throw new BadRequest('User must exist.');
+				}
+				if (isUndefined(userRoleName)) {
+					throw new BadRequest('For this case the team role for user must be set.');
+				}
+				return {
+					esid: schoolId,
+					isUserCreated,
+					isResend,
+					user,
+					team,
+					userRoleName,
+					importHash: user.importHash,
 				};
-				// eslint-disable-next-line no-param-reassign
-				user = await userModel.create(newUser);
-				isUserCreated = true;
-			}
-
-			if (isUserCreated || isDefined(role)) {
-				userRoleName = role;
-			} else {
-				const teamUser = team.invitedUserIds.find((invited) => invited.email === email);
-				isResend = true;
-				userRoleName = (teamUser || {}).role || role;
-			}
-
-			// if role teamadmin by import from teacher over email and
-			// no user exist, the user is undefined
-			if (isUndefined(user)) {
-				throw new BadRequest('User must exist.');
-			}
-			if (isUndefined(userRoleName)) {
-				throw new BadRequest('For this case the team role for user must be set.');
-			}
-			return {
-				esid: schoolId,
-				isUserCreated,
-				isResend,
-				user,
-				team,
-				userRoleName,
-				importHash: user.importHash,
-			};
-		}).catch((err) => {
-			warning(err);
-			throw new BadRequest('Can not resolve the user information.');
-		});
+			})
+			.catch((err) => {
+				warning(err);
+				throw new BadRequest('Can not resolve the user information.');
+			});
 	}
 
 	/**
-     * Format the response.
-     * @private
-     * @param {Object} opt
-     * @param {Object} opt.linkData
-     * @param {Object} opt.user
-     * @param {Object} [opt.isUserCreated = false]
-     * @param {Object} [opt.isResend = false]
-     * @param {Object} [opt.email]
-     */
+	 * Format the response.
+	 * @private
+	 * @param {Object} opt
+	 * @param {Object} opt.linkData
+	 * @param {Object} opt.user
+	 * @param {Object} [opt.isUserCreated = false]
+	 * @param {Object} [opt.isResend = false]
+	 * @param {Object} [opt.email]
+	 */
 	static _response(opt) {
 		if (isUndefined([opt.linkData, opt.user], 'OR')) {
 			throw new BadRequest('Can not complete the response');
@@ -226,16 +226,16 @@ class Add {
 	}
 
 	/**
-     * @private
-     * @param {Object::{email::String, role::String, teamId::String}} opt
-     * @param {Object::params} params The request params.
-     * @return {Promise::{
-     * message: 'Success!',
-     * linkData::Object~from this._generateLink(),
-     * user::Object::User,
-     * role::String
-     * }}
-     */
+	 * @private
+	 * @param {Object::{email::String, role::String, teamId::String}} opt
+	 * @param {Object::params} params The request params.
+	 * @return {Promise::{
+	 * message: 'Success!',
+	 * linkData::Object~from this._generateLink(),
+	 * user::Object::User,
+	 * role::String
+	 * }}
+	 */
 	async _userImportById(teamId, { userId, role }, params) {
 		const [ref, user, team] = await getBasic(this, teamId, params, userId);
 		const { schoolId } = user;
@@ -253,10 +253,10 @@ class Add {
 	}
 
 	/**
-     * @private
-     * @param {Obejct::team.userIds} {userIds} The userIds *must* be *popluated*
-     * @throws if user already inside this team
-     */
+	 * @private
+	 * @param {Obejct::team.userIds} {userIds} The userIds *must* be *popluated*
+	 * @throws if user already inside this team
+	 */
 	static _throwErrorIfUserExistByEmail({ userIds }, email) {
 		if (!isArray(userIds)) {
 			throw new BadRequest('Wrong input.');
@@ -274,18 +274,18 @@ class Add {
 	}
 
 	/**
-     * The schoolIds for new added users will not updated inside this step.
-     * It will manage if the user accpet the invite.
-     * @private
-     * @param {Object::{email::String, role::String, teamId::String}} opt
-     * @param {Object::params} params The request params.
-     * @return {Promise::{
-     *      message: 'Success!',
-     *      linkData::Object~from this._generateLink(),
-     *      user::Object::User,
-     *      role::String
-     * }}
-     */
+	 * The schoolIds for new added users will not updated inside this step.
+	 * It will manage if the user accpet the invite.
+	 * @private
+	 * @param {Object::{email::String, role::String, teamId::String}} opt
+	 * @param {Object::params} params The request params.
+	 * @return {Promise::{
+	 *      message: 'Success!',
+	 *      linkData::Object~from this._generateLink(),
+	 *      user::Object::User,
+	 *      role::String
+	 * }}
+	 */
 	async _userImportByEmail(teamId, { email, role }, params) {
 		// let { email, role } = data;
 		// eslint-disable-next-line no-param-reassign
@@ -316,21 +316,33 @@ class Add {
 		}
 		return Promise.all([
 			// eslint-disable-next-line no-underscore-dangle
-			this._generateLink({
-				esid, email, teamId, importHash,
-			}, isUserCreated),
+			this._generateLink(
+				{
+					esid,
+					email,
+					teamId,
+					importHash,
+				},
+				isUserCreated
+			),
 			patchTeam(this, teamId, { invitedUserIds }, params),
 			// eslint-disable-next-line no-underscore-dangle
-		]).then(([linkData]) => Add._response({
-			linkData, user, isUserCreated, isResend, email,
-		}));
+		]).then(([linkData]) =>
+			Add._response({
+				linkData,
+				user,
+				isUserCreated,
+				isResend,
+				email,
+			})
+		);
 	}
 
 	/**
-     * @param {String} teamId
-     * @param {Object::{email::String, userId::String, role::String}} data
-     * @param {Object::params} params The request params.
-     */
+	 * @param {String} teamId
+	 * @param {Object::{email::String, userId::String, role::String}} data
+	 * @param {Object::params} params The request params.
+	 */
 	patch(teamId, data, params) {
 		try {
 			if (isDefined(data.role) && ['teamexpert', 'teamadministrator'].includes(data.role) === false) {
@@ -372,9 +384,9 @@ class Accept {
 	}
 
 	/**
-     * @param {*} id
-     * @param {*} params
-     */
+	 * @param {*} id
+	 * @param {*} params
+	 */
 	get(teamId, params) {
 		return getBasic(this, teamId, params).then(([ref, sessionUser, team]) => {
 			const { email, schoolId } = sessionUser;
@@ -394,9 +406,17 @@ class Accept {
 			const schoolIds = getUpdatedSchoolIdArray(team, sessionUser);
 			const accept = { userId, teamId };
 
-			return patchTeam(this, teamId, {
-				invitedUserIds, userIds, schoolIds, accept,
-			}, params);
+			return patchTeam(
+				this,
+				teamId,
+				{
+					invitedUserIds,
+					userIds,
+					schoolIds,
+					accept,
+				},
+				params
+			);
 		});
 	}
 
@@ -416,10 +436,10 @@ class Remove {
 	}
 
 	/**
-     * @param {*} id
-     * @param {*} data
-     * @param {*} params
-     */
+	 * @param {*} id
+	 * @param {*} data
+	 * @param {*} params
+	 */
 	patch(teamId, { email }, params) {
 		if (isUndefined(email)) {
 			throw new BadRequest('Missing parameter.');
@@ -445,6 +465,8 @@ module.exports = function setup() {
 		},
 		lean: { virtuals: true },
 	};
+
+	app.use('/teams/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/teams', service(options));
 	app.use('/teams/extern/get', new Get());
@@ -479,7 +501,6 @@ module.exports = function setup() {
 		after: hooks.afterAdmin,
 	});
 
-
 	ScopePermissionService.initialize(app, '/teams/:scopeId/userPermissions', async (userId, team) => {
 		// Return all permissions of the user's team role within the given team
 		const [teamUser] = team.userIds.filter((u) => equalIds(u.userId, userId));
@@ -501,12 +522,16 @@ module.exports = function setup() {
 		// into the role with an after-hook.
 		// We need to use map+filter here, because the role-lookup is async and cannot
 		// be handled by array#filter (which is inherently synchronous) alone.
-		const teams = (await Promise.all(result.data.map(async (t) => {
-			const [u] = t.userIds.filter((i) => equalIds(i.userId, user._id));
-			if (!u.role) return false;
-			const role = await app.service('roles').get(u.role);
-			return permissions.every((p) => role.permissions.includes(p)) ? t : undefined;
-		}))).filter((e) => e);
+		const teams = (
+			await Promise.all(
+				result.data.map(async (t) => {
+					const [u] = t.userIds.filter((i) => equalIds(i.userId, user._id));
+					if (!u.role) return false;
+					const role = await app.service('roles').get(u.role);
+					return permissions.every((p) => role.permissions.includes(p)) ? t : undefined;
+				})
+			)
+		).filter((e) => e);
 		return teams;
 	});
 };

@@ -1,0 +1,222 @@
+security:
+  - jwtBearer: []
+info:
+  title: Schul-Cloud WOPI Service API
+  description:
+    This is the API specification for the Schul-Cloud WOPI service.
+    
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+components:
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    wopi_metadata:
+      description: metadata according to wopi standard
+      type: object
+      properties:
+        SupportsCobalt:
+          type: boolean
+        SupportsContainers:
+          type: boolean
+        SupportsDeleteFile:
+          type: boolean
+        SupportsEcosystem:
+          type: boolean
+        SupportsExtendedLockLength:
+          type: boolean
+        SupportsFolders:
+          type: boolean
+        SupportsGetFileWopiSrc:
+          type: boolean
+        SupportsGetLock:
+          type: boolean
+        SupportsLocks:
+          type: boolean
+        SupportsRename:
+          type: boolean
+        SupportsUpdate:
+          type: boolean
+        SupportsUserInfo:
+          type: boolean
+        UserCanRename:
+          type: boolean
+        OwnerId:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        UserId:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        BaseFileName:
+          type: string
+        Size:
+          type: integer
+        Version:
+          type: integer
+        UserFriendlyName:
+          type: string
+        UserCanWrite:
+          type: boolean
+        UserCanNotWriteRelative:
+          type: boolean
+        
+    files:
+      description: TODO
+paths:
+  '/wopi/files/{fileId}/contents':
+    get:
+      parameters:
+        - in: path
+          name: fileId
+          schema:
+            type: string
+          required: true
+          description: fileId parameter
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: retrieves a file`s binary contents.
+      summary: ''
+      tags:
+        - wopi
+      security:
+        - jwtBearer: []
+    post:
+      parameters:
+        - in: path
+          name: fileId
+          schema:
+            type: string
+          required: true
+          description: fileId parameter
+        - in: header
+          name: x-wopi-override
+          schema:
+            type: string
+            enum: [DELETE, LOCK, GET_LOCK, UNLOCK, REFRESH_LOCK, RENAME_FILE, GET_SHARE_URL, PUT_USER_INFO]
+          required: true
+          description: the wopi operation to perform
+        - in: header
+          name: x-wopi-requestedname
+          schema:
+            type: string
+          required: true
+          description: A UTF-7 encoded string that is a file name, not including the file extension.
+        - in: header
+          name: x-wopi-lock
+          schema:
+            type: string
+            format: binary
+          required: true
+          description: A string to identify the lock to a file. required for 'LOCK', 'PUT', 'REFRESH_LOCK', 'UNLOCK'.
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: updates a file’s binary contents, file has to exist in schulcloud db.
+      summary: ''
+      tags:
+        - wopi
+      security:
+        - jwtBearer: []
+  '/wopi/files/{fileId}':
+    get:
+      parameters:
+        - in: path
+          name: fileId
+          schema:
+            type: string
+          required: true
+          description: fileId parameter
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/wopi_metadata'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: returns information about a file, a user’s permissions on that file, and general information about the capabilities that the WOPI host has on the file.
+      summary: ''
+      tags:
+        - wopi
+      security:
+        - jwtBearer: []
+    post:
+      parameters:
+        - in: path
+          name: fileId
+          schema:
+            type: string
+          required: true
+          description: fileId parameter
+        - in: header
+          name: x-wopi-override
+          schema:
+            type: string
+            enum: [DELETE, LOCK, GET_LOCK, UNLOCK, REFRESH_LOCK, RENAME_FILE, GET_SHARE_URL, PUT_USER_INFO]
+          required: true
+          description: the wopi operation to perform
+        - in: header
+          name: x-wopi-requestedname
+          schema:
+            type: string
+          required: true
+          description: A UTF-7 encoded string that is a file name, not including the file extension.
+        - in: header
+          name: x-wopi-lock
+          schema:
+            type: string
+          required: true
+          description: A string to identify the lock to a file. required for 'LOCK', 'PUT', 'REFRESH_LOCK', 'UNLOCK'.
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                {}
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Performs a wopi request specified with the x-wopi-override and x-wopi-requestedname headers.
+      summary: ''
+      tags:
+        - wopi
+      security:
+        - jwtBearer: []
+  
+openapi: 3.0.2
+tags:
+  - name: wopi
+    description: A service for handling the wopi GetFile & PutFile operation.
+      More information under https://wopirest.readthedocs.io/en/latest/

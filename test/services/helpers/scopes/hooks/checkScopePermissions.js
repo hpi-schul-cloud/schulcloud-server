@@ -1,21 +1,23 @@
 const { expect } = require('chai');
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
 
+const { BadRequest, Forbidden } = require('../../../../../src/errors');
 const {
 	getScopePermissions,
 	checkScopePermissions,
 } = require('../../../../../src/services/helpers/scopePermissions/hooks/checkScopePermissions');
 
-const ALLOWED_USER_ID = (new ObjectId()).toString();
+const ALLOWED_USER_ID = new ObjectId().toString();
 const ALLOWED_USER_PERMISSIONS = ['EAT', 'THROW_AWAY'];
 const EXISTING_SCOPE = 'chocolateBars';
 const getApp = (omitHandler) => ({
 	service: (name) => {
 		if (name === `/${EXISTING_SCOPE}/:scopeId/userPermissions`) {
-			return omitHandler ? undefined : {
-				get: (id) => (id === ALLOWED_USER_ID ? ALLOWED_USER_PERMISSIONS : []),
-			};
+			return omitHandler
+				? undefined
+				: {
+						get: (id) => (id === ALLOWED_USER_ID ? ALLOWED_USER_PERMISSIONS : []),
+				  };
 		}
 		return undefined;
 	},
@@ -42,7 +44,7 @@ describe('getScopePermissions', () => {
 		expect(result).to.deep.equal([]);
 	});
 
-	it('should return the user\'s permissions in the given scope', async () => {
+	it("should return the user's permissions in the given scope", async () => {
 		const app = getApp();
 		const result = await fut(app, ALLOWED_USER_ID, { id: 42, name: EXISTING_SCOPE });
 		expect(result).to.deep.equal(ALLOWED_USER_PERMISSIONS);
@@ -51,9 +53,7 @@ describe('getScopePermissions', () => {
 	it('should fail if userId is not valid', async () => {
 		const app = getApp();
 		const examples = ['hjfsut34ruzgu', undefined, null, 672476734677374376434, []];
-		const results = await Promise.all(examples.map(
-			(example) => fut(app, example, { id: 824, name: EXISTING_SCOPE }),
-		));
+		const results = await Promise.all(examples.map((example) => fut(app, example, { id: 824, name: EXISTING_SCOPE })));
 		expect(results).to.deep.equal([[], [], [], [], []]);
 	});
 
@@ -64,7 +64,7 @@ describe('getScopePermissions', () => {
 			throw new Error('This should never happen');
 		} catch (err) {
 			expect(err).to.be.instanceOf(BadRequest);
-			expect(err.message).to.include('no userPermission service for the scope \'jellyBeans\'.');
+			expect(err.message).to.include("no userPermission service for the scope 'jellyBeans'.");
 		}
 	});
 });
@@ -97,7 +97,7 @@ describe('checkScopePermissions', () => {
 		}
 	});
 
-	it('should use the scope\'s userPermission service to resolve permissions', async () => {
+	it("should use the scope's userPermission service to resolve permissions", async () => {
 		const context = getContext({ userId: ALLOWED_USER_ID });
 		try {
 			await fut(['DRINK'])(context);
@@ -123,7 +123,7 @@ describe('checkScopePermissions', () => {
 			expect.fail('This call should not have failed.');
 		}
 
-		context.userId = (new ObjectId()).toString();
+		context.userId = new ObjectId().toString();
 		try {
 			const result = await fut([])(context);
 			expect(result).to.deep.equal(context);
@@ -161,7 +161,7 @@ describe('checkScopePermissions', () => {
 	});
 
 	it('should not allow access for users without the required permissions', async () => {
-		const context = getContext({ userId: (new ObjectId()).toString() });
+		const context = getContext({ userId: new ObjectId().toString() });
 		try {
 			await fut(['DRINK'])(context);
 			throw new Error('This should never happen');

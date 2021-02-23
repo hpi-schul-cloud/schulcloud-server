@@ -1,5 +1,4 @@
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
-
+const { Forbidden, BadRequest } = require('../../../errors');
 const SchoolYearFacade = require('../../school/logic/year');
 const logger = require('../../../logger');
 const { classModel } = require('../model');
@@ -7,12 +6,8 @@ const { classModel } = require('../model');
 // private functions
 const findDuplicates = async (successor, app) => {
 	const query = { $and: [{ name: successor.name }] };
-	query.$and.push(
-		successor.gradeLevel ? { gradeLevel: successor.gradeLevel } : { gradeLevel: { $exists: false } },
-	);
-	query.$and.push(
-		successor.year ? { year: successor.year } : { year: { $exists: false } },
-	);
+	query.$and.push(successor.gradeLevel ? { gradeLevel: successor.gradeLevel } : { gradeLevel: { $exists: false } });
+	query.$and.push(successor.year ? { year: successor.year } : { year: { $exists: false } });
 	query.$and.push({ schoolId: successor.schoolId });
 	// for some reason this only works via the model, the service always returns all classes on the school.
 	// eventually, this should go against the class service
@@ -39,7 +34,7 @@ const constructSuccessor = async (currentClass, app) => {
 	}
 
 	if (currentClass.year) {
-		const school = await (app.service('schools').get(currentClass.schoolId));
+		const school = await app.service('schools').get(currentClass.schoolId);
 		const schoolYears = new SchoolYearFacade(school.years.schoolYears, school);
 		const successorYear = await schoolYears.getNextYearAfter(currentClass.year);
 		if (!successorYear) {
@@ -128,9 +123,9 @@ class ClassSuccessorService {
 	}
 
 	/**
-     * Register methods of the service to listen to events of other services
-     * @listens classes:removed
-     */
+	 * Register methods of the service to listen to events of other services
+	 * @listens classes:removed
+	 */
 	registerEventListeners() {
 		this.app.service('/classes').on('removed', ClassSuccessorService.onClassRemoved.bind(this));
 	}

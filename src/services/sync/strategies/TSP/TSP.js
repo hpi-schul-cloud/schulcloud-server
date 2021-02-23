@@ -2,8 +2,8 @@ const rp = require('request-promise-native');
 const url = require('url');
 const moment = require('moment');
 const { JWE, JWK, JWS } = require('jose');
-const uuid = require('uuid/v4');
-const { Configuration } = require('@schul-cloud/commons');
+const { v4: uuidv4 } = require('uuid');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const accountModel = require('../../../account/model');
 
 const ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes
@@ -14,10 +14,7 @@ const SIGNATURE_KEY = Configuration.get('TSP_API_SIGNATURE_KEY');
 const BASE_URL = Configuration.get('TSP_API_BASE_URL');
 const CLIENT_ID = Configuration.get('TSP_API_CLIENT_ID');
 const CLIENT_SECRET = Configuration.get('TSP_API_CLIENT_SECRET');
-const {
-	HOST,
-	SC_DOMAIN,
-} = require('../../../../../config/globals');
+const { HOST, SC_DOMAIN } = require('../../../../../config/globals');
 
 const ENCRYPTION_OPTIONS = { alg: 'dir', enc: 'A128CBC-HS256' };
 const SIGNATURE_OPTIONS = { alg: 'HS512' };
@@ -27,11 +24,8 @@ const SIGNATURE_OPTIONS = { alg: 'HS512' };
  * @param {String} string a string
  * @returns {String} the converted string
  */
-const toBase64Url = (string) => Buffer.from(string, 'utf-8')
-	.toString('base64')
-	.replace(/=/g, '')
-	.replace(/\+/g, '-')
-	.replace(/\//g, '_');
+const toBase64Url = (string) =>
+	Buffer.from(string, 'utf-8').toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
 
 /**
  * Generates a username for a given user-like object
@@ -59,6 +53,35 @@ const getUsername = (user) => {
 const getEmail = (user) => `${getUsername(user)}@schul-cloud.org`;
 
 /**
+ * Create a consent if the user is created via TSP sync.
+ * In this case, the consent process was already handled from the TSP side.
+ * During the user creation process, the age of the users is unknown.
+ * Therfore, we create a user and a parent consent in any case.
+ */
+const createTSPConsent = () => {
+	const currentDate = Date.now();
+	const tspConsent = {
+		form: 'digital',
+		source: 'tsp-sync',
+		privacyConsent: true,
+		termsOfUseConsent: true,
+		dateOfPrivacyConsent: currentDate,
+		dateOfTermsOfUseConsent: currentDate,
+	};
+
+	return {
+		userConsent: tspConsent,
+		parentConsents: [tspConsent],
+	};
+};
+
+/**
+ * During the user creation process, the age of the users is unknown.
+ * we just take a random date
+ */
+const createBirthDay = () => new Date();
+
+/**
  * Registers a user and creates an account
  * @param {Object} app the Feathers app
  * @param {Object} userOptions options to be provided to the user service
@@ -70,17 +93,18 @@ const getEmail = (user) => `${getUsername(user)}@schul-cloud.org`;
 const createUserAndAccount = async (app, userOptions, roles, systemId) => {
 	const username = getUsername(userOptions);
 	const email = getEmail(userOptions);
-	const { pin } = await app.service('registrationPins').create({
-		email,
-		verified: true,
-		silent: true,
-	});
-	const user = await app.service('users').create({
+	let userData = {
 		...userOptions,
-		pin,
 		email,
 		roles,
-	});
+	};
+	if (Configuration.get('FEATURE_TSP_AUTO_CONSENT_ENABLED') === true) {
+		const birthday = createBirthDay();
+		const consent = createTSPConsent();
+		// ignore userToConsent from consent utils
+		userData = { ...userData, birthday, consent };
+	}
+	const user = await app.service('users').create(userData);
 	await accountModel.create({
 		userId: user._id,
 		username,
@@ -88,49 +112,6 @@ const createUserAndAccount = async (app, userOptions, roles, systemId) => {
 		activated: true,
 	});
 	return user;
-};
-
-/**
- * Create a consent if the user is created via TSP sync.
- * In this case, the consent process was already handled from the TSP side.
- * @param {Object} app the Feathers app
- * @param {User} student the student created via TSP sync
- * @async
- */
-const createTSPConsent = async (app, student) => {
-	const currentDate = Date.now();
-	const tspConsent = {
-		form: 'digital',
-		source: 'tsp-sync',
-		privacyConsent: true,
-		termsOfUseConsent: true,
-		dateOfPrivacyConsent: currentDate,
-		dateOfTermsOfUseConsent: currentDate,
-	};
-
-	/**
-	 * During the user creation process, the age of the users is unknown.
-	 * Therfore, we create a user and a parent consent in any case.
-	 */
-	await app.service('consents').create({
-		userId: student._id,
-		userConsent: tspConsent,
-		parentConsents: [tspConsent],
-	});
-};
-
-/**
- * Add a dummy birthday if the user is created via TSP sync.
- * In this case, the consent process was already handled from the TSP side and the birthday is not needed.
- * @param {Object} app the Feathers app
- * @param {User} user the user created via TSP sync
- * @async
- */
-const addDummyBirthday = async (app, user) => app.service('users').patch(user._id, { birthday: new Date() });
-
-const shortenedRegistrationProcess = async (app, student) => {
-	await createTSPConsent(app, student);
-	await addDummyBirthday(app, student);
 };
 
 /**
@@ -155,18 +136,26 @@ const findSchool = async (app, tspIdentifier) => {
 	return null;
 };
 
-const getEncryptionKey = () => JWK.asKey({
-	kty: 'oct', k: ENCRYPTION_KEY, alg: ENCRYPTION_OPTIONS.enc, use: 'enc',
-});
+const getEncryptionKey = () =>
+	JWK.asKey({
+		kty: 'oct',
+		k: ENCRYPTION_KEY,
+		alg: ENCRYPTION_OPTIONS.enc,
+		use: 'enc',
+	});
 const encryptToken = (payload) => JWE.encrypt(payload, getEncryptionKey(), ENCRYPTION_OPTIONS);
 const decryptToken = (payload) => {
 	const decryptedPayload = JWE.decrypt(payload, getEncryptionKey(), ENCRYPTION_OPTIONS);
 	return JSON.parse(decryptedPayload.toString());
 };
 
-const getSignKey = () => JWK.asKey({
-	kty: 'oct', k: toBase64Url(SIGNATURE_KEY), alg: SIGNATURE_OPTIONS.alg, use: 'sig',
-});
+const getSignKey = () =>
+	JWK.asKey({
+		kty: 'oct',
+		k: toBase64Url(SIGNATURE_KEY),
+		alg: SIGNATURE_OPTIONS.alg,
+		use: 'sig',
+	});
 const signToken = (token) => JWS.sign(token, getSignKey(), SIGNATURE_OPTIONS);
 const verifyToken = (token) => JWS.verify(token, getSignKey(), SIGNATURE_OPTIONS);
 
@@ -206,7 +195,7 @@ class TspApi {
 			sub: HOST,
 			exp: issueDate + lifetime,
 			iat: issueDate,
-			jti: uuid(),
+			jti: uuidv4(),
 		});
 		const jwt = signToken(encryptToken(payload));
 		this.lastToken = jwt;
@@ -256,7 +245,6 @@ module.exports = {
 	getUsername,
 	getEmail,
 	createUserAndAccount,
-	shortenedRegistrationProcess,
 	findSchool,
 	encryptToken,
 	decryptToken,

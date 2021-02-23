@@ -1,5 +1,6 @@
-const { Configuration } = require('@schul-cloud/commons');
-const {	GeneralError } = require('@feathersjs/errors');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+
+const { GeneralError } = require('../../errors');
 const eventListener = require('./eventListener');
 const producer = require('./producer');
 const consumer = require('./consumer');

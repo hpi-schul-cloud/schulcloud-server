@@ -1,12 +1,12 @@
 const { expect } = require('chai');
 const mockery = require('mockery');
-const commons = require('@schul-cloud/commons');
+const commons = require('@hpi-schul-cloud/commons');
 const redisMock = require('./utils/redis/redisMock');
 
 const { Configuration } = commons; // separated from require, mocked in tests
 
 describe('handleAutoLogout hook', function test() {
-	this.timeout(10000);
+	this.timeout(20000);
 
 	let fut;
 	let redisHelper;
@@ -15,9 +15,8 @@ describe('handleAutoLogout hook', function test() {
 	let server;
 	let testObjects;
 
-
 	before(async () => {
-		configBefore = Configuration.toObject(); // deep copy current config
+		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('REDIS_URI', '//validHost:3333');
 		Configuration.set('JWT_TIMEOUT_SECONDS', 7200);
 
@@ -27,7 +26,7 @@ describe('handleAutoLogout hook', function test() {
 			useCleanCache: true,
 		});
 		mockery.registerMock('redis', redisMock);
-		mockery.registerMock('@schul-cloud/commons', commons);
+		mockery.registerMock('@hpi-schul-cloud/commons', commons);
 
 		delete require.cache[require.resolve('../src/utils/redis')];
 		delete require.cache[require.resolve('../src/app')];
@@ -35,7 +34,7 @@ describe('handleAutoLogout hook', function test() {
 		delete require.cache[require.resolve('../src/app.hooks')];
 		/* eslint-disable global-require */
 		redisHelper = require('../src/utils/redis');
-		app = require('../src/app');
+		app = await require('../src/app');
 		testObjects = require('./services/helpers/testObjects')(app);
 		fut = require('../src/app.hooks').handleAutoLogout;
 		/* eslint-enable global-require */

@@ -6,16 +6,12 @@ const chaiAsPromised = require('chai-as-promised');
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const HOST = Configuration.get('HOST');
 
-const app = require('../../../../src/app');
-const {
-	createTestUser,
-	createTestActivation,
-	cleanup,
-} = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const { createTestUser, createTestActivation, cleanup } = require('../../helpers/testObjects')(appPromise);
 
 const util = require('../../../../src/services/activation/utils/generalUtils');
 const customUtils = require('../../../../src/services/activation/utils/customStrategyUtils');
@@ -35,10 +31,12 @@ const createEntry = async () => {
 };
 
 describe('activation/utils utils', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after(async () => {
@@ -147,7 +145,7 @@ describe('activation/utils utils', () => {
 
 		entry.state = util.STATE.NOT_STARTED;
 		entry.updatedAt = new Date(
-			Date.parse(entry.updatedAt) - 1000 * Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS') - 1000,
+			Date.parse(entry.updatedAt) - 1000 * Configuration.get('ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS') - 1000
 		);
 		await expect(util.validEntry(entry)).to.be.rejectedWith(customErrorMessages.ACTIVATION_LINK_EXPIRED);
 	});

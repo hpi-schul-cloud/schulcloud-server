@@ -1,15 +1,13 @@
 const mockery = require('mockery');
 const { expect } = require('chai');
 
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 
 const {
 	hasEditPermissionForUser,
 	hasReadPermissionForUser,
-} =	require('../../../../src/services/user/hooks/index.hooks');
-
-const userService = app.service('users');
+} = require('../../../../src/services/user/hooks/index.hooks');
 
 /**
  * Warning: Role Changes are not handled yet.
@@ -17,11 +15,10 @@ const userService = app.service('users');
  * @returns the hasEditPermissionForUser hook with mocked dependencies
  */
 const hasPermissionHookMockGenerator = (loggedinUserPermissions = []) => {
-	const globalHookMock = ({
-		hasPermission: (permissions) => () => permissions.some(
-			(permission) => loggedinUserPermissions.includes(permission),
-		),
-	});
+	const globalHookMock = {
+		hasPermission: (permissions) => () =>
+			permissions.some((permission) => loggedinUserPermissions.includes(permission)),
+	};
 	mockery.enable({
 		warnOnReplace: false,
 		warnOnUnregistered: false,
@@ -40,18 +37,25 @@ const hasPermissionHookMockGenerator = (loggedinUserPermissions = []) => {
  * @param sucess {Promise} - should the promise succeed?
  * @returns the promise
  */
-const assertPromiseStatus = (promise, success) => promise.then((result) => {
-	expect(success).to.be.ok;
-	return result;
-}).catch((error) => {
-	expect(success).to.not.be.ok;
-	return error;
-});
+const assertPromiseStatus = (promise, success) =>
+	promise
+		.then((result) => {
+			expect(success).to.be.ok;
+			return result;
+		})
+		.catch((error) => {
+			expect(success).to.not.be.ok;
+			return error;
+		});
 
 describe('hasEditPermissionForUser', () => {
+	let app;
+	let userService;
 	let server;
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		userService = app.service('users');
+		server = await app.listen(0);
 	});
 
 	afterEach(async () => {
@@ -107,7 +111,6 @@ describe('hasEditPermissionForUser', () => {
 		mockery.disable();
 	});
 
-
 	it('can not edit a teacher when current user has not the TEACHER_EDIT permission', async () => {
 		const testHook = hasPermissionHookMockGenerator([]);
 		const { _id: targetId } = await testObjects.createTestUser({ roles: ['teacher'] });
@@ -143,9 +146,13 @@ describe('hasEditPermissionForUser', () => {
 });
 
 describe('hasReadPermissionForUser', () => {
+	let app;
+	let userService;
 	let server;
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		userService = app.service('users');
+		server = await app.listen(0);
 	});
 
 	afterEach(async () => {
@@ -200,7 +207,6 @@ describe('hasReadPermissionForUser', () => {
 		assertPromiseStatus(testHook(context), true);
 		mockery.disable();
 	});
-
 
 	it('can not read a teacher when current user has not the TEACHER_LIST permission', async () => {
 		const testHook = hasPermissionHookMockGenerator([]);

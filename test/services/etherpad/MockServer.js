@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const logger = require('../../../src/logger');
 
@@ -8,7 +8,7 @@ const logger = require('../../../src/logger');
 module.exports = function MockServer(
 	url = 'http://localhost:58373',
 	path = Configuration.get('ETHERPAD_API_PATH'),
-	resolver,
+	resolver
 ) {
 	const app = express();
 	app.use(bodyParser.json()); // for parsing application/json
@@ -98,6 +98,9 @@ module.exports = function MockServer(
 		}
 	});
 	return {
-		server, app, port, uris,
+		server,
+		app,
+		port,
+		uris,
 	};
 };

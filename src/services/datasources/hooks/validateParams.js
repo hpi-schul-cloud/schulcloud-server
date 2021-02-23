@@ -1,4 +1,4 @@
-const {	BadRequest } = require('@feathersjs/errors');
+const { BadRequest } = require('../../../errors');
 
 /**
  * validates the contents of the params.

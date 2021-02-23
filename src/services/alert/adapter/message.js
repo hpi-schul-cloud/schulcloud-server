@@ -30,50 +30,50 @@ class Message {
 	}
 
 	/**
-     * Set Title of Message
-     */
+	 * Set Title of Message
+	 */
 	set title(value) {
 		this.mTitle = value;
 	}
 
 	/**
-     * Set Text of Message
-     */
+	 * Set Text of Message
+	 */
 	set text(value) {
 		this.mText = value;
 	}
 
 	/**
-     * Set Timestamp of Message
-     */
+	 * Set Timestamp of Message
+	 */
 	set timestamp(value) {
 		this.mTimestamp = value;
 	}
 
 	/**
-     * Set Origin of Message
-     */
+	 * Set Origin of Message
+	 */
 	set page(value) {
 		this.mPage = value;
 	}
 
 	/**
-     * Set Id of Message
-     */
+	 * Set Id of Message
+	 */
 	set messageId(value) {
 		this.mMessageId = value;
 	}
 
 	/**
-     * Set URL to link to
-     */
+	 * Set URL to link to
+	 */
 	set url(value) {
 		this.mUrl = value;
 	}
 
 	/**
-     * Set Status of message
-     */
+	 * Set Status of message
+	 */
 	set status(value) {
 		this.mStatus = value;
 	}

@@ -1,10 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { Forbidden } = require('@feathersjs/errors');
-const {
-	iff, isProvider, discard, disallow, keepInArray, keep,
-} = require('feathers-hooks-common');
-const { Configuration } = require('@schul-cloud/commons');
+const { iff, isProvider, discard, disallow, keepInArray, keep } = require('feathers-hooks-common');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
+const { Forbidden } = require('../../../errors');
 const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
@@ -25,7 +23,7 @@ let years = null;
  * @param context
  * @returns {*}
  */
-const getResultDataFromContext = (context) => ((context.result) ? (context.result.data || context.result) : []);
+const getResultDataFromContext = (context) => (context.result ? context.result.data || context.result : []);
 
 const isTeamCreationByStudentsEnabled = (currentSchool) => {
 	const { enableStudentTeamCreation } = currentSchool;
@@ -115,7 +113,8 @@ const createDefaultStorageOptions = (hook) => {
 	const storageType = getDefaultFileStorageType();
 	const schoolId = hook.result._id;
 	const fileStorageStrategy = getFileStorageStrategy(storageType);
-	return fileStorageStrategy.create(schoolId)
+	return fileStorageStrategy
+		.create(schoolId)
 		.then(() => Promise.resolve(hook))
 		.catch((err) => {
 			if (err && err.code === 'BucketAlreadyOwnedByYou') {
@@ -149,18 +148,18 @@ const decorateYears = async (context) => {
 	return context;
 };
 
-const updatesArray = (key) => (key === '$push' || key === '$pull');
+const updatesArray = (key) => key === '$push' || key === '$pull';
 const updatesChat = (key, data) => {
 	const chatFeatures = [
 		SCHOOL_FEATURES.ROCKET_CHAT,
 		SCHOOL_FEATURES.MESSENGER,
 		SCHOOL_FEATURES.MESSENGER_SCHOOL_ROOM,
 		SCHOOL_FEATURES.VIDEOCONFERENCE,
+		SCHOOL_FEATURES.MESSENGER_STUDENT_ROOM_CREATE,
 	];
 	return updatesArray(key) && chatFeatures.indexOf(data[key].features) !== -1;
 };
-const updatesTeamCreation = (key, data) => updatesArray(key)
-	&& !isTeamCreationByStudentsEnabled(data[key]);
+const updatesTeamCreation = (key, data) => updatesArray(key) && !isTeamCreationByStudentsEnabled(data[key]);
 
 const hasEditPermissions = async (context) => {
 	try {
@@ -174,9 +173,9 @@ const hasEditPermissions = async (context) => {
 		const patch = {};
 		for (const key of Object.keys(context.data)) {
 			if (
-				(user.permissions.includes('SCHOOL_CHAT_MANAGE') && updatesChat(key, context.data))
-				|| (user.permissions.includes('SCHOOL_STUDENT_TEAM_MANAGE') && updatesTeamCreation(key, context.data))
-				|| (user.permissions.includes('SCHOOL_LOGO_MANAGE') && key === 'logo_dataUrl')
+				(user.permissions.includes('SCHOOL_CHAT_MANAGE') && updatesChat(key, context.data)) ||
+				(user.permissions.includes('SCHOOL_STUDENT_TEAM_MANAGE') && updatesTeamCreation(key, context.data)) ||
+				(user.permissions.includes('SCHOOL_LOGO_MANAGE') && key === 'logo_dataUrl')
 			) {
 				patch[key] = context.data[key];
 			}
@@ -185,7 +184,7 @@ const hasEditPermissions = async (context) => {
 		return context;
 	} catch (err) {
 		logger.error('Failed to check school edit permissions', err);
-		throw new Forbidden('You don\'t have the necessary permissions to patch these fields');
+		throw new Forbidden("You don't have the necessary permissions to patch these fields");
 	}
 };
 
@@ -200,17 +199,84 @@ const restrictToUserSchool = async (context) => {
 const populateInQuery = (context) => (context.params.query || {}).$populate;
 
 const isNotAuthenticated = async (context) => {
-	if (typeof (context.params.provider) === 'undefined') {
+	if (typeof context.params.provider === 'undefined') {
 		return false;
-	} else {
-		return !((context.params.headers || {}).authorization || context.params.account && context.params.account.userId);
 	}
-}
+	return !((context.params.headers || {}).authorization || (context.params.account && context.params.account.userId));
+};
+
+const validateOfficialSchoolNumber = async (context) => {
+	if (context && context.data && context.data.officialSchoolNumber) {
+		const { officialSchoolNumber } = context.data;
+		const schools = await context.app.service('schools').find({
+			query: {
+				_id: context.id,
+				$populate: 'federalState',
+				$limit: 1,
+			},
+		});
+		const currentSchool = schools.data[0];
+		if (!currentSchool) {
+			throw new Error(`Internal error`);
+		}
+		const isSuperHero = await globalHooks.hasRole(context, context.params.account.userId, 'superhero');
+		if (!isSuperHero && currentSchool.officialSchoolNumber) {
+			throw new Error(`This school already have an officialSchoolNumber`);
+		}
+		// eg: 'BE-16593' or '16593'
+		const officialSchoolNumberFormat = RegExp('\\D{0,2}-*\\d{5}$');
+		if (!officialSchoolNumberFormat.test(officialSchoolNumber)) {
+			throw new Error(`
+			School number is incorrect.\n The format should be 'AB-12345' or '12345' (without the quotations)
+			`);
+		}
+	}
+	return context;
+};
+
+// school County
+const validateCounty = async (context) => {
+	if (context && context.data && context.data.county) {
+		const schools = await context.app.service('schools').find({
+			query: {
+				_id: context.id,
+				$populate: 'federalState',
+				$limit: 1,
+			},
+		});
+		const currentSchool = schools.data[0];
+		if (!currentSchool) {
+			throw new Error(`Internal error`);
+		}
+
+		const isSuperHero = await globalHooks.hasRole(context, context.params.account.userId, 'superhero');
+
+		const { county } = context.data;
+		if (
+			!isSuperHero &&
+			(!currentSchool.federalState.counties.length ||
+				!currentSchool.federalState.counties.some((c) => c._id.toString() === county.toString()))
+		) {
+			throw new Error(`The state doesn't not have a matching county`);
+		}
+
+		/* Tries to replace the existing county with a new one */
+		if (!isSuperHero && currentSchool.county && JSON.stringify(currentSchool.county) !== JSON.stringify(county)) {
+			throw new Error(`This school already have a county`);
+		}
+		context.data.county = currentSchool.federalState.counties.find((c) => {
+			return c._id.toString() === county.toString();
+		});
+	}
+	// checks for empty value and deletes it from context
+	if (context && context.data && Object.keys(context.data).includes('county') && !context.data.county) {
+		delete context.data.county;
+	}
+	return context;
+};
 
 exports.before = {
-	all: [
-		globalHooks.authenticateWhenJWTExist,
-	],
+	all: [globalHooks.authenticateWhenJWTExist],
 	find: [],
 	get: [],
 	create: [
@@ -218,18 +284,24 @@ exports.before = {
 		globalHooks.hasPermission('SCHOOL_CREATE'),
 		setDefaultFileStorageType,
 		setCurrentYearIfMissing,
+		validateOfficialSchoolNumber,
+		validateCounty,
 	],
 	update: [
 		authenticate('jwt'),
 		globalHooks.hasPermission('SCHOOL_EDIT'),
 		globalHooks.ifNotLocal(globalHooks.lookupSchool),
 		globalHooks.ifNotLocal(restrictToUserSchool),
+		validateOfficialSchoolNumber,
+		validateCounty,
 	],
 	patch: [
 		authenticate('jwt'),
 		globalHooks.ifNotLocal(hasEditPermissions),
 		globalHooks.ifNotLocal(globalHooks.lookupSchool),
 		globalHooks.ifNotLocal(restrictToUserSchool),
+		validateOfficialSchoolNumber,
+		validateCounty,
 	],
 	/* It is disabled for the moment, is added with new "Löschkonzept"
     remove: [authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
@@ -240,9 +312,18 @@ exports.before = {
 exports.after = {
 	all: [
 		// todo: remove id if possible (shouldnt exist)
-		iff(isNotAuthenticated, keep('name', 'purpose', 'systems', '_id', 'id')),
-		iff(populateInQuery,
-			keepInArray('systems', ['_id', 'type', 'alias', 'ldapConfig.active', 'ldapConfig.rootPath'])),
+		iff(isNotAuthenticated, keep('name', 'purpose', 'systems', '_id', 'id', 'language', 'timezone')),
+		iff(
+			populateInQuery,
+			keepInArray('systems', [
+				'_id',
+				'type',
+				'alias',
+				'ldapConfig.active',
+				'ldapConfig.provider',
+				'ldapConfig.rootPath',
+			])
+		),
 		iff(isProvider('external') && !globalHooks.isSuperHero(), discard('storageProvider')),
 	],
 	find: [decorateYears, setStudentsCanCreateTeams],

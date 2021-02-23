@@ -1,4 +1,4 @@
-const { BadRequest } = require('@feathersjs/errors');
+const { BadRequest } = require('../../../errors');
 const Syncer = require('./Syncer');
 
 class WebUntisSyncer extends Syncer {
@@ -14,19 +14,19 @@ class WebUntisSyncer extends Syncer {
 	static params(params, data = {}) {
 		const query = (params || {}).query || {};
 		const validParams = query.username && query.password && query.url;
-		const validData = (
-			['inclusive', 'exclusive'].includes(data.datatype) || (!data.datatype && !data.courseMetadataIds)
-		);
+		const validData = ['inclusive', 'exclusive'].includes(data.datatype) || (!data.datatype && !data.courseMetadataIds);
 		if (validParams && validData) {
-			return [{
-				datasourceId: params.datasourceId,
-				username: params.query.username,
-				password: params.query.password,
-				url: params.query.url,
-				datatype: data.datatype,
-				courseMetadataIds: data.courseMetadataIds,
-				dryrun: params.dryrun,
-			}];
+			return [
+				{
+					datasourceId: params.datasourceId,
+					username: params.query.username,
+					password: params.query.password,
+					url: params.query.url,
+					datatype: data.datatype,
+					courseMetadataIds: data.courseMetadataIds,
+					dryrun: params.dryrun,
+				},
+			];
 		}
 		return false;
 	}
@@ -36,10 +36,10 @@ class WebUntisSyncer extends Syncer {
 	-------------------------------------------------------------------------------------*/
 	getimportCondition() {
 		if (this.data.datatype === 'inclusive') {
-			return ((id) => this.data.courseMetadataIds.includes(id));
+			return (id) => this.data.courseMetadataIds.includes(id);
 		}
 		if (this.data.datatype === 'exclusive') {
-			return ((id) => !this.data.courseMetadataIds.includes(id));
+			return (id) => !this.data.courseMetadataIds.includes(id);
 		}
 		throw new BadRequest('invalid datatype');
 	}
@@ -49,15 +49,19 @@ class WebUntisSyncer extends Syncer {
 			const metadata = await this.app.service('webuntisMetadata').find({
 				query: { datasourceId: this.data.datasourceId },
 			});
-			const newMockAmount = (metadata.total > 10) ? 3 : 40;
-			await Promise.all(new Array(newMockAmount).fill('').map(() => this.app.service('webuntisMetadata').create({
-				datasourceId: this.data.datasourceId,
-				teacher: 'Renz',
-				class: '2a',
-				room: '0-23',
-				subject: 'mathe',
-				state: 'new',
-			})));
+			const newMockAmount = metadata.total > 10 ? 3 : 40;
+			await Promise.all(
+				new Array(newMockAmount).fill('').map(() =>
+					this.app.service('webuntisMetadata').create({
+						datasourceId: this.data.datasourceId,
+						teacher: 'Renz',
+						class: '2a',
+						room: '0-23',
+						subject: 'mathe',
+						state: 'new',
+					})
+				)
+			);
 		}
 		return Promise.resolve();
 	}

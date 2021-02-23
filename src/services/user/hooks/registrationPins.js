@@ -1,16 +1,15 @@
-const hooks = require('feathers-hooks-common');
+const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
-const { Configuration } = require('@schul-cloud/commons');
-const {
-	NODE_ENV, ENVIRONMENTS, SC_TITLE, SC_SHORT_TITLE,
-} = require('../../../../config/globals');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const moment = require('moment');
+
+const { Forbidden, BadRequest, TooManyRequests } = require('../../../errors');
+const { NODE_ENV, ENVIRONMENTS, SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../model').registrationPinModel;
 const { getRandomInt } = require('../../../utils/randomNumberGenerator');
 
-const removeOldPins = (hook) => pinModel.deleteMany({ email: hook.data.email })
-	.then(() => Promise.resolve(hook));
+const removeOldPins = (hook) => pinModel.deleteMany({ email: hook.data.email }).then(() => Promise.resolve(hook));
 
 const generatePin = (hook) => {
 	const pin = getRandomInt(9999, 1000);
@@ -54,7 +53,7 @@ Dein ${SC_SHORT_TITLE}-Team`;
 	throw new BadRequest('Die angegebene Rolle ist ungültig.', { role });
 }
 
-const checkAndVerifyPin = (hook) => {
+const checkAndVerifyPin = async (hook) => {
 	if (hook.result.data.length === 0) {
 		return hook;
 	}
@@ -62,7 +61,7 @@ const checkAndVerifyPin = (hook) => {
 		const firstDataItem = hook.result.data[0];
 		// check generation age
 		const now = Date.now();
-		if (firstDataItem.updatedAt.getTime() + (Configuration.get('PIN_MAX_AGE_SECONDS') * 1000) < now) {
+		if (firstDataItem.updatedAt.getTime() + Configuration.get('PIN_MAX_AGE_SECONDS') * 1000 < now) {
 			throw new Forbidden('Der eingegebene Code ist nicht mehr gültig. Bitte fordere einen neuen Code an.');
 		}
 		if (firstDataItem.verified === true) {
@@ -71,15 +70,13 @@ const checkAndVerifyPin = (hook) => {
 		}
 		if (firstDataItem.pin) {
 			if (firstDataItem.pin === hook.params.query.pin) {
-				return hook.app.service('registrationPins')
-					.patch(firstDataItem._id, { verified: true })
-					.then((result) => {
-						hook.result.data = [result];
-						return hook;
-					});
+				await hook.app.service('registrationPins').patch(firstDataItem._id, { verified: true });
+				// do not use result of patch, because mongodb can return a old version if not updated on all cluster nodes.
+				hook.result.data[0].verified = true;
+				return hook;
 			}
 			throw new BadRequest(
-				'Der eingegebene Code ist ungültig oder konnte nicht bestätigt werden. Bitte versuche es erneut.',
+				'Der eingegebene Code ist ungültig oder konnte nicht bestätigt werden. Bitte versuche es erneut.'
 			);
 		}
 		return hook;
@@ -124,33 +121,75 @@ const validateEmailAndPin = (hook) => {
 	if (!hook.params.query || !email) {
 		throw new BadRequest('email required');
 	}
-	if (email && typeof email === 'string' && email.length
-		&& (!pin || (pin && typeof pin === 'string' && pin.length === 4))) {
+	if (
+		email &&
+		typeof email === 'string' &&
+		email.length &&
+		(!pin || (pin && typeof pin === 'string' && pin.length === 4))
+	) {
 		return hook;
 	}
 	throw new BadRequest('pin or email invalid', { email, pin });
 };
 
+const checkTimeWindow = async (hook) => {
+	const minimalTimeDifference = moment.duration(5, 'minutes').asMilliseconds();
+	const { importHash, silent } = hook.data || {};
+	if (silent) {
+		return Promise.resolve(hook);
+	}
+
+	let registrationPins;
+	if ((hook.params.account || {}).userId) {
+		const user = await hook.app.service('users').get(hook.params.account.userId);
+		registrationPins = await hook.app.service('registrationPinsModel').find({ query: { email: user.email } });
+	} else {
+		if (!importHash) {
+			throw new BadRequest('importHash missing');
+		}
+		const user = await hook.app.service('users/linkImport').get(importHash);
+		if (!user.userId) {
+			throw new BadRequest('invalid importHash');
+		}
+		registrationPins = await hook.app.service('registrationPinsModel').find({ query: { importHash } });
+	}
+
+	if (registrationPins.data.length > 1) {
+		throw new BadRequest('registration pin is ambiguous');
+	}
+	if (registrationPins.data.length === 0) {
+		return Promise.resolve(hook);
+	}
+	const registrationPin = registrationPins.data[0];
+	const timeDifference = new Date() - registrationPin.updatedAt;
+	if (timeDifference < minimalTimeDifference) {
+		throw new TooManyRequests('too many pin creation requests', {
+			timeToWait: Math.ceil((minimalTimeDifference - timeDifference) / 1000),
+		});
+	}
+	return Promise.resolve(hook);
+};
+
 exports.before = {
 	all: [globalHooks.forceHookResolve(authenticate('jwt'))],
-	find: [hooks.disallow('external'), validateEmailAndPin],
-	get: hooks.disallow('external'),
+	find: [disallow('external'), validateEmailAndPin],
+	get: disallow('external'),
 	create: [
 		globalHooks.blockDisposableEmail('email'),
+		iff(isProvider('external'), [globalHooks.authenticateWhenJWTExist, checkTimeWindow]),
 		removeOldPins,
 		generatePin,
-		mailPin,
 	],
-	update: hooks.disallow('external'),
-	patch: hooks.disallow('external'),
-	remove: hooks.disallow('external'),
+	update: disallow('external'),
+	patch: disallow('external'),
+	remove: disallow('external'),
 };
 
 exports.after = {
 	all: [globalHooks.removeResponse(['get', 'find', 'create'])],
 	find: [checkAndVerifyPin],
 	get: [],
-	create: [returnPinOnlyToSuperHero],
+	create: [mailPin, returnPinOnlyToSuperHero],
 	update: [],
 	patch: [],
 	remove: [],

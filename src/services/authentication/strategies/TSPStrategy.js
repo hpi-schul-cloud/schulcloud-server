@@ -1,5 +1,6 @@
 const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
-const { BadRequest, NotAuthenticated } = require('@feathersjs/errors');
+
+const { NotAuthenticated, BadRequest } = require('../../../errors');
 
 const logger = require('../../../logger');
 const {
@@ -8,7 +9,8 @@ const {
 	createUserAndAccount,
 	shortenedRegistrationProcess,
 	findSchool,
-	ENTITY_SOURCE, SOURCE_ID_ATTRIBUTE,
+	ENTITY_SOURCE,
+	SOURCE_ID_ATTRIBUTE,
 	config: TSP_CONFIG,
 } = require('../../sync/strategies/TSP/TSP');
 const { SYNCER_TARGET } = require('../../sync/strategies/TSP/TSPSchoolSyncer');
@@ -77,6 +79,15 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 
 	verifyConfiguration() {}
 
+	parse(req, res) {
+		if (req.body && req.body.strategy === 'tsp') {
+			return {
+				strategy: this.name,
+			};
+		}
+		return null;
+	}
+
 	async authenticate(authentication, params) {
 		const { ticket } = authentication;
 		delete authentication.ticket;
@@ -86,11 +97,14 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		// translate TSP roles into SC roles
 		const roleList = decryptedTicket.ptscListRolle.split(',');
 		const roles = roleList
-			.map((tspRole) => ({
-				schueler: 'student',
-				lehrer: 'teacher',
-				admin: 'administrator',
-			}[tspRole.toLowerCase()]))
+			.map(
+				(tspRole) =>
+					({
+						schueler: 'student',
+						lehrer: 'teacher',
+						admin: 'administrator',
+					}[tspRole.toLowerCase()])
+			)
 			.filter((role) => {
 				const validRole = role !== undefined;
 				if (!validRole) {
@@ -126,7 +140,7 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 					sourceOptions,
 				},
 				roles,
-				systemId,
+				systemId
 			);
 
 			if (TSP_CONFIG.FEATURE_AUTO_CONSENT) {
@@ -137,19 +151,32 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 			await app.service('users').patch(user._id, { roles, schoolId: school._id });
 		}
 
-		const oneDayInMilliseconds = 864e5;
-		const timeOfLastSync = Date.now() - oneDayInMilliseconds;
-
-		// trigger an asynchronous TSP sync to reflect changes to classes
-		app.service('sync').find({
-			query: {
-				target: SYNCER_TARGET,
-				config: {
-					schoolIdentifier: decryptedTicket.ptscSchuleNummer,
-					lastChange: timeOfLastSync,
+		const tspClasses = (decryptedTicket.ptscListKlasseId || '').split(',').map((s) => s.trim());
+		if (tspClasses.length > 0) {
+			// check if all classes exist and assign the person
+			const classes = await app.service('classes').find({
+				query: {
+					'sourceOptions.tspUid': { $in: tspClasses },
 				},
-			},
-		});
+			});
+			if (classes.total === tspClasses.length) {
+				// todo: assign and update if necessary
+			} else {
+				// trigger an asynchronous TSP sync to reflect changes to classes
+				const oneDayInMilliseconds = 864e5;
+				const timeOfLastSync = Date.now() - oneDayInMilliseconds;
+
+				app.service('sync').find({
+					query: {
+						target: SYNCER_TARGET,
+						config: {
+							schoolIdentifier: decryptedTicket.ptscSchuleNummer,
+							lastChange: timeOfLastSync,
+						},
+					},
+				});
+			}
+		}
 
 		// find account and generate JWT payload
 		const [account] = await app.service('accounts').find({
@@ -163,14 +190,8 @@ class TSPStrategy extends AuthenticationBaseStrategy {
 		return {
 			authentication: { strategy: this.name },
 			[entity]: account,
-			payload: {
-				accountId: account._id,
-				userId: user._id,
-				systemId: account.systemId,
-			},
 		};
 	}
 }
-
 
 module.exports = TSPStrategy;

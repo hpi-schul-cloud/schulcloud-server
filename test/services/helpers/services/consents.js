@@ -1,22 +1,25 @@
 let createdConsentIds = [];
 
-const createTestConsent = (app) => ({
+const createTestConsent = (appPromise) => async ({
 	userId = undefined,
 	userConsent = undefined,
 	parentConsents = [],
 	manualCleanup = false,
-} = {}) => app.service('consents').create({
-	userId,
-	userConsent,
-	parentConsents,
-}).then((consent) => {
+} = {}) => {
+	const app = await appPromise;
+	const consent = await app.service('consents').create({
+		userId,
+		userConsent,
+		parentConsents,
+	});
 	if (!manualCleanup) {
 		createdConsentIds.push(consent._id.toString());
 	}
 	return consent;
-});
+};
 
-const cleanup = (app) => () => {
+const cleanup = (appPromise) => async () => {
+	const app = await appPromise;
 	if (createdConsentIds.length === 0) {
 		return Promise.resolve();
 	}

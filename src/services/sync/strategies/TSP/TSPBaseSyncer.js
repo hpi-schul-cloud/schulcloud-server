@@ -1,7 +1,5 @@
 const Syncer = require('../Syncer');
-const {
-	TspApi, config: TSP_CONFIG, ENTITY_SOURCE, findSchool,
-} = require('./TSP');
+const { TspApi, config: TSP_CONFIG, ENTITY_SOURCE, findSchool } = require('./TSP');
 const SchoolYearFacade = require('../../../school/logic/year');
 
 const SCHOOL_SYNCER_TARGET = require('./TSPSchoolSyncer').SYNCER_TARGET;
@@ -69,8 +67,7 @@ class TSPBaseSyncer extends Syncer {
 				await this.ensureDatasourceExists(school);
 				this.stats.schools.successful += 1;
 			} catch (err) {
-				this.logError(`Encountered an error while creating or updating '${name}' (${identifier}):`,
-					{ error: err });
+				this.logError(`Encountered an error while creating or updating '${name}' (${identifier}):`, { error: err });
 				this.stats.schools.errors += 1;
 				this.stats.errors.push({
 					type: 'sync-school',

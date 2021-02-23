@@ -1,0 +1,210 @@
+info:
+  title: Schul-Cloud User Service API
+  description:
+    This is the API specification for the Schul-Cloud User service.
+    
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+components:
+  schemas:
+    registration_input:
+      description: todo
+      type: object
+      properties:
+        classOrSchoolId:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        pin:
+          type: string
+          pattern: '^[0-9]{4}$'
+          description: to confirm email.
+        password_1:
+          type: string
+        password_2:
+          type: string
+          description: to confirm password. should be equal to password_1
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        birthDate:
+          type: string
+          format: date-time
+        importHash:
+          type: string
+        userId:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        parent_firstName:
+          type: string
+        parent_lastName:
+          type: string
+        parent_email:
+          type: string
+        privacyConsent:
+          type: boolean
+        termsOfUseConsent:
+          type: boolean
+        parent_privacyConsent:
+          type: boolean
+        parent_termsOfUseConsent:
+          type: boolean
+    registration_response:
+      description: response for a successful registration.
+      type: object
+      properties:
+        account:
+          type: object
+          properties:
+            _id:
+              type: string
+              pattern: '^[0-9a-f]{24}$'
+            __v:
+              type: integer
+            activated:
+              type: boolean
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+            userId:
+              type: string
+              pattern: '^[0-9a-f]{24}$'
+            username:
+              type: string
+        consent:
+          type: object
+          properties:
+            _id:
+              type: string
+              pattern: '^[0-9a-f]{24}$'
+            consentStatus:
+              type: string
+              enum: ['ok', 'unknown', 'missing']
+            requiresParentConsent:
+              type: boolean
+            parentConsents:
+              type: array
+              items:
+                type: object
+                properties:
+                  form:
+                    type: string
+                    enum: ['analog', 'digital', 'update']
+                  source:
+                    type: string
+                  dateOfPrivacyConsent:
+                    type: string
+                    format: date-time
+                  privacyConsent:
+                    type: boolean
+                  dateOfTermsOfUseConsent:
+                    type: string
+                    format: date-time
+                  termsOfUseConsent:
+                    type: boolean
+            userConsent:
+              type: object
+              properties:
+                form:
+                  type: string
+                  enum: ['analog', 'digital', 'update']
+                source:
+                  type: string
+                dateOfPrivacyConsent:
+                  type: string
+                  format: date-time
+                privacyConsent:
+                  type: boolean
+                dateOfTermsOfUseConsent:
+                  type: string
+                  format: date-time
+                termsOfUseConsent:
+                  type: boolean
+            userId:
+              type: string
+              pattern: '^[0-9a-f]{24}$'
+        user:
+          type: object
+          properties:
+            _id:
+              type: string
+              pattern: '^[0-9a-f]{24}$'
+            id:
+              type: string
+              pattern: '^[0-9a-f]{24}$'
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+            email:
+              type: string
+            features:
+              type: array
+              items:
+                type: string
+            forcePasswordChange:
+              type: boolean
+            firstName:
+              type: string
+            fullName:
+              type: string
+            lastName:
+              type: string
+            parents:
+              type: array
+              items:
+                type: string
+                pattern: '^[0-9a-f]{24}$'
+            preferences:
+              type: object
+            roles:
+              type: array
+              items:
+                type: string
+                pattern: '^[0-9a-f]{24}$'
+            schoolId:
+              type: string
+              pattern: '^[0-9a-f]{24}$'
+paths:
+  /registration:
+    post:
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/registration_response'
+        '400':
+          description: bad request - invalid input
+        '500':
+          description: general error
+      description: Registers a new user. This route is to be called at the end of a registration process.
+        It requires a valid importhash for a user object created by a school admin, as well as a valid registration pin recieved via email.
+      summary: ''
+      tags:
+        - registration
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/registration_input'
+openapi: 3.0.2
+tags:
+  - name: registration
+    description: A registration service.

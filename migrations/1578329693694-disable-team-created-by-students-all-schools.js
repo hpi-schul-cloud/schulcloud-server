@@ -6,12 +6,18 @@ const { connect, close } = require('../src/utils/database');
 const { SC_THEME } = require('../config/globals');
 // use your own name for your model, otherwise other migrations may fail.
 // The third parameter is the actually relevent one for what collection to write to.
-const features = mongoose.model('features', new mongoose.Schema({
-	features: [{
-		type: String,
-		enum: ['rocketChat', 'disableStudentTeamCreation'],
-	}],
-}), 'schools');
+const features = mongoose.model(
+	'features',
+	new mongoose.Schema({
+		features: [
+			{
+				type: String,
+				enum: ['rocketChat', 'disableStudentTeamCreation'],
+			},
+		],
+	}),
+	'schools'
+);
 
 // How to use more than one schema per collection on mongodb
 // https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
@@ -25,16 +31,19 @@ module.exports = {
 
 		await connect();
 		// ////////////////////////////////////////////////////
-		await features.updateMany(
-			{
-				features: { $ne: 'disableStudentTeamCreation' },
-			},
-			{
-				$push: {
-					features: 'disableStudentTeamCreation',
+		await features
+			.updateMany(
+				{
+					features: { $ne: 'disableStudentTeamCreation' },
 				},
-			},
-		).lean().exec();
+				{
+					$push: {
+						features: 'disableStudentTeamCreation',
+					},
+				}
+			)
+			.lean()
+			.exec();
 		// ////////////////////////////////////////////////////
 		await close();
 

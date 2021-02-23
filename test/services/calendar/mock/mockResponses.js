@@ -16,13 +16,10 @@ const exampleResponse = {
 				uid: 'e40e1276-4a27-458c-8b64-ae549adadbc2',
 			},
 			relationships: {
-				'scope-ids': [
-					'0000d231816abba584714c9e',
-				],
+				'scope-ids': ['0000d231816abba584714c9e'],
 			},
 		},
 	],
 };
-
 
 module.exports = (options) => Promise.resolve(exampleResponse);

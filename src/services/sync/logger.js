@@ -13,9 +13,11 @@ const getSyncLogger = (logStream) => {
 		],
 	});
 	if (logStream && logStream instanceof Writable) {
-		logger.add(new winston.transports.Stream({
-			stream: logStream,
-		}));
+		logger.add(
+			new winston.transports.Stream({
+				stream: logStream,
+			})
+		);
 	}
 	return logger;
 };

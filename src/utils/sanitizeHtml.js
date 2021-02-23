@@ -6,9 +6,43 @@ const maxDeep = 12;
 const keys = ['content', 'text', 'comment', 'gradeComment', 'description'];
 const paths = ['lessons', 'news', 'newsModel', 'homework', 'submissions'];
 const saveKeys = ['password', 'secret'];
-const allowedTags = ['h1', 'h2', 'h3', 'blockquote', 'p', 'a', 'ul', 'ol', 's', 'u', 'span', 'del',
-	'li', 'b', 'i', 'img', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
-	'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'audio', 'video', 'sub', 'sup'];
+const allowedTags = [
+	'h1',
+	'h2',
+	'h3',
+	'blockquote',
+	'p',
+	'a',
+	'ul',
+	'ol',
+	's',
+	'u',
+	'span',
+	'del',
+	'li',
+	'b',
+	'i',
+	'img',
+	'strong',
+	'em',
+	'strike',
+	'code',
+	'hr',
+	'br',
+	'div',
+	'table',
+	'thead',
+	'caption',
+	'tbody',
+	'tr',
+	'th',
+	'td',
+	'pre',
+	'audio',
+	'video',
+	'sub',
+	'sup',
+];
 const allowedSchemes = ['http', 'https', 'ftp', 'mailto'];
 
 // const allowedSchemesByTag = {
@@ -61,7 +95,12 @@ const htmlFalseOptions = {
 	},
 };
 
-const normalize = (data) => {
+const normalize = (data, isHTML = false) => {
+	if (isHTML === false) {
+		const match = data.match(/(?=").*(?==).*/gi);
+		data = match !== null ? data.replace(/"/gi, '&#8220;') : data;
+		data = match !== null ? data.replace(/=/gi, '&#61;') : data;
+	}
 	data = data.replace(/(&lt;)|(&#60;)/gi, '<');
 	data = data.replace(/(&gt;)|(&#62;)/gi, '>');
 	return data;
@@ -73,7 +112,8 @@ const normalize = (data) => {
  * @param {*} data
  * @param {*} param
  */
-const sanitize = (data, isHTML = false) => sanitizeHtml(normalize(data), isHTML ? htmlTrueOptions : htmlFalseOptions);
+const sanitize = (data, isHTML = false) =>
+	sanitizeHtml(normalize(data, isHTML), isHTML ? htmlTrueOptions : htmlFalseOptions);
 
 /**
  * disables sanitization for defined keys if a path is matching

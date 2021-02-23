@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 const { FileModel } = require('../src/services/fileStorage/model');
-const LessonModel = require('../src/services/lesson/model');
+const { LessonModel } = require('../src/services/lesson/model');
 const { courseGroupModel, courseModel } = require('../src/services/user-group/model');
 const { connect, close } = require('../src/utils/database');
 const logger = require('../src/logger');
@@ -69,9 +69,7 @@ const addCourseGroupIds = (datatree, courseGroups) => {
 const addCourseLessons = (datatree, lessons) => {
 	const courseGroupdLessons = [];
 	lessons.forEach((lesson) => {
-		const {
-			_id, contents, courseId,
-		} = lesson;
+		const { _id, contents, courseId } = lesson;
 		if (datatree[courseId]) {
 			datatree[courseId].lessons[_id] = contents;
 		} else {
@@ -84,9 +82,7 @@ const addCourseLessons = (datatree, lessons) => {
 const addCourseGroupLessons = (datatree, courseGroupdLessons) => {
 	const lessonsWithoutCourse = [];
 	courseGroupdLessons.forEach((lesson) => {
-		const {
-			_id, courseId, contents, courseGroupId,
-		} = lesson;
+		const { _id, courseId, contents, courseGroupId } = lesson;
 		let found = false;
 		Object.keys(datatree).forEach((_courseId) => {
 			if (datatree[_courseId].courseGroups.includes(courseGroupId)) {
@@ -182,8 +178,8 @@ const detectNotExistingFiles = (datatree, files) => {
 	});
 	if (notExists.length > 0) {
 		logger.warning(
-			`They are ${notExists.length} Files that are added in lessons,`
-			+ 'but not exist as meta data in file collection with targetModel="course".',
+			`They are ${notExists.length} Files that are added in lessons,` +
+				'but not exist as meta data in file collection with targetModel="course".'
 		);
 		if (DETAIL_LOGS) {
 			logger.warning(JSON.stringify(notExists));
@@ -199,8 +195,8 @@ const removeCourseWithoutFiles = (datatree) => {
 		}
 	});
 	logger.info(
-		`From ${Object.keys(datatree).length} courses,`
-		+ `are filtered ${Object.keys(newDatatree).length} with includes files.`,
+		`From ${Object.keys(datatree).length} courses,` +
+			`are filtered ${Object.keys(newDatatree).length} with includes files.`
 	);
 	return newDatatree;
 };
@@ -265,15 +261,12 @@ const cloneMissingFilesAndUpdateLessons = (missingFileInfos, out) => {
 	const tasks = [];
 	missingFileInfos.forEach(({ target, sourceFile: file, teacher }) => {
 		// with the condition that we have at the moment only awsS3 as strategie, it is not check for every school.
-		const {
-			content, lessonId, index, courseId: parent,
-		} = target;
+		const { content, lessonId, index, courseId: parent } = target;
 		const id = file._id;
 		if (!teacher) {
 			out.pushFail(
 				lessonId,
-				'Skip fix file. No teachers in course exist.'
-				+ `Owner can not set. {fileId:${id}, lessonId:${lessonId}}`,
+				'Skip fix file. No teachers in course exist.' + `Owner can not set. {fileId:${id}, lessonId:${lessonId}}`
 			);
 		}
 
@@ -292,26 +285,29 @@ const cloneMissingFilesAndUpdateLessons = (missingFileInfos, out) => {
 					new: `file=${_id}&name=${name}`,
 				});
 
-
 				fileChangelog.forEach((change) => {
-					content.content.text = content.content.text.replace(
-						new RegExp(change.old, 'g'),
-						change.new,
-					);
+					content.content.text = content.content.text.replace(new RegExp(change.old, 'g'), change.new);
 				});
 
-				return LessonModel.updateOne({
-					_id: lessonId,
-				}, {
-					$set: {
-						[`contents.${index}`]: content,
+				return LessonModel.updateOne(
+					{
+						_id: lessonId,
 					},
-				}, {
-					new: true,
-				}).lean().exec().then((lesson) => {
-					out.pushModified(lesson._id);
-					return lesson;
-				});
+					{
+						$set: {
+							[`contents.${index}`]: content,
+						},
+					},
+					{
+						new: true,
+					}
+				)
+					.lean()
+					.exec()
+					.then((lesson) => {
+						out.pushModified(lesson._id);
+						return lesson;
+					});
 			})
 			.catch((err) => {
 				const { message, code, name } = err;

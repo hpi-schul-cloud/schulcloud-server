@@ -11,7 +11,7 @@ const parser = new Parser();
  * NOTE: this is the first job script. To run it, simply execute 'node src/jobs/rss-news.js'.
  * It is expected to pass MongoDB parameters as process environment variables.
  * Please see src/utils/database.js for more.
-*/
+ */
 
 async function handleFeed(dbFeed, schoolId) {
 	const data = await parser.parseURL(dbFeed.url);
@@ -30,7 +30,7 @@ async function handleFeed(dbFeed, schoolId) {
 				schoolId,
 				externalId: rssItem.guid,
 			},
-			{ upsert: true, new: true },
+			{ upsert: true, new: true }
 		);
 		checkedNews.push(dbNews._id.toString());
 	}

@@ -12,8 +12,7 @@ const sortRoles = (roles) => {
 		const [last] = sorted.slice(-1);
 
 		const parents = last.reduce((arr, child) => {
-			const found = roles
-				.filter((el) => el.roles.map((role) => role.toString()).includes(child._id.toString()));
+			const found = roles.filter((el) => el.roles.map((role) => role.toString()).includes(child._id.toString()));
 
 			if (found.length) {
 				return arr.concat(found);

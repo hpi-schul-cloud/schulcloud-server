@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-const queryString = require('querystring');
+const queryString = require('qs');
 const { DISPLAY_REQUEST_LEVEL } = require('../../config/globals');
 /*
 	log request information
@@ -26,7 +26,7 @@ module.exports = function requstLogger(_app) {
 				console.log('_____ request _____');
 				counter = -1;
 			} else {
-				console.log(`<<<-extern req-${counter += 1}-|||`);
+				console.log(`<<<-extern req-${(counter += 1)}-|||`);
 			}
 			lastRequestTime = time;
 			const query = req.query || queryString.parse(url[1] || '');

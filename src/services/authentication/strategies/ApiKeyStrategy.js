@@ -1,6 +1,7 @@
 const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
-const { NotAuthenticated } = require('@feathersjs/errors');
-const { Configuration } = require('@schul-cloud/commons');
+
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const { NotAuthenticated } = require('../../../errors');
 
 class ApiKeyStrategy extends AuthenticationBaseStrategy {
 	parse(req, res) {
@@ -31,15 +32,18 @@ class ApiKeyStrategy extends AuthenticationBaseStrategy {
 	 * @param key content of a x-api-key header
 	 */
 	validateApiKey(key) {
-		return (key && typeof key === 'string' && key !== '');
+		return key && typeof key === 'string' && key !== '';
 	}
 
 	credentialCheck(key, route) {
 		// todo: authenticate against database collection, return permissions.
 		// todo: remove route logic, give api-keys permissions instead.
-		if (route === 'mails') return (key === Configuration.get('CLIENT_API_KEY'));
-		if (route === 'sync') return (key === Configuration.get('SYNC_API_KEY'));
-		if (route === 'resolve') return (key === Configuration.get('CALENDAR_API_KEY'));
+
+		if (route === 'mails') return key === Configuration.get('CLIENT_API_KEY');
+		if (route === 'sync') return key === Configuration.get('SYNC_API_KEY');
+		if (route === 'statisticmails') return key === Configuration.get('SYNC_API_KEY');
+		if (route === 'resolve') return key === Configuration.get('CALENDAR_API_KEY');
+
 		return false;
 	}
 }
