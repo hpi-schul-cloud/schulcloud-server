@@ -1,6 +1,6 @@
-const aws = require('aws-sdk');
-const { Configuration } = require('@hpi-schul-cloud/commons');
-const { StorageProviderModel } = require('./db');
+import aws from 'aws-sdk';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { StorageProviderModel } from './db';
 
 const HOST = Configuration.get('HOST');
 
@@ -12,7 +12,6 @@ const getConfig = (provider) => {
 		accessKeyId: provider.accessKeyId,
 		secretAccessKey: provider.secretAccessKey,
 		region: provider.region,
-		endpointUrl: provider.endpointUrl,
 		cors_rules: {
 			AllowedHeaders: ['*'],
 			AllowedMethods: ['PUT'],
@@ -28,9 +27,8 @@ const getStorageProviderMetaInformation = async (storageProviderId) => {
 	return StorageProviderModel.findById(storageProviderId).lean().exec();
 };
 
-const createStorageProviderInstance = (storageProviderMetaInformation) => {
-	return new aws.S3(getConfig(storageProviderMetaInformation));
-};
+const createStorageProviderInstance = (storageProviderMetaInformation) =>
+	new aws.S3(getConfig(storageProviderMetaInformation));
 
 const deleteObjects = (storageProvider, params) => {
 	const storageProviderInstance = createStorageProviderInstance(storageProvider);
@@ -49,7 +47,7 @@ const createCopyParams = (bucket, fileId) => {
 		Key: `expiring_${fileId}`,
 		MetadataDirective: 'REPLACE',
 		Metadata: {
-			expires: true,
+			expires: 'true',
 		},
 	};
 };
@@ -79,7 +77,7 @@ const moveFilesToTrash = async (storageProvider, bucket, fileIds) => {
 
 		const deleteParams = createDeleteParams(bucket, fileIdSubset);
 		// eslint-disable-next-line no-await-in-loop
-		await deleteObjects(storageProvider, deleteParams).promise();
+		await deleteObjects(storageProvider, deleteParams);
 	}
 	return true;
 };

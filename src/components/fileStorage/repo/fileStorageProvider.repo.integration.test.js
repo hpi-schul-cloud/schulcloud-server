@@ -9,6 +9,13 @@ describe('fileStorageProvider.repo.integration.test', () => {
 	let app;
 	let configBefore;
 
+	const storageProviderInfo = {
+		accessKeyId: 'minioadmin',
+		secretAccessKey: 'minioadmin',
+		region: 'eu-west-1',
+		endpointUrl: 'http://localhost:9090',
+	};
+
 	before(async () => {
 		/* eslint-disable global-require */
 		configBefore = Configuration.toObject(); // deep copy current config
@@ -30,13 +37,36 @@ describe('fileStorageProvider.repo.integration.test', () => {
 
 	describe('createStorageProviderInstance', () => {
 		it('should not throw an error', async () => {
-			const storageProviderInfo = {
-				accessKeyId: 'minioadmin',
-				secretAccessKey: 'minioadmin',
-				region: 'eu-west-1',
-				endpointUrl: 'http://localhost:9090',
-			};
 			expect(() => fileStorageProviderRepo.private.createStorageProviderInstance(storageProviderInfo)).to.not.throw();
+		});
+	});
+
+	describe('moveFilesToTrash', () => {
+		it('should mark objects as to be deleted under a prefixed name', async () => {
+			const bucketName = `bucket-${testObjects.generateObjectId()}`;
+			const fileId = testObjects.generateObjectId().toString();
+			const storageProvider = fileStorageProviderRepo.private.createStorageProviderInstance(storageProviderInfo);
+			await storageProvider.createBucket({ Bucket: bucketName }).promise();
+			await storageProvider
+				.upload({
+					Bucket: bucketName,
+					Key: fileId,
+					Body: 'test',
+				})
+				.promise();
+
+			await fileStorageProviderRepo.moveFilesToTrash(storageProviderInfo, bucketName, [fileId]);
+
+			const fileStorageContent = await storageProvider.listObjectsV2({ Bucket: bucketName }).promise();
+
+			expect(fileStorageContent.Contents).to.be.an('array').of.length(1);
+			expect(fileStorageContent.Contents[0].Key).to.eq(`expiring_${fileId}`);
+
+			const modifiedFile = await storageProvider
+				.headObject({ Bucket: bucketName, Key: `expiring_${fileId}` })
+				.promise();
+
+			expect(modifiedFile.Metadata.expires).to.eq('true');
 		});
 	});
 });

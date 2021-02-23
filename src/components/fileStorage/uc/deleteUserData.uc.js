@@ -8,7 +8,6 @@ const { facadeLocator } = require('../../../utils/facadeLocator');
 
 const { trashBinResult } = require('../../helper/uc.helper');
 
-
 const storageBucketName = (schoolId) => `bucket-${schoolId}`;
 
 const decryptAccessKey = async (secretAccessKey) => {
@@ -50,6 +49,7 @@ const removePersonalFiles = async (userId) => {
 
 	const schoolFacade = facadeLocator.facade('school/v2');
 	const school = await schoolFacade.getSchool(schoolId);
+
 	const storageProvider = await getStorageProvider(school.storageProvider, school._id);
 	const bucket = storageBucketName(schoolId);
 
