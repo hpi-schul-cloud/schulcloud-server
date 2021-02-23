@@ -9,7 +9,7 @@ const schoolModel = require('../school/model');
 const userModel = require('../user/model');
 const accountModel = require('../account/model');
 const homeworkModel = require('../homework/model');
-const lessonModel = require('../lesson/model');
+const { LessonModel } = require('../lesson/model');
 const groupModel = require('../user-group/model');
 const { FileModel } = require('../fileStorage/model');
 
@@ -41,8 +41,8 @@ const promises = [
 	},
 	{
 		name: 'lessons',
-		promise: lessonModel.countDocuments(),
-		model: lessonModel.find(),
+		promise: LessonModel.countDocuments(),
+		model: LessonModel.find(),
 	},
 	{
 		name: 'classes',
