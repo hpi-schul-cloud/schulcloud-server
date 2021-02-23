@@ -8,7 +8,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const logger = require('../src/logger');
 const etherpadClient = require('../src/services/etherpad/utils/EtherpadClient.js');
 const { connect, close } = require('../src/utils/database');
-const Lesson = require('../src/services/lesson/model');
+const { LessonModel: Lesson } = require('../src/services/lesson/model');
 
 /** *****************************************
  * MESSAGES

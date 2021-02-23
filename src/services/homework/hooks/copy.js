@@ -1,9 +1,8 @@
 const { disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider } = require('feathers-hooks-common');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden } = reqlib('src/errors');
+const { Forbidden } = require('../../../errors');
 const { hasPermission, mapPayload, injectUserId } = require('../../../hooks');
 const HomeworkModel = require('../model').homeworkModel;
 const resolveStorageType = require('../../fileStorage/hooks/resolveStorageType');

@@ -11,6 +11,7 @@ const homeworks = require('./homeworks');
 const lessons = require('./lessons');
 const login = require('./login');
 const ltiTools = require('./ltiTools');
+const problems = require('./problems');
 const pseudonyms = require('./pseudonyms');
 const roles = require('./roles');
 const registrationPins = require('./registrationPins');
@@ -42,6 +43,7 @@ module.exports = (app, opt) => ({
 	lessons,
 	login: login(app, opt),
 	ltiTools: ltiTools(app, opt),
+	problems,
 	pseudonyms,
 	storageProviders: storageProviders(app),
 	submissions: submissions(app, opt),
