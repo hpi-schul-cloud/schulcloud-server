@@ -82,40 +82,30 @@ const replaceUserWithTombstone = async (user) => {
 	return { success: true };
 };
 
-/**
- * Checks if the user defined by param3.account.userId has the right to perform the action defined in permissionAction on the user defined in id
- *
- * @param {*} id ID of the user to be effected by the request
- * @param {*} roleName the role name that the effected user should have
- * @param {*} permissionAction the action that is to be performed (CREATE, EDIT, DELETE)
- * @param {*} param3 needs to contain account.userId, which is the ID of the user issuing the request
- */
-const checkPermissions = async (id, roleName, permissionAction, { user: currentUser }) => {
-	const userToBeEffected = await userRepo.getUserWithRoles(id);
-
+const checkPermissionsInternal = async (affectedUser, roleName, permissionAction, currentUser) => {
 	let grantPermission = true;
 	// the effected user's role fits the rolename for the route
-	grantPermission = grantPermission && userToBeEffected.roles.some((role) => role.name.toUpperCase() === roleName);
+	grantPermission = grantPermission && affectedUser.roles.some((role) => role.name.toUpperCase() === roleName);
 	// users must be on same school
-	grantPermission = grantPermission && equalIds(userToBeEffected.schoolId, currentUser.schoolId);
+	grantPermission = grantPermission && equalIds(affectedUser.schoolId, currentUser.schoolId);
 
 	// current user must have the permission
-	userToBeEffected.roles.forEach((userRoleToBeEffected) => {
-		if (userRoleToBeEffected.name === 'student') {
+	affectedUser.roles.forEach((userRoleToBeAffected) => {
+		if (userRoleToBeAffected.name === 'student') {
 			grantPermission =
 				grantPermission &&
 				currentUser.roles.some((role) =>
 					role.permissions.some((permission) => permission === `STUDENT_${permissionAction}`)
 				);
 		}
-		if (userRoleToBeEffected.name === 'teacher') {
+		if (userRoleToBeAffected.name === 'teacher') {
 			grantPermission =
 				grantPermission &&
 				currentUser.roles.some((role) =>
 					role.permissions.some((permission) => permission === `TEACHER_${permissionAction}`)
 				);
 		}
-		if (userRoleToBeEffected.name === 'administrator') {
+		if (userRoleToBeAffected.name === 'administrator') {
 			grantPermission = grantPermission && currentUser.roles.some((role) => role.name === 'superhero');
 		}
 	});
@@ -123,6 +113,22 @@ const checkPermissions = async (id, roleName, permissionAction, { user: currentU
 	if (!grantPermission) {
 		throw new Forbidden(`You don't have permissions to perform this action`);
 	}
+};
+
+/**
+ * Checks if the user defined by params.user has the right to perform the action defined in permissionAction on the user defined in id
+ *
+ * @param {string|string[]} affectedUserId ID or list of IDs of the user(s) to be affected by the request
+ * @param {*} roleName the role name that the effected user should have
+ * @param {*} permissionAction the action that is to be performed (CREATE, EDIT, DELETE)
+ * @param {Object} params needs to contain a property `user` with populated roles and permissions, which is the user issuing the request
+ */
+const checkPermissions = async (affectedUserId, roleName, permissionAction, { user: currentUser }) => {
+	const ids = Array.isArray(affectedUserId) ? affectedUserId : [affectedUserId];
+	const affectedUsers = await userRepo.getUsersWithRoles(ids);
+	return Promise.all(
+		affectedUsers.map(async (aUser) => checkPermissionsInternal(aUser, roleName, permissionAction, currentUser))
+	);
 };
 
 const getOrCreateTombstoneUserId = async (schoolId, user) => {

@@ -36,9 +36,7 @@ class UserServiceV2 {
 		// TODO remove when we can rely on OpenAPI validation
 		validateIds(ids);
 
-		await Promise.all(
-			ids.map((userId) => userUC.checkPermissions(userId, this.roleNameSubject, 'DELETE', { ...params }))
-		);
+		await userUC.checkPermissions(ids, this.roleNameSubject, 'DELETE', { ...params });
 		await Promise.all(ids.map((userId) => userUC.deleteUser(userId, { ...params })));
 	}
 
