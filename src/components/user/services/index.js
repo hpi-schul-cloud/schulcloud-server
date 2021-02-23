@@ -6,6 +6,6 @@ module.exports = (app) => {
 	app.service(adminStudentsRoute).hooks(adminHookGenerator('STUDENT'));
 
 	const adminTeachersRoute = '/users/v2/admin/teacher';
-	app.use(adminTeachersRoute, new UserServiceV2('STUDENT'));
+	app.use(adminTeachersRoute, new UserServiceV2('TEACHER'));
 	app.service(adminTeachersRoute).hooks(adminHookGenerator('TEACHER'));
 };
