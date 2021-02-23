@@ -28,25 +28,6 @@ const getStorageProviderMetaInformation = async (storageProviderId) => {
 	return StorageProviderModel.findById(storageProviderId).lean().exec();
 };
 
-const getLeastUsedStorageProvider = async (session) => {
-	const providers = await StorageProviderModel.find({ isShared: true })
-		.sort({ freeBuckets: -1 })
-		.limit(1)
-		.session(session)
-		.lean()
-		.exec();
-
-	if (!Array.isArray(providers) || providers.length === 0) throw new Error('No available provider found.');
-	return providers[0];
-};
-
-const decreaseFreeBuckets = async (storageProviderId, session) => {
-	return StorageProviderModel.findByIdAndUpdate(storageProviderId, { $inc: { freeBuckets: -1 } })
-		.session(session)
-		.lean()
-		.exec();
-};
-
 const createStorageProviderInstance = (storageProviderMetaInformation) => {
 	return new aws.S3(getConfig(storageProviderMetaInformation));
 };
@@ -61,11 +42,52 @@ const copyObject = (storageProvider, params) => {
 	return storageProviderInstance.copyObject(params).promise();
 };
 
+const createCopyParams = (bucket, fileId) => {
+	return {
+		Bucket: bucket,
+		CopySource: `/${bucket}/${fileId}`,
+		Key: `expiring_${fileId}`,
+		MetadataDirective: 'REPLACE',
+		Metadata: {
+			expires: true,
+		},
+	};
+};
+
+const createDeleteParams = (bucket, fileIds) => {
+	return {
+		Bucket: bucket,
+		Delete: {
+			Objects: fileIds.map((fileId) => ({
+				Key: fileId,
+			})),
+		},
+	};
+};
+
+const moveFilesToTrash = async (storageProvider, bucket, fileIds) => {
+	const parallelRequests = 100; // we can experiment with inc-/decreasing this. Max 1000 for the delete request
+	for (let processedFiles = 0; processedFiles < fileIds.length; processedFiles += parallelRequests) {
+		const fileIdSubset = fileIds.slice(processedFiles, processedFiles + parallelRequests);
+		// eslint-disable-next-line no-await-in-loop
+		await Promise.all(
+			fileIdSubset.map((fileId) => {
+				const copyParams = createCopyParams(bucket, fileId);
+				return copyObject(storageProvider, copyParams);
+			})
+		);
+
+		const deleteParams = createDeleteParams(bucket, fileIdSubset);
+		// eslint-disable-next-line no-await-in-loop
+		await deleteObjects(storageProvider, deleteParams).promise();
+	}
+	return true;
+};
+
 module.exports = {
+	private: {
+		createStorageProviderInstance,
+	},
 	getStorageProviderMetaInformation,
-	deleteObjects,
-	copyObject,
-	getLeastUsedStorageProvider,
-	decreaseFreeBuckets,
-	createStorageProviderInstance,
+	moveFilesToTrash,
 };
