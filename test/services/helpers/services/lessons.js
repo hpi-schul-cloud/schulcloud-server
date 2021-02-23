@@ -1,4 +1,4 @@
-const LessonModel = require('../../../../src/services/lesson/model');
+const { LessonModel } = require('../../../../src/services/lesson/model');
 
 let createdLessons = [];
 

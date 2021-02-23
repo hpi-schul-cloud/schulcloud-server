@@ -1,9 +1,8 @@
 const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
-const reqlib = require('app-root-path').require;
 
-const { NotAuthenticated } = reqlib('src/errors');
 const { omit } = require('lodash');
 const moodleClient = require('moodle-client');
+const { NotAuthenticated } = require('../../../errors');
 const logger = require('../../../logger');
 
 class MoodleStrategy extends AuthenticationBaseStrategy {

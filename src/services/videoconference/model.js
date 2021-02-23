@@ -47,6 +47,13 @@ const videoconferenceSchema = new Schema(
 		timestamps: true,
 	}
 );
+/*
+query list with biggest impact of database load
+schulcloud.videoconferences    find         {"target": 1, "targetModel": 1} -> 1
+*/
+// only work with both by generic model path
+videoconferenceSchema.index({ target: 1 }); // ok = 1
+videoconferenceSchema.index({ target: 1, targetModel: 1 }); // ok = 1
 
 enableAuditLog(videoconferenceSchema);
 

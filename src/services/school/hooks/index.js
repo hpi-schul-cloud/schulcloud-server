@@ -1,9 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider, discard, disallow, keepInArray, keep } = require('feathers-hooks-common');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden } = reqlib('src/errors');
+const { Forbidden } = require('../../../errors');
 const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
@@ -220,7 +219,8 @@ const validateOfficialSchoolNumber = async (context) => {
 		if (!currentSchool) {
 			throw new Error(`Internal error`);
 		}
-		if (currentSchool.officialSchoolNumber) {
+		const isSuperHero = await globalHooks.hasRole(context, context.params.account.userId, 'superhero');
+		if (!isSuperHero && currentSchool.officialSchoolNumber) {
 			throw new Error(`This school already have an officialSchoolNumber`);
 		}
 		// eg: 'BE-16593' or '16593'
@@ -249,15 +249,19 @@ const validateCounty = async (context) => {
 			throw new Error(`Internal error`);
 		}
 
+		const isSuperHero = await globalHooks.hasRole(context, context.params.account.userId, 'superhero');
+
 		const { county } = context.data;
 		if (
-			!currentSchool.federalState.counties.length ||
-			!currentSchool.federalState.counties.some((c) => c._id.toString() === county.toString())
+			!isSuperHero &&
+			(!currentSchool.federalState.counties.length ||
+				!currentSchool.federalState.counties.some((c) => c._id.toString() === county.toString()))
 		) {
 			throw new Error(`The state doesn't not have a matching county`);
 		}
+
 		/* Tries to replace the existing county with a new one */
-		if (currentSchool.county && JSON.stringify(currentSchool.county) !== JSON.stringify(county)) {
+		if (!isSuperHero && currentSchool.county && JSON.stringify(currentSchool.county) !== JSON.stringify(county)) {
 			throw new Error(`This school already have a county`);
 		}
 		context.data.county = currentSchool.federalState.counties.find((c) => {
