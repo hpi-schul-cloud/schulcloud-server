@@ -1,6 +1,4 @@
-const reqlib = require('app-root-path').require;
-
-const { NotFound } = reqlib('src/errors');
+const { NotFound } = require('../../../errors');
 const { FileModel } = require('../model');
 const { userModel } = require('../../user/model');
 const RoleModel = require('../../role/model');

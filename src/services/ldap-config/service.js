@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
-const reqlib = require('app-root-path').require;
 
 const errorHandlers = require('./errors');
 
-const { Forbidden } = reqlib('src/errors');
+const { Forbidden } = require('../../errors');
 
 class LdapConfigService {
 	setup(app) {

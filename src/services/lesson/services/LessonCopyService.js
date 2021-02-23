@@ -1,11 +1,10 @@
 // eslint-disable-next-line max-classes-per-file
 const _ = require('lodash');
-const reqlib = require('app-root-path').require;
 
-const { NotFound, GeneralError } = reqlib('src/errors');
+const { NotFound, GeneralError } = require('../../../errors');
 const { homeworkModel } = require('../../homework/model');
 const { FileModel } = require('../../fileStorage/model');
-const lessonModel = require('../model');
+const { LessonModel } = require('../model');
 
 const { copyFile } = require('../../fileStorage/utils');
 const logger = require('../../../logger');
@@ -117,7 +116,7 @@ class LessonCopyService {
 		newLesson.contents.forEach((content) => {
 			fileChangeLog.replaceAllInContent(content);
 		});
-		return lessonModel.update({ _id: newLesson._id }, newLesson).lean().exec();
+		return LessonModel.update({ _id: newLesson._id }, newLesson).lean().exec();
 	}
 
 	createTempLesson(sourceLesson, newCourseId) {
@@ -136,8 +135,7 @@ class LessonCopyService {
 	 */
 	async create(data, params) {
 		const { newCourseId, lessonId: _id } = data;
-		const sourceLesson = await lessonModel
-			.findOne({ _id })
+		const sourceLesson = await LessonModel.findOne({ _id })
 			.populate('courseId')
 			.lean()
 			.exec()
@@ -145,7 +143,7 @@ class LessonCopyService {
 				throw new NotFound('Can not fetch lesson.', err);
 			});
 		const tempLesson = this.createTempLesson(sourceLesson, newCourseId);
-		const newLesson = await lessonModel.create(tempLesson).catch((err) => {
+		const newLesson = await LessonModel.create(tempLesson).catch((err) => {
 			throw new GeneralError('Can not create new lesson.', err);
 		});
 

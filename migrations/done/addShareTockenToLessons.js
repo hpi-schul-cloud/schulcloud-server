@@ -3,7 +3,7 @@ const name = 'Add shareToken to lessons in shared courses';
 const nanoid = require('nanoid');
 
 const database = require('../../src/utils/database');
-const lessonsModel = require('../../src/services/lesson/model');
+const { LessonModel } = require('../../src/services/lesson/model');
 const { courseModel } = require('../../src/services/user-group/model');
 
 const run = async () => {
@@ -19,10 +19,10 @@ const run = async () => {
 			.exec();
 		return Promise.all(
 			data.map(async ({ _id }) => {
-				const lessons = await lessonsModel.find({ courseId: _id }).lean().exec();
+				const lessons = await LessonModel.find({ courseId: _id }).lean().exec();
 				for (let i = 0; i < lessons.length; i += 1) {
 					if (!lessons[i].shareToken) {
-						await lessonsModel.findByIdAndUpdate(lessons[i]._id, { shareToken: nanoid(12) });
+						await LessonModel.findByIdAndUpdate(lessons[i]._id, { shareToken: nanoid(12) });
 						console.log(lessons[i]);
 					}
 				}

@@ -1,9 +1,8 @@
 const _ = require('lodash');
-const reqlib = require('app-root-path').require;
 
-const { NotFound, BadRequest } = reqlib('src/errors');
+const { NotFound, BadRequest } = require('../../../errors');
 const { FileModel } = require('../../fileStorage/model');
-const lessonModel = require('../model');
+const { LessonModel } = require('../model');
 
 class LessonFilesService {
 	isTextContent(content) {
@@ -29,7 +28,7 @@ class LessonFilesService {
 		if (!lessonId || !shareToken) throw new BadRequest('Missing parameters!');
 
 		// first fetch lesson from given id
-		return lessonModel.findOne({ _id: lessonId, shareToken }).then((lesson) => {
+		return LessonModel.findOne({ _id: lessonId, shareToken }).then((lesson) => {
 			if (!lesson) {
 				throw new NotFound('No lesson was not found for given lessonId and shareToken!');
 			}
