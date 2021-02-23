@@ -495,6 +495,28 @@ describe('AdminUsersService', () => {
 		}
 	});
 
+	it('ignore schoolId', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool();
+		const { _id: otherSchoolId } = await testObjects.createTestSchool();
+		const targetUser = await testObjects.createTestUser({ roles: ['student'], schoolId });
+		const actingUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+		const params = await testObjects.generateRequestParamsFromUser(actingUser);
+
+		const result = await adminStudentsService.patch(targetUser._id, { schoolId: otherSchoolId }, params);
+		expect(equalIds(result.schoolId, schoolId)).to.equal(true);
+	});
+
+	it('ignore roles', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool();
+		const targetUser = await testObjects.createTestUser({ roles: ['student'], schoolId });
+		const actingUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+		const params = await testObjects.generateRequestParamsFromUser(actingUser);
+
+		await adminStudentsService.patch(targetUser._id, { roles: ['superhero'] }, params);
+		const result = await app.service('users').get(targetUser._id, { query: { $populate: 'roles' } });
+		expect(result.roles[0].name).to.equal('student');
+	});
+
 	it('users with STUDENT_LIST permission can access the FIND method', async () => {
 		await testObjects.createTestRole({
 			name: 'studentListPerm',
