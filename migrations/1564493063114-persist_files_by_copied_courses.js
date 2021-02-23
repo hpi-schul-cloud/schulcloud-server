@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 const { FileModel } = require('../src/services/fileStorage/model');
-const LessonModel = require('../src/services/lesson/model');
+const { LessonModel } = require('../src/services/lesson/model');
 const { courseGroupModel, courseModel } = require('../src/services/user-group/model');
 const { connect, close } = require('../src/utils/database');
 const logger = require('../src/logger');
