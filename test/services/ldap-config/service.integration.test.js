@@ -260,7 +260,11 @@ describe('LdapConfigService', () => {
 				.set('content-type', 'application/json');
 			const response = await request.send(knownBadConfig);
 			expect(response.status).to.equal(400);
-			expect(response.body.message).to.include("request.body should have required property 'rootPath'");
+			expect(response.body.validation_errors).to.deep.include({
+				path: '.body.rootPath',
+				message: "should have required property 'rootPath'",
+				errorCode: 'required.openapi.validation',
+			});
 		});
 	});
 
