@@ -1,65 +1,59 @@
-const { expect } = require('chai');
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../src/app');
+const { MethodNotAllowed, BadRequest } = require('../../../src/errors');
 
-const Pseudonym = require('../../../src/services/pseudonym/model');
+const PseudonymModel = require('../../../src/services/pseudonym/model');
 
-const { cleanup, createTestUser, generateRequestParamsFromUser } = require('../helpers/testObjects')(appPromise);
+const {
+	cleanup,
+	createTestUser,
+	createTestLtiTool,
+	createTestPseudonym,
+	generateRequestParamsFromUser,
+} = require('../helpers/testObjects')(appPromise); // todo import everything
+
+chai.use(chaiAsPromised);
+const { expect } = chai;
 
 describe('pseudonym service', function pseudonymTest() {
 	let app;
 	let pseudonymService;
-	let toolService;
 	let server;
 	this.timeout(10000);
 
-	const testTool1 = {
-		_id: '5a79cb15c3874f9aea14daa5',
-		name: 'test1',
-		url: 'https://tool.com?pseudonym={PSEUDONYM}',
-		isLocal: true,
-		isTemplate: true,
-		resource_link_id: 1,
-		lti_version: '1p0',
-		lti_message_type: 'basic-start-request',
-		secret: '1',
-		key: '1',
-	};
-	const testTool2 = {
-		_id: '5a79cb15c3874f9aea14daa6',
-		originTool: '5a79cb15c3874f9aea14daa5',
-		name: 'test2',
-		url: 'https://tool.com?pseudonym={PSEUDONYM}',
-		isLocal: true,
-		resource_link_id: 1,
-		lti_version: '1p0',
-		lti_message_type: 'basic-start-request',
-		secret: '1',
-		key: '1',
+	const createTestData = async () => {
+		const testUser = await createTestUser();
+		const testTool = await createTestLtiTool();
+		return { testUser, testTool };
 	};
 
-	let testUser1;
-	let testUser2;
-	let testUser3;
+	const getPseudonyms = async (user, tool) => {
+		const result = pseudonymService.find({
+			query: {
+				userId: user._id,
+				toolId: tool._id,
+			},
+		});
+		return result;
+	};
+
+	const expectValidPseudonym = (pseudonymModelTO) => {
+		expect(ObjectId.isValid(pseudonymModelTO.userId)).to.be.true;
+		expect(ObjectId.isValid(pseudonymModelTO.toolId)).to.be.true;
+		expect(pseudonymModelTO.pseudonym).to.be.an('string');
+		expect(pseudonymModelTO.pseudonym.length).to.be.greaterThan(0);
+	};
 
 	before(async () => {
 		app = await appPromise;
 		server = await app.listen(0);
 		pseudonymService = app.service('pseudonym');
-		toolService = app.service('ltiTools');
-
-		testUser1 = await createTestUser();
-		testUser2 = await createTestUser();
-		testUser3 = await createTestUser();
-
-		await toolService.create(testTool1);
-		await toolService.create(testTool2);
 	});
 
 	after(async () => {
-		await Pseudonym.remove({}).exec();
-		await toolService.remove(testTool1);
-		await toolService.remove(testTool2);
+		await PseudonymModel.remove({}).exec();
 		await cleanup();
 		await server.close();
 	});
@@ -68,141 +62,124 @@ describe('pseudonym service', function pseudonymTest() {
 		expect(app.service('pseudonym')).to.be.ok;
 	});
 
-	it('throws MethodNotAllowed on GET', () =>
-		pseudonymService
-			.get(testTool1._id)
-			.then(() => {
-				throw new Error('Was not supposed to succeed');
-			})
-			.catch((err) => {
-				expect(err.name).to.equal('MethodNotAllowed');
-				expect(err.code).to.equal(405);
-			}));
+	it('throws MethodNotAllowed on GET', async () => {
+		const { testTool } = await createTestData();
+		expect(pseudonymService.get(testTool._id)).to.be.rejectedWith(MethodNotAllowed);
+	});
 
-	it('throws MethodNotAllowed on UPDATE', () =>
-		pseudonymService
-			.update(testTool1._id, {})
-			.then(() => {
-				throw new Error('Was not supposed to succeed');
-			})
-			.catch((err) => {
-				expect(err.name).to.equal('MethodNotAllowed');
-				expect(err.code).to.equal(405);
-			}));
+	it('throws MethodNotAllowed on UPDATE', async () => {
+		const { testTool } = await createTestData();
+		expect(pseudonymService.update(testTool._id, {})).to.be.rejectedWith(MethodNotAllowed);
+	});
 
-	it('throws MethodNotAllowed on PATCH', () =>
-		pseudonymService
-			.patch(testTool1._id, {})
-			.then(() => {
-				throw new Error('Was not supposed to succeed');
-			})
-			.catch((err) => {
-				expect(err.name).to.equal('MethodNotAllowed');
-				expect(err.code).to.equal(405);
-			}));
+	it('throws MethodNotAllowed on PATCH', async () => {
+		const { testTool } = await createTestData();
+		expect(pseudonymService.patch(testTool._id, {})).to.be.rejectedWith(MethodNotAllowed);
+	});
 
 	it('throws MethodNotAllowed on external call to REMOVE', async () => {
 		const user = await createTestUser({ roles: 'teacher' });
 		const params = await generateRequestParamsFromUser(user);
-		return pseudonymService
-			.remove(testTool1._id, params)
-			.then(() => {
-				throw new Error('Was not supposed to succeed');
-			})
-			.catch((err) => {
-				expect(err.name).to.equal('MethodNotAllowed');
-				expect(err.code).to.equal(405);
-			});
+		const { testTool } = await createTestData();
+		expect(pseudonymService.remove(testTool._id, params)).to.be.rejectedWith(MethodNotAllowed);
 	});
 
-	it('does not throw on internal call to REMOVE', async () => {
-		const pseudonym = await Pseudonym.create({});
+	it('does not throw and deletes a pseudonym on internal call to REMOVE', async () => {
+		const { testUser, testTool } = await createTestData();
+		const pseudonym = await createTestPseudonym({}, testTool, testUser);
+		expect(await PseudonymModel.findById(pseudonym._id)).to.not.equal(null);
 		await pseudonymService.remove(pseudonym._id);
-		expect(await Pseudonym.findById(pseudonym._id)).to.equal(null);
+		expect(await PseudonymModel.findById(pseudonym._id)).to.equal(null);
 	});
 
-	let pseudonym = '';
-	it('creates missing pseudonym on FIND for derived tool', () =>
-		pseudonymService
-			.find({
-				query: {
-					userId: testUser3._id,
-					toolId: testTool2._id,
-				},
-			})
-			.then((result) => {
-				expect(Array.isArray(result.data)).to.equal(true);
-				({ pseudonym } = result.data[0]);
-				expect(pseudonym).to.be.a('String');
-			}));
+	it('returns a pseudonym which will be created on first request and then reused for same tool', async () => {
+		const { testUser, testTool } = await createTestData();
+		const responseWithPseudonymNewlyCreated = await getPseudonyms(testUser, testTool);
+		expect(responseWithPseudonymNewlyCreated.data).to.be.an('array').of.length(1);
+		const { pseudonym } = responseWithPseudonymNewlyCreated.data[0];
+		expect(pseudonym).to.be.an('string');
+		expect(pseudonym.length).to.be.greaterThan(0);
+		const secondResponseWithSamePseudonym = await getPseudonyms(testUser, testTool);
+		expect(secondResponseWithSamePseudonym.data).to.be.an('array').of.length(1);
+		const samePseudonym = secondResponseWithSamePseudonym.data[0].pseudonym;
+		expect(samePseudonym).to.deep.equal(pseudonym);
+	});
 
-	it('returns existing pseudonym on FIND for derived tool', () =>
-		pseudonymService
-			.find({
-				query: {
-					userId: testUser3._id,
-					toolId: testTool2._id,
-				},
-			})
-			.then((result) => {
-				expect(result.data.length).to.equal(1);
-				expect(result.data[0].pseudonym).to.equal(pseudonym);
-			}));
+	it('returns existing pseudonym on FIND for derived tool', async () => {
+		const testUser = await createTestUser();
+		const testTemplateTool = await createTestLtiTool({ isTemplate: true });
+		const testTool = await createTestLtiTool({ isTemplate: false, originTool: testTemplateTool._id });
 
-	it('returns existing pseudonym on FIND for origin tool', () =>
-		pseudonymService
-			.find({
-				query: {
-					userId: testUser3._id,
-					toolId: testTool1._id,
-				},
-			})
-			.then((result) => {
-				expect(result.data[0].pseudonym).to.eql(pseudonym);
-			}));
+		// create pseudonym for template tool by find
+		const pseudonymsTemplateResponse = await getPseudonyms(testUser, testTemplateTool);
+		const templateToolPseudonym = pseudonymsTemplateResponse.data[0];
 
-	it('creates missing pseudonyms on FIND with multiple users', () =>
-		pseudonymService
-			.find({
-				query: {
-					userId: [testUser1._id, testUser2._id],
-					toolId: testTool1._id,
-				},
-			})
-			.then((result) => {
-				expect(result.data).to.be.a('Array');
-				expect(result.data.length).to.eql(2);
-			}));
+		// derived tool should resolve with same pseudonym
+		const pseudonymsResponse = await getPseudonyms(testUser, testTool);
+		const derivedTemplatePseudonym = pseudonymsResponse.data[0];
 
-	it("doesn't create pseudonyms on FIND for missing users", () =>
-		pseudonymService
-			.find({
+		expectValidPseudonym(templateToolPseudonym);
+		expect(templateToolPseudonym).to.deep.equal(derivedTemplatePseudonym);
+	});
+
+	it('returns existing pseudonym on FIND for origin tool', async () => {
+		const testUser = await createTestUser();
+		const testTemplateTool = await createTestLtiTool({ isTemplate: true });
+		const testTool = await createTestLtiTool({ isTemplate: false, originTool: testTemplateTool._id });
+
+		// create pseudonym for derived tool by find
+		const pseudonymsResponse = await getPseudonyms(testUser, testTool);
+		const derivedTemplatePseudonym = pseudonymsResponse.data[0];
+
+		// origin tool should resolve with same pseudonym
+		const pseudonymsTemplateResponse = await getPseudonyms(testUser, testTemplateTool);
+		const templateToolPseudonym = pseudonymsTemplateResponse.data[0];
+
+		expectValidPseudonym(templateToolPseudonym);
+		expect(templateToolPseudonym).to.deep.equal(derivedTemplatePseudonym);
+	});
+
+	it('creates missing pseudonyms on FIND with multiple users', async () => {
+		const { testUser, testTool } = await createTestData();
+		const secondTestUser = await createTestUser();
+
+		const response = await pseudonymService.find({
+			query: {
+				userId: [testUser._id, secondTestUser._id],
+				toolId: testTool._id,
+			},
+		});
+		const { data } = response;
+		expect(data).to.be.a('array').of.length(2);
+		data.forEach((pseudonymTO) => expectValidPseudonym(pseudonymTO));
+		expect(data.map((pseudonym) => pseudonym.userId.toString())).to.include.members([
+			testUser._id.toString(),
+			secondTestUser._id.toString(),
+		]);
+		expect(data[0].pseudonym).to.be.not.equal(data[1].pseudonym);
+	});
+
+	it("doesn't create pseudonyms on FIND for missing users", async () => {
+		const { testTool } = await createTestData();
+		expect(
+			pseudonymService.find({
 				query: {
 					userId: new ObjectId(), // not existing userId
-					toolId: testTool1._id,
+					toolId: testTool._id, // existing toolId
 				},
 			})
-			.then(() => {
-				throw new Error('Was not supposed to succeed');
-			})
-			.catch((error) => {
-				expect(error.name).to.equal('BadRequest');
-				expect(error.code).to.equal(400);
-			}));
+		).to.be.rejectedWith(BadRequest);
+	});
 
-	it("doesn't create pseudonyms on FIND for missing tool", () =>
-		pseudonymService
-			.find({
+	it("doesn't create pseudonyms on FIND for missing tool", async () => {
+		const { testUser } = await createTestData();
+		expect(
+			pseudonymService.find({
 				query: {
-					userId: '599ec1688e4e364ec18ff46e',
-					toolId: '599ec1688e4e364ec18ff46e', // not existing toolId
+					toolId: new ObjectId(), // not existing toolId
+					userId: testUser._id, // existing userId
 				},
 			})
-			.then(() => {
-				throw new Error('Was not supposed to succeed');
-			})
-			.catch((error) => {
-				expect(error.name).to.equal('NotFound');
-				expect(error.code).to.equal(404);
-			}));
+		).to.be.rejectedWith(BadRequest);
+	});
 });
