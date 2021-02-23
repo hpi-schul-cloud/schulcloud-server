@@ -4,6 +4,7 @@ const { userRepo, accountRepo, trashbinRepo } = require('../repo/index');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { facadeLocator } = require('../../../utils/facadeLocator');
 const errorUtils = require('../../../errors/utils');
+const { trashBinResult } = require('../../helper/uc.helper');
 
 const userHaveSameSchool = async (userId, otherUserId) => {
 	if (userId && otherUserId) {
@@ -38,18 +39,25 @@ const getUserData = async (id) => {
 /**
  *
  * @param {*} userId
+ * @param schoolTombstoneUserId
  * @param {*} deleteUserFacades e.g. ['/registrationPin/v2', '/fileStorage/v2']
  */
-const deleteUserRelatedData = async (userId, deleteUserFacades = []) => {
+const deleteUserRelatedData = async (userId, schoolTombstoneUserId, deleteUserFacades = []) => {
 	for (const facadeName of deleteUserFacades) {
 		const facade = facadeLocator.facade(facadeName);
 		for (const deleteFn of facade.deleteUserData) {
 			try {
 				// eslint-disable-next-line no-await-in-loop
-				const trash = await deleteFn(userId);
+				const trash = await deleteFn(userId, schoolTombstoneUserId);
 				// eslint-disable-next-line no-await-in-loop
-				await trashbinRepo.updateTrashbinByUserId(userId, trash.data);
+				await trashbinRepo.updateTrashbinByUserId(userId, trash.trashBinData);
 			} catch (error) {
+				const errorTrashbinResult = trashBinResult({
+					scope: 'error',
+					data: { error, facade: facadeName, deleteFn: deleteFn.name },
+				});
+				// eslint-disable-next-line no-await-in-loop
+				await trashbinRepo.updateTrashbinByUserId(userId, errorTrashbinResult);
 				errorUtils.asyncErrorLog(error, `failed to delete user data for facade ${facadeName}#${deleteFn.name}`);
 			}
 		}
@@ -60,15 +68,17 @@ const createUserTrashbin = async (id, data) => {
 	return trashbinRepo.createUserTrashbin(id, data);
 };
 
-const replaceUserWithTombstone = async (id) => {
+const replaceUserWithTombstone = async (user) => {
+	const { _id, schoolId } = user;
 	const uid = ObjectId();
-	await userRepo.replaceUserWithTombstone(id, {
+	await userRepo.replaceUserWithTombstone(_id, {
 		firstName: 'DELETED',
 		lastName: 'USER',
 		email: `${uid}@deleted`,
 		deletedAt: new Date(),
+		schoolId,
 	});
-	await accountRepo.deleteAccountForUserId(id);
+	await accountRepo.deleteAccountForUserId(_id);
 	return { success: true };
 };
 
@@ -80,9 +90,8 @@ const replaceUserWithTombstone = async (id) => {
  * @param {*} permissionAction the action that is to be performed (CREATE, EDIT, DELETE)
  * @param {*} param3 needs to contain account.userId, which is the ID of the user issuing the request
  */
-const checkPermissions = async (id, roleName, permissionAction, { account }) => {
+const checkPermissions = async (id, roleName, permissionAction, { user: currentUser }) => {
 	const userToBeEffected = await userRepo.getUserWithRoles(id);
-	const currentUser = await userRepo.getUserWithRoles(account.userId);
 
 	let grantPermission = true;
 	// the effected user's role fits the rolename for the route
@@ -116,23 +125,39 @@ const checkPermissions = async (id, roleName, permissionAction, { account }) => 
 	}
 };
 
-const deleteUser = async (id) => {
+const getOrCreateTombstoneUserId = async (schoolId, user) => {
+	const schoolFacade = facadeLocator.facade('/school/v2');
+	const school = await schoolFacade.getSchool(schoolId);
+	if (school.tombstoneUserId) {
+		return school.tombstoneUserId;
+	}
+	const tombstoneSchool = await schoolFacade.getTombstoneSchool();
+	if (tombstoneSchool) {
+		const schoolTombstoneUser = await userRepo.createTombstoneUser(schoolId, tombstoneSchool._id);
+		await schoolFacade.setTombstoneUser(user, schoolId, schoolTombstoneUser._id);
+		return schoolTombstoneUser;
+	}
+	return undefined;
+};
+
+const deleteUser = async (id, { user: loggedinUser }) => {
 	const userAccountData = await getUserData(id);
 	const user = userAccountData.find(({ scope }) => scope === 'user').data;
 
 	await createUserTrashbin(id, userAccountData);
 
-	await replaceUserWithTombstone(id);
+	await replaceUserWithTombstone(user);
 	try {
 		const registrationPinFacade = facadeLocator.facade('/registrationPin/v2');
-		const registrationPinTrash = await registrationPinFacade.deleteRegistrationPinsByEmail(user.email);
-		await trashbinRepo.updateTrashbinByUserId(user._id, registrationPinTrash.data); // TODO unnecessary for PINs?
+		await registrationPinFacade.deleteRegistrationPinsByEmail(user.email);
 	} catch (error) {
 		errorUtils.asyncErrorLog(error, `failed to delete registration pin for user ${user._id}`);
 	}
 
+	const schoolTombstoneUserId = await getOrCreateTombstoneUserId(user.schoolId, loggedinUser);
 	// this is an async function, but we don't need to wait for it, because we don't give any errors information back to the user
-	deleteUserRelatedData(user.id, []).catch((error) => {
+	const facades = ['/pseudonym/v2', '/helpdesk/v2', '/fileStorage/v2', '/classes/v2', '/courses/v2'];
+	deleteUserRelatedData(user._id, schoolTombstoneUserId, facades).catch((error) => {
 		errorUtils.asyncErrorLog(error, 'deleteUserRelatedData failed');
 	});
 };
@@ -146,4 +171,5 @@ module.exports = {
 	getUserData,
 	replaceUserWithTombstone,
 	userHaveSameSchool,
+	getOrCreateTombstoneUserId,
 };
