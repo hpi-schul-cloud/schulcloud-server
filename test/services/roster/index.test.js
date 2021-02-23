@@ -20,6 +20,7 @@ describe('roster service', function oauth() {
 	let server;
 
 	let testUser1;
+	let testToolTemplate;
 	let testTool1;
 	let testCourse;
 
@@ -36,8 +37,8 @@ describe('roster service', function oauth() {
 		server = app.listen(0);
 
 		testUser1 = { _id: '0000d231816abba584714c9e' }; // cord carl
-		testTool1 = {
-			_id: '5a79cb15c3874f9aea14daa5',
+		testToolTemplate = {
+			_id: '5a79cb15c3874f9aea14daa6',
 			name: 'test1',
 			url: 'https://tool.com?pseudonym={PSEUDONYM}',
 			isLocal: true,
@@ -49,6 +50,23 @@ describe('roster service', function oauth() {
 			key: '1',
 			oAuthClientId: '123456789',
 		};
+		testToolTemplate = await toolService.create(testToolTemplate);
+		testTool1 = {
+			_id: '5a79cb15c3874f9aea14daa5',
+			name: 'test1',
+			url: 'https://tool.com?pseudonym={PSEUDONYM}',
+			isLocal: true,
+			isTemplate: false,
+			resource_link_id: 1,
+			lti_version: '1p0',
+			lti_message_type: 'basic-start-request',
+			secret: '1',
+			key: '1',
+			originTool: testToolTemplate._id,
+		};
+
+		testTool1 = await toolService.create(testTool1);
+
 		testCourse = {
 			_id: '5cb8dc8e7cccac0e98a29975',
 			name: 'rosterTestCourse',
@@ -58,25 +76,23 @@ describe('roster service', function oauth() {
 			ltiToolIds: [testTool1._id],
 			shareToken: 'xxx',
 		};
-		return Promise.all([toolService.create(testTool1), courseService.create(testCourse)]).then(() =>
-			pseudonymService
-				.find({
-					query: {
-						userId: testUser1._id,
-						toolId: testTool1._id,
-					},
-				})
-				.then((pseudonym) => {
-					pseudonym1 = pseudonym.data[0].pseudonym;
-					return Promise.resolve();
-				})
-		);
+		await courseService.create(testCourse);
+
+		const pseudonym = await pseudonymService.find({
+			query: {
+				userId: testUser1._id,
+				toolId: testTool1._id,
+			},
+		});
+		pseudonym1 = pseudonym.data[0].pseudonym;
+		return Promise.resolve();
 	});
 
 	after(() =>
 		Promise.all([
 			pseudonymService.remove(null, { query: {} }),
 			toolService.remove(testTool1),
+			toolService.remove(testToolTemplate),
 			courseService.remove(testCourse._id),
 		]).then(server.close())
 	);
@@ -97,7 +113,7 @@ describe('roster service', function oauth() {
 		userGroupsService
 			.find({
 				route: { user: pseudonym1 },
-				tokenInfo: { client_id: testTool1.oAuthClientId },
+				tokenInfo: { client_id: testToolTemplate.oAuthClientId },
 			})
 			.then((groups) => {
 				const group1 = groups.data.groups[0];
@@ -112,7 +128,7 @@ describe('roster service', function oauth() {
 		groupsService
 			.get(testCourse._id, {
 				tokenInfo: {
-					client_id: testTool1.oAuthClientId,
+					client_id: testToolTemplate.oAuthClientId,
 					obfuscated_subject: pseudonym1,
 				},
 			})
@@ -120,7 +136,7 @@ describe('roster service', function oauth() {
 				assert.strictEqual(pseudonym1, group.data.teachers[0].user_id);
 				const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
 				const iframe = `<iframe src="http://localhost:3100/oauth2/username/${pseudonym1}" ${properties}></iframe>`;
-				assert.strictEqual(encodeURI(iframe), group.data.teachers[0].username);
+				assert.strictEqual(iframe, group.data.teachers[0].username);
 				done();
 			});
 	});

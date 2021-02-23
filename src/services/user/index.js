@@ -2,7 +2,6 @@ const hooks = require('feathers-hooks-common');
 const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-const reqlib = require('app-root-path').require;
 
 const { userModel, registrationPinModel } = require('./model');
 const registrationPinsHooks = require('./hooks/registrationPins');
@@ -24,7 +23,7 @@ const {
 	QrRegistrationLinksLegacyClient: { QrRegistrationLinksLegacyClient, qrRegistrationLinksLegacyHooks },
 } = require('./services');
 
-const { registerApiValidation } = reqlib('src/utils/apiValidation');
+const { registerApiValidation } = require('../../utils/apiValidation');
 
 module.exports = (app) => {
 	registerApiValidation(app, path.join(__dirname, '/docs/adminusers.openapi.yaml'));
