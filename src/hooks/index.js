@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = reqlib('src/errors');
+const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = require('../errors');
 const { authenticate } = require('@feathersjs/authentication');
 
 const { v4: uuidv4 } = require('uuid');
@@ -526,32 +525,6 @@ exports.mapPayload = (context) => {
 	});
 	return context;
 };
-
-exports.restrictToUsersOwnClasses = (context) =>
-	getUser(context).then((user) => {
-		if (testIfRoleNameExist(user, ['superhero', 'administrator', 'teacher'])) {
-			return context;
-		}
-		if (context.method === 'get') {
-			const classService = context.app.service('classes');
-			return classService.get(context.id).then((result) => {
-				const userId = context.params.account.userId.toString();
-				if (
-					!_.some(result.userIds, (u) => equalIds(u, userId)) &&
-					!_.some(result.teacherIds, (u) => equalIds(u, userId))
-				) {
-					throw new Forbidden('You are not in that class.');
-				}
-			});
-		}
-		if (context.method === 'find') {
-			const { _id } = user;
-			if (typeof context.params.query.$or === 'undefined') {
-				context.params.query.$or = [{ userIds: _id }, { teacherIds: _id }, { substitutionIds: _id }];
-			}
-		}
-		return context;
-	});
 
 // meant to be used as an after context
 exports.denyIfNotCurrentSchool = ({ errorMessage = 'Die angefragte Ressource gehört nicht zur eigenen Schule!' }) => (

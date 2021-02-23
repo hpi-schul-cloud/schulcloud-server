@@ -1,7 +1,6 @@
 const http = require('http');
-const reqlib = require('app-root-path').require;
 
-const logger = reqlib('src/logger');
+const logger = require('../logger');
 
 const incomingMessageToJson = (incomingMessage) => {
 	if (!(incomingMessage instanceof http.IncomingMessage)) {

@@ -1,6 +1,9 @@
-const { ValidationError } = require('../../../../errors');
+const { trashBinResult } = require('../../../helper/uc.helper');
+
 const { coursesRepo, lessonsRepo, courseGroupsRepo } = require('../../repo/index');
-const { equal, isValid: isValidObjectId } = require('../../../../helper/compare').ObjectId;
+const { equal } = require('../../../../helper/compare').ObjectId;
+const validationHelper = require('../../../helper/validation.helper');
+
 const { debug } = require('../../../../logger');
 
 const addLessonContentsToTrashbinData = (userId, lessons = [], trashBinData) => {
@@ -15,8 +18,8 @@ const addLessonContentsToTrashbinData = (userId, lessons = [], trashBinData) => 
 	Object.assign(trashBinData, lessonIdsWithUserContentsIds);
 };
 
-const validateParams = (userId) => {
-	if (!isValidObjectId(userId)) throw new ValidationError('a valid objectId is required', { userId });
+const expectUserId = (userId) => {
+	validationHelper.validateObjectId({ userId });
 };
 
 /**
@@ -25,7 +28,7 @@ const validateParams = (userId) => {
  * @param {String|ObjectId} userId
  */
 const deleteUserDatafromLessons = async (userId) => {
-	validateParams(userId);
+	expectUserId(userId);
 
 	const data = [];
 	let complete = true;
@@ -37,7 +40,7 @@ const deleteUserDatafromLessons = async (userId) => {
 		complete = result.success;
 		debug(`removed user from ${result.modifiedDocuments} lessons`, { userId });
 	}
-	return { trashBinData: { scope: 'lessons', data }, complete };
+	return trashBinResult({ scope: 'lessons', data, complete });
 };
 
 const addCoursesToData = (coursesAggreate = [], data) => {
@@ -53,7 +56,7 @@ const addCoursesToData = (coursesAggreate = [], data) => {
  * @param {String|ObjectId} userId
  */
 const deleteUserDataFromCourses = async (userId) => {
-	validateParams(userId);
+	expectUserId(userId);
 
 	const data = {};
 	let complete = true;
@@ -65,7 +68,7 @@ const deleteUserDataFromCourses = async (userId) => {
 		complete = result.success;
 		addCoursesToData(courses, data);
 	}
-	return { trashBinData: { scope: 'courses', data }, complete };
+	return trashBinResult({ scope: 'courses', data, complete });
 };
 
 const addCourseGroupData = (courseGroupdata = [], data) => {
@@ -79,7 +82,7 @@ const addCourseGroupData = (courseGroupdata = [], data) => {
  * @param {*} userId
  */
 const deleteUserDataFromCourseGroups = async (userId) => {
-	validateParams(userId);
+	expectUserId(userId);
 	const data = [];
 	let complete = true;
 	const courseGroups = await courseGroupsRepo.getCourseGroupsWithUser(userId);
@@ -91,7 +94,7 @@ const deleteUserDataFromCourseGroups = async (userId) => {
 		addCourseGroupData(courseGroups, data);
 	}
 
-	return { trashBinData: { scope: 'courseGroups', data }, complete };
+	return trashBinResult({ scope: 'courseGroups', data, complete });
 };
 
 module.exports = { deleteUserDataFromCourses, deleteUserDataFromCourseGroups, deleteUserDatafromLessons };

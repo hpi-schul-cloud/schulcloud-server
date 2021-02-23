@@ -1,12 +1,18 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { disallow } = require('feathers-hooks-common');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden } = reqlib('src/errors');
+const { Forbidden } = require('../../../errors');
 const globalHooks = require('../../../hooks');
-const { lookupSchool } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+
+const restrictToTeachersWithTeams = async (hook) => {
+	const permited = await globalHooks.hasRole(hook, hook.params.account.userId, 'teacher');
+	if (permited) {
+		return Promise.resolve(hook);
+	}
+	throw new Forbidden("You don't have the necessary permissions to see teachers of other schools");
+};
 
 const mapRoleFilterQuery = (hook) => {
 	if (hook.params.query.roles) {
@@ -54,8 +60,9 @@ const filterForPublicTeacher = (hook) => {
 exports.before = {
 	all: [authenticate('jwt')],
 	find: [
-		lookupSchool,
+		globalHooks.lookupSchool,
 		globalHooks.mapPaginationQuery,
+		restrictToTeachersWithTeams,
 		filterForPublicTeacher,
 		// resolve ids for role strings (e.g. 'TEACHER')
 		globalHooks.resolveToIds('/roles', 'params.query.roles', 'name'),

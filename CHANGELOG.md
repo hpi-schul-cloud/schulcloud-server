@@ -11,18 +11,251 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-8341 - add tombstone school to tombstone user
+- SC-8408 - added delete events by scope Id route
+- SC-7937 - Allow adding multiple materials to lesson
+
+### Changed
+
+- OPS-1508 - added limits for cpu and ram to the docker compose files
+- SC-8500 - refactoring in error handling
+- SC-7021 - automatic deletion documents in the trashbins collection after 7 days.
+
+## [26.0.0]
+
+### Fixed
+
+- SC-8534 fix registration link generation
+
+## [25.6.8] - 2021-02-19
+
+### Changed
+
+- SC-8477 LDAP-Sync: Speed up class sync by holding all the school's users in map while creating/populating classes
+- SC-8477 LDAP-Sync: Speed up user sync by grouping users into chunks and loading the chunks from DB instead of individual users
+
+## [25.6.7] - 2021-02-18
+
+### Security
+
+- SC-8655 - prevent changes to immutable user attributes
+
+## [25.6.6] - 2021-02-18
+
+### Fixed
+
+- SC-8657 - Recreate shared links for homework
+
+## [25.6.5] - 2021-02-17
+
+### Fixed
+
+- SC-8634 - Recreate shared links for homework
+
+## [25.6.4] - 2021-02-17
+
+### Changed
+
+- Reverted Changes for SC-8410
+
+## [25.6.3] - 2021-02-15
+
+### Security
+
+- VOR-3 - Enable and replace old file links.
+
+## [25.6.2] - 2021-02-11
+
+### Changed
+
+- VOR-2 - Adjusted business rules for adding team members from external school.
+
+## [25.6.1] - 2021-02-11
+
+### Fixed
+
+- VOR-1 - Fix passwordRecovery id validation.
+
+## [25.6.0] - 2021-02-09
+
+### Fixed
+
+- SC-8514 - QR Code generation fails
+- SC-8390 - Lern-Store collections feature flag was not excluding collections in search
+- SC-8322 prevent wrong assignment from school to storage provider
+
+### Added
+
+- SC-8482 - Deletion concept orchestration integration
+- SC-8029 - Add deletion concept handling for pseudonyms and registration pins
+- SC-6950 - Add access for superhero to change kreisid and officialSchoolNumber
+- SC-8206 - Add school tombstone for deleting concept
+- SC-7825 - Deletion concept for user data in tasks
+
+### Changed
+
+- SC-8541 - restrict class modifing requests to the teachers, who are inside these classes
+- SC-8380 removed reqlib, replaced by normal require to keep referenced types known
+- SC-8213 error handling concept
+- SC-4576 - sanitize bbb room and member names
+- SC-8300 Added user information to LDAP Sync in case of errors
+
+## [25.5.16] - 2021-02-08
+
+### Added
+
+- SC-8512 - Creating a migration for duplicated events
+
+## [25.5.15]
+
+### Fixed
+
+- SC-8571 - New courses does not appear in bettermarks
+
+## [25.5.14] - 2021-02-02
+
+### Changed
+
+- SC-8420 - Fix old missing indexes that migration for new indexes can executed. 25.5.3
+
+## [25.5.13]
+
+### Changed
+
+- SC-8462 - Add logging for homework deletion
+
+## [25.5.12]
+
+### Fixed
+
+- SC-8499 - Change order of migrations
+
+## [25.5.11]
+
+### Fixed
+
+- SC-8499 - Prevent duplicated pseudonyms
+
+## [25.5.10]
+
+- SC-8506 - add origin server name to bbb create and join requests
+
+## [25.5.9]
+
+### Fixed
+
+- SC-8503 - Clicking on task in BRB and THR shows pencil page
+
+## [25.5.8]
+
+### Changed
+
+- SC-8480 - Return GeneralError if unknown error code is given to error pipeline
+
+## [25.5.7]
+
+## Added
+
+- SC-8489 - Added permission check for homework deletion
+
+## [25.5.6]
+
+### Fixed
+
+- SC-8410 - Verify ldap connection reads the first page of users only to avoid timeouts
+- SC-8444 - resolve eventual consistency in course shareToken generation
+
+## [25.5.5]
+
+### Fixed
+
+- SC-8303 - fix wrong assignment from school to storage provider
+
+## [25.5.4]
+
+### Added
+
+- SC-8358 - bettermarks: show hint for safari users
+- SC-8412 - update swagger documentation of pseudonym/roster/ltitools
+
+### Fixed
+
+- SC-5287 - Fixed OAuth2 rostering
+- SC-5287 - Repair Bettermark's depseudonymization
+- SC-8313 - Bettermarks: depseudonymization iframe needs to use Storage Access API in Safari
+- SC-8379 - Secure ltiTools route
+- SC-8315 - bettermarks: security check and production configuration
+
+## [25.5.3]
+
+### Added
+
+- SC-8420 - Migration for sync new indexes.
+
+## [25.5.2]
+
+### Fixed
+
+- SC-8189 - fix duplicate events by returning updated object at findOneAndUpdate
+
+## [25.5.1]
+
+### Fixed
+
+- SC-8303 - fix wrong assignment from school to storage provider
+
+## [25.5.0]
+
+### Added
+
+- SC-7835 - Add deletion concept handling for helpdesk problems
 - SC-8229 - Added invalid DN error to ldap-config service error handling
 - SC-7825 - Remove user relations from courses
 - SC-7827 - Add deletion concept handling for file permissions.
 - SC-8030 - Setup orchestrator for deleting concept
 - SC-8060 - increase unit test coverage for lernstore counties
 - SC-8179 - repaired unit test
-- SC-7763 - adds searchable feature flag for lernstore 
+- SC-7763 - adds searchable feature flag for lernstore.
 - SC-8020 - adds collections filter to edu-sharing service
+- SC-8260 - new team indexes and migration to add this
+
+### Fixed
+
+- SC-8230 - fix deletion of teachers via new route
 
 ### Removed
 
 - SC-8233 - Removed attribute and member as required attributes for the LDAP-config service
+
+### Fixed
+
+- SC-8329 - Cluster returns old verison of Pin object after patch
+
+## [25.4.1]
+
+- Update from 25.3.9 into master
+
+## [25.3.9]
+
+- SC-8198 continue school sync on user issues
+
+## [25.3.8]
+
+### Changed
+
+- SC-8198 - handle eventually consistent database in THR sync
+
+## [25.3.7] - 2020-12-18
+
+### Changed
+
+- SC-8209 - prevent sync from stopping if error occurs for a single student
+
+## [25.3.6]
+
+### Fixed
+
+- SC-8235 - repaired reigstration link for students
 
 ## [25.3.5]
 
@@ -97,6 +330,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 - SC-7028 - Add Course Component API Specification document
 - SC-7476 - Prevent hash generation if user has account
 - SC-6692 - Added Lern-Store counties support for Niedersachsen (Merlin)
+
 
 ### Changed
 
