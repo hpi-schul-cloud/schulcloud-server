@@ -1,14 +1,15 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { hasSchoolPermission } = require('../../../hooks');
+const { populateUser } = require('../populateUserHook');
 const userUC = require('../uc/users.uc');
 
 class UserServiceV2 {
-	constructor(roleName) {
-		this.roleName = roleName;
+	constructor(roleNameSubject) {
+		this.roleNameSubject = roleNameSubject;
 	}
 
 	async remove(id, params) {
-		return userUC.deleteUser(id, this.roleName, { ...params, app: this.app });
+		await userUC.checkPermissions(id, this.roleNameSubject, 'DELETE', { ...params });
+		return userUC.deleteUser(id, { ...params });
 	}
 
 	async setup(app) {
@@ -16,10 +17,9 @@ class UserServiceV2 {
 	}
 }
 
-const adminHookGenerator = (kind) => ({
+const adminHookGenerator = () => ({
 	before: {
-		all: [authenticate('jwt')],
-		remove: [hasSchoolPermission(`${kind}_DELETE`)],
+		all: [authenticate('jwt'), populateUser],
 	},
 	after: {},
 });

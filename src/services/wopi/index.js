@@ -5,9 +5,9 @@
 const rp = require('request-promise-native');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, NotFound, BadRequest } = reqlib('src/errors');
+const { Forbidden, NotFound, BadRequest } = require('../../errors');
+const logger = require('../../logger');
 const hooks = require('./hooks');
 const { FileModel } = require('../fileStorage/model');
 const { canWrite, canRead } = require('../fileStorage/utils/filePermissionHelper');

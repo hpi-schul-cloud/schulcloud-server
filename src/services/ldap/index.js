@@ -3,9 +3,9 @@ const ldap = require('ldapjs');
 const mongoose = require('mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, NotFound, BadRequest, GeneralError, NotAuthenticated, NoClientInstanceError } = reqlib('src/errors');
+const { Forbidden, NotFound, BadRequest, NotAuthenticated, NoClientInstanceError } = require('../../errors');
+const LDAPConnectionError = require('./LDAPConnectionError');
 
 const hooks = require('./hooks');
 
@@ -34,6 +34,9 @@ module.exports = function LDAPService() {
 			// only needed to register as a feathers service
 		}
 
+		/**
+		 * @deprecated
+		 */
 		get(id, params) {
 			return app
 				.service('systems')
@@ -60,7 +63,10 @@ module.exports = function LDAPService() {
 				});
 		}
 
-		/** Used for activation only */
+		/**
+		 * Used for activation only
+		 * @deprecated
+		 */
 		async patch(systemId, payload, context) {
 			const systemService = await app.service('systems');
 			const userService = await app.service('users');
@@ -143,7 +149,7 @@ module.exports = function LDAPService() {
 
 				client.on('error', (e) => {
 					logger.error('Error during LDAP operation', { error: e });
-					reject(new GeneralError('LDAP error', e));
+					reject(new LDAPConnectionError(e));
 				});
 
 				client.on('connect', () => {

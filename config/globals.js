@@ -46,7 +46,7 @@ const globals = {
 	SC_THEME: process.env.SC_THEME || 'default',
 	SC_TITLE: process.env.SC_TITLE || 'HPI Schul-Cloud',
 	SC_SHORT_TITLE: process.env.SC_SHORT_TITLE || 'HPI Schul-Cloud',
-	SMTP_SENDER: process.env.SMTP_SENDER || 'noreply@schul-cloud.org',
+	SMTP_SENDER: process.env.SMTP_SENDER || 'noreply@hpi-schul-cloud.org',
 
 	LEAD_TIME: process.env.LEAD_TIME ? parseInt(process.env.LEAD_TIME, 10) : undefined,
 	/**

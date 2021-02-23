@@ -1,9 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
-const reqlib = require('app-root-path').require;
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
-const { NotFound, BadRequest } = reqlib('src/errors');
 const nanoid = require('nanoid');
 const { iff, isProvider } = require('feathers-hooks-common');
+const { NotFound, BadRequest } = require('../../../errors');
 const { equal } = require('../../../helper/compare').ObjectId;
 const {
 	injectUserId,
@@ -14,7 +14,7 @@ const {
 	getRestrictPopulatesHook,
 	preventPopulate,
 } = require('../../../hooks');
-const lessonModel = require('../model');
+const { LessonModel } = require('../model');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
 
 // add a shareToken to a lesson if course has a shareToken
@@ -36,12 +36,41 @@ const addShareTokenIfCourseShareable = async (context) => {
 		return context;
 	}
 
-	return lessonModel.findByIdAndUpdate(_id, { shareToken: nanoid(12) }).then(() => context);
+	return LessonModel.findByIdAndUpdate(_id, { shareToken: nanoid(12) }).then(() => context);
 };
 
 // Generate a new url for material that have merlin as source.
 // The url expires after 2 hours
 const convertMerlinUrl = async (context) => {
+	const schoolId =
+		context.params &&
+		context.params.authentication &&
+		context.params.authentication.payload &&
+		context.params.authentication.payload.schoolId;
+	if (Configuration.get('FEATURE_ES_MERLIN_ENABLED') === false || !schoolId) {
+		return context;
+	}
+
+	// Converts urls to valid merlin urls on the fly
+	// This if snippet only applies if the user went to the course first and added content from the course
+	if (context.result && context.result.contents && context.result.contents.length) {
+		await Promise.all(
+			context.result.contents.map(async (content) => {
+				if (content && content.content && content.content.resources && content.content.resources.length) {
+					await Promise.all(
+						content.content.resources.map(async (resource) => {
+							if (resource && resource.merlinReference) {
+								context.params.query.merlinReference = resource.merlinReference;
+								resource.url = await context.app.service('edu-sharing/merlinToken').find(context.params);
+							}
+						})
+					);
+				}
+			})
+		);
+	}
+
+	// Converts url to a valid merlin url if a merlin reference is stored in in the material
 	if (
 		context.result &&
 		context.result.materialIds &&
@@ -51,9 +80,8 @@ const convertMerlinUrl = async (context) => {
 		await Promise.all(
 			materialIds.map(async (material) => {
 				if (material.merlinReference) {
-					material.url = await context.app
-						.service('edu-sharing/merlinToken')
-						.find({ query: { merlinReference: material.merlinReference } });
+					context.params.query.merlinReference = material.merlinReference;
+					material.url = await context.app.service('edu-sharing/merlinToken').find(context.params);
 				}
 			})
 		);
@@ -61,11 +89,35 @@ const convertMerlinUrl = async (context) => {
 	return context;
 };
 
+const attachMerlinReferenceToLesson = (context) => {
+	if (Configuration.get('FEATURE_ES_MERLIN_ENABLED') === false) {
+		return context;
+	}
+	if (context.data && context.data.contents && context.data.contents.length) {
+		context.data.contents.forEach((c) => {
+			if (c.content && c.content.resources && c.content.resources.length) {
+				c.content.resources.forEach((resource) => {
+					const merlinUrl = new URL(resource.url);
+					if (
+						`${merlinUrl.protocol}//${merlinUrl.hostname}${merlinUrl.pathname}` ===
+							Configuration.get('ES_MERLIN_AUTH_URL') &&
+						merlinUrl.searchParams.get('identifier').length
+					) {
+						resource.merlinReference = merlinUrl.searchParams.get('identifier');
+					}
+				});
+			}
+		});
+	}
+
+	return context;
+};
+
 const setPosition = async (context) => {
 	const { courseId, courseGroupId } = context.data;
 	if (courseId || courseGroupId) {
 		const query = courseId ? { courseId } : { courseGroupId };
-		context.data.position = await lessonModel.count(query).exec(); // next free position
+		context.data.position = await LessonModel.count(query).exec(); // next free position
 	}
 
 	return context;
@@ -194,6 +246,7 @@ exports.before = () => ({
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 	],
 	patch: [
+		attachMerlinReferenceToLesson,
 		checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 		permitGroupOperation,
 		ifNotLocal(checkCorrectCourseOrTeamId),

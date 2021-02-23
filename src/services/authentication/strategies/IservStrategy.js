@@ -1,9 +1,8 @@
 const { AuthenticationBaseStrategy } = require('@feathersjs/authentication');
-const reqlib = require('app-root-path').require;
 
-const { NotAuthenticated } = reqlib('src/errors');
 const { omit } = require('lodash');
 const ClientOAuth2 = require('client-oauth2');
+const { NotAuthenticated } = require('../../../errors');
 const logger = require('../../../logger');
 
 class IservStrategy extends AuthenticationBaseStrategy {

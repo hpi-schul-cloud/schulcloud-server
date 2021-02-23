@@ -11,6 +11,9 @@ const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
+// id from seed data
+const TOMBSTONE_SCHOOL_ID = '5fda01df490123cba891a193';
+
 describe('user repository', () => {
 	let app;
 	let server;
@@ -49,6 +52,7 @@ describe('user repository', () => {
 				firstName: 'DELETED',
 				lastName: 'USER',
 				email: `${Date.now()}@deleted`,
+				schoolId: user.schoolId,
 			};
 
 			const result = await userRepo.replaceUserWithTombstone(user._id, replaceData);
@@ -58,7 +62,7 @@ describe('user repository', () => {
 			expect(result.lastName).to.equal(replaceData.lastName);
 			expect(result.email).to.equal(replaceData.email);
 			expect(result).to.haveOwnProperty('deletedAt');
-			expect(result).to.not.haveOwnProperty('schoolId');
+			expect(result.schoolId.toString()).to.equal(user.schoolId.toString());
 			expect(result).to.not.haveOwnProperty('firstLogin');
 			expect(result.roles.length).to.equal(0);
 		});
@@ -74,18 +78,46 @@ describe('user repository', () => {
 		});
 	});
 
-	describe('getUserRoles', () => {
+	describe('getUserWithRoles', () => {
 		it('when called with a valid userid, then it returns an array of populated roles', async () => {
 			const user = await testObjects.createTestUser({ roles: ['teacher', 'administrator'] });
 
-			const result = await userRepo.getUserRoles(user._id);
+			const result = await userRepo.getUserWithRoles(user._id);
 
-			expect(Array.isArray(result)).to.be.true;
-			expect(result.length).to.equal(2);
-			result.forEach((role) => {
+			expect(Array.isArray(result.roles)).to.be.true;
+			expect(result.roles.length).to.equal(2);
+			result.roles.forEach((role) => {
 				expect(role).to.haveOwnProperty('name');
 				expect(role).to.haveOwnProperty('permissions');
 			});
+		});
+	});
+
+	describe('createTombstoneUser', () => {
+		it('should return a user object', async () => {
+			const school = await testObjects.createTestSchool();
+
+			const tombstoneUser = await userRepo.createTombstoneUser(school._id, TOMBSTONE_SCHOOL_ID);
+
+			expect(tombstoneUser).to.be.an('object');
+			expect(tombstoneUser).to.contain.keys('email', 'firstName', 'lastName', 'schoolId');
+
+			expect(tombstoneUser.email).to.equal(`tombstone-${school._id.toString()}@hpi-schul-cloud.de`);
+			expect(tombstoneUser.firstName).to.equal('Gelöschter');
+			expect(tombstoneUser.lastName).to.equal('Benutzer');
+			expect(tombstoneUser.schoolId.toString()).to.equal(TOMBSTONE_SCHOOL_ID);
+		});
+
+		it('should return unique email adresses for different schools', async () => {
+			const numberOfTestSchools = 5;
+			const schools = await Promise.all([...Array(numberOfTestSchools)].map(() => testObjects.createTestSchool()));
+
+			const tombstoneUsers = await Promise.all(
+				schools.map((school) => userRepo.createTombstoneUser(school._id, TOMBSTONE_SCHOOL_ID))
+			);
+			const tombstoneEmailAdresses = tombstoneUsers.map((user) => user.email);
+
+			expect(new Set(tombstoneEmailAdresses).size).to.eql(5);
 		});
 	});
 });

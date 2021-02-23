@@ -1,8 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { keep } = require('feathers-hooks-common');
-const reqlib = require('app-root-path').require;
 
-const { Forbidden, NotFound, BadRequest, GeneralError } = reqlib('src/errors');
+const { Forbidden, NotFound, BadRequest, GeneralError } = require('../../../errors');
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
 const { hasRoleNoHook, hasPermissionNoHook, hasPermission } = require('../../../hooks');
@@ -253,6 +252,24 @@ const pinIsVerified = (hook) => {
 		});
 };
 
+const protectImmutableAttributes = async (context) => {
+	const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
+	if (userIsSuperhero) return context;
+
+	delete context.data.roles;
+	delete (context.data.$push || {}).roles;
+	delete (context.data.$pull || {}).roles;
+	delete (context.data.$pop || {}).roles;
+	delete (context.data.$addToSet || {}).roles;
+	delete (context.data.$pullAll || {}).roles;
+	delete (context.data.$set || {}).roles;
+
+	delete context.data.schoolId;
+	delete (context.data.$set || {}).schoolId;
+
+	return context;
+};
+
 const securePatching = async (context) => {
 	const targetUser = await context.app.service('users').get(context.id, { query: { $populate: 'roles' } });
 	const actingUser = await context.app
@@ -277,18 +294,6 @@ const securePatching = async (context) => {
 		return Promise.reject(new NotFound(`no record found for id '${context.id.toString()}'`));
 	}
 
-	delete context.data.schoolId;
-	delete (context.data.$set || {}).schoolId;
-
-	if (!isAdmin) {
-		delete context.data.roles;
-		delete (context.data.$push || {}).roles;
-		delete (context.data.$pull || {}).roles;
-		delete (context.data.$pop || {}).roles;
-		delete (context.data.$addToSet || {}).roles;
-		delete (context.data.$pullAll || {}).roles;
-		delete (context.data.$set || {}).roles;
-	}
 	if (!ObjectId.equal(context.id, context.params.account.userId)) {
 		if (!(isAdmin || (isTeacher && targetIsStudent))) {
 			return Promise.reject(new BadRequest('You have not the permissions to change other users'));
@@ -632,6 +637,7 @@ module.exports = {
 	removeStudentFromCourses,
 	sanitizeData,
 	pinIsVerified,
+	protectImmutableAttributes,
 	securePatching,
 	decorateUser,
 	decorateAvatar,
