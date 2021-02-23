@@ -35,6 +35,8 @@ const roleSchema = new Schema(
 		timestamps: true,
 	}
 );
+roleSchema.index({ name: 1 });
+
 // https://mongoosejs.com/docs/middleware.html
 const mongooseOperationsForClearCache = [
 	'findOneAndDelete',
