@@ -4,7 +4,7 @@ const { disallow } = require('feathers-hooks-common');
 const { Forbidden, NotFound } = require('../../../errors');
 const logger = require('../../../logger');
 const { injectUserId, mapPayload } = require('../../../hooks');
-const lesson = require('../model');
+const { LessonModel } = require('../model');
 const checkIfCourseGroupLesson = require('./checkIfCourseGroupLesson');
 const resolveStorageType = require('../../fileStorage/hooks/resolveStorageType');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
@@ -12,8 +12,7 @@ const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const checkForShareToken = (context) => {
 	const { shareToken = '', lessonId } = context.data;
 	const currentUserId = context.params.account.userId.toString();
-	return lesson
-		.findOne({ _id: lessonId })
+	return LessonModel.findOne({ _id: lessonId })
 		.populate('courseId')
 		.select('shareToken courseId')
 		.lean()
