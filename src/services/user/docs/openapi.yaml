@@ -99,6 +99,7 @@ components:
         birthday:
           type: string
           format: 'date'
+          nullable: true
         roles:
           type: array
           items:

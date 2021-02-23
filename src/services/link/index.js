@@ -7,14 +7,14 @@ const path = require('path');
 const { BadRequest } = require('@feathersjs/errors');
 
 const logger = require('../../logger');
-const link = require('./link-model');
+const { LinkModel } = require('./link-model');
 const hooks = require('./hooks');
 
 module.exports = function setup() {
 	const app = this;
 
 	const options = {
-		Model: link,
+		Model: LinkModel,
 		paginate: {
 			default: 10000,
 			max: 10000,
@@ -94,7 +94,7 @@ module.exports = function setup() {
 			}
 
 			// base link
-			if (data.role === 'student') {
+			if (data.role === 'student' || (data.role.name && data.role.name === 'student')) {
 				linkData.link = `${data.host || Configuration.get('HOST')}/registration/${data.schoolId}`;
 			} else {
 				linkData.link = `${data.host || Configuration.get('HOST')}/registration/${data.schoolId}/byemployee`;

@@ -13,7 +13,7 @@ const getUserGroupSchema = (additional = {}) => {
 	const schema = {
 		name: { type: String, required: true },
 		schoolId: { type: Schema.Types.ObjectId, required: true, index: true },
-		userIds: [{ type: Schema.Types.ObjectId, ref: 'user' }],
+		userIds: [{ type: Schema.Types.ObjectId, ref: 'user', index: true }],
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now },
 	};
@@ -51,12 +51,11 @@ const courseSchema = getUserGroupSchema({
 	ltiToolIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
 	color: { type: String, required: true, default: '#ACACAC' },
 	startDate: { type: Date },
-	untilDate: { type: Date, index: true },
+	untilDate: { type: Date },
 	shareToken: {
 		type: String,
 		unique: true,
 		sparse: true,
-		index: true,
 	},
 	times: [timeSchema],
 	// optional information if this course is a copy from other
@@ -65,9 +64,21 @@ const courseSchema = getUserGroupSchema({
 	...externalSourceSchema,
 });
 
-courseSchema.index({ userIds: 1 });
-courseSchema.index({ teacherIds: 1 });
-courseSchema.index({ substitutionIds: 1 });
+/*
+query list with biggest impact of database load
+
+*/
+// _directly set in getUserGroupSchema_
+// schema.index({ schoolId: 1 });
+// schema.index({ userIds: 1 });
+// _ from externalSourceSchema
+// schema.index({ source: 1 });
+// - - - - - - - - - - - - - - - - -
+courseSchema.index({ userIds: 1 }); // ?
+courseSchema.index({ teacherIds: 1 }); // ?
+courseSchema.index({ substitutionIds: 1 }); // ?
+courseSchema.index({ shareToken: 1 }, { sparse: true, unique: true }); // ?
+courseSchema.index({ untilDate: 1 }); // ?
 
 courseSchema.plugin(mongooseLeanVirtuals);
 
@@ -93,6 +104,17 @@ const courseGroupSchema = getUserGroupSchema({
 	courseId: { type: Schema.Types.ObjectId, required: true, ref: 'course' },
 });
 
+/*
+query list with biggest impact of database load
+schulcloud.coursegroups        find         {"$and": [{"courseId": 1}], "courseId": 1, "schoolId": 1} -> 1
+schulcloud.coursegroups        find         {"userIds": 1} -> 2
+*/
+
+// _directly set in getUserGroupSchema_
+// schema.index({ schoolId: 1 });
+// schema.index({ userIds: 1 });
+courseGroupSchema.index({ schoolId: 1, courseId: 1 }); // ok = 1
+
 const classSchema = getUserGroupSchema({
 	teacherIds: [{ type: Schema.Types.ObjectId, ref: 'user', required: true }],
 	invitationLink: { type: String },
@@ -108,6 +130,18 @@ const classSchema = getUserGroupSchema({
 	successor: { type: Schema.Types.ObjectId, ref: 'classes' },
 	...externalSourceSchema,
 });
+
+/*
+query list with biggest impact of database load
+schulcloud.classes             find         {"$or": [{"userIds": 1}, {"teacherIds": 1}]} -> 1
+*/
+// _directly set in getUserGroupSchema_
+// schema.index({ schoolId: 1 });
+// schema.index({ userIds: 1 });
+// _ from externalSourceSchema
+// schema.index({ source: 1 });
+// - - - - - - - - - - - - - - - - -
+classSchema.index({ teacherIds: 1 }); // ok or = 1
 
 classSchema.plugin(mongooseLeanVirtuals);
 

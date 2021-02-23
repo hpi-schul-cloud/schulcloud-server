@@ -11,7 +11,7 @@ const { ValidationError } = require('../../../errors');
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
-const simulateOrchestratedDeletion = (userId) => Promise.all(deleteUserData().map((step) => step(userId)));
+const simulateOrchestratedDeletion = (userId) => Promise.all(deleteUserData.map((step) => step(userId)));
 
 const repeat = (times, promiseFn) => Promise.all([...Array(times)].map(() => promiseFn()));
 
@@ -64,9 +64,8 @@ describe('when removing user data in courses', async () => {
 	});
 
 	it('should fail for execution without user id', async () => {
-		const deleteUserDataSteps = deleteUserData();
-		expect(deleteUserDataSteps.length !== 0, 'have steps').to.be.true;
-		deleteUserDataSteps.forEach((step) => {
+		expect(deleteUserData.length !== 0, 'have steps').to.be.true;
+		deleteUserData.forEach((step) => {
 			expect(step()).to.eventually.throw(ValidationError);
 		});
 	});
