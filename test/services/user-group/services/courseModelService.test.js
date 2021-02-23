@@ -1,20 +1,21 @@
 const { expect } = require('chai');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 const { courseModel } = require('../../../../src/services/user-group/model');
 
 describe('course model service', () => {
+	let app;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
 	});
-
 
 	it('CREATE a course on internal call', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
@@ -73,7 +74,7 @@ describe('course model service', () => {
 		} catch (err) {
 			expect(err.message).to.not.eq('should have failed');
 			expect(err.code).to.eq(405);
-			expect(err.message).to.eq('Provider \'rest\' can not call \'get\'. (disallow)');
+			expect(err.message).to.eq("Provider 'rest' can not call 'get'. (disallow)");
 		}
 	});
 });

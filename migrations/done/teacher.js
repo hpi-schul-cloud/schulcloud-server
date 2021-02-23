@@ -8,7 +8,6 @@ const database = require('../../src/utils/database');
 const { submissionModel } = require('../../src/services/homework/model.js');
 const { FileModel } = require('../../src/services/fileStorage/model.js');
 
-
 const run = async (dry) => {
 	database.connect();
 
@@ -28,43 +27,52 @@ const run = async (dry) => {
 		return Promise.resolve();
 	}
 
-	const promises = submissionWithFiles
-		.map((sub) => {
-			const { teacherId } = sub.homeworkId || {};
+	const promises = submissionWithFiles.map((sub) => {
+		const { teacherId } = sub.homeworkId || {};
 
-			if (!teacherId) {
-				return Promise.resolve();
-			}
+		if (!teacherId) {
+			return Promise.resolve();
+		}
 
-			const buggyFiles = sub.fileIds
-				.filter((file) => !file.permissions
-					.find((perm) => perm.refId && perm.refId.toString() === teacherId.toString()));
+		const buggyFiles = sub.fileIds.filter(
+			(file) => !file.permissions.find((perm) => perm.refId && perm.refId.toString() === teacherId.toString())
+		);
 
-			if (!buggyFiles.length) {
-				return Promise.resolve();
-			}
+		if (!buggyFiles.length) {
+			return Promise.resolve();
+		}
 
-			console.log('Update permissions of files:');
-			console.log(buggyFiles.map((file) => file._id));
-			console.log(`with access rights for teacher: ${teacherId}`);
+		console.log('Update permissions of files:');
+		console.log(buggyFiles.map((file) => file._id));
+		console.log(`with access rights for teacher: ${teacherId}`);
 
-			const filePromises = buggyFiles.map((file) => dry
+		const filePromises = buggyFiles.map((file) =>
+			dry
 				? Promise.resolve()
-				: FileModel.update({ _id: file._id }, {
-					$set: {
-						permissions: [...file.permissions, {
-							refId: teacherId,
-							refPermModel: 'user',
-							write: false,
-							read: true,
-							create: false,
-							delete: false,
-						}],
-					},
-				}).exec().catch(errorHandler));
+				: FileModel.update(
+						{ _id: file._id },
+						{
+							$set: {
+								permissions: [
+									...file.permissions,
+									{
+										refId: teacherId,
+										refPermModel: 'user',
+										write: false,
+										read: true,
+										create: false,
+										delete: false,
+									},
+								],
+							},
+						}
+				  )
+						.exec()
+						.catch(errorHandler)
+		);
 
-			return Promise.all(filePromises);
-		});
+		return Promise.all(filePromises);
+	});
 
 	return Promise.all(promises);
 };

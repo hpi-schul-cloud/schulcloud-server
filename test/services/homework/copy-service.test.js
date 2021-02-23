@@ -1,18 +1,26 @@
 const chai = require('chai');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 const { homeworkModel } = require('../../../src/services/homework/model');
 
-const homeworkCopyService = app.service('homework/copy');
 const { expect } = chai;
 
-
 describe('homework copy service', () => {
+	let app;
+	let homeworkCopyService;
 	const homeworkIdsToDelete = [];
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		homeworkCopyService = app.service('homework/copy');
+		server = await app.listen(0);
+	});
 
 	after(async () => {
 		await homeworkModel.deleteMany({ id: { $in: homeworkIdsToDelete } });
-		testObjects.cleanup();
+		await testObjects.cleanup();
+		await server.close();
 	});
 
 	it('internal call can copy a homework via POST', async () => {
@@ -73,7 +81,9 @@ describe('homework copy service', () => {
 		});
 
 		const copy = await homeworkCopyService.create({
-			_id: homework._id, userId: otherUser._id, newTeacher: otherUser._id,
+			_id: homework._id,
+			userId: otherUser._id,
+			newTeacher: otherUser._id,
 		});
 		expect(copy.courseId).to.equal(null);
 		expect(copy.lessonId).to.equal(null);
@@ -101,7 +111,10 @@ describe('homework copy service', () => {
 		});
 
 		const copyForCourse = await homeworkCopyService.create({
-			_id: homework._id, userId: otherUser._id, newTeacher: otherUser._id, courseId: course._id,
+			_id: homework._id,
+			userId: otherUser._id,
+			newTeacher: otherUser._id,
+			courseId: course._id,
 		});
 		expect(copyForCourse.courseId).to.equal(course._id);
 		expect(copyForCourse.lessonId).to.equal(null);
@@ -132,7 +145,10 @@ describe('homework copy service', () => {
 		});
 
 		const copy = await homeworkCopyService.create({
-			_id: homework._id, userId: destUser._id, newTeacher: destUser._id, courseId: destCourse._id,
+			_id: homework._id,
+			userId: destUser._id,
+			newTeacher: destUser._id,
+			courseId: destCourse._id,
 		});
 		expect(copy.courseId).to.equal(destCourse._id);
 		expect(copy.lessonId).to.equal(null);

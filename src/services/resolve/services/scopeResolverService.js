@@ -2,9 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { equal } = require('../../../helper/compare').ObjectId;
 
 // get an json api conform entry
-const getDataEntry = ({
-	type, id, name, authorities = ['can-read'], attributes = {},
-}) => ({
+const getDataEntry = ({ type, id, name, authorities = ['can-read'], attributes = {} }) => ({
 	type,
 	id,
 	attributes: {
@@ -38,16 +36,14 @@ class ScopeResolver {
 		const user = await userService.get(id);
 		const userId = user._id;
 
-		response.data.push(getDataEntry({
-			type: 'user',
-			id: userId,
-			name: user.fullName,
-			authorities: [
-				'can-read',
-				'can-write',
-				'can-send-notifications',
-			],
-		}));
+		response.data.push(
+			getDataEntry({
+				type: 'user',
+				id: userId,
+				name: user.fullName,
+				authorities: ['can-read', 'can-write', 'can-send-notifications'],
+			})
+		);
 
 		const [courses, classes, teams] = await Promise.all([
 			courseService.find({
@@ -85,16 +81,18 @@ class ScopeResolver {
 		});
 
 		teams.data.forEach((_team) => {
-			response.data.push(getDataEntry({
-				type: 'scope',
-				id: _team._id,
-				name: _team.name,
-				// todo: only leaders have notification and write permissions
-				authorities: ['can-read', 'can-write', 'can-send-notifications'],
-				attributes: {
-					scopeType: 'team',
-				},
-			}));
+			response.data.push(
+				getDataEntry({
+					type: 'scope',
+					id: _team._id,
+					name: _team.name,
+					// todo: only leaders have notification and write permissions
+					authorities: ['can-read', 'can-write', 'can-send-notifications'],
+					attributes: {
+						scopeType: 'team',
+					},
+				})
+			);
 		});
 
 		const scopes = [].concat(courses.data, classes.data);
@@ -110,13 +108,15 @@ class ScopeResolver {
 				authorities.push('can-write', 'can-send-notifications');
 			}
 
-			response.data.push(getDataEntry({
-				type: 'scope',
-				id: scope._id,
-				name: scope.name,
-				authorities,
-				attributes: scope.attributes,
-			}));
+			response.data.push(
+				getDataEntry({
+					type: 'scope',
+					id: scope._id,
+					name: scope.name,
+					authorities,
+					attributes: scope.attributes,
+				})
+			);
 		});
 
 		return Promise.resolve(response);

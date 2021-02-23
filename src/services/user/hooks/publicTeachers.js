@@ -1,10 +1,18 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { Forbidden } = require('@feathersjs/errors');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { disallow } = require('feathers-hooks-common');
+
+const { Forbidden } = require('../../../errors');
 const globalHooks = require('../../../hooks');
-const { lookupSchool } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+
+const restrictToTeachersWithTeams = async (hook) => {
+	const permited = await globalHooks.hasRole(hook, hook.params.account.userId, 'teacher');
+	if (permited) {
+		return Promise.resolve(hook);
+	}
+	throw new Forbidden("You don't have the necessary permissions to see teachers of other schools");
+};
 
 const mapRoleFilterQuery = (hook) => {
 	if (hook.params.query.roles) {
@@ -23,15 +31,13 @@ const filterForPublicTeacher = (hook) => {
 	// Limit accessible user (only teacher which are discoverable)
 	hook.params.query.roles = ['teacher'];
 
-	const TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION = Configuration
-		.get('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
+	const TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION = Configuration.get(
+		'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION'
+	);
 	switch (TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION) {
 		case 'opt-in':
 			// own school and other schools if opted-in
-			hook.params.query.$or = [
-				{ schoolId: hook.params.account.schoolId },
-				{ discoverable: true },
-			];
+			hook.params.query.$or = [{ schoolId: hook.params.account.schoolId }, { discoverable: true }];
 			break;
 		case 'opt-out':
 			// everybody who did not opt-out or from same school
@@ -54,8 +60,9 @@ const filterForPublicTeacher = (hook) => {
 exports.before = {
 	all: [authenticate('jwt')],
 	find: [
-		lookupSchool,
+		globalHooks.lookupSchool,
 		globalHooks.mapPaginationQuery,
+		restrictToTeachersWithTeams,
 		filterForPublicTeacher,
 		// resolve ids for role strings (e.g. 'TEACHER')
 		globalHooks.resolveToIds('/roles', 'params.query.roles', 'name'),

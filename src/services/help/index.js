@@ -1,6 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
 const hooks = require('feathers-hooks-common');
-const errors = require('@feathersjs/errors');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
+const { NotFound, BadRequest } = require('../../errors');
 const { helpDocumentsModel } = require('./model');
 const logger = require('../../logger');
 const { excludeAttributesFromSanitization } = require('../../hooks/sanitizationExceptions');
@@ -11,7 +14,9 @@ const { excludeAttributesFromSanitization } = require('../../hooks/sanitizationE
 const findDocuments = async (app, userId, theme) => {
 	let query = { theme };
 	if (userId) {
-		const school = await app.service('users').get(userId)
+		const school = await app
+			.service('users')
+			.get(userId)
 			.then((user) => app.service('schools').get(user.schoolId));
 
 		if (school.documentBaseDirType === 'school') query = { schoolId: school._id };
@@ -19,10 +24,9 @@ const findDocuments = async (app, userId, theme) => {
 	}
 	const result = await helpDocumentsModel.find(query).lean().exec();
 
-	if (result.length < 1) throw new errors.NotFound('could not find help documents for this user or theme.');
+	if (result.length < 1) throw new NotFound('could not find help documents for this user or theme.');
 	return result[0].data;
 };
-
 
 /**
  * Service to get an array of help Document data, specific to school, schoolgroup, or theme.
@@ -36,7 +40,7 @@ class HelpDocumentsService {
 	async find(params) {
 		try {
 			if (!(params.query || {}).theme) {
-				throw new errors.BadRequest('this method requires querying for a theme - query:{theme:"themename"}');
+				throw new BadRequest('this method requires querying for a theme - query:{theme:"themename"}');
 			}
 			const { userId } = params.account || params.query || {};
 			const { theme } = params.query || {};
@@ -54,14 +58,16 @@ class HelpDocumentsService {
 
 module.exports = function news() {
 	const app = this;
-	const path = 'help/documents';
-	app.use(path, new HelpDocumentsService());
-	const service = app.service(path);
+	app.use('/help/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+
+	const docPath = 'help/documents';
+	app.use(docPath, new HelpDocumentsService());
+	const service = app.service(docPath);
 
 	service.hooks({
 		before: {
 			all: [authenticate('jwt')],
-			find: [excludeAttributesFromSanitization(path, ['title', 'content'])],
+			find: [excludeAttributesFromSanitization(docPath, ['title', 'content'])],
 			get: [hooks.disallow()],
 			create: [hooks.disallow()],
 			update: [hooks.disallow()],

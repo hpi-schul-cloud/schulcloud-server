@@ -1,3 +1,5 @@
+const { Configuration } = require('@hpi-schul-cloud/commons');
+
 const logger = require('../../../logger');
 const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 
@@ -23,7 +25,9 @@ const extractTokenFromBearerHeader = (header) => header.replace('Bearer ', '');
 
 const authHeaderExtractor = (req) => {
 	const authHeader = req.headers.authorization;
-	if (!authHeader) { return undefined; }
+	if (!authHeader) {
+		return undefined;
+	}
 	return extractTokenFromBearerHeader(authHeader);
 };
 
@@ -41,12 +45,12 @@ try {
 	secrets = {};
 }
 
-const authenticationSecret = (secrets.authentication) ? secrets.authentication : 'secrets';
+const authenticationSecret = secrets.authentication ? secrets.authentication : 'secrets';
 if (NODE_ENV === ENVIRONMENTS.PRODUCTION && !secrets.authentication) {
 	logger.error('use default authentication secret');
 }
 
-const audience = 'https://schul-cloud.org';
+const audience = Configuration.get('JWT_AUD');
 
 module.exports = {
 	jwtFromCookieString,

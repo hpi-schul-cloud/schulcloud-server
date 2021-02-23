@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { warning } = require('../../../src/logger');
 
 const FEATURE_VIDEOCONFERENCE_ENABLED = Configuration.get('FEATURE_VIDEOCONFERENCE_ENABLED');

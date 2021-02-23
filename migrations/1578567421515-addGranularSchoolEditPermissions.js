@@ -6,15 +6,18 @@ const { connect, close } = require('../src/utils/database');
 
 const { Schema } = mongoose;
 
-const roleSchema = new Schema({
-	name: { type: String, required: true },
-	permissions: [{ type: String }],
+const roleSchema = new Schema(
+	{
+		name: { type: String, required: true },
+		permissions: [{ type: String }],
 
-	// inheritance
-	roles: [{ type: Schema.Types.ObjectId }],
-}, {
-	timestamps: true,
-});
+		// inheritance
+		roles: [{ type: Schema.Types.ObjectId }],
+	},
+	{
+		timestamps: true,
+	}
+);
 
 const Role = mongoose.model('role3245', roleSchema, 'roles');
 
@@ -28,13 +31,10 @@ module.exports = {
 			{
 				$addToSet: {
 					permissions: {
-						$each: [
-							'SCHOOL_LOGO_MANAGE',
-							'SCHOOL_CHAT_MANAGE',
-						],
+						$each: ['SCHOOL_LOGO_MANAGE', 'SCHOOL_CHAT_MANAGE'],
 					},
 				},
-			},
+			}
 		).exec();
 
 		if (process.env.SC_THEME !== 'thr') {
@@ -48,7 +48,7 @@ module.exports = {
 			{ name: 'administrator' },
 			{
 				$pull: { permissions: 'SCHOOL_EDIT' },
-			},
+			}
 		).exec();
 
 		await close();
@@ -61,13 +61,10 @@ module.exports = {
 			{
 				$pull: {
 					permissions: {
-						$in: [
-							'SCHOOL_LOGO_MANAGE',
-							'SCHOOL_CHAT_MANAGE',
-						],
+						$in: ['SCHOOL_LOGO_MANAGE', 'SCHOOL_CHAT_MANAGE'],
 					},
 				},
-			},
+			}
 		).exec();
 
 		if (process.env.SC_THEME !== 'thr') {
@@ -81,7 +78,7 @@ module.exports = {
 			{ name: 'administrator' },
 			{
 				$addToSet: { permissions: 'SCHOOL_EDIT' },
-			},
+			}
 		).exec();
 		await close();
 	},

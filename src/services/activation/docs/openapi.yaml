@@ -1,0 +1,382 @@
+security:
+  - jwtBearer: []
+info:
+  title: HPI Schul-Cloud Activation Service API
+  description:
+    This is the API specification for the HPI Schul-Cloud Activation service.
+    
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+components:
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    activationModel:
+      description: TODO
+    activationModel_list:
+      description: TODO
+    activation:
+      description: TODO
+    activation_list:
+      description: TODO
+    eMailAddress:
+      description: TODO
+
+paths:
+  /activationModel:
+    get:
+      parameters:
+        - description: Number of results to return
+          in: query
+          name: $limit
+          schema:
+            type: integer
+        - description: Number of results to skip
+          in: query
+          name: $skip
+          schema:
+            type: integer
+        - description: Property to sort results
+          in: query
+          name: $sort
+          style: deepObject
+          schema:
+            type: object
+        - description: Query parameters to filter
+          in: query
+          name: filter
+          style: form
+          explode: true
+          schema:
+            $ref: '#/components/schemas/activationModel'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/activationModel_list'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Retrieves a list of all resources from the service.
+      summary: ''
+      tags:
+        - activationModel
+      security: []
+    post:
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/activationModel'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Creates a new resource with data.
+      summary: ''
+      tags:
+        - activationModel
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/activationModel'
+  '/activationModel/{_id}':
+    get:
+      parameters:
+        - in: path
+          name: _id
+          description: ID of activationModel to return
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/activationModel'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Retrieves a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - activationModel
+      security: []
+    put:
+      parameters:
+        - in: path
+          name: _id
+          description: ID of activationModel to update
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/activationModel'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - activationModel
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/activationModel'
+    patch:
+      parameters:
+        - in: path
+          name: _id
+          description: ID of activationModel to update
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/activationModel'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - activationModel
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/activationModel'
+    delete:
+      parameters:
+        - in: path
+          name: _id
+          description: ID of activationModel to remove
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/activationModel'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Removes the resource with id.
+      summary: ''
+      tags:
+        - activationModel
+      security: []
+  /activation:
+    get:
+      parameters:
+        - description: Number of results to return
+          in: query
+          name: $limit
+          schema:
+            type: integer
+        - description: Number of results to skip
+          in: query
+          name: $skip
+          schema:
+            type: integer
+        - description: Property to sort results
+          in: query
+          name: $sort
+          style: deepObject
+          schema:
+            type: object
+        - description: Query parameters to filter
+          in: query
+          name: filter
+          style: form
+          explode: true
+          schema:
+            $ref: '#/components/schemas/activation'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/activation_list'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Retrieves a list of all resources from the service.
+      summary: ''
+      tags:
+        - activation
+      security: []
+  '/activation/{id}':
+    put:
+      parameters:
+        - in: path
+          name: id
+          description: ID of activation to update
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/activation'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - activation
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/activation'
+    delete:
+      parameters:
+        - in: path
+          name: id
+          description: ID of activation to remove
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/activation'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Removes the resource with id.
+      summary: ''
+      tags:
+        - activation
+      security: []
+  /activation/eMailAddress:
+    post:
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/eMailAddress'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Creates a new resource with data.
+      summary: ''
+      tags:
+        - activation
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/eMailAddress'
+  '/activation/eMailAddress/{id}':
+    put:
+      parameters:
+        - in: path
+          name: id
+          description: ID of eMailAddress to update
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/eMailAddress'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - activation
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/eMailAddress'
+  
+openapi: 3.0.2
+tags:
+  - name: activation
+    description: An activation service.
+  - name: activationModel
+    description: An activationModel service.

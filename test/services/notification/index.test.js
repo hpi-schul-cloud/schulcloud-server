@@ -6,23 +6,22 @@ const requestMock = require('./mock/mockResponses');
 const { expect } = chai;
 
 describe('notification service', function () {
-	this.timeout(10000); // for slow require(app) call
+	this.timeout(20000); // for slow require(app) call
 
 	let app = null;
 	let notificationService = null;
 
-	before((done) => {
+	before(async () => {
 		mockery.enable({
 			warnOnReplace: false,
 			warnOnUnregistered: false,
 			useCleanCache: true,
 		});
 		mockery.registerMock('request-promise-native', requestMock);
-		app = require('../../../src/app');
+		// eslint-disable-next-line global-require
+		app = await require('../../../src/app');
 		app.setup();
 		notificationService = app.service('notification');
-
-		done();
 	});
 
 	after((done) => {
@@ -30,7 +29,6 @@ describe('notification service', function () {
 		mockery.disable();
 		done();
 	});
-
 
 	it('registered the notification service', () => {
 		assert.ok(notificationService);
@@ -47,16 +45,16 @@ describe('notification service', function () {
 			OS: 'android7',
 		};
 
-		return notificationService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
-			.then((result) => {
-				expect(result.data.id).to.equal('59199dbe8d4be221143cc866');
-				expect(result.data.type).to.equal('messages');
-			});
+		return notificationService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } }).then((result) => {
+			expect(result.data.id).to.equal('59199dbe8d4be221143cc866');
+			expect(result.data.type).to.equal('messages');
+		});
 	});
 
 	it('DELETE /notification/devices/{id}', () => {
 		notificationService = app.service('notification/devices/');
-		return notificationService.remove('anderestoken', { payload: { userId: '0000d213816abba584714c0a' } })
+		return notificationService
+			.remove('anderestoken', { payload: { userId: '0000d213816abba584714c0a' } })
 			.then((result) => {
 				expect(result.data.id).to.equal('59199dbe8d4be221143cc866');
 				expect(result.data.type).to.equal('messages');
@@ -65,11 +63,10 @@ describe('notification service', function () {
 
 	it('FIND /notification/devices', () => {
 		notificationService = app.service('notification/devices/');
-		return notificationService.find({ query: {}, payload: { userId: '0000d213816abba584714c0a' } })
-			.then((result) => {
-				expect(result.data.id).to.equal('59199dbe8d4be221143cc866');
-				expect(result.data.type).to.equal('messages');
-			});
+		return notificationService.find({ query: {}, payload: { userId: '0000d213816abba584714c0a' } }).then((result) => {
+			expect(result.data.id).to.equal('59199dbe8d4be221143cc866');
+			expect(result.data.type).to.equal('messages');
+		});
 	});
 
 	it('POST /notification/callback', () => {
@@ -79,25 +76,24 @@ describe('notification service', function () {
 			type: 'received',
 		};
 
-		return notificationService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
-			.then((result) => {
-				expect(result.data.id).to.equal('59199dbe8d4be221143cc866');
-				expect(result.data.type).to.equal('messages');
-			});
+		return notificationService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } }).then((result) => {
+			expect(result.data.id).to.equal('59199dbe8d4be221143cc866');
+			expect(result.data.type).to.equal('messages');
+		});
 	});
 
 	it('GET /notification', () => {
 		notificationService = app.service('notification');
-		return notificationService.find({ query: {}, payload: { userId: '0000d213816abba584714c0a' } })
-			.then((result) => {
-				expect(result.data.id).to.equal('59199dbe8d4be221143cc866');
-				expect(result.data.type).to.equal('messages');
-			});
+		return notificationService.find({ query: {}, payload: { userId: '0000d213816abba584714c0a' } }).then((result) => {
+			expect(result.data.id).to.equal('59199dbe8d4be221143cc866');
+			expect(result.data.type).to.equal('messages');
+		});
 	});
 
 	it('GET /notification/{id}', () => {
 		notificationService = app.service('notification');
-		return notificationService.get('59145b580908aa4173328cb7', { payload: { userId: '0000d213816abba584714c0a' } })
+		return notificationService
+			.get('59145b580908aa4173328cb7', { payload: { userId: '0000d213816abba584714c0a' } })
 			.then((result) => {
 				expect(result.data.id).to.equal('59199dbe8d4be221143cc866');
 				expect(result.data.type).to.equal('messages');
@@ -110,21 +106,19 @@ describe('notification service', function () {
 			title: 'New Notification from Teacher1_1',
 			body: 'You have a new Notification',
 			token: '0000d213816abba584714c0a',
-			scopeIds: [
-				'0000d213816abba584714c0a',
-			],
+			scopeIds: ['0000d213816abba584714c0a'],
 		};
 
-		return notificationService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } })
-			.then((result) => {
-				expect(result.data.id).to.equal('59199dbe8d4be221143cc866');
-				expect(result.data.type).to.equal('messages');
-			});
+		return notificationService.create(postBody, { payload: { userId: '0000d213816abba584714c0a' } }).then((result) => {
+			expect(result.data.id).to.equal('59199dbe8d4be221143cc866');
+			expect(result.data.type).to.equal('messages');
+		});
 	});
 
 	it('GET /notification/messages/{id}', () => {
 		notificationService = app.service('notification/messages/');
-		return notificationService.get('59199dbe8d4be221143cc866', { payload: { userId: '0000d213816abba584714c0a' } })
+		return notificationService
+			.get('59199dbe8d4be221143cc866', { payload: { userId: '0000d213816abba584714c0a' } })
 			.then((result) => {
 				expect(result.data.id).to.equal('59199dbe8d4be221143cc866');
 				expect(result.data.type).to.equal('messages');

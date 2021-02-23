@@ -1,10 +1,11 @@
 const { expect } = require('chai');
-const { BadRequest, Forbidden } = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
+
+const { BadRequest, Forbidden } = require('../../../../src/errors');
 const fut = require('../../../../src/services/ldap/hooks/restrictToSchoolSystems');
 
 describe('restrictToSchoolSystems', () => {
-	it('rejects requests that don\'t meet the requirements', () => {
+	it("rejects requests that don't meet the requirements", () => {
 		try {
 			fut({});
 			throw new Error('This should never happen');
@@ -13,7 +14,7 @@ describe('restrictToSchoolSystems', () => {
 			expect(err.message).to.equal('Unexpected call to restrictToValidSystems.');
 		}
 		try {
-			fut({ id: (new ObjectId()).toString() });
+			fut({ id: new ObjectId().toString() });
 			throw new Error('This should never happen');
 		} catch (err) {
 			expect(err).to.be.instanceOf(BadRequest);
@@ -31,7 +32,7 @@ describe('restrictToSchoolSystems', () => {
 	it('should forbid access to systems not in use by the current school', () => {
 		try {
 			fut({
-				id: (new ObjectId()).toString(),
+				id: new ObjectId().toString(),
 				params: {
 					school: {
 						systems: [new ObjectId(), new ObjectId()],
@@ -47,7 +48,7 @@ describe('restrictToSchoolSystems', () => {
 	it('should forbid access if the current school has no system', () => {
 		try {
 			fut({
-				id: (new ObjectId()).toString(),
+				id: new ObjectId().toString(),
 				params: {
 					school: {
 						systems: [],

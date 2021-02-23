@@ -1,12 +1,14 @@
 let createdSystemIds = [];
 
-const createTestSystem = (app) => async (options = { url: '', type: 'moodle' }) => {
+const createTestSystem = (appPromise) => async (options = { url: '', type: 'moodle' }) => {
+	const app = await appPromise;
 	const system = await app.service('systems').create(options);
 	createdSystemIds.push(system._id.toString());
 	return system;
 };
 
-const cleanup = (app) => () => {
+const cleanup = (appPromise) => async () => {
+	const app = await appPromise;
 	if (createdSystemIds.length === 0) {
 		return Promise.resolve();
 	}

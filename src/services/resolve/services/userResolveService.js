@@ -1,10 +1,9 @@
 const { authenticate } = require('@feathersjs/authentication');
-const errors = require('@feathersjs/errors');
+
+const { NotFound } = require('../../../errors');
 
 // get an json api conform entry
-const getDataEntry = ({
-	type, id, name, authorities = ['can-read'], attributes = {},
-}) => ({
+const getDataEntry = ({ type, id, name, authorities = ['can-read'], attributes = {} }) => ({
 	type,
 	id,
 	attributes: {
@@ -35,40 +34,49 @@ class UserResolver {
 
 		// only if both services fail the error will be thrown
 		const getScope = Promise.all([
-			userService.get(id).then((data) => {
-				data.type = 'user';
-				return data;
-			}).catch(() => undefined),
-			courseService.get(id).then((data) => data).catch(() => undefined),
-			classService.get(id).then((data) => data).catch(() => undefined),
+			userService
+				.get(id)
+				.then((data) => {
+					data.type = 'user';
+					return data;
+				})
+				.catch(() => undefined),
+			courseService
+				.get(id)
+				.then((data) => data)
+				.catch(() => undefined),
+			classService
+				.get(id)
+				.then((data) => data)
+				.catch(() => undefined),
 		]).then(([userData, courseData, classData]) => userData || courseData || classData);
 
+		return getScope
+			.then((scope) => {
+				// find users that are related to scope (either teacher or student)
+				if (!scope) throw new NotFound('No scope found for given id.');
 
-		return getScope.then((scope) => {
-			// find users that are related to scope (either teacher or student)
-			if (!scope) throw new errors.NotFound('No scope found for given id.');
-
-			return userService.find({
-				query: {
-					$or: [
-						{
-							_id: {
-								$in: scope.userIds,
+				return userService.find({
+					query: {
+						$or: [
+							{
+								_id: {
+									$in: scope.userIds,
+								},
 							},
-						},
-						{
-							_id: {
-								$in: scope.teacherIds,
+							{
+								_id: {
+									$in: scope.teacherIds,
+								},
 							},
-						},
-						{
-							_id: scope._id,
-						},
-					],
-					$populate: ['roles'],
-				},
-			});
-		})
+							{
+								_id: scope._id,
+							},
+						],
+						$populate: ['roles'],
+					},
+				});
+			})
 			.then((data) => {
 				const users = data.data;
 

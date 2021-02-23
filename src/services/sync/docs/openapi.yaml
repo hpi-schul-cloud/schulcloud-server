@@ -1,0 +1,103 @@
+security:
+  - jwtBearer: []
+info:
+  title: Schul-Cloud Sync Service API
+  description:
+    This is the API specification for the Schul-Cloud Sync service.
+    
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+components:
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    sync:
+      description: TODO
+    sync_list:
+      description: TODO
+      type: array
+      items:
+        type: object
+        properties:
+          errors:
+            type: array
+            items: 
+              type: object
+          success:
+            type: boolean
+        additionalProperties: true
+
+paths:
+  /sync:
+    get:
+      parameters:
+        - description: the syncer to run.
+          in: query
+          name: target
+          schema:
+            type: string
+          example: ldap
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sync_list'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Trigger a Sync without data.
+      summary: ''
+      tags:
+        - sync
+      security:
+        - jwtBearer: []
+    post:
+      parameters:
+        - description: target syncer
+          in: query
+          name: target
+          schema:
+            type: string
+          example: ldap
+          required: true
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sync_list'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Trigger a Sync with data.
+      summary: ''
+      tags:
+        - sync
+      security:
+        - jwtBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+  
+openapi: 3.0.2
+tags:
+  - name: sync
+    description: A sync service.

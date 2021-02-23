@@ -1,10 +1,9 @@
 const { promisify } = require('util');
 const redis = require('redis');
 const jwt = require('jsonwebtoken');
-const { GeneralError, BadRequest } = require('@feathersjs/errors');
-const commons = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
-const { Configuration } = commons;
+const { BadRequest, GeneralError } = require('../errors');
 
 let redisClient = false;
 
@@ -59,17 +58,14 @@ function extractDataFromJwt(token) {
 }
 
 // todo extract json from string?
-function getRedisData({
-	IP = 'NONE',
-	Browser = 'NONE',
-	Device = 'NONE',
-	privateDevice = false,
-}) {
+function getRedisData({ IP = 'NONE', Browser = 'NONE', Device = 'NONE', privateDevice = false }) {
 	// set expiration longer for private devices
 	let expirationInSeconds = Configuration.get('JWT_TIMEOUT_SECONDS');
-	if (Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') === true
-	&& Configuration.has('JWT_EXTENDED_TIMEOUT_SECONDS')
-	&& privateDevice === true) {
+	if (
+		Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') === true &&
+		Configuration.has('JWT_EXTENDED_TIMEOUT_SECONDS') &&
+		privateDevice === true
+	) {
 		expirationInSeconds = Configuration.get('JWT_EXTENDED_TIMEOUT_SECONDS');
 	}
 	return {

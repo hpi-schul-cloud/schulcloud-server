@@ -1,4 +1,4 @@
-const { BadRequest } = require('@feathersjs/errors');
+const { BadRequest } = require('../../../errors');
 
 const userDataFilter = (user) => ({
 	userId: user._id,
@@ -16,14 +16,17 @@ class UserLinkImportService {
 		this.docs = {};
 	}
 
-	get(hash) { // can not use get becouse the hash can have / that mapped to non existing routes
-		return this.userService.find({ query: { importHash: hash } })
+	get(hash) {
+		// can not use get becouse the hash can have / that mapped to non existing routes
+		return this.userService
+			.find({ query: { importHash: hash } })
 			.then((users) => {
 				if (users.data.length !== 1) {
 					throw new BadRequest('Can not match the hash.');
 				}
 				return userDataFilter(users.data[0]);
-			}).catch((err) => err);
+			})
+			.catch((err) => err);
 	}
 
 	setup(app) {

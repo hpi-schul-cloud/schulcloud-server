@@ -1,6 +1,6 @@
 let createdVersionIds = [];
 
-const createTestConsentVersion = (app) => ({
+const createTestConsentVersion = (appPromise) => async ({
 	consentTypes = ['privacy', 'termsOfUse'],
 	consentText = 'This is a test consent',
 	consentDataId = undefined,
@@ -8,21 +8,24 @@ const createTestConsentVersion = (app) => ({
 	publishedAt = new Date(),
 	title = 'test consent',
 	manualCleanup = false,
-} = {}) => app.service('/consentVersionsModel').create({
-	consentTypes,
-	consentText,
-	consentDataId,
-	schoolId,
-	publishedAt,
-	title,
-}).then((version) => {
+} = {}) => {
+	const app = await appPromise;
+	const version = await app.service('/consentVersionsModel').create({
+		consentTypes,
+		consentText,
+		consentDataId,
+		schoolId,
+		publishedAt,
+		title,
+	});
 	if (!manualCleanup) {
 		createdVersionIds.push(version._id.toString());
 	}
 	return version;
-});
+};
 
-const cleanup = (app) => () => {
+const cleanup = (appPromise) => async () => {
+	const app = await appPromise;
 	if (createdVersionIds.length === 0) {
 		return Promise.resolve();
 	}

@@ -1,15 +1,12 @@
-const { BadRequest } = require('@feathersjs/errors');
 const { ObjectId } = require('mongoose').Types;
+
+const { BadRequest } = require('../../../../src/errors');
 const rolesModel = require('../../../../src/services/role/model.js');
 const { userModel } = require('../../../../src/services/user/model');
 const accountModel = require('../../../../src/services/account/model.js');
-// const app = require(SRC + 'app');
-const app = require('../../../../src/app');
+const appPromise = require('../../../../src/app');
 
-const {
-	TEST_PW,
-	TEST_HASH,
-} = require('../../../../config/globals');
+const { TEST_PW, TEST_HASH } = require('../../../../config/globals');
 
 const AT = '@schul-cloud.org';
 
@@ -24,28 +21,27 @@ const REQUEST_PARAMS = {
 };
 
 const getToken = async ({ userId }) => {
-	const result = app.service('authentication').create({
-		strategy: 'local',
-		username: userId + AT,
-		password: TEST_PW,
-	}, REQUEST_PARAMS);
+	const app = await appPromise;
+	const result = app.service('authentication').create(
+		{
+			strategy: 'local',
+			username: userId + AT,
+			password: TEST_PW,
+		},
+		REQUEST_PARAMS
+	);
 	return result.accessToken;
 };
 
-const getRoleByKey = (key, value) => rolesModel.find({
-	[key]: value,
-})
-	.then(([role]) => role);
+const getRoleByKey = (key, value) =>
+	rolesModel
+		.find({
+			[key]: value,
+		})
+		.then(([role]) => role);
 
 const createUser = async (userId, roleName = 'student', schoolId = '5f2987e020834114b8efd6f8') => {
-	if (![
-		'expert',
-		'student',
-		'teacher',
-		'parent',
-		'administrator',
-		'superhero',
-	].includes(roleName)) {
+	if (!['expert', 'student', 'teacher', 'parent', 'administrator', 'superhero'].includes(roleName)) {
 		throw BadRequest(`You want to test a not related role .${roleName}`);
 	}
 
@@ -57,18 +53,17 @@ const createUser = async (userId, roleName = 'student', schoolId = '5f2987e02083
 		schoolId,
 		firstName: userId,
 		lastName: 'GeneratedTestUser',
-		roles: [
-			role._id,
-		],
+		roles: [role._id],
 	});
 };
 
-const createAccount = (userId) => accountModel.create({
-	username: userId + AT,
-	password: TEST_HASH,
-	userId,
-	activated: true,
-});
+const createAccount = (userId) =>
+	accountModel.create({
+		username: userId + AT,
+		password: TEST_HASH,
+		userId,
+		activated: true,
+	});
 
 const setupUser = async (roleName, schoolId) => {
 	const userId = new ObjectId();
@@ -76,7 +71,10 @@ const setupUser = async (roleName, schoolId) => {
 	const account = await createAccount(user._id);
 	const accessToken = await getToken(account);
 	return {
-		userId: user._id, account, user, accessToken,
+		userId: user._id,
+		account,
+		user,
+		accessToken,
 	};
 };
 

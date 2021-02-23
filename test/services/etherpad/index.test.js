@@ -1,7 +1,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const freeport = require('freeport');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const decode = require('jwt-decode');
 const logger = require('../../../src/logger');
 const MockServer = require('./MockServer');
@@ -11,15 +11,11 @@ const { expect } = chai;
 
 chai.use(chaiHttp);
 
-function request({
-	server,
-	method = 'get',
-	endpoint,
-	data,
-	accessToken,
-}) {
-	return new Promise((resolve, reject) => (
-		chai.request(server)[method](endpoint)
+function request({ server, method = 'get', endpoint, data, accessToken }) {
+	return new Promise((resolve, reject) =>
+		chai
+			.request(server)
+			[method](endpoint)
 			.set({
 				Accept: 'application/json',
 				Authorization: accessToken,
@@ -33,7 +29,7 @@ function request({
 				}
 				resolve(res);
 			})
-	));
+	);
 }
 
 describe('Etherpad services', () => {
@@ -43,9 +39,9 @@ describe('Etherpad services', () => {
 	let testHelpers;
 	let configBefore;
 
-	before((done) => {
-		configBefore = Configuration.toObject();
-		freeport((err, port) => {
+	before(() => {
+		configBefore = Configuration.toObject({ plainSecrets: true });
+		freeport(async (err, port) => {
 			if (err) {
 				logger.warning('freeport:', err);
 			}
@@ -56,11 +52,11 @@ describe('Etherpad services', () => {
 			Configuration.set('ETHERPAD_API_KEY', 'someapikey');
 
 			// eslint-disable-next-line global-require
-			app = require('../../../src/app');
+			app = await require('../../../src/app');
 			server = app.listen(0);
 			testHelpers = testObjects(app);
 
-			const mock = MockServer(mockUrl, Configuration.get('ETHERPAD_API_PATH'), done);
+			const mock = await MockServer(mockUrl, Configuration.get('ETHERPAD_API_PATH'));
 			mockServer = mock.server;
 		});
 	});
@@ -73,7 +69,9 @@ describe('Etherpad services', () => {
 
 	it('should create a new etherpad author', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const data = {};
@@ -88,10 +86,11 @@ describe('Etherpad services', () => {
 		expect(!!body.data.authorID).to.equal(true);
 	});
 
-
 	it('should create a new etherpad group', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({
 			roles: ['teacher'],
 			permissions: ['COURSE_VIEW'],
@@ -115,7 +114,9 @@ describe('Etherpad services', () => {
 
 	it('should create a new pad', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const jwt = decode(accessToken);
@@ -140,7 +141,9 @@ describe('Etherpad services', () => {
 
 	it('should create a new session', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const jwt = decode(accessToken);

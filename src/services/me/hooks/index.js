@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const hooks = require('feathers-hooks-common');
+const { transformToDataTransferObject } = require('../../../hooks');
 
 exports.before = {
 	all: [],
@@ -13,7 +14,7 @@ exports.before = {
 
 exports.after = {
 	all: [],
-	find: [],
+	find: [transformToDataTransferObject],
 	get: [],
 	create: [],
 	update: [],

@@ -25,7 +25,12 @@ const HOST_CAPABILITIES = [
 ];
 
 const CURRENTLY_IMPLEMENTED = [
-	'SupportsDeleteFile', 'SupportsLocks', 'SupportsGetLock', 'SupportsRename', 'SupportsUpdate', 'UserCanRename',
+	'SupportsDeleteFile',
+	'SupportsLocks',
+	'SupportsGetLock',
+	'SupportsRename',
+	'SupportsUpdate',
+	'UserCanRename',
 ];
 
 const defaultCapabilities = () => {

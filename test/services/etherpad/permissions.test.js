@@ -1,7 +1,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const freeport = require('freeport');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const decode = require('jwt-decode');
 const logger = require('../../../src/logger');
 const MockServer = require('./MockServer');
@@ -11,15 +11,11 @@ const { expect } = chai;
 
 chai.use(chaiHttp);
 
-function request({
-	server,
-	method = 'get',
-	endpoint,
-	data,
-	accessToken,
-}) {
-	return new Promise((resolve, reject) => (
-		chai.request(server)[method](endpoint)
+function request({ server, method = 'get', endpoint, data, accessToken }) {
+	return new Promise((resolve, reject) =>
+		chai
+			.request(server)
+			[method](endpoint)
 			.set({
 				Accept: 'application/json',
 				Authorization: accessToken,
@@ -33,7 +29,7 @@ function request({
 				}
 				resolve(res);
 			})
-	));
+	);
 }
 
 describe('Etherpad Permission Check: Teacher', () => {
@@ -44,8 +40,8 @@ describe('Etherpad Permission Check: Teacher', () => {
 	let configBefore;
 
 	before((done) => {
-		configBefore = Configuration.toObject();
-		freeport((err, port) => {
+		configBefore = Configuration.toObject({ plainSecrets: true });
+		freeport(async (err, port) => {
 			if (err) {
 				logger.warning('freeport:', err);
 			}
@@ -56,7 +52,7 @@ describe('Etherpad Permission Check: Teacher', () => {
 			Configuration.set('ETHERPAD_API_KEY', 'someapikey');
 
 			// eslint-disable-next-line global-require
-			app = require('../../../src/app');
+			app = await require('../../../src/app');
 			server = app.listen(0);
 			testHelpers = testObjects(app);
 
@@ -76,7 +72,9 @@ describe('Etherpad Permission Check: Teacher', () => {
 
 	it('should have access to my pad', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const jwt = decode(accessToken);
@@ -97,10 +95,11 @@ describe('Etherpad Permission Check: Teacher', () => {
 		expect(body.code).to.equal(0);
 	});
 
-
 	it('should not be able to create pad in foreign course', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const { body } = await request({
@@ -116,7 +115,9 @@ describe('Etherpad Permission Check: Teacher', () => {
 
 	it('should not be able to create session for foreign course', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const { body } = await request({

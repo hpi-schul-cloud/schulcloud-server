@@ -1,4 +1,4 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const hooks = require('./hooks/index');
 const { SC_SHORT_TITLE } = require('../../../config/globals');
 
@@ -19,8 +19,12 @@ class StatisticMailService {
 			htmlMailContent += `<tr><td>Kurse</td><td>${statData.courses}</td></tr>`;
 			htmlMailContent += '</table>';
 
-			if (!(Configuration.has('ADMIN_MAIL_RECEIVERS'))) { throw new Error('ADMIN_MAIL_RECEIVERS not set'); }
-			if (!(Configuration.get('ADMIN_MAIL_RECEIVERS'))) { throw new Error('ADMIN_MAIL_RECEIVERS is empty'); }
+			if (!Configuration.has('ADMIN_MAIL_RECEIVERS')) {
+				throw new Error('ADMIN_MAIL_RECEIVERS not set');
+			}
+			if (!Configuration.get('ADMIN_MAIL_RECEIVERS')) {
+				throw new Error('ADMIN_MAIL_RECEIVERS is empty');
+			}
 			await this.app.service('mails').create({
 				email: Configuration.get('ADMIN_MAIL_RECEIVERS'),
 				subject: `Statistik für ${SC_SHORT_TITLE}`,
@@ -36,7 +40,7 @@ class StatisticMailService {
 }
 // eslint-disable-next-line func-names
 module.exports = function (app) {
-	app.use('/statistics/mails', new StatisticMailService(app));
-	const statisticsMailService = app.service('/statistics/mails');
+	app.use('/statisticmails', new StatisticMailService(app));
+	const statisticsMailService = app.service('/statisticmails');
 	statisticsMailService.hooks(hooks);
 };

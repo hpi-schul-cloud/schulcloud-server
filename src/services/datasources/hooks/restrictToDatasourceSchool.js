@@ -1,4 +1,4 @@
-const {	Forbidden } = require('@feathersjs/errors');
+const { Forbidden } = require('../../../errors');
 const { hasRole } = require('../../../hooks');
 
 /**

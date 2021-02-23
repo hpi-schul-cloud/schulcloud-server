@@ -1,19 +1,16 @@
 const chai = require('chai');
-const app = require('../../../src/app');
+const appPromise = require('../../../src/app');
 const SchoolYearFacade = require('../../../src/services/school/logic/year');
-const {
-	schoolModel: School,
-	yearModel: YearModel,
-} = require('../../../src/services/school/model');
+const { schoolModel: School, yearModel: YearModel } = require('../../../src/services/school/model');
 
-const { cleanup } = require('../helpers/testObjects')(app);
-const { create: createSchool } = require('../helpers/services/schools')(app);
+const { cleanup } = require('../helpers/testObjects')(appPromise);
+const { create: createSchool } = require('../helpers/services/schools')(appPromise);
 
 const { expect } = chai;
 
 let defaultYears;
 
-describe('school year logic', async () => {
+describe('school year logic', () => {
 	before('load data', async () => {
 		defaultYears = await YearModel.find().lean().exec();
 	});
@@ -21,9 +18,10 @@ describe('school year logic', async () => {
 	it('default years, and current/next year exist', () => {
 		expect(defaultYears.length).is.greaterThan(1);
 		const nowAsYear = String(new Date().getFullYear());
-		expect(defaultYears
-			.filter((year) => year.name.startsWith(nowAsYear)).length).to.equal(1,
-			'the next school year should be added here and to all running systems');
+		expect(defaultYears.filter((year) => year.name.startsWith(nowAsYear)).length).to.equal(
+			1,
+			'the next school year should be added here and to all running systems'
+		);
 	});
 
 	it('set custom year dates for testSchool', async () => {
@@ -32,11 +30,13 @@ describe('school year logic', async () => {
 		customYear.startDate = customYear.startDate.setMonth(customYear.startDate.getMonth() + 1);
 		customYear.endDate = customYear.endDate.setMonth(customYear.endDate.getMonth() + 1);
 		let testSchool = await createSchool({
-			customYears: [{
-				yearId: yearToBeCustomized._id,
-				startDate: customYear.startDate,
-				endDate: customYear.endDate,
-			}],
+			customYears: [
+				{
+					yearId: yearToBeCustomized._id,
+					startDate: customYear.startDate,
+					endDate: customYear.endDate,
+				},
+			],
 		});
 		const testSchoolId = testSchool._id;
 		testSchool = await School.findById(testSchoolId).exec();
@@ -47,7 +47,8 @@ describe('school year logic', async () => {
 	});
 
 	describe('school year operations', async () => {
-		let testSchool; let schoolYearFacade;
+		let testSchool;
+		let schoolYearFacade;
 		before('create test school', async () => {
 			testSchool = await createSchool();
 			schoolYearFacade = new SchoolYearFacade(defaultYears, testSchool);

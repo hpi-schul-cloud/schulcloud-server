@@ -21,11 +21,12 @@ const linkSchema = new Schema({
 	data: { type: Object },
 	target: { type: String, required: true, index: true },
 	createdAt: { type: Date, default: Date.now },
+	systemNote: { type: Object },
 });
 
 enableAuditLog(linkSchema);
 
-const linkModel = mongoose.model('link', linkSchema);
-linkModel.linkLength = LINK_LENGTH; // fixme`
+const LinkModel = mongoose.model('link', linkSchema);
+LinkModel.linkLength = LINK_LENGTH; // fixme`
 
-module.exports = linkModel;
+module.exports = { LinkModel, linkSchema };

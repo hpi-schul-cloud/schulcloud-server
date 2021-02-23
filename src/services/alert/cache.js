@@ -16,16 +16,21 @@ class Cache {
 		let success = false;
 		let newMessages = [];
 
+		// set last updated always to avoid DoS in error state
+		// set last updated here to avoid updating cache simultaneously for multiple times
+		lastUpdatedTimestamp = Date.now();
+
 		for (let i = 0; i < MessageProvider.length; i += 1) {
 			const data = await MessageProvider[i].getMessage(SC_THEME);
-			if (!data.success) { success = false; return; }
+			if (!data.success) {
+				success = false;
+				return;
+			}
 			newMessages = newMessages.concat(data.messages);
 			success = true;
 		}
-
 		if (success) {
 			messages = newMessages;
-			lastUpdatedTimestamp = Date.now();
 		}
 	}
 

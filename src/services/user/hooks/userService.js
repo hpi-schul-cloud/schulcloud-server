@@ -1,20 +1,12 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { keep } = require('feathers-hooks-common');
-const {
-	BadRequest, Forbidden, GeneralError, NotFound,
-} = require('@feathersjs/errors');
+
+const { Forbidden, NotFound, BadRequest, GeneralError } = require('../../../errors');
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
-const {
-	hasRole,
-	hasRoleNoHook,
-	hasPermissionNoHook,
-	hasPermission,
-} = require('../../../hooks');
+const { hasRoleNoHook, hasPermissionNoHook, hasPermission } = require('../../../hooks');
 
-const {
-	getAge,
-} = require('../../../utils');
+const { getAge } = require('../../../utils');
 
 const constants = require('../../../utils/constants');
 const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS, SC_DOMAIN } = require('../../../../config/globals');
@@ -33,6 +25,14 @@ const mapRoleFilterQuery = (hook) => {
 
 	return Promise.resolve(hook);
 };
+const getProtectedRoles = (hook) =>
+	hook.app.service('/roles').find({
+		// load protected roles
+		query: {
+			// TODO: cache these
+			name: ['teacher', 'admin'],
+		},
+	});
 
 const checkUnique = (hook) => {
 	const userService = hook.service;
@@ -40,59 +40,81 @@ const checkUnique = (hook) => {
 	if (email === undefined) {
 		return Promise.reject(new BadRequest('Fehler beim Auslesen der E-Mail-Adresse bei der Nutzererstellung.'));
 	}
-	return userService.find({ query: { email: email.toLowerCase() } })
-		.then((result) => {
-			const { length } = result.data;
-			if (length === undefined || length >= 2) {
-				return Promise.reject(new BadRequest('Fehler beim Prüfen der Datenbankinformationen.'));
-			}
-			if (length === 0) {
-				return Promise.resolve(hook);
-			}
-
-			const user = typeof result.data[0] === 'object' ? result.data[0] : {};
-			const input = typeof hook.data === 'object' ? hook.data : {};
-			const isLoggedIn = ((hook.params || {}).account && hook.params.account.userId);
-			// eslint-disable-next-line no-underscore-dangle
-			const { asTask } = hook.params._additional || {};
-
-			if (isLoggedIn || asTask === undefined || asTask === 'student') {
-				return Promise.reject(new BadRequest(`Die E-Mail Adresse ${email} ist bereits in Verwendung!`));
-			} if (asTask === 'parent') {
-				userService.update({ _id: user._id }, {
-					$set: {
-						children: (user.children || []).concat(input.children),
-						firstName: input.firstName,
-						lastName: input.lastName,
-					},
-				});
-				return Promise.reject(new BadRequest(
-					"parentCreatePatch... it's not a bug, it's a feature - and it really is this time!",
-					user,
-				));
-				/* to stop the create process, the message are catch and resolve in regestration hook */
-			}
-
+	return userService.find({ query: { email: email.toLowerCase() } }).then((result) => {
+		const { length } = result.data;
+		if (length === undefined || length >= 2) {
+			return Promise.reject(new BadRequest('Fehler beim Prüfen der Datenbankinformationen.'));
+		}
+		if (length === 0) {
 			return Promise.resolve(hook);
-		});
+		}
+
+		const user = typeof result.data[0] === 'object' ? result.data[0] : {};
+		const input = typeof hook.data === 'object' ? hook.data : {};
+		const isLoggedIn = (hook.params || {}).account && hook.params.account.userId;
+		// eslint-disable-next-line no-underscore-dangle
+		const { asTask } = hook.params._additional || {};
+
+		if (isLoggedIn || asTask === undefined || asTask === 'student') {
+			return Promise.reject(new BadRequest(`Die E-Mail Adresse ist bereits in Verwendung!`));
+		}
+		return Promise.resolve(hook);
+	});
+};
+
+const checkUniqueEmail = async (hook) => {
+	// const userService = hook.service;
+	const userService = hook.app.service('users');
+	const accountService = hook.app.service('/accounts');
+
+	const { email } = hook.data;
+	if (!email) {
+		// there is no email address given. Nothing to check...
+		return Promise.resolve(hook);
+	}
+
+	// get userId of user entry to edit
+	const editUserId = hook.id;
+
+	const queryUsers = { email: email.toLowerCase() };
+	const queryAccounts = { username: email.toLowerCase() };
+
+	// check if new user or update of existing entry
+	if (editUserId) {
+		// exclude existing user entry
+		queryUsers._id = { $ne: editUserId };
+		// exclude existing account entry
+		queryAccounts.userId = { $ne: editUserId };
+	}
+
+	// check for users with same email
+	const users = ((await userService.find({ query: queryUsers })) || {}).data || [];
+
+	// check for account with same username (=email)
+	const accounts = await accountService.find({ query: queryAccounts });
+
+	if (users.length === 0 && accounts.length === 0) {
+		return Promise.resolve(hook);
+	}
+
+	return Promise.reject(new BadRequest(`Die E-Mail Adresse ist bereits in Verwendung!`));
 };
 
 const checkUniqueAccount = (hook) => {
 	const accountService = hook.app.service('/accounts');
 	const { email } = hook.data;
-	return accountService.find({ query: { username: email.toLowerCase() } })
-		.then((result) => {
-			if (result.length > 0) {
-				return Promise.reject(
-					new BadRequest(`Ein Account mit dieser E-Mail Adresse ${email} existiert bereits!`),
-				);
-			}
-			return Promise.resolve(hook);
-		});
+	return accountService.find({ query: { username: email.toLowerCase() } }).then((result) => {
+		if (result.length > 0) {
+			return Promise.reject(new BadRequest(`Ein Account mit dieser E-Mail Adresse ${email} existiert bereits!`));
+		}
+		return Promise.resolve(hook);
+	});
 };
 
 const updateAccountUsername = async (context) => {
-	let { params: { account } } = context;
+	let {
+		params: { account },
+	} = context;
 	const {
 		data: { email },
 		app,
@@ -107,8 +129,7 @@ const updateAccountUsername = async (context) => {
 	}
 
 	if (!account || !ObjectId.equal(context.id, account.userId)) {
-		account = (await app.service('/accounts')
-			.find({ query: { userId: context.id } }))[0];
+		account = (await app.service('/accounts').find({ query: { userId: context.id } }))[0];
 
 		if (!account) return context;
 	}
@@ -118,7 +139,8 @@ const updateAccountUsername = async (context) => {
 		return context;
 	}
 
-	await app.service('/accounts')
+	await app
+		.service('/accounts')
 		// set account in params to context.parmas.account to reference the current user
 		.patch(account._id, { username: email }, { account: context.params.account })
 		.catch((err) => {
@@ -134,18 +156,19 @@ const removeStudentFromClasses = async (hook) => {
 	const userIds = hook.id || (hook.result || []).map((u) => u._id);
 	if (userIds === undefined) {
 		throw new BadRequest(
-			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.',
+			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.'
 		);
 	}
 
 	try {
 		const usersClasses = await classesService.find({ query: { userIds: { $in: userIds } } });
-		await Promise.all(usersClasses.data.map(
-			(klass) => classesService.patch(klass._id, { $pull: { userIds: { $in: userIds } } }),
-		));
+		await Promise.all(
+			usersClasses.data.map((klass) => classesService.patch(klass._id, { $pull: { userIds: { $in: userIds } } }))
+		);
 	} catch (err) {
 		throw new Forbidden(
-			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.', err,
+			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.',
+			err
 		);
 	}
 
@@ -159,18 +182,21 @@ const removeStudentFromCourses = async (hook) => {
 	const userIds = hook.id || (hook.result || []).map((u) => u._id);
 	if (userIds === undefined) {
 		throw new BadRequest(
-			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.',
+			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.'
 		);
 	}
 
 	try {
 		const usersCourses = await coursesService.find({ query: { userIds: { $in: userIds } } });
-		await Promise.all(usersCourses.data.map(
-			(course) => hook.app.service('courseModel').patch(course._id, { $pull: { userIds: { $in: userIds } } }),
-		));
+		await Promise.all(
+			usersCourses.data.map((course) =>
+				hook.app.service('courseModel').patch(course._id, { $pull: { userIds: { $in: userIds } } })
+			)
+		);
 	} catch (err) {
 		throw new Forbidden(
-			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.', err,
+			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.',
+			err
 		);
 	}
 };
@@ -195,20 +221,23 @@ const sanitizeData = (hook) => {
 	return Promise.resolve(hook);
 };
 
-const checkJwt = () => function checkJwtfnc(hook) {
-	if (((hook.params || {}).headers || {}).authorization !== undefined) {
-		return (authenticate('jwt')).call(this, hook);
-	}
-	return Promise.resolve(hook);
-};
+const checkJwt = () =>
+	function checkJwtfnc(hook) {
+		if (((hook.params || {}).headers || {}).authorization !== undefined) {
+			return authenticate('jwt').call(this, hook);
+		}
+		return Promise.resolve(hook);
+	};
 
 const pinIsVerified = (hook) => {
 	if ((hook.params || {}).account && hook.params.account.userId) {
-		return (hasPermission(['STUDENT_CREATE', 'TEACHER_CREATE', 'ADMIN_CREATE'])).call(this, hook);
+		return hasPermission(['STUDENT_CREATE', 'TEACHER_CREATE', 'ADMIN_CREATE']).call(this, hook);
 	}
 	// eslint-disable-next-line no-underscore-dangle
 	const email = (hook.params._additional || {}).parentEmail || hook.data.email;
-	return hook.app.service('/registrationPins').find({ query: { email, verified: true } })
+	return hook.app
+		.service('/registrationPins')
+		.find({ query: { email, verified: true } })
 		.then((pins) => {
 			if (pins.data.length === 1 && pins.data[0].pin) {
 				const age = getAge(hook.data.birthday);
@@ -223,12 +252,29 @@ const pinIsVerified = (hook) => {
 		});
 };
 
+const protectImmutableAttributes = async (context) => {
+	const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
+	if (userIsSuperhero) return context;
+
+	delete context.data.roles;
+	delete (context.data.$push || {}).roles;
+	delete (context.data.$pull || {}).roles;
+	delete (context.data.$pop || {}).roles;
+	delete (context.data.$addToSet || {}).roles;
+	delete (context.data.$pullAll || {}).roles;
+	delete (context.data.$set || {}).roles;
+
+	delete context.data.schoolId;
+	delete (context.data.$set || {}).schoolId;
+
+	return context;
+};
+
 const securePatching = async (context) => {
 	const targetUser = await context.app.service('users').get(context.id, { query: { $populate: 'roles' } });
-	const actingUser = await context.app.service('users').get(
-		context.params.account.userId,
-		{ query: { $populate: 'roles' } },
-	);
+	const actingUser = await context.app
+		.service('users')
+		.get(context.params.account.userId, { query: { $populate: 'roles' } });
 	const isSuperHero = actingUser.roles.find((r) => r.name === 'superhero');
 	const isAdmin = actingUser.roles.find((r) => r.name === 'administrator');
 	const isTeacher = actingUser.roles.find((r) => r.name === 'teacher');
@@ -248,18 +294,6 @@ const securePatching = async (context) => {
 		return Promise.reject(new NotFound(`no record found for id '${context.id.toString()}'`));
 	}
 
-	delete context.data.schoolId;
-	delete (context.data.$set || {}).schoolId;
-
-	if (!isAdmin) {
-		delete context.data.roles;
-		delete (context.data.$push || {}).roles;
-		delete (context.data.$pull || {}).roles;
-		delete (context.data.$pop || {}).roles;
-		delete (context.data.$addToSet || {}).roles;
-		delete (context.data.$pullAll || {}).roles;
-		delete (context.data.$set || {}).roles;
-	}
 	if (!ObjectId.equal(context.id, context.params.account.userId)) {
 		if (!(isAdmin || (isTeacher && targetIsStudent))) {
 			return Promise.reject(new BadRequest('You have not the permissions to change other users'));
@@ -274,12 +308,7 @@ const securePatching = async (context) => {
  * @param app {object} - the global feathers-app
  * @returns {string} - a display name of the given user
  */
-const getDisplayName = (user, app) => app.service('/roles').find({
-	// load protected roles
-	query: {	// TODO: cache these
-		name: ['teacher', 'admin'],
-	},
-}).then((protectedRoles) => {
+const getDisplayName = (user, protectedRoles) => {
 	const protectedRoleIds = (protectedRoles.data || []).map((role) => role._id);
 	const isProtectedUser = protectedRoleIds.find((role) => (user.roles || []).includes(role));
 
@@ -289,19 +318,20 @@ const getDisplayName = (user, app) => app.service('/roles').find({
 		return user.lastName ? user.lastName : user._id;
 	}
 	return user.lastName ? `${user.firstName} ${user.lastName}` : user._id;
-});
+};
 
 /**
  *
  * @param hook {object} - the hook of the server-request
  * @returns {object} - the hook with the decorated user
  */
-const decorateUser = (hook) => getDisplayName(hook.result, hook.app)
-	.then((displayName) => {
-		hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
-		hook.result.displayName = displayName;
-	})
-	.then(() => Promise.resolve(hook));
+const decorateUser = async (hook) => {
+	const protectedRoles = await getProtectedRoles(hook);
+	const displayName = getDisplayName(hook.result, protectedRoles);
+	hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
+	hook.result.displayName = displayName;
+	return hook;
+};
 
 /**
  *
@@ -333,7 +363,7 @@ const setAvatarData = (user) => {
  */
 const decorateAvatar = (hook) => {
 	if (hook.result.total) {
-		hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
+		hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
 		(hook.result.data || []).forEach((user) => setAvatarData(user));
 	} else {
 		// run and find with only one user
@@ -343,32 +373,32 @@ const decorateAvatar = (hook) => {
 	return Promise.resolve(hook);
 };
 
-
 /**
  *
  * @param hook {object} - the hook of the server-request
  * @returns {object} - the hook with the decorated users
  */
-const decorateUsers = (hook) => {
-	hook.result = (hook.result.constructor.name === 'model') ? hook.result.toObject() : hook.result;
-	const userPromises = (hook.result.data || []).map((user) => getDisplayName(user, hook.app).then((displayName) => {
-		user.displayName = displayName;
+const decorateUsers = async (hook) => {
+	hook.result = hook.result.constructor.name === 'model' ? hook.result.toObject() : hook.result;
+	const protectedRoles = await getProtectedRoles(hook);
+	const users = (hook.result.data || []).map((user) => {
+		user.displayName = getDisplayName(user, protectedRoles);
 		return user;
-	}));
-
-	return Promise.all(userPromises).then((users) => {
-		hook.result.data = users;
-		return Promise.resolve(hook);
 	});
+	hook.result.data = users;
+	return hook;
 };
 
 const handleClassId = (hook) => {
 	if (!('classId' in hook.data)) {
 		return Promise.resolve(hook);
 	}
-	return hook.app.service('/classes').patch(hook.data.classId, {
-		$push: { userIds: hook.result._id },
-	}).then((res) => Promise.resolve(hook));
+	return hook.app
+		.service('/classes')
+		.patch(hook.data.classId, {
+			$push: { userIds: hook.result._id },
+		})
+		.then((res) => Promise.resolve(hook));
 };
 
 const pushRemoveEvent = (hook) => {
@@ -415,10 +445,20 @@ const enforceRoleHierarchyOnDeleteBulk = async (context) => {
 	const canDeleteTeacher = user.permissions.includes('TEACHER_DELETE');
 	const rolePromises = [];
 	if (canDeleteStudent) {
-		rolePromises.push(context.app.service('roles').find({ query: { name: 'student' } }).then((r) => r.data[0]._id));
+		rolePromises.push(
+			context.app
+				.service('roles')
+				.find({ query: { name: 'student' } })
+				.then((r) => r.data[0]._id)
+		);
 	}
 	if (canDeleteTeacher) {
-		rolePromises.push(context.app.service('roles').find({ query: { name: 'teacher' } }).then((r) => r.data[0]._id));
+		rolePromises.push(
+			context.app
+				.service('roles')
+				.find({ query: { name: 'teacher' } })
+				.then((r) => r.data[0]._id)
+		);
 	}
 	const allowedRoles = await Promise.all(rolePromises);
 
@@ -439,12 +479,10 @@ const enforceRoleHierarchyOnDelete = async (context) => {
  * @param {*} context
  */
 const enforceRoleHierarchyOnCreate = async (context) => {
-	const user = await context.app.service('users').get(
-		context.params.account.userId, { query: { $populate: 'roles' } },
-	);
+	const user = await context.app.service('users').get(context.params.account.userId, { query: { $populate: 'roles' } });
 
 	// superhero may create users with every role
-	if (user.roles.filter((u) => (u.name === 'superhero')).length > 0) {
+	if (user.roles.filter((u) => u.name === 'superhero').length > 0) {
 		return Promise.resolve(context);
 	}
 
@@ -452,39 +490,41 @@ const enforceRoleHierarchyOnCreate = async (context) => {
 	if (!context.data || !context.data.roles) {
 		return Promise.resolve(context);
 	}
-	await Promise.all(context.data.roles.map(async (roleId) => {
-		// Roles are given by ID or by name.
-		// For IDs we load the name from the DB.
-		// If it is not an ID we assume, it is a name. Invalid names are rejected in the switch anyways.
-		let roleName = '';
-		if (!ObjectId.isValid(roleId)) {
-			roleName = roleId;
-		} else {
-			try {
-				const role = await context.app.service('roles').get(roleId);
-				roleName = role.name;
-			} catch (exception) {
-				return Promise.reject(new BadRequest('No such role exists'));
+	await Promise.all(
+		context.data.roles.map(async (roleId) => {
+			// Roles are given by ID or by name.
+			// For IDs we load the name from the DB.
+			// If it is not an ID we assume, it is a name. Invalid names are rejected in the switch anyways.
+			let roleName = '';
+			if (!ObjectId.isValid(roleId)) {
+				roleName = roleId;
+			} else {
+				try {
+					const role = await context.app.service('roles').get(roleId);
+					roleName = role.name;
+				} catch (exception) {
+					return Promise.reject(new BadRequest('No such role exists'));
+				}
 			}
-		}
-		switch (roleName) {
-			case 'teacher':
-				if (!user.permissions.find((permission) => permission === 'TEACHER_CREATE')) {
+			switch (roleName) {
+				case 'teacher':
+					if (!user.permissions.find((permission) => permission === 'TEACHER_CREATE')) {
+						return Promise.reject(new BadRequest('Your are not allowed to create a user with the given role'));
+					}
+					break;
+				case 'student':
+					if (!user.permissions.find((permission) => permission === 'STUDENT_CREATE')) {
+						return Promise.reject(new BadRequest('Your are not allowed to create a user with the given role'));
+					}
+					break;
+				case 'parent':
+					break;
+				default:
 					return Promise.reject(new BadRequest('Your are not allowed to create a user with the given role'));
-				}
-				break;
-			case 'student':
-				if (!user.permissions.find((permission) => permission === 'STUDENT_CREATE')) {
-					return Promise.reject(new BadRequest('Your are not allowed to create a user with the given role'));
-				}
-				break;
-			case 'parent':
-				break;
-			default:
-				return Promise.reject(new BadRequest('Your are not allowed to create a user with the given role'));
-		}
-		return Promise.resolve(context);
-	}));
+			}
+			return Promise.resolve(context);
+		})
+	);
 
 	return Promise.resolve(context);
 };
@@ -496,7 +536,8 @@ const generateRegistrationLink = async (context) => {
 		if (!data.roles || data.roles.length > 1) {
 			throw new BadRequest('Roles must be exactly of length one if generateRegistrationLink=true is set.');
 		}
-		const { hash } = await app.service('/registrationlink')
+		const { hash } = await app
+			.service('/registrationlink')
 			// set account in params to context.parmas.account to reference the current user
 			.create({
 				role: data.roles[0],
@@ -524,18 +565,27 @@ const sendRegistrationLink = async (context) => {
 	return context;
 };
 
-
 const filterResult = async (context) => {
-	const userCallingHimself = ObjectId.equal(context.id, context.params.account.userId);
+	const userCallingHimself = context.id && ObjectId.equal(context.id, context.params.account.userId);
 	const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
 	if (userCallingHimself || userIsSuperhero) {
 		return context;
 	}
 
 	const allowedAttributes = [
-		'_id', 'roles', 'schoolId', 'firstName', 'middleName', 'lastName',
-		'namePrefix', 'nameSuffix', 'discoverable', 'fullName',
-		'displayName', 'avatarInitials', 'avatarBackgroundColor',
+		'_id',
+		'roles',
+		'schoolId',
+		'firstName',
+		'middleName',
+		'lastName',
+		'namePrefix',
+		'nameSuffix',
+		'discoverable',
+		'fullName',
+		'displayName',
+		'avatarInitials',
+		'avatarBackgroundColor',
 	];
 	return keep(...allowedAttributes)(context);
 };
@@ -550,19 +600,22 @@ const includeOnlySchoolRoles = async (context) => {
 
 		// todo: remove with static role service (SC-3731)
 		if (!Array.isArray(roleCache)) {
-			roleCache = (await context.app.service('roles').find({
-				query: {
-					name: { $in: ['administrator', 'teacher', 'student'] },
-				},
-				paginate: false,
-			})).map((r) => r._id);
+			roleCache = (
+				await context.app.service('roles').find({
+					query: {
+						name: { $in: ['administrator', 'teacher', 'student'] },
+					},
+					paginate: false,
+				})
+			).map((r) => r._id);
 		}
 		const allowedRoles = roleCache;
 
 		if (context.params.query.roles && context.params.query.roles.$in) {
 			// when querying for specific roles, filter them
-			context.params.query.roles.$in = context.params.query.roles.$in
-				.filter((r) => allowedRoles.some((a) => ObjectId.equal(r, a)));
+			context.params.query.roles.$in = context.params.query.roles.$in.filter((r) =>
+				allowedRoles.some((a) => ObjectId.equal(r, a))
+			);
 		} else {
 			// otherwise, overwrite them with whitelist
 			context.params.query.roles = {
@@ -576,6 +629,7 @@ const includeOnlySchoolRoles = async (context) => {
 module.exports = {
 	mapRoleFilterQuery,
 	checkUnique,
+	checkUniqueEmail,
 	checkJwt,
 	checkUniqueAccount,
 	updateAccountUsername,
@@ -583,6 +637,7 @@ module.exports = {
 	removeStudentFromCourses,
 	sanitizeData,
 	pinIsVerified,
+	protectImmutableAttributes,
 	securePatching,
 	decorateUser,
 	decorateAvatar,

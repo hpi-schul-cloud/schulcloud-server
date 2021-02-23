@@ -1,35 +1,21 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { BadRequest } = require('@feathersjs/errors');
 const { iff, isProvider } = require('feathers-hooks-common');
+
+const { BadRequest } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const { lookupSchool, restrictToCurrentSchool } = require('../../../hooks');
 
-
 const hooks = {
 	before: {
-		all: [
-			authenticate('jwt'),
-			lookupSchool,
-			iff(isProvider('external'), restrictToCurrentSchool),
-		],
-		get: [
-			globalHooks.hasPermission('SCHOOL_PERMISSION_VIEW'),
-
-		],
-		patch: [
-			globalHooks.hasPermission('SCHOOL_PERMISSION_CHANGE'),
-		],
+		all: [authenticate('jwt'), lookupSchool, iff(isProvider('external'), restrictToCurrentSchool)],
+		get: [globalHooks.hasPermission('SCHOOL_PERMISSION_VIEW')],
+		patch: [globalHooks.hasPermission('SCHOOL_PERMISSION_CHANGE')],
 	},
 };
 
 const getSchool = (ctx, schoolId) => ctx.service('schools').get(schoolId);
 
-const updateSchoolPermissions = (ctx, schoolId, permissions) => ctx
-	.service('schools')
-	.patch(
-		schoolId,
-		{ permissions },
-	);
+const updateSchoolPermissions = (ctx, schoolId, permissions) => ctx.service('schools').patch(schoolId, { permissions });
 
 class HandlePermissions {
 	constructor(role, permission) {

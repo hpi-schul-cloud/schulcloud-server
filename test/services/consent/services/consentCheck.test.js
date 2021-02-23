@@ -1,34 +1,30 @@
 const { expect } = require('chai');
-const { Configuration } = require('@schul-cloud/commons');
-const app = require('../../../../src/app');
-const testObjects = require('../../helpers/testObjects')(app);
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const appPromise = require('../../../../src/app');
+const testObjects = require('../../helpers/testObjects')(appPromise);
 const { createDateFromAge, createParentConsent, createUserConsent } = require('../utils/helper');
 
-
-const createUserWithConsent = ({
-	age,
-	userConsent,
-	parentConsent,
-	...others
-}) => testObjects.createTestUser({
-	birthday: createDateFromAge(age),
-	consent: {
-		userConsent,
-		parentConsents: [parentConsent],
-	},
-	...others,
-});
-
+const createUserWithConsent = ({ age, userConsent, parentConsent, ...others }) =>
+	testObjects.createTestUser({
+		birthday: createDateFromAge(age),
+		consent: {
+			userConsent,
+			parentConsents: [parentConsent],
+		},
+		...others,
+	});
 
 describe('consentCheck tests', () => {
+	let app;
 	let server;
 	let consentCheckService;
 	let schoolSerivce;
 
-	before((done) => {
+	before(async () => {
+		app = await appPromise;
 		schoolSerivce = app.service('/schools');
 		consentCheckService = app.service('/consents/:userId/check');
-		server = app.listen(0, done);
+		server = await app.listen(0);
 	});
 
 	after((done) => {
@@ -58,7 +54,7 @@ describe('consentCheck tests', () => {
 	});
 
 	it('need update for privacy consent', async () => {
-		const parentConsent = createParentConsent(true, true, (new Date()).setFullYear('1990'));
+		const parentConsent = createParentConsent(true, true, new Date().setFullYear('1990'));
 		const age = Configuration.get('CONSENT_AGE_FIRST') - 1;
 
 		const testUser = await createUserWithConsent({ age, parentConsent });

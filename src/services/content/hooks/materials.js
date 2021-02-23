@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { Forbidden } = require('@feathersjs/errors');
+
+const { Forbidden } = require('../../../errors');
 const { hasPermission } = require('../../../hooks');
 const { getScopePermissions } = require('../../helpers/scopePermissions/hooks/checkScopePermissions');
 
@@ -80,9 +81,7 @@ const checkAssociatedCoursePermissionForSearchResult = (...permissions) => async
 };
 
 exports.before = {
-	all: [
-		authenticate('jwt'),
-	],
+	all: [authenticate('jwt')],
 	find: [
 		// filtered in after-hook
 	],

@@ -1,19 +1,18 @@
 const { expect } = require('chai');
-const app = require('../../../../src/app');
-const {
-	createTestSchool,
-	createTestClass,
-	createTestTeamWithOwner,
-	cleanup,
-} = require('../../helpers/testObjects')(app);
-
-const registrationSchoolService = app.service('/registrationSchool');
+const appPromise = require('../../../../src/app');
+const { createTestSchool, createTestClass, createTestTeamWithOwner, cleanup } = require('../../helpers/testObjects')(
+	appPromise
+);
 
 describe('registrationSchool service', () => {
+	let app;
+	let registrationSchoolService;
 	let server;
 
-	before((done) => {
-		server = app.listen(0, done);
+	before(async () => {
+		app = await appPromise;
+		registrationSchoolService = app.service('/registrationSchool');
+		server = await app.listen();
 	});
 
 	after((done) => {

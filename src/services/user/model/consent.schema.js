@@ -21,15 +21,17 @@ const consentSchema = {
 		privacyConsent: { type: Boolean },
 		termsOfUseConsent: { type: Boolean },
 	},
-	parentConsents: [{
-		parentId: { type: Schema.Types.ObjectId, ref: 'user' },
-		form: { type: String, enum: consentForm },
-		source: { type: String, enum: consentSource },
-		dateOfPrivacyConsent: { type: Date },
-		dateOfTermsOfUseConsent: { type: Date },
-		privacyConsent: { type: Boolean },
-		termsOfUseConsent: { type: Boolean },
-	}],
+	parentConsents: [
+		{
+			parentId: { type: Schema.Types.ObjectId, ref: 'user' },
+			form: { type: String, enum: consentForm },
+			source: { type: String, enum: consentSource },
+			dateOfPrivacyConsent: { type: Date },
+			dateOfTermsOfUseConsent: { type: Date },
+			privacyConsent: { type: Boolean },
+			termsOfUseConsent: { type: Boolean },
+		},
+	],
 };
 
 const consentTypes = {

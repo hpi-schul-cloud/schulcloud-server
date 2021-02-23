@@ -1,6 +1,6 @@
-const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const request = require('request-promise-native');
 
+const { Forbidden, BadRequest } = require('../../../errors');
 const { getRequestOptions, makeStringRCConform } = require('../helpers');
 const { SCHOOL_FEATURES } = require('../../school/model');
 const docs = require('../docs');
@@ -18,20 +18,19 @@ class RocketChatUser {
 		// toDo: implementation with bound execution time.
 		const userName = makeStringRCConform(`${user.firstName}.${user.lastName}.${randomSuffix()}`);
 		// toDo: check availibility in rocketChat as well.
-		return userModel.findOne({ username: userName })
-			.then((result) => {
-				if (!result) {
-					return Promise.resolve(userName);
-				} return this.generateUserName(user);
-			});
+		return userModel.findOne({ username: userName }).then((result) => {
+			if (!result) {
+				return userName;
+			}
+			return this.generateUserName(user);
+		});
 	}
 
 	async handleEmailInUse(err, email, password) {
-		if (err.error.error.includes('is already in use :(')) {
+		if (err && err.error && err.error.error && err.error.error.includes('is already in use :(')) {
 			// email already in use
 			const queryString = `query={"emails.address":"${email}"}`;
-			const rcUser = await request(getRequestOptions(`/api/v1/users.list?${queryString}`,
-				{}, true, undefined, 'GET'));
+			const rcUser = await request(getRequestOptions(`/api/v1/users.list?${queryString}`, {}, true, undefined, 'GET'));
 			const updatePasswordBody = {
 				userId: rcUser.users[0]._id,
 				data: {
@@ -44,47 +43,64 @@ class RocketChatUser {
 	}
 
 	/**
-     * creates an account, should only be called by getOrCreateRocketChatAccount
-     * @param {object} data
-     */
+	 * creates an account, should only be called by getOrCreateRocketChatAccount
+	 * @param {object} data
+	 */
 	createRocketChatAccount(userId) {
-		if (userId === undefined) { throw new BadRequest('Missing data value.'); }
+		if (userId === undefined) {
+			throw new BadRequest('Missing data value.');
+		}
 
 		const internalParams = {
 			query: { $populate: 'schoolId' },
 		};
-		return this.app.service('users').get(userId, internalParams).then(async (user) => {
-			const { email } = user;
-			const password = randomPass();
-			let username = await this.generateUserName(user);
-			const name = [user.firstName, user.lastName].join(' ');
+		return this.app
+			.service('users')
+			.get(userId, internalParams)
+			.then(async (user) => {
+				const { email } = user;
+				const password = randomPass();
+				let username = await this.generateUserName(user);
+				const name = [user.firstName, user.lastName].join(' ');
 
-			const body = {
-				email, password, username, name, verified: true,
-			};
+				const body = {
+					email,
+					password,
+					username,
+					name,
+					verified: true,
+				};
 
-			const createdUser = await request(getRequestOptions('/api/v1/users.create', body, true))
-				.catch(async (err) => this.handleEmailInUse(err, email, password));
-			const rcId = createdUser.user._id;
-			({ username } = createdUser.user);
-			return userModel.create({
-				userId, username, rcId,
+				const createdUser = await request(getRequestOptions('/api/v1/users.create', body, true)).catch(async (err) =>
+					this.handleEmailInUse(err, email, password)
+				);
+
+				const rcId = createdUser.user._id;
+				({ username } = createdUser.user);
+				return userModel.create({
+					userId,
+					username,
+					rcId,
+				});
+			})
+			.catch((err) => {
+				throw new BadRequest('Can not create RocketChat Account', err);
 			});
-		}).catch((err) => {
-			throw new BadRequest('Can not create RocketChat Account', err);
-		});
 	}
 
 	/**
-     * returns the account data for an rocketChat account, matching a given schulcloud user ID.
-     * If no matching rocketChat account exists yet, it is created
-     * @param {*} userId id of a user in the schulcloud
-     */
+	 * returns the account data for an rocketChat account, matching a given schulcloud user ID.
+	 * If no matching rocketChat account exists yet, it is created
+	 * @param {*} userId id of a user in the schulcloud
+	 */
 	async getOrCreateRocketChatAccount(userId) {
 		try {
 			const scUser = await this.app.service('users').get(userId, { query: { $populate: 'schoolId' } });
-			if (!((scUser.schoolId.features || []).includes(SCHOOL_FEATURES.ROCKET_CHAT)
-				|| scUser.schoolId.purpose === 'expert')) {
+			if (
+				!(
+					(scUser.schoolId.features || []).includes(SCHOOL_FEATURES.ROCKET_CHAT) || scUser.schoolId.purpose === 'expert'
+				)
+			) {
 				throw new BadRequest('this users school does not support rocket.chat');
 			}
 			let rcUser = await userModel.findOne({ userId });
@@ -102,25 +118,26 @@ class RocketChatUser {
 	}
 
 	/**
-     * react to a user being deleted
-     * @param {*} context
-     */
+	 * react to a user being deleted
+	 * @param {*} context
+	 */
 	static onUserRemoved(context) {
 		RocketChatUser.deleteUser(context._id);
 	}
 
 	/**
-     * removes the rocketChat user belonging to the schulcloud user given by Id
-     * @param {*} userId Id of a team in the schulcloud
-     */
+	 * removes the rocketChat user belonging to the schulcloud user given by Id
+	 * @param {*} userId Id of a team in the schulcloud
+	 */
 	static deleteUser(userId) {
-		return userModel.findOne({ userId })
+		return userModel
+			.findOne({ userId })
 			.then(async (user) => {
 				if (user) {
 					await request(getRequestOptions('/api/v1/users.delete', { username: user.username }, true));
 					await userModel.deleteOne({ _id: user._id });
 				}
-				return Promise.resolve();
+				return true;
 			})
 			.catch((err) => {
 				logger.warning(new BadRequest('deleteUser', err));
@@ -128,26 +145,26 @@ class RocketChatUser {
 	}
 
 	/**
-     * returns rocketChat specific data to a given schulcloud user id
-     * @param {*} userId Id of a user in the schulcloud
-     * @param {} params
-     */
+	 * returns rocketChat specific data to a given schulcloud user id
+	 * @param {*} userId Id of a user in the schulcloud
+	 * @param {} params
+	 */
 	get(userId) {
 		return this.getOrCreateRocketChatAccount(userId)
 			.then((login) => {
 				const result = login;
 				delete result.password;
-				return Promise.resolve(result);
-			}).catch((err) => {
-				logger.warning('encountered an error while fetching a rocket.chat user.', err);
-				throw err;
+				return result;
+			})
+			.catch((err) => {
+				throw new BadRequest('encountered an error while fetching a rocket.chat user.', err);
 			});
 	}
 
 	/**
-     * returns the rocketChat usernames for an array of schulcloud userIds
-     * @param {object} params an object containing an array `userIds`
-     */
+	 * returns the rocketChat usernames for an array of schulcloud userIds
+	 * @param {object} params an object containing an array `userIds`
+	 */
 	find({ userIds }) {
 		// toDo: optimize to generate less requests
 		if (!Array.isArray(userIds || {})) {
@@ -156,7 +173,7 @@ class RocketChatUser {
 		return Promise.all(userIds.map((userId) => this.getOrCreateRocketChatAccount(userId)))
 			.then((accounts) => {
 				const result = accounts.map((account) => account.username);
-				return Promise.resolve(result);
+				return result;
 			})
 			.catch((err) => {
 				throw new BadRequest(err);
@@ -164,9 +181,9 @@ class RocketChatUser {
 	}
 
 	/**
-     * Register methods of the service to listen to events of other services
-     * @listens users:removed
-     */
+	 * Register methods of the service to listen to events of other services
+	 * @listens users:removed
+	 */
 	registerEventListeners() {
 		this.app.service('users').on('removed', RocketChatUser.onUserRemoved.bind(this));
 	}

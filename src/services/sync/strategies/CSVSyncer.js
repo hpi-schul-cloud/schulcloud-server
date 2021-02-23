@@ -1,11 +1,13 @@
 const { parse } = require('papaparse');
 const stripBOM = require('strip-bom');
 const { mix } = require('mixwith');
-const { Configuration } = require('@schul-cloud/commons');
+const { Forbidden } = require('@feathersjs/errors');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const Syncer = require('./Syncer');
 const ClassImporter = require('./mixins/ClassImporter');
 const { SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
+const { equal } = require('../../../helper/compare').ObjectId;
 
 const ATTRIBUTES = [
 	{ name: 'namePrefix', aliases: ['nameprefix', 'prefix', 'title', 'affix'] },
@@ -37,10 +39,11 @@ const buildMappingFunction = (sourceSchema, targetSchema = ATTRIBUTES) => {
 			mapping[key] = attribute.name;
 		}
 	});
-	return (record) => Object.keys(mapping).reduce((res, key) => {
-		res[mapping[key]] = record[key];
-		return res;
-	}, {});
+	return (record) =>
+		Object.keys(mapping).reduce((res, key) => {
+			res[mapping[key]] = record[key];
+			return res;
+		}, {});
 };
 
 /**
@@ -75,15 +78,15 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	}
 
 	/**
-     * @see {Syncer#respondsTo}
-     */
+	 * @see {Syncer#respondsTo}
+	 */
 	static respondsTo(target) {
 		return target === 'csv';
 	}
 
 	/**
-     * @see {Syncer#params}
-     */
+	 * @see {Syncer#params}
+	 */
 	static params(params, data = {}) {
 		const query = (params || {}).query || {};
 		if (query.school && data.data) {
@@ -104,8 +107,8 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	}
 
 	/**
-     * @see {Syncer#steps}
-     */
+	 * @see {Syncer#steps}
+	 */
 	async steps() {
 		await super.steps();
 		this.options.schoolYear = await this.determineSchoolYear();
@@ -115,10 +118,16 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		const clusteredRecords = this.clusterByEmail(sanitizedRecords);
 
 		const actions = Object.values(clusteredRecords).map((record) => async () => {
-			const enrichedRecord = await this.enrichUserData(record);
-			const user = await this.createOrUpdateUser(enrichedRecord);
-			if (importClasses) {
-				await this.createClasses(enrichedRecord, user);
+			try {
+				const enrichedRecord = await this.enrichUserData(record);
+				const [user, isUserCreated] = await this.createOrUpdateUser(enrichedRecord, this.options.schoolId);
+				if (importClasses) {
+					const isNewClassAssigned = await this.createClasses(enrichedRecord, user);
+					if (!isUserCreated && isNewClassAssigned) this.stats.users.updated += 1;
+				}
+			} catch (err) {
+				this.logError('Cannot create user', record, JSON.stringify(err));
+				this.handleUserError(err, record);
 			}
 		});
 		while (actions.length > 0) {
@@ -150,8 +159,8 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		try {
 			const strippedData = stripBOM(this.options.csvData);
 			const parseResult = parse(strippedData, {
-				delimiter: '',	// auto-detect
-				newline: '',	// auto-detect
+				delimiter: '', // auto-detect
+				newline: '', // auto-detect
 				header: true,
 				skipEmptyLines: true,
 				fastMode: true,
@@ -218,6 +227,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 					if (CSVSyncer.isValidBirthday(mappedRecord.birthday)) {
 						mappedRecord.birthday = CSVSyncer.convertToDate(mappedRecord.birthday);
 					} else {
+						this.logWarning(`Geburtsdatum fehlerhaft: ${record.firstName},${record.lastName},${mappedRecord.birthday}`);
 						this.stats.errors.push({
 							type: 'user',
 							entity: `${record.firstName},${record.lastName},${record.email},${mappedRecord.birthday}`,
@@ -238,11 +248,13 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		const recordsByEmail = {};
 		records.forEach(async (record) => {
 			if (recordsByEmail[record.email]) {
+				this.logWarning(`Mehrfachnutzung der E-Mail-Adresse "${record.email}". `);
 				this.stats.errors.push({
 					type: 'user',
 					entity: `${record.firstName},${record.lastName},${record.email}`,
-					message: `Mehrfachnutzung der E-Mail-Adresse "${record.email}". `
-						+ 'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
+					message:
+						`Mehrfachnutzung der E-Mail-Adresse "${record.email}". ` +
+						'Nur der erste Eintrag wurde importiert, dieser ignoriert.',
 				});
 				this.stats.users.failed += 1;
 			} else {
@@ -272,78 +284,70 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		return this.app.service('registrationlink').create(params);
 	}
 
-	async createOrUpdateUser(record) {
-		const userId = await this.findUserIdForRecord(record);
-		if (userId === null) {
-			return this.createUser(record);
+	async createOrUpdateUser(record, schoolId) {
+		const user = await this.findUserForRecord(record);
+
+		if (user === null) {
+			return [await this.createUser(record), true];
 		}
-		return this.updateUser(userId, record);
+
+		if (!equal(user.schoolId, schoolId)) {
+			// Give the feedback that the user exist. But can only execute by admins and is an important information.
+			throw new Forbidden('User is not on your school.');
+		}
+		this.stats.users.successful += 1;
+		// TODO the already requested user, or createt user, is request it again -> please combine methodes for performance
+		return [await this.app.service('users').get(user._id), false];
 	}
 
-	async findUserIdForRecord(record) {
-		const users = await this.app.service('users').find({
-			query: {
-				email: record.email,
+	async findUserForRecord(record) {
+		const users = await this.app.service('users').find(
+			{
+				query: {
+					email: record.email,
+					$populate: 'roles',
+					$select: ['_id', 'roles', 'schoolId'],
+				},
+				paginate: false,
+				lean: true,
 			},
-			paginate: false,
-			lean: true,
-		}, this.requestParams);
+			// x-api-key is override user scope permissions please carful at this point
+			this.requestParams
+		);
 		if (users.length >= 1) {
-			return users[0]._id;
+			const existingUser = users[0];
+			if (record.roles && !existingUser.roles.some((r) => r.name === record.roles[0])) {
+				throw new Error('Cannot change user roles.');
+			}
+			return existingUser;
 		}
 		return null;
 	}
 
 	async createUser(record) {
-		let userObject;
-		try {
-			userObject = await this.app.service('users').create(record, this.requestParams);
-			this.stats.users.created += 1;
-			this.stats.users.successful += 1;
-			if (this.options.sendEmails) {
-				await this.emailUser(record);
-			}
-		} catch (err) {
-			this.logError('Cannot create user', record, JSON.stringify(err));
-			this.handleUserError(err, record);
+		const userObject = await this.app.service('users').create(record, this.requestParams);
+		if (this.options.sendEmails) {
+			await this.emailUser(record);
 		}
-		return userObject;
-	}
-
-	async updateUser(userId, record) {
-		let userObject;
-		try {
-			const patch = {
-				firstName: record.firstName,
-				lastName: record.lastName,
-			};
-			const params = {
-				/*
-                query and payload need to be deleted, so that feathers doesn't want to update
-                multiple database objects (or none in this case). We still need the rest of
-                the requestParams to authenticate as Admin
-                */
-				...this.requestParams,
-				query: undefined,
-				payload: undefined,
-			};
-			userObject = await this.app.service('users').patch(userId, patch, params);
-			this.stats.users.updated += 1;
-			this.stats.users.successful += 1;
-		} catch (err) {
-			this.logError('Cannot update user', record, JSON.stringify(err));
-			this.handleUserError(err, record);
-		}
+		this.stats.users.created += 1;
+		this.stats.users.successful += 1;
 		return userObject;
 	}
 
 	handleUserError(err, record) {
 		this.stats.users.failed += 1;
+		this.logWarning(`Error while importing user: ${record.firstName},${record.lastName},${record.email}`);
 		if (err.message.startsWith('user validation failed')) {
 			this.stats.errors.push({
 				type: 'user',
 				entity: `${record.firstName},${record.lastName},${record.email}`,
 				message: `Ungültiger Wert in Spalte "${err.message.match(/Path `(.+)` is required/)[1]}"`,
+			});
+		} else if (err.message.startsWith('Cannot change user role')) {
+			this.stats.errors.push({
+				type: 'user',
+				entity: `${record.firstName},${record.lastName},${record.email}`,
+				message: 'Es existiert bereits ein Nutzer mit dieser E-Mail-Adresse, jedoch mit einer anderen Rolle.',
 			});
 		} else {
 			this.stats.errors.push({
@@ -362,13 +366,14 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 					subject: `Einladung für die Nutzung der ${SC_TITLE}!`,
 					headers: {},
 					content: {
-						text: `Einladung in die ${SC_TITLE}\n`
-							+ `Hallo ${user.firstName} ${user.lastName}!\n\n`
-							+ `Du wurdest eingeladen, der ${SC_TITLE} beizutreten, `
-							+ 'bitte vervollständige deine Registrierung unter folgendem Link: '
-							+ `${user.shortLink}\n\n`
-							+ 'Viel Spaß und einen guten Start wünscht dir dein '
-							+ `${SC_SHORT_TITLE}-Team`,
+						text:
+							`Einladung in die ${SC_TITLE}\n` +
+							`Hallo ${user.firstName} ${user.lastName}!\n\n` +
+							`Du wurdest eingeladen, der ${SC_TITLE} beizutreten, ` +
+							'bitte vervollständige deine Registrierung unter folgendem Link: ' +
+							`${user.shortLink}\n\n` +
+							'Viel Spaß und einen guten Start wünscht dir dein ' +
+							`${SC_SHORT_TITLE}-Team`,
 					},
 				});
 				this.stats.invitations.successful += 1;
@@ -387,7 +392,8 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	}
 
 	async createClasses(record, user) {
-		if (user === undefined) return;
+		if (user === undefined) return false;
+		let newClassAssigned = false;
 		const classes = CSVSyncer.splitClasses(record.class);
 		const classMapping = await this.buildClassMapping(classes, {
 			schoolId: this.options.schoolId,
@@ -403,10 +409,12 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			if (!importIds.includes(user._id.toString())) {
 				const patchData = {};
 				patchData[collection] = [...importIds, user._id.toString()];
+				newClassAssigned = true;
 				await this.app.service('/classes').patch(classObject._id, patchData);
 			}
 		});
 		await Promise.all(actions);
+		return newClassAssigned;
 	}
 
 	static splitClasses(classes) {
@@ -422,13 +430,15 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	 */
 	static isValidBirthday(dateString) {
 		// Adapted from https://stackoverflow.com/questions/15491894/regex-to-validate-date-format-dd-mm-yyyy
-		const dateValidationRegex = new RegExp([
-			'^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|',
-			'(?:(?:29|30)(\\/|-|\\.)(?:0?[13-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|',
-			'^(?:29(\\/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|',
-			'(?:(?:16|[2468][048]|[3579][26])00))))$|',
-			'^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$',
-		].join(''));
+		const dateValidationRegex = new RegExp(
+			[
+				'^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|',
+				'(?:(?:29|30)(\\/|-|\\.)(?:0?[13-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|',
+				'^(?:29(\\/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|',
+				'(?:(?:16|[2468][048]|[3579][26])00))))$|',
+				'^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$',
+			].join('')
+		);
 		return dateValidationRegex.test(dateString);
 	}
 
@@ -449,6 +459,5 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 		return date;
 	}
 }
-
 
 module.exports = CSVSyncer;

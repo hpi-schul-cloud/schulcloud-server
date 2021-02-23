@@ -1,4 +1,4 @@
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 /**
  * Converts consentStatus to a filter condition for consent
@@ -11,20 +11,24 @@ const createConsentFilterQuery = (...status) => {
 	const firstConsentSwitchDate = new Date();
 	firstConsentSwitchDate.setFullYear(currentDate.getFullYear() - Configuration.get('CONSENT_AGE_FIRST'));
 
-	const createRequiredConsents = (...persons) => persons.reduce((person, current) => {
-		current[`consent.${person}.privacyConsent`] = true;
-		current[`consent.${person}.termsOfUseConsent`] = true;
+	const createRequiredConsents = (...persons) =>
+		persons.reduce((person, current) => {
+			current[`consent.${person}.privacyConsent`] = true;
+			current[`consent.${person}.termsOfUseConsent`] = true;
 
-		return current;
-	}, {});
+			return current;
+		}, {});
 
-	const createMissingConsents = (...persons) => persons.reduce((person, current) => {
-		current.$or.push({ [`consent.${person}.privacyConsent`]: true });
-		current.$or.push({ [`consent.${person}.termsOfUseConsent`]: true });
+	const createMissingConsents = (...persons) =>
+		persons.reduce(
+			(person, current) => {
+				current.$or.push({ [`consent.${person}.privacyConsent`]: true });
+				current.$or.push({ [`consent.${person}.termsOfUseConsent`]: true });
 
-		return current;
-	}, { $or: [] });
-
+				return current;
+			},
+			{ $or: [] }
+		);
 
 	const orConditions = status.reduce((query, stat) => {
 		if (stat === 'missing') {
@@ -85,7 +89,6 @@ const createConsentFilterQuery = (...status) => {
 	};
 };
 
-
 const checkParentConsent = (parentConsents) => {
 	if (!parentConsents) return false;
 	const agrements = parentConsents.filter((consent) => consent.privacyConsent && consent.termsOfUseConsent);
@@ -96,9 +99,7 @@ const checkParentConsent = (parentConsents) => {
 	return false;
 };
 
-const checkUserConsent = (userConsent) => userConsent
-		&& userConsent.privacyConsent
-		&& userConsent.termsOfUseConsent;
+const checkUserConsent = (userConsent) => userConsent && userConsent.privacyConsent && userConsent.termsOfUseConsent;
 
 /**
  * Calculate the consent status
@@ -111,19 +112,17 @@ const defineConsentStatus = (birthday, consent) => {
 	}
 
 	if (!birthday) {
+		if (checkUserConsent(consent.userConsent) === true) {
+			return 'ok';
+		}
 		return 'unknown';
 	}
 
 	const currentDate = new Date();
 	const secondConsentSwitchDate = new Date();
-	secondConsentSwitchDate
-		.setFullYear(
-			currentDate.getFullYear()
-			- Configuration.get('CONSENT_AGE_SECOND'),
-		);
+	secondConsentSwitchDate.setFullYear(currentDate.getFullYear() - Configuration.get('CONSENT_AGE_SECOND'));
 	const firstConsentSwitchDate = new Date();
 	firstConsentSwitchDate.setFullYear(currentDate.getFullYear() - Configuration.get('CONSENT_AGE_FIRST'));
-
 
 	const { parentConsents, userConsent } = consent;
 

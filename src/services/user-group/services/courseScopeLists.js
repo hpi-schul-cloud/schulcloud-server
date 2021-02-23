@@ -21,11 +21,7 @@ const buildArchiveQuery = (query) => {
 	let untilQuery = {};
 	if (filter === 'active') {
 		untilQuery = {
-			$or: [
-				{ untilDate: { $exists: false } },
-				{ untilDate: null },
-				{ untilDate: { $gte: yesterday } },
-			],
+			$or: [{ untilDate: { $exists: false } }, { untilDate: null }, { untilDate: { $gte: yesterday } }],
 		};
 	}
 	if (filter === 'archived') {
@@ -40,12 +36,11 @@ module.exports = (app) => {
 		const untilQuery = buildArchiveQuery(params.query);
 
 		if (params.query.count === 'true') {
-			const courseCount = await courseModel.count({
-				$and: [
-					userQuery,
-					untilQuery,
-				],
-			}).exec();
+			const courseCount = await courseModel
+				.count({
+					$and: [userQuery, untilQuery],
+				})
+				.exec();
 
 			return {
 				total: courseCount,
@@ -54,10 +49,7 @@ module.exports = (app) => {
 
 		return app.service('courses').find({
 			query: {
-				$and: [
-					userQuery,
-					untilQuery,
-				],
+				$and: [userQuery, untilQuery],
 				$skip: params.query.$skip,
 				$limit: params.query.$limit,
 			},

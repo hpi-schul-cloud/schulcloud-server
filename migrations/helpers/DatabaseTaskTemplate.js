@@ -8,16 +8,7 @@ const testLogger = (log = {}) => {
 };
 
 class DatabaseTaskTemplate {
-	constructor({
-		id,
-		_id,
-		$set,
-		set,
-		$unset,
-		unset,
-		isModified = true,
-		log,
-	}) {
+	constructor({ id, _id, $set, set, $unset, unset, isModified = true, log }) {
 		this.id = _id || id;
 		this.set = $set || set || {};
 		this.unset = $unset || unset || {};

@@ -1,8 +1,4 @@
-const {
-	iff,
-	isProvider,
-	disallow,
-} = require('feathers-hooks-common');
+const { iff, isProvider, disallow } = require('feathers-hooks-common');
 
 exports.before = {
 	all: [],

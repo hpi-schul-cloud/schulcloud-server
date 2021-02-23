@@ -1,16 +1,11 @@
 const logger = require('../src/logger');
 const { connect, close } = require('../src/utils/database');
-const LessonModel = require('../src/services/lesson/model');
+const { LessonModel } = require('../src/services/lesson/model');
 const { OutputLogTemplate, DatabaseTaskTemplate } = require('./helpers');
 
 const isUndefined = (e) => typeof e === 'undefined';
 
-const getSortedLessons = async () => LessonModel
-	.find({})
-	.sort({ position: 1 })
-	.sort({ createdAt: 1 })
-	.lean()
-	.exec();
+const getSortedLessons = async () => LessonModel.find({}).sort({ position: 1 }).sort({ createdAt: 1 }).lean().exec();
 
 const createDataTree = (lessons = [], key) => {
 	logger.info(`create datatree ${key}`);
@@ -30,11 +25,13 @@ const createDatabaseTask = (datatree = []) => {
 	Object.values(datatree).forEach((courseLessons) => {
 		courseLessons.forEach((lesson, index) => {
 			/* In client the sorting is first null without number and after it the number from 1 to x */
-			tasks.push(new DatabaseTaskTemplate({
-				id: lesson._id,
-				isModified: lesson.position !== index,
-				set: { position: index },
-			}));
+			tasks.push(
+				new DatabaseTaskTemplate({
+					id: lesson._id,
+					isModified: lesson.position !== index,
+					set: { position: index },
+				})
+			);
 		});
 	});
 	return tasks;

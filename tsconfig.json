@@ -1,0 +1,19 @@
+{
+	"compileOnSave": true,
+	"compilerOptions": {
+		"allowJs": true,
+		"baseUrl": ".",
+		"esModuleInterop": true,
+		"lib": ["ES2019", "DOM"],
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"outDir": "build",
+		"preserveConstEnums": true,
+		"resolveJsonModule": true,
+		"sourceMap": true,
+		"strict": false,
+		"target": "ES2019"
+	},
+	"include": ["src/**/*", "src/**/*.json"],
+	"exclude": ["node_modules", "test/**/*", "config/*", "package.json", "src/**/*.test.js", "src/**/*.test.ts"]
+}

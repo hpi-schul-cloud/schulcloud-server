@@ -1,0 +1,7 @@
+# used by local prettier but not npm run lint or codacy
+# keep in sync with .eslintignore - this file is required because eslint does not accept multiple ignore files
+
+# ignore database dumps, keep format from export
+backup/setup/*.json
+migrations/helpers/*.json
+build/*

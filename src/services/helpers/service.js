@@ -1,13 +1,10 @@
 const request = require('request-promise-native');
-const { GeneralError, MethodNotAllowed } = require('@feathersjs/errors');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+
+const { GeneralError } = require('../../errors');
 const logger = require('../../logger');
 
-const {
-	REQUEST_TIMEOUT,
-	SMTP_SENDER,
-	NODE_ENV,
-	ENVIRONMENTS,
-} = require('../../../config/globals');
+const { SMTP_SENDER, NODE_ENV, ENVIRONMENTS } = require('../../../config/globals');
 
 const checkForToken = (params, app) => {
 	if ((params.headers || {}).token) {
@@ -29,14 +26,14 @@ module.exports = function setup(app) {
 
 		// POST
 		async create(data, params) {
-			const FORCE_SEND_EMAIL = app.get('FORCE_SEND_EMAIL');
-			const notificationPlatform = app.get('NOTIFICATION_PLATFORM');
+			const FORCE_SEND_EMAIL = Configuration.get('FORCE_SEND_EMAIL');
+			const notificationPlatform = Configuration.get('NOTIFICATION_PLATFORM');
 
 			if (!notificationPlatform) {
 				logger.warning('Required Env NOTIFICATION_PLATFORM is not defined');
 			}
 
-			const serviceUrls = app.get('services') || {};
+			const notificationUri = Configuration.get('NOTIFICATION_URI');
 
 			const user = await checkForToken(params, app);
 
@@ -64,7 +61,7 @@ module.exports = function setup(app) {
 			};
 
 			const requestOptions = {
-				uri: `${serviceUrls.notification}/mails`,
+				uri: `${notificationUri}/mails`,
 				method: 'POST',
 				headers: {
 					...headers,
@@ -75,7 +72,7 @@ module.exports = function setup(app) {
 					...Mail,
 				},
 				json: true,
-				timeout: REQUEST_TIMEOUT,
+				timeout: Configuration.get('REQUEST_TIMEOUT'),
 			};
 
 			// send mail with defined transport object in production mode

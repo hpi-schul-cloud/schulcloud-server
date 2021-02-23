@@ -6,12 +6,19 @@ const { connect, close } = require('../src/utils/database');
 
 // use your own name for your model, otherwise other migrations may fail.
 // The third parameter is the actually relevant one for what collection to write to.
-const RoleModel = mongoose.model('fixDemoModel', new mongoose.Schema({
-	name: { type: String, required: true },
-	permissions: [{ type: String }],
-}, {
-	timestamps: true,
-}), 'roles');
+const RoleModel = mongoose.model(
+	'fixDemoModel',
+	new mongoose.Schema(
+		{
+			name: { type: String, required: true },
+			permissions: [{ type: String }],
+		},
+		{
+			timestamps: true,
+		}
+	),
+	'roles'
+);
 
 // How to use more than one schema per collection on mongodb
 // https://stackoverflow.com/questions/14453864/use-more-than-one-schema-per-collection-on-mongodb
@@ -26,17 +33,23 @@ module.exports = {
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'demo',
-			}, {
-				$pull: { permissions: { $in: ['USERGROUP_VIEW'] } },
 			},
-		).lean().exec();
+			{
+				$pull: { permissions: { $in: ['USERGROUP_VIEW'] } },
+			}
+		)
+			.lean()
+			.exec();
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'demo',
-			}, {
-				$addToSet: { permissions: { $each: ['CLASS_VIEW', 'COURSE_VIEW'] } },
 			},
-		).lean().exec();
+			{
+				$addToSet: { permissions: { $each: ['CLASS_VIEW', 'COURSE_VIEW'] } },
+			}
+		)
+			.lean()
+			.exec();
 		// ////////////////////////////////////////////////////
 		await close();
 	},
@@ -48,17 +61,23 @@ module.exports = {
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'demo',
-			}, {
-				$pull: { permissions: { $in: ['CLASS_VIEW', 'COURSE_VIEW'] } },
 			},
-		).lean().exec();
+			{
+				$pull: { permissions: { $in: ['CLASS_VIEW', 'COURSE_VIEW'] } },
+			}
+		)
+			.lean()
+			.exec();
 		await RoleModel.findOneAndUpdate(
 			{
 				name: 'demo',
-			}, {
-				$addToSet: { permissions: { $each: ['USERGROUP_VIEW'] } },
 			},
-		).lean().exec();
+			{
+				$addToSet: { permissions: { $each: ['USERGROUP_VIEW'] } },
+			}
+		)
+			.lean()
+			.exec();
 		// ////////////////////////////////////////////////////
 		await close();
 	},

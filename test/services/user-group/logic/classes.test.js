@@ -30,11 +30,13 @@ describe('classes logic module', () => {
 		});
 
 		it('should trim leading zeros for grade levels', async () => {
-			await Promise.all(['02a', '05b', '09c', '012d', '007e', '0000010f'].map(async (input) => {
-				const result = await classObjectFromName(input);
-				expect(result.gradeLevel).to.equal(input.match(/^0*(\d+)./)[1]);
-				expect(result.name).to.equal(input.replace(/\d*/, ''));
-			}));
+			await Promise.all(
+				['02a', '05b', '09c', '012d', '007e', '0000010f'].map(async (input) => {
+					const result = await classObjectFromName(input);
+					expect(result.gradeLevel).to.equal(input.match(/^0*(\d+)./)[1]);
+					expect(result.name).to.equal(input.replace(/\d*/, ''));
+				})
+			);
 		});
 
 		it('should optionally include a schoolId in the result', async () => {

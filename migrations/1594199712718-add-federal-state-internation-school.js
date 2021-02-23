@@ -4,7 +4,6 @@ const { info, error } = require('../src/logger');
 const { connect, close } = require('../src/utils/database');
 const federalStateModel = require('../src/services/federalState/model');
 
-
 // TODO npm run migration-persist and remove this line
 // TODO update seed data and remove this line
 

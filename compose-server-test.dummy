@@ -3,7 +3,7 @@ version: \"3.7\"
 
 services:
 
-  ### Schul-Cloud Server
+  ### HPI Schul-Cloud Server
   ###
   server-mongodb:
     image: mongo:3.4
@@ -24,6 +24,13 @@ services:
       replicas: 1
       restart_policy:
         condition: any
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2048M
+        reservations:
+          cpus: '0.1'
+          memory: 2048M
     depends_on:
       - server-mongodb
     environment:

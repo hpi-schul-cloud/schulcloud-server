@@ -1,10 +1,10 @@
-const {	GeneralError, BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const request = require('request-promise-native');
 const hmacSHA512 = require('crypto-js/hmac-sha512');
 
+const { BadRequest, GeneralError } = require('../../../errors');
 
 function obtainAccessToken(userId, homeserverApiUri, secret) {
 	const loginApiUrl = `${homeserverApiUri}/_matrix/client/r0/login`;
@@ -23,17 +23,21 @@ function obtainAccessToken(userId, homeserverApiUri, secret) {
 		body: payload,
 		json: true,
 	};
-	return request(options)
-		.then((response) => {
-			const session = {
-				userId,
-				homeserverUrl: homeserverApiUri,
-				accessToken: response.access_token,
-				deviceId: response.device_id,
-				servername: response.home_server,
-			};
-			return session;
-		});
+	return request(options).then((response) => {
+		const homeserverUrl =
+			response.well_known && response.well_known['m.homeserver'] && response.well_known['m.homeserver'].base_url
+				? response.well_known['m.homeserver'].base_url
+				: homeserverApiUri;
+
+		const session = {
+			userId,
+			homeserverUrl,
+			accessToken: response.access_token,
+			deviceId: response.device_id,
+			servername: response.home_server,
+		};
+		return session;
+	});
 }
 
 class MessengerTokenService {
@@ -58,10 +62,10 @@ class MessengerTokenService {
 		const scId = (params.account || {}).userId;
 		if (!scId) throw new BadRequest('no user');
 
-		const homeserver = Configuration.get('MATRIX_SERVERNAME');
+		const homeserver = Configuration.get('MATRIX_MESSENGER__SERVERNAME');
 		const matrixId = `@sso_${scId.toString()}:${homeserver}`;
-		const matrixUri = Configuration.get('MATRIX_URI');
-		const matrixSecret = Configuration.get('MATRIX_SECRET');
+		const matrixUri = Configuration.get('MATRIX_MESSENGER__URI');
+		const matrixSecret = Configuration.get('MATRIX_MESSENGER__SECRET');
 
 		return obtainAccessToken(matrixId, matrixUri, matrixSecret);
 	}
@@ -71,25 +75,13 @@ const messengerTokenService = new MessengerTokenService({});
 
 const messengerTokenHooks = {
 	before: {
-		all: [
-			authenticate('jwt'),
-		],
-		find: [
-			disallow(),
-		],
-		get: [
-			disallow(),
-		],
+		all: [authenticate('jwt')],
+		find: [disallow()],
+		get: [disallow()],
 		create: [],
-		update: [
-			disallow(),
-		],
-		patch: [
-			disallow(),
-		],
-		remove: [
-			disallow(),
-		],
+		update: [disallow()],
+		patch: [disallow()],
+		remove: [disallow()],
 	},
 	after: {},
 };

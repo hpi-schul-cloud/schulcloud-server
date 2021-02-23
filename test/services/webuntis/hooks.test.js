@@ -1,11 +1,22 @@
 const { expect } = require('chai');
 
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 const { requireDatasourceId } = require('../../../src/services/webuntis/hooks');
 
 describe('webuntis metadata hooks', () => {
-	after(testObjects.cleanup);
+	let app;
+	let server;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen(0);
+	});
+
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
+	});
 
 	describe('requireDatasourceId', () => {
 		it('returns if datasource belongs to users school', async () => {

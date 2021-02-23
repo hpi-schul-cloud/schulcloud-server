@@ -1,9 +1,6 @@
 const { expect } = require('chai');
 
-const {
-	getUsername,
-	getEmail,
-} = require('../../../../../src/services/sync/strategies/TSP/TSP');
+const { getUsername, getEmail } = require('../../../../../src/services/sync/strategies/TSP/TSP');
 
 const users = {
 	testUser0: {
@@ -34,13 +31,9 @@ describe('TSP API unit tests', () => {
 	});
 
 	it('gets email', () => {
-		expect(getEmail(users.testUser0)).to.equal(
-			'tsp/foo@schul-cloud.org',
-		);
+		expect(getEmail(users.testUser0)).to.equal('tsp/foo@schul-cloud.org');
 		expect(getEmail(users.testUser1)).to.equal('tsp/bar@schul-cloud.org');
-		expect(getEmail(users.testUser2)).to.equal(
-			'tsp/baz@schul-cloud.org',
-		);
+		expect(getEmail(users.testUser2)).to.equal('tsp/baz@schul-cloud.org');
 		expect(() => getEmail(users.testUser3)).to.throw();
 	});
 });

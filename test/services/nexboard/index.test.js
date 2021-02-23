@@ -1,7 +1,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const freeport = require('freeport');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const logger = require('../../../src/logger');
 const MockServer = require('./MockServer');
 const testObjects = require('../helpers/testObjects');
@@ -10,15 +10,11 @@ const { expect } = chai;
 
 chai.use(chaiHttp);
 
-function request({
-	server,
-	method = 'get',
-	endpoint,
-	data,
-	accessToken,
-}) {
-	return new Promise((resolve, reject) => (
-		chai.request(server)[method](endpoint)
+function request({ server, method = 'get', endpoint, data, accessToken }) {
+	return new Promise((resolve, reject) =>
+		chai
+			.request(server)
+			[method](endpoint)
 			.set({
 				Accept: 'application/json',
 				Authorization: accessToken,
@@ -32,7 +28,7 @@ function request({
 				}
 				resolve(res);
 			})
-	));
+	);
 }
 
 describe('Nexboard services', () => {
@@ -42,9 +38,9 @@ describe('Nexboard services', () => {
 	let testHelpers;
 	let configBefore;
 
-	before((done) => {
-		configBefore = Configuration.toObject();
-		freeport((err, port) => {
+	before(() => {
+		configBefore = Configuration.toObject({ plainSecrets: true });
+		freeport(async (err, port) => {
 			if (err) {
 				logger.warning('freeport:', err);
 			}
@@ -55,11 +51,11 @@ describe('Nexboard services', () => {
 			Configuration.set('NEXBOARD_USER_ID', 'someuserid');
 
 			// eslint-disable-next-line global-require
-			app = require('../../../src/app');
+			app = await require('../../../src/app');
 			server = app.listen(0);
 			testHelpers = testObjects(app);
 
-			const mock = MockServer(mockUrl, Configuration.get('NEXBOARD_URI'), done);
+			const mock = await MockServer(mockUrl, Configuration.get('NEXBOARD_URI'));
 			mockServer = mock.server;
 		});
 	});
@@ -72,7 +68,9 @@ describe('Nexboard services', () => {
 
 	it('should create a new project', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const data = { title: 'my title', description: 'abc' };
@@ -92,7 +90,9 @@ describe('Nexboard services', () => {
 
 	it('should create a new project with default title & description', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const { body } = await request({
@@ -110,7 +110,9 @@ describe('Nexboard services', () => {
 
 	it('should show the details of one project', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const { body } = await request({
@@ -135,7 +137,9 @@ describe('Nexboard services', () => {
 
 	it('should list projects', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const { body: projects } = await request({
@@ -150,7 +154,9 @@ describe('Nexboard services', () => {
 
 	it('should create a board with a project id', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const data = {
@@ -174,7 +180,9 @@ describe('Nexboard services', () => {
 
 	it('should list multiple boards depending on a project', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const data = {
@@ -196,7 +204,9 @@ describe('Nexboard services', () => {
 
 	it('should return detailed information about one board', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['teacher'] });
 
 		const id = '1234';
@@ -215,7 +225,9 @@ describe('Nexboard services', () => {
 		await testHelpers.createTestRole({ name, permissions: [] });
 
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: [name] });
 
 		const data = {
@@ -240,7 +252,9 @@ describe('Nexboard services', () => {
 		await testHelpers.createTestRole({ name, permissions: [] });
 
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: [name] });
 
 		const data = {
@@ -262,7 +276,9 @@ describe('Nexboard services', () => {
 
 	it('Create should need TOOL_CREATE permission.', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['student'] });
 
 		const data = {
@@ -284,7 +300,9 @@ describe('Nexboard services', () => {
 
 	it('Patch should be blocked.', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['student'] });
 
 		const data = {
@@ -306,7 +324,9 @@ describe('Nexboard services', () => {
 
 	it('DELETE should be blocked.', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['student'] });
 
 		const { body } = await request({
@@ -321,7 +341,9 @@ describe('Nexboard services', () => {
 
 	it('UPDATE should be blocked.', async () => {
 		const {
-			requestParams: { authentication: { accessToken } },
+			requestParams: {
+				authentication: { accessToken },
+			},
 		} = await testHelpers.setupUser({ roles: ['student'] });
 
 		const data = {

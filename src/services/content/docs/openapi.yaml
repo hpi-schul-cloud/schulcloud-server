@@ -1,0 +1,367 @@
+security:
+  - jwtBearer: []
+info:
+  title: Schul-Cloud Content Service API
+  description:
+    This is the API specification for the Schul-Cloud Content service.
+    
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+components:
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    resources:
+      description: TODO
+    resources_list:
+      description: TODO
+    search:
+      description: TODO
+    search_list:
+      description: TODO
+    redirect:
+      description: TODO
+    materials:
+      description: TODO
+    materials_list:
+      description: TODO
+
+paths:
+  /content/resources:
+    get:
+      parameters:
+        - description: Number of results to return
+          in: query
+          name: $limit
+          schema:
+            type: integer
+        - description: Number of results to skip
+          in: query
+          name: $skip
+          schema:
+            type: integer
+        - description: Property to sort results
+          in: query
+          name: $sort
+          style: deepObject
+          schema:
+            type: object
+        - description: Query parameters to filter
+          in: query
+          name: filter
+          style: form
+          explode: true
+          schema:
+            $ref: '#/components/schemas/resources'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/resources_list'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Retrieves a list of all resources from the service.
+      summary: ''
+      tags:
+        - content
+      security: []
+  '/content/resources/{id}':
+    get:
+      parameters:
+        - in: path
+          name: id
+          description: ID of resources to return
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/resources'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Retrieves a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - content
+      security: []
+  /content/search:
+    get:
+      parameters:
+        - description: Number of results to return
+          in: query
+          name: $limit
+          schema:
+            type: integer
+        - description: Number of results to skip
+          in: query
+          name: $skip
+          schema:
+            type: integer
+        - description: Property to sort results
+          in: query
+          name: $sort
+          style: deepObject
+          schema:
+            type: object
+        - description: Query parameters to filter
+          in: query
+          name: filter
+          style: form
+          explode: true
+          schema:
+            $ref: '#/components/schemas/search'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/search_list'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Retrieves a list of all resources from the service.
+      summary: ''
+      tags:
+        - content
+      security: []
+  '/content/redirect/{id}':
+    get:
+      parameters:
+        - in: path
+          name: id
+          description: ID of redirect to return
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/redirect'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Retrieves a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - content
+      security: []
+  /materials:
+    get:
+      parameters:
+        - description: Number of results to return
+          in: query
+          name: $limit
+          schema:
+            type: integer
+        - description: Number of results to skip
+          in: query
+          name: $skip
+          schema:
+            type: integer
+        - description: Property to sort results
+          in: query
+          name: $sort
+          style: deepObject
+          schema:
+            type: object
+        - description: Query parameters to filter
+          in: query
+          name: filter
+          style: form
+          explode: true
+          schema:
+            $ref: '#/components/schemas/materials'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/materials_list'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Retrieves a list of all resources from the service.
+      summary: ''
+      tags:
+        - materials
+      security: []
+    post:
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/materials'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Creates a new resource with data.
+      summary: ''
+      tags:
+        - materials
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/materials'
+  '/materials/{_id}':
+    get:
+      parameters:
+        - in: path
+          name: _id
+          description: ID of materials to return
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/materials'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Retrieves a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - materials
+      security: []
+    put:
+      parameters:
+        - in: path
+          name: _id
+          description: ID of materials to update
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/materials'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - materials
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/materials'
+    patch:
+      parameters:
+        - in: path
+          name: _id
+          description: ID of materials to update
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/materials'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - materials
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/materials'
+    delete:
+      parameters:
+        - in: path
+          name: _id
+          description: ID of materials to remove
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/materials'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Removes the resource with id.
+      summary: ''
+      tags:
+        - materials
+      security: []
+  
+openapi: 3.0.2
+tags:
+  - name: content
+    description: A content service.
+  - name: materials
+    description: A materials service.
+  
+    

@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { createDateFromAge, createUserConsent, createParentConsent } = require('./helper');
 
 const {
@@ -8,7 +8,6 @@ const {
 	userToConsent,
 	modifyDataForUserSchema,
 } = require('../../../../src/services/consent/utils/consent');
-
 
 describe('test consent utils', () => {
 	describe('test defineConsentStatus', () => {
@@ -43,7 +42,6 @@ describe('test consent utils', () => {
 				userConsent: createUserConsent(true, true),
 			});
 
-
 			expect(consentStatus).to.equal('ok');
 		});
 
@@ -54,7 +52,6 @@ describe('test consent utils', () => {
 			const consentStatus = defineConsentStatus(birthday, {
 				parentConsents: [createParentConsent(true, true)],
 			});
-
 
 			expect(consentStatus).to.equal('missing');
 		});
@@ -67,7 +64,6 @@ describe('test consent utils', () => {
 				userConsent: createUserConsent(true, true),
 			});
 
-
 			expect(consentStatus).to.equal('ok');
 		});
 
@@ -79,7 +75,6 @@ describe('test consent utils', () => {
 				parentConsents: [createParentConsent(true, true)],
 			});
 
-
 			expect(consentStatus).to.equal('ok');
 		});
 
@@ -90,7 +85,6 @@ describe('test consent utils', () => {
 			const consentStatus = defineConsentStatus(birthday, {
 				userConsent: createUserConsent(true, true),
 			});
-
 
 			expect(consentStatus).to.equal('missing');
 		});

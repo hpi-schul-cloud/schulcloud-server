@@ -4,12 +4,13 @@
  * @example flatten([1, [2], [[3, 4], 5], 6]) => [1, 2, 3, 4, 5, 6]
  * @returns {Array} flatted array
  */
-const flatten = (arr) => arr.reduce((agg, el) => {
-	if (el instanceof Array) {
-		return agg.concat(flatten(el));
-	}
-	return agg.concat(el);
-}, []);
+const flatten = (arr) =>
+	arr.reduce((agg, el) => {
+		if (el instanceof Array) {
+			return agg.concat(flatten(el));
+		}
+		return agg.concat(el);
+	}, []);
 
 /**
  * Emulates Feathers-style pagination on a given array.
@@ -89,24 +90,25 @@ const compare = (a, b) => {
 		return a.getTime() - b.getTime();
 	}
 	// use string comparison for everything else
-	return (a.toString()).localeCompare(b.toString());
+	return a.toString().localeCompare(b.toString());
 };
 
-const sortInternal = (data, sortOrder) => data.sort((a, b) => {
-	let returnValue = 0;
-	if (Object.keys(sortOrder).length === 0) {
-		// if no sortOrder is given, sort by value
-		return compare(a, b);
-	}
-	for (const attribute of Object.keys(sortOrder)) {
-		// compare (nested) attribute values and change sign based on attribute sort order
-		const [valueA, valueB] = [getValue(a, attribute), getValue(b, attribute)];
-		returnValue = compare(valueA, valueB) * sortOrder[attribute];
-		// if values are sortable, no further attribute comparisons are necessary
-		if (returnValue !== 0) break;
-	}
-	return returnValue;
-});
+const sortInternal = (data, sortOrder) =>
+	data.sort((a, b) => {
+		let returnValue = 0;
+		if (Object.keys(sortOrder).length === 0) {
+			// if no sortOrder is given, sort by value
+			return compare(a, b);
+		}
+		for (const attribute of Object.keys(sortOrder)) {
+			// compare (nested) attribute values and change sign based on attribute sort order
+			const [valueA, valueB] = [getValue(a, attribute), getValue(b, attribute)];
+			returnValue = compare(valueA, valueB) * sortOrder[attribute];
+			// if values are sortable, no further attribute comparisons are necessary
+			if (returnValue !== 0) break;
+		}
+		return returnValue;
+	});
 
 /**
  * Sort an array using mongodb-notation
@@ -129,9 +131,16 @@ const sort = (data, sortOrder) => {
 	return sortInternal(data, sortOrderObject);
 };
 
+const asyncFilter = async (data, predicate) => {
+	const results = await Promise.all(data.map(predicate));
+
+	return data.filter((_v, index) => results[index]);
+};
+
 module.exports = {
 	flatten,
 	paginate,
 	sort,
 	convertToSortOrderObject,
+	asyncFilter,
 };

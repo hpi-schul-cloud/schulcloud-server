@@ -1,4 +1,7 @@
 const ua = require('universal-analytics');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
 const hooks = require('./hooks');
 const logger = require('../../logger');
 
@@ -40,11 +43,12 @@ class Service {
 			school: data.cd5,
 			networkProtocol: data.cd6,
 		});
-		return model.save()
+		return model
+			.save()
 			.then((_) => Promise.resolve())
 			.catch((err) => {
 				logger.error(err);
-				return Promise.reject();
+				return Promise.reject(new Error());
 			});
 	}
 
@@ -55,6 +59,8 @@ class Service {
 
 module.exports = function () {
 	const app = this;
+
+	app.use('/analytics/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	app.use('/analytics', new Service());
 	const contentService = app.service('/analytics');

@@ -10,18 +10,6 @@ const reset = () => {
 	});
 };
 
-const consume = async (queue, callback, options) => {
-	callbacks[queue] = callback;
-};
-
-const assertQueue = async () => {};
-
-const prefetch = () => {};
-
-const reject = () => {};
-
-const ack = () => {};
-
 const triggerConsume = (queue, message) => {
 	if (callbacks[queue]) {
 		return callbacks[queue]({
@@ -32,22 +20,37 @@ const triggerConsume = (queue, message) => {
 	return undefined;
 };
 
-const sendToQueue = (queue, messageBuffer, options) => {
-	if (!queues[queue]) queues[queue] = [];
-	queues[queue].push(messageBuffer);
+const channel = {
+	assertQueue: () => {},
+	on: () => {},
+	prefetch: () => {},
+	consume: (queue, callback) => {
+		callbacks[queue] = callback;
+	},
+	ack: () => {},
+	reject: () => {},
+	sendToQueue: (queue, msg) => {
+		const msgParsed = JSON.parse(msg);
+		if (!queues[queue]) queues[queue] = [];
+		queues[queue].push(msgParsed);
+	},
 };
 
-const createChannel = async () => ({
-	sendToQueue,
-	assertQueue,
-	prefetch,
-	consume,
-	reject,
-	ack,
-});
+const connection = {
+	on: () => {},
+	createChannel: async () => channel,
+};
 
-const setup = async (app) => {};
+const amqp = {
+	connect: async () => connection,
+};
 
 module.exports = {
-	setup, createChannel, queues, reset, triggerConsume,
+	amqplib: amqp,
+
+	// testing
+	queues,
+	callbacks,
+	reset,
+	triggerConsume,
 };

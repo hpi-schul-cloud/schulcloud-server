@@ -1,0 +1,620 @@
+security:
+  - jwtBearer: []
+info:
+  title: Schul-Cloud Teams Service API
+  description:
+    This is the API specification for the Schul-Cloud Teams service.
+    
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+components:
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    teams:
+      description: TODO
+    teams_list:
+      description: TODO
+    extern:
+      description: TODO
+    extern_list:
+      description: TODO
+    manage:
+      description: TODO
+    manage_list:
+      description: TODO
+    scopeId:
+      description: TODO
+    scopeId_list:
+      description: TODO
+
+paths:
+  /teams:
+    get:
+      parameters:
+        - description: Number of results to return
+          in: query
+          name: $limit
+          schema:
+            type: integer
+        - description: Number of results to skip
+          in: query
+          name: $skip
+          schema:
+            type: integer
+        - description: Property to sort results
+          in: query
+          name: $sort
+          style: deepObject
+          schema:
+            type: object
+        - description: Query parameters to filter
+          in: query
+          name: filter
+          style: form
+          explode: true
+          schema:
+            $ref: '#/components/schemas/teams'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/teams_list'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Retrieves a list of all resources from the service.
+      summary: ''
+      tags:
+        - teams
+      security: []
+    post:
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/teams'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Creates a new resource with data.
+      summary: ''
+      tags:
+        - teams
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/teams'
+  '/teams/{_id}':
+    get:
+      parameters:
+        - in: path
+          name: _id
+          description: ID of teams to return
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/teams'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Retrieves a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - teams
+      security: []
+    put:
+      parameters:
+        - in: path
+          name: _id
+          description: ID of teams to update
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/teams'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - teams
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/teams'
+    patch:
+      parameters:
+        - in: path
+          name: _id
+          description: ID of teams to update
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/teams'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - teams
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/teams'
+    delete:
+      parameters:
+        - in: path
+          name: _id
+          description: ID of teams to remove
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/teams'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Removes the resource with id.
+      summary: ''
+      tags:
+        - teams
+      security: []
+  /teams/extern/get:
+    get:
+      parameters:
+        - description: Number of results to return
+          in: query
+          name: $limit
+          schema:
+            type: integer
+        - description: Number of results to skip
+          in: query
+          name: $skip
+          schema:
+            type: integer
+        - description: Property to sort results
+          in: query
+          name: $sort
+          style: deepObject
+          schema:
+            type: object
+        - description: Query parameters to filter
+          in: query
+          name: filter
+          style: form
+          explode: true
+          schema:
+            $ref: '#/components/schemas/extern'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/extern_list'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Retrieves a list of all resources from the service.
+      summary: ''
+      tags:
+        - teams
+      security: []
+  '/teams/extern/add/{id}':
+    patch:
+      parameters:
+        - in: path
+          name: id
+          description: ID of extern to update
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/extern'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - teams
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/extern'
+  '/teams/extern/accept/{id}':
+    get:
+      parameters:
+        - in: path
+          name: id
+          description: ID of extern to return
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/extern'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Retrieves a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - teams
+      security: []
+  '/teams/extern/remove/{id}':
+    patch:
+      parameters:
+        - in: path
+          name: id
+          description: ID of extern to update
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/extern'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - teams
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/extern'
+  /teams/manage/admin:
+    get:
+      parameters:
+        - description: Number of results to return
+          in: query
+          name: $limit
+          schema:
+            type: integer
+        - description: Number of results to skip
+          in: query
+          name: $skip
+          schema:
+            type: integer
+        - description: Property to sort results
+          in: query
+          name: $sort
+          style: deepObject
+          schema:
+            type: object
+        - description: Query parameters to filter
+          in: query
+          name: filter
+          style: form
+          explode: true
+          schema:
+            $ref: '#/components/schemas/manage'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/manage_list'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Retrieves a list of all resources from the service.
+      summary: ''
+      tags:
+        - teams
+      security: []
+    post:
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/manage'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Creates a new resource with data.
+      summary: ''
+      tags:
+        - teams
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/manage'
+  '/teams/manage/admin/{id}':
+    patch:
+      parameters:
+        - in: path
+          name: id
+          description: ID of manage to update
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/manage'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - teams
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/manage'
+    delete:
+      parameters:
+        - in: path
+          name: id
+          description: ID of manage to remove
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/manage'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Removes the resource with id.
+      summary: ''
+      tags:
+        - teams
+      security: []
+  '/teams/{scopeId}/userPermissions':
+    get:
+      parameters:
+        - in: path
+          name: scopeId
+          schema:
+            type: string
+          required: true
+          description: scopeId parameter
+        - description: Number of results to return
+          in: query
+          name: $limit
+          schema:
+            type: integer
+        - description: Number of results to skip
+          in: query
+          name: $skip
+          schema:
+            type: integer
+        - description: Property to sort results
+          in: query
+          name: $sort
+          style: deepObject
+          schema:
+            type: object
+        - description: Query parameters to filter
+          in: query
+          name: filter
+          style: form
+          explode: true
+          schema:
+            $ref: '#/components/schemas/scopeId'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/scopeId_list'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Retrieves a list of all resources from the service.
+      summary: ''
+      tags:
+        - teams
+      security: []
+  '/teams/{scopeId}/userPermissions/{id}':
+    get:
+      parameters:
+        - in: path
+          name: scopeId
+          schema:
+            type: string
+          required: true
+          description: scopeId parameter
+        - in: path
+          name: id
+          description: 'ID of :scopeId to return'
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/scopeId'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Retrieves a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - teams
+      security: []
+  '/users/{scopeId}/teams':
+    get:
+      parameters:
+        - in: path
+          name: scopeId
+          schema:
+            type: string
+          required: true
+          description: scopeId parameter
+        - description: Number of results to return
+          in: query
+          name: $limit
+          schema:
+            type: integer
+        - description: Number of results to skip
+          in: query
+          name: $skip
+          schema:
+            type: integer
+        - description: Property to sort results
+          in: query
+          name: $sort
+          style: deepObject
+          schema:
+            type: object
+        - description: Query parameters to filter
+          in: query
+          name: filter
+          style: form
+          explode: true
+          schema:
+            $ref: '#/components/schemas/scopeId'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/scopeId_list'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Retrieves a list of all resources from the service.
+      summary: ''
+      tags:
+        - users
+      security: []
+  
+openapi: 3.0.2
+tags:
+  - name: teams
+    description: A teams service.
+  - name: users
+    description: A users service.
+  
+    

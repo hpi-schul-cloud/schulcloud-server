@@ -1,0 +1,304 @@
+security:
+  - jwtBearer: []
+info:
+  title: Schul-Cloud Tools Service API
+  description:
+    This is the API specification for the Schul-Cloud Tools service.
+    
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+components:
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ltiTools:
+      description: TODO
+    ltiTools_list:
+      description: TODO
+    id:
+      description: TODO
+    sign:
+      description: TODO
+
+paths:
+  /ltiTools:
+    get:
+      parameters:
+        - description: Number of results to return
+          in: query
+          name: $limit
+          schema:
+            type: integer
+        - description: Number of results to skip
+          in: query
+          name: $skip
+          schema:
+            type: integer
+        - description: Property to sort results
+          in: query
+          name: $sort
+          style: deepObject
+          schema:
+            type: object
+        - description: Query parameters to filter
+          in: query
+          name: filter
+          style: form
+          explode: true
+          schema:
+            $ref: '#/components/schemas/ltiTools'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ltiTools_list'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Retrieves a list of all resources from the service.
+      summary: ''
+      tags:
+        - ltiTools
+      security: []
+    post:
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ltiTools'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Creates a new resource with data.
+      summary: ''
+      tags:
+        - ltiTools
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ltiTools'
+  '/ltiTools/{_id}':
+    get:
+      parameters:
+        - in: path
+          name: _id
+          description: ID of ltiTools to return
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ltiTools'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Retrieves a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - ltiTools
+      security: []
+    put:
+      parameters:
+        - in: path
+          name: _id
+          description: ID of ltiTools to update
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ltiTools'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - ltiTools
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ltiTools'
+    patch:
+      parameters:
+        - in: path
+          name: _id
+          description: ID of ltiTools to update
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ltiTools'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Updates the resource identified by id using data.
+      summary: ''
+      tags:
+        - ltiTools
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ltiTools'
+    delete:
+      parameters:
+        - in: path
+          name: _id
+          description: ID of ltiTools to remove
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ltiTools'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Removes the resource with id.
+      summary: ''
+      tags:
+        - ltiTools
+      security: []
+  '/tools/{id}/link':
+    post:
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: id parameter
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/id'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Creates a new resource with data.
+      summary: ''
+      tags:
+        - tools
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/id'
+  /tools/sign/lti11:
+    post:
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sign'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Creates a new resource with data.
+      summary: ''
+      tags:
+        - tools
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/sign'
+  /tools/sign/lti13:
+    post:
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sign'
+        '401':
+          description: not authenticated
+        '500':
+          description: general error
+      description: Creates a new resource with data.
+      summary: ''
+      tags:
+        - tools
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/sign'
+  
+openapi: 3.0.2
+tags:
+  - name: ltiTools
+    description: An ltiTools service.
+  - name: tools
+    description: A tools service.
+  
+    

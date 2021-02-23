@@ -1,13 +1,14 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { disallow } = require('feathers-hooks-common');
-const { Forbidden } = require('@feathersjs/errors');
-const { Configuration } = require('@schul-cloud/commons');
+
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const { Forbidden } = require('../../../errors');
 
 const logger = require('../../../logger');
 const globalHooks = require('../../../hooks');
 
 const restrictOldPadsToCourse = async (context) => {
-	if(typeof(context.data.oldPadId) === 'undefined') {
+	if (typeof context.data.oldPadId === 'undefined') {
 		return context;
 	}
 	const oldPadURI = Configuration.get('ETHERPAD_OLD_PAD_URI') || 'https://etherpad.schul-cloud.org/p';
@@ -19,7 +20,7 @@ const restrictOldPadsToCourse = async (context) => {
 				contents: { $elemMatch: { 'content.url': `${oldPadURI}/${context.data.oldPadId}` } },
 			},
 		});
-		if(foundLessons.total < 1) {
+		if (foundLessons.total < 1) {
 			throw new Error('Forbidden');
 		}
 	} catch (err) {

@@ -1,16 +1,20 @@
 const accountsHelper = require('./accounts');
 
-const generateJWT = (app) => async ({ username, password }) => {
-	const result = await app.service('authentication').create({
-		strategy: 'local',
-		username,
-		password,
-	}, {
-		headers: {
-			'content-type': 'application/json',
+const generateJWT = (appPromise) => async ({ username, password }) => {
+	const app = await appPromise;
+	const result = await app.service('authentication').create(
+		{
+			strategy: 'local',
+			username,
+			password,
 		},
-		provider: 'rest',
-	});
+		{
+			headers: {
+				'content-type': 'application/json',
+			},
+			provider: 'rest',
+		}
+	);
 	return result.accessToken;
 };
 
@@ -18,7 +22,8 @@ const generateJWT = (app) => async ({ username, password }) => {
  * Execute login with username and password
  * @returns { authentication = {accessToken, strategy}, provider = 'rest' }
  */
-const generateRequestParams = (app) => async ({ username, password }) => {
+const generateRequestParams = (appPromise) => async ({ username, password }) => {
+	const app = await appPromise;
 	const fetchJwt = generateJWT(app);
 	const jwt = await fetchJwt({ username, password });
 	return {
@@ -37,7 +42,8 @@ const generateRequestParams = (app) => async ({ username, password }) => {
  * @param {Boolean} withAccount if true the account is also return
  * @returns { [account], authentication = {accessToken, strategy}, provider = 'rest' }
  */
-const generateRequestParamsFromUser = (app) => async (user) => {
+const generateRequestParamsFromUser = (appPromise) => async (user) => {
+	const app = await appPromise;
 	const credentials = { username: user.email, password: user.email };
 	const account = await accountsHelper(app).create(credentials, 'local', user);
 
@@ -46,8 +52,19 @@ const generateRequestParamsFromUser = (app) => async (user) => {
 	return requestParams;
 };
 
+const generateJWTFromUser = (appPromise) => async (user) => {
+	const app = await appPromise;
+	const credentials = { username: user.email, password: user.email };
+	await accountsHelper(app).create(credentials, 'local', user);
+
+	const fetchJwt = generateJWT(app);
+	const jwt = await fetchJwt(credentials);
+	return jwt;
+};
+
 module.exports = (app) => ({
 	generateJWT: generateJWT(app),
 	generateRequestParams: generateRequestParams(app),
 	generateRequestParamsFromUser: generateRequestParamsFromUser(app),
+	generateJWTFromUser: generateJWTFromUser(app),
 });

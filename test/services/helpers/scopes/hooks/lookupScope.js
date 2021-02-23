@@ -1,10 +1,9 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const { ObjectId } = require('mongoose').Types;
-const { BadRequest } = require('@feathersjs/errors');
-const {
-	lookupScope,
-} = require('../../../../../src/services/helpers/scopePermissions/hooks/lookupScope');
+
+const { BadRequest } = require('../../../../../src/errors');
+const { lookupScope } = require('../../../../../src/services/helpers/scopePermissions/hooks/lookupScope');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -62,7 +61,11 @@ describe('lookupScope', () => {
 		};
 		const context = {
 			app: fakeApp(team),
-			params: { route: { /* scopeId: team._id */ } },
+			params: {
+				route: {
+					/* scopeId: team._id */
+				},
+			},
 			path: `/teams/${team._id.toString()}/userPermissions/`,
 		};
 		expect(lookupScope(context)).to.eventually.throw(BadRequest);

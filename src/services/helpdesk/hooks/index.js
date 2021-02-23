@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
@@ -16,7 +17,7 @@ Deine ${data.cloud}
 
 async function generateSystemInformation(hook) {
 	const { userId, username } = hook.params.account;
-	const userInformation = await hook.app.service('users').get((userId), {
+	const userInformation = await hook.app.service('users').get(userId, {
 		query: {
 			$populate: { path: 'roles' },
 		},
@@ -31,7 +32,7 @@ async function generateSystemInformation(hook) {
 	return systemInformation;
 }
 
-function createFeedbackText(user, data) {
+function createFeedbackText(user, data = {}) {
 	const device = data.deviceUserAgent ? `${data.device} [auto-detection: ${data.deviceUserAgent}]` : data.device;
 	let text = `
 SystemInformation: ${data.systemInformation}
@@ -87,24 +88,29 @@ const feedback = () => async (hook) => {
 			subject: 'Ein Problem wurde gemeldet.',
 			roles: ['helpdesk', 'administrator'],
 			content: {
-				text: createInfoText(
-					(hook.params.account || {}).username || 'nouser', data,
-				),
+				text: createInfoText((hook.params.account || {}).username || 'nouser', data),
 			},
 			attachments: data.files,
 		});
 		// TODO: NOTIFICATION SERVICE
 	} else {
 		data.systemInformation = await generateSystemInformation(hook);
+		const emails = [];
+		if (data.supportType) {
+			if (data.supportType === 'problem') {
+				emails.push(Configuration.get('SUPPORT_PROBLEM_EMAIL_ADDRESS'));
+			} else {
+				emails.push(Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS'));
+			}
+		} else {
+			emails.push(Configuration.get('SUPPORT_PROBLEM_EMAIL_ADDRESS'));
+		}
 		globalHooks.sendEmail(hook, {
 			subject: data.title || data.subject || 'nosubject',
-			emails: ['ticketsystem@schul-cloud.org'],
+			emails,
 			replyEmail: data.replyEmail,
 			content: {
-				text: createFeedbackText(
-					(hook.params.account || {}).username || 'nouser',
-					data,
-				),
+				text: createFeedbackText((hook.params.account || {}).username || 'nouser', data),
 			},
 			attachments: data.files,
 		});

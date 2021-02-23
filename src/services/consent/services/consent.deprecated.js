@@ -1,15 +1,12 @@
-const { BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
+const { BadRequest } = require('../../../errors');
 const { userToConsent, modifyDataForUserSchema } = require('../utils/consent');
 const { restrictToCurrentUser } = require('../hooks/consents');
 
-
 const consentHooks = {
 	before: {
-		all: [
-			authenticate('jwt'),
-		],
+		all: [authenticate('jwt')],
 		get: [iff(isProvider('external'), restrictToCurrentUser)],
 		find: [iff(isProvider('external'), restrictToCurrentUser)],
 		create: [disallow('external')],
@@ -22,12 +19,7 @@ const consentHooks = {
 class ConsentService {
 	async find(params) {
 		const {
-			query: {
-				userId,
-				$limit,
-				$skip,
-				...oldQuery
-			},
+			query: { userId, $limit, $skip, ...oldQuery },
 		} = params;
 
 		const query = {
@@ -49,8 +41,7 @@ class ConsentService {
 				};
 			}
 
-			if (({}).hasOwnProperty.call(userId, '$in')
-				&& Array.isArray(userId.$in)) {
+			if ({}.hasOwnProperty.call(userId, '$in') && Array.isArray(userId.$in)) {
 				query._id = {
 					$in: userId.$in,
 				};
@@ -67,7 +58,6 @@ class ConsentService {
 			};
 		}
 
-
 		const users = await this.modelService.find({ query });
 		return {
 			...users,
@@ -80,37 +70,36 @@ class ConsentService {
 	}
 
 	async create(data, params) {
-		if (!({}).hasOwnProperty.call(data, 'userId')) {
+		if (!{}.hasOwnProperty.call(data, 'userId')) {
 			throw BadRequest('Consent could only create with a UserId');
 		}
 
 		const { userId, ...consent } = data;
 
-		const user = await this.modelService.patch(
-			userId,
-			modifyDataForUserSchema(consent),
-		);
+		const oldUser = await this.modelService.get(userId);
+		const newConsentData = modifyDataForUserSchema({ ...oldUser.consent, ...consent });
+
+		const user = await this.modelService.patch(userId, newConsentData);
 
 		return userToConsent(user);
 	}
 
 	async patch(_id, data, params) {
-		return userToConsent(await this.modelService
-			.patch(_id, modifyDataForUserSchema(data)));
+		return userToConsent(await this.modelService.patch(_id, modifyDataForUserSchema(data)));
 	}
 
 	async update(_id, data, params) {
-		return userToConsent(await this.modelService
-			.patch(_id, modifyDataForUserSchema(data)));
+		return userToConsent(await this.modelService.patch(_id, modifyDataForUserSchema(data)));
 	}
 
 	async remove(_id, params) {
-		return userToConsent(await this.modelService
-			.patch(_id, {
+		return userToConsent(
+			await this.modelService.patch(_id, {
 				query: {
 					$unset: 'constent',
 				},
-			}));
+			})
+		);
 	}
 
 	setup(app) {

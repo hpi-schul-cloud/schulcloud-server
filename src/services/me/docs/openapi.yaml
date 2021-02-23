@@ -1,0 +1,197 @@
+security:
+  - jwtBearer: []
+info:
+  title: HPI-Schul-Cloud me Service API
+  description:
+    This is the API specification for the HPI-Schul-Cloud me service.
+    
+  contact:
+    name: support
+    email: info@hpi-schul-cloud.de
+  license:
+    name: GPL-3.0
+    url: 'https://github.com/hpi-schul-cloud/schulcloud-server/blob/master/LICENSE'
+  version: 1.0.0
+
+components:
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    consent:
+      type: object
+      properties:
+        userConsent:
+          type: object
+          properties:
+            form:
+              type: string
+              enum: ['analog', 'digital', 'update']
+            source:
+              type: string
+            dateOfPrivacyConsent:
+              type: string
+              format: date-time
+            privacyConsent:
+              type: boolean
+            dateOfTermsOfUseConsent:
+              type: string
+              format: date-time
+            termsOfUseConsent:
+              type: boolean
+        parentConsents:
+          type: array
+          items:
+            type: object
+            properties:
+              form:
+                type: string
+                enum: ['analog', 'digital', 'update']
+              source:
+                type: string
+              dateOfPrivacyConsent:
+                type: string
+                format: date-time
+              privacyConsent:
+                type: boolean
+              dateOfTermsOfUseConsent:
+                type: string
+                format: date-time
+              termsOfUseConsent:
+                type: boolean
+    role:
+      description: A user role Object
+      type: object
+      properties:
+        _id:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        name:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        roles:
+          type: array
+          description: Array of roles this role is inheriting from
+          items:
+            type: string
+            pattern: '^[0-9a-f]{24}$'
+        permissions:
+          type: array
+          items:
+            type: string
+        __v:
+          type: integer
+        displayName:
+          type: string
+        id:
+          type: string
+          pattern: '^[0-9a-f]{24}$'  
+    user_full:
+      description: Data Transfer Object containing fully populated userdata
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        _id:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        __v:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: 'email'
+        updatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        birthday:
+          type: string
+          format: date-time
+        preferences:
+          type: object
+          properties:
+            firstLogin:
+              type: boolean
+          additionalProperties: true
+        schoolId:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/role'
+        consent:
+          $ref: '#/components/schemas/consent'
+        forcePasswordChange:
+          type: boolean
+        fullName:
+          type: string
+        id:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        avatarInitials:
+          type: string
+        avatarBackgroundColor:
+          type: string
+          pattern: '^#[0-9a-f]{6}$'
+        age:
+          type: integer
+        displayName:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        accountId:
+          type: string
+          pattern: '^[0-9a-f]{24}$'
+        schoolName:
+          type: string
+        externallyManaged:
+          type: boolean
+          description: 'an externally managed user has been imported from an external IDM system,
+            and cant be edited or deleted within the HPI-Schulcloud'
+
+
+paths:
+  /me:
+    get:
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_full'
+        '401':
+          description: not authenticated
+        '403':
+          description: forbidden
+        '500':
+          description: general error
+      description: Retrieves the currently logged in user.
+      summary: ''
+      tags:
+        - me
+      security:
+        - jwtBearer: []
+  
+openapi: 3.0.2
+tags:
+  - name: me
+    description: A me service.

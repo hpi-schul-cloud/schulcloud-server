@@ -1,7 +1,8 @@
 const { disallow } = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
-const { Forbidden } = require('@feathersjs/errors');
+
 const { iff, isProvider } = require('feathers-hooks-common');
+const { Forbidden } = require('../../../errors');
 
 const { hasPermission } = require('../../../hooks');
 
@@ -11,8 +12,7 @@ const { hasPermission } = require('../../../hooks');
  * @throws {Forbidden} if user does not have correct permissions.
  */
 const checkPermissions = async (hook) => {
-	const targetUser = await hook.app.service('users').get(hook.params.route.userId,
-		{ query: { $populate: 'roles' } });
+	const targetUser = await hook.app.service('users').get(hook.params.route.userId, { query: { $populate: 'roles' } });
 	const actingUser = await hook.app.service('users').get(hook.params.account.userId);
 
 	const targetIsStudent = targetUser.roles[0].name === 'student';

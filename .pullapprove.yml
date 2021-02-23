@@ -1,12 +1,12 @@
 version: 3
 
 pullapprove_conditions:
-- condition: "'WIP' not in labels"
-  unmet_status: pending
-  explanation: "Work in progress"
-- condition: "'- [ ]' not in body"
-  unmet_status: failure
-  explanation: "Please finish all the required checklist tasks"
+  - condition: "'WIP' not in labels"
+    unmet_status: pending
+    explanation: 'Work in progress'
+  - condition: "'- [ ]' not in body"
+    unmet_status: failure
+    explanation: 'Please finish all the required checklist tasks'
 #- condition: "'Travis*' in statuses.succeeded" # Not working yet
 #  unmet_status: failure
 #  explanation: "Tests must pass before review starts"
@@ -14,75 +14,29 @@ pullapprove_conditions:
 #  unmet_status: failure
 #  explanation: "Linter must pass before review starts"
 
-
 notifications:
-- when: pull_request.opened
-  comment: |
-    Hey @{{ author }}, thanks for the PR! The review will start once
-    the tests, CI checks and PR requirements (see checklist in your PR) have passed.
-- when: pullapprove.approved
-  comment:
-    The review is completed. @{{ author }}, please follow further instructions from
-    our Review-Guidelines https://docs.schul-cloud.org/display/SCDOK/Review-Guidelines
+  - when: pull_request.opened
+    comment: |
+      Hey @{{ author }}, thanks for the PR! The review will start once
+      the tests, CI checks and PR requirements (see checklist in your PR) have passed.
+  - when: pullapprove.approved
+    comment: The review is completed. @{{ author }}, please follow further instructions from
+      our Review-Guidelines https://docs.hpi-schul-cloud.org/display/SCDOK/Review-Guidelines
 
 groups:
-  integrathors:
-    conditions:
-    - "'IntegraTHORs' in labels"
+  sc-admins:
     reviews:
-      required: 1  # 1 approval from this group are required
-      request: 2  # 2 reviews requests will be sent at a time
-      request_order: shuffle  # reviewers will be chosen in a random order
+      required: 1 # 1 approval from this group are required
     reviewers:
       teams:
-      - integrathors
-
-  loki:
-    conditions:
-    - "'Loki' in labels"
-    reviews:
-      required: 1  # 1 approval from this group are required
-      request: 2  # 2 reviews requests will be sent at a time
-      request_order: shuffle  # reviewers will be chosen in a random order
-    reviewers:
-      teams:
-      - loki
-
-  server-core:
-    conditions:
-    - "'Loki' not in labels and 'IntegraTHORs' not in labels"
-    reviews:
-      required: 1  # 1 approval from this group are required
-      request: 2  # 2 reviews requests will be sent at a time
-      request_order: shuffle  # reviewers will be chosen in a random order
-    reviewers:
-      teams:
-      - server-core
-
-  privacy:
-    conditions:
-    - "'*model.js' in files or 'backup/setup/*.json' in files or '.pullapprove.yml' in files"
-    # only review if "*model.js", "backup/setup/*.json" files or ".pullapprove.yml" have been touched
-    reviewers:
-      teams:
-      - data-protection
-    reviews:
-      required: 1  # number of approvals required from this group
-      request: -1  # request from all members a review
-      author_value: 1
-    labels:
-      pending: "needs data protection review"
-      approved: "data protection review approved"
-      rejected: "data protection review rejected"
+        - sc-admins
 
   devops:
     conditions:
-    - "'*deploy.sh' in files or '.build/*' in files" # only review specific, deployment relevant files
+      - "'*deploy.sh' in files or '.build/*' in files" # only review specific, deployment relevant files
     reviewers:
       teams:
-      - devops
+        - devops
     reviews:
       required: 1 # number of approvals required from this group
-      request: 2 # request review from 2 members at a time
-      request_order: shuffle # reviewers will be chosen in a random order
       author_value: 1 # if author of pr is in team, no additional review required

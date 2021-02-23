@@ -1,4 +1,7 @@
-const { Forbidden, GeneralError } = require('@feathersjs/errors');
+const { static: staticContent } = require('@feathersjs/express');
+const path = require('path');
+
+const { Forbidden, GeneralError } = require('../../errors');
 const logger = require('../../logger');
 const hooks = require('./hooks');
 const { externallyManaged } = require('../helpers/utils');
@@ -10,10 +13,10 @@ class Service {
 	}
 
 	/**
-     * request headers
-     * set Content-Type = application/json
-     * set Authorization = Bearer [jwt]
-     */
+	 * request headers
+	 * set Content-Type = application/json
+	 * set Authorization = Bearer [jwt]
+	 */
 	async find(params) {
 		const { userId } = params.account;
 		const userServiceParams = {
@@ -22,6 +25,7 @@ class Service {
 			},
 		};
 		let user = {};
+		let school = {};
 		try {
 			user = await this.app.service('/users').get(userId, userServiceParams);
 		} catch (err) {
@@ -30,17 +34,19 @@ class Service {
 		}
 		user.accountId = params.account._id;
 		try {
-			user.schoolName = (await this.app.service('/schools').get(user.schoolId)).name;
+			school = await this.app.service('/schools').get(user.schoolId);
+			user.schoolName = school.name;
 		} catch (err) {
 			logger.warning(err);
-			throw new GeneralError('Can\'t find connected school.');
+			throw new GeneralError("Can't find connected school.");
 		}
 		try {
 			user.externallyManaged = await externallyManaged(this.app, user);
 		} catch (err) {
 			logger.warning(err);
-			throw new GeneralError('Can\'t check externallyManaged');
+			throw new GeneralError("Can't check externallyManaged");
 		}
+		user.language = user.language || school.language;
 		return user;
 	}
 
@@ -52,9 +58,9 @@ class Service {
 module.exports = function () {
 	const app = this;
 
-	app.use('/me', new Service());
+	app.use('/me/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+	app.use('legacy/v1/me', new Service());
 
-	const me = app.service('/me');
-
+	const me = app.service('legacy/v1/me');
 	me.hooks(hooks);
 };

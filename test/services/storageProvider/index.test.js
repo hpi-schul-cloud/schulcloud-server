@@ -1,16 +1,19 @@
 const { expect } = require('chai');
 const CryptoJS = require('crypto-js');
-const { Configuration } = require('@schul-cloud/commons');
-const app = require('../../../src/app');
-const testObjects = require('../helpers/testObjects')(app);
-
-const storageProviderService = app.service('storageProvider');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 
 describe('storageProvider service', () => {
+	let app;
+	let storageProviderService;
+
 	let configBefore = {};
 
-	before(() => {
-		configBefore = Configuration.toObject(); // deep copy current config
+	before(async () => {
+		app = await appPromise;
+		storageProviderService = app.service('storageProvider');
+		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('S3_KEY', '1234567891234567');
 	});
 
@@ -21,9 +24,9 @@ describe('storageProvider service', () => {
 	it('encrypts the secret correctly', async () => {
 		const secret = '123456789';
 		const provider = await testObjects.createTestStorageProvider({ secretAccessKey: secret });
-		const decrypted = CryptoJS.AES
-			.decrypt(provider.secretAccessKey, Configuration.get('S3_KEY'))
-			.toString(CryptoJS.enc.Utf8);
+		const decrypted = CryptoJS.AES.decrypt(provider.secretAccessKey, Configuration.get('S3_KEY')).toString(
+			CryptoJS.enc.Utf8
+		);
 		expect(decrypted).to.equal(secret);
 	});
 

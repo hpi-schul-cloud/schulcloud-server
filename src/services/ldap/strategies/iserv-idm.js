@@ -1,4 +1,5 @@
 const AbstractLDAPStrategy = require('./interface.js');
+const { filterForModifiedEntities } = require('./deltaSyncUtils');
 
 /**
  * iServ-IDM-specific LDAP functionality
@@ -6,16 +7,16 @@ const AbstractLDAPStrategy = require('./interface.js');
  */
 class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 	/**
-     * @see AbstractLDAPStrategy#getSchools
-     * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName
-     */
+	 * @see AbstractLDAPStrategy#getSchools
+	 * @returns {Array} Array of Objects containing ldapOu (ldap Organization Path), displayName
+	 */
 	async getSchools() {
 		const options = {
 			filter: 'objectClass=organization',
 			scope: 'sub',
 			attributes: ['description', 'o', 'dc', 'dn'],
 		};
-		const schools = await this.app.service('ldap').searchCollection(this.config, '', options);
+		const schools = await this.app.service('ldap').searchCollection(this.config, this.config.rootPath || '', options);
 		return schools.map((idmSchool) => ({
 			ldapOu: idmSchool.dn,
 			displayName: idmSchool.description || idmSchool.o,
@@ -23,21 +24,23 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 	}
 
 	/**
-     * @see AbstractLDAPStrategy#getUsers
-     * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
-     * (Array) roles = ['teacher', 'student', 'administrator']
-     */
+	 * @see AbstractLDAPStrategy#getUsers
+	 * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
+	 * (Array) roles = ['teacher', 'student', 'administrator']
+	 */
 	async getUsers(school) {
+		const requiredAttributes = '(objectClass=person)(sn=*)(uuid=*)(uid=*)(mail=*)(cn=*)';
 		const options = {
-			filter: '(&(objectClass=person)(sn=*)(uuid=*)(uid=*)(mail=*)(cn=*))',
+			filter: filterForModifiedEntities(this.config.lastModifyTimestamp, `(&${requiredAttributes})`),
 			scope: 'sub',
-			attributes: ['givenName', 'sn', 'dn', 'uuid', 'cn', 'mail', 'objectClass', 'memberOf'],
+			attributes: ['givenName', 'sn', 'dn', 'uuid', 'cn', 'mail', 'objectClass', 'memberOf', 'modifyTimestamp'],
 		};
 		const searchString = `ou=users,${school.ldapSchoolIdentifier}`;
 		const data = await this.app.service('ldap').searchCollection(this.config, searchString, options);
 
 		const teacherRegex = /^cn=ROLE_TEACHER|^cn=ROLE_LEHRER/;
 		const adminRegex = /^cn=ROLE_ADMIN/;
+		const userExclusionRegex = /^cn=ROLE_NBC_EXCLUDE/;
 
 		const results = [];
 		data.forEach((obj) => {
@@ -63,7 +66,7 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 				roles.push('student');
 			}
 
-			if (!memberships.some((item) => item === 'ROLE_NO_SC')) {
+			if (!memberships.some((item) => userExclusionRegex.test(item))) {
 				results.push({
 					email: obj.mail,
 					firstName: obj.givenName,
@@ -72,6 +75,7 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 					ldapDn: obj.dn,
 					ldapUUID: obj.uuid,
 					ldapUID: obj.cn,
+					modifyTimestamp: obj.modifyTimestamp,
 				});
 			}
 		});
@@ -79,14 +83,14 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 	}
 
 	/**
-     * @see AbstractLDAPStrategy#getClasses
-     * @returns {Array} Array of Objects containing className, ldapDn, uniqueMembers
-     */
+	 * @see AbstractLDAPStrategy#getClasses
+	 * @returns {Array} Array of Objects containing className, ldapDn, uniqueMembers
+	 */
 	async getClasses(school) {
 		const options = {
-			filter: 'description=*',
+			filter: filterForModifiedEntities(this.config.lastModifyTimestamp, `(description=*)`),
 			scope: 'sub',
-			attributes: ['dn', 'description', 'member'],
+			attributes: ['dn', 'description', 'member', 'modifyTimestamp'],
 		};
 		const searchString = `ou=groups,${school.ldapSchoolIdentifier}`;
 		const data = await this.app.service('ldap').searchCollection(this.config, searchString, options);
@@ -95,6 +99,7 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 			className: obj.description,
 			ldapDn: obj.dn,
 			uniqueMembers: obj.member,
+			modifyTimestamp: obj.modifyTimestamp,
 		}));
 	}
 }

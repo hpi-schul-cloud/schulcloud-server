@@ -78,9 +78,7 @@ class ActivationService {
 
 const activationHooks = {
 	before: {
-		all: [
-			authenticate('jwt'),
-		],
+		all: [authenticate('jwt')],
 		find: [],
 		get: [disallow()],
 		create: [disallow()],

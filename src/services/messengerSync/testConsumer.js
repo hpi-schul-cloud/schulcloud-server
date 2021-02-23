@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { Configuration } = require('@schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const amqp = require('amqplib/callback_api');
 
 amqp.connect(Configuration.get('RABBITMQ_URI'), (error0, connection) => {
@@ -19,11 +19,15 @@ amqp.connect(Configuration.get('RABBITMQ_URI'), (error0, connection) => {
 		// eslint-disable-next-line no-console
 		console.log(' [*] Waiting for messages in %s. To exit press CTRL+C');
 
-		channel.consume(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), (msg) => {
-			// eslint-disable-next-line no-console
-			console.log(' [x] Received %s', msg.content.toString());
-		}, {
-			noAck: true,
-		});
+		channel.consume(
+			Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'),
+			(msg) => {
+				// eslint-disable-next-line no-console
+				console.log(' [x] Received %s', msg.content.toString());
+			},
+			{
+				noAck: true,
+			}
+		);
 	});
 });

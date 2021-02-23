@@ -246,60 +246,62 @@ module.exports = {
 				responses: {
 					200: {
 						description: 'Returns an array of the directory objects',
-						example: [{
-							name: 'Lehrertest',
-							owner: '0000dcfbfb5c7a3f00bf21ab',
-							refOwnerModel: 'course',
-							_id: '5d0f65eed5aa885773d402c4',
-							updatedAt: '2019-05-23T11:43:42.206Z',
-							createdAt: '2019-05-23T11:43:42.206Z',
-							permissions: [
-								{
-									refId: '0000d231816abba584714c9e',
-									refPermModel: 'user',
-									delete: true,
-									create: true,
-									read: true,
-									write: true,
-								},
-								{
-									refId: '0000d186816abba584714c99',
-									refPermModel: 'role',
-									delete: false,
-									create: true,
-									read: true,
-									write: false,
-								},
-							],
-							isDirectory: true,
-						},
-						{
-							name: 'Lehrertest2',
-							owner: '0000dcfbfb5c7a3f00bf21ab',
-							refOwnerModel: 'course',
-							_id: '5d0f65eed5aa885773d402c3',
-							updatedAt: '2019-05-23T11:53:14.206Z',
-							createdAt: '2019-05-23T11:53:14.206Z',
-							permissions: [
-								{
-									refId: '0000d231816abba584714c9e',
-									refPermModel: 'user',
-									delete: true,
-									create: true,
-									read: true,
-									write: true,
-								},
-								{
-									refId: '0000d186816abba584714c99',
-									refPermModel: 'role',
-									delete: false,
-									create: true,
-									read: true,
-									write: false,
-								},
-							],
-							isDirectory: true,
-						}],
+						example: [
+							{
+								name: 'Lehrertest',
+								owner: '0000dcfbfb5c7a3f00bf21ab',
+								refOwnerModel: 'course',
+								_id: '5d0f65eed5aa885773d402c4',
+								updatedAt: '2019-05-23T11:43:42.206Z',
+								createdAt: '2019-05-23T11:43:42.206Z',
+								permissions: [
+									{
+										refId: '0000d231816abba584714c9e',
+										refPermModel: 'user',
+										delete: true,
+										create: true,
+										read: true,
+										write: true,
+									},
+									{
+										refId: '0000d186816abba584714c99',
+										refPermModel: 'role',
+										delete: false,
+										create: true,
+										read: true,
+										write: false,
+									},
+								],
+								isDirectory: true,
+							},
+							{
+								name: 'Lehrertest2',
+								owner: '0000dcfbfb5c7a3f00bf21ab',
+								refOwnerModel: 'course',
+								_id: '5d0f65eed5aa885773d402c3',
+								updatedAt: '2019-05-23T11:53:14.206Z',
+								createdAt: '2019-05-23T11:53:14.206Z',
+								permissions: [
+									{
+										refId: '0000d231816abba584714c9e',
+										refPermModel: 'user',
+										delete: true,
+										create: true,
+										read: true,
+										write: true,
+									},
+									{
+										refId: '0000d186816abba584714c99',
+										refPermModel: 'role',
+										delete: false,
+										create: true,
+										read: true,
+										write: false,
+									},
+								],
+								isDirectory: true,
+							},
+						],
 					},
 					403: {
 						description: 'File operation is forbidden due to missing permissions',
@@ -473,7 +475,8 @@ module.exports = {
 	},
 	signedUrlService: {
 		description: '',
-		summary: 'A service for generating signed urls, e.g. for uploading (action = putObject) and downloading files (action = getObject)',
+		summary:
+			'A service for generating signed urls, e.g. for uploading (action = putObject) and downloading files (action = getObject)',
 		operations: {
 			create: {
 				parameters: [
@@ -502,7 +505,8 @@ module.exports = {
 						description: 'Returns the data signed url and meta properties',
 						example: {
 							signedUrl: {
-								url: 'https://dev-storage.schul-cloud.org:9001/bucket-5f2987e020834114b8efd6f8/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
+								url:
+									'https://<url>:<port>/bucket-5f2987e020834114b8efd6f8/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
 								header: {
 									'Content-Type': 'image/gif',
 									'x-amz-meta-name': '24-1.gif',
@@ -542,7 +546,8 @@ module.exports = {
 						description: 'Returns the data with the signed url',
 						example: {
 							signedUrl: {
-								url: 'https://dev-storage.schul-cloud.org:9001/bucket-5f2987e020834114b8efd6f8/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
+								url:
+									'https://<url>:<port>/bucket-5f2987e020834114b8efd6f8/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
 							},
 						},
 					},
@@ -573,7 +578,8 @@ module.exports = {
 						description: 'Returns the data with the signed url',
 						example: {
 							signedUrl: {
-								url: 'https://dev-storage.schul-cloud.org:9001/bucket-5f2987e020834114b8efd6f8/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
+								url:
+									'https://<url>:<port>/bucket-5f2987e020834114b8efd6f8/1561200908775-24-1.gif?Content-Type=image%2Fgif&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=sc-devteam%2F20190622%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20190622T105509Z&X-Amz-Expires=60&X-Amz-Signature=b098d101dea55fc3a8fa1e9accf4c99807e96ab22a91f3ee162e86c850e6a164&X-Amz-SignedHeaders=host',
 							},
 						},
 					},
@@ -703,7 +709,8 @@ module.exports = {
 		operations: {
 			create: {
 				summary: 'Creating a new empty file',
-				description: 'This service lets you create an new empty file. Right now the following file types are supported: .pptx, .xlsx, .docx',
+				description:
+					'This service lets you create an new empty file. Right now the following file types are supported: .pptx, .xlsx, .docx',
 				parameters: [
 					{
 						description: 'Filename',
@@ -834,7 +841,8 @@ module.exports = {
 			},
 			find: {
 				description: '',
-				summary: 'Returns the permissions of a file filtered by owner model and permissions based on the role of the user',
+				summary:
+					'Returns the permissions of a file filtered by owner model and permissions based on the role of the user',
 				parameters: [
 					{
 						description: 'File ID to copy',

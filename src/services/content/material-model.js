@@ -23,6 +23,7 @@ const materialSchema = new Schema({
 	title: { type: String, required: true },
 	client: { type: String, required: true },
 	url: { type: String, required: true },
+	merlinReference: { type: String },
 	license: [{ type: String }],
 	description: { type: String },
 	contentType: { type: Number },

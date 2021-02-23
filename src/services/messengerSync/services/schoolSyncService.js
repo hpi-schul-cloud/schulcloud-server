@@ -1,8 +1,7 @@
-const {	BadRequest } = require('@feathersjs/errors');
 const { authenticate } = require('@feathersjs/authentication');
-const {
-	iff, isProvider, disallow,
-} = require('feathers-hooks-common');
+const { iff, isProvider, disallow } = require('feathers-hooks-common');
+
+const { BadRequest } = require('../../../errors');
 const { hasPermission, restrictToCurrentSchool } = require('../../../hooks');
 const { requestFullSchoolSync } = require('../producer');
 const { SCHOOL_FEATURES } = require('../../school/model');
@@ -41,30 +40,13 @@ const messengerSchoolSyncService = new MessengerSchoolSync({
 
 const messengerSchoolSyncHooks = {
 	before: {
-		all: [
-			authenticate('jwt'),
-		],
-		find: [
-			disallow(),
-		],
-		get: [
-			disallow(),
-		],
-		create: [
-			iff(isProvider('external'), [
-				hasPermission('MESSENGER_SYNC'),
-				restrictToCurrentSchool,
-			]),
-		],
-		update: [
-			disallow(),
-		],
-		patch: [
-			disallow(),
-		],
-		remove: [
-			disallow(),
-		],
+		all: [authenticate('jwt')],
+		find: [disallow()],
+		get: [disallow()],
+		create: [iff(isProvider('external'), [hasPermission('MESSENGER_SYNC'), restrictToCurrentSchool])],
+		update: [disallow()],
+		patch: [disallow()],
+		remove: [disallow()],
 	},
 	after: {
 		all: [],
