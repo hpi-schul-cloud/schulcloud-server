@@ -24,14 +24,12 @@ notifications:
       our Review-Guidelines https://docs.hpi-schul-cloud.org/display/SCDOK/Review-Guidelines
 
 groups:
-  server-core:
+  sc-admins:
     reviews:
       required: 1 # 1 approval from this group are required
-      request: 2 # 2 reviews requests will be sent at a time
-      request_order: shuffle # reviewers will be chosen in a random order
     reviewers:
       teams:
-        - server-core
+        - sc-admins
 
   devops:
     conditions:
@@ -41,6 +39,4 @@ groups:
         - devops
     reviews:
       required: 1 # number of approvals required from this group
-      request: 2 # request review from 2 members at a time
-      request_order: shuffle # reviewers will be chosen in a random order
       author_value: 1 # if author of pr is in team, no additional review required

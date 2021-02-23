@@ -1,15 +1,9 @@
 const helpdeskUC = require('./helpdesk.uc');
 
-class HelpdeskFacade {
-	setup(app) {
-		this.app = app;
-	}
+const facade = {
+	deleteUserData: helpdeskUC.deleteUserData,
+};
 
-	async deleteUserData() {
-		return helpdeskUC.deleteProblemsForUser();
-	}
-}
-
-module.exports = function setupProblemsFacade(app) {
-	app.registerFacade('/helpdesk/v2', new HelpdeskFacade());
+module.exports = function setupFacade(app) {
+	app.registerFacade('/helpdesk/v2', facade);
 };
