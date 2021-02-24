@@ -59,14 +59,16 @@ describe('fileStorageProvider.repo.integration.test', () => {
 
 			const fileStorageContent = await storageProvider.listObjectsV2({ Bucket: bucketName }).promise();
 
+			const newFileId = `expiring_${fileId}`;
 			expect(fileStorageContent.Contents).to.be.an('array').of.length(1);
-			expect(fileStorageContent.Contents[0].Key).to.eq(`expiring_${fileId}`);
+			expect(fileStorageContent.Contents[0].Key).to.eq(newFileId);
 
-			const modifiedFile = await storageProvider
-				.headObject({ Bucket: bucketName, Key: `expiring_${fileId}` })
-				.promise();
+			const modifiedFile = await storageProvider.headObject({ Bucket: bucketName, Key: newFileId }).promise();
 
 			expect(modifiedFile.Metadata.expires).to.eq('true');
+
+			await storageProvider.deleteObject({ Bucket: bucketName, Key: newFileId }).promise();
+			await storageProvider.deleteBucket({ Bucket: bucketName }).promise();
 		});
 	});
 });
