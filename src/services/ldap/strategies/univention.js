@@ -35,17 +35,6 @@ class UniventionLDAPStrategy extends AbstractLDAPStrategy {
 
 	/**
 	 * @public
-	 * @see AbstractLDAPStrategy#verifyConfig
-	 * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
-	 * (Array) roles = ['teacher', 'student', 'administrator']
-	 * @memberof GeneralLDAPStrategy
-	 */
-	verifyConfig(school) {
-		return this.getUsers(school);
-	}
-
-	/**
-	 * @public
 	 * @see AbstractLDAPStrategy#getUsers
 	 * @returns {Array} Array of Objects containing email, firstName, lastName, ldapDn, ldapUUID, ldapUID,
 	 * (Array) roles = ['teacher', 'student', 'administrator']

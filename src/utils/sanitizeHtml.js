@@ -4,7 +4,7 @@ const sanitizeHtml = require('sanitize-html');
 const maxDeep = 12;
 // enable html for all current editors
 const keys = ['content', 'text', 'comment', 'gradeComment', 'description'];
-const paths = ['lessons', 'news', 'newsModel', 'homework', 'submissions'];
+const paths = ['lessons', 'news', 'newsModel', 'homework', 'submissions', 'topics'];
 const saveKeys = ['password', 'secret'];
 const allowedTags = [
 	'h1',
@@ -30,6 +30,7 @@ const allowedTags = [
 	'hr',
 	'br',
 	'div',
+	'figure',
 	'table',
 	'thead',
 	'caption',
@@ -58,11 +59,24 @@ const allowedAttributes = {
 	video: [...MEDIA_ATTRIBUTES, 'autoplay', 'name', 'controls', 'controlslist'],
 	audio: [...MEDIA_ATTRIBUTES, 'controls', 'controlslist'],
 	span: ['style'],
+	table: ['style'],
+	tr: ['style'],
+	td: ['style', 'colspan', 'rowspan'],
+	th: ['style'],
+	figure: ['style'],
 };
 
-const COLOR_REGEX = [/^#(0x)?[0-9a-f]+$/i, /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/];
+const COLOR_REGEX = [
+	/^#(0x)?[0-9a-f]+$/i,
+	/^hsl\s*\(\s*\d{1,3}%?\s*,\s*\d{1,3}%?\s*,\s*\d{1,3}%?\s*\)$/i,
+	/^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/,
+];
+
 // Match any number with px, em, or %
 const SIZE_REGEX = [/^\d+(?:px|em|%)$/];
+const BORDER_REGEX = [
+	/^\d+(?:px|em|%) none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset hsl\s*\(\s*\d{1,3}%?\s*,\s*\d{1,3}%?\s*,\s*\d{1,3}%?\s*\)$/,
+];
 
 const htmlTrueOptions = {
 	allowedTags,
@@ -74,14 +88,43 @@ const htmlTrueOptions = {
 	},
 	allowedStyles: {
 		'*': {
-			// Match HEX and RGB
+			// Match HEX and RGB and HSL
 			color: COLOR_REGEX,
 			'background-color': COLOR_REGEX,
-			'text-align': [/^left$/, /^right$/, /^center$/],
+			'text-align': [/^start$/, /^end$/, /^left$/, /^right$/, /^center$/, /^justify$/, /^match-parent$/],
+			'vertical-align': [
+				/^baseline$/,
+				/^sub$/,
+				/^super$/,
+				/^text-top$/,
+				/^text-bottom$/,
+				/^middle$/,
+				/^top$/,
+				/^bottom$/,
+			],
 			'font-size': SIZE_REGEX,
 			height: SIZE_REGEX,
 			width: SIZE_REGEX,
+			'min-width': SIZE_REGEX,
+			'max-width': SIZE_REGEX,
+			'min-height': SIZE_REGEX,
+			'max-height': SIZE_REGEX,
 			'font-style': [/^\w+$/],
+			border: BORDER_REGEX,
+			'border-top': BORDER_REGEX,
+			'border-bottom': BORDER_REGEX,
+			'border-left': BORDER_REGEX,
+			'border-right': BORDER_REGEX,
+			padding: SIZE_REGEX,
+			'padding-top': SIZE_REGEX,
+			'padding-bottom': SIZE_REGEX,
+			'padding-left': SIZE_REGEX,
+			'padding-right': SIZE_REGEX,
+			margin: SIZE_REGEX,
+			'margin-top': SIZE_REGEX,
+			'margin-bottom': SIZE_REGEX,
+			'margin-left': SIZE_REGEX,
+			'margin-right': SIZE_REGEX,
 		},
 	},
 };
@@ -110,7 +153,7 @@ const normalize = (data, isHTML = false) => {
  * sanitizes data
  * https://www.npmjs.com/package/sanitize-html
  * @param {*} data
- * @param {*} param
+ * @param isHTML
  */
 const sanitize = (data, isHTML = false) =>
 	sanitizeHtml(normalize(data, isHTML), isHTML ? htmlTrueOptions : htmlFalseOptions);
