@@ -152,7 +152,7 @@ class AdminUsers {
 	async create(_data, _params) {
 		const currentUserId = _params.account.userId.toString();
 		const { schoolId } = await getCurrentUserInfo(currentUserId);
-		await this.checkExternal(schoolId);
+		await this.checkIfExternallyManaged(schoolId);
 		const { email } = _data;
 		await this.checkMail(email);
 		return this.app.service('usersModel').create({
@@ -170,9 +170,11 @@ class AdminUsers {
 	async patch(_id, _data, _params) {
 		if (!_id) throw new BadRequest('id is required');
 
-		const currentUserId = _params.account.userId.toString();
-		const { schoolId } = await getCurrentUserInfo(currentUserId);
-		await this.checkExternal(schoolId);
+		const currentUser = await getCurrentUserInfo(_params.account.userId.toString());
+		await this.checkIfExternallyManaged(currentUser.schoolId);
+
+		const userToPatch = await getCurrentUserInfo(_id);
+		await this.allowOnlyInternalChanges(currentUser, userToPatch, 'edit');
 
 		const params = await this.prepareParams(_id, _params);
 		const { email } = _data;
@@ -193,7 +195,7 @@ class AdminUsers {
 	 * he user itself should get a flag to define if it is from a external system
 	 * @param {*} schoolId
 	 */
-	async checkExternal(schoolId) {
+	async checkIfExternallyManaged(schoolId) {
 		const { isExternal } = await this.app.service('schools').get(schoolId);
 		if (isExternal) {
 			throw new Forbidden('Creating new students or teachers is only possible in the source system.');
@@ -284,20 +286,28 @@ class AdminUsers {
 
 		if (id) {
 			const userToRemove = await getCurrentUserInfo(id);
-			if (!equalIds(currentUser.schoolId, userToRemove.schoolId)) {
-				throw new Forbidden('You cannot remove users from other schools.');
-			}
+			await this.allowOnlyInternalChanges(currentUser, userToRemove, 'remove');
 			await this.app.service('accountModel').remove(null, { query: { userId: id } });
 			return this.app.service('usersModel').remove(id);
 		}
 
 		const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
-		if (usersIds.some((user) => !equalIds(currentUser.schoolId, user.schoolId))) {
-			throw new Forbidden('You cannot remove users from other schools.');
-		}
+		await this.allowOnlyInternalChanges(currentUser, usersIds, 'remove');
 
 		await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
 		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
+	}
+
+	async allowOnlyInternalChanges(currentUser, usersToModify, type) {
+		if (Array.isArray(usersToModify)) {
+			if (usersToModify.some((user) => !equalIds(user.schoolId, currentUser.schoolId))) {
+				throw new Forbidden(`You cannot ${type} users from other schools.`);
+			}
+		}
+
+		if (!equalIds(currentUser.schoolId, usersToModify.schoolId)) {
+			throw new Forbidden(`You cannot ${type} users from other schools.`);
+		}
 	}
 
 	async setup(app) {
