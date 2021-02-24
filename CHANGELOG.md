@@ -18,6 +18,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 
 - SC-8599 - added helparea contact dropdown and send value
+- SC-7944 - use persistent ids for Lern-Store content items
 - OPS-1508 - added limits for cpu and ram to the docker compose files
 - SC-8500 - refactoring in error handling
 - SC-7021 - automatic deletion documents in the trashbins collection after 7 days.

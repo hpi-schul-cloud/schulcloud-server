@@ -38,7 +38,7 @@
 		"debug-ts:container": "nodemon --config .nodemon.json -x node --inspect=0.0.0.0:5959 -r ts-node/register src/",
 		"coverage": "cross-env NODE_ENV=test nyc npm run mocha",
 		"coverage-codecov": "cross-env NODE_ENV=test nyc report --reporter=text-lcov | codecov --pipe",
-		"mocha": "cross-env NODE_ENV=test ts-mocha --exit",
+		"mocha": "cross-env NODE_ENV=test ts-mocha --exit --timeout 15000",
 		"mocha-watch": "cross-env NODE_ENV=test ts-mocha",
 		"mocha-inspect": "cross-env NODE_ENV=test ts-mocha --inspect --no-timeout --exit",
 		"migration": "migrate --config ./config/migrate.js",
