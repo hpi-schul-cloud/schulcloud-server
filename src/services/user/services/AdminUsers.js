@@ -169,6 +169,11 @@ class AdminUsers {
 
 	async patch(_id, _data, _params) {
 		if (!_id) throw new BadRequest('id is required');
+
+		const currentUserId = _params.account.userId.toString();
+		const { schoolId } = await getCurrentUserInfo(currentUserId);
+		await this.checkExternal(schoolId);
+
 		const params = await this.prepareParams(_id, _params);
 		const { email } = _data;
 		await this.checkMail(email, _id);
