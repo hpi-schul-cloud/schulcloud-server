@@ -20,13 +20,23 @@ const facadeStubs = {
 };
 
 describe('deletedUserData.uc.unit', () => {
-	beforeEach(() => {
-		sinon.stub(fileStorageProviderRepo, 'moveFilesToTrash').returns(Promise.resolve(true));
+	const previousFacades = {};
 
-		// eslint-disable-next-line guard-for-in
+	before(() => {
 		for (const [key, facade] of Object.entries(facadeStubs)) {
+			previousFacades[key] = facadeLocator.facade(key);
 			facadeLocator.registerFacade(key, facade);
 		}
+	});
+
+	after(() => {
+		for (const [key, facade] of Object.entries(previousFacades)) {
+			facadeLocator.registerFacade(key, facade);
+		}
+	});
+
+	beforeEach(() => {
+		sinon.stub(fileStorageProviderRepo, 'moveFilesToTrash').returns(Promise.resolve(true));
 	});
 
 	afterEach(sinon.restore);
