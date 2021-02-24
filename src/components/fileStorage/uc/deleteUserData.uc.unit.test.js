@@ -2,15 +2,31 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 const { ObjectId } = require('mongoose').Types;
 
+const { facadeLocator } = require('../../../utils/facadeLocator');
+
 const { removePermissionsThatUserCanAccess, removePersonalFiles } = require('./deleteUserData.uc').private;
 
 const fileRepo = require('../repo/files.repo');
 const fileStorageProviderRepo = require('../repo/fileStorageProvider.repo');
 const { GeneralError } = require('../../../errors');
 
+const facadeStubs = {
+	'/users/v2': {
+		getSchoolIdOfUser: sinon.stub().returns(Promise.resolve(new ObjectId())),
+	},
+	'/school/v2': {
+		getSchool: sinon.stub().returns(Promise.resolve(new ObjectId())),
+	},
+};
+
 describe('deletedUserData.uc.unit', () => {
 	beforeEach(() => {
 		sinon.stub(fileStorageProviderRepo, 'moveFilesToTrash').returns(Promise.resolve(true));
+
+		// eslint-disable-next-line guard-for-in
+		for (const [key, facade] of Object.entries(facadeStubs)) {
+			facadeLocator.registerFacade(key, facade);
+		}
 	});
 
 	afterEach(sinon.restore);
