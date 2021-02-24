@@ -73,15 +73,17 @@ const createUserTrashbin = async (id, data) => {
 	return trashbinRepo.createUserTrashbin(id, data);
 };
 
-const replaceUserWithTombstone = async (id) => {
+const replaceUserWithTombstone = async (user) => {
+	const { _id, schoolId } = user;
 	const uid = ObjectId();
-	await userRepo.replaceUserWithTombstone(id, {
+	await userRepo.replaceUserWithTombstone(_id, {
 		firstName: 'DELETED',
 		lastName: 'USER',
 		email: `${uid}@deleted`,
 		deletedAt: new Date(),
+		schoolId,
 	});
-	await accountRepo.deleteAccountForUserId(id);
+	await accountRepo.deleteAccountForUserId(_id);
 	return { success: true };
 };
 
@@ -149,7 +151,7 @@ const deleteUser = async (id, { user: loggedinUser }) => {
 
 	await createUserTrashbin(id, userAccountData);
 
-	await replaceUserWithTombstone(id);
+	await replaceUserWithTombstone(user);
 	try {
 		const registrationPinFacade = facadeLocator.facade('/registrationPin/v2');
 		await registrationPinFacade.deleteRegistrationPinsByEmail(user.email);

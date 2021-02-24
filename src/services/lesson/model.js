@@ -51,6 +51,9 @@ lessonSchema.index({ courseGroupId: 1 });
 
 enableAuditLog(lessonSchema);
 
-const lessonModel = mongoose.model('lesson', lessonSchema);
+const LessonModel = mongoose.model('lesson', lessonSchema);
 
-module.exports = lessonModel;
+module.exports = {
+	LessonModel,
+	lessonSchema,
+};

@@ -1,6 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
-const globalHooks = require('../../../hooks');
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const globalHooks = require('../../../hooks');
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 
@@ -61,6 +61,7 @@ Akzeptanzkriterien: ${data.acceptanceCriteria}
 		text = `
 ${text}
 User meldet folgendes:
+Problembereich: ${data.problemArea}
 Problem Kurzbeschreibung: ${data.subject}
 Problembeschreibung: ${data.problemDescription}
 `;

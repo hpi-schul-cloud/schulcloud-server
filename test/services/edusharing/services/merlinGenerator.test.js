@@ -23,6 +23,10 @@ describe('Merlin Token Generator', () => {
 		await server.close();
 	});
 
+	afterEach(async () => {
+		sinon.verifyAndRestore();
+	});
+
 	it('registered the service', async () => {
 		assert.ok(MerlinTokenGeneratorService);
 	});
@@ -40,7 +44,6 @@ describe('Merlin Token Generator', () => {
 			const post = sinon.stub(request, 'post').returns(mockResponse);
 			const result = await post(MerlinTokenGeneratorService.find({ query: { merlinReference: 'FWU-05510597' } }));
 			chai.expect(result).to.be.equal(mockResponse);
-			request.post.restore();
 		} catch (err) {
 			throw new Error(err);
 		}
@@ -54,7 +57,6 @@ describe('Merlin Token Generator', () => {
 			params.query = { merlinReference: 'foo' };
 			const result = await post(MerlinTokenGeneratorService.find(params));
 			chai.expect(result).to.be.equal(mockResponse);
-			request.post.restore();
 		} catch (err) {
 			throw new Error(err);
 		}
@@ -68,7 +70,6 @@ describe('Merlin Token Generator', () => {
 			sinon.stub(request, 'post').returns(mockResponse);
 			const result = await MerlinTokenGeneratorService.find(params);
 			chai.expect(result).to.be.equal(mockResponse);
-			request.post.restore();
 		} catch (err) {
 			throw new Error(err);
 		}

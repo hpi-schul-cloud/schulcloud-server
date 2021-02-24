@@ -11,19 +11,75 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-8341 - add tombstone school to tombstone user
 - SC-8408 - added delete events by scope Id route
 - SC-7937 - Allow adding multiple materials to lesson
 
 ### Changed
 
+- SC-8599 - added helparea contact dropdown and send value
+- SC-7944 - use persistent ids for Lern-Store content items
 - OPS-1508 - added limits for cpu and ram to the docker compose files
 - SC-8500 - refactoring in error handling
+- SC-7021 - automatic deletion documents in the trashbins collection after 7 days.
+
+## [26.0.0]
 
 ### Fixed
 
+- SC-6679 fix text editor table issue
 - SC-8534 fix registration link generation
 
-## [25.6.0] - 2020-02-09
+## [25.6.8] - 2021-02-19
+
+### Changed
+
+- SC-8477 LDAP-Sync: Speed up class sync by holding all the school's users in map while creating/populating classes
+- SC-8477 LDAP-Sync: Speed up user sync by grouping users into chunks and loading the chunks from DB instead of individual users
+
+## [25.6.7] - 2021-02-18
+
+### Security
+
+- SC-8655 - prevent changes to immutable user attributes
+
+## [25.6.6] - 2021-02-18
+
+### Fixed
+
+- SC-8657 - Recreate shared links for homework
+
+## [25.6.5] - 2021-02-17
+
+### Fixed
+
+- SC-8634 - Recreate shared links for homework
+
+## [25.6.4] - 2021-02-17
+
+### Changed
+
+- Reverted Changes for SC-8410
+
+## [25.6.3] - 2021-02-15
+
+### Security
+
+- VOR-3 - Enable and replace old file links.
+
+## [25.6.2] - 2021-02-11
+
+### Changed
+
+- VOR-2 - Adjusted business rules for adding team members from external school.
+
+## [25.6.1] - 2021-02-11
+
+### Fixed
+
+- VOR-1 - Fix passwordRecovery id validation.
+
+## [25.6.0] - 2021-02-09
 
 ### Fixed
 
@@ -41,6 +97,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-8541 - restrict class modifing requests to the teachers, who are inside these classes
 - SC-8380 removed reqlib, replaced by normal require to keep referenced types known
 - SC-8213 error handling concept
 - SC-4576 - sanitize bbb room and member names
@@ -164,6 +221,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7763 - adds searchable feature flag for lernstore.
 - SC-8020 - adds collections filter to edu-sharing service
 - SC-8260 - new team indexes and migration to add this
+
+### Fixed
+
+- SC-8230 - fix deletion of teachers via new route
 
 ### Removed
 

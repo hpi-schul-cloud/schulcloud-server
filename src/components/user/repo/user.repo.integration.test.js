@@ -52,6 +52,7 @@ describe('user repository', () => {
 				firstName: 'DELETED',
 				lastName: 'USER',
 				email: `${Date.now()}@deleted`,
+				schoolId: user.schoolId,
 			};
 
 			const result = await userRepo.replaceUserWithTombstone(user._id, replaceData);
@@ -61,7 +62,7 @@ describe('user repository', () => {
 			expect(result.lastName).to.equal(replaceData.lastName);
 			expect(result.email).to.equal(replaceData.email);
 			expect(result).to.haveOwnProperty('deletedAt');
-			expect(result).to.not.haveOwnProperty('schoolId');
+			expect(result.schoolId.toString()).to.equal(user.schoolId.toString());
 			expect(result).to.not.haveOwnProperty('firstLogin');
 			expect(result.roles.length).to.equal(0);
 		});
