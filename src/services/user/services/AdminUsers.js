@@ -170,13 +170,9 @@ class AdminUsers {
 	async patch(_id, _data, _params) {
 		if (!_id) throw new BadRequest('id is required');
 
-		const currentUser = await getCurrentUserInfo(_params.account.userId.toString());
-		await this.checkIfExternallyManaged(currentUser.schoolId);
-
-		const userToPatch = await getCurrentUserInfo(_id);
-		await this.allowOnlyInternalChanges(currentUser, userToPatch, 'edit');
-
 		const params = await this.prepareParams(_id, _params);
+		await this.checkIfExternallyManaged(params.query.schoolId);
+
 		const { email } = _data;
 		await this.checkMail(email, _id);
 		await this.updateAccount(email, _id);
@@ -286,19 +282,19 @@ class AdminUsers {
 
 		if (id) {
 			const userToRemove = await getCurrentUserInfo(id);
-			await this.allowOnlyInternalChanges(currentUser, userToRemove, 'remove');
+			await this.restrictToSameSchool(currentUser, userToRemove, 'remove');
 			await this.app.service('accountModel').remove(null, { query: { userId: id } });
 			return this.app.service('usersModel').remove(id);
 		}
 
 		const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
-		await this.allowOnlyInternalChanges(currentUser, usersIds, 'remove');
+		await this.restrictToSameSchool(currentUser, usersIds, 'remove');
 
 		await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
 		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
 	}
 
-	async allowOnlyInternalChanges(currentUser, usersToModify, type) {
+	async restrictToSameSchool(currentUser, usersToModify, type) {
 		if (Array.isArray(usersToModify)) {
 			if (usersToModify.some((user) => !equalIds(user.schoolId, currentUser.schoolId))) {
 				throw new Forbidden(`You cannot ${type} users from other schools.`);
