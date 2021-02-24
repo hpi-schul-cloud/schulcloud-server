@@ -119,10 +119,12 @@ buildandpush
 
 # trigger sc-app-ci to deploy release to staging
 # if [ "$TRAVIS_BRANCH" = "release" ] ...
+# if [ "$TRAVIS_BRANCH" = "${GIT_FLOW_BRANCH}" ] && [ "${{ secrets.CI_SC_APP_STAGING_BRANCH }" = "$(jq -r '.version' package.json )" ]
+echo "deploy release to staging $TRAVIS_BRANCH"
+echo "${GIT_FLOW_BRANCH}"
+echo "${{ secrets.CI_SC_APP_STAGING_BRANCH }"
+echo "$(jq -r '.version' package.json )"
 
-if [ "$TRAVIS_BRANCH" = "${GIT_FLOW_BRANCH}" ] && [ "${{ secrets.CI_SC_APP_STAGING_BRANCH }" = "$(jq -r '.version' package.json )" ]
-then
-	curl -XPOST -u "${{ secrets.ES_USER }}:${{ secrets.ES_PASSWORD }}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/hpi-schul-cloud/sc-app-ci/dispatches --data '{"event_type": "build_application", "branch-prefix": "${GIT_FLOW_BRANCH}", "sc-app": "sc-server", "version-qualifier": "${{ secrets.CI_SC_APP_STAGING_BRANCH }}"}'
-fi
+curl -XPOST -u "${{ secrets.ES_USER }}:${{ secrets.ES_PASSWORD }}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/hpi-schul-cloud/sc-app-ci/dispatches --data '{"event_type": "build_application", "branch-prefix": "${GIT_FLOW_BRANCH}", "sc-app": "sc-server", "version-qualifier": "${{ secrets.CI_SC_APP_STAGING_BRANCH }}"}'
 
 exit 0
