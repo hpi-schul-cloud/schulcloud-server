@@ -55,7 +55,9 @@ describe('fileStorageProvider.repo.integration.test', () => {
 				})
 				.promise();
 
-			await fileStorageProviderRepo.moveFilesToTrash(storageProviderInfo, bucketName, [fileId]);
+			const result = await fileStorageProviderRepo.moveFilesToTrash(storageProviderInfo, bucketName, [fileId]);
+
+			expect(result).to.eq(true);
 
 			const fileStorageContent = await storageProvider.listObjectsV2({ Bucket: bucketName }).promise();
 

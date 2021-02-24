@@ -10,8 +10,7 @@ const { GeneralError } = require('../../../errors');
 
 describe('deletedUserData.uc.unit', () => {
 	beforeEach(() => {
-		sinon.stub(fileStorageProviderRepo, 'deleteObjects').returns({ promise: () => Promise.resolve(true) });
-		sinon.stub(fileStorageProviderRepo, 'copyObject').returns({ promise: () => Promise.resolve(true) });
+		sinon.stub(fileStorageProviderRepo, 'moveFilesToTrash').returns(Promise.resolve(true));
 	});
 
 	afterEach(sinon.restore);

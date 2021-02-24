@@ -30,16 +30,6 @@ const getStorageProviderMetaInformation = async (storageProviderId) => {
 const createStorageProviderInstance = (storageProviderMetaInformation) =>
 	new aws.S3(getConfig(storageProviderMetaInformation));
 
-const deleteObjects = (storageProvider, params) => {
-	const storageProviderInstance = createStorageProviderInstance(storageProvider);
-	return storageProviderInstance.deleteObjects(params).promise();
-};
-
-const copyObject = (storageProvider, params) => {
-	const storageProviderInstance = createStorageProviderInstance(storageProvider);
-	return storageProviderInstance.copyObject(params).promise();
-};
-
 const createCopyParams = (bucket, fileId) => {
 	return {
 		Bucket: bucket,
@@ -67,17 +57,20 @@ const moveFilesToTrash = async (storageProvider, bucket, fileIds) => {
 	const parallelRequests = 100; // we can experiment with inc-/decreasing this. Max 1000 for the delete request
 	for (let processedFiles = 0; processedFiles < fileIds.length; processedFiles += parallelRequests) {
 		const fileIdSubset = fileIds.slice(processedFiles, processedFiles + parallelRequests);
+
+		const storageProviderInstance = createStorageProviderInstance(storageProvider);
+
 		// eslint-disable-next-line no-await-in-loop
 		await Promise.all(
 			fileIdSubset.map((fileId) => {
 				const copyParams = createCopyParams(bucket, fileId);
-				return copyObject(storageProvider, copyParams);
+				return storageProviderInstance.copyObject(copyParams).promise();
 			})
 		);
 
 		const deleteParams = createDeleteParams(bucket, fileIdSubset);
 		// eslint-disable-next-line no-await-in-loop
-		await deleteObjects(storageProvider, deleteParams);
+		await storageProviderInstance.deleteObjects(deleteParams).promise();
 	}
 	return true;
 };

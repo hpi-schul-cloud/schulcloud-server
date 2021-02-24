@@ -1,4 +1,4 @@
-// const userUc = require('./users.uc');
+const userUc = require('./users.uc');
 const userRolesUc = require('./userRoles.uc');
 
 class UserFacade {
@@ -7,7 +7,7 @@ class UserFacade {
 	}
 
 	async getSchoolIdOfUser(userId) {
-		return userRolesUc.getSchoolIdOfUser(userId);
+		return userUc.getSchoolIdOfUser(userId);
 	}
 
 	// async deleteUser(id, roleName, params) {
