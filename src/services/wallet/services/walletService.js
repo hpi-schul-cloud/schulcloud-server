@@ -9,10 +9,36 @@ class WalletService {
 		this.app = app;
 	}
 
-	async get(id, params) {
-		const wallets = this.app.service('/walletModel').find({
+	async get(id) {
+		return this.app.service('walletModel').get(id);
+	}
+
+	async patch(id, data) {
+		return this.app.service('walletModel').patch(id, data);
+	}
+
+	async remove(id) {
+		const wallet = await this.app.service('walletModel').remove(id);
+
+		const userWallets = await this.app.service('walletModel').find({
 			query: {
-				userId: id,
+				userId: wallet.userId,
+			},
+		});
+
+		if (!userWallets || userWallets.total === 0) {
+			await this.app.service('users').patch(wallet.userId, {
+				walletsConfigured: false,
+			});
+		}
+
+		return wallet;
+	}
+
+	async find(params) {
+		const wallets = this.app.service('walletModel').find({
+			query: {
+				...params.query,
 			},
 		});
 
@@ -146,14 +172,14 @@ class WalletService {
 			},
 		});
 
-		const { templateID } = data;
+		const { templateID, name, preferences } = data;
 
 		const matchingRequest = requests.data.result.find((request) => request.relationshipTemplateId === templateID);
 
 		if (matchingRequest) {
 			const requestID = matchingRequest.id;
 
-			const relationship = await axios.put(
+			const acceptRes = await axios.put(
 				`https://daad.idas.solutions/api/v1/RelationshipRequests/${requestID}/Accept`,
 				{
 					content: {},
@@ -165,24 +191,37 @@ class WalletService {
 				}
 			);
 
-			logger.info(relationship.data.result.relationshipId);
+			const { relationshipId } = acceptRes.data.result;
+
+			logger.info(relationshipId);
 
 			const { userId } = params.account;
 
 			await this.app.service('users').patch(userId, {
-				relationshipId: relationship.data.result.relationshipId,
+				walletsConfigured: true,
 			});
 
-			// TODO: Name of Wallet has to be dynamic based RelationshipRequest
-			/*
-			await this.app.service('walletModel').create({
+			const relationship = await axios.get(`https://daad.idas.solutions/api/v1/Relationships/${relationshipId}`, {
+				headers: {
+					'X-API-KEY': apiToken,
+				},
+			});
+
+			logger.info(relationship.data.result);
+
+			const identityId = relationship.data.result.from;
+
+			const wallet = await this.app.service('walletModel').create({
 				userId,
-				name: 'DAAD',
-				relationshipId: relationship.data.result.relationshipId,
+				name,
+				relationshipId,
+				identityId,
+				preferences,
 			});
-			*/
 
-			return relationship.data.result.relationshipId;
+			logger.info(wallet);
+
+			return wallet;
 		}
 
 		return null;

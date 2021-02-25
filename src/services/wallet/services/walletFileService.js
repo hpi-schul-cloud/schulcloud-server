@@ -1,16 +1,15 @@
 const axios = require('axios');
 const FormData = require('form-data');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const logger = require('../../../logger');
 
-const { Configuration } = require('@hpi-schul-cloud/commons');
 class WalletFileService {
 	setup(app) {
 		this.app = app;
 	}
 
 	async create(data, params) {
-
-		if(!Configuration.has('IDAS_API_KEY_SECRET')){
+		if (!Configuration.has('IDAS_API_KEY_SECRET')) {
 			logger.error('IDAS API key not set');
 			return 'IDAS API key not set';
 		}
@@ -43,20 +42,13 @@ class WalletFileService {
 
 			const fileID = file.data.result.id;
 
-			const userId = data.userId || params.account.userId;
-			const user = await this.app.service('users').get(userId);
+			const { walletId } = data;
 
-			const { relationshipId } = user;
-			logger.info(`RelationshipID: ${relationshipId}`);
-			const relationship = await axios.get(`https://daad.idas.solutions/api/v1/Relationships/${relationshipId}`, {
-				headers: {
-					'X-API-KEY': apiToken,
-				},
-			});
+			const wallet = await this.app.service('walletModel').get(walletId);
 
-			logger.info(relationship.data.result);
+			logger.info(wallet);
 
-			const recipientID = relationship.data.result.from;
+			const recipientID = wallet.identityId;
 
 			const message = await axios.post(
 				'https://daad.idas.solutions/api/v1/Messages',

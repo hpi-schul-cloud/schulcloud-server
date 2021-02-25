@@ -43,7 +43,7 @@ const userSchema = new Schema(
 
 		birthday: { type: Date },
 
-		relationshipId: { type: String },
+		walletsConfigured: { type: Boolean },
 
 		importHash: { type: String },
 		// inviteHash:{type:String},

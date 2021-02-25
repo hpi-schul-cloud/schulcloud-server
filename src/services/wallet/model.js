@@ -19,6 +19,28 @@ const walletSchema = new Schema(
 			type: String,
 			required: true,
 		},
+		identityId: {
+			type: String,
+			required: true,
+		},
+		preferences: {
+			manual: {
+				type: Boolean,
+				default: true,
+			},
+			portfolio: {
+				type: Boolean,
+				default: false,
+			},
+			certificates: {
+				type: Boolean,
+				default: false,
+			},
+			analytics: {
+				type: Boolean,
+				default: false,
+			},
+		},
 	},
 	{
 		timestamps: true,

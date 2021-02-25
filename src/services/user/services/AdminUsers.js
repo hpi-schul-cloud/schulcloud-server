@@ -76,7 +76,7 @@ class AdminUsers {
 					'importHash',
 					'birthday',
 					'preferences.registrationMailSend',
-					'relationshipId',
+					'walletsConfigured',
 				],
 				skip: clientQuery.$skip || clientQuery.skip,
 				limit: clientQuery.$limit || clientQuery.limit,
