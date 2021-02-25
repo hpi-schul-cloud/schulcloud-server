@@ -62,7 +62,7 @@ const allowedAttributes = {
 	table: ['style'],
 	tr: ['style'],
 	td: ['style', 'colspan', 'rowspan'],
-	th: ['style'],
+	th: ['style', 'colspan', 'rowspan'],
 	figure: ['style'],
 };
 
@@ -90,6 +90,31 @@ const htmlTrueOptions = {
 		'*': {
 			// Match HEX and RGB and HSL
 			color: COLOR_REGEX,
+			display: [
+				/^inline$/,
+				/^block$/,
+				/^contents$/,
+				/^flex$/,
+				/^grid$/,
+				/^inline-block$/,
+				/^inline-flex$/,
+				/^inline-grid$/,
+				/^inline-table$/,
+				/^list-item$/,
+				/^run-in$/,
+				/^table$/,
+				/^table-caption$/,
+				/^table-column-group$/,
+				/^table-header-group$/,
+				/^table-footer-group$/,
+				/^table-row-group$/,
+				/^table-cell$/,
+				/^table-column$/,
+				/^table-row$/,
+				/^none$/,
+				/^initial$/,
+				/^inherit$/,
+			],
 			'background-color': COLOR_REGEX,
 			'text-align': [/^start$/, /^end$/, /^left$/, /^right$/, /^center$/, /^justify$/, /^match-parent$/],
 			'vertical-align': [
