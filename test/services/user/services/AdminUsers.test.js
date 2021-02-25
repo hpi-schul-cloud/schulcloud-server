@@ -699,7 +699,7 @@ describe('AdminUsersService', () => {
 			...params.query,
 			_ids: [student._id],
 		};
-		const deletedStudent = await adminStudentsService.remove(student._id, params);
+		const deletedStudent = await adminStudentsService.remove(null, params);
 		expect(deletedStudent).to.not.be.undefined;
 		expect(deletedStudent.firstName).to.equals('testDeleteStudent');
 	});
@@ -803,7 +803,7 @@ describe('AdminUsersService', () => {
 		expect(deletedAccount).to.not.be.undefined;
 		expect(deletedAccount.username).to.equals(studentAccount.username);
 
-		const deletedStudent = await adminStudentsService.remove(student._id, params);
+		const deletedStudent = await adminStudentsService.remove(null, params);
 		expect(deletedStudent).to.not.be.undefined;
 		expect(deletedStudent.firstName).to.equals('testDeleteStudent');
 
@@ -868,7 +868,7 @@ describe('AdminUsersService', () => {
 			_ids: [student._id],
 		};
 
-		const deletedStudent = await adminStudentsService.remove(student, params);
+		const deletedStudent = await adminStudentsService.remove(null, params);
 		expect(deletedStudent).to.not.be.undefined;
 		expect(deletedStudent.firstName).to.equals('validDeleteStudent');
 
@@ -1647,7 +1647,7 @@ describe('AdminTeachersService', () => {
 			...params.query,
 			_ids: [teacher._id],
 		};
-		const deletedTeacher = await adminTeachersService.remove(teacher._id, params);
+		const deletedTeacher = await adminTeachersService.remove(null, params);
 		expect(deletedTeacher).to.not.be.undefined;
 		expect(deletedTeacher.firstName).to.equals('testDeleteTeacher');
 	});
@@ -1751,7 +1751,7 @@ describe('AdminTeachersService', () => {
 		expect(deletedAccount).to.not.be.undefined;
 		expect(deletedAccount.username).to.equals(teacherAccount.username);
 
-		const deletedTeacher = await adminTeachersService.remove(teacher._id, params);
+		const deletedTeacher = await adminTeachersService.remove(null, params);
 		expect(deletedTeacher).to.not.be.undefined;
 		expect(deletedTeacher.firstName).to.equals('testDeleteTeacher');
 
@@ -1816,7 +1816,7 @@ describe('AdminTeachersService', () => {
 			_ids: [teacher._id],
 		};
 
-		const deletedTeacher = await adminTeachersService.remove(teacher._id, params);
+		const deletedTeacher = await adminTeachersService.remove(null, params);
 		expect(deletedTeacher).to.not.be.undefined;
 		expect(deletedTeacher.firstName).to.equals('validDeleteTeacher');
 

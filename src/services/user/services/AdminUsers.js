@@ -282,28 +282,20 @@ class AdminUsers {
 
 		if (id) {
 			const userToRemove = await getCurrentUserInfo(id);
-			await this.restrictToSameSchool(currentUser, userToRemove, 'remove');
+			if (!equalIds(currentUser.schoolId, userToRemove.schoolId)) {
+				throw new Forbidden('You cannot remove users from other schools.');
+			}
 			await this.app.service('accountModel').remove(null, { query: { userId: id } });
 			return this.app.service('usersModel').remove(id);
 		}
 
 		const usersIds = await Promise.all(_ids.map((userId) => getCurrentUserInfo(userId)));
-		await this.restrictToSameSchool(currentUser, usersIds, 'remove');
+		if (usersIds.some((user) => !equalIds(currentUser.schoolId, user.schoolId))) {
+			throw new Forbidden('You cannot remove users from other schools.');
+		}
 
 		await this.app.service('accountModel').remove(null, { query: { userId: { $in: _ids } } });
 		return this.app.service('usersModel').remove(null, { query: { _id: { $in: _ids } } });
-	}
-
-	async restrictToSameSchool(currentUser, usersToModify, type) {
-		if (Array.isArray(usersToModify)) {
-			if (usersToModify.some((user) => !equalIds(user.schoolId, currentUser.schoolId))) {
-				throw new Forbidden(`You cannot ${type} users from other schools.`);
-			}
-		}
-
-		if (!equalIds(currentUser.schoolId, usersToModify.schoolId)) {
-			throw new Forbidden(`You cannot ${type} users from other schools.`);
-		}
 	}
 
 	async setup(app) {
