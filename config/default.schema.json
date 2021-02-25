@@ -290,6 +290,11 @@
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
 			"pattern": ".{16}.*"
 		},
+		"REQUEST_LIMIT_STORAGE_PROVIDER": {
+			"type": "integer",
+			"default": 100,
+			"description": "Number of objects that can be modified in one request to the storage provider. Must not exceed 1000."
+		},
 		"STORAGE_SIGNED_URL_EXPIRE": {
 			"type": "integer",
 			"default": 60,

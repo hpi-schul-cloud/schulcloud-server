@@ -20,7 +20,7 @@ const personalFileSearchQuery = (userId) => ({
 const getFileById = async (id) => FileModel.findById(id).lean().exec();
 
 /**
- * @param {*} userId
+ * @param {BSON|BSONString} userId
  * @return {data} personal files of the user
  */
 const getPersonalFilesByUserId = async (userId) => {
@@ -29,7 +29,7 @@ const getPersonalFilesByUserId = async (userId) => {
 };
 
 /**
- * @param {*} userId
+ * @param {BSON|BSONString} userId
  * @return {boolean} success
  */
 const removePersonalFilesByUserId = async (userId) => {
@@ -40,7 +40,7 @@ const removePersonalFilesByUserId = async (userId) => {
 }
 
 /**
- * @param {*} userId
+ * @param {BSON|BSONString} userId
  * @return {data} filePermissions
  */
 const getFilesWithUserPermissionsByUserId = async (userId) =>
@@ -63,7 +63,7 @@ const getFilesWithUserPermissionsByUserId = async (userId) =>
 	]);
 
 /**
- * @param {*} userId
+ * @param {BSON|BSONString} userId
  * @return {boolean} success
  */
 const removeFilePermissionsByUserId = async (userId) => {

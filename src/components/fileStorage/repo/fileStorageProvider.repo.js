@@ -54,9 +54,9 @@ const createDeleteParams = (bucket, fileIds) => {
 };
 
 const moveFilesToTrash = async (storageProvider, bucket, fileIds) => {
-	const parallelRequests = 100; // we can experiment with inc-/decreasing this. Max 1000 for the delete request
-	for (let processedFiles = 0; processedFiles < fileIds.length; processedFiles += parallelRequests) {
-		const fileIdSubset = fileIds.slice(processedFiles, processedFiles + parallelRequests);
+	const requestLimit = Configuration.get('REQUEST_LIMIT_STORAGE_PROVIDER');
+	for (let processedFiles = 0; processedFiles < fileIds.length; processedFiles += requestLimit) {
+		const fileIdSubset = fileIds.slice(processedFiles, processedFiles + requestLimit);
 
 		const storageProviderInstance = createStorageProviderInstance(storageProvider);
 
