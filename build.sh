@@ -121,12 +121,18 @@ buildandpush
 # if [ "$TRAVIS_BRANCH" = "release" ] ...
 # if [ "${GIT_FLOW_BRANCH}" = "release" ] && [ "${{ secrets.CI_SC_APP_STAGING_BRANCH }}" = "$(jq -r '.version' package.json )" ]
 
+echo "###########################################"
 echo "deploy release to staging $TRAVIS_BRANCH"
 echo "${GIT_FLOW_BRANCH}"
 echo "$(jq -r '.version' package.json )"
 echo "$CI_SC_APP_STAGING_BRANCH"
-
+echo "${CI_SC_APP_STAGING_BRANCH}"
+echo "${{ CI_SC_APP_STAGING_BRANCH }}"
 echo "Trigger sc-app-ci to deploy release to staging instance"
+echo "###########################################"
+echo env
+echo "###########################################"
+
 
 curl -X POST https://api.github.com/repos/hpi-schul-cloud/schulcloud-server/dispatches \
 -H 'Accept: application/vnd.github.everest-preview+json' \
