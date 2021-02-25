@@ -47,7 +47,7 @@ const removePersonalFiles = async (userId) => {
 	if (personalFiles.length === 0) {
 		return { trashBinData, complete: true };
 	}
-	const personalFileIds = personalFiles.map((file) => file._id);
+	const storageFileNames = personalFiles.map((file) => file.storageFileName);
 
 	const userFacade = facadeLocator.facade('/users/v2');
 	const schoolId = await userFacade.getSchoolIdOfUser(userId);
@@ -64,7 +64,7 @@ const removePersonalFiles = async (userId) => {
 
 	const complete = Promise.all([
 		filesRepo.removePersonalFilesByUserId(userId),
-		fileStorageProviderRepo.moveFilesToTrash(storageProvider, bucket, personalFileIds),
+		fileStorageProviderRepo.moveFilesToTrash(storageProvider, bucket, storageFileNames),
 	]).every(Boolean);
 
 	return { trashBinData, complete };
