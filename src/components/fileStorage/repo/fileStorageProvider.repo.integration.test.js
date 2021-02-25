@@ -18,7 +18,7 @@ describe('fileStorageProvider.repo.integration.test', () => {
 
 	before(async () => {
 		/* eslint-disable global-require */
-		configBefore = Configuration.toObject(); // deep copy current config
+		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		app = await require('../../../app');
 		testObjects = require('../../../../test/services/helpers/testObjects')(app);
 		Configuration.set('S3_KEY', 'abcdefghijklmnop');
