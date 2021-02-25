@@ -36,9 +36,11 @@ const getAverageRating = function getAverageRating(submissions) {
 	}
 	return undefined;
 };
+
 function isValidSubmission(submission) {
 	return (submission.comment && submission.comment !== '') || (submission.fileIds && submission.fileIds.length > 0);
 }
+
 function isGraded(submission) {
 	return (
 		(submission.gradeComment && submission.gradeComment !== '') ||
@@ -94,7 +96,7 @@ function hasHomeworkPermission(userId, homework) {
 	return hasPermission;
 }
 
-const hasViewPermissionBefore = (hook) => {
+const populateWithCourse = (hook) => {
 	// Add populate to query to be able to filter permissions
 	if ((hook.params.query || {}).$populate) {
 		if (!hook.params.query.$populate.includes('courseId')) {
@@ -112,115 +114,136 @@ const hasViewPermissionBefore = (hook) => {
 const hasViewPermissionAfter = (hook) => {
 	// filter any other homeworks where the user has no view permission
 	// user is teacher OR ( user is in courseId of task AND availableDate < Date.now() )
-	// availableDate < Date.now()
-	function hasPermission(e) {
+	const hasPermission = (homework) => {
+		if (homework.private === false && !homework.courseId) {
+			return false;
+		}
+		const userId = hook.params.account.userId.toString();
 		const isTeacherCheck =
-			e.teacherId === (hook.params.account || {}).userId.toString() ||
-			(!e.private && ((e.courseId || {}).teacherIds || []).includes((hook.params.account || {}).userId.toString())) ||
-			(!e.private &&
-				((e.courseId || {}).substitutionIds || []).includes((hook.params.account || {}).userId.toString()));
-		const isStudent =
-			e.courseId != null &&
-			((e.courseId || {}).userIds || []).includes(((hook.params.account || {}).userId || '').toString());
-		const published = new Date(e.availableDate) < new Date() && !e.private;
-		return isTeacherCheck || (isStudent && published);
-	}
+			homework.teacherId === userId || (!homework.private && isCourseHomeworkTeacher(userId, homework));
+		const isStudentCheck = homework.courseId && homework.courseId.userIds && homework.courseId.userIds.includes(userId);
+		const published = new Date(homework.availableDate) < new Date() && !homework.private;
+		return isTeacherCheck || (isStudentCheck && published);
+	};
 
-	let data = JSON.parse(JSON.stringify(hook.result.data || hook.result));
-	if (data[0] !== undefined) {
-		data = data.filter(hasPermission);
+	let homework = JSON.parse(JSON.stringify(hook.result.data || hook.result));
+	if (Array.isArray(homework)) {
+		homework = homework.filter(hasPermission);
 	} else {
+		// TODO check this
 		// check if it is a single homework AND user has view permission
-		if (data.schoolId != undefined && !hasPermission(data)) {
+		if (homework.schoolId && !hasPermission(homework)) {
 			return Promise.reject(new Forbidden("You don't have permissions!"));
 		}
 	}
-	hook.result.data ? (hook.result.data = data) : (hook.result = data);
-	hook.result.data ? (hook.result.total = data.length) : (hook.total = data.length);
+
+	if (hook.result.data) {
+		hook.result.data = homework;
+		hook.result.total = homework.length;
+	} else {
+		hook.result = homework;
+		hook.total = homework.length;
+	}
+
 	return Promise.resolve(hook);
 };
 
-const addStats = (hook) => {
+const isCourseUser = (hook, homework) => {
+	return ((homework.courseId || {}).userIds || []).includes(hook.params.account.userId.toString());
+};
+
+const addStats = async (hook) => {
 	let data = hook.result.data || hook.result;
 	const submissionService = hook.app.service('/submissions');
 	const arrayed = !Array.isArray(data);
 	data = Array.isArray(data) ? data : [data];
-	return submissionService
-		.find({
-			query: {
-				homeworkId: { $in: data.map((n) => n._id) },
-				$populate: ['courseGroupId'],
-			},
-			paginate: false,
-		})
-		.then((submissions) => {
-			data = data.map((e) => {
-				const copy = JSON.parse(JSON.stringify(e)); // don't know why, but without this line it's not working :/
 
-				if (!hasHomeworkPermission(hook.params.account.userId, copy)) {
-					const currentSubmissions = submissions.filter((s) => equalIds(copy._id, s.homeworkId));
-					const filteredSubmission = currentSubmissions.filter(
-						(submission) =>
-							equalIds(hook.params.account.userId, submission.studentId) ||
-							(submission.teamMembers &&
-								submission.teamMembers.some((member) => equalIds(hook.params.account.userId, member)))
-					);
-					const submissionWithGrade = filteredSubmission.filter((submission) => submission.grade);
-					if (submissionWithGrade.length === 1) {
-						copy.grade = submissionWithGrade[0].grade.toFixed(2);
-					}
+	const submissions = await submissionService.find({
+		query: {
+			homeworkId: { $in: data.map((n) => n._id) },
+			$populate: ['courseGroupId'],
+		},
+		paginate: false,
+	});
 
-					copy.hasEvaluation = false;
-					if (filteredSubmission.filter(isGraded).length === 1) {
-						copy.hasEvaluation = true;
-					}
+	data = data.map((homework) => {
+		const homeworkSubmissions = submissions.filter((s) => equalIds(homework._id, s.homeworkId));
+		const validSubmissions = homeworkSubmissions.filter(isValidSubmission);
 
-					copy.submissions = filteredSubmission.filter(isValidSubmission).length;
-				}
+		const isTeacher = hasHomeworkPermission(hook.params.account.userId, homework);
+		if (!isTeacher) {
+			const currentStudentSubmissions = validSubmissions.filter(
+				(submission) =>
+					equalIds(hook.params.account.userId, submission.studentId) ||
+					(submission.teamMembers &&
+						submission.teamMembers.some((userId) => equalIds(hook.params.account.userId, userId)))
+			);
 
-				if (
-					!copy.private &&
-					((((copy.courseId || {}).userIds || []).includes(hook.params.account.userId.toString()) &&
-						copy.publicSubmissions) ||
-						hasHomeworkPermission(hook.params.account.userId, copy))
-				) {
-					const NumberOfCourseMembers = ((copy.courseId || {}).userIds || []).length;
-					const currentSubmissions = submissions.filter((s) => equalIds(copy._id, s.homeworkId));
-					const validSubmissions = currentSubmissions.filter(isValidSubmission);
-					const gradedSubmissions = currentSubmissions.filter(isGraded);
-					const NumberOfUsersWithSubmission = validSubmissions
-						.map((e) =>
-							e.courseGroupId ? (e.courseGroupId.userIds || []).length || 1 : (e.teamMembers || []).length || 1
-						)
-						.reduce((a, b) => a + b, 0);
+			homework.submissions = currentStudentSubmissions.length;
 
-					const NumberOfGradedUsers = gradedSubmissions
-						.map((e) =>
-							e.courseGroupId ? (e.courseGroupId.userIds || []).length || 1 : (e.teamMembers || []).length || 1
-						)
-						.reduce((a, b) => a + b, 0);
-					const submissionPerc =
-						NumberOfCourseMembers !== 0 ? (NumberOfUsersWithSubmission / NumberOfCourseMembers) * 100 : 0;
-					const gradePerc = NumberOfCourseMembers !== 0 ? (NumberOfGradedUsers / NumberOfCourseMembers) * 100 : 0;
+			const gradedSubmissions = currentStudentSubmissions.filter(isGraded);
 
-					copy.stats = {
-						userCount: ((copy.courseId || {}).userIds || []).length,
-						submissionCount: NumberOfUsersWithSubmission,
-						submissionPercentage: submissionPerc != Infinity ? submissionPerc.toFixed(2) : undefined,
-						gradeCount: NumberOfGradedUsers,
-						gradePercentage: gradePerc != Infinity ? gradePerc.toFixed(2) : undefined,
-						averageGrade: getAverageRating(currentSubmissions),
-					};
-					copy.isTeacher = hasHomeworkPermission(hook.params.account.userId, copy);
-				}
-				return copy;
-			});
-			if (arrayed) {
-				data = data[0];
+			if (gradedSubmissions.length === 1) {
+				homework.grade = gradedSubmissions[0].grade.toFixed(2);
 			}
-			hook.result.data ? (hook.result.data = data) : (hook.result = data);
-			return Promise.resolve(hook);
-		});
+
+			homework.hasEvaluation = false;
+			if (currentStudentSubmissions.filter(isGraded).length === 1) {
+				homework.hasEvaluation = true;
+			}
+		}
+
+		if (!homework.private && (isTeacher || (homework.publicSubmissions && isCourseUser(hook, homework)))) {
+			const userCount = ((homework.courseId || {}).userIds || []).length;
+
+			const submissionCount = validSubmissions
+				.map((submission) =>
+					submission.courseGroupId
+						? (submission.courseGroupId.userIds || []).length || 1
+						: (submission.teamMembers || []).length || 1
+				)
+				.reduce((a, b) => a + b, 0);
+
+			const gradedSubmissions = homeworkSubmissions.filter(isGraded);
+			const gradeCount = gradedSubmissions
+				.map((submission) =>
+					submission.courseGroupId
+						? (submission.courseGroupId.userIds || []).length || 1
+						: (submission.teamMembers || []).length || 1
+				)
+				.reduce((a, b) => a + b, 0);
+
+			const getPercentage = (a, b) => {
+				if (a > 0 && b > 0) {
+					return ((a / b) * 100).toFixed(2);
+				}
+				return 0;
+			};
+
+			homework.stats = {
+				userCount,
+				submissionCount,
+				submissionPercentage: getPercentage(submissionCount, userCount),
+				gradeCount,
+				gradePercentage: getPercentage(gradeCount, userCount),
+				averageGrade: getAverageRating(homeworkSubmissions),
+			};
+		}
+
+		return homework;
+	});
+
+	if (arrayed) {
+		data = data[0];
+	}
+
+	if (hook.result.data) {
+		hook.result.data = data;
+	} else {
+		hook.result = data;
+	}
+
+	return Promise.resolve(hook);
 };
 
 const hasPatchPermission = (hook) => {
@@ -304,6 +327,7 @@ const hasCreatePermission = async (context) => {
 	}
 	context.data = data;
 };
+
 const restrictHomeworkDeletion = async (context) => {
 	// expect authenticated user
 	const { userId } = context.params.account;
@@ -338,11 +362,11 @@ exports.before = () => ({
 		iff(isProvider('external'), [
 			globalHooks.hasPermission('HOMEWORK_VIEW'),
 			globalHooks.mapPaginationQuery.bind(this),
-			hasViewPermissionBefore,
+			populateWithCourse,
 		]),
 		globalHooks.addCollation,
 	],
-	get: [iff(isProvider('external'), [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore])],
+	get: [iff(isProvider('external'), [globalHooks.hasPermission('HOMEWORK_VIEW'), populateWithCourse])],
 	create: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_CREATE'), hasCreatePermission)],
 	update: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_EDIT'))],
 	patch: [
