@@ -113,6 +113,9 @@ describe('Sanitization Hook', () => {
     		border-right:5px solid hsl(60, 75%, 60%);
     		border-top:5px solid hsl(60, 75%, 60%)"
     >
+		<thead>
+			<th rowspan="2">Header 1</th>
+		</thead>
         <tbody>
         <tr>
             <td style="background-color:hsl(240, 75%, 60%);
@@ -126,6 +129,7 @@ describe('Sanitization Hook', () => {
             	vertical-align:top;
             	width:40px"
             >val</td>
+            <td rowspan="2">val2</td>
         </tr>
         </tbody>
     </table>

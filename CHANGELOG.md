@@ -28,8 +28,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
-- SC-6679 fix text editor table issue
-- SC-8534 fix registration link generation
+- SC-6679 - fixed table styling in topic text-component
+- SC-8534 - fix registration link generation
 
 ## [25.6.8] - 2021-02-19
 
