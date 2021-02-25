@@ -128,7 +128,7 @@ echo "$(jq -r '.version' package.json )"
 
 curl -X POST https://api.github.com/repos/hpi-schul-cloud/schulcloud-server/dispatches \
 -H 'Accept: application/vnd.github.everest-preview+json' \
--u {{ secrets.MY_DOCKER_PASSWORD }} \
+-u MY_DOCKER_PASSWORD:${{ secrets.MY_DOCKER_PASSWORD }} \
 --data '{"event_type": "$your_event", "client_payload": { "branch-prefix": "${GIT_FLOW_BRANCH}", "sc-app": "sc-server", "version-qualifier": "$(jq -r '.version' package.json )" }}'
 
 exit 0
