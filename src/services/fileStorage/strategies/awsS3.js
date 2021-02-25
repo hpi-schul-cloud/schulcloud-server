@@ -578,7 +578,6 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 				return Promise.resolve(deletionData);
 			});
 	}
-
 }
 
 module.exports = AWSS3Strategy;

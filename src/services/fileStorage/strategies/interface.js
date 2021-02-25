@@ -40,10 +40,6 @@ class AbstractFileStorageStrategy {
 	copyFile() {
 		throw new TypeError('copyFile method has to be implemented.');
 	}
-
-	moveFilesToTrash() {
-		throw new TypeError('moveFilesToTrash method has to be implemented.');
-	}
 }
 
 module.exports = AbstractFileStorageStrategy;
