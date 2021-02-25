@@ -1,6 +1,5 @@
 const schoolUc = require('./school.uc');
 const { checkPermissions } = require('../../helper/uc.helper');
-const storageProvider = require('../../../services/storageProvider');
 
 class SchoolFacade {
 	async getSchool(id) {
