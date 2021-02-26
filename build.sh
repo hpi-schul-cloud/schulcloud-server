@@ -134,7 +134,7 @@ echo ""
 echo "###########################################"
 
 
-curl -X POST https://api.github.com/repos/hpi-schul-cloud/schulcloud-server/dispatches \
+curl -X POST https://api.github.com/repos/hpi-schul-cloud/sc-app-ci/dispatches \
 -H 'Accept: application/vnd.github.everest-preview+json' \
 -u $GITHUB_TOKEN \
 --data '{"event_type": "Trigger_from_sc_server", "client_payload": { "branch-prefix": "Feature", "sc-app": "sc-server", "version-qualifier": "26.0.0" }}'
