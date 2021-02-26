@@ -121,7 +121,7 @@ const getBucketName = (schoolId) => `${BUCKET_NAME_PREFIX}${schoolId}`;
 
 const createAWSObject = async (schoolId) => {
 	const school = await schoolModel
-		.findOne({ _id: schoolId }, null, { readPreference: 'primary' }) // primary for afterhook in school.create
+		.findOne({ _id: schoolId }, { readPreference: 'primary' }) // primary for afterhook in school.create
 		.populate('storageProvider')
 		.select(['storageProvider'])
 		.lean()
