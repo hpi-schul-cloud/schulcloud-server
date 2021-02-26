@@ -63,6 +63,9 @@ jobs:
       env:
         - GIT_SHA=$( git rev-parse HEAD )
         - DOCKERTAG=$( echo $TRAVIS_BRANCH | tr -s "[:punct:]" "-" )
+        - NEXT_RELEASE=${{ secrets.NEXT_RELEASE }}
+        - NEXT_RELEASE2=$secrets.NEXT_RELEASE
+        - NEXT_RELEASE3=${secrets.NEXT_RELEASE}
       install:
         - mkdir -p .build
         - openssl aes-256-cbc -K $encrypted_bce910623bb2_key -iv $encrypted_bce910623bb2_iv -in travis_rsa.enc -out .build/travis_rsa -d
