@@ -125,6 +125,7 @@ const createAWSObject = async (schoolId) => {
 		.populate('storageProvider')
 		.select(['storageProvider'])
 		.lean()
+		.readPreference('primary')
 		.exec();
 
 	if (school === null) throw new NotFound('School not found.');
