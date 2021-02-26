@@ -125,7 +125,7 @@ const createAWSObject = async (schoolId) => {
 		.populate('storageProvider')
 		.select(['storageProvider'])
 		.lean()
-		.readPreference('primary')
+		.readPreference('primary') // for afterhook in school.create
 		.exec();
 
 	if (school === null) throw new NotFound('School not found.');
