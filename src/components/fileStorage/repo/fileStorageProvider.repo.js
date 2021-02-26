@@ -84,7 +84,7 @@ const moveFilesToTrashBatch = async (storageProvider, bucket, fileIds) => {
 	for (let processedFiles = 0; processedFiles < fileIds.length; processedFiles += requestLimit) {
 		const fileIdSubset = fileIds.slice(processedFiles, processedFiles + requestLimit);
 		// eslint-disable-next-line no-await-in-loop
-		await moveFilesToTrashBatch(storageProvider, bucket, fileIdSubset);
+		await moveFilesToTrash(storageProvider, bucket, fileIdSubset);
 	}
 	return true;
 };

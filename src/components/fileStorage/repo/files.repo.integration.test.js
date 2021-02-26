@@ -96,8 +96,10 @@ describe('files.repo.integration.test', () => {
 			const success = await removePersonalFilesByUserId(fileOwnerId);
 
 			expect(success).to.be.true;
-			const file1AfterDeletion = await getFileById(file1._id);
-			const file2AfterDeletion = await getFileById(file2._id);
+			const [file1AfterDeletion, file2AfterDeletion] = await Promise.all([
+				getFileById(file1._id),
+				getFileById(file2._id),
+			]);
 			expect(file1AfterDeletion).to.be.null;
 			expect(file2AfterDeletion).to.be.null;
 		});

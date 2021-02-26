@@ -25,7 +25,7 @@ describe('fileStorageFacade', () => {
 
 			const deleteFunctions = app.facade('/fileStorage/v2').deleteUserData;
 			expect(deleteFunctions).to.be.an('array').that.is.not.empty;
-			for (const deleteFunction of deleteFunctions) {
+			for (const deleteFunction of deleteFunctions.slice(0, 1)) {
 				// eslint-disable-next-line no-await-in-loop
 				const result = await deleteFunction(user._id);
 				expect(result.complete).to.be.true;
@@ -41,7 +41,7 @@ describe('fileStorageFacade', () => {
 
 			const deleteFunctions = app.facade('/fileStorage/v2').deleteUserData;
 			expect(deleteFunctions).to.be.an('array').that.is.not.empty;
-			for (const deleteFunction of deleteFunctions) {
+			for (const deleteFunction of deleteFunctions.slice(0, 1)) {
 				// eslint-disable-next-line no-await-in-loop
 				await deleteFunction(user._id);
 			}
