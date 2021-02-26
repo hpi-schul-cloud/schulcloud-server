@@ -1002,6 +1002,38 @@ describe('AdminUsersService', () => {
 		it('do not update account if from external system (teacher, patch)', () =>
 			doNotUpdateAccountIfSystemIdIsSet('teacher', 'patch', adminTeachersService));
 
+		const doNotPatchUserIfExternallyManaged = (role, type, service) => async () => {
+			const school = await testObjects.createTestSchool({
+				name: 'testSchool1',
+				source: 'notInternal',
+			});
+			const user = await testObjects.createTestUser({ roles: [role], schoolId: school._id });
+			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+			params.query = {};
+
+			try {
+				await service[type](
+					user._id.toString(),
+					{
+						firstName: 'golf',
+						lastName: 'monk',
+						email: 'foo@bar.baz',
+					},
+					params
+				);
+				expect.fail('The previous call should have failed');
+			} catch (err) {
+				expect(err.code).to.equal(403);
+				expect(err.message).to.equal('Creating new students or teachers is only possible in the source system.');
+			}
+		};
+
+		it('does not allow patch student if the school is externally managed (student, patch)', () =>
+			doNotPatchUserIfExternallyManaged('student', 'patch', adminStudentsService));
+		it('does not allow patch teacher if the school is externally managed (teacher, patch)', () =>
+			doNotPatchUserIfExternallyManaged('teacher', 'patch', adminTeachersService));
+
 		const updateFromDifferentSchool = (role, type, service) => async () => {
 			const school = await testObjects.createTestSchool({
 				name: 'testSchool1',
