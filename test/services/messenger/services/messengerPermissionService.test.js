@@ -10,7 +10,7 @@ describe('MessengerPermissionService', function test() {
 
 	describe('if Matrix messenger and student room creation is enabled', async () => {
 		before(async () => {
-			configBefore = Configuration.toObject(); // deep copy current config
+			configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 			Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 			Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
 			Configuration.set('MATRIX_MESSENGER__STUDENT_ROOM_CREATION', true);
@@ -59,7 +59,7 @@ describe('MessengerPermissionService', function test() {
 
 	describe('if Matrix messenger is enabled and student room creation is disabled', async () => {
 		before(async () => {
-			configBefore = Configuration.toObject(); // deep copy current config
+			configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 			Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 			Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
 			Configuration.set('MATRIX_MESSENGER__STUDENT_ROOM_CREATION', false);
@@ -101,7 +101,7 @@ describe('MessengerPermissionService', function test() {
 
 	describe('if Matrix messenger is disabled', () => {
 		before(async () => {
-			configBefore = Configuration.toObject(); // deep copy current config
+			configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 			Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', false);
 			delete require.cache[require.resolve('../../../../src/app')];
 			// eslint-disable-next-line global-require
