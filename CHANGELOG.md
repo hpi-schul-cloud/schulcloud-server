@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.6.9] - 2021-02-26
+
+### Fixed
+
+- SC-8714 Fixed an issue in school creation that could cause the iserv-sync to fail
+
 ## [25.6.8] - 2021-02-19
 
 ### Changed
