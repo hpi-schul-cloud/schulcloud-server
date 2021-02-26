@@ -55,9 +55,9 @@ const removePersonalFiles = async (userId) => {
 	const schoolId = await userFacade.getSchoolIdOfUser(userId);
 
 	const schoolFacade = facadeLocator.facade('school/v2');
-	const school = await schoolFacade.getSchool(schoolId);
+	const storageProviderId = await schoolFacade.getStorageProviderIdForSchool(schoolId);
 
-	const storageProvider = await getStorageProvider(school.storageProvider);
+	const storageProvider = await getStorageProvider(storageProviderId);
 	if (!storageProvider) {
 		throw new AssertionError(
 			`The user ${userId} had private files, but for the school ${schoolId} is no storage provider assigned.`

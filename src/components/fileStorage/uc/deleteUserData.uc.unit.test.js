@@ -16,7 +16,7 @@ const facadeStubs = {
 		getSchoolIdOfUser: sinon.stub().returns(Promise.resolve(new ObjectId())),
 	},
 	'/school/v2': {
-		getSchool: sinon.stub().returns(Promise.resolve(new ObjectId())),
+		getStorageProviderIdForSchool: sinon.stub().returns(Promise.resolve(new ObjectId())),
 	},
 };
 
