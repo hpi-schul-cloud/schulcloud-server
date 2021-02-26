@@ -24,7 +24,7 @@ const getFileById = async (id) => FileModel.findById(id).lean().exec();
  * @return {data} personal files of the user
  */
 const getPersonalFilesByUserId = async (userId) => {
-  if (!isValidObjectId(userId)) throw new AssertionError(missingParameters({ userId }));
+	if (!isValidObjectId(userId)) throw new AssertionError(missingParameters({ userId }));
 	return FileModel.find(personalFileSearchQuery(userId)).lean().exec();
 };
 
@@ -33,11 +33,11 @@ const getPersonalFilesByUserId = async (userId) => {
  * @return {boolean} success
  */
 const removePersonalFilesByUserId = async (userId) => {
-  if (!isValidObjectId(userId)) throw new AssertionError(missingParameters({ userId }));
+	if (!isValidObjectId(userId)) throw new AssertionError(missingParameters({ userId }));
 	const deleteResult = await FileModel.deleteMany(personalFileSearchQuery(userId)).lean().exec();
 	const { success } = updateManyResult(deleteResult);
 	return success;
-}
+};
 
 /**
  * @param {BSON|BSONString} userId

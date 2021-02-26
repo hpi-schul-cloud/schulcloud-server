@@ -1,10 +1,11 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const appPromise = require('../../../app');
+const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 
 const { expect } = require('chai');
 const { fileStorageProviderRepo } = require('.');
 
 describe('fileStorageProvider.repo.integration.test', () => {
-	let testObjects;
 	let server;
 	let app;
 	let configBefore;
@@ -16,13 +17,15 @@ describe('fileStorageProvider.repo.integration.test', () => {
 		endpointUrl: 'http://localhost:9090',
 	};
 
+	const cleanupStorageProvider = async (bucketName, fileId) => {
+			await storageProvider.deleteObject({ Bucket: bucketName, Key: fileId }).promise();
+			await storageProvider.deleteBucket({ Bucket: bucketName }).promise();
+	}
+
 	before(async () => {
-		/* eslint-disable global-require */
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
-		app = await require('../../../app');
-		testObjects = require('../../../../test/services/helpers/testObjects')(app);
+		app = await appPromise;
 		Configuration.set('S3_KEY', 'abcdefghijklmnop');
-		/* eslint-enable global-require */
 		server = await app.listen(0);
 	});
 
@@ -36,11 +39,15 @@ describe('fileStorageProvider.repo.integration.test', () => {
 	});
 
 	describe('createStorageProviderInstance', () => {
-		it('should not throw an error', async () => {
+		it('should not throw an error', () => {
 			expect(() => fileStorageProviderRepo.private.createStorageProviderInstance(storageProviderInfo)).to.not.throw();
 		});
 	});
 
+	/**
+	 * This integration test requires MinIO running with the default configuration.
+	 * If MinIO is not available under the default endpoint url, this test will be skipped.
+	 */
 	describe('moveFilesToTrash', () => {
 		it('should mark objects as to be deleted under a prefixed name', async function () {
 			const bucketName = `bucket-${testObjects.generateObjectId()}`;
@@ -73,8 +80,7 @@ describe('fileStorageProvider.repo.integration.test', () => {
 
 			expect(modifiedFile.Metadata.expires).to.eq('true');
 
-			await storageProvider.deleteObject({ Bucket: bucketName, Key: newFileId }).promise();
-			await storageProvider.deleteBucket({ Bucket: bucketName }).promise();
+			await cleanupStorageProvider(bucketName, newFileId);
 		});
 	});
 });

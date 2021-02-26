@@ -1,25 +1,24 @@
 const CryptoJS = require('crypto-js');
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const { AssertionError } = require('../../../errors');
 
 const fileStorageProviderRepo = require('../repo/fileStorageProvider.repo');
 const filesRepo = require('../repo/files.repo');
 
 const { facadeLocator } = require('../../../utils/facadeLocator');
 
-const { alert } = require('../../../logger');
-
 const { trashBinResult } = require('../../helper/uc.helper');
 
 const storageBucketName = (schoolId) => `bucket-${schoolId}`;
 
-const decryptAccessKey = async (secretAccessKey) => {
+const decryptAccessKey = (secretAccessKey) => {
 	const S3_KEY = Configuration.get('S3_KEY');
 	return CryptoJS.AES.decrypt(secretAccessKey, S3_KEY).toString(CryptoJS.enc.Utf8);
 };
 
 const getStorageProvider = async (storageProviderId) => {
 	const storageProvider = await fileStorageProviderRepo.getStorageProviderMetaInformation(storageProviderId);
-	if (storageProvider) storageProvider.secretAccessKey = await decryptAccessKey(storageProvider.secretAccessKey);
+	if (storageProvider) storageProvider.secretAccessKey = decryptAccessKey(storageProvider.secretAccessKey);
 	return storageProvider;
 };
 
@@ -28,8 +27,10 @@ const getStorageProvider = async (storageProviderId) => {
  * @param {BSON|BSONString} userId
  */
 const removePermissionsThatUserCanAccess = async (userId) => {
-	const data = await filesRepo.getFilesWithUserPermissionsByUserId(userId);
-	const complete = await filesRepo.removeFilePermissionsByUserId(userId);
+	const [data, complete] = Promise.all([
+		filesRepo.getFilesWithUserPermissionsByUserId(userId),
+		filesRepo.removeFilePermissionsByUserId(userId),
+	]);
 
 	return trashBinResult({ scope: 'filePermission', data, complete });
 };
@@ -49,6 +50,7 @@ const removePersonalFiles = async (userId) => {
 	}
 	const storageFileNames = personalFiles.map((file) => file.storageFileName);
 
+	// ToDo: facade call is not needed once the context is available and the user is already stored there.
 	const userFacade = facadeLocator.facade('/users/v2');
 	const schoolId = await userFacade.getSchoolIdOfUser(userId);
 
@@ -57,8 +59,9 @@ const removePersonalFiles = async (userId) => {
 
 	const storageProvider = await getStorageProvider(school.storageProvider);
 	if (!storageProvider) {
-		alert(`The user ${userId} had private files, but for the school ${schoolId} is no storage provider assigned.`);
-		return { trashBinData, complete: true };
+		throw AssertionError(
+			`The user ${userId} had private files, but for the school ${schoolId} is no storage provider assigned.`
+		);
 	}
 	const bucket = storageBucketName(schoolId);
 

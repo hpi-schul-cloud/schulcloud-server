@@ -61,8 +61,10 @@ describe('files.repo.integration.test', () => {
 
 		it('returns files owned by the given user', async () => {
 			const fileOwnerId = generateObjectId();
-			const file1 = await fileTestUtils.create({ owner: fileOwnerId });
-			const file2 = await fileTestUtils.create({ owner: fileOwnerId });
+			const [file1, file2] = await Promise.all([
+				fileTestUtils.create({ owner: fileOwnerId }),
+				fileTestUtils.create({ owner: fileOwnerId }),
+			]);
 
 			const result = await getPersonalFilesByUserId(fileOwnerId);
 
@@ -80,19 +82,24 @@ describe('files.repo.integration.test', () => {
 			const success = await removePersonalFilesByUserId(userId);
 
 			expect(success).to.be.true;
-			expect(await getFileById(otherFile._id)).to.be.not.null;
+			const otherFileAfterDeletion = await getFileById(otherFile._id);
+			expect(otherFileAfterDeletion).to.be.not.null;
 		});
 
 		it('returns success and deletes files owned by the given user', async () => {
 			const fileOwnerId = generateObjectId();
-			const file1 = await fileTestUtils.create({ owner: fileOwnerId });
-			const file2 = await fileTestUtils.create({ owner: fileOwnerId });
+			const [file1, file2] = await Promise.all([
+				fileTestUtils.create({ owner: fileOwnerId }),
+				fileTestUtils.create({ owner: fileOwnerId }),
+			]);
 
 			const success = await removePersonalFilesByUserId(fileOwnerId);
 
 			expect(success).to.be.true;
-			expect(await getFileById(file1._id)).to.be.null;
-			expect(await getFileById(file2._id)).to.be.null;
+			const file1AfterDeletion = await getFileById(file1._id);
+			const file2AfterDeletion = await getFileById(file2._id);
+			expect(file1AfterDeletion).to.be.null;
+			expect(file2AfterDeletion).to.be.null;
 		});
 	});
 
