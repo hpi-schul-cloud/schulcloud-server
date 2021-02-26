@@ -17,7 +17,7 @@ describe('fileStorageProvider.repo.integration.test', () => {
 		endpointUrl: 'http://localhost:9090',
 	};
 
-	const cleanupStorageProvider = async (bucketName, fileId) => {
+	const cleanupStorageProvider = async (storageProvider, bucketName, fileId) => {
 			await storageProvider.deleteObject({ Bucket: bucketName, Key: fileId }).promise();
 			await storageProvider.deleteBucket({ Bucket: bucketName }).promise();
 	}
@@ -48,7 +48,7 @@ describe('fileStorageProvider.repo.integration.test', () => {
 	 * This integration test requires MinIO running with the default configuration.
 	 * If MinIO is not available under the default endpoint url, this test will be skipped.
 	 */
-	describe('moveFilesToTrash', () => {
+	describe('moveFilesToTrashBatch', () => {
 		it('should mark objects as to be deleted under a prefixed name', async function () {
 			const bucketName = `bucket-${testObjects.generateObjectId()}`;
 			const fileId = testObjects.generateObjectId().toString();
@@ -66,7 +66,7 @@ describe('fileStorageProvider.repo.integration.test', () => {
 				})
 				.promise();
 
-			const result = await fileStorageProviderRepo.moveFilesToTrash(storageProviderInfo, bucketName, [fileId]);
+			const result = await fileStorageProviderRepo.moveFilesToTrashBatch(storageProviderInfo, bucketName, [fileId]);
 
 			expect(result).to.eq(true);
 
@@ -80,7 +80,7 @@ describe('fileStorageProvider.repo.integration.test', () => {
 
 			expect(modifiedFile.Metadata.expires).to.eq('true');
 
-			await cleanupStorageProvider(bucketName, newFileId);
+			await cleanupStorageProvider(storageProvider, bucketName, newFileId);
 		});
 	});
 });

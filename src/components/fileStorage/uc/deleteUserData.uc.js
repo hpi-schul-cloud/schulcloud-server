@@ -27,7 +27,7 @@ const getStorageProvider = async (storageProviderId) => {
  * @param {BSON|BSONString} userId
  */
 const removePermissionsThatUserCanAccess = async (userId) => {
-	const [data, complete] = Promise.all([
+	const [data, complete] = await Promise.all([
 		filesRepo.getFilesWithUserPermissionsByUserId(userId),
 		filesRepo.removeFilePermissionsByUserId(userId),
 	]);
@@ -59,16 +59,18 @@ const removePersonalFiles = async (userId) => {
 
 	const storageProvider = await getStorageProvider(school.storageProvider);
 	if (!storageProvider) {
-		throw AssertionError(
+		throw new AssertionError(
 			`The user ${userId} had private files, but for the school ${schoolId} is no storage provider assigned.`
 		);
 	}
 	const bucket = storageBucketName(schoolId);
 
-	const complete = Promise.all([
-		filesRepo.removePersonalFilesByUserId(userId),
-		fileStorageProviderRepo.moveFilesToTrash(storageProvider, bucket, storageFileNames),
-	]).every(Boolean);
+	const complete = (
+		await Promise.all([
+			filesRepo.removePersonalFilesByUserId(userId),
+			fileStorageProviderRepo.moveFilesToTrashBatch(storageProvider, bucket, storageFileNames),
+		])
+	).every(Boolean);
 
 	return { trashBinData, complete };
 };

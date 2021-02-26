@@ -49,7 +49,6 @@ const createDeleteParams = (bucket, fileIds) => ({
 	},
 });
 
-
 /**
  * Marks the files in the storage provider as to be deleted.
  * This function can only handle up to 1000 file IDs at once.
@@ -85,7 +84,7 @@ const moveFilesToTrashBatch = async (storageProvider, bucket, fileIds) => {
 	for (let processedFiles = 0; processedFiles < fileIds.length; processedFiles += requestLimit) {
 		const fileIdSubset = fileIds.slice(processedFiles, processedFiles + requestLimit);
 		// eslint-disable-next-line no-await-in-loop
-		await moveFilesToTrash(storageProvider, bucket, fileIdSubset);
+		await moveFilesToTrashBatch(storageProvider, bucket, fileIdSubset);
 	}
 	return true;
 };
@@ -95,5 +94,5 @@ module.exports = {
 		createStorageProviderInstance,
 	},
 	getStorageProviderMetaInformation,
-	moveFilesToTrash: moveFilesToTrashBatch,
+	moveFilesToTrashBatch,
 };

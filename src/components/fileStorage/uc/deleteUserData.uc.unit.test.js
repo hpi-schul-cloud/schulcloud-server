@@ -1,3 +1,4 @@
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { expect } = require('chai');
 const sinon = require('sinon');
 const { ObjectId } = require('mongoose').Types;
@@ -19,7 +20,7 @@ const facadeStubs = {
 	},
 };
 
-describe('deletedUserData.uc.unit', () => {
+describe.only('deletedUserData.uc.unit', () => {
 	const previousFacades = {};
 
 	before(() => {
@@ -36,7 +37,7 @@ describe('deletedUserData.uc.unit', () => {
 	});
 
 	beforeEach(() => {
-		sinon.stub(fileStorageProviderRepo, 'moveFilesToTrash').returns(Promise.resolve(true));
+		sinon.stub(fileStorageProviderRepo, 'moveFilesToTrashBatch').returns(Promise.resolve(true));
 	});
 
 	afterEach(sinon.restore);
@@ -46,6 +47,8 @@ describe('deletedUserData.uc.unit', () => {
 			const userId = new ObjectId();
 			const removePersonalFilesStub = sinon.stub(fileRepo, 'removePersonalFilesByUserId');
 			removePersonalFilesStub.withArgs(userId).returns(true);
+			sinon.stub(fileStorageProviderRepo, 'getStorageProviderMetaInformation').returns({ secretAccessKey: 'secret' });
+			Configuration.set('S3_KEY', 'abcdefghijklmnop');
 			const getPersonalFilesStub = sinon.stub(fileRepo, 'getPersonalFilesByUserId');
 			getPersonalFilesStub.withArgs(userId).returns([
 				{
