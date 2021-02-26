@@ -20,7 +20,7 @@ const facadeStubs = {
 	},
 };
 
-describe.only('deletedUserData.uc.unit', () => {
+describe('deletedUserData.uc.unit', () => {
 	const previousFacades = {};
 
 	before(() => {
