@@ -136,4 +136,5 @@ curl -X POST https://api.github.com/repos/hpi-schul-cloud/sc-app-ci/dispatches \
 -H 'Accept: application/vnd.github.everest-preview+json' \
 -u $GITHUB_TOKEN \
 --data '{"event_type": "Trigger_from_sc_server", "client_payload": { "GIT_BRANCH": "'"$TRAVIS_BRANCH"'", "TRIGGER_REPOSITORY": "sc-server", "VERSION": "'"$VERSION"'", "NEXT_RELEASE": "'"26.0.0"'" }}'
+
 exit 0
