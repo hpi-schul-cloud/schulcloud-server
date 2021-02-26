@@ -108,15 +108,20 @@ const getS3 = (storageProvider, useCors) => {
 };
 
 const listBuckets = async (awsObject) => {
-	const response = await awsObject.s3.listBuckets().promise();
-	return response.Buckets ? response.Buckets.map((b) => b.Name) : [];
+	try {
+		const response = await awsObject.s3.listBuckets().promise();
+		return response.Buckets ? response.Buckets.map((b) => b.Name) : [];
+	} catch (e) {
+		logger.warning('Could not retrieve buckets for provider', e);
+		return [];
+	}
 };
 
 const getBucketName = (schoolId) => `${BUCKET_NAME_PREFIX}${schoolId}`;
 
 const createAWSObject = async (schoolId) => {
 	const school = await schoolModel
-		.findOne({ _id: schoolId })
+		.findOne({ _id: schoolId }, null, { readPreference: 'primary' }) // primary for afterhook in school.create
 		.populate('storageProvider')
 		.select(['storageProvider'])
 		.lean()
@@ -246,22 +251,33 @@ const reassignProviderForSchool = async (awsObject) => {
 	if (correctProvider !== undefined) {
 		logger.error(`Correct provider for school ${schoolId} could be found ${correctProvider}`);
 		await updateProviderForSchool(correctProvider, schoolId);
-		const newAwsObject = await createAWSObject(schoolId);
-		newAwsObject.provider = correctProvider;
-		return newAwsObject;
+		const err = new GeneralError('Upload failed. Please refresh the page and try again.');
+		err.provider = correctProvider;
+		throw err;
 	}
 	return awsObject;
 };
 
-const putBucketCors = async (awsObject) =>
-	awsObject.s3
-		.putBucketCors({
-			Bucket: awsObject.bucket,
-			CORSConfiguration: {
-				CORSRules: getCorsRules(),
-			},
-		})
-		.promise();
+const putBucketCors = async (awsObject) => {
+	try {
+		await awsObject.s3
+			.putBucketCors({
+				Bucket: awsObject.bucket,
+				CORSConfiguration: {
+					CORSRules: getCorsRules(),
+				},
+			})
+			.promise();
+	} catch (e) {
+		// not implemented
+		// min.io doesn't support this function
+		if (e.statusCode !== 501) {
+			throw e;
+		}
+	}
+
+}
+
 
 /**
  * Creates bucket. If s3 create bucket returns 409 (Conflict)
@@ -271,27 +287,21 @@ const putBucketCors = async (awsObject) =>
  * @returns {Promise<{code: number, data: *, message: string}>}
  */
 const createBucket = async (awsObject) => {
-	let res;
 	try {
 		logger.info(`Bucket ${awsObject.bucket} does not exist - creating ... `);
-		res = await awsObject.s3.createBucket({ Bucket: awsObject.bucket }).promise();
+		await awsObject.s3.createBucket({ Bucket: awsObject.bucket }).promise();
 		await putBucketCors(awsObject);
+		return awsObject;
 	} catch (err) {
 		logger.error(`Error by creating the bucket ${awsObject.bucket}: ${err.code} ${err.message}`);
-		if (err.statusCode === 409) {
+		if (err.statusCode === 409 || err.statusCode === 403) {
 			logger.error(`Bucket ${awsObject.bucket} does not exist. 
 							Probably it already exists by another provider. Trying to find by other providers. 
 							${err.code} - ${err.message}`);
-			res = await reassignProviderForSchool(awsObject);
-		} else {
-			throw err;
+			return reassignProviderForSchool(awsObject);
 		}
+		throw err;
 	}
-	return {
-		message: 'Successfully created s3-bucket!',
-		data: res,
-		code: 200,
-	};
 };
 
 class AWSS3Strategy extends AbstractFileStorageStrategy {
@@ -305,7 +315,12 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 		}
 
 		const awsObject = await createAWSObject(schoolId);
-		return createBucket(awsObject);
+		const data = await createBucket(awsObject);
+		return {
+			message: 'Successfully created s3-bucket!',
+			data,
+			code: 200,
+		};
 	}
 
 	async listBucketsNames(awsObject) {
@@ -321,12 +336,11 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			logger.info(`Bucket ${awsObject.bucket} does exist`);
 			return awsObject;
 		} catch (err) {
-			if (err.statusCode === 404) {
+			if (err.statusCode === 404 || err.statusCode === 403) {
 				const response = await createBucket(awsObject);
-				const newAwsObject = response.data;
-				logger.info(`Bucket ${newAwsObject.bucket} created ... `);
+				logger.info(`Bucket ${response.bucket} created ... `);
 
-				return newAwsObject;
+				return response;
 			}
 			throw err;
 		}

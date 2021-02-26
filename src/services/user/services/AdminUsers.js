@@ -13,7 +13,7 @@ const { splitForSearchIndexes } = require('../../../utils/search');
 const { hasSchoolPermission, blockDisposableEmail, transformToDataTransferObject } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { validateParams, parseRequestQuery } = require('../hooks/adminUsers.hooks');
-const { sendRegistrationLink } = require('../hooks/userService');
+const { sendRegistrationLink, protectImmutableAttributes } = require('../hooks/userService');
 
 const { userModel } = require('../model');
 
@@ -152,7 +152,7 @@ class AdminUsers {
 	async create(_data, _params) {
 		const currentUserId = _params.account.userId.toString();
 		const { schoolId } = await getCurrentUserInfo(currentUserId);
-		await this.checkExternal(schoolId);
+		await this.checkIfExternallyManaged(schoolId);
 		const { email } = _data;
 		await this.checkMail(email);
 		return this.app.service('usersModel').create({
@@ -169,7 +169,10 @@ class AdminUsers {
 
 	async patch(_id, _data, _params) {
 		if (!_id) throw new BadRequest('id is required');
+
 		const params = await this.prepareParams(_id, _params);
+		await this.checkIfExternallyManaged(params.query.schoolId);
+
 		const { email } = _data;
 		await this.checkMail(email, _id);
 		await this.updateAccount(email, _id);
@@ -188,7 +191,7 @@ class AdminUsers {
 	 * he user itself should get a flag to define if it is from a external system
 	 * @param {*} schoolId
 	 */
-	async checkExternal(schoolId) {
+	async checkIfExternallyManaged(schoolId) {
 		const { isExternal } = await this.app.service('schools').get(schoolId);
 		if (isExternal) {
 			throw new Forbidden('Creating new students or teachers is only possible in the source system.');
@@ -317,8 +320,8 @@ const adminHookGenerator = (kind) => ({
 		find: [hasSchoolPermission(`${kind}_LIST`)],
 		get: [hasSchoolPermission(`${kind}_LIST`)],
 		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
-		update: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
-		patch: [hasSchoolPermission(`${kind}_EDIT`), blockDisposableEmail('email')],
+		update: [hasSchoolPermission(`${kind}_EDIT`), protectImmutableAttributes, blockDisposableEmail('email')],
+		patch: [hasSchoolPermission(`${kind}_EDIT`), protectImmutableAttributes, blockDisposableEmail('email')],
 		remove: [hasSchoolPermission(`${kind}_DELETE`), parseRequestQuery, validateParams],
 	},
 	after: {

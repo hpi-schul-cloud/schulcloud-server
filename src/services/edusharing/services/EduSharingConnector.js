@@ -1,7 +1,7 @@
 const request = require('request-promise-native');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
-const { Forbidden, GeneralError } = require('../../../errors');
+const { Forbidden, GeneralError, NotFound } = require('../../../errors');
 const logger = require('../../../logger');
 const EduSharingResponse = require('./EduSharingResponse');
 const { getCounty } = require('../helpers');
@@ -129,46 +129,35 @@ class EduSharingConnector {
 		}
 	}
 
-	async GET(id, schoolId) {
+	async GET(uuid, schoolId) {
 		if (!schoolId) {
 			throw new Forbidden('Missing school');
 		}
-
-		// TODO filter only used props
-		const propertyFilter = '-all-';
-
-		const options = {
-			method: 'GET',
-			// eslint-disable-next-line max-len
-			url: `${ES_ENDPOINTS.NODE}${id}/metadata?propertyFilter=${propertyFilter}`,
-			headers: {
-				Accept: 'application/json',
-				'Content-type': 'application/json',
-				...basicAuthorizationHeaders,
-			},
-			timeout: Configuration.get('REQUEST_TIMEOUT'),
-		};
-
-		try {
-			const response = await this.eduSharingRequest(options);
-			const parsed = JSON.parse(response);
-			const { node } = parsed;
-
-			if (Configuration.get('FEATURE_ES_MERLIN_ENABLED')) {
-				const permission = await this.checkNodePermission(node, schoolId);
-				if (!permission) {
-					throw new Forbidden('This content is not available for your school');
-				}
-			}
-
-			if (node && node.preview && node.preview.url) {
-				node.preview.url = await this.getImage(`${node.preview.url}&crop=true&maxWidth=1200&maxHeight=800`);
-			}
-			return node;
-		} catch (err) {
-			logger.error('Edu-Sharing failed fetching node ', err.message);
-			return Promise.reject(err);
+		if (!this.validateUuid(uuid)) {
+			throw new NotFound('Invalid node id');
 		}
+
+		const criterias = [];
+		criterias.push({ property: 'ngsearchword', values: ['*'] });
+		criterias.push({
+			property: 'ccm:replicationsourceuuid',
+			values: [uuid],
+		});
+
+		const response = await this.searchEduSharing(criterias, 0, 1);
+
+		if (!response.data || response.data.length !== 1) {
+			throw new NotFound('Item not found');
+		}
+
+		if (Configuration.get('FEATURE_ES_MERLIN_ENABLED')) {
+			const permission = await this.checkNodePermission(response.data[0], schoolId);
+			if (!permission) {
+				throw new Forbidden('This content is not available for your school');
+			}
+		}
+
+		return response.data[0];
 	}
 
 	async FIND({ searchQuery = '', $skip, $limit, sortProperties = 'score', collection = '' }, schoolId) {
@@ -176,64 +165,65 @@ class EduSharingConnector {
 			throw new Forbidden('Missing school');
 		}
 
-		try {
-			const contentType = 'FILES';
-			const maxItems = parseInt($limit, 10) || 9;
-			const propertyFilter = '-all-'; // '-all-' for all properties OR ccm-stuff
-			const skipCount = parseInt($skip, 10) || 0;
-			const sortAscending = false;
+		const maxItems = parseInt($limit, 10) || 9;
+		const skipCount = parseInt($skip, 10) || 0;
 
-			const uuidV5Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-			const uuidV4Regex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
-			if (
-				(searchQuery.trim().length < 2 && !collection) ||
-				(collection !== '' && uuidV4Regex.test(collection) === false && uuidV5Regex.test(collection) === false)
-			) {
-				return new EduSharingResponse();
+		if ((searchQuery.trim().length < 2 && !collection) || (collection !== '' && !this.validateUuid(collection))) {
+			return new EduSharingResponse();
+		}
+
+		const criterias = [];
+		if (Configuration.get('FEATURE_ES_MERLIN_ENABLED')) {
+			const county = await getCounty(schoolId);
+			const groups = ['GROUP_public', 'GROUP_LowerSaxony-public', 'GROUP_Thuringia-public'];
+			if (county && county.countyId) {
+				groups.push(`GROUP_county-${county.countyId}`);
 			}
 
+			criterias.push({
+				property: 'ccm:ph_invited',
+				values: groups,
+			});
+		}
+
+		if (Configuration.get('FEATURE_ES_SEARCHABLE_ENABLED') && !collection) {
+			criterias.push({
+				property: 'ccm:hpi_searchable',
+				values: ['1'],
+			});
+		}
+
+		if (Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') === false) {
+			criterias.push({
+				property: 'ccm:hpi_lom_general_aggregationlevel',
+				values: ['1'],
+			});
+		} else if (collection) {
+			criterias.push({ property: 'ngsearchword', values: ['*'] });
+			criterias.push({
+				property: 'ccm:hpi_lom_relation',
+				values: [`{'kind': 'ispartof', 'resource': {'identifier': ['${collection}']}}`],
+			});
+		} else {
+			criterias.push({ property: 'ngsearchword', values: [searchQuery.toLowerCase()] });
+		}
+
+		const response = await this.searchEduSharing(criterias, skipCount, maxItems);
+		return response;
+	}
+
+	async searchEduSharing(criterias, skipCount, maxItems) {
+		try {
 			const url = `${ES_ENDPOINTS.SEARCH}?${[
-				`contentType=${contentType}`,
+				`contentType=FILES`,
 				`skipCount=${skipCount}`,
 				`maxItems=${maxItems}`,
-				`sortProperties=${sortProperties}`,
-				`sortAscending=${sortAscending}`,
-				`propertyFilter=${propertyFilter}`,
+				`sortProperties=score`,
+				`sortAscending=false`,
+				`propertyFilter=-all-`,
 			].join('&')}`;
 
-			const criterias = [];
-
 			const facettes = ['cclom:general_keyword'];
-
-			if (Configuration.get('FEATURE_ES_MERLIN_ENABLED')) {
-				const county = await getCounty(schoolId);
-				const groups = ['GROUP_public', 'GROUP_LowerSaxony-public', 'GROUP_Thuringia-public'];
-				if (county && county.countyId) {
-					groups.push(`GROUP_county-${county.countyId}`);
-				}
-
-				criterias.push({
-					property: 'ccm:ph_invited',
-					values: groups,
-				});
-			}
-
-			if (Configuration.get('FEATURE_ES_SEARCHABLE_ENABLED') && !collection) {
-				criterias.push({
-					property: 'ccm:hpi_searchable',
-					values: ['1'],
-				});
-			}
-
-			if (Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') && collection) {
-				criterias.push({ property: 'ngsearchword', values: ['*'] });
-				criterias.push({
-					property: 'ccm:hpi_lom_relation',
-					values: [`{'kind': 'ispartof', 'resource': {'identifier': ['${collection}']}}`],
-				});
-			} else {
-				criterias.push({ property: 'ngsearchword', values: [searchQuery.toLowerCase()] });
-			}
 
 			const options = {
 				method: 'POST',
@@ -257,6 +247,17 @@ class EduSharingConnector {
 					if (node.preview && node.preview.url) {
 						node.preview.url = await this.getImage(`${node.preview.url}&crop=true&maxWidth=300&maxHeight=300`);
 					}
+
+					// workaround for Edu-Sharing bug, where arrays are as strings "['a,b,c']"
+					if (
+						node.properties &&
+						node.properties['cclom:general_keyword'] &&
+						node.properties['cclom:general_keyword'][0]
+					) {
+						node.properties['cclom:general_keyword'] = node.properties['cclom:general_keyword'][0]
+							.slice(1, -1)
+							.split(',');
+					}
 				});
 				await Promise.allSettled(promises);
 			} else {
@@ -268,6 +269,12 @@ class EduSharingConnector {
 			logger.error('Edu-Sharing failed search ', err.message);
 			return Promise.reject(err);
 		}
+	}
+
+	validateUuid(uuid) {
+		const uuidV5Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+		const uuidV4Regex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
+		return uuidV4Regex.test(uuid) === true || uuidV5Regex.test(uuid) === true;
 	}
 }
 

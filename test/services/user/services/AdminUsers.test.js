@@ -495,6 +495,28 @@ describe('AdminUsersService', () => {
 		}
 	});
 
+	it('ignore schoolId', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool();
+		const { _id: otherSchoolId } = await testObjects.createTestSchool();
+		const targetUser = await testObjects.createTestUser({ roles: ['student'], schoolId });
+		const actingUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+		const params = await testObjects.generateRequestParamsFromUser(actingUser);
+
+		const result = await adminStudentsService.patch(targetUser._id, { schoolId: otherSchoolId }, params);
+		expect(equalIds(result.schoolId, schoolId)).to.equal(true);
+	});
+
+	it('ignore roles', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool();
+		const targetUser = await testObjects.createTestUser({ roles: ['student'], schoolId });
+		const actingUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+		const params = await testObjects.generateRequestParamsFromUser(actingUser);
+
+		await adminStudentsService.patch(targetUser._id, { roles: ['superhero'] }, params);
+		const result = await app.service('users').get(targetUser._id, { query: { $populate: 'roles' } });
+		expect(result.roles[0].name).to.equal('student');
+	});
+
 	it('users with STUDENT_LIST permission can access the FIND method', async () => {
 		await testObjects.createTestRole({
 			name: 'studentListPerm',
@@ -979,6 +1001,38 @@ describe('AdminUsersService', () => {
 			doNotUpdateAccountIfSystemIdIsSet('student', 'patch', adminStudentsService));
 		it('do not update account if from external system (teacher, patch)', () =>
 			doNotUpdateAccountIfSystemIdIsSet('teacher', 'patch', adminTeachersService));
+
+		const doNotPatchUserIfExternallyManaged = (role, type, service) => async () => {
+			const school = await testObjects.createTestSchool({
+				name: 'testSchool1',
+				source: 'notInternal',
+			});
+			const user = await testObjects.createTestUser({ roles: [role], schoolId: school._id });
+			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+			const params = await testObjects.generateRequestParamsFromUser(admin);
+			params.query = {};
+
+			try {
+				await service[type](
+					user._id.toString(),
+					{
+						firstName: 'golf',
+						lastName: 'monk',
+						email: 'foo@bar.baz',
+					},
+					params
+				);
+				expect.fail('The previous call should have failed');
+			} catch (err) {
+				expect(err.code).to.equal(403);
+				expect(err.message).to.equal('Creating new students or teachers is only possible in the source system.');
+			}
+		};
+
+		it('does not allow patch student if the school is externally managed (student, patch)', () =>
+			doNotPatchUserIfExternallyManaged('student', 'patch', adminStudentsService));
+		it('does not allow patch teacher if the school is externally managed (teacher, patch)', () =>
+			doNotPatchUserIfExternallyManaged('teacher', 'patch', adminTeachersService));
 
 		const updateFromDifferentSchool = (role, type, service) => async () => {
 			const school = await testObjects.createTestSchool({
