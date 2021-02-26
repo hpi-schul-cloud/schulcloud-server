@@ -130,6 +130,6 @@ echo "VERSION=$VERSION"
 curl -X POST https://api.github.com/repos/hpi-schul-cloud/sc-app-ci/dispatches \
 -H 'Accept: application/vnd.github.everest-preview+json' \
 -u $GITHUB_TOKEN \
---data '{"event_type": "Trigger_from_sc_server", "client_payload": { "GIT_BRANCH": "$TRAVIS_BRANCH","BRANCH_PREFIX": "$GIT_FLOW_BRANCH", "TRIGGER_REPOSITORY": "sc-server", "VERSION": "$VERSION" }}'
+--data '{"event_type": "Trigger_from_sc_server", "client_payload": { "GIT_BRANCH": '"$TRAVIS_BRANCH"', "BRANCH_PREFIX": '"$GIT_FLOW_BRANCH , "TRIGGER_REPOSITORY": "sc-server", "VERSION": '"$VERSION"' }}'
 
 exit 0
