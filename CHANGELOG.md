@@ -23,6 +23,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8500 - refactoring in error handling
 - SC-7021 - automatic deletion documents in the trashbins collection after 7 days.
 
+### Fixed
+
+- SC-8728 - fix configuration reset in tests
+
 ## [26.0.0]
 
 ### Fixed
