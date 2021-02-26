@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-8250 - add bulk deletion to user service v2
 - SC-8341 - add tombstone school to tombstone user
 - SC-8408 - added delete events by scope Id route
 - SC-7937 - Allow adding multiple materials to lesson
@@ -23,12 +24,25 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8500 - refactoring in error handling
 - SC-7021 - automatic deletion documents in the trashbins collection after 7 days.
 
+### Fixed
+
+- SC-8728 - fix configuration reset in tests
+
+### Added
 ## [26.0.0]
 
 ### Fixed
 
 - SC-6679 - fixed table styling in topic text-component
 - SC-8534 - fix registration link generation
+- SC-8682 - fix students are editable in externally managed schools
+- SC-8534 fix registration link generation
+
+## [25.6.9] - 2021-02-26
+
+### Fixed
+
+- SC-8714 Fixed an issue in school creation that could cause the iserv-sync to fail
 
 ## [25.6.8] - 2021-02-19
 

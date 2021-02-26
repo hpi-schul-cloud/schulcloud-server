@@ -93,6 +93,7 @@ class LDAPSyncer extends Syncer {
 		const currentLDAPProvider = this.system.ldapConfig.provider;
 		let newSchools = 0;
 		let updates = 0;
+		let fails = 0;
 		return Promise.all(
 			data.map((ldapSchool) =>
 				this.app
@@ -127,9 +128,13 @@ class LDAPSyncer extends Syncer {
 							return this.app.service('schools').create(schoolData);
 						});
 					})
+					.catch((err) => {
+						fails += 1;
+						this.logError(`School creation failed for ${ldapSchool.displayName}`, err);
+					})
 			)
 		).then((res) => {
-			this.logInfo(`Created ${newSchools} new schools and updated ${updates} schools`);
+			this.logInfo(`Created ${newSchools} new schools and updated ${updates} schools. ${fails} schools failed`);
 			return Promise.resolve(res);
 		});
 	}
