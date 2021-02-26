@@ -120,24 +120,26 @@ buildandpush
 # trigger sc-app-ci to deploy release to staging
 # if [ "$TRAVIS_BRANCH" = "release" ] ...
 # if [ "${GIT_FLOW_BRANCH}" = "release" ] && [ "${{ secrets.CI_SC_APP_STAGING_BRANCH }}" = "$(jq -r '.version' package.json )" ]
+# deploy upcoming Release to staging xx.xx.0 RegEx ^[0-9]+\.[0-9]+\.0$
+# [[ "$(jq -r '.version' package.json )" =~ ^[0-9]+\.[0-9]+\.0$ ]]
 
 echo "###########################################"
 echo "deploy release to staging $TRAVIS_BRANCH"
 echo "${GIT_FLOW_BRANCH}"
 echo "$(jq -r '.version' package.json )"
-echo "$CI_SC_APP_STAGING_BRANCH"
-echo "${CI_SC_APP_STAGING_BRANCH}"
-echo "${{ CI_SC_APP_STAGING_BRANCH }}"
+
 echo "Trigger sc-app-ci to deploy release to staging instance"
 echo "###########################################"
-echo env
+echo ""
 echo "###########################################"
 
 
 curl -X POST https://api.github.com/repos/hpi-schul-cloud/schulcloud-server/dispatches \
 -H 'Accept: application/vnd.github.everest-preview+json' \
--u MY_DOCKER_PASSWORD:$MY_DOCKER_PASSWORD \
---data '{"event_type": "$your_event", "client_payload": { "branch-prefix": "${GIT_FLOW_BRANCH}", "sc-app": "sc-server", "version-qualifier": "$(jq -r '.version' package.json )" }}'
+-u $GITHUB_TOKEN \
+--data '{"event_type": "Trigger_from_sc_server", "client_payload": { "branch-prefix": "Feature", "sc-app": "sc-server", "version-qualifier": "26.0.0" }}'
+
+# --data '{"event_type": "Trigger_from_sc_server", "client_payload": { "branch-prefix": "${GIT_FLOW_BRANCH}", "sc-app": "sc-server", "version-qualifier": "$(jq -r '.version' package.json )" }}'
 
 if [[ "$CI_SC_APP_STAGING_BRANCH" = "$(jq -r '.version' package.json )" ]]
 then
