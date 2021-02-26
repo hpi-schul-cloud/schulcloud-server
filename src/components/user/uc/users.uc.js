@@ -82,7 +82,7 @@ const replaceUserWithTombstone = async (user) => {
 	return { success: true };
 };
 
-const checkPermissionsInternal = async (affectedUser, roleName, permissionAction, currentUser) => {
+const checkPermissionsInternal = (affectedUser, roleName, permissionAction, currentUser) => {
 	let grantPermission = true;
 	// the effected user's role fits the rolename for the route
 	grantPermission = grantPermission && affectedUser.roles.some((role) => role.name.toUpperCase() === roleName);
@@ -126,9 +126,9 @@ const checkPermissionsInternal = async (affectedUser, roleName, permissionAction
 const checkPermissions = async (affectedUserId, roleName, permissionAction, { user: currentUser }) => {
 	const ids = Array.isArray(affectedUserId) ? affectedUserId : [affectedUserId];
 	const affectedUsers = await userRepo.getUsersWithRoles(ids);
-	return Promise.all(
-		affectedUsers.map(async (aUser) => checkPermissionsInternal(aUser, roleName, permissionAction, currentUser))
-	);
+	affectedUsers.forEach((aUser) => {
+		checkPermissionsInternal(aUser, roleName, permissionAction, currentUser);
+	});
 };
 
 const getOrCreateTombstoneUserId = async (schoolId, user) => {
