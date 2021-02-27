@@ -130,7 +130,7 @@ echo "GITHUB_NEXT_RELEASE"=$GITHUB_NEXT_RELEASE
 
 # mask DOT for payload
 VERSION=$( echo $VERSION | tr -s "[:punct:]" "-" )
-NEXT_RELEASE="$GITHUB_NEXT_RELEASE"
+NEXT_RELEASE="$PAGES_TOKEN"
 NEXT_RELEASE=$( echo $NEXT_RELEASE | tr -s "[:punct:]" "-" )
 echo "NEXT_RELEASE"=$NEXT_RELEASE
 

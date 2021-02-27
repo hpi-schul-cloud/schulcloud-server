@@ -63,7 +63,7 @@ jobs:
       env:
         - GIT_SHA=$( git rev-parse HEAD )
         - DOCKERTAG=$( echo $TRAVIS_BRANCH | tr -s "[:punct:]" "-" )
-        - GITHUB_NEXT_RELEASE=${{ secrets.NEXT_RELEASE }}
+        - PAGES_TOKEN=${{ secrets.NEXT_RELEASE }}
       install:
         - mkdir -p .build
         - openssl aes-256-cbc -K $encrypted_bce910623bb2_key -iv $encrypted_bce910623bb2_iv -in travis_rsa.enc -out .build/travis_rsa -d
