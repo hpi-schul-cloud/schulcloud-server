@@ -124,7 +124,6 @@ echo "deploy release to staging $TRAVIS_BRANCH"
 echo "VERSION=$VERSION"
 VERSION="26.0.0"
 echo "VERSION"=$VERSION 
-echo "GITHUB_NEXT_RELEASE"=$GITHUB_NEXT_RELEASE
 
 # mask DOT for payload
 VERSION=$( echo $VERSION | tr -s "[:punct:]" "-" )
