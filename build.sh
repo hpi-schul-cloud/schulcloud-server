@@ -128,18 +128,16 @@ echo "deploy release to staging $TRAVIS_BRANCH"
 echo "VERSION=$VERSION"
 VERSION="26.0.0"
 echo "VERSION"=$VERSION 
-echo "NEXT_RELEASE"=$NEXT_RELEASE
 echo "GITHUB_TOKEN"=$GITHUB_TOKEN
-echo "GITHUB_TOKEN2"=$GITHUB_TOKEN2
 
 # mask DOT for payload
-
 VERSION=$( echo $VERSION | tr -s "[:punct:]" "-" )
-
+NEXT_RELEASE=$( echo $GITHUB_TOKEN | tr -s "[:punct:]" "-" )
+echo "NEXT_RELEASE"=$NEXT_RELEASE
 
 curl -X POST https://api.github.com/repos/hpi-schul-cloud/sc-app-ci/dispatches \
 -H 'Accept: application/vnd.github.everest-preview+json' \
 -u $GITHUB_TOKEN \
---data '{"event_type": "Trigger_from_sc_server", "client_payload": { "GIT_BRANCH": "'"$TRAVIS_BRANCH"'", "TRIGGER_REPOSITORY": "sc-server", "VERSION": "'"$VERSION"'", "NEXT_RELEASE": "'"26-0-0"'" }}'
+--data '{"event_type": "Trigger_from_sc_server", "client_payload": { "GIT_BRANCH": "'"$TRAVIS_BRANCH"'", "TRIGGER_REPOSITORY": "sc-server", "VERSION": "'"$VERSION"'", "NEXT_RELEASE": "'"NEXT_RELEASE"'" }}'
 
 exit 0
