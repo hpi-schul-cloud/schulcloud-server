@@ -118,8 +118,6 @@ echo "Event detected on matching branch . Building docker image..."
 buildandpush
 
 # trigger sc-app-ci to deploy release to staging
-# deploy upcoming Release to staging 
-# upcoming Release == Version xx.xx.0 or RegEx ^[0-9]+\.[0-9]+\.0$
 
 VERSION="$(jq -r '.version' package.json )"
 echo "deploy release to staging $TRAVIS_BRANCH"
@@ -130,8 +128,6 @@ echo "GITHUB_NEXT_RELEASE"=$GITHUB_NEXT_RELEASE
 
 # mask DOT for payload
 VERSION=$( echo $VERSION | tr -s "[:punct:]" "-" )
-
-# if [ "${GIT_FLOW_BRANCH}" = "release" ] && [[ "$VERSION" =~ "$NEXT_RELEASE" ]]
 
 curl -X POST https://api.github.com/repos/hpi-schul-cloud/sc-app-ci/dispatches \
 -H 'Accept: application/vnd.github.everest-preview+json' \
