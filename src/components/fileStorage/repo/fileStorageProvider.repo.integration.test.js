@@ -7,7 +7,7 @@ const testObjects = require('../../../../test/services/helpers/testObjects')(app
 
 const fileStorageProviderRepo = rewire('./fileStorageProvider.repo');
 
-describe.only('fileStorageProvider.repo.integration.test', () => {
+describe('fileStorageProvider.repo.integration.test', () => {
 	let server;
 	let app;
 	let configBefore;
