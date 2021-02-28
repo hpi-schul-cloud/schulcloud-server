@@ -120,7 +120,6 @@ buildandpush
 # trigger sc-app-ci to deploy release to staging
 
 VERSION="$(jq -r '.version' package.json )"
-echo "deploy release to staging $TRAVIS_BRANCH"
 echo "VERSION=$VERSION"
 # just testing change release to feature
 VERSION="26.0.0"
@@ -130,7 +129,7 @@ if [[ "$TRAVIS_BRANCH" =~ ^"feature"* ]]
 then
 	echo "deploy release to staging $TRAVIS_BRANCH with $VERSION."
 	echo "deployment version is set as github secret GITHUB NEXT_RELEASE"
-	echo" and checked in sc-app-deploy workflow Deploy_release_to_staging.yml"
+	echo "and checked in sc-app-deploy workflow Deploy_release_to_staging.yml"
 
 	# mask DOT for payload
 	VERSION=$( echo $VERSION | tr -s "[:punct:]" "-" )
