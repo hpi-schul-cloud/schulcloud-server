@@ -1,11 +1,13 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const { expect } = require('chai');
+const sinon = require('sinon');
+const rewire = require('rewire');
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 
-const { expect } = require('chai');
-const { fileStorageProviderRepo } = require('.');
+const fileStorageProviderRepo = rewire('./fileStorageProvider.repo');
 
-describe('fileStorageProvider.repo.integration.test', () => {
+describe.only('fileStorageProvider.repo.integration.test', () => {
 	let server;
 	let app;
 	let configBefore;
@@ -17,10 +19,18 @@ describe('fileStorageProvider.repo.integration.test', () => {
 		endpointUrl: 'http://localhost:9090',
 	};
 
-	const cleanupStorageProvider = async (storageProvider, bucketName, fileId) => {
-			await storageProvider.deleteObject({ Bucket: bucketName, Key: fileId }).promise();
-			await storageProvider.deleteBucket({ Bucket: bucketName }).promise();
-	}
+	const cleanupStorageProvider = async (storageProvider, bucketName, fileIds) => {
+		const deleteParams = {
+			Bucket: bucketName,
+			Delete: {
+				Objects: fileIds.map((fileId) => ({
+					Key: `expiring_${fileId}`,
+				})),
+			},
+		};
+		await storageProvider.deleteObjects(deleteParams).promise();
+		await storageProvider.deleteBucket({ Bucket: bucketName }).promise();
+	};
 
 	before(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
@@ -44,19 +54,33 @@ describe('fileStorageProvider.repo.integration.test', () => {
 		});
 	});
 
+
 	/**
-	 * This integration test requires MinIO running with the default configuration.
+	 * This integration tests requires MinIO running with the default configuration.
 	 * If MinIO is not available under the default endpoint url, this test will be skipped.
 	 */
-	describe('moveFilesToTrashBatch', () => {
-		it('should mark objects as to be deleted under a prefixed name', async function () {
+	let skipMinioTests = false;
+
+	describe('moveFilesToTrash', () => {
+		beforeEach(function beforeEach() {
+			if (skipMinioTests) {
+				this.currentTest.fn = function skipFunction() {
+					this.skip();
+				};
+			}
+		});
+
+		it('should mark objects as to be deleted under a prefixed name', async function testFunction() {
 			const bucketName = `bucket-${testObjects.generateObjectId()}`;
 			const fileId = testObjects.generateObjectId().toString();
 			const storageProvider = fileStorageProviderRepo.private.createStorageProviderInstance(storageProviderInfo);
 			try {
 				await storageProvider.createBucket({ Bucket: bucketName }).promise();
 			} catch (err) {
-				if (err.code === 'UnknownEndpoint') this.skip(); // minio is not running
+				if (err.code === 'UnknownEndpoint') {
+					skipMinioTests = true;
+					this.skip(); // minio is not running
+				}
 			}
 			await storageProvider
 				.upload({
@@ -66,9 +90,7 @@ describe('fileStorageProvider.repo.integration.test', () => {
 				})
 				.promise();
 
-			const result = await fileStorageProviderRepo.moveFilesToTrashBatch(storageProviderInfo, bucketName, [fileId]);
-
-			expect(result).to.eq(true);
+			const result = await fileStorageProviderRepo.moveFilesToTrash(storageProviderInfo, bucketName, [fileId]);
 
 			const fileStorageContent = await storageProvider.listObjectsV2({ Bucket: bucketName }).promise();
 
@@ -80,7 +102,82 @@ describe('fileStorageProvider.repo.integration.test', () => {
 
 			expect(modifiedFile.Metadata.expires).to.eq('true');
 
-			await cleanupStorageProvider(storageProvider, bucketName, newFileId);
+			await cleanupStorageProvider(storageProvider, bucketName, [fileId]);
+		});
+
+		it('should throw an error if more then 1000 files should be deleted at once', async () => {
+			const fileIds = new Array(1001).fill(testObjects.generateObjectId());
+			expect(fileStorageProviderRepo.moveFilesToTrash(storageProviderInfo, 'bucketName', fileIds)).to.be.rejected;
+		});
+	});
+
+	describe('moveFilesToTrashBatch', () => {
+		let bucketName;
+		let fileIds;
+		let storageProvider;
+
+		beforeEach(async function beforeEach() {
+			if (skipMinioTests) {
+				this.currentTest.fn = function skipFunction() {
+					this.skip();
+				};
+			}
+			bucketName = `bucket-${testObjects.generateObjectId()}`;
+			fileIds = new Array(20).fill().map(() => testObjects.generateObjectId().toString());
+			storageProvider = fileStorageProviderRepo.private.createStorageProviderInstance(storageProviderInfo);
+			await storageProvider.createBucket({ Bucket: bucketName }).promise();
+			await Promise.all(
+				fileIds.map((fileId) =>
+					storageProvider
+						.upload({
+							Bucket: bucketName,
+							Key: fileId,
+							Body: 'test',
+						})
+						.promise()
+				)
+			);
+		});
+
+		afterEach(async () => {
+			sinon.restore();
+			await cleanupStorageProvider(storageProvider, bucketName, fileIds);
+		});
+
+		it('should call moveFileToTrash in unevenly distributed batches', async () => {
+			Configuration.set('REQUEST_LIMIT_STORAGE_PROVIDER', 5);
+			const moveFilesToTrashSpy = sinon.spy(fileStorageProviderRepo, 'moveFilesToTrash');
+
+			const resetSpy = fileStorageProviderRepo.__set__('moveFilesToTrash', moveFilesToTrashSpy);
+
+			const result = await fileStorageProviderRepo.moveFilesToTrashBatch(storageProviderInfo, bucketName, fileIds);
+
+			expect(result).to.eq(true);
+			expect(moveFilesToTrashSpy.callCount).to.eq(4);
+			expect(moveFilesToTrashSpy.getCall(0).args).deep.to.equal([storageProviderInfo, bucketName, fileIds.slice(0, 5)]);
+			expect(moveFilesToTrashSpy.getCall(1).args).deep.to.equal([storageProviderInfo, bucketName, fileIds.slice(5, 10)]);
+			expect(moveFilesToTrashSpy.getCall(2).args).deep.to.equal([storageProviderInfo, bucketName, fileIds.slice(10, 15)]);
+			expect(moveFilesToTrashSpy.getCall(3).args).deep.to.equal([storageProviderInfo, bucketName, fileIds.slice(15, 20)]);
+
+			resetSpy();
+		});
+
+		it('should call moveFileToTrash in evenly distributed batches', async () => {
+			Configuration.set('REQUEST_LIMIT_STORAGE_PROVIDER', 6);
+			const moveFilesToTrashSpy = sinon.spy(fileStorageProviderRepo, 'moveFilesToTrash');
+
+			const resetSpy = fileStorageProviderRepo.__set__('moveFilesToTrash', moveFilesToTrashSpy);
+
+			const result = await fileStorageProviderRepo.moveFilesToTrashBatch(storageProviderInfo, bucketName, fileIds);
+
+			expect(result).to.eq(true);
+			expect(moveFilesToTrashSpy.callCount).to.eq(4);
+			expect(moveFilesToTrashSpy.getCall(0).args).deep.to.equal([storageProviderInfo, bucketName, fileIds.slice(0, 6)]);
+			expect(moveFilesToTrashSpy.getCall(1).args).deep.to.equal([storageProviderInfo, bucketName, fileIds.slice(6, 12)]);
+			expect(moveFilesToTrashSpy.getCall(2).args).deep.to.equal([storageProviderInfo, bucketName, fileIds.slice(12, 18)]);
+			expect(moveFilesToTrashSpy.getCall(3).args).deep.to.equal([storageProviderInfo, bucketName, fileIds.slice(18, 20)]);
+
+			resetSpy();
 		});
 	});
 });

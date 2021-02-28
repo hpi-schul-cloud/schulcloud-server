@@ -58,7 +58,7 @@ const createDeleteParams = (bucket, fileIds) => ({
  */
 const moveFilesToTrash = async (storageProvider, bucket, fileIds) => {
 	if (fileIds.length > 1000) {
-		throw AssertionError('Only up to 1000 files can be deleted with one storage provider request');
+		throw new AssertionError('Only up to 1000 files can be deleted with one storage provider request');
 	}
 	const storageProviderInstance = createStorageProviderInstance(storageProvider);
 
@@ -94,5 +94,6 @@ module.exports = {
 		createStorageProviderInstance,
 	},
 	getStorageProviderMetaInformation,
+	moveFilesToTrash,
 	moveFilesToTrashBatch,
 };
