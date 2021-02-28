@@ -122,15 +122,23 @@ buildandpush
 VERSION="$(jq -r '.version' package.json )"
 echo "deploy release to staging $TRAVIS_BRANCH"
 echo "VERSION=$VERSION"
+# just testing change release to feature
 VERSION="26.0.0"
 echo "VERSION"=$VERSION 
+# if [[ "$TRAVIS_BRANCH" =~ ^"release"* ]]
+if [[ "$TRAVIS_BRANCH" =~ ^"feature"* ]]
+then
+	echo "deploy release to staging $TRAVIS_BRANCH with $VERSION."
+	echo "deployment version is set as github secret GITHUB NEXT_RELEASE"
+	echo" and checked in sc-app-deploy workflow Deploy_release_to_staging.yml"
 
-# mask DOT for payload
-VERSION=$( echo $VERSION | tr -s "[:punct:]" "-" )
+	# mask DOT for payload
+	VERSION=$( echo $VERSION | tr -s "[:punct:]" "-" )
 
-curl -X POST https://api.github.com/repos/hpi-schul-cloud/sc-app-ci/dispatches \
--H 'Accept: application/vnd.github.everest-preview+json' \
--u $GITHUB_TOKEN \
---data '{"event_type": "Trigger_from_sc_server", "client_payload": { "GIT_BRANCH": "'"$TRAVIS_BRANCH"'", "TRIGGER_REPOSITORY": "sc-server", "VERSION": "'"$VERSION"'" }}'
+	curl -X POST https://api.github.com/repos/hpi-schul-cloud/sc-app-ci/dispatches \
+	-H 'Accept: application/vnd.github.everest-preview+json' \
+	-u $GITHUB_TOKEN \
+	--data '{"event_type": "Trigger_from_sc_server", "client_payload": { "GIT_BRANCH": "'"$TRAVIS_BRANCH"'", "TRIGGER_REPOSITORY": "sc-server", "VERSION": "'"$VERSION"'" }}'
+fi
 
 exit 0
