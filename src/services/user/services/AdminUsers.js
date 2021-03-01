@@ -101,8 +101,8 @@ class AdminUsers {
 				query.searchFilterGate = searchQueryElements.length * 0.9;
 				// recreating sort here, to set searchQuery as first (main) parameter of sorting
 				query.sort = {
-					searchQuery: 1,
 					...query.sort,
+					searchQuery: 1,
 				};
 			}
 
