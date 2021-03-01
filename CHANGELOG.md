@@ -15,6 +15,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8682 - fix students are editable in externally managed schools
 - SC-8534 fix registration link generation
+- Allow sorting after search
 
 ## [25.6.9] - 2021-02-26
 
