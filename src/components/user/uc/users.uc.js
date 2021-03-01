@@ -6,6 +6,11 @@ const { facadeLocator } = require('../../../utils/facadeLocator');
 const errorUtils = require('../../../errors/utils');
 const { trashBinResult } = require('../../helper/uc.helper');
 
+const getSchoolIdOfUser = async (userId) => {
+	const user = await userRepo.getUser(userId);
+	return user.schoolId;
+}
+
 const userHaveSameSchool = async (userId, otherUserId) => {
 	if (userId && otherUserId) {
 		const { schoolId: currentUserSchoolId } = await userRepo.getUser(otherUserId);
@@ -169,6 +174,7 @@ const deleteUser = async (id, { user: loggedinUser }) => {
 };
 
 module.exports = {
+	getSchoolIdOfUser,
 	deleteUser,
 	// following not to exported by facade
 	checkPermissions,
