@@ -121,11 +121,8 @@ buildandpush
 
 VERSION="$(jq -r '.version' package.json )"
 echo "VERSION=$VERSION"
-# just testing change release to feature
-VERSION="26.0.0"
-echo "VERSION"=$VERSION 
-# if [[ "$TRAVIS_BRANCH" =~ ^"release"* ]]
-if [[ "$TRAVIS_BRANCH" =~ ^"feature"* ]]
+
+if [[ "$TRAVIS_BRANCH" =~ ^"release"* ]]
 then
 	echo "deploy release to staging $TRAVIS_BRANCH with $VERSION."
 	echo "deployment version is set as github secret GITHUB NEXT_RELEASE"
