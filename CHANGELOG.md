@@ -24,6 +24,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - OPS-1508 - added limits for cpu and ram to the docker compose files
 - SC-8500 - refactoring in error handling
 - SC-7021 - automatic deletion documents in the trashbins collection after 7 days.
+- SC-5202 - homework tests refactoring
 
 ### Fixed
 
