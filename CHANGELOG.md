@@ -17,6 +17,9 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8534 fix registration link generation
 - Allow sorting after search
 
+## [25.6.10] - 2021-03-09
+- SC-8770 Fixed issue where parent consents were overwritten
+
 ## [25.6.9] - 2021-02-26
 
 ### Fixed
