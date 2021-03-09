@@ -124,14 +124,23 @@ const firstLogin = async (data, params, app) => {
 				if (updateConsentType === 'userConsent') {
 					updatedConsent = { ...updatedConsent, ...consent[updateConsentType] };
 					updatedConsent = updateConsentDates(updatedConsent);
-					return app.service('consents').patch(consent._id, { userConsent: updatedConsent });
+					return app.service('usersModel').patch(user._id, {
+						$set: {
+							'consent.userConsent': updatedConsent,
+						},
+					});
 				}
 				if (updateConsentType === 'parentConsents' && (!consent.parentConsents || !consent.parentConsents.length)) {
 					throw new Error('no parent or user consent found');
 				}
 				updatedConsent = { ...updatedConsent, ...consent.parentConsents[0] };
 				updatedConsent = updateConsentDates(updatedConsent);
-				return app.service('consents').patch(consent._id, { parentConsents: [updatedConsent] });
+				// return app.service('consents').patch(consent._id, { parentConsents: [updatedConsent] });
+				return app.service('usersModel').patch(user._id, {
+					$set: {
+						'consent.parentConsents': [updatedConsent],
+					},
+				});
 			});
 	}
 
