@@ -15,6 +15,7 @@ describe('firstLogin Service', () => {
 	});
 
 	after(async () => {
+		await testObjects.cleanup();
 		await server.close();
 	});
 
