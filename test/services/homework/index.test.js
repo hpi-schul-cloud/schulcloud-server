@@ -297,6 +297,12 @@ describe('homework service', function test() {
 
 			const params = await testObjects.generateRequestParamsFromUser(student);
 			const result = await homeworkService.find(params);
+			expect(result).to.not.be.undefined;
+			expect(result.data.length).to.equal(50);
+			result.data.forEach((homework) => {
+				expect(homework.submissions).to.equal(1);
+			});
+
 			// assert
 		});
 	});
