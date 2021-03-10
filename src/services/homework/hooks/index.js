@@ -151,6 +151,7 @@ const addStats = (hook) => {
 				homeworkId: { $in: data.map((n) => n._id) },
 				$populate: ['courseGroupId'],
 			},
+			// paginate: false,
 		})
 		.then((submissions) => {
 			data = data.map((e) => {

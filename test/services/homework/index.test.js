@@ -252,6 +252,55 @@ describe('homework service', function test() {
 		});
 	});
 
+	describe('FIND', () => {
+		const createHomeworkWithSubmissions = async (teacherId, studentIds = [], courseId) => {
+			const { _id: homeworkId } = await testObjects.createTestHomework({
+				teacherId,
+				name: 'Testaufgabe',
+				description: '\u003cp\u003eAufgabenbeschreibung\u003c/p\u003e\r\n',
+				availableDate: Date.now(),
+				dueDate: Date.now() + 86400000,
+				lessonId: null,
+				courseId,
+			});
+			const submissionPromises = [];
+			studentIds.forEach((studentId) => {
+				submissionPromises.push(
+					testObjects.createTestSubmission({
+						homeworkId,
+						studentId,
+						comment: 'I dont know the answer',
+					})
+				);
+			});
+			await Promise.all(submissionPromises);
+		};
+		it('does not paginate the submissions', async () => {
+			const { _id: teacherId } = await testObjects.createTestUser({ roles: ['teacher'] });
+			const student = await testObjects.createTestUser({ roles: ['student'] });
+			const otherStudentPromises = [];
+			for (let i = 0; i < 25; i += 1) {
+				otherStudentPromises.push(testObjects.createTestUser({ roles: ['student'] }));
+			}
+			let otherStudents = await Promise.all(otherStudentPromises);
+			otherStudents = otherStudents.map((s) => s._id);
+			const { _id: courseId } = await testObjects.createTestCourse({
+				teacherIds: [teacherId],
+				userIds: [student._id, ...otherStudents],
+			});
+
+			const homeworkPromises = [];
+			for (let i = 0; i < 50; i += 1) {
+				homeworkPromises.push(createHomeworkWithSubmissions(teacherId, [student._id, ...otherStudents], courseId));
+			}
+			await Promise.all(homeworkPromises);
+
+			const params = await testObjects.generateRequestParamsFromUser(student);
+			const result = await homeworkService.find(params);
+			// assert
+		});
+	});
+
 	it('FIND only my own tasks', async () => {
 		const user = await testObjects.createTestUser({ roles: ['teacher'] });
 		await testObjects.createTestHomework({
