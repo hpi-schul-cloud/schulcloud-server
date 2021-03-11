@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.0.2] - 2021-03-10
+
+### Fixed
+
+- SC-5202 - fixed an issue with internal pagination in homework-submissions
+
 ## [26.0.1] - 2021-03-09
 
 ### Changed
