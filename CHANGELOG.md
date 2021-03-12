@@ -13,7 +13,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
-- SC-8211 - Fixed course events duplications
 - SC-5202 - fixed an issue with internal pagination in homework-submissions
 
 ## [26.0.1] - 2021-03-09
@@ -29,6 +28,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8682 - fix students are editable in externally managed schools
 - SC-8534 fix registration link generation
 - Allow sorting after search
+
+## [25.6.11]
+
+### Fixed
+- SC-8211 - Fixed course events duplications
 
 ## [25.6.10] - 2021-03-09
 
