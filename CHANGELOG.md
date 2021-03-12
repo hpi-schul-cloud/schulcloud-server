@@ -13,6 +13,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-8211 - Fixed course events duplications
 - SC-5202 - fixed an issue with internal pagination in homework-submissions
 
 ## [26.0.1] - 2021-03-09
