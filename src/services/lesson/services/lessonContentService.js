@@ -1,4 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { LessonModel } = require('../model');
 
 const lessonContentService = {
 	find(params) {
