@@ -50,6 +50,13 @@ module.exports = function setup() {
 				]} },
 				{ $unwind: '$contents' },
 				{ $match: { 'contents.component': params.query.type } },
+				{ $match: { $or: [
+					{ 'contents.user': { $in: [params.query.user] } },
+					{ $or: [
+						{'contents.hidden': { $exists: false } },
+						{'contents.hidden': false }
+					]},
+				] } },
 				{ $project: { _id: '$contents._id', content: '$contents.content' } },
 			]).exec();
 		},

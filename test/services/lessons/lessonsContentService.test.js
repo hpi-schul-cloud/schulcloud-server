@@ -118,10 +118,3 @@ describe('Lesson Content Service', () => {
 		});
 	});
 });
-
-/*
-result 
-{"_id":"5ea2c6ad843b8d002b193106","content":{"title":"sdfasd","description":"sdfasdf","board":"25380","url":"
-https://nexboard.nexenio.com/app/client/pub/25380/355n8800-j412-4ko8-g3b0-5553qz291615
-"}}
-*/
