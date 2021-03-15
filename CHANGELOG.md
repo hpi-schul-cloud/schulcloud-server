@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.6.12] - 2021-03-15
+
+- SC-8782 Fixed lesson context Query
+
 ## [25.6.10] - 2021-03-09
 - SC-8770 Fixed issue where parent consents were overwritten
 
