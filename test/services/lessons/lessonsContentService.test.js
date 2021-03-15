@@ -5,7 +5,7 @@ const testObjects = require('../helpers/testObjects')(appPromise);
 // const { equal: equalIds } = require('../../../src/helper/compare').ObjectId;
 // const { userModel } = require('../../../src/services/user/model');
 
-describe.only('Lesson Content Service', () => {
+describe('Lesson Content Service', () => {
 	let app;
 	let server;
 
