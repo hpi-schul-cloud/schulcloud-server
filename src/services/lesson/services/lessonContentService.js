@@ -1,3 +1,5 @@
+const { authenticate } = require('@feathersjs/authentication');
+
 const lessonContentService = {
 	find(params) {
 		const userId = params.account.userId;
@@ -32,7 +34,7 @@ const lessonContentService = {
 
 const lessonContentServiceHooks = {
 	before: {
-		all: [auth.hooks.authenticate('jwt')],
+		all: [authenticate('jwt')],
 		find: [],
 	},
 	after: {
