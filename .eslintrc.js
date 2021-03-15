@@ -75,8 +75,8 @@ module.exports = {
 				sourceType: 'module', // Allows for the use of imports
 			},
 			rules: {
-				'import/extensions': 'off',
-				'import/no-extraneous-dependencies': ['error', { devDependencies: ['**/*.test.js'] }],
+				'import/extensions': 'never',
+				'import/no-extraneous-dependencies': ['error', { devDependencies: ['**/*.test.{js,ts}'] }],
 			},
 		},
 	],
