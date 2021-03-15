@@ -2,7 +2,9 @@ const service = require('feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
+const { BadRequest } = require('../../errors');
 const { LessonModel } = require('./model');
+const { courseModel } = require('../user-group/model');
 const hooks = require('./hooks/index');
 const copyHooks = require('./hooks/copy');
 const { LessonCopyService, LessonFilesService, AddMaterialService } = require('./services');
@@ -30,7 +32,22 @@ module.exports = function setup() {
 	// Return all lesson.contets which have component = query.type And User = query.user or null
 	app.use('/lessons/contents/:type/', {
 		find(params) {
+			const userId = params.query.user;
+			if (!userId) {
+				throw new BadRequest('requires a user in the query')
+			}
 			return LessonModel.aggregate([
+				{ $lookup: {
+					from: 'courses',
+					localField: 'courseId',
+					foreignField: '_id',
+					as: 'course'
+				}},
+				{ $match: { $or: [
+					{ 'course.userIds': userId},
+					{ 'course.teacherIds': userId },
+					{ 'course.substitutionIds': userId }
+				]} },
 				{ $unwind: '$contents' },
 				{ $match: { 'contents.component': params.query.type } },
 				{ $match: { 'contents.user_id': { $in: [params.query.user, null] } } },
