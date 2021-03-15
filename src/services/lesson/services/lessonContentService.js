@@ -4,9 +4,7 @@ const { LessonModel } = require('../model');
 const lessonContentService = {
 	find(params) {
 		const userId = params.account.userId;
-		if (!userId) {
-			throw new BadRequest('requires a user in the query')
-		}
+
 		return LessonModel.aggregate([
 			{ $lookup: {
 				from: 'courses',
