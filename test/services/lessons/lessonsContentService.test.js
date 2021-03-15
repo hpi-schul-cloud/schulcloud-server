@@ -150,7 +150,7 @@ describe('Lesson Content Service', () => {
 			expect(result[0].content.title).to.equal('sdfasd');
 		});
 
-		it('does not find a nexboard that is visible', async () => {
+		it('does not find a nexboard that is hidden', async () => {
 			const user = await testObjects.createTestUser();
 			const params = await testObjects.generateRequestParamsFromUser(user);
 			params.query = {
