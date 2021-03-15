@@ -26,28 +26,30 @@ describe('Lesson Content Service', () => {
 			params.query = {
 				type: 'neXboard',
 				user: user._id,
-			}
+			};
 			params.route = {
-				type: 'neXboard'
-			}
+				type: 'neXboard',
+			};
 
-			const course = await testObjects.createTestCourse({ userIds: [user._id]});
-			const lesson = await testObjects.createTestLesson({ courseId: course._id })
-			await app.service('lessons').patch(lesson._id, { $push: { contents: {
-				title: 'testcontent',
-				component: 'neXboard',
-				content: {
-					title:"sdfasd",
-					description:"sdfasdf",
-					board:"25380",
-					url:"https://nexboard.nexenio.com/app/client/pub/25380/someid"
-				}
-			} } })
+			const course = await testObjects.createTestCourse({ userIds: [user._id] });
+			const lesson = await testObjects.createTestLesson({ courseId: course._id });
+			await app.service('lessons').patch(lesson._id, {
+				$push: {
+					contents: {
+						title: 'testcontent',
+						component: 'neXboard',
+						content: {
+							title: 'sdfasd',
+							description: 'sdfasdf',
+							board: '25380',
+							url: 'https://nexboard.nexenio.com/app/client/pub/25380/someid',
+						},
+					},
+				},
+			});
 
-			const result = await app.service('/lessons/contents/:type/').find(
-				params
-			);
-			
+			const result = await app.service('/lessons/contents/:type/').find(params);
+
 			expect(result.length).to.equal(1);
 			expect(result[0].content.title).to.equal('sdfasd');
 		});
@@ -58,28 +60,30 @@ describe('Lesson Content Service', () => {
 			params.query = {
 				type: 'neXboard',
 				user: user._id,
-			}
+			};
 			params.route = {
-				type: 'neXboard'
-			}
+				type: 'neXboard',
+			};
 
-			const course = await testObjects.createTestCourse({ userIds: []}); // user not in course
-			const lesson = await testObjects.createTestLesson({ courseId: course._id })
-			await app.service('lessons').patch(lesson._id, { $push: { contents: {
-				title: 'testcontent',
-				component: 'neXboard',
-				content: {
-					title:"sdfasd",
-					description:"sdfasdf",
-					board:"25380",
-					url:"https://nexboard.nexenio.com/app/client/pub/25380/someid"
-				}
-			} } })
+			const course = await testObjects.createTestCourse({ userIds: [] }); // user not in course
+			const lesson = await testObjects.createTestLesson({ courseId: course._id });
+			await app.service('lessons').patch(lesson._id, {
+				$push: {
+					contents: {
+						title: 'testcontent',
+						component: 'neXboard',
+						content: {
+							title: 'sdfasd',
+							description: 'sdfasdf',
+							board: '25380',
+							url: 'https://nexboard.nexenio.com/app/client/pub/25380/someid',
+						},
+					},
+				},
+			});
 
-			const result = await app.service('/lessons/contents/:type/').find(
-				params
-			);
-			
+			const result = await app.service('/lessons/contents/:type/').find(params);
+
 			expect(result.length).to.equal(0);
 		});
 
@@ -89,29 +93,31 @@ describe('Lesson Content Service', () => {
 			params.query = {
 				type: 'neXboard',
 				user: user._id,
-			}
+			};
 			params.route = {
-				type: 'neXboard'
-			}
+				type: 'neXboard',
+			};
 
-			const course = await testObjects.createTestCourse({ userIds: [user._id]});
-			const lesson = await testObjects.createTestLesson({ courseId: course._id })
-			await app.service('lessons').patch(lesson._id, { $push: { contents: {
-				title: 'testcontent',
-				component: 'neXboard',
-				hidden: false,
-				content: {
-					title:"sdfasd",
-					description:"sdfasdf",
-					board:"25380",
-					url:"https://nexboard.nexenio.com/app/client/pub/25380/someid"
-				}
-			} } })
+			const course = await testObjects.createTestCourse({ userIds: [user._id] });
+			const lesson = await testObjects.createTestLesson({ courseId: course._id });
+			await app.service('lessons').patch(lesson._id, {
+				$push: {
+					contents: {
+						title: 'testcontent',
+						component: 'neXboard',
+						hidden: false,
+						content: {
+							title: 'sdfasd',
+							description: 'sdfasdf',
+							board: '25380',
+							url: 'https://nexboard.nexenio.com/app/client/pub/25380/someid',
+						},
+					},
+				},
+			});
 
-			const result = await app.service('/lessons/contents/:type/').find(
-				params
-			);
-			
+			const result = await app.service('/lessons/contents/:type/').find(params);
+
 			expect(result.length).to.equal(1);
 			expect(result[0].content.title).to.equal('sdfasd');
 		});
@@ -122,29 +128,31 @@ describe('Lesson Content Service', () => {
 			params.query = {
 				type: 'neXboard',
 				user: user._id,
-			}
+			};
 			params.route = {
-				type: 'neXboard'
-			}
+				type: 'neXboard',
+			};
 
-			const course = await testObjects.createTestCourse({ userIds: [user._id]});
-			const lesson = await testObjects.createTestLesson({ courseId: course._id })
-			await app.service('lessons').patch(lesson._id, { $push: { contents: {
-				title: 'testcontent',
-				component: 'neXboard',
-				hidden: true,
-				content: {
-					title:"sdfasd",
-					description:"sdfasdf",
-					board:"25380",
-					url:"https://nexboard.nexenio.com/app/client/pub/25380/someid"
-				}
-			} } })
+			const course = await testObjects.createTestCourse({ userIds: [user._id] });
+			const lesson = await testObjects.createTestLesson({ courseId: course._id });
+			await app.service('lessons').patch(lesson._id, {
+				$push: {
+					contents: {
+						title: 'testcontent',
+						component: 'neXboard',
+						hidden: true,
+						content: {
+							title: 'sdfasd',
+							description: 'sdfasdf',
+							board: '25380',
+							url: 'https://nexboard.nexenio.com/app/client/pub/25380/someid',
+						},
+					},
+				},
+			});
 
-			const result = await app.service('/lessons/contents/:type/').find(
-				params
-			);
-			
+			const result = await app.service('/lessons/contents/:type/').find(params);
+
 			expect(result.length).to.equal(0);
 		});
 	});

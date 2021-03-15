@@ -3,33 +3,36 @@ const { LessonModel } = require('../model');
 
 const lessonContentService = {
 	find(params) {
-		const userId = params.account.userId;
+		const { userId } = params.account;
 
 		return LessonModel.aggregate([
-			{ $lookup: {
-				from: 'courses',
-				localField: 'courseId',
-				foreignField: '_id',
-				as: 'course'
-			}},
-			{ $match: { $or: [
-				{ 'course.userIds': userId},
-				{ 'course.teacherIds': userId },
-				{ 'course.substitutionIds': userId }
-			]} },
+			{
+				$lookup: {
+					from: 'courses',
+					localField: 'courseId',
+					foreignField: '_id',
+					as: 'course',
+				},
+			},
+			{
+				$match: {
+					$or: [{ 'course.userIds': userId }, { 'course.teacherIds': userId }, { 'course.substitutionIds': userId }],
+				},
+			},
 			{ $unwind: '$contents' },
 			{ $match: { 'contents.component': params.query.type } },
-			{ $match: { $or: [
-				{ 'contents.user': { $in: [params.query.user] } },
-				{ $or: [
-					{'contents.hidden': { $exists: false } },
-					{'contents.hidden': false }
-				]},
-			] } },
+			{
+				$match: {
+					$or: [
+						{ 'contents.user': { $in: [params.query.user] } },
+						{ $or: [{ 'contents.hidden': { $exists: false } }, { 'contents.hidden': false }] },
+					],
+				},
+			},
 			{ $project: { _id: '$contents._id', content: '$contents.content' } },
 		]).exec();
 	},
-}
+};
 
 const lessonContentServiceHooks = {
 	before: {
