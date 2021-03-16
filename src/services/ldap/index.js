@@ -12,6 +12,21 @@ const hooks = require('./hooks');
 const getLDAPStrategy = require('./strategies');
 const logger = require('../../logger');
 
+function defer() {
+	const deferred = {
+		promise: null,
+		resolve: null,
+		reject: null,
+	};
+
+	deferred.promise = new Promise((resolve, reject) => {
+		deferred.resolve = resolve;
+		deferred.reject = reject;
+	});
+
+	return deferred;
+}
+
 module.exports = function LDAPService() {
 	const app = this;
 
@@ -25,6 +40,7 @@ module.exports = function LDAPService() {
 	class LdapService {
 		constructor() {
 			this.clients = {};
+			this.wantedClientQueue = {};
 		}
 
 		/**
@@ -110,17 +126,37 @@ module.exports = function LDAPService() {
 				return newClient;
 			};
 
-			const client = this.clients[config.url];
-			if (client) {
-				if (autoconnect && !client.connected) {
-					return getNewClient();
-				}
-				return client;
+			let client = this.clients[config.url];
+			if (autoconnect && (!client || !client.connected)) {
+				client = getNewClient();
 			}
-			if (autoconnect) {
-				return getNewClient();
+
+			if (client) {
+				if (!client.inUse) {
+					client.inUse = true;
+					return client;
+				}
+				const { resolve, promise } = defer();
+				if (!this.wantedClientQueue[config.url]) {
+					this.wantedClientQueue[config.url] = [];
+				}
+				this.wantedClientQueue[config.url].push({
+					resolve: () => {
+						resolve(client);
+					},
+				});
+				return promise;
 			}
 			throw new NoClientInstanceError('No client exists and autoconnect is not enabled.');
+		}
+
+		returnClient(config) {
+			if (this.wantedClientQueue[config.url] && this.wantedClientQueue[config.url].length > 0) {
+				this.wantedClientQueue[config.url].shift().resolve();
+			}
+			if (!this.wantedClientQueue[config.url] || this.wantedClientQueue[config.url].length === 0) {
+				this.clients[config.url].inUse = false;
+			}
 		}
 
 		/**
@@ -249,8 +285,10 @@ module.exports = function LDAPService() {
 							res.on('end', (result) => {
 								if (result.status === 0) {
 									resolve(objects);
+								} else {
+									reject(new Error('LDAP result code != 0'));
 								}
-								reject(new Error('LDAP result code != 0'));
+								this.returnClient(config);
 							});
 						});
 					})
