@@ -151,11 +151,11 @@ module.exports = function LDAPService() {
 		}
 
 		returnClient(config) {
-			if (this.wantedClientQueue[config.url] && this.wantedClientQueue[config.url].length > 0) {
-				this.wantedClientQueue[config.url].shift().resolve();
-			}
 			if (!this.wantedClientQueue[config.url] || this.wantedClientQueue[config.url].length === 0) {
 				this.clients[config.url].inUse = false;
+			}
+			if (this.wantedClientQueue[config.url] && this.wantedClientQueue[config.url].length > 0) {
+				this.wantedClientQueue[config.url].shift().resolve();
 			}
 		}
 
