@@ -1,6 +1,6 @@
-const { Configuration } = require('@hpi-schul-cloud/commons');
-const appPromise = require('./app');
-const logger = require('./logger');
+import { Configuration } from '@hpi-schul-cloud/commons';
+import appPromise from './app';
+import logger from './logger';
 
 Configuration.printHierarchy();
 

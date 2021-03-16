@@ -4,8 +4,9 @@ import chaiAsPromised from 'chai-as-promised';
 import appPromise from '../../../app';
 import { pseudonymRepo } from '.';
 import { ValidationError } from '../../../errors';
+import testObjectHelpers from '../../../../test/services/helpers/testObjects';
 
-const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
+const testObjects = testObjectHelpers(appPromise);
 
 chai.use(chaiAsPromised);
 const { expect } = chai;

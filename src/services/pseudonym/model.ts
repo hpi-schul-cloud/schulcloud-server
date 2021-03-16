@@ -13,13 +13,13 @@ export interface IWithTimestamps {
 }
 
 export interface IPseudonymBaseDocument extends IWithTimestamps, Document {
-	pseudonym: string;
+	pseudonym?: string; // TODO make required (as defined in the schema, but fails in createTestPseudonym currently)
 }
 
 // TODO add interfaces with referencing user/tool
 export interface IPseudonymDocument extends IPseudonymBaseDocument {
-	userId?: ObjectId; // TODO User['_id'];
-	toolId?: ObjectId; // TODO Tool['_id'];
+	userId?: ObjectId; // TODO IUserDocument['_id'];
+	toolId?: ObjectId; // TODO IToolDocument['_id'];
 }
 
 const pseudonymSchema = new Schema(
@@ -44,4 +44,4 @@ pseudonymSchema.index({ userId: 1, toolId: 1 }, { unique: true });
 pseudonymSchema.plugin(idValidator);
 enableAuditLog(pseudonymSchema);
 
-export default mongoose.model<IPseudonymBaseDocument>('Pseudonym', pseudonymSchema);
+export default mongoose.model<IPseudonymDocument>('Pseudonym', pseudonymSchema);

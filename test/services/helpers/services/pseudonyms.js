@@ -1,4 +1,4 @@
-const Pseudonym = require('../../../../src/services/pseudonym/model');
+import Pseudonym from '../../../../src/services/pseudonym/model.ts';
 
 let createdpseudonymsIds = [];
 
