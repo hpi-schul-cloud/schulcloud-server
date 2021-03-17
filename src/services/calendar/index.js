@@ -4,6 +4,8 @@ const path = require('path');
 const queryString = require('qs');
 
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const courseCalendarSetup = require('./courseCalendar');
+
 const hooks = require('./hooks');
 
 /**
@@ -274,11 +276,13 @@ class Service {
 	}
 }
 
+// TODO: Move this to a real index file without including base service
 module.exports = function () {
 	const app = this;
 
 	app.use('/calendar/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
+	app.configure(courseCalendarSetup);
 	app.use('/calendar', new Service());
 	const contentService = app.service('/calendar');
 	contentService.hooks(hooks);

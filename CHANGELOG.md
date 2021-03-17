@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.6.11] - 2021-03-17
+
 ## [25.6.13] - 2021-03-16
 
 - SC-8782 Migration for changing urls
@@ -17,7 +19,14 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8782 Fixed lesson context Query
 
+## [25.6.11] - 2021-03-15
+
+### Fixed
+
+- SC-8211 - Fixed course events duplications
+
 ## [25.6.10] - 2021-03-09
+
 - SC-8770 Fixed issue where parent consents were overwritten
 
 ## [25.6.9] - 2021-02-26
