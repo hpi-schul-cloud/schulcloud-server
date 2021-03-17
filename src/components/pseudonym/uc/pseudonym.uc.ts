@@ -3,7 +3,10 @@ import { validateObjectId } from '../../helper/validation.helper';
 import { trashBinResult } from '../../helper/uc.helper';
 import { debug } from '../../../logger';
 
-const deletePseudonymsForUser = async (userId: ) => {
+import { PseudonymModel } from '../../../services/pseudonym/model';
+import type { ObjectId, TrashBinResult } from '../../../../types';
+
+const deletePseudonymsForUser = async (userId: ObjectId): Promise<TrashBinResult<PseudonymModel[]>> => {
 	validateObjectId({ userId });
 	let complete = true;
 	debug(`deleting user related pseudonyms started`, { userId });

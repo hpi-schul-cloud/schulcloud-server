@@ -1,16 +1,16 @@
-import type { ObjectId, LeanDocument } from 'mongoose';
+import type { ObjectId } from '../../../../types';
 
-import Pseudonym, { IPseudonymDocument } from '../../../services/pseudonym/model';
+import Pseudonym, { PseudonymModel } from '../../../services/pseudonym/model';
 import { DeleteManyResult, deleteManyResult } from '../../helper/repo.helper';
 import { validateObjectId } from '../../helper/validation.helper';
 
-const byUserFilter = (userId: ObjectId) => ({ userId });
+const byUserFilter = (userId: ObjectId): { userId: ObjectId } => ({ userId });
 
 /**
  * Return pseudonyms for userId
  * @param userId
  */
-const getPseudonymsForUser = async (userId: ObjectId): Promise<LeanDocument<IPseudonymDocument>[]> => {
+const getPseudonymsForUser = (userId: ObjectId): Promise<PseudonymModel[]> => {
 	validateObjectId({ userId });
 	return Pseudonym.find(byUserFilter(userId)).lean().exec();
 };
