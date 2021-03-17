@@ -1,9 +1,9 @@
-const { pseudonymRepo } = require('../repo/index');
-const { validateObjectId } = require('../../helper/validation.helper');
-const { trashBinResult } = require('../../helper/uc.helper');
-const { debug } = require('../../../logger');
+import { pseudonymRepo } from '../repo/index';
+import { validateObjectId } from '../../helper/validation.helper';
+import { trashBinResult } from '../../helper/uc.helper';
+import { debug } from '../../../logger';
 
-const deletePseudonymsForUser = async (userId) => {
+const deletePseudonymsForUser = async (userId: ) => {
 	validateObjectId({ userId });
 	let complete = true;
 	debug(`deleting user related pseudonyms started`, { userId });
@@ -20,6 +20,4 @@ const deletePseudonymsForUser = async (userId) => {
 
 const deleteUserData = [deletePseudonymsForUser];
 
-module.exports = {
-	deleteUserData,
-};
+export { deleteUserData };

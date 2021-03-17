@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import type { ObjectId } from 'mongoose';
-import v4 from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import idValidator from 'mongoose-id-validator';
 
 import { enableAuditLog } from '../../utils/database';
@@ -30,7 +30,7 @@ const pseudonymSchema = new Schema(
 			type: String,
 			required: true,
 			unique: true,
-			default: v4,
+			default: uuidv4,
 		},
 	},
 	{
