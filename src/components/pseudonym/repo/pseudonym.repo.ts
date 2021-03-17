@@ -10,7 +10,7 @@ const byUserFilter = (userId: ObjectId): { userId: ObjectId } => ({ userId });
  * Return pseudonyms for userId
  * @param userId
  */
-const getPseudonymsForUser = (userId: ObjectId): Promise<PseudonymModel[]> => {
+const getPseudonymsForUser = async (userId: ObjectId): Promise<PseudonymModel[]> => {
 	validateObjectId({ userId });
 	return Pseudonym.find(byUserFilter(userId)).lean().exec();
 };
