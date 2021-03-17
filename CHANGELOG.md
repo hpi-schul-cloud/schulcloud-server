@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [25.6.13] - 2021-03-16
+
+- SC-8782 Migration for changing urls
+
 ## [25.6.12] - 2021-03-15
 
 - SC-8782 Fixed lesson context Query
