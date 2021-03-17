@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.0.3] - 2021-03-17
+
+### Changed
+
+- merged hotfixes 25.6.11 and following into 26.0 branch
+
 ## [26.0.2] - 2021-03-10
 
 ### Fixed
@@ -28,6 +34,22 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8682 - fix students are editable in externally managed schools
 - SC-8534 fix registration link generation
 - Allow sorting after search
+
+## [25.6.11] - 2021-03-17
+
+## [25.6.13] - 2021-03-16
+
+- SC-8782 Migration for changing urls
+
+## [25.6.12] - 2021-03-15
+
+- SC-8782 Fixed lesson context Query
+
+## [25.6.11] - 2021-03-15
+
+### Fixed
+
+- SC-8211 - Fixed course events duplications
 
 ## [25.6.10] - 2021-03-09
 
