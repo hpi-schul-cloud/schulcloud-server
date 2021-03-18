@@ -7,7 +7,6 @@ import favicon from 'serve-favicon';
 import compress from 'compression';
 import cors from 'cors';
 // import rest from '@feathersjs/express';
-import bodyParser from 'body-parser';
 import socketio from '@feathersjs/socketio';
 
 import { Types } from 'mongoose';
@@ -65,10 +64,10 @@ const setupApp = async () => {
 		.use('/', express.static('public'))
 		.configure(setupConfiguration)
 		.configure(sentry)
-		.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
-		.use('/', bodyParser.json({ limit: '10mb' }))
-		.use(bodyParser.urlencoded({ extended: true }))
-		.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
+		.use('/helpdesk', express.json({ limit: BODYPARSER_JSON_LIMIT }))
+		.use('/', express.json({ limit: '10mb' }))
+		.use(express.urlencoded({ extended: true }))
+		.use(express.raw({ type: () => true, limit: '10mb' }))
 		.use(defaultHeaders)
 		.get('/system_info/haproxy', (req, res) => {
 			res.send({ timestamp: new Date().getTime() });
