@@ -82,9 +82,9 @@ module.exports = {
 				sourceType: 'module', // Allows for the use of imports
 			},
 			rules: {
-				'import/extensions': ['error', 'never'],
-				'import/prefer-default-export': 'off',
-				'import/no-extraneous-dependencies': ['error', { devDependencies: ['**/*.test.{js,ts}'] }],
+				'import/extensions': ['error', 'never'], // We not want extensions required within of import statements
+				'import/prefer-default-export': 'off', // JS can not import default from TS
+				'import/no-extraneous-dependencies': ['error', { devDependencies: ['**/*.test.{js,ts}'] }], // We allow dev dependencies to be used in test files only
 			},
 		},
 	],
