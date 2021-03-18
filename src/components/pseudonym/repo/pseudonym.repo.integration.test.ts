@@ -11,7 +11,7 @@ const testObjects = testObjectHelpers(appPromise);
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-describe.only('pseudonym repo', () => {
+describe('pseudonym repo', () => {
 	let app;
 	let server;
 	let ltiTool;

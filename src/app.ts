@@ -109,4 +109,4 @@ const setupApp = async () => {
 	return app;
 };
 
-export default setupApp();
+export = setupApp();
