@@ -29,6 +29,7 @@ const userModelService = feathersMongooseService({
 		virtuals: true,
 	},
 	multi: true,
+	whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 });
 
 module.exports = {

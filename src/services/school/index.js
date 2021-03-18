@@ -24,6 +24,7 @@ module.exports = function schoolServices() {
 			virtuals: true,
 		},
 		multi: true,
+		whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 	};
 
 	app.use('/schools', service(options));
@@ -41,6 +42,8 @@ module.exports = function schoolServices() {
 				default: 500,
 				max: 5000,
 			},
+			multi: true,
+			whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 		})
 	);
 	const schoolGroupService = app.service('/schoolGroup');
@@ -56,6 +59,8 @@ module.exports = function schoolServices() {
 				max: 5000,
 			},
 			lean: true,
+			multi: true,
+			whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 		})
 	);
 	const yearService = app.service('/years');
@@ -71,6 +76,8 @@ module.exports = function schoolServices() {
 				max: 5000,
 			},
 			lean: true,
+			multi: true,
+			whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 		})
 	);
 	const gradeLevelService = app.service('/gradeLevels');

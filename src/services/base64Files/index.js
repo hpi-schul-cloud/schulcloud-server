@@ -15,6 +15,7 @@ module.exports = (app) => {
 		},
 		lean: true,
 		multi: true,
+		whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 	});
 
 	const name = 'base64Files';

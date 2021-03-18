@@ -51,6 +51,7 @@ module.exports = function relases() {
 		},
 		lean: true,
 		multi: true,
+		whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 	};
 
 	app.use('/releases/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));

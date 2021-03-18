@@ -18,6 +18,7 @@ module.exports = function () {
 		},
 		lean: true,
 		multi: true,
+		whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 	};
 
 	app.use('/federalStates', service(options));

@@ -473,6 +473,7 @@ module.exports = function news() {
 			lean: true,
 			paginate: DEFAULT_PAGINATION_OPTIONS,
 			multi: true,
+			whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 		})
 	);
 	app.service('/newsModel').hooks(newsModelHooks);

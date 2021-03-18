@@ -9,6 +9,7 @@ const accountModelService = service({
 	paginate: false,
 	lean: true,
 	multi: true,
+	whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 });
 
 const accountModelServiceHooks = {
