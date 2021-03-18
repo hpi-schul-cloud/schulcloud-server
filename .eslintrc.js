@@ -54,6 +54,13 @@ module.exports = {
 		mocha: true,
 		browser: true,
 	},
+	settings: {
+		'import/resolver': {
+			node: {
+				extensions: ['.js', '.ts'],
+			},
+		},
+	},
 	overrides: [
 		{
 			files: ['*.test.js', '*.test.ts'],
