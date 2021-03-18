@@ -13,6 +13,7 @@ module.exports = (app) => {
 			max: 1000,
 		},
 		lean: true,
+		multi: true,
 	};
 
 	app.use('/storageProvider/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));

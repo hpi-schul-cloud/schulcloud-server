@@ -14,6 +14,7 @@ const _DefaultServiceOptions = {
 		max: 100,
 	},
 	lean: true,
+	multi: true,
 };
 
 const _DefaultHeaderParams = {

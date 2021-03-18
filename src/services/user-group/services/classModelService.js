@@ -11,6 +11,7 @@ const classModelService = service({
 		max: 100,
 	},
 	lean: { virtuals: true },
+	multi: true,
 });
 
 const classModelServiceHooks = {

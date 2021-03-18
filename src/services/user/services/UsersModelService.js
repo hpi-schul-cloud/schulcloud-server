@@ -28,6 +28,7 @@ const userModelService = feathersMongooseService({
 	lean: {
 		virtuals: true,
 	},
+	multi: true,
 });
 
 module.exports = {

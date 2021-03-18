@@ -35,6 +35,7 @@ module.exports = function () {
 				max: 200,
 			},
 			lean: true,
+			multi: true,
 		})
 	);
 	app.service('consentVersionsModel').hooks(consentVersionModelHooks);

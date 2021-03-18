@@ -10,6 +10,7 @@ module.exports = (app) => {
 			max: 10000,
 		},
 		lean: true,
+		multi: true,
 	};
 
 	// Initialize our service with any options it requires

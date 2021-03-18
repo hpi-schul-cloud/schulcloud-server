@@ -22,6 +22,7 @@ module.exports = function () {
 			max: 100,
 		},
 		lean: true,
+		multi: true,
 	};
 
 	app.use('/ltiTools', service(options));

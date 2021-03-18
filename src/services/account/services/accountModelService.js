@@ -8,6 +8,7 @@ const accountModelService = service({
 	Model: accountModel,
 	paginate: false,
 	lean: true,
+	multi: true,
 });
 
 const accountModelServiceHooks = {

@@ -14,6 +14,7 @@ module.exports = (app) => {
 			max: 25,
 		},
 		lean: true,
+		multi: true,
 	});
 
 	const name = 'base64Files';

@@ -54,6 +54,7 @@ module.exports = function () {
 				max: 100,
 			},
 			lean: true,
+			multi: true,
 		})
 	);
 	const gradeService = app.service('/grades');

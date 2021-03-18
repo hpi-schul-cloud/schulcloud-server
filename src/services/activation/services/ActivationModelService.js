@@ -20,6 +20,7 @@ const activationModelService = feathersMongooseService({
 	lean: {
 		virtuals: true,
 	},
+	multi: true,
 });
 
 module.exports = {

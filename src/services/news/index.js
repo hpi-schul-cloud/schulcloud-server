@@ -472,6 +472,7 @@ module.exports = function news() {
 			Model: newsModel,
 			lean: true,
 			paginate: DEFAULT_PAGINATION_OPTIONS,
+			multi: true,
 		})
 	);
 	app.service('/newsModel').hooks(newsModelHooks);

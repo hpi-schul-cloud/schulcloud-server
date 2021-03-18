@@ -24,6 +24,7 @@ module.exports = function () {
 			max: 1000,
 		},
 		lean: true,
+		multi: true,
 	};
 
 	app.use('/helpdesk', service(options));

@@ -109,6 +109,7 @@ module.exports = function () {
 			max: 25,
 		},
 		lean: true,
+		multi: true,
 	};
 
 	app.use('/content/resources', new ResourcesService());

@@ -17,6 +17,7 @@ const datasourceService = service({
 		default: 10,
 		max: 50,
 	},
+	multi: true,
 });
 
 const datasourceHooks = {

@@ -48,6 +48,7 @@ module.exports = (app) => {
 				max: 1000,
 			},
 			lean: true,
+			multi: true,
 		})
 	);
 
@@ -64,6 +65,7 @@ module.exports = (app) => {
 				max: 5000,
 			},
 			lean: true,
+			multi: true,
 		})
 	);
 	const registrationPinModelService = app.service('/registrationPinsModel');
@@ -81,6 +83,7 @@ module.exports = (app) => {
 				max: 5000,
 			},
 			lean: true,
+			multi: true,
 		})
 	);
 	const registrationPinService = app.service('/registrationPins');

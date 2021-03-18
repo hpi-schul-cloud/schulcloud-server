@@ -16,6 +16,7 @@ module.exports = function setup() {
 				max: 100000,
 			},
 			lean: true,
+			multi: true,
 		})
 	);
 	const hwService = app.service('/homework');

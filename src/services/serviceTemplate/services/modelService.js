@@ -17,6 +17,7 @@ const modelService = service({
 		default: 25,
 		max: 100,
 	},
+	multi: true,
 });
 
 /**

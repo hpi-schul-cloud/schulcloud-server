@@ -50,6 +50,7 @@ module.exports = function relases() {
 			max: 10000,
 		},
 		lean: true,
+		multi: true,
 	};
 
 	app.use('/releases/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));

@@ -23,6 +23,7 @@ module.exports = function schoolServices() {
 		lean: {
 			virtuals: true,
 		},
+		multi: true,
 	};
 
 	app.use('/schools', service(options));
