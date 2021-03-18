@@ -1,3 +1,6 @@
+/* eslint-disable max-classes-per-file */
+
+import { Schema, Document as MongooseDocument } from 'mongoose';
 import { error } from '../../logger';
 
 // TODO find this in mongoose...
@@ -32,6 +35,19 @@ export interface UpdateManyResult {
 export interface DeleteManyResult {
 	success: boolean;
 	deletedDocuments: number;
+}
+
+/**
+ * Base structure for mongoose documents with ObjectId as identifier.
+ */
+class BaseDocument extends MongooseDocument<Schema.Types.ObjectId> {
+	id?: string;
+}
+
+export class DocumentWithTimestamps extends BaseDocument {
+	createdAt?: Date;
+
+	updatedAt?: Date;
 }
 
 /**

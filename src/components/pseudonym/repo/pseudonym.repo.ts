@@ -1,6 +1,6 @@
 import type { ObjectId } from '../../../../types';
 
-import Pseudonym, { PseudonymModel } from '../../../services/pseudonym/model';
+import PseudonymModel, { Pseudonym } from '../../../services/pseudonym/model';
 import { DeleteManyResult, deleteManyResult } from '../../helper/repo.helper';
 import { validateObjectId } from '../../helper/validation.helper';
 
@@ -10,9 +10,9 @@ const byUserFilter = (userId: ObjectId): { userId: ObjectId } => ({ userId });
  * Return pseudonyms for userId
  * @param userId
  */
-const getPseudonymsForUser = async (userId: ObjectId): Promise<PseudonymModel[]> => {
+const getPseudonymsForUser = async (userId: ObjectId): Promise<Pseudonym[]> => {
 	validateObjectId({ userId });
-	return Pseudonym.find(byUserFilter(userId)).lean().exec();
+	return PseudonymModel.find(byUserFilter(userId)).lean().exec();
 };
 
 /**
@@ -21,7 +21,7 @@ const getPseudonymsForUser = async (userId: ObjectId): Promise<PseudonymModel[]>
  */
 const deletePseudonymsForUser = async (userId: ObjectId): Promise<DeleteManyResult> => {
 	validateObjectId({ userId });
-	const deleteResult = await Pseudonym.deleteMany(byUserFilter(userId)).lean().exec();
+	const deleteResult = await PseudonymModel.deleteMany(byUserFilter(userId)).lean().exec();
 	return deleteManyResult(deleteResult);
 };
 

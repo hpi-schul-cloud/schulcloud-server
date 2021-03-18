@@ -1,18 +1,27 @@
-import mongoose, { Schema, Document, LeanDocument } from 'mongoose';
-import type { ObjectId } from 'mongoose';
+/* eslint-disable max-classes-per-file */
+
+import mongoose, { Schema, LeanDocument } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import idValidator from 'mongoose-id-validator';
 
+import { ObjectId } from '../../../types';
+import { DocumentWithTimestamps } from '../../components/helper/repo.helper';
 import { enableAuditLog } from '../../utils/database';
 
+// interface WithId {
+// 	_id?: Schema.Types.ObjectId;
+// 	id?: string;
+// }
+
 // TODO add interfaces with referencing user/tool
-interface PseudonymDocument extends Document {
+class PseudonymDocument extends DocumentWithTimestamps {
 	userId?: ObjectId; // TODO IUserDocument['_id'];
+
 	toolId?: ObjectId; // TODO IToolDocument['_id'];
+
+	/** auto generated uuid v4 */
 	pseudonym?: string;
 }
-
-export type PseudonymModel = LeanDocument<PseudonymDocument>;
 
 const pseudonymSchema = new Schema(
 	{
@@ -36,4 +45,5 @@ pseudonymSchema.index({ userId: 1, toolId: 1 }, { unique: true });
 pseudonymSchema.plugin(idValidator);
 enableAuditLog(pseudonymSchema);
 
-export default mongoose.model('Pseudonym', pseudonymSchema);
+export type Pseudonym = LeanDocument<PseudonymDocument>;
+export default mongoose.model<PseudonymDocument>('Pseudonym', pseudonymSchema);
