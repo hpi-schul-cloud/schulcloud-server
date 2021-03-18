@@ -3,6 +3,6 @@
 declare namespace Express {
 	export interface Request {
 		/** Timestamp as number */
-		leadTime: number;
+		leadTime?: number;
 	}
 }
