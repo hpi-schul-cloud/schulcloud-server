@@ -10,9 +10,9 @@ import { enableAuditLog } from '../../../../utils/database';
 
 // TODO add interfaces with referencing user/tool
 class PseudonymDocument extends BaseDocumentWithTimestamps {
-	userId?: ObjectId; // TODO IUserDocument['_id'];
+	userId?: ObjectId | any; // TODO UserDocument['_id'] | UserDocument;
 
-	toolId?: ObjectId; // TODO IToolDocument['_id'];
+	toolId?: ObjectId | any; // TODO LtiToolDocument['_id'] | LtiToolDocument;
 
 	/** auto generated uuid v4 */
 	pseudonym?: string;

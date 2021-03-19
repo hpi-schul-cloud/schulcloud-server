@@ -1,7 +1,7 @@
 import type { ObjectId as MongooseObjectId } from 'mongoose';
 
 /**
- * we allow object id's to be a string or the mongoose object id.
+ * ObjectIds are either a string or an ObjectId from Mongoose.
  */
 export type ObjectId = string | MongooseObjectId;
 
