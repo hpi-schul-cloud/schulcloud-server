@@ -39,12 +39,16 @@ export interface DeleteManyResult {
 
 /**
  * Base structure for mongoose documents with ObjectId as identifier.
+ * We override id to only allow string as it's type.
  */
-class BaseDocument extends MongooseDocument<Schema.Types.ObjectId> {
+export abstract class BaseDocument extends MongooseDocument<Schema.Types.ObjectId> {
 	id?: string;
 }
 
-export class DocumentWithTimestamps extends BaseDocument {
+/**
+ * Some schemas are using timestamps:true, these can extend from this class.
+ */
+export abstract class BaseDocumentWithTimestamps extends BaseDocument {
 	createdAt?: Date;
 
 	updatedAt?: Date;

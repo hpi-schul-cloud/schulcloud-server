@@ -3,7 +3,7 @@ import { validateObjectId } from '../../helper/validation.helper';
 import { trashBinResult } from '../../helper/uc.helper';
 import { debug } from '../../../logger';
 
-import { Pseudonym } from '../../../services/pseudonym/model';
+import { Pseudonym } from '../repo/db/pseudonym';
 import type { ObjectId, TrashBinResult } from '../../../../types';
 
 const deletePseudonymsForUser = async (userId: ObjectId): Promise<TrashBinResult<Pseudonym[]>> => {

@@ -1,6 +1,6 @@
 import type { ObjectId } from '../../../../types';
 
-import PseudonymModel, { Pseudonym } from '../../../services/pseudonym/model';
+import { PseudonymModel, Pseudonym } from './db/pseudonym';
 import { DeleteManyResult, deleteManyResult } from '../../helper/repo.helper';
 import { validateObjectId } from '../../helper/validation.helper';
 

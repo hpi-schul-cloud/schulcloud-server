@@ -3,12 +3,12 @@ import { static as staticContent } from '@feathersjs/express';
 import path from 'path';
 
 import service from 'feathers-mongoose';
-import Pseudonym from './model';
+import { PseudonymModel } from '../../components/pseudonym/repo/db/pseudonym';
 import hooks from './hooks';
 
 export default (app: FeathersApplication): void => {
 	const options = {
-		Model: Pseudonym,
+		Model: PseudonymModel,
 		paginate: {
 			default: 1000,
 			max: 1000,

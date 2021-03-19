@@ -4,17 +4,12 @@ import mongoose, { Schema, LeanDocument } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import idValidator from 'mongoose-id-validator';
 
-import { ObjectId } from '../../../types';
-import { DocumentWithTimestamps } from '../../components/helper/repo.helper';
-import { enableAuditLog } from '../../utils/database';
-
-// interface WithId {
-// 	_id?: Schema.Types.ObjectId;
-// 	id?: string;
-// }
+import { ObjectId } from '../../../../../types';
+import { BaseDocumentWithTimestamps } from '../../../helper/repo.helper';
+import { enableAuditLog } from '../../../../utils/database';
 
 // TODO add interfaces with referencing user/tool
-class PseudonymDocument extends DocumentWithTimestamps {
+class PseudonymDocument extends BaseDocumentWithTimestamps {
 	userId?: ObjectId; // TODO IUserDocument['_id'];
 
 	toolId?: ObjectId; // TODO IToolDocument['_id'];
@@ -25,8 +20,8 @@ class PseudonymDocument extends DocumentWithTimestamps {
 
 const pseudonymSchema = new Schema(
 	{
-		userId: { type: Schema.Types.ObjectId, ref: 'user' }, // TODO can we add required here?
-		toolId: { type: Schema.Types.ObjectId, ref: 'ltiTool' }, // TODO can we add required here?
+		userId: { type: Schema.Types.ObjectId, ref: 'user' },
+		toolId: { type: Schema.Types.ObjectId, ref: 'ltiTool' },
 		pseudonym: {
 			type: String,
 			required: true,
@@ -45,5 +40,8 @@ pseudonymSchema.index({ userId: 1, toolId: 1 }, { unique: true });
 pseudonymSchema.plugin(idValidator);
 enableAuditLog(pseudonymSchema);
 
+/** Pseudonym BO definition, to be used from anywhere */
 export type Pseudonym = LeanDocument<PseudonymDocument>;
-export default mongoose.model<PseudonymDocument>('Pseudonym', pseudonymSchema);
+
+/** Pseudonym Mongoose Model for database access from within of the pseudonym repository only */
+export const PseudonymModel = mongoose.model<PseudonymDocument>('Pseudonym', pseudonymSchema);
