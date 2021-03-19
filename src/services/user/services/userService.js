@@ -86,7 +86,7 @@ const userService = new UserService({
 		max: 5000,
 	},
 	multi: true,
-	whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
+	whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate', '$nor'],
 });
 
 const populateWhitelist = {
