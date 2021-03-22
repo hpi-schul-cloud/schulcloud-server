@@ -12,7 +12,9 @@ const byUserFilter = (userId: ObjectId): { userId: ObjectId } => ({ userId });
  */
 const getPseudonymsForUser = async (userId: ObjectId): Promise<Pseudonym[]> => {
 	validateObjectId({ userId });
-	return PseudonymModel.find(byUserFilter(userId)).lean().exec();
+	const result = await PseudonymModel.find(byUserFilter(userId)).lean().exec();
+	/** SECURITY: result-documents may resolve with more properties than defined in @Pseudonym, all results need to be mapped to not have more properties than defined exported as latest in the use cases. */
+	return result.map((pseudonym) => pseudonym);
 };
 
 /**
