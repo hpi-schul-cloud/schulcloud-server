@@ -231,6 +231,8 @@ const datasourceRunService = new DatasourceRuns({
 		default: 50,
 		max: 500,
 	},
+	multi: true,
+	whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 });
 
 const datasourceRunsHooks = {
