@@ -12,9 +12,6 @@ import { ObjectId } from '../../../../../types';
 const { Schema } = mongoose;
 
 const defaultFeatures: any[] = [];
-const USER_FEATURES = {
-	EDTR: 'edtr',
-};
 
 enum UserFeatures {
 	edtr = 'edtr',
@@ -115,6 +112,8 @@ class UserDocument extends BaseDocumentWithTimestamps implements ExternalSourceS
 	deletedAt?: Date | null;
 }
 
+export type User = LeanDocument<UserDocument>;
+
 const userSchema = new Schema(
 	{
 		roles: [{ type: Schema.Types.ObjectId, ref: 'role' }],
@@ -153,12 +152,12 @@ const userSchema = new Schema(
 		features: {
 			type: [String],
 			default: defaultFeatures,
-			enum: Object.values(USER_FEATURES),
+			enum: Object.values(UserFeatures),
 		},
 
 		consent: {
 			userConsent: {
-				form: { type: String, enum: ConsentForm },
+				form: { type: String, enum: Object.values(ConsentForm) },
 				dateOfPrivacyConsent: { type: Date },
 				dateOfTermsOfUseConsent: { type: Date },
 				privacyConsent: { type: Boolean },
@@ -166,7 +165,7 @@ const userSchema = new Schema(
 			},
 			parentConsents: [
 				{
-					form: { type: String, enum: ConsentForm },
+					form: { type: String, enum: Object.values(ConsentForm) },
 					dateOfPrivacyConsent: { type: Date },
 					dateOfTermsOfUseConsent: { type: Date },
 					privacyConsent: { type: Boolean },
@@ -175,7 +174,7 @@ const userSchema = new Schema(
 			],
 			consentVersionUpdated: {
 				type: 'string',
-				enum: VersionUpdated,
+				enum: Object.values(VersionUpdated),
 			},
 		},
 
@@ -252,12 +251,13 @@ if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
 
 // This 'pre-save' method slices the firstName, lastName and email
 // To allow searching the users
-function buildSearchIndexOnSave() {
+function buildSearchIndexOnSave(this: User, next: any) {
+	// TODO verify this https://stackoverflow.com/a/46192412
 	this.firstNameSearchValues = splitForSearchIndexes(this.firstName);
 	this.lastNameSearchValues = splitForSearchIndexes(this.lastName);
 	this.emailSearchValues = splitForSearchIndexes(this.email);
 }
-function buildSearchIndexOnUpdate() {
+function buildSearchIndexOnUpdate(this: any) {
 	const data = this.getUpdate() || {};
 	if (data.firstName && !data.firstNameSearchValues) data.firstNameSearchValues = splitForSearchIndexes(data.firstName);
 	if (data.lastName && !data.lastNameSearchValues) data.lastNameSearchValues = splitForSearchIndexes(data.lastName);
@@ -269,8 +269,8 @@ userSchema.pre('updateOne', buildSearchIndexOnUpdate);
 userSchema.pre('updateMany', buildSearchIndexOnUpdate);
 userSchema.pre('findOneAndUpdate', buildSearchIndexOnUpdate);
 
-userSchema.virtual('fullName').get(function get() {
-	return [this.namePrefix, this.firstName, this.middleName, this.lastName, this.nameSuffix]
+userSchema.virtual('fullName').get(function get(this: User) {
+	return [this.namePrefix, this.firstName, (this as any).middleName, this.lastName, this.nameSuffix]
 		.join(' ')
 		.trim()
 		.replace(/\s+/g, ' ');
@@ -278,14 +278,13 @@ userSchema.virtual('fullName').get(function get() {
 
 userSchema.plugin(leanVirtuals);
 
-userSchema.methods.getPermissions = function getPermissions() {
+userSchema.methods.getPermissions = function getPermissions(this: User) {
 	return roleModel.resolvePermissions(this.roles);
 };
 
 enableAuditLog(userSchema);
 userSchema.plugin(mongooseHistory);
 
-export type User = LeanDocument<UserDocument>;
 export const UserModel = mongoose.model<UserDocument>('user', userSchema);
 
-export { USER_FEATURES, userSchema, consentTypes };
+export { UserFeatures, userSchema, consentTypes };
