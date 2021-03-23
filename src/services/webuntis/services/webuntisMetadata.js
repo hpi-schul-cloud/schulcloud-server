@@ -16,6 +16,8 @@ const webuntisMetadataService = service({
 		default: 50,
 		max: 1000,
 	},
+	multi: true,
+	whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 });
 
 /**

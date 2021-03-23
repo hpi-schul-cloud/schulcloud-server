@@ -48,6 +48,8 @@ module.exports = (app) => {
 				max: 1000,
 			},
 			lean: true,
+			multi: true,
+			whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 		})
 	);
 
@@ -64,6 +66,8 @@ module.exports = (app) => {
 				max: 5000,
 			},
 			lean: true,
+			multi: true,
+			whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 		})
 	);
 	const registrationPinModelService = app.service('/registrationPinsModel');
@@ -81,6 +85,8 @@ module.exports = (app) => {
 				max: 5000,
 			},
 			lean: true,
+			multi: true,
+			whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 		})
 	);
 	const registrationPinService = app.service('/registrationPins');

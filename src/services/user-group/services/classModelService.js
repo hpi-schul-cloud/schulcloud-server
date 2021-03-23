@@ -11,6 +11,8 @@ const classModelService = service({
 		max: 100,
 	},
 	lean: { virtuals: true },
+	multi: true,
+	whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 });
 
 const classModelServiceHooks = {

@@ -14,6 +14,8 @@ export default (app: FeathersApplication): void => {
 			max: 1000,
 		},
 		lean: false,
+		multi: true,
+		whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 	};
 	app.use('/pseudonym/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/pseudonym', service(options));

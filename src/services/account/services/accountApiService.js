@@ -64,6 +64,8 @@ class Accounts {
 
 const accountService = new Accounts({
 	paginate: false,
+	multi: true,
+	whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 });
 
 const populateWhitelist = {

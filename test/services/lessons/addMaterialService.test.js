@@ -86,11 +86,13 @@ describe('addMaterial Service', function test() {
 			],
 			params
 		);
+		const responseIds = response.map((material) => material._id.toString());
 		const result = await app.service('lessons').get(lesson._id);
 		expect(result).to.not.be.undefined;
 		expect(result).to.haveOwnProperty('materialIds');
-		expect(result.materialIds[0].toString()).to.equal(response[0]._id.toString());
-		expect(result.materialIds[1].toString()).to.equal(response[1]._id.toString());
+		const resultIds = result.materialIds.map((materialId) => materialId.toString());
+		expect(responseIds).to.have.members(resultIds);
+		expect(result.materialIds.length).to.equal(2);
 	});
 
 	it('adds the material to the lesson in courseGroup', async () => {

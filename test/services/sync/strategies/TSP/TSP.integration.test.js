@@ -15,6 +15,10 @@ const { equal: equalIds } = require('../../../../../src/helper/compare').ObjectI
 
 const { findSchool, createUserAndAccount } = require('../../../../../src/services/sync/strategies/TSP/TSP');
 
+const { ObjectId } = require('mongoose').Types;
+
+const rnd = () => new ObjectId();
+
 describe('TSP API integration tests', () => {
 	let app;
 	let server;
@@ -50,7 +54,7 @@ describe('TSP API integration tests', () => {
 			const userDetails = {
 				firstName: 'Thor',
 				lastName: 'Heyerdahl',
-				email: 'sailing@pacific.ocean',
+				email: 'sailing' + rnd() + '@pacific.ocean',
 				schoolId: school._id,
 				source: 'tsp',
 				sourceOptions: { awesome: true, tspUid: '2345' },

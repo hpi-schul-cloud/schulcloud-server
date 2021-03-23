@@ -109,6 +109,8 @@ module.exports = function () {
 			max: 25,
 		},
 		lean: true,
+		multi: true,
+		whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
 	};
 
 	app.use('/content/resources', new ResourcesService());
