@@ -255,7 +255,7 @@ describe('Account Service', () => {
 		it('should fail on verification mismatch', async () => {
 			const user = await testObjects.createTestUser({ firstLogin: true, roles: ['student'] });
 			const accountDetails = {
-				username: 'some@user.de',
+				username: `some${new ObjectId()}@user.de`,
 				password: 'ca4t9fsfr3dsd',
 				userId: user._id,
 			};
@@ -272,7 +272,7 @@ describe('Account Service', () => {
 				);
 				throw new Error('This should not happen.');
 			} catch (exception) {
-				assert.equal(exception.message, 'Dein Passwort ist nicht korrekt!');
+				expect(exception.message).to.equal('Dein Passwort ist nicht korrekt!');
 			} finally {
 				await accountService.remove(account._id);
 				await userService.remove(user._id);
@@ -280,7 +280,7 @@ describe('Account Service', () => {
 		});
 
 		it('should successfully patch activated to true', async () => {
-			user = await testObjects.createTestUser();
+			const user = await testObjects.createTestUser();
 			const accountDetails = {
 				username: user.email,
 				password: 'ca4t9fsfr3dsd',
