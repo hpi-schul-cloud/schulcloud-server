@@ -121,6 +121,7 @@ describe('fileStorageProvider.repo.integration.test', () => {
 				this.currentTest.fn = function skipFunction() {
 					this.skip();
 				};
+				return;
 			}
 			bucketName = `bucket-${testObjects.generateObjectId()}`;
 			fileIds = new Array(20).fill().map(() => testObjects.generateObjectId().toString());
@@ -141,7 +142,9 @@ describe('fileStorageProvider.repo.integration.test', () => {
 
 		afterEach(async () => {
 			sinon.restore();
-			await cleanupStorageProvider(storageProvider, bucketName, fileIds);
+			if (!skipMinioTests) {
+				await cleanupStorageProvider(storageProvider, bucketName, fileIds);
+			};
 		});
 
 		it('should call moveFileToTrash in unevenly distributed batches', async () => {
