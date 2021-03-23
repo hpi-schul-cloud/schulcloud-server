@@ -1,24 +1,119 @@
-const mongoose = require('mongoose');
-const leanVirtuals = require('mongoose-lean-virtuals');
-const { Configuration } = require('@hpi-schul-cloud/commons');
-const mongooseHistory = require('mongoose-history');
-const roleModel = require('../../role/model');
-const { enableAuditLog } = require('../../../utils/database');
-const { splitForSearchIndexes } = require('../../../utils/search');
-const externalSourceSchema = require('../../../helper/externalSourceSchema');
+import mongoose, { LeanDocument } from 'mongoose';
+import leanVirtuals from 'mongoose-lean-virtuals';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import mongooseHistory from 'mongoose-history';
+import { BaseDocumentWithTimestamps } from '../../../helper/repo.helper';
+import roleModel from '../../../../services/role/model';
+import { enableAuditLog } from '../../../../utils/database';
+import { splitForSearchIndexes } from '../../../../utils/search';
+import externalSourceSchema from '../../../../helper/externalSourceSchema';
+import { ObjectId } from '../../../../../types';
 
 const { Schema } = mongoose;
 
-const defaultFeatures = [];
+const defaultFeatures: any[] = [];
 const USER_FEATURES = {
 	EDTR: 'edtr',
 };
 
-const consentForm = ['analog', 'digital', 'update'];
+enum UserFeatures {
+	edtr = 'edtr',
+}
+
+enum ConsentForm {
+	analog = 'analog',
+	digital = 'digital',
+	update = 'update',
+}
+
 const consentTypes = {
 	PRIVACY: 'privacy',
 	TERMS_OF_USE: 'termsOfUse',
 };
+
+interface Parent {
+	firstName: string;
+	lastName: string;
+	email: string;
+}
+
+interface Consent {
+	form?: ConsentForm;
+	dateOfPrivacyConsent?: Date;
+	dateOfTermsOfUseConsent?: Date;
+	privacyConsent?: boolean;
+	termsOfUseConsent?: boolean;
+}
+enum VersionUpdated {
+	all = 'all',
+	dateOfPrivacyConsent = 'dateOfPrivacyConsent',
+	dateOfTermsOfUseConsent = 'dateOfTermsOfUseConsent',
+}
+interface UsersConsent {
+	userConsent?: Consent;
+	parentConsents?: Consent[];
+	consentVersionUpdated?: VersionUpdated;
+}
+interface ExternalSourceSchema {
+	source?: string;
+	sourceOptions?: unknown;
+}
+
+class UserDocument extends BaseDocumentWithTimestamps implements ExternalSourceSchema {
+	// ExternalSourceSchema
+	source?: string | undefined;
+
+	sourceOptions?: unknown;
+
+	// UserDocument
+	roles?: ObjectId[] | unknown[];
+
+	email?: string;
+
+	emailSearchValues?: unknown[];
+
+	schoolId?: ObjectId | unknown;
+
+	firstName?: string;
+
+	firstNameSearchValues?: unknown[];
+
+	lastName?: string;
+
+	lastNameSearchValues?: unknown[];
+
+	namePrefix?: string;
+
+	nameSuffix?: string;
+
+	forcePasswordChange?: boolean;
+
+	birthday?: Date;
+
+	importHash?: string;
+
+	parents?: Parent[];
+
+	language?: string;
+
+	preferences?: any;
+
+	features?: UserFeatures[];
+
+	consent?: UsersConsent;
+
+	discoverable?: boolean;
+
+	ldapDn?: string;
+
+	ldapId?: string;
+
+	customAvatarBackgroundColor?: string;
+
+	avatarSettings?: unknown;
+
+	deletedAt?: Date | null;
+}
 
 const userSchema = new Schema(
 	{
@@ -63,7 +158,7 @@ const userSchema = new Schema(
 
 		consent: {
 			userConsent: {
-				form: { type: String, enum: consentForm },
+				form: { type: String, enum: ConsentForm },
 				dateOfPrivacyConsent: { type: Date },
 				dateOfTermsOfUseConsent: { type: Date },
 				privacyConsent: { type: Boolean },
@@ -71,7 +166,7 @@ const userSchema = new Schema(
 			},
 			parentConsents: [
 				{
-					form: { type: String, enum: consentForm },
+					form: { type: String, enum: ConsentForm },
 					dateOfPrivacyConsent: { type: Date },
 					dateOfTermsOfUseConsent: { type: Date },
 					privacyConsent: { type: Boolean },
@@ -80,7 +175,7 @@ const userSchema = new Schema(
 			],
 			consentVersionUpdated: {
 				type: 'string',
-				enum: ['all', 'dateOfPrivacyConsent', 'dateOfTermsOfUseConsent'],
+				enum: VersionUpdated,
 			},
 		},
 
@@ -190,8 +285,7 @@ userSchema.methods.getPermissions = function getPermissions() {
 enableAuditLog(userSchema);
 userSchema.plugin(mongooseHistory);
 
-module.exports = {
-	USER_FEATURES,
-	userSchema,
-	consentTypes,
-};
+export type User = LeanDocument<UserDocument>;
+export const UserModel = mongoose.model<UserDocument>('user', userSchema);
+
+export { USER_FEATURES, userSchema, consentTypes };

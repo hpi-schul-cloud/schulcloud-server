@@ -130,6 +130,7 @@
 		"@types/feathersjs__express": "^1.1.8",
 		"@types/mocha": "^8.0.3",
 		"@types/mongoose-id-validator": "^0.6.0",
+		"@types/mongoose-lean-virtuals": "^0.5.1",
 		"@types/multer": "^1.4.5",
 		"@types/serve-favicon": "^2.5.2",
 		"@types/uuid": "^8.3.0",

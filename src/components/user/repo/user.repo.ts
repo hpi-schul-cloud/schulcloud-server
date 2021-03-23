@@ -1,5 +1,5 @@
-const { userModel: User } = require('../../../services/user/model');
-const { NotFound, GeneralError } = require('../../../errors');
+import { userModel as User } from '../../../services/user/model';
+import { NotFound, GeneralError } from '../../../errors';
 
 const getUser = async (_id) => {
 	const user = await User.findOne({ _id }).lean().exec();

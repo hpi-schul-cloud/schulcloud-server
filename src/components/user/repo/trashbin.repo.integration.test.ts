@@ -1,15 +1,18 @@
-const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 
-const appPromise = require('../../../app');
-const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
-const trashbinRepo = require('./trashbin.repo');
-const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+import appPromise from '../../../app';
+import * as trashbinRepo from './trashbin.repo';
+import testObjectHelpers from '../../../../test/services/helpers/testObjects';
+import * as compareHelper from '../../../helper/compare';
+
+const testObjects = testObjectHelpers(appPromise);
+const { equal: equalIds } = compareHelper.ObjectId;
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-describe('user repository', () => {
+describe.only('user repository', () => {
 	let app;
 	let server;
 
@@ -26,7 +29,7 @@ describe('user repository', () => {
 	describe('createUserTrashbin', () => {
 		it('when creating a new trashbin with any data, then it returns the new trashbin object', async () => {
 			const user = await testObjects.createTestUser();
-			const data = [
+			const data: trashbinRepo.TrashbinData = [
 				{
 					scope: 'user',
 					data: {
@@ -46,7 +49,7 @@ describe('user repository', () => {
 	describe('updateUserTrashbin', () => {
 		it('when updating an existing trashbin with new data, then the new data is merged with the old', async () => {
 			const user = await testObjects.createTestUser();
-			const data = [
+			const data: trashbinRepo.TrashbinData = [
 				{
 					scope: 'user',
 					data: {
@@ -56,23 +59,20 @@ describe('user repository', () => {
 				},
 			];
 			await trashbinRepo.createUserTrashbin(user._id, data);
-			const updateData = [
-				{
-					scope: 'account',
-					data: {
-						username: 'mark@mustermann',
-						someotherproperty: 'stuff goes here',
-					},
+			const updateData: trashbinRepo.TrashbinScopeData = {
+				scope: 'account',
+				data: {
+					username: 'mark@mustermann',
+					someotherproperty: 'stuff goes here',
 				},
-			];
-
+			}; // TODO [] removed
 			const result = await trashbinRepo.updateTrashbinByUserId(user._id, updateData);
 			expect(result.data.length).to.equal(2);
 		});
 
 		it('when multiple trashbins exists, then it updates the newest one', async () => {
 			const user = await testObjects.createTestUser();
-			const data = [
+			const data: trashbinRepo.TrashbinData = [
 				{
 					scope: 'ogre',
 					data: {
@@ -83,13 +83,10 @@ describe('user repository', () => {
 			];
 			await trashbinRepo.createUserTrashbin(user._id, data);
 			const { _id: secondId } = await trashbinRepo.createUserTrashbin(user._id, data);
-			const updateData = [
-				{
-					scope: 'mathknowledge',
-					data: { knownnumbers: 42 },
-				},
-			];
-
+			const updateData: trashbinRepo.TrashbinScopeData = {
+				scope: 'mathknowledge',
+				data: { knownnumbers: 42 },
+			}; // TODO [] removed
 			const result = await trashbinRepo.updateTrashbinByUserId(user._id, updateData);
 			expect(equalIds(result._id, secondId)).to.be.true;
 			expect(result.data.length).to.equal(2);
