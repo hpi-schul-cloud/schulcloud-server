@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 /* eslint-disable no-underscore-dangle */
 const ldap = require('ldapjs');
 const mongoose = require('mongoose');
@@ -13,48 +12,7 @@ const hooks = require('./hooks');
 const getLDAPStrategy = require('./strategies');
 const logger = require('../../logger');
 
-class Lock {
-	constructor() {
-		this.locked = false;
-		this.queue = [];
-	}
-
-	createDeferredPromise() {
-		const deferred = {
-			promise: null,
-			resolve: null,
-			reject: null,
-		};
-
-		deferred.promise = new Promise((resolve, reject) => {
-			deferred.resolve = resolve;
-			deferred.reject = reject;
-		});
-
-		return deferred;
-	}
-
-	getLock() {
-		if (!this.locked) {
-			this.locked = true;
-			return Promise.resolve;
-		}
-		const { resolve, promise: deferredPromise } = this.createDeferredPromise();
-		this.queue.push({
-			resolve,
-		});
-		return deferredPromise;
-	}
-
-	releaseLock() {
-		if (this.queue.length === 0) {
-			this.locked = false;
-		}
-		if (this.queue.length > 0) {
-			this.queue.shift().resolve();
-		}
-	}
-}
+const LockingQueue = require('./lockingQueue');
 
 module.exports = function LDAPService() {
 	const app = this;
@@ -162,7 +120,7 @@ module.exports = function LDAPService() {
 
 			if (client) {
 				if (!this.mapOfLocks[config.url]) {
-					this.mapOfLocks[config.url] = new Lock();
+					this.mapOfLocks[config.url] = new LockingQueue();
 				}
 				await this.mapOfLocks[config.url].getLock();
 				return client;
