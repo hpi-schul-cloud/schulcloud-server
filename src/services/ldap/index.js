@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 /* eslint-disable no-underscore-dangle */
 const ldap = require('ldapjs');
 const mongoose = require('mongoose');
@@ -12,19 +13,47 @@ const hooks = require('./hooks');
 const getLDAPStrategy = require('./strategies');
 const logger = require('../../logger');
 
-function defer() {
-	const deferred = {
-		promise: null,
-		resolve: null,
-		reject: null,
-	};
+class Lock {
+	constructor() {
+		this.locked = false;
+		this.queue = [];
+	}
 
-	deferred.promise = new Promise((resolve, reject) => {
-		deferred.resolve = resolve;
-		deferred.reject = reject;
-	});
+	createDeferredPromise() {
+		const deferred = {
+			promise: null,
+			resolve: null,
+			reject: null,
+		};
 
-	return deferred;
+		deferred.promise = new Promise((resolve, reject) => {
+			deferred.resolve = resolve;
+			deferred.reject = reject;
+		});
+
+		return deferred;
+	}
+
+	getLock() {
+		if (!this.locked) {
+			this.locked = true;
+			return Promise.resolve;
+		}
+		const { resolve, promise: deferredPromise } = this.createDeferredPromise();
+		this.queue.push({
+			resolve,
+		});
+		return deferredPromise;
+	}
+
+	releaseLock() {
+		if (this.queue.length === 0) {
+			this.locked = false;
+		}
+		if (this.queue.length > 0) {
+			this.queue.shift().resolve();
+		}
+	}
 }
 
 module.exports = function LDAPService() {
@@ -40,7 +69,7 @@ module.exports = function LDAPService() {
 	class LdapService {
 		constructor() {
 			this.clients = {};
-			this.wantedClientQueue = {};
+			this.mapOfLocks = {};
 		}
 
 		/**
@@ -132,31 +161,13 @@ module.exports = function LDAPService() {
 			}
 
 			if (client) {
-				if (!client.inUse) {
-					client.inUse = true;
-					return client;
+				if (!this.mapOfLocks[config.url]) {
+					this.mapOfLocks[config.url] = new Lock();
 				}
-				const { resolve, promise } = defer();
-				if (!this.wantedClientQueue[config.url]) {
-					this.wantedClientQueue[config.url] = [];
-				}
-				this.wantedClientQueue[config.url].push({
-					resolve: () => {
-						resolve(client);
-					},
-				});
-				return promise;
+				await this.mapOfLocks[config.url].getLock();
+				return client;
 			}
 			throw new NoClientInstanceError('No client exists and autoconnect is not enabled.');
-		}
-
-		returnClient(config) {
-			if (!this.wantedClientQueue[config.url] || this.wantedClientQueue[config.url].length === 0) {
-				this.clients[config.url].inUse = false;
-			}
-			if (this.wantedClientQueue[config.url] && this.wantedClientQueue[config.url].length > 0) {
-				this.wantedClientQueue[config.url].shift().resolve();
-			}
 		}
 
 		/**
@@ -288,7 +299,7 @@ module.exports = function LDAPService() {
 								} else {
 									reject(new Error('LDAP result code != 0'));
 								}
-								this.returnClient(config);
+								this.mapOfLocks[config.url].releaseLock();
 							});
 						});
 					})
