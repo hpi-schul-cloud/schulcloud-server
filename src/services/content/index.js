@@ -110,7 +110,7 @@ module.exports = function () {
 		},
 		lean: true,
 		multi: true,
-		whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
+		whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 	};
 
 	app.use('/content/resources', new ResourcesService());

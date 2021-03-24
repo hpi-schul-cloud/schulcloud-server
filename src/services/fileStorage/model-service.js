@@ -11,7 +11,7 @@ module.exports = (app) => {
 		},
 		lean: true,
 		multi: true,
-		whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
+		whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 	};
 
 	// Initialize our service with any options it requires

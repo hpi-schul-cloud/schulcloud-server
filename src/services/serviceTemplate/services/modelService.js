@@ -18,7 +18,7 @@ const modelService = service({
 		max: 100,
 	},
 	multi: true,
-	whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
+	whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 });
 
 /**

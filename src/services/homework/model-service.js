@@ -17,7 +17,7 @@ module.exports = function setup() {
 			},
 			lean: true,
 			multi: true,
-			whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
+			whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 		})
 	);
 	const hwService = app.service('/homework');
@@ -37,7 +37,7 @@ module.exports = function setup() {
 			},
 			lean: true,
 			multi: true,
-			whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
+			whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 		})
 	);
 	const submissionService = app.service('/submissions');
