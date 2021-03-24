@@ -9,8 +9,6 @@ const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const testGenericErrorMessage = 'Der angefragte Nutzer ist unbekannt!';
 
-const rnd = () => new ObjectId();
-
 describe('user service', () => {
 	let userService;
 	let classesService;
@@ -60,7 +58,7 @@ describe('user service', () => {
 					id: '0000d231816abba584714d01',
 					accounts: [],
 					schoolId: '5f2987e020834114b8efd6f8',
-					email: 'user1246' + rnd() + '@testusers.net',
+					email: 'user1246@testusers.net',
 					firstName: 'Max',
 					lastName: 'Tester',
 					roles: [testSubrole._id],
