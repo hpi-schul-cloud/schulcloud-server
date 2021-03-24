@@ -20,7 +20,7 @@ module.exports = function setup() {
 		},
 		lean: { virtuals: true },
 		multi: true,
-		whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
+		whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 	};
 
 	app.use('/roles/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));

@@ -37,7 +37,7 @@ const messengerSchoolSyncService = new MessengerSchoolSync({
 		max: 500,
 	},
 	multi: true,
-	whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
+	whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 });
 
 const messengerSchoolSyncHooks = {

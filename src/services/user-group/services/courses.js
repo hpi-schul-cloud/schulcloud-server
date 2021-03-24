@@ -71,7 +71,7 @@ const courseService = new Courses({
 		max: 100,
 	},
 	multi: true,
-	whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
+	whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 });
 
 const populateWhitelist = {

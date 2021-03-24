@@ -13,7 +13,7 @@ const courseGroupModelService = service({
 	},
 	lean: { virtuals: true },
 	multi: true,
-	whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
+	whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 });
 
 const courseGroupModelServiceHooks = {

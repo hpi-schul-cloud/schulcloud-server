@@ -3,13 +3,10 @@ const logger = require('../../../../src/logger/index');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 const accountModel = require('../../../../src/services/account/model');
-const { ObjectId } = require('mongoose').Types;
 
 const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const testGenericErrorMessage = "You don't have one of the permissions: STUDENT_LIST.";
-
-const rnd = () => new ObjectId();
 
 describe('AdminUsersService', () => {
 	let app;
@@ -462,7 +459,7 @@ describe('AdminUsersService', () => {
 		const mockData = {
 			firstName: 'testFirst',
 			lastName: 'testLast',
-			email: 'studentTest' + rnd() + '@de.de',
+			email: 'studentTest@de.de',
 			roles: ['student'],
 			schoolId: admin.schoolId,
 		};
@@ -639,7 +636,7 @@ describe('AdminUsersService', () => {
 		const studentData = {
 			firstName: 'testCreateStudent',
 			lastName: 'lastTestCreateStudent',
-			email: 'testCreateStudent' + rnd() + '@de.de',
+			email: 'testCreateStudent@de.de',
 			roles: ['student'],
 			schoolId: school._id,
 		};
@@ -724,7 +721,7 @@ describe('AdminUsersService', () => {
 		const studentData = {
 			firstName: 'testDeleteStudent',
 			lastName: 'lastDeleteStudent',
-			email: 'testDeleteStudent2' + rnd() + '@de.de',
+			email: 'testDeleteStudent2@de.de',
 			roles: ['student'],
 			schoolId: school._id,
 		};
@@ -878,7 +875,7 @@ describe('AdminUsersService', () => {
 		const otherStudentData = {
 			firstName: 'otherValidDeleteStudent',
 			lastName: 'otherLastValidDeleteStudent',
-			email: 'otherValidDeleteStudent' + rnd() + '@de.de',
+			email: 'otherValidDeleteStudent@de.de',
 			roles: ['student'],
 			schoolId: school._id,
 		};
@@ -1432,7 +1429,7 @@ describe('AdminTeachersService', () => {
 		const mockData = {
 			firstName: 'testFirst',
 			lastName: 'testLast',
-			email: 'teacherTest' + rnd() + '@de.de',
+			email: 'teacherTest@de.de',
 			roles: ['teacher'],
 			schoolId: admin.schoolId,
 		};
@@ -1587,7 +1584,7 @@ describe('AdminTeachersService', () => {
 		const teacherData = {
 			firstName: 'testCreateTeacher',
 			lastName: 'lastTestCreateTeacher',
-			email: 'testCreateTeacher' + rnd() + '@de.de',
+			email: 'testCreateTeacher@de.de',
 			roles: ['teacher'],
 			schoolId: school._id,
 		};
@@ -1672,7 +1669,7 @@ describe('AdminTeachersService', () => {
 		const teacherData = {
 			firstName: 'testDeleteTeacher',
 			lastName: 'lastDeleteTeacher',
-			email: 'testDeleteTeacher2' + rnd() + '@de.de',
+			email: 'testDeleteTeacher2@de.de',
 			roles: ['teacher'],
 			schoolId: school._id,
 		};
@@ -1826,7 +1823,7 @@ describe('AdminTeachersService', () => {
 		const otherTeacherData = {
 			firstName: 'otherValidDeleteTeacher',
 			lastName: 'otherLastValidDeleteTeacher',
-			email: 'otherValidDeleteTeacher' + rnd() + '@de.de',
+			email: 'otherValidDeleteTeacher@de.de',
 			roles: ['teacher'],
 			schoolId: school._id,
 		};

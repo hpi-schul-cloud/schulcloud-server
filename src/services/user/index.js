@@ -49,7 +49,7 @@ module.exports = (app) => {
 			},
 			lean: true,
 			multi: true,
-			whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
+			whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 		})
 	);
 
@@ -67,7 +67,7 @@ module.exports = (app) => {
 			},
 			lean: true,
 			multi: true,
-			whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
+			whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 		})
 	);
 	const registrationPinModelService = app.service('/registrationPinsModel');
@@ -86,7 +86,7 @@ module.exports = (app) => {
 			},
 			lean: true,
 			multi: true,
-			whitelist: [ '$exists', '$elemMatch', '$regex', '$skip', '$populate' ],
+			whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 		})
 	);
 	const registrationPinService = app.service('/registrationPins');
