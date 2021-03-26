@@ -1,5 +1,5 @@
 const AbstractLDAPStrategy = require('./interface.js');
-const { filterForModifiedEntities } = require('./deltaSyncUtils');
+const { filterForModifiedEntities, dateToLDAPTimestamp } = require('./deltaSyncUtils');
 
 /**
  * iServ-IDM-specific LDAP functionality
@@ -31,7 +31,7 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 	async getUsers(school) {
 		const requiredAttributes = '(objectClass=person)(sn=*)(uuid=*)(uid=*)(mail=*)(cn=*)';
 		const options = {
-			filter: filterForModifiedEntities(this.config.lastModifyTimestamp, `(&${requiredAttributes})`),
+			filter: filterForModifiedEntities(this.getLastModifiedTimestamp(this.config), `(&${requiredAttributes})`),
 			scope: 'sub',
 			attributes: ['givenName', 'sn', 'dn', 'uuid', 'cn', 'mail', 'objectClass', 'memberOf', 'modifyTimestamp'],
 		};
@@ -82,13 +82,17 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 		return results;
 	}
 
+	getLastModifiedTimestamp(config) {
+		return dateToLDAPTimestamp(config.lastSyncAttempt);
+	}
+
 	/**
 	 * @see AbstractLDAPStrategy#getClasses
 	 * @returns {Array} Array of Objects containing className, ldapDn, uniqueMembers
 	 */
 	async getClasses(school) {
 		const options = {
-			filter: filterForModifiedEntities(this.config.lastModifyTimestamp, `(description=*)`),
+			filter: filterForModifiedEntities(this.getLastModifiedTimestamp(this.config), `(description=*)`),
 			scope: 'sub',
 			attributes: ['dn', 'description', 'member', 'modifyTimestamp'],
 		};

@@ -1,4 +1,19 @@
 /**
+ * Convert date to LDAP timestamp format
+ * @param date
+ * @returns {string} formatted as "YYYYMMDDHHmmssZ"
+ */
+const dateToLDAPTimestamp = (date) => {
+	if (date instanceof Date) {
+		return `${date
+			.toISOString()
+			.replace(/[-:.T]/gi, '')
+			.substring(0, 14)}Z`;
+	}
+	return date;
+};
+
+/**
  * Returns an LDAP filter to retrieve only recently updated entities (e.g. based on a
  * timestamp of a previous previous full sync). If the given attribute name does not
  * exist on the server, the resulting query gracefully falls back to all entities. The
@@ -36,4 +51,5 @@ const filterForModifiedEntities = (lastChange, existingFilter = '') => {
 module.exports = {
 	filterForModifiedEntities,
 	getModifiedFilter,
+	dateToLDAPTimestamp,
 };
