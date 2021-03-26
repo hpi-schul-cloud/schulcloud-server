@@ -39,6 +39,7 @@ class RocketChatLogin {
  					await setUserStatus({authToken, userId: rcAccount.rcId}, 'offline');
 					if (res.success) return { authToken };
 				} catch (err) {
+					logger.error(err);
 					authToken = '';
 				}
 			}
