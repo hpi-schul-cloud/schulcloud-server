@@ -26,6 +26,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7021 - automatic deletion documents in the trashbins collection after 7 days.
 - SC-5202 - homework tests refactoring
 - SC-7868 - filestorage integration tests are skipped on local test environments if minio is not setup
+- SC-8589 - add lazy loading
 
 ### Fixed
 
