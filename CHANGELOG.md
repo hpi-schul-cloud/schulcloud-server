@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.1.0]
+
 ## [26.0.4] - 2021-03-25
 
 ### Changed
