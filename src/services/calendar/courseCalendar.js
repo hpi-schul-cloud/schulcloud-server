@@ -31,11 +31,7 @@ class CourseCalendarService {
 	}
 }
 
-module.exports = CourseCalendarService;
-
-module.exports = function setup() {
-	const app = this;
-
+module.exports = function setup(app) {
 	app.use('/calendar/courses', new CourseCalendarService(app));
 	const courseCalendarService = app.service('/calendar/courses');
 	courseCalendarService.hooks(hooks);
