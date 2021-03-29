@@ -9,10 +9,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-## [26.0.4] - 2021-03-29
+## [26.0.5] - 2021-03-29
 
 ### Fixed
+
 - LDAP sync can be run with multiple school in parallel
+
+## [26.0.4] - 2021-03-25
+
+### Changed
+
+- SC-8829 - status of logging in rocket chat user is set to offline
+
 ## [26.0.3] - 2021-03-17
 
 ### Changed
