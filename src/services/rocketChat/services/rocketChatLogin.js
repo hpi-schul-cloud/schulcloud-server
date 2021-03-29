@@ -6,6 +6,11 @@ const { userModel } = require('../model');
 const docs = require('../docs');
 const logger = require('../../../logger');
 
+
+const setUserStatus = async (authenticationHeaders, status) => {
+	return request(getRequestOptions('/api/v1/users.setStatus', {message: '', status}, false, authenticationHeaders, 'POST'))
+}
+
 class RocketChatLogin {
 	constructor(options) {
 		this.options = options || {};
@@ -31,8 +36,10 @@ class RocketChatLogin {
 					const res = await request(
 						getRequestOptions('/api/v1/me', {}, false, { authToken, userId: rcAccount.rcId }, 'GET')
 					);
+ 					await setUserStatus({authToken, userId: rcAccount.rcId}, 'offline');
 					if (res.success) return { authToken };
 				} catch (err) {
+					logger.error(err);
 					authToken = '';
 				}
 			}
@@ -42,6 +49,7 @@ class RocketChatLogin {
 			({ authToken } = response.data);
 			if (response.success === true && authToken !== undefined) {
 				await userModel.update({ username: rcAccount.username }, { authToken });
+ 				await setUserStatus({authToken, userId: rcAccount.rcId}, 'offline');
 				return Promise.resolve({ authToken });
 			}
 			return Promise.reject(new BadRequest('False response data from rocketChat'));
