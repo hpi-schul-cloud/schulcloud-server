@@ -22,7 +22,7 @@ class LockingQueue {
 	getLock() {
 		if (!this.locked) {
 			this.locked = true;
-			return Promise.resolve;
+			return Promise.resolve();
 		}
 		const { resolve, promise: deferredPromise } = this.createDeferredPromise();
 		this.queue.push({
