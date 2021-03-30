@@ -33,6 +33,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [26.1.0]
 
+## [26.0.5] - 2021-03-29
+
+### Fixed
+
+- SC- 8691 - LDAP sync can be run with multiple school in parallel
+
 ## [26.0.4] - 2021-03-25
 
 ### Changed
@@ -396,7 +402,6 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 - SC-7028 - Add Course Component API Specification document
 - SC-7476 - Prevent hash generation if user has account
 - SC-6692 - Added Lern-Store counties support for Niedersachsen (Merlin)
-
 
 ### Changed
 
