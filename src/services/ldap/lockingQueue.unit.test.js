@@ -4,7 +4,7 @@ const LockingQueue = require('./lockingQueue');
 
 const { expect } = chai;
 
-describe('lockingQueue', () => {
+describe.only('lockingQueue', () => {
 	it('should lock and resolve the returned promise immediatly', (done) => {
 		const lockingQueue = new LockingQueue();
 		const promise1 = lockingQueue.getLock();
@@ -18,13 +18,12 @@ describe('lockingQueue', () => {
 			});
 	});
 
-	it('should lock and unlock', (done) => {
+	it('should lock and unlock', async () => {
 		const lockingQueue = new LockingQueue();
-		lockingQueue.getLock();
+		const lock = await lockingQueue.getLock();
 		expect(lockingQueue.locked).to.be.true;
-		lockingQueue.releaseLock();
+		lock.releaseLock();
 		expect(lockingQueue.locked).to.be.false;
-		done();
 	});
 
 	it('if getLock is called twice the second promise should be called after the first is released', (done) => {
@@ -36,28 +35,49 @@ describe('lockingQueue', () => {
 
 		expect(lockingQueue.locked).to.be.true;
 		promise1
-			.then(() => {
+			.then((lock) => {
 				promise1Resolve = true;
 				expect(promise2Resolve, 'Promise 2 not yet resolved').to.be.false;
-				expect(lockingQueue.locked, 'still locked after promise 1 resolved').to.be.true;
+				expect(lockingQueue.locked, 'locked after promise 1 resolved').to.be.true;
+				lock.releaseLock();
+				expect(lockingQueue.locked, 'still locked after first releaseLock').to.be.true;
 				return '';
 			})
 			.catch(() => {
 				expect.fail('unexpected failed promise');
 			});
 		promise2
-			.then(() => {
+			.then((lock) => {
 				promise2Resolve = true;
 				expect(promise1Resolve, 'Promise 1 already resolved').to.be.true;
-				expect(lockingQueue.locked, 'not locked after both promises resolved').to.be.false;
+				expect(lockingQueue.locked, 'still locked after promise 1 resolved').to.be.true;
+				lock.releaseLock();
+				expect(lockingQueue.locked, 'not locked after second releaseLock').to.be.false;
 				return done();
 			})
 			.catch(() => {
 				expect.fail('unexpected failed promise');
 			});
-		lockingQueue.releaseLock();
-		expect(lockingQueue.locked, 'still locked after first releaseLock').to.be.true;
-		lockingQueue.releaseLock();
+	});
+
+	it('calling releaseLock on same lock twice does not matter', (done) => {
+		const lockingQueue = new LockingQueue();
+		const promise1 = lockingQueue.getLock();
+		lockingQueue.getLock();
+
+		expect(lockingQueue.locked).to.be.true;
+		promise1
+			.then((lock) => {
+				expect(lockingQueue.locked, 'locked after promise 1 resolved').to.be.true;
+				lock.releaseLock();
+				lock.releaseLock();
+				expect(lockingQueue.locked, 'still locked after calling releaseLock twice').to.be.true;
+				done();
+				return '';
+			})
+			.catch(() => {
+				expect.fail('unexpected failed promise');
+			});
 	});
 
 	it('should resolve one promise at a time whenever "releaseLock" is called', (done) => {
@@ -68,51 +88,51 @@ describe('lockingQueue', () => {
 		let promise1Resolve = false;
 		let promise2Resolve = false;
 		promise1
-			.then(() => {
+			.then((lock) => {
 				promise1Resolve = true;
 				expect(promise2Resolve, 'Promise 2 not yet resolved').to.be.false;
+				lock.releaseLock();
+				expect(lockingQueue.locked, 'still locked after 1st releaseLock()').to.be.true;
 				return '';
 			})
 			.catch(() => {
 				expect.fail('unexpected failed promise');
 			});
 		promise2
-			.then(() => {
+			.then((lock) => {
 				promise2Resolve = true;
 				expect(promise1Resolve, 'Promise 1 already resolved').to.be.true;
+				lock.releaseLock();
+				expect(lockingQueue.locked, 'still locked after 2nd releaseLock()').to.be.true;
 				return '';
 			})
 			.catch(() => {
 				expect.fail('unexpected failed promise');
 			});
-		promise3
-			.then(() => {
-				expect(promise1Resolve, 'Promise 1 already resolved').to.be.true;
-				expect(promise2Resolve, 'Promise 21 already resolved').to.be.true;
-				return '';
-			})
-			.catch(() => {
-				expect.fail('unexpected failed promise');
-			});
-
-		lockingQueue.releaseLock();
-		expect(lockingQueue.locked, 'still locked after 1st releaseLock()').to.be.true;
-
 		const promise4 = lockingQueue.getLock();
-		promise4
-			.then(() => {
+		promise3
+			.then((lock) => {
 				expect(promise1Resolve, 'Promise 1 already resolved').to.be.true;
-				expect(promise2Resolve, 'Promise 21 already resolved').to.be.true;
+				expect(promise2Resolve, 'Promise 2 already resolved').to.be.true;
+				lock.releaseLock();
+				expect(lockingQueue.locked, 'still locked after 3rd releaseLock()').to.be.true;
+				return '';
+			})
+			.catch(() => {
+				expect.fail('unexpected failed promise');
+			});
+
+
+		promise4
+			.then((lock) => {
+				expect(promise1Resolve, 'Promise 1 already resolved').to.be.true;
+				expect(promise2Resolve, 'Promise 2 already resolved').to.be.true;
+				lock.releaseLock();
+				expect(lockingQueue.locked, 'still locked after 4th releaseLock()').to.be.false;
 				return done();
 			})
 			.catch(() => {
 				expect.fail('unexpected failed promise');
 			});
-
-		lockingQueue.releaseLock();
-		expect(lockingQueue.locked, 'still locked after 2nd releaseLock()').to.be.true;
-		lockingQueue.releaseLock();
-		expect(lockingQueue.locked, 'still locked after 3rd releaseLock()').to.be.true;
-		lockingQueue.releaseLock();
 	});
 });
