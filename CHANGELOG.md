@@ -9,12 +9,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-## [26.0.5] - 2021-03-29
-
-### Fixed
-
-- SC- 8691 - LDAP sync can be run with multiple school in parallel
-
 ## [26.0.4] - 2021-03-25
 
 ### Changed
