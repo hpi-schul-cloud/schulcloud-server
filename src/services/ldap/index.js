@@ -12,6 +12,8 @@ const hooks = require('./hooks');
 const getLDAPStrategy = require('./strategies');
 const logger = require('../../logger');
 
+const LockingQueue = require('./lockingQueue');
+
 module.exports = function LDAPService() {
 	const app = this;
 
@@ -25,6 +27,7 @@ module.exports = function LDAPService() {
 	class LdapService {
 		constructor() {
 			this.clients = {};
+			this.mapOfLocks = {};
 		}
 
 		/**
@@ -110,15 +113,17 @@ module.exports = function LDAPService() {
 				return newClient;
 			};
 
-			const client = this.clients[config.url];
-			if (client) {
-				if (autoconnect && !client.connected) {
-					return getNewClient();
-				}
-				return client;
+			let client = this.clients[config.url];
+			if (autoconnect && (!client || !client.connected)) {
+				client = getNewClient();
 			}
-			if (autoconnect) {
-				return getNewClient();
+
+			if (client) {
+				if (!this.mapOfLocks[config.url]) {
+					this.mapOfLocks[config.url] = new LockingQueue();
+				}
+				await this.mapOfLocks[config.url].getLock();
+				return client;
 			}
 			throw new NoClientInstanceError('No client exists and autoconnect is not enabled.');
 		}
@@ -249,8 +254,10 @@ module.exports = function LDAPService() {
 							res.on('end', (result) => {
 								if (result.status === 0) {
 									resolve(objects);
+								} else {
+									reject(new Error('LDAP result code != 0'));
 								}
-								reject(new Error('LDAP result code != 0'));
+								this.mapOfLocks[config.url].releaseLock();
 							});
 						});
 					})
