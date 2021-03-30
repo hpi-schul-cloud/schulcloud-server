@@ -119,13 +119,13 @@ describe('class hooks', () => {
 
 		it('should not extend the query with user filter for teachers at schools where teachers can see all students', async () => {
 			const { _id: usersSchoolId } = await testObjects.createTestSchool({ permissions: { teacher: 'STUDENT_LIST' } });
-			const admin = await testObjects.createTestUser({ roles: 'administrator', schoolId: usersSchoolId });
+			const teacher = await testObjects.createTestUser({ roles: 'teacher', schoolId: usersSchoolId });
 
 			const originalQuery = { key: 'value' };
 			const context = {
 				app,
 				params: {
-					account: { userId: admin._id },
+					account: { userId: teacher._id },
 					query: originalQuery,
 				},
 			};
