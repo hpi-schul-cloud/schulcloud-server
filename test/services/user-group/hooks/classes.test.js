@@ -5,7 +5,7 @@ const testObjects = require('../../helpers/testObjects')(appPromise);
 
 const {
 	sortByGradeAndOrName,
-	restrictFINDToUsersOwnClasses,
+	restrictFINDToClassesTheUserIsAllowedToSee,
 	restrictToUsersOwnClasses,
 } = require('../../../../src/services/user-group/hooks/classes');
 
@@ -56,7 +56,7 @@ describe('class hooks', () => {
 		});
 	});
 
-	describe('restrictFINDToUsersOwnClasses', () => {
+	describe('restrictFINDToClassesTheUserIsAllowedToSee', () => {
 		let app;
 		let server;
 
@@ -85,7 +85,7 @@ describe('class hooks', () => {
 			const restrictQuery = { $or: [{ userIds: teacher._id }, { teacherIds: teacher._id }] };
 			const expectedQuery = { ...originalQuery, ...restrictQuery };
 
-			const result = await restrictFINDToUsersOwnClasses(context);
+			const result = await restrictFINDToClassesTheUserIsAllowedToSee(context);
 			expect(JSON.stringify(result.params.query)).to.be.deep.equal(JSON.stringify(expectedQuery));
 		});
 
@@ -113,8 +113,25 @@ describe('class hooks', () => {
 				],
 			};
 
-			const result = await restrictFINDToUsersOwnClasses(context);
+			const result = await restrictFINDToClassesTheUserIsAllowedToSee(context);
 			expect(JSON.stringify(result.params.query)).to.be.deep.equal(JSON.stringify(expectedQuery));
+		});
+
+		it('should not extend the query with user filter for teachers at schools where teachers can see all students', async () => {
+			const { _id: usersSchoolId } = await testObjects.createTestSchool({ permissions: { teacher: 'STUDENT_LIST' } });
+			const admin = await testObjects.createTestUser({ roles: 'administrator', schoolId: usersSchoolId });
+
+			const originalQuery = { key: 'value' };
+			const context = {
+				app,
+				params: {
+					account: { userId: admin._id },
+					query: originalQuery,
+				},
+			};
+
+			const result = await restrictFINDToClassesTheUserIsAllowedToSee(context);
+			expect(JSON.stringify(result.params.query)).to.be.deep.equal(JSON.stringify(originalQuery));
 		});
 
 		it('should not extend the query with user filter for admin', async () => {
@@ -130,7 +147,7 @@ describe('class hooks', () => {
 				},
 			};
 
-			const result = await restrictFINDToUsersOwnClasses(context);
+			const result = await restrictFINDToClassesTheUserIsAllowedToSee(context);
 			expect(JSON.stringify(result.params.query)).to.be.deep.equal(JSON.stringify(originalQuery));
 		});
 
@@ -147,7 +164,7 @@ describe('class hooks', () => {
 				},
 			};
 
-			const result = await restrictFINDToUsersOwnClasses(context);
+			const result = await restrictFINDToClassesTheUserIsAllowedToSee(context);
 			expect(JSON.stringify(result.params.query)).to.be.deep.equal(JSON.stringify(originalQuery));
 		});
 	});
