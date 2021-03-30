@@ -62,6 +62,7 @@ class LDAPSchoolSyncer extends Syncer {
 			const userData = await this.app.service('usersModel').find({
 				query: {
 					ldapId: { $in: ldapUserIds },
+					schoolId: this.school._id,
 					$populate: ['roles'],
 					$limit: bulkSize, // needed for bulkSize > 1000 because of default limit
 				},
