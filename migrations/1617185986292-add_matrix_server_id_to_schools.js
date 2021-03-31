@@ -4,14 +4,14 @@ const { alert, error } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
-const { SCHOOL_FEATURES } = require('../src/school/model');
+const { SCHOOL_FEATURES, schoolSchema } = require('../src/services/school/model');
 
 
 // use your own name for your model, otherwise other migrations may fail.
 // The third parameter is the actually relevent one for what collection to write to.
 const School = mongoose.model(
 	'schools31032021',
-	schoolModel,
+	schoolSchema,
 	'schools'
 );
 
@@ -51,7 +51,7 @@ module.exports = {
 	},
 
 	down: async function down() {
-		
+
 		// ////////////////////////////////////////////////////
 		// Implement the necessary steps to roll back the migration here.
 
