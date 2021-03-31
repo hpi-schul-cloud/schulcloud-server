@@ -33,11 +33,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [26.1.0]
 
+## [26.0.6] - 2021-03-30
+
+### Fixed
+
+- SC-8836 - teachers can add classes from other teachers to their courses
+
 ## [26.0.5] - 2021-03-29
 
 ### Fixed
 
-- SC- 8691 - LDAP sync can be run with multiple school in parallel
+- SC-8691 - LDAP sync can be run with multiple school in parallel
 
 ## [26.0.4] - 2021-03-25
 
