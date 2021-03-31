@@ -197,12 +197,12 @@ const handleMessage = (incomingMessage) =>
 		});
 
 const setup = () => {
-	const number_of_servers = Configuration.get('NUMBER_OF_SERVERS');
+	const numberOfServers = Configuration.get('MATRIX_MESSENGER__NUMBER_OF_SERVERS');
 	channelSendExternal = {};
-	for (let mxId = 1; mxId <= number_of_servers; mxId++) {
+	for (let mxId = 1; mxId <= numberOfServers; mxId++) {
 		channelSendExternal[mxId] = getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL') + '_' + i, { durable: false });
 	}
-	
+
 	channelReadInternal = getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true });
 	channelReadInternal.consumeQueue(handleMessage, { noAck: false });
 };

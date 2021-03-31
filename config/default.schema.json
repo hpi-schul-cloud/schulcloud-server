@@ -173,7 +173,12 @@
 				"NUMBER_OF_SERVERS": {
 					"type": "integer",
 					"default": 1,
-					"description": "How many matrix servers are available."
+					"description": "How many Matrix Messenger servers are available."
+				},
+				"MAX_SCHOOLS_PER_SERVER": {
+					"type": "integer",
+					"default": 10,
+					"description": "Maximum number of schools that can share one Matrix Messenger server"
 				},
 				"SECRET": {
 					"type": "string",

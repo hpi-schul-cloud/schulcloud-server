@@ -275,6 +275,58 @@ const validateCounty = async (context) => {
 	return context;
 };
 
+const setMatrixServerId = async (context) => {
+	console.log('-----', context ? context.data : 'NO context');
+
+	// messenger gets activated
+	if (context && context.data && context.data.features && context.data.features.includes(SCHOOL_FEATURES.MESSENGER)) {
+		// and no mxId set
+		const schools = await schoolModel.find({
+			_id: context.id,
+			$limit: 1,
+		});
+
+		const currentSchool = schools.data[0];
+
+		const isMxIdSet = currentSchool && currentSchool.mxId;
+
+		if (!isMxIdSet) {
+			const numberOfServers = Configuration.get('MATRIX_MESSENGER__NUMBER_OF_SERVERS');
+			const maxSchoolsPerServer = Configuration.get('MATRIX_MESSENGER__MAX_SCHOOLS_PER_SERVER');
+
+			const countAggregate = await schoolModel.aggregate([
+				{ '$group' : {_id: '$mxId', count: { $sum:1 } } }
+			]);
+
+			const countCache = countAggregate.reduce((m, c) => {
+				m[c['_id']] = c['count'];
+			});
+
+			// find the lowest mxId that has < maxSchoolsPerServer schools
+			let freeServerId;
+			for(let mxId = 1; mxId <= numberOfServers; mxId++) {
+				const numSchools = countCache[mxId] || 0;
+				if (numSchools < maxSchoolsPerServer) {
+					freeServerId = mxId;
+					break;
+				}
+			}
+
+			if (freeServerId) {
+				context.data.mxId = freeServerId;
+			}
+			else {
+				throw new Error(`No free matrix server available. Matrix messenger cannot be activated.`);
+			}
+		}
+	}
+	// TODO deactivate messenger
+	// else {
+		// we keep all data for now
+		// decide what to do with messenger data of school
+	// }
+}
+
 exports.before = {
 	all: [globalHooks.authenticateWhenJWTExist],
 	find: [],
@@ -286,6 +338,7 @@ exports.before = {
 		setCurrentYearIfMissing,
 		validateOfficialSchoolNumber,
 		validateCounty,
+		setMatrixServerId,
 	],
 	update: [
 		authenticate('jwt'),
@@ -294,6 +347,7 @@ exports.before = {
 		globalHooks.ifNotLocal(restrictToUserSchool),
 		validateOfficialSchoolNumber,
 		validateCounty,
+		setMatrixServerId,
 	],
 	patch: [
 		authenticate('jwt'),
@@ -302,6 +356,7 @@ exports.before = {
 		globalHooks.ifNotLocal(restrictToUserSchool),
 		validateOfficialSchoolNumber,
 		validateCounty,
+		setMatrixServerId,
 	],
 	/* It is disabled for the moment, is added with new "Löschkonzept"
     remove: [authenticate('jwt'), globalHooks.hasPermission('SCHOOL_CREATE')]
