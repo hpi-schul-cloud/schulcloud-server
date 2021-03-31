@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.0.7] - 2021-03-31
+
+### Fixed
+
+- SC-8768 ldap sync: in user search include current school
+
 ## [26.0.6] - 2021-03-30
 
 ### Fixed
