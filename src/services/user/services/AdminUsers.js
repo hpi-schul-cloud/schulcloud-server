@@ -33,7 +33,7 @@ const setSearchParametesIfExist = (clientQuery, query) => {
 		const searchQueryElements = splitForSearchIndexes(clientQuery.searchQuery.trim());
 		query.searchQuery = `${clientQuery.searchQuery} ${searchQueryElements.join(' ')}`;
 		// increase gate by searched word, to get better results
-		query.searchFilterGate = searchQueryElements.length * 1.95 + amountOfSearchWords;
+		query.searchFilterGate = searchQueryElements.length * 2 + amountOfSearchWords;
 		// recreating sort here, to set searchQuery as first (main) parameter of sorting
 		query.sort = {
 			...query.sort,
@@ -109,6 +109,7 @@ class AdminUsers {
 			if (clientQuery.classes) query.classes = clientQuery.classes;
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
+			setSearchParametesIfExist(clientQuery, query);
 
 			const dateQueries = ['createdAt'];
 			for (const dateQuery of dateQueries) {
