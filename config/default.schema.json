@@ -162,14 +162,18 @@
 			"properties": {
 				"URI": {
 					"type": "string",
-					"format": "uri",
-					"default": "https://matrix.messenger.schule",
-					"description": "The URI of the Matrix Messenger server."
+					"default": "test.messenger.schule",
+					"description": "The base URI of the Matrix Messenger servers."
 				},
 				"SERVERNAME": {
 					"type": "string",
-					"default": "messenger.schule",
-					"description": "Servername of the Matrix Messenger server."
+					"default": "test.messenger.schule",
+					"description": "Base servername of the Matrix Messenger servers."
+				},
+				"NUMBER_OF_SERVERS": {
+					"type": "integer",
+					"default": 1,
+					"description": "How many matrix servers are available."
 				},
 				"SECRET": {
 					"type": "string",

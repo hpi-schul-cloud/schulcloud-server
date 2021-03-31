@@ -158,6 +158,7 @@ const expandContentIds = async (data) => {
 
 	if (!data.school && data.schoolId) {
 		data.school = await getSchoolData(data.schoolId);
+		data.mxId = 1; // data.school.mxId;
 	}
 
 	return data;
@@ -191,9 +192,9 @@ const isCourseModerator = (course, userId) => {
 		.some((moderatorId) => ObjectId.equal(moderatorId, userId));
 };
 
-const buildMatrixUserId = (userId) => {
+const buildMatrixUserId = (mxId, userId) => {
 	const servername = Configuration.get('MATRIX_MESSENGER__SERVERNAME');
-	return `@sso_${userId.toString()}:${servername}`;
+	return `@sso_${userId.toString()}:mx${mxId}.${servername}`;
 };
 
 /*
@@ -255,7 +256,7 @@ const buildMessageObject = async (data) => {
 	const result = {
 		method: 'addUser',
 		user: {
-			id: buildMatrixUserId(user._id),
+			id: buildMatrixUserId(data.mxId, user._id),
 			name: displayName(user),
 		},
 	};
@@ -325,7 +326,7 @@ const buildDeleteUserMessage = async (data) => {
 	return {
 		method: 'removeUser',
 		user: {
-			id: buildMatrixUserId(data.userId),
+			id: buildMatrixUserId(data.mxId, data.userId),
 		},
 	};
 };
@@ -345,7 +346,7 @@ const buildAddTeamMessage = async (data) => {
 	});
 	const members = membersWithMessengerActivated.map((teamUser) => {
 		return {
-			id: buildMatrixUserId(teamUser.userId),
+			id: buildMatrixUserId(data.mxId, teamUser.userId),
 			is_moderator: isTeamModerator(data.team, teamUser.userId, moderatorRoles),
 		};
 	});
@@ -374,7 +375,7 @@ const buildAddCourseMessage = async (data) => {
 	// members
 	const members = getAllCourseUserIds(data.course).map((userId) => {
 		return {
-			id: buildMatrixUserId(userId),
+			id: buildMatrixUserId(data.mxId, userId),
 			is_moderator: isCourseModerator(data.course, userId),
 		};
 	});

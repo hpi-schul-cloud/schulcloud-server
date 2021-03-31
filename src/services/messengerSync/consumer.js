@@ -111,8 +111,8 @@ const validateMessage = (content) => {
 	}
 };
 
-const sendToExternalQueue = (message) => {
-	channelSendExternal.sendToQueue(message, { persistent: true });
+const sendToExternalQueue = (mxId, message) => {
+	channelSendExternal[mxId].sendToQueue(message, { persistent: true });
 };
 
 const executeMessage = async (incomingMessage) => {
@@ -138,37 +138,37 @@ const executeMessage = async (incomingMessage) => {
 
 		case ACTIONS.SYNC_USER: {
 			const outgoingMessage = await buildAddUserMessage(content);
-			sendToExternalQueue(outgoingMessage);
+			sendToExternalQueue(content.mxId, outgoingMessage);
 			return true;
 		}
 
 		case ACTIONS.DELETE_USER: {
 			const outgoingMessage = await buildDeleteUserMessage(content);
-			sendToExternalQueue(outgoingMessage);
+			sendToExternalQueue(content.mxId, outgoingMessage);
 			return true;
 		}
 
 		case ACTIONS.SYNC_COURSE: {
 			const outgoingMessage = await buildAddCourseMessage(content);
-			sendToExternalQueue(outgoingMessage);
+			sendToExternalQueue(content.mxId, outgoingMessage);
 			return true;
 		}
 
 		case ACTIONS.DELETE_COURSE: {
 			const outgoingMessage = await buildDeleteCourseMessage(content);
-			sendToExternalQueue(outgoingMessage);
+			sendToExternalQueue(content.mxId, outgoingMessage);
 			return true;
 		}
 
 		case ACTIONS.SYNC_TEAM: {
 			const outgoingMessage = await buildAddTeamMessage(content);
-			sendToExternalQueue(outgoingMessage);
+			sendToExternalQueue(content.mxId, outgoingMessage);
 			return true;
 		}
 
 		case ACTIONS.DELETE_TEAM: {
 			const outgoingMessage = await buildDeleteTeamMessage(content);
-			sendToExternalQueue(outgoingMessage);
+			sendToExternalQueue(content.mxId, outgoingMessage);
 			return true;
 		}
 
@@ -197,7 +197,12 @@ const handleMessage = (incomingMessage) =>
 		});
 
 const setup = () => {
-	channelSendExternal = getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), { durable: false });
+	const number_of_servers = Configuration.get('NUMBER_OF_SERVERS');
+	channelSendExternal = {};
+	for (let mxId = 1; mxId <= number_of_servers; mxId++) {
+		channelSendExternal[mxId] = getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL') + '_' + i, { durable: false });
+	}
+	
 	channelReadInternal = getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true });
 	channelReadInternal.consumeQueue(handleMessage, { noAck: false });
 };

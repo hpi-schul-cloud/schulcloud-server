@@ -84,6 +84,7 @@ const schoolSchema = new Schema(
 			default: defaultFeatures,
 			enum: Object.values(SCHOOL_FEATURES),
 		},
+		mxId: { type: Number },
 		/**
 		 * depending on system settings,
 		 * an admin may opt-in or -out,
