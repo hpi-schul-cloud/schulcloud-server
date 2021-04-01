@@ -43,7 +43,7 @@ describe('MessengerTokenService', function test() {
 		});
 
 		it('can not be used without feature flag', async () => {
-			const school = await testObjects.createTestSchool({ features: ['messenger'] });
+			const school = await testObjects.createTestSchool({ features: ['messenger'], mxId: 1 });
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
 
 			const params = await testObjects.generateRequestParamsFromUser(student);
@@ -72,10 +72,10 @@ describe('MessengerTokenService', function test() {
 			});
 
 			it('can fail', async () => {
-				nock(Configuration.get('MATRIX_MESSENGER__URI'))
+				nock('https://mx1.' + Configuration.get('MATRIX_MESSENGER__URI'))
 					.post('/_matrix/client/r0/login')
 					.reply(403, 'Invalid Password');
-				const school = await testObjects.createTestSchool({ features: ['messenger'] });
+				const school = await testObjects.createTestSchool({ features: ['messenger'], mxId: 1 });
 				const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
 
 				const params = await testObjects.generateRequestParamsFromUser(student);
@@ -93,50 +93,56 @@ describe('MessengerTokenService', function test() {
 			});
 
 			it('should succeed', async () => {
-				nock(Configuration.get('MATRIX_MESSENGER__URI')).post('/_matrix/client/r0/login').reply(200, {
-					access_token: 'token',
-					device_id: 'DEVICE',
-					home_server: 'messenger.schule',
-				});
-				const school = await testObjects.createTestSchool({ features: ['messenger'] });
+				nock('https://mx1.' + Configuration.get('MATRIX_MESSENGER__URI'))
+					.post('/_matrix/client/r0/login')
+					.reply(200, (uri, requestBody) => {
+						return {
+							access_token: 'token',
+							device_id: requestBody.device_id,
+							home_server: 'mx1.messenger.schule',
+						};
+					});
+				const school = await testObjects.createTestSchool({ features: ['messenger'], mxId: 1 });
 				const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
 
 				const params = await testObjects.generateRequestParamsFromUser(student);
 				return service.create({}, params).then((response) => {
 					expect(response).not.to.be.undefined;
-					expect(response.userId).to.equals(`@sso_${student._id}:messenger.schule`);
-					expect(response.homeserverUrl).to.equals(Configuration.get('MATRIX_MESSENGER__URI'));
+					expect(response.userId).to.equals(`@sso_${student._id}:mx1.messenger.schule`);
+					expect(response.homeserverUrl).to.equals('https://mx1.' + Configuration.get('MATRIX_MESSENGER__URI'));
 					expect(response.accessToken).to.equals('token');
-					expect(response.deviceId).to.equals('DEVICE');
-					expect(response.servername).to.equals('messenger.schule');
+					expect(response.deviceId).to.equals(`sc_${student._id}`);
+					expect(response.servername).to.equals('mx1.messenger.schule');
 				});
 			});
 
 			it('should succeed with custom homeserverUrl', async () => {
 				const customHomeserverUrl = 'https://matrix-server.url';
-				nock(Configuration.get('MATRIX_MESSENGER__URI'))
+				nock('https://mx1.' + Configuration.get('MATRIX_MESSENGER__URI'))
 					.post('/_matrix/client/r0/login')
-					.reply(200, {
-						access_token: 'token',
-						device_id: 'DEVICE',
-						home_server: 'messenger.schule',
-						well_known: {
-							'm.homeserver': {
-								base_url: customHomeserverUrl,
+					.reply(200, (uri, requestBody) => {
+						return {
+							access_token: 'token',
+							device_id: requestBody.device_id,
+							home_server: 'mx1.messenger.schule',
+							well_known: {
+								'm.homeserver': {
+									base_url: customHomeserverUrl,
+								},
 							},
-						},
+						};
 					});
-				const school = await testObjects.createTestSchool({ features: ['messenger'] });
+				const school = await testObjects.createTestSchool({ features: ['messenger'], mxId: 1 });
 				const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
 
 				const params = await testObjects.generateRequestParamsFromUser(student);
 				return service.create({}, params).then((response) => {
 					expect(response).not.to.be.undefined;
-					expect(response.userId).to.equals(`@sso_${student._id}:messenger.schule`);
+					expect(response.userId).to.equals(`@sso_${student._id}:mx1.messenger.schule`);
 					expect(response.homeserverUrl).to.equals(customHomeserverUrl);
 					expect(response.accessToken).to.equals('token');
-					expect(response.deviceId).to.equals('DEVICE');
-					expect(response.servername).to.equals('messenger.schule');
+					expect(response.deviceId).to.equals(`sc_${student._id}`);
+					expect(response.servername).to.equals('mx1.messenger.schule');
 				});
 			});
 		});

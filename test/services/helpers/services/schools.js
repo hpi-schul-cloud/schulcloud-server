@@ -30,6 +30,7 @@ const create = (appPromise) => async ({
 	language = 'de',
 	timezone = 'Europe/Berlin',
 	storageProvider = undefined,
+	mxId = undefined,
 } = {}) => {
 	const app = await appPromise;
 	const school = await app.service('schools').create({
@@ -60,6 +61,7 @@ const create = (appPromise) => async ({
 		language,
 		timezone,
 		storageProvider,
+		mxId,
 	});
 	createdSchoolIds.push(school._id);
 	return school;

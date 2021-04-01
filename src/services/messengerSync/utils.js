@@ -106,6 +106,7 @@ const getSchoolData = (schoolId) =>
 				_id: 1,
 				name: 1,
 				features: 1,
+				mxId: 1,
 			}
 		)
 		.lean()
@@ -158,7 +159,7 @@ const expandContentIds = async (data) => {
 
 	if (!data.school && data.schoolId) {
 		data.school = await getSchoolData(data.schoolId);
-		data.mxId = 1; // data.school.mxId;
+		data.mxId = data.school.mxId;
 	}
 
 	return data;
@@ -196,6 +197,11 @@ const buildMatrixUserId = (mxId, userId) => {
 	const servername = Configuration.get('MATRIX_MESSENGER__SERVERNAME');
 	return `@sso_${userId.toString()}:mx${mxId}.${servername}`;
 };
+
+const buildMatrixServerUri = (mxId) => {
+	const baseUri = Configuration.get('MATRIX_MESSENGER__URI');
+	return `https://mx${mxId}.${baseUri}`;
+}
 
 /*
 {
@@ -406,4 +412,6 @@ module.exports = {
 	buildDeleteTeamMessage,
 	buildAddCourseMessage,
 	buildDeleteCourseMessage,
+	buildMatrixUserId,
+	buildMatrixServerUri,
 };

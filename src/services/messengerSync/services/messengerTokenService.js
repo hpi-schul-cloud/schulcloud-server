@@ -3,6 +3,7 @@ const { disallow } = require('feathers-hooks-common');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const request = require('request-promise-native');
 const hmacSHA512 = require('crypto-js/hmac-sha512');
+const { buildMatrixUserId, buildMatrixServerUri, expandContentIds } = require('../utils');
 
 const { BadRequest, GeneralError } = require('../../../errors');
 
@@ -64,10 +65,15 @@ class MessengerTokenService {
 		const scId = (params.account || {}).userId;
 		if (!scId) throw new BadRequest('no user');
 
-		const homeserver = Configuration.get('MATRIX_MESSENGER__SERVERNAME');
-		const matrixId = `@sso_${scId.toString()}:${homeserver}`;
+		// find mxId by users school
+		const models = await expandContentIds({
+			userId: scId
+		});
+		const mxId = models.mxId;
+		const matrixId = buildMatrixUserId(mxId, scId.toString())
+
 		const deviceId = `sc_${scId.toString()}`;
-		const matrixUri = Configuration.get('MATRIX_MESSENGER__URI');
+		const matrixUri = buildMatrixServerUri(mxId);
 		const matrixSecret = Configuration.get('MATRIX_MESSENGER__SECRET');
 
 		return obtainAccessToken(matrixId, deviceId, matrixUri, matrixSecret);
