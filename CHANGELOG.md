@@ -14,6 +14,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 
 - SC-8732 - change search filter gate and weight of values in indexes. Will reduce amount of results
+- SC-8880 - changed the validation for search queries in NAT, now it allows empty values
 
 ## [26.0.4] - 2021-03-25
 
