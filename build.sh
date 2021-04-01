@@ -5,7 +5,7 @@
 
 # decrypt key
 mkdir -p .build
-openssl aes-256-cbc -K $encrypted_bce910623bb2_key -iv $encrypted_bce910623bb2_iv -in travis_rsa.enc -out .build/travis_rsa -d
+openssl aes-256-cbc -K "$encrypted_bce910623bb2_key" -iv "$encrypted_bce910623bb2_iv" -in travis_rsa.enc -out .build/travis_rsa -d
 
 #
 # set -e : "... Exit immediately if a pipeline [...], which may consist of a single simple command [...],
@@ -112,7 +112,7 @@ function buildandpush {
 	docker push schulcloud/schulcloud-server:"$DOCKERTAG_SHA"
 }
 # write version file
-printf "%s\n%s\n%s" $TRAVIS_COMMIT $TRAVIS_BRANCH $TRAVIS_COMMIT_MESSAGE > ./version
+printf "%s\n%s\n%s" "$TRAVIS_COMMIT" "$TRAVIS_BRANCH" "$TRAVIS_COMMIT_MESSAGE" > ./version
 
 echo "Event detected on matching branch . Building docker image..."
 buildandpush
@@ -129,11 +129,11 @@ then
 	echo "and checked in sc-app-deploy workflow Deploy_release_to_staging.yml"
 
 	# mask DOT for payload
-	VERSION=$( echo $VERSION | tr -s "[:punct:]" "-" )
+	VERSION=$( echo "$VERSION" | tr -s "[:punct:]" "-" )
 
 	curl -X POST https://api.github.com/repos/hpi-schul-cloud/sc-app-ci/dispatches \
 	-H 'Accept: application/vnd.github.everest-preview+json' \
-	-u $GITHUB_TOKEN \
+	-u "$GITHUB_TOKEN" \
 	--data '{"event_type": "Trigger_from_sc_server", "client_payload": { "GIT_BRANCH": "'"$TRAVIS_BRANCH"'", "TRIGGER_REPOSITORY": "sc-server", "VERSION": "'"$VERSION"'" }}'
 fi
 
