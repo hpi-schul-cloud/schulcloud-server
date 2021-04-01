@@ -4,7 +4,7 @@ const LockingQueue = require('./lockingQueue');
 
 const { expect } = chai;
 
-describe.only('lockingQueue', () => {
+describe('lockingQueue', () => {
 	it('should lock and resolve the returned promise immediatly', (done) => {
 		const lockingQueue = new LockingQueue();
 		const promise1 = lockingQueue.getLock();
