@@ -376,6 +376,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 
 ### Added
 
+- OPS-1499 - Add feature to CI Pipeline and provide team based HPI Schul-Cloud instances
 - SC-7841 - remove deleted user from classes
 - OPS-1559 - Added Enhance build pipeline
 - OPS-1499 - Add feature to CI Pipeline and provide team based HPI Schul-Cloud instances
