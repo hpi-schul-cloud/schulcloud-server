@@ -129,7 +129,7 @@ describe('service', function test() {
 	});
 
 	it('sync school', async () => {
-		const school = await testObjects.createTestSchool({ features: ['messenger'] });
+		const school = await testObjects.createTestSchool({ features: ['messenger'], mxId: 1 });
 		await Promise.all([
 			testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id }),
 			testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id }),
@@ -146,7 +146,7 @@ describe('service', function test() {
 	});
 
 	it('sync user', async () => {
-		const school = await testObjects.createTestSchool({ features: ['messenger'] });
+		const school = await testObjects.createTestSchool({ features: ['messenger'], mxId: 1 });
 		const users = await Promise.all([
 			testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id }),
 			testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id }),
@@ -163,7 +163,7 @@ describe('service', function test() {
 	});
 
 	it('delete team', async () => {
-		const school = await testObjects.createTestSchool({ features: ['messenger'] });
+		const school = await testObjects.createTestSchool({ features: ['messenger'], mxId: 1 });
 		const { team } = await testObjects.createTestTeamWithOwner({ roles: ['teacher'], schoolId: school._id });
 
 		const msg = {
@@ -175,7 +175,7 @@ describe('service', function test() {
 	});
 
 	it('delete course', async () => {
-		const school = await testObjects.createTestSchool({ features: ['messenger'] });
+		const school = await testObjects.createTestSchool({ features: ['messenger'], mxId: 1 });
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 		const course = await testObjects.createTestCourse({ teacherIds: [teacher._id], schoolId: school._id });
 

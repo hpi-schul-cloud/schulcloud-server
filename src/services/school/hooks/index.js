@@ -8,7 +8,7 @@ const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
 
 const globalHooks = require('../../../hooks');
-const { fileStorageTypes, SCHOOL_FEATURES } = require('../model');
+const { schoolModel, fileStorageTypes, SCHOOL_FEATURES } = require('../model');
 const getFileStorageStrategy = require('../../fileStorage/strategies').createStrategy;
 
 const { yearModel: Year } = require('../model');
@@ -279,14 +279,11 @@ const setMatrixServerId = async (context) => {
 	console.log('-----', context ? context.data : 'NO context');
 
 	// messenger gets activated
-	if (context && context.data && context.data.features && context.data.features.includes(SCHOOL_FEATURES.MESSENGER)) {
+	if (context && context.data && context.data.features && context.data.features.includes(SCHOOL_FEATURES.MESSENGER) && !context.data.mxId) {
 		// and no mxId set
-		const schools = await schoolModel.find({
+		const currentSchool = await schoolModel.findOne({
 			_id: context.id,
-			$limit: 1,
 		});
-
-		const currentSchool = schools.data[0];
 
 		const isMxIdSet = currentSchool && currentSchool.mxId;
 

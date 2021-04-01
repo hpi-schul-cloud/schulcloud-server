@@ -42,7 +42,7 @@ describe('service', function test() {
 	});
 
 	it('admin can trigger a schoolSync', async () => {
-		const school = await testObjects.createTestSchool({ features: ['messenger'] });
+		const school = await testObjects.createTestSchool({ features: ['messenger'], mxId: 1 });
 		const users = await Promise.all([
 			testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id }),
 			testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id }),

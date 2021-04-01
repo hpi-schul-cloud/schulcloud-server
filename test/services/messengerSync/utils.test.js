@@ -65,7 +65,7 @@ describe('messenger synchronizer utils', () => {
 	describe('buildAddUserMessage', () => {
 		it('builds a correct object for teacher with course', async () => {
 			this.app = app;
-			const school = await testObjects.createTestSchool({ features: ['messenger', 'messengerSchoolRoom'] });
+			const school = await testObjects.createTestSchool({ features: ['messenger', 'messengerSchoolRoom'], mxId: 1 });
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 			const course = await testObjects.createTestCourse({ teacherIds: [teacher._id], schoolId: school._id });
 			const result = await buildAddUserMessage({ userId: teacher._id, courses: [course] });
@@ -107,7 +107,7 @@ describe('messenger synchronizer utils', () => {
 
 		it('builds a correct object for teacher with team', async () => {
 			this.app = app;
-			const school = await testObjects.createTestSchool({ features: ['messenger', 'messengerSchoolRoom'] });
+			const school = await testObjects.createTestSchool({ features: ['messenger', 'messengerSchoolRoom'], mxId: 1 });
 			const { user, team } = await testObjects.createTestTeamWithOwner({ roles: ['teacher'], schoolId: school._id });
 			const result = await buildAddUserMessage({ userId: user._id, teams: [team] });
 			expect(result.method).to.equal('addUser');
@@ -143,7 +143,7 @@ describe('messenger synchronizer utils', () => {
 
 		it('builds a correct object for schoolSync with allhands disabled', async () => {
 			this.app = app;
-			const school = await testObjects.createTestSchool({ features: ['messenger'] });
+			const school = await testObjects.createTestSchool({ features: ['messenger'], mxId: 1 });
 			const { user } = await testObjects.createTestTeamWithOwner({ roles: ['teacher'], schoolId: school._id });
 			await Promise.all([
 				testObjects.createTestCourse({ teacherIds: [user._id], schoolId: school._id }),
@@ -172,7 +172,7 @@ describe('messenger synchronizer utils', () => {
 
 		it('builds a correct object for admin without course or team', async () => {
 			this.app = app;
-			const school = await testObjects.createTestSchool({ features: ['messenger'] });
+			const school = await testObjects.createTestSchool({ features: ['messenger'], mxId: 1 });
 			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
 			const result = await buildAddUserMessage({ userId: admin._id, fullSync: true });
 			expect(result.method).to.equal('addUser');
@@ -195,7 +195,7 @@ describe('messenger synchronizer utils', () => {
 
 		it('builds a correct object for student with courses', async () => {
 			this.app = app;
-			const school = await testObjects.createTestSchool({ features: ['messenger'] });
+			const school = await testObjects.createTestSchool({ features: ['messenger'], mxId: 1 });
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
 
 			await Promise.all([
@@ -218,7 +218,7 @@ describe('messenger synchronizer utils', () => {
 
 		it('builds a correct object for student with write access in course', async () => {
 			this.app = app;
-			const school = await testObjects.createTestSchool({ features: ['messenger'] });
+			const school = await testObjects.createTestSchool({ features: ['messenger'], mxId: 1 });
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
 
 			const courseProps = { userIds: [student._id], schoolId: school._id, features: ['messenger'] };
@@ -241,7 +241,7 @@ describe('messenger synchronizer utils', () => {
 		});
 
 		it('builds correct welcome messages', async () => {
-			const school = await testObjects.createTestSchool({ features: ['messenger'] });
+			const school = await testObjects.createTestSchool({ features: ['messenger'], mxId: 1 });
 			const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
 			const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
 			const { user } = await testObjects.createTestTeamWithOwner({ roles: ['teacher'], schoolId: school._id });
@@ -322,7 +322,7 @@ describe('messenger synchronizer utils', () => {
 		it('true if messenger flag is set', async () => {
 			// arrange
 			this.app = app;
-			const school = await testObjects.createTestSchool({ features: ['messenger'] });
+			const school = await testObjects.createTestSchool({ features: ['messenger'], mxId: 1 });
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 
 			// act
@@ -350,7 +350,7 @@ describe('messenger synchronizer utils', () => {
 		it('true if messenger flag is set on school sync', async () => {
 			// arrange
 			this.app = app;
-			const school = await testObjects.createTestSchool({ features: ['messenger'] });
+			const school = await testObjects.createTestSchool({ features: ['messenger'], mxId: 1 });
 
 			// act
 			const data = await expandContentIds({ schoolId: school._id });

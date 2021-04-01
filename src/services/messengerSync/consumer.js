@@ -200,7 +200,7 @@ const setup = () => {
 	const numberOfServers = Configuration.get('MATRIX_MESSENGER__NUMBER_OF_SERVERS');
 	channelSendExternal = {};
 	for (let mxId = 1; mxId <= numberOfServers; mxId++) {
-		channelSendExternal[mxId] = getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL') + '_' + i, { durable: false });
+		channelSendExternal[mxId] = getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL') + '_' + mxId, { durable: false });
 	}
 
 	channelReadInternal = getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true });
