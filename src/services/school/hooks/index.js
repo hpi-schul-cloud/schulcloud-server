@@ -276,8 +276,6 @@ const validateCounty = async (context) => {
 };
 
 const setMatrixServerId = async (context) => {
-	console.log('-----', context ? context.data : 'NO context');
-
 	// messenger gets activated
 	if (context && context.data && context.data.features && context.data.features.includes(SCHOOL_FEATURES.MESSENGER) && !context.data.mxId) {
 		// and no mxId set
@@ -292,12 +290,13 @@ const setMatrixServerId = async (context) => {
 			const maxSchoolsPerServer = Configuration.get('MATRIX_MESSENGER__MAX_SCHOOLS_PER_SERVER');
 
 			const countAggregate = await schoolModel.aggregate([
-				{ '$group' : {_id: '$mxId', count: { $sum:1 } } }
+				{ '$group' : {_id: '$mxId', count: { $sum: 1 } } }
 			]);
 
-			const countCache = countAggregate.reduce((m, c) => {
-				m[c['_id']] = c['count'];
-			});
+			const countCache = countAggregate.reduce((obj, item) => {
+				obj[item._id] = item.count
+				return obj
+			  }, {})
 
 			// find the lowest mxId that has < maxSchoolsPerServer schools
 			let freeServerId;
@@ -311,8 +310,7 @@ const setMatrixServerId = async (context) => {
 
 			if (freeServerId) {
 				context.data.mxId = freeServerId;
-			}
-			else {
+			} else {
 				throw new Error(`No free matrix server available. Matrix messenger cannot be activated.`);
 			}
 		}
