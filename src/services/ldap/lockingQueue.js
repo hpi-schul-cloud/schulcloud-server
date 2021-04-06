@@ -19,7 +19,7 @@ class LockingQueue {
 		this.queue = [];
 	}
 
-	createDeferredPromise() {
+	createDeferredPromise(promisePayload) {
 		const deferred = {
 			promise: null,
 			resolve: null,
@@ -27,7 +27,9 @@ class LockingQueue {
 		};
 
 		deferred.promise = new Promise((resolve, reject) => {
-			deferred.resolve = resolve;
+			deferred.resolve = () => {
+				resolve(promisePayload);
+			};
 			deferred.reject = reject;
 		});
 
@@ -35,14 +37,33 @@ class LockingQueue {
 	}
 
 	getLock() {
+		const that = this;
+		const releaseObject = (function () {
+			let released = false;
+			return {
+				releaseLock: function releaseLock() {
+					if (!released) {
+						released = true;
+						if (that.queue.length === 0) {
+							that.locked = false;
+						}
+						if (that.queue.length > 0) {
+							that.queue.shift().resolve();
+						}
+					}
+				},
+			};
+		})();
+
 		if (!this.locked) {
 			this.locked = true;
-			return Promise.resolve();
+			return Promise.resolve(releaseObject);
 		}
-		const { resolve, promise: deferredPromise } = this.createDeferredPromise();
+		const { resolve, promise: deferredPromise } = this.createDeferredPromise(releaseObject);
 		this.queue.push({
 			resolve,
 		});
+
 		return deferredPromise;
 	}
 

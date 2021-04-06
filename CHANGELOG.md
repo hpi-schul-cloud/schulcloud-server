@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.0.8] - 2021-03-31
+
+### Fixed
+
+- SC-8691 ldap sync: fix potential deadlock while loadind ldap data
+
 ## [26.0.7] - 2021-03-31
 
 ### Fixed
