@@ -1,5 +1,4 @@
-const pseudonymRepo = require('./pseudonym.repo');
+import * as pseudonymRepo from './pseudonym.repo';
+import type { Pseudonym } from './db/pseudonym';
 
-module.exports = {
-	pseudonymRepo,
-};
+export { pseudonymRepo, Pseudonym };

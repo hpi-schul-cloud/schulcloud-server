@@ -1,11 +1,13 @@
-const sinon = require('sinon');
-const { ObjectId } = require('mongoose').Types;
-const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
-const pseudonymUC = require('./pseudonym.uc');
-const { ValidationError } = require('../../../errors');
+import sinon from 'sinon';
+import { Types } from 'mongoose';
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+import { deleteUserData } from './pseudonym.uc';
+import { ValidationError } from '../../../errors';
 
-const { pseudonymRepo } = require('../repo');
+import { pseudonymRepo } from '../repo';
+
+const { ObjectId } = Types;
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
@@ -33,7 +35,7 @@ describe('pseudonym usecase', () => {
 	});
 
 	const getPseudonymDeletionResult = async (userId) => {
-		const deletionSteps = pseudonymUC.deleteUserData;
+		const deletionSteps = deleteUserData;
 		const deletionResults = deletionSteps.map((step) => step(userId));
 		const result = await Promise.all(deletionResults);
 
@@ -42,8 +44,8 @@ describe('pseudonym usecase', () => {
 
 	describe('deleteUserData', () => {
 		it('should recieve an array of functions form use case', () => {
-			expect(pseudonymUC.deleteUserData).to.be.an('array').with.length.greaterThan(0);
-			expect(pseudonymUC.deleteUserData[0]).to.be.an('function');
+			expect(deleteUserData).to.be.an('array').with.length.greaterThan(0);
+			expect(deleteUserData[0]).to.be.an('function');
 		});
 	});
 

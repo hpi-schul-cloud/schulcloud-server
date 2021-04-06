@@ -1,27 +1,29 @@
-function stripSlashes(path) {
+import { Application as FeathersApplication } from '@feathersjs/feathers';
+
+function stripSlashes(path: string): string {
 	return path.replace(/^(\/+)|(\/+)$/g, '');
 }
-const facadeDict = {};
+
+// TODO add keyof operator to know all service identifiers with their types
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const facadeDict: Record<string, any> = {};
 
 const facadeLocator = {
-	facade: (path) => {
+	facade: <T>(path: string): T => {
 		const strippedPath = stripSlashes(path);
-		return facadeDict[strippedPath];
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		return (facadeDict[strippedPath] as any) as T;
 	},
-	registerFacade: (path, facade) => {
+	registerFacade: <T>(path: string, facade: T): void => {
 		const strippedPath = stripSlashes(path);
 		facadeDict[strippedPath] = facade;
 	},
 };
 
-const setupFacadeLocator = (app) => {
-	app.registerFacade = (path, facade) => {
-		return facadeLocator.registerFacade(path, facade);
-	};
-	app.facade = (path) => {
-		return facadeLocator.facade(path);
-	};
+const setupFacadeLocator = (app: FeathersApplication): FeathersApplication => {
+	app.registerFacade = (path, facade) => facadeLocator.registerFacade(path, facade);
+	app.facade = <T>(path: string) => facadeLocator.facade<T>(path);
 	return app;
 };
 
-module.exports = { setupFacadeLocator, facadeLocator };
+export { setupFacadeLocator, facadeLocator };

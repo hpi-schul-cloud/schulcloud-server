@@ -1,5 +1,6 @@
-const pseudonymFacade = require('./uc/pseudonym.facade');
+import { Application as FeathersApplication } from '@feathersjs/feathers';
+import pseudonymFacade from './uc/pseudonym.facade';
 
-module.exports = (app) => {
+export default (app: FeathersApplication): void => {
 	app.configure(pseudonymFacade);
 };

@@ -1,9 +1,12 @@
-const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
-const appPromise = require('../../../app');
-const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
-const { pseudonymRepo } = require('.');
-const { ValidationError } = require('../../../errors');
+import chai from 'chai';
+
+import chaiAsPromised from 'chai-as-promised';
+import appPromise from '../../../app';
+import { pseudonymRepo } from '.';
+import { ValidationError } from '../../../errors';
+import testObjectHelpers from '../../../../test/services/helpers/testObjects';
+
+const testObjects = testObjectHelpers(appPromise);
 
 chai.use(chaiAsPromised);
 const { expect } = chai;

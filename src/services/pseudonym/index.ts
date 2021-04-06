@@ -1,14 +1,14 @@
-const service = require('feathers-mongoose');
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
+import { Application as FeathersApplication } from '@feathersjs/feathers';
+import { static as staticContent } from '@feathersjs/express';
+import path from 'path';
 
-const Pseudonym = require('./model');
-const hooks = require('./hooks');
+import service from 'feathers-mongoose';
+import { PseudonymModel } from '../../components/pseudonym/repo/db/pseudonym';
+import hooks from './hooks';
 
-module.exports = function () {
-	const app = this;
+export default (app: FeathersApplication): void => {
 	const options = {
-		Model: Pseudonym,
+		Model: PseudonymModel,
 		paginate: {
 			default: 1000,
 			max: 1000,

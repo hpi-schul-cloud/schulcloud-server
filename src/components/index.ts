@@ -1,12 +1,14 @@
-const userComponent = require('./user');
-const fileStorageComponent = require('./fileStorage');
-const helpdeskComponent = require('./helpdesk');
-const pseudonymComponent = require('./pseudonym');
-const courseComponent = require('./course');
-const userGroupComponent = require('./user-group');
-const schoolComponent = require('./school');
+import { Application as FeathersApplication } from '@feathersjs/feathers';
 
-module.exports = (app) => {
+import userComponent from './user';
+import fileStorageComponent from './fileStorage';
+import helpdeskComponent from './helpdesk';
+import pseudonymComponent from './pseudonym';
+import courseComponent from './course';
+import userGroupComponent from './user-group';
+import schoolComponent from './school';
+
+export default (app: FeathersApplication): void => {
 	app.configure(userComponent);
 	app.configure(fileStorageComponent);
 	app.configure(helpdeskComponent);

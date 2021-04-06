@@ -1,9 +1,10 @@
-const pseudonymUC = require('./pseudonym.uc');
+import { Application as FeathersApplication } from '@feathersjs/feathers';
+import { deleteUserData } from './pseudonym.uc';
 
 const facade = {
-	deleteUserData: pseudonymUC.deleteUserData,
+	deleteUserData,
 };
 
-module.exports = function setupFacade(app) {
+export default (app: FeathersApplication): void => {
 	app.registerFacade('/pseudonym/v2', facade);
 };

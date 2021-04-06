@@ -1,17 +1,39 @@
-const { Forbidden, AssertionError } = require('../../errors');
+import { Forbidden } from '../../errors';
 
-const trashBinResult = ({ scope, data, complete }) => ({ trashBinData: { scope, data }, complete });
+import type { ObjectId, TrashBinResult } from '../../../types';
 
-const validPermissionOperators = ['AND', 'OR'];
+function trashBinResult<T>({
+	scope,
+	data,
+	complete,
+}: {
+	scope: string;
+	data: T;
+	complete: boolean;
+}): TrashBinResult<T> {
+	return { trashBinData: { scope, data }, complete };
+}
 
-const checkPermissions = (user, schoolId, permissionsToCheck, permissionOperator = 'AND') => {
+type PermissionOperator = 'AND' | 'OR';
+
+interface Role {
+	permissions: string[];
+}
+
+interface User {
+	schoolId: ObjectId;
+	roles: Role[];
+}
+
+const checkPermissions = (
+	user: User,
+	schoolId: ObjectId,
+	permissionsToCheck: string[],
+	permissionOperator: PermissionOperator = 'AND'
+): void => {
 	let grantPermission = true;
 	// same school?
 	grantPermission = grantPermission && user.schoolId.toString() === schoolId.toString();
-
-	if (!validPermissionOperators.includes(permissionOperator)) {
-		throw new AssertionError('no such permission operator');
-	}
 
 	// user has permission
 	for (const permissionToCheck of permissionsToCheck) {
@@ -31,4 +53,4 @@ const checkPermissions = (user, schoolId, permissionsToCheck, permissionOperator
 	}
 };
 
-module.exports = { checkPermissions, trashBinResult };
+export { checkPermissions, trashBinResult };
