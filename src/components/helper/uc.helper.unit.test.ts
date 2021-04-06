@@ -88,6 +88,24 @@ describe('uc.helper', () => {
 		});
 	});
 	describe('multiple needed permissions', () => {
+		it('should fail on invalid permission operator', () => {
+			const schoolId = 'dummySchoolId123';
+			const permissionToCheck = ['SCHOOL_EDIT'];
+			const user = {
+				schoolId: 'differentSchoolId234',
+				roles: [
+					{
+						permissions: [...permissionToCheck, 'SOME_STUFF'],
+					},
+					{
+						permissions: ['OTHER_PERMISSION', 'SOME_STUFF'],
+					},
+				],
+			};
+			expect(() => checkPermissions(user, schoolId, permissionToCheck, 'XOR')).to.throw(
+				`ASSERTION_ERROR`
+			);
+		});
 		it('should return true for valid multiple need permissions in one role', () => {
 			const schoolId = 'dummySchoolId123';
 			const permissionToCheck = ['SCHOOL_EDIT', 'USER_EDIT'];
