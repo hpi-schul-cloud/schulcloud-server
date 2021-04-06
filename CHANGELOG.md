@@ -26,6 +26,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7021 - automatic deletion documents in the trashbins collection after 7 days.
 - SC-5202 - homework tests refactoring
 - SC-8748 - bump feathers-mongoose from 6.3.0 to 8.3.1
+- SC-8781 - introduce typescript for pseudonyms component
 - SC-7868 - filestorage integration tests are skipped on local test environments if minio is not setup
 
 ### Fixed
@@ -367,7 +368,6 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 - SC-7028 - Add Course Component API Specification document
 - SC-7476 - Prevent hash generation if user has account
 - SC-6692 - Added Lern-Store counties support for Niedersachsen (Merlin)
-
 
 ### Changed
 
