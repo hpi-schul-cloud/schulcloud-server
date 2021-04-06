@@ -13,15 +13,15 @@ const { Schema } = mongoose;
 
 const defaultFeatures: any[] = [];
 
-enum UserFeatures {
-	edtr = 'edtr',
-}
+export const UserFeatures = {
+	edtr: 'edtr',
+} as const;
 
-enum ConsentForm {
-	analog = 'analog',
-	digital = 'digital',
-	update = 'update',
-}
+export const ConsentForm = {
+	analog: 'analog',
+	digital: 'digital',
+	update: 'update',
+} as const;
 
 const consentTypes = {
 	PRIVACY: 'privacy',
@@ -34,22 +34,24 @@ interface Parent {
 	email: string;
 }
 
+type Values<T> = T[keyof T];
+
 interface Consent {
-	form?: ConsentForm;
+	form?: Values<typeof ConsentForm>;
 	dateOfPrivacyConsent?: Date;
 	dateOfTermsOfUseConsent?: Date;
 	privacyConsent?: boolean;
 	termsOfUseConsent?: boolean;
 }
-enum VersionUpdated {
-	all = 'all',
-	dateOfPrivacyConsent = 'dateOfPrivacyConsent',
-	dateOfTermsOfUseConsent = 'dateOfTermsOfUseConsent',
-}
+export const VersionUpdated = {
+	all: 'all',
+	dateOfPrivacyConsent: 'dateOfPrivacyConsent',
+	dateOfTermsOfUseConsent: 'dateOfTermsOfUseConsent',
+};
 interface UsersConsent {
 	userConsent?: Consent;
 	parentConsents?: Consent[];
-	consentVersionUpdated?: VersionUpdated;
+	consentVersionUpdated?: Values<typeof VersionUpdated>;
 }
 interface ExternalSourceSchema {
 	source?: string;
@@ -95,7 +97,7 @@ class UserDocument extends BaseDocumentWithTimestamps implements ExternalSourceS
 
 	preferences?: any;
 
-	features?: UserFeatures[];
+	features?: Values<typeof UserFeatures>[];
 
 	consent?: UsersConsent;
 
@@ -287,4 +289,4 @@ userSchema.plugin(mongooseHistory);
 
 export const UserModel = mongoose.model<UserDocument>('user', userSchema);
 
-export { UserFeatures, userSchema, consentTypes };
+export { userSchema, consentTypes };
