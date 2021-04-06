@@ -1,4 +1,4 @@
-const Pseudonym = require('../../../../src/services/pseudonym/model');
+import { PseudonymModel } from '../../../../src/components/pseudonym/repo/db/pseudonym.ts';
 
 let createdpseudonymsIds = [];
 
@@ -6,7 +6,7 @@ const createTestPseudonym = async (pseudonymParameters, ltiTool, user) => {
 	pseudonymParameters.userId = user._id;
 	pseudonymParameters.toolId = ltiTool._id;
 
-	const pseudonym = await Pseudonym.create(pseudonymParameters);
+	const pseudonym = await PseudonymModel.create(pseudonymParameters);
 	createdpseudonymsIds.push(pseudonym._id.toString());
 	return pseudonym;
 };
@@ -17,7 +17,7 @@ const cleanup = async () => {
 	}
 	const ids = createdpseudonymsIds;
 	createdpseudonymsIds = [];
-	return Pseudonym.deleteMany({ _id: { $in: ids } });
+	return PseudonymModel.deleteMany({ _id: { $in: ids } });
 };
 
 module.exports = {

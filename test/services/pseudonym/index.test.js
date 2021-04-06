@@ -4,7 +4,7 @@ const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../src/app');
 const { MethodNotAllowed, BadRequest } = require('../../../src/errors');
 
-const PseudonymModel = require('../../../src/services/pseudonym/model');
+const { PseudonymModel } = require('../../../src/components/pseudonym/repo/db/pseudonym');
 
 const {
 	cleanup,
