@@ -1,3 +1,4 @@
+const moment = require('moment');
 const accountModel = require('../../account/model');
 const Syncer = require('./Syncer');
 const { dateToLdapTimestamp } = require('../../ldap/strategies/deltaSyncUtils');
@@ -17,7 +18,7 @@ class LDAPSchoolSyncer extends Syncer {
 			delete this.school.ldapLastSync;
 		}
 		this.stats = Object.assign(this.stats, {
-			startTimestamp: new Date(),
+			startTimestamp: moment.utc().toDate(),
 			modifyTimestamp: this.school.ldapLastSync || '0',
 			name: this.school.name,
 			users: {

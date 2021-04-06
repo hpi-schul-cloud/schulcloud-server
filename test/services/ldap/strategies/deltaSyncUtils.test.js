@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const moment = require('moment');
 
 const {
 	filterForModifiedEntities,
@@ -44,6 +45,11 @@ describe('deltaSyncUtils', () => {
 	describe('#dateToLDAPTimestamp', () => {
 		it('should return date in format YYYYMMDDHHmmssZ', () => {
 			const date = new Date('2021-03-26T13:42:13.409Z');
+			expect(dateToLdapTimestamp(date)).to.equal('20210326134213Z');
+		});
+
+		it('should return correct date format for moment utc', () => {
+			const date = moment('2021-03-26T13:42:13.409Z').utc().toDate();
 			expect(dateToLdapTimestamp(date)).to.equal('20210326134213Z');
 		});
 	});

@@ -1,16 +1,12 @@
+const moment = require('moment');
+
 /**
  * Convert date to LDAP timestamp format
  * @param date
  * @returns {string} formatted as "YYYYMMDDHHmmssZ"
  */
 const dateToLdapTimestamp = (date) => {
-	if (date instanceof Date) {
-		return `${date
-			.toISOString()
-			.replace(/[-:.T]/gi, '')
-			.substring(0, 14)}Z`;
-	}
-	return date;
+	return `${moment(date).utc().format('YYYYMMDDHHmmss')}Z`;
 };
 
 /**
