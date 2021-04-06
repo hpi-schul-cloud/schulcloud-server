@@ -15,6 +15,8 @@ class LDAPSchoolSyncer extends Syncer {
 		this.school = school;
 		this.options = options;
 		if (options.forceFullSync) {
+			// these dates are used for forcing full sync
+			delete this.system.ldapConfig.lastModifyTimestamp;
 			delete this.school.ldapLastSync;
 		}
 		this.stats = Object.assign(this.stats, {
