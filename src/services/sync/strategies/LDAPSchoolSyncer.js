@@ -50,7 +50,7 @@ class LDAPSchoolSyncer extends Syncer {
 		await super.steps();
 		await this.getUserData();
 		await this.getClassData();
-		await this.updateModifyTimestamp();
+		await this.updateTimestamps();
 		return this.stats;
 	}
 
@@ -113,7 +113,7 @@ class LDAPSchoolSyncer extends Syncer {
 		);
 	}
 
-	async updateModifyTimestamp() {
+	async updateTimestamps() {
 		this.logInfo('Persisting school ldap sync timestamp...');
 		await this.app
 			.service('schools')
