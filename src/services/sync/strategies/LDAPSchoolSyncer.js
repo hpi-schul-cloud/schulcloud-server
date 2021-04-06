@@ -1,5 +1,6 @@
 const accountModel = require('../../account/model');
 const Syncer = require('./Syncer');
+const { dateToLdapTimestamp } = require('../../ldap/strategies/deltaSyncUtils');
 
 /**
  * Implements syncing schools from LDAP servers based on the Syncer interface
@@ -13,10 +14,11 @@ class LDAPSchoolSyncer extends Syncer {
 		this.school = school;
 		this.options = options;
 		if (options.forceFullSync) {
-			delete this.system.ldapConfig.lastModifyTimestamp;
+			delete this.school.ldapLastSync;
 		}
 		this.stats = Object.assign(this.stats, {
-			modifyTimestamp: this.system.ldapConfig.lastModifyTimestamp || '0',
+			startTimestamp: new Date(),
+			modifyTimestamp: this.school.ldapLastSync || '0',
 			name: this.school.name,
 			users: {
 				created: 0,
@@ -45,6 +47,7 @@ class LDAPSchoolSyncer extends Syncer {
 		await super.steps();
 		await this.getUserData();
 		await this.getClassData();
+		await this.updateModifyTimestamp();
 		return this.stats;
 	}
 
@@ -107,8 +110,11 @@ class LDAPSchoolSyncer extends Syncer {
 		);
 	}
 
-	updateModifyTimestampMaximum(date) {
-		if (date && this.stats.modifyTimestamp < date) this.stats.modifyTimestamp = date;
+	async updateModifyTimestamp() {
+		this.logInfo('Persisting school ldap sync timestamp...');
+		await this.app
+			.service('schools')
+			.patch(this.school._id, { ldapLastSync: dateToLdapTimestamp(this.stats.startTimestamp) });
 	}
 
 	createUserAndAccount(idmUser) {
@@ -172,7 +178,6 @@ class LDAPSchoolSyncer extends Syncer {
 		const userMap = new Map();
 		for (const ldapClass of data) {
 			try {
-				this.updateModifyTimestampMaximum(ldapClass.modifyTimestamp);
 				// eslint-disable-next-line no-await-in-loop
 				const klass = await this.getOrCreateClassFromLdapData(ldapClass, school);
 				// eslint-disable-next-line no-await-in-loop
