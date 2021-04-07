@@ -33,6 +33,22 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [26.1.0]
 
+## [26.0.9] - 2021-04-06
+
+- SC-8779 - fix partial LDAP sync
+
+## [26.0.8] - 2021-03-31
+
+### Fixed
+
+- SC-8691 ldap sync: fix potential deadlock while loadind ldap data
+
+## [26.0.7] - 2021-03-31
+
+### Fixed
+
+- SC-8768 ldap sync: in user search include current school
+
 ## [26.0.6] - 2021-03-30
 
 ### Fixed
