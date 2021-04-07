@@ -276,50 +276,56 @@ const validateCounty = async (context) => {
 };
 
 const setMatrixServerId = async (context) => {
-	// messenger gets activated
-	if (context && context.data && context.data.features && context.data.features.includes(SCHOOL_FEATURES.MESSENGER) && !context.data.mxId) {
-		// and no mxId set
+	
+	let messengerActivation = 
+		// messenger activation can be triggered by pushing the feature flag
+		context?.data?.$push?.features?.$each?.includes(SCHOOL_FEATURES.MESSENGER)
+		
+		// messenger activation can be triggered by setting the feature flags array
+		|| context?.data?.features?.includes(SCHOOL_FEATURES.MESSENGER);
+
+	// check for a mxId
+	let matrixIdIsPresent = !!context.data.mxId;
+	if (messengerActivation && !matrixIdIsPresent) {
 		const currentSchool = await schoolModel.findOne({
 			_id: context.id,
 		});
 
-		const isMxIdSet = currentSchool && currentSchool.mxId;
+		matrixIdIsPresent = currentSchool && currentSchool.mxId;
+	}
 
-		if (!isMxIdSet) {
-			const numberOfServers = Configuration.get('MATRIX_MESSENGER__NUMBER_OF_SERVERS');
-			const maxSchoolsPerServer = Configuration.get('MATRIX_MESSENGER__MAX_SCHOOLS_PER_SERVER');
+	// assign the school to a matrix server
+	if (!matrixIdIsPresent) {
+		const numberOfServers = Configuration.get('MATRIX_MESSENGER__NUMBER_OF_SERVERS');
+		const maxSchoolsPerServer = Configuration.get('MATRIX_MESSENGER__MAX_SCHOOLS_PER_SERVER');
 
-			const countAggregate = await schoolModel.aggregate([
-				{ '$group' : {_id: '$mxId', count: { $sum: 1 } } }
-			]);
+		const countAggregate = await schoolModel.aggregate([
+			{ '$group' : {_id: '$mxId', count: { $sum: 1 } } }
+		]);
 
-			const countCache = countAggregate.reduce((obj, item) => {
-				obj[item._id] = item.count
-				return obj
-			  }, {})
+		const countCache = countAggregate.reduce((obj, item) => {
+			obj[item._id] = item.count;
+			return obj;
+		}, {});
 
-			// find the lowest mxId that has < maxSchoolsPerServer schools
-			let freeServerId;
-			for(let mxId = 1; mxId <= numberOfServers; mxId++) {
-				const numSchools = countCache[mxId] || 0;
-				if (numSchools < maxSchoolsPerServer) {
-					freeServerId = mxId;
-					break;
-				}
-			}
-
-			if (freeServerId) {
-				context.data.mxId = freeServerId;
-			} else {
-				throw new Error(`No free matrix server available. Matrix messenger cannot be activated.`);
+		// find the lowest mxId that has < maxSchoolsPerServer schools
+		let freeServerId;
+		for(let mxId = 1; mxId <= numberOfServers; mxId++) {
+			const numSchools = countCache[mxId] || 0;
+			if (numSchools < maxSchoolsPerServer) {
+				freeServerId = mxId;
+				break;
 			}
 		}
+
+		if (freeServerId) {
+			context.data.mxId = freeServerId;
+		} else {
+			throw new Error(`No free matrix server available. Matrix messenger cannot be activated.`);
+		}
 	}
+
 	// TODO deactivate messenger
-	// else {
-		// we keep all data for now
-		// decide what to do with messenger data of school
-	// }
 }
 
 exports.before = {
