@@ -464,6 +464,8 @@ module.exports = function setup() {
 			max: 100,
 		},
 		lean: { virtuals: true },
+		multi: true,
+		whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 	};
 
 	app.use('/teams/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));

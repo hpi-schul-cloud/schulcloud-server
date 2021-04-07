@@ -25,6 +25,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8500 - refactoring in error handling
 - SC-7021 - automatic deletion documents in the trashbins collection after 7 days.
 - SC-5202 - homework tests refactoring
+- SC-8748 - bump feathers-mongoose from 6.3.0 to 8.3.1
 - SC-7868 - filestorage integration tests are skipped on local test environments if minio is not setup
 
 ### Fixed
