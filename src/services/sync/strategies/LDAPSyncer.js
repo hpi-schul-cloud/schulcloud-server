@@ -1,9 +1,15 @@
-const asyncPool = require('tiny-async-pool');
-const { Configuration } = require('@hpi-schul-cloud/commons');
+const { getChannel } = require('../../../utils/rabbitmq');
 const Syncer = require('./Syncer');
-const LDAPSchoolSyncer = require('./LDAPSchoolSyncer');
 
 const SchoolYearFacade = require('../../school/logic/year.js');
+
+const LDAP_SYNC_ACTIONS = {
+	SYNC_USER: 'syncUser',
+	SYNC_SCHOOL: 'syncSchool',
+	SYNC_CLASSES: 'syncClasses',
+};
+
+const LDAP_SYNC_CHANNEL_NAME = 'sync_ldap';
 
 /**
  * Implements syncing from LDAP servers based on the Syncer interface for a
@@ -19,6 +25,7 @@ class LDAPSyncer extends Syncer {
 		this.stats = Object.assign(this.stats, {
 			schools: {},
 		});
+		this.syncQueue = getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
 	}
 
 	prefix() {
@@ -32,39 +39,12 @@ class LDAPSyncer extends Syncer {
 		await super.steps();
 		await this.attemptRun();
 		const schools = await this.getSchools();
-		const activeSchools = schools.filter((s) => !s.inMaintenance);
-		const nextSchoolSync = async (school) => {
-			try {
-				const stats = await new LDAPSchoolSyncer(this.app, {}, this.logger, this.system, school, this.options).sync();
-				if (
-					!this.stats.modifyTimestamp &&
-					(stats.users.updated !== 0 ||
-						stats.users.created !== 0 ||
-						stats.classes.updated !== 0 ||
-						stats.classes.created !== 0) &&
-					stats.modifyTimestamp
-				) {
-					// persist the largest modifyTimestamp of the first updated school for the next delta sync
-					this.stats.modifyTimestamp = stats.modifyTimestamp;
-				}
-
-				if (stats.success !== true) {
-					this.stats.errors.push(`LDAP sync failed for school "${school.name}" (${school._id}).`);
-				}
-				this.stats.schools[school.ldapSchoolIdentifier] = stats;
-			} catch (err) {
-				// We need to catch errors here, so that the async pool will not reject early without
-				// running all sync processes
-				this.logger.error('Uncaught LDAP sync error', { error: err, systemId: this.system._id, schoolId: school._id });
-				this.stats.errors.push(
-					`LDAP sync failed for school "${school.name}" (${school._id}) with error "${err.message}".`
-				);
-			}
-		};
-		const poolSize = Configuration.get('LDAP_SCHOOL_SYNCER_POOL_SIZE');
-		this.logger.info(`Running LDAP school sync with pool size ${poolSize}`);
-		await asyncPool(poolSize, activeSchools, nextSchoolSync);
-		await this.persistRun();
+		for (const school of schools) {
+			this.getUserData(school);
+		}
+		for (const school of schools) {
+			this.getClassData(school);
+		}
 		return this.stats;
 	}
 
@@ -76,67 +56,123 @@ class LDAPSyncer extends Syncer {
 	}
 
 	getCurrentYearAndFederalState() {
-		return Promise.all([
-			this.app.service('years').find(),
-			this.app.service('federalStates').find({ query: { abbreviation: 'NI' } }),
-		]).then(([years, states]) => {
-			if (years.total === 0 || states.total === 0) {
-				return Promise.reject(new Error('Database should contain at least one year and one valid federal state'));
+		try {
+			const years = this.app.service('years').find();
+			const states = this.app.service('federalStates').find({ query: { abbreviation: 'NI' } });
+			if (years.total !== 0 && states.total !== 0) {
+				const currentYear = new SchoolYearFacade(years.data).defaultYear;
+				const stateID = states.data[0]._id;
+				return { currentYear, stateID };
 			}
-			const currentYear = new SchoolYearFacade(years.data).defaultYear;
-			return Promise.resolve({ currentYear, federalState: states.data[0]._id });
-		});
+
+			return {};
+		} catch (err) {
+			this.logError('Database should contain at least one year and one valid federal state', err);
+			return {};
+		}
 	}
 
 	createSchoolsFromLdapData(data) {
 		this.logInfo(`Got ${data.length} schools from the server`);
-		const currentLDAPProvider = this.system.ldapConfig.provider;
-		let newSchools = 0;
-		let updates = 0;
-		let fails = 0;
-		return Promise.all(
-			data.map((ldapSchool) =>
-				this.app
-					.service('schools')
-					.find({
-						query: {
+		const schoolList = [];
+		try {
+			const { currentYear, federalState } = this.getCurrentYearAndFederalState();
+			for (const ldapSchool of data) {
+				try {
+					const schoolData = {
+						action: LDAP_SYNC_ACTIONS.SYNC_SCHOOL,
+						data: {
+							name: ldapSchool.displayName,
+							systems: [this.system._id],
 							ldapSchoolIdentifier: ldapSchool.ldapOu,
+							currentYear,
+							federalState,
 						},
-					})
-					.then((schools) => {
-						if (schools.total !== 0) {
-							updates += 1;
-							if (currentLDAPProvider === 'univention') {
-								return this.app
-									.service('schools')
-									.update({ _id: schools.data[0]._id }, { $set: { name: ldapSchool.displayName } });
-							}
-							return this.app
-								.service('schools')
-								.update({ _id: schools.data[0]._id }, { $set: { name: schools.data[0].name } });
-						}
+					};
+					this.syncQueue.sendToQueue(schoolData, {});
+					schoolList.push(schoolData.data);
+				} catch (err) {
+					this.logger.error('Uncaught LDAP sync error', { error: err, systemId: this.system._id });
+				}
+			}
+		} catch (err) {
+			this.logger.error('Uncaught LDAP sync error', { error: err, systemId: this.system._id });
+		}
+	}
 
-						return this.getCurrentYearAndFederalState().then(({ currentYear, federalState }) => {
-							const schoolData = {
-								name: ldapSchool.displayName,
-								systems: [this.system._id],
-								ldapSchoolIdentifier: ldapSchool.ldapOu,
-								currentYear,
-								federalState,
-							};
-							newSchools += 1;
-							return this.app.service('schools').create(schoolData);
-						});
-					})
-					.catch((err) => {
-						fails += 1;
-						this.logError(`School creation failed for ${ldapSchool.displayName}`, err);
-					})
-			)
-		).then((res) => {
-			this.logInfo(`Created ${newSchools} new schools and updated ${updates} schools. ${fails} schools failed`);
-			return Promise.resolve(res);
-		});
+	getUserData(school) {
+		this.logInfo('Getting users...');
+		const ldapUsers = this.app.service('ldap').getUsers(this.system.ldapConfig, school);
+		this.logInfo(`Creating and updating ${ldapUsers.length} users...`);
+
+		const bulkSize = 1000; // 5000 is a hard limit because of definition in user model
+
+		for (let i = 0; i < ldapUsers.length; i += bulkSize) {
+			const ldapUserChunk = ldapUsers.slice(i, i + bulkSize);
+			for (const ldapUser of ldapUserChunk) {
+				try {
+					const userData = {
+						action: LDAP_SYNC_ACTIONS.SYNC_USER,
+						data: {
+							user: {
+								firstName: ldapUser.firstName,
+								lastName: ldapUser.lastName,
+								systemId: this.system._id,
+								shoolDn: school.ldapSchoolIdentifier,
+								email: ldapUser.email,
+								ldapDn: ldapUser.ldapDn,
+								ldapId: ldapUser.ldapUUID,
+								roles: ldapUser.roles,
+							},
+							account: {
+								ldapDn: ldapUser.ldapDn,
+								ldapId: ldapUser.ldapUUID,
+								username: `${school.ldapSchoolIdentifier}/${ldapUser.ldapUID}`.toLowerCase(),
+								systemId: this.system._id,
+								shoolDn: school.ldapSchoolIdentifier,
+								activated: true,
+							},
+						},
+					};
+					this.syncQueue.sendToQueue(userData, {});
+				} catch (err) {
+					this.logError(`User creation error for ${ldapUser.firstName} ${ldapUser.lastName} (${ldapUser.email})`, err);
+				}
+			}
+		}
+	}
+
+	getClassData(school) {
+		this.logInfo('Getting classes...');
+		const classes = this.app.service('ldap').getClasses(this.system.ldapConfig, school);
+		this.logInfo(`Creating and updating ${classes.length} classes...`);
+		for (const ldapClass of classes) {
+			try {
+				this.pushClassData(ldapClass, school);
+			} catch (err) {
+				this.logError('Cannot create synced class', { error: err, ldapClass });
+			}
+		}
+	}
+
+	pushClassData(data, school) {
+		const classData = {
+			action: LDAP_SYNC_ACTIONS.SYNC_CLASSES,
+			data: {
+				name: data.className,
+				systemId: this.system._id,
+				shoolDn: school.ldapSchoolIdentifier,
+				nameFormat: 'static',
+				ldapDN: data.ldapDn,
+				year: school.currentYear,
+				uniqueMembers: data.uniqueMembers,
+			},
+		};
+		if (!Array.isArray(classData.uniqueMembers)) {
+			// if there is only one member, ldapjs doesn't give us an array here
+			classData.uniqueMembers = [classData.uniqueMembers];
+		}
+		this.syncQueue.sendToQueue(classData, {});
 	}
 
 	/**
@@ -188,4 +224,8 @@ class LDAPSyncer extends Syncer {
 	}
 }
 
-module.exports = LDAPSyncer;
+module.exports = {
+	LDAPSyncer,
+	LDAP_SYNC_ACTIONS,
+	LDAP_SYNC_CHANNEL_NAME,
+};

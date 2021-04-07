@@ -1,7 +1,7 @@
 const asyncPool = require('tiny-async-pool');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const Syncer = require('./Syncer');
-const LDAPSyncer = require('./LDAPSyncer');
+const { LDAPSyncer } = require('./LDAPSyncer');
 
 /**
  * Implements syncing from multiple LDAP servers based on the Syncer interface
