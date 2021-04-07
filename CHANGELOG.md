@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.0.9] - 2021-04-06
+
+- SC-8779 - fix partial LDAP sync
+
 ## [26.0.8] - 2021-03-31
 
 ### Fixed
