@@ -69,6 +69,7 @@ const schoolSchema = new Schema(
 		federalState: { type: Schema.Types.ObjectId, ref: 'federalstate' },
 		createdAt: { type: Date, default: Date.now },
 		ldapSchoolIdentifier: { type: String },
+		ldapLastSync: { type: String },
 		updatedAt: { type: Date, default: Date.now },
 		experimental: { type: Boolean, default: false },
 		pilot: { type: Boolean, default: false },
