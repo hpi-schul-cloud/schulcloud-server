@@ -5,10 +5,9 @@ const logger = require('../../../logger');
 const { LDAP_SYNC_ACTIONS, LDAP_SYNC_CHANNEL_NAME } = require('./LDAPSyncer');
 
 class LDAPSyncerConsumer {
-	constructor(app) {
+	constructor(app, syncQueue) {
 		this.app = app;
-		this.syncQueue = getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
-		this.syncQueue.consumeQueue(this.handleMessage, { noAck: false });
+		this.syncQueue = syncQueue;
 	}
 
 	handleMessage(incomingMessage) {
@@ -48,27 +47,30 @@ class LDAPSyncerConsumer {
 		}
 	}
 
-	schoolAction(schoolData) {
-		this.app
+	async schoolAction(schoolData) {
+		const schools = await this.app
 			.service('schools')
-			.find({ query: { ldapSchoolIdentifier: schoolData.ldapSchoolIdentifier, systems: { $in: schoolData.systems } } })
-			.then((schools) => {
-				if (schools.total !== 0) {
-					this.app.service('schools').update({ _id: schools.data[0]._id }, { $set: { name: schoolData.name } });
-				} else {
-					this.app.service('schools').create(schoolData);
-				}
-				return true;
-			})
-			.catch((err) => logger.error('LDAP SYNC: error while update or add a school', err));
+			.find({ query: { ldapSchoolIdentifier: schoolData.ldapSchoolIdentifier, systems: { $in: schoolData.systems } } });
+
+		try {
+			if (schools.total !== 0) {
+				await this.app.service('schools').update({ _id: schools.data[0]._id }, { $set: { name: schoolData.name } });
+			} else {
+				await this.app.service('schools').create(schoolData);
+			}
+			return true;
+		} catch (err) {
+			logger.error('LDAP SYNC: error while update or add a school', err);
+			return false;
+		}
 	}
 
-	userAction(data) {
-		const schools = this.app
+	async userAction(data) {
+		const schools = await this.app
 			.service('schools')
-			.find({ query: { ldapSchoolIdentifier: data.user.shoolDn, systems: { $in: data.user.systemId } } });
+			.find({ query: { ldapSchoolIdentifier: data.user.schoolDn, systems: { $in: data.user.systemId } } });
 		if (schools.total !== 0) {
-			const userData = this.app.service('usersModel').find({
+			const userData = await this.app.service('usersModel').find({
 				query: {
 					ldapId: data.user.ldapId,
 					schoolId: schools.data[0]._id,
@@ -83,7 +85,7 @@ class LDAPSyncerConsumer {
 		}
 	}
 
-	updateUser(user, userData, account) {
+	async updateUser(user, userData, account) {
 		const updateObject = {};
 		if (userData.firstName !== user.firstName) {
 			updateObject.firstName = user.firstName || ' ';
@@ -100,7 +102,7 @@ class LDAPSyncerConsumer {
 		}
 		// Role
 		updateObject.roles = user.roles;
-		this.app.service('users').patch(userData._id, updateObject);
+		await this.app.service('users').patch(userData._id, updateObject);
 		accountModel.update(
 			{ userId: userData._id, systemId: account.systemId },
 			{
@@ -136,11 +138,11 @@ class LDAPSyncerConsumer {
 			.catch((err) => logger.error('LDAP SYNC: error while creating User', err));
 	}
 
-	classAction(classData) {
-		const school = this.app
+	async classAction(classData) {
+		const school = await this.app
 			.service('schools')
-			.find({ query: { ldapSchoolIdentifier: classData.shoolDn, systems: { $in: classData.systemId } } });
-		const existingClasses = this.app.service('classes').find({
+			.find({ query: { ldapSchoolIdentifier: classData.schoolDn, systems: { $in: classData.systemId } } });
+		const existingClasses = await this.app.service('classes').find({
 			query: {
 				year: school.currentYear,
 				ldapDN: classData.ldapDn,
@@ -154,16 +156,20 @@ class LDAPSyncerConsumer {
 				ldapDN: classData.ldapDn,
 				year: school.currentYear,
 			};
-			this.app.service('classes').create(newClass);
+			await this.app.service('classes').create(newClass);
 		} else {
 			const existingClass = existingClasses.data[0];
 			if (existingClass.name !== classData.className) {
-				this.app.service('classes').patch(existingClass._id, { name: classData.className });
+				await this.app.service('classes').patch(existingClass._id, { name: classData.className });
 			}
 		}
 	}
 }
 
-module.exports = {
-	LDAPSyncerConsumer,
+const setupConsumer = async (app) => {
+	const syncQueue = getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
+	const consumer = new LDAPSyncerConsumer(app, syncQueue);
+	await syncQueue.consumeQueue((message) => consumer.handleMessage(message), { noAck: false });
 };
+
+module.exports = setupConsumer;

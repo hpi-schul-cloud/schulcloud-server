@@ -48,17 +48,15 @@ class LDAPSyncer extends Syncer {
 		return this.stats;
 	}
 
-	getSchools() {
-		return this.app
-			.service('ldap')
-			.getSchools(this.system.ldapConfig)
-			.then((data) => this.createSchoolsFromLdapData(data));
+	async getSchools() {
+		const data = await this.app.service('ldap').getSchools(this.system.ldapConfig);
+		return this.createSchoolsFromLdapData(data);
 	}
 
-	getCurrentYearAndFederalState() {
+	async getCurrentYearAndFederalState() {
 		try {
-			const years = this.app.service('years').find();
-			const states = this.app.service('federalStates').find({ query: { abbreviation: 'NI' } });
+			const years = await this.app.service('years').find();
+			const states = await this.app.service('federalStates').find({ query: { abbreviation: 'NI' } });
 			if (years.total !== 0 && states.total !== 0) {
 				const currentYear = new SchoolYearFacade(years.data).defaultYear;
 				const stateID = states.data[0]._id;
@@ -98,11 +96,12 @@ class LDAPSyncer extends Syncer {
 		} catch (err) {
 			this.logger.error('Uncaught LDAP sync error', { error: err, systemId: this.system._id });
 		}
+		return schoolList;
 	}
 
-	getUserData(school) {
-		this.logInfo('Getting users...');
-		const ldapUsers = this.app.service('ldap').getUsers(this.system.ldapConfig, school);
+	async getUserData(school) {
+		this.logInfo(`Getting users for school ${school.name}`);
+		const ldapUsers = await this.app.service('ldap').getUsers(this.system.ldapConfig, school);
 		this.logInfo(`Creating and updating ${ldapUsers.length} users...`);
 
 		const bulkSize = 1000; // 5000 is a hard limit because of definition in user model
@@ -118,7 +117,7 @@ class LDAPSyncer extends Syncer {
 								firstName: ldapUser.firstName,
 								lastName: ldapUser.lastName,
 								systemId: this.system._id,
-								shoolDn: school.ldapSchoolIdentifier,
+								schoolDn: school.ldapSchoolIdentifier,
 								email: ldapUser.email,
 								ldapDn: ldapUser.ldapDn,
 								ldapId: ldapUser.ldapUUID,
@@ -129,7 +128,7 @@ class LDAPSyncer extends Syncer {
 								ldapId: ldapUser.ldapUUID,
 								username: `${school.ldapSchoolIdentifier}/${ldapUser.ldapUID}`.toLowerCase(),
 								systemId: this.system._id,
-								shoolDn: school.ldapSchoolIdentifier,
+								schoolDn: school.ldapSchoolIdentifier,
 								activated: true,
 							},
 						},
@@ -142,9 +141,9 @@ class LDAPSyncer extends Syncer {
 		}
 	}
 
-	getClassData(school) {
-		this.logInfo('Getting classes...');
-		const classes = this.app.service('ldap').getClasses(this.system.ldapConfig, school);
+	async getClassData(school) {
+		this.logInfo(`Getting classes for school ${school.name}`);
+		const classes = await this.app.service('ldap').getClasses(this.system.ldapConfig, school);
 		this.logInfo(`Creating and updating ${classes.length} classes...`);
 		for (const ldapClass of classes) {
 			try {
@@ -161,7 +160,7 @@ class LDAPSyncer extends Syncer {
 			data: {
 				name: data.className,
 				systemId: this.system._id,
-				shoolDn: school.ldapSchoolIdentifier,
+				schoolDn: school.ldapSchoolIdentifier,
 				nameFormat: 'static',
 				ldapDN: data.ldapDn,
 				year: school.currentYear,

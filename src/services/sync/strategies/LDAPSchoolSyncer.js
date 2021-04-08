@@ -55,7 +55,7 @@ class LDAPSchoolSyncer extends Syncer {
 	}
 
 	async getUserData() {
-		this.logInfo('Getting users...');
+		this.logInfo(`Getting users for school ${this.school.name}`);
 		const ldapUsers = await this.app.service('ldap').getUsers(this.system.ldapConfig, this.school);
 		this.logInfo(`Creating and updating ${ldapUsers.length} users...`);
 
@@ -102,7 +102,7 @@ class LDAPSchoolSyncer extends Syncer {
 	}
 
 	async getClassData() {
-		this.logInfo('Getting classes...');
+		this.logInfo(`Getting classes for school ${this.school.name}`);
 		const classes = await this.app.service('ldap').getClasses(this.system.ldapConfig, this.school);
 		this.logInfo(`Creating and updating ${classes.length} classes...`);
 		await this.createClassesFromLdapData(classes, this.school);

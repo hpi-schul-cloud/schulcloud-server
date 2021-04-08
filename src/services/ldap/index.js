@@ -250,10 +250,10 @@ module.exports = function LDAPService() {
 					try {
 						client.search(searchString, optionsWithPaging, (err, res) => {
 							if (err) {
-								handleError(reject, err);
+								handleError(err);
 							}
-							res.on('error', () => {
-								handleError(reject, err);
+							res.on('error', (e) => {
+								handleError(e);
 							});
 							res.on('searchEntry', (entry) => {
 								const result = entry.object;
@@ -266,13 +266,13 @@ module.exports = function LDAPService() {
 								if (result.status === 0) {
 									resolve(objects);
 								} else {
-									handleError(reject, new Error('LDAP result code != 0'));
+									handleError(new Error('LDAP result code != 0'));
 								}
 								lock.releaseLock();
 							});
 						});
 					} catch (error) {
-						handleError(reject, error);
+						handleError(error);
 					}
 				});
 			});
