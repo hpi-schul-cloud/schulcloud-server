@@ -277,6 +277,7 @@ const validateCounty = async (context) => {
 
 const setMatrixServerId = async (context) => {
 	
+	// does the messenger gets activated?
 	let messengerActivation = 
 		// messenger activation can be triggered by pushing the feature flag
 		context?.data?.$push?.features?.$each?.includes(SCHOOL_FEATURES.MESSENGER)
@@ -284,7 +285,7 @@ const setMatrixServerId = async (context) => {
 		// messenger activation can be triggered by setting the feature flags array
 		|| context?.data?.features?.includes(SCHOOL_FEATURES.MESSENGER);
 
-	// check for a mxId
+	// does a mxId already exist or is given?
 	let matrixIdIsPresent = !!context.data.mxId;
 	if (messengerActivation && !matrixIdIsPresent) {
 		const currentSchool = await schoolModel.findOne({
@@ -295,7 +296,7 @@ const setMatrixServerId = async (context) => {
 	}
 
 	// assign the school to a matrix server
-	if (!matrixIdIsPresent) {
+	if (messengerActivation && !matrixIdIsPresent) {
 		const numberOfServers = Configuration.get('MATRIX_MESSENGER__NUMBER_OF_SERVERS');
 		const maxSchoolsPerServer = Configuration.get('MATRIX_MESSENGER__MAX_SCHOOLS_PER_SERVER');
 
@@ -326,6 +327,8 @@ const setMatrixServerId = async (context) => {
 	}
 
 	// TODO deactivate messenger
+	// We currently keep the school assigned to the same server on deactivation,
+	// because we do not delete all data from the server which allows quick reactivation.
 }
 
 exports.before = {
