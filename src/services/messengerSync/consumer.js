@@ -111,8 +111,8 @@ const validateMessage = (content) => {
 	}
 };
 
-const sendToExternalQueue = (message) => {
-	channelSendExternal.sendToQueue(message, { persistent: true });
+const sendToExternalQueue = (message, priority = 0) => {
+	channelSendExternal.sendToQueue(message, { persistent: true, priority });
 };
 
 const executeMessage = async (incomingMessage) => {
@@ -129,46 +129,48 @@ const executeMessage = async (incomingMessage) => {
 		return false;
 	}
 
+	const priority = content.schoolSync ? 0 : 2;
+
 	switch (content.action) {
 		case ACTIONS.SYNC_SCHOOL: {
-			await requestSyncForEachSchoolUser(content.schoolId);
-			await requestRemovalOfRemovedRooms(content.schoolId);
+			await requestSyncForEachSchoolUser(content.schoolId, true);
+			await requestRemovalOfRemovedRooms(content.schoolId, true);
 			return true;
 		}
 
 		case ACTIONS.SYNC_USER: {
 			const outgoingMessage = await buildAddUserMessage(content);
-			sendToExternalQueue(outgoingMessage);
+			sendToExternalQueue(outgoingMessage, priority);
 			return true;
 		}
 
 		case ACTIONS.DELETE_USER: {
 			const outgoingMessage = await buildDeleteUserMessage(content);
-			sendToExternalQueue(outgoingMessage);
+			sendToExternalQueue(outgoingMessage, priority);
 			return true;
 		}
 
 		case ACTIONS.SYNC_COURSE: {
 			const outgoingMessage = await buildAddCourseMessage(content);
-			sendToExternalQueue(outgoingMessage);
+			sendToExternalQueue(outgoingMessage, priority);
 			return true;
 		}
 
 		case ACTIONS.DELETE_COURSE: {
 			const outgoingMessage = await buildDeleteCourseMessage(content);
-			sendToExternalQueue(outgoingMessage);
+			sendToExternalQueue(outgoingMessage, priority);
 			return true;
 		}
 
 		case ACTIONS.SYNC_TEAM: {
 			const outgoingMessage = await buildAddTeamMessage(content);
-			sendToExternalQueue(outgoingMessage);
+			sendToExternalQueue(outgoingMessage, priority);
 			return true;
 		}
 
 		case ACTIONS.DELETE_TEAM: {
 			const outgoingMessage = await buildDeleteTeamMessage(content);
-			sendToExternalQueue(outgoingMessage);
+			sendToExternalQueue(outgoingMessage, priority);
 			return true;
 		}
 
@@ -197,7 +199,10 @@ const handleMessage = (incomingMessage) =>
 		});
 
 const setup = () => {
-	channelSendExternal = getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), { durable: false });
+	channelSendExternal = getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_EXTERNAL'), {
+		durable: false,
+		arguments: { 'x-max-priority': 2 },
+	});
 	channelReadInternal = getChannel(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), { durable: true });
 	channelReadInternal.consumeQueue(handleMessage, { noAck: false });
 };
