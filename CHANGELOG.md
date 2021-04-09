@@ -13,7 +13,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
-- SC-8779 - messenger: use user-based fixed device ids
+- SC-8909 - messenger: use user-based fixed device ids
 
 ## [26.0.14] - 2021-04-16
 
