@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const { getChannel } = require('../../../utils/rabbitmq');
 const accountModel = require('../../account/model');
 const logger = require('../../../logger');
@@ -5,39 +6,23 @@ const logger = require('../../../logger');
 const { LDAP_SYNC_ACTIONS, LDAP_SYNC_CHANNEL_NAME } = require('./LDAPSyncer');
 
 class LDAPSyncerConsumer {
-	constructor(app, syncQueue) {
+	constructor(app) {
 		this.app = app;
-		this.syncQueue = syncQueue;
 	}
 
-	handleMessage(incomingMessage) {
-		try {
-			this.executeMessage(incomingMessage);
-			this.syncQueue.ackMessage(incomingMessage);
-			return true;
-		} catch (err) {
-			this.syncQueue.ackMessage(incomingMessage);
-			logger.error('LDAP SYNC: error while handling Stuff', err);
-			return false;
-		}
-	}
-
-	executeMessage(incomingMessage) {
+	async executeMessage(incomingMessage) {
 		const content = JSON.parse(incomingMessage.content.toString());
 		switch (content.action) {
 			case LDAP_SYNC_ACTIONS.SYNC_SCHOOL: {
-				this.schoolAction(content.data);
-				return true;
+				return this.schoolAction(content.data);
 			}
 
 			case LDAP_SYNC_ACTIONS.SYNC_USER: {
-				this.userAction(content.data);
-				return true;
+				return this.userAction(content.data);
 			}
 
 			case LDAP_SYNC_ACTIONS.SYNC_CLASSES: {
-				this.classAction(content.data);
-				return true;
+				return this.classAction(content.data);
 			}
 
 			default: {
@@ -77,15 +62,22 @@ class LDAPSyncerConsumer {
 					$populate: ['roles'],
 				},
 			});
-			if (userData.total !== 0) {
-				this.updateUser(data.user, userData, data.account);
-			} else {
-				this.createUser(data.user, data.account, schools.data[0]);
+			try {
+				if (userData.total !== 0) {
+					this.updateUser(data.user, userData.data[0], data.account);
+				} else {
+					this.createUser(data.user, data.account, schools.data[0]);
+				}
+				return true;
+			} catch (err) {
+				logger.error('LDAP SYNC: error while update or add a user', err);
+				return false;
 			}
 		}
+		return true;
 	}
 
-	async updateUser(user, userData, account) {
+	updateUser(user, userData, account) {
 		const updateObject = {};
 		if (userData.firstName !== user.firstName) {
 			updateObject.firstName = user.firstName || ' ';
@@ -101,18 +93,23 @@ class LDAPSyncerConsumer {
 			updateObject.ldapDn = user.ldapDn;
 		}
 		// Role
-		updateObject.roles = user.roles;
-		await this.app.service('users').patch(userData._id, updateObject);
-		accountModel.update(
-			{ userId: userData._id, systemId: account.systemId },
-			{
-				username: account.username,
-				userId: userData._id,
-				systemId: account.systemId,
-				activated: true,
-			},
-			{ upsert: true }
-		);
+		const userDataRoles = userData.roles.map((r) => r.name);
+		if (!_.isEqual(userDataRoles, user.roles)) {
+			updateObject.roles = user.roles;
+		}
+		if (!_.isEmpty(updateObject)) {
+			this.app.service('users').patch(userData._id, updateObject);
+			accountModel.update(
+				{ userId: userData._id, systemId: account.systemId },
+				{
+					username: account.username,
+					userId: userData._id,
+					systemId: account.systemId,
+					activated: true,
+				},
+				{ upsert: true }
+			);
+		}
 	}
 
 	createUser(idmUser, account, school) {
@@ -124,7 +121,7 @@ class LDAPSyncerConsumer {
 				schoolId: school._id,
 				email: idmUser.email,
 				ldapDn: idmUser.ldapDn,
-				ldapId: idmUser.ldapUUID,
+				ldapId: idmUser.ldapId,
 				roles: idmUser.roles,
 			})
 			.then((user) =>
@@ -166,10 +163,28 @@ class LDAPSyncerConsumer {
 	}
 }
 
-const setupConsumer = async (app) => {
+const setupConsumer = (app) => {
 	const syncQueue = getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
-	const consumer = new LDAPSyncerConsumer(app, syncQueue);
-	await syncQueue.consumeQueue((message) => consumer.handleMessage(message), { noAck: false });
+	const consumer = new LDAPSyncerConsumer(app);
+
+	const handleMessage = (incomingMessage) =>
+		consumer
+			.executeMessage(incomingMessage)
+			.then((success) => {
+				if (success) {
+					syncQueue.ackMessage(incomingMessage);
+				} else {
+					syncQueue.rejectMessage(incomingMessage, false);
+				}
+				return success;
+			})
+			.catch((err) => {
+				logger.error('LDAP SYNC: error while handling Stuff', err);
+				syncQueue.rejectMessage(incomingMessage, false);
+				return false;
+			});
+
+	syncQueue.consumeQueue(handleMessage, { noAck: false });
 };
 
 module.exports = setupConsumer;

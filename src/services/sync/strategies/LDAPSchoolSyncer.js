@@ -57,7 +57,7 @@ class LDAPSchoolSyncer extends Syncer {
 	async getUserData() {
 		this.logInfo(`Getting users for school ${this.school.name}`);
 		const ldapUsers = await this.app.service('ldap').getUsers(this.system.ldapConfig, this.school);
-		this.logInfo(`Creating and updating ${ldapUsers.length} users...`);
+		this.logInfo(`Creating and updating ${ldapUsers.length} users for school ${this.school.name}`);
 
 		const bulkSize = 1000; // 5000 is a hard limit because of definition in user model
 
@@ -104,7 +104,7 @@ class LDAPSchoolSyncer extends Syncer {
 	async getClassData() {
 		this.logInfo(`Getting classes for school ${this.school.name}`);
 		const classes = await this.app.service('ldap').getClasses(this.system.ldapConfig, this.school);
-		this.logInfo(`Creating and updating ${classes.length} classes...`);
+		this.logInfo(`Creating and updating ${classes.length} classes for school ${this.school.name}`);
 		await this.createClassesFromLdapData(classes, this.school);
 		this.logInfo(
 			`Created ${this.stats.classes.created} classes, ` +

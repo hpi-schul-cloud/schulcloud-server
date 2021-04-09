@@ -39,13 +39,17 @@ class LDAPSyncer extends Syncer {
 		await super.steps();
 		await this.attemptRun();
 		const schools = await this.getSchools();
+		const userPromises = [];
 		for (const school of schools) {
-			this.getUserData(school);
+			userPromises.push(this.getUserData(school));
 		}
+		await Promise.all(userPromises);
+
+		const schoolPromises = [];
 		for (const school of schools) {
-			this.getClassData(school);
+			schoolPromises.push(this.getClassData(school));
 		}
-		return this.stats;
+		await Promise.all(schoolPromises);
 	}
 
 	async getSchools() {
@@ -102,7 +106,7 @@ class LDAPSyncer extends Syncer {
 	async getUserData(school) {
 		this.logInfo(`Getting users for school ${school.name}`);
 		const ldapUsers = await this.app.service('ldap').getUsers(this.system.ldapConfig, school);
-		this.logInfo(`Creating and updating ${ldapUsers.length} users...`);
+		this.logInfo(`Creating and updating ${ldapUsers.length} users for school ${school.name}`);
 
 		const bulkSize = 1000; // 5000 is a hard limit because of definition in user model
 
@@ -144,7 +148,7 @@ class LDAPSyncer extends Syncer {
 	async getClassData(school) {
 		this.logInfo(`Getting classes for school ${school.name}`);
 		const classes = await this.app.service('ldap').getClasses(this.system.ldapConfig, school);
-		this.logInfo(`Creating and updating ${classes.length} classes...`);
+		this.logInfo(`Creating and updating ${classes.length} classes for school ${school.name}`);
 		for (const ldapClass of classes) {
 			try {
 				this.pushClassData(ldapClass, school);
