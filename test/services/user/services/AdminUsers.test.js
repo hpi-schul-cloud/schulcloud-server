@@ -750,7 +750,7 @@ describe('AdminUsersService', () => {
 			firstName: 'testFirst',
 			lastName: 'testLast',
 			roles: ['student'],
-			schoolId,
+			schoolId: school._id,
 		};
 		try {
 			await adminStudentsService.remove(student, params);
@@ -1750,7 +1750,7 @@ describe('AdminTeachersService', () => {
 			firstName: 'testFirst',
 			lastName: 'testLast',
 			roles: ['student'],
-			schoolId,
+			schoolId: school._id,
 		};
 		try {
 			await adminTeachersService.remove(teacher, params);
