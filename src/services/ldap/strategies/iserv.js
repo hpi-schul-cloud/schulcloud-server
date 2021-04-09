@@ -28,9 +28,9 @@ class iServLDAPStrategy extends AbstractLDAPStrategy {
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 * @memberof iServLDAPStrategy
 	 */
-	getUsers() {
+	getUsers(school) {
 		const options = {
-			filter: filterForModifiedEntities(this.config.lastModifyTimestamp, 'objectClass=person'),
+			filter: filterForModifiedEntities(school.ldapLastSync, 'objectClass=person'),
 			scope: 'sub',
 			attributes: ['givenName', 'sn', 'dn', 'uuid', 'uid', 'mail', 'objectClass', 'memberOf', 'modifyTimestamp'],
 		};

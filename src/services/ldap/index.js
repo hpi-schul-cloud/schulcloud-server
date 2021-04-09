@@ -119,10 +119,6 @@ module.exports = function LDAPService() {
 			}
 
 			if (client) {
-				if (!this.mapOfLocks[config.url]) {
-					this.mapOfLocks[config.url] = new LockingQueue();
-				}
-				await this.mapOfLocks[config.url].getLock();
 				return client;
 			}
 			throw new NoClientInstanceError('No client exists and autoconnect is not enabled.');
@@ -235,15 +231,30 @@ module.exports = function LDAPService() {
 				},
 			};
 
-			return this._getClient(config).then(
-				(client) =>
-					new Promise((resolve, reject) => {
-						const objects = [];
+			return this._getClient(config).then(async (client) => {
+				if (!this.mapOfLocks[config.url]) {
+					this.mapOfLocks[config.url] = new LockingQueue();
+				}
+				const lock = await this.mapOfLocks[config.url].getLock();
+
+				return new Promise((resolve, reject) => {
+					const objects = [];
+					const handleError = (err) => {
+						logger.error('Error during searchCollection', { error: err });
+						if (!this.mapOfLocks[config.url]) {
+							lock.releaseLock();
+						}
+						reject(err);
+					};
+
+					try {
 						client.search(searchString, optionsWithPaging, (err, res) => {
 							if (err) {
-								reject(err);
+								handleError(reject, err);
 							}
-							res.on('error', reject);
+							res.on('error', () => {
+								handleError(reject, err);
+							});
 							res.on('searchEntry', (entry) => {
 								const result = entry.object;
 								rawAttributes.forEach((element) => {
@@ -255,13 +266,16 @@ module.exports = function LDAPService() {
 								if (result.status === 0) {
 									resolve(objects);
 								} else {
-									reject(new Error('LDAP result code != 0'));
+									handleError(reject, new Error('LDAP result code != 0'));
 								}
-								this.mapOfLocks[config.url].releaseLock();
+								lock.releaseLock();
 							});
 						});
-					})
-			);
+					} catch (error) {
+						handleError(reject, error);
+					}
+				});
+			});
 		}
 
 		/**
