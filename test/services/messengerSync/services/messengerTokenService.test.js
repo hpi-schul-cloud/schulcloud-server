@@ -10,7 +10,7 @@ const {
 	messengerTokenHooks,
 } = require('../../../../src/services/messengerSync/services/messengerTokenService');
 
-describe.only('MessengerTokenService', function test() {
+describe('MessengerTokenService', function test() {
 	let app;
 	this.timeout(10000);
 	let server;
