@@ -745,12 +745,11 @@ describe('AdminUsersService', () => {
 			ldapSchoolIdentifier: 'testId'
 		});
 		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+		const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
 		const params = await testObjects.generateRequestParamsFromUser(admin);
-		const student = {
-			firstName: 'testFirst',
-			lastName: 'testLast',
-			roles: ['student'],
-			schoolId: school._id,
+		params.query = {
+			...params.query,
+			_ids: [student._id],
 		};
 		try {
 			await adminStudentsService.remove(student, params);
@@ -1745,12 +1744,11 @@ describe('AdminTeachersService', () => {
 			ldapSchoolIdentifier: 'testId'
 		});
 		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
 		const params = await testObjects.generateRequestParamsFromUser(admin);
-		const teacher = {
-			firstName: 'testFirst',
-			lastName: 'testLast',
-			roles: ['student'],
-			schoolId: school._id,
+		params.query = {
+			...params.query,
+			_ids: [teacher._id],
 		};
 		try {
 			await adminTeachersService.remove(teacher, params);
