@@ -199,7 +199,7 @@ class AdminUsers {
 	async checkIfExternallyManaged(schoolId) {
 		const { isExternal } = await this.app.service('schools').get(schoolId);
 		if (isExternal) {
-			throw new Forbidden('Creating new students or teachers is only possible in the source system.');
+			throw new Forbidden('Creating, editing, or removing students or teachers is only possible in the source system.');
 		}
 	}
 
@@ -284,6 +284,7 @@ class AdminUsers {
 	async remove(id, params) {
 		const { _ids } = params.query;
 		const currentUser = await getCurrentUserInfo(params.account.userId);
+		await this.checkIfExternallyManaged(currentUser.schoolId);
 
 		if (id) {
 			const userToRemove = await getCurrentUserInfo(id);
