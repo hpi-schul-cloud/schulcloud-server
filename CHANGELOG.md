@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.0.9] - 2021-04-09
+
+### Fixed
+
+- SC-8908 ldap sync: fix lock
 ## [26.0.8] - 2021-03-31
 
 ### Fixed
