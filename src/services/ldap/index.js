@@ -241,9 +241,7 @@ module.exports = function LDAPService() {
 					const objects = [];
 					const handleError = (err) => {
 						logger.error('Error during searchCollection', { error: err });
-						if (!this.mapOfLocks[config.url]) {
-							lock.releaseLock();
-						}
+						lock.releaseLock();
 						reject(err);
 					};
 
@@ -252,8 +250,8 @@ module.exports = function LDAPService() {
 							if (err) {
 								handleError(err);
 							}
-							res.on('error', (e) => {
-								handleError(e);
+							res.on('error', (err) => {
+								handleError(err);
 							});
 							res.on('searchEntry', (entry) => {
 								const result = entry.object;
