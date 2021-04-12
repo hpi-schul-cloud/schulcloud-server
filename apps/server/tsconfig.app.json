@@ -1,13 +1,25 @@
 {
-	"extends": "../../tsconfig-base.json",
+	"compileOnSave": true,
 	"compilerOptions": {
-		"declaration": false,
+		"declaration": true,
 		"outDir": "../../dist/apps/server",
+
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"allowSyntheticDefaultImports": true,
+		"target": "es2017",
+		"sourceMap": true,
+		"baseUrl": "./",
+		"incremental": true,
+		"allowJs": true,
+		"esModuleInterop": true,
+		"lib": ["ES2017", "DOM"],
+		"module": "commonjs",
+		"preserveConstEnums": true,
 		"resolveJsonModule": true,
-		"moduleResolution": "node"
+		"moduleResolution": "node",
+		"strict": true,
+		"paths": {}
 	},
 	"include": ["./src/**/*"],
 	"exclude": ["node_modules", "dist", "./test", "**/*spec.ts"]
