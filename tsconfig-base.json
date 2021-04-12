@@ -19,7 +19,6 @@
 		"preserveConstEnums": true,
 		"resolveJsonModule": true,
 		"strict": true,
-		"typeRoots": ["./types"],
 		"paths": {}
 	}
 }
