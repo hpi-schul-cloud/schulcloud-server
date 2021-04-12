@@ -12,6 +12,7 @@ class LDAPSyncerConsumer {
 
 	async executeMessage(incomingMessage) {
 		const content = JSON.parse(incomingMessage.content.toString());
+		logger.debug(`Incoming ${content.action} ${content.syncId}: ${JSON.stringify(content.data).substring(0, 100)}...`);
 		switch (content.action) {
 			case LDAP_SYNC_ACTIONS.SYNC_SCHOOL: {
 				return this.schoolAction(content.data);
@@ -176,9 +177,10 @@ const setupConsumer = (app) => {
 			.catch((err) => {
 				logger.error('LDAP SYNC: error while handling Stuff', { err, syncId: incomingMessage.syncId });
 				return false;
-			});
+			})
+			.finally(() => syncQueue.ackMessage(incomingMessage));
 
-	syncQueue.consumeQueue(handleMessage, { noAck: true });
+	syncQueue.consumeQueue(handleMessage, { noAck: false });
 };
 
 module.exports = setupConsumer;
