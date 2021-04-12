@@ -11,6 +11,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [26.1.0]
 
+### Added
+
+- SC-8910 - added an isExternal check to the adminUsers service remove method
+
 ### Changed
 
 - SC-8732 - change search filter gate and weight of values in indexes. Will reduce amount of results
