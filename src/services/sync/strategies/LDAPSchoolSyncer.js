@@ -55,9 +55,11 @@ class LDAPSchoolSyncer extends Syncer {
 	}
 
 	async getUserData() {
-		this.logInfo(`Getting users for school ${this.school.name}`);
+		this.logInfo(`Getting users for school ${this.school.name}`, { syncId: this.syncId });
 		const ldapUsers = await this.app.service('ldap').getUsers(this.system.ldapConfig, this.school);
-		this.logInfo(`Creating and updating ${ldapUsers.length} users for school ${this.school.name}`);
+		this.logInfo(`Creating and updating ${ldapUsers.length} users for school ${this.school.name}`, {
+			syncId: this.syncId,
+		});
 
 		const bulkSize = 1000; // 5000 is a hard limit because of definition in user model
 
@@ -89,7 +91,10 @@ class LDAPSchoolSyncer extends Syncer {
 				} catch (err) {
 					this.stats.users.errors += 1;
 					this.stats.errors.push(err);
-					this.logError(`User creation error for ${ldapUser.firstName} ${ldapUser.lastName} (${ldapUser.email})`, err);
+					this.logError(`User creation error for ${ldapUser.firstName} ${ldapUser.lastName} (${ldapUser.email})`, {
+						err,
+						syncId: this.syncId,
+					});
 				}
 			}
 		}
@@ -97,7 +102,8 @@ class LDAPSchoolSyncer extends Syncer {
 		this.logInfo(
 			`Created ${this.stats.users.created} users, ` +
 				`updated ${this.stats.users.updated} users. ` +
-				`Skipped errors: ${this.stats.users.errors}.`
+				`Skipped errors: ${this.stats.users.errors}.`,
+			{ syncId: this.syncId }
 		);
 	}
 
@@ -109,12 +115,13 @@ class LDAPSchoolSyncer extends Syncer {
 		this.logInfo(
 			`Created ${this.stats.classes.created} classes, ` +
 				`updated ${this.stats.classes.updated} classes. ` +
-				`Skipped errors: ${this.stats.classes.errors}.`
+				`Skipped errors: ${this.stats.classes.errors}.`,
+			{ syncId: this.syncId }
 		);
 	}
 
 	async updateTimestamps() {
-		this.logInfo('Persisting school ldap sync timestamp...');
+		this.logInfo('Persisting school ldap sync timestamp...', { syncId: this.syncId });
 		await this.app
 			.service('schools')
 			.patch(this.school._id, { ldapLastSync: dateToLdapTimestamp(this.stats.startTimestamp) });
@@ -188,7 +195,7 @@ class LDAPSchoolSyncer extends Syncer {
 			} catch (err) {
 				this.stats.classes.errors += 1;
 				this.stats.errors.push(err);
-				this.logError('Cannot create synced class', { error: err, data });
+				this.logError('Cannot create synced class', { error: err, data, syncId: this.syncId });
 			}
 		}
 	}

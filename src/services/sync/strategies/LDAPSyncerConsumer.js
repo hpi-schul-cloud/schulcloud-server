@@ -45,7 +45,7 @@ class LDAPSyncerConsumer {
 			}
 			return true;
 		} catch (err) {
-			logger.error('LDAP SYNC: error while update or add a school', err);
+			logger.error('LDAP SYNC: error while update or add a school', { err, syncId: schoolData.syncId });
 			return false;
 		}
 	}
@@ -70,7 +70,7 @@ class LDAPSyncerConsumer {
 				}
 				return true;
 			} catch (err) {
-				logger.error('LDAP SYNC: error while update or add a user', err);
+				logger.error('LDAP SYNC: error while update or add a user', { err, syncId: data.syncId });
 				return false;
 			}
 		}
@@ -174,7 +174,7 @@ const setupConsumer = (app) => {
 				return true;
 			})
 			.catch((err) => {
-				logger.error('LDAP SYNC: error while handling Stuff', err);
+				logger.error('LDAP SYNC: error while handling Stuff', { err, syncId: incomingMessage.syncId });
 				return false;
 			})
 			.finally(() => syncQueue.ackMessage(incomingMessage));

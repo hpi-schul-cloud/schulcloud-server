@@ -1,6 +1,5 @@
 const { getChannel } = require('../../../utils/rabbitmq');
 const Syncer = require('./Syncer');
-const mongoose = require('mongoose')
 
 const SchoolYearFacade = require('../../school/logic/year.js');
 
@@ -27,7 +26,6 @@ class LDAPSyncer extends Syncer {
 			schools: {},
 		});
 		this.syncQueue = getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
-		this.syncId = String(new mongoose.Types.ObjectId());
 	}
 
 	prefix() {
@@ -71,13 +69,16 @@ class LDAPSyncer extends Syncer {
 
 			return {};
 		} catch (err) {
-			this.logError('Database should contain at least one year and one valid federal state', { err, syncId });
+			this.logError('Database should contain at least one year and one valid federal state', {
+				err,
+				syncId: this.syncId,
+			});
 			return {};
 		}
 	}
 
 	createSchoolsFromLdapData(data) {
-		this.logInfo(`Got ${data.length} schools from the server`, { syncId });
+		this.logInfo(`Got ${data.length} schools from the server`, { syncId: this.syncId });
 		const schoolList = [];
 		try {
 			const { currentYear, federalState } = this.getCurrentYearAndFederalState();
@@ -97,19 +98,19 @@ class LDAPSyncer extends Syncer {
 					this.syncQueue.sendToQueue(schoolData, {});
 					schoolList.push(schoolData.data);
 				} catch (err) {
-					this.logger.error('Uncaught LDAP sync error', { error: err, systemId: this.system._id, syncId });
+					this.logger.error('Uncaught LDAP sync error', { error: err, systemId: this.system._id, syncId: this.syncId });
 				}
 			}
 		} catch (err) {
-			this.logger.error('Uncaught LDAP sync error', { error: err, systemId: this.system._id, syncId });
+			this.logger.error('Uncaught LDAP sync error', { error: err, systemId: this.system._id, syncId: this.syncId });
 		}
 		return schoolList;
 	}
 
 	async getUserData(school) {
-		this.logInfo(`Getting users for school ${school.name}`, { syncId });
+		this.logInfo(`Getting users for school ${school.name}`, { syncId: this.syncId });
 		const ldapUsers = await this.app.service('ldap').getUsers(this.system.ldapConfig, school);
-		this.logInfo(`Creating and updating ${ldapUsers.length} users for school ${school.name}`, { syncId });
+		this.logInfo(`Creating and updating ${ldapUsers.length} users for school ${school.name}`, { syncId: this.syncId });
 
 		const bulkSize = 1000; // 5000 is a hard limit because of definition in user model
 
@@ -119,6 +120,7 @@ class LDAPSyncer extends Syncer {
 				try {
 					const userData = {
 						action: LDAP_SYNC_ACTIONS.SYNC_USER,
+						syncId: this.syncId,
 						data: {
 							user: {
 								firstName: ldapUser.firstName,
@@ -142,21 +144,24 @@ class LDAPSyncer extends Syncer {
 					};
 					this.syncQueue.sendToQueue(userData, {});
 				} catch (err) {
-					this.logError(`User creation error for ${ldapUser.firstName} ${ldapUser.lastName} (${ldapUser.email})`, { err, syncId });
+					this.logError(`User creation error for ${ldapUser.firstName} ${ldapUser.lastName} (${ldapUser.email})`, {
+						err,
+						syncId: this.syncId,
+					});
 				}
 			}
 		}
 	}
 
 	async getClassData(school) {
-		this.logInfo(`Getting classes for school ${school.name}`, { syncId });
+		this.logInfo(`Getting classes for school ${school.name}`, { syncId: this.syncId });
 		const classes = await this.app.service('ldap').getClasses(this.system.ldapConfig, school);
-		this.logInfo(`Creating and updating ${classes.length} classes for school ${school.name}`, { syncId });
+		this.logInfo(`Creating and updating ${classes.length} classes for school ${school.name}`, { syncId: this.syncId });
 		for (const ldapClass of classes) {
 			try {
 				this.pushClassData(ldapClass, school);
 			} catch (err) {
-				this.logError('Cannot create synced class', { error: err, ldapClass, syncId });
+				this.logError('Cannot create synced class', { error: err, ldapClass, syncId: this.syncId });
 			}
 		}
 	}
@@ -164,6 +169,7 @@ class LDAPSyncer extends Syncer {
 	pushClassData(data, school) {
 		const classData = {
 			action: LDAP_SYNC_ACTIONS.SYNC_CLASSES,
+			syncId: this.syncId,
 			data: {
 				name: data.className,
 				systemId: this.system._id,
@@ -188,12 +194,12 @@ class LDAPSyncer extends Syncer {
 	 */
 	async attemptRun() {
 		const now = Date.now();
-		this.logger.debug(`Setting system.ldapConfig.lastSyncAttempt = ${now}`, { syncId });
+		this.logger.debug(`Setting system.ldapConfig.lastSyncAttempt = ${now}`, { syncId: this.syncId });
 		const update = {
 			'ldapConfig.lastSyncAttempt': now,
 		};
 		await this.app.service('systems').patch(this.system._id, update);
-		this.logger.debug('System stats updated.', { syncId });
+		this.logger.debug('System stats updated.', { syncId: this.syncId });
 	}
 
 	/**
@@ -202,7 +208,7 @@ class LDAPSyncer extends Syncer {
 	 * @async
 	 */
 	async persistRun() {
-		this.logger.debug('System-Sync done. Updating system stats...', { syncId });
+		this.logger.debug('System-Sync done. Updating system stats...', { syncId: this.syncId });
 		if (this.successful()) {
 			const update = {};
 			if (this.stats.modifyTimestamp) {
@@ -219,13 +225,13 @@ class LDAPSyncer extends Syncer {
 				update['ldapConfig.lastSuccessfulPartialSync'] = now;
 			}
 
-			this.logger.debug(`Setting these values: ${JSON.stringify(update)}.`, { syncId });
+			this.logger.debug(`Setting these values: ${JSON.stringify(update)}.`, { syncId: this.syncId });
 			await this.app.service('systems').patch(this.system._id, update);
-			this.logger.debug('System stats updated.', { syncId });
+			this.logger.debug('System stats updated.', { syncId: this.syncId });
 		} else {
 			// The sync attempt was persisted before the run (see #attemptRun) in order to
 			// record the run even if there are uncaught errors. Nothing to do here...
-			this.logger.debug('Not successful. Skipping...', { syncId });
+			this.logger.debug('Not successful. Skipping...', { syncId: this.syncId });
 		}
 	}
 }
