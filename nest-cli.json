@@ -4,7 +4,7 @@
 	"root": "apps/server",
 	"sourceRoot": "apps/server/src",
 	"compilerOptions": {
-		"webpack": true,
+		"webpack": false,
 		"tsConfigPath": "apps/server/tsconfig.app.json"
 	},
 	"projects": {
@@ -14,6 +14,7 @@
 			"entryFile": "main",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
+				"assets": "**/*.yaml",
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		}
