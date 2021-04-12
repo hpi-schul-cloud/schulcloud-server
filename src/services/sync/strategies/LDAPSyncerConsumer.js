@@ -176,10 +176,9 @@ const setupConsumer = (app) => {
 			.catch((err) => {
 				logger.error('LDAP SYNC: error while handling Stuff', { err, syncId: incomingMessage.syncId });
 				return false;
-			})
-			.finally(() => syncQueue.ackMessage(incomingMessage));
+			});
 
-	syncQueue.consumeQueue(handleMessage, { noAck: false });
+	syncQueue.consumeQueue(handleMessage, { noAck: true });
 };
 
 module.exports = setupConsumer;
