@@ -61,16 +61,44 @@ module.exports = {
 			},
 		},
 	},
+	ignorePatterns: [
+		// should not be applied on nest apps
+		'apps/server/**',
+	],
 	overrides: [
 		{
-			files: ['*.test.js', '*.test.ts'],
+			// nest.js server in 'apps/server/**' */ which is excluded from outer rules
+			files: ['apps/server/**/*.*'],
+			parser: '@typescript-eslint/parser',
+			parserOptions: {
+				project: 'apps/server/tsconfig.app.json',
+				sourceType: 'module',
+			},
+			plugins: ['@typescript-eslint/eslint-plugin'],
+			extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
+			root: true,
+			env: {
+				node: true,
+				jest: true,
+			},
+			rules: {
+				'@typescript-eslint/interface-name-prefix': 'off',
+				'@typescript-eslint/explicit-function-return-type': 'off',
+				'@typescript-eslint/explicit-module-boundary-types': 'off',
+				'@typescript-eslint/no-explicit-any': 'off',
+			},
+		},
+		{
+			// legacy test files js/ts
+			files: ['{test,src}/**/*.test.js', '{test,src}/**/*.test.ts'],
 			rules: {
 				'no-unused-expressions': 'off',
 				'global-require': 'warn',
 			},
 		},
 		{
-			files: ['*.ts'],
+			// legacy typescript
+			files: ['{test,src}/**/*.ts'],
 			parser: '@typescript-eslint/parser',
 			extends: [
 				'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
