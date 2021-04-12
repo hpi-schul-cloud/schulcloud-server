@@ -1,5 +1,5 @@
 const { getUsername } = require('./TSP');
-const { FileModel } = require('../../../fileStorage/model.js');
+const { FileModel } = require('../../../fileStorage/model.js.js');
 const { info: logInfo, error: logError } = require('../../../../logger');
 
 const getInvalidatedUuid = (uuid) => `${uuid}/invalid!`;

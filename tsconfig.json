@@ -1,25 +1,5 @@
 {
-	"compileOnSave": true,
-	"compilerOptions": {
-		"declaration": true,
-		"removeComments": true,
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
-		"allowSyntheticDefaultImports": true,
-		"target": "es2017",
-		"sourceMap": true,
-		"baseUrl": "./",
-		"incremental": true,
-		"allowJs": true,
-		"esModuleInterop": true,
-		"lib": ["ES2020", "DOM"],
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"outDir": "./build",
-		"preserveConstEnums": true,
-		"resolveJsonModule": true,
-		"strict": true,
-		"typeRoots": ["./types"],
-		"paths": {}
-	}
+	"extends": "./tsconfig-base.json",
+	"include": ["src/**/*", "src/**/*.json"],
+	"exclude": ["node_modules", "test/**/*", "config/*", "package.json", "src/**/*.test.js", "src/**/*.test.ts"]
 }
