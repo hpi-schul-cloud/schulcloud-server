@@ -170,19 +170,14 @@ const setupConsumer = (app) => {
 	const handleMessage = (incomingMessage) =>
 		consumer
 			.executeMessage(incomingMessage)
-			.then((success) => {
-				if (success) {
-					syncQueue.ackMessage(incomingMessage);
-				} else {
-					syncQueue.rejectMessage(incomingMessage, false);
-				}
-				return success;
+			.then(() => {
+				return true;
 			})
 			.catch((err) => {
 				logger.error('LDAP SYNC: error while handling Stuff', err);
-				syncQueue.rejectMessage(incomingMessage, false);
 				return false;
-			});
+			})
+			.finally(() => syncQueue.ackMessage(incomingMessage));
 
 	syncQueue.consumeQueue(handleMessage, { noAck: false });
 };
