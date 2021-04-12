@@ -77,7 +77,6 @@ module.exports = {
 			},
 			plugins: ['@typescript-eslint/eslint-plugin'],
 			extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
-			root: true,
 			env: {
 				node: true,
 				jest: true,
@@ -102,7 +101,7 @@ module.exports = {
 			files: ['{test,src}/**/*.ts'],
 			parser: '@typescript-eslint/parser',
 			plugins: ['@typescript-eslint'],
-			extends: ['plugin:@typescript-eslint/recommended', 'prettier/@typescript-eslint', 'plugin:prettier/recommended'],
+			extends: ['plugin:@typescript-eslint/recommended', 'prettier', 'plugin:prettier/recommended'],
 		},
 	],
 };

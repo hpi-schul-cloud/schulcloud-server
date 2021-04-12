@@ -2,7 +2,12 @@
 	"extends": "../../tsconfig-base.json",
 	"compilerOptions": {
 		"declaration": false,
-		"outDir": "../../dist/apps/server"
+		"outDir": "../../dist/apps/server",
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true,
+		"moduleResolution": "node"
 	},
 	"include": ["./src/**/*"],
 	"exclude": ["node_modules", "dist", "./test", "**/*spec.ts"]
