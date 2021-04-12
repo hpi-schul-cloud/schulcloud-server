@@ -63,11 +63,12 @@ module.exports = {
 	},
 	ignorePatterns: [
 		// should not be applied on nest apps
-		'apps/server/**',
+		'apps/**',
 	],
 	overrides: [
 		{
 			// nest.js server in 'apps/server/**' */ which is excluded from outer rules
+			// this section is more less (parserOptions/project path) only what nest.js defines
 			files: ['apps/server/**/*.*'],
 			parser: '@typescript-eslint/parser',
 			parserOptions: {
