@@ -241,19 +241,17 @@ module.exports = function LDAPService() {
 					const objects = [];
 					const handleError = (err) => {
 						logger.error('Error during searchCollection', { error: err });
-						if (!this.mapOfLocks[config.url]) {
-							lock.releaseLock();
-						}
+						lock.releaseLock();
 						reject(err);
 					};
 
 					try {
 						client.search(searchString, optionsWithPaging, (err, res) => {
 							if (err) {
-								handleError(reject, err);
+								handleError(err);
 							}
-							res.on('error', () => {
-								handleError(reject, err);
+							res.on('error', (err) => {
+								handleError(err);
 							});
 							res.on('searchEntry', (entry) => {
 								const result = entry.object;
@@ -266,13 +264,13 @@ module.exports = function LDAPService() {
 								if (result.status === 0) {
 									resolve(objects);
 								} else {
-									handleError(reject, new Error('LDAP result code != 0'));
+									handleError(new Error('LDAP result code != 0'));
 								}
 								lock.releaseLock();
 							});
 						});
 					} catch (error) {
-						handleError(reject, error);
+						handleError(error);
 					}
 				});
 			});

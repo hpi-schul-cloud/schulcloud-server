@@ -53,6 +53,8 @@ const courseGroupService = new CourseGroups({
 		default: 25,
 		max: 100,
 	},
+	multi: true,
+	whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 });
 
 const courseGroupHooks = {
