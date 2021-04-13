@@ -20,6 +20,46 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8732 - change search filter gate and weight of values in indexes. Will reduce amount of results
 - SC-8880 - changed the validation for search queries in NAT, now it allows empty values
 
+## [26.0.11] - 2021-04-13
+
+### Changed
+
+- SC-8748 - bump feathers-mongoose from 6.3.0 to 8.3.1
+
+## [26.0.10] - 2021-04-09
+
+### Fixed
+
+- SC-8908 ldap sync: fix lock
+
+## [26.0.9] - 2021-04-06
+
+- SC-8779 - fix partial LDAP sync
+
+## [26.0.8] - 2021-03-31
+
+### Fixed
+
+- SC-8691 ldap sync: fix potential deadlock while loadind ldap data
+
+## [26.0.7] - 2021-03-31
+
+### Fixed
+
+- SC-8768 ldap sync: in user search include current school
+
+## [26.0.6] - 2021-03-30
+
+### Fixed
+
+- SC-8836 - teachers can add classes from other teachers to their courses
+
+## [26.0.5] - 2021-03-29
+
+### Fixed
+
+- SC-8691 - LDAP sync can be run with multiple school in parallel
+
 ## [26.0.4] - 2021-03-25
 
 ### Changed

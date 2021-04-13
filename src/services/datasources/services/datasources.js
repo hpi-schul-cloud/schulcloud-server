@@ -17,6 +17,8 @@ const datasourceService = service({
 		default: 10,
 		max: 50,
 	},
+	multi: true,
+	whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 });
 
 const datasourceHooks = {

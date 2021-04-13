@@ -13,7 +13,7 @@ const {
 	sortByGradeAndOrName,
 	prepareGradeLevelUnset,
 	saveSuccessor,
-	restrictFINDToUsersOwnClasses,
+	restrictFINDToClassesTheUserIsAllowedToSee,
 	restrictToUsersOwnClasses,
 } = require('../hooks/classes');
 
@@ -111,6 +111,8 @@ const classesService = new Classes({
 		default: 25,
 		max: 100,
 	},
+	multi: true,
+	whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 });
 
 const classesHooks = {
@@ -119,7 +121,7 @@ const classesHooks = {
 		find: [
 			hasPermission('CLASS_VIEW'),
 			iff(isProvider('external'), restrictToCurrentSchool),
-			iff(isProvider('external'), restrictFINDToUsersOwnClasses),
+			iff(isProvider('external'), restrictFINDToClassesTheUserIsAllowedToSee),
 			sortByGradeAndOrName,
 			addCollation,
 			mapPaginationQuery,
