@@ -35,6 +35,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [26.1.0]
 
+## [26.0.11] - 2021-04-13
+
+### Changed
+
+- SC-8748 - bump feathers-mongoose from 6.3.0 to 8.3.1
+
+## [26.0.10] - 2021-04-09
+
+### Fixed
+
+- SC-8908 ldap sync: fix lock
+
 ## [26.0.9] - 2021-04-06
 
 - SC-8779 - fix partial LDAP sync

@@ -46,7 +46,6 @@ module.exports = (app) => {
 				total: courseCount,
 			};
 		}
-
 		return app.service('courses').find({
 			query: {
 				$and: [userQuery, untilQuery],
