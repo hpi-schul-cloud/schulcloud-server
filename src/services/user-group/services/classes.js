@@ -111,6 +111,8 @@ const classesService = new Classes({
 		default: 25,
 		max: 100,
 	},
+	multi: true,
+	whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 });
 
 const classesHooks = {

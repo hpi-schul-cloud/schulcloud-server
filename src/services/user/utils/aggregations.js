@@ -367,9 +367,9 @@ const createMultiDocumentAggregation = ({
 	...match
 }) => {
 	// eslint-disable-next-line no-param-reassign
-	limit = Number(limit);
+	limit = Number(limit); // TODO fails for limit==null as it results in NaN
 	// eslint-disable-next-line no-param-reassign
-	skip = Number(skip);
+	skip = Number(skip); // TODO fails for skip==null as it results in NaN
 	if (typeof match._id === 'string') {
 		match._id = ObjectId(match._id);
 	} else if (Array.isArray(match._id)) {
