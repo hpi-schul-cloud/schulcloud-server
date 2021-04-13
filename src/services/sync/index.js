@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider } = require('feathers-hooks-common');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
@@ -54,7 +55,10 @@ module.exports = function setup() {
 
 	app.use('/sync/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/sync', new SyncService());
-	app.configure(consumer);
+
+	if (Configuration.get('FEATURE_RABBITMQ_ENABLED')) {
+		app.configure(consumer);
+	}
 
 	const syncService = app.service('/sync');
 	syncService.hooks({

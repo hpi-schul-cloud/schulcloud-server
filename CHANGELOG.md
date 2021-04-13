@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.0.11] - 2021-04-13
+
+### Changed
+- SC-8898 - parallelize LDAP sync using RabbitMQ
+
 ## [26.0.10] - 2021-04-09
 
 ### Fixed
