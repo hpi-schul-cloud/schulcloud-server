@@ -9,6 +9,7 @@ import path from 'path';
 
 const ROUTE_PRAEFIX = 'v2';
 const API_PATH = 'api';
+const PORT = 3030;
 
 async function bootstrap() {
 	// load the legacy feathers/express server
@@ -48,13 +49,13 @@ async function bootstrap() {
 		.setVersion('2.0')
 		//.setLicense()
 		//.setTermsOfService()
-		// TODO .addBearerAuth()
+		.addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'JWT')
 		.build();
 	const document = SwaggerModule.createDocument(app, config);
 	SwaggerModule.setup(path.join(ROUTE_PRAEFIX, API_PATH), app, document);
 
 	await app.init();
 
-	adapter.listen(3000);
+	adapter.listen(PORT);
 }
 bootstrap();

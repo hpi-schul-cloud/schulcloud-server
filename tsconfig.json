@@ -1,13 +1,13 @@
 {
 	"compileOnSave": true,
 	"compilerOptions": {
-		"declaration": true,
+		"declaration": false,
 		"removeComments": true,
+		"sourceMap": false,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"allowSyntheticDefaultImports": true,
 		"target": "es2017",
-		"sourceMap": true,
 		"baseUrl": "./",
 		"incremental": true,
 		"allowJs": true,

@@ -14,7 +14,6 @@
 			"entryFile": "main",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
-				"assets": "**/*.yaml",
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		}

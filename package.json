@@ -48,6 +48,7 @@
 		"migration-persist": "node ./backup.js -b export -p setup/ -c migrations --sort \"{ createdAt: 1 }\"",
 		"migrate-etherpads": "node ./migrate-etherpads.js",
 		"nest:prebuild": "rimraf dist",
+		"nest:assets": "copyfiles src/**/*.yaml dist/apps/server",
 		"nest:build": "nest build",
 		"nest:clean": "shx rm -rf dist",
 		"nest:format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
