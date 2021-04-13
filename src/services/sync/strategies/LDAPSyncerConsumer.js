@@ -34,40 +34,44 @@ class LDAPSyncerConsumer {
 	}
 
 	async schoolAction(schoolData) {
+		const { ldapSchoolIdentifier, systems, name, syncId } = schoolData;
 		const schools = await this.app
 			.service('schools')
-			.find({ query: { ldapSchoolIdentifier: schoolData.ldapSchoolIdentifier, systems: { $in: schoolData.systems } } });
+			.find({ query: { ldapSchoolIdentifier, systems: { $in: systems } } });
 
 		try {
 			if (schools.total !== 0) {
-				await this.app.service('schools').update({ _id: schools.data[0]._id }, { $set: { name: schoolData.name } });
+				const schoolId = schools.data[0]._id;
+				await this.app.service('schools').update({ _id: schoolId }, { $set: { name } });
 			} else {
 				await this.app.service('schools').create(schoolData);
 			}
 			return true;
 		} catch (err) {
-			logger.error('LDAP SYNC: error while update or add a school', { err, syncId: schoolData.syncId });
+			logger.error('LDAP SYNC: error while update or add a school', { err, syncId });
 			return false;
 		}
 	}
 
 	async userAction(data) {
+		const inputUser = data.user;
+		const { schoolDn, systemId, ldapId } = inputUser;
 		const schools = await this.app
 			.service('schools')
-			.find({ query: { ldapSchoolIdentifier: data.user.schoolDn, systems: { $in: data.user.systemId } } });
+			.find({ query: { ldapSchoolIdentifier: schoolDn, systems: { $in: systemId } } });
 		if (schools.total !== 0) {
-			const userData = await this.app.service('usersModel').find({
+			const user = await this.app.service('usersModel').find({
 				query: {
-					ldapId: data.user.ldapId,
+					ldapId,
 					schoolId: schools.data[0]._id,
 					$populate: ['roles'],
 				},
 			});
 			try {
-				if (userData.total !== 0) {
-					this.updateUser(data.user, userData.data[0], data.account);
+				if (user.total !== 0) {
+					this.updateUser(inputUser, user.data[0], data.account);
 				} else {
-					this.createUser(data.user, data.account, schools.data[0]);
+					this.createUser(inputUser, data.account, schools.data[0]);
 				}
 				return true;
 			} catch (err) {
@@ -78,33 +82,33 @@ class LDAPSyncerConsumer {
 		return true;
 	}
 
-	updateUser(user, userData, account) {
+	updateUser(inputUser, user, account) {
 		const updateObject = {};
-		if (userData.firstName !== user.firstName) {
-			updateObject.firstName = user.firstName || ' ';
+		if (user.firstName !== inputUser.firstName) {
+			updateObject.firstName = inputUser.firstName || ' ';
 		}
-		if (userData.lastName !== user.lastName) {
-			updateObject.lastName = user.lastName;
+		if (user.lastName !== inputUser.lastName) {
+			updateObject.lastName = inputUser.lastName;
 		}
 		// Updating SchoolId will cause an issue. We need to discuss about it
-		if (userData.email !== user.email) {
-			updateObject.email = user.email;
+		if (user.email !== inputUser.email) {
+			updateObject.email = inputUser.email;
 		}
-		if (userData.ldapDn !== user.ldapDn) {
-			updateObject.ldapDn = user.ldapDn;
+		if (user.ldapDn !== inputUser.ldapDn) {
+			updateObject.ldapDn = inputUser.ldapDn;
 		}
 		// Role
-		const userDataRoles = userData.roles.map((r) => r.name);
-		if (!_.isEqual(userDataRoles, user.roles)) {
-			updateObject.roles = user.roles;
+		const userDataRoles = user.roles.map((r) => r.name);
+		if (!_.isEqual(userDataRoles, inputUser.roles)) {
+			updateObject.roles = inputUser.roles;
 		}
 		if (!_.isEmpty(updateObject)) {
-			this.app.service('users').patch(userData._id, updateObject);
+			this.app.service('users').patch(user._id, updateObject);
 			accountModel.update(
-				{ userId: userData._id, systemId: account.systemId },
+				{ userId: user._id, systemId: account.systemId },
 				{
 					username: account.username,
-					userId: userData._id,
+					userId: user._id,
 					systemId: account.systemId,
 					activated: true,
 				},
@@ -113,17 +117,17 @@ class LDAPSyncerConsumer {
 		}
 	}
 
-	createUser(idmUser, account, school) {
+	createUser(inputUser, account, school) {
 		this.app
 			.service('users')
 			.create({
-				firstName: idmUser.firstName,
-				lastName: idmUser.lastName,
+				firstName: inputUser.firstName,
+				lastName: inputUser.lastName,
 				schoolId: school._id,
-				email: idmUser.email,
-				ldapDn: idmUser.ldapDn,
-				ldapId: idmUser.ldapId,
-				roles: idmUser.roles,
+				email: inputUser.email,
+				ldapDn: inputUser.ldapDn,
+				ldapId: inputUser.ldapId,
+				roles: inputUser.roles,
 			})
 			.then((user) =>
 				accountModel.create({
@@ -136,29 +140,30 @@ class LDAPSyncerConsumer {
 			.catch((err) => logger.error('LDAP SYNC: error while creating User', err));
 	}
 
-	async classAction(classData) {
+	async classAction(inputClass) {
+		const { schoolDn, systemId, ldapDn, className } = inputClass;
 		const school = await this.app
 			.service('schools')
-			.find({ query: { ldapSchoolIdentifier: classData.schoolDn, systems: { $in: classData.systemId } } });
+			.find({ query: { ldapSchoolIdentifier: schoolDn, systems: { $in: systemId } } });
 		const existingClasses = await this.app.service('classes').find({
 			query: {
 				year: school.currentYear,
-				ldapDN: classData.ldapDn,
+				ldapDN: ldapDn,
 			},
 		});
 		if (existingClasses.total === 0) {
 			const newClass = {
-				name: classData.className,
+				name: className,
 				schoolId: school._id,
 				nameFormat: 'static',
-				ldapDN: classData.ldapDn,
+				ldapDN: ldapDn,
 				year: school.currentYear,
 			};
 			await this.app.service('classes').create(newClass);
 		} else {
 			const existingClass = existingClasses.data[0];
-			if (existingClass.name !== classData.className) {
-				await this.app.service('classes').patch(existingClass._id, { name: classData.className });
+			if (existingClass.name !== className) {
+				await this.app.service('classes').patch(existingClass._id, { name: className });
 			}
 		}
 	}
