@@ -1,26 +1,50 @@
 import { Injectable } from '@nestjs/common';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
+import { NewsEntity } from './entities/news.entity';
+import { NewsRepoService } from './repos/news-repo.service';
 
 @Injectable()
 export class NewsService {
-  create(createNewsDto: CreateNewsDto) {
-    return 'This action adds a new news';
-  }
+	constructor(private newsRepo: NewsRepoService) {}
 
-  findAll() {
-    return `This action returns all news`;
-  }
+	async create(createNewsDto: CreateNewsDto): Promise<NewsEntity> {
+		return {
+			title: 'title',
+			body: 'content',
+			publishedOn: new Date(),
+		};
+	}
 
-  findOne(id: number) {
-    return `This action returns a #${id} news`;
-  }
+	async findAll(): Promise<NewsEntity[]> {
+		const news = await this.newsRepo.findAll();
 
-  update(id: number, updateNewsDto: UpdateNewsDto) {
-    return `This action updates a #${id} news`;
-  }
+		return news.map((news) => {
+			return {
+				title: news.title,
+				body: news.content,
+				publishedOn: news.createdAt,
+			};
+		});
+	}
 
-  remove(id: number) {
-    return `This action removes a #${id} news`;
-  }
+	async findOne(id: string): Promise<NewsEntity> {
+		return {
+			title: 'title',
+			body: 'content',
+			publishedOn: new Date(),
+		};
+	}
+
+	async update(id: string, updateNewsDto: UpdateNewsDto): Promise<NewsEntity> {
+		return {
+			title: 'title',
+			body: 'content',
+			publishedOn: new Date(),
+		};
+	}
+
+	async remove(id: string) {
+		return id;
+	}
 }

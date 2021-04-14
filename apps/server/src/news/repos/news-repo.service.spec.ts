@@ -1,16 +1,14 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NewsService } from './news.service';
-import { NewsRepoService } from './repos/news-repo.service';
-import { News } from './repos/schemas/news.schema';
+import { NewsRepoService } from './news-repo.service';
+import { News } from './schemas/news.schema';
 
-describe('NewsService', () => {
-	let service: NewsService;
+describe('NewsRepoService', () => {
+	let service: NewsRepoService;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
-				NewsService,
 				NewsRepoService,
 				{
 					provide: getModelToken(News.name),
@@ -19,7 +17,7 @@ describe('NewsService', () => {
 			],
 		}).compile();
 
-		service = module.get<NewsService>(NewsService);
+		service = module.get<NewsRepoService>(NewsRepoService);
 	});
 
 	it('should be defined', () => {
