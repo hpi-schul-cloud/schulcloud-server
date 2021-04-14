@@ -5,9 +5,17 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"name": "Attach to NestJS",
+			"port": 9229,
+			"request": "attach",
+			"skipFiles": ["<node_internals>/**"],
+			"type": "pwa-node",
+			"restart": true
+		},
+		{
 			"type": "node",
 			"request": "launch",
-			"name": "Deubg NestJS via NPM",
+			"name": "Launch and Deubg NestJS via NPM",
 			"runtimeExecutable": "npm",
 			"runtimeArgs": ["run-script", "nest:start:debug"],
 			"port": 9229,
