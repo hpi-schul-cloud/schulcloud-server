@@ -9,6 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.0.12] - 2021-04-14
+
+### Fixed
+- SC-8917 - verify configuration missing school
+
 ## [26.0.11] - 2021-04-13
 
 ### Changed
