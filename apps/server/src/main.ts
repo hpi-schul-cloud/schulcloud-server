@@ -45,7 +45,7 @@ async function bootstrap() {
 	// DTO's and Entity properties have to use @ApiProperty decorator to add their properties // TODO make this default?
 	const config = new DocumentBuilder()
 		.setTitle('HPI Schul-Cloud Server API')
-		.setDescription('This is v2 of the server NestJS')
+		.setDescription('This is /v2 of the server NestJS')
 		.setVersion('2.0')
 		//.setLicense()
 		//.setTermsOfService()
