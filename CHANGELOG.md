@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.0.12] - 2021-04-14
+
+### Changed
+
+- SC-8929 - increase performance for alert requests
+
 ## [26.0.11] - 2021-04-13
 
 ### Changed
