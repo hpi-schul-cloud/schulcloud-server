@@ -1,7 +1,7 @@
 import { Controller, Post, UseGuards, Request, Body } from '@nestjs/common';
 import { LocalAuthGuard } from './auth-local.guard';
 import { AuthService } from './auth.service';
-import { IsAuthenticated } from './DTO/authenticated.entity';
+import { AuthEntity } from './Entities/auth.entity';
 import { UserDTO } from './DTO/user.dto';
 
 @Controller('auth')
@@ -14,7 +14,7 @@ export class AuthController {
 	 */
 	@UseGuards(LocalAuthGuard)
 	@Post('login')
-	async login(@Request() req, @Body() _user: UserDTO): Promise<IsAuthenticated> {
+	async login(@Request() req, @Body() _user: UserDTO): Promise<AuthEntity> {
 		return this.authService.login(req.user);
 	}
 }
