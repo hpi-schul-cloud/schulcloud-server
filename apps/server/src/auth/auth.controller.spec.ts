@@ -1,18 +1,20 @@
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { jwtConstants } from './constants';
+import { jwtOptionsProvider } from './jwt-options.provider';
+import { LocalStrategy } from './strategies/local.strategy';
 
 describe('AuthController', () => {
 	let controller: AuthController;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [UsersModule],
+			imports: [UsersModule, PassportModule],
 			controllers: [AuthController],
-			providers: [AuthService, JwtService],
+			providers: [AuthService, LocalStrategy, JwtService, jwtOptionsProvider],
 		}).compile();
 
 		controller = module.get<AuthController>(AuthController);

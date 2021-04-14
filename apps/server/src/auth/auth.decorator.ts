@@ -1,6 +1,6 @@
 import { applyDecorators, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { JwtAuthGuard } from './auth-jwt.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 /**
  * Authentication Decorator taking care of authentication and extending openAPI spec.
