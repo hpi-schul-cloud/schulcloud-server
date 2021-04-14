@@ -5,9 +5,7 @@ const sinon = require('sinon');
 
 const { LDAP_SYNC_ACTIONS } = require('../../../../src/services/sync/strategies/LDAPSyncer');
 const { LDAPSyncerConsumer } = require('../../../../src/services/sync/strategies/LDAPSyncerConsumer');
-const { ClassRepo, UserRepo, AccountRepo } = require('../../../../src/services/sync/repo');
-const schoolRepo = require('../../../../src/components/school/repo/school.repo');
-
+const { SchoolRepo, ClassRepo, UserRepo, AccountRepo } = require('../../../../src/services/sync/repo');
 const { BadRequest } = require('../../../../src/errors');
 
 const appPromise = require('../../../../src/app');
@@ -35,6 +33,7 @@ describe('Ldap Syncer Consumer', () => {
 		let ldapConsumer;
 
 		before(() => {
+			const schoolRepo = new SchoolRepo(app);
 			ldapConsumer = new LDAPSyncerConsumer(schoolRepo);
 		});
 
@@ -71,25 +70,27 @@ describe('Ldap Syncer Consumer', () => {
 
 	describe('schoolAction: ', () => {
 		it('create school for new school', async () => {
+			const schoolRepo = new SchoolRepo(app);
 			const findByLdapIdAndSystemStub = sandbox.stub(schoolRepo, 'findByLdapIdAndSystem');
-			findByLdapIdAndSystemStub.returns({ total: 0 });
+			findByLdapIdAndSystemStub.returns(undefined);
 
 			const createSchoolStub = sandbox.stub(schoolRepo, 'create');
 
-			const ldapConsumer = new LDAPSyncerConsumer();
+			const ldapConsumer = new LDAPSyncerConsumer(schoolRepo);
 			const result = await ldapConsumer.schoolAction({ name: 'Test School' });
 			expect(result).to.be.equal(true);
 			expect(createSchoolStub.calledOnce).to.be.true;
 		});
 
 		it('update school name for existing school', async () => {
+			const schoolRepo = new SchoolRepo(app);
 			const findByLdapIdAndSystemStub = sandbox.stub(schoolRepo, 'findByLdapIdAndSystem');
 			const schoolId = 1;
-			findByLdapIdAndSystemStub.returns({ total: 1, data: [{ name: 'Test School', _id: schoolId }] });
+			findByLdapIdAndSystemStub.returns({ name: 'Test School', _id: schoolId });
 
 			const updateSchoolStub = sandbox.stub(schoolRepo, 'updateName');
 
-			const ldapConsumer = new LDAPSyncerConsumer();
+			const ldapConsumer = new LDAPSyncerConsumer(schoolRepo);
 			const newSchoolName = 'New Test School';
 			const result = await ldapConsumer.schoolAction({ name: newSchoolName });
 			expect(result).to.be.equal(true);

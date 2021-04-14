@@ -63,34 +63,4 @@ describe('school repository', () => {
 			expect(updatedSchool).to.deep.equal(expectedSchool);
 		});
 	});
-
-	describe('create', () => {
-		it('should successfully create new school', async () => {
-			const schoolName = 'Test School';
-			const res = await schoolRepo.create({ name: schoolName });
-			expect(res._id).to.be.not.undefined;
-			expect(res.name).to.be.equal(schoolName);
-
-			await schoolRepo.remove(res);
-		});
-	});
-
-	describe('update', () => {
-		it('should successfully update school name', async () => {
-			const schoolName = 'New Test School';
-			const school = await testObjects.createTestSchool({});
-			const res = await schoolRepo.updateName(school._id, schoolName);
-			expect(res.name).to.be.equal(schoolName);
-		});
-	});
-
-	describe('find by ldap and system', async () => {
-		it('should find school by ldap and system', async () => {
-			const ldapSchoolIdentifier = 'LDAP_ID';
-			const system = await testObjects.createTestSystem();
-			const school = await testObjects.createTestSchool({ ldapSchoolIdentifier, systems: [system._id] });
-			const res = await schoolRepo.findByLdapIdAndSystem(ldapSchoolIdentifier, system._id);
-			expect(res._id.toString()).to.be.equal(school._id.toString());
-		});
-	});
 });

@@ -1,15 +1,15 @@
 const _ = require('lodash');
 const { getChannel } = require('../../../utils/rabbitmq');
 const logger = require('../../../logger');
-const { ClassRepo, UserRepo, AccountRepo } = require('../repo');
-const schoolRepo = require('../../../components/school/repo/school.repo');
+const { ClassRepo, UserRepo, AccountRepo, SchoolRepo } = require('../repo');
 
 const { BadRequest } = require('../../../errors');
 
 const { LDAP_SYNC_ACTIONS, LDAP_SYNC_CHANNEL_NAME } = require('./LDAPSyncer');
 
 class LDAPSyncerConsumer {
-	constructor(classRepo, userRepo, accountRepo) {
+	constructor(schoolRepo, classRepo, userRepo, accountRepo) {
+		this.schoolRepo = schoolRepo;
 		this.classRepo = classRepo;
 		this.userRepo = userRepo;
 		this.accountRepo = accountRepo;
@@ -39,14 +39,14 @@ class LDAPSyncerConsumer {
 	}
 
 	async schoolAction(schoolData) {
-		const school = await schoolRepo.findByLdapIdAndSystem(schoolData.ldapSchoolIdentifier, schoolData.systems);
+		const school = await this.schoolRepo.findByLdapIdAndSystem(schoolData.ldapSchoolIdentifier, schoolData.systems);
 
 		try {
 			if (school !== undefined) {
 				const schoolId = school._id;
-				await schoolRepo.updateName(schoolId, schoolData.name);
+				await this.schoolRepo.updateName(schoolId, schoolData.name);
 			} else {
-				await schoolRepo.create(schoolData);
+				await this.schoolRepo.create(schoolData);
 			}
 			return true;
 		} catch (err) {
@@ -56,14 +56,14 @@ class LDAPSyncerConsumer {
 	}
 
 	async userAction(data) {
-		const school = await schoolRepo.findByLdapIdAndSystem(data.user.schoolDn, data.user.systemId);
+		const school = await this.schoolRepo.findByLdapIdAndSystem(data.user.schoolDn, data.user.systemId);
 		if (school !== undefined) {
 			const userData = await this.userRepo.findByLdapIdAndSchool(data.user.ldapId, school._id);
 			try {
 				if (userData.total !== 0) {
 					this.updateUser(data.user, userData.data[0], data.account);
 				} else {
-					await this.createUser(data.user, data.account, school._id);
+					await this.createUser(data.user, data.account);
 				}
 				return true;
 			} catch (err) {
@@ -102,7 +102,8 @@ class LDAPSyncerConsumer {
 
 	async createUser(idmUser, account, schoolId) {
 		try {
-			const user = await this.userRepo.create(idmUser, account, schoolId);
+			idmUser.schoolId = schoolId;
+			const user = await this.userRepo.create(idmUser);
 			await this.accountRepo.create(user._id, account);
 		} catch (err) {
 			logger.error('LDAP SYNC: error while creating User', err);
@@ -111,22 +112,25 @@ class LDAPSyncerConsumer {
 	}
 
 	async classAction(classData) {
-		const school = await schoolRepo.findByLdapIdAndSystem(classData.schoolDn, classData.systemId);
-		const existingClasses = await this.classRepo.findByYearAndLdapDn(school.currentYear, classData.ldapDn);
+		const school = await this.schoolRepo.findByLdapIdAndSystem(classData.schoolDn, classData.systemId);
 
-		if (existingClasses.total === 0) {
-			const newClass = {
-				name: classData.className,
-				schoolId: school._id,
-				nameFormat: 'static',
-				ldapDN: classData.ldapDn,
-				year: school.currentYear,
-			};
-			this.classRepo.create(newClass);
-		} else {
-			const existingClass = existingClasses.data[0];
-			if (existingClass.name !== classData.className) {
-				this.classRepo.updateName(existingClass._id, classData.className);
+		if (school !== undefined) {
+			const existingClasses = await this.classRepo.findByYearAndLdapDn(school.currentYear, classData.ldapDn);
+
+			if (existingClasses.total === 0) {
+				const newClass = {
+					name: classData.className,
+					schoolId: school._id,
+					nameFormat: 'static',
+					ldapDN: classData.ldapDn,
+					year: school.currentYear,
+				};
+				this.classRepo.create(newClass);
+			} else {
+				const existingClass = existingClasses.data[0];
+				if (existingClass.name !== classData.className) {
+					this.classRepo.updateName(existingClass._id, classData.className);
+				}
 			}
 		}
 	}
@@ -137,7 +141,8 @@ const setupConsumer = (app) => {
 	const classRepo = new ClassRepo(app);
 	const userRepo = new UserRepo(app);
 	const accountRepo = new AccountRepo(app);
-	const consumer = new LDAPSyncerConsumer(classRepo, userRepo, accountRepo);
+	const schoolRepo = new SchoolRepo(app);
+	const consumer = new LDAPSyncerConsumer(schoolRepo, classRepo, userRepo, accountRepo);
 
 	const handleMessage = (incomingMessage) =>
 		consumer
