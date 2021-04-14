@@ -1,5 +1,4 @@
-import { Controller, Get, Request } from '@nestjs/common';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { ServerService } from './server.service';
 
 @Controller()
@@ -10,12 +9,5 @@ export class ServerController {
 	@Get()
 	getHello(): string {
 		return this.serverService.getHello();
-	}
-
-	/** default route to test authenticated access */
-	// @UseGuards(JwtAuthGuard)
-	@Get('profile')
-	getProfile(@Request() req) {
-		return req.user;
 	}
 }
