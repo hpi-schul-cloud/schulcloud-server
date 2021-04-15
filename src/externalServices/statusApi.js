@@ -5,7 +5,7 @@ const statusApi = () => {
 	const api = new Api({
 		baseURL: Configuration.get('ALERT_STATUS_API_URL'),
 	});
-
+	// TODO: if possible request only related time not all
 	const getIncidents = (sort = 'id') => {
 		return api.get('/incidents', { params: { sort } }).then((response) => response.data);
 	};
