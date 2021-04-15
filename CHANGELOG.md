@@ -35,6 +35,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [26.1.0]
 
+## [26.0.13] - 2021-04-15
+
+### Fixed
+
+- SC-8917 - verify configuration missing school
+
+## [26.0.12] - 2021-04-14
+
+### Changed
+
+- SC-8929 - increase performance for alert requests
+
 ## [26.0.11] - 2021-04-13
 
 ### Changed
@@ -103,8 +115,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
-- SC-6679 - fixed table styling in topic text-component
-- SC-8534 - fix registration link generation
 - SC-8682 - fix students are editable in externally managed schools
 - SC-8534 fix registration link generation
 - Allow sorting after search
@@ -326,10 +336,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7763 - adds searchable feature flag for lernstore.
 - SC-8020 - adds collections filter to edu-sharing service
 - SC-8260 - new team indexes and migration to add this
-
-### Fixed
-
-- SC-8230 - fix deletion of teachers via new route
 
 ### Removed
 
