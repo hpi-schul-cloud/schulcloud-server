@@ -65,6 +65,9 @@ async function bootstrap() {
 	const apiDocsPath = path.join(ROUTE_PRAEFIX, API_PATH);
 	SwaggerModule.setup(apiDocsPath, app, document);
 
+	// setup legacy app since that's not called automatically by app.listen()
+	await legacyApp.setup();
+
 	await app.init();
 
 	adapter.listen(PORT);
