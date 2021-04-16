@@ -36,7 +36,8 @@ describe('deltaSyncUtils', () => {
 		});
 
 		it('adds a timestamp based filter if correct format is used', () => {
-			expect(filterForModifiedEntities('11111111111111Z', '(foo=bar)')).to.equal(
+			const school = { ldapLastSync: '11111111111111Z' };
+			expect(filterForModifiedEntities(school, '(foo=bar)')).to.equal(
 				'(&(foo=bar)(|(!(modifyTimestamp=*))(!(modifyTimestamp<=11111111111111Z))))'
 			);
 		});

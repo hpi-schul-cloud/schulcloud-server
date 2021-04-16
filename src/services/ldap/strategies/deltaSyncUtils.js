@@ -28,15 +28,16 @@ const getModifiedFilter = (timestamp, attributeName = 'modifyTimestamp') =>
  * undefined or does not match the correct format, the base filter is returned. Otherwise,
  * the base filter is combined with a filter for recently updated entities (i.e. updated
  * since lastChange).
- * @param {String} lastChange time of last modification, formatted as "YYYYMMDDHHmmssZ"
+ * @param school
  * @param {String} existingFilter optional LDAP-compatible filter condition (including
  * outer parens) [defaults to '']
  * @example
- * 	filterForModifiedEntities(); // => ''
- * 	filterForModifiedEntities('20201020000000Z', '(objectClass=person)');
- * 	// => '(&(objectClass=person)(|(!(modifyTimestamp=*))(modifyTimestamp>=20201020000000Z)))'
+ *    filterForModifiedEntities(); // => ''
+ *    filterForModifiedEntities('20201020000000Z', '(objectClass=person)');
+ *    // => '(&(objectClass=person)(|(!(modifyTimestamp=*))(modifyTimestamp>=20201020000000Z)))'
  */
-const filterForModifiedEntities = (lastChange, existingFilter = '') => {
+const filterForModifiedEntities = (school, existingFilter = '') => {
+	const lastChange = school && school.ldapLastSync;
 	if (!/\d{14}Z/.test(lastChange)) {
 		return existingFilter;
 	}
