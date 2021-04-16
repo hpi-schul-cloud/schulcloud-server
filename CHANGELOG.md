@@ -9,6 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.0.14] - 2021-04-16
+
+- SC-8934 - no more autosync for the migrations for the mongodb
+
 ## [26.0.13] - 2021-04-15
 
 ### Fixed
