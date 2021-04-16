@@ -1,13 +1,14 @@
 import { Controller, Get, UseGuards, Request } from '@nestjs/common';
-import { Authenticate } from '../auth/auth.decorator';
-import { UserEntity } from './Entities/user.entity';
+import { Authenticate, User } from '../auth/auth.decorator';
+import { JwtPayload } from '../auth/interfaces/jwt-payload';
+import { UserEntity } from './entities/user.entity';
 
 @Authenticate('jwt')
 @Controller('users')
 export class UsersController {
 	/** default route to test authenticated access */
 	@Get('profile')
-	getProfile(@Request() req): UserEntity {
-		return new UserEntity(req.user);
+	getProfile(@User() user: JwtPayload): UserEntity {
+		return new UserEntity(user);
 	}
 }

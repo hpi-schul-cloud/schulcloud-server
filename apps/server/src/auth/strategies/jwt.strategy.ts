@@ -10,11 +10,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		super({
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 			ignoreExpiration: false,
-			secretOrKey: jwtConstants.secret, // TODO change to PEM-encoded public key
+			secretOrKey: jwtConstants.secret,
+			...jwtConstants.jwtOptions,
 		});
 	}
 
 	async validate(payload: JwtPayload) {
-		return { userId: payload.sub, username: payload.username };
+		// TODO check jwt is whitelisted
+		// TODO check user exist/is active
+		return payload;
 	}
 }

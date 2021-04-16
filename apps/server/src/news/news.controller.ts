@@ -4,8 +4,10 @@ import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { NewsEntity } from './entities/news.entity';
+import { Authenticate } from '../auth/auth.decorator';
 
 @ApiTags('News')
+@Authenticate('jwt')
 @Controller('news')
 export class NewsController {
 	constructor(private readonly newsService: NewsService) {}

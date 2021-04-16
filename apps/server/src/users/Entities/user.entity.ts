@@ -1,13 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { JwtPayload } from '../../auth/interfaces/jwt-payload';
 
 export class UserEntity {
-	constructor(user: UserEntity) {
+	constructor(payload: JwtPayload) {
 		// TODO Builder
-		this.userId = user.userId;
-		this.username = user.username;
+		this.userId = payload.userId;
+		this.schoolId = payload.schoolId;
+		this.roles = payload.roles;
 	}
 	@ApiProperty()
 	userId: string;
 	@ApiProperty()
-	username: string;
+	schoolId: string;
+	@ApiProperty()
+	roles: string[];
 }
