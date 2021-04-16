@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { User, UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload';
@@ -18,9 +18,6 @@ export class AuthService {
 	}
 
 	async login(user: any): Promise<AuthEntity> {
-		// const payload: JwtPayload = { username: user.username, sub: user.userId };
-		return {
-			access_token: '...',
-		} as AuthEntity;
+		throw new NotImplementedException();
 	}
 }

@@ -1,8 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { ObjectId } from 'mongoose';
-import { News } from '../interfaces/news.interface';
+import { Document, LeanDocument, ObjectId } from 'mongoose';
 
-export class NewsEntity {
+/** describes the news schema */
+export class NewsDocument extends Document {
 	schoolId: ObjectId;
 
 	title: string;
@@ -23,3 +22,5 @@ export class NewsEntity {
 	target?: ObjectId;
 	targetModel?: string;
 }
+
+export type News = LeanDocument<NewsDocument>;

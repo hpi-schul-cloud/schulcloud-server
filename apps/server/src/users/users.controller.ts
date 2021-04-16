@@ -1,5 +1,6 @@
 import { Controller, Get, UseGuards, Request } from '@nestjs/common';
-import { Authenticate, User } from '../auth/auth.decorator';
+import { Authenticate, CurrentUser } from '../auth/auth.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { JwtPayload } from '../auth/interfaces/jwt-payload';
 import { UserEntity } from './entities/user.entity';
 
@@ -8,7 +9,7 @@ import { UserEntity } from './entities/user.entity';
 export class UsersController {
 	/** default route to test authenticated access */
 	@Get('profile')
-	getProfile(@User() user: JwtPayload): UserEntity {
+	getProfile(@CurrentUser() user: JwtPayload): UserEntity {
 		return new UserEntity(user);
 	}
 }

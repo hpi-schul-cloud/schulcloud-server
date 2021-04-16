@@ -24,7 +24,7 @@ export class NewsController {
 
 	@Get(':id')
 	findOne(@Param('id') id: string): Promise<NewsEntity> {
-		return this.newsService.findOne(id);
+		return this.newsService.findOneById(id);
 	}
 
 	@Patch(':id')

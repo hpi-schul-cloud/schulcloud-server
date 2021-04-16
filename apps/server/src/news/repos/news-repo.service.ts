@@ -1,25 +1,24 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { CreateNewsDto } from '../dto/create-news.dto';
 import { UpdateNewsDto } from '../dto/update-news.dto';
-import { News, NewsDocument } from './schemas/news.schema';
+import { News, NewsDocument } from '../interfaces/news.interface';
 
 @Injectable()
 export class NewsRepoService {
-	constructor(@InjectModel(News.name) private readonly newsModel: Model<NewsDocument>) {}
+	constructor(@Inject('NEWS_MODEL') private readonly newsModel: Model<NewsDocument>) {}
 
-	create(createNewsDto: CreateNewsDto): Promise<News> {
+	create(createNewsDto: CreateNewsDto): Promise<NewsDocument> {
 		const createdNews = new this.newsModel(createNewsDto);
 		return createdNews.save();
 	}
 
 	findAll(): Promise<News[]> {
-		return this.newsModel.find().exec();
+		return this.newsModel.find().lean().exec();
 	}
 
-	findOne(id: string): Promise<News> {
-		return this.newsModel.findById(id).exec();
+	findOneById(id: string): Promise<News> {
+		return this.newsModel.findById(id).lean().exec();
 	}
 
 	update(id: string, updateNewsDto: UpdateNewsDto) {

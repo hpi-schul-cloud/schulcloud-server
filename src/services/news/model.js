@@ -91,6 +91,7 @@ const newsHistoryModel = mongoose.model('newshistory', newsHistorySchema);
 
 module.exports = {
 	newsModel,
+	newsSchema,
 	targetModels,
 	newsHistoryModel,
 	newsPermissions,
