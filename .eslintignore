@@ -4,3 +4,4 @@
 # ignore database dumps, keep format from export
 backup/setup/*.json
 migrations/helpers/*.json
+dist
