@@ -1,7 +1,7 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { NewsDocument } from '../interfaces/news.interface';
 import { NewsRepoService } from './news-repo.service';
-import { News } from './schemas/news.schema';
 
 describe('NewsRepoService', () => {
 	let service: NewsRepoService;
@@ -11,7 +11,7 @@ describe('NewsRepoService', () => {
 			providers: [
 				NewsRepoService,
 				{
-					provide: getModelToken(News.name),
+					provide: getModelToken(NewsDocument.name),
 					useValue: {},
 				},
 			],
