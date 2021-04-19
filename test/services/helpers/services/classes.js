@@ -21,6 +21,7 @@ const createTestClass = (appPromise, opt) => async ({
 	gradeLevel = undefined,
 	year = undefined,
 	predecessor = undefined,
+	ldapDN = undefined,
 }) => {
 	const app = await appPromise;
 	const res = await app.service('classes').create({
@@ -32,6 +33,7 @@ const createTestClass = (appPromise, opt) => async ({
 		gradeLevel,
 		year,
 		predecessor,
+		ldapDN,
 	});
 	createdClassesIds.push(res._id.toString());
 	return res;

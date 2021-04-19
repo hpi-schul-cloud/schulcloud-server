@@ -1,6 +1,6 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const { SchoolRepo } = require('../../../../src/services/sync/repo');
+const SchoolRepo = require('../../../../src/services/sync/repo/school.repo');
 const { schoolModel } = require('../../../../src/services/school/model');
 
 const appPromise = require('../../../../src/app');
@@ -13,12 +13,10 @@ const { expect } = chai;
 describe('school repo', () => {
 	let app;
 	let server;
-	let repo;
 
 	before(async () => {
 		app = await appPromise;
 		server = await app.listen(0);
-		repo = new SchoolRepo(app);
 	});
 
 	beforeEach(async () => {});
@@ -33,7 +31,7 @@ describe('school repo', () => {
 
 	it('should successfully create new school', async () => {
 		const schoolName = 'Test School';
-		const res = await repo.create({ name: schoolName });
+		const res = await SchoolRepo.createSchool({ name: schoolName });
 		expect(res._id).to.be.not.undefined;
 		expect(res.name).to.be.equal(schoolName);
 
@@ -43,31 +41,20 @@ describe('school repo', () => {
 	it('should successfully update school name', async () => {
 		const schoolName = 'New Test School';
 		const school = await testObjects.createTestSchool({});
-		const res = await repo.updateName(school._id, schoolName);
+		const res = await SchoolRepo.updateSchoolName(school._id, schoolName);
 		expect(res.name).to.be.equal(schoolName);
 	});
 
-	it('should return undefined for empty parameters', async () => {
-		const res = await repo.findByLdapIdAndSystem(undefined, undefined);
-		expect(res).to.be.undefined;
+	it('should return null if not found', async () => {
+		const res = await SchoolRepo.findSchoolByLdapIdAndSystem('not existed dn', undefined);
+		expect(res).to.be.null;
 	});
 
 	it('should find school by ldap and system', async () => {
 		const ldapSchoolIdentifier = 'LDAP_ID';
 		const system = await testObjects.createTestSystem();
 		const school = await testObjects.createTestSchool({ ldapSchoolIdentifier, systems: [system._id] });
-		const res = await repo.findByLdapIdAndSystem(ldapSchoolIdentifier, system._id);
+		const res = await SchoolRepo.findSchoolByLdapIdAndSystem(ldapSchoolIdentifier, system._id);
 		expect(res._id.toString()).to.be.equal(school._id.toString());
-	});
-
-	it('should return school from cache for same ldap and system', async () => {
-		const ldapSchoolIdentifier = 'LDAP_ID';
-		const system = await testObjects.createTestSystem();
-		await testObjects.createTestSchool({ ldapSchoolIdentifier, systems: [system._id] });
-		const res = await repo.findByLdapIdAndSystem(ldapSchoolIdentifier, system._id);
-		expect(res.fromCache).to.be.undefined;
-
-		const res2 = await repo.findByLdapIdAndSystem(ldapSchoolIdentifier, system._id);
-		expect(res2.fromCache).to.be.true;
 	});
 });

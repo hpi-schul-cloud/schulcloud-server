@@ -1,20 +1,15 @@
 const _ = require('lodash');
 const { getChannel } = require('../../../utils/rabbitmq');
 const logger = require('../../../logger');
-const { ClassRepo, UserRepo, AccountRepo, SchoolRepo } = require('../repo');
+const { createUserAndAccount, updateUserAndAccount, findByLdapIdAndSchool } = require('../repo/user.repo');
+const { createClass, updateClassName, findClassByYearAndLdapDn } = require('../repo/class.repo');
+const { createSchool, updateSchoolName, findSchoolByLdapIdAndSystem } = require('../repo/school.repo');
 
 const { BadRequest } = require('../../../errors');
 
 const { LDAP_SYNC_ACTIONS, LDAP_SYNC_CHANNEL_NAME } = require('./LDAPSyncer');
 
 class LDAPSyncerConsumer {
-	constructor(schoolRepo, classRepo, userRepo, accountRepo) {
-		this.schoolRepo = schoolRepo;
-		this.classRepo = classRepo;
-		this.userRepo = userRepo;
-		this.accountRepo = accountRepo;
-	}
-
 	async executeMessage(incomingMessage) {
 		const content = JSON.parse(incomingMessage.content.toString());
 		logger.debug(`Incoming ${content.action} ${content.syncId}: ${JSON.stringify(content.data).substring(0, 100)}...`);
@@ -39,14 +34,14 @@ class LDAPSyncerConsumer {
 	}
 
 	async schoolAction(schoolData) {
-		const school = await this.schoolRepo.findByLdapIdAndSystem(schoolData.ldapSchoolIdentifier, schoolData.systems);
+		const school = await findSchoolByLdapIdAndSystem(schoolData.ldapSchoolIdentifier, schoolData.systems);
 
 		try {
 			if (school !== undefined) {
 				const schoolId = school._id;
-				await this.schoolRepo.updateName(schoolId, schoolData.name);
+				await updateSchoolName(schoolId, schoolData.name);
 			} else {
-				await this.schoolRepo.create(schoolData);
+				await createSchool(schoolData);
 			}
 			return true;
 		} catch (err) {
@@ -56,16 +51,14 @@ class LDAPSyncerConsumer {
 	}
 
 	async userAction(data) {
-		const school = await this.schoolRepo.findByLdapIdAndSystem(data.user.schoolDn, data.user.systemId);
+		const school = await findSchoolByLdapIdAndSystem(data.user.schoolDn, data.user.systemId);
 		if (school !== undefined) {
-			const userData = await this.userRepo.findByLdapIdAndSchool(data.user.ldapId, school._id);
+			const userData = await findByLdapIdAndSchool(data.user.ldapId, school._id);
 			try {
 				if (userData.total !== 0) {
-					this.updateUser(data.user, userData.data[0], data.account);
-				} else {
-					await this.createUser(data.user, data.account);
+					return this.updateUser(data.user, userData.data[0], data.account);
 				}
-				return true;
+				return this.createUser(data.user, data.account, school._id);
 			} catch (err) {
 				logger.error('LDAP SYNC: error while update or add a user', { err, syncId: data.syncId });
 				throw err;
@@ -74,7 +67,7 @@ class LDAPSyncerConsumer {
 		return true;
 	}
 
-	updateUser(user, userData, account) {
+	async updateUser(user, userData, account) {
 		const updateObject = {};
 		if (userData.firstName !== user.firstName) {
 			updateObject.firstName = user.firstName || ' ';
@@ -95,16 +88,15 @@ class LDAPSyncerConsumer {
 			updateObject.roles = user.roles;
 		}
 		if (!_.isEmpty(updateObject)) {
-			this.userRepo.patch(userData._id, updateObject);
-			this.accountRepo.update(userData._id, account);
+			return updateUserAndAccount(userData._id, updateObject, account);
 		}
+		return true;
 	}
 
 	async createUser(idmUser, account, schoolId) {
 		try {
 			idmUser.schoolId = schoolId;
-			const user = await this.userRepo.create(idmUser);
-			await this.accountRepo.create(user._id, account);
+			return createUserAndAccount(idmUser, account);
 		} catch (err) {
 			logger.error('LDAP SYNC: error while creating User', err);
 			throw err;
@@ -112,10 +104,10 @@ class LDAPSyncerConsumer {
 	}
 
 	async classAction(classData) {
-		const school = await this.schoolRepo.findByLdapIdAndSystem(classData.schoolDn, classData.systemId);
+		const school = await findSchoolByLdapIdAndSystem(classData.schoolDn, classData.systemId);
 
 		if (school !== undefined) {
-			const existingClasses = await this.classRepo.findByYearAndLdapDn(school.currentYear, classData.ldapDn);
+			const existingClasses = await findClassByYearAndLdapDn(school.currentYear, classData.ldapDn);
 
 			if (existingClasses.total === 0) {
 				const newClass = {
@@ -125,24 +117,20 @@ class LDAPSyncerConsumer {
 					ldapDN: classData.ldapDn,
 					year: school.currentYear,
 				};
-				this.classRepo.create(newClass);
-			} else {
-				const existingClass = existingClasses.data[0];
-				if (existingClass.name !== classData.className) {
-					this.classRepo.updateName(existingClass._id, classData.className);
-				}
+				return createClass(newClass);
+			}
+			const existingClass = existingClasses.data[0];
+			if (existingClass.name !== classData.className) {
+				return updateClassName(existingClass._id, classData.className);
 			}
 		}
+		return true;
 	}
 }
 
-const setupConsumer = (app) => {
+const setupConsumer = () => {
 	const syncQueue = getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
-	const classRepo = new ClassRepo(app);
-	const userRepo = new UserRepo(app);
-	const accountRepo = new AccountRepo(app);
-	const schoolRepo = new SchoolRepo(app);
-	const consumer = new LDAPSyncerConsumer(schoolRepo, classRepo, userRepo, accountRepo);
+	const consumer = new LDAPSyncerConsumer();
 
 	const handleMessage = (incomingMessage) =>
 		consumer
@@ -156,7 +144,7 @@ const setupConsumer = (app) => {
 			})
 			.finally(() => syncQueue.ackMessage(incomingMessage));
 
-	syncQueue.consumeQueue(handleMessage, { noAck: false });
+	return syncQueue.consumeQueue(handleMessage, { noAck: false });
 };
 
 module.exports = {

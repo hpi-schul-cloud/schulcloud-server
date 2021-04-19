@@ -1,42 +1,27 @@
-class SchoolRepo {
-	constructor(app) {
-		this.app = app;
-		this.service = this.app.service('schools');
-		this.schoolCache = {};
-	}
+const { schoolModel } = require('../../school/model');
 
-	create(schoolData) {
-		return this.service.create(schoolData);
-	}
+const createSchool = async (schoolData) => {
+	return schoolModel.create(schoolData);
+};
 
-	updateName(schoolId, schoolName) {
-		return this.service.patch({ _id: schoolId }, { name: schoolName });
-	}
+const updateSchoolName = async (schoolId, schoolName) => {
+	return schoolModel.findOneAndUpdate({ _id: schoolId }, { name: schoolName }, { new: true }).lean().exec();
+};
 
-	async findByLdapIdAndSystem(ldapSchoolIdentifier, systems) {
-		const schoolFromCache = this.schoolCache[ldapSchoolIdentifier];
-		if (schoolFromCache === undefined) {
-			const schools = await this.service.find({
-				query: {
-					ldapSchoolIdentifier,
-					systems: { $in: systems },
-				},
-			});
-			if (schools.total !== 0) {
-				const school = schools.data[0];
-				if (school !== undefined) {
-					this.schoolCache[ldapSchoolIdentifier] = school;
-					return Promise.resolve(school);
-				}
-			}
-		}
-		schoolFromCache.fromCache = true;
-		return Promise.resolve(schoolFromCache);
-	}
+const findSchoolByLdapIdAndSystem = async (ldapSchoolIdentifier, systems) => {
+	return schoolModel
+		.findOne({
+			ldapSchoolIdentifier,
+			systems: { $in: systems },
+		})
+		.lean()
+		.exec();
+};
 
-	cleanCache() {
-		this.schoolCache = {};
-	}
-}
+const SchoolRepo = {
+	createSchool,
+	updateSchoolName,
+	findSchoolByLdapIdAndSystem,
+};
 
 module.exports = SchoolRepo;
