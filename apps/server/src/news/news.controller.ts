@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+	Controller,
+	Get,
+	Post,
+	Body,
+	Patch,
+	Param,
+	Delete,
+	UseInterceptors,
+	ClassSerializerInterceptor,
+} from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
@@ -9,6 +19,7 @@ import { Authenticate } from '../auth/auth.decorator';
 @ApiTags('News')
 @Authenticate('jwt')
 @Controller('news')
+@UseInterceptors(ClassSerializerInterceptor)
 export class NewsController {
 	constructor(private readonly newsService: NewsService) {}
 
@@ -23,7 +34,7 @@ export class NewsController {
 	}
 
 	@Get(':id')
-	findOne(@Param('id') id: string): Promise<NewsEntity> {
+	findOne(@Param('id') id: string): Promise<Partial<NewsEntity>> {
 		return this.newsService.findOneById(id);
 	}
 

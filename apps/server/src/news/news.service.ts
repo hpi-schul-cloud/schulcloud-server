@@ -18,20 +18,15 @@ export class NewsService {
 		};
 	}
 
-	async findAll(): Promise<News[]> {
+	async findAll(): Promise<NewsEntity[]> {
 		const news = await this.newsRepo.findAll();
 		// return news;
-		return news.map((news) => {
-			return {
-				...news,
-				test: 'huhu',
-			};
-		});
+		return news.map((news) => new NewsEntity(news));
 	}
 
 	async findOneById(id: string): Promise<News> {
 		const news = await this.newsRepo.findOneById(id);
-		return news; // TODO filter props pipe
+		return new NewsEntity(news); // TODO filter props pipe
 	}
 
 	async update(id: string, updateNewsDto: UpdateNewsDto): Promise<any> {

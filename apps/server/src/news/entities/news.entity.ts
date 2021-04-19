@@ -1,8 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude, Transform } from 'class-transformer';
 import { ObjectId } from 'mongoose';
-import { News } from '../interfaces/news.interface';
 
-export class NewsEntity {
+class DocumentEntity {
+	@Transform((value) => String(value), { toPlainOnly: true })
+	_id: ObjectId;
+	constructor(partial: Partial<DocumentEntity>) {
+		Object.assign(this, partial);
+	}
+}
+
+export class NewsEntity extends DocumentEntity {
+	@Transform((value) => String(value), { toPlainOnly: true })
 	schoolId: ObjectId;
 
 	title: string;
@@ -15,11 +24,19 @@ export class NewsEntity {
 	createdAt: Date;
 	updatedAt?: Date;
 
+	@Exclude()
 	externalId?: string;
+	@Exclude()
 	source: 'internal' | 'rss';
+	@Exclude()
 	sourceDescription?: string;
 
 	// target and targetModel must exist or not exist
 	target?: ObjectId;
 	targetModel?: string;
+
+	constructor(partial: Partial<NewsEntity>) {
+		super(partial);
+		Object.assign(this, partial);
+	}
 }
