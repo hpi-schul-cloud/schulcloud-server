@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { AnyARecord } from 'node:dns';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
 import { NewsEntity } from './entities/news.entity';
