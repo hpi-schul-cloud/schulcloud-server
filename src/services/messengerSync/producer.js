@@ -21,12 +21,12 @@ const sendMessage = (message) => {
 };
 
 // USER
-const requestFullSyncForUser = async (user, syncSchool = false) => {
+const requestFullSyncForUser = async (user, schoolSync = false) => {
 	const message = {
 		action: ACTIONS.SYNC_USER,
 		userId: user._id,
 		fullSync: true,
-		syncSchool,
+		schoolSync,
 	};
 	sendMessage(message);
 };
@@ -145,9 +145,9 @@ const requestFullSchoolSync = (school) => {
 	sendMessage(message);
 };
 
-const requestSyncForEachSchoolUser = async (schoolId, syncSchool = false) => {
+const requestSyncForEachSchoolUser = async (schoolId, schoolSync = false) => {
 	const users = await app.service('users').find({ query: { schoolId } });
-	users.data.forEach((user) => requestFullSyncForUser(user, syncSchool));
+	users.data.forEach((user) => requestFullSyncForUser(user, schoolSync));
 };
 
 // SETUP
