@@ -14,7 +14,8 @@ import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { NewsEntity } from './entities/news.entity';
-import { Authenticate } from '../auth/auth.decorator';
+import { Authenticate, CurrentUser } from '../auth/auth.decorator';
+import { ICurrentUser } from '../auth/interfaces/jwt-payload';
 
 @ApiTags('News')
 @Authenticate('jwt')
@@ -29,13 +30,14 @@ export class NewsController {
 	}
 
 	@Get()
-	findAll(): Promise<NewsEntity[]> {
-		return this.newsService.findAll();
+	findAll(@CurrentUser() currentUser: ICurrentUser): Promise<NewsEntity[]> {
+		return this.newsService.findAll(currentUser);
 	}
 
 	@Get(':id')
-	findOne(@Param('id') id: string): Promise<Partial<NewsEntity>> {
-		return this.newsService.findOneById(id);
+	findOne(@Param('id') newsId: string, @CurrentUser() currentUser: ICurrentUser): Promise<Partial<NewsEntity>> {
+		const {userId}=currentUser;
+		return this.newsService.getByIdForUserId(newsId, userId);
 	}
 
 	@Patch(':id')

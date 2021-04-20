@@ -1,6 +1,15 @@
-export interface JwtPayload {
+export interface ICurrentUser {
+	/** authenticated users id */
+	userId: string;
+	/** users role ids as string[] */
+	roles: string[];
+	/** users schoolId as string */
+	schoolId: string;
 	/** account id as string */
 	accountId: string;
+}
+
+export interface JwtPayload extends ICurrentUser {
 	/** audience */
 	aud: string;
 	/** expiration in // TODO
@@ -11,14 +20,9 @@ export interface JwtPayload {
 	/** issuer */
 	iss: string;
 	jti: string;
-	/** users role ids as string[] */
-	roles: string[];
-	/** users schoolId as string */
-	schoolId: string;
+
 	/** // TODO
 	 *
 	 */
 	sub: string;
-	/** authenticated users id */
-	userId: string;
 }

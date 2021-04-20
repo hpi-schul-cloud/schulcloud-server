@@ -56,7 +56,7 @@ async function bootstrap() {
 	// DTO's and Entity properties have to use @ApiProperty decorator to add their properties
 	const config = new DocumentBuilder()
 		.setTitle('HPI Schul-Cloud Server API')
-		.setDescription('This is /v2 of HPI Schul-Cloud Server')
+		.setDescription('This is v2 of HPI Schul-Cloud Server. Checkout /docs for v1.')
 		.setVersion('2.0')
 		/** set authentication for all routes enabled by default */
 		.addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })

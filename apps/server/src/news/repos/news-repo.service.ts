@@ -3,6 +3,9 @@ import { Model } from 'mongoose';
 import { CreateNewsDto } from '../dto/create-news.dto';
 import { UpdateNewsDto } from '../dto/update-news.dto';
 import { News, NewsDocument } from '../interfaces/news.interface';
+import legacyConstants = require('../../../../../src/services/news/constants');
+
+const { populateProperties } = legacyConstants;
 
 @Injectable()
 export class NewsRepoService {
@@ -17,8 +20,17 @@ export class NewsRepoService {
 		return this.newsModel.find().lean().exec();
 	}
 
-	findOneById(id: string): Promise<News> {
-		return this.newsModel.findById(id).lean().exec();
+	/** resolves on news document with some elements populated already */
+	async findOneById(id: string): Promise<News> {
+		let query = this.newsModel.findById(id);
+		if (populateProperties) {
+			populateProperties.forEach((populationSet) => {
+				const { path, select } = populationSet;
+				query = query.populate(path, select);
+			});
+		}
+		const newsDocument = await query.lean().exec();
+		return newsDocument;
 	}
 
 	update(id: string, updateNewsDto: UpdateNewsDto) {
