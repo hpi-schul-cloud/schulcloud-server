@@ -20,8 +20,6 @@ const activationModelService = feathersMongooseService({
 	lean: {
 		virtuals: true,
 	},
-	multi: true,
-	whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 });
 
 module.exports = {

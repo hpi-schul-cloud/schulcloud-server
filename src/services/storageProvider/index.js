@@ -13,8 +13,6 @@ module.exports = (app) => {
 			max: 1000,
 		},
 		lean: true,
-		multi: true,
-		whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 	};
 
 	app.use('/storageProvider/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
