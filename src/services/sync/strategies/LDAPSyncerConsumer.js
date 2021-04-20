@@ -1,9 +1,9 @@
 const _ = require('lodash');
 const { getChannel } = require('../../../utils/rabbitmq');
 const logger = require('../../../logger');
-const { createUserAndAccount, updateUserAndAccount, findByLdapIdAndSchool } = require('../repo/user.repo');
-const { createClass, updateClassName, findClassByYearAndLdapDn } = require('../repo/class.repo');
-const { createSchool, updateSchoolName, findSchoolByLdapIdAndSystem } = require('../repo/school.repo');
+const UserRepo = require('../repo/user.repo');
+const ClassRepo = require('../repo/class.repo');
+const SchoolRepo = require('../repo/school.repo');
 
 const { BadRequest } = require('../../../errors');
 
@@ -34,14 +34,14 @@ class LDAPSyncerConsumer {
 	}
 
 	async schoolAction(schoolData) {
-		const school = await findSchoolByLdapIdAndSystem(schoolData.ldapSchoolIdentifier, schoolData.systems);
+		const school = await SchoolRepo.findSchoolByLdapIdAndSystem(schoolData.ldapSchoolIdentifier, schoolData.systems);
 
 		try {
-			if (school !== undefined) {
+			if (school !== null) {
 				const schoolId = school._id;
-				await updateSchoolName(schoolId, schoolData.name);
+				await SchoolRepo.updateSchoolName(schoolId, schoolData.name);
 			} else {
-				await createSchool(schoolData);
+				await SchoolRepo.createSchool(schoolData);
 			}
 			return true;
 		} catch (err) {
@@ -51,9 +51,9 @@ class LDAPSyncerConsumer {
 	}
 
 	async userAction(data) {
-		const school = await findSchoolByLdapIdAndSystem(data.user.schoolDn, data.user.systemId);
-		if (school !== undefined) {
-			const userData = await findByLdapIdAndSchool(data.user.ldapId, school._id);
+		const school = await SchoolRepo.findSchoolByLdapIdAndSystem(data.user.schoolDn, data.user.systemId);
+		if (school !== null) {
+			const userData = await UserRepo.findByLdapIdAndSchool(data.user.ldapId, school._id);
 			try {
 				if (userData.total !== 0) {
 					return this.updateUserAndAccount(data.user, userData.data[0], data.account);
@@ -88,7 +88,7 @@ class LDAPSyncerConsumer {
 			updateObject.roles = user.roles;
 		}
 		if (!_.isEmpty(updateObject)) {
-			return updateUserAndAccount(userData._id, updateObject, account);
+			return UserRepo.updateUserAndAccount(userData._id, updateObject, account);
 		}
 		return true;
 	}
@@ -96,7 +96,7 @@ class LDAPSyncerConsumer {
 	async createUserAndAccount(idmUser, account, schoolId) {
 		try {
 			idmUser.schoolId = schoolId;
-			return createUserAndAccount(idmUser, account);
+			return UserRepo.createUserAndAccount(idmUser, account);
 		} catch (err) {
 			logger.error('LDAP SYNC: error while creating User', err);
 			throw err;
@@ -104,10 +104,10 @@ class LDAPSyncerConsumer {
 	}
 
 	async classAction(classData) {
-		const school = await findSchoolByLdapIdAndSystem(classData.schoolDn, classData.systemId);
+		const school = await SchoolRepo.findSchoolByLdapIdAndSystem(classData.schoolDn, classData.systemId);
 
-		if (school !== undefined) {
-			const existingClasses = await findClassByYearAndLdapDn(school.currentYear, classData.ldapDn);
+		if (school !== null) {
+			const existingClasses = await ClassRepo.findClassByYearAndLdapDn(school.currentYear, classData.ldapDn);
 
 			if (existingClasses.total === 0) {
 				const newClass = {
@@ -117,11 +117,11 @@ class LDAPSyncerConsumer {
 					ldapDN: classData.ldapDn,
 					year: school.currentYear,
 				};
-				return createClass(newClass);
+				return ClassRepo.createClass(newClass);
 			}
 			const existingClass = existingClasses.data[0];
 			if (existingClass.name !== classData.className) {
-				return updateClassName(existingClass._id, classData.className);
+				return ClassRepo.updateClassName(existingClass._id, classData.className);
 			}
 		}
 		return true;

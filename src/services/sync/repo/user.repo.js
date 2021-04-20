@@ -59,8 +59,10 @@ const findByLdapIdAndSchool = async (ldapId, schoolId) => {
 		.exec();
 };
 
-module.exports = {
+const UserRepo = {
 	createUserAndAccount,
 	updateUserAndAccount,
 	findByLdapIdAndSchool,
 };
+
+module.exports = UserRepo;
