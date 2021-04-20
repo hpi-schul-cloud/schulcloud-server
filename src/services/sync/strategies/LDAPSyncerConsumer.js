@@ -1,9 +1,7 @@
 const _ = require('lodash');
 const { getChannel } = require('../../../utils/rabbitmq');
 const logger = require('../../../logger');
-const UserRepo = require('../repo/user.repo');
-const ClassRepo = require('../repo/class.repo');
-const SchoolRepo = require('../repo/school.repo');
+const { UserRepo, ClassRepo, SchoolRepo } = require('../repo');
 
 const { BadRequest } = require('../../../errors');
 
@@ -107,22 +105,26 @@ class LDAPSyncerConsumer {
 		const school = await SchoolRepo.findSchoolByLdapIdAndSystem(classData.schoolDn, classData.systemId);
 
 		if (school !== null) {
-			const existingClasses = await ClassRepo.findClassByYearAndLdapDn(school.currentYear, classData.ldapDn);
+			const existingClass = await ClassRepo.findClassByYearAndLdapDn(school.currentYear, classData.ldapDn);
+			try {
+				if (existingClass === null) {
+					const newClass = {
+						name: classData.className,
+						schoolId: school._id,
+						nameFormat: 'static',
+						ldapDN: classData.ldapDn,
+						year: school.currentYear,
+					};
+					await ClassRepo.createClass(newClass);
+				} else if (existingClass.name !== classData.className) {
+					await ClassRepo.updateClassName(existingClass._id, classData.className);
+				}
+			} catch (err) {
+				logger.error('LDAP SYNC: error while update or add a class', { err, syncId: classData.syncId });
+				throw err;
+			}
 
-			if (existingClasses.total === 0) {
-				const newClass = {
-					name: classData.className,
-					schoolId: school._id,
-					nameFormat: 'static',
-					ldapDN: classData.ldapDn,
-					year: school.currentYear,
-				};
-				return ClassRepo.createClass(newClass);
-			}
-			const existingClass = existingClasses.data[0];
-			if (existingClass.name !== classData.className) {
-				return ClassRepo.updateClassName(existingClass._id, classData.className);
-			}
+			return true;
 		}
 		return true;
 	}

@@ -2,16 +2,12 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
 const sinon = require('sinon');
-const proxyquire = require('proxyquire');
+const { ObjectId } = require('mongoose').Types;
 
 const { LDAP_SYNC_ACTIONS } = require('../../../../src/services/sync/strategies/LDAPSyncer');
 const { LDAPSyncerConsumer } = require('../../../../src/services/sync/strategies/LDAPSyncerConsumer');
 const { BadRequest } = require('../../../../src/errors');
-const {
-	createSchool,
-	updateSchoolName,
-	findSchoolByLdapIdAndSystem,
-} = require('../../../../src/services/sync/repo/school.repo');
+const { SchoolRepo, ClassRepo, UserRepo } = require('../../../../src/services/sync/repo');
 
 const appPromise = require('../../../../src/app');
 
@@ -73,11 +69,11 @@ describe('Ldap Syncer Consumer', () => {
 	});
 
 	describe('schoolAction: ', () => {
-		it('create school for new school', async () => {
-			const findSchoolByLdapIdAndSystemStub = sandbox.stub(findSchoolByLdapIdAndSystem);
-			findSchoolByLdapIdAndSystemStub.returns(undefined);
+		it('create school if not exists', async () => {
+			const findSchoolByLdapIdAndSystemStub = sandbox.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			findSchoolByLdapIdAndSystemStub.returns(null);
 
-			const createSchoolStub = sandbox.stub(createSchool);
+			const createSchoolStub = sandbox.stub(SchoolRepo, 'createSchool');
 
 			const ldapConsumer = new LDAPSyncerConsumer();
 			const result = await ldapConsumer.schoolAction({ name: 'Test School' });
@@ -86,11 +82,11 @@ describe('Ldap Syncer Consumer', () => {
 		});
 
 		it('update school name for existing school', async () => {
-			const findSchoolByLdapIdAndSystemStub = sandbox.stub(findSchoolByLdapIdAndSystem);
+			const findSchoolByLdapIdAndSystemStub = sandbox.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 			const schoolId = 1;
 			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School', _id: schoolId });
 
-			const updateSchoolStub = sandbox.stub(updateSchoolName);
+			const updateSchoolStub = sandbox.stub(SchoolRepo, 'updateSchoolName');
 
 			const ldapConsumer = new LDAPSyncerConsumer();
 			const newSchoolName = 'New Test School';
@@ -99,6 +95,52 @@ describe('Ldap Syncer Consumer', () => {
 			expect(updateSchoolStub.calledOnce).to.be.true;
 			expect(updateSchoolStub.getCall(0).firstArg).to.be.equal(schoolId);
 			expect(updateSchoolStub.getCall(0).lastArg).to.be.equal(newSchoolName);
+		});
+	});
+
+	describe('Class action: ', () => {
+		it('should create class if not exists', async () => {
+			const findSchoolByLdapIdAndSystemStub = sandbox.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			const schoolId = 1;
+			const className = 'Class Name';
+			const ldapDn = 'some ldap';
+			const currentYear = new ObjectId();
+			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School', _id: schoolId, currentYear });
+
+			const findClassByYearAndLdapDnStub = sandbox.stub(ClassRepo, 'findClassByYearAndLdapDn');
+			findClassByYearAndLdapDnStub.returns(null);
+
+			const createClassStub = sandbox.stub(ClassRepo, 'createClass');
+			const ldapConsumer = new LDAPSyncerConsumer();
+			const result = await ldapConsumer.classAction({ className, ldapDn });
+			expect(result).to.be.equal(true);
+			expect(createClassStub.calledOnce).to.be.true;
+
+			const callArg = createClassStub.firstCall.firstArg;
+			expect(callArg.schoolId).to.be.equal(schoolId);
+			expect(callArg.name).to.be.equal(className);
+			expect(callArg.nameFormat).to.be.equal('static');
+			expect(callArg.year).to.be.equal(currentYear);
+			expect(callArg.ldapDN).to.be.equal(ldapDn);
+		});
+
+		it('should update class name for existing class', async () => {
+			const findSchoolByLdapIdAndSystemStub = sandbox.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			const classId = 1;
+			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School' });
+
+			const findClassByYearAndLdapDnStub = sandbox.stub(ClassRepo, 'findClassByYearAndLdapDn');
+			findClassByYearAndLdapDnStub.returns({ name: 'Test class', _id: classId });
+
+			const updateClassStub = sandbox.stub(ClassRepo, 'updateClassName');
+
+			const ldapConsumer = new LDAPSyncerConsumer();
+			const newClassName = 'New Test Class';
+			const result = await ldapConsumer.classAction({ className: newClassName });
+			expect(result).to.be.equal(true);
+			expect(updateClassStub.calledOnce).to.be.true;
+			expect(updateClassStub.getCall(0).firstArg).to.be.equal(classId);
+			expect(updateClassStub.getCall(0).lastArg).to.be.equal(newClassName);
 		});
 	});
 });
