@@ -56,9 +56,9 @@ class LDAPSyncerConsumer {
 			const userData = await findByLdapIdAndSchool(data.user.ldapId, school._id);
 			try {
 				if (userData.total !== 0) {
-					return this.updateUser(data.user, userData.data[0], data.account);
+					return this.updateUserAndAccount(data.user, userData.data[0], data.account);
 				}
-				return this.createUser(data.user, data.account, school._id);
+				return this.createUserAndAccount(data.user, data.account, school._id);
 			} catch (err) {
 				logger.error('LDAP SYNC: error while update or add a user', { err, syncId: data.syncId });
 				throw err;
@@ -67,7 +67,7 @@ class LDAPSyncerConsumer {
 		return true;
 	}
 
-	async updateUser(user, userData, account) {
+	async updateUserAndAccount(user, userData, account) {
 		const updateObject = {};
 		if (userData.firstName !== user.firstName) {
 			updateObject.firstName = user.firstName || ' ';
@@ -93,7 +93,7 @@ class LDAPSyncerConsumer {
 		return true;
 	}
 
-	async createUser(idmUser, account, schoolId) {
+	async createUserAndAccount(idmUser, account, schoolId) {
 		try {
 			idmUser.schoolId = schoolId;
 			return createUserAndAccount(idmUser, account);
