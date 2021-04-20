@@ -21,6 +21,6 @@ jobs:
         npm run migration-persist
         git diff --exit-code backup/**
     - name: check filesystem migrations have been added to database
-      run: npm run migration-sync
+      run: npm run migration-list
     - name: check migrations in database exist in filesystem
       run: npm run migration-prune
