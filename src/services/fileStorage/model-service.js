@@ -10,8 +10,6 @@ module.exports = (app) => {
 			max: 10000,
 		},
 		lean: true,
-		multi: true,
-		whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 	};
 
 	// Initialize our service with any options it requires

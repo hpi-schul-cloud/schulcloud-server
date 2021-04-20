@@ -14,8 +14,6 @@ const _DefaultServiceOptions = {
 		max: 100,
 	},
 	lean: true,
-	multi: true,
-	whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 };
 
 const _DefaultHeaderParams = {

@@ -686,7 +686,7 @@ describe('user service', () => {
 				result = await app.service('users').remove(null, params);
 			} catch (err) {
 				testObjects.createdUserIds.concat(userIds);
-				throw err;
+				throw new Error('should not have failed', err);
 			}
 			expect(result).to.not.be.undefined;
 			expect(Array.isArray(result)).to.equal(true);
@@ -712,7 +712,7 @@ describe('user service', () => {
 				result = await app.service('users').remove(null, params);
 			} catch (err) {
 				testObjects.createdUserIds.concat(userIds);
-				throw err;
+				throw new Error('should not have failed', err);
 			}
 			expect(result).to.not.be.undefined;
 			expect(Array.isArray(result)).to.equal(true);
