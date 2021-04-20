@@ -49,16 +49,18 @@ class LDAPSyncerConsumer {
 	}
 
 	async userAction(data) {
-		const school = await SchoolRepo.findSchoolByLdapIdAndSystem(data.user.schoolDn, data.user.systemId);
+		const { userData, accountData, syncId } = data;
+		const school = await SchoolRepo.findSchoolByLdapIdAndSystem(userData.schoolDn, userData.systemId);
 		if (school !== null) {
-			const userData = await UserRepo.findByLdapIdAndSchool(data.user.ldapId, school._id);
+			const user = await UserRepo.findByLdapIdAndSchool(userData.ldapId, school._id);
 			try {
-				if (userData.total !== 0) {
-					return this.updateUserAndAccount(data.user, userData.data[0], data.account);
+				if (user !== null) {
+					await this.updateUserAndAccount(userData, user, accountData);
+				} else {
+					await this.createUserAndAccount(userData, accountData, school._id);
 				}
-				return this.createUserAndAccount(data.user, data.account, school._id);
 			} catch (err) {
-				logger.error('LDAP SYNC: error while update or add a user', { err, syncId: data.syncId });
+				logger.error('LDAP SYNC: error while update or add a user', { err, syncId });
 				throw err;
 			}
 		}
@@ -81,7 +83,7 @@ class LDAPSyncerConsumer {
 			updateObject.ldapDn = user.ldapDn;
 		}
 		// Role
-		const userDataRoles = userData.roles.map((r) => r.name);
+		const userDataRoles = userData.roles && userData.roles.map((r) => r.name);
 		if (!_.isEqual(userDataRoles, user.roles)) {
 			updateObject.roles = user.roles;
 		}

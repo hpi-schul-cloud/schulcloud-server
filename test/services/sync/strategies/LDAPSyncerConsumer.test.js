@@ -143,4 +143,76 @@ describe('Ldap Syncer Consumer', () => {
 			expect(updateClassStub.getCall(0).lastArg).to.be.equal(newClassName);
 		});
 	});
+
+	describe('User action: ', () => {
+		it('should create user and account if not exists', async () => {
+			const findSchoolByLdapIdAndSystemStub = sandbox.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			const testSchoolId = new ObjectId();
+			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School', _id: testSchoolId });
+
+			const findByLdapIdAndSchoolStub = sandbox.stub(UserRepo, 'findByLdapIdAndSchool');
+			findByLdapIdAndSchoolStub.returns(null);
+
+			const createUserAndAccountStub = sandbox.stub(UserRepo, 'createUserAndAccount');
+
+			const ldapConsumer = new LDAPSyncerConsumer();
+			const testUserInput = { _id: 1 };
+			const testAccountInput = { _id: 2 };
+			const result = await ldapConsumer.userAction({ userData: testUserInput, accountData: testAccountInput });
+
+			const { firstArg } = createUserAndAccountStub.firstCall;
+			const { lastArg } = createUserAndAccountStub.firstCall;
+
+			expect(result).to.be.true;
+			expect(createUserAndAccountStub.calledOnce).to.be.true;
+			expect(firstArg.schoolId).to.be.equal(testSchoolId);
+			expect(firstArg._id).to.be.equal(testUserInput._id);
+			expect(lastArg._id).to.be.equal(testAccountInput._id);
+		});
+
+		it('should update user and account if exists', async () => {
+			const findSchoolByLdapIdAndSystemStub = sandbox.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			const testSchoolId = new ObjectId();
+			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School', _id: testSchoolId });
+
+			const findByLdapIdAndSchoolStub = sandbox.stub(UserRepo, 'findByLdapIdAndSchool');
+			const existingUser = {
+				_id: 1,
+				firstName: 'Old fname',
+				lastName: 'Old lname',
+				email: 'Old email',
+				ldapDn: 'Old ldapdn',
+			};
+			findByLdapIdAndSchoolStub.returns(existingUser);
+
+			const updateUserAndAccountStub = sandbox.stub(UserRepo, 'updateUserAndAccount');
+
+			const ldapConsumer = new LDAPSyncerConsumer();
+			const testUserInput = {
+				_id: 1,
+				firstName: 'New fname',
+				lastName: 'New lname',
+				email: 'New email',
+				ldapDn: 'new ldapdn',
+				roles: [new ObjectId()],
+			};
+			const testAccountInput = { _id: 2 };
+			const result = await ldapConsumer.userAction({ userData: testUserInput, accountData: testAccountInput });
+
+			expect(result).to.be.true;
+			expect(updateUserAndAccountStub.calledOnce).to.be.true;
+
+			const { args } = updateUserAndAccountStub.firstCall;
+			const updateUserArg = args[1];
+
+			expect(args[0]).to.be.equal(testUserInput._id);
+			expect(updateUserArg.firstName).to.be.equal(testUserInput.firstName);
+			expect(updateUserArg.lastName).to.be.equal(testUserInput.lastName);
+			expect(updateUserArg.email).to.be.equal(testUserInput.email);
+			expect(updateUserArg.ldapDn).to.be.equal(testUserInput.ldapDn);
+			expect(updateUserArg.roles).to.be.equal(testUserInput.roles);
+
+			expect(args[2]).to.be.equal(testAccountInput);
+		});
+	});
 });
