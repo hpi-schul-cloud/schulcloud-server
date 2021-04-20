@@ -36,6 +36,34 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [26.1.0]
 
+## [26.0.16] - 2021-04-20
+
+### Removed
+
+- - SC-8748 - revert: bump feathers-mongoose from 6.3.0 to 8.3.1
+
+## [26.0.15] - 2021-04-19
+
+### Changed
+
+- SC-8909 - messenger: use user-based fixed device ids
+
+## [26.0.14] - 2021-04-16
+
+- SC-8934 - no more autosync for the migrations for the mongodb
+
+## [26.0.13] - 2021-04-15
+
+### Fixed
+
+- SC-8917 - verify configuration missing school
+
+## [26.0.12] - 2021-04-14
+
+### Changed
+
+- SC-8929 - increase performance for alert requests
+
 ## [26.0.11] - 2021-04-13
 
 ### Changed

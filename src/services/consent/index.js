@@ -35,8 +35,6 @@ module.exports = function () {
 				max: 200,
 			},
 			lean: true,
-			multi: true,
-			whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 		})
 	);
 	app.service('consentVersionsModel').hooks(consentVersionModelHooks);
