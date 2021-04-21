@@ -2,10 +2,12 @@ import { Exclude, Transform } from 'class-transformer';
 import { IsInt } from 'class-validator';
 import { ObjectId } from 'mongoose';
 
+const ObjectIdToString = ({ value }) => value.toString();
 class BaseEntity {
-	// @Transform((value) => String(value), { toPlainOnly: true })
-	_id: string;
+	@Transform(ObjectIdToString, { toPlainOnly: true })
+	_id: ObjectId;
 	@IsInt()
+	@Exclude()
 	__v: number;
 	constructor(partial: Partial<BaseEntity>) {
 		Object.assign(this, partial);
@@ -25,13 +27,13 @@ class WithTimeStampBaseEntity extends BaseEntity {
 }
 
 class PopulatedUserName {
-	_id: string;
+	_id: ObjectId;
 	firstName: string;
 	lastName: string;
 }
 
 class PopulatedSchoolName {
-	_id: string;
+	_id: ObjectId;
 	name: string;
 }
 
@@ -48,7 +50,7 @@ export class NewsEntity extends WithTimeStampBaseEntity {
 	// hidden properties
 
 	@Exclude()
-	externalId?: string;
+	externalId?: ObjectId;
 	@Exclude()
 	sourceDescription?: string;
 
@@ -61,17 +63,17 @@ export class NewsEntity extends WithTimeStampBaseEntity {
 	// populated entities
 
 	// @Transform((value) => String(value), { toPlainOnly: true })
-	schoolId: string;
+	schoolId: ObjectId;
 	/** school name of referenced schoolId */
 	school: PopulatedSchoolName;
 
 	/** user id of creator */
-	creatorId: string;
+	creatorId: ObjectId;
 	/** creatorname of referenced creatorId */
 	creator: PopulatedUserName;
 
 	/** when updated, the user id of the updating user */
-	updaterId?: string;
+	updaterId?: ObjectId;
 	updater?: PopulatedUserName;
 
 	permissions: string[];
