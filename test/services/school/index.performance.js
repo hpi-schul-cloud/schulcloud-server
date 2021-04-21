@@ -30,6 +30,7 @@ describe.skip('[performance] school service', () => {
 
 	it('[p] find schools', async () => {
 		let dbCalls = 0;
+		// const timeIterations = 100;
 		let  $limit = schoolService.paginate.max;
 
 		TestEventEmitter.on('mongoose_test_calls', (data) => {
@@ -48,22 +49,24 @@ describe.skip('[performance] school service', () => {
 			}
 		};
 
+		// iterations over the call for time messure do not work like expected 
+		// TODO: figure out if feathers cache stuff
 		let start = Date.now();
 		const result = await schoolService.find(params); // move to external call
-		let requestTimeMS = Date.now() - start;
+		let time = Date.now() - start;
 
 		const charNumberByRessource = getCharNumber(result, $limit);
-		// replace console.log in future
+		// TODO: replace console.log in future
 		console.log({
 			$limit,
 			charNumberByRessource,
-			requestTimeMS,
+			time,
 			dbCalls,
 		});
 
 		expect($limit, 'To high paginate max limit.').below(limits.paginate);
 		expect(dbCalls, 'To many database calls are needed.').below(limits.dbCalls);
-		expect(requestTimeMS, 'Reponse time is to slow').below(limits.time);
+		expect(time, 'Reponse time is to slow').below(limits.time);
 		expect(charNumberByRessource, 'Response Kb size is to much.').below(limits.chars);
 	});
 });

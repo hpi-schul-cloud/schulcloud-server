@@ -12,7 +12,7 @@ const warn = (message, pass) => {
 
 const performanceMessurceLimits = {
 	chars: 1000,
-	time: 50,
+	time: 100,
 	dbCalls: 10,
 	paginate: 1000,
 }
