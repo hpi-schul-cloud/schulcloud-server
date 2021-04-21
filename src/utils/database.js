@@ -3,6 +3,8 @@
 const mongoose = require('mongoose');
 const diffHistory = require('mongoose-diff-history/diffHistory');
 const uriFormat = require('mongodb-uri');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+
 
 const logger = require('../logger');
 const {
@@ -121,6 +123,10 @@ function connect() {
 
 function close() {
 	return mongoose.connection.close();
+}
+
+if (Configuration.get('FEATURE_MONGOOSE_LOGGING_ENABLED')) {
+	mongoose.set('debug', true);
 }
 
 module.exports = {

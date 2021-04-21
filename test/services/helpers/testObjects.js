@@ -1,6 +1,7 @@
 const { ObjectId: generateObjectId } = require('mongoose').Types;
 
 const logger = require('../../../src/logger/index');
+const TestEventEmitter = require('./mongooseEventListener');
 
 const serviceHelpers = require('./services');
 
@@ -8,6 +9,13 @@ const warn = (message, pass) => {
 	logger.warning(message);
 	return pass;
 };
+
+const performanceMessurceLimits = {
+	chars: 1000,
+	time: 50,
+	dbCalls: 10,
+	paginate: 1000,
+}
 
 module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObjectId }) => {
 	const {
@@ -170,5 +178,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 		options: opt,
 		randomGen,
 		generateObjectId,
+		TestEventEmitter,
+		performanceMessurceLimits,
 	};
 };

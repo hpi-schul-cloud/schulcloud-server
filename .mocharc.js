@@ -8,5 +8,5 @@ module.exports = {
 	slow: 75,
 	timeout: 2000,
 	'watch-files': ['test/*', 'src/*', 'config/*'],
-	spec: ['{test,src}/**/*.test.{js,ts}'],
+	spec: ['{test,src}/**/*.{test,performance}.{js,ts}'],
 };
