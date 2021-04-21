@@ -12,6 +12,7 @@ const { newsModel, targetModels, newsHistoryModel, newsPermissions } = require('
 const hooks = require('./hooks');
 const newsModelHooks = require('./hooks/newsModel.hooks');
 const { flatten, paginate, convertToSortOrderObject } = require('../../utils/array');
+const { defaultWhitelist } = require('../../utils/whitelist');
 
 const DEFAULT_PAGINATION_OPTIONS = {
 	default: 25,
@@ -472,6 +473,8 @@ module.exports = function news() {
 			Model: newsModel,
 			lean: true,
 			paginate: DEFAULT_PAGINATION_OPTIONS,
+			multi: true,
+			whitelist: defaultWhitelist,
 		})
 	);
 	app.service('/newsModel').hooks(newsModelHooks);

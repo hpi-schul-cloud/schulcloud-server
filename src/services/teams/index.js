@@ -28,6 +28,7 @@ const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const HOST = Configuration.get('HOST');
 
 const { AdminOverview } = require('./services');
+const { defaultWhitelist, regexWhitelist } = require('../../utils/whitelist');
 
 class Get {
 	constructor(options) {
@@ -464,6 +465,8 @@ module.exports = function setup() {
 			max: 100,
 		},
 		lean: { virtuals: true },
+		multi: true,
+		whitelist: [...defaultWhitelist, ...regexWhitelist],
 	};
 
 	app.use('/teams/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));

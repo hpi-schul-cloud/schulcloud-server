@@ -2,6 +2,7 @@ const service = require('feathers-mongoose');
 const { homeworkModel, submissionModel } = require('./model');
 const hooks = require('./hooks');
 const submissionHooks = require('./hooks/submissions');
+const { defaultModelServiceWhitelist } = require('../../utils/whitelist');
 
 module.exports = function setup() {
 	const app = this;
@@ -16,6 +17,8 @@ module.exports = function setup() {
 				max: 100000,
 			},
 			lean: true,
+			multi: true,
+			whitelist: defaultModelServiceWhitelist,
 		})
 	);
 	const hwService = app.service('/homework');
@@ -34,6 +37,8 @@ module.exports = function setup() {
 				max: 5000,
 			},
 			lean: true,
+			multi: true,
+			whitelist: defaultModelServiceWhitelist,
 		})
 	);
 	const submissionService = app.service('/submissions');

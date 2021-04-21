@@ -4,6 +4,7 @@ const auth = require('@feathersjs/authentication');
 
 const { enableQuery, enableQueryAfter } = require('../../../hooks');
 const { courseGroupModel } = require('../model');
+const { defaultModelServiceWhitelist } = require('../../../utils/whitelist');
 
 const courseGroupModelService = service({
 	Model: courseGroupModel,
@@ -12,6 +13,8 @@ const courseGroupModelService = service({
 		max: 100,
 	},
 	lean: { virtuals: true },
+	multi: true,
+	whitelist: defaultModelServiceWhitelist,
 });
 
 const courseGroupModelServiceHooks = {

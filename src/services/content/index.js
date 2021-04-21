@@ -10,6 +10,7 @@ const resourcesHooks = require('./hooks/resources');
 const redirectHooks = require('./hooks/redirect');
 const searchHooks = require('./hooks/search');
 const materialsHooks = require('./hooks/materials');
+const { defaultWhitelist } = require('../../utils/whitelist');
 
 class ResourcesService {
 	constructor(options) {
@@ -109,6 +110,8 @@ module.exports = function () {
 			max: 25,
 		},
 		lean: true,
+		multi: true,
+		whitelist: defaultWhitelist,
 	};
 
 	app.use('/content/resources', new ResourcesService());

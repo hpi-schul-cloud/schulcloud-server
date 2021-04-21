@@ -9,6 +9,7 @@ const path = require('path');
 
 const ltiTool = require('./model');
 const hooks = require('./hooks');
+const { defaultWhitelist } = require('../../utils/whitelist');
 
 module.exports = function () {
 	const app = this;
@@ -22,6 +23,8 @@ module.exports = function () {
 			max: 100,
 		},
 		lean: true,
+		multi: true,
+		whitelist: defaultWhitelist,
 	};
 
 	app.use('/ltiTools', service(options));

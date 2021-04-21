@@ -4,6 +4,7 @@ const path = require('path');
 
 const Pseudonym = require('./model');
 const hooks = require('./hooks');
+const { defaultWhitelist } = require('../../utils/whitelist');
 
 module.exports = function () {
 	const app = this;
@@ -14,6 +15,8 @@ module.exports = function () {
 			max: 1000,
 		},
 		lean: false,
+		multi: true,
+		whitelist: defaultWhitelist,
 	};
 	app.use('/pseudonym/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/pseudonym', service(options));

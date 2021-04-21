@@ -3,6 +3,7 @@ const auth = require('@feathersjs/authentication');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { activationModel } = require('../model');
 const { enableQuery, enableQueryAfter } = require('../../../hooks');
+const { defaultModelServiceWhitelist } = require('../../../utils/whitelist');
 
 const activationModelHooks = {
 	before: {
@@ -20,6 +21,8 @@ const activationModelService = feathersMongooseService({
 	lean: {
 		virtuals: true,
 	},
+	multi: true,
+	whitelist: defaultModelServiceWhitelist,
 });
 
 module.exports = {

@@ -8,6 +8,7 @@ const consentDocs = require('./docs');
 const { ConsentCheckService, consentCheckHooks } = require('./services/consentCheck.service');
 const { ConsentVersionService, ConsentVersionServiceHooks } = require('./services/consentVersionService');
 const deprecated = require('./services/consent.deprecated');
+const { defaultWhitelist } = require('../../utils/whitelist');
 
 // eslint-disable-next-line func-names
 module.exports = function () {
@@ -35,6 +36,8 @@ module.exports = function () {
 				max: 200,
 			},
 			lean: true,
+			multi: true,
+			whitelist: defaultWhitelist,
 		})
 	);
 	app.service('consentVersionsModel').hooks(consentVersionModelHooks);

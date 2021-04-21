@@ -4,6 +4,7 @@ const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { userModel } = require('../model');
 const { addDates: addConsentDate } = require('../hooks/consent');
 const { enableQuery, enableQueryAfter, resolveToIds } = require('../../../hooks');
+const { defaultModelServiceWhitelist } = require('../../../utils/whitelist');
 
 const userModelHooks = {
 	before: {
@@ -28,6 +29,8 @@ const userModelService = feathersMongooseService({
 	lean: {
 		virtuals: true,
 	},
+	multi: true,
+	whitelist: defaultModelServiceWhitelist,
 });
 
 module.exports = {

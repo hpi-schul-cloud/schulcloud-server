@@ -2,11 +2,15 @@ const service = require('feathers-mongoose');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { BadRequest } = require('../../../../src/errors');
+const { defaultModelServiceWhitelist } = require('../../../../src/utils/whitelist');
 
 const HOST = Configuration.get('HOST');
+// eslint-disable-next-line no-underscore-dangle
 const _TYPE = ['before', 'after'];
+// eslint-disable-next-line no-underscore-dangle
 const _METHOD = ['get', 'update', 'patch', 'create', 'find', 'remove'];
 
+// eslint-disable-next-line no-underscore-dangle
 const _DefaultServiceOptions = {
 	Model: undefined, // maybe must added fake?
 	paginate: {
@@ -14,8 +18,11 @@ const _DefaultServiceOptions = {
 		max: 100,
 	},
 	lean: true,
+	multi: true,
+	whitelist: defaultModelServiceWhitelist,
 };
 
+// eslint-disable-next-line no-underscore-dangle
 const _DefaultHeaderParams = {
 	authorization: '<jwtToken>',
 	host: HOST,
@@ -42,6 +49,7 @@ const isObject = (obj) => {
 const getService = (options = {}) => {
 	const opt = { ..._DefaultServiceOptions, ...options };
 	if (opt.Model === undefined || opt.paginate === undefined) {
+		// eslint-disable-next-line no-underscore-dangle
 		opt._TEST_INFO_ = 'service can not create and is faked';
 		return opt;
 	}
@@ -60,6 +68,7 @@ const patchParams = (params, account = {}) => {
 };
 
 /** * feathers is hook test ** */
+// eslint-disable-next-line no-underscore-dangle
 const _typeof =
 	typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
 		? function (obj) {

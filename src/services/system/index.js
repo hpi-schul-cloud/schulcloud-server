@@ -4,6 +4,7 @@ const path = require('path');
 
 const system = require('./model');
 const hooks = require('./hooks');
+const { defaultWhitelist } = require('../../utils/whitelist');
 
 module.exports = function () {
 	const app = this;
@@ -17,6 +18,8 @@ module.exports = function () {
 			max: 25,
 		},
 		lean: true,
+		multi: true,
+		whitelist: defaultWhitelist,
 	};
 
 	app.use('/systems', service(options));

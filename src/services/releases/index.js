@@ -5,6 +5,7 @@ const path = require('path');
 
 const release = require('./release-model');
 const hooks = require('./hooks/index');
+const { defaultWhitelist } = require('../../utils/whitelist');
 
 class ReleaseFetchService {
 	async find() {
@@ -50,6 +51,8 @@ module.exports = function relases() {
 			max: 10000,
 		},
 		lean: true,
+		multi: true,
+		whitelist: defaultWhitelist,
 	};
 
 	app.use('/releases/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));

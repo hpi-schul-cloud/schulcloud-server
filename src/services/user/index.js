@@ -24,6 +24,7 @@ const {
 } = require('./services');
 
 const { registerApiValidation } = require('../../utils/apiValidation');
+const { defaultWhitelist } = require('../../utils/whitelist');
 
 module.exports = (app) => {
 	registerApiValidation(app, path.join(__dirname, '/docs/adminusers.openapi.yaml'));
@@ -48,6 +49,8 @@ module.exports = (app) => {
 				max: 1000,
 			},
 			lean: true,
+			multi: true,
+			whitelist: defaultWhitelist,
 		})
 	);
 
@@ -64,6 +67,8 @@ module.exports = (app) => {
 				max: 5000,
 			},
 			lean: true,
+			multi: true,
+			whitelist: defaultWhitelist,
 		})
 	);
 	const registrationPinModelService = app.service('/registrationPinsModel');
@@ -81,6 +86,8 @@ module.exports = (app) => {
 				max: 5000,
 			},
 			lean: true,
+			multi: true,
+			whitelist: defaultWhitelist,
 		})
 	);
 	const registrationPinService = app.service('/registrationPins');

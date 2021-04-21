@@ -5,6 +5,7 @@ const { BadRequest } = require('../../../errors');
 const { hasPermission, restrictToCurrentSchool } = require('../../../hooks');
 const { requestFullSchoolSync } = require('../producer');
 const { SCHOOL_FEATURES } = require('../../school/model');
+const { defaultWhitelist } = require('../../../utils/whitelist');
 
 class MessengerSchoolSync {
 	constructor(options) {
@@ -36,6 +37,8 @@ const messengerSchoolSyncService = new MessengerSchoolSync({
 		default: 50,
 		max: 500,
 	},
+	multi: true,
+	whitelist: defaultWhitelist,
 });
 
 const messengerSchoolSyncHooks = {

@@ -4,6 +4,7 @@ const path = require('path');
 
 const { StorageProviderModel } = require('./model');
 const hooks = require('./hooks');
+const { defaultWhitelist } = require('../../utils/whitelist');
 
 module.exports = (app) => {
 	const options = {
@@ -13,6 +14,8 @@ module.exports = (app) => {
 			max: 1000,
 		},
 		lean: true,
+		multi: true,
+		whitelist: defaultWhitelist,
 	};
 
 	app.use('/storageProvider/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));

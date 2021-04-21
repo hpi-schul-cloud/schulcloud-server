@@ -44,6 +44,7 @@ const {
 	sendRegistrationLink,
 	includeOnlySchoolRoles,
 } = require('../hooks/userService');
+const { defaultWhitelist, logicOperations: NOR } = require('../../../utils/whitelist');
 
 // const USER_RABBIT_EXCHANGE = 'user';
 class UserService {
@@ -85,6 +86,8 @@ const userService = new UserService({
 		default: 1000,
 		max: 5000,
 	},
+	multi: true,
+	whitelist: [...defaultWhitelist, NOR],
 });
 
 const populateWhitelist = {

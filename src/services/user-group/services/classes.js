@@ -22,6 +22,7 @@ const { paginate } = require('../../../utils/array');
 const {
 	modelServices: { prepareInternalParams },
 } = require('../../../utils');
+const { defaultWhitelist } = require('../../../utils/whitelist');
 
 class Classes {
 	constructor(options) {
@@ -111,6 +112,8 @@ const classesService = new Classes({
 		default: 25,
 		max: 100,
 	},
+	multi: true,
+	whitelist: defaultWhitelist,
 });
 
 const classesHooks = {

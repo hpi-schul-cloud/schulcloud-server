@@ -11,6 +11,7 @@ const { getDatasource, restrictToDatasourceSchool } = require('../hooks');
 const { datasourceRunCreateSchema } = require('../schemas');
 const { datasourceRunModel } = require('../model');
 const { SUCCESS, ERROR, PENDING } = require('../constants');
+const { defaultWhitelist } = require('../../../utils/whitelist');
 
 class DatasourceRuns {
 	constructor(options) {
@@ -231,6 +232,8 @@ const datasourceRunService = new DatasourceRuns({
 		default: 50,
 		max: 500,
 	},
+	multi: true,
+	whitelist: defaultWhitelist,
 });
 
 const datasourceRunsHooks = {

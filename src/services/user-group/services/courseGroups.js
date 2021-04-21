@@ -9,6 +9,7 @@ const {
 const {
 	modelServices: { prepareInternalParams },
 } = require('../../../utils');
+const { defaultWhitelist } = require('../../../utils/whitelist');
 
 const { restrictToUsersCourses, denyIfNotInCourse } = require('../hooks/courseGroups');
 
@@ -53,6 +54,8 @@ const courseGroupService = new CourseGroups({
 		default: 25,
 		max: 100,
 	},
+	multi: true,
+	whitelist: defaultWhitelist,
 });
 
 const courseGroupHooks = {

@@ -61,7 +61,6 @@ class Accounts {
 		this.app = app;
 	}
 }
-
 const accountService = new Accounts({
 	paginate: false,
 });

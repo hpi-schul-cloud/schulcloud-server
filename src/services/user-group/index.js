@@ -16,6 +16,7 @@ const { courseModelService, courseModelServiceHooks } = require('./services/cour
 const { courseService, courseHooks } = require('./services/courses');
 const { courseGroupModelService, courseGroupModelServiceHooks } = require('./services/courseGroupModelService');
 const { courseGroupHooks, courseGroupService } = require('./services/courseGroups');
+const { defaultWhitelist } = require('../../utils/whitelist');
 
 // eslint-disable-next-line func-names
 module.exports = function () {
@@ -54,6 +55,8 @@ module.exports = function () {
 				max: 100,
 			},
 			lean: true,
+			multi: true,
+			whitelist: defaultWhitelist,
 		})
 	);
 	const gradeService = app.service('/grades');

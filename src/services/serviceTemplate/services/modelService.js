@@ -7,6 +7,7 @@ const { hasPermission } = require('../../../hooks');
 
 const { createSchema, patchSchema } = require('../schemas');
 const { serviceModel } = require('../model');
+const { defaultModelServiceWhitelist } = require('../../../utils/whitelist');
 
 /**
  * the datasources service manages the datasources collection.
@@ -17,6 +18,8 @@ const modelService = service({
 		default: 25,
 		max: 100,
 	},
+	multi: true,
+	whitelist: defaultModelServiceWhitelist,
 });
 
 /**

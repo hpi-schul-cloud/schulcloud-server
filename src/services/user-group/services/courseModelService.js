@@ -3,6 +3,7 @@ const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const auth = require('@feathersjs/authentication');
 
 const { courseModel } = require('../model');
+const { defaultModelServiceWhitelist } = require('../../../utils/whitelist');
 
 const courseModelService = service({
 	Model: courseModel,
@@ -11,6 +12,8 @@ const courseModelService = service({
 		max: 10000,
 	},
 	lean: { virtuals: true },
+	multi: true,
+	whitelist: defaultModelServiceWhitelist,
 });
 
 const courseModelServiceHooks = {

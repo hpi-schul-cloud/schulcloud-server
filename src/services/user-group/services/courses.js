@@ -30,6 +30,7 @@ const {
 } = require('../hooks/courses');
 
 const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
+const { defaultWhitelist } = require('../../../utils/whitelist');
 
 class Courses {
 	constructor(options) {
@@ -70,6 +71,8 @@ const courseService = new Courses({
 		default: 25,
 		max: 100,
 	},
+	multi: true,
+	whitelist: defaultWhitelist,
 });
 
 const populateWhitelist = {

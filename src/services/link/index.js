@@ -9,6 +9,7 @@ const { BadRequest } = require('@feathersjs/errors');
 const logger = require('../../logger');
 const { LinkModel } = require('./link-model');
 const hooks = require('./hooks');
+const { defaultWhitelist } = require('../../utils/whitelist');
 
 module.exports = function setup() {
 	const app = this;
@@ -20,6 +21,8 @@ module.exports = function setup() {
 			max: 10000,
 		},
 		lean: true,
+		multi: true,
+		whitelist: defaultWhitelist,
 	};
 
 	let linkService = service(options);

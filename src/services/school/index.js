@@ -8,6 +8,7 @@ const hooks = require('./hooks');
 const schoolGroupHooks = require('./hooks/schoolGroup.hooks');
 const { SchoolMaintenanceService } = require('./maintenance');
 const { HandlePermissions, handlePermissionsHooks } = require('./services/permissions');
+const { defaultWhitelist } = require('../../utils/whitelist');
 
 module.exports = function schoolServices() {
 	const app = this;
@@ -23,6 +24,8 @@ module.exports = function schoolServices() {
 		lean: {
 			virtuals: true,
 		},
+		multi: true,
+		whitelist: defaultWhitelist,
 	};
 
 	app.use('/schools', service(options));
@@ -40,6 +43,8 @@ module.exports = function schoolServices() {
 				default: 500,
 				max: 5000,
 			},
+			multi: true,
+			whitelist: defaultWhitelist,
 		})
 	);
 	const schoolGroupService = app.service('/schoolGroup');
@@ -55,6 +60,8 @@ module.exports = function schoolServices() {
 				max: 5000,
 			},
 			lean: true,
+			multi: true,
+			whitelist: defaultWhitelist,
 		})
 	);
 	const yearService = app.service('/years');
@@ -70,6 +77,8 @@ module.exports = function schoolServices() {
 				max: 5000,
 			},
 			lean: true,
+			multi: true,
+			whitelist: defaultWhitelist,
 		})
 	);
 	const gradeLevelService = app.service('/gradeLevels');

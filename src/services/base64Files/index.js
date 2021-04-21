@@ -5,6 +5,7 @@ const path = require('path');
 const hooks = require('./hooks');
 const { base64FileModel } = require('./models');
 const seDownloadHeaders = require('./hooks/setDownloadHeaders');
+const { defaultWhitelist } = require('../../utils/whitelist');
 
 module.exports = (app) => {
 	const base64FileService = service({
@@ -14,6 +15,8 @@ module.exports = (app) => {
 			max: 25,
 		},
 		lean: true,
+		multi: true,
+		whitelist: defaultWhitelist,
 	});
 
 	const name = 'base64Files';

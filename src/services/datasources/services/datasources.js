@@ -7,6 +7,7 @@ const { updatedBy, createdBy, protectFields, validateParams } = require('../hook
 
 const { restrictToCurrentSchool, hasPermission, denyIfNotCurrentSchool } = require('../../../hooks');
 const { datasourcesCreateSchema, datasourcesPatchSchema } = require('../schemas');
+const { defaultWhitelist } = require('../../../utils/whitelist');
 
 /**
  * the datasources service manages the datasources collection.
@@ -17,6 +18,8 @@ const datasourceService = service({
 		default: 10,
 		max: 50,
 	},
+	multi: true,
+	whitelist: defaultWhitelist,
 });
 
 const datasourceHooks = {

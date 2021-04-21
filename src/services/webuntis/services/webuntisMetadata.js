@@ -6,6 +6,7 @@ const { hasPermission } = require('../../../hooks');
 const { requireDatasourceId } = require('../hooks');
 // const { createSchema, patchSchema } = require('../schemas');
 const { webuntisMetadataModel } = require('../model');
+const { defaultWhitelist } = require('../../../utils/whitelist');
 
 /**
  * the datasources service manages the datasources collection.
@@ -16,6 +17,8 @@ const webuntisMetadataService = service({
 		default: 50,
 		max: 1000,
 	},
+	multi: true,
+	whitelist: defaultWhitelist,
 });
 
 /**

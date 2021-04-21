@@ -8,6 +8,7 @@ const { PermissionService, permissionHooks } = require('./services/permissions')
 const { UserPermissions, userPermissionsHooks } = require('./services/userPermissions');
 const { UserRoles, userRolesHooks } = require('./services/userRoles');
 const { definePermissions, PERMISSIONS, ROLES } = require('./utils/permissions');
+const { defaultWhitelist, regexWhitelist } = require('../../utils/whitelist');
 
 module.exports = function setup() {
 	const app = this;
@@ -19,6 +20,8 @@ module.exports = function setup() {
 			max: 25,
 		},
 		lean: { virtuals: true },
+		multi: true,
+		whitelist: [...defaultWhitelist, ...regexWhitelist],
 	};
 
 	app.use('/roles/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
