@@ -1,3 +1,4 @@
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { expect } = require('chai');
 
 const appPromise = require('../../../../src/app');
@@ -115,6 +116,26 @@ describe('class hooks', () => {
 
 			const result = await restrictFINDToClassesTheUserIsAllowedToSee(context);
 			expect(JSON.stringify(result.params.query)).to.be.deep.equal(JSON.stringify(expectedQuery));
+		});
+
+		it('should not extend the query with user filter for instances where teachers can see all students', async () => {
+			const configBefore = Configuration.toObject({ plainSecrets: true });
+			Configuration.set('ADMIN_TOGGLE_STUDENT_VISIBILITY', 'opt-in');
+			const { _id: usersSchoolId } = await testObjects.createTestSchool();
+			const teacher = await testObjects.createTestUser({ roles: 'teacher', schoolId: usersSchoolId });
+
+			const originalQuery = { key: 'value' };
+			const context = {
+				app,
+				params: {
+					account: { userId: teacher._id },
+					query: originalQuery,
+				},
+			};
+
+			const result = await restrictFINDToClassesTheUserIsAllowedToSee(context);
+			expect(JSON.stringify(result.params.query)).to.be.deep.equal(JSON.stringify(originalQuery));
+			Configuration.reset(configBefore);
 		});
 
 		it('should not extend the query with user filter for teachers at schools where teachers can see all students', async () => {

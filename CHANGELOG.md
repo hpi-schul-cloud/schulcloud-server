@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.0.17] - 2021-04-21
+
+### Fixed 
+
+- SC-8836 - fix student visibility by utilizing environment variable 
+
 ## [26.0.16] - 2021-04-20
 
 ### Removed

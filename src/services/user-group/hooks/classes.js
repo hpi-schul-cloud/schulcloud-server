@@ -1,3 +1,4 @@
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { NotFound } = require('../../../errors');
 
@@ -53,7 +54,8 @@ const restrictFINDToClassesTheUserIsAllowedToSee = async (context) => {
 		const school = await context.app.service('schools').get(currentUser.schoolId);
 
 		const teachersCanSeeAllSchoolStudents =
-			school.permissions && school.permissions.teacher && school.permissions.teacher.STUDENT_LIST;
+			Configuration.get('ADMIN_TOGGLE_STUDENT_VISIBILITY') === 'enabled' ||
+			(school.permissions && school.permissions.teacher && school.permissions.teacher.STUDENT_LIST);
 
 		if (teachersCanSeeAllSchoolStudents) {
 			return context;
