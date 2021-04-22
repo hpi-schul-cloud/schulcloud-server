@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NewsService } from './news.service';
-import { NewsRepoService } from './repos/news-repo.service';
+import { NewsRepo } from './repos/news.repo';
 
 describe('NewsService', () => {
 	let service: NewsService;
@@ -10,7 +10,7 @@ describe('NewsService', () => {
 			providers: [
 				NewsService,
 				{
-					provide: NewsRepoService,
+					provide: NewsRepo,
 					useValue: {},
 				},
 			],
