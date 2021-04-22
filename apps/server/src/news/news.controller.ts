@@ -22,7 +22,7 @@ import { ObjectId } from 'mongoose';
 @ApiTags('News')
 @Authenticate('jwt')
 @Controller('news')
-@UseInterceptors(ClassSerializerInterceptor)
+@UseInterceptors(ClassSerializerInterceptor) // works only for class instances, default object are not covered!
 export class NewsController {
 	constructor(private readonly newsService: NewsService) {}
 
@@ -31,15 +31,12 @@ export class NewsController {
 		return this.newsService.create(createNewsDto);
 	}
 
-	@Get()
-	findAll(@CurrentUser() currentUser: ICurrentUser): Promise<NewsEntity[]> {
-		return this.newsService.findAll(currentUser);
-	}
+	// @Get()
+	// findAll(@CurrentUser() currentUser: ICurrentUser): Promise<NewsEntity[]> {
+	// 	return this.newsService.findAll(currentUser);
+	// }
 
-	/**
-	 * Retrieve a specific news entry by id.
-	 * The current user must be part of related scope.
-	 * */
+	/** Retrieve a specific news entry by id. A user may only read news of scopes he has the read permission. The news entity has school and user names populated. */
 	@Get(':id')
 	async findOne(
 		// A parameter pipe like ParseObjectIdPipe gives us the guarantee of typesafety for @Param
@@ -51,17 +48,17 @@ export class NewsController {
 		return news;
 	}
 
-	@Patch(':id')
-	update(
-		@Param('id', ParseObjectIdPipe)
-		newsId: ObjectId,
-		@Body() updateNewsDto: UpdateNewsDto
-	) {
-		return this.newsService.update(newsId, updateNewsDto);
-	}
+	// @Patch(':id')
+	// update(
+	// 	@Param('id', ParseObjectIdPipe)
+	// 	newsId: ObjectId,
+	// 	@Body() updateNewsDto: UpdateNewsDto
+	// ) {
+	// 	return this.newsService.update(newsId, updateNewsDto);
+	// }
 
-	@Delete(':id')
-	remove(@Param('id') id: string): Promise<string> {
-		return this.newsService.remove(id);
-	}
+	// @Delete(':id')
+	// remove(@Param('id') id: string): Promise<string> {
+	// 	return this.newsService.remove(id);
+	// }
 }

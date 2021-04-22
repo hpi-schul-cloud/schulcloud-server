@@ -1,6 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiProperty, IntersectionType } from '@nestjs/swagger';
-import { Exclude, Transform, Type } from 'class-transformer';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import { IsInt, IsString, Matches } from 'class-validator';
 import { Types, Document, LeanDocument } from 'mongoose';
 
@@ -25,7 +25,7 @@ class BaseEntity {
 	_id: Types.ObjectId;
 	@IsInt()
 	@Exclude()
-	__v: number;
+	__v?: number;
 }
 
 class WithTimeStampBaseEntity extends BaseEntity {
@@ -35,16 +35,21 @@ class WithTimeStampBaseEntity extends BaseEntity {
 	updatedAt?: Date;
 }
 
-class UserEntity {
+export class UserEntity {
 	@IsMongoIdString()
 	_id: Types.ObjectId;
 	firstName: string;
 	lastName: string;
+	@Expose()
+	get fullName() {
+		return this.firstName + ' ' + this.lastName;
+	}
 }
 
-class SchoolEntity {
+export class SchoolEntity {
 	@IsMongoIdString()
 	_id: Types.ObjectId;
+	/** the schools name */
 	name: string;
 }
 
@@ -58,21 +63,22 @@ export class NewsEntity extends WithTimeStampBaseEntity {
 
 	source: 'internal' | 'rss';
 
-	// hidden properties
+	// hidden api properties
 
 	@Exclude()
 	externalId?: string;
 	@Exclude()
 	sourceDescription?: string;
 
-	// target and targetModel must either exist or not exist
-	/** id reference to a collection */
+	// target and targetModel both must either exist or not
+
 	@IsMongoIdString()
+	/** id reference to a collection */
 	target?: Types.ObjectId;
 	/** name of a collection which is referenced in target */
 	targetModel?: string;
 
-	// populated entities
+	// populated properties
 
 	@IsMongoIdString()
 	schoolId: Types.ObjectId;
@@ -85,14 +91,17 @@ export class NewsEntity extends WithTimeStampBaseEntity {
 	@IsMongoIdString()
 	updaterId?: Types.ObjectId;
 
-	/** school name of referenced schoolId */
 	@Type(() => SchoolEntity)
 	school?: SchoolEntity;
-	/** creatorname of referenced creatorId */
+
 	@Type(() => UserEntity)
 	creator?: UserEntity;
+
 	@Type(() => UserEntity)
 	updater?: UserEntity;
+
+	// decorated properties
+
 	permissions?: string[];
 
 	constructor(partial: Partial<NewsEntity>) {

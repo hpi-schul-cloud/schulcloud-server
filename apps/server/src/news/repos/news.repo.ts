@@ -38,6 +38,9 @@ export class NewsRepo {
 				newsDocument[path] = newsDocument[target]._id;
 			}
 		});
+		// NOT EXPORT A DOCUMENT, HERE WE KNOW WHAT THE DB HAS RETURNED
+		// FOR UPPER LAYERS ONLY WE MUST PROVIDE TYPESAFETY
+		// THIS MIGHT CHANGE WHEN WE USE A NON_LEGACY MODEL FACTORY
 		return plainToClass(NewsEntity, newsDocument);
 	}
 
