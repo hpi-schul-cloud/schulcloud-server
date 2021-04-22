@@ -20,8 +20,6 @@ module.exports = function setup() {
 			max: 10000,
 		},
 		lean: true,
-		multi: true,
-		whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 	};
 
 	let linkService = service(options);
