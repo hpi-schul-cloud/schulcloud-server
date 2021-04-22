@@ -3,8 +3,8 @@ import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
-// import { install } from 'source-map-support';
-// install(); // TODO register source-map-support to
+import { install } from 'source-map-support';
+install(); // TODO register source-map-support to
 
 import legacyAppPromise = require('../../../src/app');
 

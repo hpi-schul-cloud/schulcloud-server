@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ObjectId } from 'mongoose';
-import { CurrentUser } from '../auth/auth.decorator';
-import { ICurrentUser, JwtPayload } from '../auth/interfaces/jwt-payload';
+import { ICurrentUser } from '../auth/interfaces/jwt-payload';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
 import { NewsEntity } from './entities/news.entity';
@@ -28,12 +27,12 @@ export class NewsService {
 
 	async getOne(id: ObjectId, userId: string): Promise<NewsEntity> {
 		const news = await this.newsRepo.findOneById(id);
-		// TODO permissions
-		// TODO decorate news permissions
 		if (news == null) {
 			throw new NotFoundException();
 		}
-		return news as NewsEntity;
+		// TODO permissions
+		// TODO decorate news permissions
+		return news;
 	}
 
 	async update(id: ObjectId, updateNewsDto: UpdateNewsDto): Promise<any> {
