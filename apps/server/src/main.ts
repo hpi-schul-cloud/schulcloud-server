@@ -2,6 +2,10 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
+// import { install } from 'source-map-support';
+// install(); // TODO register source-map-support to
+
 import legacyAppPromise = require('../../../src/app');
 
 import { ServerModule } from './server.module';
@@ -18,6 +22,9 @@ async function bootstrap() {
 
 	// create the NestJS application adapting the legacy  server
 	const app = await NestFactory.create(ServerModule, adapter);
+
+	// for all NestJS controller routes, prepend ROUTE_PRAEFIX
+	app.setGlobalPrefix(ROUTE_PRAEFIX);
 
 	/** *********************************************
 	 * Global Pipe setup
@@ -38,11 +45,18 @@ async function bootstrap() {
 				enableImplicitConversion: true,
 			},
 			whitelist: true, // only pass valid @ApiProperty-decorated DTO properties, remove others
+			forbidNonWhitelisted: true, // when whitelist is true, fail when additional invalid parameters are received
 		})
 	);
-
-	// for all NestJS controller routes, prepend ROUTE_PRAEFIX
-	app.setGlobalPrefix(ROUTE_PRAEFIX);
+	/** *********************************************
+	 * Global Interceptor setup
+	 * **********************************************
+	 * Validation of DTOs will base on type-checking
+	 * which is enabled by default. To you might use
+	 * the class-validator decorators to extend
+	 * validation.
+	 */
+	// app.useGlobalInterceptors(ClassSerializerInterceptor);
 
 	/** *********************************************
 	 * OpenAPI docs setup
