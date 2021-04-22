@@ -5,9 +5,9 @@ import { ApiProperty } from '@nestjs/swagger';
  */
 export class CreateNewsDto {
 	@ApiProperty()
-	readonly title: string;
+	title: string;
 	@ApiProperty()
-	readonly body: string;
+	body: string;
 	@ApiProperty()
-	readonly publishedOn: Date;
+	publishedOn: Date;
 }
