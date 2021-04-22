@@ -14,8 +14,8 @@ import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { NewsEntity } from './entities/news.entity';
-import { Authenticate, CurrentUser } from '../auth/auth.decorator';
-import { ICurrentUser } from '../auth/interfaces/jwt-payload';
+import { Authenticate, CurrentUser } from '../authentication/auth.decorator';
+import { ICurrentUser } from '../authentication/interfaces/jwt-payload';
 import { ParseObjectIdPipe } from './parse-object-id.pipe';
 import { ObjectId } from 'mongoose';
 

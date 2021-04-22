@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ObjectId } from 'mongoose';
-import { ICurrentUser } from '../auth/interfaces/jwt-payload';
+import { ICurrentUser } from '../authentication/interfaces/jwt-payload';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
 import { NewsEntity } from './entities/news.entity';
