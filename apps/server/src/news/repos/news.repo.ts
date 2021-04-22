@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Document, LeanDocument, Model, ObjectId } from 'mongoose';
 import { CreateNewsDto } from '../dto/create-news.dto';
 import { UpdateNewsDto } from '../dto/update-news.dto';
@@ -18,30 +18,34 @@ export class NewsRepo {
 	}
 
 	async findAll(): Promise<NewsEntity[]> {
-		const newsDocuments = await this.newsModel.find().lean().exec();
-		return newsDocuments.map((doc) => plainToClass(NewsEntity, doc, { excludeExtraneousValues: true }));
+		// TODO filter by user scopes
+		let query = this.newsModel.find();
+		populateProperties.forEach((populationSet) => {
+			const { path, select } = populationSet;
+			query = query.populate(path, select);
+		});
+		const newsDocuments = await query.lean().exec();
+
+		const newsEntities = newsDocuments.map(toNewsEntity);
+		return newsEntities;
 	}
 
 	/** resolves a news document with some elements names (school, updator/creator) populated already */
-	async findOneById(id: ObjectId): Promise<NewsEntity | null> {
+	async findOneById(id: ObjectId): Promise<NewsEntity> {
 		let query = this.newsModel.findById(id);
-		if (populateProperties) {
-			populateProperties.forEach((populationSet) => {
-				const { path, select } = populationSet;
-				query = query.populate(path, select);
-			});
-		}
-		const newsDocument = await query.lean().exec();
-		populateProperties.forEach(({ path, target }) => {
-			if (target) {
-				newsDocument[target] = newsDocument[path];
-				newsDocument[path] = newsDocument[target]._id;
-			}
+		populateProperties.forEach((populationSet) => {
+			const { path, select } = populationSet;
+			query = query.populate(path, select);
 		});
+		const newsDocument = await query.lean().exec();
 		// NOT EXPORT A DOCUMENT, HERE WE KNOW WHAT THE DB HAS RETURNED
 		// FOR UPPER LAYERS ONLY WE MUST PROVIDE TYPESAFETY
 		// THIS MIGHT CHANGE WHEN WE USE A NON_LEGACY MODEL FACTORY
-		return plainToClass(NewsEntity, newsDocument);
+		if (newsDocument !== null) {
+			const newsEntity = toNewsEntity(newsDocument);
+			return newsEntity;
+		}
+		throw new NotFoundException('The requested news ' + id + 'has not been found.');
 	}
 
 	update(id: string, updateNewsDto: UpdateNewsDto) {
@@ -51,4 +55,22 @@ export class NewsRepo {
 	remove(id: string) {
 		return `This action removes a #${id} news`;
 	}
+}
+function toNewsEntity(newsDocument: LeanDocument<Document<NewsEntity, {}>>): NewsEntity {
+	// move populated properties to other named property and restore id's like without population
+	// sample: schoolId:{...} to schoolId:ObjectId and school:{...}
+	populateProperties.forEach(({ path, target }) => {
+		if (target && path in newsDocument) {
+			const id = newsDocument[path]._id;
+			newsDocument[target] = newsDocument[path];
+			newsDocument[path] = id;
+		}
+	});
+	const newsEntity = plainToClass(NewsEntity, newsDocument, {
+		/** remove properties not exported in @NewsEntity */
+		excludeExtraneousValues: true,
+		/** For undefined properties, apply defaults defined within of @NewsEntity */
+		exposeDefaultValues: true,
+	});
+	return newsEntity;
 }

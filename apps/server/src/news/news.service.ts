@@ -21,15 +21,13 @@ export class NewsService {
 	async findAll(currentUser: ICurrentUser): Promise<NewsEntity[]> {
 		const { userId, schoolId } = currentUser;
 		// TODO pagination
+		// TODO filter for current user
 		const news = await this.newsRepo.findAll();
-		return news.map((news) => new NewsEntity({}));
+		return news;
 	}
 
 	async getOne(id: ObjectId, userId: string): Promise<NewsEntity> {
 		const news = await this.newsRepo.findOneById(id);
-		if (news == null) {
-			throw new NotFoundException();
-		}
 		// TODO permissions
 		// TODO decorate news permissions
 		return news;

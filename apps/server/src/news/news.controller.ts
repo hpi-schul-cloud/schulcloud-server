@@ -31,10 +31,10 @@ export class NewsController {
 		return this.newsService.create(createNewsDto);
 	}
 
-	// @Get()
-	// findAll(@CurrentUser() currentUser: ICurrentUser): Promise<NewsEntity[]> {
-	// 	return this.newsService.findAll(currentUser);
-	// }
+	@Get()
+	findAll(@CurrentUser() currentUser: ICurrentUser): Promise<NewsEntity[]> {
+		return this.newsService.findAll(currentUser);
+	}
 
 	/** Retrieve a specific news entry by id. A user may only read news of scopes he has the read permission. The news entity has school and user names populated. */
 	@Get(':id')
