@@ -14,7 +14,7 @@ export class NewsDocument extends Document {
 	createdAt: Date;
 	updatedAt?: Date;
 
-	externalId?: string;
+	externalId?: ObjectId;
 	source: 'internal' | 'rss';
 	sourceDescription?: string;
 
