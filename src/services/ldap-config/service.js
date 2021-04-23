@@ -103,7 +103,7 @@ class LdapConfigService {
 		if (systemId && !config.searchUserPassword) {
 			await this.useExisitingPassword(config, systemId);
 		}
-		const verificationResult = await this.verifyConfig(config);
+		const verificationResult = await this.verifyConfig(config, options.school);
 		if (verificationResult.ok && options.saveSystem) {
 			await this.saveConfig(config, systemId, options.school, options.activateSystem);
 		}
@@ -125,10 +125,11 @@ class LdapConfigService {
 	 * Verifies a given config by connecting to the server and retrieving sample
 	 * objects. Errors are caught and categorized.
 	 * @param {Object} config LDAP config object
+	 * @param school
 	 * @returns {Object} verification result object
 	 * `{ ok: Boolean, errors: [], users: {}, classes: {} }`
 	 */
-	async verifyConfig(config) {
+	async verifyConfig(config, school) {
 		const ldap = this.app.service('ldap');
 		const result = {
 			ok: false,
@@ -137,7 +138,7 @@ class LdapConfigService {
 			classes: {},
 		};
 		try {
-			const users = await ldap.getUsers(config);
+			const users = await ldap.getUsers(config, school);
 			result.users = LdapConfigService.generateUserStats(users);
 			if (LdapConfigService.shouldVerifyClasses(config)) {
 				const classes = await ldap.getClasses(config);
