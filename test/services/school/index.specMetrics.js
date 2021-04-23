@@ -7,11 +7,13 @@ const testObjects = require('../helpers/testObjects');
 const getCharNumber = (result, ressourceNumbers=1) => ((JSON.stringify(result)).length/ressourceNumbers);
 
 // TODO: it fail because the service must be improve
-describe.skip('[performance] school service', () => {
+describe('[performance] school service', () => {
+	const serviceName = 'schools';
+	const method = 'find';
 	let app;
 	let server;
 	let testHelper;
-	let schoolService;
+	let service;
 	let TestEventEmitter;
 	let limits;
 
@@ -20,7 +22,8 @@ describe.skip('[performance] school service', () => {
 		server = await app.listen(0);
 		testHelper = testObjects(app);
 		({ TestEventEmitter, performanceMessurceLimits: limits } = testHelper);
-		schoolService = app.service('schools');
+		service = app.service(serviceName);
+		// create ressources for each service
 	});
 
 	after(async () => {
@@ -28,10 +31,10 @@ describe.skip('[performance] school service', () => {
 		await server.close();
 	});
 
-	it('[p] find schools', async () => {
+	it('[p] schools find', async () => {
 		let dbCalls = 0;
 		// const timeIterations = 100;
-		let  $limit = schoolService.paginate.max;
+		let  $limit = service.paginate.max;
 
 		TestEventEmitter.on('mongoose_test_calls', (data) => {
 			dbCalls++;
@@ -49,15 +52,17 @@ describe.skip('[performance] school service', () => {
 			}
 		};
 
-		// iterations over the call for time messure do not work like expected 
+		// iterations over the call for time messure do not work like expected
 		// TODO: figure out if feathers cache stuff
 		let start = Date.now();
-		const result = await schoolService.find(params); // move to external call
+		const result = await service[method](params); // move to external call
 		let time = Date.now() - start;
 
 		const charNumberByRessource = getCharNumber(result, $limit);
 		// TODO: replace console.log in future
 		console.log({
+			service: serviceName,
+			method,
 			$limit,
 			charNumberByRessource,
 			time,
