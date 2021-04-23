@@ -1,4 +1,5 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const logger = require('../../logger');
 const { getChannel } = require('../../utils/rabbitmq');
 const { getAllCourseUserIds } = require('../user-group/logic/courses');
 const { teamsModel } = require('../teams/model');
@@ -17,7 +18,11 @@ let app;
 let channelSendInternal;
 
 const sendMessage = (message) => {
-	channelSendInternal.sendToQueue(message, { persistent: true });
+	try {
+		channelSendInternal.sendToQueue(message, { persistent: true });
+	} catch(err) {
+		logger.error(`Messenger sync message "${JSON.stringify(message)}" cannot be sent to internal queue`, err);
+	}
 };
 
 // USER
