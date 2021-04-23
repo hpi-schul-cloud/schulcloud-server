@@ -24,8 +24,6 @@ module.exports = function () {
 			max: 1000,
 		},
 		lean: true,
-		multi: true,
-		whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 	};
 
 	app.use('/helpdesk', service(options));

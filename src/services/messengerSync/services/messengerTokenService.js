@@ -6,14 +6,16 @@ const hmacSHA512 = require('crypto-js/hmac-sha512');
 
 const { BadRequest, GeneralError } = require('../../../errors');
 
-function obtainAccessToken(userId, homeserverApiUri, secret) {
+function obtainAccessToken(userId, deviceId, homeserverApiUri, secret) {
 	const loginApiUrl = `${homeserverApiUri}/_matrix/client/r0/login`;
 
 	const password = hmacSHA512(userId, secret).toString();
 
 	const payload = {
 		type: 'm.login.password',
+		initial_device_display_name: 'hpi-schul-cloud (embed)',
 		user: userId,
+		device_id: deviceId,
 		password,
 	};
 
@@ -64,10 +66,11 @@ class MessengerTokenService {
 
 		const homeserver = Configuration.get('MATRIX_MESSENGER__SERVERNAME');
 		const matrixId = `@sso_${scId.toString()}:${homeserver}`;
+		const deviceId = `sc_${scId.toString()}`;
 		const matrixUri = Configuration.get('MATRIX_MESSENGER__URI');
 		const matrixSecret = Configuration.get('MATRIX_MESSENGER__SECRET');
 
-		return obtainAccessToken(matrixId, matrixUri, matrixSecret);
+		return obtainAccessToken(matrixId, deviceId, matrixUri, matrixSecret);
 	}
 }
 
