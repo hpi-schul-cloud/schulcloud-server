@@ -1,23 +1,12 @@
-import {
-	Controller,
-	Get,
-	Post,
-	Body,
-	Patch,
-	Param,
-	Delete,
-	UseInterceptors,
-	ClassSerializerInterceptor,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/create-news.dto';
-import { UpdateNewsDto } from './dto/update-news.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { NewsEntity } from './entities/news.entity';
 import { Authenticate, CurrentUser } from '../authentication/auth.decorator';
 import { ICurrentUser } from '../authentication/interfaces/jwt-payload';
 import { ParseObjectIdPipe } from './parse-object-id.pipe';
-import { ObjectId } from 'mongoose';
+import { ObjectId, SchemaTypes } from 'mongoose';
 
 @ApiTags('News')
 @Authenticate('jwt')
@@ -43,8 +32,8 @@ export class NewsController {
 		@Param('id', ParseObjectIdPipe) newsId: ObjectId,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<NewsEntity> {
-		const { userId } = currentUser;
-		const news = await this.newsService.getOne(newsId, userId);
+		const userId = new SchemaTypes.ObjectId(currentUser.userId);
+		const news = await this.newsService.findOneByIdForUser(newsId, userId);
 		return news;
 	}
 
