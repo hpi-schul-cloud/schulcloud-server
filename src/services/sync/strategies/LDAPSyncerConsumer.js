@@ -10,7 +10,6 @@ const { LDAP_SYNC_ACTIONS, LDAP_SYNC_CHANNEL_NAME } = require('./LDAPSyncer');
 class LDAPSyncerConsumer {
 	async executeMessage(incomingMessage) {
 		const content = JSON.parse(incomingMessage.content.toString());
-		logger.debug(`Incoming ${content.action} ${content.syncId}: ${JSON.stringify(content.data).substring(0, 100)}...`);
 		switch (content.action) {
 			case LDAP_SYNC_ACTIONS.SYNC_SCHOOL: {
 				return this.schoolAction(content.data);
@@ -36,8 +35,9 @@ class LDAPSyncerConsumer {
 
 		try {
 			if (school !== null) {
-				const schoolId = school._id;
-				await SchoolRepo.updateSchoolName(schoolId, schoolData.name);
+				if (school.name !== schoolData.name) {
+					await SchoolRepo.updateSchoolName(school._id, schoolData.name);
+				}
 			} else {
 				await SchoolRepo.createSchool(schoolData);
 			}
@@ -49,13 +49,13 @@ class LDAPSyncerConsumer {
 	}
 
 	async userAction(data) {
-		const { userData, accountData, syncId } = data;
+		const { user: userData, account: accountData, syncId } = data;
 		const school = await SchoolRepo.findSchoolByLdapIdAndSystem(userData.schoolDn, userData.systemId);
 		if (school !== null) {
-			const user = await UserRepo.findByLdapIdAndSchool(userData.ldapId, school._id);
+			const foundUser = await UserRepo.findByLdapIdAndSchool(userData.ldapId, school._id);
 			try {
-				if (user !== null) {
-					await this.updateUserAndAccount(userData, user, accountData);
+				if (foundUser !== null) {
+					await this.updateUserAndAccount(foundUser, userData, accountData);
 				} else {
 					await this.createUserAndAccount(userData, accountData, school._id);
 				}
@@ -63,32 +63,33 @@ class LDAPSyncerConsumer {
 				logger.error('LDAP SYNC: error while update or add a user', { err, syncId });
 				throw err;
 			}
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	async updateUserAndAccount(user, userData, account) {
 		const updateObject = {};
 		if (userData.firstName !== user.firstName) {
-			updateObject.firstName = user.firstName || ' ';
+			updateObject.firstName = userData.firstName || ' ';
 		}
 		if (userData.lastName !== user.lastName) {
-			updateObject.lastName = user.lastName;
+			updateObject.lastName = userData.lastName;
 		}
 		// Updating SchoolId will cause an issue. We need to discuss about it
 		if (userData.email !== user.email) {
-			updateObject.email = user.email;
+			updateObject.email = userData.email;
 		}
 		if (userData.ldapDn !== user.ldapDn) {
-			updateObject.ldapDn = user.ldapDn;
+			updateObject.ldapDn = userData.ldapDn;
 		}
 		// Role
-		const userDataRoles = userData.roles && userData.roles.map((r) => r.name);
-		if (!_.isEqual(userDataRoles, user.roles)) {
-			updateObject.roles = user.roles;
+		const userRoles = user.roles && user.roles.map((r) => r.name);
+		if (!_.isEqual(userRoles, userData.roles)) {
+			updateObject.roles = userData.roles;
 		}
 		if (!_.isEmpty(updateObject)) {
-			return UserRepo.updateUserAndAccount(userData._id, updateObject, account);
+			return UserRepo.updateUserAndAccount(user._id, updateObject, account);
 		}
 		return true;
 	}
@@ -107,19 +108,21 @@ class LDAPSyncerConsumer {
 		const school = await SchoolRepo.findSchoolByLdapIdAndSystem(classData.schoolDn, classData.systemId);
 
 		if (school !== null) {
-			const existingClass = await ClassRepo.findClassByYearAndLdapDn(school.currentYear, classData.ldapDn);
+			const existingClass = await ClassRepo.findClassByYearAndLdapDn(school.currentYear, classData.ldapDN);
 			try {
-				if (existingClass === null) {
+				if (existingClass !== null) {
+					if (existingClass.name !== classData.name) {
+						await ClassRepo.updateClassName(existingClass._id, classData.name);
+					}
+				} else {
 					const newClass = {
-						name: classData.className,
+						name: classData.name,
 						schoolId: school._id,
 						nameFormat: 'static',
-						ldapDN: classData.ldapDn,
+						ldapDN: classData.ldapDN,
 						year: school.currentYear,
 					};
 					await ClassRepo.createClass(newClass);
-				} else if (existingClass.name !== classData.className) {
-					await ClassRepo.updateClassName(existingClass._id, classData.className);
 				}
 			} catch (err) {
 				logger.error('LDAP SYNC: error while update or add a class', { err, syncId: classData.syncId });
@@ -128,7 +131,7 @@ class LDAPSyncerConsumer {
 
 			return true;
 		}
-		return true;
+		return false;
 	}
 }
 

@@ -1,5 +1,8 @@
 const accountModel = require('../../account/model');
 const { userModel } = require('../../user/model');
+const roleModel = require('../../role/model');
+const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { BadRequest } = require('../../../errors');
 
 const createAccount = async (account) => {
 	return accountModel.create({
@@ -10,8 +13,39 @@ const createAccount = async (account) => {
 	});
 };
 
+const resolveUserRoles = async (roles) => {
+	return roleModel
+		.find({
+			name: {
+				$in: roles,
+			},
+		})
+		.lean()
+		.exec();
+};
+
+/**
+ * request user and compare the email address.
+ * if possible it should be solved via unique index on database
+ * @param {string} email
+ * @param {string} userId
+ */
+const checkMail = async (email, userId) => {
+	if (email) {
+		const users = await userModel
+			.find({ query: { email: email.toLowerCase() } })
+			.lean()
+			.exec();
+		if (userId && users.length === 1 && equalIds(users[0]._id, userId)) return;
+		if (users.length !== 0) {
+			throw new BadRequest('Email already exists.');
+		}
+	}
+};
+
 const createUserAndAccount = async (inputUser, inputAccount) => {
-	// (await User.create(user)).toObject()
+	await checkMail(inputUser.email);
+	inputUser.roles = await resolveUserRoles(inputUser.roles);
 	const user = (await userModel.create(inputUser)).toObject();
 	inputAccount.userId = user._id;
 	const account = (await createAccount(inputAccount)).toObject();
@@ -33,18 +67,9 @@ const updateAccount = async (userId, account) => {
 };
 
 const updateUserAndAccount = async (userId, changedUser, changedAccount) => {
+	await checkMail(changedUser.email, userId);
 	const user = await userModel.findOneAndUpdate({ _id: userId }, changedUser, { new: true }).lean().exec();
-	const account = await accountModel
-		.findOneAndUpdate(
-			{ userId, systemId: changedAccount.systemId },
-			{
-				username: changedAccount.username,
-				activated: true,
-			},
-			{ new: true }
-		)
-		.lean()
-		.exec();
+	const account = await updateAccount(user._id, changedAccount);
 	return { user, account };
 };
 
@@ -60,6 +85,7 @@ const findByLdapIdAndSchool = async (ldapId, schoolId) => {
 };
 
 const UserRepo = {
+	private: { createAccount, updateAccount },
 	createUserAndAccount,
 	updateUserAndAccount,
 	findByLdapIdAndSchool,

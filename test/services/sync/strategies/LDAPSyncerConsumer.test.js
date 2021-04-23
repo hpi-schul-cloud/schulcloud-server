@@ -112,7 +112,7 @@ describe('Ldap Syncer Consumer', () => {
 
 			const createClassStub = sandbox.stub(ClassRepo, 'createClass');
 			const ldapConsumer = new LDAPSyncerConsumer();
-			const result = await ldapConsumer.classAction({ className, ldapDn });
+			const result = await ldapConsumer.classAction({ name: className, ldapDN: ldapDn });
 			expect(result).to.be.equal(true);
 			expect(createClassStub.calledOnce).to.be.true;
 
@@ -136,7 +136,7 @@ describe('Ldap Syncer Consumer', () => {
 
 			const ldapConsumer = new LDAPSyncerConsumer();
 			const newClassName = 'New Test Class';
-			const result = await ldapConsumer.classAction({ className: newClassName });
+			const result = await ldapConsumer.classAction({ name: newClassName });
 			expect(result).to.be.equal(true);
 			expect(updateClassStub.calledOnce).to.be.true;
 			expect(updateClassStub.getCall(0).firstArg).to.be.equal(classId);
@@ -158,7 +158,7 @@ describe('Ldap Syncer Consumer', () => {
 			const ldapConsumer = new LDAPSyncerConsumer();
 			const testUserInput = { _id: 1 };
 			const testAccountInput = { _id: 2 };
-			const result = await ldapConsumer.userAction({ userData: testUserInput, accountData: testAccountInput });
+			const result = await ldapConsumer.userAction({ user: testUserInput, account: testAccountInput });
 
 			const { firstArg } = createUserAndAccountStub.firstCall;
 			const { lastArg } = createUserAndAccountStub.firstCall;
@@ -197,7 +197,7 @@ describe('Ldap Syncer Consumer', () => {
 				roles: [new ObjectId()],
 			};
 			const testAccountInput = { _id: 2 };
-			const result = await ldapConsumer.userAction({ userData: testUserInput, accountData: testAccountInput });
+			const result = await ldapConsumer.userAction({ user: testUserInput, account: testAccountInput });
 
 			expect(result).to.be.true;
 			expect(updateUserAndAccountStub.calledOnce).to.be.true;
