@@ -8,10 +8,10 @@ const formater = format.printf((info) => {
 
 const logger = createLogger({
 	levels: winston.config.syslog.levels,
-	level: 'alert',
+	level: 'info',
 	transports: [
 		new transports.Console({
-			level: 'alert',
+			level: 'info',
 			format: formater,
 		}),
 	],
