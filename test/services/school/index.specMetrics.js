@@ -4,7 +4,7 @@ const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects');
 // const logger = require('../../../src/logger'); -> logger.info or logger.alert do not work
 
-const getCharNumber = (result, ressourceNumbers=1) => ((JSON.stringify(result)).length/ressourceNumbers);
+const getCharNumber = (result, ressourceNumbers = 1) => JSON.stringify(result).length / ressourceNumbers;
 
 // TODO: it fail because the service must be improve
 describe('[performance] school service', () => {
@@ -34,14 +34,14 @@ describe('[performance] school service', () => {
 	it('[p] schools find', async () => {
 		let dbCalls = 0;
 		// const timeIterations = 100;
-		let  $limit = service.paginate.max;
+		const $limit = service.paginate.max;
 
 		TestEventEmitter.on('mongoose_test_calls', (data) => {
-			dbCalls++;
+			dbCalls += 1;
 		});
 
 		const promises = [];
-		for(let i=0; i<$limit; i++) {
+		for (let i = 0; i < $limit; i += 1) {
 			promises.push(testHelper.createTestSchool());
 		}
 		await Promise.all(promises);
@@ -49,14 +49,14 @@ describe('[performance] school service', () => {
 		const params = {
 			query: {
 				$limit,
-			}
+			},
 		};
 
 		// iterations over the call for time messure do not work like expected
 		// TODO: figure out if feathers cache stuff
-		let start = Date.now();
+		const start = Date.now();
 		const result = await service[method](params); // move to external call
-		let time = Date.now() - start;
+		const time = Date.now() - start;
 
 		const charNumberByRessource = getCharNumber(result, $limit);
 		// TODO: replace console.log in future
@@ -75,4 +75,3 @@ describe('[performance] school service', () => {
 		expect(charNumberByRessource, 'Response Kb size is to much.').below(limits.chars);
 	});
 });
-

@@ -172,6 +172,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 		teams,
 		files,
 		classes,
+		schools,
 		createTestTeamWithOwner,
 		info,
 		setupUser,
