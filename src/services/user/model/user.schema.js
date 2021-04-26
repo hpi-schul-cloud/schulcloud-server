@@ -135,12 +135,12 @@ userSchema.index(
 	},
 	{
 		weights: {
-			firstName: 10,
-			lastName: 10,
-			email: 10,
-			firstNameSearchValues: 2,
-			lastNameSearchValues: 2,
-			emailSearchValues: 1,
+			firstName: 15,
+			lastName: 15,
+			email: 15,
+			firstNameSearchValues: 3,
+			lastNameSearchValues: 3,
+			emailSearchValues: 2,
 		},
 		name: 'userSearchIndex',
 		default_language: 'none', // no stop words and no stemming,
