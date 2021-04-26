@@ -33,6 +33,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 - SC-8728 - fix configuration reset in tests
+- SC-8873 - fix addUser prioritization for full school Matrix messenger sync
 
 ## [26.1.0]
 
