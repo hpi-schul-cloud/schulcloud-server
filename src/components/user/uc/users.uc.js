@@ -167,7 +167,7 @@ const deleteUser = async (id, { user: loggedinUser }) => {
 
 	const schoolTombstoneUserId = await getOrCreateTombstoneUserId(user.schoolId, loggedinUser);
 	// this is an async function, but we don't need to wait for it, because we don't give any errors information back to the user
-	const facades = ['/pseudonym/v2', '/helpdesk/v2', '/fileStorage/v2', '/classes/v2', '/courses/v2'];
+	const facades = ['/pseudonym/v2', '/helpdesk/v2', '/fileStorage/v2', '/classes/v2', '/courses/v2', '/messenger/v2'];
 	deleteUserRelatedData(user._id, schoolTombstoneUserId, facades).catch((error) => {
 		errorUtils.asyncErrorLog(error, 'deleteUserRelatedData failed');
 	});
