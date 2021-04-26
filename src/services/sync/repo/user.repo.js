@@ -80,6 +80,8 @@ const updateAccount = async (userId, account) => {
 
 const updateUserAndAccount = async (userId, changedUser, changedAccount) => {
 	await checkMail(changedUser.email, userId);
+	changedUser.roles = await resolveUserRoles(changedUser.roles);
+
 	const user = await userModel.findOneAndUpdate({ _id: userId }, changedUser, { new: true }).lean().exec();
 	const account = await updateAccount(user._id, changedAccount);
 	return { user, account };
