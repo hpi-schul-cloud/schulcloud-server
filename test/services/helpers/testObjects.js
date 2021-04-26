@@ -15,7 +15,7 @@ const performanceMessurceLimits = {
 	time: 100,
 	dbCalls: 10,
 	paginate: 1000,
-}
+};
 
 module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObjectId }) => {
 	const {
@@ -173,6 +173,8 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 		files,
 		classes,
 		schools,
+		years,
+		users,
 		createTestTeamWithOwner,
 		info,
 		setupUser,

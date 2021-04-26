@@ -3,6 +3,7 @@ const getAllRoutes = require('../services/helpers/getAllRoutes');
 
 const { expect } = chai;
 const PORT = 5255;
+const MAX_PAGINATION = 1001;
 
 const selectForTest = (service) => {
 	if (!service) {
@@ -28,10 +29,10 @@ const main = (app) => {
 		for (const [serviceName] of Object.entries(routes)) {
 			const service = app.service(serviceName);
 			if (selectForTest(service)) {
-				// test if all before hooks include disallow external
+				// TODO: test if all before hooks include disallow external
 				it(`test pagination max limit for ${serviceName}`, () => {
-					expect(service.paginate).to.exist;
-					expect(service.paginate.max).below(1001);
+					expect(service.paginate).to.not.equal('undefined');
+					expect(service.paginate.max).below(MAX_PAGINATION);
 				});
 			}
 		}
