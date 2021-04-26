@@ -10,7 +10,7 @@ const { hasPermission } = require('../../hooks');
 const Syncer = require('./strategies/Syncer');
 const syncers = require('./strategies');
 const getSyncLogger = require('./logger');
-const consumer = require('./strategies/LDAPSyncerConsumer');
+const { consumer } = require('./strategies/LDAPSyncerConsumer');
 
 module.exports = function setup() {
 	const app = this;
@@ -54,6 +54,7 @@ module.exports = function setup() {
 
 	app.use('/sync/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/sync', new SyncService());
+
 	app.configure(consumer);
 
 	const syncService = app.service('/sync');
