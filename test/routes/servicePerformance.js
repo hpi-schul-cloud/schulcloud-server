@@ -141,7 +141,7 @@ const prepareConfigMap = async (testHelper, config) => {
 };
 
 const main = (app) => {
-	describe.only('metrics service call for specific services', () => {
+	describe('metrics service call for specific services', () => {
 		let server;
 		const testHelper = testObjects(app);
 		const { TestEventEmitter, performanceMessurceLimits: limits } = testHelper;
