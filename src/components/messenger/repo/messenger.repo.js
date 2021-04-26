@@ -4,7 +4,6 @@ const deactivateUser = async (userId) => {
     return requestUserRemoval();
 }
 
-
 module.exports = {
 	deactivateUser,
 };
