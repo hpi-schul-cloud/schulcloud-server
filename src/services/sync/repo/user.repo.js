@@ -24,6 +24,19 @@ const resolveUserRoles = async (roles) => {
 		.exec();
 };
 
+const createUser = async (user) => {
+	user.roles = await resolveUserRoles(user.roles);
+	return userModel.create({
+		firstName: user.firstName,
+		lastName: user.lastName,
+		schoolId: user.schoolId,
+		email: user.email,
+		ldapDn: user.ldapDn,
+		ldapId: user.ldapId,
+		roles: user.roles,
+	});
+};
+
 /**
  * request user and compare the email address.
  * if possible it should be solved via unique index on database
@@ -45,8 +58,7 @@ const checkMail = async (email, userId) => {
 
 const createUserAndAccount = async (inputUser, inputAccount) => {
 	await checkMail(inputUser.email);
-	inputUser.roles = await resolveUserRoles(inputUser.roles);
-	const user = (await userModel.create(inputUser)).toObject();
+	const user = (await createUser(inputUser)).toObject();
 	inputAccount.userId = user._id;
 	const account = (await createAccount(inputAccount)).toObject();
 	return { user, account };
@@ -85,7 +97,7 @@ const findByLdapIdAndSchool = async (ldapId, schoolId) => {
 };
 
 const UserRepo = {
-	private: { createAccount, updateAccount },
+	private: { createAccount, createUser, updateAccount },
 	createUserAndAccount,
 	updateUserAndAccount,
 	findByLdapIdAndSchool,

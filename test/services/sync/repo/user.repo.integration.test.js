@@ -88,7 +88,16 @@ describe('user repo', () => {
 	});
 
 	it('should successfully update user and account', async () => {
-		const testUser = await testObjects.createTestUser({});
+		const initialFirstName = 'Initial Fname';
+		const initialLastName = 'Initial Lname';
+		const initialEmail = 'initial@email.com';
+		const initialBirthday = new Date();
+		const testUser = await testObjects.createTestUser({
+			firstName: initialFirstName,
+			lastName: initialLastName,
+			birthday: initialBirthday,
+			email: initialEmail,
+		});
 		const password = 'password123';
 		const credentials = { username: testUser.email, password };
 		await testObjects.createTestAccount(credentials, 'local', testUser);
@@ -104,6 +113,8 @@ describe('user repo', () => {
 		expect(user.firstName).to.be.equal(newFirstName);
 		expect(user.lastName).to.be.equal(newLastName);
 		expect(account.username).to.be.equal(newUserName);
+		expect(user.email).to.be.equal(initialEmail);
+		expect(user.birthday.toString()).to.be.equal(initialBirthday.toString());
 	});
 
 	it('should throw an error by update if email already used', async () => {
