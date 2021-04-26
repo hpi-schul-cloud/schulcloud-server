@@ -58,7 +58,7 @@ const getExample = (result) => {
 
 const buildTest = (app, TestEventEmitter, limits, serviceName) => {
 	describe(`[performance] ${serviceName} service`, () => {
-		const method = 'find'; // ['get', 'find']; // TODO: get do not work
+		const method = 'find';
 		const service = app.service(serviceName);
 
 		it(`[p] ${serviceName} ${method}`, async () => {
