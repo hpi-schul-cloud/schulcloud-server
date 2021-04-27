@@ -90,6 +90,7 @@ paths:
         - description: Regex to search for in firstName, lastName, and emails.
           in: query
           name: searchQuery
+          allowEmptyValue: true
           schema:
             type: string
         - description: Query parameters to filter
@@ -310,6 +311,7 @@ paths:
         - description: Regex to search for in firstName, lastName, and emails.
           in: query
           name: searchQuery
+          allowEmptyValue: true
           schema:
             type: string
         - description: Query parameters to filter
