@@ -20,7 +20,7 @@ let channelSendInternal;
 const sendMessage = (message) => {
 	try {
 		channelSendInternal.sendToQueue(message, { persistent: true });
-	} catch(err) {
+	} catch (err) {
 		logger.error(`Messenger sync message "${JSON.stringify(message)}" cannot be sent to internal queue`, err);
 	}
 };
