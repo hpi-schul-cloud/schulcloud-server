@@ -38,6 +38,16 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [26.1.0]
 
+
+### Added
+
+- SC-8910 - added an isExternal check to the adminUsers service remove method
+
+### Changed
+
+- SC-8732 - change search filter gate and weight of values in indexes. Will reduce amount of results
+- SC-8880 - changed the validation for search queries in NAT, now it allows empty
+
 ## [26.0.16] - 2021-04-20
 
 ### Removed
@@ -51,6 +61,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8909 - messenger: use user-based fixed device ids
 
 ## [26.0.14] - 2021-04-16
+
+### Changed
 
 - SC-8934 - no more autosync for the migrations for the mongodb
 
