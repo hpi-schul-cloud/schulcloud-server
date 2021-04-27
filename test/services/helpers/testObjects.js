@@ -11,10 +11,10 @@ const warn = (message, pass) => {
 };
 
 const performanceMessurceLimits = {
-	chars: 1000,
-	time: 100,
-	dbCalls: 10,
-	paginate: 1000,
+	chars: 500,
+	time: 50,
+	dbCalls: 5,
+	paginate: 100,
 };
 
 module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObjectId }) => {
