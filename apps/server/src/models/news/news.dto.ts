@@ -1,5 +1,17 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { PartialType } from '@nestjs/mapped-types';
-import { CreateNewsDto } from './create-news.dto';
+
+/**
+ * DTO for creating a news document.
+ */
+export class CreateNewsDto {
+	@ApiProperty()
+	title: string;
+	@ApiProperty()
+	body: string;
+	@ApiProperty()
+	publishedOn: Date;
+}
 
 /**
  * DTO for Updating a news document.
