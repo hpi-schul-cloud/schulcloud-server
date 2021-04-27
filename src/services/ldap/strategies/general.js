@@ -28,7 +28,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 	 * (Array) roles = ['teacher', 'student', 'administrator']
 	 * @memberof GeneralLDAPStrategy
 	 */
-	async getUsers() {
+	async getUsers(school) {
 		const {
 			userAttributeNameMapping,
 			userPathAdditions,
@@ -40,7 +40,7 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 		const requiredFilters = requiredAttributes.map((attr) => `(${attr}=*)`).join('');
 
 		const options = {
-			filter: filterForModifiedEntities(this.config.lastModifyTimestamp, `(&(objectClass=person)${requiredFilters})`),
+			filter: filterForModifiedEntities(school, `(&(objectClass=person)${requiredFilters})`),
 			scope: 'sub',
 			attributes: [
 				userAttributeNameMapping.givenName,
@@ -140,15 +140,12 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 	 * @returns {Array} Array of Objects containing className, ldapDn, uniqueMember
 	 * @memberof GeneralLDAPStrategy
 	 */
-	getClasses() {
+	getClasses(school) {
 		const { classAttributeNameMapping, classPathAdditions } = this.config.providerOptions;
 
 		if (classPathAdditions !== '') {
 			const options = {
-				filter: filterForModifiedEntities(
-					this.config.lastModifyTimestamp,
-					`${classAttributeNameMapping.description}=*`
-				),
+				filter: filterForModifiedEntities(school, `${classAttributeNameMapping.description}=*`),
 				scope: 'sub',
 				attributes: [
 					classAttributeNameMapping.dn,

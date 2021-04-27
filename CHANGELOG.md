@@ -16,6 +16,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8408 - added delete events by scope Id route
 - SC-7937 - Allow adding multiple materials to lesson
 - SC-7868 - Deletion concept for personal file connections
+- SC-8873 - Add prioritization for Matrix messenger tasks
 
 ### Changed
 
@@ -26,13 +27,95 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7021 - automatic deletion documents in the trashbins collection after 7 days.
 - SC-5202 - homework tests refactoring
 - SC-7868 - filestorage integration tests are skipped on local test environments if minio is not setup
-- SC-8589 - add lazy loading
+- SC-8779 - messenger: use user-based fixed device ids
+- SC-8589 - depseudonymization iframe: add lazy loading
 
 ### Fixed
 
 - SC-8728 - fix configuration reset in tests
+- SC-8873 - fix addUser prioritization for full school Matrix messenger sync
 
 ## [26.1.0]
+
+
+### Added
+
+- SC-8910 - added an isExternal check to the adminUsers service remove method
+
+### Changed
+
+- SC-8732 - change search filter gate and weight of values in indexes. Will reduce amount of results
+- SC-8880 - changed the validation for search queries in NAT, now it allows empty
+
+## [26.0.16] - 2021-04-20
+
+### Removed
+
+- - SC-8748 - revert: bump feathers-mongoose from 6.3.0 to 8.3.1
+
+## [26.0.15] - 2021-04-19
+
+### Changed
+
+- SC-8909 - messenger: use user-based fixed device ids
+
+## [26.0.14] - 2021-04-16
+
+### Changed
+
+- SC-8934 - no more autosync for the migrations for the mongodb
+
+## [26.0.13] - 2021-04-15
+
+### Fixed
+
+- SC-8917 - verify configuration missing school
+
+## [26.0.12] - 2021-04-14
+
+### Changed
+
+- SC-8929 - increase performance for alert requests
+
+## [26.0.11] - 2021-04-13
+
+### Changed
+
+- SC-8748 - bump feathers-mongoose from 6.3.0 to 8.3.1
+
+## [26.0.10] - 2021-04-09
+
+### Fixed
+
+- SC-8908 ldap sync: fix lock
+
+## [26.0.9] - 2021-04-06
+
+- SC-8779 - fix partial LDAP sync
+
+## [26.0.8] - 2021-03-31
+
+### Fixed
+
+- SC-8691 ldap sync: fix potential deadlock while loadind ldap data
+
+## [26.0.7] - 2021-03-31
+
+### Fixed
+
+- SC-8768 ldap sync: in user search include current school
+
+## [26.0.6] - 2021-03-30
+
+### Fixed
+
+- SC-8836 - teachers can add classes from other teachers to their courses
+
+## [26.0.5] - 2021-03-29
+
+### Fixed
+
+- SC-8691 - LDAP sync can be run with multiple school in parallel
 
 ## [26.0.4] - 2021-03-25
 
@@ -397,7 +480,6 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 - SC-7028 - Add Course Component API Specification document
 - SC-7476 - Prevent hash generation if user has account
 - SC-6692 - Added Lern-Store counties support for Niedersachsen (Merlin)
-
 
 ### Changed
 

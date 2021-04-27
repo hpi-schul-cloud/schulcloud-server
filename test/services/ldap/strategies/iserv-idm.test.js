@@ -194,10 +194,10 @@ describe('IservIdmLDAPStrategy', () => {
 		});
 
 		it('should filter for modifyTimestamp if applicable', async () => {
-			const config = {
-				lastModifyTimestamp: '20201020000000Z',
+			const school = {
+				ldapLastSync: '20201020000000Z',
 			};
-			await new IservIdmLDAPStrategy(app, config).getUsers({});
+			await new IservIdmLDAPStrategy(app, {}).getUsers(school);
 			expect(ldapServiceMock.searchCollection.lastArg.filter).to.include('!(modifyTimestamp<=20201020000000Z)');
 		});
 	});
@@ -267,10 +267,10 @@ describe('IservIdmLDAPStrategy', () => {
 		});
 
 		it('should filter for modifyTimestamp if applicable', async () => {
-			const config = {
-				lastModifyTimestamp: '20201020000000Z',
+			const school = {
+				ldapLastSync: '20201020000000Z',
 			};
-			await new IservIdmLDAPStrategy(app, config).getClasses({});
+			await new IservIdmLDAPStrategy(app, {}).getClasses(school);
 			expect(ldapServiceMock.searchCollection.lastArg.filter).to.include('!(modifyTimestamp<=20201020000000Z)');
 		});
 	});

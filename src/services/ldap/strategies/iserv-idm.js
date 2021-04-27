@@ -31,7 +31,7 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 	async getUsers(school) {
 		const requiredAttributes = '(objectClass=person)(sn=*)(uuid=*)(uid=*)(mail=*)(cn=*)';
 		const options = {
-			filter: filterForModifiedEntities(this.config.lastModifyTimestamp, `(&${requiredAttributes})`),
+			filter: filterForModifiedEntities(school, `(&${requiredAttributes})`),
 			scope: 'sub',
 			attributes: ['givenName', 'sn', 'dn', 'uuid', 'cn', 'mail', 'objectClass', 'memberOf', 'modifyTimestamp'],
 		};
@@ -88,7 +88,7 @@ class IservIdmLDAPStrategy extends AbstractLDAPStrategy {
 	 */
 	async getClasses(school) {
 		const options = {
-			filter: filterForModifiedEntities(this.config.lastModifyTimestamp, `(description=*)`),
+			filter: filterForModifiedEntities(school, `(description=*)`),
 			scope: 'sub',
 			attributes: ['dn', 'description', 'member', 'modifyTimestamp'],
 		};
