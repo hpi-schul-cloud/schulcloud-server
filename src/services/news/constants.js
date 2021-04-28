@@ -6,4 +6,11 @@ module.exports = {
 		{ path: 'updaterId', select: ['_id', 'firstName', 'lastName'], target: 'updater' },
 		{ path: 'target', select: ['_id', 'name'] },
 	],
+	newsPermissions: {
+		VIEW: 'NEWS_VIEW',
+		EDIT: 'NEWS_EDIT',
+		CREATE: 'NEWS_CREATE',
+		REMOVE: 'NEWS_CREATE',
+	},
+	targetModels: ['courses', 'teams', 'class'],
 };
