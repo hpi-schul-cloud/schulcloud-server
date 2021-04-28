@@ -41,6 +41,7 @@
 		"mocha": "cross-env NODE_ENV=test ts-mocha --exit --timeout 15000",
 		"mocha-watch": "cross-env NODE_ENV=test ts-mocha",
 		"mocha-inspect": "cross-env NODE_ENV=test ts-mocha --inspect --no-timeout --exit",
+		"mocha-metrics": "cross-env NODE_ENV=test ts-mocha \"test/routes/*.metrics.js\" --exclude \"{test,src}/**/*.test.{js,ts}\" --no-timeout --exit",
 		"migration": "migrate --config ./config/migrate.js",
 		"migration-sync": "migrate list --autosync --config ./config/migrate.js",
 		"migration-list": "migrate list --config ./config/migrate.js",

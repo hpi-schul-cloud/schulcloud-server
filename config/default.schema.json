@@ -486,6 +486,11 @@
 			"default": false,
 			"description": "enable the /versions route"
 		},
+		"FEATURE_MONGOOSE_LOGGING_ENABLED" : {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable logging for mongoose database calls."
+		},
 		"PROMETHEUS": {
 			"type": "object",
 			"description": "Prometheus metrics options used by prometheus-api-metrics",
