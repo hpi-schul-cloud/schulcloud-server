@@ -32,14 +32,17 @@ class ConfigServiceV2 {
 		this.app = app;
 	}
 
-	find() {
+	find(params) {
 		// secrets are save
-		const _envs = {
-			ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN'),
-			SOME_OTHER_ENV_VARIABLES: 'string_value',
-			SOME_ANY_OTHER_ENV_VARIABLES: true,
-		};
-		return _envs;
+
+		return new Promise((resolve) => {
+			const _envs = {
+				ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN'),
+				SOME_OTHER_ENV_VARIABLES: 'string_value',
+				SOME_ANY_OTHER_ENV_VARIABLES: true,
+			};
+			resolve(_envs);
+		  });
 	}
 }
 
