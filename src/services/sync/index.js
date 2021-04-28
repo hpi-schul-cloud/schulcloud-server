@@ -3,6 +3,7 @@ const { iff, isProvider } = require('feathers-hooks-common');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { BadRequest } = require('../../errors');
 
 const { hasPermission } = require('../../hooks');
@@ -55,7 +56,9 @@ module.exports = function setup() {
 	app.use('/sync/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/sync', new SyncService());
 
-	app.configure(consumer);
+	if (Configuration.get('FEATURE_SYNCER_CONSUMER_ENABLE') === true) {
+		app.configure(consumer);
+	}
 
 	const syncService = app.service('/sync');
 	syncService.hooks({

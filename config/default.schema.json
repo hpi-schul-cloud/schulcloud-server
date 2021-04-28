@@ -509,6 +509,11 @@
 			"default": 8000,
 			"description": "Default timeout for external requests in milliseconds."
 		},
+		"FEATURE_SYNCER_CONSUMER_ENABLE": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enable consumer for queued sync messages"
+		},
 		"LDAP_SYSTEM_SYNCER_POOL_SIZE": {
 			"type": "integer",
 			"minimum": 1,
