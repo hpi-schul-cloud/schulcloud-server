@@ -17,6 +17,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7937 - Allow adding multiple materials to lesson
 - SC-7868 - Deletion concept for personal file connections
 - SC-8873 - Add prioritization for Matrix messenger tasks
+- SC-8982 - add inital service ressource messuring test setup
 
 ### Changed
 
@@ -33,6 +34,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8728 - fix configuration reset in tests
 - SC-8873 - fix addUser prioritization for full school Matrix messenger sync
+- SC-8982 - fix test setup for on the fly building test like routes jwt
 
 ## [26.1.0]
 
