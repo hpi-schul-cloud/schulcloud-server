@@ -1,6 +1,5 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NewsDocument } from '../interfaces/news.interface';
 import { NewsRepo } from './news.repo';
 
 describe('NewsRepoService', () => {

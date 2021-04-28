@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { LeanDocument, Model, ObjectId } from 'mongoose';
+import { LeanDocument, Model, Types } from 'mongoose';
 import legacyConstants = require('../../../../../src/services/news/constants');
 import { InjectModel } from '@nestjs/mongoose';
 import { INews, News } from '../../models/news/news.model';
@@ -33,7 +33,7 @@ export class NewsRepo {
 	}
 
 	/** resolves a news document with some elements names (school, updator/creator) populated already */
-	async findOneById(id: ObjectId): Promise<News> {
+	async findOneById(id: Types.ObjectId): Promise<News> {
 		let query = this.newsModel.findById(id);
 		populateProperties.forEach((populationSet) => {
 			const { path, select } = populationSet;
@@ -43,11 +43,11 @@ export class NewsRepo {
 		// NOT EXPORT A DOCUMENT, HERE WE KNOW WHAT THE DB HAS RETURNED
 		// FOR UPPER LAYERS ONLY WE MUST PROVIDE TYPESAFETY
 		// THIS MIGHT CHANGE WHEN WE USE A NON_LEGACY MODEL FACTORY
-		if (newsDocument !== null) {
-			const news = toNews(newsDocument);
-			return news;
+		if (newsDocument == null) {
+			throw new NotFoundException('The requested news ' + id + 'has not been found.');
 		}
-		throw new NotFoundException('The requested news ' + id + 'has not been found.');
+		const news = toNews(newsDocument);
+		return news;
 	}
 
 	update(id: string, updateNewsDto: UpdateNewsDto) {

@@ -4,7 +4,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '../authentication/auth.decorator';
 import { ICurrentUser } from '../authentication/interfaces/jwt-payload';
 import { ParseObjectIdPipe } from './parse-object-id.pipe';
-import { ObjectId, Schema, SchemaTypes } from 'mongoose';
+import { Types } from 'mongoose';
 import { News } from '../models/news/news.model';
 import { CreateNewsDto } from '../models/news/news.dto';
 
@@ -29,10 +29,10 @@ export class NewsController {
 	@Get(':id')
 	async findOne(
 		// A parameter pipe like ParseObjectIdPipe gives us the guarantee of typesafety for @Param
-		@Param('id', ParseObjectIdPipe) newsId: ObjectId,
+		@Param('id', ParseObjectIdPipe) newsId: Types.ObjectId,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<News> {
-		const userId = new Schema.Types.ObjectId(currentUser.userId);
+		const userId = new Types.ObjectId(currentUser.userId);
 		const news = await this.newsService.findOneByIdForUser(newsId, userId);
 		return news;
 	}
