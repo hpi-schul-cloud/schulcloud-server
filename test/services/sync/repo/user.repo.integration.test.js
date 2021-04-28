@@ -119,6 +119,9 @@ describe('user repo', () => {
 
 	it('should throw an error by update if email already used', async () => {
 		const testEmail = `test${Date.now()}@example.com`;
+		const existedEmail = `existed@example.com`;
+
+		await testObjects.createTestUser({ email: existedEmail });
 		const testUser = await testObjects.createTestUser({ email: testEmail });
 		const password = 'password123';
 		const credentials = { username: testUser.email, password };
@@ -130,7 +133,7 @@ describe('user repo', () => {
 		expect(
 			UserRepo.updateUserAndAccount(
 				testUser._id,
-				{ firstName: newFirstName, lastName: newLastName },
+				{ firstName: newFirstName, lastName: newLastName, email: existedEmail },
 				{ username: newUserName }
 			)
 		).to.eventually.throw(BadRequest);

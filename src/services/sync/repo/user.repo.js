@@ -45,10 +45,7 @@ const createUser = async (user) => {
  */
 const checkMail = async (email, userId) => {
 	if (email) {
-		const users = await userModel
-			.find({ query: { email: email.toLowerCase() } })
-			.lean()
-			.exec();
+		const users = await userModel.find({ email: email.toLowerCase() }).lean().exec();
 		if (userId && users.length === 1 && equalIds(users[0]._id, userId)) return;
 		if (users.length !== 0) {
 			throw new BadRequest('Email already exists.');
