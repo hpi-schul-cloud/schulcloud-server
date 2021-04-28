@@ -1,10 +1,7 @@
 const { requestUserRemoval } = require('../../../services/messengerSync/producer');
 
-const deactivateUser = async (userId) => {
-    return requestUserRemoval();
-}
+const deactivateUser = (user) => requestUserRemoval(user);
 
 module.exports = {
 	deactivateUser,
 };
-

@@ -7,13 +7,12 @@ const deactivateUser = async (userId) => {
 	const userFacade = facadeLocator.facade('/users/v2');
 	const schoolId = await userFacade.getSchoolIdOfUser(userId);
 
-    await messengerRepo.deactivateUser({_id: userId, schoolId});
-    return trashBinResult({scope: 'messenger', data: {}, complete: true})
-}
+	await messengerRepo.deactivateUser({ _id: userId, schoolId });
+	return trashBinResult({ scope: 'messenger', data: {}, complete: true });
+};
 
 const deleteUserData = [deactivateUser];
 
 module.exports = {
 	deleteUserData,
 };
-
