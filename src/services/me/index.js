@@ -5,6 +5,7 @@ const { Forbidden, GeneralError } = require('../../errors');
 const logger = require('../../logger');
 const hooks = require('./hooks');
 const { externallyManaged } = require('../helpers/utils');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 class Service {
 	constructor(options) {
@@ -26,6 +27,7 @@ class Service {
 		};
 		let user = {};
 		let school = {};
+
 		try {
 			user = await this.app.service('/users').get(userId, userServiceParams);
 		} catch (err) {
@@ -47,6 +49,11 @@ class Service {
 			throw new GeneralError("Can't check externallyManaged");
 		}
 		user.language = user.language || school.language;
+		user.envVariables = {
+			ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN'),
+			SOME_OTHER_ENV_VARIABLES: 'string_value',
+			SOME_ANY_OTHER_ENV_VARIABLES: true,
+		};
 		return user;
 	}
 
