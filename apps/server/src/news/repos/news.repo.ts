@@ -1,23 +1,25 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Document, LeanDocument, Model, ObjectId } from 'mongoose';
-import { CreateNewsDto } from '../dto/create-news.dto';
-import { UpdateNewsDto } from '../dto/update-news.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { LeanDocument, Model, ObjectId } from 'mongoose';
 import legacyConstants = require('../../../../../src/services/news/constants');
-import { NewsEntity } from '../entities/news.entity';
-import { plainToClass } from 'class-transformer';
+import { InjectModel } from '@nestjs/mongoose';
+import { INews, News } from '../../models/news/news.model';
+import { CreateNewsDto, UpdateNewsDto } from '../../models/news/news.dto';
 
 const { populateProperties } = legacyConstants;
 
 @Injectable()
 export class NewsRepo {
-	constructor(@Inject('NEWS_MODEL') private readonly newsModel: Model<Document<NewsEntity>>) {}
+	constructor(@InjectModel('News') private readonly newsModel: Model<INews>) {}
 
-	create(createNewsDto: CreateNewsDto): Promise<Document<NewsEntity>> {
-		const createdNews = new this.newsModel(createNewsDto);
-		return createdNews.save();
+	async create(createNewsDto: CreateNewsDto): Promise<News> {
+		const newsToCreate = new News(createNewsDto);
+		const createdNews = await this.newsModel.create(newsToCreate);
+		if (createdNews) {
+			return new News(createdNews.toJSON());
+		}
 	}
 
-	async findAll(): Promise<NewsEntity[]> {
+	async findAll(): Promise<News[]> {
 		// TODO filter by user scopes
 		let query = this.newsModel.find();
 		populateProperties.forEach((populationSet) => {
@@ -26,12 +28,12 @@ export class NewsRepo {
 		});
 		const newsDocuments = await query.lean().exec();
 
-		const newsEntities = newsDocuments.map(toNewsEntity);
+		const newsEntities = newsDocuments.map(toNews);
 		return newsEntities;
 	}
 
 	/** resolves a news document with some elements names (school, updator/creator) populated already */
-	async findOneById(id: ObjectId): Promise<NewsEntity> {
+	async findOneById(id: ObjectId): Promise<News> {
 		let query = this.newsModel.findById(id);
 		populateProperties.forEach((populationSet) => {
 			const { path, select } = populationSet;
@@ -42,8 +44,8 @@ export class NewsRepo {
 		// FOR UPPER LAYERS ONLY WE MUST PROVIDE TYPESAFETY
 		// THIS MIGHT CHANGE WHEN WE USE A NON_LEGACY MODEL FACTORY
 		if (newsDocument !== null) {
-			const newsEntity = toNewsEntity(newsDocument);
-			return newsEntity;
+			const news = toNews(newsDocument);
+			return news;
 		}
 		throw new NotFoundException('The requested news ' + id + 'has not been found.');
 	}
@@ -56,7 +58,7 @@ export class NewsRepo {
 		return `This action removes a #${id} news`;
 	}
 }
-function toNewsEntity(newsDocument: LeanDocument<Document<NewsEntity, {}>>): NewsEntity {
+function toNews(newsDocument: LeanDocument<INews>): News {
 	// move populated properties to other named property and restore id's like without population
 	// sample: schoolId:{...} to schoolId:ObjectId and school:{...}
 	populateProperties.forEach(({ path, target }) => {
@@ -66,11 +68,12 @@ function toNewsEntity(newsDocument: LeanDocument<Document<NewsEntity, {}>>): New
 			newsDocument[path] = id;
 		}
 	});
-	const newsEntity = plainToClass(NewsEntity, newsDocument, {
-		/** remove properties not exported in @NewsEntity */
-		excludeExtraneousValues: true,
-		/** For undefined properties, apply defaults defined within of @NewsEntity */
-		exposeDefaultValues: true,
-	});
-	return newsEntity;
+	// const news = plainToClass(News, newsDocument, {
+	// 	/** remove properties not exported in @News */
+	// 	excludeExtraneousValues: true,
+	// 	/** For undefined properties, apply defaults defined within of @News */
+	// 	exposeDefaultValues: true,
+	// });
+	const news = new News(newsDocument);
+	return news;
 }
