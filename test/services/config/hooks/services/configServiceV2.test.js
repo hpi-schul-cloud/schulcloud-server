@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const appPromise = require('../../../../../src/app');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
-describe.only('ConfigServiceV2', () => {
+describe('ConfigServiceV2', () => {
 	let app;
 	let server;
 	let configService;
