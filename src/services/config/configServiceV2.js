@@ -34,11 +34,11 @@ class ConfigServiceV2 {
 	}
 
 	find() {
-		const _envs = {
+		const envs = {
 			ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN'),
 		};
 
-		return Promise.resolve(_envs);
+		return Promise.resolve(envs);
 	}
 }
 
