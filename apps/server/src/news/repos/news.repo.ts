@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { LeanDocument, Model, Query, Types } from 'mongoose';
+import { Document, LeanDocument, Model, Query, Types } from 'mongoose';
 import legacyConstants = require('../../../../../src/services/news/constants');
 import { InjectModel } from '@nestjs/mongoose';
 import { INews, News } from '../../models/news/news.model';
@@ -27,10 +27,9 @@ export class NewsRepo {
 
 	// TODO move...
 	/** Takes a query to enable pagination */
-	QueryBuilder(query: any) {
-		// TODO replace any by generic query
+	QueryBuilder<T extends Document>(query: Query<T[], T>) {
 		return {
-			paginate: (pagination?: PaginationModel) => {
+			paginate: (pagination?: PaginationModel): Query<T[], T> => {
 				if (pagination == null) {
 					return query;
 				}
@@ -53,7 +52,7 @@ export class NewsRepo {
 			const { path, select } = populationSet;
 			query = query.populate(path, select);
 		});
-		query = this.QueryBuilder(query).paginate(pagination);
+		query = this.QueryBuilder<INews>(query).paginate(pagination);
 		const newsDocuments = await query.lean().exec();
 
 		const newsEntities = newsDocuments.map(toNews);
