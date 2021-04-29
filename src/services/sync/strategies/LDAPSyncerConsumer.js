@@ -36,7 +36,7 @@ class LDAPSyncerConsumer {
 		try {
 			const school = await SchoolRepo.findSchoolByLdapIdAndSystem(schoolData.ldapSchoolIdentifier, schoolData.systems);
 
-			if (school !== null) {
+			if (school) {
 				if (school.name !== schoolData.name) {
 					await SchoolRepo.updateSchoolName(school._id, schoolData.name);
 				}
@@ -51,7 +51,7 @@ class LDAPSyncerConsumer {
 	async userAction({ user, account, syncId } = {}) {
 		try {
 			const school = await SchoolRepo.findSchoolByLdapIdAndSystem(user.schoolDn, user.systemId);
-			if (school !== null) {
+			if (school) {
 				const foundUser = await UserRepo.findByLdapIdAndSchool(user.ldapId, school._id);
 				if (foundUser !== null) {
 					await this.updateUserAndAccount(foundUser, user, account);
@@ -99,9 +99,9 @@ class LDAPSyncerConsumer {
 		try {
 			const school = await SchoolRepo.findSchoolByLdapIdAndSystem(classData.schoolDn, classData.systemId);
 
-			if (school !== null) {
+			if (school) {
 				const existingClass = await ClassRepo.findClassByYearAndLdapDn(school.currentYear, classData.ldapDN);
-				if (existingClass !== null) {
+				if (existingClass) {
 					if (existingClass.name !== classData.name) {
 						await ClassRepo.updateClassName(existingClass._id, classData.name);
 					}
