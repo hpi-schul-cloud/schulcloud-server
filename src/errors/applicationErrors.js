@@ -96,6 +96,16 @@ class SilentError extends BusinessError {
 	}
 }
 
+class SyncError extends Error {
+	constructor(taskType, syncId, error) {
+		super(taskType);
+		this.name = this.constructor.name;
+		this.message = error.message;
+		this.error = error;
+		Error.captureStackTrace(this, this.constructor);
+	}
+}
+
 module.exports = {
 	ApplicationError,
 	TechnicalError,
@@ -106,4 +116,5 @@ module.exports = {
 	SilentError,
 	ValidationError,
 	ForbiddenError,
+	SyncError,
 };
