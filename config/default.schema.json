@@ -511,7 +511,7 @@
 		},
 		"FEATURE_SYNCER_CONSUMER_ENABLE": {
 			"type": "boolean",
-			"default": true,
+			"default": false,
 			"description": "Enable consumer for queued sync messages"
 		},
 		"LDAP_SYSTEM_SYNCER_POOL_SIZE": {

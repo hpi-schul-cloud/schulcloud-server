@@ -48,7 +48,8 @@ const checkMail = async (email, userId) => {
 		const users = await userModel.find({ email: email.toLowerCase() }).lean().exec();
 		if (userId && users.length === 1 && equalIds(users[0]._id, userId)) return;
 		if (users.length !== 0) {
-			throw new BadRequest('Email already exists.');
+			const msgPrefix = userId ? `User ${userId} cannot be updated` : `User cannot be created.`;
+			throw new BadRequest(`${msgPrefix}. User with the same email already exists.`);
 		}
 	}
 };
