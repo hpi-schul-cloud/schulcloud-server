@@ -49,11 +49,6 @@ class Service {
 			throw new GeneralError("Can't check externallyManaged");
 		}
 		user.language = user.language || school.language;
-		user.envVariables = {
-			ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN'),
-			SOME_OTHER_ENV_VARIABLES: 'string_value',
-			SOME_ANY_OTHER_ENV_VARIABLES: true,
-		};
 		return user;
 	}
 

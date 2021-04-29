@@ -1,31 +1,32 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
 /**
- * Should not open for external request only for SC internal micro services.
+ *
  */
 const configServiceHooksV2 = {
 	before: {
 		all: [],
 		find: [],
-		get: [],
-		create: [],
-		update: [],
-		patch: [],
-		remove: [],
+		// get: [],
+		// create: [],
+		// update: [],
+		// patch: [],
+		// remove: [],
 	},
 	after: {
 		all: [],
 		find: [],
-		get: [],
-		create: [],
-		update: [],
-		patch: [],
-		remove: [],
+		// get: [],
+		// create: [],
+		// update: [],
+		// patch: [],
+		// remove: [],
 	},
 };
 
 /**
- * This service resolve configuration for extern services for example shd.
+ * This service for the env variables to sync between server and client.
+ * These env variables must be public and there must be no secret values.
  */
 class ConfigServiceV2 {
 	setup(app) {
@@ -33,13 +34,11 @@ class ConfigServiceV2 {
 	}
 
 	find() {
-		// secrets are save
 		const _envs = {
 			ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN'),
-			SOME_OTHER_ENV_VARIABLES: 'string_value',
-			SOME_ANY_OTHER_ENV_VARIABLES: true,
 		};
-		return _envs;
+
+		return Promise.resolve(_envs);
 	}
 }
 
