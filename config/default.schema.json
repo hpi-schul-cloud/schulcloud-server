@@ -560,6 +560,11 @@
 			"type": "string",
 			"default": "ticketsystem@schul-cloud.org",
 			"description": "Email address used for reporting a wish"
+		},
+		"ADMIN_TABLES_DISPLAY_CONSENT_COLUMN": {
+			"type": "boolean",
+			"default": true,
+			"description": "Display/Hide admin tables consent column"
 		}
 	},
 	"required": [
