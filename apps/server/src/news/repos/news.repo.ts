@@ -1,11 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { LeanDocument, Model, Types } from 'mongoose';
+import { LeanDocument, Model, Query, Types } from 'mongoose';
 import legacyConstants = require('../../../../../src/services/news/constants');
 import { InjectModel } from '@nestjs/mongoose';
 import { INews, News } from '../../models/news/news.model';
 import { CreateNewsDto, UpdateNewsDto } from '../../models/news/news.dto';
 
 const { populateProperties } = legacyConstants;
+
+// TODO move to repo models
+interface PaginationModel {
+	readonly skip?: number;
+	readonly limit?: number;
+}
 
 @Injectable()
 export class NewsRepo {
@@ -19,13 +25,35 @@ export class NewsRepo {
 		}
 	}
 
-	async findAll(): Promise<News[]> {
-		// TODO filter by user scopes
+	// TODO move...
+	/** Takes a query to enable pagination */
+	QueryBuilder(query: any) {
+		// TODO replace any by generic query
+		return {
+			paginate: (pagination?: PaginationModel) => {
+				if (pagination == null) {
+					return query;
+				}
+				if (pagination.limit != null) {
+					query = query.limit(pagination.limit);
+				}
+				if (pagination.skip != null) {
+					query = query.skip(pagination.skip);
+				}
+				return query;
+			},
+			// TODO add more fancy query builders ()=$")=%§)="
+		};
+	}
+
+	async findAllByUser(userId: Types.ObjectId, pagination?: PaginationModel): Promise<News[]> {
 		let query = this.newsModel.find();
+		// TODO filter by user scopes
 		populateProperties.forEach((populationSet) => {
 			const { path, select } = populationSet;
 			query = query.populate(path, select);
 		});
+		query = this.QueryBuilder(query).paginate(pagination);
 		const newsDocuments = await query.lean().exec();
 
 		const newsEntities = newsDocuments.map(toNews);

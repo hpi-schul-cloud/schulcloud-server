@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseInterceptors, ClassSerializerInterceptor, Query } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '../authentication/auth.decorator';
@@ -7,6 +7,7 @@ import { ParseObjectIdPipe } from './parse-object-id.pipe';
 import { Types } from 'mongoose';
 import { News } from '../models/news/news.model';
 import { CreateNewsDto } from '../models/news/news.dto';
+import { PaginationDTO } from '../models/pagination.dto';
 
 @ApiTags('News')
 @Authenticate('jwt')
@@ -21,8 +22,8 @@ export class NewsController {
 	}
 
 	@Get()
-	findAll(@CurrentUser() currentUser: ICurrentUser): Promise<News[]> {
-		return this.newsService.findAll(currentUser);
+	findAll(@CurrentUser() currentUser: ICurrentUser, @Query() pagination: PaginationDTO): Promise<News[]> {
+		return this.newsService.findAllForUser(currentUser, pagination);
 	}
 
 	/** Retrieve a specific news entry by id. A user may only read news of scopes he has the read permission. The news entity has school and user names populated. */

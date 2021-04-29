@@ -15,6 +15,8 @@ interface Target {
 	targetModel: string;
 }
 
+import CompareHelper = require('../../../../src/helper/compare'); // TODO move to lib
+const { equal: equalId } = CompareHelper.ObjectId;
 @Injectable()
 export class AuthorizationService {
 	constructor(private feathersServiceProvider: FeathersServiceProvider) {}
@@ -28,12 +30,11 @@ export class AuthorizationService {
 		if (user == null) throw new NotFoundException(); // user not null
 
 		// test user is school member
-		const sameSchool = schoolId.equals(user.schoolId); // TODO check: equalid helper removed
-		if (!sameSchool)
-			throw new UnauthorizedException('user ' + user._id + ' does not belong to given school ' + schoolId);
-
-		if (!Array.isArray(user.permissions)) throw new UnprocessableEntityException();
-		return user.permissions;
+		const sameSchool = equalId(schoolId, user.schoolId);
+		if (sameSchool && Array.isArray(user.permissions)) {
+			return user.permissions;
+		}
+		return [];
 	}
 
 	async getUserPermissions(userId: Types.ObjectId, target: Target): Promise<string[]> {

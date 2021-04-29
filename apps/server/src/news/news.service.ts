@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { ICurrentUser } from '../authentication/interfaces/jwt-payload';
 import { AuthorizationService } from '../authorization/authorization.service';
 import { CreateNewsDto, UpdateNewsDto } from '../models/news/news.dto';
 import { News } from '../models/news/news.model';
+import { PaginationDTO } from '../models/pagination.dto';
 import { School } from '../models/school/school.model';
 
 import { NewsRepo } from './repos/news.repo';
@@ -24,28 +25,30 @@ export class NewsService {
 		};
 	}
 
-	async findAll(currentUser: ICurrentUser): Promise<News[]> {
-		const { userId } = currentUser;
+	async findAllForUser(currentUser: ICurrentUser, pagination: PaginationDTO): Promise<News[]> {
+		const userId = new Types.ObjectId(currentUser.userId);
 		// TODO pagination
 		// TODO filter for current user
-		const newsDocuments = await this.newsRepo.findAll();
+		const newsDocuments = await this.newsRepo.findAllByUser(userId, pagination);
 		const newsEntities = await Promise.all(
-			newsDocuments.map(async (news) => {
-				const permissions = (
-					await this.getUserPermissionsForSubject(new Types.ObjectId(userId), news)
-				).filter((permission) => permission.includes('NEWS'));
-				return new News({ ...news, permissions });
+			newsDocuments.map(async (news: News) => {
+				await this.decoratePermissions(news, userId);
+				// TODO await this.authorizeUserReadNews(news, userId);
+				return news;
 			})
 		);
 		return newsEntities;
 	}
 
+	private async decoratePermissions(news: News, userId: Types.ObjectId) {
+		news.permissions = (await this.getUserPermissionsForSubject(userId, news)).filter((permission) =>
+			permission.includes('NEWS')
+		);
+	}
+
 	async findOneByIdForUser(newsId: Types.ObjectId, userId: Types.ObjectId): Promise<News> {
 		const news = await this.newsRepo.findOneById(newsId);
-		news.permissions = (await this.getUserPermissionsForSubject(userId, news)).filter(
-			(permission) => permission.includes('NEWS') // TODO impl
-		);
-
+		await this.decoratePermissions(news, userId);
 		await this.authorizeUserReadNews(news, userId);
 		return news;
 	}
@@ -61,7 +64,7 @@ export class NewsService {
 			// request write permission for unpublished news
 			requiredUserPermission = 'NEWS_EDIT';
 		}
-		if (requiredUserPermission in userPermissions) return;
+		if (userPermissions.includes(requiredUserPermission)) return;
 		throw new UnauthorizedException('Nee nee nee...');
 	}
 
@@ -85,7 +88,11 @@ export class NewsService {
 			scope = { targetModel, targetId };
 		} else if ('schoolId' in subject) {
 			const { schoolId } = subject;
-			scope = { targetModel: 'school', targetId: schoolId._id };
+			if ('name' in schoolId) {
+				scope = { targetModel: 'school', targetId: schoolId._id };
+			} else {
+				scope = { targetModel: 'school', targetId: schoolId };
+			}
 		} else {
 			// data format not seems to be compatible, throw
 			throw new UnauthorizedException('Bääm');
