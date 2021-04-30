@@ -176,7 +176,7 @@ const setupConsumer = () => {
 				return false;
 			})
 			.finally(() => {
-				// syncLogger.debug({ content: JSON.parse(incomingMessage.content.toString()) });
+				syncLogger.debug({ content: JSON.parse(incomingMessage.content.toString()) });
 				syncQueue.ackMessage(incomingMessage);
 			});
 
