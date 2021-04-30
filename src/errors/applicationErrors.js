@@ -96,17 +96,37 @@ class SilentError extends BusinessError {
 	}
 }
 
+/* internally helper, need to test */
+const filterKeys = (data = {}, allowedKeys = null) => {
+	if (allowedKeys) {
+		Object.entries(data).forEach(([key, value]) => {
+			if (allowedKeys.includes(key)) {
+				this.data[key] = value;
+			}
+		});
+		return data;
+	}
+	return data;
+};
+
+// possible to bind allowedKeys and taskType
 class SyncError extends Error {
-	constructor(taskType, syncId, error) {
+	constructor(taskType, error, { syncId, data = {}, allowedKeys = null } = {}) {
 		super(taskType);
 		this.name = this.constructor.name;
 		this.message = error.message;
+		this.syncId = syncId;
+		this.data = filterKeys(data, allowedKeys);
 		this.error = error;
+
 		Error.captureStackTrace(this, this.constructor);
 	}
 }
 
 module.exports = {
+	private: {
+		filterKeys,
+	},
 	ApplicationError,
 	TechnicalError,
 	BusinessError,

@@ -9,20 +9,37 @@ const { BadRequest } = require('../../../errors');
 
 const { LDAP_SYNC_ACTIONS, LDAP_SYNC_CHANNEL_NAME } = require('./LDAPSyncer');
 
+// TODO: put action to class or functions with bind filter and repo
+// TODO: make possible actions configurable
+
 class LDAPSyncerConsumer {
+	constructor({ logLevel } = {}) {
+		this.logLevel = logLevel || 'error';
+		this.actions = {};
+		this.allowedLogKeys = {
+			[LDAP_SYNC_ACTIONS.SYNC_SCHOOL]: this.useFilter(null),
+			[LDAP_SYNC_ACTIONS.SYNC_USER]: this.useFilter(['_id', 'syncId', 'ldapId']),
+			[LDAP_SYNC_ACTIONS.SYNC_CLASSES]: this.useFilter(['_id', 'syncId', 'ldapDN']),
+		};
+	}
+
+	useFilter(filter = null) {
+		return this.logLevel === 'error' ? filter : null;
+	}
+
 	async executeMessage(incomingMessage) {
 		const content = JSON.parse(incomingMessage.content.toString());
 		switch (content.action) {
 			case LDAP_SYNC_ACTIONS.SYNC_SCHOOL: {
-				return this.schoolAction(content.data);
+				return this.schoolAction(content.data, this.filter[LDAP_SYNC_ACTIONS.SYNC_SCHOOL]);
 			}
 
 			case LDAP_SYNC_ACTIONS.SYNC_USER: {
-				return this.userAction(content.data);
+				return this.userAction(content.data, this.filter[LDAP_SYNC_ACTIONS.SYNC_USER]);
 			}
 
 			case LDAP_SYNC_ACTIONS.SYNC_CLASSES: {
-				return this.classAction(content.data);
+				return this.classAction(content.data, this.filter[LDAP_SYNC_ACTIONS.SYNC_CLASSES]);
 			}
 
 			default: {
@@ -44,11 +61,15 @@ class LDAPSyncerConsumer {
 				await SchoolRepo.createSchool(schoolData);
 			}
 		} catch (err) {
-			throw new SyncError(LDAP_SYNC_ACTIONS.SYNC_SCHOOL, schoolData.syncId, err);
+			throw new SyncError(LDAP_SYNC_ACTIONS.SYNC_SCHOOL, err, {
+				data: schoolData,
+				allowedKeys: this.allowedLogKeys[LDAP_SYNC_ACTIONS.SYNC_SCHOOL],
+			});
 		}
 	}
 
-	async userAction({ user, account, syncId } = {}) {
+	async userAction(userData = {}) {
+		const { user, account } = userData; // fix it
 		try {
 			const school = await SchoolRepo.findSchoolByLdapIdAndSystem(user.schoolDn, user.systemId);
 			if (school) {
@@ -60,7 +81,10 @@ class LDAPSyncerConsumer {
 				}
 			}
 		} catch (err) {
-			throw new SyncError(LDAP_SYNC_ACTIONS.SYNC_USER, syncId, err);
+			throw new SyncError(LDAP_SYNC_ACTIONS.SYNC_USER, err, {
+				data: userData,
+				allowedKeys: this.allowedLogKeys[LDAP_SYNC_ACTIONS.SYNC_USER],
+			});
 		}
 	}
 
@@ -117,37 +141,13 @@ class LDAPSyncerConsumer {
 				}
 			}
 		} catch (err) {
-			throw new SyncError(LDAP_SYNC_ACTIONS.SYNC_CLASSES, classData.syncId, err);
+			throw new SyncError(LDAP_SYNC_ACTIONS.SYNC_CLASSES, err, {
+				data: classData,
+				allowedKeys: this.allowedLogKeys[LDAP_SYNC_ACTIONS.SYNC_CLASSES],
+			});
 		}
 	}
 }
-
-const getFilteredKeys = (action) => {
-	const keysToRemove = ['firstName', 'lastName', 'email'];
-	switch (action) {
-		case LDAP_SYNC_ACTIONS.SYNC_USER:
-			keysToRemove.push('ldapDn');
-			break;
-		case LDAP_SYNC_ACTIONS.SYNC_SCHOOL:
-			keysToRemove.push('uniqueMembers');
-			break;
-		default:
-			break;
-	}
-	return keysToRemove;
-};
-
-const getFilteredData = (content) => {
-	let dataToProcess = content.data;
-	const keysToRemove = getFilteredKeys(content.action);
-	if (dataToProcess.user) {
-		delete dataToProcess.account;
-		dataToProcess = dataToProcess.user;
-	}
-	Object.keys(dataToProcess).forEach((key) => !keysToRemove.includes(key) || delete dataToProcess[key]);
-
-	return dataToProcess;
-};
 
 const setupConsumer = () => {
 	const syncQueue = getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
@@ -158,9 +158,6 @@ const setupConsumer = () => {
 			.executeMessage(incomingMessage)
 			.then(() => true)
 			.catch((err) => {
-				const content = JSON.parse(incomingMessage.content.toString());
-				const filteredData = getFilteredData(content);
-				syncLogger.info({ action: content.action, syncId: content.syncId, data: filteredData });
 				syncLogger.error(err);
 				return false;
 			})
