@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { ExposeMongoIdAsString } from '../repo/base';
+import { ExposeMongoIdAsString } from '../repo/entity/base.entity';
 import { Types } from 'mongoose';
 
 export class User {

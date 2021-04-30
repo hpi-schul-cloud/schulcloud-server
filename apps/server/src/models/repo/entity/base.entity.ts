@@ -21,7 +21,7 @@ export function ExposeMongoIdAsString() {
 	);
 }
 
-export class BaseModel {
+export abstract class BaseEntity {
 	@ExposeMongoIdAsString()
 	_id: Types.ObjectId;
 	@IsInt()
@@ -29,7 +29,7 @@ export class BaseModel {
 	__v?: number;
 }
 
-export class WithTimeStampBaseModel extends BaseModel {
+export abstract class WithTimeStampBaseEntity extends BaseEntity {
 	/** the documents creation date */
 	@Expose()
 	createdAt: Date;

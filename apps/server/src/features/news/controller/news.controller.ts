@@ -5,7 +5,7 @@ import { Authenticate, CurrentUser } from '../../../modules/authentication/auth.
 import { ICurrentUser } from '../../../modules/authentication/interfaces/jwt-payload';
 import { ParseObjectIdPipe } from '../parse-object-id.pipe';
 import { Types } from 'mongoose';
-import { News } from '../../../models/news/news.model';
+import { News } from '../repo/entity/news.entity';
 import { CreateNewsDto } from './dto/news.dto';
 import { PaginationDTO } from '../../../models/controller/dto/pagination.dto';
 

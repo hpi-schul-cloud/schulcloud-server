@@ -1,10 +1,10 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 import { Types, Document } from 'mongoose';
-import { ExposeMongoIdAsString, WithTimeStampBaseModel } from '../repo/base';
-import { School } from '../school/school.model';
-import { User } from '../user/user.model';
+import { ExposeMongoIdAsString, WithTimeStampBaseEntity } from '../../../../models/repo/entity/base.entity';
+import { School } from '../../../../models/school/school.model';
+import { User } from '../../../../models/user/user.model';
 
-export class News extends WithTimeStampBaseModel {
+export class News extends WithTimeStampBaseEntity {
 	/** the news title */
 	@Expose()
 	title: string;

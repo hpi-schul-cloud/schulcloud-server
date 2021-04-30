@@ -3,7 +3,7 @@ import { Types } from 'mongoose';
 import { ICurrentUser } from '../../modules/authentication/interfaces/jwt-payload';
 import { AuthorizationService } from '../../modules/authorization/authorization.service';
 import { CreateNewsDto, UpdateNewsDto } from './controller/dto/news.dto';
-import { News } from '../../models/news/news.model';
+import { News } from './repo/entity/news.entity';
 import { PaginationDTO } from '../../models/controller/dto/pagination.dto';
 import { School } from '../../models/school/school.model';
 
