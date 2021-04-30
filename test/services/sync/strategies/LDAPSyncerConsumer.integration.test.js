@@ -51,9 +51,11 @@ describe('Ldap Syncer Consumer Integration', () => {
 			action: 'syncSchool',
 			syncId: '6082d04c4f92b7557025df7b',
 			data: {
-				name: schoolName,
-				systems: [system._id],
-				ldapSchoolIdentifier: ldapSchoolIDn,
+				school: {
+					name: schoolName,
+					systems: [system._id],
+					ldapSchoolIdentifier: ldapSchoolIDn,
+				},
 			},
 		};
 		const schoolData = {
@@ -61,8 +63,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 		};
 
 		const ldapConsumer = new LDAPSyncerConsumer();
-		const result = await ldapConsumer.executeMessage(schoolData);
-		expect(result).to.be.equal(true);
+		await ldapConsumer.executeMessage(schoolData);
 
 		const foundSchool = await schoolModel.findOne({ ldapSchoolIdentifier: ldapSchoolIDn }).lean().exec();
 		expect(foundSchool).to.be.not.null;
@@ -82,17 +83,18 @@ describe('Ldap Syncer Consumer Integration', () => {
 			action: 'syncSchool',
 			syncId: '6082d04c4f92b7557025df7b',
 			data: {
-				name: updatedSchoolName,
-				systems: [system._id],
-				ldapSchoolIdentifier: ldapSchoolIDn,
+				school: {
+					name: updatedSchoolName,
+					systems: [system._id],
+					ldapSchoolIdentifier: ldapSchoolIDn,
+				},
 			},
 		};
 		const schoolData = {
 			content: JSON.stringify(contentData),
 		};
 		const ldapConsumer = new LDAPSyncerConsumer();
-		const result = await ldapConsumer.executeMessage(schoolData);
-		expect(result).to.be.equal(true);
+		await ldapConsumer.executeMessage(schoolData);
 
 		const foundSchool = await schoolModel.findOne({ ldapSchoolIdentifier: ldapSchoolIDn }).lean().exec();
 		expect(foundSchool).to.be.not.null;
@@ -137,9 +139,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 			content: JSON.stringify(contentData),
 		};
 		const ldapConsumer = new LDAPSyncerConsumer();
-		const result = await ldapConsumer.executeMessage(userData);
-
-		expect(result).to.be.equal(true);
+		await ldapConsumer.executeMessage(userData);
 
 		const foundUser = await userModel.findOne({ ldapDn: ldapUserDn }).lean().exec();
 		expect(foundUser).to.be.not.null;
@@ -199,9 +199,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 			content: JSON.stringify(contentData),
 		};
 		const ldapConsumer = new LDAPSyncerConsumer();
-		const result = await ldapConsumer.executeMessage(userData);
-
-		expect(result).to.be.equal(true);
+		await ldapConsumer.executeMessage(userData);
 
 		const foundUser = await userModel.findOne({ ldapDn: ldapUserDn }).lean().exec();
 		expect(foundUser).to.be.not.null;
@@ -218,12 +216,14 @@ describe('Ldap Syncer Consumer Integration', () => {
 			action: LDAP_SYNC_ACTIONS.SYNC_CLASSES,
 			syncId: '6082c4f2ba4aef3c5c4473fd',
 			data: {
-				name: className,
-				systemId: system._id.toString(),
-				schoolDn: school.ldapSchoolIdentifier,
-				nameFormat: 'static',
-				ldapDN: ldapClassDn,
-				uniqueMembers: ['some uuid'],
+				class: {
+					name: className,
+					systemId: system._id.toString(),
+					schoolDn: school.ldapSchoolIdentifier,
+					nameFormat: 'static',
+					ldapDN: ldapClassDn,
+					uniqueMembers: ['some uuid'],
+				},
 			},
 			uniqueMembers: [null],
 		};
@@ -231,8 +231,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 			content: JSON.stringify(contentData),
 		};
 		const ldapConsumer = new LDAPSyncerConsumer();
-		const result = await ldapConsumer.executeMessage(classData);
-		expect(result).to.be.equal(true);
+		await ldapConsumer.executeMessage(classData);
 
 		const foundClass = await classModel.findOne({ ldapDN: ldapClassDn }).lean().exec();
 		expect(foundClass).to.be.not.null;
@@ -257,12 +256,14 @@ describe('Ldap Syncer Consumer Integration', () => {
 			action: LDAP_SYNC_ACTIONS.SYNC_CLASSES,
 			syncId: '6082c4f2ba4aef3c5c4473fd',
 			data: {
-				name: updatedClassName,
-				systemId: system._id.toString(),
-				schoolDn: school.ldapSchoolIdentifier,
-				nameFormat: 'static',
-				ldapDN: ldapClassDn,
-				uniqueMembers: ['some uuid'],
+				class: {
+					name: updatedClassName,
+					systemId: system._id.toString(),
+					schoolDn: school.ldapSchoolIdentifier,
+					nameFormat: 'static',
+					ldapDN: ldapClassDn,
+					uniqueMembers: ['some uuid'],
+				},
 			},
 			uniqueMembers: [null],
 		};
@@ -270,8 +271,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 			content: JSON.stringify(contentData),
 		};
 		const ldapConsumer = new LDAPSyncerConsumer();
-		const result = await ldapConsumer.executeMessage(classData);
-		expect(result).to.be.equal(true);
+		await ldapConsumer.executeMessage(classData);
 
 		const foundClass = await classModel.findOne({ ldapDN: ldapClassDn }).lean().exec();
 		expect(foundClass).to.be.not.null;

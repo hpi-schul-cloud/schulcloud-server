@@ -7,6 +7,8 @@ const { ObjectId } = require('mongoose').Types;
 const { LDAP_SYNC_ACTIONS } = require('../../../../src/services/sync/strategies/LDAPSyncer');
 const { LDAPSyncerConsumer } = require('../../../../src/services/sync/strategies/LDAPSyncerConsumer');
 const { BadRequest } = require('../../../../src/errors');
+const { SyncError } = require('../../../../src/errors/applicationErrors');
+
 const { SchoolRepo, ClassRepo, UserRepo } = require('../../../../src/services/sync/repo');
 
 const appPromise = require('../../../../src/app');
@@ -76,8 +78,7 @@ describe('Ldap Syncer Consumer', () => {
 			const createSchoolStub = sandbox.stub(SchoolRepo, 'createSchool');
 
 			const ldapConsumer = new LDAPSyncerConsumer();
-			const result = await ldapConsumer.schoolAction({ name: 'Test School' });
-			expect(result).to.be.equal(true);
+			await ldapConsumer.schoolAction({ name: 'Test School' });
 			expect(createSchoolStub.calledOnce).to.be.true;
 		});
 
@@ -90,11 +91,17 @@ describe('Ldap Syncer Consumer', () => {
 
 			const ldapConsumer = new LDAPSyncerConsumer();
 			const newSchoolName = 'New Test School';
-			const result = await ldapConsumer.schoolAction({ name: newSchoolName });
-			expect(result).to.be.equal(true);
+			await ldapConsumer.schoolAction({ school: { name: newSchoolName } });
 			expect(updateSchoolStub.calledOnce).to.be.true;
 			expect(updateSchoolStub.getCall(0).firstArg).to.be.equal(schoolId);
 			expect(updateSchoolStub.getCall(0).lastArg).to.be.equal(newSchoolName);
+		});
+
+		it('should throw a sync error if school repo throws an error', async () => {
+			const findSchoolByLdapIdAndSystemStub = sandbox.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			findSchoolByLdapIdAndSystemStub.throws(new BadRequest('school repo error'));
+			const ldapConsumer = new LDAPSyncerConsumer();
+			expect(ldapConsumer.schoolAction({})).to.eventually.throw(SyncError);
 		});
 	});
 
@@ -112,8 +119,7 @@ describe('Ldap Syncer Consumer', () => {
 
 			const createClassStub = sandbox.stub(ClassRepo, 'createClass');
 			const ldapConsumer = new LDAPSyncerConsumer();
-			const result = await ldapConsumer.classAction({ name: className, ldapDN: ldapDn });
-			expect(result).to.be.equal(true);
+			await ldapConsumer.classAction({ class: { name: className, ldapDN: ldapDn } });
 			expect(createClassStub.calledOnce).to.be.true;
 
 			const callArg = createClassStub.firstCall.firstArg;
@@ -136,11 +142,21 @@ describe('Ldap Syncer Consumer', () => {
 
 			const ldapConsumer = new LDAPSyncerConsumer();
 			const newClassName = 'New Test Class';
-			const result = await ldapConsumer.classAction({ name: newClassName });
-			expect(result).to.be.equal(true);
+			await ldapConsumer.classAction({ class: { name: newClassName } });
 			expect(updateClassStub.calledOnce).to.be.true;
 			expect(updateClassStub.getCall(0).firstArg).to.be.equal(classId);
 			expect(updateClassStub.getCall(0).lastArg).to.be.equal(newClassName);
+		});
+
+		it('should throw a sync error if class repo throws an error', async () => {
+			const findSchoolByLdapIdAndSystemStub = sandbox.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School' });
+
+			const findClassByYearAndLdapDnStub = sandbox.stub(ClassRepo, 'findClassByYearAndLdapDn');
+			findClassByYearAndLdapDnStub.throws(new BadRequest('class repo error'));
+
+			const ldapConsumer = new LDAPSyncerConsumer();
+			expect(ldapConsumer.classAction({})).to.eventually.throw(SyncError);
 		});
 	});
 
@@ -158,12 +174,11 @@ describe('Ldap Syncer Consumer', () => {
 			const ldapConsumer = new LDAPSyncerConsumer();
 			const testUserInput = { _id: 1 };
 			const testAccountInput = { _id: 2 };
-			const result = await ldapConsumer.userAction({ user: testUserInput, account: testAccountInput });
+			await ldapConsumer.userAction({ user: testUserInput, account: testAccountInput });
 
 			const { firstArg } = createUserAndAccountStub.firstCall;
 			const { lastArg } = createUserAndAccountStub.firstCall;
 
-			expect(result).to.be.true;
 			expect(createUserAndAccountStub.calledOnce).to.be.true;
 			expect(firstArg.schoolId).to.be.equal(testSchoolId);
 			expect(firstArg._id).to.be.equal(testUserInput._id);
@@ -197,9 +212,8 @@ describe('Ldap Syncer Consumer', () => {
 				roles: [new ObjectId()],
 			};
 			const testAccountInput = { _id: 2 };
-			const result = await ldapConsumer.userAction({ user: testUserInput, account: testAccountInput });
+			await ldapConsumer.userAction({ user: testUserInput, account: testAccountInput });
 
-			expect(result).to.be.true;
 			expect(updateUserAndAccountStub.calledOnce).to.be.true;
 
 			const { args } = updateUserAndAccountStub.firstCall;
@@ -213,6 +227,17 @@ describe('Ldap Syncer Consumer', () => {
 			expect(updateUserArg.roles).to.be.equal(testUserInput.roles);
 
 			expect(args[2]).to.be.equal(testAccountInput);
+		});
+
+		it('should throw a sync error if user repo throws an error', async () => {
+			const findSchoolByLdapIdAndSystemStub = sandbox.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School' });
+
+			const findByLdapIdAndSchoolStub = sandbox.stub(UserRepo, 'findByLdapIdAndSchool');
+			findByLdapIdAndSchoolStub.throws(new BadRequest('class repo error'));
+
+			const ldapConsumer = new LDAPSyncerConsumer();
+			expect(ldapConsumer.userAction({ user: {}, account: {} })).to.eventually.throw(SyncError);
 		});
 	});
 });

@@ -88,15 +88,17 @@ class LDAPSyncer extends Syncer {
 						action: LDAP_SYNC_ACTIONS.SYNC_SCHOOL,
 						syncId: this.syncId,
 						data: {
-							name: ldapSchool.displayName,
-							systems: [this.system._id],
-							ldapSchoolIdentifier: ldapSchool.ldapOu,
-							currentYear,
-							federalState,
+							school: {
+								name: ldapSchool.displayName,
+								systems: [this.system._id],
+								ldapSchoolIdentifier: ldapSchool.ldapOu,
+								currentYear,
+								federalState,
+							},
 						},
 					};
 					this.syncQueue.sendToQueue(schoolData, {});
-					schoolList.push(schoolData.data);
+					schoolList.push(schoolData.data.school);
 				} catch (err) {
 					this.logger.error('Uncaught LDAP sync error', { error: err, systemId: this.system._id, syncId: this.syncId });
 				}
@@ -171,13 +173,15 @@ class LDAPSyncer extends Syncer {
 			action: LDAP_SYNC_ACTIONS.SYNC_CLASSES,
 			syncId: this.syncId,
 			data: {
-				name: data.className,
-				systemId: this.system._id,
-				schoolDn: school.ldapSchoolIdentifier,
-				nameFormat: 'static',
-				ldapDN: data.ldapDn,
-				year: school.currentYear,
-				uniqueMembers: data.uniqueMembers,
+				class: {
+					name: data.className,
+					systemId: this.system._id,
+					schoolDn: school.ldapSchoolIdentifier,
+					nameFormat: 'static',
+					ldapDN: data.ldapDn,
+					year: school.currentYear,
+					uniqueMembers: data.uniqueMembers,
+				},
 			},
 		};
 		if (!Array.isArray(classData.uniqueMembers)) {
