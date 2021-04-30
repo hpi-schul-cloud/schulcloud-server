@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const appPromise = require('../../../../../src/app');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
-describe('ConfigServiceV2', () => {
+describe.only('PublicAppConfigService', () => {
 	let app;
 	let server;
 	let configService;
@@ -11,7 +11,7 @@ describe('ConfigServiceV2', () => {
 
 	before(async () => {
 		app = await appPromise;
-		configService = app.service('/config/v2');
+		configService = app.service('/config/app/public');
 		server = await app.listen(0);
 	});
 

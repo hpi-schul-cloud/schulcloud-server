@@ -3,7 +3,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 /**
  *
  */
-const configServiceHooksV2 = {
+const publicAppConfigServiceHooks = {
 	before: {
 		all: [],
 		find: [],
@@ -28,7 +28,7 @@ const configServiceHooksV2 = {
  * This service for the env variables to sync between server and client.
  * These env variables must be public and there must be no secret values.
  */
-class ConfigServiceV2 {
+class PublicAppConfigService {
 	setup(app) {
 		this.app = app;
 	}
@@ -43,6 +43,6 @@ class ConfigServiceV2 {
 }
 
 module.exports = {
-	configServiceHooksV2,
-	ConfigServiceV2,
+	publicAppConfigServiceHooks,
+	PublicAppConfigService,
 };
