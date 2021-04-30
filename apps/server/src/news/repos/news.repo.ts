@@ -29,6 +29,10 @@ export class NewsRepo {
 	/** Takes a query to enable pagination */
 	QueryBuilder<T extends Document>(query: Query<T[], T>) {
 		return {
+			/**
+			 * enable pagination for a given query.
+			 * all members must return the query to enable chaining
+			 */
 			paginate: (pagination?: PaginationModel): Query<T[], T> => {
 				if (pagination == null) {
 					return query;
