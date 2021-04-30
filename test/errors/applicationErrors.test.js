@@ -18,7 +18,7 @@ describe('filterKeys', () => {
 	});
 });
 
-describe.only('batchFilterKeys', () => {
+describe('batchFilterKeys', () => {
 	it('should correctly filter batch', () => {
 		const subData = {
 			a: 1,
@@ -42,5 +42,21 @@ describe.only('batchFilterKeys', () => {
 		expect(res.account.b).to.be.not.undefined;
 		expect(res.account.c).to.be.undefined;
 		expect(res.account.d).to.be.undefined;
+	});
+
+	it('should disbale filter if set to null', () => {
+		const subData = {
+			a: 1,
+			b: 2,
+			d: 3,
+		};
+
+		const data = {
+			user: subData,
+			account: subData,
+		};
+
+		const res = batchFilterKeys(data, null);
+		expect(res).eql(data);
 	});
 });
