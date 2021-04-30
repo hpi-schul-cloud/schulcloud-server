@@ -97,29 +97,18 @@ class SilentError extends BusinessError {
 }
 
 /* internally helper, need to test */
-const filterKeys = (data = {}, allowedKeys = null) => {
-	let result = {};
-
-	if (allowedKeys) {
-		const filteredEntries = Object.entries(data).filter(([key, value]) => allowedKeys.includes(key));
-		result = Object.fromEntries(filteredEntries);
-	} else {
-		result = data;
-	}
-	return result;
+const filterKeys = (data = {}, allowedKeys = []) => {
+	const filteredEntries = Object.entries(data).filter(([key]) => allowedKeys.includes(key));
+	return Object.fromEntries(filteredEntries);
 };
 
-const filterKeys2 = (data = {}, allowedKeys = null) => {
+const batchFilterKeys = (data, allowedKeys = null) => {
+	let result = data;
 	if (allowedKeys) {
-		for (const key in data) {
-			if (!allowedKeys.includes(key)) {
-				delete data[key];
-			} else if (typeof data[key] === 'object') {
-				filterKeys(data[key], allowedKeys);
-			}
-		}
+		const filteredEntries = Object.entries(data).map(([k, v]) => [k, filterKeys(v, allowedKeys)]);
+		result = Object.fromEntries(filteredEntries);
 	}
-	return data;
+	return result;
 };
 
 // possible to bind allowedKeys and taskType
@@ -129,10 +118,7 @@ class SyncError extends Error {
 		this.name = this.constructor.name;
 		this.message = error.message;
 		this.syncId = syncId;
-		this.data = {};
-		Object.entries(data).forEach(([key, value]) => {
-			this.data[key] = filterKeys(value, allowedKeys);
-		});
+		this.data = batchFilterKeys(data, allowedKeys);
 		this.error = error;
 
 		Error.captureStackTrace(this, this.constructor);
@@ -142,6 +128,7 @@ class SyncError extends Error {
 module.exports = {
 	private: {
 		filterKeys,
+		batchFilterKeys,
 	},
 	ApplicationError,
 	TechnicalError,
