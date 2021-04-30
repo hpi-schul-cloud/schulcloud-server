@@ -1,4 +1,4 @@
-import { authConfig } from '../../../../src/services/authentication/configuration';
+import { authConfig } from '../../../../../src/services/authentication/configuration';
 const { secret, jwtOptions } = authConfig;
 
 export interface JwtConstants {

@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards, Request } from '@nestjs/common';
-import { Authenticate, CurrentUser } from '../authentication/auth.decorator';
-import { JwtPayload } from '../authentication/interfaces/jwt-payload';
+import { Authenticate, CurrentUser } from '../../modules/authentication/auth.decorator';
+import { JwtPayload } from '../../modules/authentication/interfaces/jwt-payload';
 import { UserEntity } from './entities/user.entity';
 
 @Authenticate('jwt')

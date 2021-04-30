@@ -1,17 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Document, LeanDocument, Model, Query, Types } from 'mongoose';
-import legacyConstants = require('../../../../../src/services/news/constants');
+import legacyConstants = require('../../../../../../src/services/news/constants');
 import { InjectModel } from '@nestjs/mongoose';
-import { INews, News } from '../../models/news/news.model';
-import { CreateNewsDto, UpdateNewsDto } from '../../models/news/news.dto';
+import { INews, News } from '../../../models/news/news.model';
+import { CreateNewsDto, UpdateNewsDto } from '../controller/dto/news.dto';
+import { PaginationModel } from '../../../models/repo';
 
 const { populateProperties } = legacyConstants;
-
-// TODO move to repo models
-interface PaginationModel {
-	readonly skip?: number;
-	readonly limit?: number;
-}
 
 @Injectable()
 export class NewsRepo {

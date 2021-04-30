@@ -1,17 +1,19 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Types } from 'mongoose';
-import { ICurrentUser } from '../authentication/interfaces/jwt-payload';
-import { AuthorizationService } from '../authorization/authorization.service';
-import { CreateNewsDto, UpdateNewsDto } from '../models/news/news.dto';
-import { News } from '../models/news/news.model';
-import { PaginationDTO } from '../models/pagination.dto';
-import { School } from '../models/school/school.model';
+import { ICurrentUser } from '../../modules/authentication/interfaces/jwt-payload';
+import { AuthorizationService } from '../../modules/authorization/authorization.service';
+import { CreateNewsDto, UpdateNewsDto } from './controller/dto/news.dto';
+import { News } from '../../models/news/news.model';
+import { PaginationDTO } from '../../models/controller/dto/pagination.dto';
+import { School } from '../../models/school/school.model';
 
-import { NewsRepo } from './repos/news.repo';
+import { NewsRepo } from './repo/news.repo';
 
 type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
 type Target = { targetModel: string; targetId: Types.ObjectId };
 type AuthorizationSubject = { schoolId: Types.ObjectId | School; target?: Types.ObjectId; targetModel?: string };
+
+// CONSIDER https://github.com/devonfw/devon4j/blob/master/documentation/guide-service-layer.asciidoc#service-considerations
 
 @Injectable()
 export class NewsService {

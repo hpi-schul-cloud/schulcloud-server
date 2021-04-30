@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { JwtPayload } from '../../authentication/interfaces/jwt-payload';
+import { JwtPayload } from '../../../modules/authentication/interfaces/jwt-payload';
 
 export class UserEntity {
 	constructor(payload: JwtPayload) {

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { NewsService } from './news.service';
-import { NewsRepo } from './repos/news.repo';
-import { NewsController } from './news.controller';
-import { NewsSchema } from './repos/schemas/news.schema';
+import { NewsRepo } from './repo/news.repo';
+import { NewsController } from './controller/news.controller';
+import { NewsSchema } from './repo/schema/news.schema';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthorizationModule } from '../authorization/authorization.module';
+import { AuthorizationModule } from '../../modules/authorization/authorization.module';
 
 @Module({
 	imports: [MongooseModule.forFeature([{ name: 'News', schema: NewsSchema }]), AuthorizationModule],

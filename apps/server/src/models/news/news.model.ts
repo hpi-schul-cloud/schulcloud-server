@@ -1,6 +1,6 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 import { Types, Document } from 'mongoose';
-import { ExposeMongoIdAsString, WithTimeStampBaseModel } from '../base';
+import { ExposeMongoIdAsString, WithTimeStampBaseModel } from '../repo/base';
 import { School } from '../school/school.model';
 import { User } from '../user/user.model';
 

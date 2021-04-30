@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { ExposeMongoIdAsString } from '../base';
+import { ExposeMongoIdAsString } from '../repo/base';
 import { Types } from 'mongoose';
 
 export class School {

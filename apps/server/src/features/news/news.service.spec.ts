@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NewsService } from './news.service';
-import { NewsRepo } from './repos/news.repo';
+import { NewsRepo } from './repo/news.repo';
 
 describe('NewsService', () => {
 	let service: NewsService;

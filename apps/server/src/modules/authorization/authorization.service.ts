@@ -15,7 +15,7 @@ interface Target {
 	targetModel: string;
 }
 
-import CompareHelper = require('../../../../src/helper/compare'); // TODO move to lib
+import CompareHelper = require('../../../../../src/helper/compare'); // TODO move to lib
 const { equal: equalId } = CompareHelper.ObjectId;
 @Injectable()
 export class AuthorizationService {

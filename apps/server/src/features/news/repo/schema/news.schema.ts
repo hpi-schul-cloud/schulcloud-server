@@ -1,4 +1,4 @@
-import newsModel = require('../../../../../../src/services/news/model');
+import newsModel = require('../../../../../../../src/services/news/model');
 const { newsSchema } = newsModel;
 
 // TODO export type and use factory instead

@@ -1,13 +1,13 @@
 import { Controller, Get, Post, Body, Param, UseInterceptors, ClassSerializerInterceptor, Query } from '@nestjs/common';
-import { NewsService } from './news.service';
+import { NewsService } from '../news.service';
 import { ApiTags } from '@nestjs/swagger';
-import { Authenticate, CurrentUser } from '../authentication/auth.decorator';
-import { ICurrentUser } from '../authentication/interfaces/jwt-payload';
-import { ParseObjectIdPipe } from './parse-object-id.pipe';
+import { Authenticate, CurrentUser } from '../../../modules/authentication/auth.decorator';
+import { ICurrentUser } from '../../../modules/authentication/interfaces/jwt-payload';
+import { ParseObjectIdPipe } from '../parse-object-id.pipe';
 import { Types } from 'mongoose';
-import { News } from '../models/news/news.model';
-import { CreateNewsDto } from '../models/news/news.dto';
-import { PaginationDTO } from '../models/pagination.dto';
+import { News } from '../../../models/news/news.model';
+import { CreateNewsDto } from './dto/news.dto';
+import { PaginationDTO } from '../../../models/controller/dto/pagination.dto';
 
 @ApiTags('News')
 @Authenticate('jwt')
