@@ -124,6 +124,7 @@ class LDAPSyncerConsumer {
 					};
 					await ClassRepo.createClass(newClass);
 				}
+                await this.classAddUser(classData, school);
 			} catch (err) {
 				logger.error('LDAP SYNC: error while update or add a class', { err, syncId: classData.syncId });
 				throw err;
@@ -133,6 +134,24 @@ class LDAPSyncerConsumer {
 		}
 		return false;
 	}
+    
+    async classAddUser(classData, schoolObject) {
+        const students = [];
+		const teachers = [];
+        const classObject = await ClassRepo.findClassByYearAndLdapDn(schoolObject.currentYear, classData.ldapDN);
+        if (!Array.isArray(classData.uniqueMembers)) {
+			// if there is only one member, ldapjs doesn't give us an array here
+			classData.uniqueMembers = [ldapClass.uniqueMembers];
+		}
+        const user = await UserRepo.findByLdapDnAndSchool(classData.uniqueMembers, schoolObject._id);
+        user.roles.forEach((role) => {
+			if (role.name === 'student') students.push(user._id);
+			if (role.name === 'teacher') teachers.push(user._id);
+		});
+        await ClassRepo.updateClassStudents(classObject._id, students);
+        await ClassRepo.updateClassTeachers(classObject._id, teachers);
+        
+    }
 }
 
 const setupConsumer = () => {
