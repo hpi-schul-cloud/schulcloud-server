@@ -18,6 +18,8 @@ const { expect } = chai;
 describe('user repo', () => {
 	let app;
 	let server;
+	const createdAccounts = [];
+	const createdUsers = [];
 
 	before(async () => {
 		app = await appPromise;
@@ -27,6 +29,12 @@ describe('user repo', () => {
 	beforeEach(async () => {});
 
 	afterEach(async () => {
+		const accountPromises = createdAccounts.map((account) => accountModel.remove(account));
+		await Promise.all(accountPromises);
+
+		const userPromises = createdUsers.map((user) => userModel.remove(user));
+		await Promise.all(userPromises);
+
 		await testObjects.cleanup();
 	});
 
@@ -60,8 +68,8 @@ describe('user repo', () => {
 		expect(user.roles.length).to.be.equal(1);
 		expect(user.roles[0]._id.toString()).to.be.equal(role._id.toString());
 
-		await accountModel.remove(account);
-		await userModel.remove(user);
+		createdAccounts.push(account);
+		createdUsers.push(user);
 	});
 
 	it('should throw an error by user creation if email already used', async () => {

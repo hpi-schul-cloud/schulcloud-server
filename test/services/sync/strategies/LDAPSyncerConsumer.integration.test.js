@@ -55,7 +55,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 					name: schoolName,
 					systems: [system._id],
 					ldapSchoolIdentifier: ldapSchoolIDn,
-				}
+				},
 			},
 		};
 		const schoolData = {
@@ -87,7 +87,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 					name: updatedSchoolName,
 					systems: [system._id],
 					ldapSchoolIdentifier: ldapSchoolIDn,
-				}
+				},
 			},
 		};
 		const schoolData = {
@@ -223,7 +223,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 					nameFormat: 'static',
 					ldapDN: ldapClassDn,
 					uniqueMembers: ['some uuid'],
-				}
+				},
 			},
 			uniqueMembers: [null],
 		};
