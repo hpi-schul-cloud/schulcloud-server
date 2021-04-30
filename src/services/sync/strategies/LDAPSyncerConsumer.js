@@ -2,7 +2,7 @@ import { SyncError } from '../../../errors/applicationErrors';
 
 const _ = require('lodash');
 const { getChannel } = require('../../../utils/rabbitmq');
-const logger = require('../../../logger');
+const { syncLogger } = require('../../../logger/syncLogger');
 const { UserRepo, ClassRepo, SchoolRepo } = require('../repo');
 
 const { BadRequest } = require('../../../errors');
@@ -122,6 +122,33 @@ class LDAPSyncerConsumer {
 	}
 }
 
+const getFilteredKeys = (action) => {
+	const keysToRemove = ['firstName', 'lastName', 'email'];
+	switch (action) {
+		case LDAP_SYNC_ACTIONS.SYNC_USER:
+			keysToRemove.push('ldapDn');
+			break;
+		case LDAP_SYNC_ACTIONS.SYNC_SCHOOL:
+			keysToRemove.push('uniqueMembers');
+			break;
+		default:
+			break;
+	}
+	return keysToRemove;
+};
+
+const getFilteredData = (content) => {
+	let dataToProcess = content.data;
+	const keysToRemove = getFilteredKeys(content.action);
+	if (dataToProcess.user) {
+		delete dataToProcess.account;
+		dataToProcess = dataToProcess.user;
+	}
+	Object.keys(dataToProcess).forEach((key) => !keysToRemove.includes(key) || delete dataToProcess[key]);
+
+	return dataToProcess;
+};
+
 const setupConsumer = () => {
 	const syncQueue = getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
 	const consumer = new LDAPSyncerConsumer();
@@ -131,10 +158,16 @@ const setupConsumer = () => {
 			.executeMessage(incomingMessage)
 			.then(() => true)
 			.catch((err) => {
-				logger.error(err);
+				const content = JSON.parse(incomingMessage.content.toString());
+				const filteredData = getFilteredData(content);
+				syncLogger.info({ action: content.action, syncId: content.syncId, data: filteredData });
+				syncLogger.error(err);
 				return false;
 			})
-			.finally(() => syncQueue.ackMessage(incomingMessage));
+			.finally(() => {
+				syncLogger.debug({ content: JSON.parse(incomingMessage.content.toString()) });
+				syncQueue.ackMessage(incomingMessage);
+			});
 
 	return syncQueue.consumeQueue(handleMessage, { noAck: false });
 };
