@@ -58,8 +58,8 @@ class LDAPSyncerConsumer {
 		}
 	}
 
-	async schoolAction(data = {}, { syncId, allowedKeys }) {
-		const { school: schoolData } = data;
+	async schoolAction(data = {}, { syncId, allowedKeys } = {}) {
+		const { school: schoolData = {} } = data;
 		try {
 			const school = await SchoolRepo.findSchoolByLdapIdAndSystem(schoolData.ldapSchoolIdentifier, schoolData.systems);
 
@@ -79,8 +79,8 @@ class LDAPSyncerConsumer {
 		}
 	}
 
-	async userAction(data = {}, { syncId, allowedKeys }) {
-		const { user, account } = data;
+	async userAction(data = {}, { syncId, allowedKeys } = {}) {
+		const { user = {}, account = {} } = data;
 		try {
 			const school = await SchoolRepo.findSchoolByLdapIdAndSystem(user.schoolDn, user.systemId);
 			if (school) {
@@ -131,8 +131,8 @@ class LDAPSyncerConsumer {
 		return UserRepo.createUserAndAccount(idmUser, account);
 	}
 
-	async classAction(data = {}, { syncId, allowedKeys }) {
-		const { class: classData } = data;
+	async classAction(data = {}, { syncId, allowedKeys } = {}) {
+		const { class: classData = {} } = data;
 		try {
 			const school = await SchoolRepo.findSchoolByLdapIdAndSystem(classData.schoolDn, classData.systemId);
 
