@@ -98,13 +98,26 @@ class SilentError extends BusinessError {
 
 /* internally helper, need to test */
 const filterKeys = (data = {}, allowedKeys = null) => {
+	let result = {};
+
 	if (allowedKeys) {
-		Object.entries(data).forEach(([key, value]) => {
-			if (allowedKeys.includes(key)) {
-				this.data[key] = value;
+		const filteredEntries = Object.entries(data).filter(([key, value]) => allowedKeys.includes(key));
+		result = Object.fromEntries(filteredEntries);
+	} else {
+		result = data;
+	}
+	return result;
+};
+
+const filterKeys2 = (data = {}, allowedKeys = null) => {
+	if (allowedKeys) {
+		for (const key in data) {
+			if (!allowedKeys.includes(key)) {
+				delete data[key];
+			} else if (typeof data[key] === 'object') {
+				filterKeys(data[key], allowedKeys);
 			}
-		});
-		return data;
+		}
 	}
 	return data;
 };
@@ -116,7 +129,10 @@ class SyncError extends Error {
 		this.name = this.constructor.name;
 		this.message = error.message;
 		this.syncId = syncId;
-		this.data = filterKeys(data, allowedKeys);
+		this.data = {};
+		Object.entries(data).forEach(([key, value]) => {
+			this.data[key] = filterKeys(value, allowedKeys);
+		});
 		this.error = error;
 
 		Error.captureStackTrace(this, this.constructor);

@@ -51,9 +51,11 @@ describe('Ldap Syncer Consumer Integration', () => {
 			action: 'syncSchool',
 			syncId: '6082d04c4f92b7557025df7b',
 			data: {
-				name: schoolName,
-				systems: [system._id],
-				ldapSchoolIdentifier: ldapSchoolIDn,
+				school: {
+					name: schoolName,
+					systems: [system._id],
+					ldapSchoolIdentifier: ldapSchoolIDn,
+				}
 			},
 		};
 		const schoolData = {
@@ -81,9 +83,11 @@ describe('Ldap Syncer Consumer Integration', () => {
 			action: 'syncSchool',
 			syncId: '6082d04c4f92b7557025df7b',
 			data: {
-				name: updatedSchoolName,
-				systems: [system._id],
-				ldapSchoolIdentifier: ldapSchoolIDn,
+				school: {
+					name: updatedSchoolName,
+					systems: [system._id],
+					ldapSchoolIdentifier: ldapSchoolIDn,
+				}
 			},
 		};
 		const schoolData = {
@@ -212,12 +216,14 @@ describe('Ldap Syncer Consumer Integration', () => {
 			action: LDAP_SYNC_ACTIONS.SYNC_CLASSES,
 			syncId: '6082c4f2ba4aef3c5c4473fd',
 			data: {
-				name: className,
-				systemId: system._id.toString(),
-				schoolDn: school.ldapSchoolIdentifier,
-				nameFormat: 'static',
-				ldapDN: ldapClassDn,
-				uniqueMembers: ['some uuid'],
+				class: {
+					name: className,
+					systemId: system._id.toString(),
+					schoolDn: school.ldapSchoolIdentifier,
+					nameFormat: 'static',
+					ldapDN: ldapClassDn,
+					uniqueMembers: ['some uuid'],
+				}
 			},
 			uniqueMembers: [null],
 		};
@@ -250,12 +256,14 @@ describe('Ldap Syncer Consumer Integration', () => {
 			action: LDAP_SYNC_ACTIONS.SYNC_CLASSES,
 			syncId: '6082c4f2ba4aef3c5c4473fd',
 			data: {
-				name: updatedClassName,
-				systemId: system._id.toString(),
-				schoolDn: school.ldapSchoolIdentifier,
-				nameFormat: 'static',
-				ldapDN: ldapClassDn,
-				uniqueMembers: ['some uuid'],
+				class: {
+					name: updatedClassName,
+					systemId: system._id.toString(),
+					schoolDn: school.ldapSchoolIdentifier,
+					nameFormat: 'static',
+					ldapDN: ldapClassDn,
+					uniqueMembers: ['some uuid'],
+				},
 			},
 			uniqueMembers: [null],
 		};

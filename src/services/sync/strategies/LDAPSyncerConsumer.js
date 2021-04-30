@@ -18,8 +18,8 @@ class LDAPSyncerConsumer {
 		this.actions = {};
 		this.allowedLogKeys = {
 			[LDAP_SYNC_ACTIONS.SYNC_SCHOOL]: this.useFilter(null),
-			[LDAP_SYNC_ACTIONS.SYNC_USER]: this.useFilter(['_id', 'syncId', 'ldapId']),
-			[LDAP_SYNC_ACTIONS.SYNC_CLASSES]: this.useFilter(['_id', 'syncId', 'ldapDN']),
+			[LDAP_SYNC_ACTIONS.SYNC_USER]: this.useFilter(['ldapId', 'systemId', 'roles', 'activated']),
+			[LDAP_SYNC_ACTIONS.SYNC_CLASSES]: this.useFilter(['class', 'ldapDN', 'systemId', 'schoolDn', 'year']),
 		};
 	}
 
@@ -31,15 +31,24 @@ class LDAPSyncerConsumer {
 		const content = JSON.parse(incomingMessage.content.toString());
 		switch (content.action) {
 			case LDAP_SYNC_ACTIONS.SYNC_SCHOOL: {
-				return this.schoolAction(content.data, this.allowedLogKeys[LDAP_SYNC_ACTIONS.SYNC_SCHOOL]);
+				return this.schoolAction(content.data, {
+					syncId: content.syncId,
+					allowedKeys: this.allowedLogKeys[LDAP_SYNC_ACTIONS.SYNC_SCHOOL],
+				});
 			}
 
 			case LDAP_SYNC_ACTIONS.SYNC_USER: {
-				return this.userAction(content.data, this.allowedLogKeys[LDAP_SYNC_ACTIONS.SYNC_USER]);
+				return this.userAction(content.data, {
+					syncId: content.syncId,
+					allowedKeys: this.allowedLogKeys[LDAP_SYNC_ACTIONS.SYNC_USER],
+				});
 			}
 
 			case LDAP_SYNC_ACTIONS.SYNC_CLASSES: {
-				return this.classAction(content.data, this.allowedLogKeys[LDAP_SYNC_ACTIONS.SYNC_CLASSES]);
+				return this.classAction(content.data, {
+					syncId: content.syncId,
+					allowedKeys: this.allowedLogKeys[LDAP_SYNC_ACTIONS.SYNC_CLASSES],
+				});
 			}
 
 			default: {
@@ -49,7 +58,8 @@ class LDAPSyncerConsumer {
 		}
 	}
 
-	async schoolAction(schoolData = {}, allowedKeys) {
+	async schoolAction(data = {}, { syncId, allowedKeys }) {
+		const { school: schoolData } = data;
 		try {
 			const school = await SchoolRepo.findSchoolByLdapIdAndSystem(schoolData.ldapSchoolIdentifier, schoolData.systems);
 
@@ -62,14 +72,15 @@ class LDAPSyncerConsumer {
 			}
 		} catch (err) {
 			throw new SyncError(LDAP_SYNC_ACTIONS.SYNC_SCHOOL, err, {
-				data: schoolData,
+				data,
+				syncId,
 				allowedKeys,
 			});
 		}
 	}
 
-	async userAction(userData = {}, allowedKeys) {
-		const { user, account } = userData; // fix it
+	async userAction(data = {}, { syncId, allowedKeys }) {
+		const { user, account } = data;
 		try {
 			const school = await SchoolRepo.findSchoolByLdapIdAndSystem(user.schoolDn, user.systemId);
 			if (school) {
@@ -82,7 +93,8 @@ class LDAPSyncerConsumer {
 			}
 		} catch (err) {
 			throw new SyncError(LDAP_SYNC_ACTIONS.SYNC_USER, err, {
-				data: userData,
+				syncId,
+				data,
 				allowedKeys,
 			});
 		}
@@ -119,7 +131,8 @@ class LDAPSyncerConsumer {
 		return UserRepo.createUserAndAccount(idmUser, account);
 	}
 
-	async classAction(classData = {}, allowedKeys) {
+	async classAction(data = {}, { syncId, allowedKeys }) {
+		const { class: classData } = data;
 		try {
 			const school = await SchoolRepo.findSchoolByLdapIdAndSystem(classData.schoolDn, classData.systemId);
 
@@ -142,7 +155,8 @@ class LDAPSyncerConsumer {
 			}
 		} catch (err) {
 			throw new SyncError(LDAP_SYNC_ACTIONS.SYNC_CLASSES, err, {
-				data: classData,
+				data,
+				syncId,
 				allowedKeys,
 			});
 		}
@@ -162,7 +176,7 @@ const setupConsumer = () => {
 				return false;
 			})
 			.finally(() => {
-				syncLogger.debug({ content: JSON.parse(incomingMessage.content.toString()) });
+				// syncLogger.debug({ content: JSON.parse(incomingMessage.content.toString()) });
 				syncQueue.ackMessage(incomingMessage);
 			});
 

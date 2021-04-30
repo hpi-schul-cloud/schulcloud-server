@@ -46,16 +46,19 @@ const createUser = async (user) => {
 const checkMail = async (email, userId) => {
 	if (email) {
 		const users = await userModel.find({ email: email.toLowerCase() }).lean().exec();
-		if (userId && users.length === 1 && equalIds(users[0]._id, userId)) return;
+		if (userId && users.length === 1 && equalIds(users[0]._id, userId)) return true;
 		if (users.length !== 0) {
-			const msgPrefix = userId ? `User ${userId} cannot be updated` : `User cannot be created.`;
-			throw new BadRequest(`${msgPrefix}. User with the same email already exists.`);
+			return false;
 		}
 	}
+	return true;
 };
 
 const createUserAndAccount = async (inputUser, inputAccount) => {
-	await checkMail(inputUser.email);
+	const canBeCreated = await checkMail(inputUser.email);
+	if (!canBeCreated) {
+		throw new BadRequest(`User cannot be created. User with the same email already exists.`, inputUser.ldapId);
+	}
 	const user = (await createUser(inputUser)).toObject();
 	inputAccount.userId = user._id;
 	const account = (await createAccount(inputAccount)).toObject();
@@ -78,6 +81,11 @@ const updateAccount = async (userId, account) => {
 
 const updateUserAndAccount = async (userId, changedUser, changedAccount) => {
 	await checkMail(changedUser.email, userId);
+
+	const canBeUpdated = await checkMail(changedUser.email, userId);
+	if (!canBeUpdated) {
+		throw new BadRequest(`User ${userId} cannot be updated. User with the same email already exists.`, userId);
+	}
 	changedUser.roles = await resolveUserRoles(changedUser.roles);
 
 	const user = await userModel.findOneAndUpdate({ _id: userId }, changedUser, { new: true }).lean().exec();
