@@ -52,7 +52,6 @@ module.exports = {
 	env: {
 		node: true,
 		mocha: true,
-		browser: true,
 	},
 	settings: {
 		'import/resolver': {
