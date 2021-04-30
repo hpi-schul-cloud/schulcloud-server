@@ -91,7 +91,7 @@ describe('Ldap Syncer Consumer', () => {
 
 			const ldapConsumer = new LDAPSyncerConsumer();
 			const newSchoolName = 'New Test School';
-			await ldapConsumer.schoolAction({ name: newSchoolName });
+			await ldapConsumer.schoolAction({ school: { name: newSchoolName } });
 			expect(updateSchoolStub.calledOnce).to.be.true;
 			expect(updateSchoolStub.getCall(0).firstArg).to.be.equal(schoolId);
 			expect(updateSchoolStub.getCall(0).lastArg).to.be.equal(newSchoolName);
@@ -119,7 +119,7 @@ describe('Ldap Syncer Consumer', () => {
 
 			const createClassStub = sandbox.stub(ClassRepo, 'createClass');
 			const ldapConsumer = new LDAPSyncerConsumer();
-			await ldapConsumer.classAction({ name: className, ldapDN: ldapDn });
+			await ldapConsumer.classAction({ class: { name: className, ldapDN: ldapDn } });
 			expect(createClassStub.calledOnce).to.be.true;
 
 			const callArg = createClassStub.firstCall.firstArg;
@@ -142,7 +142,7 @@ describe('Ldap Syncer Consumer', () => {
 
 			const ldapConsumer = new LDAPSyncerConsumer();
 			const newClassName = 'New Test Class';
-			await ldapConsumer.classAction({ name: newClassName });
+			await ldapConsumer.classAction({ class: { name: newClassName } });
 			expect(updateClassStub.calledOnce).to.be.true;
 			expect(updateClassStub.getCall(0).firstArg).to.be.equal(classId);
 			expect(updateClassStub.getCall(0).lastArg).to.be.equal(newClassName);
@@ -237,8 +237,7 @@ describe('Ldap Syncer Consumer', () => {
 			findByLdapIdAndSchoolStub.throws(new BadRequest('class repo error'));
 
 			const ldapConsumer = new LDAPSyncerConsumer();
-			await ldapConsumer.userAction({});
-			expect(ldapConsumer.userAction({})).to.eventually.throw(SyncError);
+			expect(ldapConsumer.userAction({ user: {}, account: {} })).to.eventually.throw(SyncError);
 		});
 	});
 });

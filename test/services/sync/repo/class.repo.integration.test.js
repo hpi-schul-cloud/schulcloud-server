@@ -15,6 +15,7 @@ const { expect } = chai;
 describe('class repo', () => {
 	let app;
 	let server;
+	const createdClasses = [];
 
 	before(async () => {
 		app = await appPromise;
@@ -24,6 +25,8 @@ describe('class repo', () => {
 	beforeEach(async () => {});
 
 	afterEach(async () => {
+		const classPromises = createdClasses.map((clazz) => classModel.remove(clazz));
+		await Promise.all(classPromises);
 		await testObjects.cleanup();
 	});
 
@@ -38,7 +41,7 @@ describe('class repo', () => {
 		expect(res._id).to.be.not.undefined;
 		expect(res.name).to.be.equal(className);
 
-		await classModel.remove(res);
+		createdClasses.push(res);
 	});
 
 	it('should successfully update class name', async () => {

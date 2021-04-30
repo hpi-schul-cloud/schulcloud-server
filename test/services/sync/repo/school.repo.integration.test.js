@@ -13,6 +13,7 @@ const { expect } = chai;
 describe('school repo', () => {
 	let app;
 	let server;
+	const createdSchools = [];
 
 	before(async () => {
 		app = await appPromise;
@@ -22,6 +23,8 @@ describe('school repo', () => {
 	beforeEach(async () => {});
 
 	afterEach(async () => {
+		const promises = createdSchools.map((school) => schoolModel.remove(school));
+		await Promise.all(promises);
 		await testObjects.cleanup();
 	});
 
@@ -32,10 +35,9 @@ describe('school repo', () => {
 	it('should successfully create new school', async () => {
 		const schoolName = 'Test School';
 		const res = await SchoolRepo.createSchool({ name: schoolName });
+		createdSchools.push(res);
 		expect(res._id).to.be.not.undefined;
 		expect(res.name).to.be.equal(schoolName);
-
-		await schoolModel.remove(res);
 	});
 
 	it('should successfully update school name', async () => {
