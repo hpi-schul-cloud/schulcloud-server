@@ -1,0 +1,75 @@
+const { NotImplemented, SyncError } = require('../../../../errors');
+
+// TODO: Need to be moved to utils, move test too
+const filterKeys = (data = {}, allowedKeys = []) => {
+	const filteredEntries = Object.entries(data).filter(([key]) => allowedKeys.includes(key));
+	return Object.fromEntries(filteredEntries);
+};
+
+const batchFilterKeys = (data, allowedKeys = null) => {
+	let result = data;
+	if (allowedKeys) {
+		const filteredEntries = Object.entries(data).map(([k, v]) => [k, filterKeys(v, allowedKeys)]);
+		result = Object.fromEntries(filteredEntries);
+	}
+	return result;
+};
+
+class BaseConumerStrategie {
+	constructor(type, options) {
+		this.filterActive = true;
+		this.type = type;
+
+		Object.entries(options).forEach((k, v) => {
+			this[k] = v;
+		});
+	}
+
+	/**
+	 * @private
+	 * @param {string} type
+	 * @returns {boolean}
+	 */
+	matchType(type) {
+		return this.type === type;
+	}
+
+	/**
+	 * @private
+	 * @param {object} data
+	 * @returns {Promise}
+	 */
+	async action(data = {}) {
+		throw new NotImplemented('Must be implemented');
+	}
+
+	/**
+	 * @private
+	 * @param {object} data
+	 * @returns {object}
+	 */
+	filterData(data) {
+		return batchFilterKeys(data, this.allowedLogKeys);
+	}
+
+	/**
+	 * @public
+	 * @param {object} content
+	 * @returns {Promise}
+	 */
+	async exec({ type, data, syncId } = {}) {
+		if (!this.matchType(type)) {
+			return Promise.resolve();
+		}
+
+		return this.action(data).catch((err) => {
+			const filteredData = this.filterActive ? this.filterData(data) : data;
+			throw new SyncError(this.type, err, {
+				data: filteredData,
+				syncId,
+			});
+		});
+	}
+}
+
+module.exports = BaseConumerStrategie;
