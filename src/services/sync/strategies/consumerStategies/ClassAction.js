@@ -9,7 +9,7 @@ const defaultOptions = {
 	ClassRepo,
 };
 
-class Class extends BaseConsumerStrategie {
+class ClassAction extends BaseConsumerStrategie {
 	constructor(filterActive = true, options = defaultOptions) {
 		super(LDAP_SYNC_ACTIONS.SYNC_SCHOOL, options);
 		this.filterActive = filterActive;
@@ -40,5 +40,4 @@ class Class extends BaseConsumerStrategie {
 	}
 }
 
-// TODO: should rename in more specific way
-module.exports = Class;
+module.exports = ClassAction;

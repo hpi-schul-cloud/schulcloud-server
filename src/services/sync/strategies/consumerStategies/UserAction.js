@@ -9,7 +9,7 @@ const defaultOptions = {
 	UserRepo,
 };
 
-class User extends BaseConsumerStrategie {
+class UserAction extends BaseConsumerStrategie {
 	constructor(filterActive = true, options = defaultOptions) {
 		super(LDAP_SYNC_ACTIONS.SYNC_SCHOOL, options);
 		this.filterActive = filterActive;
@@ -60,5 +60,4 @@ class User extends BaseConsumerStrategie {
 	}
 }
 
-// TODO: should rename in more specific way
-module.exports = User;
+module.exports = UserAction;

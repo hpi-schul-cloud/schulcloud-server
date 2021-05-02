@@ -1,7 +1,7 @@
 const { getChannel } = require('../../../utils/rabbitmq');
 const { syncLogger } = require('../../../logger/syncLogger');
 // TODO: later it is defined outside of Consumer and pass over constructure to make it configurable
-const { School, User, Class } = require('./consumerStategies');
+const { SchoolAction, UserAction, ClassAction } = require('./consumerStategies');
 
 const { BadRequest } = require('../../../errors');
 
@@ -17,9 +17,9 @@ class LDAPSyncerConsumer {
 
 		// TODO: replace later over constructor import
 		this.actions = {
-			[LDAP_SYNC_ACTIONS.SYNC_SCHOOL]: new School(shouldUseFilter),
-			[LDAP_SYNC_ACTIONS.SYNC_USER]: new User(shouldUseFilter),
-			[LDAP_SYNC_ACTIONS.SYNC_CLASSES]: new Class(shouldUseFilter),
+			[LDAP_SYNC_ACTIONS.SYNC_SCHOOL]: new SchoolAction(shouldUseFilter),
+			[LDAP_SYNC_ACTIONS.SYNC_USER]: new UserAction(shouldUseFilter),
+			[LDAP_SYNC_ACTIONS.SYNC_CLASSES]: new ClassAction(shouldUseFilter),
 		};
 	}
 

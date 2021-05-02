@@ -1,9 +1,9 @@
-const School = require('./School');
-const User = require('./User');
-const Class = require('./Class');
+const SchoolAction = require('./SchoolAction');
+const UserAction = require('./UserAction');
+const ClassAction = require('./ClassAction');
 
 module.exports = {
-	School,
-	User,
-	Class,
+	SchoolAction,
+	UserAction,
+	ClassAction,
 };

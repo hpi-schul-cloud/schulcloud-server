@@ -29,24 +29,6 @@ switch (NODE_ENV) {
 }
 const syncLogger = createLogger(selectedFormat, Configuration.get('SYNC_LOG_LEVEL'));
 
-const syncError = (err) =>
-	syncLogger.error(
-		util.inspect(
-			{
-				type: 'syncError',
-				syncId: err.syncId,
-				syncType: err.syncType,
-				timestamp: new Date(),
-				code: err.code,
-			},
-			{
-				depth: 5,
-				compact: false,
-				breakLength: 120,
-			}
-		)
-	);
-
 module.exports = {
 	syncLogger,
 };
