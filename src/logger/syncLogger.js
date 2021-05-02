@@ -1,5 +1,4 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const util = require('util');
 const winston = require('winston');
 
 const { format } = winston;
