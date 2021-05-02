@@ -9,6 +9,13 @@ const defaultOptions = {
 	ClassRepo,
 };
 
+// TODO: in all actions it looks not nice that filterActive is not passed as option
+// the additional this it not really nessasry because options pass all to this.
+// but we must also keep in mind that we do not hide options behind BaseConsumerStrategie class.
+// But Enable / Disable filter should come from top this is fine.
+// If we pass filterActive to options, we must destructure options -> set defaults (that we do not must set repos if we pass this) -> put the combind keys as optiosn to super
+// -> i do not like it because we put knowlege and logic handling to the constructor and every they want to add a new action must do it in the same way and implement the same.
+// --> sound weird...
 class ClassAction extends BaseConsumerStrategie {
 	constructor(filterActive = true, options = defaultOptions) {
 		super(LDAP_SYNC_ACTIONS.SYNC_SCHOOL, options);

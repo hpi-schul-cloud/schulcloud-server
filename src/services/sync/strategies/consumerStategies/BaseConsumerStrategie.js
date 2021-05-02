@@ -5,6 +5,7 @@ class BaseConumerStrategie {
 	constructor(type, options) {
 		this.filterActive = true;
 		this.type = type;
+		this.allowedLogKeys = null;
 
 		Object.entries(options).forEach((k, v) => {
 			this[k] = v;
