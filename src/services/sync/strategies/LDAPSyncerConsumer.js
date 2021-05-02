@@ -1,30 +1,20 @@
+const { Configuration } = require('@hpi-schul-cloud/commons');
+
 const { getChannel } = require('../../../utils/rabbitmq');
 const { syncLogger } = require('../../../logger/syncLogger');
-// TODO: later it is defined outside of Consumer and pass over constructure to make it configurable
+
 const { SchoolAction, UserAction, ClassAction } = require('./consumerStategies');
 
 const { BadRequest } = require('../../../errors');
 
-const { LDAP_SYNC_ACTIONS, LDAP_SYNC_CHANNEL_NAME } = require('./LDAPSyncer');
-
-// TODO: put action to class or functions with bind filter and repo
-// TODO: make possible actions configurable
+const { LDAP_SYNC_CHANNEL_NAME } = require('./LDAPSyncer');
 
 class LDAPSyncerConsumer {
-	constructor({ logLevel } = {}) {
-		this.logLevel = logLevel || 'error';
-		const shouldUseFilter = this.logLevel === 'error';
-
-		// TODO: replace later over constructor import
-		this.actions = {
-			[LDAP_SYNC_ACTIONS.SYNC_SCHOOL]: new SchoolAction(shouldUseFilter),
-			[LDAP_SYNC_ACTIONS.SYNC_USER]: new UserAction(shouldUseFilter),
-			[LDAP_SYNC_ACTIONS.SYNC_CLASSES]: new ClassAction(shouldUseFilter),
-		};
-	}
-
-	useFilter(filter = null) {
-		return this.logLevel === 'error' ? filter : null;
+	constructor(...actions) {
+		this.actions = {};
+		actions.forEach((action) => {
+			this.actions[action.getType()] = action;
+		});
 	}
 
 	async executeMessage(incomingMessage) {
@@ -39,7 +29,14 @@ class LDAPSyncerConsumer {
 
 const setupConsumer = () => {
 	const syncQueue = getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
-	const consumer = new LDAPSyncerConsumer();
+
+	const shouldUseFilter = Configuration.get('SYNC_LOG_LEVEL') === 'error';
+
+	const consumer = new LDAPSyncerConsumer(
+		new SchoolAction(shouldUseFilter),
+		new UserAction(shouldUseFilter),
+		new ClassAction(shouldUseFilter)
+	);
 
 	const handleMessage = (incomingMessage) =>
 		consumer

@@ -12,13 +12,17 @@ class BaseConumerStrategie {
 		});
 	}
 
+	getType() {
+		return this.type;
+	}
+
 	/**
 	 * @private
 	 * @param {string} type
 	 * @returns {boolean}
 	 */
 	matchType(type) {
-		return this.type === type;
+		return this.getType() === type;
 	}
 
 	/**
