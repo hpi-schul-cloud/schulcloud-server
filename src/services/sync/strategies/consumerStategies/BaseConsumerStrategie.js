@@ -1,6 +1,8 @@
 const { NotImplemented, SyncError, BadRequest } = require('../../../../errors');
 const { batchFilterKeys } = require('../../utils');
 
+const securedKeys = ['type', 'getType', 'matchType', 'filterData', 'exec', 'action'];
+
 class BaseConumerStrategie {
 	constructor(type, options) {
 		if (!type) {
@@ -10,9 +12,15 @@ class BaseConumerStrategie {
 		this.type = type;
 		this.allowedLogKeys = null;
 
-		Object.entries(options).forEach((k, v) => {
-			this[k] = v;
+		Object.entries(options).forEach(([k, v]) => {
+			if (!securedKeys.includes(k)) {
+				this[k] = v;
+			}
 		});
+	}
+
+	getSecuredKeys() {
+		return securedKeys;
 	}
 
 	getType() {
