@@ -1,7 +1,7 @@
 const { NotImplemented, SyncError, BadRequest } = require('../../../../errors');
 const { batchFilterKeys } = require('../../utils');
 
-const securedKeys = ['type', 'getType', 'matchType', 'filterData', 'exec', 'action'];
+const securedKeys = ['type', 'getType', 'matchType', 'filterData', 'exec', 'action', 'getSecuredKeys'];
 
 class BaseConumerStrategie {
 	constructor(type, options) {
@@ -19,10 +19,18 @@ class BaseConumerStrategie {
 		});
 	}
 
+	/**
+	 * @public
+	 * @returns {Array[string]}
+	 */
 	getSecuredKeys() {
 		return securedKeys;
 	}
 
+	/**
+	 * @public
+	 * @returns {string}
+	 */
 	getType() {
 		return this.type;
 	}
