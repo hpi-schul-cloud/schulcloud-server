@@ -3,6 +3,9 @@ const { batchFilterKeys } = require('../../utils');
 
 class BaseConumerStrategie {
 	constructor(type, options) {
+		if (!type) {
+			throw new NotImplemented('The type must set for consumer actions.');
+		}
 		this.filterActive = true;
 		this.type = type;
 		this.allowedLogKeys = null;
