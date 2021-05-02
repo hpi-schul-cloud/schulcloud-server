@@ -33,7 +33,7 @@ class LDAPSyncerConsumer {
 		if (this.actions[content.action]) {
 			return this.actions[content.action].exec(content);
 		}
-		throw new BadRequest(`${content.action} is not valid message action`);
+		throw new BadRequest(`The ${content.action} is not valid message action.`);
 	}
 }
 

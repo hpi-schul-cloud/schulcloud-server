@@ -1,19 +1,5 @@
-const { NotImplemented, SyncError } = require('../../../../errors');
-
-// TODO: Need to be moved to utils, move test too
-const filterKeys = (data = {}, allowedKeys = []) => {
-	const filteredEntries = Object.entries(data).filter(([key]) => allowedKeys.includes(key));
-	return Object.fromEntries(filteredEntries);
-};
-
-const batchFilterKeys = (data, allowedKeys = null) => {
-	let result = data;
-	if (allowedKeys) {
-		const filteredEntries = Object.entries(data).map(([k, v]) => [k, filterKeys(v, allowedKeys)]);
-		result = Object.fromEntries(filteredEntries);
-	}
-	return result;
-};
+const { NotImplemented, SyncError, BadRequest } = require('../../../../errors');
+const { batchFilterKeys } = require('../../utils');
 
 class BaseConumerStrategie {
 	constructor(type, options) {
@@ -59,7 +45,8 @@ class BaseConumerStrategie {
 	 */
 	async exec({ type, data, syncId } = {}) {
 		if (!this.matchType(type)) {
-			return Promise.resolve();
+			// return Promise.resolve();
+			throw new BadRequest(`The ${type} is not the supported message action.`);
 		}
 
 		return this.action(data).catch((err) => {

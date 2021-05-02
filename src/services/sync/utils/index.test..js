@@ -1,6 +1,7 @@
+// TODO: chai dependencies for /src must be fixed
 const { expect } = require('chai');
 
-const { filterKeys, batchFilterKeys } = require('../../src/errors/applicationErrors').private;
+const { filterKeys, batchFilterKeys } = require('./index');
 
 describe('filterKeys', () => {
 	it('should correctly filter keys which are not allowed', () => {
