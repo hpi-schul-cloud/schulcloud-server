@@ -56,7 +56,7 @@ class BaseConumerStrategie {
 
 		return this.action(data).catch((err) => {
 			const filteredData = this.filterActive ? this.filterData(data) : data;
-			throw new SyncError(this.type, err, {
+			throw new SyncError(this.getType(), err, {
 				data: filteredData,
 				syncId,
 			});
