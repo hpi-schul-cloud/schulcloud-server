@@ -10,13 +10,7 @@ class BaseConsumerAction {
 		}
 		this.filterActive = true;
 		this.type = type;
-		this.allowedLogKeys = null;
-
-		Object.entries(options).forEach(([k, v]) => {
-			if (!securedKeys.includes(k)) {
-				this[k] = v;
-			}
-		});
+		this.allowedLogKeys = options.allowedLogKeys || null;
 	}
 
 	/**
