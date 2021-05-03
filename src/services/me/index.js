@@ -33,9 +33,14 @@ class Service {
 			throw new Forbidden('Your access token is not valid.');
 		}
 		user.accountId = params.account._id;
+
+		const roles = await this.app.service('/roles/user').get(userId, params);
+		user.permissions = roles.reduce((acc, role) => [...new Set(acc.concat(role.permissions))], []);
+
 		try {
 			school = await this.app.service('/schools').get(user.schoolId);
 			user.schoolName = school.name;
+			user.school = school;
 		} catch (err) {
 			logger.warning(err);
 			throw new GeneralError("Can't find connected school.");
