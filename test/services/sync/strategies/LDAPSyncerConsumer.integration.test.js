@@ -3,6 +3,7 @@ const chaiAsPromised = require('chai-as-promised');
 
 const { LDAP_SYNC_ACTIONS } = require('../../../../src/services/sync/strategies/LDAPSyncer');
 const { LDAPSyncerConsumer } = require('../../../../src/services/sync/strategies/LDAPSyncerConsumer');
+const { SchoolAction, UserAction, ClassAction } = require('../../../../src/services/sync/strategies/consumerActions');
 
 const { userModel } = require('../../../../src/services/user/model');
 const accountModel = require('../../../../src/services/account/model');
@@ -25,10 +26,17 @@ const accountUserName = 'TEST_ACCOUNT_UNAME';
 describe('Ldap Syncer Consumer Integration', () => {
 	let app;
 	let server;
+	let ldapConsumer;
 
 	before(async () => {
 		app = await appPromise;
 		server = await app.listen(0);
+		const shouldUseFilter = true;
+		ldapConsumer = new LDAPSyncerConsumer(
+			new SchoolAction(shouldUseFilter),
+			new UserAction(shouldUseFilter),
+			new ClassAction(shouldUseFilter)
+		);
 	});
 
 	afterEach(async () => {
@@ -62,7 +70,6 @@ describe('Ldap Syncer Consumer Integration', () => {
 			content: JSON.stringify(contentData),
 		};
 
-		const ldapConsumer = new LDAPSyncerConsumer();
 		await ldapConsumer.executeMessage(schoolData);
 
 		const foundSchool = await schoolModel.findOne({ ldapSchoolIdentifier: ldapSchoolIDn }).lean().exec();
@@ -93,7 +100,6 @@ describe('Ldap Syncer Consumer Integration', () => {
 		const schoolData = {
 			content: JSON.stringify(contentData),
 		};
-		const ldapConsumer = new LDAPSyncerConsumer();
 		await ldapConsumer.executeMessage(schoolData);
 
 		const foundSchool = await schoolModel.findOne({ ldapSchoolIdentifier: ldapSchoolIDn }).lean().exec();
@@ -138,7 +144,6 @@ describe('Ldap Syncer Consumer Integration', () => {
 		const userData = {
 			content: JSON.stringify(contentData),
 		};
-		const ldapConsumer = new LDAPSyncerConsumer();
 		await ldapConsumer.executeMessage(userData);
 
 		const foundUser = await userModel.findOne({ ldapDn: ldapUserDn }).lean().exec();
@@ -198,7 +203,6 @@ describe('Ldap Syncer Consumer Integration', () => {
 		const userData = {
 			content: JSON.stringify(contentData),
 		};
-		const ldapConsumer = new LDAPSyncerConsumer();
 		await ldapConsumer.executeMessage(userData);
 
 		const foundUser = await userModel.findOne({ ldapDn: ldapUserDn }).lean().exec();
@@ -230,7 +234,6 @@ describe('Ldap Syncer Consumer Integration', () => {
 		const classData = {
 			content: JSON.stringify(contentData),
 		};
-		const ldapConsumer = new LDAPSyncerConsumer();
 		await ldapConsumer.executeMessage(classData);
 
 		const foundClass = await classModel.findOne({ ldapDN: ldapClassDn }).lean().exec();
@@ -270,7 +273,6 @@ describe('Ldap Syncer Consumer Integration', () => {
 		const classData = {
 			content: JSON.stringify(contentData),
 		};
-		const ldapConsumer = new LDAPSyncerConsumer();
 		await ldapConsumer.executeMessage(classData);
 
 		const foundClass = await classModel.findOne({ ldapDN: ldapClassDn }).lean().exec();

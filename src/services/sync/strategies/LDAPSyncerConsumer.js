@@ -3,7 +3,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const { getChannel } = require('../../../utils/rabbitmq');
 const { syncLogger } = require('../../../logger/syncLogger');
 
-const { SchoolAction, UserAction, ClassAction } = require('./consumerStategies');
+const { SchoolAction, UserAction, ClassAction } = require('./consumerActions');
 
 const { BadRequest } = require('../../../errors');
 

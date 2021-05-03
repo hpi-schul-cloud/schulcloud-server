@@ -1,12 +1,10 @@
-const BaseConsumerStrategie = require('./BaseConsumerStrategie');
+const BaseConsumerAction = require('./BaseConsumerAction');
 // TODO: place from where it is importat must be fixed later
 const { LDAP_SYNC_ACTIONS } = require('../LDAPSyncer');
 const { SchoolRepo, ClassRepo } = require('../../repo');
 
 const defaultOptions = {
 	allowedLogKeys: ['class', 'ldapDN', 'systemId', 'schoolDn', 'year'],
-	SchoolRepo,
-	ClassRepo,
 };
 
 // TODO: in all actions it looks not nice that filterActive is not passed as option
@@ -16,22 +14,22 @@ const defaultOptions = {
 // If we pass filterActive to options, we must destructure options -> set defaults (that we do not must set repos if we pass this) -> put the combind keys as optiosn to super
 // -> i do not like it because we put knowlege and logic handling to the constructor and every they want to add a new action must do it in the same way and implement the same.
 // --> sound weird...
-class ClassAction extends BaseConsumerStrategie {
+class ClassAction extends BaseConsumerAction {
 	constructor(filterActive = true, options = defaultOptions) {
-		super(LDAP_SYNC_ACTIONS.SYNC_SCHOOL, options);
+		super(LDAP_SYNC_ACTIONS.SYNC_CLASSES, options);
 		this.filterActive = filterActive;
 	}
 
 	async action(data = {}) {
 		const { class: classData = {} } = data;
 
-		const school = await this.SchoolRepo.findSchoolByLdapIdAndSystem(classData.schoolDn, classData.systemId);
+		const school = await SchoolRepo.findSchoolByLdapIdAndSystem(classData.schoolDn, classData.systemId);
 
 		if (school) {
-			const existingClass = await this.ClassRepo.findClassByYearAndLdapDn(school.currentYear, classData.ldapDN);
+			const existingClass = await ClassRepo.findClassByYearAndLdapDn(school.currentYear, classData.ldapDN);
 			if (existingClass) {
 				if (existingClass.name !== classData.name) {
-					await this.ClassRepo.updateClassName(existingClass._id, classData.name);
+					await ClassRepo.updateClassName(existingClass._id, classData.name);
 				}
 			} else {
 				const newClass = {
@@ -41,7 +39,7 @@ class ClassAction extends BaseConsumerStrategie {
 					ldapDN: classData.ldapDN,
 					year: school.currentYear,
 				};
-				await this.ClassRepo.createClass(newClass);
+				await ClassRepo.createClass(newClass);
 			}
 		}
 	}

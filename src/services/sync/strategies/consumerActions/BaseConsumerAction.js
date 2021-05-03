@@ -3,7 +3,7 @@ const { batchFilterKeys } = require('../../utils');
 
 const securedKeys = ['type', 'getType', 'matchType', 'filterData', 'exec', 'action', 'getSecuredKeys'];
 
-class BaseConumerStrategie {
+class BaseConsumerAction {
 	constructor(type, options) {
 		if (!type) {
 			throw new NotImplemented('The type must set for consumer actions.');
@@ -67,10 +67,10 @@ class BaseConumerStrategie {
 	 * @param {object} content
 	 * @returns {Promise}
 	 */
-	async exec({ type, data, syncId } = {}) {
-		if (!this.matchType(type)) {
+	async exec({ action, data, syncId } = {}) {
+		if (!this.matchType(action)) {
 			// return Promise.resolve();
-			throw new BadRequest(`The ${type} is not the supported message action.`);
+			throw new BadRequest(`The ${action} is not the supported message action.`);
 		}
 
 		return this.action(data).catch((err) => {
@@ -83,4 +83,4 @@ class BaseConumerStrategie {
 	}
 }
 
-module.exports = BaseConumerStrategie;
+module.exports = BaseConsumerAction;
