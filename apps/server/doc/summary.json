@@ -1,0 +1,12 @@
+[
+	{
+		"title": "Architecture Guide",
+		"file": "architecture/index.md",
+		"children": [
+			{
+				"title": "Application Layers",
+				"file": "architecture/application-layers.md"
+			}
+		]
+	}
+]

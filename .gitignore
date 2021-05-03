@@ -73,6 +73,9 @@ build
 /dist
 /node_modules
 
+# documentation
+/documentation
+
 # Tests
 /coverage
 /.nyc_output
