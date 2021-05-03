@@ -36,6 +36,7 @@ class LDAPSyncer extends Syncer {
 	 * @see {Syncer#steps}
 	 */
 	async steps() {
+		await this.syncQueue.getChannel();
 		await super.steps();
 		await this.attemptRun();
 		const schools = await this.getSchools();
