@@ -36,6 +36,9 @@ class PublicAppConfigService {
 	find() {
 		const envs = {
 			ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN'),
+			FALLBACK_DISABLED: true,
+			JWT_SHOW_TIMEOUT_WARNING_SECONDS: 3600,
+			JWT_TIMEOUT_SECONDS: 3600 * 2,
 		};
 
 		return Promise.resolve(envs);

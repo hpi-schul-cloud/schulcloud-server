@@ -7,7 +7,12 @@ describe('PublicAppConfigService', () => {
 	let server;
 	let configService;
 
-	const envsToTest = ['ADMIN_TABLES_DISPLAY_CONSENT_COLUMN'];
+	const envsToTest = [
+		'ADMIN_TABLES_DISPLAY_CONSENT_COLUMN',
+		'FALLBACK_DISABLED',
+		'JWT_SHOW_TIMEOUT_WARNING_SECONDS',
+		'JWT_TIMEOUT_SECONDS'
+	];
 
 	before(async () => {
 		app = await appPromise;
