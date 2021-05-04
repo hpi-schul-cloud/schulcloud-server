@@ -2,6 +2,7 @@ const BaseConsumerAction = require('./BaseConsumerAction');
 // TODO: place from where it is importat must be fixed later
 const { LDAP_SYNC_ACTIONS } = require('../LDAPSyncer');
 const { SchoolRepo, ClassRepo } = require('../../repo');
+const { NotFound } = require('../../../../errors');
 
 const defaultOptions = {
 	allowedLogKeys: ['class', 'ldapDN', 'systemId', 'schoolDn', 'year'],
@@ -41,6 +42,11 @@ class ClassAction extends BaseConsumerAction {
 				};
 				await ClassRepo.createClass(newClass);
 			}
+		} else {
+			throw new NotFound(`School for ${classData.schoolDn} and ${classData.systemId} couldn't be found.`, {
+				schoolDn: classData.schoolDn,
+				systemId: classData.systemId,
+			});
 		}
 	}
 }

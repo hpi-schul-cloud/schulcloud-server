@@ -4,8 +4,7 @@ const chaiAsPromised = require('chai-as-promised');
 const sinon = require('sinon');
 const { ObjectId } = require('mongoose').Types;
 
-const { BadRequest } = require('../../../../../src/errors');
-const { SyncError } = require('../../../../../src/errors/applicationErrors');
+const { BadRequest, NotFound } = require('../../../../../src/errors');
 const { ClassAction } = require('../../../../../src/services/sync/strategies/consumerActions');
 
 const { SchoolRepo, ClassRepo } = require('../../../../../src/services/sync/repo');
@@ -65,14 +64,20 @@ describe('Class Actions', () => {
 			expect(updateClassStub.getCall(0).lastArg).to.be.equal(newClassName);
 		});
 
-		it('should throw a sync error if class repo throws an error', async () => {
+		it('should throw an error if class repo throws an error', async () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School' });
 
 			const findClassByYearAndLdapDnStub = sinon.stub(ClassRepo, 'findClassByYearAndLdapDn');
 			findClassByYearAndLdapDnStub.throws(new BadRequest('class repo error'));
 
-			expect(classAction.action({})).to.eventually.throw(SyncError);
+			expect(classAction.action({})).to.be.rejectedWith(BadRequest);
+		});
+
+		it('should throw an error if school could not be found', async () => {
+			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			findSchoolByLdapIdAndSystemStub.returns(null);
+			expect(classAction.action({ class: { schoolDn: 'SCHOOL_DN', systemId: '' } })).to.be.rejectedWith(NotFound);
 		});
 	});
 });
