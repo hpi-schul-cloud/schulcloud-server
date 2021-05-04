@@ -4,6 +4,7 @@ const { ObjectId } = require('mongoose').Types;
 const logger = require('../logger');
 
 const {
+	SyncError,
 	ApplicationError,
 	BusinessError,
 	TechnicalError,
@@ -241,6 +242,7 @@ class NoClientInstanceError extends Error {}
 
 module.exports = {
 	ApplicationError,
+	SyncError,
 	BusinessError,
 	TechnicalError,
 	ValidationError,

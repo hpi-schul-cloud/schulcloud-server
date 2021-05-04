@@ -3,6 +3,8 @@ const chaiAsPromised = require('chai-as-promised');
 
 const { LDAP_SYNC_ACTIONS } = require('../../../../src/services/sync/strategies/LDAPSyncer');
 const { LDAPSyncerConsumer } = require('../../../../src/services/sync/strategies/LDAPSyncerConsumer');
+const { SchoolAction, UserAction, ClassAction } = require('../../../../src/services/sync/strategies/consumerActions');
+const SchoolYearFacade = require('../../../../src/services/school/logic/year');
 
 const { userModel } = require('../../../../src/services/user/model');
 const accountModel = require('../../../../src/services/account/model');
@@ -11,6 +13,7 @@ const { classModel } = require('../../../../src/services/user-group/model');
 const { schoolModel } = require('../../../../src/services/school/model');
 
 const appPromise = require('../../../../src/app');
+const { SyncError } = require('../../../../src/errors/applicationErrors');
 
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
@@ -25,10 +28,17 @@ const accountUserName = 'TEST_ACCOUNT_UNAME';
 describe('Ldap Syncer Consumer Integration', () => {
 	let app;
 	let server;
+	let ldapConsumer;
 
 	before(async () => {
 		app = await appPromise;
 		server = await app.listen(0);
+		const shouldUseFilter = true;
+		ldapConsumer = new LDAPSyncerConsumer(
+			new SchoolAction(shouldUseFilter),
+			new UserAction(shouldUseFilter),
+			new ClassAction(shouldUseFilter)
+		);
 	});
 
 	afterEach(async () => {
@@ -47,6 +57,10 @@ describe('Ldap Syncer Consumer Integration', () => {
 	it('should create school by the data', async () => {
 		const schoolName = 'test school';
 		const system = await testObjects.createTestSystem();
+		const years = await app.service('years').find({ query: { name: '2021/22' } });
+		const currentYear = new SchoolYearFacade(years.data).defaultYear;
+		const states = await app.service('federalStates').find({ query: { abbreviation: 'NI' } });
+		const federalStateId = states.data[0]._id;
 		const contentData = {
 			action: 'syncSchool',
 			syncId: '6082d04c4f92b7557025df7b',
@@ -55,6 +69,8 @@ describe('Ldap Syncer Consumer Integration', () => {
 					name: schoolName,
 					systems: [system._id],
 					ldapSchoolIdentifier: ldapSchoolIDn,
+					currentYear,
+					federalState: federalStateId,
 				},
 			},
 		};
@@ -62,12 +78,13 @@ describe('Ldap Syncer Consumer Integration', () => {
 			content: JSON.stringify(contentData),
 		};
 
-		const ldapConsumer = new LDAPSyncerConsumer();
 		await ldapConsumer.executeMessage(schoolData);
 
 		const foundSchool = await schoolModel.findOne({ ldapSchoolIdentifier: ldapSchoolIDn }).lean().exec();
 		expect(foundSchool).to.be.not.null;
 		expect(foundSchool.name).to.be.equal(schoolName);
+		expect(foundSchool.federalState.toString()).to.be.equal(federalStateId.toString());
+		expect(foundSchool.currentYear.toString()).to.be.equal(currentYear._id.toString());
 	});
 
 	it('should update existing school by the data', async () => {
@@ -93,7 +110,6 @@ describe('Ldap Syncer Consumer Integration', () => {
 		const schoolData = {
 			content: JSON.stringify(contentData),
 		};
-		const ldapConsumer = new LDAPSyncerConsumer();
 		await ldapConsumer.executeMessage(schoolData);
 
 		const foundSchool = await schoolModel.findOne({ ldapSchoolIdentifier: ldapSchoolIDn }).lean().exec();
@@ -138,7 +154,6 @@ describe('Ldap Syncer Consumer Integration', () => {
 		const userData = {
 			content: JSON.stringify(contentData),
 		};
-		const ldapConsumer = new LDAPSyncerConsumer();
 		await ldapConsumer.executeMessage(userData);
 
 		const foundUser = await userModel.findOne({ ldapDn: ldapUserDn }).lean().exec();
@@ -146,10 +161,14 @@ describe('Ldap Syncer Consumer Integration', () => {
 		expect(foundUser.email).to.be.equal(testEmail);
 		expect(foundUser.firstName).to.be.equal(firstName);
 		expect(foundUser.lastName).to.be.equal(lastName);
+		expect(foundUser.ldapId).to.be.equal(ldapUserId);
+		expect(foundUser.ldapDn).to.be.equal(ldapUserDn);
 
 		const foundAccount = await accountModel.findOne({ userId: foundUser._id }).lean().exec();
 		expect(foundAccount).to.be.not.null;
 		expect(foundAccount.username).to.be.equal(accountUserName.toLowerCase());
+		expect(foundAccount.systemId.toString()).to.be.equal(system._id.toString());
+		expect(foundAccount.activated).to.be.true;
 	});
 
 	it('should update existing user by the data', async () => {
@@ -198,7 +217,6 @@ describe('Ldap Syncer Consumer Integration', () => {
 		const userData = {
 			content: JSON.stringify(contentData),
 		};
-		const ldapConsumer = new LDAPSyncerConsumer();
 		await ldapConsumer.executeMessage(userData);
 
 		const foundUser = await userModel.findOne({ ldapDn: ldapUserDn }).lean().exec();
@@ -230,7 +248,6 @@ describe('Ldap Syncer Consumer Integration', () => {
 		const classData = {
 			content: JSON.stringify(contentData),
 		};
-		const ldapConsumer = new LDAPSyncerConsumer();
 		await ldapConsumer.executeMessage(classData);
 
 		const foundClass = await classModel.findOne({ ldapDN: ldapClassDn }).lean().exec();
@@ -270,11 +287,35 @@ describe('Ldap Syncer Consumer Integration', () => {
 		const classData = {
 			content: JSON.stringify(contentData),
 		};
-		const ldapConsumer = new LDAPSyncerConsumer();
 		await ldapConsumer.executeMessage(classData);
 
 		const foundClass = await classModel.findOne({ ldapDN: ldapClassDn }).lean().exec();
 		expect(foundClass).to.be.not.null;
 		expect(foundClass.name).to.be.equal(updatedClassName);
+	});
+
+	it('should throw SyncError if school could not be found', async () => {
+		const className = 'test class';
+		const system = await testObjects.createTestSystem();
+		const schoolDn = 'Not existed school dn';
+		const contentData = {
+			action: LDAP_SYNC_ACTIONS.SYNC_CLASSES,
+			syncId: '6082c4f2ba4aef3c5c4473fd',
+			data: {
+				class: {
+					name: className,
+					systemId: system._id.toString(),
+					schoolDn,
+					nameFormat: 'static',
+					ldapDN: ldapClassDn,
+					uniqueMembers: ['some uuid'],
+				},
+			},
+			uniqueMembers: [null],
+		};
+		const classData = {
+			content: JSON.stringify(contentData),
+		};
+		expect(ldapConsumer.executeMessage(classData)).to.be.rejectedWith(SyncError);
 	});
 });

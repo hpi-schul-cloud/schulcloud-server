@@ -10,8 +10,14 @@ const findClassByYearAndLdapDn = async (year, ldapDN) => {
 		.exec();
 };
 
-const createClass = async (newClass) => {
-	return classModel.create(newClass);
+const createClass = async (classData, school) => {
+	return classModel.create({
+		name: classData.name,
+		schoolId: school._id,
+		nameFormat: 'static',
+		ldapDN: classData.ldapDN,
+		year: school.currentYear,
+	});
 };
 
 const updateClassName = async (classId, className) => {
