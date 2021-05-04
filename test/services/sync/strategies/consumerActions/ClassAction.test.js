@@ -24,13 +24,14 @@ describe('Class Actions', () => {
 	});
 
 	describe('action: ', () => {
+		const testSchoolName = 'Test School';
 		it('should create class if not exists', async () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 			const schoolId = 1;
 			const className = 'Class Name';
 			const ldapDn = 'some ldap';
 			const currentYear = new ObjectId();
-			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School', _id: schoolId, currentYear });
+			findSchoolByLdapIdAndSystemStub.returns({ name: testSchoolName, _id: schoolId, currentYear });
 
 			const findClassByYearAndLdapDnStub = sinon.stub(ClassRepo, 'findClassByYearAndLdapDn');
 			findClassByYearAndLdapDnStub.returns(null);
@@ -39,18 +40,17 @@ describe('Class Actions', () => {
 			await classAction.action({ class: { name: className, ldapDN: ldapDn } });
 			expect(createClassStub.calledOnce).to.be.true;
 
-			const callArg = createClassStub.firstCall.firstArg;
-			expect(callArg.schoolId).to.be.equal(schoolId);
-			expect(callArg.name).to.be.equal(className);
-			expect(callArg.nameFormat).to.be.equal('static');
-			expect(callArg.year).to.be.equal(currentYear);
-			expect(callArg.ldapDN).to.be.equal(ldapDn);
+			const { firstArg, lastArg } = createClassStub.firstCall;
+			expect(firstArg.name).to.be.equal(className);
+			expect(firstArg.ldapDN).to.be.equal(ldapDn);
+			expect(lastArg.name).to.be.equal(testSchoolName);
+			expect(lastArg.currentYear._id.toString()).to.be.equal(currentYear.toString());
 		});
 
 		it('should update class name for existing class', async () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 			const classId = 1;
-			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School' });
+			findSchoolByLdapIdAndSystemStub.returns({ name: testSchoolName });
 
 			const findClassByYearAndLdapDnStub = sinon.stub(ClassRepo, 'findClassByYearAndLdapDn');
 			findClassByYearAndLdapDnStub.returns({ name: 'Test class', _id: classId });
@@ -66,7 +66,7 @@ describe('Class Actions', () => {
 
 		it('should throw an error if class repo throws an error', async () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
-			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School' });
+			findSchoolByLdapIdAndSystemStub.returns({ name: testSchoolName });
 
 			const findClassByYearAndLdapDnStub = sinon.stub(ClassRepo, 'findClassByYearAndLdapDn');
 			findClassByYearAndLdapDnStub.throws(new BadRequest('class repo error'));

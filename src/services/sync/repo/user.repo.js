@@ -32,7 +32,7 @@ const createUser = async (user) => {
 		schoolId: user.schoolId,
 		email: user.email,
 		ldapDn: user.ldapDn,
-		ldapId: user.ldapUUID,
+		ldapId: user.ldapId,
 		roles: user.roles,
 	});
 };

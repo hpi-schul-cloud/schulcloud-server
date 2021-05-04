@@ -161,10 +161,14 @@ describe('Ldap Syncer Consumer Integration', () => {
 		expect(foundUser.email).to.be.equal(testEmail);
 		expect(foundUser.firstName).to.be.equal(firstName);
 		expect(foundUser.lastName).to.be.equal(lastName);
+		expect(foundUser.ldapId).to.be.equal(ldapUserId);
+		expect(foundUser.ldapDn).to.be.equal(ldapUserDn);
 
 		const foundAccount = await accountModel.findOne({ userId: foundUser._id }).lean().exec();
 		expect(foundAccount).to.be.not.null;
 		expect(foundAccount.username).to.be.equal(accountUserName.toLowerCase());
+		expect(foundAccount.systemId.toString()).to.be.equal(system._id.toString());
+		expect(foundAccount.activated).to.be.true;
 	});
 
 	it('should update existing user by the data', async () => {

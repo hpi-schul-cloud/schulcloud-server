@@ -33,14 +33,7 @@ class ClassAction extends BaseConsumerAction {
 					await ClassRepo.updateClassName(existingClass._id, classData.name);
 				}
 			} else {
-				const newClass = {
-					name: classData.name,
-					schoolId: school._id,
-					nameFormat: 'static',
-					ldapDN: classData.ldapDN,
-					year: school.currentYear,
-				};
-				await ClassRepo.createClass(newClass);
+				await ClassRepo.createClass(classData, school);
 			}
 		} else {
 			throw new NotFound(`School for ${classData.schoolDn} and ${classData.systemId} couldn't be found.`, {

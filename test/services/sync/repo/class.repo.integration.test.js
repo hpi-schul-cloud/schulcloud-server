@@ -37,7 +37,7 @@ describe('class repo', () => {
 	it('should successfully create new class', async () => {
 		const className = 'Test Class';
 		const school = await testObjects.createTestSchool();
-		const res = await ClassRepo.createClass({ name: className, schoolId: school._id });
+		const res = await ClassRepo.createClass({ name: className, schoolId: school._id }, school);
 		expect(res._id).to.be.not.undefined;
 		expect(res.name).to.be.equal(className);
 
