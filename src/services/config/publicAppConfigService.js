@@ -39,6 +39,10 @@ class PublicAppConfigService {
 			FALLBACK_DISABLED: true,
 			JWT_SHOW_TIMEOUT_WARNING_SECONDS: 3600,
 			JWT_TIMEOUT_SECONDS: 3600 * 2,
+			FEATURE_EXTENSIONS_ENABLED: true,
+			FEATURE_TEAMS_ENABLED: true,
+			NOT_AUTHENTICATED_REDIRECT_URL: "/login",
+			FEATURE_ES_COLLECTIONS_ENABLED: false,
 		};
 
 		return Promise.resolve(envs);
