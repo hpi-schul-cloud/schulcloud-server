@@ -1,9 +1,3 @@
-const { static: staticContent } = require('@feathersjs/express');
-const path = require('path');
-
-const { Forbidden, GeneralError } = require('../../../errors');
-const logger = require('../../../logger');
-const publicSchoolsHooks = require('../hooks/publicSchools.hooks');
 const { schoolModel } = require('../model');
 
 class SchoolsListService {

@@ -458,11 +458,10 @@ describe('years service', () => {
 	});
 });
 
-describe('schoolsList service', () => {
+describe.only('schoolsList service', () => {
 	let app;
 	let server;
 	let schoolsListService;
-	let schoolService;
 
 	before(async () => {
 		app = await appPromise;
@@ -481,9 +480,7 @@ describe('schoolsList service', () => {
 
 	describe('find', () => {
 		before('load data and set samples', async () => {
-			schoolService = app.service('/schools');
-
-			const school = await createSchool();
+			await createSchool();
 		});
 
 		it('can be accessed unautorized', async () => {
