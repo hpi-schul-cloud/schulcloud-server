@@ -43,6 +43,7 @@ class PublicAppConfigService {
 			FEATURE_TEAMS_ENABLED: true,
 			NOT_AUTHENTICATED_REDIRECT_URL: "/login",
 			FEATURE_ES_COLLECTIONS_ENABLED: false,
+			ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: true,
 		};
 
 		return Promise.resolve(envs);
