@@ -3,7 +3,6 @@ const chaiAsPromised = require('chai-as-promised');
 
 const sinon = require('sinon');
 const { BadRequest } = require('../../../../../src/errors');
-const { SyncError } = require('../../../../../src/errors/applicationErrors');
 const { SchoolAction } = require('../../../../../src/services/sync/strategies/consumerActions');
 
 const { SchoolRepo } = require('../../../../../src/services/sync/repo');
@@ -54,7 +53,7 @@ describe('School Actions', () => {
 		it('should throw a sync error if school repo throws an error', async () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 			findSchoolByLdapIdAndSystemStub.throws(new BadRequest('school repo error'));
-			await expect(schoolAction.action({})).to.be.rejectedWith(SyncError);
+			await expect(schoolAction.action({})).to.be.rejectedWith(BadRequest);
 		});
 	});
 });

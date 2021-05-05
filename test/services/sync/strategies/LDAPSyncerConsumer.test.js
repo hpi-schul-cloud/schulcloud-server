@@ -34,7 +34,7 @@ describe('Ldap Syncer Consumer', () => {
 			const ldapConsumer = new LDAPSyncerConsumer();
 			const msg = {
 				action: TEST_ACTION_TYPE,
-				content: 'test message',
+				content: JSON.stringify({ res: 'test message' }),
 			};
 			await expect(ldapConsumer.executeMessage(msg)).to.be.rejectedWith(BadRequest);
 		});
