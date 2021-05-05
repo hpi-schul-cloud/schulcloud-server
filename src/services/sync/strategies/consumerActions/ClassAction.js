@@ -1,7 +1,7 @@
 const BaseConsumerAction = require('./BaseConsumerAction');
 // TODO: place from where it is importat must be fixed later
 const { LDAP_SYNC_ACTIONS } = require('../LDAPSyncer');
-const { SchoolRepo, ClassRepo } = require('../../repo');
+const { SchoolRepo, ClassRepo, UserRepo } = require('../../repo');
 const { NotFound } = require('../../../../errors');
 
 const defaultOptions = {
@@ -35,11 +35,35 @@ class ClassAction extends BaseConsumerAction {
 			} else {
 				await ClassRepo.createClass(classData, school);
 			}
+			await this.addUsersToClass(classData, school);
 		} else {
 			throw new NotFound(`School for ${classData.schoolDn} and ${classData.systemId} couldn't be found.`, {
 				schoolDn: classData.schoolDn,
 				systemId: classData.systemId,
 			});
+		}
+	}
+
+	async addUsersToClass(classData, schoolObject) {
+		const students = [];
+		const teachers = [];
+		const classObject = await ClassRepo.findClassByYearAndLdapDn(schoolObject.currentYear, classData.ldapDN);
+		if (!Array.isArray(classData.uniqueMembers)) {
+			// if there is only one member, ldapjs doesn't give us an array here
+			classData.uniqueMembers = [classData.uniqueMembers];
+		}
+		const users = await UserRepo.findByLdapDnsAndSchool(classData.uniqueMembers, schoolObject._id);
+		users.forEach((user) => {
+			user.roles.forEach((role) => {
+				if (role.name === 'student') students.push(user._id);
+				if (role.name === 'teacher') teachers.push(user._id);
+			});
+		});
+		if (students.length > 0) {
+			await ClassRepo.updateClassStudents(classObject._id, students);
+		}
+		if (teachers.length > 0) {
+			await ClassRepo.updateClassTeachers(classObject._id, teachers);
 		}
 	}
 }

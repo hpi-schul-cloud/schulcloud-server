@@ -7,7 +7,7 @@ const { ObjectId } = require('mongoose').Types;
 const { BadRequest, NotFound } = require('../../../../../src/errors');
 const { ClassAction } = require('../../../../../src/services/sync/strategies/consumerActions');
 
-const { SchoolRepo, ClassRepo } = require('../../../../../src/services/sync/repo');
+const { SchoolRepo, ClassRepo, UserRepo } = require('../../../../../src/services/sync/repo');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
@@ -27,7 +27,7 @@ describe('Class Actions', () => {
 		const testSchoolName = 'Test School';
 		it('should create class if not exists', async () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
-			const schoolId = 1;
+			const schoolId = new ObjectId();
 			const className = 'Class Name';
 			const ldapDn = 'some ldap';
 			const currentYear = new ObjectId();
@@ -78,6 +78,83 @@ describe('Class Actions', () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 			findSchoolByLdapIdAndSystemStub.returns(null);
 			expect(classAction.action({ class: { schoolDn: 'SCHOOL_DN', systemId: '' } })).to.be.rejectedWith(NotFound);
+		});
+	});
+
+	describe('addUsersToClass', () => {
+		let updateClassStudentsStub;
+		let updateClassTeachersStub;
+		const mockClass = {
+			_id: new ObjectId(),
+		};
+		beforeEach(() => {
+			const findClassByYearAndLdapDnStub = sinon.stub(ClassRepo, 'findClassByYearAndLdapDn');
+			findClassByYearAndLdapDnStub.returns(mockClass);
+
+			updateClassStudentsStub = sinon.stub(ClassRepo, 'updateClassStudents');
+			updateClassTeachersStub = sinon.stub(ClassRepo, 'updateClassTeachers');
+		});
+
+		afterEach(() => sinon.restore());
+
+		it('should add single user to the class', async () => {
+			const uniqueMembers = 'user1';
+			const classData = {
+				ldapDn: 'TEST_CLASS',
+				uniqueMembers,
+			};
+
+			const foundUsers = [
+				{
+					_id: 'user1',
+					roles: [{ name: 'student' }],
+				},
+			];
+			const findByLdapDnAndSchoolStub = sinon.stub(UserRepo, 'findByLdapDnAndSchool');
+			findByLdapDnAndSchoolStub.returns(foundUsers);
+
+			const schoolObj = { _id: new ObjectId(), currentYear: new ObjectId() };
+			await classAction.addUsersToClass(classData, schoolObj);
+
+			expect(updateClassStudentsStub.calledOnce).to.be.true;
+			expect(updateClassStudentsStub.getCall(0).firstArg.toString()).to.be.equal(mockClass._id.toString());
+			expect(updateClassStudentsStub.getCall(0).lastArg).to.eql(['user1']);
+		});
+
+		it('should add students and teachers to the class', async () => {
+			const uniqueMembers = ['user1', 'user2', 'user3'];
+			const classData = {
+				ldapDn: 'TEST_CLASS',
+				uniqueMembers,
+			};
+
+			const foundUsers = [
+				{
+					_id: 'user1',
+					roles: [{ name: 'student' }],
+				},
+				{
+					_id: 'user2',
+					roles: [{ name: 'student' }, { name: 'teacher' }], // Should this case exists?
+				},
+				{
+					_id: 'user3',
+					roles: [{ name: 'teacher' }],
+				},
+			];
+			const findByLdapDnAndSchoolStub = sinon.stub(UserRepo, 'findByLdapDnAndSchool');
+			findByLdapDnAndSchoolStub.returns(foundUsers);
+
+			const schoolObj = { _id: new ObjectId(), currentYear: new ObjectId() };
+			await classAction.addUsersToClass(classData, schoolObj);
+
+			expect(updateClassStudentsStub.calledOnce).to.be.true;
+			expect(updateClassStudentsStub.getCall(0).firstArg.toString()).to.be.equal(mockClass._id.toString());
+			expect(updateClassStudentsStub.getCall(0).lastArg).to.eql(['user1', 'user2']);
+
+			expect(updateClassTeachersStub.calledOnce).to.be.true;
+			expect(updateClassTeachersStub.getCall(0).firstArg.toString()).to.be.equal(mockClass._id.toString());
+			expect(updateClassTeachersStub.getCall(0).lastArg).to.eql(['user2', 'user3']);
 		});
 	});
 });
