@@ -110,8 +110,8 @@ describe('Class Actions', () => {
 					roles: [{ name: 'student' }],
 				},
 			];
-			const findByLdapDnAndSchoolStub = sinon.stub(UserRepo, 'findByLdapDnAndSchool');
-			findByLdapDnAndSchoolStub.returns(foundUsers);
+			const findByLdapDnsAndSchoolStub = sinon.stub(UserRepo, 'findByLdapDnsAndSchool');
+			findByLdapDnsAndSchoolStub.returns(foundUsers);
 
 			const schoolObj = { _id: new ObjectId(), currentYear: new ObjectId() };
 			await classAction.addUsersToClass(classData, schoolObj);
@@ -142,8 +142,8 @@ describe('Class Actions', () => {
 					roles: [{ name: 'teacher' }],
 				},
 			];
-			const findByLdapDnAndSchoolStub = sinon.stub(UserRepo, 'findByLdapDnAndSchool');
-			findByLdapDnAndSchoolStub.returns(foundUsers);
+			const findByLdapDnsAndSchoolStub = sinon.stub(UserRepo, 'findByLdapDnsAndSchool');
+			findByLdapDnsAndSchoolStub.returns(foundUsers);
 
 			const schoolObj = { _id: new ObjectId(), currentYear: new ObjectId() };
 			await classAction.addUsersToClass(classData, schoolObj);
