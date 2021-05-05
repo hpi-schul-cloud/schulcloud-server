@@ -36,7 +36,7 @@ describe('Ldap Syncer Consumer', () => {
 				action: TEST_ACTION_TYPE,
 				content: 'test message',
 			};
-			expect(ldapConsumer.executeMessage(msg)).to.eventually.throw(BadRequest);
+			await expect(ldapConsumer.executeMessage(msg)).to.be.rejectedWith(BadRequest);
 		});
 	});
 });

@@ -96,7 +96,7 @@ describe('user repo', () => {
 			const inputAccount = {
 				username: TEST_EMAIL,
 			};
-			expect(UserRepo.createUserAndAccount(inputUser, inputAccount)).to.eventually.throw(BadRequest);
+			await expect(UserRepo.createUserAndAccount(inputUser, inputAccount)).to.be.rejectedWith(BadRequest);
 		});
 	});
 	describe('update user and account', () => {
@@ -143,13 +143,13 @@ describe('user repo', () => {
 			const newFirstName = 'new first name';
 			const newLastName = 'new last name';
 			const newUserName = 'new user name';
-			expect(
+			await expect(
 				UserRepo.updateUserAndAccount(
 					testUser._id,
 					{ firstName: newFirstName, lastName: newLastName, email: existedEmail },
 					{ username: newUserName }
 				)
-			).to.eventually.throw(BadRequest);
+			).to.be.rejectedWith(BadRequest);
 		});
 	});
 

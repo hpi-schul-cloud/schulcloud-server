@@ -367,7 +367,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 			const classData = {
 				content: JSON.stringify(contentData),
 			};
-			expect(ldapConsumer.executeMessage(classData)).to.be.rejectedWith(SyncError);
+			await expect(ldapConsumer.executeMessage(classData)).to.be.rejectedWith(SyncError);
 		});
 	});
 });

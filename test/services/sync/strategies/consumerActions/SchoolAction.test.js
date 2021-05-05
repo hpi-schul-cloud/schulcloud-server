@@ -54,7 +54,7 @@ describe('School Actions', () => {
 		it('should throw a sync error if school repo throws an error', async () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 			findSchoolByLdapIdAndSystemStub.throws(new BadRequest('school repo error'));
-			expect(schoolAction.action({})).to.eventually.throw(SyncError);
+			await expect(schoolAction.action({})).to.be.rejectedWith(SyncError);
 		});
 	});
 });
