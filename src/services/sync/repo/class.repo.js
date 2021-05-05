@@ -36,8 +36,8 @@ const ClassRepo = {
 	findClassByYearAndLdapDn,
 	createClass,
 	updateClassName,
-    updateClassStudents,
-    updateClassTeachers,
+	updateClassStudents,
+	updateClassTeachers,
 };
 
 module.exports = ClassRepo;
