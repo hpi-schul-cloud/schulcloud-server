@@ -21,6 +21,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-6950 - changes validation for officialSchoolNumber
 - SC-8599 - added helparea contact dropdown and send value
 - SC-7944 - use persistent ids for Lern-Store content items
 - OPS-1508 - added limits for cpu and ram to the docker compose files
