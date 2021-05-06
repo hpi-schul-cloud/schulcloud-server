@@ -27,15 +27,18 @@ class ClassAction extends BaseConsumerAction {
 		const school = await SchoolRepo.findSchoolByLdapIdAndSystem(classData.schoolDn, classData.systemId);
 
 		if (school) {
+			let classId;
 			const existingClass = await ClassRepo.findClassByYearAndLdapDn(school.currentYear, classData.ldapDN);
 			if (existingClass) {
+				classId = existingClass._id;
 				if (existingClass.name !== classData.name) {
 					await ClassRepo.updateClassName(existingClass._id, classData.name);
 				}
 			} else {
-				await ClassRepo.createClass(classData, school);
+				const createdClass = await ClassRepo.createClass(classData, school);
+				classId = createdClass._id;
 			}
-			await this.addUsersToClass(classData, school);
+			await this.addUsersToClass(school._id, classId, classData.uniqueMembers);
 		} else {
 			throw new NotFound(`School for ${classData.schoolDn} and ${classData.systemId} couldn't be found.`, {
 				schoolDn: classData.schoolDn,
@@ -44,27 +47,19 @@ class ClassAction extends BaseConsumerAction {
 		}
 	}
 
-	async addUsersToClass(classData, schoolObject) {
+	async addUsersToClass(schoolId, classId, uniqueMembers) {
 		const students = [];
 		const teachers = [];
-		const classObject = await ClassRepo.findClassByYearAndLdapDn(schoolObject.currentYear, classData.ldapDN);
-		if (!Array.isArray(classData.uniqueMembers)) {
-			// if there is only one member, ldapjs doesn't give us an array here
-			classData.uniqueMembers = [classData.uniqueMembers];
-		}
-		const users = await UserRepo.findByLdapDnsAndSchool(classData.uniqueMembers, schoolObject._id);
+		const ldapDns = !Array.isArray(uniqueMembers) ? [uniqueMembers] : uniqueMembers;
+		const users = await UserRepo.findByLdapDnsAndSchool(ldapDns, schoolId);
 		users.forEach((user) => {
 			user.roles.forEach((role) => {
 				if (role.name === 'student') students.push(user._id);
 				if (role.name === 'teacher') teachers.push(user._id);
 			});
 		});
-		if (students.length > 0) {
-			await ClassRepo.updateClassStudents(classObject._id, students);
-		}
-		if (teachers.length > 0) {
-			await ClassRepo.updateClassTeachers(classObject._id, teachers);
-		}
+		await ClassRepo.updateClassStudents(classId, students);
+		await ClassRepo.updateClassTeachers(classId, teachers);
 	}
 }
 

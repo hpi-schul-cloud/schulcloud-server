@@ -37,6 +37,7 @@ describe('Class Actions', () => {
 			findClassByYearAndLdapDnStub.returns(null);
 
 			const createClassStub = sinon.stub(ClassRepo, 'createClass');
+			createClassStub.returns({ _id: new ObjectId() });
 			await classAction.action({ class: { name: className, ldapDN: ldapDn } });
 			expect(createClassStub.calledOnce).to.be.true;
 
@@ -49,7 +50,7 @@ describe('Class Actions', () => {
 
 		it('should update class name for existing class', async () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
-			const classId = 1;
+			const classId = new ObjectId();
 			findSchoolByLdapIdAndSystemStub.returns({ name: testSchoolName });
 
 			const findClassByYearAndLdapDnStub = sinon.stub(ClassRepo, 'findClassByYearAndLdapDn');
@@ -99,10 +100,6 @@ describe('Class Actions', () => {
 
 		it('should add single user to the class', async () => {
 			const uniqueMembers = 'user1';
-			const classData = {
-				ldapDn: 'TEST_CLASS',
-				uniqueMembers,
-			};
 
 			const foundUsers = [
 				{
@@ -114,7 +111,7 @@ describe('Class Actions', () => {
 			findByLdapDnsAndSchoolStub.returns(foundUsers);
 
 			const schoolObj = { _id: new ObjectId(), currentYear: new ObjectId() };
-			await classAction.addUsersToClass(classData, schoolObj);
+			await classAction.addUsersToClass(schoolObj._id, mockClass._id, uniqueMembers);
 
 			expect(updateClassStudentsStub.calledOnce).to.be.true;
 			expect(updateClassStudentsStub.getCall(0).firstArg.toString()).to.be.equal(mockClass._id.toString());
@@ -123,10 +120,6 @@ describe('Class Actions', () => {
 
 		it('should add students and teachers to the class', async () => {
 			const uniqueMembers = ['user1', 'user2', 'user3'];
-			const classData = {
-				ldapDn: 'TEST_CLASS',
-				uniqueMembers,
-			};
 
 			const foundUsers = [
 				{
@@ -146,7 +139,7 @@ describe('Class Actions', () => {
 			findByLdapDnsAndSchoolStub.returns(foundUsers);
 
 			const schoolObj = { _id: new ObjectId(), currentYear: new ObjectId() };
-			await classAction.addUsersToClass(classData, schoolObj);
+			await classAction.addUsersToClass(schoolObj._id, mockClass._id, uniqueMembers);
 
 			expect(updateClassStudentsStub.calledOnce).to.be.true;
 			expect(updateClassStudentsStub.getCall(0).firstArg.toString()).to.be.equal(mockClass._id.toString());
