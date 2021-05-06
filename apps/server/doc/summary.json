@@ -1,11 +1,15 @@
 [
 	{
-		"title": "Architecture Guide",
-		"file": "architecture/index.md",
+		"title": "NestJS Application",
+		"file": "../README.md",
 		"children": [
 			{
+				"title": "Naming Conventions",
+				"file": "naming-conventions.md"
+			},
+			{
 				"title": "Application Layers",
-				"file": "architecture/application-layers.md"
+				"file": "application-layers.md"
 			}
 		]
 	}
