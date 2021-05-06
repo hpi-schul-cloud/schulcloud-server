@@ -104,11 +104,23 @@ const findByLdapIdAndSchool = async (ldapId, schoolId) => {
 		.exec();
 };
 
+const findByLdapDnsAndSchool = async (ldapDns, schoolId) => {
+	return userModel
+		.find({
+			ldapDn: { $in: ldapDns },
+			schoolId,
+		})
+		.populate('roles')
+		.lean()
+		.exec();
+};
+
 const UserRepo = {
 	private: { createAccount, createUser, updateAccount },
 	createUserAndAccount,
 	updateUserAndAccount,
 	findByLdapIdAndSchool,
+	findByLdapDnsAndSchool,
 };
 
 module.exports = UserRepo;

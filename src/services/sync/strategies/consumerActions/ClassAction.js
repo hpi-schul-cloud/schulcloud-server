@@ -1,7 +1,7 @@
 const BaseConsumerAction = require('./BaseConsumerAction');
 // TODO: place from where it is importat must be fixed later
 const { LDAP_SYNC_ACTIONS } = require('../LDAPSyncer');
-const { SchoolRepo, ClassRepo } = require('../../repo');
+const { SchoolRepo, ClassRepo, UserRepo } = require('../../repo');
 const { NotFound } = require('../../../../errors');
 
 const defaultOptions = {
@@ -27,20 +27,39 @@ class ClassAction extends BaseConsumerAction {
 		const school = await SchoolRepo.findSchoolByLdapIdAndSystem(classData.schoolDn, classData.systemId);
 
 		if (school) {
+			let classId;
 			const existingClass = await ClassRepo.findClassByYearAndLdapDn(school.currentYear, classData.ldapDN);
 			if (existingClass) {
+				classId = existingClass._id;
 				if (existingClass.name !== classData.name) {
 					await ClassRepo.updateClassName(existingClass._id, classData.name);
 				}
 			} else {
-				await ClassRepo.createClass(classData, school);
+				const createdClass = await ClassRepo.createClass(classData, school);
+				classId = createdClass._id;
 			}
+			await this.addUsersToClass(school._id, classId, classData.uniqueMembers);
 		} else {
 			throw new NotFound(`School for ${classData.schoolDn} and ${classData.systemId} couldn't be found.`, {
 				schoolDn: classData.schoolDn,
 				systemId: classData.systemId,
 			});
 		}
+	}
+
+	async addUsersToClass(schoolId, classId, uniqueMembers) {
+		const students = [];
+		const teachers = [];
+		const ldapDns = !Array.isArray(uniqueMembers) ? [uniqueMembers] : uniqueMembers;
+		const users = await UserRepo.findByLdapDnsAndSchool(ldapDns, schoolId);
+		users.forEach((user) => {
+			user.roles.forEach((role) => {
+				if (role.name === 'student') students.push(user._id);
+				if (role.name === 'teacher') teachers.push(user._id);
+			});
+		});
+		await ClassRepo.updateClassStudents(classId, students);
+		await ClassRepo.updateClassTeachers(classId, teachers);
 	}
 }
 

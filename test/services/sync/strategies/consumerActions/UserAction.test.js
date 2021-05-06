@@ -96,13 +96,13 @@ describe('User Actions', () => {
 			const findByLdapIdAndSchoolStub = sinon.stub(UserRepo, 'findByLdapIdAndSchool');
 			findByLdapIdAndSchoolStub.throws(new BadRequest('class repo error'));
 
-			expect(userAction.action({ user: {}, account: {} })).to.be.rejectedWith(BadRequest);
+			await expect(userAction.action({ user: {}, account: {} })).to.be.rejectedWith(BadRequest);
 		});
 
 		it('should throw an error if school could not be found', async () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 			findSchoolByLdapIdAndSystemStub.returns(null);
-			expect(userAction.action({ class: { schoolDn: 'SCHOOL_DN', systemId: '' } })).to.be.rejectedWith(NotFound);
+			await expect(userAction.action({ class: { schoolDn: 'SCHOOL_DN', systemId: '' } })).to.be.rejectedWith(NotFound);
 		});
 	});
 });

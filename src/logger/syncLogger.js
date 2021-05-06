@@ -11,7 +11,7 @@ const getDevelopFormat = () =>
 const getProductionFormat = () =>
 	format.combine(format.errors({ stack: true }), format.timestamp(), format.prettyPrint({ depth: 5, colorize: false }));
 
-const getTestFormat = () => format.combine(format.prettyPrint({ depth: 5, colorize: true }));
+const getTestFormat = () => format.combine(format.prettyPrint({ depth: 1, colorize: true }));
 
 let selectedFormat;
 switch (NODE_ENV) {

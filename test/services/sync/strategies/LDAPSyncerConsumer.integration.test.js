@@ -54,268 +54,320 @@ describe('Ldap Syncer Consumer Integration', () => {
 		await server.close();
 	});
 
-	it('should create school by the data', async () => {
-		const schoolName = 'test school';
-		const system = await testObjects.createTestSystem();
-		const years = await app.service('years').find({ query: { name: '2021/22' } });
-		const currentYear = new SchoolYearFacade(years.data).defaultYear;
-		const states = await app.service('federalStates').find({ query: { abbreviation: 'NI' } });
-		const federalStateId = states.data[0]._id;
-		const contentData = {
-			action: 'syncSchool',
-			syncId: '6082d04c4f92b7557025df7b',
-			data: {
-				school: {
-					name: schoolName,
-					systems: [system._id],
-					ldapSchoolIdentifier: ldapSchoolIDn,
-					currentYear,
-					federalState: federalStateId,
+	describe('school messages', () => {
+		it('should create school by the data', async () => {
+			const schoolName = 'test school';
+			const system = await testObjects.createTestSystem();
+			const years = await app.service('years').find({ query: { name: '2021/22' } });
+			const currentYear = new SchoolYearFacade(years.data).defaultYear;
+			const states = await app.service('federalStates').find({ query: { abbreviation: 'NI' } });
+			const federalStateId = states.data[0]._id;
+			const contentData = {
+				action: 'syncSchool',
+				syncId: '6082d04c4f92b7557025df7b',
+				data: {
+					school: {
+						name: schoolName,
+						systems: [system._id],
+						ldapSchoolIdentifier: ldapSchoolIDn,
+						currentYear,
+						federalState: federalStateId,
+					},
 				},
-			},
-		};
-		const schoolData = {
-			content: JSON.stringify(contentData),
-		};
+			};
+			const schoolData = {
+				content: JSON.stringify(contentData),
+			};
 
-		await ldapConsumer.executeMessage(schoolData);
+			await ldapConsumer.executeMessage(schoolData);
 
-		const foundSchool = await schoolModel.findOne({ ldapSchoolIdentifier: ldapSchoolIDn }).lean().exec();
-		expect(foundSchool).to.be.not.null;
-		expect(foundSchool.name).to.be.equal(schoolName);
-		expect(foundSchool.federalState.toString()).to.be.equal(federalStateId.toString());
-		expect(foundSchool.currentYear.toString()).to.be.equal(currentYear._id.toString());
-	});
-
-	it('should update existing school by the data', async () => {
-		const initialSchoolName = 'Initial School Name';
-		const system = await testObjects.createTestSystem();
-		await testObjects.createTestSchool({
-			name: initialSchoolName,
-			ldapSchoolIdentifier: ldapSchoolIDn,
-			systems: [system._id],
-		});
-		const updatedSchoolName = 'Updated School Name';
-		const contentData = {
-			action: 'syncSchool',
-			syncId: '6082d04c4f92b7557025df7b',
-			data: {
-				school: {
-					name: updatedSchoolName,
-					systems: [system._id],
-					ldapSchoolIdentifier: ldapSchoolIDn,
-				},
-			},
-		};
-		const schoolData = {
-			content: JSON.stringify(contentData),
-		};
-		await ldapConsumer.executeMessage(schoolData);
-
-		const foundSchool = await schoolModel.findOne({ ldapSchoolIdentifier: ldapSchoolIDn }).lean().exec();
-		expect(foundSchool).to.be.not.null;
-		expect(foundSchool.name).to.be.equal(updatedSchoolName);
-	});
-
-	it('should create user by the data', async () => {
-		const testEmail = `test${Date.now()}@example.com`;
-		const firstName = 'test first';
-		const lastName = 'test last';
-		const ldapUserId = 'LDAP_USER_ID';
-
-		const system = await testObjects.createTestSystem();
-		const school = await testObjects.createTestSchool({ ldapSchoolIdentifier: ldapSchoolIDn, systems: [system._id] });
-
-		const contentData = {
-			action: 'syncUser',
-			syncId: '6082d22395baca4f64ef0a1f',
-			data: {
-				user: {
-					firstName,
-					lastName,
-					systemId: system._id.toString(),
-					schoolDn: school.ldapSchoolIdentifier,
-					email: testEmail,
-					ldapDn: ldapUserDn,
-					ldapId: ldapUserId,
-					roles: ['student'],
-				},
-				account: {
-					ldapDn: ldapUserDn,
-					ldapId: ldapUserId,
-					username: accountUserName,
-					systemId: system._id.toString(),
-					schoolDn: school.ldapSchoolIdentifier,
-					activated: true,
-				},
-			},
-		};
-
-		const userData = {
-			content: JSON.stringify(contentData),
-		};
-		await ldapConsumer.executeMessage(userData);
-
-		const foundUser = await userModel.findOne({ ldapDn: ldapUserDn }).lean().exec();
-		expect(foundUser).to.be.not.null;
-		expect(foundUser.email).to.be.equal(testEmail);
-		expect(foundUser.firstName).to.be.equal(firstName);
-		expect(foundUser.lastName).to.be.equal(lastName);
-		expect(foundUser.ldapId).to.be.equal(ldapUserId);
-		expect(foundUser.ldapDn).to.be.equal(ldapUserDn);
-
-		const foundAccount = await accountModel.findOne({ userId: foundUser._id }).lean().exec();
-		expect(foundAccount).to.be.not.null;
-		expect(foundAccount.username).to.be.equal(accountUserName.toLowerCase());
-		expect(foundAccount.systemId.toString()).to.be.equal(system._id.toString());
-		expect(foundAccount.activated).to.be.true;
-	});
-
-	it('should update existing user by the data', async () => {
-		const initialFirstName = 'initial fname';
-		const initialLastName = 'initial lname';
-		const initialEmail = `initial_test${Date.now()}@example.com`;
-		const updatedEmail = `test${Date.now()}@example.com`;
-		const updatedFirstName = 'test first';
-		const updatedLastName = 'test last';
-		const ldapUserId = 'LDAP_USER_ID';
-
-		const system = await testObjects.createTestSystem();
-		const school = await testObjects.createTestSchool({ ldapSchoolIdentifier: ldapSchoolIDn, systems: [system._id] });
-		await testObjects.createTestUser({
-			ldapId: ldapUserId,
-			firstName: initialFirstName,
-			lastName: initialLastName,
-			email: initialEmail,
-			schoolId: school._id,
-		});
-		const contentData = {
-			action: 'syncUser',
-			syncId: '6082d22395baca4f64ef0a1f',
-			data: {
-				user: {
-					firstName: updatedFirstName,
-					lastName: updatedLastName,
-					systemId: system._id.toString(),
-					schoolDn: school.ldapSchoolIdentifier,
-					email: updatedEmail,
-					ldapDn: ldapUserDn,
-					ldapId: ldapUserId,
-					roles: ['student'],
-				},
-				account: {
-					ldapDn: ldapUserDn,
-					ldapId: ldapUserId,
-					username: accountUserName,
-					systemId: system._id.toString(),
-					schoolDn: school.ldapSchoolIdentifier,
-					activated: true,
-				},
-			},
-		};
-
-		const userData = {
-			content: JSON.stringify(contentData),
-		};
-		await ldapConsumer.executeMessage(userData);
-
-		const foundUser = await userModel.findOne({ ldapDn: ldapUserDn }).lean().exec();
-		expect(foundUser).to.be.not.null;
-		expect(foundUser.email).to.be.equal(updatedEmail);
-		expect(foundUser.firstName).to.be.equal(updatedFirstName);
-		expect(foundUser.lastName).to.be.equal(updatedLastName);
-	});
-
-	it('should create class by the data', async () => {
-		const className = 'test class';
-		const system = await testObjects.createTestSystem();
-		const school = await testObjects.createTestSchool({ ldapSchoolIdentifier: ldapSchoolIDn, systems: [system._id] });
-		const contentData = {
-			action: LDAP_SYNC_ACTIONS.SYNC_CLASSES,
-			syncId: '6082c4f2ba4aef3c5c4473fd',
-			data: {
-				class: {
-					name: className,
-					systemId: system._id.toString(),
-					schoolDn: school.ldapSchoolIdentifier,
-					nameFormat: 'static',
-					ldapDN: ldapClassDn,
-					uniqueMembers: ['some uuid'],
-				},
-			},
-			uniqueMembers: [null],
-		};
-		const classData = {
-			content: JSON.stringify(contentData),
-		};
-		await ldapConsumer.executeMessage(classData);
-
-		const foundClass = await classModel.findOne({ ldapDN: ldapClassDn }).lean().exec();
-		expect(foundClass).to.be.not.null;
-		expect(foundClass.name).to.be.equal(className);
-	});
-
-	it('should update existing class by the data', async () => {
-		const initialClassName = 'initial test class';
-
-		const system = await testObjects.createTestSystem();
-		const school = await testObjects.createTestSchool({ ldapSchoolIdentifier: ldapSchoolIDn, systems: [system._id] });
-
-		await testObjects.createTestClass({
-			name: initialClassName,
-			ldapDN: ldapClassDn,
-			schoolId: school._id,
-			year: school.currentYear,
+			const foundSchool = await schoolModel.findOne({ ldapSchoolIdentifier: ldapSchoolIDn }).lean().exec();
+			expect(foundSchool).to.be.not.null;
+			expect(foundSchool.name).to.be.equal(schoolName);
+			expect(foundSchool.federalState.toString()).to.be.equal(federalStateId.toString());
+			expect(foundSchool.currentYear.toString()).to.be.equal(currentYear._id.toString());
 		});
 
-		const updatedClassName = 'updated test class';
-		const contentData = {
-			action: LDAP_SYNC_ACTIONS.SYNC_CLASSES,
-			syncId: '6082c4f2ba4aef3c5c4473fd',
-			data: {
-				class: {
-					name: updatedClassName,
-					systemId: system._id.toString(),
-					schoolDn: school.ldapSchoolIdentifier,
-					nameFormat: 'static',
-					ldapDN: ldapClassDn,
-					uniqueMembers: ['some uuid'],
+		it('should update existing school by the data', async () => {
+			const initialSchoolName = 'Initial School Name';
+			const system = await testObjects.createTestSystem();
+			await testObjects.createTestSchool({
+				name: initialSchoolName,
+				ldapSchoolIdentifier: ldapSchoolIDn,
+				systems: [system._id],
+			});
+			const updatedSchoolName = 'Updated School Name';
+			const contentData = {
+				action: 'syncSchool',
+				syncId: '6082d04c4f92b7557025df7b',
+				data: {
+					school: {
+						name: updatedSchoolName,
+						systems: [system._id],
+						ldapSchoolIdentifier: ldapSchoolIDn,
+					},
 				},
-			},
-			uniqueMembers: [null],
-		};
-		const classData = {
-			content: JSON.stringify(contentData),
-		};
-		await ldapConsumer.executeMessage(classData);
+			};
+			const schoolData = {
+				content: JSON.stringify(contentData),
+			};
+			await ldapConsumer.executeMessage(schoolData);
 
-		const foundClass = await classModel.findOne({ ldapDN: ldapClassDn }).lean().exec();
-		expect(foundClass).to.be.not.null;
-		expect(foundClass.name).to.be.equal(updatedClassName);
+			const foundSchool = await schoolModel.findOne({ ldapSchoolIdentifier: ldapSchoolIDn }).lean().exec();
+			expect(foundSchool).to.be.not.null;
+			expect(foundSchool.name).to.be.equal(updatedSchoolName);
+		});
 	});
 
-	it('should throw SyncError if school could not be found', async () => {
-		const className = 'test class';
-		const system = await testObjects.createTestSystem();
-		const schoolDn = 'Not existed school dn';
-		const contentData = {
-			action: LDAP_SYNC_ACTIONS.SYNC_CLASSES,
-			syncId: '6082c4f2ba4aef3c5c4473fd',
-			data: {
-				class: {
-					name: className,
-					systemId: system._id.toString(),
-					schoolDn,
-					nameFormat: 'static',
-					ldapDN: ldapClassDn,
-					uniqueMembers: ['some uuid'],
+	describe('user messages', () => {
+		it('should create user by the data', async () => {
+			const testEmail = `test${Date.now()}@example.com`;
+			const firstName = 'test first';
+			const lastName = 'test last';
+			const ldapUserId = 'LDAP_USER_ID';
+
+			const system = await testObjects.createTestSystem();
+			const school = await testObjects.createTestSchool({ ldapSchoolIdentifier: ldapSchoolIDn, systems: [system._id] });
+
+			const contentData = {
+				action: 'syncUser',
+				syncId: '6082d22395baca4f64ef0a1f',
+				data: {
+					user: {
+						firstName,
+						lastName,
+						systemId: system._id.toString(),
+						schoolDn: school.ldapSchoolIdentifier,
+						email: testEmail,
+						ldapDn: ldapUserDn,
+						ldapId: ldapUserId,
+						roles: ['student'],
+					},
+					account: {
+						ldapDn: ldapUserDn,
+						ldapId: ldapUserId,
+						username: accountUserName,
+						systemId: system._id.toString(),
+						schoolDn: school.ldapSchoolIdentifier,
+						activated: true,
+					},
 				},
-			},
-			uniqueMembers: [null],
-		};
-		const classData = {
-			content: JSON.stringify(contentData),
-		};
-		expect(ldapConsumer.executeMessage(classData)).to.be.rejectedWith(SyncError);
+			};
+
+			const userData = {
+				content: JSON.stringify(contentData),
+			};
+			await ldapConsumer.executeMessage(userData);
+
+			const foundUser = await userModel.findOne({ ldapDn: ldapUserDn }).lean().exec();
+			expect(foundUser).to.be.not.null;
+			expect(foundUser.email).to.be.equal(testEmail);
+			expect(foundUser.firstName).to.be.equal(firstName);
+			expect(foundUser.lastName).to.be.equal(lastName);
+			expect(foundUser.ldapId).to.be.equal(ldapUserId);
+			expect(foundUser.ldapDn).to.be.equal(ldapUserDn);
+
+			const foundAccount = await accountModel.findOne({ userId: foundUser._id }).lean().exec();
+			expect(foundAccount).to.be.not.null;
+			expect(foundAccount.username).to.be.equal(accountUserName.toLowerCase());
+			expect(foundAccount.systemId.toString()).to.be.equal(system._id.toString());
+			expect(foundAccount.activated).to.be.true;
+		});
+
+		it('should update existing user by the data', async () => {
+			const initialFirstName = 'initial fname';
+			const initialLastName = 'initial lname';
+			const initialEmail = `initial_test${Date.now()}@example.com`;
+			const updatedEmail = `test${Date.now()}@example.com`;
+			const updatedFirstName = 'test first';
+			const updatedLastName = 'test last';
+			const ldapUserId = 'LDAP_USER_ID';
+
+			const system = await testObjects.createTestSystem();
+			const school = await testObjects.createTestSchool({ ldapSchoolIdentifier: ldapSchoolIDn, systems: [system._id] });
+			await testObjects.createTestUser({
+				ldapId: ldapUserId,
+				firstName: initialFirstName,
+				lastName: initialLastName,
+				email: initialEmail,
+				schoolId: school._id,
+			});
+			const contentData = {
+				action: 'syncUser',
+				syncId: '6082d22395baca4f64ef0a1f',
+				data: {
+					user: {
+						firstName: updatedFirstName,
+						lastName: updatedLastName,
+						systemId: system._id.toString(),
+						schoolDn: school.ldapSchoolIdentifier,
+						email: updatedEmail,
+						ldapDn: ldapUserDn,
+						ldapId: ldapUserId,
+						roles: ['student'],
+					},
+					account: {
+						ldapDn: ldapUserDn,
+						ldapId: ldapUserId,
+						username: accountUserName,
+						systemId: system._id.toString(),
+						schoolDn: school.ldapSchoolIdentifier,
+						activated: true,
+					},
+				},
+			};
+
+			const userData = {
+				content: JSON.stringify(contentData),
+			};
+			await ldapConsumer.executeMessage(userData);
+
+			const foundUser = await userModel.findOne({ ldapDn: ldapUserDn }).lean().exec();
+			expect(foundUser).to.be.not.null;
+			expect(foundUser.email).to.be.equal(updatedEmail);
+			expect(foundUser.firstName).to.be.equal(updatedFirstName);
+			expect(foundUser.lastName).to.be.equal(updatedLastName);
+		});
+	});
+
+	describe('class messages', () => {
+		let system;
+		let school;
+		beforeEach(async () => {
+			system = await testObjects.createTestSystem();
+			school = await testObjects.createTestSchool({ ldapSchoolIdentifier: ldapSchoolIDn, systems: [system._id] });
+		});
+		it('should create class by the data', async () => {
+			const className = 'test class';
+
+			const contentData = {
+				action: LDAP_SYNC_ACTIONS.SYNC_CLASSES,
+				syncId: '6082c4f2ba4aef3c5c4473fd',
+				data: {
+					class: {
+						name: className,
+						systemId: system._id.toString(),
+						schoolDn: school.ldapSchoolIdentifier,
+						nameFormat: 'static',
+						ldapDN: ldapClassDn,
+					},
+				},
+			};
+			const classData = {
+				content: JSON.stringify(contentData),
+			};
+			await ldapConsumer.executeMessage(classData);
+
+			const foundClass = await classModel.findOne({ ldapDN: ldapClassDn }).lean().exec();
+			expect(foundClass).to.be.not.null;
+			expect(foundClass.name).to.be.equal(className);
+			expect(foundClass.userIds).to.be.empty;
+			expect(foundClass.teacherIds).to.be.empty;
+		});
+
+		it('should update existing class by the data', async () => {
+			const initialClassName = 'initial test class';
+
+			await testObjects.createTestClass({
+				name: initialClassName,
+				ldapDN: ldapClassDn,
+				schoolId: school._id,
+				year: school.currentYear,
+			});
+
+			const updatedClassName = 'updated test class';
+			const contentData = {
+				action: LDAP_SYNC_ACTIONS.SYNC_CLASSES,
+				syncId: '6082c4f2ba4aef3c5c4473fd',
+				data: {
+					class: {
+						name: updatedClassName,
+						systemId: system._id.toString(),
+						schoolDn: school.ldapSchoolIdentifier,
+						nameFormat: 'static',
+						ldapDN: ldapClassDn,
+						uniqueMembers: ['some uuid'],
+					},
+				},
+				uniqueMembers: [null],
+			};
+			const classData = {
+				content: JSON.stringify(contentData),
+			};
+			await ldapConsumer.executeMessage(classData);
+
+			const foundClass = await classModel.findOne({ ldapDN: ldapClassDn }).lean().exec();
+			expect(foundClass).to.be.not.null;
+			expect(foundClass.name).to.be.equal(updatedClassName);
+		});
+
+		it('should create class with users by the data', async () => {
+			const className = 'test class';
+			const ldapDns = ['user1', 'user2'];
+			const contentData = {
+				action: LDAP_SYNC_ACTIONS.SYNC_CLASSES,
+				syncId: '6082c4f2ba4aef3c5c4473fd',
+				data: {
+					class: {
+						name: className,
+						systemId: system._id.toString(),
+						schoolDn: school.ldapSchoolIdentifier,
+						nameFormat: 'static',
+						ldapDN: ldapClassDn,
+						uniqueMembers: ldapDns,
+					},
+				},
+				uniqueMembers: [null],
+			};
+			const classData = {
+				content: JSON.stringify(contentData),
+			};
+			const testStudent = await testObjects.createTestUser({
+				ldapDn: ldapDns[0],
+				schoolId: school._id,
+				roles: ['student'],
+			});
+			const testTeacher = await testObjects.createTestUser({
+				ldapDn: ldapDns[1],
+				schoolId: school._id,
+				roles: ['teacher'],
+			});
+
+			await ldapConsumer.executeMessage(classData);
+
+			const foundClass = await classModel.findOne({ ldapDN: ldapClassDn }).lean().exec();
+			expect(foundClass).to.be.not.null;
+			expect(foundClass.name).to.be.equal(className);
+
+			expect(foundClass.userIds.length).to.be.equal(1);
+			expect(foundClass.teacherIds.length).to.be.equal(1);
+
+			expect(foundClass.userIds.map((userId) => userId.toString())).to.include(testStudent._id.toString());
+			expect(foundClass.teacherIds.map((userId) => userId.toString())).to.include(testTeacher._id.toString());
+		});
+
+		it('should throw SyncError if school could not be found', async () => {
+			const className = 'test class';
+			const schoolDn = 'Not existed school dn';
+			const contentData = {
+				action: LDAP_SYNC_ACTIONS.SYNC_CLASSES,
+				syncId: '6082c4f2ba4aef3c5c4473fd',
+				data: {
+					class: {
+						name: className,
+						systemId: system._id.toString(),
+						schoolDn,
+						nameFormat: 'static',
+						ldapDN: ldapClassDn,
+						uniqueMembers: ['some uuid'],
+					},
+				},
+				uniqueMembers: [null],
+			};
+			const classData = {
+				content: JSON.stringify(contentData),
+			};
+			await expect(ldapConsumer.executeMessage(classData)).to.be.rejectedWith(SyncError);
+		});
 	});
 });

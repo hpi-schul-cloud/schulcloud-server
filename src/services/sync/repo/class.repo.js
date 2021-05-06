@@ -24,10 +24,20 @@ const updateClassName = async (classId, className) => {
 	return classModel.findOneAndUpdate({ _id: classId }, { name: className }, { new: true }).lean().exec();
 };
 
+const updateClassStudents = async (classId, students) => {
+	return classModel.findOneAndUpdate({ _id: classId }, { userIds: students }, { new: true }).lean().exec();
+};
+
+const updateClassTeachers = async (classId, teachers) => {
+	return classModel.findOneAndUpdate({ _id: classId }, { teacherIds: teachers }, { new: true }).lean().exec();
+};
+
 const ClassRepo = {
 	findClassByYearAndLdapDn,
 	createClass,
 	updateClassName,
+	updateClassStudents,
+	updateClassTeachers,
 };
 
 module.exports = ClassRepo;
