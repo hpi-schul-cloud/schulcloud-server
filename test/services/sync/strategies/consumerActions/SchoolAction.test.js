@@ -7,17 +7,13 @@ const { SchoolAction } = require('../../../../../src/services/sync/strategies/co
 
 const { SchoolRepo } = require('../../../../../src/services/sync/repo');
 
-const appPromise = require('../../../../../src/app');
-
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
 describe('School Actions', () => {
-	let app;
 	let schoolAction;
 
 	before(async () => {
-		app = await appPromise;
 		schoolAction = new SchoolAction(true);
 	});
 
@@ -31,6 +27,7 @@ describe('School Actions', () => {
 			findSchoolByLdapIdAndSystemStub.returns(null);
 
 			const createSchoolStub = sinon.stub(SchoolRepo, 'createSchool');
+			createSchoolStub.returns({ _id: 1 });
 
 			await schoolAction.action({ name: 'Test School' });
 			expect(createSchoolStub.calledOnce).to.be.true;
