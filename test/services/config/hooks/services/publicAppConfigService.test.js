@@ -9,14 +9,12 @@ describe('PublicAppConfigService', () => {
 
 	const envsToTest = [
 		'ADMIN_TABLES_DISPLAY_CONSENT_COLUMN',
-		'FALLBACK_DISABLED',
 		'JWT_SHOW_TIMEOUT_WARNING_SECONDS',
 		'JWT_TIMEOUT_SECONDS',
 		'FEATURE_EXTENSIONS_ENABLED',
 		'FEATURE_TEAMS_ENABLED',
 		'NOT_AUTHENTICATED_REDIRECT_URL',
 		'FEATURE_ES_COLLECTIONS_ENABLED',
-		'ADMIN_TABLES_DISPLAY_CONSENT_COLUMN'
 	];
 
 	before(async () => {
@@ -33,7 +31,7 @@ describe('PublicAppConfigService', () => {
 		expect(configService).to.not.equal(undefined);
 	});
 
-	it('returns environment variables', async () => {
+	it('returns the right environment variables', async () => {
 		const serviceEnvs = await configService.find();
 		const testEnvs = {};
 		envsToTest.forEach((env) => (testEnvs[env] = Configuration.get(env)));
