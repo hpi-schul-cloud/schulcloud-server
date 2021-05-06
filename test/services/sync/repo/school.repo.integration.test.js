@@ -39,12 +39,14 @@ describe('school repo', () => {
 		const federalStateId = new ObjectId();
 		const systemId = new ObjectId();
 		const ldapSchoolIDn = 'TEST_LDAP';
+		const fileStorageType = 'awsS3';
 		const school = {
 			name: schoolName,
 			systems: [systemId],
 			ldapSchoolIdentifier: ldapSchoolIDn,
 			currentYear,
 			federalState: federalStateId,
+			fileStorageType,
 		};
 		const res = await SchoolRepo.createSchool(school);
 		createdSchools.push(res);
@@ -54,6 +56,7 @@ describe('school repo', () => {
 		expect(res.systems[0]._id.toString()).to.be.equal(systemId.toString());
 		expect(res.federalState.toString()).to.be.equal(federalStateId.toString());
 		expect(res.currentYear.toString()).to.be.equal(currentYear.toString());
+		expect(res.fileStorageType).to.be.equal(fileStorageType);
 	});
 
 	it('should successfully update school name', async () => {
