@@ -18,6 +18,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7868 - Deletion concept for personal file connections
 - SC-8873 - Add prioritization for Matrix messenger tasks
 - SC-8982 - add inital service ressource messuring test setup
+- OPS-1499 - Add feature to CI Pipeline and provide team based HPI Schul-Cloud instances
 
 ### Changed
 
@@ -450,10 +451,7 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 
 ### Added
 
-- OPS-1499 - Add feature to CI Pipeline and provide team based HPI Schul-Cloud instances
 - SC-7841 - remove deleted user from classes
-- OPS-1559 - Added Enhance build pipeline
-- OPS-1499 - Add feature to CI Pipeline and provide team based HPI Schul-Cloud instances
 - SC-7836 - Removing registration pin by removing the user
 - SC-7838 - move pseudonyms to trashbin
 - SC-7142 - Counties/Kreise added to federal states.
