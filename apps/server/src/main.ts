@@ -74,7 +74,7 @@ async function bootstrap() {
 		.addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
 		.build();
 	const document = SwaggerModule.createDocument(app, config);
-	const apiDocsPath = ROUTE_PRAEFIX + '/' + API_PATH;
+	const apiDocsPath = ROUTE_PRAEFIX + '/api';
 	SwaggerModule.setup(apiDocsPath, app, document);
 
 	// setup legacy app since that's not called automatically by app.listen()
