@@ -12,6 +12,7 @@ const { newsModel, targetModels, newsHistoryModel, newsPermissions } = require('
 const hooks = require('./hooks');
 const newsModelHooks = require('./hooks/newsModel.hooks');
 const { flatten, paginate, convertToSortOrderObject } = require('../../utils/array');
+const { populateProperties } = require('./constants');
 
 const DEFAULT_PAGINATION_OPTIONS = {
 	default: 25,
@@ -172,6 +173,7 @@ class AbstractService {
 	}
 }
 
+// eslint-disable-next-line import/prefer-default-export
 class NewsService extends AbstractService {
 	/**
 	 * Fields to populate after querying, including whitelisted attributes
@@ -181,12 +183,7 @@ class NewsService extends AbstractService {
 	static populateParams() {
 		return {
 			query: {
-				$populate: [
-					{ path: 'schoolId', select: ['_id', 'name'] },
-					{ path: 'creatorId', select: ['_id', 'firstName', 'lastName'] },
-					{ path: 'updaterId', select: ['_id', 'firstName', 'lastName'] },
-					{ path: 'target', select: ['_id', 'name'] },
-				],
+				$populate: populateProperties,
 			},
 		};
 	}
@@ -309,16 +306,22 @@ class NewsService extends AbstractService {
 	 * @memberof NewsService
 	 */
 	async get(id, params) {
-		const news = await this.app.service('newsModel').get(id, NewsService.populateParams());
+		const { userId } = params.account;
+		const newsModelService = this.app.service('newsModel');
+		return this.getByIdForUserId(id, userId, newsModelService);
+	}
+
+	async getByIdForUserId(id, userId, newsModelService) {
+		const news = await newsModelService.get(id, NewsService.populateParams());
 		this.checkExistence(news, id);
 		const now = Date.now();
 		if (news.displayAt > now) {
-			await this.authorize(news, params.account.userId, newsPermissions.EDIT);
+			await this.authorize(news, userId, newsPermissions.EDIT);
 		} else {
-			await this.authorize(news, params.account.userId, newsPermissions.VIEW);
+			await this.authorize(news, userId, newsPermissions.VIEW);
 		}
 
-		news.permissions = await this.getPermissions(params.account.userId, news);
+		news.permissions = await this.getPermissions(userId, news);
 		return NewsService.decorateResults(news);
 	}
 

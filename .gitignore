@@ -1,6 +1,10 @@
 # Logs
 logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
 
 # Runtime data
 pids
@@ -37,9 +41,22 @@ data/
 backup/*
 !backup/setup/
 
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
 # Visual Studio Code data
-.vscode
 .vs/**
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 
 # local dev secrets
 config/secrets.json
@@ -51,5 +68,14 @@ version
 # patch files
 *.patch
 
-# typescript build
+# compiled output
 build
+/dist
+/node_modules
+
+# documentation
+/documentation
+
+# Tests
+/coverage
+/.nyc_output

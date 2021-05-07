@@ -1,0 +1,16 @@
+[
+	{
+		"title": "NestJS Application",
+		"file": "../README.md",
+		"children": [
+			{
+				"title": "Conventions",
+				"file": "conventions.md"
+			},
+			{
+				"title": "Application Layers",
+				"file": "application-layers.md"
+			}
+		]
+	}
+]
