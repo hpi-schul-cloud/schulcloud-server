@@ -458,7 +458,7 @@ describe('years service', () => {
 	});
 });
 
-describe.only('schoolsList service', () => {
+describe('schoolsList service', () => {
 	let app;
 	let server;
 	let schoolsListService;

@@ -20,7 +20,8 @@ class SchoolsListService {
 			.populate(systemsQuery)
 			.select(['name', 'systems'])
 			.sort('name')
-			.lean();
+			.lean()
+			.exec();
 		return schools;
 	}
 
