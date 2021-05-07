@@ -17,6 +17,8 @@ Models with ownership:
 
 ## Business Layer
 
+Protect that domain model from all the other technical intricacies involved in creating a web application.
+
 ## Data Layer
 
 Before access data, a repository has to be implemented which is responsible to separate for example a database provider from the application.

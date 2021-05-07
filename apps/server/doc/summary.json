@@ -4,8 +4,8 @@
 		"file": "../README.md",
 		"children": [
 			{
-				"title": "Naming Conventions",
-				"file": "naming-conventions.md"
+				"title": "Conventions",
+				"file": "conventions.md"
 			},
 			{
 				"title": "Application Layers",
