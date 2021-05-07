@@ -37,28 +37,40 @@ const createUser = async (user) => {
 	});
 };
 
-/**
- * request user and compare the email address.
- * if possible it should be solved via unique index on database
- * @param {string} email
- * @param {string} userId
- */
-const checkMail = async (email, userId) => {
-	if (email) {
-		const users = await userModel.find({ email: email.toLowerCase() }).lean().exec();
-		if (userId && users.length === 1 && equalIds(users[0]._id, userId)) return true;
-		if (users.length !== 0) {
-			return false;
-		}
+const findUsersByEmail = async (email) => {
+	return userModel.find({ email: email.toLowerCase() }).lean().exec();
+};
+
+const checkCreate = async (email) => {
+	if (!email) {
+		throw new BadRequest(`User cannot be created. Email is missing`);
 	}
-	return true;
+	const users = await findUsersByEmail(email);
+	if (users.length !== 0) {
+		throw new BadRequest(`User cannot be created. User with the same email already exists.`, { email });
+	}
+};
+
+const checkUpdate = async (email, userId) => {
+	if (!email || !userId) {
+		throw new BadRequest(`User cannot be updated. Email ${email} or userId ${userId} is missing`);
+	}
+	const users = await findUsersByEmail(email);
+	if (users.length === 0) {
+		throw new BadRequest(`User cannot be updated. User with this email doesn't exists.`, {
+			userId,
+			email,
+		});
+	} else if (!equalIds(users[0]._id, userId)) {
+		throw new BadRequest(`User cannot be updated. User and email don't match.`, {
+			userId,
+			email,
+		});
+	}
 };
 
 const createUserAndAccount = async (inputUser, inputAccount) => {
-	const canBeCreated = await checkMail(inputUser.email);
-	if (!canBeCreated) {
-		throw new BadRequest(`User cannot be created. User with the same email already exists.`, inputUser.ldapId);
-	}
+	await checkCreate(inputUser.email);
 	const user = (await createUser(inputUser)).toObject();
 	inputAccount.userId = user._id;
 	const account = (await createAccount(inputAccount)).toObject();
@@ -80,12 +92,7 @@ const updateAccount = async (userId, account) => {
 };
 
 const updateUserAndAccount = async (userId, changedUser, changedAccount) => {
-	await checkMail(changedUser.email, userId);
-
-	const canBeUpdated = await checkMail(changedUser.email, userId);
-	if (!canBeUpdated) {
-		throw new BadRequest(`User ${userId} cannot be updated. User with the same email already exists.`, userId);
-	}
+	await checkUpdate(changedUser.email, userId);
 	changedUser.roles = await resolveUserRoles(changedUser.roles);
 
 	const user = await userModel.findOneAndUpdate({ _id: userId }, changedUser, { new: true }).lean().exec();
