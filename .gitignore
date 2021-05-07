@@ -53,9 +53,9 @@ backup/*
 # Visual Studio Code data
 .vs/**
 .vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
 !.vscode/extensions.json
 
 # local dev secrets
