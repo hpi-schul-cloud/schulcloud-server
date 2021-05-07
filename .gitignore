@@ -51,6 +51,8 @@ version
 
 # patch files
 *.patch
+.build/travis_rsa
 
 # typescript build
 build
+
