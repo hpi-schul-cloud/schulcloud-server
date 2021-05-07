@@ -11,6 +11,7 @@ import legacyAppPromise = require('../../../src/app');
 import { ServerModule } from './server.module';
 
 const ROUTE_PRAEFIX = 'v3';
+const API_PATH = 'api';
 const PORT = 3030;
 
 async function bootstrap() {
