@@ -2,7 +2,24 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Attach to NestJS",
+			"type": "node",
+			"request": "launch",
+			"name": "nest:test:debug",
+			"runtimeExecutable": "npm",
+			"runtimeArgs": ["run-script", "nest:test:debug"],
+			"port": 9229,
+			"skipFiles": ["<node_internals>/**"]
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "nest:test:e2e",
+			"runtimeExecutable": "npm",
+			"runtimeArgs": ["run-script", "nest:test:e2e"],
+			"skipFiles": ["<node_internals>/**"]
+		},
+		{
+			"name": "nest:attach",
 			"port": 9229,
 			"request": "attach",
 			"skipFiles": ["<node_internals>/**"],
@@ -12,7 +29,7 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "Deubg NestJS via NPM",
+			"name": "nest:start:debug",
 			"runtimeExecutable": "npm",
 			"runtimeArgs": ["run-script", "nest:start:debug"],
 			"port": 9229,

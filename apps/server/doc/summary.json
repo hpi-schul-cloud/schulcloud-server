@@ -10,6 +10,10 @@
 			{
 				"title": "Application Layers",
 				"file": "application-layers.md"
+			},
+			{
+				"title": "Git",
+				"file": "git.md"
 			}
 		]
 	}
