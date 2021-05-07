@@ -9,7 +9,7 @@ const accountModel = require('../src/services/account/model');
 const { userModel } = require('../src/services/user/model');
 
 const updateIndices = async () => {
-	alert('Sync inices');
+	alert('Sync indices');
 	await connect();
 
 	alert('Updating class indices...');
