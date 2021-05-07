@@ -11,7 +11,7 @@ import legacyAppPromise = require('../../../src/app');
 import { ServerModule } from './server.module';
 import path = require('path');
 
-const ROUTE_PRAEFIX = 'v2';
+const ROUTE_PRAEFIX = 'v3';
 const API_PATH = 'api';
 const PORT = 3030;
 
@@ -70,8 +70,8 @@ async function bootstrap() {
 	// DTO's and Entity properties have to use @ApiProperty decorator to add their properties
 	const config = new DocumentBuilder()
 		.setTitle('HPI Schul-Cloud Server API')
-		.setDescription('This is v2 of HPI Schul-Cloud Server. Checkout /docs for v1.')
-		.setVersion('2.0')
+		.setDescription('This is v3 of HPI Schul-Cloud Server. Checkout /docs for v1.')
+		.setVersion('3.0')
 		/** set authentication for all routes enabled by default */
 		.addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
 		.build();
