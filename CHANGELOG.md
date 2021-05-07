@@ -18,6 +18,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7868 - Deletion concept for personal file connections
 - SC-8873 - Add prioritization for Matrix messenger tasks
 - SC-8982 - add inital service ressource messuring test setup
+- OPS-1499 - Add feature to CI Pipeline and provide team based HPI Schul-Cloud instances
 
 ### Changed
 
