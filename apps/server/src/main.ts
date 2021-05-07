@@ -9,7 +9,6 @@ install(); // TODO register source-map-support to
 import legacyAppPromise = require('../../../src/app');
 
 import { ServerModule } from './server.module';
-import path = require('path');
 
 const ROUTE_PRAEFIX = 'v3';
 const PORT = 3030;
