@@ -4,6 +4,7 @@ const BaseConsumerAction = require('./BaseConsumerAction');
 // TODO: place from where it is importat must be fixed later
 const { LDAP_SYNC_ACTIONS } = require('../LDAPSyncer');
 const { SchoolRepo, UserRepo } = require('../../repo');
+const { NotFound } = require('../../../../errors');
 
 const defaultOptions = {
 	allowedLogKeys: ['ldapId', 'systemId', 'roles', 'activated'],
@@ -25,6 +26,11 @@ class UserAction extends BaseConsumerAction {
 			} else {
 				await this.createUserAndAccount(user, account, school._id);
 			}
+		} else {
+			throw new NotFound(`School for ${user.schoolDn} and ${user.systemId} couldn't be found.`, {
+				schoolDn: user.schoolDn,
+				systemId: user.systemId,
+			});
 		}
 	}
 
@@ -36,7 +42,6 @@ class UserAction extends BaseConsumerAction {
 		if (user.lastName !== foundUser.lastName) {
 			updateObject.lastName = user.lastName;
 		}
-		// Updating SchoolId will cause an issue. We need to discuss about it
 		if (user.email !== foundUser.email) {
 			updateObject.email = user.email;
 		}

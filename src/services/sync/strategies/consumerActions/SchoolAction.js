@@ -1,7 +1,11 @@
 const BaseConsumerAction = require('./BaseConsumerAction');
 // TODO: place from where it is importat must be fixed later
 const { LDAP_SYNC_ACTIONS } = require('../LDAPSyncer');
+const { NODE_ENV, ENVIRONMENTS } = require('../../../../../config/globals');
 const { SchoolRepo } = require('../../repo');
+const { fileStorageTypes } = require('../../../school/model');
+const getFileStorageStrategy = require('../../../fileStorage/strategies').createStrategy;
+const { BadRequest } = require('../../../../errors');
 
 const defaultOptions = {
 	allowedLogKeys: null,
@@ -22,7 +26,31 @@ class SchoolAction extends BaseConsumerAction {
 				await SchoolRepo.updateSchoolName(school._id, schoolData.name);
 			}
 		} else {
-			await SchoolRepo.createSchool(schoolData);
+			schoolData.fileStorageType = this.getDefaultFileStorageType();
+			const createdSchool = await SchoolRepo.createSchool(schoolData);
+			this.createDefaultStorageOptions({
+				schoolId: createdSchool._id,
+				fileStorageType: createdSchool.fileStorageType,
+			});
+		}
+	}
+
+	getDefaultFileStorageType() {
+		return fileStorageTypes && fileStorageTypes[0];
+	}
+
+	createDefaultStorageOptions({ schoolId, fileStorageType }) {
+		// create buckets only in production mode
+		if (fileStorageType && NODE_ENV === ENVIRONMENTS.PRODUCTION) {
+			const fileStorageStrategy = getFileStorageStrategy(fileStorageType);
+			fileStorageStrategy.create(schoolId).catch((err) => {
+				if (err && err.code !== 'BucketAlreadyOwnedByYou') {
+					throw new BadRequest(`Error by creating ${fileStorageType} file storage strategy for school ${schoolId}`, {
+						schoolId,
+						fileStorageType,
+					});
+				}
+			});
 		}
 	}
 }

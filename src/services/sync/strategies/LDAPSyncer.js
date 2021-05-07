@@ -36,7 +36,9 @@ class LDAPSyncer extends Syncer {
 	 * @see {Syncer#steps}
 	 */
 	async steps() {
+		await this.syncQueue.getChannel();
 		await super.steps();
+		await this.syncQueue.getChannel();
 		await this.attemptRun();
 		const schools = await this.getSchools();
 		const userPromises = [];
@@ -60,11 +62,12 @@ class LDAPSyncer extends Syncer {
 	async getCurrentYearAndFederalState() {
 		try {
 			const years = await this.app.service('years').find();
+			// TODO: change federal state for other LDAPs
 			const states = await this.app.service('federalStates').find({ query: { abbreviation: 'NI' } });
 			if (years.total !== 0 && states.total !== 0) {
 				const currentYear = new SchoolYearFacade(years.data).defaultYear;
-				const stateID = states.data[0]._id;
-				return { currentYear, stateID };
+				const federalState = states.data[0]._id;
+				return { currentYear, federalState };
 			}
 
 			return {};
@@ -77,11 +80,11 @@ class LDAPSyncer extends Syncer {
 		}
 	}
 
-	createSchoolsFromLdapData(data) {
+	async createSchoolsFromLdapData(data) {
 		this.logInfo(`Got ${data.length} schools from the server`, { syncId: this.syncId });
 		const schoolList = [];
 		try {
-			const { currentYear, federalState } = this.getCurrentYearAndFederalState();
+			const { currentYear, federalState } = await this.getCurrentYearAndFederalState();
 			for (const ldapSchool of data) {
 				try {
 					const schoolData = {

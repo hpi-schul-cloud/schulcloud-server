@@ -3,22 +3,17 @@ const chaiAsPromised = require('chai-as-promised');
 
 const sinon = require('sinon');
 const { BadRequest } = require('../../../../../src/errors');
-const { SyncError } = require('../../../../../src/errors/applicationErrors');
 const { SchoolAction } = require('../../../../../src/services/sync/strategies/consumerActions');
 
 const { SchoolRepo } = require('../../../../../src/services/sync/repo');
-
-const appPromise = require('../../../../../src/app');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
 describe('School Actions', () => {
-	let app;
 	let schoolAction;
 
 	before(async () => {
-		app = await appPromise;
 		schoolAction = new SchoolAction(true);
 	});
 
@@ -32,6 +27,7 @@ describe('School Actions', () => {
 			findSchoolByLdapIdAndSystemStub.returns(null);
 
 			const createSchoolStub = sinon.stub(SchoolRepo, 'createSchool');
+			createSchoolStub.returns({ _id: 1 });
 
 			await schoolAction.action({ name: 'Test School' });
 			expect(createSchoolStub.calledOnce).to.be.true;
@@ -54,7 +50,7 @@ describe('School Actions', () => {
 		it('should throw a sync error if school repo throws an error', async () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
 			findSchoolByLdapIdAndSystemStub.throws(new BadRequest('school repo error'));
-			expect(schoolAction.action({})).to.eventually.throw(SyncError);
+			await expect(schoolAction.action({})).to.be.rejectedWith(BadRequest);
 		});
 	});
 });

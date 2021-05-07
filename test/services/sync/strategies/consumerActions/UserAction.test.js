@@ -4,8 +4,7 @@ const chaiAsPromised = require('chai-as-promised');
 const sinon = require('sinon');
 const { ObjectId } = require('mongoose').Types;
 
-const { BadRequest } = require('../../../../../src/errors');
-const { SyncError } = require('../../../../../src/errors/applicationErrors');
+const { BadRequest, NotFound } = require('../../../../../src/errors');
 const { UserAction } = require('../../../../../src/services/sync/strategies/consumerActions');
 
 const { SchoolRepo, UserRepo } = require('../../../../../src/services/sync/repo');
@@ -97,7 +96,13 @@ describe('User Actions', () => {
 			const findByLdapIdAndSchoolStub = sinon.stub(UserRepo, 'findByLdapIdAndSchool');
 			findByLdapIdAndSchoolStub.throws(new BadRequest('class repo error'));
 
-			expect(userAction.action({ user: {}, account: {} })).to.eventually.throw(SyncError);
+			await expect(userAction.action({ user: {}, account: {} })).to.be.rejectedWith(BadRequest);
+		});
+
+		it('should throw an error if school could not be found', async () => {
+			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			findSchoolByLdapIdAndSystemStub.returns(null);
+			await expect(userAction.action({ class: { schoolDn: 'SCHOOL_DN', systemId: '' } })).to.be.rejectedWith(NotFound);
 		});
 	});
 });
