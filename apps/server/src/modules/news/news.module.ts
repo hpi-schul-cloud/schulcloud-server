@@ -8,7 +8,9 @@ import { AuthorizationModule } from '../authorization/authorization.module';
 
 @Module({
 	imports: [MongooseModule.forFeature([{ name: 'News', schema: NewsSchema }]), AuthorizationModule],
-	controllers: [NewsController],
+	controllers: [
+		/*NewsController*/
+	],
 	providers: [NewsService, NewsRepo],
 	exports: [NewsService],
 })
