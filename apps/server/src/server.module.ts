@@ -5,16 +5,11 @@ import { NewsModule } from './modules/news/news.module';
 import { ServerController } from './server.controller';
 import { ServerService } from './server.service';
 import { UsersModule } from './modules/user/users.module';
+import { DB_URL } from './config';
 import { TaskModule } from './modules/task/task.module';
 
 @Module({
-	imports: [
-		AuthModule,
-		UsersModule,
-		NewsModule,
-		TaskModule,
-		MongooseModule.forRoot('mongodb://localhost:27017/schulcloud'),
-	], // TODO use db connection as defined for feathers
+	imports: [AuthModule, UsersModule, NewsModule, TaskModule, MongooseModule.forRoot(DB_URL)],
 	controllers: [ServerController],
 	providers: [ServerService],
 })
