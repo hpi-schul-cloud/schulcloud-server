@@ -18,6 +18,7 @@ async function bootstrap() {
 	// load the legacy feathers/express server
 	const legacyApp = await legacyAppPromise;
 	const adapter = new ExpressAdapter(legacyApp);
+	await legacyApp.setup();
 
 	// create the NestJS application adapting the legacy  server
 	const app = await NestFactory.create(ServerModule, adapter);
@@ -77,9 +78,6 @@ async function bootstrap() {
 	const document = SwaggerModule.createDocument(app, config);
 	const apiDocsPath = ROUTE_PRAEFIX + '/api';
 	SwaggerModule.setup(apiDocsPath, app, document);
-
-	// setup legacy app since that's not called automatically by app.listen()
-	await legacyApp.setup();
 
 	await app.init();
 
