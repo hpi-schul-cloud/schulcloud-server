@@ -9,7 +9,7 @@ export class TaskResponseDto {
 	}
 
 	@ApiProperty()
-	title: string;
+	name: string;
 	@ApiProperty()
 	duedate: Date;
 	@ApiProperty()
