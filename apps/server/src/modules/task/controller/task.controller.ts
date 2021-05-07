@@ -14,10 +14,25 @@ export class TaskController {
 
 	@Get('dashboard')
 	async findAll(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Query() pagination: PaginationQueryDto
+		@CurrentUser() currentUser: ICurrentUser
+		//@Query() pagination: PaginationQueryDto
 	): Promise<TaskResponseDto[]> {
-		const response = new TaskResponseDto({ title: 'experimental creation of black holes' });
-		return [response];
+		const response = [
+			new TaskResponseDto({
+				title: 'experimental creation of black holes',
+				duedate: new Date(),
+				courseName: 'Astrophysik 2b',
+				displayColor: '#ffb9b9',
+				id: '59cce16281297026d02cdc49',
+			}),
+			new TaskResponseDto({
+				title: 'solve world poverty',
+				duedate: new Date(),
+				courseName: 'Politics 2b',
+				displayColor: '#ffbb00',
+				id: '59cce16281297026d02cdc37',
+			}),
+		];
+		return response;
 	}
 }
