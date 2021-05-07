@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersModule } from '../../features/users/users.module';
 import { AuthService } from './auth.service';
 import { jwtOptionsProvider } from './jwt-options.provider';
-import { LocalStrategy } from './strategies/local.strategy';
+import { LocalStrategy } from './strategy/local.strategy';
 
 describe('AuthService', () => {
 	let service: AuthService;

@@ -1,7 +1,7 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { User, UsersService } from '../../features/users/users.service';
+import { User, UsersService } from '../user/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { AuthEntity } from './entities/auth.entity';
+import { AuthEntity } from './entity/auth.entity';
 
 @Injectable()
 export class AuthService {
