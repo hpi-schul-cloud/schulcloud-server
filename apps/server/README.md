@@ -37,3 +37,18 @@ The documentation is provided by compodoc, run `npm run nest:dev:serve`, check g
 
 - Naming Conventions
 - Application Layers
+
+## Development
+
+### NestJS CLI
+
+To use the NestJS CLI, [install the nest cli globally](https://docs.nestjs.com/#installation). 
+
+```bash
+$ npm i -g @nestjs/cli
+```
+Then you may use features like `nest g service foo` within of `/apps/server/src`.
+
+### Debugging
+
+There are launch configurations available for VSCode in `.vscode/launch.default.json`
