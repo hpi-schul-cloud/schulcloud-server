@@ -1,13 +1,10 @@
 const chai = require('chai');
 const request = require('request-promise-native');
-const appPromise = require('../../src/app');
 const getAllRoutes = require('../services/helpers/getAllRoutes');
 const { whitelistNoJwt, whitelistInvalidJwt, ignorelistNoJwt, ignorelistInvalidJwt } = require('./whitelist');
 
 const { expect } = chai;
 const PORT = 5254;
-
-const sleep = (time) => new Promise((res) => setTimeout(res, time));
 
 const isOnWhitelist = (endpoint, method, whitelist) => {
 	if (endpoint in whitelist) {
@@ -29,23 +26,18 @@ const isOnIgnorelist = (endpoint, method, ignorelist) => {
 	return false;
 };
 
-const serverSetup = () => {
-	let app;
+const createTests = (app, token, whitelist, ignorelist) => {
 	let server;
 
 	before(async () => {
-		app = await appPromise;
 		server = await app.listen(PORT);
 	});
 
 	after((done) => {
 		server.close(done);
 	});
-};
 
-const createTests = (token, whitelist, ignorelist) => {
-	serverSetup();
-	const routes = getAllRoutes();
+	const routes = getAllRoutes(app);
 	let headers;
 	if (token || token === '') {
 		headers = { Authorization: token };
@@ -56,12 +48,12 @@ const createTests = (token, whitelist, ignorelist) => {
 		describe(`${route}`, () => {
 			for (let method of detail.methods) {
 				// test every endpoint of route
-				it(`${method}`, async function run() {
+				it(`${method}`, async () => {
 					// needed for post authentication otherwise too many requests error
-					if (route === 'authentication' && method === 'post') {
+					/* if (route === 'authentication' && method === 'post') {
 						this.timeout(20000);
 						await sleep(15000);
-					}
+					} */
 					if (method === 'find') {
 						method = 'get';
 					}
@@ -91,7 +83,11 @@ const createTests = (token, whitelist, ignorelist) => {
 	}
 };
 
-describe('Call routes without jwt', () => createTests(undefined, whitelistNoJwt, ignorelistNoJwt));
-describe('Call routes with empty jwt', () => createTests('', whitelistNoJwt, ignorelistNoJwt));
-describe('Call routes with invalid jwt', () =>
-	createTests('eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJhY2Nv', whitelistInvalidJwt, ignorelistInvalidJwt));
+const main = (app) => {
+	describe('[metrics] Call routes without jwt', () => createTests(app, undefined, whitelistNoJwt, ignorelistNoJwt));
+	describe('[metrics] Call routes with empty jwt', () => createTests(app, '', whitelistNoJwt, ignorelistNoJwt));
+	describe('[metrics] Call routes with invalid jwt', () =>
+		createTests(app, 'eyJhbGciOiJIUzI1NiIsInR5cCI6ImFjY2VzcyJ9.eyJhY2Nv', whitelistInvalidJwt, ignorelistInvalidJwt));
+};
+
+module.exports = main;
