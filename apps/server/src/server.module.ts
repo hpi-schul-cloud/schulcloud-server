@@ -6,9 +6,10 @@ import { ServerController } from './server.controller';
 import { ServerService } from './server.service';
 import { UsersModule } from './modules/user/users.module';
 import { DB_URL } from './config';
+import { TaskModule } from './modules/task/task.module';
 
 @Module({
-	imports: [AuthModule, UsersModule, NewsModule, MongooseModule.forRoot(DB_URL)],
+	imports: [AuthModule, UsersModule, NewsModule, TaskModule, MongooseModule.forRoot(DB_URL)],
 	controllers: [ServerController],
 	providers: [ServerService],
 })
