@@ -1,22 +1,18 @@
 const { classModel } = require('../../user-group/model');
 
-const findClassByYearAndLdapDn = async (year, ldapDN) => {
-	return classModel
+const findClassByYearAndLdapDn = async (year, ldapDN) =>
+	classModel
 		.findOne({
 			year,
 			ldapDN,
 		})
 		.lean()
 		.exec();
-};
 
-const createClass = async (newClass) => {
-	return classModel.create(newClass);
-};
+const createClass = async (newClass) => classModel.create(newClass);
 
-const updateClassName = async (classId, className) => {
-	return classModel.findOneAndUpdate({ _id: classId }, { name: className }, { new: true }).lean().exec();
-};
+const updateClassName = async (classId, className) =>
+	classModel.findOneAndUpdate({ _id: classId }, { name: className }, { new: true }).lean().exec();
 
 const ClassRepo = {
 	findClassByYearAndLdapDn,
