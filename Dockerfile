@@ -11,7 +11,7 @@ RUN npm ci
 #--only=production
 
 COPY . .
-RUN npm run build
+RUN npm run nest:build
 #COPY ./localtime /etc/localtime
 ENV TZ=Europe/Berlin
 

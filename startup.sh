@@ -2,4 +2,4 @@
 
 # crontab ./crontab && crond
 npm run migration-sync
-npm start
+npm run start:nest:prod
