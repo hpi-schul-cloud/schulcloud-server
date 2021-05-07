@@ -12,7 +12,6 @@ import { ServerModule } from './server.module';
 import path = require('path');
 
 const ROUTE_PRAEFIX = 'v3';
-const API_PATH = 'api';
 const PORT = 3030;
 
 async function bootstrap() {
@@ -76,7 +75,7 @@ async function bootstrap() {
 		.addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
 		.build();
 	const document = SwaggerModule.createDocument(app, config);
-	const apiDocsPath = path.join(ROUTE_PRAEFIX, API_PATH);
+	const apiDocsPath = 'v3/api';
 	SwaggerModule.setup(apiDocsPath, app, document);
 
 	// setup legacy app since that's not called automatically by app.listen()
