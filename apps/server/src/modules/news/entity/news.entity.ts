@@ -1,71 +1,53 @@
-import { Exclude, Expose, Type } from 'class-transformer';
-import { Types, Document } from 'mongoose';
-import { ExposeMongoIdAsString, WithTimeStampBaseEntity } from '../../../shared/core/repo/entity/base.entity';
-import { School } from '../../../shared/domain/entities/school/school.model';
-import { User } from '../../../shared/domain/entities/user/user.model';
-
-export class News extends WithTimeStampBaseEntity {
+import { Entity, ManyToOne, Property, Reference } from '@mikro-orm/core';
+import { BaseEntity, BaseEntityWithTimestamps } from '../../../shared/domain';
+import { SchoolInfo } from './school-info.entity';
+import { UserInfo } from './user-info.entity';
+@Entity()
+export class News extends BaseEntityWithTimestamps {
 	/** the news title */
-	@Expose()
-	title: string;
+	@Property()
+	title!: string;
+
 	/** the news content as html */
-	@Expose()
-	content: string;
+	@Property()
+	content!: string;
+
 	/** only past news are visible for viewers, when edit permission, news visible in the future might be accessed too  */
-	@Expose()
-	displayAt: Date;
+	@Property()
+	displayAt!: Date;
 
-	@Expose()
-	source: 'internal' | 'rss';
-
-	// hidden api properties
-
-	@Exclude()
+	@Property()
 	externalId?: string;
-	@Exclude()
+
+	@Property()
+	source?: 'internal' | 'rss';
+
+	@Property()
 	sourceDescription?: string;
 
-	// target and targetModel both must either exist or not
-	@ExposeMongoIdAsString()
-	/** id reference to a collection */
-	target?: Types.ObjectId;
-	/** name of a collection which is referenced in target */
-	@Expose()
+	// /** id reference to a collection */
+	// @ManyToOne()
+	target?: { id: string };
+
+	// /** name of a collection which is referenced in target */
+	// @Property()
 	targetModel?: string;
 
-	// populated properties
+	@ManyToOne({ fieldName: 'schoolId' })
+	school: SchoolInfo;
 
-	@ExposeMongoIdAsString()
-	schoolId: Types.ObjectId;
+	@ManyToOne({ fieldName: 'creatorId' })
+	creator: UserInfo;
 
-	/** user id of creator */
-	@ExposeMongoIdAsString()
-	creatorId: Types.ObjectId;
+	@ManyToOne({ fieldName: 'updaterId' })
+	updater?: UserInfo;
 
-	/** when updated, the user id of the updating user */
-	@ExposeMongoIdAsString()
-	updaterId?: Types.ObjectId;
-
-	@Type(() => School)
-	@Expose()
-	school?: School;
-
-	@Type(() => User)
-	@Expose()
-	creator?: User;
-
-	@Type(() => User)
-	@Expose()
-	updater?: User;
-
-	// decorated properties
-	@Expose()
 	permissions: string[] = [];
 
-	constructor(partial: Partial<News>) {
+	constructor(props: { title: string; content: string; displayAt: Date }) {
 		super();
-		Object.assign(this, partial);
+		this.title = props.title;
+		this.content = props.content;
+		this.displayAt = props.displayAt;
 	}
 }
-
-export type INews = Document & News;
