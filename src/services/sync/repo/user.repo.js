@@ -47,7 +47,11 @@ const checkCreate = async (email) => {
 	}
 	const users = await findUsersByEmail(email);
 	if (users.length !== 0) {
-		throw new BadRequest(`User cannot be created. User with the same email already exists.`, { email });
+		const userExistsInSchool = users[0].schoolId;
+		throw new BadRequest(
+			`User cannot be created. User with the same email already exists in school ${userExistsInSchool}`,
+			{ email }
+		);
 	}
 };
 
@@ -62,10 +66,16 @@ const checkUpdate = async (email, userId) => {
 			email,
 		});
 	} else if (!equalIds(users[0]._id, userId)) {
-		throw new BadRequest(`User cannot be updated. User and email don't match.`, {
-			userId,
-			email,
-		});
+		const userExistsInSchool = users[0].schoolId;
+		throw new BadRequest(
+			`User cannot be updated. User and email don't match.
+		User with the same email already exists in school ${userExistsInSchool}`,
+			{
+				userId,
+				email,
+				existsInSchool: userExistsInSchool,
+			}
+		);
 	}
 };
 

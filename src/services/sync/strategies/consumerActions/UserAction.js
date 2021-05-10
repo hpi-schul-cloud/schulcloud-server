@@ -7,7 +7,7 @@ const { SchoolRepo, UserRepo } = require('../../repo');
 const { NotFound } = require('../../../../errors');
 
 const defaultOptions = {
-	allowedLogKeys: ['ldapId', 'systemId', 'roles', 'activated'],
+	allowedLogKeys: ['ldapId', 'systemId', 'roles', 'activated', 'schoolDn'],
 };
 
 class UserAction extends BaseConsumerAction {
