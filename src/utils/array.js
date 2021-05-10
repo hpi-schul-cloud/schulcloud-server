@@ -137,18 +137,10 @@ const asyncFilter = async (data, predicate) => {
 	return data.filter((_v, index) => results[index]);
 };
 
-const executeInChunks = (data, chunkSize, func) => {
-	for (let i = 0; i < data.length; i += chunkSize) {
-		const chunk = data.slice(i, i + chunkSize);
-		chunk.forEach(func);
-	}
-};
-
 module.exports = {
 	flatten,
 	paginate,
 	sort,
 	convertToSortOrderObject,
 	asyncFilter,
-	executeInChunks,
 };

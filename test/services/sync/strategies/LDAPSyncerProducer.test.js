@@ -1,12 +1,17 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const { SyncMessageBuilder } = require('../../../../src/services/sync/utils/SyncMessageBuilder');
+const { SyncMessageBuilder } = require('../../../../src/services/sync/strategies/SyncMessageBuilder');
 
 const { LDAPSyncer } = require('../../../../src/services/sync/strategies/LDAPSyncer');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
 const SYNC_ID = 'TEST_SYNC_ID';
+
+const currentYear = '2021/22';
+
+const federalState = 'NI';
+
 const exampleLdapSchoolData = [
 	{
 		displayName: 'school1',
@@ -76,25 +81,28 @@ describe('Ldap Syncer Producer', () => {
 		ldapSyncer.messageBuilder = new SyncMessageBuilder(SYNC_ID, fakeLdapSystem._id);
 	});
 
-	describe('createSchoolsFromLdapData', () => {
+	describe('sendLdapSchools', () => {
 		it('should return school data', async () => {
-			const result = await ldapSyncer.createSchoolsFromLdapData(exampleLdapSchoolData);
+			const result = await ldapSyncer.sendLdapSchools(exampleLdapSchoolData, currentYear, federalState);
 			expect(result.length).to.eql(exampleLdapSchoolData.length);
 			for (let i = 0; i < result.length; i += 1) {
 				expect(result[i].name).to.eql(exampleLdapSchoolData[i].displayName);
 				expect(result[i].systems).to.eql([fakeLdapSystem._id]);
 			}
 		});
-		it('should add sync messages to queue', async () => {
-			await ldapSyncer.createSchoolsFromLdapData(exampleLdapSchoolData);
+		it('should add correct formatted sync messages to queue', async () => {
+			await ldapSyncer.sendLdapSchools(exampleLdapSchoolData, currentYear, federalState);
 			const { messages } = ldapSyncer.syncQueue;
 			expect(messages.length).to.eql(exampleLdapSchoolData.length);
 			for (let i = 0; i < messages.length; i += 1) {
 				const messageData = messages[i].data;
-				expect(messageData.action).to.eql('syncSchool');
-				expect(messageData.syncId).to.not.be.undefined;
-				expect(messageData.data.school.name).to.eql(exampleLdapSchoolData[i].displayName);
-				expect(messageData.data.school.ldapSchoolIdentifier).to.eql(exampleLdapSchoolData[i].ldapOu);
+				const exampleLdapSchool = exampleLdapSchoolData[i];
+				const expectedResult = ldapSyncer.messageBuilder.createSchoolDataMessage(
+					exampleLdapSchool,
+					currentYear,
+					federalState
+				);
+				expect(messageData).to.be.eql(expectedResult);
 			}
 		});
 	});

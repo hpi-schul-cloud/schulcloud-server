@@ -18,12 +18,12 @@ class SyncMessageBuilder {
 		};
 	}
 
-	createSchoolDataMessage({ schoolName, ldapSchoolIdentifier, currentYear, federalState }) {
+	createSchoolDataMessage(ldapSchool, currentYear, federalState) {
 		const data = {
 			school: {
-				name: schoolName,
+				name: ldapSchool.displayName,
 				systems: [this.systemId],
-				ldapSchoolIdentifier,
+				ldapSchoolIdentifier: ldapSchool.ldapOu,
 				currentYear,
 				federalState,
 			},

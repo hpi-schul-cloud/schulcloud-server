@@ -1,4 +1,5 @@
-const { schoolModel } = require('../../school/model');
+const federalStateModel = require('../../federalState/model');
+const { schoolModel, yearModel } = require('../../school/model');
 
 const createSchool = async ({ name, systems, ldapSchoolIdentifier, currentYear, federalState, fileStorageType }) => {
 	return schoolModel.create({
@@ -25,10 +26,20 @@ const findSchoolByLdapIdAndSystem = async (ldapSchoolIdentifier, systems) => {
 		.exec();
 };
 
+const getYears = async () => {
+	return yearModel.find().lean().exec();
+};
+
+const findFederalState = async (abbreviation) => {
+	return federalStateModel.findOne({ abbreviation }).lean().exec();
+};
+
 const SchoolRepo = {
 	createSchool,
 	updateSchoolName,
 	findSchoolByLdapIdAndSystem,
+	getYears,
+	findFederalState,
 };
 
 module.exports = SchoolRepo;
