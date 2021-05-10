@@ -5,7 +5,7 @@ import { TaskUC } from '../uc/task.uc';
 import { Task } from '../entity/task.entity';
 import { TaskController } from './task.controller';
 
-describe('TaskController', () => {
+describe.skip('TaskController', () => {
 	let controller: TaskController;
 
 	beforeEach(async () => {
@@ -27,8 +27,4 @@ describe('TaskController', () => {
 	it('should be defined', () => {
 		expect(controller).toBeDefined();
 	});
-
-	it('should return unauthorized when user is not authorized');
-	it('should return open homeworks');
-	it('should not return homeworks of other users');
 });

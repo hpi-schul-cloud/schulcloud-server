@@ -64,15 +64,3 @@ export class TaskRepo {
 		return Promise.resolve(mappedTasks);
 	}
 }
-
-/*
-  * student is on course
-  * lesson (if exists) is visible
-  * 
-  * look for submissions
- 
-  * get all courses of user
-  * get all visible lessons to these courses
-  * get all homeworks to these courses and lessons
-  * check for submissions
-*/

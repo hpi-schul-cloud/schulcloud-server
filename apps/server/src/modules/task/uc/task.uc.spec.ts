@@ -4,7 +4,7 @@ import { Task } from '../entity/task.entity';
 import { TaskRepo } from '../repo/task.repo';
 import { TaskUC } from './task.uc';
 
-describe('TaskService', () => {
+describe.skip('TaskService', () => {
 	let service: TaskUC;
 
 	beforeEach(async () => {
