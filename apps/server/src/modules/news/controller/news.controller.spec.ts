@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NewsController } from './news.controller';
 import { NewsService } from '../news.service';
 import { NewsRepo } from '../repo/news.repo';
+import { AuthorizationService } from '../../authorization/authorization.service';
+import { FeathersServiceProvider } from '../../authorization/feathers-service.provider';
 
 describe('NewsController', () => {
 	let controller: NewsController;
@@ -15,6 +17,8 @@ describe('NewsController', () => {
 					provide: NewsRepo,
 					useValue: {},
 				},
+				AuthorizationService,
+				FeathersServiceProvider,
 			],
 		}).compile();
 

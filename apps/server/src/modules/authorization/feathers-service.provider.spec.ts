@@ -2,17 +2,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { FeathersServiceProvider } from './feathers-service.provider';
 
 describe('FeathersServiceProvider', () => {
-  let provider: FeathersServiceProvider;
+	let provider: FeathersServiceProvider;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [FeathersServiceProvider],
-    }).compile();
+	beforeEach(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			providers: [FeathersServiceProvider],
+		}).compile();
 
-    provider = module.get<FeathersServiceProvider>(FeathersServiceProvider);
-  });
+		provider = await module.resolve<FeathersServiceProvider>(FeathersServiceProvider);
+	});
 
-  it('should be defined', () => {
-    expect(provider).toBeDefined();
-  });
+	it('should be defined', () => {
+		expect(provider).toBeDefined();
+	});
 });
