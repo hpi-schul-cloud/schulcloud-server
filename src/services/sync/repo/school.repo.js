@@ -1,7 +1,14 @@
 const { schoolModel } = require('../../school/model');
 
-const createSchool = async (schoolData) => {
-	return schoolModel.create(schoolData);
+const createSchool = async ({ name, systems, ldapSchoolIdentifier, currentYear, federalState, fileStorageType }) => {
+	return schoolModel.create({
+		name,
+		systems,
+		ldapSchoolIdentifier,
+		currentYear,
+		federalState,
+		fileStorageType,
+	});
 };
 
 const updateSchoolName = async (schoolId, schoolName) => {

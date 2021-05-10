@@ -9,6 +9,11 @@ const { BadRequest } = require('../../../errors');
 
 const { LDAP_SYNC_CHANNEL_NAME } = require('./LDAPSyncer');
 
+/**
+ * This is the main message consumer class which takes a list of executable actions.
+ * Each action should have a type and a function exec.
+ * By consuming a message the consumer decide which action to use for the execution by the actionType.
+ */
 class LDAPSyncerConsumer {
 	constructor(...actions) {
 		this.actions = {};
@@ -41,11 +46,7 @@ const setupConsumer = () => {
 	const handleMessage = (incomingMessage) =>
 		consumer
 			.executeMessage(incomingMessage)
-			.then(() => true)
-			.catch((err) => {
-				syncLogger.error(err);
-				return false;
-			})
+			.catch((err) => syncLogger.error(err))
 			.finally(() => {
 				syncLogger.debug({ content: JSON.parse(incomingMessage.content.toString()) });
 				syncQueue.ackMessage(incomingMessage);
