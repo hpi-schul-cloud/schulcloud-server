@@ -176,6 +176,7 @@ const gradeModel = mongoose.model('grade', gradeSchema);
 module.exports = {
 	COURSE_FEATURES,
 	courseModel,
+	courseSchema,
 	courseGroupModel,
 	classModel,
 	gradeModel,

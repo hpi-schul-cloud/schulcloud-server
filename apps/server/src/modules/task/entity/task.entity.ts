@@ -1,5 +1,5 @@
-import { Expose } from "class-transformer";
-import { WithTimeStampBaseEntity } from "../../../shared/core/repo";
+import { Expose } from 'class-transformer';
+import { WithTimeStampBaseEntity } from '../../../shared/core/repo';
 import { Document } from 'mongoose';
 
 export class Task extends WithTimeStampBaseEntity {
@@ -20,4 +20,10 @@ export class Task extends WithTimeStampBaseEntity {
 	id: string;
 }
 
-export type ITask = Document & Task;
+type ITaskModel = {
+	courseId: { name: string; color: string };
+	dueDate: Date;
+	name: string;
+};
+
+export type ITask = Document & ITaskModel & WithTimeStampBaseEntity;

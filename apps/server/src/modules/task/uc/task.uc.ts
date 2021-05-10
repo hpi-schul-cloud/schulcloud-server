@@ -11,6 +11,6 @@ export class TaskUC {
 	constructor(private taskRepo: TaskRepo) {}
 
 	async findAllOpenForUser(userId: EntityId): Promise<Task[]>  {
-		return this.taskRepo.findAllOpenByUser(userId);
+		return this.taskRepo.findAllOpenByStudent(userId);
 	}
 }
