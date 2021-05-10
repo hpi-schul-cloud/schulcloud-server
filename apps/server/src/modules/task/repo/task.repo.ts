@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Document, LeanDocument, Model, Query, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { EntityId } from '../../../shared/domain/entity-id';
 import { ITask, Task } from '../entity/task.entity';
 import { ISubmission } from '../entity/submission.entity';
@@ -36,12 +36,11 @@ export class TaskRepo {
 			.exec();
 		const homeworksWithSubmissions = submissionsOfStudent.map((submission) => submission.homeworkId);
 
-		//todo: check if submissions are correctly filtered
 		const openTasksOfStudent = await this.taskModel
 			.find({
 				courseId: { $in: coursesOfStudent },
 				$or: [{ lessonId: { $exists: false } }, { lessonId: null }, { lessonId: { $in: lessonsOfStudent } }],
-				submissionId: { $nin: homeworksWithSubmissions },
+				_id: { $nin: homeworksWithSubmissions },
 			})
 			.populate({
 				path: 'courseId',
@@ -49,8 +48,6 @@ export class TaskRepo {
 			})
 			.lean()
 			.exec();
-
-		
 		
 		const mappedTasks = openTasksOfStudent.map((task) => {
 			const entity = {
