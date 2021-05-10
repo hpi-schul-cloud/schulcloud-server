@@ -1,4 +1,6 @@
+import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Task } from '../entity/task.entity';
 import { TaskRepo } from './task.repo';
 
 describe('TaskService', () => {
@@ -6,7 +8,13 @@ describe('TaskService', () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [TaskRepo],
+			providers: [
+				TaskRepo,
+				{
+					provide: getModelToken(Task.name),
+					useValue: {},
+				},
+			],
 		}).compile();
 
 		service = module.get<TaskRepo>(TaskRepo);
