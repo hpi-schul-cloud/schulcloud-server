@@ -1,11 +1,12 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
+const { SyncMessageBuilder } = require('../../../../src/services/sync/utils/SyncMessageBuilder');
 
 const { LDAPSyncer } = require('../../../../src/services/sync/strategies/LDAPSyncer');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
-
+const SYNC_ID = 'TEST_SYNC_ID';
 const exampleLdapSchoolData = [
 	{
 		displayName: 'school1',
@@ -42,11 +43,13 @@ const exampleLdapUserData = [
 	},
 ];
 
-const exampleLdapClassData = {
-	name: 'exampleClass',
-	ldapDN: 'ldapDn',
-	uniqueMembers: 'uniqueMember',
-};
+const exampleLdapClassData = [
+	{
+		name: 'exampleClass',
+		ldapDN: 'ldapDn',
+		uniqueMembers: 'uniqueMember',
+	},
+];
 
 const fakeLdapSystem = {
 	_id: '123456789',
@@ -63,13 +66,14 @@ class FakeSyncQueue {
 	}
 }
 
-describe.only('Ldap Syncer Producer', () => {
+describe('Ldap Syncer Producer', () => {
 	let ldapSyncer;
 
 	beforeEach(() => {
 		ldapSyncer = new LDAPSyncer();
 		ldapSyncer.system = fakeLdapSystem;
 		ldapSyncer.syncQueue = new FakeSyncQueue();
+		ldapSyncer.messageBuilder = new SyncMessageBuilder(SYNC_ID, fakeLdapSystem._id);
 	});
 
 	describe('createSchoolsFromLdapData', () => {
@@ -98,7 +102,7 @@ describe.only('Ldap Syncer Producer', () => {
 	describe('sendUserData', () => {
 		it('should add sync messages to queue', async () => {
 			const schoolDn = 'schoolDn';
-			await ldapSyncer.sendUserData(exampleLdapUserData, schoolDn);
+			await ldapSyncer.sendLdapUsers(exampleLdapUserData, schoolDn);
 			const { messages } = ldapSyncer.syncQueue;
 			expect(messages.length).to.eql(exampleLdapUserData.length);
 			for (let i = 0; i < messages.length; i += 1) {
@@ -125,19 +129,21 @@ describe.only('Ldap Syncer Producer', () => {
 	describe('sendClassData', () => {
 		it('should add sync messages to queue', async () => {
 			const school = { ldapSchoolIdentifier: 'schoolDn', currentYear: 'currentYear' };
-			await ldapSyncer.sendClassData(exampleLdapClassData, school);
+			await ldapSyncer.sendLdapClasses(exampleLdapClassData, school);
 			const { messages } = ldapSyncer.syncQueue;
 			expect(messages.length).to.eql(1);
-			const messageData = messages[0].data;
-			expect(messageData.action).to.eql('syncClasses');
-			expect(messageData.syncId).to.not.be.undefined;
-			expect(messageData.data.class.name).to.eql(exampleLdapClassData.className);
-			expect(messageData.data.class.systemId).to.eql(fakeLdapSystem._id);
-			expect(messageData.data.class.schoolDn).to.eql(school.ldapSchoolIdentifier);
-			expect(messageData.data.class.nameFormat).to.eql('static');
-			expect(messageData.data.class.ldapDN).to.eql(exampleLdapClassData.ldapDn);
-			expect(messageData.data.class.year).to.eql(school.currentYear);
-			expect(messageData.data.class.uniqueMembers).to.eql([exampleLdapClassData.uniqueMembers]);
+			for (let i = 0; i < messages.length; i += 1) {
+				const messageData = messages[i].data;
+				expect(messageData.action).to.eql('syncClasses');
+				expect(messageData.syncId).to.not.be.undefined;
+				expect(messageData.data.class.name).to.eql(exampleLdapClassData[i].className);
+				expect(messageData.data.class.systemId).to.eql(fakeLdapSystem._id);
+				expect(messageData.data.class.schoolDn).to.eql(school.ldapSchoolIdentifier);
+				expect(messageData.data.class.nameFormat).to.eql('static');
+				expect(messageData.data.class.ldapDN).to.eql(exampleLdapClassData[i].ldapDn);
+				expect(messageData.data.class.year).to.eql(school.currentYear);
+				expect(messageData.data.class.uniqueMembers).to.eql([exampleLdapClassData[i].uniqueMembers]);
+			}
 		});
 	});
 });
