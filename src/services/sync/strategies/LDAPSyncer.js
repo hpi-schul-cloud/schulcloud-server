@@ -46,7 +46,7 @@ class LDAPSyncer extends Syncer {
 		const years = await SchoolRepo.getYears();
 		const currentYear = new SchoolYearFacade(years).defaultYear;
 		const federalState = await SchoolRepo.findFederalState('NI');
-		return this.sendLdapSchools(data, currentYear, federalState);
+		return this.sendLdapSchools(data, currentYear._id, federalState._id);
 	}
 
 	async processLdapUsers(school) {

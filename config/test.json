@@ -19,5 +19,9 @@
 	"SECRET_ES_MERLIN_COUNTIES_CREDENTIALS": "[{\"countyId\":3256,\"merlinUser\":\"dummy\",\"secretMerlinKey\":\"dummy\"}]",
 	"FEATURE_ES_SEARCHABLE_ENABLED": true,
 	"FEATURE_ES_COLLECTIONS_ENABLED": true,
-	"LERNSTORE_MODE": "EDUSHARING"
+	"LERNSTORE_MODE": "EDUSHARING",
+	"FEATURE_RABBITMQ_ENABLED": true,
+	"RABBITMQ_URI": "amqp://localhost",
+	"FEATURE_SYNCER_CONSUMER_ENABLE": true,
+	"SYNC_LOG_LEVEL": "debug"
 }

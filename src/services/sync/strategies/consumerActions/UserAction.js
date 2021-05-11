@@ -27,7 +27,7 @@ class UserAction extends BaseConsumerAction {
 				await this.createUserAndAccount(user, account, school._id);
 			}
 		} else {
-			throw new NotFound(`School for ${user.schoolDn} and ${user.systemId} couldn't be found.`, {
+			throw new NotFound(`School for schoolDn ${user.schoolDn} and systemId ${user.systemId} couldn't be found.`, {
 				schoolDn: user.schoolDn,
 				systemId: user.systemId,
 			});

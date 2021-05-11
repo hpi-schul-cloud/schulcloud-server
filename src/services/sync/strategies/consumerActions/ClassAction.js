@@ -40,10 +40,13 @@ class ClassAction extends BaseConsumerAction {
 			}
 			await this.addUsersToClass(school._id, classId, classData.uniqueMembers);
 		} else {
-			throw new NotFound(`School for ${classData.schoolDn} and ${classData.systemId} couldn't be found.`, {
-				schoolDn: classData.schoolDn,
-				systemId: classData.systemId,
-			});
+			throw new NotFound(
+				`School for schoolDn ${classData.schoolDn} and system ${classData.systemId} couldn't be found.`,
+				{
+					schoolDn: classData.schoolDn,
+					systemId: classData.systemId,
+				}
+			);
 		}
 	}
 
