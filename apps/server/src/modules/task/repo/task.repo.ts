@@ -43,7 +43,7 @@ export class TaskRepo {
 				path: 'courseId',
 				select: 'name color',
 			})
-			.sort({ duedate: -1 })
+			.sort({ dueDate: 1 })
 			.lean()
 			.exec();
 
@@ -59,7 +59,7 @@ export class TaskRepo {
 			}
 			return entity
 		});
-
+		// TODO: pagination or total is missing
 		return mappedTasks;
 	}
 }
