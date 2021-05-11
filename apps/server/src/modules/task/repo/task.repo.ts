@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ITaskQuery, EntityId, ITask, Task, ISubmission, ILesson, ICourse } from '../entity';
+import { ITaskOption, EntityId, ITask, Task, ISubmission, ILesson, ICourse } from '../entity';
 
 
 @Injectable()
@@ -15,7 +15,7 @@ export class TaskRepo {
 
 	// WARNING: this is used to deal with the current datamodel, and needs to be changed.
 	// DO NOT DO THIS AT HOME!!
-	async findAllOpenByStudent(userId: EntityId, { year, pagination }: ITaskQuery): Promise<Task[]> {
+	async findAllOpenByStudent(userId: EntityId, { year, pagination }: ITaskOption): Promise<Task[]> {
 		const coursesOfStudent = await this.courseModel.find({ userIds: userId }).select('_id').lean().exec();
 		// todo: handle coursegroups
 		const lessonsOfStudent = await this.lessonModel
@@ -45,7 +45,7 @@ export class TaskRepo {
 			})
 			.lean()
 			.exec();
-		
+
 		const mappedTasks = openTasksOfStudent.map((task) => {
 			const entity = {
 				id: task._id.toString(),
@@ -58,6 +58,7 @@ export class TaskRepo {
 			}
 			return entity
 		});
-		return Promise.resolve(mappedTasks);
+
+		return mappedTasks;
 	}
 }

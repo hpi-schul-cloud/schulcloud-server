@@ -1,4 +1,4 @@
-export *  from './task.query.entity';
+export *  from './task.option.entity';
 export * from './task.entity';
 export * from './submission.entity';
 export * from './lesson.entity';
