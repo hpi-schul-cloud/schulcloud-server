@@ -1,6 +1,6 @@
 const { expect } = require('chai');
-const appPromise = require('../../../../../src/app');
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const appPromise = require('../../../../../src/app');
 
 describe('PublicAppConfigService', () => {
 	let app;
@@ -34,6 +34,7 @@ describe('PublicAppConfigService', () => {
 	it('returns the right environment variables', async () => {
 		const serviceEnvs = await configService.find();
 		const testEnvs = {};
+		// eslint-disable-next-line no-return-assign
 		envsToTest.forEach((env) => (testEnvs[env] = Configuration.get(env)));
 		expect(serviceEnvs).to.eql(testEnvs);
 	});
