@@ -2,7 +2,7 @@ const _ = require('lodash');
 
 const BaseConsumerAction = require('./BaseConsumerAction');
 // TODO: place from where it is importat must be fixed later
-const { LDAP_SYNC_ACTIONS } = require('../LDAPSyncer');
+const { LDAP_SYNC_ACTIONS } = require('../SyncMessageBuilder');
 const { SchoolRepo, UserRepo } = require('../../repo');
 const { NotFound } = require('../../../../errors');
 

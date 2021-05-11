@@ -1,7 +1,7 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
-const { LDAP_SYNC_ACTIONS } = require('../../../../src/services/sync/strategies/LDAPSyncer');
+const { LDAP_SYNC_ACTIONS } = require('../../../../src/services/sync/strategies/SyncMessageBuilder');
 const { LDAPSyncerConsumer } = require('../../../../src/services/sync/strategies/LDAPSyncerConsumer');
 const { SchoolAction, UserAction, ClassAction } = require('../../../../src/services/sync/strategies/consumerActions');
 const SchoolYearFacade = require('../../../../src/services/school/logic/year');

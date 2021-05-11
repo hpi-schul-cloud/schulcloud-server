@@ -4,12 +4,6 @@ const SchoolYearFacade = require('../../school/logic/year');
 const { SyncMessageBuilder } = require('./SyncMessageBuilder');
 const { SchoolRepo } = require('../repo');
 
-const LDAP_SYNC_ACTIONS = {
-	SYNC_USER: 'syncUser',
-	SYNC_SCHOOL: 'syncSchool',
-	SYNC_CLASSES: 'syncClasses',
-};
-
 const LDAP_SYNC_CHANNEL_NAME = 'sync_ldap';
 
 /**
@@ -121,6 +115,5 @@ class LDAPSyncer extends Syncer {
 
 module.exports = {
 	LDAPSyncer,
-	LDAP_SYNC_ACTIONS,
 	LDAP_SYNC_CHANNEL_NAME,
 };

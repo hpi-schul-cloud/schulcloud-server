@@ -71,6 +71,20 @@ class FakeSyncQueue {
 	}
 }
 
+class FakeLdapService {
+	getSchools(ldapConfig) {
+		return exampleLdapSchoolData;
+	}
+
+	getClasses(ldapConfig, school) {
+		return exampleLdapClassData;
+	}
+
+	getUsers(ldapConfig, school) {
+		return exampleLdapUserData;
+	}
+}
+
 describe('Ldap Syncer Producer', () => {
 	let ldapSyncer;
 
@@ -79,6 +93,7 @@ describe('Ldap Syncer Producer', () => {
 		ldapSyncer.system = fakeLdapSystem;
 		ldapSyncer.syncQueue = new FakeSyncQueue();
 		ldapSyncer.messageBuilder = new SyncMessageBuilder(SYNC_ID, fakeLdapSystem._id);
+		ldapSyncer.ldapService = new FakeLdapService();
 	});
 
 	describe('sendLdapSchools', () => {
@@ -115,21 +130,8 @@ describe('Ldap Syncer Producer', () => {
 			expect(messages.length).to.eql(exampleLdapUserData.length);
 			for (let i = 0; i < messages.length; i += 1) {
 				const messageData = messages[i].data;
-				expect(messageData.action).to.eql('syncUser');
-				expect(messageData.syncId).to.not.be.undefined;
-				expect(messageData.data.user.firstName).to.eql(exampleLdapUserData[i].firstName);
-				expect(messageData.data.user.lastName).to.eql(exampleLdapUserData[i].lastName);
-				expect(messageData.data.user.email).to.eql(exampleLdapUserData[i].email);
-				expect(messageData.data.user.ldapDn).to.eql(exampleLdapUserData[i].ldapDn);
-				expect(messageData.data.user.ldapId).to.eql(exampleLdapUserData[i].ldapUUID);
-				expect(messageData.data.user.roles).to.eql(exampleLdapUserData[i].roles);
-
-				expect(messageData.data.account.ldapDn).to.eql(exampleLdapUserData[i].ldapDn);
-				expect(messageData.data.account.ldapId).to.eql(exampleLdapUserData[i].ldapUUID);
-				expect(messageData.data.account.username).to.eql(`${schoolDn}/${exampleLdapUserData[i].ldapUID}`.toLowerCase());
-				expect(messageData.data.account.systemId).to.eql(fakeLdapSystem._id);
-				expect(messageData.data.account.schoolDn).to.eql(schoolDn);
-				expect(messageData.data.account.activated).to.be.true;
+				const expectedResult = ldapSyncer.messageBuilder.createUserDataMessage(exampleLdapUserData[i], schoolDn);
+				expect(messageData).to.be.eql(expectedResult);
 			}
 		});
 	});
@@ -142,15 +144,8 @@ describe('Ldap Syncer Producer', () => {
 			expect(messages.length).to.eql(1);
 			for (let i = 0; i < messages.length; i += 1) {
 				const messageData = messages[i].data;
-				expect(messageData.action).to.eql('syncClasses');
-				expect(messageData.syncId).to.not.be.undefined;
-				expect(messageData.data.class.name).to.eql(exampleLdapClassData[i].className);
-				expect(messageData.data.class.systemId).to.eql(fakeLdapSystem._id);
-				expect(messageData.data.class.schoolDn).to.eql(school.ldapSchoolIdentifier);
-				expect(messageData.data.class.nameFormat).to.eql('static');
-				expect(messageData.data.class.ldapDN).to.eql(exampleLdapClassData[i].ldapDn);
-				expect(messageData.data.class.year).to.eql(school.currentYear);
-				expect(messageData.data.class.uniqueMembers).to.eql([exampleLdapClassData[i].uniqueMembers]);
+				const expectedResult = ldapSyncer.messageBuilder.createClassDataMessage(exampleLdapClassData[i], school);
+				expect(messageData).to.be.eql(expectedResult);
 			}
 		});
 	});
