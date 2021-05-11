@@ -3,7 +3,9 @@ import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '../../authentication/interface/jwt-payload';
 import { TaskUC } from '../uc/task.uc';
 import { Controller, Get, Query } from '@nestjs/common';
-import { TaskResponseDto, QueryDto } from './dto';
+import { TaskResponseDto, TaskQueryDto } from './dto';
+
+// TODO: swagger doku do not read from combined query object only from passed single parameter in Query(), but this do not allowed optional querys only required querys
 
 @ApiTags('Task')
 @Authenticate('jwt')
@@ -14,7 +16,7 @@ export class TaskController {
 	@Get('dashboard')
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() query: QueryDto,
+		@Query() query: TaskQueryDto,
 	): Promise<TaskResponseDto[]> {
 		const response = this.taskUc.findAllOpenForUser(currentUser.userId, query);
 		return response;

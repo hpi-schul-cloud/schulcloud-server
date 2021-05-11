@@ -1,3 +1,5 @@
-import { QueryDto } from '../controller/dto';
+import { TaskQueryDto } from '../controller/dto';
 
-export type ITaskOption = QueryDto;
+class TaskOptionsEntry extends TaskQueryDto {}
+
+export type ITaskOption = TaskOptionsEntry;
