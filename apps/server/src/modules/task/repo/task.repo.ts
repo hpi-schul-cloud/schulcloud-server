@@ -43,6 +43,7 @@ export class TaskRepo {
 				path: 'courseId',
 				select: 'name color',
 			})
+			.sort({ duedate: -1 })
 			.lean()
 			.exec();
 

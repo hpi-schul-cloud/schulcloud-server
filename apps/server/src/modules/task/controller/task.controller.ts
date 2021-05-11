@@ -3,7 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '../../authentication/interface/jwt-payload';
 import { TaskUC } from '../uc/task.uc';
 import { Controller, Get, Query } from '@nestjs/common';
-import { TaskResponseDto, PaginationQueryDto, YearsQueryDto } from './dto';
+import { TaskResponseDto, IQueryDto } from './dto';
 
 // TODO: override pipe to pass combined querys to it
 // TODO: pagination limits maybe a problem we should think about it, but is fine if want the global max and defaults
@@ -16,10 +16,8 @@ export class TaskController {
 	@Get('dashboard')
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query('year?') year: YearsQueryDto,
-		@Query('pagination') pagination: PaginationQueryDto,
+		@Query() query: IQueryDto,
 	): Promise<TaskResponseDto[]> {
-		const query = { year, pagination };
 		const response = this.taskUc.findAllOpenForUser(currentUser.userId, query);
 		return response;
 	}
