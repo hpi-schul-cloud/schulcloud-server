@@ -6,5 +6,5 @@ export class YearsQueryDto {
 	@Min(2015)
     @Max(2030)
 	@ApiProperty({ description: 'Requested year, otherwise default is used.', minimum: 2015, maximum: 2030 })
-	year?: number = 2020;
+	year?: number;
 }
