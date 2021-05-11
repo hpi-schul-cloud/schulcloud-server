@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { EntityId } from '../../../shared/domain/entity-id';
-import { ITask, Task } from '../entity/task.entity';
-import { ISubmission } from '../entity/submission.entity';
-import { ILesson } from '../entity/lesson.entity';
-import { ICourse } from '../entity/course.entity';
+import { ITaskQuery, EntityId, ITask, Task, ISubmission, ILesson, ICourse } from '../entity';
+
 
 @Injectable()
 export class TaskRepo {
@@ -18,7 +15,7 @@ export class TaskRepo {
 
 	// WARNING: this is used to deal with the current datamodel, and needs to be changed.
 	// DO NOT DO THIS AT HOME!!
-	async findAllOpenByStudent(userId: EntityId): Promise<Task[]> {
+	async findAllOpenByStudent(userId: EntityId, { year, pagination }: ITaskQuery): Promise<Task[]> {
 		const coursesOfStudent = await this.courseModel.find({ userIds: userId }).select('_id').lean().exec();
 		// todo: handle coursegroups
 		const lessonsOfStudent = await this.lessonModel

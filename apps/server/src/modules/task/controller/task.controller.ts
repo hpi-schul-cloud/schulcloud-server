@@ -1,10 +1,11 @@
-import { PaginationQueryDto } from '../../../shared/core/controller/dto/pagination.query.dto';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { ApiTags } from '@nestjs/swagger';
 import { ICurrentUser } from '../../authentication/interface/jwt-payload';
 import { TaskUC } from '../uc/task.uc';
 import { Controller, Get, Query } from '@nestjs/common';
-import { TaskResponseDto } from './dto/task-response.dto';
+import { TaskResponseDto, PaginationQueryDto, YearsQueryDto } from './dto';
+
+// TODO: override pipe to pass combined querys to it
 
 @ApiTags('Task')
 @Authenticate('jwt')
@@ -14,10 +15,12 @@ export class TaskController {
 
 	@Get('dashboard')
 	async findAll(
-		@CurrentUser() currentUser: ICurrentUser
-		//@Query() pagination: PaginationQueryDto
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query('year?') year: YearsQueryDto,
+		@Query('pagination?') pagination: PaginationQueryDto,
 	): Promise<TaskResponseDto[]> {
-		const response = this.taskUc.findAllOpenForUser(currentUser.userId);
+		const query = { year, pagination };
+		const response = this.taskUc.findAllOpenForUser(currentUser.userId, query);
 		return response;
 	}
 }
