@@ -1,1 +1,3 @@
-export { IQueryDto as ITaskOption } from '../controller/dto';
+import { QueryDto } from '../controller/dto';
+
+export type ITaskOption = QueryDto;

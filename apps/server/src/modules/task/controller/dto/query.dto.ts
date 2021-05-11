@@ -20,5 +20,3 @@ export class QueryDto {
 	@ApiProperty({ description: 'Page limit, defaults to 10.', minimum: 1, maximum: 99 })
 	limit;
 }
-
-export type IQueryDto = QueryDto;
