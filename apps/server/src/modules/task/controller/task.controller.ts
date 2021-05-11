@@ -6,7 +6,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { TaskResponseDto, PaginationQueryDto, YearsQueryDto } from './dto';
 
 // TODO: override pipe to pass combined querys to it
-
+// TODO: pagination limits maybe a problem we should think about it, but is fine if want the global max and defaults
 @ApiTags('Task')
 @Authenticate('jwt')
 @Controller('task')
@@ -17,7 +17,7 @@ export class TaskController {
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query('year?') year: YearsQueryDto,
-		@Query('pagination?') pagination: PaginationQueryDto,
+		@Query('pagination') pagination: PaginationQueryDto,
 	): Promise<TaskResponseDto[]> {
 		const query = { year, pagination };
 		const response = this.taskUc.findAllOpenForUser(currentUser.userId, query);
