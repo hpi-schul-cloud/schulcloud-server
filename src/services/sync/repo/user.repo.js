@@ -60,11 +60,9 @@ const checkUpdate = async (email, userId) => {
 	if (!email) return;
 	const users = await findUsersByEmail(email);
 	if (users.length === 0) {
-		throw new BadRequest(`User cannot be updated. User with this email doesn't exists.`, {
-			userId,
-			email,
-		});
-	} else if (!equalIds(users[0]._id, userId)) {
+		return;
+	}
+	if (!equalIds(users[0]._id, userId)) {
 		const userExistsInSchool = users[0].schoolId;
 		throw new BadRequest(
 			`User cannot be updated. User and email don't match.
