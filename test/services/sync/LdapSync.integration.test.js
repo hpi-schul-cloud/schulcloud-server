@@ -36,7 +36,7 @@ const exampleLdapSchoolData = [
 	},
 ];
 
-const exampleLdapUserData = [
+const exampleLdapStudents = [
 	{
 		firstName: 'firstName1',
 		lastName: 'lastName1',
@@ -47,6 +47,9 @@ const exampleLdapUserData = [
 		roles: ['student'],
 		schoolDn: exampleLdapSchoolData[0].ldapOu,
 	},
+];
+
+const exampleLdapTeachers = [
 	{
 		firstName: 'firstName2',
 		lastName: 'lastName2',
@@ -55,22 +58,25 @@ const exampleLdapUserData = [
 		ldapUID: 'ldapUID2',
 		ldapUUID: 'ldapUUID2',
 		roles: ['teacher'],
-		schoolDn: exampleLdapSchoolData[1].ldapOu,
+		schoolDn: exampleLdapSchoolData[0].ldapOu,
 	},
 ];
+
+const exampleLdapUserData = [...exampleLdapStudents, ...exampleLdapTeachers];
 
 const exampleLdapClassData = [
 	{
 		name: 'exampleClass',
-		ldapDN: 'ldapDn',
+		ldapDn: 'ldapDn',
 		uniqueMembers: exampleLdapUserData.map((u) => u.ldapDn),
 		schoolDn: exampleLdapSchoolData[0].ldapOu,
 	},
 ];
 
 class FakeLdapService {
-	constructor(app) {
+	constructor(app, options) {
 		this.app = app;
+		this.options = options;
 	}
 
 	async get(id, params) {
@@ -78,15 +84,19 @@ class FakeLdapService {
 	}
 
 	getSchools(ldapConfig) {
-		return exampleLdapSchoolData;
+		return this.options.fillSchools ? exampleLdapSchoolData : [];
 	}
 
 	getClasses(ldapConfig, school) {
-		return exampleLdapClassData.filter((exampleClass) => exampleClass.schoolDn === school.ldapSchoolIdentifier);
+		return this.options.fillClasses
+			? exampleLdapClassData.filter((exampleClass) => exampleClass.schoolDn === school.ldapSchoolIdentifier)
+			: [];
 	}
 
 	getUsers(ldapConfig, school) {
-		return exampleLdapUserData.filter((exampleUser) => exampleUser.schoolDn === school.ldapSchoolIdentifier);
+		return this.options.fillUsers
+			? exampleLdapUserData.filter((exampleUser) => exampleUser.schoolDn === school.ldapSchoolIdentifier)
+			: [];
 	}
 
 	async disconnect() {
@@ -94,7 +104,35 @@ class FakeLdapService {
 	}
 }
 
-describe.only('Ldap Sync Integration', function () {
+const createTestSchools = async (system) => {
+	return Promise.all(
+		exampleLdapSchoolData.map((school) =>
+			testObjects.createTestSchool({
+				ldapSchoolIdentifier: school.ldapOu,
+				name: school.displayName,
+				systems: [system._id],
+			})
+		)
+	);
+};
+
+const createTestUsers = async (schools) => {
+	return Promise.all(
+		exampleLdapUserData.map((user) =>
+			testObjects.createTestUser({
+				firstName: user.firstName,
+				lastName: user.lastName,
+				email: user.email,
+				ldapDn: user.ldapDn,
+				ldapId: user.ldapUUID,
+				roles: user.roles,
+				schoolId: schools.filter((school) => school.ldapSchoolIdentifier === user.schoolDn)[0]._id,
+			})
+		)
+	);
+}
+
+describe('Ldap Sync Integration', function () {
 	this.timeout(20000);
 	let app;
 	let server;
@@ -103,23 +141,22 @@ describe.only('Ldap Sync Integration', function () {
 	const cleanupAll = async () => {
 		await testObjects.cleanup();
 		const accounts = exampleLdapUserData.map((user) => `${user.schoolDn}/${user.ldapUID}`.toLowerCase());
-		const deleteAccountRes = await accountModel
+		await accountModel
 			.deleteMany({ username: { $in: accounts } })
 			.lean()
 			.exec();
 		const userLdapDns = exampleLdapUserData.map((user) => user.ldapDn);
-		const deleteUserRes = await userModel
+		await userModel
 			.deleteMany({ ldapDn: { $in: userLdapDns } })
 			.lean()
 			.exec();
 		const classLdapDns = exampleLdapClassData.map((clazz) => clazz.ldapDN);
-		const deleteClassRes = await classModel
+		await classModel
 			.deleteMany({ ldapDN: { $in: classLdapDns } })
 			.lean()
 			.exec();
-
 		const schoolLdapDns = exampleLdapSchoolData.map((school) => school.ldapOu);
-		const deleteSchoolRes = await schoolModel
+		await schoolModel
 			.deleteMany({ ldapSchoolIdentifier: { $in: schoolLdapDns } })
 			.lean()
 			.exec();
@@ -129,7 +166,9 @@ describe.only('Ldap Sync Integration', function () {
 		app = await appPromise;
 		server = await app.listen(0);
 		await cleanupAll();
-		app.services.ldap = new FakeLdapService(app);
+	});
+
+	beforeEach(async () => {
 		system = await testObjects.createTestSystem({
 			type: 'ldap',
 			ldapConfig: fakeLdapConfig,
@@ -144,13 +183,18 @@ describe.only('Ldap Sync Integration', function () {
 		await server.close();
 	});
 
-	it('should run the whole sync process', async () => {
+	it('should create schools from ldap sync', async () => {
 		const params = { query: { target: 'ldap' } };
+		const options = {
+			fillSchools: true,
+		};
+		app.services.ldap = new FakeLdapService(app, options);
 		const result = await app.service('sync').find(params);
+		// eslint-disable-next-line promise/param-names
+		await new Promise((r) => setTimeout(r, 1000));
 		expect(result.length).to.be.eql(1);
 		expect(result[0].success).to.be.true;
-		// eslint-disable-next-line promise/param-names
-		await new Promise((r) => setTimeout(r, 5000));
+
 		const foundSchools = await Promise.all(
 			exampleLdapSchoolData.map((exampleSchool) =>
 				SchoolRepo.findSchoolByLdapIdAndSystem(exampleSchool.ldapOu, system._id)
@@ -158,22 +202,82 @@ describe.only('Ldap Sync Integration', function () {
 		);
 		expect(foundSchools.length).to.be.eql(exampleLdapSchoolData.length);
 		foundSchools.forEach((foundSchool) => expect(foundSchool).to.be.not.null);
+	});
+
+	it('should create users from ldap sync', async () => {
+		const params = { query: { target: 'ldap' } };
+		const schools = await createTestSchools(system);
+
+		const options = {
+			fillSchools: true,
+			fillUsers: true,
+		};
+		app.services.ldap = new FakeLdapService(app, options);
+		const result = await app.service('sync').find(params);
+		// eslint-disable-next-line promise/param-names
+		await new Promise((r) => setTimeout(r, 1000));
+		expect(result.length).to.be.eql(1);
+		expect(result[0].success).to.be.true;
+
+		const foundUsers = await Promise.all(
+			exampleLdapUserData.map((exampleUser) => {
+				const foundSchool = schools.filter((school) => school.ldapSchoolIdentifier === exampleUser.schoolDn);
+				return UserRepo.findByLdapIdAndSchool(exampleUser.ldapUUID, foundSchool[0]._id);
+			})
+		);
+		expect(foundUsers.length).to.be.eql(exampleLdapUserData.length);
+		foundUsers.forEach((foundUser) => expect(foundUser).to.be.not.null);
+	});
+
+	const getExpectedStudentIdsForClass = (exampleClass, users) => {
+		const expectedStudentLdapDns = exampleLdapStudents
+			.filter((exampleUser) => exampleClass.uniqueMembers.includes(exampleUser.ldapDn))
+			.map((u) => u.ldapDn);
+		return users.filter((user) => expectedStudentLdapDns.includes(user.ldapDn)).map((user) => user._id.toString());
+	};
+
+	const getExpectedTeacherIdsForClass = (exampleClass, users) => {
+		const expectedTeachersLdapDns = exampleLdapTeachers
+			.filter((exampleUser) => exampleClass.uniqueMembers.includes(exampleUser.ldapDn))
+			.map((u) => u.ldapDn);
+		return users.filter((user) => expectedTeachersLdapDns.includes(user.ldapDn)).map((user) => user._id.toString());
+	};
+
+	it('should create classes from ldap sync', async () => {
+		const params = { query: { target: 'ldap' } };
+		const schools = await createTestSchools(system);
+		const users = await createTestUsers(schools);
+		const options = {
+			fillSchools: true,
+			fillClasses: true,
+		};
+		app.services.ldap = new FakeLdapService(app, options);
+		const result = await app.service('sync').find(params);
+		// eslint-disable-next-line promise/param-names
+		await new Promise((r) => setTimeout(r, 1000));
+		expect(result.length).to.be.eql(1);
+		expect(result[0].success).to.be.true;
+
 		const currentYear = new SchoolYearFacade(await SchoolRepo.getYears()).defaultYear;
 
 		const foundClasses = await Promise.all(
 			exampleLdapClassData.map((exampleClass) =>
-				ClassRepo.findClassByYearAndLdapDn(currentYear._id, exampleClass.ldapDN)
+				ClassRepo.findClassByYearAndLdapDn(currentYear._id, exampleClass.ldapDn)
 			)
 		);
 		expect(foundClasses.length).to.be.eql(exampleLdapClassData.length);
-		foundClasses.forEach((foundClass) => expect(foundClass).to.be.not.null);
 
-		const foundUsers = await Promise.all(
-			exampleLdapUserData.map((exampleUser) =>
-				UserRepo.findByLdapIdAndSchool(exampleUser.ldapUUID, foundSchools[0]._id)
-			)
-		);
-		expect(foundUsers.length).to.be.eql(exampleLdapUserData.length);
-		foundUsers.forEach((foundUser) => expect(foundUser).to.be.not.null);
+		for (const foundClass of foundClasses) {
+			expect(foundClass).to.be.not.null;
+			const exampleClass = exampleLdapClassData.filter((ex) => foundClass.ldapDN === ex.ldapDn)[0];
+			const expectedStudentIds = getExpectedStudentIdsForClass(exampleClass, users);
+			const expectedTeacherIds = getExpectedTeacherIdsForClass(exampleClass, users);
+
+			const actualStudentIds = foundClass.userIds.map((id) => id.toString());
+			expect(actualStudentIds).to.be.eql(expectedStudentIds);
+
+			const actualTeacherIds = foundClass.teacherIds.map((id) => id.toString());
+			expect(actualTeacherIds).to.be.eql(expectedTeacherIds);
+		}
 	});
 });

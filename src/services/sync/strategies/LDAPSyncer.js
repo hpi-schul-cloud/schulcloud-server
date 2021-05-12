@@ -1,10 +1,12 @@
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { getChannel } = require('../../../utils/rabbitmq');
 const Syncer = require('./Syncer');
 const SchoolYearFacade = require('../../school/logic/year');
 const { SyncMessageBuilder } = require('./SyncMessageBuilder');
 const { SchoolRepo } = require('../repo');
+const { syncLogger } = require('../../../logger/syncLogger');
 
-const LDAP_SYNC_CHANNEL_NAME = 'sync_ldap';
+const LDAP_SYNC_CHANNEL_NAME = Configuration.get('SYNC_QUEUE_NAME');
 
 /**
  * Implements syncing from LDAP servers based on the Syncer interface for a
@@ -50,19 +52,19 @@ class LDAPSyncer extends Syncer {
 	}
 
 	async processLdapUsers(school) {
-		this.logInfo(`Getting users for school ${school.name}`, { syncId: this.syncId });
+		syncLogger.info(`Getting users for school ${school.name}`, { syncId: this.syncId });
 		const ldapUsers = await this.ldapService.getUsers(this.system.ldapConfig, school);
 		await this.sendLdapUsers(ldapUsers, school.ldapSchoolIdentifier);
 	}
 
 	async processLdapClasses(school) {
-		this.logInfo(`Getting classes for school ${school.name}`, { syncId: this.syncId });
+		syncLogger.info(`Getting classes for school ${school.name}`, { syncId: this.syncId });
 		const classes = await this.ldapService.getClasses(this.system.ldapConfig, school);
 		await this.sendLdapClasses(classes, school);
 	}
 
 	async sendLdapSchools(ldapSchools, currentYear, federalState) {
-		this.logInfo(`Got ${ldapSchools.length} schools from the server`, { syncId: this.syncId });
+		syncLogger.info(`Got ${ldapSchools.length} schools from the server`, { syncId: this.syncId });
 		return ldapSchools
 			.map((ldapSchool) => this.sendLdapSchool(ldapSchool, currentYear, federalState))
 			.filter((ldapSchool) => ldapSchool !== undefined);
@@ -74,13 +76,13 @@ class LDAPSyncer extends Syncer {
 			this.syncQueue.sendToQueue(schoolMessage, {});
 			return schoolMessage.data.school;
 		} catch (err) {
-			this.logger.error('Uncaught LDAP sync error', { error: err, systemId: this.system._id, syncId: this.syncId });
+			syncLogger.error('Uncaught LDAP sync error', { error: err, systemId: this.system._id, syncId: this.syncId });
 			return undefined;
 		}
 	}
 
 	sendLdapUsers(ldapUsers, ldapSchoolIdentifier) {
-		this.logInfo(`Processing ${ldapUsers.length} users for school ${ldapSchoolIdentifier}`, { syncId: this.syncId });
+		syncLogger.info(`Processing ${ldapUsers.length} users for school ${ldapSchoolIdentifier}`, { syncId: this.syncId });
 		ldapUsers.forEach((ldapUser) => this.sendLdapUser(ldapUser, ldapSchoolIdentifier));
 	}
 
@@ -89,7 +91,7 @@ class LDAPSyncer extends Syncer {
 			const userMessage = this.messageBuilder.createUserDataMessage(ldapUser, ldapSchoolIdentifier);
 			this.syncQueue.sendToQueue(userMessage, {});
 		} catch (err) {
-			this.logError(`User creation error for ${ldapUser.firstName} ${ldapUser.lastName} (${ldapUser.email})`, {
+			syncLogger.error(`User creation error for ${ldapUser.firstName} ${ldapUser.lastName} (${ldapUser.email})`, {
 				err,
 				syncId: this.syncId,
 			});
@@ -97,7 +99,7 @@ class LDAPSyncer extends Syncer {
 	}
 
 	sendLdapClasses(classes, school) {
-		this.logInfo(`Creating and updating ${classes.length} classes for school ${school.ldapSchoolIdentifier}`, {
+		syncLogger.info(`Creating and updating ${classes.length} classes for school ${school.ldapSchoolIdentifier}`, {
 			syncId: this.syncId,
 		});
 		classes.forEach((ldapClass) => this.sendLdapClass(ldapClass, school));
@@ -108,7 +110,7 @@ class LDAPSyncer extends Syncer {
 			const classMessage = this.messageBuilder.createClassDataMessage(ldapClass, school);
 			this.syncQueue.sendToQueue(classMessage, {});
 		} catch (err) {
-			this.logError('Cannot create synced class', { error: err, ldapClass, syncId: this.syncId });
+			syncLogger.error('Cannot create synced class', { error: err, ldapClass, syncId: this.syncId });
 		}
 	}
 }
