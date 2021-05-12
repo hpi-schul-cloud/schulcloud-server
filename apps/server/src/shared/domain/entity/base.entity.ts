@@ -9,6 +9,9 @@ export abstract class BaseEntity {
 	id!: string;
 }
 
+// NOTE apparently we can only have one step of inheritance
+// that's why we definethe whole class here
+// TODO implement cutom class decorators
 export abstract class BaseEntityWithTimestamps {
 	@PrimaryKey()
 	_id!: ObjectId;
