@@ -8,7 +8,7 @@ import { News, SchoolInfo, UserInfo } from './entity';
 
 @Module({
 	imports: [AuthorizationModule],
-	controllers: [NewsController],
+	controllers: [/* NewsController */],
 	providers: [NewsUc, NewsRepo],
 	exports: [NewsUc],
 })
