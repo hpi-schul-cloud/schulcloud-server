@@ -47,6 +47,16 @@ const exampleLdapStudents = [
 		roles: ['student'],
 		schoolDn: exampleLdapSchoolData[0].ldapOu,
 	},
+	{
+		firstName: 'firstName1',
+		lastName: 'lastName1',
+		email: `test12@example.com`,
+		ldapDn: 'ldapDn12',
+		ldapUID: 'ldapUID12',
+		ldapUUID: 'ldapUUID12',
+		roles: ['student'],
+		schoolDn: exampleLdapSchoolData[0].ldapOu,
+	},
 ];
 
 const exampleLdapTeachers = [
@@ -130,7 +140,7 @@ const createTestUsers = async (schools) => {
 			})
 		)
 	);
-}
+};
 
 describe('Ldap Sync Integration', function () {
 	this.timeout(20000);
@@ -274,9 +284,11 @@ describe('Ldap Sync Integration', function () {
 			const expectedTeacherIds = getExpectedTeacherIdsForClass(exampleClass, users);
 
 			const actualStudentIds = foundClass.userIds.map((id) => id.toString());
+			expect(actualStudentIds.length).to.be.eql(exampleLdapStudents.length);
 			expect(actualStudentIds).to.be.eql(expectedStudentIds);
 
 			const actualTeacherIds = foundClass.teacherIds.map((id) => id.toString());
+			expect(actualTeacherIds.length).to.be.eql(exampleLdapTeachers.length);
 			expect(actualTeacherIds).to.be.eql(expectedTeacherIds);
 		}
 	});

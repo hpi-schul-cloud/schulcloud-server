@@ -19,8 +19,10 @@ class LDAPSyncer extends Syncer {
 		super(app, stats, logger);
 		this.system = system;
 		this.options = options;
-		this.stats = Object.assign(this.stats, {
-			schools: {},
+		this.stats = Object.assign(stats, {
+			schools: 0,
+			users: 0,
+			classes: 0,
 		});
 		this.syncQueue = getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
 		const systemId = this.system && this.system._id;
@@ -44,23 +46,26 @@ class LDAPSyncer extends Syncer {
 	}
 
 	async processLdapSchools() {
-		const data = await this.ldapService.getSchools(this.system.ldapConfig);
+		const ldapSchools = await this.ldapService.getSchools(this.system.ldapConfig);
+		this.stats.schools += ldapSchools.length;
 		const years = await SchoolRepo.getYears();
 		const currentYear = new SchoolYearFacade(years).defaultYear;
 		const federalState = await SchoolRepo.findFederalState('NI');
-		return this.sendLdapSchools(data, currentYear._id, federalState._id);
+		return this.sendLdapSchools(ldapSchools, currentYear._id, federalState._id);
 	}
 
 	async processLdapUsers(school) {
 		syncLogger.info(`Getting users for school ${school.name}`, { syncId: this.syncId });
 		const ldapUsers = await this.ldapService.getUsers(this.system.ldapConfig, school);
+		this.stats.users += ldapUsers.length;
 		await this.sendLdapUsers(ldapUsers, school.ldapSchoolIdentifier);
 	}
 
 	async processLdapClasses(school) {
 		syncLogger.info(`Getting classes for school ${school.name}`, { syncId: this.syncId });
-		const classes = await this.ldapService.getClasses(this.system.ldapConfig, school);
-		await this.sendLdapClasses(classes, school);
+		const ldapClasses = await this.ldapService.getClasses(this.system.ldapConfig, school);
+		this.stats.classes += ldapClasses.length;
+		await this.sendLdapClasses(ldapClasses, school);
 	}
 
 	async sendLdapSchools(ldapSchools, currentYear, federalState) {
