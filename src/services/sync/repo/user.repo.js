@@ -4,17 +4,16 @@ const roleModel = require('../../role/model');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { BadRequest } = require('../../../errors');
 
-const createAccount = async (account) => {
-	return accountModel.create({
+const createAccount = async (account) =>
+	accountModel.create({
 		userId: account.userId,
 		username: account.username.toLowerCase(),
 		systemId: account.systemId,
 		activated: true,
 	});
-};
 
-const resolveUserRoles = async (roles) => {
-	return roleModel
+const resolveUserRoles = async (roles) =>
+	roleModel
 		.find({
 			name: {
 				$in: roles,
@@ -22,7 +21,6 @@ const resolveUserRoles = async (roles) => {
 		})
 		.lean()
 		.exec();
-};
 
 const createUser = async (user) => {
 	user.roles = await resolveUserRoles(user.roles);
@@ -88,8 +86,8 @@ const createUserAndAccount = async (inputUser, inputAccount) => {
 	return { user, account };
 };
 
-const updateAccount = async (userId, account) => {
-	return accountModel
+const updateAccount = async (userId, account) =>
+	accountModel
 		.findOneAndUpdate(
 			{ userId, systemId: account.systemId },
 			{
@@ -100,7 +98,6 @@ const updateAccount = async (userId, account) => {
 		)
 		.lean()
 		.exec();
-};
 
 const updateUserAndAccount = async (userId, changedUser, changedAccount) => {
 	await checkUpdate(changedUser.email, userId);
@@ -111,8 +108,8 @@ const updateUserAndAccount = async (userId, changedUser, changedAccount) => {
 	return { user, account };
 };
 
-const findByLdapIdAndSchool = async (ldapId, schoolId) => {
-	return userModel
+const findByLdapIdAndSchool = async (ldapId, schoolId) =>
+	userModel
 		.findOne({
 			ldapId,
 			schoolId,
@@ -120,7 +117,6 @@ const findByLdapIdAndSchool = async (ldapId, schoolId) => {
 		.populate('roles')
 		.lean()
 		.exec();
-};
 
 const findByLdapDnsAndSchool = async (ldapDns, schoolId) => {
 	return userModel
