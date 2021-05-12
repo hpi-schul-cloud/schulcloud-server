@@ -56,9 +56,10 @@ const checkCreate = async (email) => {
 };
 
 const checkUpdate = async (email, userId) => {
-	if (!email || !userId) {
-		throw new BadRequest(`User cannot be updated. Email ${email} or userId ${userId} is missing`);
+	if (!userId) {
+		throw new BadRequest(`User cannot be updated. Userid is missing`);
 	}
+	if (!email) return;
 	const users = await findUsersByEmail(email);
 	if (users.length === 0) {
 		throw new BadRequest(`User cannot be updated. User with this email doesn't exists.`, {
