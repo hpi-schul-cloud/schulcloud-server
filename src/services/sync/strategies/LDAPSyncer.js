@@ -15,7 +15,7 @@ const LDAP_SYNC_CHANNEL_NAME = Configuration.get('SYNC_QUEUE_NAME');
  * @implements {Syncer}
  */
 class LDAPSyncer extends Syncer {
-	constructor(app, stats, logger, system, options = {}) {
+	constructor(app, stats = {}, logger, system, options = {}) {
 		super(app, stats, logger);
 		this.system = system;
 		this.options = options;
