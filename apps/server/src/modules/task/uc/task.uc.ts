@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ICurrentUser } from '../../authentication/interface/jwt-payload';
-import { ITaskOption, Task, EntityId } from '../entity';
+import { ITaskOption, EntityId, ITaskMetadata } from '../entity';
 import { TaskRepo } from '../repo/task.repo';
 
 // filter tasks older than 3 weeks
@@ -9,7 +9,7 @@ import { TaskRepo } from '../repo/task.repo';
 export class TaskUC {
 	constructor(private taskRepo: TaskRepo) {}
 
-	async findAllOpenForUser(userId: EntityId, option: ITaskOption): Promise<Task[]>  {
+	async findAllOpenForUser(userId: EntityId, option: ITaskOption): Promise<ITaskMetadata[]> {
 		return this.taskRepo.findAllOpenByStudent(userId, option);
 	}
 }

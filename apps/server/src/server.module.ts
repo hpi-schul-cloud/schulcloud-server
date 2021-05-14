@@ -9,6 +9,7 @@ import { DB_URL } from './config';
 import { TaskModule } from './modules/task/task.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { News, SchoolInfo, UserInfo } from './modules/news/entity';
+import { Task, Lesson, Course, Submission } from './modules/task/entity';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 
 @Module({
@@ -21,7 +22,7 @@ import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 		MikroOrmModule.forRoot({
 			type: 'mongo',
 			clientUrl: DB_URL,
-			entities: [News, SchoolInfo, UserInfo],
+			entities: [News, SchoolInfo, UserInfo, Task, Lesson, Course, Submission],
 			findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
 				return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
 			},

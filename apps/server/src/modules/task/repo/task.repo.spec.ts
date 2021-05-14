@@ -1,26 +1,28 @@
-import { getModelToken } from '@nestjs/mongoose';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Task } from '../entity/task.entity';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { Test } from '@nestjs/testing';
 import { TaskRepo } from './task.repo';
 
-describe.skip('TaskService', () => {
-	let service: TaskRepo;
-
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+describe('TaskService', () => {
+	it('should be defined', async () => {
+		const module = await Test.createTestingModule({
 			providers: [
 				TaskRepo,
 				{
-					provide: getModelToken(Task.name),
-					useValue: {},
+					provide: EntityManager,
+					useValue: {
+						find: (entity: any, query: any) => {
+							return [{ _id: new ObjectId(), name: 'testtask' }];
+						},
+					},
 				},
 			],
 		}).compile();
 
-		service = module.get<TaskRepo>(TaskRepo);
-	});
-
-	it('should be defined', () => {
+		const service = module.get<TaskRepo>(TaskRepo);
 		expect(service).toBeDefined();
+		expect(module.get<EntityManager>(EntityManager)).toBeDefined();
+
+		const result = await service.findAllOpenByStudent('abcde');
+		expect(result.length).toEqual(1);
 	});
 });

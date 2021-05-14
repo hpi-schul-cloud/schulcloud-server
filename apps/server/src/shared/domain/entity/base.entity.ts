@@ -9,7 +9,13 @@ export abstract class BaseEntity {
 	id!: string;
 }
 
-export abstract class BaseEntityWithTimestamps extends BaseEntity {
+export abstract class BaseEntityWithTimestamps {
+	@PrimaryKey()
+	_id!: ObjectId;
+
+	@SerializedPrimaryKey()
+	id!: string;
+
 	@Property()
 	createdAt = new Date();
 

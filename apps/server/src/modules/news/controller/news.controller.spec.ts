@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NewsController } from './news.controller';
-import { NewsService } from '../news.service';
 import { NewsRepo } from '../repo/news.repo';
 import { AuthorizationService } from '../../authorization/authorization.service';
 import { FeathersServiceProvider } from '../../authorization/feathers-service.provider';
+import { NewsUc } from '../uc';
 
 describe('NewsController', () => {
 	let controller: NewsController;
@@ -12,7 +12,7 @@ describe('NewsController', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [NewsController],
 			providers: [
-				NewsService,
+				NewsUc,
 				{
 					provide: NewsRepo,
 					useValue: {},

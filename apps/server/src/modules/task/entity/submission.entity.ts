@@ -1,14 +1,12 @@
-import { Expose } from "class-transformer";
-import { WithTimeStampBaseEntity } from "../../../shared/core/repo";
-import { Document } from 'mongoose';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { UserInfo } from '../../news/entity';
+import { Task } from './task.entity';
+import { BaseEntityWithTimestamps } from '../../../shared/domain';
 
-export class Submission extends WithTimeStampBaseEntity {
-	constructor(partial: Partial<Submission>) {
-		super();
-		Object.assign(this, partial);
-	}
-	
-	homeworkId: string;
+@Entity({ tableName: 'submissions' })
+export class Submission extends BaseEntityWithTimestamps {
+	@ManyToOne({ fieldName: 'homeworkId' })
+	homework: Task;
+	@ManyToOne({ fieldName: 'studentId' })
+	student: UserInfo;
 }
-
-export type ISubmission = Document & Submission;
