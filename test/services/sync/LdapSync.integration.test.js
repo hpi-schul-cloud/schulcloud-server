@@ -92,11 +92,11 @@ class FakeLdapService {
 		this.options = options;
 	}
 
-	async get(id, params) {
+	async get() {
 		return { school: 'some school' };
 	}
 
-	getSchools(ldapConfig) {
+	getSchools() {
 		return this.options.fillSchools ? exampleLdapSchoolData : [];
 	}
 
@@ -117,8 +117,8 @@ class FakeLdapService {
 	}
 }
 
-const createTestSchools = async (system) => {
-	return Promise.all(
+const createTestSchools = async (system) =>
+	Promise.all(
 		exampleLdapSchoolData.map((school) =>
 			testObjects.createTestSchool({
 				ldapSchoolIdentifier: school.ldapOu,
@@ -127,10 +127,9 @@ const createTestSchools = async (system) => {
 			})
 		)
 	);
-};
 
-const createTestUsers = async (schools) => {
-	return Promise.all(
+const createTestUsers = async (schools) =>
+	Promise.all(
 		exampleLdapUserData.map((user) =>
 			testObjects.createTestUser({
 				firstName: user.firstName,
@@ -143,7 +142,6 @@ const createTestUsers = async (schools) => {
 			})
 		)
 	);
-};
 
 const isRabbitMqAvailable = (result) => {
 	const isRabbitMqEnabled = Configuration.get('FEATURE_RABBITMQ_ENABLED') === true;
@@ -159,7 +157,7 @@ const isRabbitMqAvailable = (result) => {
 };
 
 // the call should be with function, otherwise 'this' will not be available
-describe('Ldap Sync Integration', function () {
+describe('Ldap Sync Integration', function test() {
 	this.timeout(20000);
 	let app;
 	let server;
@@ -195,7 +193,7 @@ describe('Ldap Sync Integration', function () {
 		await cleanupAll();
 	});
 
-	beforeEach(async function beforeEach() {
+	beforeEach(async () => {
 		system = await testObjects.createTestSystem({
 			type: 'ldap',
 			ldapConfig: fakeLdapConfig,
@@ -228,7 +226,7 @@ describe('Ldap Sync Integration', function () {
 		}
 	}
 
-	it('should create schools from ldap sync', async function () {
+	it('should create schools from ldap sync', async function test() {
 		const options = {
 			fillSchools: true,
 		};
@@ -243,7 +241,7 @@ describe('Ldap Sync Integration', function () {
 		foundSchools.forEach((foundSchool) => expect(foundSchool).to.be.not.null);
 	});
 
-	it('should create users from ldap sync', async function () {
+	it('should create users from ldap sync', async function test() {
 		const schools = await createTestSchools(system);
 
 		const options = {

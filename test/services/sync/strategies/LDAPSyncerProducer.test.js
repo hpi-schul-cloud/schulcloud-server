@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const { SyncMessageBuilder } = require('../../../../src/services/sync/strategies/SyncMessageBuilder');
@@ -72,15 +73,15 @@ class FakeSyncQueue {
 }
 
 class FakeLdapService {
-	getSchools(ldapConfig) {
+	getSchools() {
 		return exampleLdapSchoolData;
 	}
 
-	getClasses(ldapConfig, school) {
+	getClasses() {
 		return exampleLdapClassData;
 	}
 
-	getUsers(ldapConfig, school) {
+	getUsers() {
 		return exampleLdapUserData;
 	}
 }
