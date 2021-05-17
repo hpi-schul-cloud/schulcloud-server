@@ -1,5 +1,5 @@
-import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
@@ -56,7 +56,7 @@ async function bootstrap() {
 	 * the class-validator decorators to extend
 	 * validation.
 	 */
-	// app.useGlobalInterceptors(ClassSerializerInterceptor);
+	app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
 	/** *********************************************
 	 * OpenAPI docs setup

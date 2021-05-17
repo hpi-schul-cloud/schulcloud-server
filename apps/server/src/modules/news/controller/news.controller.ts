@@ -11,7 +11,6 @@ import { NewsMapper } from '../mapper/news.mapper';
 @ApiTags('News')
 @Authenticate('jwt')
 @Controller('news')
-@UseInterceptors(ClassSerializerInterceptor) // works only for class instances, default object are not covered!
 export class NewsController {
 	constructor(private readonly newsUc: NewsUc) {}
 
