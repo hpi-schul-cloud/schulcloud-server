@@ -1,2 +1,3 @@
 export * from './news.uc';
-export * from './create-news.dto';
+export * from './create-news.interface';
+export * from './update-news.interface';

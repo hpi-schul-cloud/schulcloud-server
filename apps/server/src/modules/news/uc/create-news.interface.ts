@@ -1,4 +1,4 @@
-export interface ICreateNewsDto {
+export interface ICreateNews {
 	title: string;
 	content: string;
 	displayAt: Date;

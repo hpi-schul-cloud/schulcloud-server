@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Body, Param, UseInterceptors, ClassSerializerInterceptor, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { NewsUc } from '../uc/news.uc';
 import { ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { ICurrentUser } from '../../authentication/interface/jwt-payload';
 import { ParseObjectIdPipe } from '../../../shared/core/pipe/parse-object-id.pipe';
-import { CreateNewsRequestDto, NewsResponseDto } from './dto';
-import { PaginationQueryDto } from '../../../shared/core/controller/dto/pagination.query.dto';
+import { CreateNewsParams, NewsResponse } from './dto';
+import { PaginationQuery } from '../../../shared/core/controller/dto/pagination.query';
 import { NewsMapper } from '../mapper/news.mapper';
 
 @ApiTags('News')
@@ -15,8 +15,8 @@ export class NewsController {
 	constructor(private readonly newsUc: NewsUc) {}
 
 	@Post()
-	async create(@Body() createNewsDto: CreateNewsRequestDto): Promise<NewsResponseDto> {
-		const news = await this.newsUc.create(NewsMapper.mapCreateNewsToDomain(createNewsDto));
+	async create(@CurrentUser() currentUser: ICurrentUser, @Body() params: CreateNewsParams): Promise<NewsResponse> {
+		const news = await this.newsUc.create(currentUser.userId, NewsMapper.mapCreateNewsToDomain(params));
 		const dto = NewsMapper.mapToResponse(news);
 		return dto;
 	}
@@ -24,8 +24,8 @@ export class NewsController {
 	@Get()
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() pagination: PaginationQueryDto
-	): Promise<NewsResponseDto[]> {
+		@Query() pagination: PaginationQuery
+	): Promise<NewsResponse[]> {
 		const newsList = await this.newsUc.findAllForUser(currentUser.userId, pagination);
 		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
 		return dtoList;
@@ -37,7 +37,7 @@ export class NewsController {
 		// A parameter pipe like ParseObjectIdPipe gives us the guarantee of typesafety for @Param
 		@Param('id', ParseObjectIdPipe) newsId: string,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<NewsResponseDto> {
+	): Promise<NewsResponse> {
 		const news = await this.newsUc.findOneByIdForUser(newsId, currentUser.userId);
 		const dto = NewsMapper.mapToResponse(news);
 		return dto;

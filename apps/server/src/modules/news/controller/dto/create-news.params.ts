@@ -4,7 +4,7 @@ import { IsDate, IsString } from 'class-validator';
 /**
  * DTO for creating a news document.
  */
-export class CreateNewsRequestDto {
+export class CreateNewsParams {
 	@ApiProperty()
 	@IsString()
 	title: string;

@@ -3,14 +3,14 @@ import { News } from '../entity/news.entity';
 import { PaginationModel } from '../../../shared/core/repo/interface/pagination.interface';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { EntityId } from '../../../shared/domain';
-import { ICreateNewsDto } from '../uc';
+import { ICreateNews } from '../uc';
 import { Dictionary } from '@mikro-orm/core';
 
 @Injectable()
 export class NewsRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async create(props: ICreateNewsDto): Promise<News> {
+	async create(props: ICreateNews): Promise<News> {
 		const news = this.em.create(News, props);
 		this.em.persistAndFlush(news);
 		return news;

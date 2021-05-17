@@ -1,8 +1,8 @@
 import { Expose } from 'class-transformer';
-import { SchoolInfoResponseDto } from './school-info-response.dto';
-import { UserInfoResponseDto } from './user-info-response.dto';
+import { SchoolInfoResponse } from './school-info.response';
+import { UserInfoResponse } from './user-info.response';
 
-export class NewsResponseDto {
+export class NewsResponse {
 	@Expose()
 	id: string;
 
@@ -25,13 +25,13 @@ export class NewsResponseDto {
 	targetModel: string;
 
 	@Expose()
-	school: SchoolInfoResponseDto;
+	school: SchoolInfoResponse;
 
 	@Expose()
-	creator: UserInfoResponseDto;
+	creator: UserInfoResponse;
 
 	@Expose()
-	updater: UserInfoResponseDto;
+	updater: UserInfoResponse;
 
 	@Expose()
 	createdAt: Date;

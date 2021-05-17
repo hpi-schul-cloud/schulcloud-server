@@ -1,12 +1,12 @@
-import { CreateNewsRequestDto, NewsResponseDto } from '../controller/dto';
+import { CreateNewsParams, NewsResponse } from '../controller/dto';
 import { News } from '../entity';
-import { ICreateNewsDto } from '../uc';
+import { ICreateNews } from '../uc';
 import { SchoolInfoMapper } from './school-info.mapper';
 import { UserInfoMapper } from './user-info.mapper';
 
 export class NewsMapper {
-	static mapToResponse(news: News): NewsResponseDto {
-		const dto = new NewsResponseDto();
+	static mapToResponse(news: News): NewsResponse {
+		const dto = new NewsResponse();
 		dto.id = news.id;
 		dto.title = news.title;
 		dto.content = news.content;
@@ -23,11 +23,11 @@ export class NewsMapper {
 		return dto;
 	}
 
-	static mapCreateNewsToDomain(reqDto: CreateNewsRequestDto): ICreateNewsDto {
+	static mapCreateNewsToDomain(params: CreateNewsParams): ICreateNews {
 		const dto = {
-			title: reqDto.title,
-			content: reqDto.body,
-			displayAt: reqDto.publishedOn,
+			title: params.title,
+			content: params.body,
+			displayAt: params.publishedOn,
 		};
 		return dto;
 	}

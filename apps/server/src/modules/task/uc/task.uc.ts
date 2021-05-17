@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ICurrentUser } from '../../authentication/interface/jwt-payload';
-import { ITaskOption, EntityId, ITaskMetadata } from '../entity';
+import { EntityId } from '../../../shared/domain';
+import { ITaskOption, ITaskMetadata } from '../entity';
 import { TaskRepo } from '../repo/task.repo';
 
 // filter tasks older than 3 weeks
