@@ -1,44 +1,47 @@
-import { Expose } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { SchoolInfoResponse } from './school-info.response';
 import { UserInfoResponse } from './user-info.response';
 
+const NEWS_SOURCES = ['internal', 'rss'] as const;
+type SourceType = typeof NEWS_SOURCES[number];
 export class NewsResponse {
-	@Expose()
+	@ApiProperty({ pattern: '[a-f0-9]{24}' })
 	id: string;
 
-	@Expose()
+	@ApiProperty()
 	title: string;
 
-	@Expose()
+	@ApiProperty()
 	content: string;
 
-	@Expose()
+	@ApiProperty()
 	displayAt: Date;
 
-	@Expose()
-	source: 'internal' | 'rss';
+	@ApiPropertyOptional({ type: 'string', enum: NEWS_SOURCES })
+	source?: SourceType;
 
-	@Expose()
-	target: { id: string };
+	@ApiPropertyOptional()
+	target?: { id: string };
 
-	@Expose()
-	targetModel: string;
+	@ApiPropertyOptional()
+	targetModel?: string;
 
-	@Expose()
+	@ApiProperty()
 	school: SchoolInfoResponse;
 
-	@Expose()
+	@ApiProperty()
 	creator: UserInfoResponse;
 
-	@Expose()
-	updater: UserInfoResponse;
+	@ApiPropertyOptional()
+	updater?: UserInfoResponse;
 
-	@Expose()
+	@ApiProperty()
 	createdAt: Date;
 
-	@Expose()
+	@ApiProperty()
 	updatedAt: Date;
 
-	@Expose()
+	@ApiProperty()
 	permissions: string[];
 }

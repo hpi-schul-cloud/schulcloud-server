@@ -13,5 +13,5 @@ export class CreateNewsParams {
 	body: string;
 	@ApiProperty()
 	@IsDate()
-	publishedOn: Date;
+	displayAt: Date;
 }
