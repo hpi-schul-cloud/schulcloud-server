@@ -51,7 +51,7 @@ The different layers use separately defined objects that must be mapped when cro
 - Never export entities through the service layer without DTO-mapping which is defined in the controller
 - Concepts owned by a layer must not be shared with other layers
 
-![](/assets/object-ownership.png)
+![](../../assets/object-ownership.png)
 
 Further reading: https://khalilstemmler.com/articles/software-design-architecture/organizing-app-logic/
 

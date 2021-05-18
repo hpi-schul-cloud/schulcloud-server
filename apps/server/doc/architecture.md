@@ -32,7 +32,7 @@ Our architecture is based on the following principles:
 
 The following figure shows the general architecture approach for the HPI-Schul-Cloud. It contains two different architecture categories (*business architecture* and *technical architecture*), which are described in more detail bellow.
 
-![](/assets/architecture-overview.png)
+![](../../assets/architecture-overview.png)
 
 ### Business Architecture
 
@@ -83,7 +83,7 @@ If `component B` needs anything from `component A`, it must always access it 
   - for example if `component B` has no business logic (like a simple adapter component)
     - In any other situation, you should only put it into the
 
-![Communication between components](/assets/Communication-between-components.png)
+![Communication between components](../../assets/Communication-between-components.png)
 
 ### Provide dedicated APIs for external systems
 
@@ -95,7 +95,7 @@ If external applications can't use the default REST API of the system (e.g. beca
   - Do not use any relations, constraints or other dependencies onto the target component(s) on database level and do not query the data directly. Always use the UseCase Facade
 - An adapter component can contain multiple endpoints (e.g. for users, courses and classes) and the adapter is allowed to access multiple business components (e.g. to retrieve data from users, courses and classes).
 
-![Integrating external App](/assets/Integrating-external-App.png) The figure above shows the generic setup. As stated above, the adapter component can access additional components
+![Integrating external App](../../assets/Integrating-external-App.png) The figure above shows the generic setup. As stated above, the adapter component can access additional components
 
 ### Accessing an external API / System
 
@@ -122,23 +122,23 @@ Scenarios:
 
 #### With Adapter Component
 
-![With Adapter Component](/assets/Calling-an-external-System.png)
+![With Adapter Component](../../assets/Calling-an-external-System.png)
 
 #### With Business Component
 
-![With Business Component](/assets/access-external-system-from-business-component.png)
+![With Business Component](../../assets/access-external-system-from-business-component.png)
 
 ### Access Legacy Code
 
 If you need to access legacy code (not yet migrated to the new architecture), you can do it from the logic layer (preferred) or the service layer (if there is no logic layer or it is only needed for service-layer-mapping)
 
-![Access Legacy Code](/assets/Access-Legacy-Code.png)
+![Access Legacy Code](../../assets/Access-Legacy-Code.png)
 
 ### Extract Component into external system (Microservice)
 
 The component approach not only increases the maintainability and test-ability by a large amount, it also allows to extract components into separate applications without large refactorings. The components are already decoupled and the required functionality in the UseCase Facade can be pulled up into the REST-API.
 
-![Extract Component into its own microservice](/assets/extract-component-microservice.png)
+![Extract Component into its own microservice](../../assets/extract-component-microservice.png)
 
 ## Layers
 
@@ -215,7 +215,7 @@ In practice it is not always appropriate to create use cases in the logic layer 
 
 ## Cross Cutting Concerns
 
-![Cross Cutting Concerns](/assets/Cross-Cutting-Concerns.png)
+![Cross Cutting Concerns](../../assets/Cross-Cutting-Concerns.png)
 
 ### Error Handling
 
