@@ -278,42 +278,6 @@ For details see the corresponding [logging and tracing guidelines](https://docs
 
 # Architecture Mapping to Code
 
-## For details about how this architecture is implemented in code, see the [Server Code Conventions](https://docs.hpi-schul-cloud.org/display/TSC/Server+Code+Conventions).
+For details about how this architecture is implemented in code, see the [Server Code Conventions](https://docs.hpi-schul-cloud.org/display/TSC/Server+Code+Conventions).
 
-## Business Layer
-
----
-
-The business layer defines the core of our application. It defines logic in use-cases and holds the domain model in entities.
-
-> Protect that domain model from all the other technical intricacies involved in creating a web application.
-
-This means: the business layer must focus on the logical view of the application. Surrounding layers must be implemented on the busines layer.
-
-### Entities
-
-The domain entities are defined in the business layer. They might have [ORM-decorators](https://mikro-orm.io/docs/decorators) which define how entities are persisted.
-
-- DTOs are exported to the business layer only
-- Entities/Documents rely on the Schema below and refer to a value object that is referenced by an id
-
-Never export an entity without DTO conversion to the upper layer.
-
-TODO: When convert to a DTO take care this might change the interface but the objects data must be filtered too (Solution: Mapper)!
-
-## Presentation Layer
-
-Controllers are used to connect the application to the presentation layer, which provides a REST API. All data a controller retrieves or responds over the API have to be defined as DTO class. It must enforce Mapping incoming and outgoing data to DTO instances and apply [Validation](https://docs.nestjs.com/techniques/validation) and [Authentication]() using [Pipes](https://docs.nestjs.com/pipes).
-
-Data Flow:
-
-- Incoming Data: API -> Validation -> Authentication -> DTO
-- Outgoing Data: DTO -> Serialization -> API
-
-Models with ownership:
-
-- DTO for request and response models
-
-## Data Layer
-
-Before access data, a repository has to be implemented which is responsible to separate for example a database provider from the application.
+Next: See Architecture Mapping and Conventions here.
