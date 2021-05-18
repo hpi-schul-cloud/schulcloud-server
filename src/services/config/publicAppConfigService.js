@@ -1,4 +1,5 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const { DOCUMENT_BASE_DIR } = require('../../../config/globals');
 
 /**
  *
@@ -42,6 +43,7 @@ class PublicAppConfigService {
 			FEATURE_TEAMS_ENABLED: Configuration.get('FEATURE_TEAMS_ENABLED'),
 			NOT_AUTHENTICATED_REDIRECT_URL: Configuration.get('NOT_AUTHENTICATED_REDIRECT_URL'),
 			FEATURE_ES_COLLECTIONS_ENABLED: Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED'),
+			DOCUMENT_BASE_DIR,
 		};
 
 		return Promise.resolve(envs);
