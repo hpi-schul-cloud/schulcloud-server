@@ -45,7 +45,7 @@
 		"nest:build": "nest build",
 		"nest:build:all": "npm run nest:build",
 		"nest:clean": "shx rm -rf dist",
-		"nest:doc:serve": "npx @compodoc/compodoc -p tsconfig.json -s -w --includes apps/server/doc",
+		"nest:doc:serve": "npx @compodoc/compodoc -p tsconfig.json -s -w -a apps/assets --includes apps/server/doc",
 		"nest:start": "nest start",
 		"nest:start:dev": "nest start --watch",
 		"nest:start:debug": "nest start --debug --watch",
