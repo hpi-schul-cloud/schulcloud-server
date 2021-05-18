@@ -2,7 +2,7 @@ const _ = require('lodash');
 
 const BaseConsumerAction = require('./BaseConsumerAction');
 // TODO: place from where it is importat must be fixed later
-const { LDAP_SYNC_ACTIONS } = require('../LDAPSyncer');
+const { LDAP_SYNC_ACTIONS } = require('../SyncMessageBuilder');
 const { SchoolRepo, UserRepo } = require('../../repo');
 const { NotFound } = require('../../../../errors');
 
@@ -27,7 +27,7 @@ class UserAction extends BaseConsumerAction {
 				await this.createUserAndAccount(user, account, school._id);
 			}
 		} else {
-			throw new NotFound(`School for ${user.schoolDn} and ${user.systemId} couldn't be found.`, {
+			throw new NotFound(`School for schoolDn ${user.schoolDn} and systemId ${user.systemId} couldn't be found.`, {
 				schoolDn: user.schoolDn,
 				systemId: user.systemId,
 			});

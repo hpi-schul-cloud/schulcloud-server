@@ -1,6 +1,6 @@
 const BaseConsumerAction = require('./BaseConsumerAction');
 // TODO: place from where it is importat must be fixed later
-const { LDAP_SYNC_ACTIONS } = require('../LDAPSyncer');
+const { LDAP_SYNC_ACTIONS } = require('../SyncMessageBuilder');
 const { SchoolRepo, ClassRepo, UserRepo } = require('../../repo');
 const { NotFound } = require('../../../../errors');
 
@@ -40,10 +40,13 @@ class ClassAction extends BaseConsumerAction {
 			}
 			await this.addUsersToClass(school._id, classId, classData.uniqueMembers);
 		} else {
-			throw new NotFound(`School for ${classData.schoolDn} and ${classData.systemId} couldn't be found.`, {
-				schoolDn: classData.schoolDn,
-				systemId: classData.systemId,
-			});
+			throw new NotFound(
+				`School for schoolDn ${classData.schoolDn} and system ${classData.systemId} couldn't be found.`,
+				{
+					schoolDn: classData.schoolDn,
+					systemId: classData.systemId,
+				}
+			);
 		}
 	}
 

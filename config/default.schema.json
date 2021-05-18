@@ -531,6 +531,11 @@
 			"default": "error",
 			"description": "Log level for queue based syncers (e.g. LDAP)"
 		},
+		"SYNC_QUEUE_NAME" : {
+			"type": "string",
+			"default": "sync_ldap",
+			"description": "Queue name for sync"
+		},
 		"MEMORY_INTERVAL_TIME": {
 			"type": "integer",
 			"default": 0,
