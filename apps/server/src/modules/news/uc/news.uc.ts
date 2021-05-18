@@ -66,7 +66,7 @@ export class NewsUc {
 		return {
 			title: 'title',
 			body: 'content',
-			publishedOn: new Date(),
+			displayAt: new Date(),
 		};
 	}
 

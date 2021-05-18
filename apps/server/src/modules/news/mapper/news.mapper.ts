@@ -27,7 +27,7 @@ export class NewsMapper {
 		const dto = {
 			title: params.title,
 			content: params.body,
-			displayAt: params.publishedOn,
+			displayAt: params.displayAt,
 		};
 		return dto;
 	}
