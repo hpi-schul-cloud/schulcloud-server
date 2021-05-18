@@ -25,6 +25,16 @@ const publicAppConfigServiceHooks = {
 	},
 };
 
+const exposedVars = [
+	'ADMIN_TABLES_DISPLAY_CONSENT_COLUMN',
+	'FEATURE_ES_COLLECTIONS_ENABLED',
+	'FEATURE_EXTENSIONS_ENABLED',
+	'FEATURE_TEAMS_ENABLED',
+	'JWT_SHOW_TIMEOUT_WARNING_SECONDS',
+	'JWT_TIMEOUT_SECONDS',
+	'NOT_AUTHENTICATED_REDIRECT_URL',
+];
+
 /**
  * This service for the env variables to sync between server and client.
  * These env variables must be public and there must be no secret values.
@@ -36,15 +46,11 @@ class PublicAppConfigService {
 
 	find() {
 		const envs = {
-			ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN'),
-			JWT_SHOW_TIMEOUT_WARNING_SECONDS: Configuration.get('JWT_SHOW_TIMEOUT_WARNING_SECONDS'),
-			JWT_TIMEOUT_SECONDS: Configuration.get('JWT_TIMEOUT_SECONDS'),
-			FEATURE_EXTENSIONS_ENABLED: Configuration.get('FEATURE_EXTENSIONS_ENABLED'),
-			FEATURE_TEAMS_ENABLED: Configuration.get('FEATURE_TEAMS_ENABLED'),
-			NOT_AUTHENTICATED_REDIRECT_URL: Configuration.get('NOT_AUTHENTICATED_REDIRECT_URL'),
-			FEATURE_ES_COLLECTIONS_ENABLED: Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED'),
 			DOCUMENT_BASE_DIR,
 		};
+		exposedVars.forEach((varName) => {
+			envs[varName] = Configuration.get(varName);
+		});
 
 		return Promise.resolve(envs);
 	}
