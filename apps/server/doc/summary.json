@@ -4,12 +4,16 @@
 		"file": "../README.md",
 		"children": [
 			{
-				"title": "Conventions",
-				"file": "conventions.md"
+				"title": "Software Architecture",
+				"file": "architecture.md"
 			},
 			{
-				"title": "Application Layers",
-				"file": "application-layers.md"
+				"title": "Architecture Mapping to Code",
+				"file": "architecture-mapping.md"
+			},
+			{
+				"title": "Code Conventions",
+				"file": "conventions.md"
 			},
 			{
 				"title": "Git",
