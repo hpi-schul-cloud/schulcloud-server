@@ -22,7 +22,7 @@ export class NewsResponse {
 	source?: SourceType;
 
 	@ApiPropertyOptional()
-	target?: { id: string };
+	targetId?: string;
 
 	@ApiPropertyOptional()
 	targetModel?: string;

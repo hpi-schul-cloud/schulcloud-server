@@ -4,6 +4,7 @@ import { AuthorizationService } from '../../authorization/authorization.service'
 import { News, SchoolInfo } from '../entity';
 import { NewsRepo } from '../repo/news.repo';
 import { ICreateNews } from './create-news.interface';
+import { INewsScope } from './news-scope.interface';
 import { IUpdateNews } from './update-news.interface';
 
 type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
@@ -21,10 +22,10 @@ export class NewsUc {
 		return news;
 	}
 
-	async findAllForUser(userId: EntityId, pagination: IPagination): Promise<News[]> {
-		// TODO scope
-		// authorization
-		const newsList = await this.newsRepo.findAllByUser(userId, pagination);
+	async findAllForUser(userId: EntityId, scope?: INewsScope, pagination?: IPagination): Promise<News[]> {
+		const user = await this.authorizationService.getUser(userId);
+
+		const newsList = await this.newsRepo.findAllBySchoolAndScope(user.schoolId.toString(), scope, pagination);
 		await Promise.all(
 			newsList.map(async (news: News) => {
 				await this.decoratePermissions(news, userId);
