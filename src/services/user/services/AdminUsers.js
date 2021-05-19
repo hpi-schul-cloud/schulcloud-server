@@ -27,6 +27,21 @@ const getCurrentYear = (ref, schoolId) =>
 		})
 		.then(({ currentYear }) => currentYear.toString());
 
+const setSearchParametesIfExist = (clientQuery, query) => {
+	if (clientQuery.searchQuery && clientQuery.searchQuery.trim().length !== 0) {
+		const amountOfSearchWords = clientQuery.searchQuery.split(' ').length;
+		const searchQueryElements = splitForSearchIndexes(clientQuery.searchQuery.trim());
+		query.searchQuery = `${clientQuery.searchQuery} ${searchQueryElements.join(' ')}`;
+		// increase gate by searched word, to get better results
+		query.searchFilterGate = searchQueryElements.length * 2 + amountOfSearchWords;
+		// recreating sort here, to set searchQuery as first (main) parameter of sorting
+		query.sort = {
+			...query.sort,
+			searchQuery: 1,
+		};
+	}
+};
+
 class AdminUsers {
 	constructor(roleName) {
 		this.roleName = roleName;
@@ -94,17 +109,7 @@ class AdminUsers {
 			if (clientQuery.classes) query.classes = clientQuery.classes;
 			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
 			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
-			if (clientQuery.searchQuery && clientQuery.searchQuery.trim().length !== 0) {
-				const searchQueryElements = splitForSearchIndexes(clientQuery.searchQuery.trim());
-				query.searchQuery = `${clientQuery.searchQuery} ${searchQueryElements.join(' ')}`;
-				// increase gate by searched word, to get better results
-				query.searchFilterGate = searchQueryElements.length * 0.9;
-				// recreating sort here, to set searchQuery as first (main) parameter of sorting
-				query.sort = {
-					...query.sort,
-					searchQuery: 1,
-				};
-			}
+			setSearchParametesIfExist(clientQuery, query);
 
 			const dateQueries = ['createdAt'];
 			for (const dateQuery of dateQueries) {
@@ -194,7 +199,7 @@ class AdminUsers {
 	async checkIfExternallyManaged(schoolId) {
 		const { isExternal } = await this.app.service('schools').get(schoolId);
 		if (isExternal) {
-			throw new Forbidden('Creating new students or teachers is only possible in the source system.');
+			throw new Forbidden('Creating, editing, or removing students or teachers is only possible in the source system.');
 		}
 	}
 
@@ -279,6 +284,7 @@ class AdminUsers {
 	async remove(id, params) {
 		const { _ids } = params.query;
 		const currentUser = await getCurrentUserInfo(params.account.userId);
+		await this.checkIfExternallyManaged(currentUser.schoolId);
 
 		if (id) {
 			const userToRemove = await getCurrentUserInfo(id);

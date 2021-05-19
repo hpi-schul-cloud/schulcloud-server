@@ -20,15 +20,18 @@ class Cache {
 		// set last updated here to avoid updating cache simultaneously for multiple times
 		lastUpdatedTimestamp = Date.now();
 
-		for (let i = 0; i < MessageProvider.length; i += 1) {
-			const data = await MessageProvider[i].getMessage(SC_THEME);
+		const promises = MessageProvider.map(async (provider) => {
+			const data = await provider.getMessage(SC_THEME);
 			if (!data.success) {
 				success = false;
 				return;
 			}
 			newMessages = newMessages.concat(data.messages);
 			success = true;
-		}
+		});
+
+		await Promise.all(promises);
+
 		if (success) {
 			messages = newMessages;
 		}

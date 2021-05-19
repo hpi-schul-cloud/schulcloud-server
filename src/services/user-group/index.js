@@ -54,8 +54,6 @@ module.exports = function () {
 				max: 100,
 			},
 			lean: true,
-			multi: true,
-			whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 		})
 	);
 	const gradeService = app.service('/grades');
