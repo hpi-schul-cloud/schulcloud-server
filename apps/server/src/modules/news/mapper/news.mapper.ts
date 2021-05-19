@@ -12,7 +12,7 @@ export class NewsMapper {
 		dto.content = news.content;
 		dto.displayAt = news.displayAt;
 		dto.source = news.source;
-		dto.target = news.target;
+		dto.targetId = news.target?.id;
 		dto.targetModel = news.targetModel;
 		dto.school = SchoolInfoMapper.mapToResponse(news.school);
 		dto.creator = UserInfoMapper.mapToResponse(news.creator);

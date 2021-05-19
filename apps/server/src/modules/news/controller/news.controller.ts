@@ -26,7 +26,12 @@ export class NewsController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationQuery
 	): Promise<NewsResponse[]> {
-		const newsList = await this.newsUc.findAllForUser(currentUser.userId, pagination);
+		// TODO get scope from dto
+		const newsList = await this.newsUc.findAllForUser(
+			currentUser.userId,
+			{ targetId: '59a3ce58a2049554a93fec6e', targetModel: 'courses' },
+			pagination
+		);
 		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
 		return dtoList;
 	}

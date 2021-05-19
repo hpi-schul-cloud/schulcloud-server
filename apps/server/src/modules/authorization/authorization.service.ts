@@ -16,6 +16,7 @@ interface Target {
 }
 
 import CompareHelper = require('../../../../../src/helper/compare'); // TODO move to lib
+import { EntityId } from '../../shared/domain';
 const { equal: equalId } = CompareHelper.ObjectId;
 @Injectable()
 export class AuthorizationService {
@@ -23,6 +24,11 @@ export class AuthorizationService {
 	async hasPermission(userId: Types.ObjectId, permission: Permission, scope: Target): Promise<boolean> {
 		// const permissions =
 		return false;
+	}
+
+	async getUser(userId: EntityId): Promise<any> {
+		const user = await this.feathersServiceProvider.get('users', new Types.ObjectId(userId));
+		return user;
 	}
 
 	async getUserSchoolPermissions(userId: Types.ObjectId, schoolId: Types.ObjectId): Promise<string[]> {

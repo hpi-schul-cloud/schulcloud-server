@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { News } from '../entity/news.entity';
+import { News, NewsTargetModel } from '../entity/news.entity';
 import { PaginationModel } from '../../../shared/core/repo/interface/pagination.interface';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { EntityId } from '../../../shared/domain';
 import { ICreateNews } from '../uc';
-import { Dictionary } from '@mikro-orm/core';
+import { Dictionary, Reference } from '@mikro-orm/core';
+import { INewsScope } from '../uc/news-scope.interface';
 
 @Injectable()
 export class NewsRepo {
@@ -16,16 +17,25 @@ export class NewsRepo {
 		return news;
 	}
 
-	async findAllByUser(userId: EntityId, pagination: PaginationModel = {}): Promise<News[]> {
-		// TODO filter by user scopes
-		const newsList = this.em.find(
-			News,
-			{},
-			{
-				populate: ['school', 'creator', 'updater'],
-				...pagination,
-			}
-		);
+	async findAllBySchoolAndScope(
+		schoolId: EntityId,
+		scope?: INewsScope,
+		pagination: PaginationModel = {}
+	): Promise<News[]> {
+		const subQueries = [];
+
+		subQueries.push({ school: schoolId });
+
+		if (scope != null) {
+			subQueries.push({ $and: [{ target: scope.targetId }, { targetModel: scope.targetModel }] });
+		}
+
+		const query = subQueries.length > 1 ? { $and: subQueries } : subQueries[0];
+
+		const newsList = this.em.find(News, query, {
+			populate: ['school', 'creator', 'updater'],
+			...pagination,
+		});
 		return newsList;
 	}
 

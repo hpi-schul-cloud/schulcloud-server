@@ -1,7 +1,10 @@
-import { Entity, ManyToOne, Property, Reference } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps } from '../../../shared/domain';
+import { AnyEntity, Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { BaseEntity, BaseEntityWithTimestamps } from '../../../shared/domain';
 import { SchoolInfo } from './school-info.entity';
 import { UserInfo } from './user-info.entity';
+
+const NEWS_TARGET_MODELS = ['courses', 'teams', 'class'] as const;
+export type NewsTargetModel = typeof NEWS_TARGET_MODELS[number];
 @Entity()
 export class News extends BaseEntityWithTimestamps {
 	/** the news title */
@@ -25,13 +28,13 @@ export class News extends BaseEntityWithTimestamps {
 	@Property()
 	sourceDescription?: string;
 
-	// /** id reference to a collection */
-	// @ManyToOne()
-	target?: { id: string };
+	/** id reference to a collection */
+	@ManyToOne()
+	target?: BaseEntity;
 
-	// /** name of a collection which is referenced in target */
-	// @Property()
-	targetModel?: string;
+	/** name of a collection which is referenced in target */
+	@Property()
+	targetModel?: NewsTargetModel;
 
 	@ManyToOne({ fieldName: 'schoolId' })
 	school: SchoolInfo;
