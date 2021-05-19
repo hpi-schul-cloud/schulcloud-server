@@ -1,0 +1,21 @@
+name: Publish to GitHub Pages
+
+on:
+  push:
+    # branches:
+    #   - master
+
+jobs:
+  publish-nest-documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v1
+
+      - name: Generate documentation
+        run: npm run nest:doc:build
+
+      - name: Publish generated content to GitHub Pages
+        uses: tsunematsu21/actions-publish-gh-pages@v1.0.1
+        with:
+          dir: documentation
