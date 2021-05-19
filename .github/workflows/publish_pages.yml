@@ -19,3 +19,4 @@ jobs:
         uses: tsunematsu21/actions-publish-gh-pages@v1.0.1
         with:
           dir: documentation
+          branch: gh-pages
