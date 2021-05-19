@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "26.0.11",
+	"version": "26.1.0",
 	"homepage": "https://hpi-schul-cloud.de/",
 	"main": "src/",
 	"keywords": [
@@ -97,7 +97,7 @@
 		"express": "^4.14.0",
 		"express-openapi-validator": "^4.7.0",
 		"feathers-hooks-common": "^5.0.3",
-		"feathers-mongoose": "^8.3.1",
+		"feathers-mongoose": "^6.3.0",
 		"feathers-swagger": "^1.1.0",
 		"file-type": "^14.2.0",
 		"freeport": "^1.0.5",

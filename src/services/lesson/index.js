@@ -20,8 +20,6 @@ module.exports = function setup() {
 			max: 500,
 		},
 		lean: true,
-		multi: true,
-		whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 	};
 
 	app.use('/lessons/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));

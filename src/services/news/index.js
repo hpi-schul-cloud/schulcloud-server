@@ -356,18 +356,19 @@ class NewsService extends AbstractService {
 			query: {
 				displayAt: baseFilter.published,
 				$or: subqueries,
+				$limit: query.$limit,
+				$skip: query.$skip,
 				...NewsService.populateParams().query,
 				...searchFilter,
 				...sortQuery,
 			},
 			paginate: query.$paginate,
 		};
-		if (query.$skip) internalRequestParams.query.$skip = query.$skip;
-		if (query.$limit) internalRequestParams.query.$limit = query.$limit;
-
-		const result = await this.app.service('newsModel').find(internalRequestParams);
-		const decoratedResult = NewsService.decorateResults(result);
-		return this.decoratePermissions(decoratedResult, params.account.userId);
+		return this.app
+			.service('newsModel')
+			.find(internalRequestParams)
+			.then(NewsService.decorateResults)
+			.then((result) => this.decoratePermissions(result, params.account.userId));
 	}
 
 	/**
@@ -474,8 +475,6 @@ module.exports = function news() {
 			Model: newsModel,
 			lean: true,
 			paginate: DEFAULT_PAGINATION_OPTIONS,
-			multi: true,
-			whitelist: [ '$exists', '$elemMatch', '$regex', '$populate', '$skip' ],
 		})
 	);
 	app.service('/newsModel').hooks(newsModelHooks);
