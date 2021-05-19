@@ -33,10 +33,9 @@ Beside existing [scripts](/), for the nestJS application the following scripts h
 
 The documentation is provided by compodoc, run `npm run nest:dev:serve`, check generated compodoc features, custom information can be found in additional information section. Your console will tell you, where it is served.
 
-## Content of apps/server/doc
+## Content
 
-- Naming Conventions
-- Application Layers
+For further reading, browse `apps/server/doc`.
 
 ## Development
 
