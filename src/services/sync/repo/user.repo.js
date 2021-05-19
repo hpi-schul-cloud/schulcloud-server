@@ -35,9 +35,7 @@ const createUser = async (user) => {
 	});
 };
 
-const findUsersByEmail = async (email) => {
-	return userModel.find({ email: email.toLowerCase() }).lean().exec();
-};
+const findUsersByEmail = async (email) => userModel.find({ email: email.toLowerCase() }).lean().exec();
 
 const checkCreate = async (email) => {
 	if (!email) {
@@ -116,8 +114,8 @@ const findByLdapIdAndSchool = async (ldapId, schoolId) =>
 		.lean()
 		.exec();
 
-const findByLdapDnsAndSchool = async (ldapDns, schoolId) => {
-	return userModel
+const findByLdapDnsAndSchool = async (ldapDns, schoolId) =>
+	userModel
 		.find({
 			ldapDn: { $in: ldapDns },
 			schoolId,
@@ -125,7 +123,6 @@ const findByLdapDnsAndSchool = async (ldapDns, schoolId) => {
 		.populate('roles')
 		.lean()
 		.exec();
-};
 
 const UserRepo = {
 	private: { createAccount, createUser, updateAccount },

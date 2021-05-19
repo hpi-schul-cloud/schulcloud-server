@@ -157,7 +157,7 @@ const isRabbitMqAvailable = (result) => {
 };
 
 // the call should be with function, otherwise 'this' will not be available
-describe('Ldap Sync Integration', function test() {
+describe('Ldap Sync Integration', function testSuite() {
 	this.timeout(20000);
 	let app;
 	let server;
@@ -274,7 +274,7 @@ describe('Ldap Sync Integration', function test() {
 		return users.filter((user) => expectedTeachersLdapDns.includes(user.ldapDn)).map((user) => user._id.toString());
 	};
 
-	it('should create classes from ldap sync', async function () {
+	it('should create classes from ldap sync', async function test() {
 		const schools = await createTestSchools(system);
 		const users = await createTestUsers(schools);
 		const options = {

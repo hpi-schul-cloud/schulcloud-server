@@ -18,6 +18,7 @@ describe('Base Actions', () => {
 			this.filterActive = filterActive;
 		}
 
+		// eslint-disable-next-line no-unused-vars
 		async action(data = {}) {
 			throw new BadRequest(`Expected error`);
 		}

@@ -43,6 +43,7 @@ class BaseConsumerAction {
 	 * @param {object} data
 	 * @returns {Promise}
 	 */
+	// eslint-disable-next-line no-unused-vars
 	async action(data = {}) {
 		throw new NotImplemented('Must be implemented');
 	}
@@ -63,7 +64,6 @@ class BaseConsumerAction {
 	 */
 	async exec({ action, data, syncId } = {}) {
 		if (!this.matchType(action)) {
-			// return Promise.resolve();
 			throw new BadRequest(`The ${action} is not the supported message action.`);
 		}
 
