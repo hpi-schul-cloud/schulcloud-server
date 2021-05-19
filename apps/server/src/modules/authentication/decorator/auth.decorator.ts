@@ -15,8 +15,12 @@ import { ICurrentUser } from '../interface/jwt-payload';
  * @returns
  */
 export function Authenticate(...strategies: ['jwt']) {
-	// if (strategies.includes('jwt'))
-	return applyDecorators(UseGuards(JwtAuthGuard), ApiBearerAuth());
+	return applyDecorators(
+		// apply jwt authentication
+		UseGuards(JwtAuthGuard),
+		// add jwt authentication to openapi spec
+		ApiBearerAuth()
+	);
 }
 
 /**

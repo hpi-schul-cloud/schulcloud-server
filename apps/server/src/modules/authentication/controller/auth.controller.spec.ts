@@ -5,7 +5,6 @@ import { UsersModule } from '../../user/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from '../auth.service';
 import { jwtOptionsProvider } from '../jwt-options.provider';
-import { LocalStrategy } from '../strategy/local.strategy';
 
 describe('AuthController', () => {
 	let controller: AuthController;
@@ -14,7 +13,7 @@ describe('AuthController', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [UsersModule, PassportModule],
 			controllers: [AuthController],
-			providers: [AuthService, LocalStrategy, JwtService, jwtOptionsProvider],
+			providers: [AuthService, JwtService, jwtOptionsProvider],
 		}).compile();
 
 		controller = module.get<AuthController>(AuthController);
