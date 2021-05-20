@@ -42,7 +42,7 @@ test/ // e2e tests against controllers should use same folder names like control
 
 ```
 
-For concepts (see https://docs.nestjs.com/first-steps) of NestJS put implementations in shared/core. You might use shared/utils for own solutions, assume TextUtils but when it contains text validators, move it better to shared/core/validators/text.validator.ts before merge. The core concepts of NestJS can be extended with ours (like repo).
+For concepts (see https://docs.nestjs.com/first-steps) of NestJS put implementations in shared/core. You might use shared/utils for own solutions, assume TextUtils but when it contains text validators, move it better to shared/validators/text.validator.ts before merge. The core concepts of NestJS can be extended with ours (like repo).
 
 ## Layers
 

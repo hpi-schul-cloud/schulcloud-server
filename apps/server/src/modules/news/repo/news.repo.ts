@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { News, NewsTargetModel } from '../entity/news.entity';
-import { PaginationModel } from '../../../shared/core/repo/interface/pagination.interface';
+import { PaginationModel } from '../../../shared/repo/interface/pagination.interface';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { EntityId } from '../../../shared/domain';
 import { ICreateNews } from '../uc';
