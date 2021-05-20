@@ -18,9 +18,11 @@ import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 		UsersModule,
 		NewsModule,
 		TaskModule,
-		MongooseModule.forRoot(DB_URL),
+		// TODO remove mongoose
+		MongooseModule.forRoot(DB_URL, {}),
 		MikroOrmModule.forRoot({
 			type: 'mongo',
+			// TODO add mongoose options as mongo options (see database.js)
 			clientUrl: DB_URL,
 			entities: [News, SchoolInfo, UserInfo, Task, Lesson, Course, Submission],
 			findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
