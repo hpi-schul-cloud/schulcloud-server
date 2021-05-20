@@ -14,6 +14,7 @@
 - find the best way ORM entity discovery
 - decide where to put domain interfaces (directory)
 - how can we log validation errors during development?
+- sanitizer
 
 ## ACCEPTED
 
@@ -22,9 +23,6 @@ ceev: ?
 - check build & start for production with ops
 - load/perf test
 
-tobi:
-
-- 404 error handling in feathers has to be replaced (tests too). better: have nest before feathers... but seems not to be working
 - disable legacy ts support (app, tests)
 
 - fix .env/config for windows
@@ -32,16 +30,19 @@ tobi:
 
 ## SELECTED
 
+- custom error handling (log/response)
 - db configuration
   - keep mongoose options as mongo options
   - povider for mikroorm options and db url
   - test db provider
   - entity discovery
+  - check indexes in mikroorm: when are they updated?
 - news
   - uc cleanup: 2auth, visibilities
 
 ## DONE
 
+- 404 error handling in feathers has to be replaced (tests too). better: have nest before feathers... but seems not to be working
 - remove mongoose
 - publish documentation, see https://hpi-schul-cloud.github.io/schulcloud-server/overview.html
 - fix all tests (nest/legacy)
