@@ -1,3 +1,4 @@
+import { EntityManager } from '@mikro-orm/mongodb';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { News } from '../entity/news.entity';
@@ -11,7 +12,7 @@ describe('NewsRepoService', () => {
 			providers: [
 				NewsRepo,
 				{
-					provide: getModelToken(News.name),
+					provide: EntityManager,
 					useValue: {},
 				},
 			],

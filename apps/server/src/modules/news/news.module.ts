@@ -1,17 +1,15 @@
 import { Module } from '@nestjs/common';
-import { NewsService } from './news.service';
+import { NewsUc } from './uc/news.uc';
 import { NewsRepo } from './repo/news.repo';
 import { NewsController } from './controller/news.controller';
-import { NewsSchema } from './repo/schema/news.schema';
-import { MongooseModule } from '@nestjs/mongoose';
 import { AuthorizationModule } from '../authorization/authorization.module';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { News, SchoolInfo, UserInfo } from './entity';
 
 @Module({
-	imports: [MongooseModule.forFeature([{ name: 'News', schema: NewsSchema }]), AuthorizationModule],
-	controllers: [
-		/*NewsController*/
-	],
-	providers: [NewsService, NewsRepo],
-	exports: [NewsService],
+	imports: [AuthorizationModule],
+	controllers: [/* NewsController */],
+	providers: [NewsUc, NewsRepo],
+	exports: [NewsUc],
 })
 export class NewsModule {}

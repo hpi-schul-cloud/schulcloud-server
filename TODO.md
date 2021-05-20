@@ -3,6 +3,18 @@
 ## SUGGESTED
 
 - disable Document from window
+- find a name for base entity id type
+- find a name for base entity class
+- decide if we want to use our entity id type in all layers (also in dtos etc.)
+- use index.ts files to bundle exports - we could use path names for imports then, e.g. @shared/domain
+- naming of dtos and dto-files: api vs domain, maybe we can leave out "dto" suffix because we know that they are dtos
+  e.g.
+  api: <CreatNewsParams, create-news.params.ts>, <NewsResponse, news.response.ts>
+  domain: <CreateNews[Vo|Input], create-news.[vo|input].ts>, <News, news.entity.ts>
+- check how we can implement mandatory/optional fields in dtos
+- should we use Expose() as default in dtos?
+- find the best way to configure all entities in the ORM
+- how can we log validation errors during development?
 
 ## ACCEPTED
 

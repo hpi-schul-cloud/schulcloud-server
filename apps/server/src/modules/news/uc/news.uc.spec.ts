@@ -1,16 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NewsController } from './news.controller';
-import { NewsRepo } from '../repo/news.repo';
 import { AuthorizationService } from '../../authorization/authorization.service';
 import { FeathersServiceProvider } from '../../authorization/feathers-service.provider';
-import { NewsUc } from '../uc';
+import { NewsRepo } from '../repo/news.repo';
+import { NewsUc } from './news.uc';
 
-describe('NewsController', () => {
-	let controller: NewsController;
+describe('NewsUc', () => {
+	let service: NewsUc;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			controllers: [NewsController],
 			providers: [
 				NewsUc,
 				{
@@ -22,10 +20,10 @@ describe('NewsController', () => {
 			],
 		}).compile();
 
-		controller = module.get<NewsController>(NewsController);
+		service = module.get<NewsUc>(NewsUc);
 	});
 
 	it('should be defined', () => {
-		expect(controller).toBeDefined();
+		expect(service).toBeDefined();
 	});
 });

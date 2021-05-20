@@ -1,29 +1,33 @@
-import { Expose } from 'class-transformer';
-import { WithTimeStampBaseEntity } from '../../../shared/core/repo';
-import { Document } from 'mongoose';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { BaseEntityWithTimestamps } from '../../../shared/domain';
+import { Course } from './course.entity';
+import { Lesson } from './lesson.entity';
 
-export class Task extends WithTimeStampBaseEntity {
-	constructor(partial: Partial<Task>) {
-		super();
-		Object.assign(this, partial);
-	}
-
-	@Expose()
+@Entity({ tableName: 'homeworks' })
+export class Task extends BaseEntityWithTimestamps {
+	@Property()
 	name: string;
-	@Expose()
-	duedate: Date;
-	@Expose()
-	courseName: string;
-	@Expose()
-	displayColor: string;
-	@Expose()
-	id: string;
+	@Property()
+	dueDate?: Date;
+	@Property()
+	private?: boolean;
+
+	@ManyToOne({ fieldName: 'courseId' })
+	course: Course;
+	@ManyToOne({ fieldName: 'lessonId' })
+	lesson?: Lesson;
+
+	constructor() {
+		super();
+	}
 }
 
-type ITaskModel = {
-	courseId: { name: string; color: string };
-	dueDate: Date;
+export class ITaskMetadata extends BaseEntityWithTimestamps {
 	name: string;
-};
 
-export type ITask = Document & ITaskModel & WithTimeStampBaseEntity;
+	duedate: Date;
+
+	courseName: string;
+
+	displayColor: string;
+}

@@ -1,15 +1,17 @@
-import { Expose } from "class-transformer";
-import { WithTimeStampBaseEntity } from "../../../shared/core/repo";
-import { Document } from 'mongoose';
+import { Collection, Entity, ManyToMany, Property } from '@mikro-orm/core';
+import { UserInfo } from '../../news/entity';
+import { BaseEntityWithTimestamps } from '../../../shared/domain';
 
-export class Course extends WithTimeStampBaseEntity {
+@Entity({ tableName: 'courses' })
+export class Course extends BaseEntityWithTimestamps {
 	constructor(partial: Partial<Course>) {
 		super();
 		Object.assign(this, partial);
 	}
-
-	name: string
-	color: string
+	@Property()
+	name: string;
+	@Property()
+	color: string;
+	@ManyToMany({ fieldName: 'userIds', type: UserInfo })
+	students = new Collection<UserInfo>(this);
 }
-
-export type ICourse = Document & Course;
