@@ -39,6 +39,7 @@ ceev: ?
   - check indexes in mikroorm: when are they updated?
 - news
   - uc cleanup: 2auth, visibilities
+- context: user-/request-context (see mikroorm/asynclocalstorage)
 
 ## DONE
 
