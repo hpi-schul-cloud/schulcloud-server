@@ -19,7 +19,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8873 - Add prioritization for Matrix messenger tasks
 - SC-8982 - add inital service ressource messuring test setup
 - SC-9004 - Sync env variables between backend and frontend
-- OPS-1499 - Add feature to CI Pipeline and provide team based HPI Schul-Cloud instances
+- OPS-1499 - Add feature to CI Pipeline and provide manual deployments of branches
+- Add run script for sync indexes based on existing and registered schemas.
 
 
 ### Changed
