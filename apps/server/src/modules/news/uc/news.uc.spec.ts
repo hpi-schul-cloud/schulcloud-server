@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationService } from '../../authorization/authorization.service';
 import { FeathersServiceProvider } from '../../authorization/feathers-service.provider';
+import { LoggerModule } from '../../logger/logger.module';
 import { NewsRepo } from '../repo/news.repo';
 import { NewsUc } from './news.uc';
 
@@ -9,6 +10,7 @@ describe('NewsUc', () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
+			imports: [LoggerModule],
 			providers: [
 				NewsUc,
 				{
