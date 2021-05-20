@@ -16,16 +16,34 @@
 
 ## ACCEPTED
 
+ceev: ?
+
 - check build & start for production with ops
 - load/perf test
+
+tobi:
+
 - 404 error handling in feathers has to be replaced (tests too). better: have nest before feathers... but seems not to be working
 - disable legacy ts support (app, tests)
-- fix all tests (nest/legacy)
+
 - fix .env/config for windows
 - watch docs should hot reload on md file change
 
+## SELECTED
+
+- db configuration
+  - keep mongoose options as mongo options
+  - povider for mikroorm options and db url
+  - test db provider
+  - entity discovery
+- news
+  - uc cleanup: 2auth, visibilities
+
 ## DONE
 
+- remove mongoose
+- publish documentation, see https://hpi-schul-cloud.github.io/schulcloud-server/overview.html
+- fix all tests (nest/legacy)
 - remove legacy scripts from package json (except tests) goal: have separated tests (legacy/nest) but only execute the nest app
 - using legacy database connection string
 - v3 with/-out slash: diffenrent routes should respond with different result (/v3 is a resssource, /v3/ === /v3/index)
