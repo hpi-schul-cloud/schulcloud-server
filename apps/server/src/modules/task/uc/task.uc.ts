@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ICurrentUser } from '../../authentication/interface/jwt-payload';
 import { ITaskOption, EntityId, ITaskMetadata } from '../entity';
 import { TaskRepo } from '../repo/task.repo';
 
