@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityId, IPagination } from '../../../shared/domain';
 import { AuthorizationService } from '../../authorization/authorization.service';
+import { ServerLogger } from '../../logger/logger.service';
 import { News, SchoolInfo } from '../entity';
 import { NewsRepo } from '../repo/news.repo';
 import { ICreateNews } from './create-news.interface';
@@ -13,7 +14,13 @@ type AuthorizationSubject = { school?: SchoolInfo; targetModel?: string; target?
 
 @Injectable()
 export class NewsUc {
-	constructor(private newsRepo: NewsRepo, private authorizationService: AuthorizationService) {}
+	constructor(
+		private newsRepo: NewsRepo,
+		private authorizationService: AuthorizationService,
+		private logger: ServerLogger
+	) {
+		this.logger.setContext(NewsUc.name);
+	}
 
 	async create(userId: EntityId, params: ICreateNews): Promise<News> {
 		// TODO add school reference (implicit)
@@ -29,6 +36,7 @@ export class NewsUc {
 		// 		getAuthorizedEntities(userId, 'Course', 'NEWS_READ'): EntityId[]
 		// 3. user, resource (by id)
 		// 		getPermissions(userId, 'Course', courseId)
+		this.logger.log(`start find all news for user ${userId}`);
 		const user = await this.authorizationService.getUser(userId);
 
 		const newsList = await this.newsRepo.findAllBySchoolAndScope(user.schoolId.toString(), scope, pagination);
@@ -38,6 +46,7 @@ export class NewsUc {
 				// await this.authorizeUserReadNews(news, userId);
 			})
 		);
+		this.logger.log(`return ${newsList.length} news for user ${userId}`);
 		return newsList;
 	}
 

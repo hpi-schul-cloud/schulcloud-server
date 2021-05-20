@@ -12,6 +12,10 @@
 				"file": "architecture-mapping.md"
 			},
 			{
+				"title": "Cross-cutting concerns",
+				"file": "cross-cutting-concerns.md"
+			},
+			{
 				"title": "Code Conventions",
 				"file": "conventions.md"
 			},

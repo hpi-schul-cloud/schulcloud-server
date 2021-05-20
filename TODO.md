@@ -2,6 +2,7 @@
 
 ## SUGGESTED
 
+- filter logs by request with reflect-metadata (see mikroorm em setup)
 - disable Document from window
 - find a name for base entity id type
 - find a name for base entity class
@@ -13,19 +14,39 @@
 - find the best way ORM entity discovery
 - decide where to put domain interfaces (directory)
 - how can we log validation errors during development?
+- sanitizer
 
 ## ACCEPTED
 
+ceev: ?
+
 - check build & start for production with ops
 - load/perf test
-- 404 error handling in feathers has to be replaced (tests too). better: have nest before feathers... but seems not to be working
+
 - disable legacy ts support (app, tests)
-- fix all tests (nest/legacy)
+
 - fix .env/config for windows
 - watch docs should hot reload on md file change
 
+## SELECTED
+
+- custom error handling (log/response)
+- db configuration
+  - keep mongoose options as mongo options
+  - povider for mikroorm options and db url
+  - test db provider
+  - entity discovery
+  - check indexes in mikroorm: when are they updated?
+- news
+  - uc cleanup: 2auth, visibilities
+- context: user-/request-context (see mikroorm/asynclocalstorage)
+
 ## DONE
 
+- 404 error handling in feathers has to be replaced (tests too). better: have nest before feathers... but seems not to be working
+- remove mongoose
+- publish documentation, see https://hpi-schul-cloud.github.io/schulcloud-server/overview.html
+- fix all tests (nest/legacy)
 - remove legacy scripts from package json (except tests) goal: have separated tests (legacy/nest) but only execute the nest app
 - using legacy database connection string
 - v3 with/-out slash: diffenrent routes should respond with different result (/v3 is a resssource, /v3/ === /v3/index)

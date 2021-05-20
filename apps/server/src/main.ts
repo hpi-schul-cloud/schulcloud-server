@@ -3,11 +3,13 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
+// register source-map-support for debugging
 import { install } from 'source-map-support';
-install(); // TODO register source-map-support to
+install();
 
+// application imports
 import legacyAppPromise = require('../../../src/app');
-
+import { ServerLogger } from './modules/logger/logger.service';
 import { ServerModule } from './server.module';
 
 const ROUTE_PRAEFIX = 'v3';
@@ -21,7 +23,10 @@ async function bootstrap() {
 	await legacyApp.setup();
 
 	// create the NestJS application adapting the legacy  server
-	const app = await NestFactory.create(ServerModule, adapter);
+	const app = await NestFactory.create(ServerModule, adapter, {});
+
+	// switch logger
+	app.useLogger(new ServerLogger());
 
 	// for all NestJS controller routes, prepend ROUTE_PRAEFIX
 	app.setGlobalPrefix(ROUTE_PRAEFIX);
