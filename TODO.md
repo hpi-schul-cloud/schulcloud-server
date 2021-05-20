@@ -2,6 +2,7 @@
 
 ## SUGGESTED
 
+- filter logs by request with reflect-metadata (see mikroorm em setup)
 - disable Document from window
 - find a name for base entity id type
 - find a name for base entity class
