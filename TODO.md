@@ -31,6 +31,7 @@ ceev: ?
 
 ## SELECTED
 
+- inject APP_FILTER (exception handler) and APP_INTERCEPTOR (logger)
 - custom error handling (log/response)
 - db configuration
   - keep mongoose options as mongo options
