@@ -15,6 +15,7 @@
 - decide where to put domain interfaces (directory)
 - how can we log validation errors during development?
 - sanitizer
+- remove non-node async library
 
 ## ACCEPTED
 
