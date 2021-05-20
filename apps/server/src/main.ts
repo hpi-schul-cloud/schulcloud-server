@@ -11,6 +11,7 @@ install();
 import legacyAppPromise = require('../../../src/app');
 import { ServerLogger } from './modules/logger/logger.service';
 import { ServerModule } from './server.module';
+import { DurationLoggingInterceptor } from './shared/interceptor/duration-logging.interceptor';
 
 const ROUTE_PRAEFIX = 'v3';
 const API_PATH = 'api';
@@ -61,7 +62,7 @@ async function bootstrap() {
 	 * the class-validator decorators to extend
 	 * validation.
 	 */
-	app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+	app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)), new DurationLoggingInterceptor());
 
 	/** *********************************************
 	 * OpenAPI docs setup
