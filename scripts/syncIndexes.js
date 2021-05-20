@@ -12,10 +12,10 @@ const extractIndexFromModel = ([modelName, model]) => [modelName, model.schema._
 const formatToLog = (data) => util.inspect(data, { depth: 5, compact: true, breakLength: 120 });
 
 appPromise
-	.then((app) => {
+	.then(async (app) => {
 		console.log('start syncIndexes..');
 		const models = getModels();
-		models.forEach(syncIndex);
+		await Promise.all(models.map(m => syncIndex(m)))
 		const indexes = models.map(extractIndexFromModel);
 		console.log('list all indexes \n', formatToLog(indexes));
 		console.log('..finished!');
