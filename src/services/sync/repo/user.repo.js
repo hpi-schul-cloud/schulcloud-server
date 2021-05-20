@@ -43,10 +43,11 @@ const checkCreate = async (email) => {
 	}
 	const users = await findUsersByEmail(email);
 	if (users.length !== 0) {
-		const userExistsInSchool = users[0].schoolId;
+		const foundUser = users[0];
+		const userExistsInSchool = foundUser.schoolId;
 		throw new BadRequest(
 			`User cannot be created. User with the same email already exists in school ${userExistsInSchool}`,
-			{ email }
+			{ userId: foundUser._id, existsInSchool: userExistsInSchool }
 		);
 	}
 };
@@ -67,7 +68,6 @@ const checkUpdate = async (email, userId) => {
 		User with the same email already exists in school ${userExistsInSchool}`,
 			{
 				userId,
-				email,
 				existsInSchool: userExistsInSchool,
 			}
 		);

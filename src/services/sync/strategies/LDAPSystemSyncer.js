@@ -62,8 +62,10 @@ class LDAPSystemSyncer extends Syncer {
 			}
 		};
 		const poolSize = Configuration.get('LDAP_SYSTEM_SYNCER_POOL_SIZE');
-		this.logger.info(`Running LDAP system sync with pool size ${poolSize}`);
-		await asyncPool(poolSize, systems, nextSystemSync);
+		if (systems.length > 0) {
+			this.logger.info(`Running LDAP system sync with pool size ${poolSize}`);
+			await asyncPool(poolSize, systems, nextSystemSync);
+		}
 		return this.stats;
 	}
 
@@ -72,7 +74,11 @@ class LDAPSystemSyncer extends Syncer {
 			.service('systems')
 			.find({ query: { type: 'ldap', 'ldapConfig.active': true }, paginate: false })
 			.then((systems) => {
-				this.logInfo(`Found ${systems.length} LDAP configurations.`);
+				if (systems.length === 0) {
+					this.logger.error('No LDAP configurations were found.');
+				} else {
+					this.logInfo(`Found ${systems.length} LDAP configurations.`);
+				}
 				return systems;
 			});
 	}
