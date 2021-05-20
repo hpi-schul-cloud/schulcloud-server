@@ -14,12 +14,12 @@ In file names, we use lowercase and minus in the beginning and end with `.<conce
 
 ### Samples
 
-| File name               | Class name        | Concept    | Location               |
-| ----------------------- | ----------------- | ---------- | ---------------------- |
-| login-user.uc.ts        | LoginUserUc       | use case   | module/uc              |
-| text.validator.ts       | TextValidator     | validator  | shared/core/validators |
-| user.repo.ts            | UserRepo          | repository | module/repo            |
-| parse-object-id.pipe.ts | ParseObjectIdPipe | pipe       | shared/core/pipes      |
+| File name               | Class name        | Concept    | Location          |
+| ----------------------- | ----------------- | ---------- | ----------------- |
+| login-user.uc.ts        | LoginUserUc       | use case   | module/uc         |
+| text.validator.ts       | TextValidator     | validator  | shared/validators |
+| user.repo.ts            | UserRepo          | repository | module/repo       |
+| parse-object-id.pipe.ts | ParseObjectIdPipe | pipe       | shared/pipes      |
 
 ## Programming Conventions
 
