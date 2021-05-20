@@ -23,6 +23,12 @@ export class NewsUc {
 	}
 
 	async findAllForUser(userId: EntityId, scope?: INewsScope, pagination?: IPagination): Promise<News[]> {
+		// 1. isAuthorized(userId, schoolId, 'NEWS_READ')
+		// 2. user, resource, permission
+		// 		yields list of ids
+		// 		getAuthorizedEntities(userId, 'Course', 'NEWS_READ'): EntityId[]
+		// 3. user, resource (by id)
+		// 		getPermissions(userId, 'Course', courseId)
 		const user = await this.authorizationService.getUser(userId);
 
 		const newsList = await this.newsRepo.findAllBySchoolAndScope(user.schoolId.toString(), scope, pagination);
