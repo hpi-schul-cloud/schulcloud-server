@@ -6,7 +6,11 @@ import { EntityId } from '../../../shared/domain';
 import { ICreateNews } from '../uc';
 import { Dictionary, Reference } from '@mikro-orm/core';
 import { INewsScope } from '../uc/news-scope.interface';
-
+import { targetModels } from '../../../../../../src/services/news/constants';
+export interface NewsTarget {
+	targetModel: NewsTargetModel;
+	targetIds: EntityId[];
+}
 @Injectable()
 export class NewsRepo {
 	constructor(private readonly em: EntityManager) {}
@@ -17,18 +21,26 @@ export class NewsRepo {
 		return news;
 	}
 
-	async findAllBySchoolAndScope(
-		schoolId: EntityId,
-		scope?: INewsScope,
-		pagination: PaginationModel = {}
-	): Promise<News[]> {
+	findAllBySchool(schoolId: EntityId, pagination: PaginationModel = {}): Promise<News[]> {
+		const query = { $and: [{ school: schoolId }, { $and: [{ targetModel: null }, { target: null }] }] };
+
+		const newsList = this.em.find(News, query, {
+			populate: ['school', 'creator', 'updater'],
+			...pagination,
+		});
+		return newsList;
+	}
+
+	async findAllByTargets(schoolId: EntityId, targets: NewsTarget[], pagination: PaginationModel = {}): Promise<News[]> {
 		const subQueries = [];
 
 		subQueries.push({ school: schoolId });
 
-		if (scope != null) {
-			subQueries.push({ $and: [{ target: scope.targetId }, { targetModel: scope.targetModel }] });
-		}
+		const targetSubQuery = targets.map((target) => {
+			$and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }];
+		});
+
+		subQueries.push(...targetSubQuery);
 
 		const query = subQueries.length > 1 ? { $and: subQueries } : subQueries[0];
 

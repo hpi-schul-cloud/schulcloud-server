@@ -3,7 +3,7 @@ import { BaseEntity, BaseEntityWithTimestamps } from '../../../shared/domain';
 import { SchoolInfo } from './school-info.entity';
 import { UserInfo } from './user-info.entity';
 
-const NEWS_TARGET_MODELS = ['courses', 'teams', 'class'] as const;
+const NEWS_TARGET_MODELS = ['courses', 'teams'] as const;
 export type NewsTargetModel = typeof NEWS_TARGET_MODELS[number];
 @Entity()
 export class News extends BaseEntityWithTimestamps {

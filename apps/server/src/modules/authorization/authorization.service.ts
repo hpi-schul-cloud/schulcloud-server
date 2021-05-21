@@ -1,39 +1,31 @@
-import {
-	ImATeapotException,
-	Injectable,
-	NotFoundException,
-	UnauthorizedException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
-import { Types } from 'mongoose';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { FeathersServiceProvider } from './feathers-service.provider';
 
 type Permission = 'foo' | 'bar';
 type Model = 'school' | 'course' | 'team'; // TODO use it
 interface Target {
-	targetId: Types.ObjectId;
+	targetId: EntityId;
 	targetModel: string;
 }
 
 import CompareHelper = require('../../../../../src/helper/compare'); // TODO move to lib
 import { EntityId } from '../../shared/domain';
+import { NewsTargetModel } from '../news/entity';
 const { equal: equalId } = CompareHelper.ObjectId;
 @Injectable()
 export class AuthorizationService {
 	constructor(private feathersServiceProvider: FeathersServiceProvider) {}
-	async hasPermission(userId: Types.ObjectId, permission: Permission, scope: Target): Promise<boolean> {
-		// const permissions =
-		return false;
-	}
 
-	async getUser(userId: EntityId): Promise<any> {
-		const user = await this.feathersServiceProvider.get('users', new Types.ObjectId(userId));
-		return user;
-	}
-
-	async getUserSchoolPermissions(userId: Types.ObjectId, schoolId: Types.ObjectId): Promise<string[]> {
+	/**
+	 * Get all permissions of a user for a school
+	 * @param userId
+	 * @param schoolId
+	 * @returns
+	 * @throws NotFoundException if the user doesn't exist
+	 */
+	async getUserSchoolPermissions(userId: EntityId, schoolId: EntityId): Promise<string[]> | never {
 		const user = await this.feathersServiceProvider.get('users', userId);
-		if (user == null) throw new NotFoundException(); // user not null
+		if (user == null) throw new NotFoundException();
 
 		// test user is school member
 		const sameSchool = equalId(schoolId, user.schoolId);
@@ -43,7 +35,56 @@ export class AuthorizationService {
 		return [];
 	}
 
-	async getUserPermissions(userId: Types.ObjectId, target: Target): Promise<string[]> {
+	/**
+	 * Check permissions of a user for a school
+	 * @param userId
+	 * @param schoolId
+	 * @param permissions
+	 * @returns
+	 * @throws NotFoundException if the user doesn't exist
+	 * 				 UnauthorizedException if the user doesn't have the specified permissions
+	 */
+	async checkUserSchoolPermissions(userId: EntityId, schoolId: EntityId, permissions: string[]): Promise<void> | never {
+		const userSchoolPermissions = await this.getUserSchoolPermissions(userId, schoolId);
+		const hasPermissions = permissions.every((p) => userSchoolPermissions.includes(p));
+
+		if (hasPermissions === false) {
+			// TODO decide wether to throw or return boolean
+			// TODO provide more error information
+			throw new UnauthorizedException('Insufficient permissions');
+		}
+	}
+
+	/**
+	 *
+	 * @param userId
+	 * @param targetModel
+	 * @param permissions
+	 */
+	async getPermittedTargets(
+		userId: EntityId,
+		targetModel: NewsTargetModel,
+		permissions: string[]
+	): Promise<EntityId[]> {
+		const targets = await this.feathersServiceProvider.find(`/users/:scopeId/${targetModel}`, {
+			route: { scopeId: userId.toString() },
+			query: {
+				permissions: permissions,
+			},
+			paginate: false,
+		});
+		return targets.map((item) => item._id.toString());
+	}
+
+	/**
+	 *
+	 * @param userId
+	 * @param targetModel
+	 * @param targetId
+	 */
+	// async getTartgetPermissions(userId: EntityId, targetModel: NewsTargetModel, targetId: EntityId): Promise<string[]> {}
+
+	async getUserPermissions(userId: EntityId, target: Target): Promise<string[]> {
 		const params = { route: { scopeId: target.targetId } };
 		if (target.targetModel === 'school') {
 			const schoolPermissions = await this.getUserSchoolPermissions(userId, target.targetId);

@@ -1,9 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityId, IPagination } from '../../../shared/domain';
+import { PaginationModel } from '../../../shared/repo';
 import { AuthorizationService } from '../../authorization/authorization.service';
 import { ServerLogger } from '../../logger/logger.service';
-import { News, SchoolInfo } from '../entity';
-import { NewsRepo } from '../repo/news.repo';
+import { News, NewsTargetModel, SchoolInfo } from '../entity';
+import { NewsRepo, NewsTarget } from '../repo/news.repo';
 import { ICreateNews } from './create-news.interface';
 import { INewsScope } from './news-scope.interface';
 import { IUpdateNews } from './update-news.interface';
@@ -29,7 +30,20 @@ export class NewsUc {
 		return news;
 	}
 
-	async findAllForUser(userId: EntityId, scope?: INewsScope, pagination?: IPagination): Promise<News[]> {
+	/**
+	 *
+	 * @param userId
+	 * @param schoolId
+	 * @param scope
+	 * @param pagination
+	 * @returns
+	 */
+	async findAllForUserAndSchool(
+		userId: EntityId,
+		schoolId: EntityId,
+		scope?: INewsScope,
+		pagination?: IPagination
+	): Promise<News[]> {
 		// 1. isAuthorized(userId, schoolId, 'NEWS_READ')
 		// 2. user, resource, permission
 		// 		yields list of ids
@@ -37,24 +51,56 @@ export class NewsUc {
 		// 3. user, resource (by id)
 		// 		getPermissions(userId, 'Course', courseId)
 		this.logger.log(`start find all news for user ${userId}`);
-		const user = await this.authorizationService.getUser(userId);
 
-		const newsList = await this.newsRepo.findAllBySchoolAndScope(user.schoolId.toString(), scope, pagination);
+		await this.authorizationService.checkUserSchoolPermissions(userId, schoolId, ['NEWS_VIEW']);
+
+		let newsList: News[];
+
+		// only permitted school news (no targets)
+		if (scope.targetModel === 'school') {
+			newsList = await this.newsRepo.findAllBySchool(schoolId, pagination);
+		} else {
+			// include all targets if scope is not given
+			// filter by specific target otherwise
+			const targetModels = scope == null ? ['courses', 'teams'] : [scope.targetModel];
+			const targets = await this.getPermittedTargets(userId, targetModels as NewsTargetModel[]);
+			newsList = await this.newsRepo.findAllByTargets(schoolId, targets, pagination);
+		}
+
 		await Promise.all(
 			newsList.map(async (news: News) => {
 				await this.decoratePermissions(news, userId);
-				// await this.authorizeUserReadNews(news, userId);
 			})
 		);
 		this.logger.log(`return ${newsList.length} news for user ${userId}`);
 		return newsList;
 	}
 
+	/**
+	 *
+	 * @param newsId
+	 * @param userId
+	 * @returns
+	 */
 	async findOneByIdForUser(newsId: EntityId, userId: EntityId): Promise<News> {
 		const news = await this.newsRepo.findOneById(newsId);
 		await this.decoratePermissions(news, userId);
 		// await this.authorizeUserReadNews(news, userId);
 		return news;
+	}
+
+	private async getPermittedTargets(userId: EntityId, targetModels: NewsTargetModel[]): Promise<NewsTarget[]> {
+		const targets = await Promise.all(
+			targetModels.map(async (targetModel) => {
+				return {
+					targetModel: targetModel as NewsTargetModel,
+					targetIds: await this.authorizationService.getPermittedTargets(userId, targetModel as NewsTargetModel, [
+						'NEWS_VIEW',
+					]),
+				};
+			})
+		);
+		return targets;
 	}
 
 	private async decoratePermissions(news: News, userId: EntityId) {
@@ -91,8 +137,6 @@ export class NewsUc {
 	}
 
 	async getUserPermissionsForSubject(userId: EntityId, subject: AuthorizationSubject): Promise<string[]> {
-		// TODO figure out hoe we can handle targetModel/target in ORM
-
 		// detect scope of subject
 		// let scope: Target;
 		// if ('targetModel' in subject && subject.targetModel && 'target' in subject && subject.target) {

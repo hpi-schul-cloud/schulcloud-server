@@ -27,8 +27,9 @@ export class NewsController {
 		@Query() pagination: PaginationQuery
 	): Promise<NewsResponse[]> {
 		// TODO get scope from dto
-		const newsList = await this.newsUc.findAllForUser(
+		const newsList = await this.newsUc.findAllForUserAndSchool(
 			currentUser.userId,
+			currentUser.schoolId,
 			{ targetId: '59a3ce58a2049554a93fec6e', targetModel: 'courses' },
 			pagination
 		);
