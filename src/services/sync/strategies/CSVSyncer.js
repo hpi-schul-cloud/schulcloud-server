@@ -6,7 +6,6 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const Syncer = require('./Syncer');
 const ClassImporter = require('./mixins/ClassImporter');
-const { SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
 const { equal } = require('../../../helper/compare').ObjectId;
 
 const ATTRIBUTES = [
@@ -363,17 +362,17 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 			if (user && user.email && user.schoolId && user.shortLink) {
 				await this.app.service('mails').create({
 					email: user.email,
-					subject: `Einladung für die Nutzung der ${SC_TITLE}!`,
+					subject: `Einladung für die Nutzung der ${Configuration.get('SC_TITLE')}!`,
 					headers: {},
 					content: {
 						text:
-							`Einladung in die ${SC_TITLE}\n` +
+							`Einladung in die ${Configuration.get('SC_TITLE')}\n` +
 							`Hallo ${user.firstName} ${user.lastName}!\n\n` +
-							`Du wurdest eingeladen, der ${SC_TITLE} beizutreten, ` +
+							`Du wurdest eingeladen, der ${Configuration.get('SC_TITLE')} beizutreten, ` +
 							'bitte vervollständige deine Registrierung unter folgendem Link: ' +
 							`${user.shortLink}\n\n` +
 							'Viel Spaß und einen guten Start wünscht dir dein ' +
-							`${SC_SHORT_TITLE}-Team`,
+							`${Configuration.get('SC_SHORT_TITLE')}-Team`,
 					},
 				});
 				this.stats.invitations.successful += 1;

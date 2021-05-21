@@ -1,11 +1,11 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { BadRequest } = require('../../../errors');
 
 const { restrictToCurrentSchool, denyIfNotCurrentSchoolOrEmpty, hasPermission } = require('../../../hooks');
 
-const globals = require('../../../../config/globals');
 const { isSuperheroUser } = require('../../../helper/userHelpers');
 
 const {
@@ -48,7 +48,7 @@ class ConsentVersionService {
 
 	// eslint-disable-next-line consistent-return
 	validateConsentUpload(isShdUpload, schoolId) {
-		if (isShdUpload && globals.SC_THEME === 'n21') {
+		if (isShdUpload && Configuration('SC_THEME') === 'n21') {
 			throw new BadRequest('SHD consent upload is disabled for NBC instance.');
 		}
 		if (!schoolId && !isShdUpload) {

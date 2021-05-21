@@ -4,7 +4,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const moment = require('moment');
 
 const { Forbidden, BadRequest, TooManyRequests } = require('../../../errors');
-const { NODE_ENV, ENVIRONMENTS, SC_TITLE, SC_SHORT_TITLE } = require('../../../../config/globals');
+const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../model').registrationPinModel;
 const { getRandomInt } = require('../../../utils/randomNumberGenerator');
@@ -20,6 +20,8 @@ const generatePin = (hook) => {
 function createinfoText(hook) {
 	const role = hook.data.mailTextForRole;
 	const { pin } = hook.data;
+	const SC_TITLE = Configuration.get('SC_TITLE');
+	const SC_SHORT_TITLE = Configuration.get('SC_SHORT_TITLE');
 	if (!pin) {
 		throw new BadRequest('Fehler beim Erstellen der Pin.');
 	}
@@ -87,7 +89,7 @@ const checkAndVerifyPin = async (hook) => {
 const mailPin = (hook) => {
 	if (!(hook.data || {}).silent) {
 		globalHooks.sendEmail(hook, {
-			subject: `${SC_SHORT_TITLE}: Registrierung mit PIN verifizieren`,
+			subject: `${Configuration.get('SC_SHORT_TITLE')}: Registrierung mit PIN verifizieren`,
 			emails: (hook.data || {}).email,
 			content: {
 				text: createinfoText(hook),

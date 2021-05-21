@@ -1,4 +1,4 @@
-const { SC_THEME } = require('../../../config/globals');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const MessageProvider = [];
 let messages = null;
@@ -21,7 +21,7 @@ class Cache {
 		lastUpdatedTimestamp = Date.now();
 
 		const promises = MessageProvider.map(async (provider) => {
-			const data = await provider.getMessage(SC_THEME);
+			const data = await provider.getMessage(Configuration.get('SC_THEME'));
 			if (!data.success) {
 				success = false;
 				return;

@@ -1,12 +1,15 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { Forbidden, BadRequest } = require('../../../errors');
 const { hasPermission } = require('../../../hooks');
 
-const { SC_SHORT_TITLE, SC_TITLE } = require('../../../../config/globals');
 const logger = require('../../../logger');
 
 const mailContent = (firstName, lastName, registrationLink) => {
+	const SC_TITLE = Configuration.get('SC_TITLE');
+	const SC_SHORT_TITLE = Configuration.get('SC_SHORT_TITLE');
+
 	const mail = {
 		subject: `Einladung für die Nutzung der ${SC_TITLE}!`,
 		content: {
