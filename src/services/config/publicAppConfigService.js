@@ -21,6 +21,8 @@ const exposedVars = [
 	'NOT_AUTHENTICATED_REDIRECT_URL',
 	'DOCUMENT_BASE_DIR',
 	'SC_THEME',
+	'SC_TITLE',
+	'SC_SHORT_TITLE',
 ];
 
 /**

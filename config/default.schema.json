@@ -325,6 +325,21 @@
 			"default": "https://s3.hidrive.strato.com/schul-cloud-hpi/",
 			"description": "Storage url for global documents."
 		},
+		"SC_THEME":{
+			"type": "string",
+			"default": "default",
+			"description": "The used theming."
+		},
+		"SC_TITLE":{
+			"type": "string",
+			"default": "HPI Schul-Cloud",
+			"description": "The used title."
+		},
+		"SC_SHORT_TITLE":{
+			"type": "string",
+			"default": "HPI Schul-Cloud",
+			"description": "Look to SC_TITLE, it is a possible short form of it."
+		},
 		"ADMIN_TOGGLE_STUDENT_VISIBILITY": {
 			"type": "string",
 			"default": "enabled",
