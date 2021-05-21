@@ -1,27 +1,13 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const { DOCUMENT_BASE_DIR } = require('../../../config/globals');
 
-/**
- *
- */
 const publicAppConfigServiceHooks = {
 	before: {
 		all: [],
 		find: [],
-		// get: [],
-		// create: [],
-		// update: [],
-		// patch: [],
-		// remove: [],
 	},
 	after: {
 		all: [],
 		find: [],
-		// get: [],
-		// create: [],
-		// update: [],
-		// patch: [],
-		// remove: [],
 	},
 };
 
@@ -33,10 +19,12 @@ const exposedVars = [
 	'JWT_SHOW_TIMEOUT_WARNING_SECONDS',
 	'JWT_TIMEOUT_SECONDS',
 	'NOT_AUTHENTICATED_REDIRECT_URL',
+	'DOCUMENT_BASE_DIR',
+	'SC_THEME',
 ];
 
 /**
- * This service for the env variables to sync between server and client.
+ * This service is for the env variables to sync between server and client.
  * These env variables must be public and there must be no secret values.
  */
 class PublicAppConfigService {
@@ -45,9 +33,7 @@ class PublicAppConfigService {
 	}
 
 	find() {
-		const envs = {
-			DOCUMENT_BASE_DIR,
-		};
+		const envs = {};
 		exposedVars.forEach((varName) => {
 			envs[varName] = Configuration.get(varName);
 		});
@@ -57,6 +43,7 @@ class PublicAppConfigService {
 }
 
 module.exports = {
+	exposedVars,
 	publicAppConfigServiceHooks,
 	PublicAppConfigService,
 };

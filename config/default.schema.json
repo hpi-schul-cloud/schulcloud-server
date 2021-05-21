@@ -319,6 +319,12 @@
 			"type": "string",
 			"description": "Password for the antivirus service"
 		},
+		"DOCUMENT_BASE_DIR": {
+			"type": "string",
+			"format": "uri",
+			"default": "https://s3.hidrive.strato.com/schul-cloud-hpi/",
+			"description": "Storage url for global documents."
+		},
 		"ADMIN_TOGGLE_STUDENT_VISIBILITY": {
 			"type": "string",
 			"default": "enabled",
