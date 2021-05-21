@@ -1,8 +1,8 @@
 const winston = require('winston');
 const util = require('util');
-const { SYSTEM_LOG_LEVEL, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
+const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
 
-const systemLogLevel = SYSTEM_LOG_LEVEL;
+const systemLogLevel = 'sendRequests';
 const colorizeMessage = NODE_ENV !== ENVIRONMENTS.PRODUCTION;
 
 const systemLogger = winston.createLogger({

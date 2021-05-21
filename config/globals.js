@@ -42,9 +42,7 @@ const globals = {
 	MONGOOSE_CONNECTION_POOL_SIZE: parseInt(process.env.MONGOOSE_CONNECTION_POOL_SIZE || '10', 10),
 
 	SC_DOMAIN: process.env.SC_DOMAIN || 'localhost',
-	SC_THEME: process.env.SC_THEME || 'default',
-	SC_TITLE: process.env.SC_TITLE || 'HPI Schul-Cloud',
-	SC_SHORT_TITLE: process.env.SC_SHORT_TITLE || 'HPI Schul-Cloud',
+	/* @should set in notification service */
 	SMTP_SENDER: process.env.SMTP_SENDER || 'noreply@hpi-schul-cloud.org',
 
 	LEAD_TIME: process.env.LEAD_TIME ? parseInt(process.env.LEAD_TIME, 10) : undefined,
@@ -54,10 +52,12 @@ const globals = {
 	NODE_ENV,
 	ENVIRONMENTS,
 	LOG_LEVEL: process.env.LOG_LEVEL || defaultLogLevel,
-	SYSTEM_LOG_LEVEL: process.env.SYSTEM_LOG_LEVEL || 'sendRequests',
 	// secrets smtp
+	/* @deprecated */
 	SMTP: process.env.SMTP,
+	/* @deprecated */
 	SMTP_HOST: process.env.SMTP_HOST,
+	/* @deprecated */
 	SMTP_PORT: process.env.SMTP_PORT,
 	// secrets aws
 	AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
