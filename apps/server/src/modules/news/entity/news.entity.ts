@@ -3,8 +3,16 @@ import { BaseEntity, BaseEntityWithTimestamps } from '../../../shared/domain';
 import { SchoolInfo } from './school-info.entity';
 import { UserInfo } from './user-info.entity';
 
-const NEWS_TARGET_MODELS = ['courses', 'teams'] as const;
-export type NewsTargetModel = typeof NEWS_TARGET_MODELS[number];
+export const NewsTargetModel = {
+	Course: 'courses',
+	Team: 'teams',
+} as const;
+
+// TODO put into shared types
+type ValueOf<T> = T[keyof T];
+
+export type NewsTargetModelValue = ValueOf<typeof NewsTargetModel>;
+
 @Entity()
 export class News extends BaseEntityWithTimestamps {
 	/** the news title */
@@ -34,7 +42,7 @@ export class News extends BaseEntityWithTimestamps {
 
 	/** name of a collection which is referenced in target */
 	@Property()
-	targetModel?: NewsTargetModel;
+	targetModel?: NewsTargetModelValue;
 
 	@ManyToOne({ fieldName: 'schoolId' })
 	school: SchoolInfo;

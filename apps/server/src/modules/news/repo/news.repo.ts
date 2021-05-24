@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { News, NewsTargetModel } from '../entity/news.entity';
+import { News, NewsTargetModel, NewsTargetModelValue } from '../entity/news.entity';
 import { PaginationModel } from '../../../shared/repo/interface/pagination.interface';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { EntityId } from '../../../shared/domain';
 import { ICreateNews } from '../uc';
 import { Dictionary, Reference } from '@mikro-orm/core';
-import { INewsScope } from '../uc/news-scope.interface';
-import { targetModels } from '../../../../../../src/services/news/constants';
-export interface NewsTarget {
-	targetModel: NewsTargetModel;
+
+export interface NewsTargetFilter {
+	targetModel: NewsTargetModelValue;
 	targetIds: EntityId[];
 }
+
 @Injectable()
 export class NewsRepo {
 	constructor(private readonly em: EntityManager) {}
@@ -31,13 +31,17 @@ export class NewsRepo {
 		return newsList;
 	}
 
-	async findAllByTargets(schoolId: EntityId, targets: NewsTarget[], pagination: PaginationModel = {}): Promise<News[]> {
+	async findAllByTargets(
+		schoolId: EntityId,
+		targets: NewsTargetFilter[],
+		pagination: PaginationModel = {}
+	): Promise<News[]> {
 		const subQueries = [];
 
 		subQueries.push({ school: schoolId });
 
 		const targetSubQuery = targets.map((target) => {
-			$and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }];
+			return { $and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }] };
 		});
 
 		subQueries.push(...targetSubQuery);

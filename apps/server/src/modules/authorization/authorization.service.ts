@@ -10,7 +10,7 @@ interface Target {
 
 import CompareHelper = require('../../../../../src/helper/compare'); // TODO move to lib
 import { EntityId } from '../../shared/domain';
-import { NewsTargetModel } from '../news/entity';
+import { NewsTargetModelValue } from '../news/entity';
 const { equal: equalId } = CompareHelper.ObjectId;
 @Injectable()
 export class AuthorizationService {
@@ -63,7 +63,7 @@ export class AuthorizationService {
 	 */
 	async getPermittedTargets(
 		userId: EntityId,
-		targetModel: NewsTargetModel,
+		targetModel: NewsTargetModelValue,
 		permissions: string[]
 	): Promise<EntityId[]> {
 		const targets = await this.feathersServiceProvider.find(`/users/:scopeId/${targetModel}`, {

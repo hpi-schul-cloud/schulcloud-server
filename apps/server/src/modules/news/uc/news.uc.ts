@@ -1,13 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityId, IPagination } from '../../../shared/domain';
-import { PaginationModel } from '../../../shared/repo';
 import { AuthorizationService } from '../../authorization/authorization.service';
 import { ServerLogger } from '../../logger/logger.service';
-import { News, NewsTargetModel, SchoolInfo } from '../entity';
-import { NewsRepo, NewsTarget } from '../repo/news.repo';
-import { ICreateNews } from './create-news.interface';
-import { INewsScope } from './news-scope.interface';
-import { IUpdateNews } from './update-news.interface';
+import { News, NewsTargetModel, NewsTargetModelValue, SchoolInfo } from '../entity';
+import { NewsRepo, NewsTargetFilter } from '../repo/news.repo';
+import { ICreateNews, INewsScope, IUpdateNews } from './news.interface';
 
 type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
 type Target = { targetModel?: string; target?: { id: string } };
@@ -62,9 +59,9 @@ export class NewsUc {
 		} else {
 			// include all targets if scope is not given
 			// filter by specific target otherwise
-			const targetModels = scope == null ? ['courses', 'teams'] : [scope.targetModel];
-			const targets = await this.getPermittedTargets(userId, targetModels as NewsTargetModel[]);
-			newsList = await this.newsRepo.findAllByTargets(schoolId, targets, pagination);
+			const targetModels = scope == null ? Object.values(NewsTargetModel) : [scope.targetModel];
+			const filters = await this.getTargetFilters(userId, targetModels);
+			newsList = await this.newsRepo.findAllByTargets(schoolId, filters, pagination);
 		}
 
 		await Promise.all(
@@ -89,14 +86,12 @@ export class NewsUc {
 		return news;
 	}
 
-	private async getPermittedTargets(userId: EntityId, targetModels: NewsTargetModel[]): Promise<NewsTarget[]> {
+	private async getTargetFilters(userId: EntityId, targetModels: NewsTargetModelValue[]): Promise<NewsTargetFilter[]> {
 		const targets = await Promise.all(
 			targetModels.map(async (targetModel) => {
 				return {
-					targetModel: targetModel as NewsTargetModel,
-					targetIds: await this.authorizationService.getPermittedTargets(userId, targetModel as NewsTargetModel, [
-						'NEWS_VIEW',
-					]),
+					targetModel: targetModel,
+					targetIds: await this.authorizationService.getPermittedTargets(userId, targetModel, ['NEWS_VIEW']),
 				};
 			})
 		);
