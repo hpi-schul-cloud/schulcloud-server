@@ -11,7 +11,7 @@ const MockAuth = require('../mock/response-auth.json');
 const EduSharingResponse = require('../../../../src/services/edusharing/services/EduSharingResponse');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
-describe('EduSharing FIND', () => {
+describe.only('EduSharing FIND', () => {
 	let app;
 	let eduSharingResponse;
 	let eduSharingService;
@@ -112,6 +112,40 @@ describe('EduSharing FIND', () => {
 
 			chai.expect(postStub.getCalls()[0].args[0].body).contains(`{"property":"ccm:hpi_searchable","values":["1"]}`);
 			chai.expect(response.total).to.gte(1);
+		} catch (err) {
+			throw new Error(err);
+		}
+	});
+
+	it('should search with appropriate ph_invited group permissions', async () => {
+		try {
+			const user = await testObjects.createTestUser({ roles: ['teacher'] });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+
+			// cookie already set
+			// sinon.stub(request, 'get').returns(MockAuth);
+
+			const postStub = sinon.stub(request, 'post');
+			// postStub.onCall(0).returns(MockNodeRestricted);
+			postStub.onCall(0).returns(MockNodes);
+
+			params.query = { searchQuery: 'foo' };
+			// const response = await eduSharingService.find(params);
+			await eduSharingService.find(params);
+
+			chai
+				.expect(postStub.getCalls()[0].args[0].body)
+				.contains(
+					// `{"property":"ccm:ph_invited","values":["GROUP_HPIBossCloud", "GROUP_public", "GROUP_LowerSaxony-public", "GROUP_Brandenburg-public", "GROUP_Thuringia-public"]}`
+					`{"property":"ccm:ph_invited","values":["GROUP_county-12051","GROUP_HPIBossCloud","GROUP_public","GROUP_LowerSaxony-public","GROUP_Brandenburg-public","GROUP_Thuringia-public"]}`
+				);
+			// chai.expect(postStub.getCalls()[0].args[0].body).contains(`{"property":"ccm:ph_invited"`);
+
+			// const response = await eduSharingService.find(params);
+			// const responseStub = postStub.getCalls()[0].args[0].body;
+
+			// chai.expect('ccm:ph_invited' in response.data[0].properties).to.be.true;
+			// chai.expect('ccm:ph_invited' in responseStub).to.be.true;
 		} catch (err) {
 			throw new Error(err);
 		}
