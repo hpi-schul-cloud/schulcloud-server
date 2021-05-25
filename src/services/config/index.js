@@ -2,7 +2,7 @@ const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
 const { ConfigService, configServiceHooks } = require('./configService');
-const { PublicAppConfigService, publicAppConfigServiceHooks } = require('./PublicAppConfigService');
+const { PublicAppConfigService, publicAppConfigServiceHooks } = require('./publicAppConfigService');
 
 module.exports = (app) => {
 	app.use('/config/api', staticContent(path.join(__dirname, '/docs')));
