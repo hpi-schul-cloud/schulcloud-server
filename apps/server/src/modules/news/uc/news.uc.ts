@@ -53,14 +53,16 @@ export class NewsUc {
 
 		let newsList: News[];
 
-		// only permitted school news (no targets)
-		if (scope.targetModel === 'school') {
+		if (scope == null) {
+			// all news for all permitted targets
+			const filters = await this.getTargetFilters(userId, Object.values(NewsTargetModel));
+			newsList = await this.newsRepo.findAllByTargets(schoolId, filters, pagination);
+		} else if (scope.targetModel === 'school') {
+			// all news for school
 			newsList = await this.newsRepo.findAllBySchool(schoolId, pagination);
 		} else {
-			// include all targets if scope is not given
-			// filter by specific target otherwise
-			const targetModels = scope == null ? Object.values(NewsTargetModel) : [scope.targetModel];
-			const filters = await this.getTargetFilters(userId, targetModels);
+			// filter news by specific target
+			const filters = await this.getTargetFilters(userId, [scope.targetModel]);
 			newsList = await this.newsRepo.findAllByTargets(schoolId, filters, pagination);
 		}
 
