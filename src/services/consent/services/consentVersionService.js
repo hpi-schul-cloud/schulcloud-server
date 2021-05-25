@@ -48,7 +48,7 @@ class ConsentVersionService {
 
 	// eslint-disable-next-line consistent-return
 	validateConsentUpload(isShdUpload, schoolId) {
-		if (isShdUpload && Configuration('SC_THEME') === 'n21') {
+		if (isShdUpload && Configuration.get('SC_THEME') === 'n21') {
 			throw new BadRequest('SHD consent upload is disabled for NBC instance.');
 		}
 		if (!schoolId && !isShdUpload) {

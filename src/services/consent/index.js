@@ -4,7 +4,6 @@ const path = require('path');
 
 const { ConsentVersionModel } = require('./model');
 const consentVersionModelHooks = require('./hooks/consentversionsModelHooks');
-const consentDocs = require('./docs');
 const { ConsentCheckService, consentCheckHooks } = require('./services/consentCheck.service');
 const { ConsentVersionService, ConsentVersionServiceHooks } = require('./services/consentVersionService');
 const deprecated = require('./services/consent.deprecated');
