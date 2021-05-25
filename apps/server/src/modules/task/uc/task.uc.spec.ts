@@ -1,6 +1,4 @@
-import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Task } from '../entity/task.entity';
 import { TaskRepo } from '../repo/task.repo';
 import { TaskUC } from './task.uc';
 
@@ -13,7 +11,7 @@ describe.skip('TaskService', () => {
 				TaskUC,
 				TaskRepo,
 				{
-					provide: getModelToken(Task.name),
+					provide: TaskRepo,
 					useValue: {},
 				},
 			],
