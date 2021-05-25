@@ -47,7 +47,8 @@
 		"migration-list": "migrate list --config ./config/migrate.js",
 		"migration-prune": "migrate prune --config ./config/migrate.js",
 		"migration-persist": "node ./backup.js -b export -p setup/ -c migrations --sort \"{ createdAt: 1 }\"",
-		"migrate-etherpads": "node ./migrate-etherpads.js"
+		"migrate-etherpads": "node ./migrate-etherpads.js",
+		"syncIndexes": "node ./scripts/syncIndexes.js"
 	},
 	"dependencies": {
 		"@feathersjs/authentication": "^4.5.3",
@@ -59,7 +60,7 @@
 		"@feathersjs/socketio": "^4.5.4",
 		"@hpi-schul-cloud/commons": "^1.3.2",
 		"@sentry/node": "^6.2.0",
-		"ajv": "^6.10.2",
+		"ajv": "^8.5.0",
 		"amqplib": "^0.7.0",
 		"arg": "^5.0.0",
 		"aws-sdk": "^2.306.0",
