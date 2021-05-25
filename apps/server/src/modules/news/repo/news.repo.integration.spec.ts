@@ -2,9 +2,9 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import {News, NewsTargetModel, SchoolInfo, UserInfo} from '../entity';
-import {NewsRepo, NewsTargetFilter} from './news.repo';
-import {MikroORM} from "@mikro-orm/core";
+import { News, NewsTargetModel, SchoolInfo, UserInfo } from '../entity';
+import { NewsRepo, NewsTargetFilter } from './news.repo';
+import { MikroORM } from '@mikro-orm/core';
 
 describe('NewsService', () => {
 	let repo: NewsRepo;
@@ -34,12 +34,20 @@ describe('NewsService', () => {
 		it('should return news for targets', async () => {
 			const schoolId = new ObjectId().toString();
 			const courseId = new ObjectId().toString();
-			const news = await em.create(News,{ school: schoolId, title: 'test course news', content: 'content', target: courseId, targetModel: 'courses' });
+			const news = await em.create(News, {
+				school: schoolId,
+				title: 'test course news',
+				content: 'content',
+				target: courseId,
+				targetModel: 'courses',
+			});
 			await em.persistAndFlush(news);
-			const targets = [{
-				targetModel: NewsTargetModel.Course,
-				targetIds: [courseId],
-			}];
+			const targets = [
+				{
+					targetModel: NewsTargetModel.Course,
+					targetIds: [courseId],
+				},
+			];
 			const pagination = { skip: 0, limit: 20 };
 			const result = await repo.findAllByTargets(schoolId, targets, pagination);
 			expect(result.length).toEqual(1);
