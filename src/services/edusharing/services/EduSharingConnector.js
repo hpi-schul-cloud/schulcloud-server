@@ -30,27 +30,30 @@ const basicAuthorizationHeaders = {
 const edusharingInstancePermissions = [
 	{
 		name: 'LowerSaxony',
-		alias: 'n21',  // or abbreviation
+		alias: 'n21', // or abbreviation
 		privateGroups: ['GROUP_LowerSaxony-private'],
-		publicGroups: ['GROUP_public', 'GROUP_LowerSaxony-public', 'GROUP_Brandenburg-public', 'GROUP_Thuringia-public']
-	}, {
+		publicGroups: ['GROUP_public', 'GROUP_LowerSaxony-public', 'GROUP_Brandenburg-public', 'GROUP_Thuringia-public'],
+	},
+	{
 		name: 'Brandenburg',
-		alias: 'brb', 
+		alias: 'brb',
 		privateGroups: ['GROUP_Brandenburg-private'],
-		publicGroups: ['GROUP_public', 'GROUP_LowerSaxony-public', 'GROUP_Brandenburg-public', 'GROUP_Thuringia-public']
-	}, {
+		publicGroups: ['GROUP_public', 'GROUP_LowerSaxony-public', 'GROUP_Brandenburg-public', 'GROUP_Thuringia-public'],
+	},
+	{
 		name: 'Thuringia',
-		alias: 'thr', 
+		alias: 'thr',
 		privateGroups: ['GROUP_Thuringia-private'],
-		publicGroups: ['GROUP_Thuringia-public']
-	}, 
-	{  // same for BossCloud, Open, and International.
-		name: 'HPIBossCloud', 
+		publicGroups: ['GROUP_Thuringia-public'],
+	},
+	{
+		// same for BossCloud, Open, and International.
+		name: 'HPIBossCloud',
 		alias: 'default', // open, int
 		privateGroups: ['GROUP_HPIBossCloud'],
-		publicGroups: ['GROUP_public', 'GROUP_LowerSaxony-public', 'GROUP_Brandenburg-public', 'GROUP_Thuringia-public']
-	}
-]
+		publicGroups: ['GROUP_public', 'GROUP_LowerSaxony-public', 'GROUP_Brandenburg-public', 'GROUP_Thuringia-public'],
+	},
+];
 
 // bug in edu-sharing limits session to 5 min instead of 1h
 const eduSharingCookieValidity = 240000; // 4 min
@@ -199,28 +202,27 @@ class EduSharingConnector {
 		if ((searchQuery.trim().length < 2 && !collection) || (collection !== '' && !this.validateUuid(collection))) {
 			return new EduSharingResponse();
 		}
-		
+
 		/* Providing the appropriate permissions, i.e., which items we are allowed to access, by specifying 
 			the necessary groups. */
 
-		let countyGroups = [];  // County permissions.
+		const countyGroups = []; // County permissions.
 		const county = await getCounty(schoolId);
 		if (county && county.countyId) {
 			countyGroups.push(`GROUP_county-${county.countyId}`);
 		}
-		
+
 		let instancePermissions = edusharingInstancePermissions.find(
-			element => Configuration.get("ES_USER").includes(element.name)  // e.g., if ES_USER includes 'LowerSaxony'
+			(element) => Configuration.get('ES_USER').includes(element.name) // e.g., if ES_USER includes 'LowerSaxony'
 		);
-		if (typeof instancePermissions == "undefined") {
-			instancePermissions = edusharingInstancePermissions.HPIBossCloud; // default permissions
+		if (typeof instancePermissions === 'undefined') {
+			instancePermissions = edusharingInstancePermissions.find(
+				(element) => element.alias === 'default' // default permissions
+			);
 		}
 
-		const privateGroups = [...instancePermissions.privateGroups] // From its own state.
-
-		const publicGroups = [...instancePermissions.publicGroups]; // From all states.
-		
-		let groups = [...countyGroups, ...privateGroups, ...publicGroups];
+		// Private: from its own state, public: from all states
+		const groups = [...countyGroups, ...instancePermissions.privateGroups, ...instancePermissions.publicGroups];
 
 		const criterias = [];
 		if (groups.length) {
