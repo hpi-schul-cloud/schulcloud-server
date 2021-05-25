@@ -7,8 +7,6 @@ import { NewsRepo, NewsTargetFilter } from '../repo/news.repo';
 import { ICreateNews, INewsScope, IUpdateNews } from './news.interface';
 
 type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
-type Target = { targetModel?: string; target?: { id: string } };
-type AuthorizationSubject = { school?: SchoolInfo; targetModel?: string; target?: { id: string } };
 
 @Injectable()
 export class NewsUc {
@@ -54,16 +52,16 @@ export class NewsUc {
 		let newsList: News[];
 
 		if (scope == null) {
-			// all news for all permitted targets
+			// all news for all permitted targets and school
 			const filters = await this.getTargetFilters(userId, Object.values(NewsTargetModel));
-			newsList = await this.newsRepo.findAllByTargets(schoolId, filters, pagination);
+			newsList = await this.newsRepo.findAll(schoolId, filters, pagination);
 		} else if (scope.targetModel === 'school') {
-			// all news for school
+			// all news for school only
 			newsList = await this.newsRepo.findAllBySchool(schoolId, pagination);
 		} else {
-			// filter news by specific target
+			// all news for specific target
 			const filters = await this.getTargetFilters(userId, [scope.targetModel]);
-			newsList = await this.newsRepo.findAllByTargets(schoolId, filters, pagination);
+			newsList = await this.newsRepo.findAllByTarget(schoolId, filters[0], pagination);
 		}
 
 		await Promise.all(
@@ -100,10 +98,31 @@ export class NewsUc {
 		return targets;
 	}
 
+	async update(id: EntityId, params: IUpdateNews): Promise<any> {
+		return {
+			title: 'title',
+			body: 'content',
+			displayAt: new Date(),
+		};
+	}
+
+	async remove(id: string) {
+		return id;
+	}
+
 	private async decoratePermissions(news: News, userId: EntityId) {
-		news.permissions = (await this.getUserPermissionsForSubject(userId, news)).filter((permission) =>
+		news.permissions = (await this.getEntityPermissions(userId, news)).filter((permission) =>
 			permission.includes('NEWS')
 		);
+	}
+
+	private async getEntityPermissions(userId: EntityId, news: News): Promise<string[]> {
+		const permissions =
+			news.targetModel && news.target
+				? await this.authorizationService.getUserTartgetPermissions(userId, news.targetModel, news.target.id)
+				: await this.authorizationService.getUserSchoolPermissions(userId, news.school.id);
+
+		return permissions;
 	}
 
 	private async authorizeUserReadNews(news: News, userId: EntityId): Promise<void> {
@@ -119,40 +138,5 @@ export class NewsUc {
 		}
 		if (userPermissions.includes(requiredUserPermission)) return;
 		throw new UnauthorizedException('Nee nee nee...');
-	}
-
-	async update(id: EntityId, params: IUpdateNews): Promise<any> {
-		return {
-			title: 'title',
-			body: 'content',
-			displayAt: new Date(),
-		};
-	}
-
-	async remove(id: string) {
-		return id;
-	}
-
-	async getUserPermissionsForSubject(userId: EntityId, subject: AuthorizationSubject): Promise<string[]> {
-		// detect scope of subject
-		// let scope: Target;
-		// if ('targetModel' in subject && subject.targetModel && 'target' in subject && subject.target) {
-		// 	const { target: target, targetModel } = subject;
-		// 	scope = { targetModel, target };
-		// } else if ('school' in subject) {
-		// 	const { schoolId } = subject;
-		// 	if ('name' in schoolId) {
-		// 		scope = { targetModel: 'school', targetId: schoolId._id };
-		// 	} else {
-		// 		scope = { targetModel: 'school', targetId: schoolId };
-		// 	}
-		// } else {
-		// 	// data format not seems to be compatible, throw
-		// 	throw new UnauthorizedException('Bääm');
-		// }
-		// // scope is now school (generic) or a user group (specific)
-		// const permissions = await this.authorizationService.getUserPermissions(userId, scope);
-		// return permissions;
-		return new Promise((resolve) => resolve(['NEWS_VIEW']));
 	}
 }

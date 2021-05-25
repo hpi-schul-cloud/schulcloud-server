@@ -21,23 +21,53 @@ export class NewsRepo {
 		return news;
 	}
 
+	/**
+	 * Find news for all targets including school
+	 * @param schoolId
+	 * @param targets
+	 * @param pagination
+	 */
+	async findAll(schoolId: EntityId, targets: NewsTargetFilter[], pagination: PaginationModel = {}): Promise<News[]> {
+		const targetSubQuery = [];
+		// include all targets
+		targets.forEach((target) => {
+			targetSubQuery.push({ $and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }] });
+		});
+		// include school
+		targetSubQuery.push({ $and: [{ targetModel: null }, { target: null }] });
+
+		const targetQuery = targetSubQuery.length > 1 ? { $or: targetSubQuery } : targetSubQuery[0];
+		const query = { $and: [{ school: schoolId }, targetQuery] };
+
+		const newsList = await this.findNews(query, pagination);
+		return newsList;
+	}
+
+	/**
+	 * Find news for school only
+	 * @param schoolId
+	 * @param pagination
+	 * @returns
+	 */
 	async findAllBySchool(schoolId: EntityId, pagination: PaginationModel = {}): Promise<News[]> {
 		const query = { $and: [{ school: schoolId }, { $and: [{ targetModel: null }, { target: null }] }] };
 		const newsList = await this.findNews(query, pagination);
 		return newsList;
 	}
 
-	async findAllByTargets(
+	/**
+	 * Find news for a specific target
+	 * @param schoolId
+	 * @param target
+	 * @param pagination
+	 * @returns
+	 */
+	async findAllByTarget(
 		schoolId: EntityId,
-		targets: NewsTargetFilter[],
+		target: NewsTargetFilter,
 		pagination: PaginationModel = {}
 	): Promise<News[]> {
-		const targetSubQuery = targets.map((target) => {
-			return { $and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }] };
-		});
-
-		const targetQuery = targetSubQuery.length > 1 ? { $or: targetSubQuery } : targetSubQuery[0];
-		const query = { $and: [{ school: schoolId }, targetQuery] };
+		const query = { $and: [{ school: schoolId }, { targetModel: target.targetModel, 'target:in': target.targetIds }] };
 
 		const newsList = await this.findNews(query, pagination);
 		return newsList;
