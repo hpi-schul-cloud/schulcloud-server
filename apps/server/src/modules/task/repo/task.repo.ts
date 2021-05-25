@@ -47,7 +47,7 @@ export class TaskRepo {
 				displayColor: task.course?.color,
 				createdAt: task.createdAt,
 				updatedAt: task.updatedAt,
-			};
+			} as ITaskMetadata; // TODO does not match ITaskMetadata, remove as...
 		});
 
 		// TODO: pagination or total is missing

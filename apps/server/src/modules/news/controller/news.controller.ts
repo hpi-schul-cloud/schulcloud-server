@@ -30,7 +30,7 @@ export class NewsController {
 		const newsList = await this.newsUc.findAllForUserAndSchool(
 			currentUser.userId,
 			currentUser.schoolId,
-			null,
+			undefined,
 			pagination
 		);
 		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
