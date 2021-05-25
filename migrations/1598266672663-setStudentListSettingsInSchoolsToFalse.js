@@ -1,5 +1,3 @@
-// const { Configuration } = require('@hpi-schul-cloud/commons');
-
 const logger = require('../src/logger');
 const { connect, close } = require('../src/utils/database');
 
@@ -51,7 +49,7 @@ module.exports = {
 		if (!process.env.SC_TITLE || process.env.SC_TITLE === 'Niedersächsische Bildungscloud') {
 			logger.warning(
 				`Migration is not executed for this instance. 
-				Because process.env.SC_SHORT_TITLE is not set, or instance is xxxx.`
+				Because process.env.SC_TITLE is not set, or instance is xxxx.`
 			);
 			return;
 		}

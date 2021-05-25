@@ -7,7 +7,6 @@ const PasswordRecoveryModel = require('../model');
 const { randomStringAsBase64Url } = require('../../../utils/randomNumberGenerator');
 const globalHooks = require('../../../hooks');
 const logger = require('../../../logger/index');
-const { SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const HOST = Configuration.get('HOST');
 
@@ -59,6 +58,7 @@ const sendInfo = (context) => {
 				},
 			})
 			.then((account) => {
+				const SC_SHORT_TITLE = Configuration.get('SC_SHORT_TITLE');
 				const recoveryLink = `${HOST}/pwrecovery/${context.result.token}`;
 				const mailContent = `Sehr geehrte/r ${account.userId.firstName} ${account.userId.lastName}, \n
 Bitte setzen Sie Ihr Passwort unter folgendem Link zurück:

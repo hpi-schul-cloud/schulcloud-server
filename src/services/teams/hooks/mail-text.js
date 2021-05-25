@@ -1,5 +1,6 @@
-const { SC_SHORT_TITLE } = require('../../../../config/globals');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
+const SC_SHORT_TITLE = Configuration.get('SC_SHORT_TITLE');
 const close = `\n\nViel Spaß und einen guten Start wünscht dir dein ${SC_SHORT_TITLE}-Team`;
 
 const inviteWithRegistration = ({ invitee, inviter, teamName, shortLink }) => `Hallo ${invitee}!

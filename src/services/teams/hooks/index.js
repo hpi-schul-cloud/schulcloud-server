@@ -1,4 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const {
 	Forbidden,
@@ -10,7 +11,6 @@ const {
 	NotAcceptable,
 } = require('../../../errors');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
-const { SC_SHORT_TITLE } = require('../../../../config/globals');
 
 const globalHooks = require('../../../hooks');
 const logger = require('../../../logger');
@@ -406,7 +406,7 @@ const hasTeamPermission = (permsissions, _teamId) =>
 		return Promise.all([getSessionUser(hook), teamRolesToHook(hook), getTeam(hook)])
 			.then(([, ref, team]) => {
 				if (get(hook, 'isSuperhero') === true) {
-					return Promise.resolve(hook);
+					return hook;
 				}
 				const userId = bsonIdToString(hook.params.account.userId);
 				const teamId = _teamId || hook.teamId || hook.id;
@@ -425,7 +425,7 @@ const hasTeamPermission = (permsissions, _teamId) =>
 					}
 				});
 
-				return Promise.resolve(hook);
+				return hook;
 			})
 			.catch((err) => {
 				logger.warning(err);
@@ -598,7 +598,7 @@ const sendInfo = (hook) => {
 	return getSessionUser(hook)
 		.then((user) => {
 			globalHooks.sendEmail(hook, {
-				subject: `${SC_SHORT_TITLE}: Team-Einladung`,
+				subject: `${Configuration.get('SC_SHORT_TITLE')}: Team-Einladung`,
 				emails: [email],
 				content: {
 					text: createEmailText(hook, user),

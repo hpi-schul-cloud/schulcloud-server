@@ -1,6 +1,5 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const hooks = require('./hooks/index');
-const { SC_SHORT_TITLE } = require('../../../config/globals');
 
 class StatisticMailService {
 	constructor(app) {
@@ -9,6 +8,7 @@ class StatisticMailService {
 
 	async create() {
 		try {
+			const SC_SHORT_TITLE = Configuration.get('SC_SHORT_TITLE');
 			const statData = await this.app.service('statistics').find();
 			let htmlMailContent = `<h1>Statistik für ${SC_SHORT_TITLE}</h1>`;
 			htmlMailContent += `<table><tr><td>Schulen</td><td>${statData.schools}</td></tr>`;

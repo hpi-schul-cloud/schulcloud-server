@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
-const { SC_SHORT_TITLE } = require('../../../../../config/globals');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+
 const logger = require('../../../../logger');
 
 const {
@@ -29,6 +30,7 @@ const {
 	customErrorMessages,
 } = require('../../utils/generalUtils');
 
+const SC_SHORT_TITLE = Configuration.get('SC_SHORT_TITLE');
 const buildActivationLinkMail = (user, entry) => {
 	const activationLink = createActivationLink(entry.activationCode);
 	const email = entry.quarantinedObject;
