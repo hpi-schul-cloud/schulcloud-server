@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { News, NewsTargetModel, NewsTargetModelValue } from '../entity/news.entity';
-import { PaginationModel } from '../../../shared/repo/interface/pagination.interface';
-import { EntityManager } from '@mikro-orm/mongodb';
-import { EntityId } from '../../../shared/domain';
-import { ICreateNews } from '../uc';
-import { Dictionary, Reference } from '@mikro-orm/core';
+import {Injectable} from '@nestjs/common';
+import {News, NewsTargetModelValue} from '../entity/news.entity';
+import {PaginationModel} from '../../../shared/repo/interface/pagination.interface';
+import {EntityManager} from '@mikro-orm/mongodb';
+import {EntityId} from '../../../shared/domain';
+import {ICreateNews} from '../uc';
+import {Dictionary} from '@mikro-orm/core';
 
 export interface NewsTargetFilter {
 	targetModel: NewsTargetModelValue;
@@ -23,12 +23,15 @@ export class NewsRepo {
 
 	findAllBySchool(schoolId: EntityId, pagination: PaginationModel = {}): Promise<News[]> {
 		const query = { $and: [{ school: schoolId }, { $and: [{ targetModel: null }, { target: null }] }] };
+		const newsList = this.findNews(query, pagination);
+		return newsList;
+	}
 
-		const newsList = this.em.find(News, query, {
+	private findNews(query, pagination: PaginationModel) {
+		return this.em.find(News, query, {
 			populate: ['school', 'creator', 'updater'],
 			...pagination,
 		});
-		return newsList;
 	}
 
 	async findAllByTargets(
@@ -36,22 +39,14 @@ export class NewsRepo {
 		targets: NewsTargetFilter[],
 		pagination: PaginationModel = {}
 	): Promise<News[]> {
-		const subQueries = [];
-
-		subQueries.push({ school: schoolId });
-
 		const targetSubQuery = targets.map((target) => {
 			return { $and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }] };
 		});
 
-		subQueries.push(...targetSubQuery);
+		const targetQuery = targetSubQuery.length > 1 ? { $or: targetSubQuery } : targetSubQuery[0];
+		const query = { $and: [{ school: schoolId }, targetQuery]};
 
-		const query = subQueries.length > 1 ? { $and: subQueries } : subQueries[0];
-
-		const newsList = this.em.find(News, query, {
-			populate: ['school', 'creator', 'updater'],
-			...pagination,
-		});
+		const newsList = this.findNews(query, pagination);
 		return newsList;
 	}
 
