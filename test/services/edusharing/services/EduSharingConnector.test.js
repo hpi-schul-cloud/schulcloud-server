@@ -11,7 +11,7 @@ const MockAuth = require('../mock/response-auth.json');
 const EduSharingResponse = require('../../../../src/services/edusharing/services/EduSharingResponse');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
-describe.only('EduSharing FIND', () => {
+describe('EduSharing FIND', () => {
 	let app;
 	let eduSharingResponse;
 	let eduSharingService;
