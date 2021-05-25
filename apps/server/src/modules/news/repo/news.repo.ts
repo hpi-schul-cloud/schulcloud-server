@@ -27,11 +27,12 @@ export class NewsRepo {
 		return newsList;
 	}
 
-	private findNews(query, pagination: PaginationModel) {
-		return this.em.find(News, query, {
-			populate: ['school', 'creator', 'updater'],
+	private async findNews(query, pagination: PaginationModel) {
+		const obj = await this.em.find(News, query, {
 			...pagination,
 		});
+		const news = await this.em.populate(obj, ['school', 'creator', 'updater']);
+		return news;
 	}
 
 	async findAllByTargets(
@@ -44,7 +45,10 @@ export class NewsRepo {
 		});
 
 		const targetQuery = targetSubQuery.length > 1 ? { $or: targetSubQuery } : targetSubQuery[0];
-		const query = { $and: [{ school: schoolId }, targetQuery]};
+		const query = {$and: [
+				{ school: schoolId},
+				targetQuery
+		]};
 
 		const newsList = this.findNews(query, pagination);
 		return newsList;

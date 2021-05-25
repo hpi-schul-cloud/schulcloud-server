@@ -47,6 +47,7 @@ module.exports = {
 			},
 		],
 		'arrow-parens': ['error', 'always'],
+		'arrow-body-style': ['error', 'as-needed'],
 	},
 	plugins: ['import', 'prettier', 'promise'],
 	env: {
