@@ -9,20 +9,10 @@ const configServiceHooks = {
 	before: {
 		all: [authenticate('jwt'), superheroAccess],
 		find: [],
-		/* get: [],
-		create: [],
-		update: [],
-		patch: [],
-		remove: [], */
 	},
 	after: {
 		all: [],
 		find: [],
-		/* get: [],
-		create: [],
-		update: [],
-		patch: [],
-		remove: [], */
 	},
 };
 
