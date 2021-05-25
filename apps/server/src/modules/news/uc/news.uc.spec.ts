@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationService } from '../../authorization/authorization.service';
 import { FeathersServiceProvider } from '../../authorization/feathers-service.provider';
-import { LoggerModule } from '../../logger/logger.module';
+import { LoggerModule } from '../../../core/logger/logger.module';
 import { NewsRepo } from '../repo/news.repo';
 import { NewsUc } from './news.uc';
 

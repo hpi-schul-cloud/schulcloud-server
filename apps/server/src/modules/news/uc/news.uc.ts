@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityId, IPagination } from '../../../shared/domain';
 import { AuthorizationService } from '../../authorization/authorization.service';
-import { ServerLogger } from '../../logger/logger.service';
+import { ServerLogger } from '../../../core/logger/logger.service';
 import { News, NewsTargetModel, NewsTargetModelValue, SchoolInfo } from '../entity';
 import { NewsRepo, NewsTargetFilter } from '../repo/news.repo';
 import { ICreateNews, INewsScope, IUpdateNews } from './news.interface';

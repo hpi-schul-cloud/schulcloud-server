@@ -9,7 +9,7 @@ install();
 
 // application imports
 import legacyAppPromise = require('../../../src/app');
-import { ServerLogger } from './modules/logger/logger.service';
+import { ServerLogger } from './core/logger/logger.service';
 import { ServerModule } from './server.module';
 import { DurationLoggingInterceptor } from './shared/interceptor/duration-logging.interceptor';
 
