@@ -60,8 +60,9 @@ export class NewsUc {
 			newsList = await this.newsRepo.findAllBySchool(schoolId, pagination);
 		} else {
 			// all news for specific target
-			const filters = await this.getTargetFilters(userId, [scope.targetModel]);
-			newsList = await this.newsRepo.findAllByTarget(schoolId, filters[0], pagination);
+			const filter = await this.getTargetFilter(userId, scope.targetModel);
+			// TODO decide whether to throw UnauthorizedException or return empty list
+			newsList = await this.newsRepo.findAllByTarget(schoolId, filter, pagination);
 		}
 
 		await Promise.all(
@@ -87,15 +88,17 @@ export class NewsUc {
 	}
 
 	private async getTargetFilters(userId: EntityId, targetModels: NewsTargetModelValue[]): Promise<NewsTargetFilter[]> {
-		const targets = await Promise.all(
-			targetModels.map(async (targetModel) => {
-				return {
-					targetModel: targetModel,
-					targetIds: await this.authorizationService.getPermittedTargets(userId, targetModel, ['NEWS_VIEW']),
-				};
-			})
-		);
-		return targets;
+		const targets = await Promise.all(targetModels.map((targetModel) => this.getTargetFilter(userId, targetModel)));
+		const nonEmptyTargets = targets.filter((target) => target.targetIds.length > 0);
+
+		return nonEmptyTargets;
+	}
+
+	private async getTargetFilter(userId: EntityId, targetModel: NewsTargetModelValue): Promise<NewsTargetFilter> {
+		return {
+			targetModel,
+			targetIds: await this.authorizationService.getPermittedTargets(userId, targetModel, ['NEWS_VIEW']),
+		};
 	}
 
 	async update(id: EntityId, params: IUpdateNews): Promise<any> {
