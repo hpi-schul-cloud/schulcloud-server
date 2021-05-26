@@ -22,6 +22,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8982 - add inital service ressource messuring test setup
 - OPS-1499 - Add feature to CI Pipeline and provide manual deployments of branches and automatic deploy of release to staging
 - Add run script for sync indexes based on existing and registered schemas.
+- SC-9085 - add registration pin deletion for parent emails
 
 ### Changed
 
