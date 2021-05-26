@@ -7,15 +7,13 @@ services:
 
 branches:
   only:
-    - develop
-    - master
-     - /^(release).*$/
+    - /^(release).*$/
     # OPS-1664 naming convention <branch>/<JIRA-Ticket ID>-<Jira_Summary>
-    - /^((hotfix|feature)\/[A-Z]+-[0-9]+-[a-zA-Z_]+)$/
+    - /^(feature\/[A-Z]+-[0-9]+-[a-zA-Z_]+)$/
 
 stages:
   - name: test
-    if: NOT (commit_message =~ /(skip-test-stage)/ ) or branch = master
+    if: NOT (commit_message =~ /(skip-test-stage)/ ) OR branch = /^(feature).*$/ AND "$TRAVIS_PULL_REQUEST" != "false"
   - name: deploy
     if: NOT (commit_message =~ /(skip-deploy-stage)/)
 jobs:
