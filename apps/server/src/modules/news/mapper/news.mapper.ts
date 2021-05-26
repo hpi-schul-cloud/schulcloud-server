@@ -16,7 +16,9 @@ export class NewsMapper {
 		dto.targetModel = news.targetModel;
 		dto.school = SchoolInfoMapper.mapToResponse(news.school);
 		dto.creator = UserInfoMapper.mapToResponse(news.creator);
-		dto.updater = UserInfoMapper.mapToResponse(news.updater);
+		if (news.updater) {
+			dto.updater = UserInfoMapper.mapToResponse(news.updater);
+		}
 		dto.createdAt = news.createdAt;
 		dto.updatedAt = news.updatedAt;
 		dto.permissions = news.permissions;

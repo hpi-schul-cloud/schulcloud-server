@@ -30,7 +30,7 @@ export class NewsController {
 		const newsList = await this.newsUc.findAllForUserAndSchool(
 			currentUser.userId,
 			currentUser.schoolId,
-			null,
+			undefined,
 			// { targetModel: 'school', targetId: '' },
 			pagination
 		);

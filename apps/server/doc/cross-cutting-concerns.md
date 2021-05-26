@@ -6,7 +6,7 @@ For logging use the logger ServerLogger, provided by the logger module. It is ho
 
 ```TypeScript
 // add Logger module to your feature module imports or unit tests
-import { LoggerModule } from '../../logger/logger.module';
+import { LoggerModule } from '../core/logger/logger.module';
 // ...
 imports: [LoggerModule],
 
@@ -16,7 +16,7 @@ imports: [LoggerModule],
 // within of a provider (use-case, service, ...)
 
 // import the server logger service
-import { ServerLogger } from '../../logger/logger.service';
+import { ServerLogger } from '../core/logger/logger.service';
 
 @Injectable()
 export class YourUc {
@@ -59,3 +59,21 @@ interface LoggerService {
 Only a string should be provided as a single parameter by default. Ensure not putting complex objects into a log. Think about persisting more complex results for later analysis into a database.
 
 Optionally in the second parameter, the context can be overridden only.
+
+## Exception Handling
+
+We separate our business exceptions from technical exceptions. While for technical exceptions, we use the predefined HTTPExceptions from NestJS, b usiness exceptions inherit from abstract BusinessException.
+
+By default, implementations of BusinessException must define a title, type (identifier) and custom message and can contain additional data (like validation error).
+
+![](../../assets/exception-hierarchy.svg)
+
+There is a filter defined to handle exceptions, which cares about the response format of exceptions and logging.
+
+In client applications, for technical errors, evaluate the http-error-code, then for business exceptions, the type can be used as identifier.
+
+For business errors we use 409/conflict as default to clearly have all business errors with one error code identified.
+
+> Sample: For API validation errors, 409/Bad Request will be extended with `validationError: ValidationError[{ field: string, error: string }]` and a custom type `API_VALIDATION_ERROR`.
+
+Pipes can be used as input validation. To get errors reported in the correct format, they can define a custom exception factory when they should produce api validation error or other exceptions, handled by clients.
