@@ -30,7 +30,7 @@ describe('NewsService', () => {
 		await mongod.stop();
 	});
 
-	describe('findAllByTargets', () => {
+	describe('findAll', () => {
 		it('should return news for targets', async () => {
 			const schoolId = new ObjectId().toString();
 			const courseId = new ObjectId().toString();
@@ -49,9 +49,9 @@ describe('NewsService', () => {
 				},
 			];
 			const pagination = { skip: 0, limit: 20 };
-			const result = await repo.findAllByTargets(schoolId, targets, pagination);
+			const result = await repo.findAll(schoolId, targets, pagination);
 			expect(result.length).toEqual(1);
-			expect(result[0]._id.toString()).toEqual(news._id.toString());
+			expect(result[0].id).toEqual(news.id);
 		});
 	});
 });
