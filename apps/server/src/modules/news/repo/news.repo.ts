@@ -4,7 +4,7 @@ import { PaginationModel } from '../../../shared/repo/interface/pagination.inter
 import { EntityManager } from '@mikro-orm/mongodb';
 import { EntityId } from '../../../shared/domain';
 import { ICreateNews } from '../uc';
-import { Dictionary } from '@mikro-orm/core';
+import { Dictionary, FilterQuery } from '@mikro-orm/core';
 
 export interface NewsTargetFilter {
 	targetModel: NewsTargetModelValue;
@@ -28,7 +28,7 @@ export class NewsRepo {
 	 * @param pagination
 	 */
 	async findAll(schoolId: EntityId, targets: NewsTargetFilter[], pagination: PaginationModel = {}): Promise<News[]> {
-		const targetSubQuery = [];
+		const targetSubQuery: FilterQuery<News>[] = [];
 		// include all targets
 		targets.forEach((target) => {
 			targetSubQuery.push({ $and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }] });
