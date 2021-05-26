@@ -38,6 +38,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-8933 - fix date format on first login
 - SC-8728 - fix configuration reset in tests
 - SC-8873 - fix addUser prioritization for full school Matrix messenger sync
 - SC-8982 - fix test setup for on the fly building test like routes jwt
