@@ -1,17 +1,11 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { FeathersServiceProvider } from './feathers-service.provider';
 
-type Permission = 'foo' | 'bar';
-type Model = 'school' | 'course' | 'team'; // TODO use it
-interface Target {
-	targetId: EntityId;
-	targetModel: string;
-}
-
 import CompareHelper = require('../../../../../src/helper/compare'); // TODO move to lib
 import { EntityId } from '../../shared/domain';
 import { NewsTargetModelValue } from '../news/entity';
 const { equal: equalId } = CompareHelper.ObjectId;
+
 @Injectable()
 export class AuthorizationService {
 	constructor(private feathersServiceProvider: FeathersServiceProvider) {}
@@ -82,21 +76,15 @@ export class AuthorizationService {
 	 * @param targetModel
 	 * @param targetId
 	 */
-	// async getTartgetPermissions(userId: EntityId, targetModel: NewsTargetModel, targetId: EntityId): Promise<string[]> {}
-
-	async getUserPermissions(userId: EntityId, target: Target): Promise<string[]> {
-		const params = { route: { scopeId: target.targetId } };
-		if (target.targetModel === 'school') {
-			const schoolPermissions = await this.getUserSchoolPermissions(userId, target.targetId);
-			// TODO service response is string array?
-			return schoolPermissions;
-		}
-		// otherwise a scope must implement userPermissions:
-		// TODO check the service implements userPermissions
+	async getUserTartgetPermissions(
+		userId: EntityId,
+		targetModel: NewsTargetModelValue,
+		targetId: EntityId
+	): Promise<string[]> {
 		const targetPermissions: string[] = await this.feathersServiceProvider.get(
-			`${target.targetModel}/:scopeId/userPermissions/`,
+			`${targetModel}/:scopeId/userPermissions/`,
 			userId,
-			params
+			{ route: { scopeId: targetId } }
 		);
 		// TODO service response is string array?
 		return targetPermissions;

@@ -1,10 +1,10 @@
-import {Injectable} from '@nestjs/common';
-import {News, NewsTargetModelValue} from '../entity/news.entity';
-import {PaginationModel} from '../../../shared/repo/interface/pagination.interface';
-import {EntityManager} from '@mikro-orm/mongodb';
-import {EntityId} from '../../../shared/domain';
-import {ICreateNews} from '../uc';
-import {Dictionary} from '@mikro-orm/core';
+import { Injectable } from '@nestjs/common';
+import { News, NewsTargetModelValue } from '../entity/news.entity';
+import { PaginationModel } from '../../../shared/repo/interface/pagination.interface';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityId } from '../../../shared/domain';
+import { ICreateNews } from '../uc';
+import { Dictionary } from '@mikro-orm/core';
 
 export interface NewsTargetFilter {
 	targetModel: NewsTargetModelValue;
@@ -21,32 +21,55 @@ export class NewsRepo {
 		return news;
 	}
 
-	findAllBySchool(schoolId: EntityId, pagination: PaginationModel = {}): Promise<News[]> {
-		const query = { $and: [{ school: schoolId }, { $and: [{ targetModel: null }, { target: null }] }] };
-		const newsList = this.findNews(query, pagination);
+	/**
+	 * Find news for all targets including school
+	 * @param schoolId
+	 * @param targets
+	 * @param pagination
+	 */
+	async findAll(schoolId: EntityId, targets: NewsTargetFilter[], pagination: PaginationModel = {}): Promise<News[]> {
+		const targetSubQuery = [];
+		// include all targets
+		targets.forEach((target) => {
+			targetSubQuery.push({ $and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }] });
+		});
+		// include school
+		targetSubQuery.push({ $and: [{ targetModel: null }, { target: null }] });
+
+		const targetQuery = targetSubQuery.length > 1 ? { $or: targetSubQuery } : targetSubQuery[0];
+		const query = { $and: [{ school: schoolId }, targetQuery] };
+
+		const newsList = await this.findNews(query, pagination);
 		return newsList;
 	}
 
-	private findNews(query, pagination: PaginationModel) {
-		return this.em.find(News, query, {
-			populate: ['school', 'creator', 'updater'],
-			...pagination,
-		});
+	/**
+	 * Find news for school only
+	 * @param schoolId
+	 * @param pagination
+	 * @returns
+	 */
+	async findAllBySchool(schoolId: EntityId, pagination: PaginationModel = {}): Promise<News[]> {
+		const query = { $and: [{ school: schoolId }, { $and: [{ targetModel: null }, { target: null }] }] };
+		const newsList = await this.findNews(query, pagination);
+		return newsList;
 	}
 
-	async findAllByTargets(
+	/**
+	 * Find news for a specific target
+	 * @param schoolId
+	 * @param target
+	 * @param pagination
+	 * @returns
+	 */
+	async findAllByTarget(
 		schoolId: EntityId,
-		targets: NewsTargetFilter[],
+		target: NewsTargetFilter,
 		pagination: PaginationModel = {}
 	): Promise<News[]> {
-		const targetSubQuery = targets.map((target) => {
-			return { $and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }] };
-		});
+		const query = { $and: [{ school: schoolId }, { targetModel: target.targetModel, 'target:in': target.targetIds }] };
 
-		const targetQuery = targetSubQuery.length > 1 ? { $or: targetSubQuery } : targetSubQuery[0];
-		const query = { $and: [{ school: schoolId }, targetQuery]};
-
-		const newsList = this.findNews(query, pagination);
+		const newsList = await this.findNews(query, pagination);
 		return newsList;
 	}
 
@@ -62,5 +85,13 @@ export class NewsRepo {
 
 	remove(id: EntityId) {
 		return `This action removes a #${id} news`;
+	}
+
+	private async findNews(query, pagination: PaginationModel) {
+		const obj = await this.em.find(News, query, {
+			...pagination,
+		});
+		const newsList = await this.em.populate(obj, ['school', 'creator', 'updater']);
+		return newsList;
 	}
 }

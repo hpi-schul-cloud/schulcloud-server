@@ -31,6 +31,7 @@ export class NewsController {
 			currentUser.userId,
 			currentUser.schoolId,
 			undefined,
+			// { targetModel: 'school', targetId: '' },
 			pagination
 		);
 		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
