@@ -14,6 +14,10 @@ export interface INewsScope {
 	// do not use the collection name!
 	// we should use the entity instead here (which is then mapped to the collection)
 	// see News entity definition
-	targetModel: NewsTargetModelValue | 'school';
-	targetId: EntityId;
+	target?:
+		| {
+				targetModel: 'school';
+		  }
+		| { targetModel: NewsTargetModelValue; targetId: EntityId };
+	unpublished?: boolean;
 }

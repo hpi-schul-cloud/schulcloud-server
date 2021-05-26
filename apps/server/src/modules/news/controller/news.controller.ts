@@ -31,7 +31,13 @@ export class NewsController {
 			currentUser.userId,
 			currentUser.schoolId,
 			undefined,
-			// { targetModel: 'school', targetId: '' },
+			// {
+			// 	target: {
+			// 		targetModel: 'courses',
+			// 		targetId: '0000dcfbfb5c7a3f00bf21ab',
+			// 	},
+			// 	unpublished: false,
+			// },
 			pagination
 		);
 		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));

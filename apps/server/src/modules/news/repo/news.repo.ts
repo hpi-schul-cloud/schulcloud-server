@@ -25,33 +25,37 @@ export class NewsRepo {
 	 * Find news for all targets including school
 	 * @param schoolId
 	 * @param targets
+	 * @param unpublished
 	 * @param pagination
 	 */
-	async findAll(schoolId: EntityId, targets: NewsTargetFilter[], pagination: PaginationModel = {}): Promise<News[]> {
-		const targetSubQuery: FilterQuery<News>[] = [];
-		// include all targets
-		targets.forEach((target) => {
-			targetSubQuery.push({ $and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }] });
-		});
-		// include school
-		targetSubQuery.push({ $and: [{ targetModel: null }, { target: null }] });
+	async findAll(
+		schoolId: EntityId,
+		targets: NewsTargetFilter[],
+		unpublished: boolean,
+		pagination: PaginationModel = {}
+	): Promise<News[]> {
+		const scope = new NewsScope();
+		scope.bySchool(schoolId);
+		scope.byAllTargets(targets);
+		scope.byUnpublished(unpublished);
 
-		const targetQuery = targetSubQuery.length > 1 ? { $or: targetSubQuery } : targetSubQuery[0];
-		const query = { $and: [{ school: schoolId }, targetQuery] };
-
-		const newsList = await this.findNews(query, pagination);
+		const newsList = await this.findNews(scope.query, pagination);
 		return newsList;
 	}
 
 	/**
 	 * Find news for school only
 	 * @param schoolId
+	 * @param unpublished
 	 * @param pagination
 	 * @returns
 	 */
-	async findAllBySchool(schoolId: EntityId, pagination: PaginationModel = {}): Promise<News[]> {
-		const query = { $and: [{ school: schoolId }, { $and: [{ targetModel: null }, { target: null }] }] };
-		const newsList = await this.findNews(query, pagination);
+	async findAllBySchool(schoolId: EntityId, unpublished: boolean, pagination: PaginationModel = {}): Promise<News[]> {
+		const scope = new NewsScope();
+		scope.bySchool(schoolId);
+		scope.byEmptyTarget();
+		scope.byUnpublished(unpublished);
+		const newsList = await this.findNews(scope.query, pagination);
 		return newsList;
 	}
 
@@ -59,17 +63,22 @@ export class NewsRepo {
 	 * Find news for a specific target
 	 * @param schoolId
 	 * @param target
+	 * @param unpublished
 	 * @param pagination
 	 * @returns
 	 */
 	async findAllByTarget(
 		schoolId: EntityId,
 		target: NewsTargetFilter,
+		unpublished: boolean,
 		pagination: PaginationModel = {}
 	): Promise<News[]> {
-		const query = { $and: [{ school: schoolId }, { targetModel: target.targetModel, 'target:in': target.targetIds }] };
+		const scope = new NewsScope();
+		scope.bySchool(schoolId);
+		scope.byTarget(target);
+		scope.byUnpublished(unpublished);
 
-		const newsList = await this.findNews(query, pagination);
+		const newsList = await this.findNews(scope.query, pagination);
 		return newsList;
 	}
 
@@ -93,5 +102,59 @@ export class NewsRepo {
 		});
 		const newsList = await this.em.populate(obj, ['school', 'creator', 'updater']);
 		return newsList;
+	}
+}
+
+class NewsScope {
+	query: FilterQuery<News> = {};
+
+	bySchool(schoolId: EntityId) {
+		this.addQuery({ school: schoolId });
+		return this;
+	}
+
+	// targets + school target
+	byAllTargets(targets: NewsTargetFilter[]) {
+		const queries: FilterQuery<News>[] = targets.map(this.getTargetQuery);
+		queries.push(this.getEmptyTargetQuery());
+		this.addQuery({ $or: queries });
+		return this;
+	}
+
+	// single target
+	byTarget(target: NewsTargetFilter) {
+		this.addQuery(this.getTargetQuery(target));
+		return this;
+	}
+
+	byEmptyTarget() {
+		this.addQuery(this.getEmptyTargetQuery());
+		return this;
+	}
+
+	byUnpublished(unpublished: boolean) {
+		const now = new Date();
+		this.addQuery({ displayAt: unpublished ? { $gt: now } : { $lte: now } });
+		return this;
+	}
+
+	private addQuery(query: FilterQuery<News>) {
+		if (Object.keys(this.query).length === 0) {
+			this.query = query;
+		} else {
+			if (Array.isArray(this.query['$and'])) {
+				this.query['$and'].push(query);
+			} else {
+				this.query = { $and: [Object.assign({}, this.query), query] };
+			}
+		}
+	}
+
+	private getTargetQuery(target: NewsTargetFilter): FilterQuery<News> {
+		return { $and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }] };
+	}
+
+	private getEmptyTargetQuery() {
+		return { $and: [{ targetModel: null }, { target: null }] };
 	}
 }
