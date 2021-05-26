@@ -13,7 +13,7 @@ branches:
 
 stages:
   - name: test
-    if: NOT (commit_message =~ /(skip-test-stage)/ ) OR branch = /^(feature).*$/ AND "$TRAVIS_PULL_REQUEST" != "false"
+    if: NOT ((commit_message =~ /(skip-test-stage)/ ) OR branch = /^(feature).*$/ AND "$TRAVIS_PULL_REQUEST" != "false" (
   - name: deploy
     if: NOT (commit_message =~ /(skip-deploy-stage)/)
 jobs:
