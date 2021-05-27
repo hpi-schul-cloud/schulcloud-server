@@ -13,6 +13,8 @@ import { ErrorResponse } from '../dto/error.response';
 import { BusinessError } from '../../../shared/error/business.error';
 import { Response } from 'express';
 
+const isFeathersError = (error) => error?.type === 'FeathersError';
+
 const isBusinessError = (error): error is BusinessError => {
 	return error instanceof BusinessError;
 };
@@ -51,7 +53,13 @@ function createErrorResponseForUnknownError(error?: Error): ErrorResponse {
 const createErrorResponse = (error: any, logger: Logger): ErrorResponse => {
 	try {
 		let errorResponse: ErrorResponse;
-		if (isBusinessError(error)) {
+		if (isFeathersError(error)) {
+			// handles feathers errors only when calling feathers services from nest app
+			const { code, className: type, name: title, message } = error;
+			const snakeType = _.snakeCase(type).toUpperCase();
+			const startTitle = _.startCase(title);
+			errorResponse = new ErrorResponse(snakeType, startTitle, message, code);
+		} else if (isBusinessError(error)) {
 			// create response from business error using 409/conflict
 			errorResponse = createErrorResponseForBusinessError(error);
 		} else if (isTechnicalError(error)) {
