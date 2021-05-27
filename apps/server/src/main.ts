@@ -10,7 +10,7 @@ install();
 // application imports
 import legacyAppPromise = require('../../../src/app');
 import { ApiValidationError } from './core/error/errors/api-validation.error';
-import { ServerLogger } from './core/logger/logger.service';
+import { Logger } from './core/logger/logger.service';
 import { ServerModule } from './server.module';
 import { DurationLoggingInterceptor } from './shared/interceptor/duration-logging.interceptor';
 
@@ -28,7 +28,7 @@ async function bootstrap() {
 	const app = await NestFactory.create(ServerModule, adapter, {});
 
 	// switch logger
-	app.useLogger(new ServerLogger());
+	app.useLogger(new Logger());
 
 	// for all NestJS controller routes, prepend ROUTE_PRAEFIX
 	app.setGlobalPrefix(ROUTE_PRAEFIX);

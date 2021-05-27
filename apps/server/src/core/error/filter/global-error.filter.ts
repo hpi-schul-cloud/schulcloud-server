@@ -7,7 +7,7 @@ import {
 	InternalServerErrorException,
 } from '@nestjs/common';
 import * as _ from 'lodash';
-import { ServerLogger } from '../../logger/logger.service';
+import { Logger } from '../../logger/logger.service';
 import { ErrorResponse } from '../dto/error.response';
 
 import { BusinessError } from '../errors/business.error';
@@ -53,7 +53,7 @@ function createErrorResponseForUnknownError(error?: Error): ErrorResponse {
 	return response;
 }
 
-const createErrorResponse = (error: any, logger: ServerLogger): ErrorResponse => {
+const createErrorResponse = (error: any, logger: Logger): ErrorResponse => {
 	try {
 		let errorResponse: ErrorResponse;
 		if (isBusinessError(error)) {
@@ -68,19 +68,27 @@ const createErrorResponse = (error: any, logger: ServerLogger): ErrorResponse =>
 		}
 		return errorResponse;
 	} catch (exception) {
-		logger.error(exception, exception?.stack, 'Exception Fallback');
+		logger.error(exception, exception?.stack, 'Exception Response failed');
 		return createErrorResponseForUnknownError();
 	}
 };
 
-const writeErrorLog = (error: any, logger: ServerLogger): void => {
-	if (isBusinessError(error)) return;
-	logger.error(error);
+const writeErrorLog = (error: any, logger: Logger): void => {
+	if (isBusinessError(error)) {
+		// set type as context
+		logger.error(error, undefined, (error as any)?.response?.type);
+	} else if (isTechnicalError(error)) {
+		// log error message only
+		logger.error(error);
+	} else {
+		// full log with stack trace
+		logger.error(error, error?.stack, 'Unhandled Exception');
+	}
 };
 
 @Catch()
 export class GlobalErrorFilter<T = any> implements ExceptionFilter<T> {
-	private static readonly logger = new ServerLogger('Exception');
+	private static readonly logger = new Logger('Exception');
 
 	catch(error: T, host: ArgumentsHost) {
 		const ctx = host.switchToHttp();
