@@ -1,16 +1,16 @@
 <mxfile>
     <diagram id="ib5NyIqzP1NXBs57_w-h" name="Page-1">
-        <mxGraphModel dx="1622" dy="520" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="1620" dy="607" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="2" target="3">
+                <mxCell id="4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="2" target="3" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="2" target="5">
+                <mxCell id="7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="2" target="5" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="5" target="12">
+                <mxCell id="13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="5" target="12" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="420" y="270" as="sourcePoint"/>
                         <Array as="points">
@@ -19,58 +19,58 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="2" value="NestJS&lt;br&gt;HttpException" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e51400;strokeColor=#B20000;fontColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="2" value="NestJS&lt;br&gt;HttpException" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e51400;strokeColor=#B20000;fontColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="300" y="80" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="3" target="10">
+                <mxCell id="11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="3" target="10" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="3" value="NestJS&lt;br&gt;Any Technical Exception&lt;br&gt;code+resp&lt;br&gt;with custom message" style="whiteSpace=wrap;html=1;rounded=0;fillColor=#e51400;strokeColor=#B20000;fontColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="3" value="NestJS&lt;br&gt;Any Technical Exception&lt;br&gt;code+resp&lt;br&gt;with custom message" style="whiteSpace=wrap;html=1;rounded=0;fillColor=#e51400;strokeColor=#B20000;fontColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="180" y="210" width="140" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="5" target="8">
+                <mxCell id="9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="5" target="8" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="5" value="&lt;i&gt;Business Exception&lt;br&gt;&lt;/i&gt;set format" style="whiteSpace=wrap;html=1;rounded=0;fillColor=#fa6800;strokeColor=#C73500;fontColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="5" value="&lt;i&gt;Business Exception&lt;br&gt;&lt;/i&gt;set format" style="whiteSpace=wrap;html=1;rounded=0;fillColor=#fa6800;strokeColor=#C73500;fontColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="360" y="210" width="290" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="8" target="14">
+                <mxCell id="15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="8" target="14" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="8" value="Business Exc. Impl.&lt;br&gt;title/type/message&lt;br&gt;default: 409/Conflict" style="whiteSpace=wrap;html=1;rounded=0;fillColor=#fa6800;strokeColor=#C73500;fontColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="8" value="Business Exc. Impl.&lt;br&gt;title/type/message&lt;br&gt;default: 409/Conflict" style="whiteSpace=wrap;html=1;rounded=0;fillColor=#fa6800;strokeColor=#C73500;fontColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="360" y="350" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="10" target="17">
+                <mxCell id="18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="10" target="17" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="10" value="apply response format: &lt;br&gt;title/type/message" style="whiteSpace=wrap;html=1;rounded=0;fillColor=#76608a;strokeColor=#432D57;fontColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="10" value="apply response format: &lt;br&gt;title/type/message" style="whiteSpace=wrap;html=1;rounded=0;fillColor=#76608a;strokeColor=#432D57;fontColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="190" y="470" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="12" target="14">
+                <mxCell id="16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="12" target="14" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="12" value="API Validation Exc.&lt;br&gt;400/Bad Request&lt;br&gt;+ validationError" style="whiteSpace=wrap;html=1;rounded=0;fillColor=#fa6800;strokeColor=#C73500;fontColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="12" value="API Validation Exc.&lt;br&gt;400/Bad Request&lt;br&gt;+ validationError" style="whiteSpace=wrap;html=1;rounded=0;fillColor=#fa6800;strokeColor=#C73500;fontColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="530" y="350" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="14" target="19">
+                <mxCell id="20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="14" target="19" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="14" value="return status and response (already formatted)" style="whiteSpace=wrap;html=1;rounded=0;fillColor=#76608a;strokeColor=#432D57;fontColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="14" value="return status and response (already formatted)" style="whiteSpace=wrap;html=1;rounded=0;fillColor=#76608a;strokeColor=#432D57;fontColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="360" y="470" width="290" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="17" value="1. identify by error code" style="whiteSpace=wrap;html=1;rounded=0;fontColor=#ffffff;strokeColor=#3A5431;fillColor=#6d8764;" vertex="1" parent="1">
+                <mxCell id="17" value="1. identify by error code" style="whiteSpace=wrap;html=1;rounded=0;fontColor=#ffffff;strokeColor=#3A5431;fillColor=#6d8764;" parent="1" vertex="1">
                     <mxGeometry x="190" y="610" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="19" value="2. identify by type, use custom additional data" style="whiteSpace=wrap;html=1;rounded=0;fontColor=#ffffff;strokeColor=#3A5431;fillColor=#6d8764;" vertex="1" parent="1">
+                <mxCell id="19" value="2. identify by error code, then by type, &lt;br&gt;use custom additional data" style="whiteSpace=wrap;html=1;rounded=0;fontColor=#ffffff;strokeColor=#3A5431;fillColor=#6d8764;" parent="1" vertex="1">
                     <mxGeometry x="360" y="610" width="290" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="21" value="Exception Filter:&lt;br&gt;logging/response" style="whiteSpace=wrap;html=1;rounded=0;fontColor=#ffffff;strokeColor=#432D57;fillColor=#76608a;" vertex="1" parent="1">
+                <mxCell id="21" value="Exception Filter:&lt;br&gt;logging/response" style="whiteSpace=wrap;html=1;rounded=0;fontColor=#ffffff;strokeColor=#432D57;fillColor=#76608a;" parent="1" vertex="1">
                     <mxGeometry x="-10" y="470" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="23" value="Client Evaluation:" style="whiteSpace=wrap;html=1;rounded=0;fontColor=#ffffff;strokeColor=#3A5431;fillColor=#6d8764;" vertex="1" parent="1">
+                <mxCell id="23" value="Client Evaluation:" style="whiteSpace=wrap;html=1;rounded=0;fontColor=#ffffff;strokeColor=#3A5431;fillColor=#6d8764;" parent="1" vertex="1">
                     <mxGeometry x="-10" y="610" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="25" value="Server Module:&lt;br&gt;defines/uses" style="whiteSpace=wrap;html=1;rounded=0;fontColor=#ffffff;strokeColor=#C73500;fillColor=#fa6800;" vertex="1" parent="1">
+                <mxCell id="25" value="Server Module:&lt;br&gt;defines/uses" style="whiteSpace=wrap;html=1;rounded=0;fontColor=#ffffff;strokeColor=#C73500;fillColor=#fa6800;" parent="1" vertex="1">
                     <mxGeometry x="-10" y="210" width="120" height="200" as="geometry"/>
                 </mxCell>
             </root>

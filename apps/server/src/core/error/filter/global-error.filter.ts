@@ -12,7 +12,6 @@ import { ErrorResponse } from '../dto/error.response';
 
 import { BusinessError } from '../errors/business.error';
 import { Response } from 'express';
-import { ValidationError, ValidationErrorResponse } from '../dto/validation-error.response';
 import { API_VALIDATION_ERROR_TYPE } from '../server-error-types';
 
 const isValidationError = (error: HttpException): error is BadRequestException => {
@@ -40,41 +39,16 @@ const isTechnicalError = (error): error is HttpException => {
  */
 const createErrorResponseForHttpException = (exception: HttpException): ErrorResponse => {
 	const code = exception.getStatus();
-	// TODO create type and title by code, define types
 	const { error } = exception.getResponse() as { error: string | undefined };
 	const type = error || exception.message;
-	return {
-		code,
-		type: _.snakeCase(type).toUpperCase(),
-		title: _.startCase(type),
-		message: exception.message,
-	};
-};
-
-const getValidationErrorsFromBadRequestException = (error: BadRequestException) => {
-	// expect error messages to be an array of strings
-	const { message } = error.getResponse() as { message: string[] };
-	const validationErrors = message.map((message) => {
-		// messages have the related field by default in the first word, split up messages
-		const firstWord = message.split(' ')[0];
-		const rest = message.replace(firstWord + ' ', '');
-		return new ValidationError(firstWord, rest);
-	});
-	return validationErrors;
-};
-
-const createErrorResponseForValidationError = (error: BadRequestException): ValidationErrorResponse => {
-	const { title, type, defaultMessage } = API_VALIDATION_ERROR_TYPE;
-	const response: ErrorResponse = { code: error.getStatus(), title, type, message: defaultMessage };
-	const validationErrors = getValidationErrorsFromBadRequestException(error);
-	return Object.assign({}, response, { validationErrors });
+	return new ErrorResponse(_.snakeCase(type).toUpperCase(), _.startCase(type), exception.message, code);
 };
 
 function createErrorResponseForBusinessError(error: BusinessError): ErrorResponse {
-	throw new Error('Function not implemented.');
+	return error.getResponse() as any as ErrorResponse;
 }
 
-function createErrorResponseForUnknownError(error: any): ErrorResponse {
+function createErrorResponseForUnknownError(error: Error): ErrorResponse {
 	const unknownError = new InternalServerErrorException(error);
 	const response = createErrorResponseForHttpException(unknownError);
 	return response;
@@ -82,10 +56,7 @@ function createErrorResponseForUnknownError(error: any): ErrorResponse {
 
 const createErrorResponse = (error: any): ErrorResponse => {
 	let errorResponse: ErrorResponse;
-	if (isValidationError(error)) {
-		// create response as validation error from 400/bad request exception
-		errorResponse = createErrorResponseForValidationError(error);
-	} else if (isBusinessError(error)) {
+	if (isBusinessError(error)) {
 		// create response from business error using 409/conflict
 		errorResponse = createErrorResponseForBusinessError(error);
 	} else if (isTechnicalError(error)) {
