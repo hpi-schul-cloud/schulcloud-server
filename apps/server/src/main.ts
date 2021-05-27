@@ -51,7 +51,7 @@ async function bootstrap() {
 				enableImplicitConversion: true,
 			},
 			whitelist: true, // only pass valid @ApiProperty-decorated DTO properties, remove others
-			forbidNonWhitelisted: true, // when whitelist is true, fail when additional invalid parameters are received
+			forbidNonWhitelisted: false, // additional params are just skipped (required when extracting multiple DTO from single query)
 		})
 	);
 	/** *********************************************
