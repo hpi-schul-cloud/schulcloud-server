@@ -44,25 +44,22 @@ export class NewsUc {
 		this.logger.log(`start find all news for user ${userId}`);
 
 		const unpublished = !!scope?.unpublished;
-		const permission = unpublished ? 'NEWS_EDIT' : 'NEWS_VIEW';
-		await this.authorizationService.checkUserSchoolPermissions(userId, schoolId, [permission]);
+		const permissions = unpublished ? ['NEWS_EDIT'] : ['NEWS_VIEW'];
+		await this.authorizationService.checkUserSchoolPermissions(userId, schoolId, permissions);
 
 		let newsList: News[];
 
 		if (scope?.target == null) {
 			// all news for all permitted targets and school
-			const targets = await this.getTargetFilters(userId, Object.values(NewsTargetModel), permission);
+			const targets = await this.getTargetFilters(userId, Object.values(NewsTargetModel), permissions);
 			newsList = await this.newsRepo.findAll(schoolId, targets, unpublished, pagination);
 		} else if (scope.target.targetModel === 'school') {
 			// all news for school only
 			newsList = await this.newsRepo.findAllBySchool(schoolId, unpublished, pagination);
 		} else {
-			// all news for specific target
-			const target = await this.getTargetFilter(userId, scope.target.targetModel, permission);
-			// TODO decide whether to throw UnauthorizedException or return empty list when user has no permissions for the specified target
+			let target = await this.getTargetFilter(userId, scope.target.targetModel, scope.target.targetId, permissions);
 			newsList = await this.newsRepo.findAllByTarget(schoolId, target, unpublished, pagination);
 		}
-
 		await Promise.all(
 			newsList.map(async (news: News) => {
 				await this.decoratePermissions(news, userId);
@@ -102,10 +99,10 @@ export class NewsUc {
 	private async getTargetFilters(
 		userId: EntityId,
 		targetModels: NewsTargetModelValue[],
-		permission: string
+		permissions: string[]
 	): Promise<NewsTargetFilter[]> {
 		const targets = await Promise.all(
-			targetModels.map((targetModel) => this.getTargetFilter(userId, targetModel, permission))
+			targetModels.map((targetModel) => this.getTargetFilter(userId, targetModel, undefined, permissions))
 		);
 		const nonEmptyTargets = targets.filter((target) => target.targetIds.length > 0);
 
@@ -115,11 +112,20 @@ export class NewsUc {
 	private async getTargetFilter(
 		userId: EntityId,
 		targetModel: NewsTargetModelValue,
-		permission: string
+		targetId?: EntityId,
+		permissions: string[] = []
 	): Promise<NewsTargetFilter> {
+		let targetIds;
+		if (targetId) {
+			// all news for specific target
+			await this.authorizationService.checkUserTargetPermissions(userId, targetModel, targetId, permissions);
+			targetIds = [targetId];
+		} else {
+			targetIds = await this.authorizationService.getPermittedTargets(userId, targetModel, permissions);
+		}
 		return {
 			targetModel,
-			targetIds: await this.authorizationService.getPermittedTargets(userId, targetModel, [permission]),
+			targetIds,
 		};
 	}
 
@@ -132,7 +138,7 @@ export class NewsUc {
 	private async getEntityPermissions(userId: EntityId, news: News): Promise<string[]> {
 		const permissions =
 			news.targetModel && news.target
-				? await this.authorizationService.getUserTartgetPermissions(userId, news.targetModel, news.target.id)
+				? await this.authorizationService.getUserTargetPermissions(userId, news.targetModel, news.target.id)
 				: await this.authorizationService.getUserSchoolPermissions(userId, news.school.id);
 
 		return permissions;

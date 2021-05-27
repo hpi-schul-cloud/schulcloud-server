@@ -51,10 +51,7 @@ export class NewsRepo {
 	 * @returns
 	 */
 	async findAllBySchool(schoolId: EntityId, unpublished: boolean, pagination: PaginationModel = {}): Promise<News[]> {
-		const scope = new NewsScope();
-		scope.bySchool(schoolId);
-		scope.byEmptyTarget();
-		scope.byUnpublished(unpublished);
+		const scope = new NewsScope().bySchool(schoolId).byEmptyTarget().byUnpublished(unpublished);
 		const newsList = await this.findNews(scope.query, pagination);
 		return newsList;
 	}
@@ -73,10 +70,7 @@ export class NewsRepo {
 		unpublished: boolean,
 		pagination: PaginationModel = {}
 	): Promise<News[]> {
-		const scope = new NewsScope();
-		scope.bySchool(schoolId);
-		scope.byTarget(target);
-		scope.byUnpublished(unpublished);
+		const scope = new NewsScope().bySchool(schoolId).byTarget(target).byUnpublished(unpublished);
 
 		const newsList = await this.findNews(scope.query, pagination);
 		return newsList;
