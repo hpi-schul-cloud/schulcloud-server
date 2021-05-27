@@ -3,6 +3,9 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Logger } from '../../core/logger/logger.service';
 
+/**
+ * This interceptor is logging the duration of a REST call.
+ */
 @Injectable()
 export class DurationLoggingInterceptor implements NestInterceptor {
 	private readonly logger = new Logger(DurationLoggingInterceptor.name);

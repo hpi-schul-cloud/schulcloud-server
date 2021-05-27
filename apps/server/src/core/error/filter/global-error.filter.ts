@@ -70,8 +70,8 @@ const createErrorResponse = (error: any, logger: Logger): ErrorResponse => {
 
 const writeErrorLog = (error: any, logger: Logger): void => {
 	if (isBusinessError(error)) {
-		// set type as context
-		logger.error(error, undefined, (error as any)?.response?.type);
+		// log error message only
+		logger.error(error);
 	} else if (isTechnicalError(error)) {
 		// log error message only
 		logger.error(error);

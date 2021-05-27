@@ -27,21 +27,8 @@ async function bootstrap() {
 	// create the NestJS application adapting the legacy  server
 	const app = await NestFactory.create(ServerModule, adapter, {});
 
-	// switch logger
-	app.useLogger(new Logger());
-
 	// for all NestJS controller routes, prepend ROUTE_PRAEFIX
 	app.setGlobalPrefix(ROUTE_PRAEFIX);
-
-	/** *********************************************
-	 * Global Interceptor setup
-	 * **********************************************
-	 * Validation of DTOs will base on type-checking
-	 * which is enabled by default. To you might use
-	 * the class-validator decorators to extend
-	 * validation.
-	 */
-	app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)), new DurationLoggingInterceptor());
 
 	/** *********************************************
 	 * OpenAPI docs setup
