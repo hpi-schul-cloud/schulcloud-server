@@ -17,6 +17,8 @@
 		"baseUrl": "./",
 		"incremental": true,
 		"allowJs": true,
-		"paths": {}
+		"paths": {
+			"@shared/*": ["apps/server/src/shared/*"]
+		}
 	}
 }

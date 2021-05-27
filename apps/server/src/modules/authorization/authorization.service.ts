@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/co
 import { FeathersServiceProvider } from './feathers-service.provider';
 
 import CompareHelper = require('../../../../../src/helper/compare'); // TODO move to lib
-import { EntityId } from '../../shared/domain';
+import { EntityId } from '@shared/domain';
 import { NewsTargetModelValue } from '../news/entity';
 const { equal: equalId } = CompareHelper.ObjectId;
 

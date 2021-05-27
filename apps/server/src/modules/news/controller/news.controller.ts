@@ -3,9 +3,9 @@ import { NewsUc } from '../uc/news.uc';
 import { ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { ICurrentUser } from '../../authentication/interface/jwt-payload';
-import { ParseObjectIdPipe } from '../../../shared/pipe/parse-object-id.pipe';
+import { ParseObjectIdPipe } from '@shared/pipe';
 import { CreateNewsParams, NewsFilterQuery, NewsResponse } from './dto';
-import { PaginationQuery } from '../../../shared/controller/dto/pagination.query';
+import { PaginationQuery } from '@shared/controller';
 import { NewsMapper } from '../mapper/news.mapper';
 
 @ApiTags('News')

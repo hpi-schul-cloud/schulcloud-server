@@ -1,5 +1,5 @@
 import { AnyEntity, Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { BaseEntity, BaseEntityWithTimestamps } from '../../../shared/domain';
+import { BaseEntity, BaseEntityWithTimestamps } from '@shared/domain';
 import { SchoolInfo } from './school-info.entity';
 import { UserInfo } from './user-info.entity';
 

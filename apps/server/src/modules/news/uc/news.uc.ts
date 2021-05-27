@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination } from '../../../shared/domain';
+import { EntityId, IPagination } from '@shared/domain';
 import { AuthorizationService } from '../../authorization/authorization.service';
 import { Logger } from '../../../core/logger/logger.service';
 import { News, NewsTargetModel, NewsTargetModelValue, SchoolInfo } from '../entity';

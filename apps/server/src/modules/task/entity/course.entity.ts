@@ -1,6 +1,6 @@
 import { Collection, Entity, ManyToMany, Property } from '@mikro-orm/core';
 import { UserInfo } from '../../news/entity';
-import { BaseEntityWithTimestamps } from '../../../shared/domain';
+import { BaseEntityWithTimestamps } from '@shared/domain';
 
 @Entity({ tableName: 'courses' })
 export class Course extends BaseEntityWithTimestamps {

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '../../../shared/domain';
+import { EntityId } from '@shared/domain';
 import { ITaskOption, ITaskMetadata } from '../entity';
 import { TaskRepo } from '../repo/task.repo';
 

@@ -1,4 +1,4 @@
-import { BaseEntityWithTimestamps } from '../../../shared/domain';
+import { BaseEntityWithTimestamps } from '@shared/domain';
 import { Collection, Entity, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 import { UserInfo } from '../../news/entity';
 import { Course } from './course.entity';

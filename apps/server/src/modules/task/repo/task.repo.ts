@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '../../../shared/domain';
+import { EntityId } from '@shared/domain';
 import { ITaskOption, Task, ITaskMetadata, Submission, Course, Lesson } from '../entity';
 
 @Injectable()

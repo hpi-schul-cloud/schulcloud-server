@@ -1,7 +1,7 @@
 import { Injectable, Scope, Inject } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
-import { EntityId } from '../../shared/domain';
+import { EntityId } from '@shared/domain';
 
 // Provides an interface to access feathers services
 // Use only to gain access to feathers services.

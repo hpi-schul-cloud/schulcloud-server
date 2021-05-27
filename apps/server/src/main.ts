@@ -9,10 +9,7 @@ install();
 
 // application imports
 import legacyAppPromise = require('../../../src/app');
-import { ApiValidationError } from './core/error/errors/api-validation.error';
-import { Logger } from './core/logger/logger.service';
 import { ServerModule } from './server.module';
-import { DurationLoggingInterceptor } from './shared/interceptor/duration-logging.interceptor';
 
 const ROUTE_PRAEFIX = 'v3';
 const API_PATH = 'api';
