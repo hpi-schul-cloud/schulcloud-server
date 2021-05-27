@@ -50,6 +50,29 @@ export class AuthorizationService {
 	}
 
 	/**
+	 * Check permissions of a user for a target
+	 * @param userId
+	 * @param targetModel
+	 * @param targetId
+	 * @param permissions
+	 * @returns
+	 * @throws NotFoundException if the user doesn't exist
+	 *                 UnauthorizedException if the user doesn't have the specified permissions
+	 */
+	async checkUserTargetPermissions(
+		userId: EntityId,
+		targetModel: NewsTargetModelValue,
+		targetId: EntityId,
+		permissions: string[]
+	): Promise<void> | never {
+		const userTargetPermissions = await this.getUserTargetPermissions(userId, targetModel, targetId);
+		const hasPermissions = permissions.every((p) => userTargetPermissions.includes(p));
+		if (!hasPermissions) {
+			throw new UnauthorizedException('Insufficient permissions');
+		}
+	}
+
+	/**
 	 *
 	 * @param userId
 	 * @param targetModel
@@ -76,7 +99,7 @@ export class AuthorizationService {
 	 * @param targetModel
 	 * @param targetId
 	 */
-	async getUserTartgetPermissions(
+	async getUserTargetPermissions(
 		userId: EntityId,
 		targetModel: NewsTargetModelValue,
 		targetId: EntityId

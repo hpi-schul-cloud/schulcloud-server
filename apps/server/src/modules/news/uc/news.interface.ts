@@ -18,6 +18,6 @@ export interface INewsScope {
 		| {
 				targetModel: 'school';
 		  }
-		| { targetModel: NewsTargetModelValue; targetId: EntityId };
+		| { targetModel: NewsTargetModelValue; targetId?: EntityId };
 	unpublished?: boolean;
 }
