@@ -68,7 +68,7 @@ const createErrorResponse = (error: any, logger: Logger): ErrorResponse => {
 		}
 		return errorResponse;
 	} catch (exception) {
-		logger.error(exception, exception?.stack, 'Exception Response failed');
+		logger.error(exception, exception?.stack, 'Error Response failed');
 		return createErrorResponseForUnknownError();
 	}
 };
@@ -82,13 +82,13 @@ const writeErrorLog = (error: any, logger: Logger): void => {
 		logger.error(error);
 	} else {
 		// full log with stack trace
-		logger.error(error, error?.stack, 'Unhandled Exception');
+		logger.error(error, error?.stack, 'Unhandled Error');
 	}
 };
 
 @Catch()
 export class GlobalErrorFilter<T = any> implements ExceptionFilter<T> {
-	private static readonly logger = new Logger('Exception');
+	private static readonly logger = new Logger('Error');
 
 	catch(error: T, host: ArgumentsHost) {
 		const ctx = host.switchToHttp();
