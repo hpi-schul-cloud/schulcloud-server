@@ -4,7 +4,7 @@
  *  */
 
 import legacyErrorTypes = require('../../../../../src/errors/commonErrorTypes');
-import { IErrorType } from './error-type.interface';
+import { IErrorType } from './interface/error-type.interface';
 
 // check legacy error typing is matching IErrorType
 const serverErrorTypes: { [index: string]: IErrorType } = legacyErrorTypes;

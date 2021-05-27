@@ -3,8 +3,3 @@ export interface IErrorType {
 	readonly title: string;
 	readonly defaultMessage: string;
 }
-
-export interface IErrorTranslation {
-	readonly title: string;
-	readonly defaultMessage: string;
-}
