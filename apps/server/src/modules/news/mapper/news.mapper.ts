@@ -1,6 +1,6 @@
-import { CreateNewsParams, NewsResponse } from '../controller/dto';
-import { News } from '../entity';
-import { ICreateNews } from '../uc';
+import { CreateNewsParams, NewsFilterQuery, NewsResponse } from '../controller/dto';
+import { News, NewsTargetModel, NewsTargetModelValue } from '../entity';
+import { ICreateNews, INewsScope } from '../uc';
 import { SchoolInfoMapper } from './school-info.mapper';
 import { UserInfoMapper } from './user-info.mapper';
 
@@ -22,6 +22,24 @@ export class NewsMapper {
 		dto.createdAt = news.createdAt;
 		dto.updatedAt = news.updatedAt;
 		dto.permissions = news.permissions;
+		return dto;
+	}
+
+	static mapNewsScopeToDomain(query: NewsFilterQuery): INewsScope {
+		const dto: INewsScope = {};
+		if (query.targetModel) {
+			if (query.targetModel === 'school') {
+				dto.target = { targetModel: query.targetModel };
+			} else if (Object.values(NewsTargetModel).includes(query.targetModel as NewsTargetModelValue) && query.targetId) {
+				dto.target = {
+					targetModel: query.targetModel as NewsTargetModelValue,
+					targetId: query.targetId,
+				};
+			}
+		}
+		if (query.unpublished) {
+			dto.unpublished = query.unpublished;
+		}
 		return dto;
 	}
 

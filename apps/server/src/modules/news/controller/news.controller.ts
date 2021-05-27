@@ -4,7 +4,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { ICurrentUser } from '../../authentication/interface/jwt-payload';
 import { ParseObjectIdPipe } from '../../../shared/pipe/parse-object-id.pipe';
-import { CreateNewsParams, NewsResponse } from './dto';
+import { CreateNewsParams, NewsFilterQuery, NewsResponse } from './dto';
 import { PaginationQuery } from '../../../shared/controller/dto/pagination.query';
 import { NewsMapper } from '../mapper/news.mapper';
 
@@ -24,15 +24,22 @@ export class NewsController {
 	@Get()
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() pagination: PaginationQuery
+		@Query() scope: NewsFilterQuery
+		// @Query('pagination') pagination: PaginationQuery
 	): Promise<NewsResponse[]> {
 		// TODO get scope from dto
 		const newsList = await this.newsUc.findAllForUserAndSchool(
 			currentUser.userId,
 			currentUser.schoolId,
-			undefined,
-			// { targetModel: 'school', targetId: '' },
-			pagination
+			NewsMapper.mapNewsScopeToDomain(scope)
+			// {
+			// 	target: {
+			// 		targetModel: 'courses',
+			// 		targetId: '0000dcfbfb5c7a3f00bf21ab',
+			// 	},
+			// 	unpublished: false,
+			// },
+			// pagination
 		);
 		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
 		return dtoList;
