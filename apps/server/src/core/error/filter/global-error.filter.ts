@@ -7,13 +7,11 @@ import {
 	InternalServerErrorException,
 } from '@nestjs/common';
 import * as _ from 'lodash';
-import { ServerLogger } from '../../logger/logger.service';
+import { Logger } from '../../logger/logger.service';
 import { ErrorResponse } from '../dto/error.response';
 
 import { BusinessError } from '../errors/business.error';
 import { Response } from 'express';
-import { ValidationError, ValidationErrorResponse } from '../dto/validation-error.response';
-import { API_VALIDATION_ERROR_TYPE } from '../server-error-types';
 
 const isValidationError = (error: HttpException): error is BadRequestException => {
 	const { message } = error.getResponse() as any;
@@ -40,73 +38,63 @@ const isTechnicalError = (error): error is HttpException => {
  */
 const createErrorResponseForHttpException = (exception: HttpException): ErrorResponse => {
 	const code = exception.getStatus();
-	// TODO create type and title by code, define types
 	const { error } = exception.getResponse() as { error: string | undefined };
 	const type = error || exception.message;
-	return {
-		code,
-		type: _.snakeCase(type).toUpperCase(),
-		title: _.startCase(type),
-		message: exception.message,
-	};
-};
-
-const getValidationErrorsFromBadRequestException = (error: BadRequestException) => {
-	// expect error messages to be an array of strings
-	const { message } = error.getResponse() as { message: string[] };
-	const validationErrors = message.map((message) => {
-		// messages have the related field by default in the first word, split up messages
-		const firstWord = message.split(' ')[0];
-		const rest = message.replace(firstWord + ' ', '');
-		return new ValidationError(firstWord, rest);
-	});
-	return validationErrors;
-};
-
-const createErrorResponseForValidationError = (error: BadRequestException): ValidationErrorResponse => {
-	const { title, type, defaultMessage } = API_VALIDATION_ERROR_TYPE;
-	const response: ErrorResponse = { code: error.getStatus(), title, type, message: defaultMessage };
-	const validationErrors = getValidationErrorsFromBadRequestException(error);
-	return Object.assign({}, response, { validationErrors });
+	return new ErrorResponse(_.snakeCase(type).toUpperCase(), _.startCase(type), exception.message, code);
 };
 
 function createErrorResponseForBusinessError(error: BusinessError): ErrorResponse {
-	throw new Error('Function not implemented.');
+	return error.getResponse() as any as ErrorResponse;
 }
 
-function createErrorResponseForUnknownError(error: any): ErrorResponse {
+function createErrorResponseForUnknownError(error?: Error): ErrorResponse {
 	const unknownError = new InternalServerErrorException(error);
 	const response = createErrorResponseForHttpException(unknownError);
 	return response;
 }
 
-const createErrorResponse = (error: any): ErrorResponse => {
-	let errorResponse: ErrorResponse;
-	if (isValidationError(error)) {
-		// create response as validation error from 400/bad request exception
-		errorResponse = createErrorResponseForValidationError(error);
-	} else if (isBusinessError(error)) {
-		// create response from business error using 409/conflict
-		errorResponse = createErrorResponseForBusinessError(error);
-	} else if (isTechnicalError(error)) {
-		// create response from technical error
-		errorResponse = createErrorResponseForHttpException(error);
-	} else {
-		// create response from unknown error
-		errorResponse = createErrorResponseForUnknownError(error);
+const createErrorResponse = (error: any, logger: Logger): ErrorResponse => {
+	try {
+		let errorResponse: ErrorResponse;
+		if (isBusinessError(error)) {
+			// create response from business error using 409/conflict
+			errorResponse = createErrorResponseForBusinessError(error);
+		} else if (isTechnicalError(error)) {
+			// create response from technical error
+			errorResponse = createErrorResponseForHttpException(error);
+		} else {
+			// create response from unknown error
+			errorResponse = createErrorResponseForUnknownError(error);
+		}
+		return errorResponse;
+	} catch (exception) {
+		logger.error(exception, exception?.stack, 'Exception Response failed');
+		return createErrorResponseForUnknownError();
 	}
-	return errorResponse;
+};
+
+const writeErrorLog = (error: any, logger: Logger): void => {
+	if (isBusinessError(error)) {
+		// set type as context
+		logger.error(error, undefined, (error as any)?.response?.type);
+	} else if (isTechnicalError(error)) {
+		// log error message only
+		logger.error(error);
+	} else {
+		// full log with stack trace
+		logger.error(error, error?.stack, 'Unhandled Exception');
+	}
 };
 
 @Catch()
 export class GlobalErrorFilter<T = any> implements ExceptionFilter<T> {
-	private static readonly logger = new ServerLogger('Exception');
+	private static readonly logger = new Logger('Exception');
 
 	catch(error: T, host: ArgumentsHost) {
 		const ctx = host.switchToHttp();
 		const response = ctx.getResponse<Response>();
-
-		const errorResponse: ErrorResponse = createErrorResponse(error);
+		writeErrorLog(error, GlobalErrorFilter.logger);
+		const errorResponse: ErrorResponse = createErrorResponse(error, GlobalErrorFilter.logger);
 		response.status(errorResponse.code).json(errorResponse);
 	}
 }

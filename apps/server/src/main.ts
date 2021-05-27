@@ -1,4 +1,4 @@
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationError, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -9,7 +9,8 @@ install();
 
 // application imports
 import legacyAppPromise = require('../../../src/app');
-import { ServerLogger } from './core/logger/logger.service';
+import { ApiValidationError } from './core/error/errors/api-validation.error';
+import { Logger } from './core/logger/logger.service';
 import { ServerModule } from './server.module';
 import { DurationLoggingInterceptor } from './shared/interceptor/duration-logging.interceptor';
 
@@ -27,7 +28,7 @@ async function bootstrap() {
 	const app = await NestFactory.create(ServerModule, adapter, {});
 
 	// switch logger
-	app.useLogger(new ServerLogger());
+	app.useLogger(new Logger());
 
 	// for all NestJS controller routes, prepend ROUTE_PRAEFIX
 	app.setGlobalPrefix(ROUTE_PRAEFIX);
@@ -52,6 +53,9 @@ async function bootstrap() {
 			},
 			whitelist: true, // only pass valid @ApiProperty-decorated DTO properties, remove others
 			forbidNonWhitelisted: false, // additional params are just skipped (required when extracting multiple DTO from single query)
+			exceptionFactory: (errors: ValidationError[]) => {
+				return new ApiValidationError(errors);
+			},
 		})
 	);
 	/** *********************************************
