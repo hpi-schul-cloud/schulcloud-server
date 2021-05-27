@@ -37,7 +37,7 @@ export class NewsMapper {
 				};
 			}
 		}
-		if (query.unpublished) {
+		if ('unpublished' in query) {
 			dto.unpublished = query.unpublished;
 		}
 		return dto;
