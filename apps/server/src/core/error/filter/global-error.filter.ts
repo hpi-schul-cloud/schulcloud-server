@@ -13,11 +13,6 @@ import { ErrorResponse } from '../dto/error.response';
 import { BusinessError } from '../errors/business.error';
 import { Response } from 'express';
 
-const isValidationError = (error: HttpException): error is BadRequestException => {
-	const { message } = error.getResponse() as any;
-	return error instanceof BadRequestException && Array.isArray(message) && message.length > 0;
-};
-
 const isBusinessError = (error): error is BusinessError => {
 	return error instanceof BusinessError;
 };
