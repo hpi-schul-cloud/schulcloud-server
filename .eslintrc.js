@@ -61,32 +61,58 @@ module.exports = {
 			},
 		},
 	},
-	ignorePatterns: [
-		// should not be applied on nest apps
-		'apps/**',
-	],
 	overrides: [
 		{
 			// nest.js server in 'apps/server/**' */ which is excluded from outer rules
 			// this section is more less (parserOptions/project path) only what nest.js defines
-			files: ['apps/server/**/*.*'],
+			files: ['apps/server/**'],
 			parser: '@typescript-eslint/parser',
+			plugins: ['@typescript-eslint', 'import'],
+			extends: [
+				'eslint:recommended',
+				'plugin:@typescript-eslint/eslint-recommended',
+				'plugin:@typescript-eslint/recommended',
+				'plugin:prettier/recommended',
+				'plugin:promise/recommended',
+			],
 			parserOptions: {
-				project: 'apps/server/tsconfig.app.json',
-				sourceType: 'module',
+				project: 'apps/server/tsconfig.lint.json',
+				// sourceType: 'module',
 			},
-			plugins: ['@typescript-eslint/eslint-plugin'],
-			extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
 			env: {
 				node: true,
-				jest: true,
+				es6: true,
+			},
+			settings: {
+				'import/parsers': {
+					'@typescript-eslint/parser': ['.ts'],
+				},
+
+				'import/resolver': {
+					typescript: {
+						alwaysTryTypes: true,
+						project: ['tsconfig.json', 'apps/server/tsconfig.lint.json'],
+					},
+				},
 			},
 			rules: {
-				'@typescript-eslint/interface-name-prefix': 'off',
-				'@typescript-eslint/explicit-function-return-type': 'off',
-				'@typescript-eslint/explicit-module-boundary-types': 'off',
-				'@typescript-eslint/no-explicit-any': 'off',
+				'import/no-unresolved': 'error',
+				'import/extensions': ['error', 'always', { ts: 'never' }],
+				'import/prefer-default-export': 'off',
+				'import/no-extraneous-dependencies': ['error', { devDependencies: ['**/*spec.ts'] }],
+				// '@typescript-eslint/interface-name-prefix': 'off',
+				// '@typescript-eslint/explicit-function-return-type': 'off',
+				// '@typescript-eslint/explicit-module-boundary-types': 'off',
+				// '@typescript-eslint/no-explicit-any': 'off',
 			},
+			overrides: [
+				{
+					files: ['*.test.ts'],
+					env: {
+						jest: true,
+					},
+				},
+			],
 		},
 		{
 			// legacy test files js/ts
