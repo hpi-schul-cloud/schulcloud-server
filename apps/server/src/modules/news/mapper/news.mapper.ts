@@ -30,7 +30,7 @@ export class NewsMapper {
 		if (query.targetModel) {
 			if (query.targetModel === 'school') {
 				dto.target = { targetModel: query.targetModel };
-			} else if (Object.values(NewsTargetModel).includes(query.targetModel as NewsTargetModelValue) && query.targetId) {
+			} else {
 				dto.target = {
 					targetModel: query.targetModel as NewsTargetModelValue,
 					targetId: query.targetId,

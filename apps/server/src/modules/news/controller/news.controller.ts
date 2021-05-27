@@ -24,22 +24,14 @@ export class NewsController {
 	@Get()
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() scope: NewsFilterQuery
-		// @Query('pagination') pagination: PaginationQuery
+		@Query() scope: NewsFilterQuery,
+		@Query() pagination: PaginationQuery
 	): Promise<NewsResponse[]> {
-		// TODO get scope from dto
 		const newsList = await this.newsUc.findAllForUserAndSchool(
 			currentUser.userId,
 			currentUser.schoolId,
-			NewsMapper.mapNewsScopeToDomain(scope)
-			// {
-			// 	target: {
-			// 		targetModel: 'courses',
-			// 		targetId: '0000dcfbfb5c7a3f00bf21ab',
-			// 	},
-			// 	unpublished: false,
-			// },
-			// pagination
+			NewsMapper.mapNewsScopeToDomain(scope),
+			pagination
 		);
 		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
 		return dtoList;
