@@ -10,7 +10,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { News, SchoolInfo, UserInfo } from './modules/news/entity';
 import { Task, Lesson, Course, Submission } from './modules/task/entity';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
-import { ErrorModule } from './core/error/error.module';
+import { CoreModule } from './core/core.module';
 
 @Module({
 	imports: [
@@ -27,7 +27,7 @@ import { ErrorModule } from './core/error/error.module';
 				return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
 			},
 		}),
-		ErrorModule,
+		CoreModule,
 	],
 	controllers: [ServerController],
 	providers: [ServerService],

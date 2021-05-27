@@ -34,31 +34,6 @@ async function bootstrap() {
 	app.setGlobalPrefix(ROUTE_PRAEFIX);
 
 	/** *********************************************
-	 * Global Pipe setup
-	 * **********************************************
-	 * Validation of DTOs will base on type-checking
-	 * which is enabled by default. To you might use
-	 * the class-validator decorators to extend
-	 * validation.
-	 */
-	// transform and -options enables setting of defaults or initialization of empty arrays
-	app.useGlobalPipes(
-		// validation pipe ensures DTO validation globally
-		new ValidationPipe({
-			// enable DTO instance creation for incoming data
-			transform: true,
-			transformOptions: {
-				// enable type coersion, requires transform:true
-				enableImplicitConversion: true,
-			},
-			whitelist: true, // only pass valid @ApiProperty-decorated DTO properties, remove others
-			forbidNonWhitelisted: false, // additional params are just skipped (required when extracting multiple DTO from single query)
-			exceptionFactory: (errors: ValidationError[]) => {
-				return new ApiValidationError(errors);
-			},
-		})
-	);
-	/** *********************************************
 	 * Global Interceptor setup
 	 * **********************************************
 	 * Validation of DTOs will base on type-checking
