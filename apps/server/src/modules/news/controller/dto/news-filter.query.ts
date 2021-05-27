@@ -1,5 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import { ToBoolean } from '../../../../shared/transformer';
 
 // TODO validate
 export class NewsFilterQuery {
@@ -13,8 +15,9 @@ export class NewsFilterQuery {
 	@ApiProperty()
 	targetId?: string;
 
-	@IsBoolean()
 	@IsOptional()
+	@IsBoolean()
+	@ToBoolean()
 	@ApiProperty()
 	unpublished?: boolean;
 }
