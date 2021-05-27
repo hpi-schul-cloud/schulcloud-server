@@ -12,7 +12,6 @@ import { ErrorResponse } from '../dto/error.response';
 
 import { BusinessError } from '../errors/business.error';
 import { Response } from 'express';
-import { API_VALIDATION_ERROR_TYPE } from '../server-error-types';
 
 const isValidationError = (error: HttpException): error is BadRequestException => {
 	const { message } = error.getResponse() as any;
@@ -48,25 +47,35 @@ function createErrorResponseForBusinessError(error: BusinessError): ErrorRespons
 	return error.getResponse() as any as ErrorResponse;
 }
 
-function createErrorResponseForUnknownError(error: Error): ErrorResponse {
+function createErrorResponseForUnknownError(error?: Error): ErrorResponse {
 	const unknownError = new InternalServerErrorException(error);
 	const response = createErrorResponseForHttpException(unknownError);
 	return response;
 }
 
-const createErrorResponse = (error: any): ErrorResponse => {
-	let errorResponse: ErrorResponse;
-	if (isBusinessError(error)) {
-		// create response from business error using 409/conflict
-		errorResponse = createErrorResponseForBusinessError(error);
-	} else if (isTechnicalError(error)) {
-		// create response from technical error
-		errorResponse = createErrorResponseForHttpException(error);
-	} else {
-		// create response from unknown error
-		errorResponse = createErrorResponseForUnknownError(error);
+const createErrorResponse = (error: any, logger: ServerLogger): ErrorResponse => {
+	try {
+		let errorResponse: ErrorResponse;
+		if (isBusinessError(error)) {
+			// create response from business error using 409/conflict
+			errorResponse = createErrorResponseForBusinessError(error);
+		} else if (isTechnicalError(error)) {
+			// create response from technical error
+			errorResponse = createErrorResponseForHttpException(error);
+		} else {
+			// create response from unknown error
+			errorResponse = createErrorResponseForUnknownError(error);
+		}
+		return errorResponse;
+	} catch (exception) {
+		logger.error(exception, exception?.stack, 'Exception Fallback');
+		return createErrorResponseForUnknownError();
 	}
-	return errorResponse;
+};
+
+const writeErrorLog = (error: any, logger: ServerLogger): void => {
+	if (isBusinessError(error)) return;
+	logger.error(error);
 };
 
 @Catch()
@@ -76,8 +85,8 @@ export class GlobalErrorFilter<T = any> implements ExceptionFilter<T> {
 	catch(error: T, host: ArgumentsHost) {
 		const ctx = host.switchToHttp();
 		const response = ctx.getResponse<Response>();
-
-		const errorResponse: ErrorResponse = createErrorResponse(error);
+		writeErrorLog(error, GlobalErrorFilter.logger);
+		const errorResponse: ErrorResponse = createErrorResponse(error, GlobalErrorFilter.logger);
 		response.status(errorResponse.code).json(errorResponse);
 	}
 }
