@@ -10,7 +10,7 @@ import * as _ from 'lodash';
 import { Logger } from '../../logger/logger.service';
 import { ErrorResponse } from '../dto/error.response';
 
-import { BusinessError } from '../errors/business.error';
+import { BusinessError } from '../../../shared/error/business.error';
 import { Response } from 'express';
 
 const isBusinessError = (error): error is BusinessError => {

@@ -1,6 +1,6 @@
 import { HttpStatus, ValidationError } from '@nestjs/common';
-import { ApiValidationErrorResponse } from '../dto/api-validation-error.response';
-import { ValidationErrorDetailResponse } from '../dto/validation-error-detail.response';
+import { ApiValidationErrorResponse } from '../../core/error/dto/api-validation-error.response';
+import { ValidationErrorDetailResponse } from '../../core/error/dto/validation-error-detail.response';
 import { BusinessError } from './business.error';
 
 export class ApiValidationError extends BusinessError {

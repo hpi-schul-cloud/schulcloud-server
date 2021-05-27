@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, ValidationError } from '@nestjs/common';
-import { IErrorType } from '../interface/error-type.interface';
+import { IErrorType } from '../../core/error/interface/error-type.interface';
 
 /**
  * Abstract base class for business errors, errors that are handled
