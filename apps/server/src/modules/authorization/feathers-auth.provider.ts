@@ -1,10 +1,8 @@
-import { Injectable, Scope, Inject, NotFoundException } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseEntity, EntityId } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Application } from '@feathersjs/express';
 import { NewsTargetModelValue } from '../news/entity';
+import { FeathersServiceProvider } from './feathers-service.provider';
 
 interface User {
 	_id: ObjectId;
@@ -12,24 +10,9 @@ interface User {
 	permissions: string[];
 }
 
-interface FeathersService {
-	get(id: EntityId, params?: FeathersServiceParams): Promise<FeathersServiceResponse>;
-
-	find(params?: FeathersServiceParams): Promise<FeathersServiceResponse>;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type FeathersServiceParams = Record<string, any>;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type FeathersServiceResponse = Record<string, any> | string[];
-
-// Provides an interface to access feathers services
-// Use only to gain access to feathers services.
-// IMPORTANT: Introduce strict typing in NestJs services
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class FeathersAuthProvider {
-	constructor(@Inject(REQUEST) private request: Request) {}
+	constructor(private serviceProvider: FeathersServiceProvider) {}
 
 	async getUserSchoolPermissions(userId: EntityId, schoolId: EntityId): Promise<string[]> | never {
 		const user = await this.getUser(userId);
@@ -46,7 +29,7 @@ export class FeathersAuthProvider {
 		targetModel: NewsTargetModelValue,
 		targetId: EntityId
 	): Promise<string[]> {
-		const service = this.getService(`${targetModel}/:scopeId/userPermissions/`);
+		const service = this.serviceProvider.getService(`${targetModel}/:scopeId/userPermissions/`);
 		const targetPermissions = (await service.get(userId, {
 			route: { scopeId: targetId },
 		})) as string[];
@@ -58,7 +41,7 @@ export class FeathersAuthProvider {
 		targetModel: NewsTargetModelValue,
 		permissions: string[]
 	): Promise<EntityId[]> {
-		const service = this.getService(`/users/:scopeId/${targetModel}`);
+		const service = this.serviceProvider.getService(`/users/:scopeId/${targetModel}`);
 		const targets = (await service.find({
 			route: { scopeId: userId.toString() },
 			query: {
@@ -76,14 +59,9 @@ export class FeathersAuthProvider {
 	}
 
 	private async getUser(userId: EntityId): Promise<User> {
-		const service = this.getService('users');
+		const service = this.serviceProvider.getService('users');
 		const user = (await service.get(userId)) as User;
 		if (user == null) throw new NotFoundException();
 		return user;
-	}
-
-	private getService(path: string): FeathersService {
-		const service = (this.request.app as Application).service(path) as FeathersService;
-		return service;
 	}
 }

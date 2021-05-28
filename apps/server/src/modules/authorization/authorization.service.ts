@@ -4,6 +4,7 @@ import { NewsTargetModelValue } from '../news/entity';
 import { FeathersAuthProvider } from './feathers-auth.provider';
 
 export type EntityTypeValue = NewsTargetModelValue | 'school';
+
 @Injectable()
 export class AuthorizationService {
 	constructor(private authProvider: FeathersAuthProvider) {}
