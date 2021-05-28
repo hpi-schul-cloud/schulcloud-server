@@ -22,7 +22,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - OPS-1499 - Add feature to CI Pipeline and provide manual deployments of branches
 - Add run script for sync indexes based on existing and registered schemas.
 
-
 ### Changed
 
 - SC-8440 - fixed open api validation for manual consent
@@ -36,6 +35,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-5202 - homework tests refactoring
 - SC-7868 - filestorage integration tests are skipped on local test environments if minio is not setup
 - SC-8779 - messenger: use user-based fixed device ids
+- Move envs from global to default.schema.json
 
 ### Fixed
 
