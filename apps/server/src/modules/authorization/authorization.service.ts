@@ -10,11 +10,11 @@ export class AuthorizationService {
 	constructor(private authProvider: FeathersAuthProvider) {}
 
 	/**
-	 *
+	 * Get all permissions a user has for a specific entity
 	 * @param userId
 	 * @param targetModel
 	 * @param targetId
-	 * @returns
+	 * @returns The list of entity permissions for the user
 	 */
 	async getEntityPermissions(userId: EntityId, targetModel: EntityTypeValue, targetId: EntityId): Promise<string[]> {
 		const permissions =
@@ -24,6 +24,14 @@ export class AuthorizationService {
 		return permissions;
 	}
 
+	/**
+	 * Ensure that a user has sufficient permissions for a specific entity
+	 * @param userId
+	 * @param targetModel
+	 * @param targetId
+	 * @param permissions
+	 * @throws UnauthorizedException if the permissions are not satisfied
+	 */
 	async checkEntityPermissions(
 		userId: EntityId,
 		targetModel: EntityTypeValue,
@@ -37,6 +45,13 @@ export class AuthorizationService {
 		}
 	}
 
+	/**
+	 * Get all entities for which a user has specific permissions
+	 * @param userId
+	 * @param targetModel
+	 * @param permissions
+	 * @returns The list of ids of all entities that satisfy the provided permissions for the user
+	 */
 	async getPermittedEntities(
 		userId: EntityId,
 		targetModel: EntityTypeValue,
