@@ -1,38 +1,38 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { BaseEntity, EntityId } from '@shared/domain';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { FeathersServiceProvider } from './feathers-service.provider';
-
-import CompareHelper = require('../../../../../src/helper/compare'); // TODO move to lib
 import { NewsTargetModelValue } from '../news/entity';
 
-const { equal: equalId } = CompareHelper.ObjectId;
+interface User {
+	_id: ObjectId;
+	schoolId: ObjectId;
+	permissions: string[];
+}
 
+export type EntityTypeValue = NewsTargetModelValue | 'school';
 @Injectable()
 export class AuthorizationService {
 	constructor(private feathersServiceProvider: FeathersServiceProvider) {}
 
 	/**
-	 * Get all permissions of a user for a school
+	 *
 	 * @param userId
-	 * @param schoolId
+	 * @param targetModel
+	 * @param targetId
 	 * @returns
-	 * @throws NotFoundException if the user doesn't exist
 	 */
-	async getUserSchoolPermissions(userId: EntityId, schoolId: EntityId): Promise<string[]> | never {
-		const user = await this.feathersServiceProvider.get('users', userId);
-		if (user == null) throw new NotFoundException();
-
-		// test user is school member
-		const sameSchool: boolean = equalId(schoolId, user.schoolId) as boolean;
-		if (sameSchool && Array.isArray(user.permissions)) {
-			return user.permissions;
-		}
-		return [];
+	async getEntityPermissions(userId: EntityId, targetModel: EntityTypeValue, targetId: EntityId): Promise<string[]> {
+		const permissions =
+			targetModel === 'school'
+				? await this.getUserSchoolPermissions(userId, targetId)
+				: await this.getUserTargetPermissions(userId, targetModel, targetId);
+		return permissions;
 	}
 
 	async checkEntityPermissions(
 		userId: EntityId,
-		targetModel: NewsTargetModelValue | 'school',
+		targetModel: EntityTypeValue,
 		targetId: EntityId,
 		permissions: string[]
 	): Promise<void> | never {
@@ -43,52 +43,65 @@ export class AuthorizationService {
 		}
 	}
 
-	/**
-	 *
-	 * @param userId
-	 * @param targetModel
-	 * @param permissions
-	 */
-	async getPermittedTargets(
+	async getPermittedEntities(
+		userId: EntityId,
+		targetModel: EntityTypeValue,
+		permissions: string[]
+	): Promise<EntityId[]> {
+		const entitiyIds =
+			targetModel === 'school'
+				? this.getPermittedSchools(userId)
+				: this.getPermittedTargets(userId, targetModel, permissions);
+
+		return entitiyIds;
+	}
+
+	private async getUserSchoolPermissions(userId: EntityId, schoolId: EntityId): Promise<string[]> | never {
+		const user = await this.getUser(userId);
+		// test user is school member
+		const sameSchool = user.schoolId.equals(schoolId);
+		if (sameSchool && Array.isArray(user.permissions)) {
+			return user.permissions;
+		}
+		return [];
+	}
+
+	private async getUserTargetPermissions(
+		userId: EntityId,
+		targetModel: NewsTargetModelValue,
+		targetId: EntityId
+	): Promise<string[]> {
+		const targetPermissions = (await this.feathersServiceProvider.get(
+			`${targetModel}/:scopeId/userPermissions/`,
+			userId,
+			{ route: { scopeId: targetId } }
+		)) as string[];
+		return targetPermissions;
+	}
+
+	private async getPermittedTargets(
 		userId: EntityId,
 		targetModel: NewsTargetModelValue,
 		permissions: string[]
 	): Promise<EntityId[]> {
-		const targets = await this.feathersServiceProvider.find(`/users/:scopeId/${targetModel}`, {
+		const targets = (await this.feathersServiceProvider.find(`/users/:scopeId/${targetModel}`, {
 			route: { scopeId: userId.toString() },
 			query: {
 				permissions,
 			},
 			paginate: false,
-		});
+		})) as BaseEntity[];
 		return targets.map((item) => item._id.toString());
 	}
 
-	/**
-	 *
-	 * @param userId
-	 * @param targetModel
-	 * @param targetId
-	 */
-	async getUserTargetPermissions(
-		userId: EntityId,
-		targetModel: NewsTargetModelValue,
-		targetId: EntityId
-	): Promise<string[]> {
-		const targetPermissions: string[] = await this.feathersServiceProvider.get(
-			`${targetModel}/:scopeId/userPermissions/`,
-			userId,
-			{ route: { scopeId: targetId } }
-		);
-		// TODO service response is string array?
-		return targetPermissions;
+	private async getPermittedSchools(userId: EntityId): Promise<EntityId[]> {
+		const user = await this.getUser(userId);
+		return [user._id.toString()] as EntityId[];
 	}
 
-	async getEntityPermissions(userId: EntityId, targetModel: NewsTargetModelValue | 'school', targetId: EntityId) {
-		const permissions =
-			targetModel === 'school'
-				? await this.getUserSchoolPermissions(userId, targetId)
-				: await this.getUserTargetPermissions(userId, targetModel, targetId);
-		return permissions;
+	private async getUser(userId: EntityId): Promise<User> {
+		const user = (await this.feathersServiceProvider.get('users', userId)) as User;
+		if (user == null) throw new NotFoundException();
+		return user;
 	}
 }

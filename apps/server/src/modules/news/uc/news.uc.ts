@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, IPagination } from '@shared/domain';
-import { AuthorizationService } from '../../authorization/authorization.service';
+import { AuthorizationService, EntityTypeValue } from '../../authorization/authorization.service';
 import { Logger } from '../../../core/logger/logger.service';
 import { News, NewsTargetModel, NewsTargetModelValue } from '../entity';
 import { NewsRepo } from '../repo/news.repo';
 import { ICreateNews, INewsScope, IUpdateNews } from './news.interface';
-import { NewsTargetFilter } from '../repo/newsTargetFilter';
+import { NewsTargetFilter } from '../repo/news-target-filter';
 
 type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
 
@@ -85,7 +85,7 @@ export class NewsUc {
 		const newsTarget = NewsUc.getTarget(news);
 		await this.authorizationService.checkEntityPermissions(
 			userId,
-			newsTarget.targetModel as NewsTargetModelValue | 'school',
+			newsTarget.targetModel as EntityTypeValue,
 			newsTarget.targetId,
 			requiredPermissions
 		);
@@ -93,16 +93,18 @@ export class NewsUc {
 		return news;
 	}
 
-	async update(id: EntityId, params: IUpdateNews): Promise<any> {
+	async update(id: EntityId, params: IUpdateNews): Promise<News> {
+		this.logger.log(`start update news ${id}`);
 		await Promise.resolve();
-		return {
-			title: 'title',
-			body: 'content',
+		return new News({
+			title: params.title || '',
+			content: params.content || '',
 			displayAt: new Date(),
-		};
+		});
 	}
 
-	async remove(id: string) {
+	async remove(id: EntityId): Promise<EntityId> {
+		this.logger.log(`start remove news ${id}`);
 		await Promise.resolve();
 		return id;
 	}
@@ -126,13 +128,13 @@ export class NewsUc {
 		targetId?: EntityId,
 		permissions: string[] = []
 	): Promise<NewsTargetFilter> {
-		let targetIds;
+		let targetIds: EntityId[];
 		if (targetId) {
 			// all news for specific target
 			await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, permissions);
 			targetIds = [targetId];
 		} else {
-			targetIds = await this.authorizationService.getPermittedTargets(userId, targetModel, permissions);
+			targetIds = await this.authorizationService.getPermittedEntities(userId, targetModel, permissions);
 		}
 		return {
 			targetModel,
@@ -144,7 +146,7 @@ export class NewsUc {
 		const newsTarget = NewsUc.getTarget(news);
 		const permissions = await this.authorizationService.getEntityPermissions(
 			userId,
-			newsTarget.targetModel as NewsTargetModelValue | 'school',
+			newsTarget.targetModel as EntityTypeValue,
 			newsTarget.targetId
 		);
 		return permissions.filter((permission) => permission.includes('NEWS'));

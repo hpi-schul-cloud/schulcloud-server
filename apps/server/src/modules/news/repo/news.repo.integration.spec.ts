@@ -3,10 +3,9 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MikroORM } from '@mikro-orm/core';
+import moment from 'moment';
 import { News, NewsTargetModel, SchoolInfo, UserInfo } from '../entity';
 import { NewsRepo } from './news.repo';
-
-const moment = require('moment');
 
 describe('NewsService', () => {
 	let repo: NewsRepo;
@@ -33,7 +32,7 @@ describe('NewsService', () => {
 	});
 
 	const createTestNews = async (schoolId: string, targetModel?: string, target?: string) => {
-		const news = await em.create(News, {
+		const news = em.create(News, {
 			school: schoolId,
 			title: 'test course news',
 			content: 'content',

@@ -49,16 +49,14 @@ describe('NewsUc', () => {
 				{
 					provide: AuthorizationService,
 					useValue: {
-						checkUserSchoolPermissions() {},
-						checkUserTargetPermissions() {},
+						checkEntityPermissions() {},
 						// eslint-disable-next-line @typescript-eslint/no-shadow
-						getPermittedTargets(userId, targetModel, permissions) {
+						getPermittedEntities(userId, targetModel, permissions) {
 							return targets
 								.filter((target) => target.targetModel === targetModel)
 								.flatMap((target) => target.targetIds);
 						},
-						getUserTargetPermissions() {},
-						getUserSchoolPermissions() {},
+						getEntityPermissions() {},
 					},
 				},
 			],

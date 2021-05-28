@@ -73,7 +73,7 @@ export class NewsRepo {
 
 	/** resolves a news document with some elements names (school, updator/creator) populated already */
 	async findOneById(id: EntityId): Promise<News> {
-		const news = this.em.findOneOrFail(News, id, ['school', 'creator', 'updater']);
+		const news = await this.em.findOneOrFail(News, id, ['school', 'creator', 'updater']);
 		return news;
 	}
 
