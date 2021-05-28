@@ -10,15 +10,21 @@ describe('MessengerPermissionService', function test() {
 
 	describe('if Matrix messenger and student room creation is enabled', async () => {
 		before(async () => {
-			configBefore = Configuration.toObject(); // deep copy current config
-			Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
-			Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
-			Configuration.set('MATRIX_MESSENGER__STUDENT_ROOM_CREATION', true);
 			delete require.cache[require.resolve('../../../../src/app')];
+			configBefore = Configuration.toObject({ plainSecrets: true });
+			Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
+			Configuration.update({
+				FEATURE_MATRIX_MESSENGER_ENABLED: true,
+				MATRIX_MESSENGER: {
+					SECRET: 'secret',
+					STUDENT_ROOM_CREATION: true,
+				},
+			});
 			// eslint-disable-next-line global-require
-			app = await require('../../../../src/app');
+			const appPromise = require('../../../../src/app');
 			// eslint-disable-next-line global-require
-			testObjects = require('../../helpers/testObjects')(app);
+			testObjects = require('../../helpers/testObjects')(appPromise);
+			app = await appPromise;
 			server = await app.listen(0);
 		});
 
@@ -61,8 +67,13 @@ describe('MessengerPermissionService', function test() {
 		before(async () => {
 			configBefore = Configuration.toObject(); // deep copy current config
 			Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
-			Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
-			Configuration.set('MATRIX_MESSENGER__STUDENT_ROOM_CREATION', false);
+			Configuration.update({
+				FEATURE_MATRIX_MESSENGER_ENABLED: true,
+				MATRIX_MESSENGER: {
+					SECRET: 'secret',
+					STUDENT_ROOM_CREATION: false,
+				},
+			});
 			delete require.cache[require.resolve('../../../../src/app')];
 			// eslint-disable-next-line global-require
 			app = await require('../../../../src/app');
