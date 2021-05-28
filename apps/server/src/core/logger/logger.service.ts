@@ -1,5 +1,6 @@
 import { Injectable, Scope, Logger as NestLogger } from '@nestjs/common';
 import { ILogger } from './logger.interface';
+
 @Injectable({ scope: Scope.TRANSIENT })
 /**
  * Default logger for server application.
@@ -14,7 +15,4 @@ export class Logger extends NestLogger implements ILogger {
 	 * @param context when initialized in a provider, use setContext with CustomProviderClass.name
 	 * @param isTimestampEnabled
 	 */
-	constructor(context?: string, isTimestampEnabled?: boolean) {
-		super(context, isTimestampEnabled);
-	}
 }
