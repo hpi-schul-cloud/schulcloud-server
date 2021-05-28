@@ -1,21 +1,17 @@
-import {
-	ArgumentsHost,
-	BadRequestException,
-	Catch,
-	ExceptionFilter,
-	HttpException,
-	InternalServerErrorException,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
 import * as _ from 'lodash';
+import { Response } from 'express';
 import { Logger } from '../../logger/logger.service';
 import { ErrorResponse } from '../dto/error.response';
-
+import { FeathersError } from '../interface';
 import { BusinessError } from '../../../shared/error/business.error';
-import { Response } from 'express';
 
-const isFeathersError = (error) => error?.type === 'FeathersError';
+const isFeathersError = (error: Error): error is FeathersError => {
+	if (!(error && 'type' in error)) return false;
+	return (error as FeathersError)?.type === 'FeathersError';
+};
 
-const isBusinessError = (error): error is BusinessError => {
+const isBusinessError = (error: Error): error is BusinessError => {
 	return error instanceof BusinessError;
 };
 
@@ -24,7 +20,7 @@ const isBusinessError = (error): error is BusinessError => {
  * @param error
  * @returns
  */
-const isTechnicalError = (error): error is HttpException => {
+const isTechnicalError = (error: Error): error is HttpException => {
 	return error instanceof HttpException;
 };
 
@@ -35,6 +31,7 @@ const isTechnicalError = (error): error is HttpException => {
  */
 const createErrorResponseForHttpException = (exception: HttpException): ErrorResponse => {
 	const code = exception.getStatus();
+	// const msg = exception.initMessage();
 	const { error } = exception.getResponse() as { error: string | undefined };
 	const type = error || exception.message;
 	return new ErrorResponse(_.snakeCase(type).toUpperCase(), _.startCase(type), exception.message, code);
@@ -52,40 +49,45 @@ function createErrorResponseForUnknownError(error?: Error): ErrorResponse {
 
 const createErrorResponse = (error: any, logger: Logger): ErrorResponse => {
 	try {
-		let errorResponse: ErrorResponse;
-		if (isFeathersError(error)) {
-			// handles feathers errors only when calling feathers services from nest app
-			const { code, className: type, name: title, message } = error;
-			const snakeType = _.snakeCase(type).toUpperCase();
-			const startTitle = _.startCase(title);
-			errorResponse = new ErrorResponse(snakeType, startTitle, message, code);
-		} else if (isBusinessError(error)) {
-			// create response from business error using 409/conflict
-			errorResponse = createErrorResponseForBusinessError(error);
-		} else if (isTechnicalError(error)) {
-			// create response from technical error
-			errorResponse = createErrorResponseForHttpException(error);
-		} else {
-			// create response from unknown error
-			errorResponse = createErrorResponseForUnknownError(error);
+		if (error instanceof Error) {
+			if (isFeathersError(error)) {
+				// handles feathers errors only when calling feathers services from nest app
+				const { code, className: type, name: title, message } = error;
+				const snakeType = _.snakeCase(type).toUpperCase();
+				const startTitle = _.startCase(title);
+				return new ErrorResponse(snakeType, startTitle, message, code);
+			}
+			if (isBusinessError(error)) {
+				// create response from business error using 409/conflict
+				return createErrorResponseForBusinessError(error);
+			}
+			if (isTechnicalError(error)) {
+				// create response from technical error
+				return createErrorResponseForHttpException(error);
+			}
 		}
-		return errorResponse;
+		// create response from unknown error
+		return createErrorResponseForUnknownError(error);
 	} catch (exception) {
-		logger.error(exception, exception?.stack, 'Error Response failed');
+		const stack = exception instanceof Error ? exception.stack : undefined;
+		logger.error(exception, stack, 'Response Error');
 		return createErrorResponseForUnknownError();
 	}
 };
 
 const writeErrorLog = (error: any, logger: Logger): void => {
-	if (isBusinessError(error)) {
-		// log error message only
-		logger.error(error);
-	} else if (isTechnicalError(error)) {
-		// log error message only
-		logger.error(error);
+	if (error instanceof Error) {
+		if (isFeathersError(error)) {
+			logger.error(error, error.stack, 'Feathers Error');
+		} else if (isBusinessError(error)) {
+			logger.error(error, error.stack, 'Business Error');
+		} else if (isTechnicalError(error)) {
+			logger.error(error, error.stack, 'Technical Error');
+		} else {
+			logger.error(error, error.stack, 'Unhandled Error');
+		}
 	} else {
-		// full log with stack trace
-		logger.error(error, error?.stack, 'Unhandled Error');
+		logger.error(error, 'Unknown error');
 	}
 };
 
@@ -93,7 +95,8 @@ const writeErrorLog = (error: any, logger: Logger): void => {
 export class GlobalErrorFilter<T = any> implements ExceptionFilter<T> {
 	private static readonly logger = new Logger('Error');
 
-	catch(error: T, host: ArgumentsHost) {
+	// eslint-disable-next-line class-methods-use-this
+	catch(error: T, host: ArgumentsHost): void {
 		const ctx = host.switchToHttp();
 		const response = ctx.getResponse<Response>();
 		writeErrorLog(error, GlobalErrorFilter.logger);
