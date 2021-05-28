@@ -1,9 +1,9 @@
+import * as moment from 'moment';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MikroORM } from '@mikro-orm/core';
-import moment from 'moment';
 import { News, NewsTargetModel, SchoolInfo, UserInfo } from '../entity';
 import { NewsRepo } from './news.repo';
 
