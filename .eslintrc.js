@@ -67,7 +67,7 @@ module.exports = {
 			parser: '@typescript-eslint/parser',
 			plugins: ['@typescript-eslint'],
 			extends: [
-				'airbnb-typescript',
+				'airbnb-typescript/base',
 				'plugin:@typescript-eslint/recommended',
 				'plugin:@typescript-eslint/recommended-requiring-type-checking',
 				'plugin:prettier/recommended',
@@ -97,6 +97,9 @@ module.exports = {
 				'import/extensions': ['error', 'always', { ts: 'never' }],
 				'import/prefer-default-export': 'off',
 				'no-void': ['error', { allowAsStatement: true }],
+				'max-classes-per-file': 'off',
+				'class-methods-use-this': 'off',
+				'no-param-reassign': 'off',
 			},
 			overrides: [
 				{

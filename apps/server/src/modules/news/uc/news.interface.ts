@@ -7,7 +7,7 @@ export interface ICreateNews {
 	displayAt: Date;
 }
 
-export interface IUpdateNews extends Partial<ICreateNews> {}
+export type IUpdateNews = Partial<ICreateNews>;
 
 export interface INewsScope {
 	// TODO clarify on singular vs plural: e.g. 'courses' vs 'school'

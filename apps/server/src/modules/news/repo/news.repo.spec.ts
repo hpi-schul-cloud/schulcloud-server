@@ -1,9 +1,9 @@
 import { EntityManager, MikroORM, Options } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 import { News, SchoolInfo, UserInfo } from '../entity';
 import { NewsRepo } from './news.repo';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 
 describe('NewsRepoService', () => {
 	let repo: NewsRepo;

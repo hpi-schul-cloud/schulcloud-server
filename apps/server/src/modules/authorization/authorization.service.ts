@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { EntityId } from '@shared/domain';
 import { FeathersServiceProvider } from './feathers-service.provider';
 
 import CompareHelper = require('../../../../../src/helper/compare'); // TODO move to lib
-import { EntityId } from '@shared/domain';
 import { NewsTargetModelValue } from '../news/entity';
+
 const { equal: equalId } = CompareHelper.ObjectId;
 
 @Injectable()
@@ -22,51 +23,21 @@ export class AuthorizationService {
 		if (user == null) throw new NotFoundException();
 
 		// test user is school member
-		const sameSchool = equalId(schoolId, user.schoolId);
+		const sameSchool: boolean = equalId(schoolId, user.schoolId) as boolean;
 		if (sameSchool && Array.isArray(user.permissions)) {
 			return user.permissions;
 		}
 		return [];
 	}
 
-	/**
-	 * Check permissions of a user for a school
-	 * @param userId
-	 * @param schoolId
-	 * @param permissions
-	 * @returns
-	 * @throws NotFoundException if the user doesn't exist
-	 * 				 UnauthorizedException if the user doesn't have the specified permissions
-	 */
-	async checkUserSchoolPermissions(userId: EntityId, schoolId: EntityId, permissions: string[]): Promise<void> | never {
-		const userSchoolPermissions = await this.getUserSchoolPermissions(userId, schoolId);
-		const hasPermissions = permissions.every((p) => userSchoolPermissions.includes(p));
-
-		if (hasPermissions === false) {
-			// TODO decide wether to throw or return boolean
-			// TODO provide more error information
-			throw new UnauthorizedException('Insufficient permissions');
-		}
-	}
-
-	/**
-	 * Check permissions of a user for a target
-	 * @param userId
-	 * @param targetModel
-	 * @param targetId
-	 * @param permissions
-	 * @returns
-	 * @throws NotFoundException if the user doesn't exist
-	 *                 UnauthorizedException if the user doesn't have the specified permissions
-	 */
-	async checkUserTargetPermissions(
+	async checkEntityPermissions(
 		userId: EntityId,
-		targetModel: NewsTargetModelValue,
+		targetModel: NewsTargetModelValue | 'school',
 		targetId: EntityId,
 		permissions: string[]
 	): Promise<void> | never {
-		const userTargetPermissions = await this.getUserTargetPermissions(userId, targetModel, targetId);
-		const hasPermissions = permissions.every((p) => userTargetPermissions.includes(p));
+		const entityPermissions = await this.getEntityPermissions(userId, targetModel, targetId);
+		const hasPermissions = permissions.every((p) => entityPermissions.includes(p));
 		if (!hasPermissions) {
 			throw new UnauthorizedException('Insufficient permissions');
 		}
@@ -86,7 +57,7 @@ export class AuthorizationService {
 		const targets = await this.feathersServiceProvider.find(`/users/:scopeId/${targetModel}`, {
 			route: { scopeId: userId.toString() },
 			query: {
-				permissions: permissions,
+				permissions,
 			},
 			paginate: false,
 		});
@@ -111,5 +82,13 @@ export class AuthorizationService {
 		);
 		// TODO service response is string array?
 		return targetPermissions;
+	}
+
+	async getEntityPermissions(userId: EntityId, targetModel: NewsTargetModelValue | 'school', targetId: EntityId) {
+		const permissions =
+			targetModel === 'school'
+				? await this.getUserSchoolPermissions(userId, targetId)
+				: await this.getUserTargetPermissions(userId, targetModel, targetId);
+		return permissions;
 	}
 }

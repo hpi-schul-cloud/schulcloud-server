@@ -8,9 +8,11 @@ export class CreateNewsParams {
 	@ApiProperty()
 	@IsString()
 	title: string;
+
 	@ApiProperty()
 	@IsString()
 	body: string;
+
 	@ApiProperty()
 	@IsDate()
 	displayAt: Date;

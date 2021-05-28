@@ -1,11 +1,11 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { INewsScope } from './news.interface';
 
-import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationService } from '../../authorization/authorization.service';
 import { LoggerModule } from '../../../core/logger/logger.module';
 import { NewsRepo } from '../repo/news.repo';
 import { NewsUc } from './news.uc';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { NewsTargetModel } from '../entity';
 
 describe('NewsUc', () => {
@@ -51,6 +51,7 @@ describe('NewsUc', () => {
 					useValue: {
 						checkUserSchoolPermissions() {},
 						checkUserTargetPermissions() {},
+						// eslint-disable-next-line @typescript-eslint/no-shadow
 						getPermittedTargets(userId, targetModel, permissions) {
 							return targets
 								.filter((target) => target.targetModel === targetModel)
@@ -76,7 +77,7 @@ describe('NewsUc', () => {
 			const scope = {};
 			const findAllSpy = jest.spyOn(repo, 'findAll');
 			await service.findAllForUserAndSchool(userId, schoolId, scope, pagination);
-			let expectedParams = [schoolId, targets, false, pagination];
+			const expectedParams = [schoolId, targets, false, pagination];
 			expect(findAllSpy).toHaveBeenCalledWith(...expectedParams);
 		});
 		it('should search for news by school id', async () => {
@@ -87,7 +88,7 @@ describe('NewsUc', () => {
 			};
 			const findAllBySchoolSpy = jest.spyOn(repo, 'findAllBySchool');
 			await service.findAllForUserAndSchool(userId, schoolId, scope, pagination);
-			let expectedParams = [schoolId, false, pagination];
+			const expectedParams = [schoolId, false, pagination];
 			expect(findAllBySchoolSpy).toHaveBeenCalledWith(...expectedParams);
 		});
 		it('should search for course news with given courseId', async () => {
@@ -103,7 +104,7 @@ describe('NewsUc', () => {
 				targetModel: scope.target.targetModel,
 				targetIds: [scope.target.targetId],
 			};
-			let expectedParams = [schoolId, expectedTarget, false, pagination];
+			const expectedParams = [schoolId, expectedTarget, false, pagination];
 			expect(findAllByTargetSpy).toHaveBeenCalledWith(...expectedParams);
 		});
 		it('should search for all course news if course id is not given', async () => {
@@ -114,8 +115,8 @@ describe('NewsUc', () => {
 			const targetIds = targets
 				.filter((target) => target.targetModel === targetModel)
 				.flatMap((target) => target.targetIds);
-			const expectedTarget = {targetModel, targetIds};
-			let expectedParams = [schoolId, expectedTarget, false, pagination];
+			const expectedTarget = { targetModel, targetIds };
+			const expectedParams = [schoolId, expectedTarget, false, pagination];
 			expect(findAllByTargetSpy).toHaveBeenCalledWith(...expectedParams);
 		});
 	});
