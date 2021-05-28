@@ -63,21 +63,18 @@ module.exports = {
 	},
 	overrides: [
 		{
-			// nest.js server in 'apps/server/**' */ which is excluded from outer rules
-			// this section is more less (parserOptions/project path) only what nest.js defines
-			files: ['apps/server/**'],
+			files: ['apps/**/*.ts'],
 			parser: '@typescript-eslint/parser',
-			plugins: ['@typescript-eslint', 'import'],
+			plugins: ['@typescript-eslint'],
 			extends: [
-				'eslint:recommended',
-				'plugin:@typescript-eslint/eslint-recommended',
+				'airbnb-typescript',
 				'plugin:@typescript-eslint/recommended',
+				'plugin:@typescript-eslint/recommended-requiring-type-checking',
 				'plugin:prettier/recommended',
 				'plugin:promise/recommended',
 			],
 			parserOptions: {
 				project: 'apps/server/tsconfig.lint.json',
-				// sourceType: 'module',
 			},
 			env: {
 				node: true,
@@ -87,27 +84,23 @@ module.exports = {
 				'import/parsers': {
 					'@typescript-eslint/parser': ['.ts'],
 				},
-
 				'import/resolver': {
 					typescript: {
 						alwaysTryTypes: true,
-						project: ['tsconfig.json', 'apps/server/tsconfig.lint.json'],
+						project: ['tsconfig.json', 'apps/server/tsconfig.lint.json', 'apps/server/tsconfig.app.json'],
 					},
 				},
 			},
 			rules: {
-				'import/no-unresolved': 'error',
+				'import/no-unresolved': 'off', // better handled by ts resolver
+				'import/no-extraneous-dependencies': 'off', // better handles by ts resolver
 				'import/extensions': ['error', 'always', { ts: 'never' }],
 				'import/prefer-default-export': 'off',
-				'import/no-extraneous-dependencies': ['error', { devDependencies: ['**/*spec.ts'] }],
-				// '@typescript-eslint/interface-name-prefix': 'off',
-				// '@typescript-eslint/explicit-function-return-type': 'off',
-				// '@typescript-eslint/explicit-module-boundary-types': 'off',
-				// '@typescript-eslint/no-explicit-any': 'off',
+				'no-void': ['error', { allowAsStatement: true }],
 			},
 			overrides: [
 				{
-					files: ['*.test.ts'],
+					files: ['**/*spec.ts'],
 					env: {
 						jest: true,
 					},
