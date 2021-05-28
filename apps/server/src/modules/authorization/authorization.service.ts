@@ -96,7 +96,7 @@ export class AuthorizationService {
 
 	private async getPermittedSchools(userId: EntityId): Promise<EntityId[]> {
 		const user = await this.getUser(userId);
-		return [user._id.toString()] as EntityId[];
+		return [user.schoolId.toString()] as EntityId[];
 	}
 
 	private async getUser(userId: EntityId): Promise<User> {
