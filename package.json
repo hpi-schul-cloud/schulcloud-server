@@ -66,7 +66,7 @@
 		"@feathersjs/express": "^4.5.11",
 		"@feathersjs/feathers": "^4.5.11",
 		"@feathersjs/socketio": "^4.5.11",
-		"@hpi-schul-cloud/commons": "^1.3.2",
+		"@hpi-schul-cloud/commons": "^1.3.3",
 		"@mikro-orm/core": "^4.5.4",
 		"@mikro-orm/mongodb": "^4.5.4",
 		"@mikro-orm/nestjs": "^4.2.0",
