@@ -1,18 +1,23 @@
 import { FilterQuery } from '@mikro-orm/core';
 import { EntityId } from '@shared/domain';
 import { News } from '../entity';
-import { NewsTargetFilter } from './newsTargetFilter';
+import { NewsTargetFilter } from './news-target-filter';
 
 export class NewsScope {
-	query: FilterQuery<News> = {};
+	private _queries: FilterQuery<News>[] = [];
 
-	bySchool(schoolId: EntityId) {
+	get query(): FilterQuery<News> {
+		const query = this._queries.length > 1 ? { $and: this._queries } : this._queries[0];
+		return query;
+	}
+
+	bySchool(schoolId: EntityId): NewsScope {
 		this.addQuery({ school: schoolId });
 		return this;
 	}
 
 	// targets + school target
-	byAllTargets(targets: NewsTargetFilter[]) {
+	byAllTargets(targets: NewsTargetFilter[]): NewsScope {
 		const queries: FilterQuery<News>[] = targets.map((target) => this.getTargetQuery(target));
 		queries.push(this.getEmptyTargetQuery());
 		this.addQuery({ $or: queries });
@@ -20,30 +25,24 @@ export class NewsScope {
 	}
 
 	// single target
-	byTarget(target: NewsTargetFilter) {
+	byTarget(target: NewsTargetFilter): NewsScope {
 		this.addQuery(this.getTargetQuery(target));
 		return this;
 	}
 
-	byEmptyTarget() {
+	byEmptyTarget(): NewsScope {
 		this.addQuery(this.getEmptyTargetQuery());
 		return this;
 	}
 
-	byUnpublished(unpublished: boolean) {
+	byUnpublished(unpublished: boolean): NewsScope {
 		const now = new Date();
 		this.addQuery({ displayAt: unpublished ? { $gt: now } : { $lte: now } });
 		return this;
 	}
 
 	private addQuery(query: FilterQuery<News>) {
-		if (Object.keys(this.query).length === 0) {
-			this.query = query;
-		} else if (Array.isArray(this.query.$and)) {
-			this.query.$and.push(query);
-		} else {
-			this.query = { $and: [{ ...this.query }, query] };
-		}
+		this._queries.push(query);
 	}
 
 	private getTargetQuery(target: NewsTargetFilter): FilterQuery<News> {

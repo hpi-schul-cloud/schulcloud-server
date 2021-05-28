@@ -100,6 +100,7 @@ module.exports = {
 				'max-classes-per-file': 'off',
 				'class-methods-use-this': 'off',
 				'no-param-reassign': 'off',
+				'no-underscore-dangle': 'off',
 			},
 			overrides: [
 				{

@@ -2,10 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { PaginationModel } from '@shared/repo/interface/pagination.interface';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain';
-import { Dictionary } from '@mikro-orm/core';
 import { News } from '../entity';
-import { NewsScope } from './newsScope';
-import { NewsTargetFilter } from './newsTargetFilter';
+import { NewsScope } from './news-scope';
+import { NewsTargetFilter } from './news-target-filter';
 
 @Injectable()
 export class NewsRepo {
@@ -78,13 +77,13 @@ export class NewsRepo {
 		return news;
 	}
 
-	update(id: EntityId, props: Dictionary) {
-		return `This action updates a #${id} news`;
-	}
+	// update(id: EntityId, props: Record<string, any>): string {
+	// 	return `This action updates a #${id} news`;
+	// }
 
-	remove(id: EntityId) {
-		return `This action removes a #${id} news`;
-	}
+	// remove(id: EntityId): string {
+	// 	return `This action removes a #${id} news`;
+	// }
 
 	private async findNews(query, pagination: PaginationModel) {
 		const obj = await this.em.find(News, query, {
