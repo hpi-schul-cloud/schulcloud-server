@@ -13,6 +13,12 @@ type ValueOf<T> = T[keyof T];
 
 export type NewsTargetModelValue = ValueOf<typeof NewsTargetModel>;
 
+export type NewsTarget =
+	| {
+			targetModel: 'school';
+	  }
+	| { targetModel: NewsTargetModelValue; targetId?: EntityId };
+
 @Entity()
 export class News extends BaseEntityWithTimestamps {
 	/** the news title */
@@ -54,6 +60,12 @@ export class News extends BaseEntityWithTimestamps {
 	updater?: UserInfo;
 
 	permissions: string[] = [];
+
+	setTarget(target: NewsTarget): void {
+		if (target.targetModel !== 'school') {
+			Object.assign(this, { targetModel: target.targetModel, target: target.targetId });
+		}
+	}
 
 	constructor(props: { title: string; content: string; displayAt: Date; school: EntityId; creator: EntityId }) {
 		super();

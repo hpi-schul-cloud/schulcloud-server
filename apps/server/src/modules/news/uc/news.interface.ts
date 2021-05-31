@@ -1,10 +1,10 @@
-import { EntityId } from '@shared/domain';
-import { NewsTargetModelValue } from '../entity';
+import { NewsTarget } from '../entity';
 
 export interface ICreateNews {
 	title: string;
 	content: string;
 	displayAt: Date;
+	target: NewsTarget;
 }
 
 export type IUpdateNews = Partial<ICreateNews>;
@@ -14,10 +14,6 @@ export interface INewsScope {
 	// do not use the collection name!
 	// we should use the entity instead here (which is then mapped to the collection)
 	// see News entity definition
-	target?:
-		| {
-				targetModel: 'school';
-		  }
-		| { targetModel: NewsTargetModelValue; targetId?: EntityId };
+	target?: NewsTarget;
 	unpublished?: boolean;
 }

@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { EntityId, IPagination } from '@shared/domain';
 import { AuthorizationService, EntityTypeValue } from '../../authorization/authorization.service';
 import { Logger } from '../../../core/logger/logger.service';
-import { News, NewsTargetModel, NewsTargetModelValue } from '../entity';
+import { News, NewsTarget, NewsTargetModel, NewsTargetModelValue } from '../entity';
 import { NewsRepo } from '../repo/news.repo';
 import { ICreateNews, INewsScope, IUpdateNews } from './news.interface';
 import { NewsTargetFilter } from '../repo/news-target-filter';
@@ -16,14 +16,20 @@ export class NewsUc {
 	}
 
 	async create(userId: EntityId, schoolId: EntityId, params: ICreateNews): Promise<News> {
-		// TODO authorization
-		const props = {
+		this.logger.log(`create news for user ${userId}`);
+
+		await this.checkNewsTargetPermissions(userId, schoolId, params.target, ['NEWS_CREATE']);
+
+		const props = new News({
 			...params,
 			school: schoolId,
 			creator: userId,
-		};
-		const newsEntity = new News(props);
-		const news = await this.newsRepo.create(newsEntity);
+		});
+		props.setTarget(params.target);
+		const news = await this.newsRepo.create(props);
+
+		this.logger.log(`news for user ${userId} created`);
+
 		return news;
 	}
 
@@ -41,12 +47,6 @@ export class NewsUc {
 		scope?: INewsScope,
 		pagination?: IPagination
 	): Promise<News[]> {
-		// 1. isAuthorized(userId, schoolId, 'NEWS_READ')
-		// 2. user, resource, permission
-		// 		yields list of ids
-		// 		getAuthorizedEntities(userId, 'Course', 'NEWS_READ'): EntityId[]
-		// 3. user, resource (by id)
-		// 		getPermissions(userId, 'Course', courseId)
 		this.logger.log(`start find all news for user ${userId}`);
 
 		const unpublished = !!scope?.unpublished;
@@ -164,5 +164,20 @@ export class NewsUc {
 
 	private static getRequiredPermissions(unpublished: boolean): Permission[] {
 		return unpublished ? ['NEWS_EDIT'] : ['NEWS_VIEW'];
+	}
+
+	private async checkNewsTargetPermissions(
+		userId: EntityId,
+		schoolId: EntityId,
+		target: NewsTarget,
+		permissions: string[]
+	) {
+		const { targetModel } = target;
+		const targetId = target.targetModel === 'school' ? schoolId : target.targetId;
+		if (targetId != null) {
+			await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, permissions);
+		} else {
+			throw new ConflictException('Invalid news target');
+		}
 	}
 }

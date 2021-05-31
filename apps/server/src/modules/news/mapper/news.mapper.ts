@@ -29,7 +29,7 @@ export class NewsMapper {
 		const dto: INewsScope = {};
 		if (query.targetModel) {
 			if (query.targetModel === 'school') {
-				dto.target = { targetModel: query.targetModel };
+				dto.target = { targetModel: query.targetModel as NewsTargetModelValue };
 			} else {
 				dto.target = {
 					targetModel: query.targetModel as NewsTargetModelValue,
@@ -48,6 +48,10 @@ export class NewsMapper {
 			title: params.title,
 			content: params.body,
 			displayAt: params.displayAt,
+			target: {
+				targetModel: params.targetModel as NewsTargetModelValue,
+				targetId: params.targetId,
+			},
 		};
 		return dto;
 	}
