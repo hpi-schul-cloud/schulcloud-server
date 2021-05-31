@@ -22,7 +22,7 @@
 	},
 	"name": "AddPositionToLessons",
 	"createdAt": {
-		"$date": "2019-07-08T14:15:27.05Z"
+		"$date": "2019-07-08T14:15:27.050Z"
 	},
 	"state": "up",
 	"__v": 0
@@ -56,7 +56,7 @@
 	"state": "up",
 	"name": "addStartAndEndDateToYearCollection",
 	"createdAt": {
-		"$date": "2019-07-17T08:12:18.48Z"
+		"$date": "2019-07-17T08:12:18.480Z"
 	},
 	"__v": 0
 },
@@ -199,7 +199,7 @@
 	"state": "up",
 	"name": "AddScopePermissionsViewPermissionToCourseTeachers",
 	"createdAt": {
-		"$date": "2019-09-25T14:59:22.19Z"
+		"$date": "2019-09-25T14:59:22.190Z"
 	},
 	"__v": 0
 },
@@ -407,7 +407,7 @@
 	"state": "up",
 	"name": "addVideoconferencePermissionsToTeamRoles",
 	"createdAt": {
-		"$date": "2020-02-03T09:18:11.13Z"
+		"$date": "2020-02-03T09:18:11.130Z"
 	},
 	"__v": 0
 },
@@ -429,7 +429,7 @@
 	"state": "up",
 	"name": "datasource-permissions-for-superhero",
 	"createdAt": {
-		"$date": "2020-02-19T14:22:21.2Z"
+		"$date": "2020-02-19T14:22:21.200Z"
 	},
 	"__v": 0
 },
@@ -539,7 +539,7 @@
 	"state": "up",
 	"name": "addAdminPermissionForManagingStudentTeamCreation",
 	"createdAt": {
-		"$date": "2020-04-15T12:59:02.81Z"
+		"$date": "2020-04-15T12:59:02.810Z"
 	},
 	"__v": 0
 },
@@ -605,7 +605,7 @@
 	"state": "up",
 	"name": "encrypt-ldap-search-user-password",
 	"createdAt": {
-		"$date": "2020-05-26T14:00:06.91Z"
+		"$date": "2020-05-26T14:00:06.910Z"
 	},
 	"__v": 0
 },
@@ -825,7 +825,7 @@
 	"state": "up",
 	"name": "syncUserIndex",
 	"createdAt": {
-		"$date": "2020-10-15T11:46:01.84Z"
+		"$date": "2020-10-15T11:46:01.840Z"
 	},
 	"__v": 0
 },
@@ -924,7 +924,7 @@
 	"state": "up",
 	"name": "addUniquePseudonymIndex",
 	"createdAt": {
-		"$date": "2021-01-18T12:25:27.66Z"
+		"$date": "2021-01-18T12:25:27.660Z"
 	},
 	"__v": 0
 },
@@ -935,7 +935,7 @@
 	"state": "up",
 	"name": "syncIndexes",
 	"createdAt": {
-		"$date": "2021-01-18T12:25:28.66Z"
+		"$date": "2021-01-18T12:25:28.660Z"
 	},
 	"__v": 0
 },
@@ -974,18 +974,7 @@
 },
 {
 	"_id": {
-		"$oid": "60a22a35cc8f8f35542a1d52"
-	},
-	"state": "up",
-	"name": "add-task-dashboard-for-students",
-	"createdAt": {
-		"$date": "2021-05-17T08:32:53.574Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "606c0f825fa13b502e30d775"
+		"$oid": "60509afacace7c54f0c17f65"
 	},
 	"state": "up",
 	"name": "update-nexboard-urls",
@@ -996,12 +985,12 @@
 },
 {
 	"_id": {
-		"$oid": "60757eca72058806093ad5a2"
+		"$oid": "60a22a35cc8f8f35542a1d52"
 	},
 	"state": "up",
-	"name": "set_search_index",
+	"name": "add-task-dashboard-for-students",
 	"createdAt": {
-		"$date": "2021-03-29T09:50:49.972Z"
+		"$date": "2021-05-17T08:32:53.574Z"
 	},
 	"__v": 0
 }]
