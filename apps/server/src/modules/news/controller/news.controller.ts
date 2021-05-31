@@ -16,7 +16,11 @@ export class NewsController {
 
 	@Post()
 	async create(@CurrentUser() currentUser: ICurrentUser, @Body() params: CreateNewsParams): Promise<NewsResponse> {
-		const news = await this.newsUc.create(currentUser.userId, NewsMapper.mapCreateNewsToDomain(params));
+		const news = await this.newsUc.create(
+			currentUser.userId,
+			currentUser.schoolId,
+			NewsMapper.mapCreateNewsToDomain(params)
+		);
 		const dto = NewsMapper.mapToResponse(news);
 		return dto;
 	}

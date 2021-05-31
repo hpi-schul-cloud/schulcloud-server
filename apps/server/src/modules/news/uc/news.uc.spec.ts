@@ -35,6 +35,9 @@ describe('NewsUc', () => {
 				{
 					provide: NewsRepo,
 					useValue: {
+						create() {
+							return {};
+						},
 						findAll() {
 							return [];
 						},
@@ -116,6 +119,17 @@ describe('NewsUc', () => {
 			const expectedTarget = { targetModel, targetIds };
 			const expectedParams = [schoolId, expectedTarget, false, pagination];
 			expect(findAllByTargetSpy).toHaveBeenCalledWith(...expectedParams);
+		});
+	});
+	describe('create', () => {
+		it('should assign all required properties to news object', async () => {
+			const createSpy = jest.spyOn(repo, 'create');
+			const params = { title: 'title', content: 'content', displayAt: new Date() };
+			await service.create(userId, schoolId, params);
+			expect(createSpy).toHaveBeenCalled();
+			const callArgs = createSpy.mock.calls[0][0];
+			expect(callArgs.school.id === schoolId);
+			expect(callArgs.creator.id === userId);
 		});
 	});
 });
