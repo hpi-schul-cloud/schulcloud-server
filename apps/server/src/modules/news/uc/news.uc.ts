@@ -15,10 +15,14 @@ export class NewsUc {
 		this.logger.setContext(NewsUc.name);
 	}
 
-	async create(userId: EntityId, params: ICreateNews): Promise<News> {
-		// TODO add school reference (implicit)
-		// authorization
-		const newsEntity = new News(params);
+	async create(userId: EntityId, schoolId: EntityId, params: ICreateNews): Promise<News> {
+		// TODO authorization
+		const props = {
+			...params,
+			school: schoolId,
+			creator: userId,
+		};
+		const newsEntity = new News(props);
 		const news = await this.newsRepo.create(newsEntity);
 		return news;
 	}
@@ -75,12 +79,12 @@ export class NewsUc {
 
 	/**
 	 *
-	 * @param newsId
+	 * @param id
 	 * @param userId
 	 * @returns
 	 */
-	async findOneByIdForUser(newsId: EntityId, userId: EntityId): Promise<News> {
-		const news = await this.newsRepo.findOneById(newsId);
+	async findOneByIdForUser(id: EntityId, userId: EntityId): Promise<News> {
+		const news = await this.newsRepo.findOneById(id);
 		const requiredPermissions = NewsUc.getRequiredPermissions(news.displayAt > new Date());
 		const newsTarget = NewsUc.getTarget(news);
 		await this.authorizationService.checkEntityPermissions(
@@ -93,18 +97,16 @@ export class NewsUc {
 		return news;
 	}
 
-	async update(id: EntityId, params: IUpdateNews): Promise<News> {
+	async update(id: EntityId, userId: EntityId, params: IUpdateNews): Promise<News> {
 		this.logger.log(`start update news ${id}`);
-		await Promise.resolve();
-		return new News({
-			title: params.title || '',
-			content: params.content || '',
-			displayAt: new Date(),
-		});
+		// TODO replace with real functionality
+		const news = await this.findOneByIdForUser(id, userId);
+		return news;
 	}
 
 	async remove(id: EntityId): Promise<EntityId> {
 		this.logger.log(`start remove news ${id}`);
+		// TODO replace with real functionality
 		await Promise.resolve();
 		return id;
 	}

@@ -41,6 +41,7 @@ describe('NewsService', () => {
 			target,
 			targetModel,
 			displayAt,
+			creator: new ObjectId().toString(),
 		});
 		return news;
 	};

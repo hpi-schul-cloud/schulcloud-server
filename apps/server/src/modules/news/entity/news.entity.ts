@@ -1,6 +1,5 @@
-import { AnyEntity, Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { BaseEntity, BaseEntityWithTimestamps } from '@shared/domain';
-import { Get } from '@nestjs/common';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { BaseEntity, BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 import { SchoolInfo } from './school-info.entity';
 import { UserInfo } from './user-info.entity';
 
@@ -56,10 +55,8 @@ export class News extends BaseEntityWithTimestamps {
 
 	permissions: string[] = [];
 
-	constructor(props: { title: string; content: string; displayAt: Date }) {
+	constructor(props: { title: string; content: string; displayAt: Date; school: EntityId; creator: EntityId }) {
 		super();
-		this.title = props.title;
-		this.content = props.content;
-		this.displayAt = props.displayAt;
+		Object.assign(this, props);
 	}
 }
