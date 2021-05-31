@@ -1,3 +1,4 @@
+sudo: true
 dist: bionic
 language: node_js
 node_js: 'lts/*'
@@ -9,15 +10,11 @@ branches:
   only:
     - develop
     - master
-    - /^(?i:release).*$/
-    # OPS-1664 naming convention <branch>/<JIRA-Ticket ID>-<Jira_Summary>
-    - /^((hotfix|feature)\/[A-Z]+-[0-9]+-[a-zA-Z_]+)$/
+    - /^((hotfix|feature|release)\/)$/
 
 stages:
   - name: test
-    if: NOT (commit_message =~ /(skip-test-stage)/ ) OR branch = master
   - name: deploy
-    if: NOT (commit_message =~ /(skip-deploy-stage)/)
 jobs:
   include:
     - stage: test
@@ -30,7 +27,7 @@ jobs:
         - ROCKET_CHAT_URI=http://localhost:5000
       cache: npm
       install:
-        - sudo echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+        - echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
         - ls -la $HOME
         - echo ls -la /home/travis/.docker
         - docker pull mongo:4.2
