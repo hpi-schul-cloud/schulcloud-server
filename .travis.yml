@@ -31,6 +31,8 @@ jobs:
       cache: npm
       install:
         - sudo echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+        - sudo echo $HOME
+        - sudo pwd
         - sudo ls -la
         - sudo docker pull mongo:4.2
         - sudo docker pull minio/minio
