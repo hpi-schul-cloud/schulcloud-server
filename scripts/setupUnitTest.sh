@@ -5,7 +5,7 @@ set -e # fail with exit 1 on any error
 echo $( bash pwd)
 
 mkdir -p .build
-openssl aes-256-cbc -K "$encrypted_bce910623bb2_key" -iv "$encrypted_bce910623bb2_iv" -in travis_rsa.enc -out .build/travis_rsa -d
+openssl aes-256-cbc -K "$encrypted_0ddd2445e49f_key" -iv "$encrypted_0ddd2445e49f_iv" -in travis_rsa.enc -out .build/travis_rsa -d
 
 echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 

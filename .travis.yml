@@ -13,12 +13,13 @@ branches:
     - /^((hotfix|feature|release)\/)$/
 
 stages:
-  - test
+  - unit_test
+  - e2e_test
   - build_and_push
 
 jobs:
   include:
-    - stage: test
+    - stage: unit_test
       script:
         # - npm audit --audit-level=high
         - bash ./scripts/setupUnitTest.sh
@@ -27,7 +28,8 @@ jobs:
       env:
         - ROCKET_CHAT_URI=http://localhost:5000
       cache: npm
-    - script: curl "https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/master/scripts/ci/fetch.travis.sh" | bash
+    - stage: e2e_test
+      script: curl "https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/master/scripts/ci/fetch.travis.sh" | bash
       name: "test:end-to-end"
       env:
         - DOCKER_COMPOSE_VERSION=1.27.4
