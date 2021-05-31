@@ -2,6 +2,7 @@ const { expect } = require('chai');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects');
+const { ForbiddenError } = require('../../../../src/errors/applicationErrors');
 
 describe('MessengerPermissionService', () => {
 	describe('if Matrix messenger and student room creation is enabled', async () => {
@@ -130,7 +131,7 @@ describe('MessengerPermissionService', () => {
 		});
 
 		it('the service is not exposed', async () => {
-			expect(app.service('/messengerPermissions')).to.be.undefined;
+			expect(app.service('/messengerPermissions').get('id')).to.be.rejectedWith(ForbiddenError);
 		});
 	});
 });
