@@ -96,6 +96,9 @@ echo DOCKERTAG="$DOCKERTAG"
 echo DOCKERTAG_SHA="$DOCKERTAG_SHA"
 
 function buildandpush {
+	# Log in to the docker CLI
+	echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+	
 	# build containers
 	docker build -t schulcloud/schulcloud-server:"$DOCKERTAG" -t schulcloud/schulcloud-server:"$DOCKERTAG_SHA" .
 
@@ -103,9 +106,6 @@ function buildandpush {
 	then
 		exit $?
 	fi
-
-	# Log in to the docker CLI
-	echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
 	# take those images and push them up to docker hub
 	docker push schulcloud/schulcloud-server:"$DOCKERTAG"
