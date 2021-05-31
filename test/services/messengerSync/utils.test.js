@@ -20,6 +20,7 @@ describe('messenger synchronizer utils', () => {
 		server = await app.listen(0);
 		configBefore = Configuration.toObject();
 
+		Configuration.set('MATRIX_MESSENGER__SECRET', 'fake.secret');
 		Configuration.set('MATRIX_MESSENGER__SERVERNAME', 'fake.server');
 	});
 
