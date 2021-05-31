@@ -32,7 +32,7 @@ jobs:
       install:
         - sudo echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
         - sudo echo $HOME
-        - sudo echo ls $HOME
+        - sudo ls $HOME
         - sudo pwd
         - sudo ls -la
         - sudo docker pull mongo:4.2
