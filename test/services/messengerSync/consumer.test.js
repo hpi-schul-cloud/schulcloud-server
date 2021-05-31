@@ -7,8 +7,7 @@ const { ACTIONS } = require('../../../src/services/messengerSync/producer');
 
 const { Configuration } = commons;
 
-describe('service', function test() {
-	this.timeout(20000); // give require app enough time
+describe('service', () => {
 	let configBefore;
 	let server;
 	let app;
@@ -35,15 +34,15 @@ describe('service', function test() {
 		server = await app.listen(0);
 	});
 
-	after((done) => {
+	after(async () => {
 		rabbitmqMock.reset();
 
 		Configuration.reset(configBefore);
 		mockery.deregisterAll();
 		mockery.disable();
 
-		server.close(done);
-		testObjects.cleanup();
+		await testObjects.cleanup();
+		await server.close();
 	});
 
 	it('reject invalid messages', async () => {
