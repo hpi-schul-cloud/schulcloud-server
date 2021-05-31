@@ -38,7 +38,7 @@ describe('service', function test() {
 	after((done) => {
 		rabbitmqMock.reset();
 
-		Configuration.parse(configBefore);
+		Configuration.reset(configBefore);
 		mockery.deregisterAll();
 		mockery.disable();
 

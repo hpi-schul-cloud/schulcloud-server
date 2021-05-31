@@ -36,7 +36,7 @@ describe('MessengerConfigService', function test() {
 		});
 
 		after(async () => {
-			Configuration.parse(configBefore);
+			Configuration.reset(configBefore);
 			app.service('schools').listeners(schoolServiceListeners);
 			await testObjects.cleanup();
 			await server.close();
@@ -138,7 +138,7 @@ describe('MessengerConfigService', function test() {
 		});
 
 		after(async () => {
-			Configuration.parse(configBefore);
+			Configuration.reset(configBefore);
 			await server.close();
 		});
 

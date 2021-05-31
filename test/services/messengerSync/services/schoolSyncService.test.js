@@ -32,7 +32,7 @@ describe('service', () => {
 	});
 
 	after(async () => {
-		Configuration.parse(configBefore);
+		Configuration.reset(configBefore);
 		mockery.deregisterAll();
 		mockery.disable();
 		await testObjects.cleanup();

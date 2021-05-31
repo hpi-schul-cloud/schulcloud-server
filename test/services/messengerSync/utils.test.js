@@ -27,7 +27,7 @@ describe('messenger synchronizer utils', () => {
 	after((done) => {
 		server.close(done);
 		testObjects.cleanup();
-		Configuration.parse(configBefore);
+		Configuration.reset(configBefore);
 	});
 
 	/*

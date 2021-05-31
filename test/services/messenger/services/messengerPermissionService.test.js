@@ -27,7 +27,7 @@ describe('MessengerPermissionService', () => {
 		});
 
 		after(async () => {
-			Configuration.parse(configBefore);
+			Configuration.reset(configBefore);
 			await testHelper.cleanup();
 			await server.close();
 		});
@@ -84,12 +84,12 @@ describe('MessengerPermissionService', () => {
 		});
 
 		after(async () => {
-			Configuration.parse(configBefore);
+			Configuration.reset(configBefore);
 			await testHelper.cleanup();
 			await server.close();
 		});
 
-		it.only('administrators have messenger permission to open one to one chats', async () => {
+		it('administrators have messenger permission to open one to one chats', async () => {
 			const school = await testHelper.createTestSchool();
 			const adminUser = await testHelper.createTestUser({ roles: ['administrator'], schoolId: school._id });
 			const result = await app.service('/messengerPermissions').get(adminUser._id);
@@ -125,7 +125,7 @@ describe('MessengerPermissionService', () => {
 		});
 
 		after(async () => {
-			Configuration.parse(configBefore);
+			Configuration.reset(configBefore);
 			await server.close();
 		});
 
