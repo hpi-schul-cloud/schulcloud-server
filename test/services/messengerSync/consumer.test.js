@@ -143,8 +143,15 @@ describe('service', function test() {
 			schoolId: school._id,
 			fullSync: true,
 		};
-		const success = await rabbitmqMock.triggerConsume(Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL'), msg);
+		const queueName = Configuration.get('RABBITMQ_MATRIX_QUEUE_INTERNAL');
+
+		const success = await rabbitmqMock.triggerConsume(queueName, msg);
 		expect(success).to.be.true;
+
+		// generated messages should be marked as school sync messages, so they can be downprioritized
+		const generatedMessages = rabbitmqMock.queues[queueName].slice(-3);
+		expect(generatedMessages).to.be.an('array').of.length(3);
+		generatedMessages.forEach((message) => expect(message.schoolSync).to.be.true);
 	});
 
 	it('sync user', async () => {

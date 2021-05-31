@@ -79,7 +79,7 @@ const facadeStubs = {
 	},
 	'/school/v2': {
 		getSchool: sinon.stub().returns({ name: 'dummy school', tombstoneUserId: 'dummy-id' }),
-		// getTombstoneSchool
+		getTombstoneSchool: sinon.stub().returns({ _id: new ObjectId(), name: 'tombstone school' }),
 		// updateSchool
 	},
 };

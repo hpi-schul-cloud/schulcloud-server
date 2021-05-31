@@ -18,7 +18,7 @@ describe('messenger synchronizer utils', () => {
 	before(async () => {
 		app = await appPromise;
 		server = await app.listen(0);
-		configBefore = Configuration.toObject();
+		configBefore = Configuration.toObject({ plainSecrets: true });
 
 		Configuration.set('MATRIX_MESSENGER__SECRET', 'fake.secret');
 		Configuration.set('MATRIX_MESSENGER__SERVERNAME', 'fake.server');

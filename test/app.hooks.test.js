@@ -103,6 +103,53 @@ describe('Sanitization Hook', () => {
 		expect(result.content).to.equal(content);
 	});
 
+	it('hook does not sanitizes table style attributes', () => {
+		const content = `
+	<figure class="table" 
+		style="height:300px;width:230px">
+    <table style="background-color:hsl(120, 75%, 60%);
+    		border-bottom:5px solid hsl(60, 75%, 60%);
+    		border-left:5px solid hsl(60, 75%, 60%);
+    		border-right:5px solid hsl(60, 75%, 60%);
+    		border-top:5px solid hsl(60, 75%, 60%)"
+    >
+		<thead>
+			<th rowspan="2">Header 1</th>
+		</thead>
+        <tbody>
+        <tr>
+            <td style="background-color:hsl(240, 75%, 60%);
+            	border-bottom:5px inset hsl(210, 75%, 60%);
+            	border-left:5px inset hsl(210, 75%, 60%);
+            	border-right:5px inset hsl(210, 75%, 60%);
+            	border-top:5px inset hsl(210, 75%, 60%);
+            	height:40px;
+            	padding:4px;
+            	text-align:center;
+            	vertical-align:top;
+            	width:40px"
+            >val</td>
+            <td rowspan="2">val2</td>
+        </tr>
+        </tbody>
+    </table>
+	</figure>`;
+
+		const data = {
+			schoolId: '5f2987e020834114b8efd6f8',
+			title: '<script>alert("test");</script>SanitizationTest äöüß§$%/()=',
+			content,
+		};
+
+		const result = sanitizeDeep(data, 'topics');
+		const regExp = /(?:\r\n|\r|\n|\t|\s)/g;
+		const resultContent = result.content.replace(regExp, '');
+		const expectedContent = content.replace(regExp, '');
+		expect(result.schoolId).to.equal('5f2987e020834114b8efd6f8');
+		expect(result.title).to.equal('SanitizationTest äöüß§$%/()=');
+		expect(resultContent).to.equal(expectedContent);
+	});
+
 	// TODO: Map test to generic output for sanitizeConst keys, paths, saveKeys
 	it('sanitize in news, example', () => {
 		const data = {

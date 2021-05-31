@@ -68,6 +68,7 @@ version
 
 # patch files
 *.patch
+.build/travis_rsa
 
 # compiled output
 build
