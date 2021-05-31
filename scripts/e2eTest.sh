@@ -3,10 +3,10 @@
 set -e
 
 # Preconditions
-sudo rm /usr/local/bin/docker-compose
-curl -L https://github.com/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m` > docker-compose
-chmod +x docker-compose
-sudo mv docker-compose /usr/local/bin
+#sudo rm /usr/local/bin/docker-compose
+#curl -L https://github.com/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m` > docker-compose
+#chmod +x docker-compose
+#sudo mv docker-compose /usr/local/bin
 
 # Envirements
 export BRANCH_NAME=${TRAVIS_PULL_REQUEST_BRANCH:=$TRAVIS_BRANCH}
@@ -17,20 +17,18 @@ urlBranch="https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/$B
 urlDevelop="https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/develop/scripts/ci/end-to-end-tests.travis.sh"
 urlMaster="https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/master/scripts/ci/end-to-end-tests.travis.sh"
 
-status=$(curl --head --silent $urlBranch | head -n 1)
-
 # Execute
-if echo "$status" | grep -q 404
-  echo "Matching branchname found in end-to-ent-test repo"
-  curl -fO $urlBranch
+if curl --head --silent --fail $urlBranch 2> /dev/null;
+then
+  echo "select $BRANCH_NAME"
+  #curl -fO "$urlBranch"
+elif [[ $BRANCH_NAME = feature* ]];
+then
+  echo "select develop"
+  curl -fO "$urlDevelop"
 else
-  echo "Fallback to default branch in end-to-ent-test repo"
-  if [$BRANCH_NAME = feature*]
-  then
-    curl -fO $urlDevelop
-  else
-    curl -fO $urlMaster
-  fi
+  echo "select master"
+  curl -fO "$urlMaster"
 fi
 
 echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
