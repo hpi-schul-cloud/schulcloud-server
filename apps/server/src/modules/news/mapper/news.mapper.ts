@@ -1,5 +1,5 @@
 import { CreateNewsParams, NewsFilterQuery, NewsResponse } from '../controller/dto';
-import { News, NewsTargetModel, NewsTargetModelValue } from '../entity';
+import { News, NewsTargetModelValue } from '../entity';
 import { ICreateNews, INewsScope } from '../uc';
 import { SchoolInfoMapper } from './school-info.mapper';
 import { UserInfoMapper } from './user-info.mapper';

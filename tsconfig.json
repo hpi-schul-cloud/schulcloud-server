@@ -11,7 +11,10 @@
 		"strictNullChecks": true,
 		"strictPropertyInitialization": false,
 		"noImplicitAny": false,
-		"target": "es2019",
+		"target": "es2017",
+		"lib": [
+			"es2019.array"
+		],
 		"sourceMap": true,
 		"outDir": "./dist",
 		"baseUrl": "./",
