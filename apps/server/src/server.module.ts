@@ -1,5 +1,4 @@
 import { Module, NotFoundException } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/authentication/auth.module';
 import { NewsModule } from './modules/news/news.module';
 import { ServerController } from './server.controller';
@@ -18,7 +17,6 @@ import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 		UsersModule,
 		NewsModule,
 		TaskModule,
-		MongooseModule.forRoot(DB_URL),
 		MikroOrmModule.forRoot({
 			type: 'mongo',
 			clientUrl: DB_URL,
