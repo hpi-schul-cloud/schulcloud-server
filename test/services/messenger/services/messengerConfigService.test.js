@@ -1,5 +1,6 @@
 const { expect } = require('chai');
 const commons = require('@hpi-schul-cloud/commons');
+const { ForbiddenError } = require('../../../../src/errors/applicationErrors');
 
 const { Configuration } = commons;
 
@@ -143,7 +144,8 @@ describe('MessengerConfigService', function test() {
 		});
 
 		it('the service is not exposed', async () => {
-			expect(app.service('schools/:schoolId/messenger')).to.be.undefined;
+			expect(app.service('schools/:schoolId/messenger').find()).to.be.rejectedWith(ForbiddenError);
+			expect(app.service('schools/:schoolId/messenger').patch()).to.be.rejectedWith(ForbiddenError);
 		});
 	});
 });
