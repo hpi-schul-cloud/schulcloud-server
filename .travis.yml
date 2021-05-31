@@ -30,18 +30,18 @@ jobs:
         - ROCKET_CHAT_URI=http://localhost:5000
       cache: npm
       install:
-        - sudo echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-        - sudo echo $HOME
-        - sudo ls $HOME
-        - sudo pwd
-        - sudo ls -la
-        - sudo docker pull mongo:4.2
-        - sudo docker pull minio/minio
+        - echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+        - echo $HOME
+        - ls $HOME
+        - pwd
+        - ls -la
+        - docker pull mongo:4.2
+        - docker pull minio/minio
         - curl https://raw.githubusercontent.com/hpi-schul-cloud/schulcloud-authorization-server/master/docker-compose-test.yml > docker-compose-oauthserver.yml
         - curl https://raw.githubusercontent.com/hpi-schul-cloud/schulcloud-authorization-server/master/.env.example > .env
-        - sudo docker-compose -f docker-compose-oauthserver.yml up -d
-        - sudo docker run -d -p 27017:27017 mongo:4.2
-        - sudo docker run -d -p 9090:9000 minio/minio server /data
+        - docker-compose -f docker-compose-oauthserver.yml up -d
+        - docker run -d -p 27017:27017 mongo:4.2
+        - docker run -d -p 9090:9000 minio/minio server /data
         - npm ci
         - npm i -g wait-on
         - wait-on tcp:27017 -t 60000
