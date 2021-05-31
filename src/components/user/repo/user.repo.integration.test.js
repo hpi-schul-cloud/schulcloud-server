@@ -52,6 +52,7 @@ describe('user repository', () => {
 				firstName: 'DELETED',
 				lastName: 'USER',
 				email: `${Date.now()}@deleted`,
+				schoolId: user.schoolId,
 			};
 
 			const result = await userRepo.replaceUserWithTombstone(user._id, replaceData);
@@ -61,7 +62,7 @@ describe('user repository', () => {
 			expect(result.lastName).to.equal(replaceData.lastName);
 			expect(result.email).to.equal(replaceData.email);
 			expect(result).to.haveOwnProperty('deletedAt');
-			expect(result).to.not.haveOwnProperty('schoolId');
+			expect(result.schoolId.toString()).to.equal(user.schoolId.toString());
 			expect(result).to.not.haveOwnProperty('firstLogin');
 			expect(result.roles.length).to.equal(0);
 		});
@@ -86,6 +87,39 @@ describe('user repository', () => {
 			expect(Array.isArray(result.roles)).to.be.true;
 			expect(result.roles.length).to.equal(2);
 			result.roles.forEach((role) => {
+				expect(role).to.haveOwnProperty('name');
+				expect(role).to.haveOwnProperty('permissions');
+			});
+		});
+	});
+
+	describe('getUsersWithRoles', () => {
+		it('when called with a list of valid userids, then it returns an array of users with populated roles', async () => {
+			const user1 = await testObjects.createTestUser({ roles: ['teacher', 'administrator'] });
+			const user2 = await testObjects.createTestUser({ roles: ['teacher'] });
+			const user3 = await testObjects.createTestUser({ roles: ['teacher'] });
+
+			const result = await userRepo.getUsersWithRoles([user1._id, user2._id, user3._id]);
+
+			expect(result.length).to.equal(3);
+
+			expect(Array.isArray(result[0].roles)).to.be.true;
+			expect(result[0].roles.length).to.equal(2);
+			result[0].roles.forEach((role) => {
+				expect(role).to.haveOwnProperty('name');
+				expect(role).to.haveOwnProperty('permissions');
+			});
+
+			expect(Array.isArray(result[1].roles)).to.be.true;
+			expect(result[1].roles.length).to.equal(1);
+			result[1].roles.forEach((role) => {
+				expect(role).to.haveOwnProperty('name');
+				expect(role).to.haveOwnProperty('permissions');
+			});
+
+			expect(Array.isArray(result[2].roles)).to.be.true;
+			expect(result[2].roles.length).to.equal(1);
+			result[2].roles.forEach((role) => {
 				expect(role).to.haveOwnProperty('name');
 				expect(role).to.haveOwnProperty('permissions');
 			});

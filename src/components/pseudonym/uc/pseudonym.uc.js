@@ -4,7 +4,7 @@ const { trashBinResult } = require('../../helper/uc.helper');
 const { debug } = require('../../../logger');
 
 const deletePseudonymsForUser = async (userId) => {
-	validateObjectId(userId);
+	validateObjectId({ userId });
 	let complete = true;
 	debug(`deleting user related pseudonyms started`, { userId });
 	const pseudonyms = await pseudonymRepo.getPseudonymsForUser(userId);

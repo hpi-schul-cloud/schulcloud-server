@@ -1,3 +1,4 @@
-const fileModel = require('../../../../services/fileStorage/model');
+const { FileModel } = require('../../../../services/fileStorage/model');
+const { StorageProviderModel } = require('../../../../services/storageProvider/model');
 
-module.exports = fileModel;
+module.exports = { FileModel, StorageProviderModel };
