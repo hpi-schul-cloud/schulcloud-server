@@ -24,10 +24,10 @@ describe('messenger synchronizer utils', () => {
 		Configuration.set('MATRIX_MESSENGER__SERVERNAME', 'fake.server');
 	});
 
-	after((done) => {
-		server.close(done);
-		testObjects.cleanup();
+	after(async () => {
+		await testObjects.cleanup();
 		Configuration.reset(configBefore);
+		await server.close();
 	});
 
 	/*
