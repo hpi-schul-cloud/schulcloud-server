@@ -1,15 +1,15 @@
-import { ClassSerializerInterceptor, ValidationError, ValidationPipe } from '@nestjs/common';
-import { NestFactory, Reflector } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 // register source-map-support for debugging
-import { install } from 'source-map-support';
-install();
+import * as sourceMapSupport from 'source-map-support';
+import { ServerModule } from './server.module';
+import legacyAppPromise = require('../../../src/app');
+
+sourceMapSupport.install();
 
 // application imports
-import legacyAppPromise = require('../../../src/app');
-import { ServerModule } from './server.module';
 
 const ROUTE_PRAEFIX = 'v3';
 const API_PATH = 'api';
@@ -19,7 +19,7 @@ async function bootstrap() {
 	// load the legacy feathers/express server
 	const legacyApp = await legacyAppPromise;
 	const adapter = new ExpressAdapter(legacyApp);
-	await legacyApp.setup();
+	legacyApp.setup();
 
 	// create the NestJS application adapting the legacy  server
 	const app = await NestFactory.create(ServerModule, adapter, {});
@@ -45,11 +45,11 @@ async function bootstrap() {
 		.addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
 		.build();
 	const document = SwaggerModule.createDocument(app, config);
-	const apiDocsPath = ROUTE_PRAEFIX + '/api';
+	const apiDocsPath = `${ROUTE_PRAEFIX}/${API_PATH}`;
 	SwaggerModule.setup(apiDocsPath, app, document);
 
 	await app.init();
 
 	adapter.listen(PORT);
 }
-bootstrap();
+void bootstrap();
