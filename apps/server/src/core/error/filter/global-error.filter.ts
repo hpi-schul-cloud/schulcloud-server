@@ -1,10 +1,10 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
 import * as _ from 'lodash';
 import { Response } from 'express';
+import { BusinessError } from '@shared/error/business.error';
 import { Logger } from '../../logger/logger.service';
 import { ErrorResponse } from '../dto/error.response';
 import { FeathersError } from '../interface';
-import { BusinessError } from '../../../shared/error/business.error';
 
 const isFeathersError = (error: Error): error is FeathersError => {
 	if (!(error && 'type' in error)) return false;
@@ -31,14 +31,16 @@ const isTechnicalError = (error: Error): error is HttpException => {
  */
 const createErrorResponseForHttpException = (exception: HttpException): ErrorResponse => {
 	const code = exception.getStatus();
-	// const msg = exception.initMessage();
-	const { error } = exception.getResponse() as { error: string | undefined };
-	const type = error || exception.message;
-	return new ErrorResponse(_.snakeCase(type).toUpperCase(), _.startCase(type), exception.message, code);
+	const msg = exception.message || 'Some error occurred';
+	const exceptionName = exception.constructor.name.replace('Exception', '');
+	const type = _.snakeCase(exceptionName).toUpperCase();
+	const title = _.startCase(exceptionName);
+	return new ErrorResponse(type, title, msg, code);
 };
 
 function createErrorResponseForBusinessError(error: BusinessError): ErrorResponse {
-	return error.getResponse() as any as ErrorResponse;
+	const response = error.getResponse();
+	return response;
 }
 
 function createErrorResponseForUnknownError(error?: Error): ErrorResponse {
@@ -47,15 +49,19 @@ function createErrorResponseForUnknownError(error?: Error): ErrorResponse {
 	return response;
 }
 
+function createErrorResponseForFeathersError(error: FeathersError) {
+	const { code, className: type, name: title, message } = error;
+	const snakeType = _.snakeCase(type).toUpperCase();
+	const startTitle = _.startCase(title);
+	return new ErrorResponse(snakeType, startTitle, message, code);
+}
+
 const createErrorResponse = (error: any, logger: Logger): ErrorResponse => {
 	try {
 		if (error instanceof Error) {
 			if (isFeathersError(error)) {
 				// handles feathers errors only when calling feathers services from nest app
-				const { code, className: type, name: title, message } = error;
-				const snakeType = _.snakeCase(type).toUpperCase();
-				const startTitle = _.startCase(title);
-				return new ErrorResponse(snakeType, startTitle, message, code);
+				return createErrorResponseForFeathersError(error);
 			}
 			if (isBusinessError(error)) {
 				// create response from business error using 409/conflict
@@ -100,7 +106,11 @@ export class GlobalErrorFilter<T = any> implements ExceptionFilter<T> {
 		const ctx = host.switchToHttp();
 		const response = ctx.getResponse<Response>();
 		writeErrorLog(error, GlobalErrorFilter.logger);
-		const errorResponse: ErrorResponse = createErrorResponse(error, GlobalErrorFilter.logger);
+		const errorResponse: ErrorResponse = this.createErrorResponse(error);
 		response.status(errorResponse.code).json(errorResponse);
+	}
+
+	createErrorResponse(error: T): ErrorResponse {
+		return createErrorResponse(error, GlobalErrorFilter.logger);
 	}
 }
