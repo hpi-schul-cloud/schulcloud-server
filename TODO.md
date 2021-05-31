@@ -16,6 +16,7 @@
 - how can we log validation errors during development?
 - sanitizer
 - remove non-node async library
+- fix async cleanup & timeout in tests
 
 ## ACCEPTED
 
