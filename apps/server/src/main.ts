@@ -3,13 +3,13 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 // register source-map-support for debugging
-import * as sourceMapSupport from 'source-map-support';
+import { install as sourceMapInstall } from 'source-map-support';
+
+// application imports
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
 
-sourceMapSupport.install();
-
-// application imports
+sourceMapInstall();
 
 const ROUTE_PRAEFIX = 'v3';
 const API_PATH = 'api';
