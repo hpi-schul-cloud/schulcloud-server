@@ -31,8 +31,9 @@ jobs:
       cache: npm
       install:
         - echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+        - echo ls -la /home/travis/.docker
         - echo $HOME
-        - ls $HOME
+        - ls -la $HOME
         - pwd
         - ls -la
         - docker pull mongo:4.2
