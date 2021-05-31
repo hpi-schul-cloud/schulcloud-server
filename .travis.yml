@@ -31,13 +31,12 @@ jobs:
       cache: npm
       install:
         - sudo echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+        - sudo docker pull mongo:4.2
+        - sudo docker pull minio/minio
         - curl https://raw.githubusercontent.com/hpi-schul-cloud/schulcloud-authorization-server/master/docker-compose-test.yml > docker-compose-oauthserver.yml
         - curl https://raw.githubusercontent.com/hpi-schul-cloud/schulcloud-authorization-server/master/.env.example > .env
         - sudo docker-compose -f docker-compose-oauthserver.yml up -d
-        - sudo echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-        - sudo docker pull mongo:4.2
         - sudo docker run -d -p 27017:27017 mongo:4.2
-        - sudo docker pull minio/minio
         - sudo docker run -d -p 9090:9000 minio/minio server /data
         - npm ci
         - npm i -g wait-on
