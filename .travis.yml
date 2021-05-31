@@ -19,7 +19,7 @@ stages:
 jobs:
   include:
     - script:
-        - bash ./scripts/setupUnitTest.sh
+        - bash ./scripts/unitTest.sh
         - npm run coverage-codecov
       name: test:mocha
     - script: curl "https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/master/scripts/ci/fetch.travis.sh" | bash
