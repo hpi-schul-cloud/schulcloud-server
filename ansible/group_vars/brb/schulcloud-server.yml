@@ -60,3 +60,5 @@ EDTR_SOURCE: https://edtrio.brandenburg.schul-cloud.org
 GLOBAL_ANNOUNCEMENT: ""
 # produktive Instanz
 PROD_INSTANCE: true
+# Matrix
+RABBITMQ_MATRIX_QUEUE_EXTERNAL: matrix_sync_populated
