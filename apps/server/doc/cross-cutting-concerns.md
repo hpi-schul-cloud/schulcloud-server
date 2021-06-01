@@ -1,5 +1,7 @@
 # Cross cutting concerns
 
+The cross cutting topics are part of the core-module.
+
 ## Logging
 
 For logging use the logger ServerLogger, provided by the logger module. It is hooked up in the application on startup, replacing the default logger and can be transient injected into any provider by additionally define set a context into the logger.
@@ -62,15 +64,23 @@ Optionally in the second parameter, the context can be overridden only.
 
 ## Exception Handling
 
-We separate our business exceptions from technical exceptions. While for technical exceptions, we use the predefined HTTPExceptions from NestJS, b usiness exceptions inherit from abstract BusinessException.
-
-By default, implementations of BusinessException must define a title, type (identifier) and custom message and can contain additional data (like validation error).
-
 ![](../../assets/exception-hierarchy.svg)
 
-There is a filter defined to handle exceptions, which cares about the response format of exceptions and logging.
+We separate our business exceptions from technical exceptions. While for technical exceptions, we use the predefined HTTPExceptions from NestJS, business exceptions inherit from abstract BusinessException.
 
-In client applications, for technical errors, evaluate the http-error-code, then for business exceptions, the type can be used as identifier.
+By default, implementations of BusinessException must define
+
+```JSON
+	code: 500
+	type: "CUSTOM_ERROR_TYPE",
+	title: "Custom Error Type",
+	message: "Human readable details",
+	// additional: optionalData
+```
+
+There is a GlobalErrorFilter provided to handle exceptions, which cares about the response format of exceptions and logging. It overrides the default NestJS APP_FILTER in the core/error-module.
+
+In client applications, for technical errors, evaluate the http-error-code, then for business exceptions, the type can be used as identifier and additional data can be evaluated.
 
 For business errors we use 409/conflict as default to clearly have all business errors with one error code identified.
 
