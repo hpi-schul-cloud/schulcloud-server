@@ -30,14 +30,21 @@
 ## SELECTED
 
 - db configuration
+
   - keep mongoose options as mongo options
   - povider for mikroorm options and db url
   - test db provider
   - entity discovery
   - check indexes in mikroorm: when are they updated?
+
 - news
+
   - uc cleanup: 2auth, visibilities
+  - document best practices/layers/orm
+
 - context: user-/request-context (see mikroorm/asynclocalstorage)
+
+- fix jest, linter, ...
 
 ## DONE
 
