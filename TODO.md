@@ -16,11 +16,9 @@
 - how can we log validation errors during development?
 - sanitizer
 - remove non-node async library
-- fix async cleanup & timeout in tests
+- fix async cleanup & remove timeout in tests
 
 ## ACCEPTED
-
-ceev: ?
 
 - check build & start for production with ops
 - load/perf test
@@ -28,12 +26,9 @@ ceev: ?
 - disable legacy ts support (app, tests)
 
 - fix .env/config for windows
-- watch docs should hot reload on md file change
 
 ## SELECTED
 
-- inject APP_FILTER (exception handler) and APP_INTERCEPTOR (logger)
-- custom error handling (log/response)
 - db configuration
   - keep mongoose options as mongo options
   - povider for mikroorm options and db url
@@ -46,6 +41,9 @@ ceev: ?
 
 ## DONE
 
+- inject APP_FILTER (exception handler) and APP_INTERCEPTOR (logger), see core module
+- custom error handling (log/response), see global-error.filter.ts
+- watch docs should hot reload on md file change
 - 404 error handling in feathers has to be replaced (tests too). better: have nest before feathers... but seems not to be working
 - remove mongoose
 - publish documentation, see https://hpi-schul-cloud.github.io/schulcloud-server/overview.html
