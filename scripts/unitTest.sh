@@ -17,11 +17,11 @@ echo "ROCKET_CHAT_URI" $ROCKET_CHAT_URI
 # Execute
 curl https://raw.githubusercontent.com/hpi-schul-cloud/schulcloud-authorization-server/master/docker-compose-test.yml > docker-compose-oauthserver.yml
 curl https://raw.githubusercontent.com/hpi-schul-cloud/schulcloud-authorization-server/master/.env.example > .env
-sudo docker-compose -f docker-compose-oauthserver.yml up -d
-sudo docker pull mongo:4.2
-sudo docker run -d -p 27017:27017 mongo:4.2
-sudo docker pull minio/minio
-sudo docker run -d -p 9090:9000 minio/minio server /data
+docker-compose -f docker-compose-oauthserver.yml up -d
+docker pull mongo:4.2
+docker run -d -p 27017:27017 mongo:4.2
+docker pull minio/minio
+docker run -d -p 9090:9000 minio/minio server /data
 npm ci
 npm i -g wait-on
 wait-on tcp:27017 -t 60000
