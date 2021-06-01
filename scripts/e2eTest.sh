@@ -12,10 +12,10 @@ sudo mv docker-compose /usr/local/bin
 export BRANCH_NAME=${TRAVIS_PULL_REQUEST_BRANCH:=$TRAVIS_BRANCH}
 
 echo "BRANCH: $BRANCH_NAME"
-
-urlBranch="https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/$BRANCH_NAME/scripts/ci/end-to-end-tests.travis.sh"
-urlDevelop="https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/develop/scripts/ci/end-to-end-tests.travis.sh"
-urlMaster="https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/master/scripts/ci/end-to-end-tests.travis.sh"
+fileName="end-to-end-tests.travis.sh"
+urlBranch="https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/$BRANCH_NAME/scripts/ci/$fileName"
+urlDevelop="https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/develop/scripts/ci/$fileName"
+urlMaster="https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/master/scripts/ci/$fileName"
 
 # Execute
 if curl --head --silent --fail $urlBranch 2> /dev/null;
@@ -34,7 +34,7 @@ fi
 echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
 ls -a
-chmod 700 end-to-end-tests.travis.sh
-bash end-to-end-tests.travis.sh
+chmod "./scripts/$fileName"
+bash "./scripts/$fileName"
 
 set +e
