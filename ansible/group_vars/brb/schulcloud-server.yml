@@ -4,6 +4,7 @@ SC_TITLE: Schul-Cloud Brandenburg
 SC_SHORT_TITLE: Schul-Cloud Brandenburg
 SC_PRODUCTNAME: Schul-Cloud Brandenburg
 SC_NAV_TITLE: Schul-Cloud Brandenburg
+
 #DOCUMENT_BASE_DIR:
 SMTP: ""
 SHOW_VERSION: 1

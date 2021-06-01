@@ -6,7 +6,7 @@ metadata:
   labels:
     app: api
 spec:
-  replicas: {{ API_REPLICAS }}
+  replicas: {{ API_REPLICAS|default("2", true) }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
