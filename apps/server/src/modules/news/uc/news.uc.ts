@@ -16,7 +16,7 @@ export class NewsUc {
 	}
 
 	async create(userId: EntityId, schoolId: EntityId, params: ICreateNews): Promise<News> {
-		this.logger.log(`create news for user ${userId}`);
+		this.logger.log(`create news as user ${userId}`);
 
 		await this.checkNewsTargetPermissions(userId, schoolId, params.target, ['NEWS_CREATE']);
 
@@ -30,7 +30,7 @@ export class NewsUc {
 		);
 		await this.newsRepo.save(news);
 
-		this.logger.log(`news for user ${userId} created`);
+		this.logger.log(`news ${news.id} created by user ${userId}`);
 
 		return news;
 	}

@@ -181,12 +181,46 @@ To test the setup behind a controller, use e2e-tests to ensure, use cases and re
 The domain layer assumes a kind of higher-level policy that everything else relies on ([Source](https://khalilstemmler.com/articles/software-design-architecture/organizing-app-logic/)).
 
 > This means, a controller or a repository must fit this layer.
-> Specific goals of a repository, like query optimization must not be part of this layer, a repository must handle this transparent for a use case.
+> Specific goals of a repository, like query optimization must not be a transparent part of the repository only.
 
 #### Use Cases
 
 Use cases either return entities (data) to the user through a query (CRUD) or apply a command (do ... ok/err).
 Further reading: https://khalilstemmler.com/articles/oop-design-principles/command-query-separation/
+
+They focus on providing business use cases and should only contain higher logical function calls, that are well-tested and hide their implementation inside of a use-case.
+
+```TypeScript
+// Sample
+	async create(userId: EntityId, schoolId: EntityId, params: ICreateNews): Promise<News> {
+		this.logger.log(`create news as user ${userId}`);
+
+		await this.checkNewsTargetPermissions(userId, schoolId, params.target, ['NEWS_CREATE']);
+
+		const news = new News(
+			{
+				...params,
+				school: schoolId,
+				creator: userId,
+			},
+			params.target
+		);
+		await this.newsRepo.save(news);
+
+		this.logger.log(`news ${news.id} created by user ${userId}`);
+
+		return news;
+	}
+```
+
+How to structure a use case? When creating a use case, care of
+
+- the general business goal
+- preconditions
+- actors, in-put & out-put data
+- post conditions to be well-known
+- the normal case (step by step)
+- all (handled) exception-cases (to be handled in a client application)
 
 #### Testing
 
