@@ -1,10 +1,14 @@
-import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntity, BaseEntityWithTimestamps, EntityId } from '@shared/domain';
-import { NewsTarget, NewsTargetModelValue } from './news.types';
+import { CourseInfo } from './course-info.entity';
+import { NewsTarget, NewsTargetModel, NewsTargetModelValue } from './news.types';
 import { SchoolInfo } from './school-info.entity';
 import { UserInfo } from './user-info.entity';
 
-@Entity()
+@Entity({
+	discriminatorColumn: 'targetModel',
+	abstract: true,
+})
 export class News extends BaseEntityWithTimestamps {
 	/** the news title */
 	@Property()
@@ -30,10 +34,10 @@ export class News extends BaseEntityWithTimestamps {
 	/** id reference to a collection */
 	@ManyToOne()
 	target?: BaseEntity;
-
 	/** name of a collection which is referenced in target */
-	@Property()
-	targetModel?: NewsTargetModelValue;
+
+	@Enum()
+	targetModel: NewsTargetModelValue | undefined;
 
 	@ManyToOne({ fieldName: 'schoolId' })
 	school: SchoolInfo;
@@ -62,4 +66,37 @@ export class News extends BaseEntityWithTimestamps {
 			this.setTarget(target);
 		}
 	}
+}
+
+@Entity({ discriminatorValue: undefined })
+export class SchoolNews extends News {
+	/** id reference to a collection */
+	@Property()
+	target: undefined;
+
+	/** name of a collection which is referenced in target */
+	@Property()
+	targetModel: undefined;
+}
+
+@Entity({ discriminatorValue: NewsTargetModel.Course })
+export class CourseNews extends News {
+	/** id reference to a collection */
+	@ManyToOne()
+	target?: CourseInfo;
+
+	/** name of a collection which is referenced in target */
+	@Property()
+	targetModel: typeof NewsTargetModel.Course;
+}
+
+@Entity({ discriminatorValue: NewsTargetModel.Team })
+export class TeamNews extends News {
+	/** id reference to a collection */
+	@ManyToOne()
+	target?: TeamInfo;
+
+	/** name of a collection which is referenced in target */
+	@Property()
+	targetModel: typeof NewsTargetModel.Team;
 }
