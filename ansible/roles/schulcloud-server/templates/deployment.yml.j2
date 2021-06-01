@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api
+spec:
+  replicas: {{ API_REPLICAS }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      #maxUnavailable: 1
+  revisionHistoryLimit: 4
+  paused: false
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+      containers:
+      - name: api
+        image: {{ SERVER_IMAGE_NAME }}:{{ APP_IMAGE_TAG }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3030
+          name: api
+          protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: api-configmap
+        - secretRef:
+            name: notification-secret
+        readinessProbe:
+          httpGet:
+            path: /version
+            port: 3030
+          timeoutSeconds: 4
+          failureThreshold: 3
+          periodSeconds: 5
+        # liveless if unsatisfactory reply
+        livenessProbe:
+          httpGet:
+            path: /version
+            port: 3030
+          timeoutSeconds: 4
+          failureThreshold: 3
+          periodSeconds: 15
+        startupProbe:
+          httpGet:
+            path: /version
+            port: 3030
+          timeoutSeconds: 4
+          failureThreshold:  36
+          periodSeconds: 5
+        resources:
+          limits:
+            cpu: "2000m"
+            memory: "2Gi"
+          requests:
+            cpu: "100m"
+            memory: "2Gi"
