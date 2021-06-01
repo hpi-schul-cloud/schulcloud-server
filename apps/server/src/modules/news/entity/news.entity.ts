@@ -3,7 +3,21 @@ import { BaseEntity, BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 import { CourseInfo } from './course-info.entity';
 import { NewsTarget, NewsTargetModel, NewsTargetModelValue } from './news.types';
 import { SchoolInfo } from './school-info.entity';
+import { TeamInfo } from './team-info.entity';
 import { UserInfo } from './user-info.entity';
+
+interface INewsProperties {
+	title: string;
+	content: string;
+	displayAt: Date;
+	school: EntityId;
+	creator: EntityId;
+
+	externalId?: string;
+	source?: 'internal' | 'rss';
+	sourceDescription?: string;
+	updater?: EntityId;
+}
 
 @Entity({
 	discriminatorColumn: 'targetModel',
@@ -34,8 +48,8 @@ export class News extends BaseEntityWithTimestamps {
 	/** id reference to a collection */
 	@ManyToOne()
 	target?: BaseEntity;
-	/** name of a collection which is referenced in target */
 
+	/** name of a collection which is referenced in target */
 	@Enum()
 	targetModel: NewsTargetModelValue | undefined;
 
@@ -56,47 +70,62 @@ export class News extends BaseEntityWithTimestamps {
 		}
 	}
 
-	constructor(
-		props: { title: string; content: string; displayAt: Date; school: EntityId; creator: EntityId },
-		target?: NewsTarget
-	) {
+	constructor(props: INewsProperties, target?: NewsTarget) {
 		super();
-		Object.assign(this, props);
+		this.title = props.title;
+		this.content = props.content;
+		this.displayAt = props.displayAt;
+		Object.assign(this, { school: props.school, creator: props.creator });
 		if (target) {
 			this.setTarget(target);
 		}
 	}
 }
 
-@Entity({ discriminatorValue: undefined })
+@Entity({ discriminatorValue: 'school' })
 export class SchoolNews extends News {
 	/** id reference to a collection */
 	@Property()
-	target: undefined;
+	target = undefined;
 
 	/** name of a collection which is referenced in target */
 	@Property()
-	targetModel: undefined;
+	targetModel = undefined;
+
+	// eslint-disable-next-line @typescript-eslint/no-useless-constructor
+	constructor(props: INewsProperties) {
+		super(props);
+	}
 }
 
 @Entity({ discriminatorValue: NewsTargetModel.Course })
 export class CourseNews extends News {
 	/** id reference to a collection */
 	@ManyToOne()
-	target?: CourseInfo;
+	target: CourseInfo;
 
 	/** name of a collection which is referenced in target */
 	@Property()
 	targetModel: typeof NewsTargetModel.Course;
+
+	// eslint-disable-next-line @typescript-eslint/no-useless-constructor
+	constructor(props: INewsProperties) {
+		super(props);
+	}
 }
 
 @Entity({ discriminatorValue: NewsTargetModel.Team })
 export class TeamNews extends News {
 	/** id reference to a collection */
 	@ManyToOne()
-	target?: TeamInfo;
+	target: TeamInfo;
 
 	/** name of a collection which is referenced in target */
 	@Property()
 	targetModel: typeof NewsTargetModel.Team;
+
+	// eslint-disable-next-line @typescript-eslint/no-useless-constructor
+	constructor(props: INewsProperties) {
+		super(props);
+	}
 }

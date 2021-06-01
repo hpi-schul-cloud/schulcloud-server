@@ -5,9 +5,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import { EntityId } from '@shared/domain';
-import { CourseNews, News, NewsTargetModel, SchoolInfo, UserInfo } from '../entity';
+import { CourseNews, News, NewsTargetModel, SchoolInfo, SchoolNews, TeamNews, UserInfo } from '../entity';
 import { NewsRepo } from './news.repo';
 import { CourseInfo } from '../entity/course-info.entity';
+import { TeamInfo } from '../entity/team-info.entity';
 
 describe.only('NewsService', () => {
 	let repo: NewsRepo;
@@ -23,7 +24,7 @@ describe.only('NewsService', () => {
 				MikroOrmModule.forRoot({
 					type: 'mongo',
 					clientUrl: dbUrl,
-					entities: [News, CourseNews, CourseInfo, SchoolInfo, UserInfo],
+					entities: [News, CourseNews, CourseInfo, SchoolNews, SchoolInfo, TeamNews, TeamInfo, UserInfo],
 				}),
 			],
 			providers: [NewsRepo],
