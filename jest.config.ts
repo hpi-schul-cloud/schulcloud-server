@@ -8,7 +8,9 @@ const { compilerOptions } = require('./tsconfig.json');
 const config: Config.InitialOptions = {
 	moduleFileExtensions: ['js', 'json', 'ts'],
 	rootDir: '.',
-	testRegex: 'spec\\.ts$',
+	testRegex: '\\.spec\\.ts$',
+	// ignore legacy mocha tests
+	testPathIgnorePatterns: ['^src', '^test'],
 	transform: {
 		'^.+\\.(t|j)s$': 'ts-jest',
 	},
