@@ -48,7 +48,9 @@ data:
   ROCKET_CHAT_URI: "http://rocketchat-svc:5000"
   # anything else
   CALENDAR_URI: "http://calendar-svc:3000"
+{% if CONTENT_URI is defined %}  
   CONTENT_URI: "{{ CONTENT_URI }}"
+{% endif %}
   KEEP_ALIVE: "{{ KEEP_ALIVE|default("true", true) }}"
   #  Prints slow requests above 4 s in log 
   #  LEAD_TIME: "4000"
