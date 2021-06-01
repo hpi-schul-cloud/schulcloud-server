@@ -10,7 +10,7 @@ branches:
   only:
     - develop
     - master
-    - /^((hotfix|feature|release)\/)$/
+    - /^((hotfix|feature|release)\/.*)$/
 
 stages:
   - test
