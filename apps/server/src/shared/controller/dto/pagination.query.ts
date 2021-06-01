@@ -6,6 +6,7 @@ export class PaginationQuery {
 	@Min(0)
 	@ApiProperty({ description: 'number of elements (not pages) to be skipped' })
 	skip?: number = 0;
+
 	@IsInt()
 	@Min(1)
 	@Max(100)

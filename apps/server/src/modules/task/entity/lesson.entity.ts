@@ -7,6 +7,7 @@ import { Course } from './course.entity';
 export class Lesson extends BaseEntityWithTimestamps {
 	@Property()
 	hidden: boolean;
+
 	@ManyToOne({ fieldName: 'courseId' })
 	course: Course;
 }

@@ -10,13 +10,17 @@ export class TaskResponseDto {
 
 	@ApiProperty()
 	name: string;
+
 	@ApiProperty()
 	duedate: Date;
+
 	@ApiProperty()
 	courseName: string;
+
 	@ApiProperty()
 	displayColor: string;
+
 	@ApiProperty()
 	id: string;
-	//status: string;
+	// status: string;
 }

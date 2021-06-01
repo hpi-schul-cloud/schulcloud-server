@@ -1,8 +1,8 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TaskRepo } from './task.repo';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { TaskRepo } from './task.repo';
 import { Course, Lesson, Submission, Task } from '../entity';
 import { UserInfo } from '../../news/entity';
 

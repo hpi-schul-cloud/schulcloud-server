@@ -7,13 +7,16 @@ import { Lesson } from './lesson.entity';
 export class Task extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
+
 	@Property()
 	dueDate?: Date;
+
 	@Property()
 	private?: boolean;
 
 	@ManyToOne({ fieldName: 'courseId' })
 	course: Course;
+
 	@ManyToOne({ fieldName: 'lessonId' })
 	lesson?: Lesson;
 
