@@ -56,7 +56,7 @@
 		"nest:test:watch": "jest --watch",
 		"nest:test:cov": "jest --coverage",
 		"nest:test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-		"nest:test:e2e": "jest --config ./apps/server/test/jest-e2e.json",
+		"nest:test:e2e": "jest --config ./apps/server/test/jest-e2e.config.ts",
 		"syncIndexes": "node ./scripts/syncIndexes.js"
 	},
 	"dependencies": {

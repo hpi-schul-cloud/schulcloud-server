@@ -8,13 +8,15 @@ const { compilerOptions } = require('./tsconfig.json');
 const config: Config.InitialOptions = {
 	moduleFileExtensions: ['js', 'json', 'ts'],
 	rootDir: '.',
-	testRegex: '.*\\.spec\\.ts$',
+	testRegex: 'spec\\.ts$',
 	transform: {
 		'^.+\\.(t|j)s$': 'ts-jest',
 	},
 	collectCoverageFrom: ['**/*.(t|j)s'],
 	coverageDirectory: './coverage',
 	testEnvironment: 'node',
+	// detectOpenHandles: true,
+	// detectLeaks: true,
 	roots: ['<rootDir>/apps/'],
 	moduleNameMapper: {
 		// add ts-config path's here as regex
