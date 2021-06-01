@@ -26,6 +26,7 @@ FEATURE_TSP_AUTO_CONSENT_ENABLED: "false"
 FEATURE_LOG_REQUEST: "false"
 SENTRY_SAMPLE_RATE: 0
 ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: true
+AWS_ENDPOINT_URL: https://s3.hidrive.strato.com
 # Zusätzlich freigegebene routen
 ROUTE_ACCOUNTS: true
 ROUTE_CLASSES: true
