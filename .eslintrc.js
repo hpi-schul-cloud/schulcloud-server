@@ -124,7 +124,7 @@ module.exports = {
 			files: ['{test,src}/**/*.ts'],
 			parser: '@typescript-eslint/parser',
 			plugins: ['@typescript-eslint'],
-			extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
+			extends: ['plugin:@typescript-eslint/recommended', 'prettier', 'plugin:prettier/recommended'],
 		},
 	],
 };

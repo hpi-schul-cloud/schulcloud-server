@@ -8,10 +8,13 @@ export class UserEntity {
 		this.schoolId = payload.schoolId;
 		this.roles = payload.roles;
 	}
+
 	@ApiProperty()
 	userId: string;
+
 	@ApiProperty()
 	schoolId: string;
+
 	@ApiProperty()
 	roles: string[];
 }

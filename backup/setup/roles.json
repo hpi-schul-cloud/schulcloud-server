@@ -247,7 +247,9 @@
 			"$oid": "0000d186816abba584714c95"
 		}
 	],
-	"permissions": [],
+	"permissions": [
+		"Task_Dashboard_View_v3"
+	],
 	"__v": 0
 },
 {

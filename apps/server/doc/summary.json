@@ -16,10 +16,6 @@
 				"file": "cross-cutting-concerns.md"
 			},
 			{
-				"title": "Code Conventions",
-				"file": "conventions.md"
-			},
-			{
 				"title": "Git",
 				"file": "git.md"
 			}
