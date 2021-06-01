@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: daily
+      time: '01:00'
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 99
+    versioning-strategy: increase-if-necessary # less changes as possible
+    rebase-strategy: disabled # should still rebase on schedule
+  - package-ecosystem: docker
+    directory: '/'
+    schedule:
+      interval: weekly
+      day: monday
+      time: '01:00'
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 99
+    rebase-strategy: disabled
