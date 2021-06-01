@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { INewsScope } from './news.interface';
+import { ICreateNews, INewsScope } from './news.interface';
 
 import { AuthorizationService } from '../../authorization/authorization.service';
 import { LoggerModule } from '../../../core/logger/logger.module';
@@ -124,12 +124,37 @@ describe('NewsUc', () => {
 	describe('create', () => {
 		it('should assign all required properties to news object', async () => {
 			const createSpy = jest.spyOn(repo, 'create');
-			const params = { title: 'title', content: 'content', displayAt: new Date() };
+			const params = {
+				title: 'title',
+				content: 'content',
+				displayAt: new Date(),
+				target: { targetModel: 'school' },
+			} as ICreateNews;
 			await service.create(userId, schoolId, params);
 			expect(createSpy).toHaveBeenCalled();
 			const callArgs = createSpy.mock.calls[0][0];
 			expect(callArgs.school.id === schoolId);
 			expect(callArgs.creator.id === userId);
 		});
+
+		it('should assign target to news object', async () => {
+			const courseId = new ObjectId().toHexString();
+			const createSpy = jest.spyOn(repo, 'create');
+			const params = {
+				title: 'title',
+				content: 'content',
+				displayAt: new Date(),
+				target: { targetModel: 'courses', targetId: courseId },
+			} as ICreateNews;
+			await service.create(userId, schoolId, params);
+			expect(createSpy).toHaveBeenCalled();
+			const callArgs = createSpy.mock.calls[0][0];
+			expect(callArgs.school.id === schoolId);
+			expect(callArgs.creator.id === userId);
+			expect(callArgs.targetModel === 'courses');
+			expect(callArgs.target?.id === courseId);
+		});
+
+		// TODO test authorization
 	});
 });
