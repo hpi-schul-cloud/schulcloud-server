@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseEntity, EntityId } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NewsTargetModelValue } from '../news/entity';
-import { FeathersServiceProvider } from './feathers-service.provider';
+import { FeathersServiceProvider } from '../feathers/feathers-service.provider';
 
 interface User {
 	_id: ObjectId;
@@ -12,7 +12,7 @@ interface User {
 
 @Injectable()
 export class FeathersAuthProvider {
-	constructor(private serviceProvider: FeathersServiceProvider) {}
+	constructor(private feathersServiceProvider: FeathersServiceProvider) {}
 
 	async getUserSchoolPermissions(userId: EntityId, schoolId: EntityId): Promise<string[]> | never {
 		const user = await this.getUser(userId);
@@ -29,7 +29,7 @@ export class FeathersAuthProvider {
 		targetModel: NewsTargetModelValue,
 		targetId: EntityId
 	): Promise<string[]> {
-		const service = this.serviceProvider.getService(`${targetModel}/:scopeId/userPermissions/`);
+		const service = this.feathersServiceProvider.getService(`${targetModel}/:scopeId/userPermissions/`);
 		const targetPermissions = (await service.get(userId, {
 			route: { scopeId: targetId },
 		})) as string[];
@@ -41,7 +41,7 @@ export class FeathersAuthProvider {
 		targetModel: NewsTargetModelValue,
 		permissions: string[]
 	): Promise<EntityId[]> {
-		const service = this.serviceProvider.getService(`/users/:scopeId/${targetModel}`);
+		const service = this.feathersServiceProvider.getService(`/users/:scopeId/${targetModel}`);
 		const targets = (await service.find({
 			route: { scopeId: userId.toString() },
 			query: {
@@ -59,7 +59,7 @@ export class FeathersAuthProvider {
 	}
 
 	private async getUser(userId: EntityId): Promise<User> {
-		const service = this.serviceProvider.getService('users');
+		const service = this.feathersServiceProvider.getService('users');
 		const user = (await service.get(userId)) as User;
 		if (user == null) throw new NotFoundException();
 		return user;

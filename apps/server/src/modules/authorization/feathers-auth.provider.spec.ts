@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { FeathersModule } from '../feathers/feathers.module';
 import { FeathersAuthProvider } from './feathers-auth.provider';
 
 describe('FeathersAuthProvider', () => {
@@ -6,6 +7,7 @@ describe('FeathersAuthProvider', () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
+			imports: [FeathersModule],
 			providers: [FeathersAuthProvider],
 		}).compile();
 

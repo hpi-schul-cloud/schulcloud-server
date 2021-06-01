@@ -7,7 +7,7 @@ export type EntityTypeValue = NewsTargetModelValue | 'school';
 
 @Injectable()
 export class AuthorizationService {
-	constructor(private authProvider: FeathersAuthProvider) {}
+	constructor(private feathersAuthProvider: FeathersAuthProvider) {}
 
 	/**
 	 * Get all permissions a user has for a specific entity
@@ -19,8 +19,8 @@ export class AuthorizationService {
 	async getEntityPermissions(userId: EntityId, targetModel: EntityTypeValue, targetId: EntityId): Promise<string[]> {
 		const permissions =
 			targetModel === 'school'
-				? await this.authProvider.getUserSchoolPermissions(userId, targetId)
-				: await this.authProvider.getUserTargetPermissions(userId, targetModel, targetId);
+				? await this.feathersAuthProvider.getUserSchoolPermissions(userId, targetId)
+				: await this.feathersAuthProvider.getUserTargetPermissions(userId, targetModel, targetId);
 		return permissions;
 	}
 
@@ -59,8 +59,8 @@ export class AuthorizationService {
 	): Promise<EntityId[]> {
 		const entitiyIds =
 			targetModel === 'school'
-				? this.authProvider.getPermittedSchools(userId)
-				: this.authProvider.getPermittedTargets(userId, targetModel, permissions);
+				? this.feathersAuthProvider.getPermittedSchools(userId)
+				: this.feathersAuthProvider.getPermittedTargets(userId, targetModel, permissions);
 
 		return entitiyIds;
 	}

@@ -5,8 +5,18 @@ import { Application } from '@feathersjs/express';
 import { EntityId } from '@shared/domain';
 
 export interface FeathersService {
+	/**
+	 *
+	 * @param id
+	 * @param params
+	 * @deprecated Access legacy eathers service get method
+	 */
 	get(id: EntityId, params?: FeathersServiceParams): Promise<FeathersServiceResponse>;
-
+	/**
+	 *
+	 * @param params
+	 * @deprecated Access legacy eathers service find method
+	 */
 	find(params?: FeathersServiceParams): Promise<FeathersServiceResponse>;
 }
 
@@ -16,9 +26,10 @@ export type FeathersServiceParams = Record<string, any>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type FeathersServiceResponse = Record<string, any> | any[];
 
-// Provides an interface to access feathers services
-// Use only to gain access to feathers services.
-// IMPORTANT: Introduce strict typing in NestJs services
+/**
+ * This Service gives access to legacy feathers services. It is request based injected.
+ * IMPORTANT: Introduce strong typing immediately when using this modules service.
+ */
 @Injectable({ scope: Scope.REQUEST })
 export class FeathersServiceProvider {
 	constructor(@Inject(REQUEST) private request: Request) {}
