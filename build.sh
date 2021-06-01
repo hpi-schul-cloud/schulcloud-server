@@ -34,10 +34,10 @@ then
 elif [[ "$TRAVIS_BRANCH" =~ ^"release"* ]]
 then
 	GIT_FLOW_BRANCH="release"
-elif [[ "$TRAVIS_BRANCH" =~ ^hotfix\/[A-Z]+-[0-9]+-[a-zA-Z_]+$ ]]
+elif [[ "$TRAVIS_BRANCH" =~ ^hotfix\/[A-Z]+-[0-9]+-[a-zA-Z0-9_]+$ ]]
 then
 	GIT_FLOW_BRANCH="hotfix"
-elif [[ "$TRAVIS_BRANCH" =~ ^feature\/[A-Z]+-[0-9]+-[a-zA-Z_]+$ ]]
+elif [[ "$TRAVIS_BRANCH" =~ ^feature\/[A-Z]+-[0-9]+-[a-zA-Z0-9_]+$ ]]
 then
 	GIT_FLOW_BRANCH="feature"
 else
@@ -97,15 +97,15 @@ echo DOCKERTAG_SHA="$DOCKERTAG_SHA"
 
 function buildandpush {
 	# build containers
+	# Log in to the docker CLI
+	echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+	
 	docker build -t schulcloud/schulcloud-server:"$DOCKERTAG" -t schulcloud/schulcloud-server:"$DOCKERTAG_SHA" .
 
 	if [[ "$?" != "0" ]]
 	then
 		exit $?
 	fi
-
-	# Log in to the docker CLI
-	echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
 	# take those images and push them up to docker hub
 	docker push schulcloud/schulcloud-server:"$DOCKERTAG"
