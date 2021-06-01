@@ -44,7 +44,6 @@
 		"nest:prebuild": "rimraf dist",
 		"nest:build": "nest build",
 		"nest:build:all": "npm run nest:build",
-		"nest:clean": "shx rm -rf dist",
 		"nest:docs:serve": "npx @compodoc/compodoc -p tsconfig.json -s -w -a apps/assets --includes apps/server/doc -d docs",
 		"nest:docs:build": "npx @compodoc/compodoc -p tsconfig.json -w -a apps/assets --includes apps/server/doc -d docs",
 		"nest:start": "nest start",
