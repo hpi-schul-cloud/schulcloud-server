@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ICreateNews, INewsScope } from './news.interface';
+import { ICreateNews, INewsScope } from '../entity/news.types';
 
 import { AuthorizationService } from '../../authorization/authorization.service';
 import { LoggerModule } from '../../../core/logger/logger.module';
@@ -35,7 +35,7 @@ describe('NewsUc', () => {
 				{
 					provide: NewsRepo,
 					useValue: {
-						create() {
+						save() {
 							return {};
 						},
 						findAll() {
@@ -123,7 +123,7 @@ describe('NewsUc', () => {
 	});
 	describe('create', () => {
 		it('should assign all required properties to news object', async () => {
-			const createSpy = jest.spyOn(repo, 'create');
+			const createSpy = jest.spyOn(repo, 'save');
 			const params = {
 				title: 'title',
 				content: 'content',
@@ -132,14 +132,14 @@ describe('NewsUc', () => {
 			} as ICreateNews;
 			await service.create(userId, schoolId, params);
 			expect(createSpy).toHaveBeenCalled();
-			const callArgs = createSpy.mock.calls[0][0];
-			expect(callArgs.school.id === schoolId);
-			expect(callArgs.creator.id === userId);
+			const newsProps = createSpy.mock.calls[0][0];
+			expect(newsProps.school.id === schoolId);
+			expect(newsProps.creator.id === userId);
 		});
 
 		it('should assign target to news object', async () => {
-			const courseId = new ObjectId().toHexString();
-			const createSpy = jest.spyOn(repo, 'create');
+			const courseId = new ObjectId().toString();
+			const createSpy = jest.spyOn(repo, 'save');
 			const params = {
 				title: 'title',
 				content: 'content',
@@ -148,11 +148,11 @@ describe('NewsUc', () => {
 			} as ICreateNews;
 			await service.create(userId, schoolId, params);
 			expect(createSpy).toHaveBeenCalled();
-			const callArgs = createSpy.mock.calls[0][0];
-			expect(callArgs.school.id === schoolId);
-			expect(callArgs.creator.id === userId);
-			expect(callArgs.targetModel === 'courses');
-			expect(callArgs.target?.id === courseId);
+			const newsProps = createSpy.mock.calls[0][0];
+			expect(newsProps.school.id === schoolId);
+			expect(newsProps.creator.id === userId);
+			expect(newsProps.targetModel === 'courses');
+			expect(newsProps.target?.id === courseId);
 		});
 
 		// TODO test authorization

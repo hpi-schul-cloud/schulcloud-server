@@ -1,23 +1,8 @@
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntity, BaseEntityWithTimestamps, EntityId } from '@shared/domain';
+import { NewsTarget, NewsTargetModelValue } from './news.types';
 import { SchoolInfo } from './school-info.entity';
 import { UserInfo } from './user-info.entity';
-
-export const NewsTargetModel = {
-	Course: 'courses',
-	Team: 'teams',
-} as const;
-
-// TODO put into shared types
-type ValueOf<T> = T[keyof T];
-
-export type NewsTargetModelValue = ValueOf<typeof NewsTargetModel>;
-
-export type NewsTarget =
-	| {
-			targetModel: 'school';
-	  }
-	| { targetModel: NewsTargetModelValue; targetId?: EntityId };
 
 @Entity()
 export class News extends BaseEntityWithTimestamps {
@@ -67,8 +52,14 @@ export class News extends BaseEntityWithTimestamps {
 		}
 	}
 
-	constructor(props: { title: string; content: string; displayAt: Date; school: EntityId; creator: EntityId }) {
+	constructor(
+		props: { title: string; content: string; displayAt: Date; school: EntityId; creator: EntityId },
+		target?: NewsTarget
+	) {
 		super();
 		Object.assign(this, props);
+		if (target) {
+			this.setTarget(target);
+		}
 	}
 }

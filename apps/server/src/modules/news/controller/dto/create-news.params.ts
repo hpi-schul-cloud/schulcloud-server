@@ -20,10 +20,10 @@ export class CreateNewsParams {
 	@IsString()
 	@IsOptional()
 	@ApiProperty()
-	targetModel?: string;
+	targetModel: string;
 
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional()
-	targetId?: string;
+	targetId: string;
 }

@@ -2,9 +2,9 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { EntityId, IPagination } from '@shared/domain';
 import { AuthorizationService, EntityTypeValue } from '../../authorization/authorization.service';
 import { Logger } from '../../../core/logger/logger.service';
-import { News, NewsTarget, NewsTargetModel, NewsTargetModelValue } from '../entity';
+import { News, NewsTargetModel, NewsTargetModelValue } from '../entity';
 import { NewsRepo } from '../repo/news.repo';
-import { ICreateNews, INewsScope, IUpdateNews } from './news.interface';
+import { ICreateNews, INewsScope, IUpdateNews, NewsTarget } from '../entity/news.types';
 import { NewsTargetFilter } from '../repo/news-target-filter';
 
 type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
@@ -20,13 +20,15 @@ export class NewsUc {
 
 		await this.checkNewsTargetPermissions(userId, schoolId, params.target, ['NEWS_CREATE']);
 
-		const props = new News({
-			...params,
-			school: schoolId,
-			creator: userId,
-		});
-		props.setTarget(params.target);
-		const news = await this.newsRepo.create(props);
+		const news = new News(
+			{
+				...params,
+				school: schoolId,
+				creator: userId,
+			},
+			params.target
+		);
+		await this.newsRepo.save(news);
 
 		this.logger.log(`news for user ${userId} created`);
 

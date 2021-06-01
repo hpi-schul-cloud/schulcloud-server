@@ -10,8 +10,7 @@ import { NewsTargetFilter } from './news-target-filter';
 export class NewsRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async create(props: News): Promise<News> {
-		const news = this.em.create(News, props);
+	async save(news: News): Promise<News> {
 		await this.em.persistAndFlush(news);
 		return news;
 	}
@@ -76,10 +75,6 @@ export class NewsRepo {
 		const news = await this.em.findOneOrFail(News, id, ['school', 'creator', 'updater']);
 		return news;
 	}
-
-	// update(id: EntityId, props: Record<string, any>): string {
-	// 	return `This action updates a #${id} news`;
-	// }
 
 	// remove(id: EntityId): string {
 	// 	return `This action removes a #${id} news`;

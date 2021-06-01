@@ -98,12 +98,11 @@ describe('NewsService', () => {
 		describe('create', () => {
 			it('should create and persist a news entity', async () => {
 				const courseId = new ObjectId().toString();
-				const props = newTestNews(schoolId, 'courses', courseId);
-				const result = await repo.create(props);
-				expect(result).toBeDefined();
-				expect(result.id).toBeDefined();
-				const expectedNews = await em.findOne(News, result.id);
-				expect(result).toStrictEqual(expectedNews);
+				const news = newTestNews(schoolId, 'courses', courseId);
+				await repo.save(news);
+				expect(news.id).toBeDefined();
+				const expectedNews = await em.findOne(News, news.id);
+				expect(news).toStrictEqual(expectedNews);
 			});
 		});
 
