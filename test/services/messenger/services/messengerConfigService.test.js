@@ -1,5 +1,6 @@
 const { expect } = require('chai');
 const commons = require('@hpi-schul-cloud/commons');
+const { ForbiddenError } = require('../../../../src/errors/applicationErrors');
 
 const { Configuration } = commons;
 
@@ -22,7 +23,7 @@ describe('MessengerConfigService', function test() {
 
 	describe('if Matrix messenger is enabled', () => {
 		before(async () => {
-			configBefore = Configuration.toObject(); // deep copy current config
+			configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 			Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 			Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
 			delete require.cache[require.resolve('../../../../src/app')];
@@ -36,7 +37,7 @@ describe('MessengerConfigService', function test() {
 		});
 
 		after(async () => {
-			Configuration.parse(configBefore);
+			Configuration.reset(configBefore);
 			app.service('schools').listeners(schoolServiceListeners);
 			await testObjects.cleanup();
 			await server.close();
@@ -128,7 +129,7 @@ describe('MessengerConfigService', function test() {
 
 	describe('if Matrix messenger is disabled', () => {
 		before(async () => {
-			configBefore = Configuration.toObject(); // deep copy current config
+			configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 			Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', false);
 			delete require.cache[require.resolve('../../../../src/app')];
 			// eslint-disable-next-line global-require
@@ -138,12 +139,13 @@ describe('MessengerConfigService', function test() {
 		});
 
 		after(async () => {
-			Configuration.parse(configBefore);
+			Configuration.reset(configBefore);
 			await server.close();
 		});
 
 		it('the service is not exposed', async () => {
-			expect(app.service('schools/:schoolId/messenger')).to.be.undefined;
+			expect(app.service('schools/:schoolId/messenger').find()).to.be.rejectedWith(ForbiddenError);
+			expect(app.service('schools/:schoolId/messenger').patch()).to.be.rejectedWith(ForbiddenError);
 		});
 	});
 });

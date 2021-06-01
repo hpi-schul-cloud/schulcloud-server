@@ -110,7 +110,7 @@ describe('Test team basic methods', () => {
 				const { userIds } = await teamService.get(slimteam._id);
 				expect(userIds.some((item) => equalIds(item.userId, hero._id))).to.equal(true);
 			} finally {
-				cleanup();
+				await cleanup();
 			}
 		});
 
@@ -133,7 +133,7 @@ describe('Test team basic methods', () => {
 					expect(e.message).to.equal('Only administrator, teacher and students can create teams.');
 				});
 			} finally {
-				cleanup();
+				await cleanup();
 			}
 		});
 	});

@@ -2,6 +2,7 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const chaiHttp = require('chai-http');
 const proxyquire = require('proxyquire');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { expect } = chai;
 chai.use(chaiHttp);
@@ -43,9 +44,12 @@ describe('legacy forward', () => {
 	});
 
 	it('when a non-existing route is called, then the server responds with 404', async () => {
+		const before = Configuration.toObject({ plainSecrets: true });
+		Configuration.set('FEATURE_LEGACY_NOT_FOUND_ENABLED', true);
 		const request = chai.request(app).get('/this/route/does/not/exist');
 		const result = await request.send();
 		expect(result.body.code).to.equal(404);
+		Configuration.reset(before);
 	});
 
 	it('when a service without basepath is called, then the server respons with 200', async () => {

@@ -1,4 +1,5 @@
 const chai = require('chai');
+const { ObjectId } = require('mongoose').Types;
 
 const testObjects = require('../../../../test/services/helpers/testObjects');
 const { SubmissionModel, HomeworkModel } = require('./db');
@@ -106,6 +107,7 @@ const createHomeworks = async (testHelper) => {
 const matchId = (ressource) => ({ _id }) => equal(_id, ressource._id);
 
 const db = {};
+// TODO move to homeworks/submission repository, test it there and reuse it here only
 db.findHomeworks = (userId) => HomeworkModel.find({ teacherId: userId }).lean().exec();
 db.findGroupSubmissions = (userId) => SubmissionModel.find({ teamMembers: userId }).lean().exec();
 db.findSubmissions = (userId) => SubmissionModel.find({ stundentId: userId }).lean().exec();
@@ -453,29 +455,24 @@ describe('in "task.repo" the function', () => {
 
 		it('should handle unexpected inputs', async () => {
 			// must execute step by step that errors not mixed
-			const resultNull = await findGroupSubmissionIdsByUser(null);
-			expect(resultNull, 'when input is null').to.be.an('array').with.lengthOf(0);
+			const resultNull = await findGroupSubmissionIdsByUser(new ObjectId());
+			expect(resultNull, 'when input is any valid id').to.be.an('array').with.lengthOf(0);
 
-			const resultUndefined = await findGroupSubmissionIdsByUser(undefined);
-			expect(resultUndefined, 'when input is undefined').to.be.an('array').with.lengthOf(0);
+			expect(findGroupSubmissionIdsByUser(null))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
 
-			try {
-				await findGroupSubmissionIdsByUser('123');
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "123" at path "teamMembers" for model "submission"'
-				);
-			}
+			expect(findGroupSubmissionIdsByUser(undefined))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
 
-			try {
-				await findGroupSubmissionIdsByUser(() => {});
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.match(
-					/Cast to ObjectId failed for value "\[Function.*\]" at path "teamMembers" for model "submission"/
-				);
-			}
+			expect(findGroupSubmissionIdsByUser('123'))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+
+			expect(findGroupSubmissionIdsByUser(() => {}))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
 		});
 	});
 
@@ -584,30 +581,24 @@ describe('in "task.repo" the function', () => {
 
 		it('should handle unexpected inputs', async () => {
 			// must execute step by step that errors not mixed
-			const resultNull = await findUserSubmissionsByUser(null);
-			expect(resultNull, 'when input is null').to.be.an('array').with.lengthOf(0);
+			const resultNull = await findUserSubmissionsByUser(new ObjectId());
+			expect(resultNull, 'when input is any object id').to.be.an('array').with.lengthOf(0);
 
-			const resultUndefined = await findUserSubmissionsByUser(undefined);
-			expect(resultUndefined, 'when input is undefined').to.be.an('array').with.lengthOf(0);
+			expect(findUserSubmissionsByUser(null))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
 
-			try {
-				await findUserSubmissionsByUser('123');
-				throw new Error('test failed');
-			} catch (err) {
-				expect(err.message, 'when input is not bson string').to.equal(
-					'Cast to ObjectId failed for value "123" at path "studentId" for model "submission"'
-				);
-			}
+			expect(findUserSubmissionsByUser(undefined))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
 
-			try {
-				await findUserSubmissionsByUser(() => {});
-				throw new Error('test failed');
-			} catch (err) {
-				// err.message.replace('[Function]', '[Function (anonymous)]'); // error message depends on JavaScript engine
-				expect(err.message, 'when input is not bson string').to.match(
-					/Cast to ObjectId failed for value "\[Function.*\]" at path "studentId" for model "submission"/
-				);
-			}
+			expect(findUserSubmissionsByUser('123'))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
+
+			expect(findUserSubmissionsByUser(() => {}))
+				.to.eventually.throw(AssertionError)
+				.with.property(getExpectedAssertionError('userId'));
 		});
 	});
 

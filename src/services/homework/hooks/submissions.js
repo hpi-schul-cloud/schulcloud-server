@@ -106,8 +106,8 @@ const filterRequestedSubmissions = async (context) => {
 	delete originalQuery.$populate;
 	delete originalQuery.$limit;
 	const query = { $and: [originalQuery, permissionQuery] };
-	if (queryPopulates) query.$populate = queryPopulates;
-	if (queryLimit) query.$limit = queryLimit;
+	query.$populate = queryPopulates;
+	query.$limit = queryLimit;
 
 	context.params.query = query;
 

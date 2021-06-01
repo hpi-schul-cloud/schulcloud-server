@@ -16,8 +16,6 @@ module.exports = function setup() {
 				max: 100000,
 			},
 			lean: true,
-			multi: true,
-			whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 		})
 	);
 	const hwService = app.service('/homework');
@@ -36,8 +34,6 @@ module.exports = function setup() {
 				max: 5000,
 			},
 			lean: true,
-			multi: true,
-			whitelist: ['$exists', '$elemMatch', '$regex', '$skip', '$populate'],
 		})
 	);
 	const submissionService = app.service('/submissions');

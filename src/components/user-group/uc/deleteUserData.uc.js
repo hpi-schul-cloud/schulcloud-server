@@ -3,7 +3,7 @@ const { classesRepo } = require('../repo/index');
 const { trashBinResult } = require('../../helper/uc.helper');
 const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
 const { debug } = require('../../../logger');
-const assertionErrorHelper = require('../../../errors/helper/assertionErrorHelper');
+const assertionErrorHelper = require('../../../errors/assertionErrorHelper');
 
 const validateParams = (userId) => {
 	if (!isValidObjectId(userId)) throw new AssertionError(assertionErrorHelper.missingParameters({ userId }));

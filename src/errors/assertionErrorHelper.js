@@ -1,5 +1,6 @@
 const REQUIRED_PARAMENTER_MISSING = 'REQUIRED_PARAMENTER_MISSING';
 const REQUIRED_PARAMETER_TO_BE_NON_EMPTY_STRING = 'REQUIRED_PARAMETER_TO_BE_NON_EMPTY_STRING';
+const REQUIRED_PARAM_SHOULD_MATCH_EMAIL_REGEX = 'REQUIRED_PARAM_SHOULD_MATCH_EMAIL_REGEX';
 
 /**
  * Transforms an options object into array of validation errors.
@@ -24,7 +25,17 @@ const requiredParametersToBeNonEmtyString = (parameterNames) => {
 	return validationErrors;
 };
 
+const requiredParametersShouldMatchEmailRegex = (parameterNames) => {
+	const validationErrors = Object.keys(parameterNames).map((key) => ({
+		param: key,
+		error: REQUIRED_PARAM_SHOULD_MATCH_EMAIL_REGEX,
+	}));
+
+	return validationErrors;
+};
+
 module.exports = {
+	requiredParametersShouldMatchEmailRegex,
 	missingParameters,
 	requiredParametersToBeNonEmtyString,
 };

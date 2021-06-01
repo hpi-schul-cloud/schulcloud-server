@@ -1,5 +1,4 @@
 const { expect } = require('chai');
-const logger = require('../../../../src/logger/index');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 const accountModel = require('../../../../src/services/account/model');
@@ -36,12 +35,8 @@ describe('AdminUsersService', () => {
 	});
 
 	it('builds class display names correctly', async () => {
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'] }).catch((err) => {
-			logger.warning('Can not create teacher', err);
-		});
-		const student = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
-			logger.warning('Can not create student', err);
-		});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const student = await testObjects.createTestUser({ roles: ['student'] });
 
 		expect(teacher).to.not.be.undefined;
 		expect(student).to.not.be.undefined;
@@ -52,17 +47,14 @@ describe('AdminUsersService', () => {
 		});
 		expect(testClass).to.not.be.undefined;
 
-		const gradeLevelClass = await testObjects
-			.createTestClass({
-				name: 'A',
-				userIds: [student._id],
-				teacherIds: [teacher._id],
-				nameFormat: 'gradeLevel+name',
-				gradeLevel: 2,
-			})
-			.catch((err) => {
-				logger.warning('Can not create test class.', err);
-			});
+		const gradeLevelClass = await testObjects.createTestClass({
+			name: 'A',
+			userIds: [student._id],
+			teacherIds: [teacher._id],
+			nameFormat: 'gradeLevel+name',
+			gradeLevel: 2,
+		});
+
 		expect(gradeLevelClass).to.not.be.undefined;
 
 		const params = {
@@ -72,9 +64,7 @@ describe('AdminUsersService', () => {
 			query: {},
 		};
 
-		const result = await adminStudentsService.find(params).catch((err) => {
-			logger.warning('Can not execute adminStudentsService.find.', err);
-		});
+		const result = await adminStudentsService.find(params);
 
 		const searchClass = (users, name) =>
 			users.some((user) => equalIds(student._id, user._id) && user.classes.includes(name));
@@ -84,30 +74,20 @@ describe('AdminUsersService', () => {
 	});
 
 	it('request muliple users by id', async () => {
-		const admin = await testObjects.createTestUser({ roles: ['administrator'] }).catch((err) => {
-			logger.warning('Can not create admin', err);
-		});
+		const admin = await testObjects.createTestUser({ roles: ['administrator'] });
 		const params = await testObjects.generateRequestParamsFromUser(admin);
 
-		const student1 = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
-			logger.warning('Can not create student', err);
-		});
+		const student1 = await testObjects.createTestUser({ roles: ['student'] });
 
-		const student2 = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
-			logger.warning('Can not create student', err);
-		});
+		const student2 = await testObjects.createTestUser({ roles: ['student'] });
 
-		const student3 = await testObjects.createTestUser({ roles: ['student'] }).catch((err) => {
-			logger.warning('Can not create student', err);
-		});
+		const student3 = await testObjects.createTestUser({ roles: ['student'] });
 
 		params.query = {
 			users: [student1._id.toString(), student2._id.toString(), student3._id.toString()],
 		};
 
-		const result = await adminStudentsService.find(params).catch((err) => {
-			logger.warning('Can not execute adminStudentsService.find.', err);
-		});
+		const result = await adminStudentsService.find(params);
 
 		expect(result.total).to.equal(3);
 	});
@@ -187,39 +167,30 @@ describe('AdminUsersService', () => {
 	});
 
 	it('sorts students correctly', async () => {
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'] }).catch((err) => {
-			logger.warning('Can not create teacher', err);
-		});
-		const student1 = await testObjects
-			.createTestUser({
-				firstName: 'Max',
-				roles: ['student'],
-				consent: {
-					userConsent: {
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+		const student1 = await testObjects.createTestUser({
+			firstName: 'Max',
+			roles: ['student'],
+			consent: {
+				userConsent: {
+					form: 'digital',
+					privacyConsent: true,
+					termsOfUseConsent: true,
+				},
+				parentConsents: [
+					{
 						form: 'digital',
 						privacyConsent: true,
 						termsOfUseConsent: true,
 					},
-					parentConsents: [
-						{
-							form: 'digital',
-							privacyConsent: true,
-							termsOfUseConsent: true,
-						},
-					],
-				},
-			})
-			.catch((err) => {
-				logger.warning('Can not create student', err);
-			});
-		const student2 = await testObjects
-			.createTestUser({
-				firstName: 'Moritz',
-				roles: ['student'],
-			})
-			.catch((err) => {
-				logger.warning('Can not create student', err);
-			});
+				],
+			},
+		});
+
+		const student2 = await testObjects.createTestUser({
+			firstName: 'Moritz',
+			roles: ['student'],
+		});
 
 		expect(teacher).to.not.be.undefined;
 		expect(student1).to.not.be.undefined;
@@ -382,9 +353,7 @@ describe('AdminUsersService', () => {
 		const limit = 1;
 		let skip = 0;
 
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'] }).catch((err) => {
-			logger.warning('Can not create teacher', err);
-		});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
 
 		expect(teacher).to.not.be.undefined;
 
@@ -449,7 +418,9 @@ describe('AdminUsersService', () => {
 			expect.fail('The previous call should have failed');
 		} catch (err) {
 			expect(err.code).to.equal(403);
-			expect(err.message).to.equal('Creating new students or teachers is only possible in the source system.');
+			expect(err.message).to.equal(
+				'Creating, editing, or removing students or teachers is only possible in the source system.'
+			);
 		}
 	});
 
@@ -739,6 +710,29 @@ describe('AdminUsersService', () => {
 		}
 	});
 
+	it('does not allow externally managed schools to remove users', async () => {
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
+			ldapSchoolIdentifier: 'testId',
+		});
+		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+		const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		params.query = {
+			...params.query,
+			_ids: [student._id],
+		};
+		try {
+			await adminStudentsService.remove(student, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal(
+				'Creating, editing, or removing students or teachers is only possible in the source system.'
+			);
+		}
+	});
+
 	it('users cannot REMOVE students from foreign schools', async () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool1',
@@ -1025,7 +1019,9 @@ describe('AdminUsersService', () => {
 				expect.fail('The previous call should have failed');
 			} catch (err) {
 				expect(err.code).to.equal(403);
-				expect(err.message).to.equal('Creating new students or teachers is only possible in the source system.');
+				expect(err.message).to.equal(
+					'Creating, editing, or removing students or teachers is only possible in the source system.'
+				);
 			}
 		};
 
@@ -1419,7 +1415,9 @@ describe('AdminTeachersService', () => {
 			expect.fail('The previous call should have failed');
 		} catch (err) {
 			expect(err.code).to.equal(403);
-			expect(err.message).to.equal('Creating new students or teachers is only possible in the source system.');
+			expect(err.message).to.equal(
+				'Creating, editing, or removing students or teachers is only possible in the source system.'
+			);
 		}
 	});
 
@@ -1714,6 +1712,29 @@ describe('AdminTeachersService', () => {
 		} catch (err) {
 			expect(err.code).to.equal(403);
 			expect(err.message).to.equal('You cannot remove users from other schools.');
+		}
+	});
+
+	it('does not allow externally managed schools to remove users', async () => {
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
+			ldapSchoolIdentifier: 'testId',
+		});
+		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		params.query = {
+			...params.query,
+			_ids: [teacher._id],
+		};
+		try {
+			await adminTeachersService.remove(teacher, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal(
+				'Creating, editing, or removing students or teachers is only possible in the source system.'
+			);
 		}
 	});
 
