@@ -21,7 +21,7 @@ urlMaster="https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/ma
 if curl --head --silent --fail $urlBranch 2> /dev/null;
 then
   echo "select $BRANCH_NAME"
-  #curl -fO "$urlBranch"
+  curl -fO "$urlBranch"
 elif [[ $BRANCH_NAME = feature* ]];
 then
   echo "select develop"
