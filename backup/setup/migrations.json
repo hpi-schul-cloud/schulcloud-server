@@ -974,17 +974,6 @@
 },
 {
 	"_id": {
-		"$oid": "60a22a35cc8f8f35542a1d52"
-	},
-	"state": "up",
-	"name": "add-task-dashboard-for-students",
-	"createdAt": {
-		"$date": "2021-05-17T08:32:53.574Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "606c0f825fa13b502e30d775"
 	},
 	"state": "up",
@@ -1002,6 +991,28 @@
 	"name": "set_search_index",
 	"createdAt": {
 		"$date": "2021-03-29T09:50:49.972Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "60a22a35cc8f8f35542a1d52"
+	},
+	"state": "up",
+	"name": "add-task-dashboard-for-students",
+	"createdAt": {
+		"$date": "2021-05-17T08:32:53.574Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "60b74b92d9f0612d2457ba6f"
+	},
+	"state": "up",
+	"name": "news_add_target_schools",
+	"createdAt": {
+		"$date": "2021-06-02T08:23:18.664Z"
 	},
 	"__v": 0
 }]

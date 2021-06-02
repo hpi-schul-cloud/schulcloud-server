@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ParseObjectIdPipe } from '@shared/pipe';
 import { PaginationQuery } from '@shared/controller';
+import { PaginationResponse } from '@shared/controller/dto/pagination.response';
 import { NewsUc } from '../uc/news.uc';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { ICurrentUser } from '../../authentication/interface/jwt-payload';
@@ -30,14 +31,14 @@ export class NewsController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: NewsFilterQuery,
 		@Query() pagination: PaginationQuery
-	): Promise<NewsResponse[]> {
-		const newsList = await this.newsUc.findAllForUser(
+	): Promise<PaginationResponse<NewsResponse[]>> {
+		const [newsList, count] = await this.newsUc.findAllForUser(
 			currentUser.userId,
 			NewsMapper.mapNewsScopeToDomain(scope),
 			pagination
 		);
 		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
-		return dtoList;
+		return new PaginationResponse(dtoList, count);
 	}
 
 	/** Retrieve a specific news entry by id. A user may only read news of scopes he has the read permission. The news entity has school and user names populated. */

@@ -93,16 +93,18 @@ class AbstractService {
 		// target and school might be populated or not
 		const isObjectId = (o) => o instanceof ObjectId || typeof o === 'string';
 		// scope case: user role in scope must have given permission
-		if (target && targetModel) {
+		if (target && targetModel && targetModel !== 'schools') {
 			const targetId = isObjectId(target) ? target.toString() : target._id.toString();
 			const scope = this.app.service(`${targetModel}/:scopeId/userPermissions/`);
 			const params = { route: { scopeId: targetId } };
 			const scopePermissions = await scope.get(userId, params);
 			return scopePermissions;
 		}
-
-		// default school case: dataItem and users schoolId must match and user permission must exist
-		return this.getSchoolPermissions(userId, isObjectId(schoolId) ? schoolId : schoolId._id);
+		if (targetModel === 'schools') {
+			// default school case: dataItem and users schoolId must match and user permission must exist
+			return this.getSchoolPermissions(userId, isObjectId(schoolId) ? schoolId : schoolId._id);
+		}
+		return [];
 	}
 
 	/**

@@ -1,5 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { EntityId, IPagination } from '@shared/domain';
+import { Counted } from '@shared/types';
 import { AuthorizationService, EntityTypeValue } from '../../authorization/authorization.service';
 import { Logger } from '../../../core/logger/logger.service';
 import { News, NewsTargetModel, NewsTargetModelValue } from '../entity';
@@ -50,14 +51,14 @@ export class NewsUc {
 	 * @param pagination
 	 * @returns
 	 */
-	async findAllForUser(userId: EntityId, scope?: INewsScope, pagination?: IPagination): Promise<News[]> {
+	async findAllForUser(userId: EntityId, scope?: INewsScope, pagination?: IPagination): Promise<Counted<News[]>> {
 		this.logger.log(`start find all news for user ${userId}`);
 
 		const unpublished = !!scope?.unpublished;
 		const permissions: Permission[] = NewsUc.getRequiredPermissions(unpublished);
 
 		const targets = await this.getPermittedTargets(userId, scope, permissions);
-		const newsList = await this.newsRepo.findAll(targets, unpublished, pagination);
+		const [newsList, newsCount] = await this.newsRepo.findAll(targets, unpublished, pagination);
 
 		await Promise.all(
 			newsList.map(async (news: News) => {
@@ -67,7 +68,7 @@ export class NewsUc {
 
 		this.logger.log(`return ${newsList.length} news for user ${userId}`);
 
-		return newsList;
+		return [newsList, newsCount];
 	}
 
 	/**

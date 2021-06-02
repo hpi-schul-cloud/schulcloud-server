@@ -75,7 +75,8 @@ describe.only('NewsService', () => {
 				targetIds: [courseId],
 			};
 			const pagination = { skip: 0, limit: 20 };
-			const result = await repo.findAll([target], false, pagination);
+			const [result, count] = await repo.findAll([target], false, pagination);
+			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
 		});
@@ -87,7 +88,8 @@ describe.only('NewsService', () => {
 				targetModel: NewsTargetModel.School,
 				targetIds: [schoolId],
 			};
-			const result = await repo.findAll([target], false, pagination);
+			const [result, count] = await repo.findAll([target], false, pagination);
+			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
 		});
@@ -100,7 +102,8 @@ describe.only('NewsService', () => {
 				targetIds: [courseId],
 			};
 			const pagination = { skip: 0, limit: 20 };
-			const result = await repo.findAll([target], false, pagination);
+			const [result, count] = await repo.findAll([target], false, pagination);
+			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
 		});
