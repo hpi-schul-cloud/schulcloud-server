@@ -114,7 +114,7 @@
 		"sanitize-html": "^2.1.0",
 		"serve-favicon": "^2.3.2",
 		"socketio-file-upload": "^0.7.0",
-		"strip-bom": "^4.0.0",
+		"strip-bom": "^5.0.0",
 		"tiny-async-pool": "^1.2.0",
 		"universal-analytics": "^0.4.17",
 		"urlsafe-base64": "^1.0.0",
