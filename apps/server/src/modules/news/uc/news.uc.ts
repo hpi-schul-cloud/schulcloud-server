@@ -30,14 +30,12 @@ export class NewsUc {
 		await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, ['NEWS_CREATE']);
 
 		const { target, ...props } = params;
-		const news = new News(
-			{
-				...props,
-				school: schoolId,
-				creator: userId,
-			},
-			target
-		);
+		const news = News.createInstance(targetModel, {
+			...props,
+			school: schoolId,
+			creator: userId,
+			target: targetId,
+		});
 		await this.newsRepo.save(news);
 
 		this.logger.log(`news ${news.id} created by user ${userId}`);

@@ -39,7 +39,7 @@ describe('NewsUc', () => {
 							return {};
 						},
 						findAll() {
-							return [];
+							return [[], 0];
 						},
 					},
 				},
@@ -151,7 +151,7 @@ describe('NewsUc', () => {
 			expect(newsProps.school.id === schoolId);
 			expect(newsProps.creator.id === userId);
 			expect(newsProps.targetModel === 'courses');
-			expect(newsProps.target?.id === courseId);
+			expect(newsProps.target.id === courseId);
 		});
 
 		// TODO test authorization

@@ -1,7 +1,7 @@
-import { Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntity, BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 import { CourseInfo } from './course-info.entity';
-import { NewsTarget, NewsTargetModel, NewsTargetModelValue } from './news.types';
+import { NewsTargetModel, NewsTargetModelValue } from './news.types';
 import { SchoolInfo } from './school-info.entity';
 import { TeamInfo } from './team-info.entity';
 import { UserInfo } from './user-info.entity';
@@ -12,6 +12,7 @@ interface INewsProperties {
 	displayAt: Date;
 	school: EntityId;
 	creator: EntityId;
+	target: EntityId;
 
 	externalId?: string;
 	source?: 'internal' | 'rss';
@@ -23,7 +24,7 @@ interface INewsProperties {
 	discriminatorColumn: 'targetModel',
 	abstract: true,
 })
-export class News extends BaseEntityWithTimestamps {
+export abstract class News extends BaseEntityWithTimestamps {
 	/** the news title */
 	@Property()
 	title!: string;
@@ -50,7 +51,7 @@ export class News extends BaseEntityWithTimestamps {
 	target: BaseEntity;
 
 	/** name of a collection which is referenced in target */
-	@Enum()
+	@Property()
 	targetModel: NewsTargetModelValue;
 
 	@ManyToOne({ fieldName: 'schoolId' })
@@ -64,19 +65,27 @@ export class News extends BaseEntityWithTimestamps {
 
 	permissions: string[] = [];
 
-	setTarget(target: NewsTarget): void {
-		Object.assign(this, { targetModel: target.targetModel, target: target.targetId });
-	}
-
-	constructor(props: INewsProperties, target?: NewsTarget) {
+	constructor(props: INewsProperties) {
 		super();
 		this.title = props.title;
 		this.content = props.content;
 		this.displayAt = props.displayAt;
-		Object.assign(this, { school: props.school, creator: props.creator });
-		if (target != null) {
-			this.setTarget(target);
+		Object.assign(this, { school: props.school, creator: props.creator, target: props.target });
+	}
+
+	static createInstance(targetModel: NewsTargetModelValue, props: INewsProperties): News {
+		let news: News;
+		if (targetModel === NewsTargetModel.Course) {
+			// eslint-disable-next-line @typescript-eslint/no-use-before-define
+			news = new CourseNews(props);
+		} else if (targetModel === NewsTargetModel.Team) {
+			// eslint-disable-next-line @typescript-eslint/no-use-before-define
+			news = new TeamNews(props);
+		} else {
+			// eslint-disable-next-line @typescript-eslint/no-use-before-define
+			news = new SchoolNews(props);
 		}
+		return news;
 	}
 }
 
@@ -84,37 +93,16 @@ export class News extends BaseEntityWithTimestamps {
 export class SchoolNews extends News {
 	@ManyToOne()
 	target: SchoolInfo;
-
-	@Property()
-	targetModel: typeof NewsTargetModel.School;
-
-	constructor(props: INewsProperties) {
-		super(props, undefined);
-	}
 }
 
 @Entity({ discriminatorValue: NewsTargetModel.Course })
 export class CourseNews extends News {
 	@ManyToOne()
 	target: CourseInfo;
-
-	@Property()
-	targetModel: typeof NewsTargetModel.Course;
-
-	constructor(props: INewsProperties) {
-		super(props, undefined);
-	}
 }
 
 @Entity({ discriminatorValue: NewsTargetModel.Team })
 export class TeamNews extends News {
 	@ManyToOne()
 	target: TeamInfo;
-
-	@Property()
-	targetModel: typeof NewsTargetModel.Team;
-
-	constructor(props: INewsProperties) {
-		super(props, undefined);
-	}
 }
