@@ -9,27 +9,152 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## 26.2.0
+
 ### Added
 
+- OPS-2418 - Change buildpipelines (Server, Client, Nuxt) to execute E2E tests according QF decision
 - SC-8250 - add bulk deletion to user service v2
 - SC-8341 - add tombstone school to tombstone user
 - SC-8408 - added delete events by scope Id route
 - SC-7937 - Allow adding multiple materials to lesson
 - SC-7868 - Deletion concept for personal file connections
+- SC-8873 - Add prioritization for Matrix messenger tasks
+- SC-8982 - add inital service ressource messuring test setup
+- OPS-1499 - Add feature to CI Pipeline and provide manual deployments of branches and automatic deploy of release to staging
+- Add run script for sync indexes based on existing and registered schemas.
+- SC-9085 - add registration pin deletion for parent emails
+- SC-9004 - Sync env variables between backend and frontend
+- OPS-1499 - Add feature to CI Pipeline and provide manual deployments of branches
+- Add run script for sync indexes based on existing and registered schemas.
+
 
 ### Changed
 
+- SC-8440 - fixed open api validation for manual consent
+- SC-9055 - changed Edu-Sharing permissions for Brandenburg Sportinhalt content
+- SC-6950 - validation for officialSchoonNumber now allows 5 or 6 digits
 - SC-8599 - added helparea contact dropdown and send value
 - SC-7944 - use persistent ids for Lern-Store content items
 - OPS-1508 - added limits for cpu and ram to the docker compose files
 - SC-8500 - refactoring in error handling
 - SC-7021 - automatic deletion documents in the trashbins collection after 7 days.
+- SC-5202 - homework tests refactoring
+- SC-7868 - filestorage integration tests are skipped on local test environments if minio is not setup
+- SC-8779 - messenger: use user-based fixed device ids
 
 ### Fixed
 
+- SC-8933 - fix date format on first login
 - SC-8728 - fix configuration reset in tests
+- SC-8873 - fix addUser prioritization for full school Matrix messenger sync
+- SC-8982 - fix test setup for on the fly building test like routes jwt
+
+## [26.1.0]
 
 ### Added
+
+- SC-8910 - added an isExternal check to the adminUsers service remove method
+
+### Changed
+
+- SC-8732 - change search filter gate and weight of values in indexes. Will reduce amount of results
+- SC-8880 - changed the validation for search queries in NAT, now it allows empty
+
+## [26.0.16] - 2021-04-20
+
+### Removed
+
+- - SC-8748 - revert: bump feathers-mongoose from 6.3.0 to 8.3.1
+
+## [26.0.15] - 2021-04-19
+
+### Changed
+
+- SC-8909 - messenger: use user-based fixed device ids
+
+## [26.0.14] - 2021-04-16
+
+### Changed
+
+- SC-8934 - no more autosync for the migrations for the mongodb
+
+## [26.0.13] - 2021-04-15
+
+### Fixed
+
+- SC-8917 - verify configuration missing school
+
+## [26.0.12] - 2021-04-14
+
+### Changed
+
+- SC-8929 - increase performance for alert requests
+
+## [26.0.11] - 2021-04-13
+
+### Changed
+
+- SC-8748 - bump feathers-mongoose from 6.3.0 to 8.3.1
+
+## [26.0.10] - 2021-04-09
+
+### Fixed
+
+- SC-8908 ldap sync: fix lock
+
+## [26.0.9] - 2021-04-06
+
+- SC-8779 - fix partial LDAP sync
+
+## [26.0.8] - 2021-03-31
+
+### Fixed
+
+- SC-8691 ldap sync: fix potential deadlock while loadind ldap data
+
+## [26.0.7] - 2021-03-31
+
+### Fixed
+
+- SC-8768 ldap sync: in user search include current school
+
+## [26.0.6] - 2021-03-30
+
+### Fixed
+
+- SC-8836 - teachers can add classes from other teachers to their courses
+
+## [26.0.5] - 2021-03-29
+
+### Fixed
+
+- SC-8691 - LDAP sync can be run with multiple school in parallel
+
+## [26.0.4] - 2021-03-25
+
+### Changed
+
+- SC-8829 - status of logging in rocket chat user is set to offline
+
+## [26.0.3] - 2021-03-17
+
+### Changed
+
+- merged hotfixes 25.6.11 and following into 26.0 branch
+
+## [26.0.2] - 2021-03-10
+
+### Fixed
+
+- SC-5202 - fixed an issue with internal pagination in homework-submissions
+
+## [26.0.1] - 2021-03-09
+
+### Changed
+
+- merged 25.6.10 into new version
+
 ## [26.0.0]
 
 ### Fixed
@@ -38,6 +163,27 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8534 - fix registration link generation
 - SC-8682 - fix students are editable in externally managed schools
 - SC-8534 fix registration link generation
+- Allow sorting after search
+
+## [25.6.11] - 2021-03-17
+
+## [25.6.13] - 2021-03-16
+
+- SC-8782 Migration for changing urls
+
+## [25.6.12] - 2021-03-15
+
+- SC-8782 Fixed lesson context Query
+
+## [25.6.11] - 2021-03-15
+
+### Fixed
+
+- SC-8211 - Fixed course events duplications
+
+## [25.6.10] - 2021-03-09
+
+- SC-8770 Fixed issue where parent consents were overwritten
 
 ## [25.6.9] - 2021-02-26
 
@@ -348,7 +494,6 @@ SC-8077 - the migration copy-parents-data-into-children-entities-and-delete-pare
 - SC-7028 - Add Course Component API Specification document
 - SC-7476 - Prevent hash generation if user has account
 - SC-6692 - Added Lern-Store counties support for Niedersachsen (Merlin)
-
 
 ### Changed
 

@@ -449,7 +449,7 @@ describe('AdminUsersService', () => {
 			expect.fail('The previous call should have failed');
 		} catch (err) {
 			expect(err.code).to.equal(403);
-			expect(err.message).to.equal('Creating new students or teachers is only possible in the source system.');
+			expect(err.message).to.equal('Creating, editing, or removing students or teachers is only possible in the source system.');
 		}
 	});
 
@@ -739,6 +739,27 @@ describe('AdminUsersService', () => {
 		}
 	});
 
+	it('does not allow externally managed schools to remove users', async () => {
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
+			ldapSchoolIdentifier: 'testId'
+		});
+		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+		const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		params.query = {
+			...params.query,
+			_ids: [student._id],
+		};
+		try {
+			await adminStudentsService.remove(student, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal("Creating, editing, or removing students or teachers is only possible in the source system.");
+		}
+	});
+
 	it('users cannot REMOVE students from foreign schools', async () => {
 		const school = await testObjects.createTestSchool({
 			name: 'testSchool1',
@@ -1025,7 +1046,7 @@ describe('AdminUsersService', () => {
 				expect.fail('The previous call should have failed');
 			} catch (err) {
 				expect(err.code).to.equal(403);
-				expect(err.message).to.equal('Creating new students or teachers is only possible in the source system.');
+				expect(err.message).to.equal('Creating, editing, or removing students or teachers is only possible in the source system.');
 			}
 		};
 
@@ -1419,7 +1440,7 @@ describe('AdminTeachersService', () => {
 			expect.fail('The previous call should have failed');
 		} catch (err) {
 			expect(err.code).to.equal(403);
-			expect(err.message).to.equal('Creating new students or teachers is only possible in the source system.');
+			expect(err.message).to.equal('Creating, editing, or removing students or teachers is only possible in the source system.');
 		}
 	});
 
@@ -1714,6 +1735,27 @@ describe('AdminTeachersService', () => {
 		} catch (err) {
 			expect(err.code).to.equal(403);
 			expect(err.message).to.equal('You cannot remove users from other schools.');
+		}
+	});
+
+	it('does not allow externally managed schools to remove users', async () => {
+		const school = await testObjects.createTestSchool({
+			name: 'testSchool',
+			ldapSchoolIdentifier: 'testId'
+		});
+		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId: school._id });
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId: school._id });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		params.query = {
+			...params.query,
+			_ids: [teacher._id],
+		};
+		try {
+			await adminTeachersService.remove(teacher, params);
+			expect.fail('The previous call should have failed');
+		} catch (err) {
+			expect(err.code).to.equal(403);
+			expect(err.message).to.equal("Creating, editing, or removing students or teachers is only possible in the source system.");
 		}
 	});
 

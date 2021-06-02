@@ -42,12 +42,23 @@ const saveSuccessor = async (context) => {
 	return context;
 };
 
-const restrictFINDToUsersOwnClasses = async (context) => {
+const restrictFINDToClassesTheUserIsAllowedToSee = async (context) => {
 	const currentUser = await context.app
 		.service('users')
 		.get(context.params.account.userId, { query: { $populate: 'roles' } });
 	const skipHook = currentUser.roles.filter((u) => u.name === 'superhero' || u.name === 'administrator').length > 0;
 	if (skipHook) return context;
+
+	if (currentUser.roles.some((r) => r.name === 'teacher')) {
+		const school = await context.app.service('schools').get(currentUser.schoolId);
+
+		const teachersCanSeeAllSchoolStudents =
+			school.permissions && school.permissions.teacher && school.permissions.teacher.STUDENT_LIST;
+
+		if (teachersCanSeeAllSchoolStudents) {
+			return context;
+		}
+	}
 
 	const { _id } = currentUser;
 	const userRestriction = [{ userIds: _id }, { teacherIds: _id }];
@@ -83,6 +94,6 @@ module.exports = {
 	prepareGradeLevelUnset,
 	sortByGradeAndOrName,
 	saveSuccessor,
-	restrictFINDToUsersOwnClasses,
+	restrictFINDToClassesTheUserIsAllowedToSee,
 	restrictToUsersOwnClasses,
 };

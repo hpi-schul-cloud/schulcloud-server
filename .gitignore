@@ -44,12 +44,15 @@ backup/*
 # local dev secrets
 config/secrets.json
 .env
+travis_rsa
 
 # version info
 version
 
 # patch files
 *.patch
+.build/travis_rsa
 
 # typescript build
 build
+

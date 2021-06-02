@@ -117,6 +117,27 @@ describe('EduSharing FIND', () => {
 		}
 	});
 
+	it('should search with appropriate ph_invited group permissions', async () => {
+		try {
+			const user = await testObjects.createTestUser({ roles: ['teacher'] });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+
+			const postStub = sinon.stub(request, 'post');
+			postStub.onCall(0).returns(MockNodes);
+
+			params.query = { searchQuery: 'foo' };
+			await eduSharingService.find(params);
+
+			chai
+				.expect(postStub.getCalls()[0].args[0].body)
+				.contains(
+					`{"property":"ccm:ph_invited","values":["GROUP_county-12051","GROUP_HPIBossCloud","GROUP_public","GROUP_LowerSaxony-public","GROUP_Brandenburg-public","GROUP_Thuringia-public"]}`
+				);
+		} catch (err) {
+			throw new Error(err);
+		}
+	});
+
 	it('should fail to get a node with invalid uuid', async () => {
 		try {
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });

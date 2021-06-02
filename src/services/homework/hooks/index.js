@@ -151,13 +151,14 @@ const addStats = (hook) => {
 				homeworkId: { $in: data.map((n) => n._id) },
 				$populate: ['courseGroupId'],
 			},
+			paginate: false,
 		})
 		.then((submissions) => {
 			data = data.map((e) => {
 				const copy = JSON.parse(JSON.stringify(e)); // don't know why, but without this line it's not working :/
 
 				if (!hasHomeworkPermission(hook.params.account.userId, copy)) {
-					const currentSubmissions = submissions.data.filter((s) => equalIds(copy._id, s.homeworkId));
+					const currentSubmissions = submissions.filter((s) => equalIds(copy._id, s.homeworkId));
 					const filteredSubmission = currentSubmissions.filter(
 						(submission) =>
 							equalIds(hook.params.account.userId, submission.studentId) ||
@@ -184,7 +185,7 @@ const addStats = (hook) => {
 						hasHomeworkPermission(hook.params.account.userId, copy))
 				) {
 					const NumberOfCourseMembers = ((copy.courseId || {}).userIds || []).length;
-					const currentSubmissions = submissions.data.filter((s) => equalIds(copy._id, s.homeworkId));
+					const currentSubmissions = submissions.filter((s) => equalIds(copy._id, s.homeworkId));
 					const validSubmissions = currentSubmissions.filter(isValidSubmission);
 					const gradedSubmissions = currentSubmissions.filter(isGraded);
 					const NumberOfUsersWithSubmission = validSubmissions
