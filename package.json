@@ -100,7 +100,7 @@
 		"mongoose-lean-virtuals": "^0.8.0",
 		"mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
 		"moodle-client": "^0.5.2",
-		"nanoid": "^2.0.3",
+		"nanoid": "^3.1.20",
 		"oauth-1.0a": "^2.2.6",
 		"papaparse": "^5.1.1",
 		"prom-client": "^12.0.0",
