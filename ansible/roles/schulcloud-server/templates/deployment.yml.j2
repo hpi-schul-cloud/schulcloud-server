@@ -39,7 +39,7 @@ spec:
         - configMapRef:
             name: api-configmap
         - secretRef:
-            name: notification-secret
+            name: api-secret
         readinessProbe:
           httpGet:
             path: /version
