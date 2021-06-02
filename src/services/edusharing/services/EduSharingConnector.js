@@ -24,6 +24,37 @@ const basicAuthorizationHeaders = {
 	)}`,
 };
 
+/* Instace-specific configuration, which we should try in the future to provide via configuration or some other means.
+	Permissions should be in-sync with Edu-Sharing permissions for the corresponding Edu-Sharing user.
+*/
+const edusharingInstancePermissions = [
+	{
+		name: 'LowerSaxony',
+		alias: 'n21', // or abbreviation
+		privateGroups: ['GROUP_LowerSaxony-private'],
+		publicGroups: ['GROUP_public', 'GROUP_LowerSaxony-public', 'GROUP_Brandenburg-public', 'GROUP_Thuringia-public'],
+	},
+	{
+		name: 'Brandenburg',
+		alias: 'brb',
+		privateGroups: ['GROUP_Brandenburg-private'],
+		publicGroups: ['GROUP_public', 'GROUP_LowerSaxony-public', 'GROUP_Brandenburg-public', 'GROUP_Thuringia-public'],
+	},
+	{
+		name: 'Thuringia',
+		alias: 'thr',
+		privateGroups: ['GROUP_Thuringia-private'],
+		publicGroups: ['GROUP_Thuringia-public'],
+	},
+	{
+		// same for BossCloud, Open, and International.
+		name: 'HPIBossCloud',
+		alias: 'default', // open, int
+		privateGroups: ['GROUP_HPIBossCloud'],
+		publicGroups: ['GROUP_public', 'GROUP_LowerSaxony-public', 'GROUP_Brandenburg-public', 'GROUP_Thuringia-public'],
+	},
+];
+
 // bug in edu-sharing limits session to 5 min instead of 1h
 const eduSharingCookieValidity = 240000; // 4 min
 let eduSharingCookieExpires = new Date();
@@ -172,14 +203,29 @@ class EduSharingConnector {
 			return new EduSharingResponse();
 		}
 
-		const criterias = [];
-		if (Configuration.get('FEATURE_ES_MERLIN_ENABLED')) {
-			const county = await getCounty(schoolId);
-			const groups = ['GROUP_public', 'GROUP_LowerSaxony-public', 'GROUP_Thuringia-public'];
-			if (county && county.countyId) {
-				groups.push(`GROUP_county-${county.countyId}`);
-			}
+		/* Providing the appropriate permissions, i.e., which items we are allowed to access, by specifying 
+			the necessary groups. */
 
+		const countyGroups = []; // County permissions.
+		const county = await getCounty(schoolId);
+		if (county && county.countyId) {
+			countyGroups.push(`GROUP_county-${county.countyId}`);
+		}
+
+		let instancePermissions = edusharingInstancePermissions.find(
+			(element) => Configuration.get('ES_USER').includes(element.name) // e.g., if ES_USER includes 'LowerSaxony'
+		);
+		if (typeof instancePermissions === 'undefined') {
+			instancePermissions = edusharingInstancePermissions.find(
+				(element) => element.alias === 'default' // default permissions
+			);
+		}
+
+		// Private: from its own state, public: from all states
+		const groups = [...countyGroups, ...instancePermissions.privateGroups, ...instancePermissions.publicGroups];
+
+		const criterias = [];
+		if (groups.length) {
 			criterias.push({
 				property: 'ccm:ph_invited',
 				values: groups,
