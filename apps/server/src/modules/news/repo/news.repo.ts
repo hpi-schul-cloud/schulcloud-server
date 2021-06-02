@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PaginationModel } from '@shared/repo/interface/pagination.interface';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain';
+import { Counted } from '@shared/types';
 import { News } from '../entity';
 import { NewsScope } from './news-scope';
 import { NewsTargetFilter } from './news-target-filter';
@@ -27,14 +28,14 @@ export class NewsRepo {
 		targets: NewsTargetFilter[],
 		unpublished: boolean,
 		pagination: PaginationModel = {}
-	): Promise<News[]> {
+	): Promise<Counted<News[]>> {
 		const scope = new NewsScope();
 		scope.bySchool(schoolId);
 		scope.byAllTargets(targets);
 		scope.byUnpublished(unpublished);
 
-		const newsList = await this.findNews(scope.query, pagination);
-		return newsList;
+		const countedNewsList = await this.findNews(scope.query, pagination);
+		return countedNewsList;
 	}
 
 	/**
@@ -44,10 +45,14 @@ export class NewsRepo {
 	 * @param pagination
 	 * @returns
 	 */
-	async findAllBySchool(schoolId: EntityId, unpublished: boolean, pagination: PaginationModel = {}): Promise<News[]> {
+	async findAllBySchool(
+		schoolId: EntityId,
+		unpublished: boolean,
+		pagination: PaginationModel = {}
+	): Promise<Counted<News[]>> {
 		const scope = new NewsScope().bySchool(schoolId).byEmptyTarget().byUnpublished(unpublished);
-		const newsList = await this.findNews(scope.query, pagination);
-		return newsList;
+		const countedNewsList = await this.findNews(scope.query, pagination);
+		return countedNewsList;
 	}
 
 	/**
@@ -63,11 +68,11 @@ export class NewsRepo {
 		target: NewsTargetFilter,
 		unpublished: boolean,
 		pagination: PaginationModel = {}
-	): Promise<News[]> {
+	): Promise<Counted<News[]>> {
 		const scope = new NewsScope().bySchool(schoolId).byTarget(target).byUnpublished(unpublished);
 
-		const newsList = await this.findNews(scope.query, pagination);
-		return newsList;
+		const countedNewsList = await this.findNews(scope.query, pagination);
+		return countedNewsList;
 	}
 
 	/** resolves a news document with some elements names (school, updator/creator) populated already */
@@ -80,11 +85,11 @@ export class NewsRepo {
 	// 	return `This action removes a #${id} news`;
 	// }
 
-	private async findNews(query, pagination: PaginationModel) {
-		const obj = await this.em.find(News, query, {
+	private async findNews(query, pagination: PaginationModel): Promise<Counted<News[]>> {
+		const [obj, count] = await this.em.findAndCount(News, query, {
 			...pagination,
 		});
 		const newsList = await this.em.populate(obj, ['school', 'creator', 'updater']);
-		return newsList;
+		return [newsList, count];
 	}
 }

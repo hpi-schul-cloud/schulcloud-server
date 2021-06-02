@@ -1,5 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { EntityId, IPagination } from '@shared/domain';
+import { Counted } from '@shared/types';
 import { AuthorizationService, EntityTypeValue } from '../../authorization/authorization.service';
 import { Logger } from '../../../core/logger/logger.service';
 import { News, NewsTargetModel, NewsTargetModelValue } from '../entity';
@@ -48,7 +49,7 @@ export class NewsUc {
 		schoolId: EntityId,
 		scope?: INewsScope,
 		pagination?: IPagination
-	): Promise<News[]> {
+	): Promise<Counted<News[]>> {
 		this.logger.log(`start find all news for user ${userId}`);
 
 		const unpublished = !!scope?.unpublished;
@@ -56,17 +57,18 @@ export class NewsUc {
 		await this.authorizationService.checkEntityPermissions(userId, 'school', schoolId, permissions);
 
 		let newsList: News[];
+		let newsCount: number;
 
 		if (scope?.target == null) {
 			// all news for all permitted targets and school
 			const targets = await this.getTargetFilters(userId, Object.values(NewsTargetModel), permissions);
-			newsList = await this.newsRepo.findAll(schoolId, targets, unpublished, pagination);
+			[newsList, newsCount] = await this.newsRepo.findAll(schoolId, targets, unpublished, pagination);
 		} else if (scope.target.targetModel === 'school') {
 			// all news for school only
-			newsList = await this.newsRepo.findAllBySchool(schoolId, unpublished, pagination);
+			[newsList, newsCount] = await this.newsRepo.findAllBySchool(schoolId, unpublished, pagination);
 		} else {
 			const target = await this.getTargetFilter(userId, scope.target.targetModel, scope.target.targetId, permissions);
-			newsList = await this.newsRepo.findAllByTarget(schoolId, target, unpublished, pagination);
+			[newsList, newsCount] = await this.newsRepo.findAllByTarget(schoolId, target, unpublished, pagination);
 		}
 		await Promise.all(
 			newsList.map(async (news: News) => {
@@ -76,7 +78,7 @@ export class NewsUc {
 
 		this.logger.log(`return ${newsList.length} news for user ${userId}`);
 
-		return newsList;
+		return [newsList, newsCount];
 	}
 
 	/**
