@@ -9,6 +9,7 @@ appPromise
 	.then((api) => {
 		const port = api.get('port');
         const app = express().use('/api', api);
+        const app = express().use('/', api);
 		const server = app.listen(port);
         api.setup(server);
 
