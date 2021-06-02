@@ -8,7 +8,7 @@ echo "load $dockerComposeUrl"
 sudo rm /usr/local/bin/docker-compose
 curl -L $dockerComposeUrl > docker-compose
 chmod +x docker-compose
-mv docker-compose /usr/local/bin
+sudo mv docker-compose /usr/local/bin
 
 # Envirements
 export BRANCH_NAME=${TRAVIS_PULL_REQUEST_BRANCH:=$TRAVIS_BRANCH}
