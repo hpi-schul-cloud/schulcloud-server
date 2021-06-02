@@ -6,6 +6,11 @@ const { facadeLocator } = require('../../../utils/facadeLocator');
 const errorUtils = require('../../../errors/utils');
 const { trashBinResult } = require('../../helper/uc.helper');
 
+const getSchoolIdOfUser = async (userId) => {
+	const user = await userRepo.getUser(userId);
+	return user.schoolId;
+};
+
 const userHaveSameSchool = async (userId, otherUserId) => {
 	if (userId && otherUserId) {
 		const { schoolId: currentUserSchoolId } = await userRepo.getUser(otherUserId);
@@ -64,56 +69,46 @@ const deleteUserRelatedData = async (userId, schoolTombstoneUserId, deleteUserFa
 	}
 };
 
-const createUserTrashbin = async (id, data) => {
-	return trashbinRepo.createUserTrashbin(id, data);
-};
+const createUserTrashbin = async (id, data) => trashbinRepo.createUserTrashbin(id, data);
 
-const replaceUserWithTombstone = async (id) => {
+const replaceUserWithTombstone = async (user) => {
+	const { _id, schoolId } = user;
 	const uid = ObjectId();
-	await userRepo.replaceUserWithTombstone(id, {
+	await userRepo.replaceUserWithTombstone(_id, {
 		firstName: 'DELETED',
 		lastName: 'USER',
 		email: `${uid}@deleted`,
 		deletedAt: new Date(),
+		schoolId,
 	});
-	await accountRepo.deleteAccountForUserId(id);
+	await accountRepo.deleteAccountForUserId(_id);
 	return { success: true };
 };
 
-/**
- * Checks if the user defined by param3.account.userId has the right to perform the action defined in permissionAction on the user defined in id
- *
- * @param {*} id ID of the user to be effected by the request
- * @param {*} roleName the role name that the effected user should have
- * @param {*} permissionAction the action that is to be performed (CREATE, EDIT, DELETE)
- * @param {*} param3 needs to contain account.userId, which is the ID of the user issuing the request
- */
-const checkPermissions = async (id, roleName, permissionAction, { user: currentUser }) => {
-	const userToBeEffected = await userRepo.getUserWithRoles(id);
-
+const checkPermissionsInternal = (affectedUser, roleName, permissionAction, currentUser) => {
 	let grantPermission = true;
 	// the effected user's role fits the rolename for the route
-	grantPermission = grantPermission && userToBeEffected.roles.some((role) => role.name.toUpperCase() === roleName);
+	grantPermission = grantPermission && affectedUser.roles.some((role) => role.name.toUpperCase() === roleName);
 	// users must be on same school
-	grantPermission = grantPermission && equalIds(userToBeEffected.schoolId, currentUser.schoolId);
+	grantPermission = grantPermission && equalIds(affectedUser.schoolId, currentUser.schoolId);
 
 	// current user must have the permission
-	userToBeEffected.roles.forEach((userRoleToBeEffected) => {
-		if (userRoleToBeEffected.name === 'student') {
+	affectedUser.roles.forEach((userRoleToBeAffected) => {
+		if (userRoleToBeAffected.name === 'student') {
 			grantPermission =
 				grantPermission &&
 				currentUser.roles.some((role) =>
 					role.permissions.some((permission) => permission === `STUDENT_${permissionAction}`)
 				);
 		}
-		if (userRoleToBeEffected.name === 'teacher') {
+		if (userRoleToBeAffected.name === 'teacher') {
 			grantPermission =
 				grantPermission &&
 				currentUser.roles.some((role) =>
 					role.permissions.some((permission) => permission === `TEACHER_${permissionAction}`)
 				);
 		}
-		if (userRoleToBeEffected.name === 'administrator') {
+		if (userRoleToBeAffected.name === 'administrator') {
 			grantPermission = grantPermission && currentUser.roles.some((role) => role.name === 'superhero');
 		}
 	});
@@ -121,6 +116,22 @@ const checkPermissions = async (id, roleName, permissionAction, { user: currentU
 	if (!grantPermission) {
 		throw new Forbidden(`You don't have permissions to perform this action`);
 	}
+};
+
+/**
+ * Checks if the user defined by params.user has the right to perform the action defined in permissionAction on the user defined in id
+ *
+ * @param {string|string[]} affectedUserId ID or list of IDs of the user(s) to be affected by the request
+ * @param {*} roleName the role name that the effected user should have
+ * @param {*} permissionAction the action that is to be performed (CREATE, EDIT, DELETE)
+ * @param {Object} params needs to contain a property `user` with populated roles and permissions, which is the user issuing the request
+ */
+const checkPermissions = async (affectedUserId, roleName, permissionAction, { user: currentUser }) => {
+	const ids = Array.isArray(affectedUserId) ? affectedUserId : [affectedUserId];
+	const affectedUsers = await userRepo.getUsersWithRoles(ids);
+	affectedUsers.forEach((aUser) => {
+		checkPermissionsInternal(aUser, roleName, permissionAction, currentUser);
+	});
 };
 
 const getOrCreateTombstoneUserId = async (schoolId, user) => {
@@ -144,10 +155,15 @@ const deleteUser = async (id, { user: loggedinUser }) => {
 
 	await createUserTrashbin(id, userAccountData);
 
-	await replaceUserWithTombstone(id);
+	await replaceUserWithTombstone(user);
 	try {
 		const registrationPinFacade = facadeLocator.facade('/registrationPin/v2');
 		await registrationPinFacade.deleteRegistrationPinsByEmail(user.email);
+		if (user.parents) {
+			await Promise.all(
+				user.parents.map((parent) => registrationPinFacade.deleteRegistrationPinsByEmail(parent.email))
+			);
+		}
 	} catch (error) {
 		errorUtils.asyncErrorLog(error, `failed to delete registration pin for user ${user._id}`);
 	}
@@ -161,6 +177,7 @@ const deleteUser = async (id, { user: loggedinUser }) => {
 };
 
 module.exports = {
+	getSchoolIdOfUser,
 	deleteUser,
 	// following not to exported by facade
 	checkPermissions,

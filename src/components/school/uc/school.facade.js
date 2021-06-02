@@ -10,6 +10,10 @@ class SchoolFacade {
 		return schoolUc.getTombstoneSchool();
 	}
 
+	async getStorageProviderIdForSchool(schoolId) {
+		return schoolUc.getStorageProviderIdForSchool(schoolId);
+	}
+
 	async setTombstoneUser(currentUser, schoolId, tombstoneUserId) {
 		checkPermissions(currentUser, schoolId, ['STUDENT_DELETE', 'TEACHER_DELETE'], 'OR');
 		return schoolUc.setTombstoneUser(schoolId, tombstoneUserId);

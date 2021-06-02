@@ -85,7 +85,7 @@ module.exports = function LDAPService() {
 				await systemService.patch(system._id, system);
 				return Promise.resolve('success');
 			});
-			session.endSession();
+			await session.endSession();
 			return Promise.resolve('success');
 		}
 

@@ -46,7 +46,7 @@ class Channel {
 		try {
 			const conn = await getConnection();
 			this.channel = await conn.createChannel();
-			this.channel.assertQueue(this.queue, this.queueOptions);
+			await this.channel.assertQueue(this.queue, this.queueOptions);
 			this.channel.on('close', () => {
 				logger.warning('RabbitMQ channel was closed.');
 				this.channel = undefined;

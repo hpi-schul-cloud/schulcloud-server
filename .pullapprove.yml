@@ -24,7 +24,7 @@ notifications:
       our Review-Guidelines https://docs.hpi-schul-cloud.org/display/SCDOK/Review-Guidelines
 
 groups:
-  server-core:
+  sc-admins:
     reviews:
       required: 1 # 1 approval from this group are required
     reviewers:

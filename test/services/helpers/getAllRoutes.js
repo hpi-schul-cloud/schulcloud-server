@@ -1,12 +1,10 @@
 const _ = require('lodash');
-const appPromise = require('../../../src/app');
 
 const removeLeadingSlash = (str) => str.replace(/^\//, '');
 const removeTrailingSlash = (str) => str.replace(/\/$/, '');
 const escapeUrlParameter = (url) => url.replace(/\/:([^/]*)?($|\/)/, '/{$1}/');
 
-const getAllRoutes = async () => {
-	const app = await appPromise;
+const getAllRoutes = (app) => {
 	// eslint-disable-next-line no-underscore-dangle
 	const routes = app._router.stack.filter((x) => x.route && x.route.path && x.route.path !== '*').map((x) => x.route);
 	const groupedRoutes = _.groupBy(routes, (r) => r.path.replace(/\/:__feathersId$/, ''));

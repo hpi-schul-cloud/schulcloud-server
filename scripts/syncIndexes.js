@@ -3,11 +3,13 @@
 const mongoose = require('mongoose');
 const util = require('util');
 const appPromise = require('../src/app');
+
 const logger = require('../src/logger');
 
 const getModels = () => Object.entries(mongoose.models);
 
 const syncIndex = ([_modelName, model]) => model.syncIndexes();
+
 const extractIndexFromModel = ([modelName, model]) => [modelName, model.schema._indexes];
 
 const formatToLog = (data) => util.inspect(data, { depth: 5, compact: true, breakLength: 120 });
