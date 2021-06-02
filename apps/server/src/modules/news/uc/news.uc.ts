@@ -77,6 +77,8 @@ export class NewsUc {
 	 * @returns
 	 */
 	async findOneByIdForUser(id: EntityId, userId: EntityId): Promise<News> {
+		this.logger.log(`start find one news ${id}`);
+
 		const news = await this.newsRepo.findOneById(id);
 		const requiredPermissions = NewsUc.getRequiredPermissions(news.displayAt > new Date());
 		await this.authorizationService.checkEntityPermissions(
@@ -86,20 +88,47 @@ export class NewsUc {
 			requiredPermissions
 		);
 		news.permissions = await this.getNewsPermissions(userId, news);
+
 		return news;
 	}
 
+	/**
+	 *
+	 * @param id
+	 * @param userId
+	 * @param params
+	 * @returns
+	 */
 	async update(id: EntityId, userId: EntityId, params: IUpdateNews): Promise<News> {
 		this.logger.log(`start update news ${id}`);
-		// TODO replace with real functionality
-		const news = await this.findOneByIdForUser(id, userId);
+
+		const news = await this.newsRepo.findOneById(id);
+		await this.authorizationService.checkEntityPermissions(userId, news.targetModel, news.target.id, ['NEWS_EDIT']);
+
+		// TODO find better way to update entity
+		if (params.title) {
+			news.title = params.title;
+		}
+
+		await this.newsRepo.save(news);
+
 		return news;
 	}
 
-	async remove(id: EntityId): Promise<EntityId> {
+	/**
+	 *
+	 * @param id
+	 * @param userId
+	 * @returns
+	 */
+	async delete(id: EntityId, userId: EntityId): Promise<EntityId> {
 		this.logger.log(`start remove news ${id}`);
-		// TODO replace with real functionality
-		await Promise.resolve();
+
+		const news = await this.newsRepo.findOneById(id);
+		await this.authorizationService.checkEntityPermissions(userId, news.targetModel, news.target.id, ['NEWS_EDIT']);
+
+		await this.newsRepo.delete(news);
+
 		return id;
 	}
 

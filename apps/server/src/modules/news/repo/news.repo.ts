@@ -41,9 +41,9 @@ export class NewsRepo {
 		return news;
 	}
 
-	// remove(id: EntityId): string {
-	// 	return `This action removes a #${id} news`;
-	// }
+	async delete(news: News): Promise<void> {
+		await this.em.removeAndFlush(news);
+	}
 
 	private async findNewsAndCount(query, pagination: PaginationModel): Promise<Counted<News[]>> {
 		const [obj, count] = await this.em.findAndCount(News, query, {
