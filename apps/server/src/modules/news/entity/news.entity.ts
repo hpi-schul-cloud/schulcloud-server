@@ -51,7 +51,7 @@ export class News extends BaseEntityWithTimestamps {
 
 	/** name of a collection which is referenced in target */
 	@Enum()
-	targetModel: NewsTargetModelValue | undefined;
+	targetModel: NewsTargetModelValue;
 
 	@ManyToOne({ fieldName: 'schoolId' })
 	school: SchoolInfo;
@@ -65,9 +65,7 @@ export class News extends BaseEntityWithTimestamps {
 	permissions: string[] = [];
 
 	setTarget(target: NewsTarget): void {
-		if (target.targetModel !== 'school') {
-			Object.assign(this, { targetModel: target.targetModel, target: target.targetId });
-		}
+		Object.assign(this, { targetModel: target.targetModel, target: target.targetId });
 	}
 
 	constructor(props: INewsProperties, target?: NewsTarget) {
@@ -76,56 +74,47 @@ export class News extends BaseEntityWithTimestamps {
 		this.content = props.content;
 		this.displayAt = props.displayAt;
 		Object.assign(this, { school: props.school, creator: props.creator });
-		if (target) {
+		if (target != null) {
 			this.setTarget(target);
 		}
 	}
 }
 
-@Entity({ discriminatorValue: 'school' })
+@Entity({ discriminatorValue: NewsTargetModel.School })
 export class SchoolNews extends News {
-	/** id reference to a collection */
-	@Property()
-	target = undefined;
+	@ManyToOne()
+	target: SchoolInfo;
 
-	/** name of a collection which is referenced in target */
 	@Property()
-	targetModel = undefined;
+	targetModel: typeof NewsTargetModel.School;
 
-	// eslint-disable-next-line @typescript-eslint/no-useless-constructor
 	constructor(props: INewsProperties) {
-		super(props);
+		super(props, undefined);
 	}
 }
 
 @Entity({ discriminatorValue: NewsTargetModel.Course })
 export class CourseNews extends News {
-	/** id reference to a collection */
 	@ManyToOne()
 	target: CourseInfo;
 
-	/** name of a collection which is referenced in target */
 	@Property()
 	targetModel: typeof NewsTargetModel.Course;
 
-	// eslint-disable-next-line @typescript-eslint/no-useless-constructor
 	constructor(props: INewsProperties) {
-		super(props);
+		super(props, undefined);
 	}
 }
 
 @Entity({ discriminatorValue: NewsTargetModel.Team })
 export class TeamNews extends News {
-	/** id reference to a collection */
 	@ManyToOne()
 	target: TeamInfo;
 
-	/** name of a collection which is referenced in target */
 	@Property()
 	targetModel: typeof NewsTargetModel.Team;
 
-	// eslint-disable-next-line @typescript-eslint/no-useless-constructor
 	constructor(props: INewsProperties) {
-		super(props);
+		super(props, undefined);
 	}
 }

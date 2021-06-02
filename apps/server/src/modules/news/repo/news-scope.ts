@@ -1,5 +1,4 @@
 import { FilterQuery } from '@mikro-orm/core';
-import { EntityId } from '@shared/domain';
 import { News } from '../entity';
 import { NewsTargetFilter } from './news-target-filter';
 
@@ -11,27 +10,10 @@ export class NewsScope {
 		return query;
 	}
 
-	bySchool(schoolId: EntityId): NewsScope {
-		this.addQuery({ school: schoolId });
-		return this;
-	}
-
-	// targets + school target
-	byAllTargets(targets: NewsTargetFilter[]): NewsScope {
+	byTargets(targets: NewsTargetFilter[]): NewsScope {
 		const queries: FilterQuery<News>[] = targets.map((target) => this.getTargetQuery(target));
-		queries.push(this.getEmptyTargetQuery());
-		this.addQuery({ $or: queries });
-		return this;
-	}
-
-	// single target
-	byTarget(target: NewsTargetFilter): NewsScope {
-		this.addQuery(this.getTargetQuery(target));
-		return this;
-	}
-
-	byEmptyTarget(): NewsScope {
-		this.addQuery(this.getEmptyTargetQuery());
+		const combinedQuery = queries.length > 1 ? { $or: queries } : this._queries[0];
+		this.addQuery(combinedQuery);
 		return this;
 	}
 
@@ -47,9 +29,5 @@ export class NewsScope {
 
 	private getTargetQuery(target: NewsTargetFilter): FilterQuery<News> {
 		return { $and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }] };
-	}
-
-	private getEmptyTargetQuery() {
-		return { $and: [{ targetModel: 'school' }, { target: null }] };
 	}
 }

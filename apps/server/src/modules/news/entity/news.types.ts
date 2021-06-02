@@ -1,6 +1,7 @@
 import { EntityId } from '@shared/domain';
 
 export const NewsTargetModel = {
+	School: 'schools',
 	Course: 'courses',
 	Team: 'teams',
 } as const;
@@ -10,18 +11,13 @@ type ValueOf<T> = T[keyof T];
 
 export type NewsTargetModelValue = ValueOf<typeof NewsTargetModel>;
 
-export type NewsTarget =
-	| {
-			targetModel: 'school';
-	  }
-	| { targetModel: NewsTargetModelValue; targetId: EntityId };
+/** define the news target for a specific entity  */
+export type NewsTarget = { targetModel: NewsTargetModelValue; targetId: EntityId };
 
-export type FindNewsTarget =
-	| {
-			targetModel: 'school';
-	  }
-	| { targetModel: NewsTargetModelValue; targetId?: EntityId };
+/** define the news target for find */
+export type FindNewsTarget = { targetModel: NewsTargetModelValue; targetId?: EntityId };
 
+/** news interface for ceating news */
 export interface ICreateNews {
 	title: string;
 	content: string;
@@ -29,12 +25,11 @@ export interface ICreateNews {
 	target: NewsTarget;
 }
 
+/** news interface for updating news */
 export type IUpdateNews = Partial<ICreateNews>;
+
+/** news interface for finding news */
 export interface INewsScope {
-	// TODO clarify on singular vs plural: e.g. 'courses' vs 'school'
-	// do not use the collection name!
-	// we should use the entity instead here (which is then mapped to the collection)
-	// see News entity definition
 	target?: FindNewsTarget;
 	unpublished?: boolean;
 }

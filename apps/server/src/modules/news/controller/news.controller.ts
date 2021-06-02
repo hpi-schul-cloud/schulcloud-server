@@ -31,9 +31,8 @@ export class NewsController {
 		@Query() scope: NewsFilterQuery,
 		@Query() pagination: PaginationQuery
 	): Promise<NewsResponse[]> {
-		const newsList = await this.newsUc.findAllForUserAndSchool(
+		const newsList = await this.newsUc.findAllForUser(
 			currentUser.userId,
-			currentUser.schoolId,
 			NewsMapper.mapNewsScopeToDomain(scope),
 			pagination
 		);

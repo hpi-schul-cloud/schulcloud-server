@@ -15,18 +15,26 @@ export class NewsUc {
 		this.logger.setContext(NewsUc.name);
 	}
 
+	/**
+	 *
+	 * @param userId
+	 * @param schoolId
+	 * @param params
+	 * @returns
+	 */
 	async create(userId: EntityId, schoolId: EntityId, params: ICreateNews): Promise<News> {
 		this.logger.log(`create news as user ${userId}`);
 
-		await this.checkNewsTargetPermissions(userId, schoolId, params.target, ['NEWS_CREATE']);
+		await this.checkNewsTargetPermissions(userId, params.target, ['NEWS_CREATE']);
 
+		const { target, ...props } = params;
 		const news = new News(
 			{
-				...params,
+				...props,
 				school: schoolId,
 				creator: userId,
 			},
-			params.target
+			target
 		);
 		await this.newsRepo.save(news);
 
@@ -38,36 +46,19 @@ export class NewsUc {
 	/**
 	 *
 	 * @param userId
-	 * @param schoolId
 	 * @param scope
 	 * @param pagination
 	 * @returns
 	 */
-	async findAllForUserAndSchool(
-		userId: EntityId,
-		schoolId: EntityId,
-		scope?: INewsScope,
-		pagination?: IPagination
-	): Promise<News[]> {
+	async findAllForUser(userId: EntityId, scope?: INewsScope, pagination?: IPagination): Promise<News[]> {
 		this.logger.log(`start find all news for user ${userId}`);
 
 		const unpublished = !!scope?.unpublished;
 		const permissions: Permission[] = NewsUc.getRequiredPermissions(unpublished);
-		await this.authorizationService.checkEntityPermissions(userId, 'school', schoolId, permissions);
 
-		let newsList: News[];
+		const targets = await this.getPermittedTargets(userId, scope, permissions);
+		const newsList = await this.newsRepo.findAll(targets, unpublished, pagination);
 
-		if (scope?.target == null) {
-			// all news for all permitted targets and school
-			const targets = await this.getTargetFilters(userId, Object.values(NewsTargetModel), permissions);
-			newsList = await this.newsRepo.findAll(schoolId, targets, unpublished, pagination);
-		} else if (scope.target.targetModel === 'school') {
-			// all news for school only
-			newsList = await this.newsRepo.findAllBySchool(schoolId, unpublished, pagination);
-		} else {
-			const target = await this.getTargetFilter(userId, scope.target.targetModel, scope.target.targetId, permissions);
-			newsList = await this.newsRepo.findAllByTarget(schoolId, target, unpublished, pagination);
-		}
 		await Promise.all(
 			newsList.map(async (news: News) => {
 				news.permissions = await this.getNewsPermissions(userId, news);
@@ -113,37 +104,42 @@ export class NewsUc {
 		return id;
 	}
 
+	private async getPermittedTargets(userId: EntityId, scope: INewsScope | undefined, permissions: Permission[]) {
+		let targets: NewsTargetFilter[];
+
+		if (scope?.target == null) {
+			// for all target models
+			targets = await this.getTargetFilters(userId, Object.values(NewsTargetModel), permissions);
+		} else {
+			const { targetModel, targetId } = scope.target;
+			if (targetModel && targetId) {
+				// for specific news target
+				await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, permissions);
+				targets = [{ targetModel, targetIds: [targetId] }];
+			} else {
+				// for single target model
+				targets = await this.getTargetFilters(userId, [targetModel], permissions);
+			}
+		}
+		return targets;
+	}
+
 	private async getTargetFilters(
 		userId: EntityId,
 		targetModels: NewsTargetModelValue[],
 		permissions: string[]
 	): Promise<NewsTargetFilter[]> {
 		const targets = await Promise.all(
-			targetModels.map((targetModel) => this.getTargetFilter(userId, targetModel, undefined, permissions))
+			targetModels.map(async (targetModel) => {
+				return {
+					targetModel,
+					targetIds: await this.authorizationService.getPermittedEntities(userId, targetModel, permissions),
+				};
+			})
 		);
 		const nonEmptyTargets = targets.filter((target) => target.targetIds.length > 0);
 
 		return nonEmptyTargets;
-	}
-
-	private async getTargetFilter(
-		userId: EntityId,
-		targetModel: NewsTargetModelValue,
-		targetId?: EntityId,
-		permissions: string[] = []
-	): Promise<NewsTargetFilter> {
-		let targetIds: EntityId[];
-		if (targetId) {
-			// all news for specific target
-			await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, permissions);
-			targetIds = [targetId];
-		} else {
-			targetIds = await this.authorizationService.getPermittedEntities(userId, targetModel, permissions);
-		}
-		return {
-			targetModel,
-			targetIds,
-		};
 	}
 
 	private async getNewsPermissions(userId: EntityId, news: News): Promise<string[]> {
@@ -168,15 +164,9 @@ export class NewsUc {
 		return unpublished ? ['NEWS_EDIT'] : ['NEWS_VIEW'];
 	}
 
-	private async checkNewsTargetPermissions(
-		userId: EntityId,
-		schoolId: EntityId,
-		target: NewsTarget,
-		permissions: string[]
-	) {
-		const { targetModel } = target;
-		const targetId = target.targetModel === 'school' ? schoolId : target.targetId;
-		if (targetId != null) {
+	private async checkNewsTargetPermissions(userId: EntityId, target: NewsTarget, permissions: string[]) {
+		const { targetModel, targetId } = target;
+		if (targetModel && targetId) {
 			await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, permissions);
 		} else {
 			throw new ConflictException('Invalid news target');

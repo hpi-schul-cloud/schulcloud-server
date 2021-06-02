@@ -35,6 +35,10 @@ describe.only('NewsService', () => {
 		em = module.get<EntityManager>(EntityManager);
 	});
 
+	beforeEach(async () => {
+		await em.nativeDelete(News, {});
+	});
+
 	afterAll(async () => {
 		await orm.close();
 		await mongod.stop();
@@ -66,30 +70,28 @@ describe.only('NewsService', () => {
 		it('should return news for targets', async () => {
 			const courseId = new ObjectId().toString();
 			const news = await createTestNews(schoolId, CourseNews, courseId);
-			const targets = [
-				{
-					targetModel: NewsTargetModel.Course,
-					targetIds: [courseId],
-				},
-			];
+			const target = {
+				targetModel: NewsTargetModel.Course,
+				targetIds: [courseId],
+			};
 			const pagination = { skip: 0, limit: 20 };
-			const result = await repo.findAll(schoolId, targets, false, pagination);
+			const result = await repo.findAll([target], false, pagination);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
 		});
-	});
 
-	describe('findAllBySchool', () => {
 		it('should return news for school', async () => {
-			const news = await createTestNews(schoolId, SchoolNews);
+			const news = await createTestNews(schoolId, SchoolNews, schoolId);
 			const pagination = { skip: 0, limit: 20 };
-			const result = await repo.findAllBySchool(schoolId, false, pagination);
+			const target = {
+				targetModel: NewsTargetModel.School,
+				targetIds: [schoolId],
+			};
+			const result = await repo.findAll([target], false, pagination);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
 		});
-	});
 
-	describe('findAllByTarget', () => {
 		it('should return news for given target', async () => {
 			const courseId = new ObjectId().toString();
 			const news = await createTestNews(schoolId, CourseNews, courseId);
@@ -98,33 +100,33 @@ describe.only('NewsService', () => {
 				targetIds: [courseId],
 			};
 			const pagination = { skip: 0, limit: 20 };
-			const result = await repo.findAllByTarget(schoolId, target, false, pagination);
+			const result = await repo.findAll([target], false, pagination);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
 		});
+	});
 
-		describe('create', () => {
-			it('should create and persist a news entity', async () => {
-				const courseId = new ObjectId().toString();
-				const news = newTestNews(schoolId, CourseNews, courseId);
-				await repo.save(news);
-				expect(news.id).toBeDefined();
-				const expectedNews = await em.findOne(News, news.id);
-				expect(news).toStrictEqual(expectedNews);
-			});
+	describe('create', () => {
+		it('should create and persist a news entity', async () => {
+			const courseId = new ObjectId().toString();
+			const news = newTestNews(schoolId, CourseNews, courseId);
+			await repo.save(news);
+			expect(news.id).toBeDefined();
+			const expectedNews = await em.findOne(News, news.id);
+			expect(news).toStrictEqual(expectedNews);
+		});
+	});
+
+	describe('findOneById', () => {
+		it('should find a news entity by id', async () => {
+			const news = await createTestNews(schoolId, News);
+			const result = await repo.findOneById(news.id);
+			expect(result).toStrictEqual(news);
 		});
 
-		describe('findOneById', () => {
-			it('should find a news entity by id', async () => {
-				const news = await createTestNews(schoolId, News);
-				const result = await repo.findOneById(news.id);
-				expect(result).toStrictEqual(news);
-			});
-
-			it('should throw an exception if not found', async () => {
-				const failNewsId = new ObjectId().toString();
-				await expect(repo.findOneById(failNewsId)).rejects.toThrow(NotFoundError);
-			});
+		it('should throw an exception if not found', async () => {
+			const failNewsId = new ObjectId().toString();
+			await expect(repo.findOneById(failNewsId)).rejects.toThrow(NotFoundError);
 		});
 	});
 });

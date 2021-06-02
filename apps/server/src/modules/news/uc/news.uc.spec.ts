@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ICreateNews, INewsScope } from '../entity/news.types';
+import { ICreateNews } from '../entity/news.types';
 
 import { AuthorizationService } from '../../authorization/authorization.service';
 import { LoggerModule } from '../../../core/logger/logger.module';
@@ -41,12 +41,6 @@ describe('NewsUc', () => {
 						findAll() {
 							return [];
 						},
-						findAllBySchool() {
-							return [];
-						},
-						findAllByTarget() {
-							return [];
-						},
 					},
 				},
 				{
@@ -73,23 +67,28 @@ describe('NewsUc', () => {
 		expect(service).toBeDefined();
 	});
 
-	describe('findAllByUserAndSchool', () => {
-		it('should search for news with by schoolId and empty scope ', async () => {
+	describe('findAllByUser', () => {
+		it('should search for news by empty scope ', async () => {
 			const scope = {};
 			const findAllSpy = jest.spyOn(repo, 'findAll');
-			await service.findAllForUserAndSchool(userId, schoolId, scope, pagination);
-			const expectedParams = [schoolId, targets, false, pagination];
+			await service.findAllForUser(userId, scope, pagination);
+			const expectedParams = [targets, false, pagination];
 			expect(findAllSpy).toHaveBeenCalledWith(...expectedParams);
 		});
-		it('should search for news by school id', async () => {
-			const scope: INewsScope = {
+		it('should search for school news with given school id', async () => {
+			const scope = {
 				target: {
-					targetModel: 'school',
+					targetModel: NewsTargetModel.School,
+					targetId: schoolId,
 				},
 			};
-			const findAllBySchoolSpy = jest.spyOn(repo, 'findAllBySchool');
-			await service.findAllForUserAndSchool(userId, schoolId, scope, pagination);
-			const expectedParams = [schoolId, false, pagination];
+			const findAllBySchoolSpy = jest.spyOn(repo, 'findAll');
+			await service.findAllForUser(userId, scope, pagination);
+			const expectedTarget = {
+				targetModel: scope.target.targetModel,
+				targetIds: [scope.target.targetId],
+			};
+			const expectedParams = [[expectedTarget], false, pagination];
 			expect(findAllBySchoolSpy).toHaveBeenCalledWith(...expectedParams);
 		});
 		it('should search for course news with given courseId', async () => {
@@ -99,25 +98,25 @@ describe('NewsUc', () => {
 					targetId: courseTargetId,
 				},
 			};
-			const findAllByTargetSpy = jest.spyOn(repo, 'findAllByTarget');
-			await service.findAllForUserAndSchool(userId, schoolId, scope, pagination);
+			const findAllByCourseSpy = jest.spyOn(repo, 'findAll');
+			await service.findAllForUser(userId, scope, pagination);
 			const expectedTarget = {
 				targetModel: scope.target.targetModel,
 				targetIds: [scope.target.targetId],
 			};
-			const expectedParams = [schoolId, expectedTarget, false, pagination];
-			expect(findAllByTargetSpy).toHaveBeenCalledWith(...expectedParams);
+			const expectedParams = [[expectedTarget], false, pagination];
+			expect(findAllByCourseSpy).toHaveBeenCalledWith(...expectedParams);
 		});
 		it('should search for all course news if course id is not given', async () => {
 			const targetModel = NewsTargetModel.Course;
 			const scope = { target: { targetModel } };
-			const findAllByTargetSpy = jest.spyOn(repo, 'findAllByTarget');
-			await service.findAllForUserAndSchool(userId, schoolId, scope, pagination);
+			const findAllByTargetSpy = jest.spyOn(repo, 'findAll');
+			await service.findAllForUser(userId, scope, pagination);
 			const targetIds = targets
 				.filter((target) => target.targetModel === targetModel)
 				.flatMap((target) => target.targetIds);
 			const expectedTarget = { targetModel, targetIds };
-			const expectedParams = [schoolId, expectedTarget, false, pagination];
+			const expectedParams = [[expectedTarget], false, pagination];
 			expect(findAllByTargetSpy).toHaveBeenCalledWith(...expectedParams);
 		});
 	});
@@ -128,7 +127,7 @@ describe('NewsUc', () => {
 				title: 'title',
 				content: 'content',
 				displayAt: new Date(),
-				target: { targetModel: 'school' },
+				target: { targetModel: NewsTargetModel.School, targetId: schoolId },
 			} as ICreateNews;
 			await service.create(userId, schoolId, params);
 			expect(createSpy).toHaveBeenCalled();

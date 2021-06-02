@@ -27,14 +27,10 @@ export class NewsMapper {
 	static mapNewsScopeToDomain(query: NewsFilterQuery): INewsScope {
 		const dto: INewsScope = {};
 		if (query.targetModel) {
-			if (query.targetModel === 'school') {
-				dto.target = { targetModel: query.targetModel as NewsTargetModelValue };
-			} else {
-				dto.target = {
-					targetModel: query.targetModel as NewsTargetModelValue,
-					targetId: query.targetId,
-				};
-			}
+			dto.target = {
+				targetModel: query.targetModel as NewsTargetModelValue,
+				targetId: query.targetId,
+			};
 		}
 		if ('unpublished' in query) {
 			dto.unpublished = query.unpublished;

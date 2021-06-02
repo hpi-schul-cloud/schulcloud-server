@@ -16,55 +16,15 @@ export class NewsRepo {
 	}
 
 	/**
-	 * Find news for all targets including school
-	 * @param schoolId
+	 * Find news
 	 * @param targets
 	 * @param unpublished
 	 * @param pagination
 	 */
-	async findAll(
-		schoolId: EntityId,
-		targets: NewsTargetFilter[],
-		unpublished: boolean,
-		pagination: PaginationModel = {}
-	): Promise<News[]> {
+	async findAll(targets: NewsTargetFilter[], unpublished: boolean, pagination: PaginationModel = {}): Promise<News[]> {
 		const scope = new NewsScope();
-		scope.bySchool(schoolId);
-		scope.byAllTargets(targets);
+		scope.byTargets(targets);
 		scope.byUnpublished(unpublished);
-
-		const newsList = await this.findNews(scope.query, pagination);
-		return newsList;
-	}
-
-	/**
-	 * Find news for school only
-	 * @param schoolId
-	 * @param unpublished
-	 * @param pagination
-	 * @returns
-	 */
-	async findAllBySchool(schoolId: EntityId, unpublished: boolean, pagination: PaginationModel = {}): Promise<News[]> {
-		const scope = new NewsScope().bySchool(schoolId).byEmptyTarget().byUnpublished(unpublished);
-		const newsList = await this.findNews(scope.query, pagination);
-		return newsList;
-	}
-
-	/**
-	 * Find news for a specific target
-	 * @param schoolId
-	 * @param target
-	 * @param unpublished
-	 * @param pagination
-	 * @returns
-	 */
-	async findAllByTarget(
-		schoolId: EntityId,
-		target: NewsTargetFilter,
-		unpublished: boolean,
-		pagination: PaginationModel = {}
-	): Promise<News[]> {
-		const scope = new NewsScope().bySchool(schoolId).byTarget(target).byUnpublished(unpublished);
 
 		const newsList = await this.findNews(scope.query, pagination);
 		return newsList;
