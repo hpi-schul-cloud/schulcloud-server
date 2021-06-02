@@ -11,8 +11,10 @@ export class NewsScope {
 	}
 
 	byTargets(targets: NewsTargetFilter[]): NewsScope {
-		const queries: FilterQuery<News>[] = targets.map((target) => this.getTargetQuery(target));
-		const combinedQuery = queries.length > 1 ? { $or: queries } : this._queries[0];
+		const queries: FilterQuery<News>[] = targets.map((target) => {
+			return { $and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }] };
+		});
+		const combinedQuery = queries.length > 1 ? { $or: queries } : queries[0];
 		this.addQuery(combinedQuery);
 		return this;
 	}
@@ -25,9 +27,5 @@ export class NewsScope {
 
 	private addQuery(query: FilterQuery<News>) {
 		this._queries.push(query);
-	}
-
-	private getTargetQuery(target: NewsTargetFilter): FilterQuery<News> {
-		return { $and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }] };
 	}
 }

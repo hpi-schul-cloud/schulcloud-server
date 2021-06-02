@@ -47,7 +47,7 @@ export class News extends BaseEntityWithTimestamps {
 
 	/** id reference to a collection */
 	@ManyToOne()
-	target?: BaseEntity;
+	target: BaseEntity;
 
 	/** name of a collection which is referenced in target */
 	@Enum()

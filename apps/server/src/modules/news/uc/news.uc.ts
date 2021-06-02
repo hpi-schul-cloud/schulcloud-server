@@ -1,11 +1,11 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityId, IPagination } from '@shared/domain';
 import { Counted } from '@shared/types';
-import { AuthorizationService, EntityTypeValue } from '../../authorization/authorization.service';
+import { AuthorizationService } from '../../authorization/authorization.service';
 import { Logger } from '../../../core/logger/logger.service';
 import { News, NewsTargetModel, NewsTargetModelValue } from '../entity';
 import { NewsRepo } from '../repo/news.repo';
-import { ICreateNews, INewsScope, IUpdateNews, NewsTarget } from '../entity/news.types';
+import { ICreateNews, INewsScope, IUpdateNews } from '../entity/news.types';
 import { NewsTargetFilter } from '../repo/news-target-filter';
 
 type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
@@ -26,7 +26,8 @@ export class NewsUc {
 	async create(userId: EntityId, schoolId: EntityId, params: ICreateNews): Promise<News> {
 		this.logger.log(`create news as user ${userId}`);
 
-		await this.checkNewsTargetPermissions(userId, params.target, ['NEWS_CREATE']);
+		const { targetModel, targetId } = params.target;
+		await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, ['NEWS_CREATE']);
 
 		const { target, ...props } = params;
 		const news = new News(
@@ -80,11 +81,10 @@ export class NewsUc {
 	async findOneByIdForUser(id: EntityId, userId: EntityId): Promise<News> {
 		const news = await this.newsRepo.findOneById(id);
 		const requiredPermissions = NewsUc.getRequiredPermissions(news.displayAt > new Date());
-		const newsTarget = NewsUc.getTarget(news);
 		await this.authorizationService.checkEntityPermissions(
 			userId,
-			newsTarget.targetModel as EntityTypeValue,
-			newsTarget.targetId,
+			news.targetModel,
+			news.target.id,
 			requiredPermissions
 		);
 		news.permissions = await this.getNewsPermissions(userId, news);
@@ -144,33 +144,11 @@ export class NewsUc {
 	}
 
 	private async getNewsPermissions(userId: EntityId, news: News): Promise<string[]> {
-		const newsTarget = NewsUc.getTarget(news);
-		const permissions = await this.authorizationService.getEntityPermissions(
-			userId,
-			newsTarget.targetModel as EntityTypeValue,
-			newsTarget.targetId
-		);
+		const permissions = await this.authorizationService.getEntityPermissions(userId, news.targetModel, news.target.id);
 		return permissions.filter((permission) => permission.includes('NEWS'));
-	}
-
-	private static getTarget(news: News) {
-		const target =
-			news.targetModel && news.target
-				? { targetModel: news.targetModel, targetId: news.target.id }
-				: { targetModel: 'school', targetId: news.school.id };
-		return target;
 	}
 
 	private static getRequiredPermissions(unpublished: boolean): Permission[] {
 		return unpublished ? ['NEWS_EDIT'] : ['NEWS_VIEW'];
-	}
-
-	private async checkNewsTargetPermissions(userId: EntityId, target: NewsTarget, permissions: string[]) {
-		const { targetModel, targetId } = target;
-		if (targetModel && targetId) {
-			await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, permissions);
-		} else {
-			throw new ConflictException('Invalid news target');
-		}
 	}
 }
