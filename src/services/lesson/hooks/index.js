@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
-const nanoid = require('nanoid');
+const { nanoid } = require('nanoid');
 const { iff, isProvider } = require('feathers-hooks-common');
 const { NotFound, BadRequest } = require('../../../errors');
 const { equal } = require('../../../helper/compare').ObjectId;

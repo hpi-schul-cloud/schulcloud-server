@@ -1,6 +1,7 @@
 const { disallow } = require('feathers-hooks-common');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { SCHOOL_FEATURES } = require('../../school/model');
+const { ForbiddenError } = require('../../../errors/applicationErrors');
 
 class MessengerPermissionService {
 	constructor(options) {
@@ -17,6 +18,9 @@ class MessengerPermissionService {
 	 * @param {Object} params feathers params object
 	 */
 	async get(id, params) {
+		if (Configuration.get('FEATURE_MATRIX_MESSENGER_ENABLED') !== true) {
+			throw new ForbiddenError('FEATURE_MATRIX_MESSENGER_ENABLED is disabled');
+		}
 		const user = await this.app.service('users').get(id);
 		const school = await this.app.service('schools').get(user.schoolId);
 
