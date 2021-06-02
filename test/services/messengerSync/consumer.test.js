@@ -7,8 +7,7 @@ const { ACTIONS } = require('../../../src/services/messengerSync/producer');
 
 const { Configuration } = commons;
 
-describe('service', function test() {
-	this.timeout(20000); // give require app enough time
+describe('service', () => {
 	let configBefore;
 	let server;
 	let app;
@@ -18,6 +17,8 @@ describe('service', function test() {
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('FEATURE_RABBITMQ_ENABLED', true);
 		Configuration.set('FEATURE_MATRIX_MESSENGER_ENABLED', true);
+		Configuration.set('MATRIX_MESSENGER__SECRET', 'fake.secret');
+		Configuration.set('MATRIX_MESSENGER__SERVERNAME', 'fake.server');
 		mockery.enable({
 			warnOnReplace: false,
 			warnOnUnregistered: false,
@@ -33,15 +34,15 @@ describe('service', function test() {
 		server = await app.listen(0);
 	});
 
-	after((done) => {
+	after(async () => {
 		rabbitmqMock.reset();
 
-		Configuration.parse(configBefore);
+		Configuration.reset(configBefore);
 		mockery.deregisterAll();
 		mockery.disable();
 
-		server.close(done);
-		testObjects.cleanup();
+		await testObjects.cleanup();
+		await server.close();
 	});
 
 	it('reject invalid messages', async () => {

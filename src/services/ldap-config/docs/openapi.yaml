@@ -65,6 +65,8 @@ paths:
             application/json:
               schema:
                 $ref: 'schemas/verify.response.yaml'
+        '400':
+          description: the required parameters are missing
         '403':
           description: the requesting user is not allowed to access this system
   '/{_id}':
