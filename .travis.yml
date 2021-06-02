@@ -8,8 +8,8 @@ services:
 branches:
   only:
     - develop
-    - master    
-    - /^(release).*$/
+    - master
+    - /^(release|dependabot).*$/
     # OPS-1664 naming convention <branch>/<JIRA-Ticket ID>-<Jira_Summary>
     - /^(feature\/[A-Z]+-[0-9]+-[a-zA-Z0-9_]+)$/
 
