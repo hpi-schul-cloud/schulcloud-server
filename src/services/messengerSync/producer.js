@@ -21,11 +21,12 @@ const sendMessage = (message) => {
 };
 
 // USER
-const requestFullSyncForUser = async (user) => {
+const requestFullSyncForUser = async (user, schoolSync = false) => {
 	const message = {
 		action: ACTIONS.SYNC_USER,
 		userId: user._id,
 		fullSync: true,
+		schoolSync,
 	};
 	sendMessage(message);
 };
@@ -87,11 +88,12 @@ const requestTeamRemoval = async (team) => {
 };
 
 // COURSE
-const requestCourseRemoval = async (course) => {
+const requestCourseRemoval = async (course, schoolSync = false) => {
 	const message = {
 		action: ACTIONS.DELETE_COURSE,
 		courseId: course._id,
 		schoolId: course.schoolId,
+		schoolSync,
 	};
 	sendMessage(message);
 };
@@ -128,10 +130,10 @@ const requestSyncForEachCourseUser = async (course) => {
 };
 
 // SCHOOL
-const requestRemovalOfRemovedRooms = async (schoolId) => {
+const requestRemovalOfRemovedRooms = async (schoolId, schoolSync = false) => {
 	const courses = await app.service('courses').find({ query: { schoolId } });
 	const archivedCourses = courses.data.filter((course) => course.isArchived);
-	archivedCourses.forEach((course) => requestCourseRemoval(course));
+	archivedCourses.forEach((course) => requestCourseRemoval(course, schoolSync));
 };
 
 const requestFullSchoolSync = (school) => {
@@ -143,9 +145,9 @@ const requestFullSchoolSync = (school) => {
 	sendMessage(message);
 };
 
-const requestSyncForEachSchoolUser = async (schoolId) => {
+const requestSyncForEachSchoolUser = async (schoolId, schoolSync = false) => {
 	const users = await app.service('users').find({ query: { schoolId } });
-	users.data.forEach((user) => requestFullSyncForUser(user));
+	users.data.forEach((user) => requestFullSyncForUser(user, schoolSync));
 };
 
 // SETUP

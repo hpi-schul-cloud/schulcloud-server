@@ -1,9 +1,13 @@
-// const userUc = require('./users.uc');
+const userUc = require('./users.uc');
 const userRolesUc = require('./userRoles.uc');
 
 class UserFacade {
 	constructor(app) {
 		this.app = app;
+	}
+
+	async getSchoolIdOfUser(userId) {
+		return userUc.getSchoolIdOfUser(userId);
 	}
 
 	// async deleteUser(id, roleName, params) {

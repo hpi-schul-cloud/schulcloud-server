@@ -38,7 +38,6 @@ const globals = {
 	DB_URL: process.env.DB_URL || defaultDbUrl,
 	DB_USERNAME: process.env.DB_USERNAME,
 	DB_PASSWORD: process.env.DB_PASSWORD,
-	DOCUMENT_BASE_DIR: process.env.DOCUMENT_BASE_DIR || 'https://s3.hidrive.strato.com/schul-cloud-hpi/',
 	MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE: 5 * 1024 * 1024, // 5MB
 	MONGOOSE_CONNECTION_POOL_SIZE: parseInt(process.env.MONGOOSE_CONNECTION_POOL_SIZE || '10', 10),
 

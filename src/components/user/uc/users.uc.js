@@ -6,6 +6,11 @@ const { facadeLocator } = require('../../../utils/facadeLocator');
 const errorUtils = require('../../../errors/utils');
 const { trashBinResult } = require('../../helper/uc.helper');
 
+const getSchoolIdOfUser = async (userId) => {
+	const user = await userRepo.getUser(userId);
+	return user.schoolId;
+};
+
 const userHaveSameSchool = async (userId, otherUserId) => {
 	if (userId && otherUserId) {
 		const { schoolId: currentUserSchoolId } = await userRepo.getUser(otherUserId);
@@ -64,9 +69,7 @@ const deleteUserRelatedData = async (userId, schoolTombstoneUserId, deleteUserFa
 	}
 };
 
-const createUserTrashbin = async (id, data) => {
-	return trashbinRepo.createUserTrashbin(id, data);
-};
+const createUserTrashbin = async (id, data) => trashbinRepo.createUserTrashbin(id, data);
 
 const replaceUserWithTombstone = async (user) => {
 	const { _id, schoolId } = user;
@@ -156,6 +159,11 @@ const deleteUser = async (id, { user: loggedinUser }) => {
 	try {
 		const registrationPinFacade = facadeLocator.facade('/registrationPin/v2');
 		await registrationPinFacade.deleteRegistrationPinsByEmail(user.email);
+		if (user.parents) {
+			await Promise.all(
+				user.parents.map((parent) => registrationPinFacade.deleteRegistrationPinsByEmail(parent.email))
+			);
+		}
 	} catch (error) {
 		errorUtils.asyncErrorLog(error, `failed to delete registration pin for user ${user._id}`);
 	}
@@ -169,6 +177,7 @@ const deleteUser = async (id, { user: loggedinUser }) => {
 };
 
 module.exports = {
+	getSchoolIdOfUser,
 	deleteUser,
 	// following not to exported by facade
 	checkPermissions,
