@@ -1,15 +1,16 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsIn, IsMongoId, IsOptional, IsString } from 'class-validator';
 import { ToBoolean } from '@shared/transformer';
 
 // TODO validate
 export class NewsFilterQuery {
 	@IsString()
 	@IsOptional()
+	@IsIn(['schools', 'courses', 'teams'])
 	@ApiProperty()
 	targetModel?: string;
 
-	@IsString()
+	@IsMongoId()
 	@IsOptional()
 	@ApiPropertyOptional()
 	targetId?: string;
