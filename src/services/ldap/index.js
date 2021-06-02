@@ -12,6 +12,8 @@ const hooks = require('./hooks');
 const getLDAPStrategy = require('./strategies');
 const logger = require('../../logger');
 
+const LockingQueue = require('./lockingQueue');
+
 module.exports = function LDAPService() {
 	const app = this;
 
@@ -25,6 +27,7 @@ module.exports = function LDAPService() {
 	class LdapService {
 		constructor() {
 			this.clients = {};
+			this.mapOfLocks = {};
 		}
 
 		/**
@@ -82,7 +85,7 @@ module.exports = function LDAPService() {
 				await systemService.patch(system._id, system);
 				return Promise.resolve('success');
 			});
-			session.endSession();
+			await session.endSession();
 			return Promise.resolve('success');
 		}
 
@@ -110,15 +113,13 @@ module.exports = function LDAPService() {
 				return newClient;
 			};
 
-			const client = this.clients[config.url];
-			if (client) {
-				if (autoconnect && !client.connected) {
-					return getNewClient();
-				}
-				return client;
+			let client = this.clients[config.url];
+			if (autoconnect && (!client || !client.connected)) {
+				client = getNewClient();
 			}
-			if (autoconnect) {
-				return getNewClient();
+
+			if (client) {
+				return client;
 			}
 			throw new NoClientInstanceError('No client exists and autoconnect is not enabled.');
 		}
@@ -230,15 +231,28 @@ module.exports = function LDAPService() {
 				},
 			};
 
-			return this._getClient(config).then(
-				(client) =>
-					new Promise((resolve, reject) => {
-						const objects = [];
+			return this._getClient(config).then(async (client) => {
+				if (!this.mapOfLocks[config.url]) {
+					this.mapOfLocks[config.url] = new LockingQueue();
+				}
+				const lock = await this.mapOfLocks[config.url].getLock();
+
+				return new Promise((resolve, reject) => {
+					const objects = [];
+					const handleError = (err) => {
+						logger.error('Error during searchCollection', { error: err });
+						lock.releaseLock();
+						reject(err);
+					};
+
+					try {
 						client.search(searchString, optionsWithPaging, (err, res) => {
 							if (err) {
-								reject(err);
+								handleError(err);
 							}
-							res.on('error', reject);
+							res.on('error', (err) => {
+								handleError(err);
+							});
 							res.on('searchEntry', (entry) => {
 								const result = entry.object;
 								rawAttributes.forEach((element) => {
@@ -249,12 +263,17 @@ module.exports = function LDAPService() {
 							res.on('end', (result) => {
 								if (result.status === 0) {
 									resolve(objects);
+								} else {
+									handleError(new Error('LDAP result code != 0'));
 								}
-								reject(new Error('LDAP result code != 0'));
+								lock.releaseLock();
 							});
 						});
-					})
-			);
+					} catch (error) {
+						handleError(error);
+					}
+				});
+			});
 		}
 
 		/**
