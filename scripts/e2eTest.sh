@@ -5,7 +5,7 @@ set -e
 # Preconditions
 dockerComposeUrl=https://github.com/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m`
 echo "load $dockerComposeUrl"
-rm /usr/local/bin/docker-compose
+sudo rm /usr/local/bin/docker-compose
 curl -L $dockerComposeUrl > docker-compose
 chmod +x docker-compose
 mv docker-compose /usr/local/bin
