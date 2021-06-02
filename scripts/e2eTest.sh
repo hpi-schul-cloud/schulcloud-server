@@ -3,10 +3,12 @@
 set -e
 
 # Preconditions
-#rm /usr/local/bin/docker-compose
-#curl -L https://github.com/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m` > docker-compose
-#chmod +x docker-compose
-#mv docker-compose /usr/local/bin
+dockerComposeUrl=https://github.com/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m`
+echo "load $dockerComposeUrl"
+rm /usr/local/bin/docker-compose
+curl -L $dockerComposeUrl > docker-compose
+chmod +x docker-compose
+mv docker-compose /usr/local/bin
 
 # Envirements
 export BRANCH_NAME=${TRAVIS_PULL_REQUEST_BRANCH:=$TRAVIS_BRANCH}
@@ -21,13 +23,16 @@ urlMaster="https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/ma
 if curl --head --silent --fail $urlBranch 2> /dev/null;
 then
   echo "select $BRANCH_NAME"
+  echo "load $urlBranch" 
   curl -f -O -s -S "$urlBranch"
 elif [[ $BRANCH_NAME = feature* ]];
 then
   echo "select develop"
+  echo "load $urlDevelop" 
   curl -f -O -s -S "$urlDevelop"
 else
   echo "select master"
+  echo "load $urlMaster" 
   curl -f -O -s -S "$urlMaster"
 fi
 
