@@ -19,10 +19,18 @@ describe('fileStorageFacade', () => {
 	});
 
 	describe('deleteUserRelatedData', () => {
-		it('when called with valid user id, then it returns trash bin data', async () => {
-			const user = await testObjects.createTestUser();
-			await testObjects.createTestFile({ owner: user });
+		let user;
+		let file;
 
+		beforeEach(async () => {
+			user = await testObjects.createTestUser();
+			const userPermission = testObjects.files.createPermission({ refId: user._id });
+			file = await testObjects.createTestFile({ owner: testObjects.generateObjectId(), additonalPermissions: [userPermission] });
+		});
+
+		afterEach(testObjects.cleanup);
+
+		it('when called with valid user id, then it returns trash bin data', async () => {
 			const deleteFunctions = app.facade('/fileStorage/v2').deleteUserData;
 			expect(deleteFunctions).to.be.an('array').that.is.not.empty;
 			for (const deleteFunction of deleteFunctions) {
@@ -36,9 +44,6 @@ describe('fileStorageFacade', () => {
 		});
 
 		it('when called with valid user id, then it deletes the users file permissions', async () => {
-			const user = await testObjects.createTestUser();
-			const file = await testObjects.createTestFile({ owner: user });
-
 			const deleteFunctions = app.facade('/fileStorage/v2').deleteUserData;
 			expect(deleteFunctions).to.be.an('array').that.is.not.empty;
 			for (const deleteFunction of deleteFunctions) {
