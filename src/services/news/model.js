@@ -39,17 +39,13 @@ const newsSchema = new Schema({
 		// will look at the `targetModel` property to find the right model.
 		refPath: 'targetModel',
 		// target and targetModel must be defined together or not
-		required: function requiredTarget() {
-			return !!this.targetModel;
-		},
+		required: true,
 	},
 	targetModel: {
 		type: String,
 		enum: targetModels,
 		// target and targetModel must be defined together or not
-		required: function requiredTargetModel() {
-			return !!this.target;
-		},
+		required: true,
 	},
 });
 
