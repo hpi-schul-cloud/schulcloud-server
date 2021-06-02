@@ -7,7 +7,7 @@ const { SC_SHORT_TITLE } = require('../../../../config/globals');
 const { createUserWithRole } = require('../hooks/helpers');
 const { getBasic, patchTeam, getSessionUser } = require('../helpers');
 const { isArray, isArrayWithElement, isString, isDefined, isUndefined, isSameId } = require('../hooks/collection');
-const { getPaginationPropertiesFromQuery } = require('../../../utils/pagination');
+
 class AdminOverview {
 	constructor(options) {
 		this.options = options || {};
@@ -106,7 +106,7 @@ class AdminOverview {
 
 	find(params) {
 		return getSessionUser(this, params).then((sessionUser) => {
-			const pagination = getPaginationPropertiesFromQuery(params.query);
+			const { limit, skip } = params.query;
 			const { schoolId } = sessionUser;
 			return this.app
 				.service('teams')
@@ -122,7 +122,8 @@ class AdminOverview {
 							},
 							'schoolIds',
 						], // schoolId
-						...pagination,
+						$limit: limit,
+						$skip: skip,
 					},
 				})
 				.then((teams) => AdminOverview.mapped(teams, schoolId))

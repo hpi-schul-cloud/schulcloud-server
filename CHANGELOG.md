@@ -9,17 +9,31 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## 26.2.0
+
 ### Added
 
+- OPS-2418 - Change buildpipelines (Server, Client, Nuxt) to execute E2E tests according QF decision
 - SC-8250 - add bulk deletion to user service v2
 - SC-8341 - add tombstone school to tombstone user
 - SC-8408 - added delete events by scope Id route
 - SC-7937 - Allow adding multiple materials to lesson
 - SC-7868 - Deletion concept for personal file connections
 - SC-8873 - Add prioritization for Matrix messenger tasks
+- SC-8982 - add inital service ressource messuring test setup
+- OPS-1499 - Add feature to CI Pipeline and provide manual deployments of branches and automatic deploy of release to staging
+- Add run script for sync indexes based on existing and registered schemas.
+- SC-9085 - add registration pin deletion for parent emails
+- SC-9004 - Sync env variables between backend and frontend
+- OPS-1499 - Add feature to CI Pipeline and provide manual deployments of branches
+- Add run script for sync indexes based on existing and registered schemas.
+
 
 ### Changed
 
+- SC-8440 - fixed open api validation for manual consent
+- SC-9055 - changed Edu-Sharing permissions for Brandenburg Sportinhalt content
+- SC-6950 - validation for officialSchoonNumber now allows 5 or 6 digits
 - SC-8599 - added helparea contact dropdown and send value
 - SC-7944 - use persistent ids for Lern-Store content items
 - OPS-1508 - added limits for cpu and ram to the docker compose files
@@ -27,12 +41,55 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7021 - automatic deletion documents in the trashbins collection after 7 days.
 - SC-5202 - homework tests refactoring
 - SC-7868 - filestorage integration tests are skipped on local test environments if minio is not setup
+- SC-8779 - messenger: use user-based fixed device ids
 
 ### Fixed
 
+- SC-8933 - fix date format on first login
 - SC-8728 - fix configuration reset in tests
+- SC-8873 - fix addUser prioritization for full school Matrix messenger sync
+- SC-8982 - fix test setup for on the fly building test like routes jwt
 
 ## [26.1.0]
+
+### Added
+
+- SC-8910 - added an isExternal check to the adminUsers service remove method
+
+### Changed
+
+- SC-8732 - change search filter gate and weight of values in indexes. Will reduce amount of results
+- SC-8880 - changed the validation for search queries in NAT, now it allows empty
+
+## [26.0.16] - 2021-04-20
+
+### Removed
+
+- - SC-8748 - revert: bump feathers-mongoose from 6.3.0 to 8.3.1
+
+## [26.0.15] - 2021-04-19
+
+### Changed
+
+- SC-8909 - messenger: use user-based fixed device ids
+
+## [26.0.14] - 2021-04-16
+
+### Changed
+
+- SC-8934 - no more autosync for the migrations for the mongodb
+
+## [26.0.13] - 2021-04-15
+
+### Fixed
+
+- SC-8917 - verify configuration missing school
+
+## [26.0.12] - 2021-04-14
+
+### Changed
+
+- SC-8929 - increase performance for alert requests
 
 ## [26.0.11] - 2021-04-13
 

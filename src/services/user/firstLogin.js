@@ -1,3 +1,4 @@
+const moment = require('moment');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const constants = require('../../utils/constants');
 const { passwordsMatch } = require('../../utils/passwordHelpers'); // fixmer this should be removed
@@ -32,6 +33,7 @@ const firstLogin = async (data, params, app) => {
 
 	// wrong birthday object?
 	if (data.studentBirthdate) {
+		data.studentBirthdate = moment(data.studentBirthdate).format('DD.MM.YYYY');
 		const dateArr = data.studentBirthdate.split('.');
 		const userBirthday = new Date(`${dateArr[1]}.${dateArr[0]}.${dateArr[2]}`);
 		// eslint-disable-next-line no-restricted-globals
