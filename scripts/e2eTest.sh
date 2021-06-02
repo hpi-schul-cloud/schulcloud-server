@@ -33,9 +33,8 @@ fi
 
 echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
-ls -a
-ls -a ./scripts
 chmod 700 $fileName
+cat $fileName
 bash $fileName
 
 set +e
