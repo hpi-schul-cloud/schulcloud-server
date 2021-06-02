@@ -59,8 +59,8 @@ export class AuthorizationService {
 	): Promise<EntityId[]> {
 		const entitiyIds =
 			targetModel === 'school'
-				? this.feathersAuthProvider.getPermittedSchools(userId)
-				: this.feathersAuthProvider.getPermittedTargets(userId, targetModel, permissions);
+				? await this.feathersAuthProvider.getPermittedSchools(userId)
+				: await this.feathersAuthProvider.getPermittedTargets(userId, targetModel, permissions);
 
 		return entitiyIds;
 	}

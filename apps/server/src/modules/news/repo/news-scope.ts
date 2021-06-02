@@ -50,6 +50,6 @@ export class NewsScope {
 	}
 
 	private getEmptyTargetQuery() {
-		return { $and: [{ targetModel: null }, { target: null }] };
+		return { $and: [{ targetModel: 'school' }, { target: null }] };
 	}
 }
