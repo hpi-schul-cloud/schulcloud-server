@@ -2,6 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId, Task, ITaskMetadata, Submission, Course, Lesson } from '../entity';
 import { PaginationModel } from '../../../shared/core/repo/index';
+import { QueryOrder } from '@mikro-orm/core';
 
 @Injectable()
 export class TaskRepo {
@@ -24,7 +25,7 @@ export class TaskRepo {
 		});
 		const homeworksWithSubmissions = submissionsOfStudent.map((submission) => submission.homework.id);
 
-		const [usersTasks, number] = await this.em.findAndCount(
+		const [usersTasks, total] = await this.em.findAndCount(
 			Task,
 			{
 				$and: [
@@ -34,7 +35,7 @@ export class TaskRepo {
 					{ $or: [{ lesson: null }, { lesson: { $in: lessonsOfStudent } }] },
 				],
 			},
-			{ populate: ['course'], limit, offset: skip }
+			{ populate: ['course'], limit, offset: skip, orderBy: { dueDate: QueryOrder.ASC } }
 		);
 
 		const mappedTasks = usersTasks.map((task) => {
