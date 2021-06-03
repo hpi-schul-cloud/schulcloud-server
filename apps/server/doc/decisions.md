@@ -10,7 +10,7 @@ Solution: NestJS
 
 ### TypeScript
 
-Solution: Use in schulcloud-server, extend strong
+Solution: Use in schulcloud-server, extend strong typing over the api via openAPI and use it in nuxt-client.
 
 ### Mikro-ORM
 
