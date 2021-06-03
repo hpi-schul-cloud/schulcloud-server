@@ -70,6 +70,8 @@ In file names, we use lowercase and minus in the beginning and end with `.<conce
 
 Components are defined as NestJS [Modules](https://docs.nestjs.com/modules). 
 
+### Communication between components
+
 To access other modules services, it can be injected anywhere. The usage is allowed only, when the module which owns that service has exported it in the modules definition.
 
 ```TypeScript
@@ -114,7 +116,11 @@ export class FeathersAuthProvider {
 
 ```
 
-Use the feathers module to get access to legacy services.
+### Access legacy Code
+
+Use the feathers module introduced above to get access to legacy services.
+
+It is important to introduce strong typing like it happened above in the FeathersAuthProvider. While the `FeathersServiceProvider` from the feathers module, has only an abstract implementation for all services, add a concrete service inside your module for a specific feathers-service, like above in `FeathersAuthProvider`.
 
 
 ## Layered Architecture
