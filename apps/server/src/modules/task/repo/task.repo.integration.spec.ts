@@ -46,6 +46,23 @@ describe('TaskService', () => {
 				expect(result[0]).toHaveProperty('courseName');
 				expect(result[0]).toHaveProperty('displayColor');
 			});
+
+			it('should return a paginated result', async () => {
+				const service = module.get<TaskRepo>(TaskRepo);
+				const em = module.get<EntityManager>(EntityManager);
+
+				const user = await em.create(UserInfo, { firstName: 'test', lastName: 'student' });
+				const course = await em.create(Course, { name: 'testCourse', students: [user], color: '#ffffff' });
+				const tasks = await Promise.all([
+					em.create(Task, { name: 'warmup', course, dueDate: new Date() }),
+					em.create(Task, { name: 'run 100m', course, dueDate: new Date() }),
+					em.create(Task, { name: '100 situps', course, dueDate: new Date() }),
+					em.create(Task, { name: '100 pushups', course, dueDate: new Date() }),
+				]);
+				await em.persistAndFlush([user, course, ...tasks]);
+				const result = await service.findAllOpenByStudent(user.id, { limit: 2, skip: 0 });
+				expect(result.length).toEqual(2);
+			});
 		});
 
 		describe('open tasks in courses', () => {
