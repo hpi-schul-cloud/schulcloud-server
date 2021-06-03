@@ -14,6 +14,15 @@ Solution: Use in schulcloud-server, extend strong
 
 ### Mikro-ORM
 
+#### Typescript Support
+- strong typed entities
+- provide meta data through:
+  - classes
+  - decorators (on classes, properties)
+#### MongoDB Support
+- full Support for MongoDB
+- (as opposed to e.g. TypeORM, Prisma)
+
 #### Unit of Work
 - implicit transactions
 - managed entities / references
@@ -34,7 +43,7 @@ Solution: Use in schulcloud-server, extend strong
 #### Relation mapping
 - 1:n, 1:1, m:n
 - foreign collection relations
-- embedded relations (mongodb)
+- embedded relations (MongoDB)
 
 #### Preloading
 - nested structures can be preloaded via populate
@@ -43,5 +52,5 @@ Solution: Use in schulcloud-server, extend strong
 - use serialized mongo-id
 
 #### Issues
-- no join queries in mongodb
+- no join queries in MongoDB
 - no populate in queries over relations
