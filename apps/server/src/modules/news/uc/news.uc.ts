@@ -54,7 +54,7 @@ export class NewsUc {
 		this.logger.log(`start find all news for user ${userId}`);
 
 		const unpublished = !!scope?.unpublished;
-		const permissions: Permission[] = NewsUc.getRequiredPermissions(unpublished);
+		const permissions: [Permission] = NewsUc.getRequiredPermissions(unpublished);
 
 		const targets = await this.getPermittedTargets(userId, scope, permissions);
 		const [newsList, newsCount] = await this.newsRepo.findAll(targets, unpublished, pagination);
@@ -80,7 +80,8 @@ export class NewsUc {
 		this.logger.log(`start find one news ${id}`);
 
 		const news = await this.newsRepo.findOneById(id);
-		const requiredPermissions = NewsUc.getRequiredPermissions(news.displayAt > new Date());
+		const isPublished = news.displayAt > new Date();
+		const requiredPermissions = NewsUc.getRequiredPermissions(isPublished);
 		await this.authorizationService.checkEntityPermissions(
 			userId,
 			news.targetModel,
@@ -175,7 +176,12 @@ export class NewsUc {
 		return permissions.filter((permission) => permission.includes('NEWS'));
 	}
 
-	private static getRequiredPermissions(unpublished: boolean): Permission[] {
+	/**
+	 *
+	 * @param unpublished news with displayAt set to future date are not published for users with view permission
+	 * @returns
+	 */
+	private static getRequiredPermissions(unpublished: boolean): [Permission] {
 		return unpublished ? ['NEWS_EDIT'] : ['NEWS_VIEW'];
 	}
 }
