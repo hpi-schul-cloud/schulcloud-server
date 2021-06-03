@@ -1,6 +1,6 @@
 # Cross cutting concerns
 
-The cross cutting topics are part of the core-module.
+The cross cutting topics are implemented within of the core-module. 
 
 ## Logging
 

@@ -12,6 +12,10 @@
 				"file": "architecture-mapping.md"
 			},
 			{
+				"title": "Domain driven design",
+				"file": "domain-driven-design.md"
+			},
+			{
 				"title": "Cross-cutting concerns",
 				"file": "cross-cutting-concerns.md"
 			},

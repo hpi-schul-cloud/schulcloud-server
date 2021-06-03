@@ -2,44 +2,6 @@
 
 ## Conventions
 
-### Programming Conventions
-
-#### Programming principles
-
-This project should try following the...
-
-- Object-Oriented Programming Basics
-- Object-Oriented Programming Design Principles (composition > inheritance, referring to abstractions, SOLID Principles)
-- General Design Principles (YAGNI, KISS, DRY)
-
-#### Domain driven design
-
-While [DDD](https://khalilstemmler.com/articles/domain-driven-design-intro/) is not enforced, we still try to follow its goals:
-
-- Discover the domain model by interacting with domain experts and agreeing upon a common set of terms to refer to processes, actors and any other phenomenon that occurs in the domain.
-- Take those newly discovered terms and embed them in the code, creating a rich domain model that reflects the actual living, breathing business and it's rules.
-- Protect that domain model from all the other technical intricacies involved in creating a web application.
-
-#### 3 layer architecture
-
-For the 3-layer architecture this means we have to protect the business layer and domain models from the outside world and infrastructure to keep it clean, fast, testable, ready for changes.
-
-#### Concepts
-
-Beside Concepts NestJS introduces, own services like [repositories](https://khalilstemmler.com/articles/domain-driven-design-intro/#Repository) might be created. We prefer using use-cases to step in the application over CRUD.
-
-#### Domain Services
-
-Domain Services (logic which depends on multiple entities, think about a state machine) are most often executed by application layer Application Services / Use Cases. Because Domain Services are a part of the Domain Layer and adhere to the dependency rule, Domain Services aren't allowed to depend on infrastructure layer concerns like Repositories to get access to the domain entities that they interact with. Application Services fetch the necessary entities, then pass them to domain services to run allow them to interact.
-
-Sample: Within of a use case we not depend on a user context from outside while for logging, error handling or in a repository it might be used. Like we see in the clean architecture schema.
-
-![](https://khalilstemmler.com/img/blog/ddd-intro/clean.jpg) "The Clean Architecture from the golden Uncle Bob archives"
-
-#### Domain events
-
-Events have to be handled very carefully. Like hooks around services might lead into separating the business logic into independend untestable workflows, the events task and data must be defined clearly and should only be used for independent tasks.
-
 ### File structure
 
 The server app located in `/apps/server` is structured like. Beside each ts-file, a test file _.spec.ts has to be added for unit tests (hidden for simplification). Use index.ts files that combine a folders content and export all files from within of the folder using `export _ from './file'` where this makes sense. When there are naming conflicts, use more specific names and correct concepts. Think about not to create sub-folders, when only one concept exist.
@@ -102,6 +64,58 @@ In file names, we use lowercase and minus in the beginning and end with `.<conce
 | text.validator.ts       | TextValidator     | validator  | shared/validators |
 | user.repo.ts            | UserRepo          | repository | module/repo       |
 | parse-object-id.pipe.ts | ParseObjectIdPipe | pipe       | shared/pipes      |
+
+
+## Components
+
+Components are defined as NestJS [Modules](https://docs.nestjs.com/modules). 
+
+To access other modules services, it can be injected anywhere. The usage is allowed only, when the module which owns that service has exported it in the modules definition.
+
+```TypeScript
+// modules/feathers/feathers-service.provider.ts
+// modules/feathers/feathers.module.ts
+@Module({
+	providers: [FeathersServiceProvider],
+	exports: [FeathersServiceProvider],
+})
+export class FeathersModule {}
+
+```
+
+The feathers module is used to handle how the application is using legacy services, when access them, inject the `FeathersServiceProvider` but in your module definition, import the `FeathersModule`.
+
+```TypeScript
+// your module, here modules/authorization/authorization.module.ts
+@Module({
+	imports: [FeathersModule], // here import the services module
+	// providers: [AuthorizationService, FeathersAuthProvider],
+	// exports: [AuthorizationService],
+})
+export class AuthorizationModule {}
+
+// inside of your service, here feathers-auth.provider.ts
+@Injectable()
+export class FeathersAuthProvider {
+
+    // inject the service in constructor
+	constructor(private feathersServiceProvider: FeathersServiceProvider) {}
+    
+    // ...
+
+	async getUserTargetPermissions(
+		// ...
+	): Promise<string[]> {
+		const service = this.feathersServiceProvider.getService(`path`);
+        const result = await service.get(...)
+		// ...
+		return result;
+	}
+
+```
+
+Use the feathers module to get access to legacy services.
+
 
 ## Layered Architecture
 
@@ -183,44 +197,7 @@ The domain layer assumes a kind of higher-level policy that everything else reli
 > This means, a controller or a repository must fit this layer.
 > Specific goals of a repository, like query optimization must not be a transparent part of the repository only.
 
-#### Use Cases
 
-Use cases either return entities (data) to the user through a query (CRUD) or apply a command (do ... ok/err).
-Further reading: https://khalilstemmler.com/articles/oop-design-principles/command-query-separation/
-
-They focus on providing business use cases and should only contain higher logical function calls, that are well-tested and hide their implementation inside of a use-case.
-
-```TypeScript
-// Sample
-	async create(userId: EntityId, schoolId: EntityId, params: ICreateNews): Promise<News> {
-		this.logger.log(`create news as user ${userId}`);
-
-		await this.checkNewsTargetPermissions(userId, schoolId, params.target, ['NEWS_CREATE']);
-
-		const news = new News(
-			{
-				...params,
-				school: schoolId,
-				creator: userId,
-			},
-			params.target
-		);
-		await this.newsRepo.save(news);
-
-		this.logger.log(`news ${news.id} created by user ${userId}`);
-
-		return news;
-	}
-```
-
-How to structure a use case? When creating a use case, care of
-
-- the general business goal
-- preconditions
-- actors, in-put & out-put data
-- post conditions to be well-known
-- the normal case (step by step)
-- all (handled) exception-cases (to be handled in a client application)
 
 #### Testing
 
