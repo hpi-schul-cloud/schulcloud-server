@@ -6,7 +6,7 @@ import { SchoolInfo } from './school-info.entity';
 import { TeamInfo } from './team-info.entity';
 import { UserInfo } from './user-info.entity';
 
-interface INewsProperties {
+export interface INewsProperties {
 	title: string;
 	content: string;
 	displayAt: Date;
