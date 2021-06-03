@@ -41,3 +41,7 @@ Solution: Use in schulcloud-server, extend strong
 
 #### Misc
 - use serialized mongo-id
+
+#### Issues
+- no join queries in mongodb
+- no populate in queries over relations
