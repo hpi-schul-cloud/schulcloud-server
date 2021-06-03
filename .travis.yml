@@ -10,11 +10,13 @@ branches:
   only:
     - develop
     - master
-    - /^(?i:release|hotfix).*$/
+    - /^(?i:release).*$/
+    # OPS-1664 naming convention <branch>/<JIRA-Ticket ID>-<Jira_Summary>
+    - /^((hotfix|feature)\/[A-Z]+-[0-9]+-[a-zA-Z_]+)$/
 
 stages:
   - name: test
-    if: NOT (commit_message =~ /(skip-test-stage)/ AND branch = master)
+    if: NOT (commit_message =~ /(skip-test-stage)/ ) OR branch = master
   - name: deploy
     if: NOT (commit_message =~ /(skip-deploy-stage)/)
 jobs:
@@ -34,6 +36,8 @@ jobs:
         - sudo docker-compose -f docker-compose-oauthserver.yml up -d
         - sudo docker pull mongo:4.2
         - sudo docker run -d -p 27017:27017 mongo:4.2
+        - sudo docker pull minio/minio
+        - sudo docker run -d -p 9090:9000 minio/minio server /data
         - npm ci
         - npm i -g wait-on
         - wait-on tcp:27017 -t 60000
@@ -51,11 +55,11 @@ jobs:
         - echo "skipping install"
       after_failure:
         - cat /home/travis/.npm/_logs/*debug.log
-    - stage: deploy
+    - stage: build
       if: NOT fork
       script:
-        - ./deploy.sh
-      name: deploy
+        - ./build.sh
+      name: build and push
       language: generic
       env:
         - GIT_SHA=$( git rev-parse HEAD )

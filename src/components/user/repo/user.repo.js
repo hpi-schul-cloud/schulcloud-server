@@ -54,9 +54,24 @@ const getUserWithRoles = async (_id) => {
 	return user;
 };
 
+const getUsersWithRoles = async (_ids) => {
+	const users = await User.find({
+		_id: { $in: _ids },
+	})
+		.populate('roles')
+		.lean()
+		.exec();
+	if (users.some((user) => user == null)) {
+		throw new NotFound('no such user');
+	}
+
+	return users;
+};
+
 module.exports = {
 	getUser,
 	getUserWithRoles,
+	getUsersWithRoles,
 	replaceUserWithTombstone,
 	createTombstoneUser,
 };

@@ -9,12 +9,53 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-## [26.1.1] - 2021-04-27
+## [26.3.0] - 2021-06-07
 
 ### Changed
+
 - SC-8898 - parallelize LDAP sync using RabbitMQ
 
+## 26.2.1 - 2021-06-02
+
+### Added
+
+- SC-9103 - add logging for syncIndexes script
+
+## 26.2.0 - 2021-06-01
+
+### Added
+
+- SC-8250 - add bulk deletion to user service v2
+- SC-8341 - add tombstone school to tombstone user
+- SC-8408 - added delete events by scope Id route
+- SC-7937 - Allow adding multiple materials to lesson
+- SC-7868 - Deletion concept for personal file connections
+- SC-8873 - Add prioritization for Matrix messenger tasks
+- SC-8982 - add inital service ressource messuring test setup
+- OPS-1499 - Add feature to CI Pipeline and provide manual deployments of branches and automatic deploy of release to staging
+- Add run script for sync indexes based on existing and registered schemas.
+- SC-9085 - add registration pin deletion for parent emails
+
+### Changed
+
+- SC-6950 - validation for officialSchoonNumber now allows 5 or 6 digits
+- SC-8599 - added helparea contact dropdown and send value
+- SC-7944 - use persistent ids for Lern-Store content items
+- OPS-1508 - added limits for cpu and ram to the docker compose files
+- SC-8500 - refactoring in error handling
+- SC-7021 - automatic deletion documents in the trashbins collection after 7 days.
+- SC-5202 - homework tests refactoring
+- SC-7868 - filestorage integration tests are skipped on local test environments if minio is not setup
+- SC-8779 - messenger: use user-based fixed device ids
+
+### Fixed
+
+- SC-8728 - fix configuration reset in tests
+- SC-8873 - fix addUser prioritization for full school Matrix messenger sync
+- SC-8982 - fix test setup for on the fly building test like routes jwt
+
 ## [26.1.0]
+
 
 ### Added
 
@@ -123,6 +164,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-6679 - fixed table styling in topic text-component
+- SC-8534 - fix registration link generation
 - SC-8682 - fix students are editable in externally managed schools
 - SC-8534 fix registration link generation
 - Allow sorting after search
@@ -344,6 +387,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7763 - adds searchable feature flag for lernstore.
 - SC-8020 - adds collections filter to edu-sharing service
 - SC-8260 - new team indexes and migration to add this
+
+### Fixed
+
+- SC-8230 - fix deletion of teachers via new route
 
 ### Removed
 

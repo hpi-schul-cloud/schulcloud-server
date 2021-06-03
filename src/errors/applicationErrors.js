@@ -9,6 +9,7 @@ const { INTERNAL_SERVER_ERROR_TYPE, ASSERTION_ERROR_TYPE, FORBIDDEN_ERROR_TYPE }
 class ApplicationError extends Error {
 	/**
 	 * Abstraction for concrete implementations of business errors
+	 * @param {String|Error|any} cause Cause is used for technical errors only and will take any argument (existing error, string, ...). BusinessErrors instead should be defined within of an own Error_TYPE.
 	 */
 	constructor({ type, title, defaultMessage }, cause, params) {
 		super(type);
@@ -62,11 +63,13 @@ class AssertionError extends TechnicalError {
 
 // BUSINESS ERRORS
 /**
- * Error for any validation error
+ * Error for any validation error that should be handled by clients
+ * Error details can be added into validationErrors for error type API_VALIDATION_ERROR_TYPE when errors can be related to input parameters.
+ * For field-unspecific issues new type-triples can be added without setting validationErrors param.
  */
 class ValidationError extends BusinessError {
-	constructor(errorType, validationErrors) {
-		super(errorType, undefined, validationErrors);
+	constructor({ type, title, defaultMessage }, validationErrors) {
+		super({ type, title, defaultMessage }, undefined, validationErrors);
 	}
 }
 
