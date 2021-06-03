@@ -6,13 +6,21 @@ While [DDD](https://khalilstemmler.com/articles/domain-driven-design-intro/) is 
 - Take those newly discovered terms and embed them in the code, creating a rich domain model that reflects the actual living, breathing business and it's rules.
 - Protect that domain model from all the other technical intricacies involved in creating a web application.
 
-## 3 layer architecture
+## Clean Architecture
+
+![](https://khalilstemmler.com/img/blog/ddd-intro/clean.jpg) "The Clean Architecture from the golden Uncle Bob archives"
 
 For the 3-layer architecture this means we have to protect the business layer and domain models from the outside world and infrastructure to keep it clean, fast, testable, ready for changes.
 
 ## Concepts
 
-Beside Concepts NestJS introduces, own services like [repositories](https://khalilstemmler.com/articles/domain-driven-design-intro/#Repository) might be created. We prefer using use-cases to step in the application over CRUD.
+### Entities
+
+NestJS does not cover how to persist entities, the heart of our application. We need a solution that not only transfers data like mongoose, instead we want to define business rules on objects with strong typing added.
+
+Instead of Interface, Model and Schema which describe the view on data, now we define Entities, that get a DRY possibility to be created, loaded, and persisted using en entity manager. The definition of how an entity relates with others or how it is persisted can be added using decorators.
+
+See https://github.com/mikro-orm/mikro-orm#-core-features for further details.
 
 ### Domain Services
 
@@ -20,9 +28,9 @@ Domain Services are most often executed by application layer Application Service
 
 Sample: Within of a use case we not depend on a user context from outside while for logging, error handling or in a repository it might be used. Like we see in the clean architecture schema.
 
-![](https://khalilstemmler.com/img/blog/ddd-intro/clean.jpg) "The Clean Architecture from the golden Uncle Bob archives"
-
 #### Use Cases
+
+Beside Concepts NestJS introduces, own services like [repositories](https://khalilstemmler.com/articles/domain-driven-design-intro/#Repository) or use-cases might be created.
 
 Use cases either return entities (data) to the user through a query (CRUD) or apply a command (do ... ok/err).
 Further reading: https://khalilstemmler.com/articles/oop-design-principles/command-query-separation/

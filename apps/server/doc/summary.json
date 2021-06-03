@@ -20,6 +20,14 @@
 				"file": "cross-cutting-concerns.md"
 			},
 			{
+				"title": "Decisions",
+				"file": "decisions.md"
+			},
+			{
+				"title": "VSCode",
+				"file": "vs-code.md"
+			},
+			{
 				"title": "Git",
 				"file": "git.md"
 			}
