@@ -81,7 +81,7 @@ If `component B` needs anything from `component A`, it must always access it 
 
 - In some cases, it is reasonable for the service layer of `component B` to call the UseCase facade of `component A` directly
   - for example if `component B` has no business logic (like a simple adapter component)
-    - In any other situation, you should only put it into the
+    - In any other situation, you should only put it into the business logic
 
 ![Communication between components](../../assets/Communication-between-components.png)
 
@@ -275,9 +275,3 @@ That way, we can use the same logic for all invocations and the source of an inv
 ### Logging and Tracing
 
 For details see the corresponding [logging and tracing guidelines](https://docs.hpi-schul-cloud.org/display/TSC/Logging+and+Tracing+Guidelines).
-
-# Architecture Mapping to Code
-
-For details about how this architecture is implemented in code, see the [Server Code Conventions](https://docs.hpi-schul-cloud.org/display/TSC/Server+Code+Conventions).
-
-Next: See Architecture Mapping and Conventions here.
