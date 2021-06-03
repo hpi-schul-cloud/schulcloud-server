@@ -19,7 +19,7 @@ import { NewsRepo } from './news.repo';
 import { CourseInfo } from '../entity/course-info.entity';
 import { TeamInfo } from '../entity/team-info.entity';
 
-describe.only('NewsService', () => {
+describe('NewsService', () => {
 	let repo: NewsRepo;
 	let mongod: MongoMemoryServer;
 	let orm: MikroORM;
@@ -51,6 +51,16 @@ describe.only('NewsService', () => {
 	afterAll(async () => {
 		await orm.close();
 		await mongod.stop();
+	});
+
+	describe('defined', () => {
+		it('repo should be defined', () => {
+			expect(repo).toBeDefined();
+		});
+
+		it('entity manager should be defined', () => {
+			expect(em).toBeDefined();
+		});
 	});
 
 	const newTestNews = (
