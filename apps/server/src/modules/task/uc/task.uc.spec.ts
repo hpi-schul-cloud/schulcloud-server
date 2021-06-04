@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TaskRepo } from '../repo/task.repo';
 import { TaskUC } from './task.uc';
 
-describe.skip('TaskService', () => {
+describe('TaskService', () => {
 	let service: TaskUC;
 
 	beforeEach(async () => {

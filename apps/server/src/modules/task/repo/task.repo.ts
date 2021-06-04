@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityId, Task, ITaskMetadata, Submission, Course, Lesson } from '../entity';
 import { PaginationModel } from '../../../shared/core/repo/index';
 import { QueryOrder } from '@mikro-orm/core';
+import { Paginated } from '../../../shared/core/types/paginated';
 
 @Injectable()
 export class TaskRepo {
@@ -10,7 +11,10 @@ export class TaskRepo {
 
 	// WARNING: this is used to deal with the current datamodel, and needs to be changed.
 	// DO NOT DO THIS AT HOME!!
-	async findAllOpenByStudent(userId: EntityId, { limit, skip }: PaginationModel = {}): Promise<ITaskMetadata[]> {
+	async findAllOpenByStudent(
+		userId: EntityId,
+		{ limit, skip }: PaginationModel = {}
+	): Promise<Paginated<ITaskMetadata[]>> {
 		// todo: handle coursegroups
 		const coursesOfStudent = await this.em.find(Course, {
 			students: userId,
@@ -52,6 +56,9 @@ export class TaskRepo {
 		});
 
 		// TODO: pagination or total is missing
-		return mappedTasks;
+		return {
+			data: mappedTasks,
+			total,
+		};
 	}
 }

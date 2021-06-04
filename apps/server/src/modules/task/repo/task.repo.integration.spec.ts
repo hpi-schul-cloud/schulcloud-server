@@ -40,11 +40,11 @@ describe('TaskService', () => {
 				const task = await em.create(Task, { name: 'roll some dice', course, dueDate: new Date() });
 				await em.persistAndFlush([user, course, task]);
 				const result = await service.findAllOpenByStudent(user.id);
-				expect(result.length).toEqual(1);
-				expect(result[0]).toHaveProperty('name');
-				expect(result[0]).toHaveProperty('duedate');
-				expect(result[0]).toHaveProperty('courseName');
-				expect(result[0]).toHaveProperty('displayColor');
+				expect(result.total).toEqual(1);
+				expect(result.data[0]).toHaveProperty('name');
+				expect(result.data[0]).toHaveProperty('duedate');
+				expect(result.data[0]).toHaveProperty('courseName');
+				expect(result.data[0]).toHaveProperty('displayColor');
 			});
 
 			it('should return a paginated result', async () => {
@@ -61,7 +61,8 @@ describe('TaskService', () => {
 				]);
 				await em.persistAndFlush([user, course, ...tasks]);
 				const result = await service.findAllOpenByStudent(user.id, { limit: 2, skip: 0 });
-				expect(result.length).toEqual(2);
+				expect(result.data.length).toEqual(2);
+				expect(result.total).toEqual(4);
 			});
 
 			it('should be sorted with earlier duedates first', async () => {
@@ -76,9 +77,9 @@ describe('TaskService', () => {
 				]);
 				await em.persistAndFlush([user, course, ...tasks]);
 				const result = await service.findAllOpenByStudent(user.id);
-				expect(result.length).toEqual(2);
-				expect(result[0].name).toEqual('1st');
-				expect(result[1].name).toEqual('2nd');
+				expect(result.total).toEqual(2);
+				expect(result.data[0].name).toEqual('1st');
+				expect(result.data[1].name).toEqual('2nd');
 			});
 		});
 
@@ -92,7 +93,7 @@ describe('TaskService', () => {
 				const task = await em.create(Task, { name: 'roll some dice', course });
 				await em.persistAndFlush([user, course, task]);
 				const result = await service.findAllOpenByStudent(user.id);
-				expect(result.length).toEqual(1);
+				expect(result.total).toEqual(1);
 			});
 
 			it('should not return task of other course', async () => {
@@ -104,7 +105,7 @@ describe('TaskService', () => {
 				const task = await em.create(Task, { name: 'secret task', course });
 				await em.persistAndFlush([user, course, task]);
 				const result = await service.findAllOpenByStudent(user.id);
-				expect(result.length).toEqual(0);
+				expect(result.total).toEqual(0);
 			});
 
 			it('should not return private task of course', async () => {
@@ -116,7 +117,7 @@ describe('TaskService', () => {
 				const task = await em.create(Task, { name: 'secret task', course, private: true });
 				await em.persistAndFlush([user, course, task]);
 				const result = await service.findAllOpenByStudent(user.id);
-				expect(result.length).toEqual(0);
+				expect(result.total).toEqual(0);
 			});
 
 			it('should not return task that has a submission by the user', async () => {
@@ -129,7 +130,7 @@ describe('TaskService', () => {
 				const submission = await em.create(Submission, { homework: task, student: user });
 				await em.persistAndFlush([user, course, submission, task]);
 				const result = await service.findAllOpenByStudent(user.id);
-				expect(result.length).toEqual(0);
+				expect(result.total).toEqual(0);
 			});
 
 			it('should not return task that has a submission by different user', async () => {
@@ -143,7 +144,7 @@ describe('TaskService', () => {
 				const submission = await em.create(Submission, { homework: task, student: otherUser });
 				await em.persistAndFlush([user, otherUser, course, submission, task]);
 				const result = await service.findAllOpenByStudent(user.id);
-				expect(result.length).toEqual(1);
+				expect(result.total).toEqual(1);
 			});
 		});
 
@@ -158,7 +159,7 @@ describe('TaskService', () => {
 				const task = await em.create(Task, { name: 'roll some dice', lesson, course });
 				await em.persistAndFlush([user, course, lesson, task]);
 				const result = await service.findAllOpenByStudent(user.id);
-				expect(result.length).toEqual(1);
+				expect(result.total).toEqual(1);
 			});
 
 			it('should return task if lesson is null', async () => {
@@ -170,7 +171,7 @@ describe('TaskService', () => {
 				const task = await em.create(Task, { name: 'roll some dice', lesson: null, course });
 				await em.persistAndFlush([user, course, task]);
 				const result = await service.findAllOpenByStudent(user.id);
-				expect(result.length).toEqual(1);
+				expect(result.total).toEqual(1);
 			});
 
 			it('should not return task in a lesson of a different course', async () => {
@@ -183,7 +184,7 @@ describe('TaskService', () => {
 				const task = await em.create(Task, { name: 'roll some dice', lesson, course });
 				await em.persistAndFlush([user, course, lesson, task]);
 				const result = await service.findAllOpenByStudent(user.id);
-				expect(result.length).toEqual(0);
+				expect(result.total).toEqual(0);
 			});
 
 			it('should not return task in a hidden lesson', async () => {
@@ -196,7 +197,7 @@ describe('TaskService', () => {
 				const task = await em.create(Task, { name: 'roll some dice', lesson, course });
 				await em.persistAndFlush([user, course, lesson, task]);
 				const result = await service.findAllOpenByStudent(user.id);
-				expect(result.length).toEqual(0);
+				expect(result.total).toEqual(0);
 			});
 
 			it('should not return task in a lesson when hidden is null', async () => {
@@ -209,7 +210,7 @@ describe('TaskService', () => {
 				const task = await em.create(Task, { name: 'roll some dice', lesson, course });
 				await em.persistAndFlush([user, course, lesson, task]);
 				const result = await service.findAllOpenByStudent(user.id);
-				expect(result.length).toEqual(0);
+				expect(result.total).toEqual(0);
 			});
 		});
 	});
