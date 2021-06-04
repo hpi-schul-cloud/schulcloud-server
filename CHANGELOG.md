@@ -11,7 +11,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-9018; SC-9003 - created schoolsList public endpoint, and jwt secured /schools endpoint
 
-## 26.2.0
+## 26.2.1 - 2021-06-02
+
+### Added
+
+- SC-9103 - add logging for syncIndexes script
+
+## 26.2.0 - 2021-06-01
 
 ### Added
 
