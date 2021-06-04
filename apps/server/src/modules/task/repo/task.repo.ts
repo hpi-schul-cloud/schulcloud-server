@@ -55,7 +55,6 @@ export class TaskRepo {
 			};
 		});
 
-		// TODO: pagination or total is missing
 		return {
 			data: mappedTasks,
 			total,
