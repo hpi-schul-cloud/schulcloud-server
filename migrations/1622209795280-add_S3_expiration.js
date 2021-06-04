@@ -1,4 +1,4 @@
-const { alert, error } = require('../src/logger');
+const { alert } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
@@ -14,7 +14,7 @@ const setBucketLifecycleConfiguration = (storageProvider, bucketName) =>
 					{
 						Prefix: 'expiring_',
 						Expiration: {
-							Days: 1,
+							Days: 7,
 						},
 						Status: 'Enabled',
 					},
