@@ -59,6 +59,8 @@ export class TaskRepo {
 		return {
 			data: mappedTasks,
 			total,
+			limit,
+			skip,
 		};
 	}
 }

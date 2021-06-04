@@ -8,7 +8,7 @@ export class PaginationQueryDto {
 	skip: number = 0;
 	@IsInt()
 	@Min(1)
-	@Max(100)
-	@ApiProperty({ description: 'Page limit, defaults to 10.', minimum: 1, maximum: 99 })
-	limit: number = 10;
+	@Max(200)
+	@ApiProperty({ description: 'Page limit, defaults to 100.', minimum: 1, maximum: 200 })
+	limit: number = 100;
 }

@@ -20,10 +20,7 @@ export class TaskController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() paginationQuery: PaginationQueryDto
 	): Promise<PaginationResponse<TaskResponseDto[]>> {
-		const { data, limit, offset: skip, total } = await this.taskUc.findAllOpenForUser(
-			currentUser.userId,
-			paginationQuery
-		);
+		const { data, limit, skip, total } = await this.taskUc.findAllOpenForUser(currentUser.userId, paginationQuery);
 		return new PaginationResponse(data, limit, skip, total);
 	}
 }
