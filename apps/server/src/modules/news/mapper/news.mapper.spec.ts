@@ -12,9 +12,19 @@ import {
 	TeamNews,
 	TeamInfo,
 	NewsTargetModelValue,
+	INewsScope,
+	ICreateNews,
+	IUpdateNews,
 } from '../entity';
 import { NewsMapper } from './news.mapper';
-import { NewsResponse, SchoolInfoResponse, UserInfoResponse } from '../controller/dto';
+import {
+	CreateNewsParams,
+	NewsFilterQuery,
+	NewsResponse,
+	SchoolInfoResponse,
+	UpdateNewsParams,
+	UserInfoResponse,
+} from '../controller/dto';
 
 const createDataInfo = <T extends BaseEntity>(props, Type: { new (props): T }): T => {
 	const id = new ObjectId().toHexString();
@@ -35,6 +45,7 @@ const getTargetModel = (news: News): NewsTargetModelValue => {
 	}
 	throw Error('Unknown news type');
 };
+const date = new Date(2021, 1, 1, 0, 0, 0);
 
 const createNews = <T extends News>(
 	newsProps,
@@ -44,13 +55,12 @@ const createNews = <T extends News>(
 	target: BaseEntity
 ): T => {
 	const newsId = new ObjectId().toHexString();
-	const now = new Date();
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const props: INewsProperties = {
 		id: newsId,
-		displayAt: now,
-		updatedAt: now,
-		createdAt: now,
+		displayAt: date,
+		updatedAt: date,
+		createdAt: date,
 		school: schoolInfo.id,
 		creator: creatorInfo.id,
 		target: target.id,
@@ -84,11 +94,11 @@ const getExpectedNewsResponse = (
 		targetModel: getTargetModel(news),
 		title: newsProps.title,
 		content: newsProps.content,
-		displayAt: news.updatedAt,
+		displayAt: date,
 		school: schoolInfoResponse,
 		creator: creatorResponse,
 		createdAt: news.createdAt,
-		updatedAt: news.displayAt,
+		updatedAt: news.updatedAt,
 		permissions: [],
 	});
 	return expected;
@@ -128,6 +138,84 @@ describe('NewsMapper', () => {
 			const result = NewsMapper.mapToResponse(teamNews);
 			const expected = getExpectedNewsResponse(schoolInfo, creatorInfo, teamNews, newsProps, teamInfo);
 
+			expect(result).toStrictEqual(expected);
+		});
+	});
+	describe('mapNewsScopeToDomain', () => {
+		it('should correctly map news query with target without unpublished to dto', () => {
+			const targetId = new ObjectId().toHexString();
+			const newsFilterQuery = new NewsFilterQuery();
+			Object.assign(newsFilterQuery, {
+				targetModel: NewsTargetModel.School,
+				targetId,
+			});
+			const result = NewsMapper.mapNewsScopeToDomain(newsFilterQuery);
+			const expected: INewsScope = {};
+			Object.assign(expected, {
+				target: {
+					targetModel: newsFilterQuery.targetModel,
+					targetId: newsFilterQuery.targetId,
+				},
+			});
+			expect(result).toStrictEqual(expected);
+		});
+		it('should correctly map news query with unpublished and target to dto', () => {
+			const targetId = new ObjectId().toHexString();
+			const newsFilterQuery = new NewsFilterQuery();
+			Object.assign(newsFilterQuery, {
+				targetModel: NewsTargetModel.School,
+				targetId,
+				unpublished: true,
+			});
+			const result = NewsMapper.mapNewsScopeToDomain(newsFilterQuery);
+			const expected: INewsScope = {};
+			Object.assign(expected, {
+				target: {
+					targetModel: newsFilterQuery.targetModel,
+					targetId: newsFilterQuery.targetId,
+				},
+				unpublished: newsFilterQuery.unpublished,
+			});
+			expect(result).toStrictEqual(expected);
+		});
+	});
+	describe('mapCreateNewsToDomain', () => {
+		it('should correctly map params to dto', () => {
+			const targetId = new ObjectId().toHexString();
+			const targetModel = NewsTargetModel.School;
+			const params: CreateNewsParams = {
+				title: 'test title',
+				body: 'test content',
+				displayAt: date,
+				targetModel,
+				targetId,
+			};
+			const result: ICreateNews = NewsMapper.mapCreateNewsToDomain(params);
+			const expected: ICreateNews = {
+				title: params.title,
+				content: params.body,
+				displayAt: date,
+				target: {
+					targetModel,
+					targetId,
+				},
+			};
+			expect(result).toStrictEqual(expected);
+		});
+	});
+	describe('mapUpdateNewsToDomain', () => {
+		it('should correctly map params to dto', () => {
+			const params: UpdateNewsParams = {
+				title: 'test title',
+				body: 'test content',
+				displayAt: date,
+			};
+			const result: IUpdateNews = NewsMapper.mapUpdateNewsToDomain(params);
+			const expected: IUpdateNews = {
+				title: params.title,
+				content: params.body,
+				displayAt: date,
+			};
 			expect(result).toStrictEqual(expected);
 		});
 	});
