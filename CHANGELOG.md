@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- SC-9018; SC-9003 - created schoolsList public endpoint, and jwt secured /schools endpoint
+
 ## 26.2.1 - 2021-06-02
 
 ### Added
