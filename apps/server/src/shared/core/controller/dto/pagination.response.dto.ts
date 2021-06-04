@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Paginated } from '../../types/paginated';
 
 export class PaginationResponse<T> {
-	constructor(data: T, total: number, limit?: number, skip?: number) {
+	constructor({ data, total, limit, skip }: Paginated<T>) {
 		this.data = data;
 		this.total = total;
 		this.limit = limit;
