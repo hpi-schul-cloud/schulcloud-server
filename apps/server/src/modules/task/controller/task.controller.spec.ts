@@ -3,7 +3,7 @@ import { TaskRepo } from '../repo/task.repo';
 import { TaskUC } from '../uc/task.uc';
 import { TaskController } from './task.controller';
 
-describe.skip('TaskController', () => {
+describe('TaskController', () => {
 	let controller: TaskController;
 
 	beforeEach(async () => {
