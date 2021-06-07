@@ -15,6 +15,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8898 - parallelize LDAP sync using RabbitMQ
 
+## 26.2.2 - 2021-06-04
+
+### Fixed
+
+- Fixed dependencies issue
+
 ## 26.2.1 - 2021-06-02
 
 ### Added
