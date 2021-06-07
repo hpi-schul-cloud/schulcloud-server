@@ -1,6 +1,9 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { ITaskOption, EntityId, Task, ITaskMetadata, Submission, Course, Lesson } from '../entity';
+import { EntityId, Task, ITaskMetadata, Submission, Course, Lesson } from '../entity';
+import { PaginationModel } from '../../../shared/core/repo/index';
+import { QueryOrder } from '@mikro-orm/core';
+import { Paginated } from '../../../shared/core/types/paginated';
 
 @Injectable()
 export class TaskRepo {
@@ -8,7 +11,10 @@ export class TaskRepo {
 
 	// WARNING: this is used to deal with the current datamodel, and needs to be changed.
 	// DO NOT DO THIS AT HOME!!
-	async findAllOpenByStudent(userId: EntityId, { year, limit, skip }: ITaskOption = {}): Promise<ITaskMetadata[]> {
+	async findAllOpenByStudent(
+		userId: EntityId,
+		{ limit, skip }: PaginationModel = {}
+	): Promise<Paginated<ITaskMetadata[]>> {
 		// todo: handle coursegroups
 		const coursesOfStudent = await this.em.find(Course, {
 			students: userId,
@@ -23,9 +29,9 @@ export class TaskRepo {
 		});
 		const homeworksWithSubmissions = submissionsOfStudent.map((submission) => submission.homework.id);
 
-		const twoWeeksAgo = new Date();
+    const twoWeeksAgo = new Date();
 		twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-		const usersTasks = await this.em.find(
+		const [usersTasks, total] = await this.em.findAndCount(
 			Task,
 			{
 				$and: [
@@ -36,7 +42,7 @@ export class TaskRepo {
 					{ $or: [{ dueDate: { $gte: twoWeeksAgo } }, { dueDate: null }] },
 				],
 			},
-			['course']
+			{ populate: ['course'], limit, offset: skip, orderBy: { dueDate: QueryOrder.ASC } }
 		);
 
 		const mappedTasks = usersTasks.map((task) => {
@@ -52,7 +58,11 @@ export class TaskRepo {
 			};
 		});
 
-		// TODO: pagination or total is missing
-		return mappedTasks;
+		return {
+			data: mappedTasks,
+			total,
+			limit,
+			skip,
+		};
 	}
 }
