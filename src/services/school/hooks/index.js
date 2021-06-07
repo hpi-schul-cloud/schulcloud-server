@@ -276,11 +276,10 @@ const validateCounty = async (context) => {
 };
 
 exports.before = {
-	all: [globalHooks.authenticateWhenJWTExist],
+	all: [authenticate('jwt')],
 	find: [],
 	get: [],
 	create: [
-		authenticate('jwt'),
 		globalHooks.hasPermission('SCHOOL_CREATE'),
 		setDefaultFileStorageType,
 		setCurrentYearIfMissing,
@@ -288,7 +287,6 @@ exports.before = {
 		validateCounty,
 	],
 	update: [
-		authenticate('jwt'),
 		globalHooks.hasPermission('SCHOOL_EDIT'),
 		globalHooks.ifNotLocal(globalHooks.lookupSchool),
 		globalHooks.ifNotLocal(restrictToUserSchool),
@@ -296,7 +294,6 @@ exports.before = {
 		validateCounty,
 	],
 	patch: [
-		authenticate('jwt'),
 		globalHooks.ifNotLocal(hasEditPermissions),
 		globalHooks.ifNotLocal(globalHooks.lookupSchool),
 		globalHooks.ifNotLocal(restrictToUserSchool),

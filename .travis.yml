@@ -4,20 +4,18 @@ node_js: 'lts/*'
 
 services:
   - docker
+  - rabbitmq
 
 branches:
   only:
     - develop
-    - master    
-    - /^(release).*$/
-    # OPS-1664 naming convention <branch>/<JIRA-Ticket ID>-<Jira_Summary>
-    - /^(feature\/[A-Z]+-[0-9]+-[a-zA-Z0-9_]+)$/
+    - master
+    - /^(release|dependabot|hotfix|feature)\/.*$/
 
 stages:
   - name: test
-    if: NOT NOT ( (commit_message =~ /(skip-test-stage)/ ) OR branch = master OR branch = develop OR branch = /^(feature).*$/ AND "$TRAVIS_PULL_REQUEST" != "false" )
   - name: deploy
-    if: NOT (commit_message =~ /(skip-deploy-stage)/)
+
 jobs:
   include:
     - stage: test

@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "26.2.0",
+	"version": "26.3.0",
 	"homepage": "https://hpi-schul-cloud.de/",
 	"main": "src/",
 	"keywords": [
@@ -85,7 +85,7 @@
 		"file-type": "^16.2.0",
 		"freeport": "^1.0.5",
 		"html-entities": "^2.1.0",
-		"jose": "^1.22.2",
+		"jose": "^1.28.1",
 		"jsonwebtoken": "8.5.1",
 		"ldapjs": "git+https://github.com/hpi-schul-cloud/node-ldapjs.git",
 		"lodash": "^4.17.19",
@@ -100,7 +100,7 @@
 		"mongoose-lean-virtuals": "^0.8.0",
 		"mongoose-shortid-nodeps": "git+https://github.com/leeroybrun/mongoose-shortid-nodeps.git",
 		"moodle-client": "^0.5.2",
-		"nanoid": "^2.0.3",
+		"nanoid": "^3.1.20",
 		"oauth-1.0a": "^2.2.6",
 		"papaparse": "^5.1.1",
 		"prom-client": "^12.0.0",
@@ -125,7 +125,7 @@
 	},
 	"devDependencies": {
 		"@istanbuljs/nyc-config-typescript": "^1.0.1",
-		"@types/express-serve-static-core": "4.17.20",
+		"@types/express-serve-static-core": "^4.17.21",
 		"@types/mocha": "^8.0.3",
 		"@typescript-eslint/eslint-plugin": "^4.5.0",
 		"@typescript-eslint/parser": "^4.5.0",
