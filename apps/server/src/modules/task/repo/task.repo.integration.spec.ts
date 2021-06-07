@@ -112,7 +112,7 @@ describe('TaskService', () => {
 				expect(result.length).toEqual(1);
 			});
 
-			it('should filter tasks that are more than two weeks overdue', async () => {
+			it('should filter tasks that are more than one week overdue', async () => {
 				const service = module.get<TaskRepo>(TaskRepo);
 				const em = module.get<EntityManager>(EntityManager);
 
