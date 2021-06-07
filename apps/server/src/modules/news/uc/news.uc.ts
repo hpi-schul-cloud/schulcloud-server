@@ -3,9 +3,8 @@ import { EntityId, IPagination } from '@shared/domain';
 import { Counted } from '@shared/types';
 import { AuthorizationService } from '../../authorization/authorization.service';
 import { Logger } from '../../../core/logger/logger.service';
-import { News, NewsTargetModel, NewsTargetModelValue } from '../entity';
+import { News, NewsTargetModel, NewsTargetModelValue, ICreateNews, INewsScope, IUpdateNews } from '../entity';
 import { NewsRepo } from '../repo/news.repo';
-import { ICreateNews, INewsScope, IUpdateNews } from '../entity/news.types';
 import { NewsTargetFilter } from '../repo/news-target-filter';
 
 type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
@@ -54,7 +53,7 @@ export class NewsUc {
 		this.logger.log(`start find all news for user ${userId}`);
 
 		const unpublished = !!scope?.unpublished;
-		const permissions: [Permission] = NewsUc.getRequiredPermissions(unpublished);
+		const permissions: Permission[] = NewsUc.getRequiredPermissions(unpublished);
 
 		const targets = await this.getPermittedTargets(userId, scope, permissions);
 		const [newsList, newsCount] = await this.newsRepo.findAll(targets, unpublished, pagination);
@@ -106,9 +105,11 @@ export class NewsUc {
 		const news = await this.newsRepo.findOneById(id);
 		await this.authorizationService.checkEntityPermissions(userId, news.targetModel, news.target.id, ['NEWS_EDIT']);
 
-		// TODO find better way to update entity
-		if (params.title) {
-			news.title = params.title;
+		// eslint-disable-next-line no-restricted-syntax
+		for (const [key, value] of Object.entries(params)) {
+			if (value) {
+				news[key] = value;
+			}
 		}
 
 		await this.newsRepo.save(news);

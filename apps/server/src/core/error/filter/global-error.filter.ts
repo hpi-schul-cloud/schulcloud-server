@@ -2,6 +2,7 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErr
 import * as _ from 'lodash';
 import { Response } from 'express';
 import { BusinessError } from '@shared/error/business.error';
+import { ApiValidationError } from '@shared/error/api-validation.error';
 import { Logger } from '../../logger/logger.service';
 import { ErrorResponse } from '../dto/error.response';
 import { FeathersError } from '../interface';
@@ -81,12 +82,20 @@ const createErrorResponse = (error: any, logger: Logger): ErrorResponse => {
 	}
 };
 
+const writeValidationErrors = (error: ApiValidationError, logger: Logger) => {
+	const errorMsg = error.validationErrors.map((e) => `Wrong property ${e.property} : ${JSON.stringify(e.constraints)}`);
+	logger.error(errorMsg, error.stack);
+};
+
 const writeErrorLog = (error: any, logger: Logger): void => {
 	if (error instanceof Error) {
 		if (isFeathersError(error)) {
 			logger.error(error, error.stack, 'Feathers Error');
 		} else if (isBusinessError(error)) {
 			logger.error(error, error.stack, 'Business Error');
+			if (error instanceof ApiValidationError) {
+				writeValidationErrors(error, logger);
+			}
 		} else if (isTechnicalError(error)) {
 			logger.error(error, error.stack, 'Technical Error');
 		} else {

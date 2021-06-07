@@ -16,6 +16,7 @@ import { ICurrentUser } from '../../../src/modules/authentication/interface/jwt-
 import { News, NewsTargetModel, NewsTargetModelValue } from '../../../src/modules/news/entity';
 import { CreateNewsParams, NewsResponse, UpdateNewsParams } from '../../../src/modules/news/controller/dto';
 import { AuthorizationService } from '../../../src/modules/authorization/authorization.service';
+import { API_VALIDATION_ERROR_TYPE } from '../../../src/core/error/server-error-types';
 
 jest.setTimeout(30000);
 
@@ -156,7 +157,7 @@ describe('News Controller (e2e)', () => {
 		});
 	});
 
-	describe('POST /news', () => {
+	describe('POST /news/{id}', () => {
 		it('should create news by input params', async () => {
 			const courseId = new ObjectId().toString();
 
@@ -174,35 +175,60 @@ describe('News Controller (e2e)', () => {
 			expect(body.id).toBeDefined();
 			expect(body.title).toBe(params.title);
 			expect(body.targetId).toBe(params.targetId);
+			expect(body.displayAt).toBe(params.displayAt.toISOString());
+		});
+		it('should throw ApiValidationError if input parameters dont match the required schema', async () => {
+			const params = new CreateNewsParams();
+			const res = await request(app.getHttpServer()).post(`/news`).send(params).expect(400);
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			expect(res.body.type).toBe(API_VALIDATION_ERROR_TYPE.type);
 		});
 	});
 
-	/*
-	TODO:
- describe('PATCH /news', () => {
- 	it('should update news by update params', async () => {
- 		const news = await createTestNews(NewsTargetModel.Course, courseTargetId);
+	describe('PATCH /news/{id}', () => {
+		it('should update news by update params', async () => {
+			const news = await createTestNews(NewsTargetModel.Course, courseTargetId);
 
- 		const courseId = new ObjectId().toString();
+			const params = {
+				title: 'updated test news',
+				body: 'new content',
+				displayAt: new Date(),
+			} as UpdateNewsParams;
 
- 		const params = new UpdateNewsParams();
- 		Object.assign(params, {
- 			title: 'test course news',
- 			body: 'content',
- 			targetModel: NewsTargetModel.Course,
- 			targetId: courseId,
- 			displayAt: new Date(),
- 		});
+			const response = await request(app.getHttpServer())
+				.patch(`/news/${news._id.toHexString()}`)
+				.send(params)
+				.expect(200);
+			const body = response.body as NewsResponse;
+			expect(body.id).toBe(news._id.toHexString());
+			expect(body.title).toBe(params.title);
+			expect(body.content).toBe(params.body);
+			if (params.displayAt) {
+				expect(body.displayAt).toBe(params.displayAt.toISOString());
+			}
+		});
 
- 		const response = await request(app.getHttpServer())
- 			.patch(`/news/${news._id.toHexString()}`)
- 			.send(params)
- 			.expect(201);
- 		const body = response.body as NewsResponse;
- 		expect(body.id).toBeDefined();
- 		expect(body.title).toBe(params.title);
- 		expect(body.targetId).toBe(params.targetId);
- 	});
-	 });
-	 */
+		it('should throw an error if trying to update of object which doesnt exists', async () => {
+			const notExistedNews = new ObjectId().toHexString();
+			const params = new UpdateNewsParams();
+			Object.assign(params, {
+				title: 'updated test news',
+				body: 'new content',
+				targetModel: NewsTargetModel.Team,
+			});
+			await request(app.getHttpServer()).patch(`/news/${notExistedNews}`).send(params).expect(404);
+		});
+	});
+	describe('DELETE /news/{id}', () => {
+		it('should delete news', async () => {
+			const news = await createTestNews(NewsTargetModel.Course, courseTargetId);
+			const newsId = news._id.toHexString();
+			await request(app.getHttpServer()).delete(`/news/${newsId}`).expect(200).expect(newsId);
+		});
+
+		it('should throw not found error, if news doesnt exists', async () => {
+			const newsId = new ObjectId().toHexString();
+			await request(app.getHttpServer()).delete(`/news/${newsId}`).expect(404);
+		});
+	});
 });
