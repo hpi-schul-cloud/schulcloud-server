@@ -9,7 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Added
+
 - SC-9018; SC-9003 - created schoolsList public endpoint, and jwt secured /schools endpoint
+- SC-9092 - delete S3 files after 7 days from user deletion
 
 ## [26.3.0] - 2021-06-07
 
