@@ -111,6 +111,27 @@ describe('TaskService', () => {
 				const result = await service.findAllOpenByStudent(user.id);
 				expect(result.length).toEqual(1);
 			});
+
+			it('should filter tasks that are more than two weeks overdue', async () => {
+				const service = module.get<TaskRepo>(TaskRepo);
+				const em = module.get<EntityManager>(EntityManager);
+
+				const user = await em.create(UserInfo, { firstName: 'test', lastName: 'student' });
+				const course = await em.create(Course, { name: 'testCourse', students: [user] });
+
+				const threeWeeksinMilliseconds = 1.814e9;
+				const tasks = await Promise.all([
+					em.create(Task, {
+						name: 'should have done this some time ago',
+						course,
+						dueDate: new Date(Date.now() - threeWeeksinMilliseconds),
+					}),
+					em.create(Task, { name: 'should have done this recently', course }),
+				]);
+				await em.persistAndFlush([user, course, ...tasks]);
+				const result = await service.findAllOpenByStudent(user.id);
+				expect(result.length).toEqual(1);
+			});
 		});
 
 		describe('open tasks in lessons', () => {

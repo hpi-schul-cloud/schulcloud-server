@@ -23,6 +23,8 @@ export class TaskRepo {
 		});
 		const homeworksWithSubmissions = submissionsOfStudent.map((submission) => submission.homework.id);
 
+		const twoWeeksAgo = new Date();
+		twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
 		const usersTasks = await this.em.find(
 			Task,
 			{
@@ -31,6 +33,7 @@ export class TaskRepo {
 					{ private: { $ne: true } },
 					{ course: { $in: coursesOfStudent } },
 					{ $or: [{ lesson: null }, { lesson: { $in: lessonsOfStudent } }] },
+					{ $or: [{ dueDate: { $gte: twoWeeksAgo } }, { dueDate: null }] },
 				],
 			},
 			['course']
