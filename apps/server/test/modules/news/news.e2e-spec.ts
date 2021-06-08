@@ -8,14 +8,14 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain';
 import * as moment from 'moment';
 import { PaginationResponse } from '@shared/controller/dto/pagination.response';
-import { ServerModule } from '../../../src/server.module';
-import { JwtAuthGuard } from '../../../src/modules/authentication/guard/jwt-auth.guard';
-import { ICurrentUser } from '../../../src/modules/authentication/interface/jwt-payload';
+import { ServerModule } from '@src/server.module';
+import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
+import { ICurrentUser } from '@src/modules/authentication/interface/jwt-payload';
 
+import { AuthorizationService } from '@src/modules/authorization/authorization.service';
+import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
 import { News, NewsTargetModel, NewsTargetModelValue } from '../../../src/modules/news/entity';
 import { CreateNewsParams, NewsResponse, UpdateNewsParams } from '../../../src/modules/news/controller/dto';
-import { AuthorizationService } from '../../../src/modules/authorization/authorization.service';
-import { API_VALIDATION_ERROR_TYPE } from '../../../src/core/error/server-error-types';
 
 jest.setTimeout(30000);
 

@@ -14,10 +14,10 @@ import {
 	SchoolNews,
 	TeamNews,
 	UserInfo,
+	CourseInfo,
+	TeamInfo,
 } from '../entity';
 import { NewsRepo } from './news.repo';
-import { CourseInfo } from '../entity/course-info.entity';
-import { TeamInfo } from '../entity/team-info.entity';
 
 describe('NewsService', () => {
 	let repo: NewsRepo;

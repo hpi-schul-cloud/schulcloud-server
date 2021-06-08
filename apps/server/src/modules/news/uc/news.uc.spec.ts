@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { LoggerModule } from '@src/core/logger/logger.module';
 import { ICreateNews } from '../entity/news.types';
 
 import { AuthorizationService } from '../../authorization/authorization.service';
-import { LoggerModule } from '../../../core/logger/logger.module';
 import { NewsRepo } from '../repo/news.repo';
 import { NewsUc } from './news.uc';
 import { NewsTargetModel } from '../entity';
