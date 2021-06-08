@@ -1,0 +1,11 @@
+name: manual tavis trigger
+
+on: [push, workflow_dispatch]
+
+jobs:
+  workflow-trigger-travis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: run git change
+        uses: "travis-ci/actions@master"
+        secrets: "CI_USER_TOKEN"
