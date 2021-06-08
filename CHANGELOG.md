@@ -10,6 +10,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 - SC-9018; SC-9003 - created schoolsList public endpoint, and jwt secured /schools endpoint
+- SC-9093 - make configured default language and timezone available in config service
 
 ## 26.2.1 - 2021-06-02
 
