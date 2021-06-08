@@ -90,6 +90,7 @@ const getExpectedNewsResponse = (
 	Object.assign(expected, {
 		id: news.id,
 		source: undefined,
+		sourceDescription: undefined,
 		targetId: target.id,
 		targetModel: getTargetModel(news),
 		title: newsProps.title,
@@ -185,7 +186,7 @@ describe('NewsMapper', () => {
 			const targetModel = NewsTargetModel.School;
 			const params: CreateNewsParams = {
 				title: 'test title',
-				body: 'test content',
+				content: 'test content',
 				displayAt: date,
 				targetModel,
 				targetId,
@@ -193,7 +194,7 @@ describe('NewsMapper', () => {
 			const result: ICreateNews = NewsMapper.mapCreateNewsToDomain(params);
 			const expected: ICreateNews = {
 				title: params.title,
-				content: params.body,
+				content: params.content,
 				displayAt: date,
 				target: {
 					targetModel,
@@ -207,13 +208,13 @@ describe('NewsMapper', () => {
 		it('should correctly map params to dto', () => {
 			const params: UpdateNewsParams = {
 				title: 'test title',
-				body: 'test content',
+				content: 'test content',
 				displayAt: date,
 			};
 			const result: IUpdateNews = NewsMapper.mapUpdateNewsToDomain(params);
 			const expected: IUpdateNews = {
 				title: params.title,
-				content: params.body,
+				content: params.content,
 				displayAt: date,
 			};
 			expect(result).toStrictEqual(expected);
