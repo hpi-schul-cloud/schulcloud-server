@@ -31,7 +31,7 @@ export class TaskRepo {
 
 		const oneWeekAgo = new Date();
 		oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-		const usersTasks = await this.em.find(
+		const [usersTasks, total] = await this.em.findAndCount(
 			Task,
 			{
 				$and: [

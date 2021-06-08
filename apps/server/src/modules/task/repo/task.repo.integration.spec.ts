@@ -165,7 +165,7 @@ describe('TaskService', () => {
 				]);
 				await em.persistAndFlush([user, course, ...tasks]);
 				const result = await service.findAllOpenByStudent(user.id);
-				expect(result.length).toEqual(1);
+				expect(result.total).toEqual(1);
 			});
 		});
 
