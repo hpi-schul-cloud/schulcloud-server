@@ -11,6 +11,7 @@ export class NewsMapper {
 		dto.content = news.content;
 		dto.displayAt = news.displayAt;
 		dto.source = news.source;
+		dto.sourceDescription = news.sourceDescription;
 		dto.targetId = news.target?.id;
 		dto.targetModel = news.targetModel;
 		dto.school = SchoolInfoMapper.mapToResponse(news.school);
@@ -41,7 +42,7 @@ export class NewsMapper {
 	static mapCreateNewsToDomain(params: CreateNewsParams): ICreateNews {
 		const dto = {
 			title: params.title,
-			content: params.body,
+			content: params.content,
 			displayAt: params.displayAt,
 			target: {
 				targetModel: params.targetModel as NewsTargetModelValue,
@@ -54,7 +55,7 @@ export class NewsMapper {
 	static mapUpdateNewsToDomain(params: UpdateNewsParams): IUpdateNews {
 		const dto = {
 			title: params.title,
-			content: params.body,
+			content: params.content,
 			displayAt: params.displayAt,
 		};
 		return dto;

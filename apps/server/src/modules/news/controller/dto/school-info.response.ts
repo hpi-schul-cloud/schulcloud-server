@@ -1,10 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
 
 export class SchoolInfoResponse {
-	@ApiProperty({ pattern: '[a-f0-9]{24}' })
+	@ApiProperty({
+		pattern: '[a-f0-9]{24}',
+		description: 'The id of the School entity',
+	})
 	id: string;
 
-	@ApiProperty()
+	@ApiProperty({
+		description: 'The name of the School entity',
+	})
 	name: string;
 }
