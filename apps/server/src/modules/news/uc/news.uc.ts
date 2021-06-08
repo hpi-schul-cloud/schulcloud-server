@@ -52,8 +52,8 @@ export class NewsUc {
 	async findAllForUser(userId: EntityId, scope?: INewsScope, pagination?: IPagination): Promise<Counted<News[]>> {
 		this.logger.log(`start find all news for user ${userId}`);
 
-		const unpublished = !!scope?.unpublished;
-		const permissions: Permission[] = NewsUc.getRequiredPermissions(unpublished);
+		const unpublished = !!scope?.unpublished; // default is only published news
+		const permissions: [Permission] = NewsUc.getRequiredPermissions(unpublished);
 
 		const targets = await this.getPermittedTargets(userId, scope, permissions);
 		const [newsList, newsCount] = await this.newsRepo.findAll(targets, unpublished, pagination);
