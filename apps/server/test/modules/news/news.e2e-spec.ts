@@ -5,7 +5,6 @@ import * as request from 'supertest';
 import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import { EntityId } from '@shared/domain';
 import * as moment from 'moment';
 import { PaginationResponse } from '@shared/controller/dto/pagination.response';
@@ -23,7 +22,6 @@ jest.setTimeout(30000);
 describe('News Controller (e2e)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
-	let mongod: MongoMemoryServer;
 	let em: EntityManager;
 	const user: ICurrentUser = {
 		userId: '0000d224816abba584714c9c',
@@ -45,7 +43,6 @@ describe('News Controller (e2e)', () => {
 		},
 	];
 	beforeAll(async () => {
-		mongod = new MongoMemoryServer();
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerModule],
 		})
@@ -69,9 +66,7 @@ describe('News Controller (e2e)', () => {
 				},
 			})
 			.compile();
-		// const legacyApp = await legacyAppPromise;
-		// const adapter = new ExpressAdapter(legacyApp);
-		// legacyApp.setup();
+
 		app = module.createNestApplication();
 		await app.init();
 		orm = module.get<MikroORM>(MikroORM);
@@ -161,14 +156,13 @@ describe('News Controller (e2e)', () => {
 		it('should create news by input params', async () => {
 			const courseId = new ObjectId().toString();
 
-			const params = new CreateNewsParams();
-			Object.assign(params, {
+			const params = {
 				title: 'test course news',
 				body: 'content',
 				targetModel: NewsTargetModel.Course,
 				targetId: courseId,
 				displayAt: new Date(),
-			});
+			} as CreateNewsParams;
 
 			const response = await request(app.getHttpServer()).post(`/news`).send(params).expect(201);
 			const body = response.body as NewsResponse;
@@ -203,19 +197,18 @@ describe('News Controller (e2e)', () => {
 			expect(body.id).toBe(news._id.toHexString());
 			expect(body.title).toBe(params.title);
 			expect(body.content).toBe(params.body);
-			if (params.displayAt) {
-				expect(body.displayAt).toBe(params.displayAt.toISOString());
-			}
+			expect(body.displayAt).toBe(params.displayAt.toISOString());
+		});
+
+		it('should do nothing if path an empty object for update', async () => {
+			const news = await createTestNews(NewsTargetModel.Course, courseTargetId);
+			const params = {} as UpdateNewsParams;
+			await request(app.getHttpServer()).patch(`/news/${news._id.toString()}`).send(params).expect(200);
 		});
 
 		it('should throw an error if trying to update of object which doesnt exists', async () => {
 			const notExistedNews = new ObjectId().toHexString();
-			const params = new UpdateNewsParams();
-			Object.assign(params, {
-				title: 'updated test news',
-				body: 'new content',
-				targetModel: NewsTargetModel.Team,
-			});
+			const params = {} as UpdateNewsParams;
 			await request(app.getHttpServer()).patch(`/news/${notExistedNews}`).send(params).expect(404);
 		});
 	});

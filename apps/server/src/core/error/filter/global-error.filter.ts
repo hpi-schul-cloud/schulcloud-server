@@ -83,7 +83,10 @@ const createErrorResponse = (error: any, logger: Logger): ErrorResponse => {
 };
 
 const writeValidationErrors = (error: ApiValidationError, logger: Logger) => {
-	const errorMsg = error.validationErrors.map((e) => `Wrong property ${e.property} : ${JSON.stringify(e.constraints)}`);
+	const errorMsg = error.validationErrors.map(
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		(e) => `Wrong property ${e.property} got ${e.value} : ${JSON.stringify(e.constraints)}`
+	);
 	logger.error(errorMsg, error.stack);
 };
 
