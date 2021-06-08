@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { ServerModule } from './../src/server.module';
+import { ServerModule } from '@src/server.module';
 
 describe('ServerController (e2e)', () => {
 	let app: INestApplication;
@@ -13,6 +13,10 @@ describe('ServerController (e2e)', () => {
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
+	});
+
+	afterEach(async () => {
+		await app.close();
 	});
 
 	it('/ (GET)', () => {

@@ -6,10 +6,9 @@ This application extends the existing server-application based on feathers and e
 
 Beside existing [scripts](/), for the nestJS application the following scripts have been added. Try not changing the scripts as they should match what NestJS defines by default. Execute `npm run ...`
 
-- `nest:prebuild` prebuild nest ressources
+- `nest:prebuild` remove existing data from previous build
 - `nest:build` compile the applications typescript ressources from apps/server to dist folder, keeps legacy js-code where it is
 - `nest:build:all` currently executes `nest:build`, could additionaly build static assets
-- `nest:clean` removes the dist folder
 - `nest:doc:serve` builds code documentation and module relations into /documentation folder and serves it on port :8080
 - `nest:start` starts the nest application // TODO how?
 - `nest:start:dev` run application without build from sources in dev-mode with hot-reload
@@ -18,8 +17,7 @@ Beside existing [scripts](/), for the nestJS application the following scripts h
 
 # How to statically check the code
 
-- `nest:format` run prettier to fix formatting issues
-- `nest:lint` run eslint to fix linter issues
+- `nest:lint` run eslint to fix linter issues and apply formatting
 
 # How to test the application?
 
@@ -33,10 +31,9 @@ Beside existing [scripts](/), for the nestJS application the following scripts h
 
 The documentation is provided by compodoc, run `npm run nest:dev:serve`, check generated compodoc features, custom information can be found in additional information section. Your console will tell you, where it is served.
 
-## Content of apps/server/doc
+## Content
 
-- Naming Conventions
-- Application Layers
+For further reading, browse `apps/server/doc`.
 
 ## Development
 

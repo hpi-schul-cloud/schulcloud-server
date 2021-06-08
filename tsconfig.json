@@ -6,12 +6,23 @@
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"allowSyntheticDefaultImports": true,
+		"strictBindCallApply": true,
+		"strictFunctionTypes": true,
+		"strictNullChecks": true,
+		"strictPropertyInitialization": false,
+		"noImplicitAny": false,
 		"target": "es2017",
+		"lib": [
+			"es2019.array"
+		],
 		"sourceMap": true,
 		"outDir": "./dist",
 		"baseUrl": "./",
 		"incremental": true,
 		"allowJs": true,
-		"paths": {}
+		"paths": {
+			"@shared/*": ["apps/server/src/shared/*"],
+			"@src/*": ["apps/server/src/*"]
+		}
 	}
 }

@@ -14,5 +14,5 @@
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"javascript.preferences.importModuleSpecifier": "relative",
-	"typescript.preferences.importModuleSpecifier": "relative"
+	"jest.autoRun": { "watch": false, "onSave": "test-file" }
 }
