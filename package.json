@@ -21,7 +21,7 @@
 		"lint-fix": "eslint . --fix --ignore-path .gitignore",
 		"lint": "eslint . --ignore-path .gitignore",
 		"seed": "node ./backup.js -p setup/ -D schulcloud-test import",
-		"test": "cross-env NODE_ENV=test npm run seed && npm run coverage && npm run nest:test && npm run nest:test:e2e",
+		"test": "cross-env NODE_ENV=test npm run seed && npm run coverage && npm run nest:test",
 		"test-inspect": "cross-env NODE_ENV=test npm run seed && npm run mocha-inspect",
 		"backup": "node ./backup.js -b export",
 		"setup": "node ./backup.js -p setup/ import",
@@ -56,7 +56,8 @@
 		"nest:test:watch": "jest --watch",
 		"nest:test:cov": "jest --coverage",
 		"nest:test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-		"nest:test:e2e": "jest --config ./apps/server/test/jest-e2e.config.ts",
+		"nest:test:spec": "jest \"\\.spec\\.ts$\"",
+		"nest:test:e2e": "jest \"\\.e2e-spec\\.ts$\"",
 		"syncIndexes": "node ./scripts/syncIndexes.js"
 	},
 	"dependencies": {

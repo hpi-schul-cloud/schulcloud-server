@@ -8,7 +8,8 @@ const { compilerOptions } = require('./tsconfig.json');
 const config: Config.InitialOptions = {
 	moduleFileExtensions: ['js', 'json', 'ts'],
 	rootDir: '.',
-	testRegex: '\\.spec\\.ts$',
+	/* we have tests in src/...*.spec.ts and test/...*.e2e-spec.ts either we test all files via `npm run nest:test` or override the regex in npm scripts to separate the execution via `npm run nest:test:spec` or `npm run nest:test:e2e` */
+	testRegex: '\\.(e2e-)?spec\\.ts$',
 	// ignore legacy mocha tests
 	testPathIgnorePatterns: ['^src', '^test'],
 	transform: {
@@ -23,6 +24,7 @@ const config: Config.InitialOptions = {
 	moduleNameMapper: {
 		// add ts-config path's here as regex
 		'^@shared/(.*)$': '<rootDir>/apps/server/src/shared/$1',
+		'^@src/(.*)$': '<rootDir>/apps/server/src/$1',
 	},
 };
 export default config;
