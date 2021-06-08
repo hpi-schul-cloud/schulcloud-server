@@ -1,6 +1,6 @@
 const ran = true;
 const name = 'Add shareToken to lessons in shared courses';
-const nanoid = require('nanoid');
+const { nanoid } = require('nanoid');
 
 const database = require('../../src/utils/database');
 const { LessonModel } = require('../../src/services/lesson/model');
