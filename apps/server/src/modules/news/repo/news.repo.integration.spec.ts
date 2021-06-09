@@ -151,8 +151,8 @@ describe('NewsService', () => {
 
 	describe('findOneById', () => {
 		it('should find a news entity by id', async () => {
-			const courseId = new ObjectId().toString();
-			const news = await createTestNews(schoolId, NewsTargetModel.Course, courseId);
+			const teamId = new ObjectId().toString();
+			const news = await createTestNews(schoolId, NewsTargetModel.Team, teamId);
 			const result = await repo.findOneById(news.id);
 			expect(result).toStrictEqual(news);
 		});

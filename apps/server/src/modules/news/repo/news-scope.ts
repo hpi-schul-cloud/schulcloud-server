@@ -7,6 +7,9 @@ export class NewsScope {
 	private _queries: FilterQuery<News>[] = [];
 
 	get query(): FilterQuery<News> {
+		if (this._queries.length === 0) {
+			return EmptyResultQuery;
+		}
 		const query = this._queries.length > 1 ? { $and: this._queries } : this._queries[0];
 		return query;
 	}

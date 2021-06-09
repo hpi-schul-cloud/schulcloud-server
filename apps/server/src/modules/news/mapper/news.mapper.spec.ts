@@ -63,12 +63,14 @@ const createNews = <T extends News>(
 		createdAt: date,
 		school: schoolInfo.id,
 		creator: creatorInfo.id,
+		updater: creatorInfo.id,
 		target: target.id,
 		...newsProps,
 	};
 	const resultNews = new NewsType(props);
 	resultNews.school = schoolInfo;
 	resultNews.creator = creatorInfo;
+	resultNews.updater = creatorInfo;
 	resultNews.target = target;
 	resultNews.targetModel = getTargetModel(resultNews);
 	return resultNews;
@@ -98,6 +100,7 @@ const getExpectedNewsResponse = (
 		displayAt: date,
 		school: schoolInfoResponse,
 		creator: creatorResponse,
+		updater: creatorResponse,
 		createdAt: news.createdAt,
 		updatedAt: news.updatedAt,
 		permissions: [],
