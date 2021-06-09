@@ -20,7 +20,6 @@ jobs:
   include:
     - script:
         - bash ./scripts/unitTest.sh
-        - npm run coverage-codecov
       name: test:mocha
     - script: bash ./scripts/e2eTest.sh
       name: "test:end-to-end"
