@@ -142,6 +142,7 @@ schulcloud.classes             find         {"$or": [{"userIds": 1}, {"teacherId
 // schema.index({ source: 1 });
 // - - - - - - - - - - - - - - - - -
 classSchema.index({ teacherIds: 1 }); // ok or = 1
+classSchema.index({ year: 1, ldapDN: 1 }); // for LDAP sync
 
 classSchema.plugin(mongooseLeanVirtuals);
 
