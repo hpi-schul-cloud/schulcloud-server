@@ -24,6 +24,8 @@ jobs:
       name: test:mocha
     - script: bash ./scripts/e2eTest.sh
       name: "test:end-to-end"
+      install:
+        - echo "skipping install"
       after_failure:
         - cat /home/travis/.npm/_logs/*debug.log
     - stage: deploy
