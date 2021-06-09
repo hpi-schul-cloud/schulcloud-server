@@ -21,7 +21,7 @@ spec:
           subPath: update.sh
           readOnly: true
         command: ['/bin/sh','-c']
-        args: ['./update.sh']
+        args: ['chmode +x /update.sh &&./update.sh']
       volumes:
       - name: script
         configMap:
