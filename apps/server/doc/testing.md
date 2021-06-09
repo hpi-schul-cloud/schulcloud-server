@@ -2,12 +2,15 @@
 
 Automated testing is the essential part of the software development process.
 Our goal is to test each application layer mostly independent of others.
+
+![Testing Hierarchy](../../assets/testing-hierarchy.png)
+
+## Testing Utilities
+
 NestJS:
 - provides default tooling (such as test runner that builds an isolated module/application loader)
 - provides integration with **Jest** and **Supertest** out of the box
 - makes the Nest dependency injection system available in the testing environment for mocking components
-
-## Testing Untilities
 
 The `@nestjs/testing.Test` class provides an execution context that mocks the full Nest runtime, but gives
 hooks that can help to manage class instances, including mocking and overriding.
