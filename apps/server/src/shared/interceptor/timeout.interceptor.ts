@@ -11,6 +11,7 @@ export class TimeoutInterceptor implements NestInterceptor {
 	protected static readonly defaultTimeout = 5000;
 
 	// constructor(private readonly timeoutMs: number = 5000) {}
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
 		return next.handle().pipe(
 			timeout(TimeoutInterceptor.defaultTimeout),
