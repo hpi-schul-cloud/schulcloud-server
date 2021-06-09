@@ -10,7 +10,6 @@ import * as moment from 'moment';
 import { PaginationResponse } from '@shared/controller/dto/pagination.response';
 import { ServerModule } from '@src/server.module';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ICurrentUser } from '@src/modules/authentication/interface/jwt-payload';
 
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
@@ -23,7 +22,7 @@ describe('News Controller (e2e)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
 	let em: EntityManager;
-	const user: ICurrentUser = {
+	const user = {
 		userId: '0000d224816abba584714c9c',
 		roles: [],
 		schoolId: '5f2987e020834114b8efd6f8',
@@ -57,7 +56,6 @@ describe('News Controller (e2e)', () => {
 			.overrideProvider(AuthorizationService)
 			.useValue({
 				checkEntityPermissions() {},
-				// eslint-disable-next-line @typescript-eslint/no-shadow
 				getPermittedEntities(userId, targetModel, permissions) {
 					return targets.filter((target) => target.targetModel === targetModel).flatMap((target) => target.targetIds);
 				},
