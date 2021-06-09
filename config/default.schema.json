@@ -570,6 +570,11 @@
 			"default": 8000,
 			"description": "Default timeout for external requests in milliseconds."
 		},
+		"FEATURE_SYNCER_CONSUMER_ENABLE": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable consumer for queued sync messages"
+		},
 		"LDAP_SYSTEM_SYNCER_POOL_SIZE": {
 			"type": "integer",
 			"minimum": 1,
@@ -581,6 +586,16 @@
 			"minimum": 1,
 			"default": 1,
 			"description": "Determines how many school syncers will be run in parallel (at most) during the LDAP sync."
+		},
+		"SYNC_LOG_LEVEL" : {
+			"type": "string",
+			"default": "error",
+			"description": "Log level for queue based syncers (e.g. LDAP)"
+		},
+		"SYNC_QUEUE_NAME" : {
+			"type": "string",
+			"default": "sync_ldap",
+			"description": "Queue name for sync"
 		},
 		"MEMORY_INTERVAL_TIME": {
 			"type": "integer",

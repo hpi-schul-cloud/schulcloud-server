@@ -12,6 +12,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-9018; SC-9003 - created schoolsList public endpoint, and jwt secured /schools endpoint
 - SC-9093 - make configured default language and timezone available in config service
 
+## [26.3.0] - 2021-06-07
+
+### Changed
+
+- SC-8898 - parallelize LDAP sync using RabbitMQ
+
+## 26.2.2 - 2021-06-04
+
+### Fixed
+
+- Fixed dependencies issue
+
 ## 26.2.1 - 2021-06-02
 
 ### Added
