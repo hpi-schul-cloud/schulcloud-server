@@ -158,7 +158,7 @@ describe('News Controller (e2e)', () => {
 
 			const params = {
 				title: 'test course news',
-				body: 'content',
+				content: 'content',
 				targetModel: NewsTargetModel.Course,
 				targetId: courseId,
 				displayAt: new Date(),
@@ -185,7 +185,7 @@ describe('News Controller (e2e)', () => {
 
 			const params = {
 				title: 'updated test news',
-				body: 'new content',
+				content: 'new content',
 				displayAt: new Date(),
 			} as UpdateNewsParams;
 
@@ -196,7 +196,7 @@ describe('News Controller (e2e)', () => {
 			const body = response.body as NewsResponse;
 			expect(body.id).toBe(news._id.toHexString());
 			expect(body.title).toBe(params.title);
-			expect(body.content).toBe(params.body);
+			expect(body.content).toBe(params.content);
 			expect(body.displayAt).toBe(params.displayAt.toISOString());
 		});
 
