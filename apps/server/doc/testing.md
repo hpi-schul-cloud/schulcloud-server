@@ -1,10 +1,21 @@
 # Testing
 
-Automated testing is the essential part of the software development process.
-Our goal is to test each application layer mostly independent of others.
+Automated testing is the essential part of the software development process. 
+It improves the code quality and ensure that the code operates correctly especially after refactoring. 
 
 ![Testing Hierarchy](../../assets/testing-hierarchy.png)
 
+Our goal is to test each application layer mostly independent of others.
+- **Repo tests** operate on data access layer. 
+  They prove that the database queries are executed correctly. 
+- **Use case tests** operate on logic layer. 
+  They verify the correct implementation of the business requirements.
+- **Mapper tests** operate between logic and service layer.
+  They verify the correct mapping between domain objects and objects delivered to the clients via REST API.
+- **End-to-end tests** operate on all layers of the application. 
+  The testing endpoint is the service layer. These tests verify the availability of the expected endpoints and checks 
+  the expected status codes and the structure of the received objects.
+  
 ## Testing Utilities
 
 NestJS:
@@ -224,9 +235,11 @@ are correctly mounted and available at a specific path.
 ```
 
 #### Clean up
-After Each test delete the created data in test to have a clean database for the next test.
-```Typescript
 
+After Each test delete the created data in test to have a clean database for the next test.
+
+
+```Typescript
 	afterEach(async () => {
 		await em.nativeDelete(News, {});
 	});
@@ -234,6 +247,7 @@ After Each test delete the created data in test to have a clean database for the
 
 #### Post Conditions
 After all tests are executed close the app and orm to release the resources
+
 ```Typescript
 	afterAll(async () => {
 		await app.close();
