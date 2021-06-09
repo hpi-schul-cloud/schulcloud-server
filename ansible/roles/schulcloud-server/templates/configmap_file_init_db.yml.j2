@@ -10,4 +10,4 @@ data:
     git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
     cd /schulcloud-server
     npm ci
-    npm run setup
+    node ./backup.js --url "$DATABASE__URL" -p setup/ import
