@@ -224,7 +224,7 @@ const validateOfficialSchoolNumber = async (context) => {
 			throw new Error(`This school already have an officialSchoolNumber`);
 		}
 		// eg: 'BE-16593' or '16593'
-		const officialSchoolNumberFormat = RegExp('\\D{0,2}-*\\d{5}$');
+		const officialSchoolNumberFormat = RegExp(/\D{0,2}-*\d{5,6}$/);
 		if (!officialSchoolNumberFormat.test(officialSchoolNumber)) {
 			throw new Error(`
 			School number is incorrect.\n The format should be 'AB-12345' or '12345' (without the quotations)
@@ -276,11 +276,10 @@ const validateCounty = async (context) => {
 };
 
 exports.before = {
-	all: [globalHooks.authenticateWhenJWTExist],
+	all: [authenticate('jwt')],
 	find: [],
 	get: [],
 	create: [
-		authenticate('jwt'),
 		globalHooks.hasPermission('SCHOOL_CREATE'),
 		setDefaultFileStorageType,
 		setCurrentYearIfMissing,
@@ -288,7 +287,6 @@ exports.before = {
 		validateCounty,
 	],
 	update: [
-		authenticate('jwt'),
 		globalHooks.hasPermission('SCHOOL_EDIT'),
 		globalHooks.ifNotLocal(globalHooks.lookupSchool),
 		globalHooks.ifNotLocal(restrictToUserSchool),
@@ -296,7 +294,6 @@ exports.before = {
 		validateCounty,
 	],
 	patch: [
-		authenticate('jwt'),
 		globalHooks.ifNotLocal(hasEditPermissions),
 		globalHooks.ifNotLocal(globalHooks.lookupSchool),
 		globalHooks.ifNotLocal(restrictToUserSchool),
