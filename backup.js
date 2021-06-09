@@ -8,14 +8,9 @@ const arg = require('arg');
 const { log } = console;
 const { env } = process;
 const {
-	BASE_PATH = 'backup/',
-	MONGO_HOST = '127.0.0.1',
-	MONGO_PORT = '27017',
+	BASE_PATH = 'backup/'
 	// URL defaults to HOST and PORT from above
-	MONGO_URL,
-	MONGO_DATABASE,
-	MONGO_USERNAME,
-	MONGO_PASSWORD,
+	MONGO_URL
 	// some values are overridden by args
 } = env;
 
@@ -34,15 +29,6 @@ const args = arg(
 
 		'--collection': [String], // collection(s) to import/export
 		'-c': '--collection',
-
-		'--username': String, // Mongo Username
-		'-U': '--username',
-
-		'--password': String, // Mongo Password
-		'-P': '--password',
-
-		'--database': String, // Mongo Database
-		'-D': '--database',
 
 		'--url': String, // Mongo Host String (ex. localhost:27017)
 		'-H': '--url',
@@ -67,10 +53,6 @@ OPTIONS:
 
 	--path (-p)        export path or directory to import from
 	--collection (-c)  collection(s) to import/export, can be used multiple times
-
-	--username (-U)    Mongo Username
-	--password (-P)    Mongo Password
-	--database (-D)    Mongo Database
 	--url (-H)         Mongo Host String (ex. localhost:27017)
 
 	--pretty (-b)      Pretty Print (only on export)
@@ -101,11 +83,8 @@ const CONFIG = {
 		HOST: MONGO_HOST,
 		PORT: MONGO_PORT,
 		get URL() {
-			return MONGO_URL || args['--url'] || `${this.HOST}:${this.PORT}`;
+			return MONGO_URL || args['--url'];
 		},
-		DATABASE: MONGO_DATABASE || args['--database'] || 'schulcloud',
-		USERNAME: MONGO_USERNAME || args['--username'],
-		PASSWORD: MONGO_PASSWORD || args['--password'],
 		get CREDENTIALS_ARGS() {
 			const cmdArgs = [];
 			if (CONFIG.MONGO.USERNAME) {
@@ -175,11 +154,7 @@ const ensureDirectoryExistence = (filePath) => {
 const importCollection = async ({ collection, filePath, drop = true }) => {
 	const cmdArgs = [
 		'mongoimport',
-		'--host',
-		CONFIG.MONGO.URL,
-		'--db',
-		CONFIG.MONGO.DATABASE,
-		...CONFIG.MONGO.CREDENTIALS_ARGS,
+		'"${CONFIG.MONGO.URL}"',
 		'--collection',
 		collection,
 		filePath,
@@ -211,11 +186,7 @@ const importDirectory = async (directoryPath) => {
 const exportCollection = async ({ collection, filePath }) => {
 	const cmdArgs = [
 		'mongoexport',
-		'--host',
-		CONFIG.MONGO.URL,
-		'--db',
-		CONFIG.MONGO.DATABASE,
-		...CONFIG.MONGO.CREDENTIALS_ARGS,
+		'"${CONFIG.MONGO.URL}"',
 		'--collection',
 		collection,
 		'--out',
@@ -234,8 +205,7 @@ const getCollectionsToExport = async () => {
 	if (!collections) {
 		const cmdArgs = [
 			'mongo',
-			`${CONFIG.MONGO.URL}/${CONFIG.MONGO.DATABASE}`,
-			...CONFIG.MONGO.CREDENTIALS_ARGS,
+            '"${CONFIG.MONGO.URL}"',
 			'--quiet',
 			'--eval',
 			'"db.getCollectionNames().join(\\" \\")"',
