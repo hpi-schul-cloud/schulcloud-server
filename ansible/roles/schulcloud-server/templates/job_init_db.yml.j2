@@ -19,7 +19,6 @@ spec:
         - name: script
           mountPath: /update.sh
           subPath: update.sh
-          readOnly: true
         command: ['/bin/sh','-c']
         args: ['chmod +x /update.sh &&./update.sh']
       volumes:
