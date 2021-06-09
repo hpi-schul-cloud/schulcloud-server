@@ -44,7 +44,7 @@ function createErrorResponseForBusinessError(error: BusinessError): ErrorRespons
 	return response;
 }
 
-function createErrorResponseForUnknownError(error?: Error): ErrorResponse {
+function createErrorResponseForUnknownError(error?: unknown): ErrorResponse {
 	const unknownError = new InternalServerErrorException(error);
 	const response = createErrorResponseForHttpException(unknownError);
 	return response;
@@ -57,7 +57,7 @@ function createErrorResponseForFeathersError(error: FeathersError) {
 	return new ErrorResponse(snakeType, startTitle, message, code);
 }
 
-const createErrorResponse = (error: any, logger: Logger): ErrorResponse => {
+const createErrorResponse = (error: unknown, logger: Logger): ErrorResponse => {
 	try {
 		if (error instanceof Error) {
 			if (isFeathersError(error)) {
@@ -90,7 +90,7 @@ const writeValidationErrors = (error: ApiValidationError, logger: Logger) => {
 	logger.error(errorMsg, error.stack);
 };
 
-const writeErrorLog = (error: any, logger: Logger): void => {
+const writeErrorLog = (error: unknown, logger: Logger): void => {
 	if (error instanceof Error) {
 		if (isFeathersError(error)) {
 			logger.error(error, error.stack, 'Feathers Error');
@@ -110,7 +110,7 @@ const writeErrorLog = (error: any, logger: Logger): void => {
 };
 
 @Catch()
-export class GlobalErrorFilter<T = any> implements ExceptionFilter<T> {
+export class GlobalErrorFilter<T = unknown> implements ExceptionFilter<T> {
 	private static readonly logger = new Logger('Error');
 
 	// eslint-disable-next-line class-methods-use-this
