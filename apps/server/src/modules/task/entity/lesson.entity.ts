@@ -1,6 +1,5 @@
 import { BaseEntityWithTimestamps } from '@shared/domain';
-import { Collection, Entity, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
-import { UserInfo } from '../../news/entity';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { Course } from './course.entity';
 
 @Entity({ tableName: 'lessons' })
