@@ -20,7 +20,7 @@ spec:
           mountPath: /update.sh
           subPath: update.sh
         command: ['/bin/sh','-c']
-        args: ['chmod +x /update.sh &&./update.sh']
+        args: ['cp /update.sh /update.run.sh && chmod +x /update.run.sh &&./update.run.sh']
       volumes:
       - name: script
         configMap:
