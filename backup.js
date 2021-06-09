@@ -80,20 +80,8 @@ const CONFIG = {
 		return path.join(this.BASE_PATH, args['--path'] || getTimestamp());
 	},
 	MONGO: {
-		HOST: MONGO_HOST,
-		PORT: MONGO_PORT,
 		get URL() {
-			return MONGO_URL || args['--url'];
-		},
-		get CREDENTIALS_ARGS() {
-			const cmdArgs = [];
-			if (CONFIG.MONGO.USERNAME) {
-				cmdArgs.push('-u', CONFIG.MONGO.USERNAME);
-			}
-			if (CONFIG.MONGO.PASSWORD) {
-				cmdArgs.push('--path', CONFIG.MONGO.PASSWORD);
-			}
-			return cmdArgs;
+			return args['--url'];
 		},
 	},
 };
