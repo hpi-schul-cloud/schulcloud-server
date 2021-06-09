@@ -23,6 +23,19 @@
       namespace: "{{ NAMESPACE }}"
       template: onepassword.yml.j2
     when: ONEPASSWORD is defined and ONEPASSWORD|bool
+    
+  - name: DB Init Configmap File
+    community.kubernetes.k8s:
+      kubeconfig: ~/.kube/config 
+      namespace: "{{ NAMESPACE }}"
+      template: configmap_file_init_db.yml.j2
+    
+  - name: DB Init Job
+    community.kubernetes.k8s:
+      kubeconfig: ~/.kube/config 
+      namespace: "{{ NAMESPACE }}"
+      template: job_init_db.yml.j2
+
       
   - name: Deployment
     community.kubernetes.k8s:

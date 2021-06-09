@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: api-db-init-job
+  labels:
+    app: api
+spec:
+  template:
+    spec:
+      containers:
+      - name: api-db-init
+        image: schulcloud/infra-tools:latest
+        envFrom:
+        - configMapRef:
+            name: api-configmap
+        - secretRef:
+            name: api-secret
+        volumeMounts:
+        - name: script
+          mountPath: /update.sh
+          subPath: update.sh
+          readOnly: true
+        command: ['/bin/sh','-c']
+        args: ['./update.sh']
+      volumes:
+      - name: script
+        configMap:
+          name: api-db-init-file
+          items:
+          - key: update.sh
+            path: update.sh
+      restartPolicy: Never
+  backoffLimit: 4

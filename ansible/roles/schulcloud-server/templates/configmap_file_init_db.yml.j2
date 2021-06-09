@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-db-init-file
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: rocketchat
+data:
+  update.sh: |
+    git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
+    cd /schulcloud-server
+    npm ci
+    npm run setup
