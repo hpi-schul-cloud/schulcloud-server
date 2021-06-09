@@ -1,6 +1,7 @@
 name: manual tavis trigger
 
-on: [push, workflow_dispatch]
+on:
+  workflow_dispatch:
 
 jobs:
   workflow-trigger-travis:

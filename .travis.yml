@@ -15,45 +15,16 @@ branches:
 
 stages:
   - name: test
-    if: NOT NOT ( (commit_message =~ /(skip-test-stage)/ ) OR branch = master OR branch = develop OR branch = /^(feature).*$/ AND "$TRAVIS_PULL_REQUEST" != "false" )
+    if: NOT ( (commit_message =~ /(skip-test-stage)/ ) OR branch = master OR branch = develop OR branch = /^(feature).*$/ AND "$TRAVIS_PULL_REQUEST" != "false" )
   - name: deploy
     if: NOT (commit_message =~ /(skip-deploy-stage)/)
 jobs:
   include:
     - stage: test
+      name: test e2e echo
       script:
-        # - npm audit --audit-level=high
-        - npm test
-        - npm run coverage-codecov
-      name: test:mocha
-      env:
-        - ROCKET_CHAT_URI=http://localhost:5000
-      cache: npm
-      install:
-        - curl https://raw.githubusercontent.com/hpi-schul-cloud/schulcloud-authorization-server/master/docker-compose-test.yml > docker-compose-oauthserver.yml
-        - curl https://raw.githubusercontent.com/hpi-schul-cloud/schulcloud-authorization-server/master/.env.example > .env
-        - sudo docker-compose -f docker-compose-oauthserver.yml up -d
-        - sudo docker pull mongo:4.2
-        - sudo docker run -d -p 27017:27017 mongo:4.2
-        - sudo docker pull minio/minio
-        - sudo docker run -d -p 9090:9000 minio/minio server /data
-        - npm ci
-        - npm i -g wait-on
-        - wait-on tcp:27017 -t 60000
-    - script: curl "https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/master/scripts/ci/fetch.travis.sh" | bash
-      name: "test:end-to-end"
-      env:
-        - DOCKER_COMPOSE_VERSION=1.27.4
-      cache: npm
-      before_install:
-        - sudo rm /usr/local/bin/docker-compose
-        - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-        - chmod +x docker-compose
-        - sudo mv docker-compose /usr/local/bin
-      install:
-        - echo "skipping install"
-      after_failure:
-        - cat /home/travis/.npm/_logs/*debug.log
+        - echo "test e2e"
+        - echo "Line_TWO"
     - stage: build
       if: NOT fork
       script:
