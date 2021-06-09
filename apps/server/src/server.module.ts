@@ -37,6 +37,7 @@ import { TeamInfo } from './modules/news/entity/team-info.entity';
 				Submission,
 			],
 			findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 				return new NotFoundException(`The requested ${entityName}: ${where} has not been found.`);
 			},
 		}),
