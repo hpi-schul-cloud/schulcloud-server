@@ -9,5 +9,7 @@ data:
   update.sh: |
     git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
     cd /schulcloud-server
-    npm ci
-    node ./backup.js --url "$DATABASE__URL" -p setup/ import
+    mongoimport --uri "$DATABASE__URL" --collection users backup/setup/users.json --jsonArray --drop
+    mongoimport --uri "$DATABASE__URL" --collection accounts backup/setup/accounts.json --jsonArray --drop
+    mongoimport --uri "$DATABASE__URL" --collection schools backup/setup/schools.json --jsonArray --drop
+    mongoimport --uri "$DATABASE__URL" --collection roles backup/setup/roles.json --jsonArray --drop
