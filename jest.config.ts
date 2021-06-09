@@ -17,6 +17,16 @@ const config: Config.InitialOptions = {
 	},
 	collectCoverageFrom: ['**/*.(t|j)s'],
 	coverageDirectory: './coverage',
+	coveragePathIgnorePatterns: ['.module.ts$', 'index.ts$', 'spec.ts$'],
+	coverageThreshold: {
+		global: {
+			branches: 80,
+			functions: 80,
+			lines: 80,
+			statements: -5,
+		},
+		// add custom paths: './apps/server/path...': { branches: X, functions: ... }
+	},
 	testEnvironment: 'node',
 	// detectOpenHandles: true,
 	// detectLeaks: true,
