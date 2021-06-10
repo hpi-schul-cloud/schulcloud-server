@@ -184,18 +184,6 @@ The use of a mapper gives us the guarantee, that
     Sample: All school properties are published while only name & id are intended to be published.
 - the API definition is complete
 
-#### Testing
-
-To test the setup behind a controller, use e2e-tests to ensure, use cases and repositories below are correctly mounted and available at a specific path.
-
-> A controller unit test should ensure it responds with the correct data-format and a referenced use-case is called correctly.
-
-> Authentication and response codes can be unit tested.
-
-> Do not test logic (from the business layer or repository) in e2e-tests, this must be done where the logic is defined within of a unit test. A e2e test should only ensure everything is correctly initialized.
-
-> Do not put logic (beside mapping) inside a controller, use the logic layer instead. Mapping can be unit tested.
-
 ### Logic (Domain-) Layer
 
 The domain layer assumes a kind of higher-level policy that everything else relies on ([Source](https://khalilstemmler.com/articles/software-design-architecture/organizing-app-logic/)).
@@ -204,11 +192,6 @@ The domain layer assumes a kind of higher-level policy that everything else reli
 > Specific goals of a repository, like query optimization must not be a transparent part of the repository only.
 
 
-
-#### Testing
-
-Use unit-tests to ensure a use-cases logic matches the given requirements (from a [user-]story). A unit test should cover preconditions, allowed input, the result, and expected exceptions defined by the story, and roughly what happens on malformed input (the execution should stop).
-
 ### Data access Layer
 
 The data access layer consists of repositories. A repository takes care to persist domain entities defined in the business layer. As we use decorators in entities to define how they are persisted, they are used in this layer too. The repository does not need to map entities like in the presentation layer as it maps data from/to an external system into the domain and to be used from/in the business layer.
@@ -216,13 +199,5 @@ The data access layer consists of repositories. A repository takes care to persi
 > It's not the task of the business layer to fit a repository. A respository should give the logic layer the ability to persist/make available what is defined in the logic layer. The domain model must be independent from a repository (See Clean Architecture).
 
 Specific concepts from within of this layer must be hidden for the business layer like database queries, protocol specifics, mapping to data layer. Others like putting multiple persistence rules into transactions is part of the domain layer (while how a transaction is implemented, then is part of the data access layer).
-
-#### Testing
-
-For the data access layer, integration tests can be used to check the repositories base functionality against a database.
-
-For Queries care DRY principle, they should be tested very carefully.
-
-> Use a in-memory database for testing to allow parallel test execution and have isolated execution of tests. A test must define the before and after state of the data set clearly and cleanup the database after execution to the before state. Instead of using predefined data sets, all preconditions should be defined in code through fixtures.
 
 Logic should not be part of a repository, use logic layer instead.

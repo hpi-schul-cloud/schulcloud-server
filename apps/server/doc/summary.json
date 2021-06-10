@@ -20,6 +20,10 @@
 				"file": "cross-cutting-concerns.md"
 			},
 			{
+				"title": "Testing",
+				"file": "testing.md"
+			},
+			{
 				"title": "Decisions",
 				"file": "decisions.md"
 			},
