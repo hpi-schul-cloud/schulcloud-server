@@ -9,6 +9,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- SC-9132 - downgrades openapi validator, which was causing problems 
 - SC-9018; SC-9003 - created schoolsList public endpoint, and jwt secured /schools endpoint
 
 ## [26.3.0] - 2021-06-07

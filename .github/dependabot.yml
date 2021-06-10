@@ -9,6 +9,11 @@ updates:
   open-pull-requests-limit: 99
   versioning-strategy: increase-if-necessary
   rebase-strategy: disabled
+  ignore:
+    # SC-9132
+    - dependency-name: express-openapi-validator
+      versions:
+        - ">=4.7.2"
 - package-ecosystem: docker
   directory: "/"
   schedule:
