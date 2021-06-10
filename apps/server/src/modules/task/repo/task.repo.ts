@@ -1,7 +1,10 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
-import { ITaskOption, Task, ITaskMetadata, Submission, Course, Lesson } from '../entity';
+import { QueryOrder } from '@mikro-orm/core';
+import { PaginationModel } from '@shared/repo';
+import { Counted } from '@shared/types';
+import { Task, Submission, Course, Lesson } from '../entity';
 
 @Injectable()
 export class TaskRepo {
@@ -9,7 +12,7 @@ export class TaskRepo {
 
 	// WARNING: this is used to deal with the current datamodel, and needs to be changed.
 	// DO NOT DO THIS AT HOME!!
-	async findAllOpenByStudent(userId: EntityId, { year, limit, skip }: ITaskOption = {}): Promise<ITaskMetadata[]> {
+	async findAllOpenByStudent(userId: EntityId, { limit, skip }: PaginationModel = {}): Promise<Counted<Task[]>> {
 		// todo: handle coursegroups
 		const coursesOfStudent = await this.em.find(Course, {
 			students: userId,
@@ -24,33 +27,42 @@ export class TaskRepo {
 		});
 		const homeworksWithSubmissions = submissionsOfStudent.map((submission) => submission.homework.id);
 
-		const usersTasks = await this.em.find(
+		const oneWeekAgo = new Date();
+		oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+		const [usersTasks, total] = await this.em.findAndCount(
 			Task,
 			{
+				// TODO task query builder, see NewsScope
 				$and: [
 					{ id: { $nin: homeworksWithSubmissions } },
 					{ private: { $ne: true } },
 					{ course: { $in: coursesOfStudent } },
 					{ $or: [{ lesson: null }, { lesson: { $in: lessonsOfStudent } }] },
+					{ $or: [{ dueDate: { $gte: oneWeekAgo } }, { dueDate: null }] },
 				],
 			},
-			['course']
+			{ populate: ['course'], limit, offset: skip, orderBy: { dueDate: QueryOrder.ASC } }
 		);
 
-		const mappedTasks = usersTasks.map((task) => {
-			return {
-				id: task.id,
-				_id: task._id,
-				name: task.name,
-				duedate: task.dueDate,
-				courseName: task.course?.name,
-				displayColor: task.course?.color,
-				createdAt: task.createdAt,
-				updatedAt: task.updatedAt,
-			} as ITaskMetadata; // TODO does not match ITaskMetadata, remove as...
-		});
+		return [usersTasks, total];
 
-		// TODO: pagination or total is missing
-		return mappedTasks;
+		// TODO move mapping to controller
+		// const mappedTasks = usersTasks.map((task) => {
+		// 	return {
+		// 		id: task.id,
+		// 		_id: task._id,
+		// 		name: task.name,
+		// 		duedate: task.dueDate,
+		// 		courseName: task.course?.name,
+		// 		displayColor: task.course?.color,
+		// 		createdAt: task.createdAt,
+		// 		updatedAt: task.updatedAt,
+		// 	} as ITaskMetadata; // TODO does not match ITaskMetadata, remove as...
+		// });
+
+		// return {
+		// 	data: mappedTasks,
+		// 	total,
+		// };
 	}
 }

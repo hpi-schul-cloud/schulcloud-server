@@ -1,0 +1,2 @@
+    command: ["migrate", "sql", "--yes", "$DSN"]
+    container_name: hydra-host

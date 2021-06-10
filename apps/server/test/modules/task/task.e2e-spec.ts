@@ -41,7 +41,8 @@ describe('Task Controller (e2e)', () => {
 		await orm.close();
 	});
 
-	it('/dashboard (GET)', () => {
-		return request(app.getHttpServer()).get('/task/dashboard').expect(200);
+	it('/ (FIND)', async () => {
+		const response = await request(app.getHttpServer()).get('/task/dashboard');
+		expect(response.status == 200);
 	});
 });
