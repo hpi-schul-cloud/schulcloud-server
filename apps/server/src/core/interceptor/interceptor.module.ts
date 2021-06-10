@@ -16,7 +16,7 @@ import { TimeoutInterceptor } from '../../shared/interceptor/timeout.interceptor
 			useClass: ClassSerializerInterceptor,
 		},
 		{
-			provide: APP_INTERCEPTOR,
+			provide: APP_INTERCEPTOR, // TODO remove (for testing)
 			useClass: TimeoutInterceptor,
 		},
 	],

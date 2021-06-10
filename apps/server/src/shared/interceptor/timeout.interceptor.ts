@@ -8,7 +8,7 @@ import { catchError, timeout } from 'rxjs/operators';
  */
 @Injectable()
 export class TimeoutInterceptor implements NestInterceptor {
-	protected static readonly defaultTimeout = 5000;
+	protected static readonly defaultTimeout = 5000; // todo take from globals
 
 	// constructor(private readonly timeoutMs: number = 5000) {}
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any

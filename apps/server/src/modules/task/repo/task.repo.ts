@@ -47,6 +47,7 @@ export class TaskRepo {
 		return [usersTasks, total];
 
 		// TODO move mapping to controller
+		// TODO how to add additional properties to a task (from course) --> entity
 		// const mappedTasks = usersTasks.map((task) => {
 		// 	return {
 		// 		id: task.id,
