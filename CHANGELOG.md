@@ -11,7 +11,25 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-9004 - Sync env variables between backend and frontend
 
-## 26.2.0
+## [26.3.0] - 2021-06-07
+
+### Changed
+
+- SC-8898 - parallelize LDAP sync using RabbitMQ
+
+## 26.2.2 - 2021-06-04
+
+### Fixed
+
+- Fixed dependencies issue
+
+## 26.2.1 - 2021-06-02
+
+### Added
+
+- SC-9103 - add logging for syncIndexes script
+
+## 26.2.0 - 2021-06-01
 
 ### Added
 

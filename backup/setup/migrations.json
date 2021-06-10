@@ -1007,6 +1007,17 @@
 },
 {
 	"_id": {
+		"$oid": "609410c8f72f685510c02e30"
+	},
+	"state": "up",
+	"name": "LDAPSyncIndices",
+	"createdAt": {
+		"$date": "2021-05-06T15:52:40.923Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "60b74b92d9f0612d2457ba6f"
 	},
 	"state": "up",
