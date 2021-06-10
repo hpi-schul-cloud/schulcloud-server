@@ -7,9 +7,10 @@ metadata:
     app: rocketchat
 data:
   update.sh: |
+    #!/bin/bash
     git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
     cd /schulcloud-server
-    mongoimport --uri "$DATABASE__URL" --collection users backup/setup/users.json --jsonArray --drop
-    mongoimport --uri "$DATABASE__URL" --collection accounts backup/setup/accounts.json --jsonArray --drop
-    mongoimport --uri "$DATABASE__URL" --collection schools backup/setup/schools.json --jsonArray --drop
-    mongoimport --uri "$DATABASE__URL" --collection roles backup/setup/roles.json --jsonArray --drop
+    for file in /schulcloud-server/backup/setup/*
+    do
+        mongoimport --uri "$DATABASE__URL" --collection ${file} --jsonArray --drop
+    done
