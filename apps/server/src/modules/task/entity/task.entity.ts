@@ -19,18 +19,4 @@ export class Task extends BaseEntityWithTimestamps {
 
 	@ManyToOne({ fieldName: 'lessonId' })
 	lesson?: Lesson;
-
-	constructor() {
-		super();
-	}
-}
-
-export class ITaskMetadata extends BaseEntityWithTimestamps {
-	name: string;
-
-	duedate: Date;
-
-	courseName: string;
-
-	displayColor: string;
 }

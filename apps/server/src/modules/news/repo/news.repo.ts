@@ -30,7 +30,8 @@ export class NewsRepo {
 		const scope = new NewsScope();
 		scope.byTargets(targets);
 		scope.byUnpublished(unpublished);
-
+		// TODO sort by publishedAt?
+		// scope.sortBy(...)
 		const countedNewsList = await this.findNewsAndCount(scope.query, pagination);
 		return countedNewsList;
 	}

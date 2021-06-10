@@ -45,25 +45,5 @@ export class TaskRepo {
 		);
 
 		return [usersTasks, total];
-
-		// TODO move mapping to controller
-		// TODO how to add additional properties to a task (from course) --> entity
-		// const mappedTasks = usersTasks.map((task) => {
-		// 	return {
-		// 		id: task.id,
-		// 		_id: task._id,
-		// 		name: task.name,
-		// 		duedate: task.dueDate,
-		// 		courseName: task.course?.name,
-		// 		displayColor: task.course?.color,
-		// 		createdAt: task.createdAt,
-		// 		updatedAt: task.updatedAt,
-		// 	} as ITaskMetadata; // TODO does not match ITaskMetadata, remove as...
-		// });
-
-		// return {
-		// 	data: mappedTasks,
-		// 	total,
-		// };
 	}
 }
