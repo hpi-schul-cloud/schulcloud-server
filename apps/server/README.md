@@ -2,6 +2,8 @@
 
 This application extends the existing server-application based on feathers and express by introducing dependency injection supporting unit testing and modularization, the possibility to develop against interfaces, and start implementation of modules using TypeScript.
 
+You find the whole [documentation published as GitHub Page](https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application.html)
+
 ## How to start the application
 
 Beside existing [scripts](/), for the nestJS application the following scripts have been added. Try not changing the scripts as they should match what NestJS defines by default. Execute `npm run ...`
@@ -17,25 +19,31 @@ Beside existing [scripts](/), for the nestJS application the following scripts h
 
 # How to statically check the code
 
-- `nest:lint` run eslint to fix linter issues and apply formatting
+- `nest:lint` run eslint to report linter issues and apply formatting
+- `nest:lint:fix` run eslint to report and auto-fix fixable linter issues and apply formatting 
 
 # How to test the application?
 
-- `nest:test` executes jest tests, to separate them from existing tests, not use _.test.[ts|js] as filename but instead either _.spec.ts beside providers or \*.e2e-spec.ts in test folders
+- `nest:test` executes all jest  (NestJS) tests, to separate them from existing tests, not use _.test.[ts|js] as filename but instead either \*.spec.ts beside tested files or \*.e2e-spec.ts in test folder
 - `nest:test:watch` executes changed tests again on save
 - `nest:test:cov` reports coverage results
 - `nest:test:debug` executes tests for debugging
-- `nest:test:e2e` beside unit tests on providers which are placed beside the providers (executed by statements above), e2e tests can be added in test folder
+- `nest:test:e2e` execute e2e tests only
+- `nest:test:spec` execute spec tests (without e2e) only
+
+## Static Code Analysis
+
+Based on `npm run nest:test:all` you can ensure the code is accepted to be merged. This executes all tests, checks for linter issues and code coverage. 
 
 ## How to get full documentation
 
-The documentation is provided by compodoc, run `npm run nest:dev:serve`, check generated compodoc features, custom information can be found in additional information section. Your console will tell you, where it is served.
+The documentation is provided by compodoc, run `npm run nest:docs:serve`, check generated compodoc features, custom information can be found in additional information section. Your console will tell you, where it is served.
+
+The updated documentation is published as [GitHub Page](https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application.html)
 
 ## Content
 
 For further reading, browse `apps/server/doc`.
-
-## Development
 
 ### NestJS CLI
 
