@@ -12,5 +12,5 @@ data:
     cd /schulcloud-server
     for file in /schulcloud-server/backup/setup/*
     do
-        mongoimport --uri "$DATABASE__URL" --collection ${file} --jsonArray --drop
+        mongoimport --uri "$DATABASE__URL" ${file} --jsonArray --drop
     done
