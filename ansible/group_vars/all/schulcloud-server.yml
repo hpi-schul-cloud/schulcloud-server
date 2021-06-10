@@ -1,2 +1,3 @@
 ---
 SERVER_IMAGE_NAME: ghcr.io/hpi-schul-cloud/schulcloud-server
+MAMUT_RULZ: "yes"
