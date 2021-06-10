@@ -16,5 +16,5 @@ RUN npm run nest:build
 ENV TZ=Europe/Berlin
 
 #ENTRYPOINT crontab ./crontab && crond
-RUN npm start
+CMD npm start
 

@@ -93,7 +93,7 @@ function connect() {
 	mongoose.Promise = global.Promise;
 	const options = getConnectionOptions();
 
-	logger.info(
+	logger.alert(
 		'connect to database host',
 		options.url,
 		options.username ? `with username ${options.username}` : 'without user',
