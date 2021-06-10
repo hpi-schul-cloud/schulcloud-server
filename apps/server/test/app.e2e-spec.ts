@@ -16,7 +16,7 @@ describe('ServerController (e2e)', () => {
 	});
 
 	// todo: fix open handle
-	it.skip('/ (GET)', () => {
+	it('/ (GET)', () => {
 		return request(app.getHttpServer()).get('/').expect(200).expect('Hello World!');
 	});
 });

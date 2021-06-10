@@ -32,7 +32,7 @@ describe('Task Controller (e2e)', () => {
 		await app.init();
 	});
 
-	it.skip('/ (FIND)', async () => {
+	it('/ (FIND)', async () => {
 		const response = await request(app.getHttpServer()).get('/task/dashboard');
 		expect(response.status == 200);
 	});

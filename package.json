@@ -53,11 +53,11 @@
 		"nest:start:prod": "node dist/apps/server/main",
 		"nest:format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
 		"nest:lint": "eslint \"{apps,libs,}/**/*.ts\" --fix",
-		"nest:test": "jest",
+		"nest:test": "jest --forceExit",
 		"nest:test:watch": "jest --watch",
 		"nest:test:cov": "jest --coverage",
 		"nest:test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-		"nest:test:e2e": "jest --config ./apps/server/test/jest-e2e.json",
+		"nest:test:e2e": "jest --config ./apps/server/test/jest-e2e.json --forceExit",
 		"syncIndexes": "node ./scripts/syncIndexes.js"
 	},
 	"dependencies": {
