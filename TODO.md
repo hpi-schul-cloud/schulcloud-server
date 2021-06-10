@@ -17,6 +17,8 @@
 - sanitizer
 - remove non-node async library
 - fix async cleanup & remove timeout in tests
+- test object creator for nest entities
+
 
 ## ACCEPTED
 
@@ -28,6 +30,8 @@
 - fix .env/config for windows
 
 ## SELECTED
+
+- test shared / core module 
 
 - db configuration
 
@@ -44,10 +48,10 @@
 
 - context: user-/request-context (see mikroorm/asynclocalstorage)
 
-- fix jest, linter, ...
 
 ## DONE
 
+- fix jest, linter, ...
 - inject APP_FILTER (exception handler) and APP_INTERCEPTOR (logger), see core module
 - custom error handling (log/response), see global-error.filter.ts
 - watch docs should hot reload on md file change

@@ -87,7 +87,7 @@ const writeValidationErrors = (error: ApiValidationError, logger: Logger) => {
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		(e) => `Wrong property ${e.property} got ${e.value} : ${JSON.stringify(e.constraints)}`
 	);
-	logger.error(errorMsg, error.stack);
+	logger.error(errorMsg, error.stack, 'API Validation Error');
 };
 
 const writeErrorLog = (error: unknown, logger: Logger): void => {
@@ -95,9 +95,10 @@ const writeErrorLog = (error: unknown, logger: Logger): void => {
 		if (isFeathersError(error)) {
 			logger.error(error, error.stack, 'Feathers Error');
 		} else if (isBusinessError(error)) {
-			logger.error(error, error.stack, 'Business Error');
 			if (error instanceof ApiValidationError) {
 				writeValidationErrors(error, logger);
+			} else {
+				logger.error(error, error.stack, 'Business Error');
 			}
 		} else if (isTechnicalError(error)) {
 			logger.error(error, error.stack, 'Technical Error');
