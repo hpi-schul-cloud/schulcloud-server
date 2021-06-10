@@ -28,6 +28,7 @@ jobs:
         - ROCKET_CHAT_URI=http://localhost:5000
       cache: npm
       install:
+        - echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
         - curl https://raw.githubusercontent.com/hpi-schul-cloud/schulcloud-authorization-server/master/docker-compose-test.yml > docker-compose-oauthserver.yml
         - curl https://raw.githubusercontent.com/hpi-schul-cloud/schulcloud-authorization-server/master/.env.example > .env
         - sudo docker-compose -f docker-compose-oauthserver.yml up -d
