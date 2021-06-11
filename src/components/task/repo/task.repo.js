@@ -1,23 +1,6 @@
-const _ = require('lodash');
 const { SubmissionModel, HomeworkModel } = require('./db');
-
+const { validateObjectId } = require('../../helper/validation.helper');
 const { updateManyResult, deleteManyResult } = require('../../helper/repo.helper');
-
-const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
-const { missingParameters } = require('../../../errors/helper/assertionErrorHelper');
-const { AssertionError } = require('../../../errors');
-
-const validateObjectId = ({ ...objectId }) => {
-	const missingProps = {};
-	for (const prop in objectId) {
-		if (!isValidObjectId(objectId[prop])) {
-			missingProps[prop] = objectId[prop];
-		}
-	}
-	if (!_.isEmpty(missingProps)) {
-		throw new AssertionError(missingParameters({ ...missingProps }));
-	}
-};
 
 /** Homeworks */
 const privateHomeworkQuery = (userId) => ({ private: true, teacherId: userId });
@@ -100,12 +83,17 @@ const userSubmissionQuery = (userId) => ({
  * @return {Array}
  */
 const findGroupSubmissionIdsByUser = async (userId) => {
+	validateObjectId({ userId });
 	const select = ['_id'];
 	const result = await SubmissionModel.find(groupSubmissionQuery(userId), select).lean().exec();
 	return result;
 };
 
-const findUserSubmissionsByUser = async (userId) => SubmissionModel.find(userSubmissionQuery(userId)).lean().exec();
+const findUserSubmissionsByUser = async (userId) => {
+	validateObjectId({ userId });
+	const result = await SubmissionModel.find(userSubmissionQuery(userId)).lean().exec();
+	return result;
+};
 
 const removeGroupSubmissionsConnectionsForUser = async (userId) => {
 	validateObjectId({ userId });
