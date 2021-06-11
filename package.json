@@ -102,6 +102,8 @@
 		"crypto-js": "^4.0.0",
 		"disposable-email-domains": "^1.0.56",
 		"es6-promisify": "^6.0.1",
+		"eslint-plugin-react": "^7.24.0",
+		"eslint-plugin-react-hooks": "^4.2.0",
 		"express": "^4.14.0",
 		"express-openapi-validator": "^4.7.0",
 		"feathers-hooks-common": "^5.0.3",
