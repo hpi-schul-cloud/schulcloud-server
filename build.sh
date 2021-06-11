@@ -3,8 +3,9 @@
 # automatically rolls out new versions on brandenburg, demo, open and test
 # develop-Branch goes to test, Master-Branch goes to productive systems
 
-cd ..
-mkdir .build
+# decrypt key
+mkdir -p .build
+openssl aes-256-cbc -K $encrypted_0ddd2445e49f_key -iv $encrypted_0ddd2445e49f_iv -in travis_rsa.enc -out .build/travis_rsa -d
 
 #
 # set -e : "... Exit immediately if a pipeline [...], which may consist of a single simple command [...],
