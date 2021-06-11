@@ -21,7 +21,6 @@ import { NewsRepo } from './news.repo';
 
 describe('NewsService', () => {
 	let repo: NewsRepo;
-	let mongod: MongoMemoryServer;
 	let orm: MikroORM;
 	let em: EntityManager;
 
@@ -35,9 +34,9 @@ describe('NewsService', () => {
 			providers: [NewsRepo],
 		}).compile();
 
-		repo = module.get<NewsRepo>(NewsRepo);
-		orm = module.get<MikroORM>(MikroORM);
-		em = module.get<EntityManager>(EntityManager);
+		repo = module.get(NewsRepo);
+		orm = module.get(MikroORM);
+		em = module.get(EntityManager);
 	});
 
 	beforeEach(async () => {
@@ -46,7 +45,7 @@ describe('NewsService', () => {
 
 	afterAll(async () => {
 		await orm.close();
-		await mongod.stop();
+		await MongoMemoryDatabaseModule.stopServer();
 	});
 
 	describe('defined', () => {
