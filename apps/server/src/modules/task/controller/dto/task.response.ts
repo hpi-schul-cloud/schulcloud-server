@@ -1,28 +1,28 @@
-import { Expose } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * DTO for returning a task document via api.
  */
 export class TaskResponse {
-	@Expose()
+	@ApiProperty()
 	name: string;
 
-	@Expose()
+	@ApiProperty()
 	duedate?: Date;
 
-	@Expose()
+	@ApiProperty()
 	courseName?: string;
 
-	@Expose()
+	@ApiProperty()
 	displayColor?: string;
 
-	@Expose()
+	@ApiProperty()
 	id: string;
 
-	@Expose()
+	@ApiProperty()
 	createdAt: Date;
 
-	@Expose()
+	@ApiProperty()
 	updatedAt: Date;
 
 	// status: string;
