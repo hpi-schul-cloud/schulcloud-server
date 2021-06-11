@@ -5,7 +5,7 @@
 
 # decrypt key
 mkdir -p .build
-openssl aes-256-cbc -K "$encrypted_bce910623bb2_key" -iv "$encrypted_bce910623bb2_iv" -in travis_rsa.enc -out .build/travis_rsa -d
+openssl aes-256-cbc -K $encrypted_0ddd2445e49f_key -iv $encrypted_0ddd2445e49f_iv -in travis_rsa.enc -out .build/travis_rsa -d
 
 #
 # set -e : "... Exit immediately if a pipeline [...], which may consist of a single simple command [...],
