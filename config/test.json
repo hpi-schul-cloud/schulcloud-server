@@ -23,7 +23,6 @@
 	"FEATURE_RABBITMQ_ENABLED": true,
 	"RABBITMQ_URI": "amqp://localhost",
 	"FEATURE_SYNCER_CONSUMER_ENABLE": true,
-	"FEATURE_TASKS_OVERVIEW_ENABLED": true,
 	"SYNC_LOG_LEVEL": "info",
 	"SYNC_QUEUE_NAME": "test_ldap_queue"
 }
