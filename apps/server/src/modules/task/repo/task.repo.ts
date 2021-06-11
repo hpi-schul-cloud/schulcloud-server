@@ -14,6 +14,14 @@ export class TaskRepo {
 	// DO NOT DO THIS AT HOME!!
 	async findAllOpenByStudent(userId: EntityId, { limit, skip }: PaginationModel = {}): Promise<Counted<Task[]>> {
 		// todo: handle coursegroups
+
+		// TODO move BL to UC
+		// we have following logical groups:
+		// filter for all news a user might read
+		// filter by tasks not yet done
+		// order by duedate
+		// pagination
+
 		const coursesOfStudent = await this.em.find(Course, {
 			students: userId,
 		});
@@ -34,6 +42,7 @@ export class TaskRepo {
 			{
 				// TODO task query builder, see NewsScope
 				$and: [
+					// TODO move into a logic group / director
 					{ id: { $nin: homeworksWithSubmissions } },
 					{ private: { $ne: true } },
 					{ course: { $in: coursesOfStudent } },
@@ -41,6 +50,8 @@ export class TaskRepo {
 					{ $or: [{ dueDate: { $gte: oneWeekAgo } }, { dueDate: null }] },
 				],
 			},
+			// TODO Populate in separate step
+			// TODO extract pagination, oderby
 			{ populate: ['course'], limit, offset: skip, orderBy: { dueDate: QueryOrder.ASC } }
 		);
 
