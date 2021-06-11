@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.3.1] - 2021-06-11
+
+### Changed
+
+- SC-9134 - Update Indexes who add for LDAP Sync
+
 ## [26.3.0] - 2021-06-07
 
 ### Changed
