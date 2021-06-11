@@ -4,7 +4,7 @@ const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 const { problemRepo } = require('.');
-const { GeneralError, ValidationError } = require('../../../errors');
+const { AssertionError } = require('../../../errors');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -57,9 +57,11 @@ describe('problem repo', () => {
 			expect(userProblems2[0]._id.toString()).to.be.equal(problemUser2._id.toString());
 		});
 
-		it('when the function is called with invalid id, it throws an error', async () => {
+		it('when the function is called with invalid id, it should return empty list', async () => {
 			const notExistedId = new ObjectId();
-			await expect(problemRepo.deleteProblemsForUser(notExistedId)).to.be.rejectedWith(GeneralError);
+			const res = await problemRepo.deleteProblemsForUser(notExistedId);
+			expect(res.success).to.be.true;
+			expect(res.deletedDocuments).to.be.equal(0);
 		});
 	});
 
@@ -85,7 +87,7 @@ describe('problem repo', () => {
 		});
 
 		it('when the function is called with invalid user id, it should return an error', async () => {
-			await expect(problemRepo.getProblemsForUser('INVALID_USER_ID')).to.be.rejectedWith(ValidationError);
+			await expect(problemRepo.getProblemsForUser('INVALID_USER_ID')).to.be.rejectedWith(AssertionError);
 		});
 	});
 });

@@ -6,7 +6,7 @@ const testObjects = require('../../../../test/services/helpers/testObjects')(app
 const { createLessonContents } = testObjects.lessons;
 const { equal, toString: idToString } = require('../../../helper/compare').ObjectId;
 const { deleteUserData } = require('./deleteUserData.uc');
-const { ValidationError } = require('../../../errors');
+const { AssertionError } = require('../../../errors');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
@@ -65,7 +65,7 @@ describe('when removing user data in courses', async () => {
 
 	it('should fail for execution without user id', async () => {
 		expect(deleteUserData.length !== 0, 'have steps').to.be.true;
-		await Promise.all(deleteUserData.map((step) => expect(step()).to.be.rejectedWith(ValidationError)));
+		await Promise.all(deleteUserData.map((step) => expect(step()).to.be.rejectedWith(AssertionError)));
 	});
 
 	it('should add only user related lesson contents to trashbin data', async () => {
