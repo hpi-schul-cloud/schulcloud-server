@@ -1,7 +1,7 @@
-import aws from 'aws-sdk';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { AssertionError } from '../../../errors';
-import { StorageProviderModel } from './db';
+const aws = require('aws-sdk');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const { AssertionError } = require('../../../errors');
+const { StorageProviderModel } = require('./db');
 
 const HOST = Configuration.get('HOST');
 

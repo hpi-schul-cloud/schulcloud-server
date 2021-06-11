@@ -4,18 +4,18 @@ node_js: 'lts/*'
 
 services:
   - docker
+  - rabbitmq
 
 branches:
   only:
     - develop
     - master
-    - /^(?i:release|hotfix).*$/
+    - /^(release|dependabot|hotfix|feature)\/.*$/
 
 stages:
   - name: test
-    if: NOT (commit_message =~ /(skip-test-stage)/ AND branch = master)
   - name: deploy
-    if: NOT (commit_message =~ /(skip-deploy-stage)/)
+
 jobs:
   include:
     - stage: test
@@ -52,11 +52,11 @@ jobs:
         - echo "skipping install"
       after_failure:
         - cat /home/travis/.npm/_logs/*debug.log
-    - stage: deploy
+    - stage: build
       if: NOT fork
       script:
-        - ./deploy.sh
-      name: deploy
+        - ./build.sh
+      name: build and push
       language: generic
       env:
         - GIT_SHA=$( git rev-parse HEAD )

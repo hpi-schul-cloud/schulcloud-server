@@ -117,6 +117,7 @@ paths:
             anyOf:
               - type: string
               - type: object
+              - type: array
         - description: Array of user ids to filter
           in: query
           name: users

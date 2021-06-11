@@ -9,18 +9,51 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- SC-9018; SC-9003 - created schoolsList public endpoint, and jwt secured /schools endpoint
+- SC-8959 - Add messenger to deletion concept
+
+## [26.3.0] - 2021-06-07
+
+### Changed
+
+- SC-8898 - parallelize LDAP sync using RabbitMQ
+
+## 26.2.2 - 2021-06-04
+
+### Fixed
+
+- Fixed dependencies issue
+
+## 26.2.1 - 2021-06-02
+
 ### Added
 
+- SC-9103 - add logging for syncIndexes script
+
+## 26.2.0 - 2021-06-01
+
+### Added
+
+- OPS-2418 - Change buildpipelines (Server, Client, Nuxt) to execute E2E tests according QF decision
 - SC-8250 - add bulk deletion to user service v2
 - SC-8341 - add tombstone school to tombstone user
 - SC-8408 - added delete events by scope Id route
 - SC-7937 - Allow adding multiple materials to lesson
 - SC-7868 - Deletion concept for personal file connections
 - SC-8873 - Add prioritization for Matrix messenger tasks
-- SC-8959 - Add messenger to deletion concept
+- SC-8982 - add inital service ressource messuring test setup
+- OPS-1499 - Add feature to CI Pipeline and provide manual deployments of branches and automatic deploy of release to staging
+- Add run script for sync indexes based on existing and registered schemas.
+- SC-9085 - add registration pin deletion for parent emails
+- SC-9004 - Sync env variables between backend and frontend
+- OPS-1499 - Add feature to CI Pipeline and provide manual deployments of branches
+- Add run script for sync indexes based on existing and registered schemas.
 
 ### Changed
 
+- SC-8440 - fixed open api validation for manual consent
+- SC-9055 - changed Edu-Sharing permissions for Brandenburg Sportinhalt content
+- SC-6950 - validation for officialSchoonNumber now allows 5 or 6 digits
 - SC-8599 - added helparea contact dropdown and send value
 - SC-7944 - use persistent ids for Lern-Store content items
 - OPS-1508 - added limits for cpu and ram to the docker compose files
@@ -32,11 +65,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-8933 - fix date format on first login
 - SC-8728 - fix configuration reset in tests
 - SC-8873 - fix addUser prioritization for full school Matrix messenger sync
+- SC-8982 - fix test setup for on the fly building test like routes jwt
 
 ## [26.1.0]
-
 
 ### Added
 
