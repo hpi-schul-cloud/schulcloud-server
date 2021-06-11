@@ -65,9 +65,7 @@ describe('when removing user data in courses', async () => {
 
 	it('should fail for execution without user id', async () => {
 		expect(deleteUserData.length !== 0, 'have steps').to.be.true;
-		deleteUserData.forEach((step) => {
-			expect(step()).to.eventually.throw(ValidationError);
-		});
+		await Promise.all(deleteUserData.map((step) => expect(step()).to.be.rejectedWith(ValidationError)));
 	});
 
 	it('should add only user related lesson contents to trashbin data', async () => {

@@ -124,7 +124,7 @@ db.cleanupUnexpectedHomeworks = () =>
 		.lean()
 		.exec();
 
-describe.only('in "task.repo" the function', () => {
+describe('in "task.repo" the function', () => {
 	let app;
 	let server;
 	let testHelper;

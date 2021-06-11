@@ -74,7 +74,7 @@ describe('helpdesk usecase', () => {
 
 		it('when the function is called with an invalid id, then it fails', async () => {
 			const userId = 'NOT_FOUND_USER';
-			expect(getProblemsDeletionResult(userId)).to.eventually.throw(ValidationError);
+			await expect(getProblemsDeletionResult(userId)).to.be.rejectedWith(ValidationError);
 		});
 	});
 });

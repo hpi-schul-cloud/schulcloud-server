@@ -59,7 +59,7 @@ describe('problem repo', () => {
 
 		it('when the function is called with invalid id, it throws an error', async () => {
 			const notExistedId = new ObjectId();
-			expect(problemRepo.deleteProblemsForUser(notExistedId)).to.eventually.throw(GeneralError);
+			await expect(problemRepo.deleteProblemsForUser(notExistedId)).to.be.rejectedWith(GeneralError);
 		});
 	});
 
@@ -85,7 +85,7 @@ describe('problem repo', () => {
 		});
 
 		it('when the function is called with invalid user id, it should return an error', async () => {
-			expect(problemRepo.getProblemsForUser('INVALID_USER_ID')).to.eventually.throw(ValidationError);
+			await expect(problemRepo.getProblemsForUser('INVALID_USER_ID')).to.be.rejectedWith(ValidationError);
 		});
 	});
 });

@@ -230,8 +230,6 @@ are correctly mounted and available at a specific path.
 		orm = module.get<MikroORM>(MikroORM);                           (6)
 		em = module.get<EntityManager>(EntityManager);
 	});
-
-
 ```
 
 #### Clean up
