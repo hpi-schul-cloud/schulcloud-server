@@ -100,11 +100,9 @@ class AbstractService {
 			const scopePermissions = await scope.get(userId, params);
 			return scopePermissions;
 		}
-		if (targetModel === 'schools') {
-			// default school case: dataItem and users schoolId must match and user permission must exist
-			return this.getSchoolPermissions(userId, isObjectId(schoolId) ? schoolId : schoolId._id);
-		}
-		return [];
+
+		// default school case: dataItem and users schoolId must match and user permission must exist
+		return this.getSchoolPermissions(userId, isObjectId(schoolId) ? schoolId : schoolId._id);
 	}
 
 	/**
