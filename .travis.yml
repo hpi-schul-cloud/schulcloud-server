@@ -28,7 +28,7 @@ jobs:
     - stage: deploy
       if: NOT fork
       script:
-        - bash ./build.sh
+        - bash ./scripts/build.sh
       name: build_and_push
       language: generic
       env:
@@ -36,6 +36,3 @@ jobs:
         - DOCKERTAG=$( echo $TRAVIS_BRANCH | tr -s "[:punct:]" "-" )
       after_failure:
         - cat /home/travis/.npm/_logs/*debug.log
-      install:
-        - mkdir -p .build
-        - openssl aes-256-cbc -K $encrypted_0ddd2445e49f_key -iv $encrypted_0ddd2445e49f_iv -in travis_rsa.enc -out .build/travis_rsa -d
