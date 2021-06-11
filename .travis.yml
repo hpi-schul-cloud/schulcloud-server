@@ -28,7 +28,7 @@ jobs:
     - stage: deploy
       if: NOT fork
       script:
-        - ./build.sh
+        - bash ./build.sh
       name: build_and_push
       language: generic
       env:
