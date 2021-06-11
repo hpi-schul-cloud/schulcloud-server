@@ -13,7 +13,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
-- SC-9134 - Update Indexes who add for LDAP Sync
+- SC-9134 - Update User Indexes who add for LDAP Sync
 
 ## [26.3.0] - 2021-06-07
 
