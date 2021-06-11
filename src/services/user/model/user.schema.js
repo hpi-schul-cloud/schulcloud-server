@@ -121,7 +121,7 @@ userSchema.index({ firstName: 1, lastName: 1 }); // ok = 5
 
 userSchema.index({ ldapDn: 1 }); // ?
 userSchema.index({ ldapId: 1 }); // ?
-userSchema.index({ ldapId: 1, schoolId: 1 }); // ?
+userSchema.index({ ldapId: 1, schoolId: 1 }); // LDAP Sync
 userSchema.index({ schoolId: 1, ldapDn: 1 }); // LDAP Sync
 userSchema.index({ schoolId: 1 }); // ?
 
