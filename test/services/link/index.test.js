@@ -13,11 +13,11 @@ describe('link service', () => {
 	before(async () => {
 		app = await appPromise;
 		service = app.service('link');
-		server = await app.listen(3031);
+		server = await app.listen();
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	it('registered the links service', () => {
