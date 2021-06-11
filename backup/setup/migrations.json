@@ -985,7 +985,18 @@
 },
 {
 	"_id": {
-		"$oid": "609410c8f72f685510c02e30"
+		"$oid": "60c32a665330afa24c1ef9ba"
+	},
+	"state": "up",
+	"name": "set_search_index",
+	"createdAt": {
+		"$date": "2021-03-29T09:50:49.972Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "60c32a665330afa24c1ef9bb"
 	},
 	"state": "up",
 	"name": "LDAPSyncIndices",
