@@ -12,6 +12,7 @@ export class TaskUC {
 	async findAllOpenForUser(userId: EntityId, pagination: IPagination): Promise<Counted<Task[]>> {
 		// TODO authorization (user conditions -> permissions?)
 		// TODO get permitted tasks...
+		// TODO have BL from repo here
 
 		const [tasks, total] = await this.taskRepo.findAllOpenByStudent(userId, pagination);
 		return [tasks, total];
