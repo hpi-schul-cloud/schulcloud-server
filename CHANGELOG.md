@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.4.0] - 2021-06-11
+
 - SC-9004 - Sync env variables between backend and frontend
 
 ## [26.3.0] - 2021-06-07
