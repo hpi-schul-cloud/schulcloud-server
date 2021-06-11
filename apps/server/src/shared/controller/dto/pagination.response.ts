@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PaginationResponse<T> {
 	constructor(data: T, total: number, skip?: number, limit?: number) {
@@ -8,15 +8,15 @@ export class PaginationResponse<T> {
 		this.limit = limit;
 	}
 
-	@Expose()
+	@ApiProperty()
 	data: T;
 
-	@Expose()
+	@ApiProperty()
 	total: number;
 
-	@Expose()
+	@ApiProperty()
 	skip?: number;
 
-	@Expose()
+	@ApiProperty()
 	limit?: number;
 }
