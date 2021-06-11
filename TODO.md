@@ -18,7 +18,7 @@
 - remove non-node async library
 - fix async cleanup & remove timeout in tests
 - test object creator for nest entities
-
+- enable log only for failed tests: https://stackoverflow.com/a/61909588
 
 ## ACCEPTED
 
@@ -40,6 +40,7 @@
   - test db provider
   - entity discovery
   - check indexes in mikroorm: when are they updated?
+  - teardown (test, server module, main.ts)
 
 - news
 
