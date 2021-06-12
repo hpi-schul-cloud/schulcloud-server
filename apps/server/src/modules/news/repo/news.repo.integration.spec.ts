@@ -1,8 +1,7 @@
 import * as moment from 'moment';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import { MikroORM, NotFoundError } from '@mikro-orm/core';
+import { NotFoundError } from '@mikro-orm/core';
 import { EntityId } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import {
@@ -21,11 +20,11 @@ import { NewsRepo } from './news.repo';
 
 describe('NewsService', () => {
 	let repo: NewsRepo;
-	let orm: MikroORM;
 	let em: EntityManager;
+	let module: TestingModule;
 
 	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
 					entities: [News, CourseNews, CourseInfo, SchoolNews, SchoolInfo, TeamNews, TeamInfo, UserInfo],
@@ -35,7 +34,6 @@ describe('NewsService', () => {
 		}).compile();
 
 		repo = module.get(NewsRepo);
-		orm = module.get(MikroORM);
 		em = module.get(EntityManager);
 	});
 
@@ -44,8 +42,7 @@ describe('NewsService', () => {
 	});
 
 	afterAll(async () => {
-		await orm.close();
-		await MongoMemoryDatabaseModule.stopServer();
+		await module.close();
 	});
 
 	describe('defined', () => {
