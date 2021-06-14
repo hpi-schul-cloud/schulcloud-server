@@ -18,7 +18,7 @@ import { CreateNewsParams, NewsResponse, UpdateNewsParams } from '../../../src/m
 
 jest.setTimeout(30000);
 
-describe('News Controller (e2e)', () => {
+describe.skip('News Controller (e2e)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
 	let em: EntityManager;

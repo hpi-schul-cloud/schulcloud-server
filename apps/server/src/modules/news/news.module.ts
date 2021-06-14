@@ -7,7 +7,13 @@ import { LoggerModule } from '../../core/logger/logger.module';
 
 @Module({
 	imports: [AuthorizationModule, LoggerModule],
-	controllers: [NewsController],
+	controllers: [
+		/* NewsController
+		 * to enable:
+		 * - unskip e2e tests
+		 * - execute migration news_add_target_schools (in migrations/scheduled)
+		 */
+	],
 	providers: [NewsUc, NewsRepo],
 	exports: [NewsUc],
 })
