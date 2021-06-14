@@ -12,6 +12,7 @@ import { LoggerModule } from '../../core/logger/logger.module';
 		 * to enable:
 		 * - unskip e2e tests
 		 * - execute migration news_add_target_schools (in migrations/scheduled)
+		 * - update backup/setup/news.json from db after migration has been executed
 		 */
 	],
 	providers: [NewsUc, NewsRepo],

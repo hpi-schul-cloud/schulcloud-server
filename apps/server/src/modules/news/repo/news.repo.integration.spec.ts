@@ -1,10 +1,9 @@
 import * as moment from 'moment';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import { MikroORM, NotFoundError } from '@mikro-orm/core';
+import { NotFoundError } from '@mikro-orm/core';
 import { EntityId } from '@shared/domain';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import {
 	CourseNews,
 	News,
@@ -21,27 +20,21 @@ import { NewsRepo } from './news.repo';
 
 describe('NewsService', () => {
 	let repo: NewsRepo;
-	let mongod: MongoMemoryServer;
-	let orm: MikroORM;
 	let em: EntityManager;
+	let module: TestingModule;
 
 	beforeAll(async () => {
-		mongod = new MongoMemoryServer();
-		const dbUrl = await mongod.getUri();
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			imports: [
-				MikroOrmModule.forRoot({
-					type: 'mongo',
-					clientUrl: dbUrl,
+				MongoMemoryDatabaseModule.forRoot({
 					entities: [News, CourseNews, CourseInfo, SchoolNews, SchoolInfo, TeamNews, TeamInfo, UserInfo],
 				}),
 			],
 			providers: [NewsRepo],
 		}).compile();
 
-		repo = module.get<NewsRepo>(NewsRepo);
-		orm = module.get<MikroORM>(MikroORM);
-		em = module.get<EntityManager>(EntityManager);
+		repo = module.get(NewsRepo);
+		em = module.get(EntityManager);
 	});
 
 	beforeEach(async () => {
@@ -49,8 +42,7 @@ describe('NewsService', () => {
 	});
 
 	afterAll(async () => {
-		await orm.close();
-		await mongod.stop();
+		await module.close();
 	});
 
 	describe('defined', () => {
