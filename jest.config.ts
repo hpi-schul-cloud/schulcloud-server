@@ -15,7 +15,7 @@ const config: Config.InitialOptions = {
 	transform: {
 		'^.+\\.(t|j)s$': 'ts-jest',
 	},
-	collectCoverageFrom: ['**/*.(t|j)s'],
+	collectCoverageFrom: ['apps/**/*.(t|j)s'],
 	coverageDirectory: './coverage',
 	coveragePathIgnorePatterns: ['.module.ts$', 'index.ts$', 'spec.ts$'],
 	coverageThreshold: {
