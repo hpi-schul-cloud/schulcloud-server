@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.3.2] - 2021-06-14
+
+### Change
+
+- SC-9029 - Change place of the channel creation for RabbitMQ
+
 ## [26.3.1] - 2021-06-14
 
 ### Added
