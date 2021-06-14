@@ -2,6 +2,8 @@ const asyncPool = require('tiny-async-pool');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const Syncer = require('./Syncer');
 const { LDAPSyncer } = require('./LDAPSyncer');
+const { getChannel } = require('../../../utils/rabbitmq');
+const LDAP_SYNC_CHANNEL_NAME = Configuration.get('SYNC_QUEUE_NAME');
 
 /**
  * Implements syncing from multiple LDAP servers based on the Syncer interface
@@ -15,6 +17,7 @@ class LDAPSystemSyncer extends Syncer {
 		Object.assign(this.stats, {
 			systems: {},
 		});
+		this.syncQueue = getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
 	}
 
 	/**
@@ -41,7 +44,7 @@ class LDAPSystemSyncer extends Syncer {
 		const systems = await this.getSystems();
 		const nextSystemSync = async (system) => {
 			try {
-				const stats = await new LDAPSyncer(this.app, {}, this.logger, system, this.options).sync();
+				const stats = await new LDAPSyncer(this.app, {}, this.logger, system, this.syncQueue, this.options).sync();
 				if (stats.success !== true) {
 					this.stats.errors.push(`LDAP sync failed for system "${system.alias}" (${system._id}).`);
 				}

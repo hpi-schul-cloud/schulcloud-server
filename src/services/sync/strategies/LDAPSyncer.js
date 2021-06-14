@@ -15,7 +15,7 @@ const LDAP_SYNC_CHANNEL_NAME = Configuration.get('SYNC_QUEUE_NAME');
  * @implements {Syncer}
  */
 class LDAPSyncer extends Syncer {
-	constructor(app, stats = {}, logger, system, options = {}) {
+	constructor(app, stats = {}, logger, system, syncQueue, options = {}) {
 		super(app, stats, logger);
 		this.system = system;
 		this.options = options;
@@ -24,7 +24,7 @@ class LDAPSyncer extends Syncer {
 			users: 0,
 			classes: 0,
 		});
-		this.syncQueue = getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
+		this.syncQueue = syncQueue;
 		const systemId = this.system && this.system._id;
 		this.ldapService = this.app && this.app.service('ldap');
 		this.messageBuilder = new SyncMessageBuilder(this.syncId, systemId);
