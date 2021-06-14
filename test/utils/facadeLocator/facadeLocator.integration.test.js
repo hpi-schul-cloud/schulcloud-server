@@ -10,13 +10,13 @@ describe('Facade Locator integration tests', () => {
 	let app;
 	let server;
 
-	before(async function setup() {
+	before(async () => {
 		app = await appPromise;
 		server = await app.listen(0);
 	});
 
-	after(function cleanup(done) {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	describe('correct setup in app', () => {

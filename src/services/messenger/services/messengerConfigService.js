@@ -1,4 +1,6 @@
 const { disallow } = require('feathers-hooks-common');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const { ForbiddenError } = require('../../../errors/applicationErrors');
 const { hasPermission } = require('../../../hooks');
 
 const schoolMessengerOptions = ['messenger', 'studentsCanCreateMessengerRoom', 'messengerSchoolRoom'];
@@ -13,11 +15,17 @@ class MessengerConfigService {
 	}
 
 	async find(params) {
+		if (Configuration.get('FEATURE_MATRIX_MESSENGER_ENABLED') !== true) {
+			throw new ForbiddenError('FEATURE_MATRIX_MESSENGER_ENABLED is disabled');
+		}
 		const school = await this.app.service('schools').get(params.route.schoolId);
 		return Object.fromEntries(schoolMessengerOptions.map((option) => [option, school.features.includes(option)]));
 	}
 
 	async patch(_id, data, params) {
+		if (Configuration.get('FEATURE_MATRIX_MESSENGER_ENABLED') !== true) {
+			throw new ForbiddenError('FEATURE_MATRIX_MESSENGER_ENABLED is disabled');
+		}
 		const school = await this.app.service('schools').get(params.route.schoolId);
 
 		// remove data unrelated to messenger
