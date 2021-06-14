@@ -1,23 +1,17 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { TaskRepo } from './task.repo';
 import { Course, Lesson, Submission, Task } from '../entity';
 import { UserInfo } from '../../news/entity';
 
 describe('TaskService', () => {
-	let mongoServer: MongoMemoryServer;
 	let module: TestingModule;
 
 	beforeAll(async () => {
-		mongoServer = new MongoMemoryServer();
-		const mongoUri = await mongoServer.getUri();
 		module = await Test.createTestingModule({
 			imports: [
-				MikroOrmModule.forRoot({
-					type: 'mongo',
-					clientUrl: mongoUri,
+				MongoMemoryDatabaseModule.forRoot({
 					entities: [Task, Lesson, Course, Submission, UserInfo],
 				}),
 			],
@@ -26,7 +20,7 @@ describe('TaskService', () => {
 	});
 
 	afterAll(async () => {
-		await mongoServer.stop();
+		await module.close();
 	});
 
 	describe('findAllOpenByStudent', () => {
