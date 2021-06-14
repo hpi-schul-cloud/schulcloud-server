@@ -5,7 +5,7 @@
 
 # decrypt key
 mkdir -p .build
-openssl aes-256-cbc -K "$encrypted_bce910623bb2_key" -iv "$encrypted_bce910623bb2_iv" -in travis_rsa.enc -out .build/travis_rsa -d
+openssl aes-256-cbc -K $encrypted_0ddd2445e49f_key -iv $encrypted_0ddd2445e49f_iv -in travis_rsa.enc -out .build/travis_rsa -d
 
 #
 # set -e : "... Exit immediately if a pipeline [...], which may consist of a single simple command [...],
@@ -61,13 +61,13 @@ elif [ "$GIT_FLOW_BRANCH" = "hotfix" ]
 then
 	# extract JIRA_TICKET_ID from TRAVIS_BRANCH
 	JIRA_TICKET_ID=${TRAVIS_BRANCH/#hotfix\//}
-	JIRA_TICKET_TEAM=${JIRA_TICKET_ID/%-*/} 
+	JIRA_TICKET_TEAM=${JIRA_TICKET_ID/%-*/}
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/#$JIRA_TICKET_TEAM"-"/}
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/%-*/}
 	JIRA_TICKET_ID="$JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID"
 
 	echo JIRA_TICKET_ID="$JIRA_TICKET_ID"
-	
+
 	# export DOCKERTAG=naming convention feature-<Jira id>-latest
 	export DOCKERTAG="${GIT_FLOW_BRANCH}_${JIRA_TICKET_ID}_latest"
 	export DOCKERTAG_SHA="${GIT_FLOW_BRANCH}_${JIRA_TICKET_ID}_${GIT_SHA}"
@@ -75,13 +75,13 @@ elif [ "$GIT_FLOW_BRANCH" = "feature" ]
 then
 	# extract JIRA_TICKET_ID from TRAVIS_BRANCH
 	JIRA_TICKET_ID=${TRAVIS_BRANCH/#feature\//}
-	JIRA_TICKET_TEAM=${JIRA_TICKET_ID/%-*/} 
+	JIRA_TICKET_TEAM=${JIRA_TICKET_ID/%-*/}
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/#$JIRA_TICKET_TEAM"-"/}
 	JIRA_TICKET_ID=${JIRA_TICKET_ID/%-*/}
 	JIRA_TICKET_ID="$JIRA_TICKET_TEAM"-"$JIRA_TICKET_ID"
 
 	echo JIRA_TICKET_ID="$JIRA_TICKET_ID"
-	
+
 	# export DOCKERTAG=naming convention feature-<Jira id>-latest
 	export DOCKERTAG="${GIT_FLOW_BRANCH}_${JIRA_TICKET_ID}_latest"
 	export DOCKERTAG_SHA="${GIT_FLOW_BRANCH}_${JIRA_TICKET_ID}_${GIT_SHA}"
@@ -96,6 +96,9 @@ echo DOCKERTAG="$DOCKERTAG"
 echo DOCKERTAG_SHA="$DOCKERTAG_SHA"
 
 function buildandpush {
+	# Log in to the docker CLI
+	echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+
 	# build containers
 	# Log in to the docker CLI
 	echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
