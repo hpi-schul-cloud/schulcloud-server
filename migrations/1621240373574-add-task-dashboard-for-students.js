@@ -24,7 +24,7 @@ const Roles = mongoose.model(
 module.exports = {
 	up: async function up() {
 		// eslint-disable-next-line no-process-env
-		if (['default', 'open', 'int'].includes(process.env.SC_THEME)) {
+		if (['n21', 'brb', 'thr'].includes(process.env.SC_THEME)) {
 			info('Migration not running on this instance');
 			return;
 		}
