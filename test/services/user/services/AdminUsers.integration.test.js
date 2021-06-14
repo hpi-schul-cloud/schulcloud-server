@@ -7,12 +7,11 @@ const { Configuration } = commons;
 chai.use(chaiHttp);
 const { expect } = chai;
 
-describe('admin users integration tests', function test() {
+describe('admin users integration tests', () => {
 	let app;
 	let server;
 	let configBefore;
 	let testObjects;
-	this.timeout(10000);
 
 	before(async () => {
 		delete require.cache[require.resolve('../../../../src/app')];
