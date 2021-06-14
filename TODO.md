@@ -22,7 +22,6 @@
 
 ## ACCEPTED
 
-- check build & start for production with ops
 - load/perf test
 
 - disable legacy ts support (app, tests)
@@ -32,6 +31,7 @@
 ## SELECTED
 
 - test shared / core module 
+- async test fixes
 
 - db configuration
 
@@ -52,6 +52,7 @@
 
 ## DONE
 
+- check build & start for production with ops
 - fix jest, linter, ...
 - inject APP_FILTER (exception handler) and APP_INTERCEPTOR (logger), see core module
 - custom error handling (log/response), see global-error.filter.ts
