@@ -10,6 +10,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 - SC-9018; SC-9003 - created schoolsList public endpoint, and jwt secured /schools endpoint
+- SC-8959 - Add messenger to deletion concept
 
 ## [26.3.0] - 2021-06-07
 
@@ -47,7 +48,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-9004 - Sync env variables between backend and frontend
 - OPS-1499 - Add feature to CI Pipeline and provide manual deployments of branches
 - Add run script for sync indexes based on existing and registered schemas.
-
 
 ### Changed
 
