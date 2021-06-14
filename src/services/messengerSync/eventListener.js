@@ -25,7 +25,6 @@ const setup = async (app) => {
 	app.service('users').on('created', (user, _context) => requestFullSyncForUser(user));
 	app.service('users').on('patched', (user, _context) => requestFullSyncForUser(user));
 	app.service('users').on('updated', (user, _context) => requestFullSyncForUser(user));
-	app.service('users').on('removed', (user, _context) => requestUserRemoval(user));
 
 	// schools
 	app.service('schools').on('created', (school, _context) => requestFullSchoolSync(school));
