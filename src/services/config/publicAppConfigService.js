@@ -40,10 +40,10 @@ class PublicAppConfigService {
 
 	find() {
 		const envs = {};
-		// const tmp2 = Configuration.get('I18N');
-		// const tmp = Configuration.get('I18N_DEFAULT_LANGUAGE');
 		exposedVars.forEach((varName) => {
-			envs[varName] = Configuration.get(varName);
+			if (Configuration.has(varName)) {
+				envs[varName] = Configuration.get(varName);
+			}
 		});
 
 		return Promise.resolve(envs);
