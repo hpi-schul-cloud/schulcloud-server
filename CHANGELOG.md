@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.4.1] - 2021-06-15
+
+### Change
+
+- SC-9029 - Change place of the channel creation for RabbitMQ
+
 ## [26.4.0] - 2021-06-11
 
 - SC-9004 - Sync env variables between backend and frontend
