@@ -19,6 +19,9 @@
 - fix async cleanup & remove timeout in tests
 - test object creator for nest entities
 - enable log only for failed tests: https://stackoverflow.com/a/61909588
+- remove sentry from code
+- remove mongoose history (keep one)
+- remove custom npm packages (ldap, ...)
 
 ## ACCEPTED
 
