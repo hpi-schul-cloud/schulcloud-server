@@ -1,7 +1,8 @@
-import assert from 'assert';
-import chai from 'chai';
-import ChaiHttp from 'chai-http';
-import appPromise from '../src/app';
+const assert = require('assert');
+const chai = require('chai');
+const ChaiHttp = require('chai-http');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const appPromise = require('../src/app');
 
 const { expect } = chai;
 chai.use(ChaiHttp);
@@ -10,13 +11,13 @@ describe('Feathers application tests', () => {
 	let app;
 	let server;
 
-	before(async function setup() {
+	before(async () => {
 		app = await appPromise;
 		server = await app.listen(0);
 	});
 
-	after(function cleanup(done) {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	it('starts and shows the index page', async () => {
@@ -25,6 +26,15 @@ describe('Feathers application tests', () => {
 	});
 
 	describe('404', () => {
+		let configBefore;
+		before('enable 404 handler', () => {
+			configBefore = Configuration.toObject({ plainSecrets: true });
+			// skipped now, NestJS handles 404 after feathers
+			Configuration.set('FEATURE_LEGACY_NOT_FOUND_ENABLED', true);
+		});
+		after('reset config', () => {
+			Configuration.reset(configBefore);
+		});
 		it('shows a 404 page', async () => {
 			const response = await chai.request(app).get('/path/to/nowhere').set('content-type', 'text/html');
 			assert.equal(response.status, 404);

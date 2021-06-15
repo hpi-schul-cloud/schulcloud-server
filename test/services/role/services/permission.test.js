@@ -2,9 +2,9 @@ const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
-
 describe('PermissionService', () => {
 	let app;
+	let server;
 	let permissionService;
 	const ROLES = {
 		TEST: 'test',
@@ -27,6 +27,7 @@ describe('PermissionService', () => {
 
 	before(async () => {
 		app = await appPromise;
+		server = await app.listen();
 		permissionService = app.service('roles/:roleName/permissions');
 
 		const testRole = await testObjects.createTestRole({
@@ -63,8 +64,9 @@ describe('PermissionService', () => {
 		});
 	});
 
-	after(() => {
-		testObjects.cleanup();
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
 	});
 
 	it('registered the service', () => {

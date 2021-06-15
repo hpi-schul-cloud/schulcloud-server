@@ -68,7 +68,7 @@ describe('MessengerTokenService', function test() {
 			});
 
 			after(() => {
-				Configuration.parse(configBefore);
+				Configuration.reset(configBefore);
 			});
 
 			it('can fail', async () => {
@@ -95,13 +95,11 @@ describe('MessengerTokenService', function test() {
 			it('should succeed', async () => {
 				nock(Configuration.get('MATRIX_MESSENGER__URI'))
 					.post('/_matrix/client/r0/login')
-					.reply(200, (uri, requestBody) => {
-						return {
-							access_token: 'token',
-							device_id: requestBody.device_id,
-							home_server: 'messenger.schule',
-						};
-					});
+					.reply(200, (uri, requestBody) => ({
+						access_token: 'token',
+						device_id: requestBody.device_id,
+						home_server: 'messenger.schule',
+					}));
 				const school = await testObjects.createTestSchool({ features: ['messenger'] });
 				const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
 
