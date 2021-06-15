@@ -40,7 +40,7 @@ describe('fileStorageProvider.repo.integration.test', () => {
 	});
 
 	after(async () => {
-		Configuration.parse(configBefore);
+		Configuration.reset(configBefore);
 		await server.close();
 	});
 
@@ -53,7 +53,6 @@ describe('fileStorageProvider.repo.integration.test', () => {
 			expect(() => fileStorageProviderRepo.private.createStorageProviderInstance(storageProviderInfo)).to.not.throw();
 		});
 	});
-
 
 	/**
 	 * This integration tests requires MinIO running with the default configuration.
@@ -144,7 +143,7 @@ describe('fileStorageProvider.repo.integration.test', () => {
 			sinon.restore();
 			if (!skipMinioTests) {
 				await cleanupStorageProvider(storageProvider, bucketName, fileIds);
-			};
+			}
 		});
 
 		it('should call moveFileToTrash in unevenly distributed batches', async () => {
@@ -158,9 +157,21 @@ describe('fileStorageProvider.repo.integration.test', () => {
 			expect(result).to.eq(true);
 			expect(moveFilesToTrashSpy.callCount).to.eq(4);
 			expect(moveFilesToTrashSpy.getCall(0).args).deep.to.equal([storageProviderInfo, bucketName, fileIds.slice(0, 5)]);
-			expect(moveFilesToTrashSpy.getCall(1).args).deep.to.equal([storageProviderInfo, bucketName, fileIds.slice(5, 10)]);
-			expect(moveFilesToTrashSpy.getCall(2).args).deep.to.equal([storageProviderInfo, bucketName, fileIds.slice(10, 15)]);
-			expect(moveFilesToTrashSpy.getCall(3).args).deep.to.equal([storageProviderInfo, bucketName, fileIds.slice(15, 20)]);
+			expect(moveFilesToTrashSpy.getCall(1).args).deep.to.equal([
+				storageProviderInfo,
+				bucketName,
+				fileIds.slice(5, 10),
+			]);
+			expect(moveFilesToTrashSpy.getCall(2).args).deep.to.equal([
+				storageProviderInfo,
+				bucketName,
+				fileIds.slice(10, 15),
+			]);
+			expect(moveFilesToTrashSpy.getCall(3).args).deep.to.equal([
+				storageProviderInfo,
+				bucketName,
+				fileIds.slice(15, 20),
+			]);
 
 			resetSpy();
 		});
@@ -176,9 +187,21 @@ describe('fileStorageProvider.repo.integration.test', () => {
 			expect(result).to.eq(true);
 			expect(moveFilesToTrashSpy.callCount).to.eq(4);
 			expect(moveFilesToTrashSpy.getCall(0).args).deep.to.equal([storageProviderInfo, bucketName, fileIds.slice(0, 6)]);
-			expect(moveFilesToTrashSpy.getCall(1).args).deep.to.equal([storageProviderInfo, bucketName, fileIds.slice(6, 12)]);
-			expect(moveFilesToTrashSpy.getCall(2).args).deep.to.equal([storageProviderInfo, bucketName, fileIds.slice(12, 18)]);
-			expect(moveFilesToTrashSpy.getCall(3).args).deep.to.equal([storageProviderInfo, bucketName, fileIds.slice(18, 20)]);
+			expect(moveFilesToTrashSpy.getCall(1).args).deep.to.equal([
+				storageProviderInfo,
+				bucketName,
+				fileIds.slice(6, 12),
+			]);
+			expect(moveFilesToTrashSpy.getCall(2).args).deep.to.equal([
+				storageProviderInfo,
+				bucketName,
+				fileIds.slice(12, 18),
+			]);
+			expect(moveFilesToTrashSpy.getCall(3).args).deep.to.equal([
+				storageProviderInfo,
+				bucketName,
+				fileIds.slice(18, 20),
+			]);
 
 			resetSpy();
 		});
