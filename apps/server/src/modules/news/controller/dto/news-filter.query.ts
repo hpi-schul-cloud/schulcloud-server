@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsIn, IsMongoId, IsOptional, IsString } from 'class-validator';
-import { ToBoolean } from '@shared/transformer';
+import { StringToBoolean } from '@shared/transformer';
 import { NewsTargetModel } from '../../entity';
 
 const TARGET_MODEL_VALUES = Object.values(NewsTargetModel);
@@ -26,7 +26,7 @@ export class NewsFilterQuery {
 
 	@IsOptional()
 	@IsBoolean()
-	@ToBoolean()
+	@StringToBoolean()
 	@ApiPropertyOptional({
 		description: 'Flag that filters if the news should be published or not',
 	})

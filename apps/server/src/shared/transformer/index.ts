@@ -1,1 +1,1 @@
-export * from './to-boolean.transformer';
+export * from './string-to-boolean.transformer';
