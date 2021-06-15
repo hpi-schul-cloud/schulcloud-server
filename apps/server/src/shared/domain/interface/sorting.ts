@@ -1,4 +1,4 @@
-import { ValueOf } from './value-of';
+import { ValueOf } from '../types/value-of';
 
 export const SortOrder = {
 	asc: 'asc',
