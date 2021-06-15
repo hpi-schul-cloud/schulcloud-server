@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { IErrorType } from '../../core/error/interface';
-import { ErrorResponse } from '../../core/error/dto/error.response';
+import { ErrorResponse } from '@src/core/error/dto/error.response';
+import { IErrorType } from '@src/core/error/interface';
 
 /**
  * Abstract base class for business errors, errors that are handled

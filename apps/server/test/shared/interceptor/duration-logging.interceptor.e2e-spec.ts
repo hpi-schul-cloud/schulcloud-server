@@ -5,7 +5,7 @@ import { Test } from '@nestjs/testing';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import * as request from 'supertest';
 import { ServerModule } from '@src/server.module';
-import { DurationLoggingInterceptor } from '@src/shared/interceptor/index';
+import { DurationLoggingInterceptor } from '@shared/common/interceptor/index';
 import { Logger } from '@src/core/logger/logger.service';
 
 describe('DurationLoggingInterceptor', () => {
@@ -38,7 +38,7 @@ describe('DurationLoggingInterceptor', () => {
 			app = (await createTestModule(interceptor)).createNestApplication();
 
 			await app.init();
-			await request(app.getHttpServer()).get('/').expect(200).expect('Hello World!');
+			await request(app.getHttpServer()).get('/').expect(200).expect('Schulcloud Server API');
 
 			expect(loggerSpy).toBeCalledTimes(2);
 

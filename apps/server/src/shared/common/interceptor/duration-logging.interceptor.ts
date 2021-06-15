@@ -1,7 +1,7 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { Logger } from '../../core/logger/logger.service';
+import { Logger } from '@src/core/logger/logger.service';
 
 /**
  * This interceptor is logging the duration of a REST call.

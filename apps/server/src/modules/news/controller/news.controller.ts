@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Query, Patch, Delete } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ParseObjectIdPipe } from '@shared/pipe';
+import { ParseObjectIdPipe } from '@shared/controller/pipe';
 import { PaginationQuery } from '@shared/controller';
 import { PaginationResponse } from '@shared/controller/dto/pagination.response';
 import { NewsUc } from '../uc/news.uc';

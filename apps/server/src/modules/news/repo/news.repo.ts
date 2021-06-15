@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PaginationModel } from '@shared/repo/interface/pagination.interface';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain';
-import { Counted } from '@shared/types';
+import { Counted } from '@shared/domain/types';
 import { News } from '../entity';
 import { NewsScope } from './news-scope';
 import { NewsTargetFilter } from './news-target-filter';

@@ -1,13 +1,10 @@
-import { EntityId } from '@shared/domain';
+import { EntityId, ValueOf } from '@shared/domain';
 
 export const NewsTargetModel = {
 	School: 'schools',
 	Course: 'courses',
 	Team: 'teams',
 } as const;
-
-// TODO put into shared types
-type ValueOf<T> = T[keyof T];
 
 export type NewsTargetModelValue = ValueOf<typeof NewsTargetModel>;
 

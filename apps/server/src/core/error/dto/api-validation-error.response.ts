@@ -1,4 +1,4 @@
-import { ApiValidationError } from '../../../shared/error/api-validation.error';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
 import { ErrorResponse } from './error.response';
 import { ValidationErrorDetailResponse } from './validation-error-detail.response';
 

@@ -1,5 +1,5 @@
 import { ValidationError, ValidationPipe } from '@nestjs/common';
-import { ApiValidationError } from '../../../shared/error/api-validation.error';
+import { ApiValidationError } from '@shared/common/error/api-validation.error';
 
 /** *********************************************
  * Global Pipe setup

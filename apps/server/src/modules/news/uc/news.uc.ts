@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId, IPagination } from '@shared/domain';
-import { Counted } from '@shared/types';
+import { Counted } from '@shared/domain/types';
 import { Logger } from '@src/core/logger/logger.service';
 import { AuthorizationService } from '../../authorization/authorization.service';
 import { News, NewsTargetModel, NewsTargetModelValue, ICreateNews, INewsScope, IUpdateNews } from '../entity';

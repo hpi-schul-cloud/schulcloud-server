@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain';
 import { QueryOrder } from '@mikro-orm/core';
 import { PaginationModel } from '@shared/repo';
-import { Counted } from '@shared/types';
+import { Counted } from '@shared/domain/types';
 import { Task, Submission, Course, Lesson } from '../entity';
 
 @Injectable()

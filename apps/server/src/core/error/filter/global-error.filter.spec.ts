@@ -1,6 +1,6 @@
 import { NotFound } from '@feathersjs/errors';
 import { HttpStatus } from '@nestjs/common';
-import { SampleError } from '@shared/error/business.error';
+import { SampleError } from '@shared/common/error/business.error';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { GlobalErrorFilter } from './global-error.filter';
 import { ErrorResponse } from '../dto/error.response';

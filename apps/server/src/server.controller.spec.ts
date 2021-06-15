@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ServerController } from './server.controller';
-import { ServerService } from './server.service';
 
 describe('ServerController', () => {
 	let serverController: ServerController;
@@ -8,15 +7,14 @@ describe('ServerController', () => {
 	beforeEach(async () => {
 		const app: TestingModule = await Test.createTestingModule({
 			controllers: [ServerController],
-			providers: [ServerService],
 		}).compile();
 
 		serverController = app.get<ServerController>(ServerController);
 	});
 
 	describe('root', () => {
-		it('should return "Hello World!"', () => {
-			expect(serverController.getHello()).toBe('Hello World!');
+		it('should return "Schulcloud Server API"', () => {
+			expect(serverController.getHello()).toBe('Schulcloud Server API');
 		});
 	});
 });
