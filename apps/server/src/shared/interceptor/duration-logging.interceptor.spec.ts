@@ -1,26 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { INestApplication, NestInterceptor } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { ServerModule } from '@src/server.module';
 import { DurationLoggingInterceptor } from '@src/shared/interceptor/index';
 import { Logger } from '@src/core/logger/logger.service';
+import { createTestModule } from './test/create-test.module';
 
 describe('DurationLoggingInterceptor', () => {
 	describe('when integrate DurationLoggingInterceptor', () => {
-		function createTestModule(interceptor: NestInterceptor) {
-			return Test.createTestingModule({
-				imports: [ServerModule],
-				providers: [
-					{
-						provide: APP_INTERCEPTOR,
-						useValue: interceptor,
-					},
-				],
-			}).compile();
-		}
 		let app: INestApplication;
 		let interceptor: DurationLoggingInterceptor;
 
