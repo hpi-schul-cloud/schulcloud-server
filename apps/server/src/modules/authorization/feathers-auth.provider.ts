@@ -17,7 +17,7 @@ export class FeathersAuthProvider {
 	async getUserSchoolPermissions(userId: EntityId, schoolId: EntityId): Promise<string[]> | never {
 		const user = await this.getUser(userId);
 		// test user is school member
-		const sameSchool = user.schoolId.equals(schoolId);
+		const sameSchool = user.schoolId.toString() === schoolId;
 		if (sameSchool && Array.isArray(user.permissions)) {
 			return user.permissions;
 		}
