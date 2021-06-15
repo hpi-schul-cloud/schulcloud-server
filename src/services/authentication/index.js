@@ -1,43 +1,11 @@
 const { AuthenticationService, JWTStrategy } = require('@feathersjs/authentication');
 const { LocalStrategy } = require('@feathersjs/authentication-local');
-const { Configuration } = require('@hpi-schul-cloud/commons');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
 const { LdapStrategy, MoodleStrategy, IservStrategy, TSPStrategy, ApiKeyStrategy } = require('./strategies');
 const { hooks } = require('./hooks');
-const { authenticationSecret, audience } = require('./logic');
-
-const authConfig = {
-	entity: 'account',
-	service: 'accountModel',
-	secret: authenticationSecret,
-	authStrategies: ['jwt', 'local', 'ldap', 'moodle', 'iserv', 'tsp', 'api-key'],
-	jwtOptions: {
-		header: { typ: 'access' },
-		audience,
-		issuer: 'feathers',
-		algorithm: 'HS256',
-		expiresIn: Configuration.get('JWT_LIFETIME'),
-	},
-	local: {
-		usernameField: 'username',
-		passwordField: 'password',
-	},
-	ldap: {
-		usernameField: 'username',
-	},
-	moodle: {
-		usernameField: 'username',
-		systemIdField: 'systemId',
-	},
-	iserv: {
-		usernameField: 'username',
-		systemIdField: 'systemId',
-	},
-	tsp: {},
-	'api-key': {},
-};
+const { authConfig } = require('./configuration');
 
 class SCAuthenticationService extends AuthenticationService {
 	async getPayload(authResult, params) {

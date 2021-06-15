@@ -14,8 +14,7 @@ describe('jwtTimer service', () => {
 		const defaultApp = await require('../../../../src/app');
 		assert.ok(defaultApp.service('accounts/jwtTimer'));
 	});
-	describe('redis mocked', function test() {
-		this.timeout(20000);
+	describe('redis mocked', () => {
 		let testObjects;
 		let app;
 		let redisHelper;
@@ -143,8 +142,8 @@ describe('jwtTimer service', () => {
 			});
 		});
 
-		after(() => {
-			testObjects.cleanup();
+		after(async () => {
+			await testObjects.cleanup();
 
 			delete require.cache[require.resolve('../../../../src/utils/redis')];
 			delete require.cache[require.resolve('../../../../src/app')];
