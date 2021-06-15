@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PaginationModel } from '@shared/repo/interface/pagination.interface';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain';
+import { EntityId, IPagination } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
 import { News } from '../entity';
 import { NewsScope } from './news-scope';
@@ -25,7 +24,7 @@ export class NewsRepo {
 	async findAll(
 		targets: NewsTargetFilter[],
 		unpublished: boolean,
-		pagination: PaginationModel = {}
+		pagination: IPagination = {}
 	): Promise<Counted<News[]>> {
 		const scope = new NewsScope();
 		scope.byTargets(targets);
@@ -46,7 +45,7 @@ export class NewsRepo {
 		await this.em.removeAndFlush(news);
 	}
 
-	private async findNewsAndCount(query, pagination: PaginationModel): Promise<Counted<News[]>> {
+	private async findNewsAndCount(query, pagination: IPagination): Promise<Counted<News[]>> {
 		const [obj, count] = await this.em.findAndCount(News, query, {
 			...pagination,
 		});

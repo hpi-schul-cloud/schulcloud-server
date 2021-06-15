@@ -1,8 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId, IPagination } from '@shared/domain';
 import { QueryOrder } from '@mikro-orm/core';
-import { PaginationModel } from '@shared/repo';
 import { Counted } from '@shared/domain/types';
 import { Task, Submission, Course, Lesson } from '../entity';
 
@@ -12,7 +11,7 @@ export class TaskRepo {
 
 	// WARNING: this is used to deal with the current datamodel, and needs to be changed.
 	// DO NOT DO THIS AT HOME!!
-	async findAllOpenByStudent(userId: EntityId, { limit, skip }: PaginationModel = {}): Promise<Counted<Task[]>> {
+	async findAllOpenByStudent(userId: EntityId, { limit, skip }: IPagination = {}): Promise<Counted<Task[]>> {
 		// todo: handle coursegroups
 
 		// TODO move BL to UC

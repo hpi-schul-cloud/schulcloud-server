@@ -4,5 +4,4 @@
  * It is forbidden to reuse existing ones from different layers.
  */
 
-export * from './interface';
 export * from './query';
