@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { DurationLoggingInterceptor } from '@shared/common/interceptor/index';
+import { DurationLoggingInterceptor } from '@shared/common';
 import { Logger } from '@src/core/logger/logger.service';
 import { createTestModule } from './test/create-test.module';
 

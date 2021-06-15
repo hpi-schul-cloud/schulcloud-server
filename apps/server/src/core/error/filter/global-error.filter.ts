@@ -1,8 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, InternalServerErrorException } from '@nestjs/common';
 import * as _ from 'lodash';
 import { Response } from 'express';
-import { BusinessError } from '@shared/common/error/business.error';
-import { ApiValidationError } from '@shared/common/error/api-validation.error';
+import { BusinessError, ApiValidationError } from '@shared/common';
 import { Logger } from '../../logger/logger.service';
 import { ErrorResponse } from '../dto/error.response';
 import { FeathersError } from '../interface';
