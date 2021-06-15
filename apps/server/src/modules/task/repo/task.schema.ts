@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import taskModel = require('../../../../../../src/services/homework/model');
 import courseModel = require('../../../../../../src/services/user-group/model');
 import lessonModel = require('../../../../../../src/services/lesson/model');

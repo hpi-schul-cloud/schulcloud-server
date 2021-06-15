@@ -17,7 +17,7 @@ const config: Config.InitialOptions = {
 	},
 	collectCoverageFrom: ['apps/**/*.(t|j)s'],
 	coverageDirectory: './coverage',
-	coveragePathIgnorePatterns: ['.module.ts$', 'index.ts$', 'spec.ts$'],
+	coveragePathIgnorePatterns: ['.module.ts$', 'index.ts$', 'spec.ts$', 'main.ts$'],
 	coverageThreshold: {
 		global: {
 			branches: 80,
