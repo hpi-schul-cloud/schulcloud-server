@@ -11,7 +11,7 @@ class DelayController {
 	@Get()
 	async getHello(): Promise<string> {
 		await delay(100);
-		return 'Hello World!';
+		return 'Schulcloud Server API';
 	}
 }
 

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { TimeoutInterceptor } from '@src/shared/interceptor';
+import { TimeoutInterceptor } from '@shared/common';
 import { createTestModule } from './test/create-test.module';
 
 describe('TimeoutInterceptor', () => {
@@ -15,7 +15,7 @@ describe('TimeoutInterceptor', () => {
 			await app.init();
 
 			// await normal response, see default REQUEST_TIMEOUT
-			await request(app.getHttpServer()).get('/').expect(200).expect('Hello World!');
+			await request(app.getHttpServer()).get('/').expect(200).expect('Schulcloud Server API');
 
 			interceptor.timeout = 11;
 			await request(app.getHttpServer()).get('/').expect(HttpStatus.REQUEST_TIMEOUT);
