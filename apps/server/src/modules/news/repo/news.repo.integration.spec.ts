@@ -154,4 +154,14 @@ describe('NewsService', () => {
 			await expect(repo.findOneById(failNewsId)).rejects.toThrow(NotFoundError);
 		});
 	});
+
+	describe('delete', () => {
+		it('should delete news', async () => {
+			const teamId = new ObjectId().toString();
+			const news = await createTestNews(schoolId, NewsTargetModel.Team, teamId);
+
+			await repo.delete(news);
+			await expect(repo.findOneById(news.id)).rejects.toThrow(NotFoundError);
+		});
+	});
 });

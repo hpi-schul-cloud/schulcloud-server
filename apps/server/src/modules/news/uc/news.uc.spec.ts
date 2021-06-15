@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LoggerModule } from '@src/core/logger/logger.module';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { UnauthorizedException } from '@nestjs/common';
 import { ICreateNews } from '../entity/news.types';
 
 import { AuthorizationService } from '../../authorization/authorization.service';
@@ -11,11 +13,24 @@ import { NewsTargetModel } from '../entity';
 describe('NewsUc', () => {
 	let service: NewsUc;
 	let repo: NewsRepo;
-	const userId = new ObjectId().toString();
-	const schoolId = new ObjectId().toString();
-	const pagination = {};
 	const courseTargetId = 'course1';
 	const teamTargetId = 'team1';
+	const NEWS_PERMISSIONS = ['NEWS_VIEW', 'NEWS_EDIT'];
+
+	const userId = new ObjectId().toString();
+	const schoolId = new ObjectId().toString();
+	const newsId = new ObjectId().toString();
+	const displayAt = new Date();
+	const exampleCourseNews = {
+		_id: newsId,
+		displayAt,
+		targetModel: NewsTargetModel.Course,
+		target: {
+			id: courseTargetId,
+		},
+	};
+	const pagination = {};
+
 	const targets = [
 		{
 			targetModel: NewsTargetModel.Course,
@@ -39,21 +54,34 @@ describe('NewsUc', () => {
 							return {};
 						},
 						findAll() {
-							return [[], 0];
+							return [[exampleCourseNews], 1];
 						},
+						findOneById(id) {
+							if (id === newsId) {
+								return exampleCourseNews;
+							}
+							throw new NotFoundException();
+						},
+						delete(id) {},
 					},
 				},
 				{
 					provide: AuthorizationService,
 					useValue: {
-						checkEntityPermissions() {},
+						checkEntityPermissions(user) {
+							if (userId !== user) {
+								throw new UnauthorizedException();
+							}
+						},
 						// eslint-disable-next-line @typescript-eslint/no-shadow
 						getPermittedEntities(userId, targetModel, permissions) {
 							return targets
 								.filter((target) => target.targetModel === targetModel)
 								.flatMap((target) => target.targetIds);
 						},
-						getEntityPermissions() {},
+						getEntityPermissions() {
+							return NEWS_PERMISSIONS;
+						},
 					},
 				},
 			],
@@ -155,5 +183,51 @@ describe('NewsUc', () => {
 		});
 
 		// TODO test authorization
+	});
+
+	describe('findOneByIdForUser', () => {
+		it('should find news by id for user', async () => {
+			const foundNews = await service.findOneByIdForUser(newsId, userId);
+			const expected = {
+				...exampleCourseNews,
+				permissions: NEWS_PERMISSIONS,
+			};
+			expect(foundNews).toStrictEqual(expected);
+		});
+
+		it('should throw not found exception if news was not found', async () => {
+			const anotherNewsId = new ObjectId().toHexString();
+			await expect(service.findOneByIdForUser(anotherNewsId, userId)).rejects.toThrow(NotFoundException);
+		});
+	});
+
+	describe('update', () => {
+		it('should update news', async () => {
+			const params = {
+				title: 'new title',
+				content: 'new content',
+			};
+			const updatedNews = await service.update(newsId, userId, params);
+			expect(updatedNews.title).toBe(params.title);
+			expect(updatedNews.content).toBe(params.content);
+		});
+
+		it('should throw Unauthorized exception if user has no NEWS_EDIT permissions', async () => {
+			const anotherUserId = new ObjectId().toHexString();
+			const params = {};
+			await expect(service.update(newsId, anotherUserId, params)).rejects.toThrow(UnauthorizedException);
+		});
+	});
+
+	describe('delete', () => {
+		it('should successfully delete news', async () => {
+			const result = await service.delete(newsId, userId);
+			expect(result).toBe(newsId);
+		});
+
+		it('should throw Unauthorized exception if user doesnt have permission NEWS_EDIT', async () => {
+			const anotherUser = new ObjectId().toHexString();
+			await expect(service.delete(newsId, anotherUser)).rejects.toThrow(UnauthorizedException);
+		});
 	});
 });
