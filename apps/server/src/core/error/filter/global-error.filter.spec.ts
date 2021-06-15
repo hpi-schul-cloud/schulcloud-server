@@ -1,7 +1,7 @@
 import { NotFound } from '@feathersjs/errors';
 import { HttpStatus } from '@nestjs/common';
-import { SampleError } from '@shared/error/business.error';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { BusinessError } from '@shared/error';
 import { GlobalErrorFilter } from './global-error.filter';
 import { ErrorResponse } from '../dto/error.response';
 
@@ -12,6 +12,18 @@ describe('GlobalErrorFilter', () => {
 	});
 
 	describe('createErrorResponse', () => {
+		class SampleError extends BusinessError {
+			constructor(message?: string) {
+				super(
+					{
+						type: 'SAMPLE_ERROR',
+						title: 'Sample Error',
+						defaultMessage: message || 'default sample error message',
+					},
+					HttpStatus.NOT_IMPLEMENTED
+				);
+			}
+		}
 		it('should process a feathers error correctly', () => {
 			const feathersError = new NotFound('Not found message');
 			const result: ErrorResponse = errorFilter.createErrorResponse(feathersError);
