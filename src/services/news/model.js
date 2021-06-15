@@ -3,15 +3,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const { enableAuditLog } = require('../../utils/database');
-
-const targetModels = ['courses', 'teams', 'class'];
-
-const newsPermissions = {
-	VIEW: 'NEWS_VIEW',
-	EDIT: 'NEWS_EDIT',
-	CREATE: 'NEWS_CREATE',
-	REMOVE: 'NEWS_CREATE',
-};
+const { targetModels, newsPermissions } = require('./constants');
 
 const newsSchema = new Schema({
 	schoolId: {
@@ -91,6 +83,7 @@ const newsHistoryModel = mongoose.model('newshistory', newsHistorySchema);
 
 module.exports = {
 	newsModel,
+	newsSchema,
 	targetModels,
 	newsHistoryModel,
 	newsPermissions,

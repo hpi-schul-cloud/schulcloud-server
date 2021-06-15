@@ -10,57 +10,32 @@ branches:
   only:
     - develop
     - master
-    - /^(release|dependabot|hotfix|feature)\/.*$/
+    - /^((hotfix|feature|release|dependabot)\/.*)$/
 
 stages:
-  - name: test
-  - name: deploy
+  - test
+  - deploy
 
 jobs:
   include:
-    - stage: test
-      script:
-        # - npm audit --audit-level=high
-        - npm test
-        - npm run coverage-codecov
+    - script:
+        - bash ./scripts/unitTest.sh
       name: test:mocha
-      env:
-        - ROCKET_CHAT_URI=http://localhost:5000
-      cache: npm
-      install:
-        - curl https://raw.githubusercontent.com/hpi-schul-cloud/schulcloud-authorization-server/master/docker-compose-test.yml > docker-compose-oauthserver.yml
-        - curl https://raw.githubusercontent.com/hpi-schul-cloud/schulcloud-authorization-server/master/.env.example > .env
-        - sudo docker-compose -f docker-compose-oauthserver.yml up -d
-        - sudo docker pull mongo:4.2
-        - sudo docker run -d -p 27017:27017 mongo:4.2
-        - sudo docker pull minio/minio
-        - sudo docker run -d -p 9090:9000 minio/minio server /data
-        - npm ci
-        - npm i -g wait-on
-        - wait-on tcp:27017 -t 60000
-    - script: curl "https://raw.githubusercontent.com/hpi-schul-cloud/end-to-end-tests/master/scripts/ci/fetch.travis.sh" | bash
+    - script: bash ./scripts/e2eTest.sh
       name: "test:end-to-end"
-      env:
-        - DOCKER_COMPOSE_VERSION=1.27.4
-      cache: npm
-      before_install:
-        - sudo rm /usr/local/bin/docker-compose
-        - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-        - chmod +x docker-compose
-        - sudo mv docker-compose /usr/local/bin
-      install:
-        - echo "skipping install"
       after_failure:
         - cat /home/travis/.npm/_logs/*debug.log
-    - stage: build
+    - stage: deploy
       if: NOT fork
       script:
-        - ./build.sh
-      name: build and push
+        - bash ./build.sh
+      name: build_and_push
       language: generic
       env:
         - GIT_SHA=$( git rev-parse HEAD )
         - DOCKERTAG=$( echo $TRAVIS_BRANCH | tr -s "[:punct:]" "-" )
+      after_failure:
+        - cat /home/travis/.npm/_logs/*debug.log
       install:
         - mkdir -p .build
         - openssl aes-256-cbc -K $encrypted_0ddd2445e49f_key -iv $encrypted_0ddd2445e49f_iv -in travis_rsa.enc -out .build/travis_rsa -d

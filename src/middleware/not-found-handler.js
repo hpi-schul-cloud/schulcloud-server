@@ -1,5 +1,7 @@
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { PageNotFound } = require('../errors');
-// todo do not work well with error handling, it is produce a 404 and pass it 500er Internal Error
+
 module.exports = (req, res, next) => {
-	next(new PageNotFound());
+	if (Configuration.get('FEATURE_LEGACY_NOT_FOUND_ENABLED') === true) return next(new PageNotFound());
+	return next();
 };
