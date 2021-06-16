@@ -11,26 +11,18 @@ const { expect } = chai;
 
 chai.use(chaiHttp);
 
-function request({ server, method = 'get', endpoint, data, accessToken }) {
-	return new Promise((resolve, reject) =>
-		chai
-			.request(server)
-			[method](endpoint)
-			.set({
-				Accept: 'application/json',
-				Authorization: accessToken,
-				'Content-Type': 'application/x-www-form-urlencoded',
-			})
-			.send(data)
-			.end((err, res) => {
-				if (err) {
-					reject(err);
-					return;
-				}
-				resolve(res);
-			})
-	);
-}
+const request = async ({ server, method = 'get', endpoint, data, accessToken }) => {
+	const response = await chai
+		.request(server)
+		[method](endpoint)
+		.set({
+			Accept: 'application/json',
+			Authorization: accessToken,
+			'Content-Type': 'application/x-www-form-urlencoded',
+		})
+		.send(data);
+	return response;
+};
 
 describe('Etherpad Permission Check: Students', () => {
 	let mockServer;
