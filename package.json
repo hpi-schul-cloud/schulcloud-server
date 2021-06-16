@@ -55,7 +55,7 @@
 		"nest:test": "jest",
 		"nest:test:spec": "jest \"\\.spec\\.ts$\"",
 		"nest:test:e2e": "jest \"\\.e2e-spec\\.ts$\"",
-		"nest:test:all": "concurrently \"npm run nest:test:cov\" \"npm run nest:lint\"",
+		"nest:test:all": "npm run nest:test:cov && npm run nest:lint",
 		"nest:test:watch": "jest --watch",
 		"nest:test:cov": "jest --coverage",
 		"nest:test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
