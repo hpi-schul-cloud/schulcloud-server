@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.4.2] - 2021-06-16
+
+### Fixed
+
+- npm run syncIndex work for not existing collections in the db
+
 ## [26.4.1] - 2021-06-15
 
 ### Change

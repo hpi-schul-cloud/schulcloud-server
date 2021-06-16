@@ -8,7 +8,7 @@ const logger = require('../src/logger');
 
 const getModels = () => Object.entries(mongoose.models);
 
-const extractIndexFromModel = ([modelName, model]) => [modelName, model.schema._indexes];
+const extractIndexFromModel = ([modelName, model]) => [modelName, (model.schema || {})._indexes];
 
 const formatToLog = (data) => util.inspect(data, { depth: 5, compact: true, breakLength: 120 });
 
@@ -20,12 +20,24 @@ const syncIndexes = async () => {
 		const models = getModels();
 		for (const [modelName, model] of models) {
 			logger.alert(`${modelName}.syncIndexes()`);
-			// eslint-disable-next-line no-await-in-loop
-			await model.syncIndexes();
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				await model.syncIndexes();
+			} catch (err) {
+				logger.alert(err);
+			}
 		}
-		const indexes = models.map(extractIndexFromModel);
-		logger.alert(formatToLog(indexes));
-		logger.alert('..finished!');
+
+		logger.alert('..syncIndex finished!');
+
+		try {
+			const indexes = models.map(extractIndexFromModel);
+			logger.alert(formatToLog(indexes));
+		} catch (err) {
+			logger.alert(err);
+		}
+
+		logger.alert('..script finished!');
 		process.exit(0);
 	} catch (error) {
 		logger.error(error);
