@@ -69,40 +69,40 @@ Therefore, the `*.repo.integration.spec.js` should be used.
 The basic structure of the repo integration test:
 
 #### Preconditions (beforeAll): 
-1. Define `MongoMemoryServer`
-2. Create `Nest JS testing module`: 
-  2.1 with `MikroOrmModule` defining entities which are used in tests.
-  2.2 provide the repo which should be tested
-3. Get repo, orm and entityManager from testing module
+
+1. Create `Nest JS testing module`: 
+  1.1 with `MongoMemoryDatabaseModule` defining entities which are used in tests. This will wrap MikroOrmModule.forRoot() with running a MongoDB in memory. 
+  1.2 provide the repo which should be tested
+2. Get repo, orm and entityManager from testing module
 
 ```TypeScript
-    beforeAll(async () => {
-        mongod = new MongoMemoryServer();                               (1)
-        const dbUrl = await mongod.getUri();
-        const module: TestingModule = await Test.createTestingModule({  (2)
+	import { MongoMemoryDatabaseModule } from '@src/modules/database';
+
+	let repo: NewsRepo;
+	let em: EntityManager;
+	let testModule: TestingModule;
+
+    beforeAll(async () => {                              
+    	testModule: TestingModule = await Test.createTestingModule({    (1)
              imports: [
-                 MikroOrmModule.forRoot({                               (2.1)
-                     type: 'mongo',
-                     clientUrl: dbUrl,
-                     entities: [News, CourseNews, ...],
-                 }),
+                 	MongoMemoryDatabaseModule.forRoot({                 (1.1)
+					entities: [News, CourseNews, ...],
+				}),
               ],
-             providers: [NewsRepo],                                     (2.2)                          
+             providers: [NewsRepo],                                     (1.2)                          
       }).compile();
-      repo = module.get<NewsRepo>(NewsRepo);                            (3)
-      orm = module.get<MikroORM>(MikroORM);
-      em = module.get<EntityManager>(EntityManager);
+      repo = testModule.get<NewsRepo>(NewsRepo);                        (2)
+      orm = testModule.get<MikroORM>(MikroORM);
+      em = testModule.get<EntityManager>(EntityManager);
     })
 ```
 
 #### Post conditions (afterAll)
-After all tests are executed close the app and orm to release the resources
+After all tests are executed close the app and orm to release the resources by closing the test module.
 ```TypeScript
     afterAll(async () => {
-        await orm.close();
-        await mongod.stop();         
-    });
-                             
+        await testModule.close();
+    });     
 ```
 
 ### Mapping Tests

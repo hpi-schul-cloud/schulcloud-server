@@ -44,6 +44,8 @@
   - entity discovery
   - check indexes in mikroorm: when are they updated?
   - teardown (test, server module, main.ts)
+  - replikaset for test module
+  - entity discovery
 
 - news
 
