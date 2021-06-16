@@ -9,7 +9,21 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Added
+
+- SC-9018; SC-9003 - created schoolsList public endpoint, and jwt secured /schools endpoint
+- SC-9092 - delete S3 files after 7 days from user deletion
+- SC-8959 - Add messenger to deletion concept
+
+## [26.4.0] - 2021-06-11
+
 - SC-9004 - Sync env variables between backend and frontend
+
+## [26.3.1] - 2021-06-14
+
+### Added
+
+- SC-9134 - Add missing mongo indexes for LDAP Sync
 
 ## [26.3.0] - 2021-06-07
 
@@ -33,6 +47,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- OPS-2418 - Change buildpipelines (Server, Client, Nuxt) to execute E2E tests according QF decision
 - SC-8250 - add bulk deletion to user service v2
 - SC-8341 - add tombstone school to tombstone user
 - SC-8408 - added delete events by scope Id route
@@ -43,9 +58,14 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - OPS-1499 - Add feature to CI Pipeline and provide manual deployments of branches and automatic deploy of release to staging
 - Add run script for sync indexes based on existing and registered schemas.
 - SC-9085 - add registration pin deletion for parent emails
+- SC-9004 - Sync env variables between backend and frontend
+- OPS-1499 - Add feature to CI Pipeline and provide manual deployments of branches
+- Add run script for sync indexes based on existing and registered schemas.
 
 ### Changed
 
+- SC-8440 - fixed open api validation for manual consent
+- SC-9055 - changed Edu-Sharing permissions for Brandenburg Sportinhalt content
 - SC-6950 - validation for officialSchoonNumber now allows 5 or 6 digits
 - SC-8599 - added helparea contact dropdown and send value
 - SC-7944 - use persistent ids for Lern-Store content items
@@ -58,12 +78,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-8933 - fix date format on first login
 - SC-8728 - fix configuration reset in tests
 - SC-8873 - fix addUser prioritization for full school Matrix messenger sync
 - SC-8982 - fix test setup for on the fly building test like routes jwt
 
 ## [26.1.0]
-
 
 ### Added
 

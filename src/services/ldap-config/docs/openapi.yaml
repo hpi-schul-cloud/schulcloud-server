@@ -66,7 +66,7 @@ paths:
               schema:
                 $ref: 'schemas/verify.response.yaml'
         '400':
-          description: validation failed
+          description: the required parameters are missing
           content:
             application/json:
               schema:

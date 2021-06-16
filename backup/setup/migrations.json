@@ -985,7 +985,7 @@
 },
 {
 	"_id": {
-		"$oid": "60757eca72058806093ad5a2"
+		"$oid": "60c32a665330afa24c1ef9ba"
 	},
 	"state": "up",
 	"name": "set_search_index",
@@ -1005,4 +1005,3 @@
 	},
 	"__v": 0
 }]
-

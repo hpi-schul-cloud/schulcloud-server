@@ -53,7 +53,6 @@ describe('messenger synchronizer utils', () => {
 			}
 		]
 	}
-
 	{
 		"method": "removeRoom",
 		"room": {

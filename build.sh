@@ -4,9 +4,8 @@
 # develop-Branch goes to test, Master-Branch goes to productive systems
 
 # decrypt key
-cd ..
 mkdir -p .build
-openssl aes-256-cbc -K "$encrypted_bce910623bb2_key" -iv "$encrypted_bce910623bb2_iv" -in travis_rsa.enc -out .build/travis_rsa -d
+openssl aes-256-cbc -K $encrypted_0ddd2445e49f_key -iv $encrypted_0ddd2445e49f_iv -in travis_rsa.enc -out .build/travis_rsa -d
 
 #
 # set -e : "... Exit immediately if a pipeline [...], which may consist of a single simple command [...],
@@ -35,10 +34,10 @@ then
 elif [[ "$TRAVIS_BRANCH" =~ ^"release"* ]]
 then
 	GIT_FLOW_BRANCH="release"
-elif [[ "$TRAVIS_BRANCH" =~ ^hotfix\/[A-Z]+-[0-9]+-[a-zA-Z_]+$ ]]
+elif [[ "$TRAVIS_BRANCH" =~ ^hotfix\/[A-Z]+-[0-9]+-[a-zA-Z0-9_]+$ ]]
 then
 	GIT_FLOW_BRANCH="hotfix"
-elif [[ "$TRAVIS_BRANCH" =~ ^feature\/[A-Z]+-[0-9]+-[a-zA-Z_]+$ ]]
+elif [[ "$TRAVIS_BRANCH" =~ ^feature\/[A-Z]+-[0-9]+-[a-zA-Z0-9_]+$ ]]
 then
 	GIT_FLOW_BRANCH="feature"
 else
@@ -101,6 +100,9 @@ function buildandpush {
 	echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
 	# build containers
+	# Log in to the docker CLI
+	echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+	
 	docker build -t schulcloud/schulcloud-server:"$DOCKERTAG" -t schulcloud/schulcloud-server:"$DOCKERTAG_SHA" .
 
 	if [[ "$?" != "0" ]]

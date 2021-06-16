@@ -99,81 +99,66 @@ describe('admin users integration tests', () => {
 
 	it('FIND basic request', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
-		await Promise.all([
+		const [adminUser] = await Promise.all([
+			testObjects.createTestUser({ roles: ['administrator'], schoolId }),
 			testObjects.createTestUser({ roles: ['student'], schoolId }),
 			testObjects.createTestUser({ roles: ['student'], schoolId }),
 			testObjects.createTestUser({ roles: ['student'], schoolId }),
 		]);
-		const token = await getAdminToken(schoolId);
-		const request = chai
-			.request(app)
-			.get('/users/admin/students')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.set('content-type', 'application/json')
-			.query({
-				$limit: 25,
-				$skip: 0,
-				$sort: {
-					email: 1,
-				},
-			});
-		const response = await request.send();
-		expect(response.body).to.not.be.undefined;
-		expect(response.body.total).to.equal(3);
-		expect(Array.isArray(response.body.data)).to.equal(true);
+
+		const params = await testObjects.generateRequestParamsFromUser(adminUser);
+		params.query = {
+			$limit: 25,
+			$skip: 0,
+			$sort: {
+				email: 1,
+			},
+		};
+
+		const result = await app.service('/users/admin/students').find(params);
+		expect(result).to.not.be.undefined;
+		expect(result.data).to.be.an('array').of.length(3);
 	});
 
 	it('FIND request with searchQuery', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
-		await Promise.all([
+		const [adminUser] = await Promise.all([
+			testObjects.createTestUser({ roles: ['administrator'], schoolId }),
 			testObjects.createTestUser({ roles: ['student'], firstName: 'Hannes', schoolId }),
 			testObjects.createTestUser({ roles: ['student'], firstName: 'Hannelore', schoolId }),
 			testObjects.createTestUser({ roles: ['student'], firstName: 'Max', schoolId }),
 		]);
-		const token = await getAdminToken(schoolId);
-		const request = chai
-			.request(app)
-			.get('/users/admin/students')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.set('content-type', 'application/json')
-			.query({
-				$limit: 25,
-				$skip: 0,
-				$sort: {
-					email: 1,
-				},
-				searchQuery: 'Hann',
-			});
-		const response = await request.send();
-		expect(response.body).to.not.be.undefined;
-		expect(response.body.total).to.equal(2);
-		expect(Array.isArray(response.body.data)).to.equal(true);
+		const params = await testObjects.generateRequestParamsFromUser(adminUser);
+		params.query = {
+			$limit: 25,
+			$skip: 0,
+			$sort: {
+				email: 1,
+			},
+			searchQuery: 'Hann',
+		};
+		const result = await app.service('/users/admin/students').find(params);
+		expect(result).to.not.be.undefined;
+		expect(result.data).to.be.an('array').of.length(2);
 	});
 
 	it('FIND request with various query params', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
-		await Promise.all([
+		const [adminUser] = await Promise.all([
+			testObjects.createTestUser({ roles: ['administrator'], schoolId }),
 			testObjects.createTestUser({ roles: ['student'], firstName: 'Bruce', lastName: 'Wayne', schoolId }),
 			testObjects.createTestUser({ roles: ['student'], schoolId }),
 			testObjects.createTestUser({ roles: ['student'], schoolId }),
 		]);
-		const token = await getAdminToken(schoolId);
-		const request = chai
-			.request(app)
-			.get('/users/admin/students')
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.set('content-type', 'application/json')
-			.query({
-				consentStatus: { $in: ['ok', 'parentsAgreed', 'missing'] },
-				firstName: 'Bruce',
-				lastName: 'Wayne',
-			});
-		const response = await request.send();
-		expect(response.body).to.not.be.undefined;
-		expect(response.body.total).to.equal(1);
-		expect(Array.isArray(response.body.data)).to.equal(true);
+
+		const params = await testObjects.generateRequestParamsFromUser(adminUser);
+		params.query = {
+			consentStatus: { $in: ['ok', 'parentsAgreed', 'missing'] },
+			firstName: 'Bruce',
+			lastName: 'Wayne',
+		};
+		const result = await app.service('/users/admin/students').find(params);
+		expect(result).to.not.be.undefined;
+		expect(result.data).to.be.an('array').of.length(1);
 	});
 });

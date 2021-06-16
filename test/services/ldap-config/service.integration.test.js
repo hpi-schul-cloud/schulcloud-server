@@ -4,6 +4,8 @@ const chaiAsPromised = require('chai-as-promised');
 const sinon = require('sinon');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
+const appPromise = require('../../../src/app');
+const testObjects = require('../helpers/testObjects')(appPromise);
 const { Forbidden } = require('../../../src/errors');
 
 const LDAPConnectionError = require('../../../src/services/ldap/LDAPConnectionError');
@@ -18,25 +20,20 @@ describe('LdapConfigService', () => {
 	let app;
 	let server;
 	let configBefore;
-	let testObjects;
 
 	before(async () => {
 		delete require.cache[require.resolve('../../../src/app')];
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		Configuration.set('FEATURE_API_VALIDATION_ENABLED', true);
 		Configuration.set('FEATURE_API_RESPONSE_VALIDATION_ENABLED', true);
-		// eslint-disable-next-line global-require
-		const appPromise = require('../../../src/app');
-		// eslint-disable-next-line global-require
-		testObjects = require('../helpers/testObjects')(appPromise);
 		app = await appPromise;
 		server = await app.listen(0);
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
-		await server.close();
 		Configuration.reset(configBefore);
+		await server.close();
 	});
 
 	describe('GET route', () => {
@@ -260,11 +257,7 @@ describe('LdapConfigService', () => {
 				.set('content-type', 'application/json');
 			const response = await request.send(knownBadConfig);
 			expect(response.status).to.equal(400);
-			expect(response.body.validation_errors).to.deep.include({
-				path: '.body.rootPath',
-				message: "should have required property 'rootPath'",
-				errorCode: 'required.openapi.validation',
-			});
+			expect(response.body.message).to.equal('Invalid config format');
 		});
 	});
 

@@ -1,5 +1,6 @@
 const { expect } = require('chai');
 const commons = require('@hpi-schul-cloud/commons');
+const testHelper = require('../../helpers/testObjects');
 const { ForbiddenError } = require('../../../../src/errors/applicationErrors');
 
 const { Configuration } = commons;
@@ -13,8 +14,7 @@ const createRequestParamsForAdmin = async (testObjects, schoolFeatures) => {
 	return params;
 };
 
-describe('MessengerConfigService', function test() {
-	this.timeout(30000);
+describe('MessengerConfigService', () => {
 	let configBefore;
 	let app;
 	let server;
@@ -29,8 +29,7 @@ describe('MessengerConfigService', function test() {
 			delete require.cache[require.resolve('../../../../src/app')];
 			// eslint-disable-next-line global-require
 			app = await require('../../../../src/app');
-			// eslint-disable-next-line global-require
-			testObjects = require('../../helpers/testObjects')(app);
+			testObjects = testHelper(app);
 			server = await app.listen(0);
 			schoolServiceListeners = app.service('schools').listeners();
 			app.service('schools').removeAllListeners();

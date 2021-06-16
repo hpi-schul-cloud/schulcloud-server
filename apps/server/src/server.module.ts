@@ -3,7 +3,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
-import { DB_URL } from './config';
+import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
 import { TaskModule } from './modules/task/task.module';
 import { CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo } from './modules/news/entity';
 import { Task, Lesson, Course, Submission } from './modules/task/entity';
@@ -19,12 +19,14 @@ import { TeamInfo } from './modules/news/entity/team-info.entity';
 			type: 'mongo',
 			// TODO add mongoose options as mongo options (see database.js)
 			clientUrl: DB_URL,
+			password: DB_PASSWORD,
+			user: DB_USERNAME,
 			entities: [
 				News,
+				CourseInfo,
 				CourseNews,
 				SchoolNews,
 				TeamNews,
-				CourseInfo,
 				SchoolInfo,
 				TeamInfo,
 				UserInfo,
