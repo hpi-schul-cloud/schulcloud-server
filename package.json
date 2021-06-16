@@ -23,7 +23,7 @@
 		"seed": "node ./backup.js -p setup/ -D schulcloud-test import",
 		"test": "npm run nest:test:all && npm run feathers:test",
 		"feathers:test": "cross-env NODE_ENV=test npm run seed && npm run coverage",
-		"test-inspect": "cross-env NODE_ENV=test npm run seed && npm run mocha-inspect",
+		"feathers:test-inspect": "cross-env NODE_ENV=test npm run seed && npm run mocha-inspect",
 		"backup": "node ./backup.js -b export",
 		"setup": "node ./backup.js -p setup/ import",
 		"build": "npm run nest:build",
