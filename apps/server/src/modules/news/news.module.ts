@@ -5,16 +5,15 @@ import { NewsController } from './controller/news.controller';
 import { AuthorizationModule } from '../authorization/authorization.module';
 import { LoggerModule } from '../../core/logger/logger.module';
 
+/* NewsController
+ * to enable:
+ * - unskip e2e tests
+ * - execute migration news_add_target_schools (in migrations/scheduled)
+ * - update backup/setup/news.json from db after migration has been executed
+ */
 @Module({
 	imports: [AuthorizationModule, LoggerModule],
-	controllers: [
-		/* NewsController
-		 * to enable:
-		 * - unskip e2e tests
-		 * - execute migration news_add_target_schools (in migrations/scheduled)
-		 * - update backup/setup/news.json from db after migration has been executed
-		 */
-	],
+	controllers: [NewsController],
 	providers: [NewsUc, NewsRepo],
 	exports: [NewsUc],
 })

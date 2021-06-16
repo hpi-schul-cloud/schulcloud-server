@@ -1,4 +1,3 @@
-import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
@@ -16,9 +15,9 @@ import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
 import { News, NewsTargetModel, NewsTargetModelValue } from '../../../src/modules/news/entity';
 import { CreateNewsParams, NewsResponse, UpdateNewsParams } from '../../../src/modules/news/controller/dto';
 
-jest.setTimeout(30000);
+import { NewsModule } from '../../../src/modules/news/news.module';
 
-describe.skip('News Controller (e2e)', () => {
+describe('News Controller (e2e)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
 	let em: EntityManager;
@@ -43,7 +42,8 @@ describe.skip('News Controller (e2e)', () => {
 	];
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [ServerModule],
+			// TODO move NewsModule into ServerModule
+			imports: [ServerModule, NewsModule],
 		})
 			.overrideGuard(JwtAuthGuard)
 			.useValue({

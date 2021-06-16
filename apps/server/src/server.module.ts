@@ -2,7 +2,6 @@ import { Module, NotFoundException } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { AuthModule } from './modules/authentication/auth.module';
-import { NewsModule } from './modules/news/news.module';
 import { ServerController } from './server.controller';
 import { DB_URL } from './config';
 import { TaskModule } from './modules/task/task.module';
@@ -15,7 +14,6 @@ import { TeamInfo } from './modules/news/entity/team-info.entity';
 @Module({
 	imports: [
 		AuthModule,
-		NewsModule,
 		TaskModule,
 		MikroOrmModule.forRoot({
 			type: 'mongo',
