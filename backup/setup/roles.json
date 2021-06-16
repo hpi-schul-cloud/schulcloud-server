@@ -248,7 +248,7 @@
 		}
 	],
 	"permissions": [
-		"Task_Dashboard_View_v3"
+		"TASK_DASHBOARD_VIEW_V3"
 	],
 	"__v": 0
 },

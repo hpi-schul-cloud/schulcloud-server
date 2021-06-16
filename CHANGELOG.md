@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.4.4] - 2021-06-16
+
+### Change
+
+- rename permission TASK_DASHBOARD_VIEW_V3
+
 ## [26.4.3] - 2021-06-16
 
 ### Change

@@ -34,7 +34,7 @@ module.exports = {
 			{
 				$addToSet: {
 					permissions: {
-						$each: ['Task_Dashboard_View_v3'],
+						$each: ['TASK_DASHBOARD_VIEW_V3'],
 					},
 				},
 			}
@@ -49,7 +49,7 @@ module.exports = {
 			{
 				$pull: {
 					permissions: {
-						$in: ['Task_Dashboard_View_v3'],
+						$in: ['TASK_DASHBOARD_VIEW_V3'],
 					},
 				},
 			}
