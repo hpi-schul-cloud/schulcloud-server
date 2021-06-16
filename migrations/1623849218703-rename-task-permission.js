@@ -5,7 +5,7 @@ const { info, error } = require('../src/logger');
 const { connect, close } = require('../src/utils/database');
 
 const Roles = mongoose.model(
-	'roles170521',
+	'roles160621',
 	new mongoose.Schema(
 		{
 			name: { type: String, required: true },
@@ -23,18 +23,29 @@ const Roles = mongoose.model(
 
 module.exports = {
 	up: async function up() {
+		await connect();
+		await Roles.updateOne(
+			{ name: 'student' },
+			{
+				$pull: {
+					permissions: {
+						$in: ['Task_Dashboard_View_v3'],
+					},
+				},
+			}
+		).exec();
 		// eslint-disable-next-line no-process-env
 		if (['n21', 'brb', 'thr'].includes(process.env.SC_THEME)) {
-			info('Migration not running on this instance');
+			info('Migration does not add the permission for this instance.');
 			return;
 		}
-		await connect();
+
 		await Roles.updateOne(
 			{ name: 'student' },
 			{
 				$addToSet: {
 					permissions: {
-						$each: ['Task_Dashboard_View_v3'],
+						$each: ['TASK_DASHBOARD_VIEW_V3'],
 					},
 				},
 			}
@@ -49,11 +60,29 @@ module.exports = {
 			{
 				$pull: {
 					permissions: {
-						$in: ['Task_Dashboard_View_v3'],
+						$in: ['TASK_DASHBOARD_VIEW_V3'],
 					},
 				},
 			}
 		).exec();
+
+		// eslint-disable-next-line no-process-env
+		if (['n21', 'brb', 'thr'].includes(process.env.SC_THEME)) {
+			info('Migration does not add the permission for this instance.');
+			return;
+		}
+
+		await Roles.updateOne(
+			{ name: 'student' },
+			{
+				$addToSet: {
+					permissions: {
+						$each: ['Task_Dashboard_View_v3'],
+					},
+				},
+			}
+		).exec();
+
 		await close();
 	},
 };
