@@ -97,8 +97,9 @@ const updateAccount = async (userId, account) =>
 
 const updateUserAndAccount = async (userId, changedUser, changedAccount) => {
 	await checkUpdate(changedUser.email, userId);
-	changedUser.roles = await resolveUserRoles(changedUser.roles);
-
+	if ('roles' in changedUser) {
+		changedUser.roles = await resolveUserRoles(changedUser.roles);
+	}
 	const user = await userModel.findOneAndUpdate({ _id: userId }, changedUser, { new: true }).lean().exec();
 	const account = await updateAccount(user._id, changedAccount);
 	return { user, account };
@@ -117,8 +118,8 @@ const findByLdapIdAndSchool = async (ldapId, schoolId) =>
 const findByLdapDnsAndSchool = async (ldapDns, schoolId) =>
 	userModel
 		.find({
-			ldapDn: { $in: ldapDns },
 			schoolId,
+			ldapDn: { $in: ldapDns },
 		})
 		.populate('roles')
 		.lean()

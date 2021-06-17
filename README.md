@@ -14,6 +14,10 @@ Codacy: [![Codacy Badge](https://app.codacy.com/project/badge/Grade/c1d53a69d043
 
 Swagger UI documentation when running the server locally, it is served at [http://localhost:3030/docs/](http://localhost:3030/docs/).
 
+# NestJS application 
+
+> Find the [NestJS applications documentation](https://hpi-schul-cloud.github.io/schulcloud-server/) of this repository at GitHub pages.
+
 # Requirements
 
 * Node.js (see `.nvmrc` for version)

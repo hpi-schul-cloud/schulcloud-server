@@ -3,7 +3,7 @@ const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 const { pseudonymRepo } = require('.');
-const { ValidationError } = require('../../../errors');
+const { AssertionError } = require('../../../errors');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -60,7 +60,7 @@ describe('pseudonym repo', () => {
 		});
 
 		it('when the function is called with invalid id, it throws an error', async () => {
-			expect(pseudonymRepo.deletePseudonymsForUser('invalid')).to.eventually.be.rejectedWith(ValidationError);
+			await expect(pseudonymRepo.deletePseudonymsForUser('invalid')).to.be.rejectedWith(AssertionError);
 		});
 	});
 
@@ -85,7 +85,7 @@ describe('pseudonym repo', () => {
 		});
 
 		it('when the function is called with invalid user id, it should return an error', async () => {
-			expect(pseudonymRepo.getPseudonymsForUser('INVALID_USER_ID')).to.eventually.be.rejectedWith(ValidationError);
+			await expect(pseudonymRepo.getPseudonymsForUser('INVALID_USER_ID')).to.be.rejectedWith(AssertionError);
 		});
 	});
 });

@@ -9,7 +9,50 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+### Added
+
 - SC-9018; SC-9003 - created schoolsList public endpoint, and jwt secured /schools endpoint
+- SC-9093 - make configured default language and timezone available in config service
+- SC-9092 - delete S3 files after 7 days from user deletion
+- SC-8959 - Add messenger to deletion concept
+
+### Changed 
+
+- SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
+
+## [26.4.4] - 2021-06-16
+
+### Change
+
+- rename permission TASK_DASHBOARD_VIEW_V3
+
+## [26.4.3] - 2021-06-16
+
+### Change
+
+- SC-9139 - Add a check if user roles should be updated or not to the repo
+
+## [26.4.2] - 2021-06-16
+
+### Fixed
+
+- npm run syncIndex work for not existing collections in the db
+
+## [26.4.1] - 2021-06-15
+
+### Change
+
+- SC-9029 - Change place of the channel creation for RabbitMQ
+
+## [26.4.0] - 2021-06-11
+
+- SC-9004 - Sync env variables between backend and frontend
+
+## [26.3.1] - 2021-06-14
+
+### Added
+
+- SC-9134 - Add missing mongo indexes for LDAP Sync
 
 ## [26.3.0] - 2021-06-07
 
@@ -17,19 +60,19 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-8898 - parallelize LDAP sync using RabbitMQ
 
-## 26.2.2 - 2021-06-04
+## [26.2.2] - 2021-06-04
 
 ### Fixed
 
 - Fixed dependencies issue
 
-## 26.2.1 - 2021-06-02
+## [26.2.1] - 2021-06-02
 
 ### Added
 
 - SC-9103 - add logging for syncIndexes script
 
-## 26.2.0 - 2021-06-01
+## [26.2.0] - 2021-06-01
 
 ### Added
 
@@ -47,7 +90,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-9004 - Sync env variables between backend and frontend
 - OPS-1499 - Add feature to CI Pipeline and provide manual deployments of branches
 - Add run script for sync indexes based on existing and registered schemas.
-
 
 ### Changed
 
