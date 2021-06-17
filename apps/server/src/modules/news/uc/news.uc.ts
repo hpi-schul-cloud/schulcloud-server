@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, IPagination } from '@shared/domain';
+import { EntityId, IFindOptions } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
 import { Logger } from '@src/core/logger/logger.service';
 import { AuthorizationService } from '../../authorization/authorization.service';
@@ -49,14 +49,14 @@ export class NewsUc {
 	 * @param pagination
 	 * @returns
 	 */
-	async findAllForUser(userId: EntityId, scope?: INewsScope, pagination?: IPagination): Promise<Counted<News[]>> {
+	async findAllForUser(userId: EntityId, scope?: INewsScope, options?: IFindOptions<News>): Promise<Counted<News[]>> {
 		this.logger.log(`start find all news for user ${userId}`);
 
 		const unpublished = !!scope?.unpublished; // default is only published news
 		const permissions: [Permission] = NewsUc.getRequiredPermissions(unpublished);
 
 		const targets = await this.getPermittedTargets(userId, scope, permissions);
-		const [newsList, newsCount] = await this.newsRepo.findAll(targets, unpublished, pagination);
+		const [newsList, newsCount] = await this.newsRepo.findAll(targets, unpublished, options);
 
 		await Promise.all(
 			newsList.map(async (news: News) => {

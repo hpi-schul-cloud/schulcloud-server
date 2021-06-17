@@ -2,7 +2,7 @@ import * as moment from 'moment';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundError } from '@mikro-orm/core';
-import { EntityId } from '@shared/domain';
+import { EntityId, SortOrder } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import {
 	CourseNews,
@@ -17,7 +17,7 @@ import {
 } from '../entity';
 import { NewsRepo } from './news.repo';
 
-describe('NewsService', () => {
+describe('NewsRepo', () => {
 	let repo: NewsRepo;
 	let em: EntityManager;
 	let module: TestingModule;
@@ -95,7 +95,7 @@ describe('NewsService', () => {
 				targetIds: [courseId],
 			};
 			const pagination = { skip: 0, limit: 20 };
-			const [result, count] = await repo.findAll([target], false, pagination);
+			const [result, count] = await repo.findAll([target], false, { pagination });
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
@@ -108,7 +108,7 @@ describe('NewsService', () => {
 				targetModel: NewsTargetModel.School,
 				targetIds: [schoolId],
 			};
-			const [result, count] = await repo.findAll([target], false, pagination);
+			const [result, count] = await repo.findAll([target], false, { pagination });
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
@@ -122,10 +122,29 @@ describe('NewsService', () => {
 				targetIds: [courseId],
 			};
 			const pagination = { skip: 0, limit: 20 };
-			const [result, count] = await repo.findAll([target], false, pagination);
+			const [result, count] = await repo.findAll([target], false, { pagination });
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
+		});
+
+		it('should return news in requested order', async () => {
+			const courseIds = Array.from(Array(5)).map(() => new ObjectId().toHexString());
+
+			for (let i = 0; i < courseIds.length; i += 1) {
+				// eslint-disable-next-line no-await-in-loop
+				await createTestNews(schoolId, NewsTargetModel.Course, courseIds[i]);
+			}
+			const target = {
+				targetModel: NewsTargetModel.Course,
+				targetIds: courseIds,
+			};
+			const [result, count] = await repo.findAll([target], false, { order: { target: SortOrder.desc } });
+			expect(count).toBeGreaterThanOrEqual(result.length);
+			expect(result.length).toEqual(courseIds.length);
+			const resultCourseIds = result.map((news) => news.target.id);
+			const reverseCourseIds = courseIds.sort((r1, r2) => (r1 > r2 ? -1 : 1));
+			expect(resultCourseIds).toEqual(reverseCourseIds);
 		});
 	});
 

@@ -35,7 +35,7 @@ export class NewsController {
 		const [newsList, count] = await this.newsUc.findAllForUser(
 			currentUser.userId,
 			NewsMapper.mapNewsScopeToDomain(scope),
-			pagination
+			{ pagination }
 		);
 		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
 		return new PaginationResponse(dtoList, count);
