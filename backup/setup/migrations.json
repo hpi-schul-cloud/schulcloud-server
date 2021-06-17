@@ -974,7 +974,7 @@
 },
 {
 	"_id": {
-		"$oid": "60509afacace7c54f0c17f65"
+		"$oid": "606c0f825fa13b502e30d775"
 	},
 	"state": "up",
 	"name": "update-nexboard-urls",
@@ -996,17 +996,6 @@
 },
 {
 	"_id": {
-		"$oid": "60c32a665330afa24c1ef9bb"
-	},
-	"state": "up",
-	"name": "LDAPSyncIndices",
-	"createdAt": {
-		"$date": "2021-05-06T15:52:40.923Z"
-	},
-	"__v": 0
-},
-{
-	"_id": {
 		"$oid": "60a22a35cc8f8f35542a1d52"
 	},
 	"state": "up",
@@ -1015,16 +1004,4 @@
 		"$date": "2021-05-17T08:32:53.574Z"
 	},
 	"__v": 0
-},
-{
-	"_id": {
-		"$oid": "60c9fab1c63192781322de94"
-	},
-	"state": "up",
-	"name": "add_S3_expiration",
-	"createdAt": {
-		"$date": "2021-05-28T13:49:55.28Z"
-	},
-	"__v": 0
 }]
-

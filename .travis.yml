@@ -18,8 +18,6 @@ stages:
 
 jobs:
   include:
-    - name: NestJS ensure jest tests and linting  
-      script: npm run nest:test:all
     - script:
         - bash ./scripts/unitTest.sh
       name: test:mocha

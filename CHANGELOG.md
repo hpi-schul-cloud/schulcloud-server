@@ -15,10 +15,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-9092 - delete S3 files after 7 days from user deletion
 - SC-8959 - Add messenger to deletion concept
 
-### Changed 
-
-- SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
-
 ## [26.4.0] - 2021-06-11
 
 - SC-9004 - Sync env variables between backend and frontend
