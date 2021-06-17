@@ -1,5 +1,6 @@
-import { authConfig } from '../../../../../src/services/authentication/configuration';
-const { secret, jwtOptions } = authConfig;
+import externalAuthConfig = require('../../../../../src/services/authentication/configuration');
+
+const { authConfig } = externalAuthConfig;
 
 export interface JwtConstants {
 	secret: string;
@@ -13,6 +14,6 @@ export interface JwtConstants {
 }
 
 export const jwtConstants: JwtConstants = {
-	secret,
-	jwtOptions,
+	secret: authConfig.secret as string,
+	jwtOptions: authConfig.jwtOptions,
 };

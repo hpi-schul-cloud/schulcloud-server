@@ -1,4 +1,6 @@
 const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+
 const { ObjectId } = require('mongoose').Types;
 
 const testObjects = require('../../../../test/services/helpers/testObjects');
@@ -21,11 +23,12 @@ const { equal, toString: idToString } = require('../../../helper/compare').Objec
 const appPromise = require('../../../app');
 
 const { expect } = chai;
+chai.use(chaiAsPromised);
 
 const getExpectedUpdateMany = (modifiedDocuments) => ({ success: true, modifiedDocuments });
 const getExpectedDeleteMany = (deletedDocuments) => ({ success: true, deletedDocuments });
 const getExpectedAssertionError = (paramName) => ({
-	assertion_errors: { param: paramName, code: 'REQUIRED_PARAMENTER_MISSING' },
+	params: [{ param: paramName, error: 'REQUIRED_PARAMETER_MISSING' }],
 });
 
 const createHomeworks = async (testHelper) => {
@@ -104,7 +107,10 @@ const createHomeworks = async (testHelper) => {
 	};
 };
 
-const matchId = (ressource) => ({ _id }) => equal(_id, ressource._id);
+const matchId =
+	(ressource) =>
+	({ _id }) =>
+		equal(_id, ressource._id);
 
 const db = {};
 // TODO move to homeworks/submission repository, test it there and reuse it here only
@@ -171,18 +177,14 @@ describe('in "task.repo" the function', () => {
 
 		it('should handle unexpected inputs', async () => {
 			// must execute step by step that errors not mixed
-			expect(findPrivateHomeworksByUser(null))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(findPrivateHomeworksByUser(undefined))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(findPrivateHomeworksByUser('123'))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(findPrivateHomeworksByUser(() => {}))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
+			let res = await expect(findPrivateHomeworksByUser(null)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(findPrivateHomeworksByUser(undefined)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(findPrivateHomeworksByUser('123')).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(findPrivateHomeworksByUser(() => {})).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
 		});
 	});
 
@@ -218,18 +220,14 @@ describe('in "task.repo" the function', () => {
 
 		it('should handle unexpected inputs', async () => {
 			// must execute step by step that errors not mixed
-			expect(findPublicHomeworkIdsByUser(null))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(findPublicHomeworkIdsByUser(undefined))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(findPublicHomeworkIdsByUser('123'))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(findPublicHomeworkIdsByUser(() => {}))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
+			let res = await expect(findPublicHomeworkIdsByUser(null)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(findPublicHomeworkIdsByUser(undefined)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(findPublicHomeworkIdsByUser('123')).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(findPublicHomeworkIdsByUser(() => {})).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
 		});
 	});
 
@@ -289,18 +287,14 @@ describe('in "task.repo" the function', () => {
 		it('should handle unexpected inputs', async () => {
 			// must execute step by step that errors not mixed
 
-			expect(deletePrivateHomeworksFromUser(null))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(deletePrivateHomeworksFromUser(undefined))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(deletePrivateHomeworksFromUser('123'))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(deletePrivateHomeworksFromUser(() => {}))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
+			let res = await expect(deletePrivateHomeworksFromUser(null)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(deletePrivateHomeworksFromUser(undefined)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(deletePrivateHomeworksFromUser('123')).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(deletePrivateHomeworksFromUser(() => {})).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
 		});
 	});
 
@@ -371,18 +365,14 @@ describe('in "task.repo" the function', () => {
 
 			await testHelper.createTestHomework({ teacherId: userId });
 
-			expect(replaceUserInPublicHomeworks(null, replaceUserId))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(replaceUserInPublicHomeworks(undefined, replaceUserId))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(replaceUserInPublicHomeworks('123', replaceUserId))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(replaceUserInPublicHomeworks(() => {}, replaceUserId))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
+			let res = await expect(replaceUserInPublicHomeworks(null, replaceUserId)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(replaceUserInPublicHomeworks(undefined, replaceUserId)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(replaceUserInPublicHomeworks('123', replaceUserId)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(replaceUserInPublicHomeworks(() => {}, replaceUserId)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
 		});
 
 		it('should handle unexpected second parameter inputs', async () => {
@@ -391,18 +381,14 @@ describe('in "task.repo" the function', () => {
 			await testHelper.createTestHomework({ teacherId: userId });
 			// must execute step by step that errors not mixed
 
-			expect(replaceUserInPublicHomeworks(userId, null))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('replaceUserId'));
-			expect(replaceUserInPublicHomeworks(userId, undefined))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('replaceUserId'));
-			expect(replaceUserInPublicHomeworks(userId, '123'))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('replaceUserId'));
-			expect(replaceUserInPublicHomeworks(userId, () => {}))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('replaceUserId'));
+			let res = await expect(replaceUserInPublicHomeworks(userId, null)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('replaceUserId').params);
+			res = await expect(replaceUserInPublicHomeworks(userId, undefined)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('replaceUserId').params);
+			res = await expect(replaceUserInPublicHomeworks(userId, '123')).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('replaceUserId').params);
+			res = await expect(replaceUserInPublicHomeworks(userId, () => {})).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('replaceUserId').params);
 		});
 	});
 
@@ -458,21 +444,17 @@ describe('in "task.repo" the function', () => {
 			const resultNull = await findGroupSubmissionIdsByUser(new ObjectId());
 			expect(resultNull, 'when input is any valid id').to.be.an('array').with.lengthOf(0);
 
-			expect(findGroupSubmissionIdsByUser(null))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
+			let res = await expect(findGroupSubmissionIdsByUser(null)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
 
-			expect(findGroupSubmissionIdsByUser(undefined))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
+			res = await expect(findGroupSubmissionIdsByUser(undefined)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
 
-			expect(findGroupSubmissionIdsByUser('123'))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
+			res = await expect(findGroupSubmissionIdsByUser('123')).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
 
-			expect(findGroupSubmissionIdsByUser(() => {}))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
+			res = await expect(findGroupSubmissionIdsByUser(() => {})).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
 		});
 	});
 
@@ -528,18 +510,14 @@ describe('in "task.repo" the function', () => {
 		it('should handle unexpected inputs', async () => {
 			// must execute step by step that errors not mixed
 
-			expect(removeGroupSubmissionsConnectionsForUser(null))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(removeGroupSubmissionsConnectionsForUser(undefined))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(removeGroupSubmissionsConnectionsForUser('123'))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(removeGroupSubmissionsConnectionsForUser(() => {}))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
+			let res = await expect(removeGroupSubmissionsConnectionsForUser(null)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(removeGroupSubmissionsConnectionsForUser(undefined)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(removeGroupSubmissionsConnectionsForUser('123')).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(removeGroupSubmissionsConnectionsForUser(() => {})).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
 		});
 	});
 
@@ -584,21 +562,17 @@ describe('in "task.repo" the function', () => {
 			const resultNull = await findUserSubmissionsByUser(new ObjectId());
 			expect(resultNull, 'when input is any object id').to.be.an('array').with.lengthOf(0);
 
-			expect(findUserSubmissionsByUser(null))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
+			let res = await expect(findUserSubmissionsByUser(null)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
 
-			expect(findUserSubmissionsByUser(undefined))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
+			res = await expect(findUserSubmissionsByUser(undefined)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
 
-			expect(findUserSubmissionsByUser('123'))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
+			res = await expect(findUserSubmissionsByUser('123')).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
 
-			expect(findUserSubmissionsByUser(() => {}))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
+			res = await expect(findUserSubmissionsByUser(() => {})).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
 		});
 	});
 
@@ -641,18 +615,14 @@ describe('in "task.repo" the function', () => {
 		it('should handle unexpected inputs', async () => {
 			// must execute step by step that errors not mixed
 
-			expect(deleteSingleSubmissionsFromUser(null))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(deleteSingleSubmissionsFromUser(undefined))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(deleteSingleSubmissionsFromUser('123'))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(deleteSingleSubmissionsFromUser(() => {}))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
+			let res = await expect(deleteSingleSubmissionsFromUser(null)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(deleteSingleSubmissionsFromUser(undefined)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(deleteSingleSubmissionsFromUser('123')).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(deleteSingleSubmissionsFromUser(() => {})).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
 		});
 	});
 
@@ -677,18 +647,14 @@ describe('in "task.repo" the function', () => {
 		});
 
 		it('should handle unexpected inputs', async () => {
-			expect(findArchivedHomeworkIdsByUser(null))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(findArchivedHomeworkIdsByUser(undefined))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(findArchivedHomeworkIdsByUser('123'))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(findArchivedHomeworkIdsByUser(() => {}))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
+			let res = await expect(findArchivedHomeworkIdsByUser(null)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(findArchivedHomeworkIdsByUser(undefined)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(findArchivedHomeworkIdsByUser('123')).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+			res = await expect(findArchivedHomeworkIdsByUser(() => {})).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
 		});
 	});
 
@@ -726,18 +692,17 @@ describe('in "task.repo" the function', () => {
 
 			await testHelper.createTestHomework({ archived: userId });
 			// must execute step by step that errors not mixed
-			expect(removeUserInArchivedHomeworks(null))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(removeUserInArchivedHomeworks(undefined))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(removeUserInArchivedHomeworks('123'))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
-			expect(removeUserInArchivedHomeworks(() => {}))
-				.to.eventually.throw(AssertionError)
-				.with.property(getExpectedAssertionError('userId'));
+			let res = await expect(removeUserInArchivedHomeworks(null)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+
+			res = await expect(removeUserInArchivedHomeworks(undefined)).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+
+			res = await expect(removeUserInArchivedHomeworks('123')).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
+
+			res = await expect(removeUserInArchivedHomeworks(() => {})).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql(getExpectedAssertionError('userId').params);
 		});
 	});
 });
