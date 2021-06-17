@@ -1,6 +1,9 @@
+/* istanbul ignore file */
+// TODO add spec, see news.mapper.spec
 import taskModel = require('../../../../../../src/services/homework/model');
 import courseModel = require('../../../../../../src/services/user-group/model');
 import lessonModel = require('../../../../../../src/services/lesson/model');
+
 const { homeworkSchema: taskSchema, SubmissionSchema: submissionSchema } = taskModel;
 const { courseSchema } = courseModel;
 const { lessonSchema } = lessonModel;

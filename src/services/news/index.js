@@ -93,7 +93,7 @@ class AbstractService {
 		// target and school might be populated or not
 		const isObjectId = (o) => o instanceof ObjectId || typeof o === 'string';
 		// scope case: user role in scope must have given permission
-		if (target && targetModel) {
+		if (target && targetModel && targetModel !== 'schools') {
 			const targetId = isObjectId(target) ? target.toString() : target._id.toString();
 			const scope = this.app.service(`${targetModel}/:scopeId/userPermissions/`);
 			const params = { route: { scopeId: targetId } };

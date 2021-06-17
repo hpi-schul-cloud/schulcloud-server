@@ -3,7 +3,7 @@ const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise);
 const { registrationPinRepo } = require('.');
-const { ValidationError } = require('../../../errors');
+const { AssertionError } = require('../../../errors');
 
 chai.use(chaiAsPromised);
 
@@ -68,9 +68,7 @@ describe('registration pin repo', () => {
 		});
 
 		it('when the function is called with empty email, it throws an error', async () => {
-			expect(registrationPinRepo.deleteRegistrationPinsByEmail(undefined)).to.eventually.be.rejectedWith(
-				ValidationError
-			);
+			await expect(registrationPinRepo.deleteRegistrationPinsByEmail(undefined)).to.be.rejectedWith(AssertionError);
 		});
 	});
 
