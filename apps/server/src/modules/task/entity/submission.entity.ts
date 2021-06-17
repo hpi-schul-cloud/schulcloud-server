@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Collection, Property, ManyToMany } from '@mikro-orm/core';
+import { Entity, ManyToOne, Collection, Property, ManyToMany, OneToMany } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain';
 import { UserTaskInfo } from './user-task-info.entity';
 import { Task } from './task.entity';
@@ -10,6 +10,7 @@ export class Submission extends BaseEntityWithTimestamps {
 		super();
 		Object.assign(this, partial);
 	}
+
 	// TODO: this populate the complete task stuff for now
 	@ManyToOne({ fieldName: 'homeworkId' })
 	homework: Task;
@@ -17,20 +18,20 @@ export class Submission extends BaseEntityWithTimestamps {
 	@ManyToOne({ fieldName: 'studentId' })
 	student: UserTaskInfo;
 
-	/***** student uploads *****/
+	/* ***** student uploads ***** */
 	@Property()
 	comment: string;
 
-	@ManyToOne({ fieldName: 'fileIds', type: FileTaskInfo })
+	@ManyToMany({ fieldName: 'fileIds', type: FileTaskInfo })
 	studentFiles = new Collection<FileTaskInfo>(this);
 
-	/***** teacher uploads *****/
+	/* ***** teacher uploads ***** */
 	@Property()
 	grade: number;
 
 	@Property()
 	gradeComment: string;
 
-	@ManyToOne({ fieldName: 'gradeFileIds', type: FileTaskInfo })
+	@ManyToMany({ fieldName: 'gradeFileIds', type: FileTaskInfo })
 	gradeFileIds = new Collection<FileTaskInfo>(this);
 }
