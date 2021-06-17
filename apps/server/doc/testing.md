@@ -252,7 +252,9 @@ are correctly mounted and available at a specific path.
 
 > Do not test logic (from the business layer or repository) in e2e-tests, this must be done where the logic is defined within of a unit test. A e2e test should only ensure everything is correctly initialized.
 
-> Do not put logic (beside mapping) inside a controller, use the logic layer instead. Mapping can be unit tested.
+> Do not put logic (beside statements, transactions, mapping) inside a controller, use the logic layer instead. 
+
+> Mappers must be unit tested.
 
 #### Preconditions
 
