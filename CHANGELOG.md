@@ -19,6 +19,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
 
+### Removed
+
+- SC-9153 - removed sentry from code and configuration
+
 ## [26.4.4] - 2021-06-16
 
 ### Change

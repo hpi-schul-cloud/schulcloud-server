@@ -1,6 +1,4 @@
 const http = require('http');
-const Sentry = require('@sentry/node');
-const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { incomingMessageToJson } = require('../utils');
 
@@ -30,9 +28,6 @@ const asyncErrorLog = (err, message) => {
 		logger.error(err);
 	}
 	// TODO execute filter must outsource from error pipline
-	if (Configuration.has('SENTRY_DSN')) {
-		Sentry.captureException(err);
-	}
 };
 
 const isSilentError = (error) => error instanceof SilentError || (error && error.error instanceof SilentError); // TODO why checking error.error here

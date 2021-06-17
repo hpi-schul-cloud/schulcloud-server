@@ -24,7 +24,6 @@ const requestLog = require('./logger/RequestLogger');
 const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
 const errorHandler = require('./middleware/errorHandler');
-const sentry = require('./middleware/sentry');
 const rabbitMq = require('./utils/rabbitmq');
 const prometheus = require('./utils/prometheus');
 
@@ -61,7 +60,6 @@ const setupApp = async () => {
 		.use(favicon(path.join(app.get('public'), 'favicon.ico')))
 		.use('/', express.static('public'))
 		.configure(setupConfiguration)
-		.configure(sentry)
 		.use('/helpdesk', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
 		.use('/', bodyParser.json({ limit: '10mb' }))
 		.use(bodyParser.urlencoded({ extended: true }))

@@ -1,7 +1,6 @@
 // Global hooks that run for every service
 const { iff, isProvider } = require('feathers-hooks-common');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const Sentry = require('@sentry/node');
 
 const { AutoLogout, SlowQuery } = require('./errors');
 const logger = require('./logger');
@@ -138,9 +137,6 @@ const leadTimeDetection = (context) => {
 			}
 			const error = new SlowQuery(`Slow query warning at route ${context.path}`, info);
 			logger.error(error);
-			if (Configuration.has('SENTRY_DSN')) {
-				Sentry.captureException(error);
-			}
 		}
 	}
 };

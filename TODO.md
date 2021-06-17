@@ -3,23 +3,16 @@
 ## SUGGESTED
 
 - filter logs by request with reflect-metadata (see mikroorm em setup)
-- disable Document from window
 - find a name for base entity id type
 - find a name for base entity class
-- decide if we want to use our entity id type in all layers (also in dtos etc.)
-- use index.ts files to bundle exports - we could use path names for imports then, e.g. @shared/domain
-- check how we can implement mandatory/optional fields in dtos
-- should we use Expose() as default in dtos?
 - in the controller we have to prohibit serialization of properties that have no @EXPOSE
 - find the best way ORM entity discovery
 - decide where to put domain interfaces (directory)
 - how can we log validation errors during development?
 - sanitizer
-- remove non-node async library
 - fix async cleanup & remove timeout in tests
 - test object creator for nest entities
 - enable log only for failed tests: https://stackoverflow.com/a/61909588
-- remove sentry from code
 - remove mongoose history (keep one)
 - remove custom npm packages (ldap, ...)
 
@@ -27,36 +20,37 @@
 
 - load/perf test
 
-- disable legacy ts support (app, tests)
-
 - fix .env/config for windows
 
 ## SELECTED
-
-- test shared / core module 
-- async test fixes
 
 - db configuration
 
   - keep mongoose options as mongo options
   - povider for mikroorm options and db url
-  - test db provider
   - entity discovery
   - check indexes in mikroorm: when are they updated?
   - teardown (test, server module, main.ts)
   - replikaset for test module
   - entity discovery
 
-- news
-
-  - uc cleanup: 2auth, visibilities
-  - document best practices/layers/orm
-
 - context: user-/request-context (see mikroorm/asynclocalstorage)
-
 
 ## DONE
 
+- remove sentry from code
+- use index.ts files to bundle exports - we could use path names for imports then, e.g. @shared/domain: we do so for shared and modules and src
+- should we use Expose() as default in dtos? No, because we implement mapping of entities before we expose data
+- check how we can implement mandatory/optional fields in dtos
+- decide if we want to use our entity id type in all layers (also in dtos etc.): we do
+- disable legacy ts support (app, tests)
+- test shared / core module
+- async test fixes
+- db configuration
+  - test db provider
+- news
+  - uc cleanup: 2auth, visibilities
+  - document best practices/layers/orm
 - check build & start for production with ops
 - fix jest, linter, ...
 - inject APP_FILTER (exception handler) and APP_INTERCEPTOR (logger), see core module
@@ -74,3 +68,8 @@
   e.g.
   api: <PaginationQuery, pagination.query.ts>, <CreatNewsParams, create-news.params.ts>, <NewsResponse, news.response.ts>
   domain: <ICreateNews, create-news.interface.ts>, <News, news.entity.ts>
+
+## Discarted
+
+- disable Document from window
+- remove non-node async library
