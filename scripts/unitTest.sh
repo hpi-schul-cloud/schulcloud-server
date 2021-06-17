@@ -26,5 +26,4 @@ npm ci
 npm i -g wait-on
 wait-on tcp:27017 -t 60000
 
-npm test
-npm run coverage-codecov
+npm run feathers:test
