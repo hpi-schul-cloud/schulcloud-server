@@ -26,7 +26,11 @@ describe('PublicAppConfigService', () => {
 		const serviceEnvs = await configService.find();
 		const testEnvs = {};
 		// eslint-disable-next-line no-return-assign
-		exposedVars.forEach((env) => (testEnvs[env] = Configuration.get(env)));
+		exposedVars.forEach((env) => {
+			if (Configuration.has(env)) {
+				testEnvs[env] = Configuration.get(env);
+			}
+		});
 		expect(serviceEnvs).to.eql(testEnvs);
 	});
 });
