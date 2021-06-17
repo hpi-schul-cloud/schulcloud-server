@@ -12,10 +12,10 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
-import { News, NewsTargetModel, NewsTargetModelValue } from '../../../src/modules/news/entity';
+import { News, NewsTargetModel } from '../../../src/modules/news/entity';
 import { CreateNewsParams, NewsResponse, UpdateNewsParams } from '../../../src/modules/news/controller/dto';
 
-import { NewsModule } from '../../../src/modules/news/news.module';
+import { NewsModule } from '@src/modules/news/news.module';
 
 describe('News Controller (e2e)', () => {
 	let app: INestApplication;
@@ -80,7 +80,7 @@ describe('News Controller (e2e)', () => {
 		await orm.close();
 	});
 
-	const newTestNews = (targetModel: NewsTargetModelValue, targetId: EntityId, unpublished = false): News => {
+	const newTestNews = (targetModel: NewsTargetModel, targetId: EntityId, unpublished = false): News => {
 		const displayAt = unpublished ? moment().add(1, 'days').toDate() : moment().subtract(1, 'days').toDate();
 		const news = News.createInstance(targetModel, {
 			school: user.schoolId,
@@ -94,7 +94,7 @@ describe('News Controller (e2e)', () => {
 		return news;
 	};
 
-	const createTestNews = async (targetModel: NewsTargetModelValue, targetId: EntityId, unpublished = false) => {
+	const createTestNews = async (targetModel: NewsTargetModel, targetId: EntityId, unpublished = false) => {
 		const news = newTestNews(targetModel, targetId, unpublished);
 		await em.persistAndFlush(news);
 		return news;

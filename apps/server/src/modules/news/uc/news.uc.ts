@@ -3,7 +3,7 @@ import { EntityId, IPagination } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
 import { Logger } from '@src/core/logger/logger.service';
 import { AuthorizationService } from '../../authorization/authorization.service';
-import { News, NewsTargetModel, NewsTargetModelValue, ICreateNews, INewsScope, IUpdateNews } from '../entity';
+import { News, NewsTargetModel, ICreateNews, INewsScope, IUpdateNews } from '../entity';
 import { NewsRepo } from '../repo/news.repo';
 import { NewsTargetFilter } from '../repo/news-target-filter';
 
@@ -156,7 +156,7 @@ export class NewsUc {
 
 	private async getTargetFilters(
 		userId: EntityId,
-		targetModels: NewsTargetModelValue[],
+		targetModels: NewsTargetModel[],
 		permissions: string[]
 	): Promise<NewsTargetFilter[]> {
 		const targets = await Promise.all(

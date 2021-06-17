@@ -8,7 +8,6 @@ import {
 	CourseNews,
 	News,
 	NewsTargetModel,
-	NewsTargetModelValue,
 	SchoolInfo,
 	SchoolNews,
 	TeamNews,
@@ -57,7 +56,7 @@ describe('NewsService', () => {
 
 	const newTestNews = (
 		schoolId: EntityId,
-		targetModel: NewsTargetModelValue,
+		targetModel: NewsTargetModel,
 		targetId: EntityId,
 		unpublished = false
 	): News => {
@@ -76,7 +75,7 @@ describe('NewsService', () => {
 
 	const createTestNews = async (
 		schoolId: string,
-		targetModel: NewsTargetModelValue,
+		targetModel: NewsTargetModel,
 		targetId: EntityId,
 		unpublished = false
 	) => {

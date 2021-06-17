@@ -1,18 +1,16 @@
-import { EntityId, ValueOf } from '@shared/domain';
+import { EntityId } from '@shared/domain';
 
-export const NewsTargetModel = {
-	School: 'schools',
-	Course: 'courses',
-	Team: 'teams',
-} as const;
-
-export type NewsTargetModelValue = ValueOf<typeof NewsTargetModel>;
+export enum NewsTargetModel {
+	School = 'schools',
+	Course = 'courses',
+	Team = 'teams',
+}
 
 /** define the news target for a specific entity  */
-export type NewsTarget = { targetModel: NewsTargetModelValue; targetId: EntityId };
+export type NewsTarget = { targetModel: NewsTargetModel; targetId: EntityId };
 
 /** define the news target for find */
-export type FindNewsTarget = { targetModel: NewsTargetModelValue; targetId?: EntityId };
+export type FindNewsTarget = { targetModel: NewsTargetModel; targetId?: EntityId };
 
 /** news interface for ceating news */
 export interface ICreateNews {
