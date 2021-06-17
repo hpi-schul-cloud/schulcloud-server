@@ -7,15 +7,11 @@ const { exec } = require('child_process');
 const { schoolModel } = require('../../../src/services/school/model');
 const { newsModel } = require('../../../src/services/news/model');
 
-
 const { expect } = chai;
 
 function runWorker() {
 	return new Promise((resolve, reject) => {
-		const child = exec(
-			`node ${path.join(__dirname, '../../../src/jobs/rss-news.js')}`,
-			{ env: { ...process.env } },
-		);
+		const child = exec(`node ${path.join(__dirname, '../../../src/jobs/rss-news.js')}`, { env: { ...process.env } });
 
 		child.on('exit', resolve);
 		child.on('error', reject);
@@ -24,9 +20,7 @@ function runWorker() {
 	});
 }
 
-describe('RSS Feed Crawler Integration', function () {
-	this.timeout(10000)
-	
+describe('RSS Feed Crawler Integration', () => {
 	const mockPort = 3039;
 	let mockServer;
 
@@ -84,11 +78,10 @@ describe('RSS Feed Crawler Integration', function () {
 	});
 
 	before(async function () {
-		 sampleSchool = await schoolModel.findOneAndUpdate(
-			{},
-			{ $set: { rssFeeds: [sampleRSSFeed] } },
-			{ new: true },
-		).lean().exec();
+		sampleSchool = await schoolModel
+			.findOneAndUpdate({}, { $set: { rssFeeds: [sampleRSSFeed] } }, { new: true })
+			.lean()
+			.exec();
 	});
 
 	beforeEach(runWorker);
@@ -104,7 +97,7 @@ describe('RSS Feed Crawler Integration', function () {
 	it('should set rssFeed status to success', async () => {
 		const school = (await schoolModel.findById(sampleSchool._id)).toObject();
 
-		const successRSSFeed = school.rssFeeds.find(el => el.url === sampleRSSFeed.url);
+		const successRSSFeed = school.rssFeeds.find((el) => el.url === sampleRSSFeed.url);
 		expect(successRSSFeed.status).to.equal('success');
 	});
 
@@ -121,7 +114,7 @@ describe('RSS Feed Crawler Integration', function () {
 		it('should set rssFeed status to error for invalid urls', async () => {
 			const school = (await schoolModel.findById(sampleSchool._id)).toObject();
 
-			const errorRSSFeed = school.rssFeeds.find(el => el.url === invalidFeed.url);
+			const errorRSSFeed = school.rssFeeds.find((el) => el.url === invalidFeed.url);
 			expect(errorRSSFeed.status).to.equal('error');
 		});
 	});
@@ -129,11 +122,7 @@ describe('RSS Feed Crawler Integration', function () {
 	describe('Override changed news', () => {
 		const changedContent = 'test';
 		before(async () => {
-			dbRSSNews = await newsModel.findByIdAndUpdate(
-				dbRSSNews._id,
-				{ content: changedContent },
-				{ new: true },
-			);
+			dbRSSNews = await newsModel.findByIdAndUpdate(dbRSSNews._id, { content: changedContent }, { new: true });
 		});
 
 		it('should override changed news', async () => {
