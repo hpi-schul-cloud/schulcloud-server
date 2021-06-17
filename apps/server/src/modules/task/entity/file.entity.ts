@@ -2,7 +2,7 @@ import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain';
 import { UserInfo } from '../../news/entity';
 
-@Entity({ tableName: 'file' })
+@Entity({ tableName: 'files' })
 export class File extends BaseEntityWithTimestamps {
 	constructor(partial: Partial<File>) {
 		super();
