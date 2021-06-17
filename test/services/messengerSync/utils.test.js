@@ -20,13 +20,14 @@ describe('messenger synchronizer utils', () => {
 		server = await app.listen(0);
 		configBefore = Configuration.toObject({ plainSecrets: true });
 
+		Configuration.set('MATRIX_MESSENGER__SECRET', 'fake.secret');
 		Configuration.set('MATRIX_MESSENGER__SERVERNAME', 'fake.server');
 	});
 
-	after((done) => {
-		server.close(done);
-		testObjects.cleanup();
-		Configuration.parse(configBefore);
+	after(async () => {
+		await testObjects.cleanup();
+		Configuration.reset(configBefore);
+		await server.close();
 	});
 
 	/*
@@ -52,7 +53,6 @@ describe('messenger synchronizer utils', () => {
 			}
 		]
 	}
-
 	{
 		"method": "removeRoom",
 		"room": {

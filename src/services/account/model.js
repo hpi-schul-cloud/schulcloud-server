@@ -28,6 +28,8 @@ const accountSchema = new Schema(
 	}
 );
 
+accountSchema.index({ userId: 1, systemId: 1 }); // for LDAP sync
+
 enableAuditLog(accountSchema);
 
 const accountModel = mongoose.model('account', accountSchema);

@@ -41,7 +41,7 @@ describe('user repository', () => {
 		it('when called with an invalid id, then it throws 404', async () => {
 			const uid = ObjectId();
 
-			expect(userRepo.getUser(uid)).to.eventually.throw(new NotFound());
+			await expect(userRepo.getUser(uid)).to.be.rejectedWith(NotFound);
 		});
 	});
 
@@ -74,7 +74,7 @@ describe('user repository', () => {
 				lastName: 'USER',
 				email: `${Date.now()}@deleted`,
 			};
-			expect(userRepo.replaceUserWithTombstone(uid, replaceData)).to.eventually.throw(new NotFound());
+			await expect(userRepo.replaceUserWithTombstone(uid, replaceData)).to.be.rejectedWith(NotFound);
 		});
 	});
 

@@ -83,9 +83,9 @@ describe('delete class user data usecase', () => {
 			expect(result.trashBinData.data).to.deep.equal({});
 		});
 
-		it('should throw an error if called with an invalid ObjectId', () => {
+		it('should throw an error if called with an invalid ObjectId', async () => {
 			const deleteUserDataFromClasses = deleteUserData.deleteUserData[0];
-			expect(deleteUserDataFromClasses('NOT_AN_ID')).to.eventually.throw(new AssertionError());
+			await expect(deleteUserDataFromClasses('NOT_AN_ID')).to.be.rejectedWith(AssertionError);
 		});
 	});
 });

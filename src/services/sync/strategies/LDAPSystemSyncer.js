@@ -1,7 +1,9 @@
 const asyncPool = require('tiny-async-pool');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const Syncer = require('./Syncer');
-const LDAPSyncer = require('./LDAPSyncer');
+const { LDAPSyncer } = require('./LDAPSyncer');
+const { getChannel } = require('../../../utils/rabbitmq');
+const LDAP_SYNC_CHANNEL_NAME = Configuration.get('SYNC_QUEUE_NAME');
 
 /**
  * Implements syncing from multiple LDAP servers based on the Syncer interface
@@ -15,6 +17,7 @@ class LDAPSystemSyncer extends Syncer {
 		Object.assign(this.stats, {
 			systems: {},
 		});
+		this.syncQueue = getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
 	}
 
 	/**
@@ -41,7 +44,7 @@ class LDAPSystemSyncer extends Syncer {
 		const systems = await this.getSystems();
 		const nextSystemSync = async (system) => {
 			try {
-				const stats = await new LDAPSyncer(this.app, {}, this.logger, system, this.options).sync();
+				const stats = await new LDAPSyncer(this.app, {}, this.logger, system, this.syncQueue, this.options).sync();
 				if (stats.success !== true) {
 					this.stats.errors.push(`LDAP sync failed for system "${system.alias}" (${system._id}).`);
 				}
@@ -62,8 +65,10 @@ class LDAPSystemSyncer extends Syncer {
 			}
 		};
 		const poolSize = Configuration.get('LDAP_SYSTEM_SYNCER_POOL_SIZE');
-		this.logger.info(`Running LDAP system sync with pool size ${poolSize}`);
-		await asyncPool(poolSize, systems, nextSystemSync);
+		if (systems.length > 0) {
+			this.logger.info(`Running LDAP system sync with pool size ${poolSize}`);
+			await asyncPool(poolSize, systems, nextSystemSync);
+		}
 		return this.stats;
 	}
 
@@ -72,7 +77,11 @@ class LDAPSystemSyncer extends Syncer {
 			.service('systems')
 			.find({ query: { type: 'ldap', 'ldapConfig.active': true }, paginate: false })
 			.then((systems) => {
-				this.logInfo(`Found ${systems.length} LDAP configurations.`);
+				if (systems.length === 0) {
+					this.logger.error('No LDAP configurations were found.');
+				} else {
+					this.logInfo(`Found ${systems.length} LDAP configurations.`);
+				}
 				return systems;
 			});
 	}

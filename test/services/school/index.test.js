@@ -51,7 +51,7 @@ describe('school service', () => {
 			sampleSchoolData = await School.findById(school._id).lean().exec();
 			delete sampleSchoolData._id;
 		});
-		it('should be possible to see only limited amount of fields if the user is not logged in', async () => {
+		it('should not be possible to access schools unauthenticated', async () => {
 			const params = {
 				provider: 'rest',
 				headers: {
@@ -60,17 +60,14 @@ describe('school service', () => {
 				account: undefined,
 				query: { $sort: { _id: 1 } },
 			};
-			const result = await schoolService.find(params);
-			const expectedFields = ['purpose', 'name', '_id', 'id', 'systems', 'years', 'isTeamCreationByStudentsEnabled'];
-			const notExpectedFields = ['fileStorageType', 'documentBaseDir', 'inMaintenance', 'currentYear', 'federalState'];
-			result.data.forEach((school) => {
-				expectedFields.forEach((field) => {
-					expect(school).to.haveOwnProperty(field);
-				});
-				notExpectedFields.forEach((field) => {
-					expect(school).to.not.haveOwnProperty(field);
-				});
-			});
+
+			try {
+				await schoolService.find(params);
+				throw new Error('should have failed');
+			} catch (err) {
+				expect(err.message).to.not.equal('should have failed');
+				expect(err.code).to.equal(401);
+			}
 		});
 		it('should be possible to see all fields if the call is done from the server', async () => {
 			const params = { provider: undefined, query: { $sort: { _id: 1 } } };
@@ -458,5 +455,53 @@ describe('years service', () => {
 	it('registered the years services', () => {
 		assert.ok(app.service('years'));
 		assert.ok(app.service('gradeLevels'));
+	});
+});
+
+describe('schoolsList service', () => {
+	let app;
+	let server;
+	let schoolsListService;
+
+	before(async () => {
+		app = await appPromise;
+		server = await app.listen();
+		schoolsListService = app.service('schoolsList');
+	});
+
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
+	});
+
+	it('registered the schoolsList services', () => {
+		assert.ok(schoolsListService);
+	});
+
+	describe('find', () => {
+		before('load data and set samples', async () => {
+			await createSchool();
+		});
+
+		it('can be accessed unautorized', async () => {
+			const params = {
+				provider: 'rest',
+				headers: {
+					authorization: undefined,
+				},
+				account: undefined,
+				query: {},
+			};
+			const result = await schoolsListService.find(params);
+			expect(result.length).gt(0);
+		});
+
+		it('should return only certain fields', async () => {
+			const schoolsList = await schoolsListService.find();
+			const fields = ['name', '_id', 'systems'];
+			schoolsList.forEach((school) => {
+				expect(Object.keys(school).every((field) => fields.includes(field))).to.be.true;
+			});
+		});
 	});
 });

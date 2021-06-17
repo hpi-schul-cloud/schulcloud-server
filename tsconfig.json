@@ -1,19 +1,28 @@
 {
-	"compileOnSave": true,
 	"compilerOptions": {
-		"allowJs": true,
-		"baseUrl": ".",
-		"esModuleInterop": true,
-		"lib": ["ES2019", "DOM"],
 		"module": "commonjs",
-		"moduleResolution": "node",
-		"outDir": "build",
-		"preserveConstEnums": true,
-		"resolveJsonModule": true,
+		"declaration": true,
+		"removeComments": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"allowSyntheticDefaultImports": true,
+		"strictBindCallApply": true,
+		"strictFunctionTypes": true,
+		"strictNullChecks": true,
+		"strictPropertyInitialization": false,
+		"noImplicitAny": false,
+		"target": "es2017",
+		"lib": [
+			"es2019.array"
+		],
 		"sourceMap": true,
-		"strict": false,
-		"target": "ES2019"
-	},
-	"include": ["src/**/*", "src/**/*.json"],
-	"exclude": ["node_modules", "test/**/*", "config/*", "package.json", "src/**/*.test.js", "src/**/*.test.ts"]
+		"outDir": "./dist",
+		"baseUrl": "./",
+		"incremental": true,
+		"allowJs": true,
+		"paths": {
+			"@shared/*": ["apps/server/src/shared/*"],
+			"@src/*": ["apps/server/src/*"]
+		}
+	}
 }

@@ -1,0 +1,40 @@
+[
+	{
+		"title": "NestJS Application",
+		"file": "../README.md",
+		"children": [
+			{
+				"title": "Software Architecture",
+				"file": "architecture.md"
+			},
+			{
+				"title": "Architecture Mapping to Code",
+				"file": "architecture-mapping.md"
+			},
+			{
+				"title": "Domain driven design",
+				"file": "domain-driven-design.md"
+			},
+			{
+				"title": "Cross-cutting concerns",
+				"file": "cross-cutting-concerns.md"
+			},
+			{
+				"title": "Testing",
+				"file": "testing.md"
+			},
+			{
+				"title": "Decisions",
+				"file": "decisions.md"
+			},
+			{
+				"title": "VSCode",
+				"file": "vs-code.md"
+			},
+			{
+				"title": "Git",
+				"file": "git.md"
+			}
+		]
+	}
+]

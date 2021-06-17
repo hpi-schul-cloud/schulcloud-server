@@ -106,6 +106,7 @@ const schoolSchema = new Schema(
 );
 
 schoolSchema.index({ purpose: 1 });
+schoolSchema.index({ ldapSchoolIdentifier: 1, systems: 1 });
 
 if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
 	// to speed up lookups during TSP sync

@@ -5,9 +5,11 @@ const path = require('path');
 
 const schoolModels = require('./model');
 const hooks = require('./hooks');
+const publicSchoolsHooks = require('./hooks/publicSchools.hooks');
 const schoolGroupHooks = require('./hooks/schoolGroup.hooks');
 const { SchoolMaintenanceService } = require('./maintenance');
 const { HandlePermissions, handlePermissionsHooks } = require('./services/permissions');
+const { SchoolsListService } = require('./services/schoolsList');
 
 module.exports = function schoolServices() {
 	const app = this;
@@ -28,6 +30,21 @@ module.exports = function schoolServices() {
 	app.use('/schools', service(options));
 	const schoolService = app.service('/schools');
 	schoolService.hooks(hooks);
+
+	// public endpoint, called from login
+	app.use('/schoolsList/api', staticContent(path.join(__dirname, './docs/openapi.yaml')));
+	app.use(
+		'/schoolsList',
+		new SchoolsListService({
+			Model: schoolModels.schoolModel,
+			paginate: {
+				default: 2,
+				max: 3,
+			},
+		})
+	);
+	const schoolsListService = app.service('schoolsList');
+	schoolsListService.hooks(publicSchoolsHooks);
 
 	app.use('/schools/:schoolId/maintenance', new SchoolMaintenanceService());
 

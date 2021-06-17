@@ -3,7 +3,7 @@ const { ObjectId } = require('mongoose').Types;
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const helpdeskUC = require('./helpdesk.uc');
-const { ValidationError } = require('../../../errors');
+const { AssertionError } = require('../../../errors');
 
 const { problemRepo } = require('../repo');
 
@@ -74,7 +74,7 @@ describe('helpdesk usecase', () => {
 
 		it('when the function is called with an invalid id, then it fails', async () => {
 			const userId = 'NOT_FOUND_USER';
-			expect(getProblemsDeletionResult(userId)).to.eventually.throw(ValidationError);
+			await expect(getProblemsDeletionResult(userId)).to.be.rejectedWith(AssertionError);
 		});
 	});
 });
