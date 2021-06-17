@@ -13,6 +13,12 @@ export class TaskMapper {
 		dto.displayColor = task.course?.color;
 		dto.createdAt = task.createdAt;
 		dto.updatedAt = task.updatedAt;
+		dto.status = {
+			submitted: task.submitted,
+			maxSubmissions: task.maxSubmissions,
+			graded: task.graded,
+
+		}
 		return dto;
 	}
 }

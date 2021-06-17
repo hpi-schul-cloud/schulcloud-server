@@ -19,4 +19,13 @@ export class Task extends BaseEntityWithTimestamps {
 
 	@ManyToOne({ fieldName: 'lessonId' })
 	lesson?: Lesson;
+
+	@Property()
+	submitted?: number;
+
+	@Property()
+	maxSubmissions?: number;
+
+	@Property()
+	graded?: number;
 }

@@ -25,5 +25,10 @@ export class TaskResponse {
 	@ApiProperty()
 	updatedAt: Date;
 
-	// status: string;
+	@ApiProperty()
+	status?: {
+		submitted?: number;
+		maxSubmissions?: number;
+		graded?: number;
+	}
 }
