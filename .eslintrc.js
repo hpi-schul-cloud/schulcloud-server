@@ -47,6 +47,7 @@ module.exports = {
 			},
 		],
 		'arrow-parens': ['error', 'always'],
+		'arrow-body-style': ['error', 'as-needed'],
 	},
 	plugins: ['import', 'prettier', 'promise'],
 	env: {
@@ -60,32 +61,55 @@ module.exports = {
 			},
 		},
 	},
-	ignorePatterns: [
-		// should not be applied on nest apps
-		'apps/**',
-	],
 	overrides: [
 		{
-			// nest.js server in 'apps/server/**' */ which is excluded from outer rules
-			// this section is more less (parserOptions/project path) only what nest.js defines
-			files: ['apps/server/**/*.*'],
+			files: ['apps/**/*.ts'],
 			parser: '@typescript-eslint/parser',
+			plugins: ['@typescript-eslint'],
+			extends: [
+				'airbnb-typescript/base',
+				'plugin:@typescript-eslint/recommended',
+				'plugin:@typescript-eslint/recommended-requiring-type-checking',
+				'plugin:prettier/recommended',
+				'plugin:promise/recommended',
+			],
 			parserOptions: {
-				project: 'apps/server/tsconfig.app.json',
-				sourceType: 'module',
+				project: 'apps/server/tsconfig.lint.json',
 			},
-			plugins: ['@typescript-eslint/eslint-plugin'],
-			extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
 			env: {
 				node: true,
-				jest: true,
+				es6: true,
+			},
+			settings: {
+				'import/parsers': {
+					'@typescript-eslint/parser': ['.ts'],
+				},
+				'import/resolver': {
+					typescript: {
+						alwaysTryTypes: true,
+						project: ['tsconfig.json', 'apps/server/tsconfig.lint.json', 'apps/server/tsconfig.app.json'],
+					},
+				},
 			},
 			rules: {
-				'@typescript-eslint/interface-name-prefix': 'off',
-				'@typescript-eslint/explicit-function-return-type': 'off',
-				'@typescript-eslint/explicit-module-boundary-types': 'off',
-				'@typescript-eslint/no-explicit-any': 'off',
+				'import/no-unresolved': 'off', // better handled by ts resolver
+				'import/no-extraneous-dependencies': 'off', // better handles by ts resolver
+				'import/extensions': ['error', 'always', { ts: 'never' }],
+				'import/prefer-default-export': 'off',
+				'no-void': ['error', { allowAsStatement: true }],
+				'max-classes-per-file': 'off',
+				'class-methods-use-this': 'off',
+				'no-param-reassign': 'off',
+				'no-underscore-dangle': 'off',
 			},
+			overrides: [
+				{
+					files: ['**/*spec.ts'],
+					env: {
+						jest: true,
+					},
+				},
+			],
 		},
 		{
 			// legacy test files js/ts

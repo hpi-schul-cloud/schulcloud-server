@@ -60,8 +60,8 @@ describe('when removing user data from course component receive multiple steps',
 
 				return { getCoursesStub, removeFromCoursesStub };
 			};
-			it('should throw an error for invalid parameters', () => {
-				expect(deleteUserDataFromCourses()).to.eventually.throw(ApplicationError);
+			it('should throw an error for invalid parameters', async () => {
+				await expect(deleteUserDataFromCourses()).to.be.rejectedWith(ApplicationError);
 			});
 			it('should resolve with valid trashbin object for user with courses assigned', async () => {
 				const { getCoursesStub, removeFromCoursesStub } = initStubs({
@@ -131,8 +131,8 @@ describe('when removing user data from course component receive multiple steps',
 
 			return { getLessonsWithUserInContensStub, deleteUserFromLessonContentsStub };
 		};
-		it('should throw an error for invalid parameters', () => {
-			expect(deleteUserDatafromLessons()).to.eventually.throw(ApplicationError);
+		it('should throw an error for invalid parameters', async () => {
+			await expect(deleteUserDatafromLessons()).to.be.rejectedWith(ApplicationError);
 		});
 		it('should resolve with user data in trashbin object for user with lesson contents assigned', async () => {
 			const { getLessonsWithUserInContensStub, deleteUserFromLessonContentsStub } = initStubs({
@@ -189,8 +189,8 @@ describe('when removing user data from course component receive multiple steps',
 
 			return { getCoursesGroupsStub, deleteUserFromUserGroupsStub };
 		};
-		it('should throw an error for invalid parameters', () => {
-			expect(deleteUserDataFromCourseGroups()).to.eventually.throw(ApplicationError);
+		it('should throw an error for invalid parameters', async () => {
+			await expect(deleteUserDataFromCourseGroups()).to.be.rejectedWith(ApplicationError);
 		});
 		it('should resolve with user data in trashbin object for user with course groups assigned', async () => {
 			const { getCoursesGroupsStub, deleteUserFromUserGroupsStub } = initStubs({

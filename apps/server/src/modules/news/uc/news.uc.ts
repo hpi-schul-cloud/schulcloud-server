@@ -1,99 +1,188 @@
-import { Reference } from '@mikro-orm/core';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { PaginationQueryDto } from '../../../shared/core/controller/dto/pagination.query.dto';
-import { BaseEntity, EntityId } from '../../../shared/domain';
+import { Injectable } from '@nestjs/common';
+import { EntityId, IPagination } from '@shared/domain';
+import { Counted } from '@shared/domain/types';
+import { Logger } from '@src/core/logger/logger.service';
 import { AuthorizationService } from '../../authorization/authorization.service';
-import { CreateNewsRequestDto, UpdateNewsRequestDto } from '../controller/dto';
-import { News, SchoolInfo } from '../entity';
+import { News, NewsTargetModel, NewsTargetModelValue, ICreateNews, INewsScope, IUpdateNews } from '../entity';
 import { NewsRepo } from '../repo/news.repo';
-import { ICreateNewsDto } from './create-news.dto';
+import { NewsTargetFilter } from '../repo/news-target-filter';
 
 type Permission = 'NEWS_VIEW' | 'NEWS_EDIT';
-type Target = { targetModel?: string; target?: { id: string } };
-type AuthorizationSubject = { school?: SchoolInfo; targetModel?: string; target?: { id: string } };
 
 @Injectable()
 export class NewsUc {
-	constructor(private newsRepo: NewsRepo, private authorizationService: AuthorizationService) {}
+	constructor(private newsRepo: NewsRepo, private authorizationService: AuthorizationService, private logger: Logger) {
+		this.logger.setContext(NewsUc.name);
+	}
 
-	async create(createNewsParams: ICreateNewsDto): Promise<News> {
-		const news = this.newsRepo.create(createNewsParams);
+	/**
+	 *
+	 * @param userId
+	 * @param schoolId
+	 * @param params
+	 * @returns
+	 */
+	async create(userId: EntityId, schoolId: EntityId, params: ICreateNews): Promise<News> {
+		this.logger.log(`create news as user ${userId}`);
+
+		const { targetModel, targetId } = params.target;
+		await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, ['NEWS_CREATE']);
+
+		const { target, ...props } = params;
+		const news = News.createInstance(targetModel, {
+			...props,
+			school: schoolId,
+			creator: userId,
+			target: targetId,
+		});
+		await this.newsRepo.save(news);
+
+		this.logger.log(`news ${news.id} created by user ${userId}`);
+
 		return news;
 	}
 
-	async findAllForUser(userId: EntityId, pagination: PaginationQueryDto): Promise<News[]> {
-		const newsList = await this.newsRepo.findAllByUser(userId, pagination);
+	/**
+	 *
+	 * @param userId
+	 * @param scope
+	 * @param pagination
+	 * @returns
+	 */
+	async findAllForUser(userId: EntityId, scope?: INewsScope, pagination?: IPagination): Promise<Counted<News[]>> {
+		this.logger.log(`start find all news for user ${userId}`);
+
+		const unpublished = !!scope?.unpublished; // default is only published news
+		const permissions: [Permission] = NewsUc.getRequiredPermissions(unpublished);
+
+		const targets = await this.getPermittedTargets(userId, scope, permissions);
+		const [newsList, newsCount] = await this.newsRepo.findAll(targets, unpublished, pagination);
+
 		await Promise.all(
 			newsList.map(async (news: News) => {
-				await this.decoratePermissions(news, userId);
-				// await this.authorizeUserReadNews(news, userId);
+				news.permissions = await this.getNewsPermissions(userId, news);
 			})
 		);
-		return newsList;
+
+		this.logger.log(`return ${newsList.length} news for user ${userId}`);
+
+		return [newsList, newsCount];
 	}
 
-	async findOneByIdForUser(newsId: EntityId, userId: EntityId): Promise<News> {
-		const news = await this.newsRepo.findOneById(newsId);
-		await this.decoratePermissions(news, userId);
-		// await this.authorizeUserReadNews(news, userId);
+	/**
+	 *
+	 * @param id
+	 * @param userId
+	 * @returns
+	 */
+	async findOneByIdForUser(id: EntityId, userId: EntityId): Promise<News> {
+		this.logger.log(`start find one news ${id}`);
+
+		const news = await this.newsRepo.findOneById(id);
+		const isPublished = news.displayAt > new Date();
+		const requiredPermissions = NewsUc.getRequiredPermissions(isPublished);
+		await this.authorizationService.checkEntityPermissions(
+			userId,
+			news.targetModel,
+			news.target.id,
+			requiredPermissions
+		);
+		news.permissions = await this.getNewsPermissions(userId, news);
+
 		return news;
 	}
 
-	private async decoratePermissions(news: News, userId: EntityId) {
-		news.permissions = (await this.getUserPermissionsForSubject(userId, news)).filter((permission) =>
-			permission.includes('NEWS')
-		);
-	}
+	/**
+	 *
+	 * @param id
+	 * @param userId
+	 * @param params
+	 * @returns
+	 */
+	async update(id: EntityId, userId: EntityId, params: IUpdateNews): Promise<News> {
+		this.logger.log(`start update news ${id}`);
 
-	private async authorizeUserReadNews(news: News, userId: EntityId): Promise<void> {
-		let requiredUserPermission: Permission | null = null;
-		const userPermissions = news.permissions;
-		// todo new Date was Date.now() before
-		if (news.displayAt > new Date()) {
-			// request read permission for published news
-			requiredUserPermission = 'NEWS_VIEW';
-		} else {
-			// request write permission for unpublished news
-			requiredUserPermission = 'NEWS_EDIT';
+		const news = await this.newsRepo.findOneById(id);
+		await this.authorizationService.checkEntityPermissions(userId, news.targetModel, news.target.id, ['NEWS_EDIT']);
+
+		// eslint-disable-next-line no-restricted-syntax
+		for (const [key, value] of Object.entries(params)) {
+			if (value) {
+				news[key] = value;
+			}
 		}
-		if (userPermissions.includes(requiredUserPermission)) return;
-		throw new UnauthorizedException('Nee nee nee...');
+
+		await this.newsRepo.save(news);
+
+		return news;
 	}
 
-	async update(id: EntityId, updateNewsDto: UpdateNewsRequestDto): Promise<any> {
-		return {
-			title: 'title',
-			body: 'content',
-			publishedOn: new Date(),
-		};
-	}
+	/**
+	 *
+	 * @param id
+	 * @param userId
+	 * @returns
+	 */
+	async delete(id: EntityId, userId: EntityId): Promise<EntityId> {
+		this.logger.log(`start remove news ${id}`);
 
-	async remove(id: string) {
+		const news = await this.newsRepo.findOneById(id);
+		await this.authorizationService.checkEntityPermissions(userId, news.targetModel, news.target.id, ['NEWS_EDIT']);
+
+		await this.newsRepo.delete(news);
+
 		return id;
 	}
 
-	async getUserPermissionsForSubject(userId: EntityId, subject: AuthorizationSubject): Promise<string[]> {
-		// TODO figure out hoe we can handle targetModel/target in ORM
+	private async getPermittedTargets(userId: EntityId, scope: INewsScope | undefined, permissions: Permission[]) {
+		let targets: NewsTargetFilter[];
 
-		// detect scope of subject
-		// let scope: Target;
-		// if ('targetModel' in subject && subject.targetModel && 'target' in subject && subject.target) {
-		// 	const { target: target, targetModel } = subject;
-		// 	scope = { targetModel, target };
-		// } else if ('school' in subject) {
-		// 	const { schoolId } = subject;
-		// 	if ('name' in schoolId) {
-		// 		scope = { targetModel: 'school', targetId: schoolId._id };
-		// 	} else {
-		// 		scope = { targetModel: 'school', targetId: schoolId };
-		// 	}
-		// } else {
-		// 	// data format not seems to be compatible, throw
-		// 	throw new UnauthorizedException('Bääm');
-		// }
-		// // scope is now school (generic) or a user group (specific)
-		// const permissions = await this.authorizationService.getUserPermissions(userId, scope);
-		// return permissions;
-		return new Promise((resolve) => resolve(['NEWS_VIEW']));
+		if (scope?.target == null) {
+			// for all target models
+			targets = await this.getTargetFilters(userId, Object.values(NewsTargetModel), permissions);
+		} else {
+			const { targetModel, targetId } = scope.target;
+			if (targetModel && targetId) {
+				// for specific news target
+				await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, permissions);
+				targets = [{ targetModel, targetIds: [targetId] }];
+			} else {
+				// for single target model
+				targets = await this.getTargetFilters(userId, [targetModel], permissions);
+			}
+		}
+		return targets;
+	}
+
+	private async getTargetFilters(
+		userId: EntityId,
+		targetModels: NewsTargetModelValue[],
+		permissions: string[]
+	): Promise<NewsTargetFilter[]> {
+		const targets = await Promise.all(
+			targetModels.map(async (targetModel) => {
+				return {
+					targetModel,
+					targetIds: await this.authorizationService.getPermittedEntities(userId, targetModel, permissions),
+				};
+			})
+		);
+		const nonEmptyTargets = targets.filter((target) => target.targetIds.length > 0);
+
+		return nonEmptyTargets;
+	}
+
+	private async getNewsPermissions(userId: EntityId, news: News): Promise<string[]> {
+		const permissions = await this.authorizationService.getEntityPermissions(userId, news.targetModel, news.target.id);
+		return permissions.filter((permission) => permission.includes('NEWS'));
+	}
+
+	/**
+	 *
+	 * @param unpublished news with displayAt set to future date are not published for users with view permission
+	 * @returns
+	 */
+	private static getRequiredPermissions(unpublished: boolean): [Permission] {
+		return unpublished ? ['NEWS_EDIT'] : ['NEWS_VIEW'];
 	}
 }
