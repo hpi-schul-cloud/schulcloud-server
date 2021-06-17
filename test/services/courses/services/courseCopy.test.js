@@ -86,16 +86,14 @@ describe('courses copy service', () => {
 		chai.expect(courseName).to.equal('Deutsch 10a');
 	});
 
-	it('creates a course copy through shareToken', () =>
-		shareCourseService
-			.create({
-				shareToken,
-				courseName: 'testCourse 76',
-				userId: testUserId,
-			})
-			.then((course) => {
-				chai.expect(course.name).to.equal('testCourse 76');
-			}));
+	it('creates a course copy through shareToken', async () => {
+		const course = await shareCourseService.create({
+			shareToken,
+			courseName: 'testCourse 76',
+			userId: testUserId,
+		});
+		chai.expect(course.name).to.equal('testCourse 76');
+	});
 
 	it('teacher can share a course', async () => {
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });

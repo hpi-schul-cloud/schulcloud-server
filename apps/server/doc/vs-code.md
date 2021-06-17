@@ -9,6 +9,8 @@ In the file `./vscode/launch.default.json` you find following actions:
 
 ## Settings
 
+In the file `./vscode/settings.default.json` find suggested settings.
+
 ## Recommended extensions
 
 See `./vscode/extensions.json` for recommendations.

@@ -76,7 +76,7 @@ build
 /node_modules
 
 # documentation
-/documentation
+/docs
 
 # Tests
 /coverage

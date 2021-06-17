@@ -25,6 +25,3 @@ docker run -d -p 9090:9000 minio/minio server /data
 npm ci
 npm i -g wait-on
 wait-on tcp:27017 -t 60000
-
-npm test
-npm run coverage-codecov

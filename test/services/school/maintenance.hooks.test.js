@@ -38,10 +38,10 @@ describe('lookupSchool hook', () => {
 				foo: 'bar',
 			},
 		};
-		await expect(lookupSchool(ctx)).to.eventually.be.rejected.and.be.an.instanceOf(BadRequest);
+		await expect(lookupSchool(ctx)).to.be.rejectedWith(BadRequest);
 	});
 
-	it('should fail gracefully if the referenced school does not exist', () => {
+	it('should fail gracefully if the referenced school does not exist', async () => {
 		const ctx = {
 			params: {
 				route: {
@@ -49,7 +49,7 @@ describe('lookupSchool hook', () => {
 				},
 			},
 		};
-		return expect(lookupSchool(ctx)).to.eventually.be.rejected.and.be.an.instanceOf(NotFound);
+		await expect(lookupSchool(ctx)).to.be.rejectedWith(NotFound);
 	});
 
 	after(cleanup);
