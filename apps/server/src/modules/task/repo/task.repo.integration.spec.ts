@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { TaskRepo } from './task.repo';
-import { CourseTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo } from '../entity';
+import { CourseTaskInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo } from '../entity';
 
 describe('TaskService', () => {
 	let module: TestingModule;
@@ -11,7 +11,7 @@ describe('TaskService', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [Task, LessonTaskInfo, CourseTaskInfo, Submission, UserTaskInfo],
+					entities: [Task, LessonTaskInfo, CourseTaskInfo, Submission, UserTaskInfo, FileTaskInfo],
 				}),
 			],
 			providers: [TaskRepo],
