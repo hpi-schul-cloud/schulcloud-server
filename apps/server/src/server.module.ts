@@ -5,11 +5,9 @@ import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
 import { TaskModule } from './modules/task/task.module';
-import { CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo } from './modules/news/entity';
-import { Task, Lesson, Course, Submission } from './modules/task/entity';
+import { CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo, CourseInfo as CourseNewsInfo, TeamInfo } from './modules/news/entity';
+import { Task, LessonInfo as LessonTaskInfo, CourseInfo as CourseTaskInfo, Submission, FileInfo as FileTaskInfo } from './modules/task/entity';
 import { CoreModule } from './core/core.module';
-import { CourseInfo } from './modules/news/entity/course-info.entity';
-import { TeamInfo } from './modules/news/entity/team-info.entity';
 
 @Module({
 	imports: [
@@ -23,7 +21,7 @@ import { TeamInfo } from './modules/news/entity/team-info.entity';
 			user: DB_USERNAME,
 			entities: [
 				News,
-				CourseInfo,
+				CourseNewsInfo,
 				CourseNews,
 				SchoolNews,
 				TeamNews,
@@ -31,8 +29,9 @@ import { TeamInfo } from './modules/news/entity/team-info.entity';
 				TeamInfo,
 				UserInfo,
 				Task,
-				Lesson,
-				Course,
+				LessonTaskInfo,
+				CourseTaskInfo,
+				FileTaskInfo,
 				Submission,
 			],
 			findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {

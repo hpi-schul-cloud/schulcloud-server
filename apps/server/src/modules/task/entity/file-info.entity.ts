@@ -3,7 +3,7 @@ import { BaseEntityWithTimestamps } from '@shared/domain';
 import { UserInfo } from '../../news/entity';
 
 @Entity({ tableName: 'files' })
-export class File extends BaseEntityWithTimestamps {
+export class FileInfo extends BaseEntityWithTimestamps {
 	constructor(partial: Partial<File>) {
 		super();
 		Object.assign(this, partial);
