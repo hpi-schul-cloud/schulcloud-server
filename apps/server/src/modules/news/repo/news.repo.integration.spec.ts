@@ -78,7 +78,7 @@ describe('NewsRepo', () => {
 		targetModel: NewsTargetModel,
 		targetId: EntityId,
 		unpublished = false
-	) => {
+	): Promise<News> => {
 		const news = newTestNews(schoolId, targetModel, targetId, unpublished);
 		await em.persistAndFlush(news);
 		return news;
@@ -131,10 +131,18 @@ describe('NewsRepo', () => {
 		it('should return news in requested order', async () => {
 			const courseIds = Array.from(Array(5)).map(() => new ObjectId().toHexString());
 
-			for (let i = 0; i < courseIds.length; i += 1) {
-				// eslint-disable-next-line no-await-in-loop
-				await createTestNews(schoolId, NewsTargetModel.Course, courseIds[i]);
-			}
+			// for (let i = 0; i < courseIds.length; i += 1) {
+			// 	// eslint-disable-next-line no-await-in-loop
+			// 	await createTestNews(schoolId, NewsTargetModel.Course, courseIds[i]);
+			// }
+			// await Promise.all([
+			// 	await createTestNews(schoolId, NewsTargetModel.Course, courseIds[0]),
+			// 	await createTestNews(schoolId, NewsTargetModel.Course, courseIds[1]),
+			// 	await createTestNews(schoolId, NewsTargetModel.Course, courseIds[2]),
+			// 	await createTestNews(schoolId, NewsTargetModel.Course, courseIds[3]),
+			// 	await createTestNews(schoolId, NewsTargetModel.Course, courseIds[4]),
+			// ]);
+			await Promise.all(courseIds.map((courseId) => createTestNews(schoolId, NewsTargetModel.Course, courseId)));
 			const target = {
 				targetModel: NewsTargetModel.Course,
 				targetIds: courseIds,
