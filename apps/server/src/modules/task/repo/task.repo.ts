@@ -32,7 +32,7 @@ export class TaskRepo {
 		const submissionsOfStudent = await this.em.find(Submission, {
 			student: userId,
 		});
-		const homeworksWithSubmissions = submissionsOfStudent.map((submission) => submission.homeworkId);
+		const homeworksWithSubmissions = submissionsOfStudent.map((submission) => submission.homework.id);
 
 		const oneWeekAgo = new Date();
 		oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
