@@ -1,10 +1,10 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain';
-import { UserInfo } from './user-info.entity';
+import { UserTaskInfo } from './user-task-info.entity';
 
 @Entity({ tableName: 'files' })
-export class FileInfo extends BaseEntityWithTimestamps {
-	constructor(partial: Partial<File>) {
+export class FileTaskInfo extends BaseEntityWithTimestamps {
+	constructor(partial: Partial<FileTaskInfo>) {
 		super();
 		Object.assign(this, partial);
 	}
@@ -13,5 +13,5 @@ export class FileInfo extends BaseEntityWithTimestamps {
 	name: string;
 
     @Property()
-    creator: UserInfo
+    creator: UserTaskInfo
 }

@@ -1,8 +1,8 @@
 import { Entity, ManyToOne, Collection, Property, ManyToMany } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain';
-import { UserInfo } from './user-info.entity';
+import { UserTaskInfo } from './user-task-info.entity';
 import { Task } from './task.entity';
-import { FileInfo } from './file-info.entity';
+import { FileTaskInfo } from './file-task-info.entity';
 
 @Entity({ tableName: 'submissions' })
 export class Submission extends BaseEntityWithTimestamps {
@@ -15,14 +15,14 @@ export class Submission extends BaseEntityWithTimestamps {
 	homework: Task;
 
 	@ManyToOne({ fieldName: 'studentId' })
-	student: UserInfo;
+	student: UserTaskInfo;
 
 	/***** student uploads *****/
 	@Property()
 	comment: string;
 
-	@ManyToOne({ fieldName: 'fileIds', type: FileInfo })
-	studentFiles = new Collection<FileInfo>(this);
+	@ManyToOne({ fieldName: 'fileIds', type: FileTaskInfo })
+	studentFiles = new Collection<FileTaskInfo>(this);
 
 	/***** teacher uploads *****/
 	@Property()
@@ -31,7 +31,6 @@ export class Submission extends BaseEntityWithTimestamps {
 	@Property()
 	gradeComment: string;
 
-	@ManyToOne({ fieldName: 'gradeFileIds', type: FileInfo })
-	gradeFileIds = new Collection<FileInfo>(this);
-
+	@ManyToOne({ fieldName: 'gradeFileIds', type: FileTaskInfo })
+	gradeFileIds = new Collection<FileTaskInfo>(this);
 }

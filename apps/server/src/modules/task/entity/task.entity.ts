@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain';
-import { CourseInfo } from './course-info.entity';
+import { CourseTaskInfo } from './course-task-info.entity';
 import { LessonInfo } from './lesson-info.entity';
 
 @Entity({ tableName: 'homeworks' })
@@ -15,7 +15,7 @@ export class Task extends BaseEntityWithTimestamps {
 	private?: boolean;
 
 	@ManyToOne({ fieldName: 'courseId' })
-	course: CourseInfo;
+	course: CourseTaskInfo;
 
 	@ManyToOne({ fieldName: 'lessonId' })
 	lesson?: LessonInfo;
