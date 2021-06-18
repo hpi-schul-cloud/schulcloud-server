@@ -56,4 +56,25 @@ export class TaskRepo {
 
 		return [usersTasks, total];
 	}
+
+	async findAllAssignedByTeacher(userId: EntityId): Promise<Counted<Task[]>> {
+		// TODO: merge overlaps with findAllOpenByStudent
+		// TODO: use Query Builder
+		const coursesOfTeacher = await this.em.find(CourseTaskInfo, {
+			teachers: userId,
+		});
+		const publishedLessons = await this.em.find(LessonTaskInfo, {
+			course: { $in: coursesOfTeacher },
+			hidden: false,
+		});
+
+		const [usersTasks, count] = await this.em.findAndCount(Task, {
+			$and: [
+				{ course: { $in: coursesOfTeacher } },
+				{ private: { $ne: true } },
+				{ $or: [{ lesson: null }, { lesson: { $in: publishedLessons } }] },
+			],
+		});
+		return [usersTasks, count];
+	}
 }

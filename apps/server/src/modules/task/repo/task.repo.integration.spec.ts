@@ -22,6 +22,109 @@ describe('TaskService', () => {
 		await module.close();
 	});
 
+	describe('findAllAssignedByTeacher', () => {
+		it('should return task of teachers course', async () => {
+			const service = module.get<TaskRepo>(TaskRepo);
+			const em = module.get<EntityManager>(EntityManager);
+
+			const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
+			const course = em.create(CourseTaskInfo, { name: 'testCourse', teachers: [user] });
+			const task = em.create(Task, { name: 'find me', course });
+			await em.persistAndFlush([user, course, task]);
+			const [result, total] = await service.findAllAssignedByTeacher(user.id);
+			expect(total).toEqual(1);
+			expect(result[0].name).toEqual(task.name);
+		});
+
+		it('should not return task of other course', async () => {
+			const service = module.get<TaskRepo>(TaskRepo);
+			const em = module.get<EntityManager>(EntityManager);
+
+			const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
+			const course = em.create(CourseTaskInfo, { name: 'testCourse', teachers: [] });
+			const task = em.create(Task, { name: 'find me', course });
+			await em.persistAndFlush([user, course, task]);
+			const [result, total] = await service.findAllAssignedByTeacher(user.id);
+			expect(total).toEqual(0);
+		});
+
+		it('should not return private task of course', async () => {
+			const service = module.get<TaskRepo>(TaskRepo);
+			const em = module.get<EntityManager>(EntityManager);
+
+			const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
+			const course = em.create(CourseTaskInfo, { name: 'testCourse', teachers: [user] });
+			const task = em.create(Task, { name: 'find me', course, private: true });
+			await em.persistAndFlush([user, course, task]);
+			const [result, total] = await service.findAllAssignedByTeacher(user.id);
+			expect(total).toEqual(0);
+		});
+
+		it('should return task in a visible lesson of the users course', async () => {
+			const service = module.get<TaskRepo>(TaskRepo);
+			const em = module.get<EntityManager>(EntityManager);
+
+			const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
+			const course = em.create(CourseTaskInfo, { name: 'testCourse', teachers: [user] });
+			const lesson = em.create(LessonTaskInfo, { course, hidden: false });
+			const task = em.create(Task, { name: 'roll some dice', lesson, course });
+			await em.persistAndFlush([user, course, lesson, task]);
+			const [result, total] = await service.findAllAssignedByTeacher(user.id);
+			expect(total).toEqual(1);
+		});
+
+		it('should return task if lesson is null', async () => {
+			const service = module.get<TaskRepo>(TaskRepo);
+			const em = module.get<EntityManager>(EntityManager);
+
+			const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
+			const course = em.create(CourseTaskInfo, { name: 'testCourse', teachers: [user] });
+			const task = em.create(Task, { name: 'roll some dice', lesson: null, course });
+			await em.persistAndFlush([user, course, task]);
+			const [result, total] = await service.findAllAssignedByTeacher(user.id);
+			expect(total).toEqual(1);
+		});
+
+		it('should not return task in a lesson of a different course', async () => {
+			const service = module.get<TaskRepo>(TaskRepo);
+			const em = module.get<EntityManager>(EntityManager);
+
+			const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
+			const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [] });
+			const lesson = em.create(LessonTaskInfo, { course });
+			const task = em.create(Task, { name: 'roll some dice', lesson, course });
+			await em.persistAndFlush([user, course, lesson, task]);
+			const [result, total] = await service.findAllAssignedByTeacher(user.id);
+			expect(total).toEqual(0);
+		});
+
+		it('should not return task in a hidden lesson', async () => {
+			const service = module.get<TaskRepo>(TaskRepo);
+			const em = module.get<EntityManager>(EntityManager);
+
+			const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
+			const course = em.create(CourseTaskInfo, { name: 'testCourse', teachers: [user] });
+			const lesson = em.create(LessonTaskInfo, { course, hidden: true });
+			const task = em.create(Task, { name: 'roll some dice', lesson, course });
+			await em.persistAndFlush([user, course, lesson, task]);
+			const [result, total] = await service.findAllAssignedByTeacher(user.id);
+			expect(total).toEqual(0);
+		});
+
+		it('should not return task in a lesson when hidden is null', async () => {
+			const service = module.get<TaskRepo>(TaskRepo);
+			const em = module.get<EntityManager>(EntityManager);
+
+			const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
+			const course = em.create(CourseTaskInfo, { name: 'testCourse', teachers: [user] });
+			const lesson = em.create(LessonTaskInfo, { course });
+			const task = em.create(Task, { name: 'roll some dice', lesson, course });
+			await em.persistAndFlush([user, course, lesson, task]);
+			const [result, total] = await service.findAllAssignedByTeacher(user.id);
+			expect(total).toEqual(0);
+		});
+	});
+
 	describe('findAllOpenByStudent', () => {
 		describe('return value', () => {
 			it('should return the expected properties', async () => {
@@ -207,7 +310,7 @@ describe('TaskService', () => {
 
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
-				const lesson = em.create(LessonTaskInfo, { course });
+				const lesson = em.create(LessonTaskInfo, { course, hidden: true });
 				const task = em.create(Task, { name: 'roll some dice', lesson, course });
 				await em.persistAndFlush([user, course, lesson, task]);
 				const [result, total] = await service.findAllOpenByStudent(user.id);
