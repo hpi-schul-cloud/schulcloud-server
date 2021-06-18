@@ -9,9 +9,8 @@ export class UserTaskInfo extends BaseEntity {
 	@Property()
 	lastName!: string;
 
-	constructor(props: { firstName: string; lastName: string }) {
+	constructor(partial: Partial<UserTaskInfo>) {
 		super();
-		this.firstName = props.firstName;
-		this.lastName = props.lastName;
+		Object.assign(this, partial);
 	}
 }
