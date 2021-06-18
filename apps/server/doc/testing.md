@@ -110,11 +110,11 @@ When expecting an error, you might take values from an error, test for the error
 		const code = await doSomethingCrazy(x,y,z).catch(err => err.code)
 		expect(code).to...
 	})
-	it('good sample expecting an error type', async () => {
+	it('good sample expecting an error type from a sync function', () => {
 		expect(() => doSomethingCrazySync(wrong, param)).toThrow(BadRequestException);
 	})
 	it('good sample expecting an error type from an async function', async () => {
-		await expect(() => doSomethingCrazySync(wrong, param)).toThrow(BadRequestException);
+		await expect(doSomethingCrazySync(wrong, param)).rejects.toThrow(BadRequestException);
 	})
 ```
 
