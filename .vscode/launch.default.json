@@ -35,6 +35,17 @@
 			"port": 9229,
 			"skipFiles": ["<node_internals>/**"],
 			"console": "integratedTerminal"
+		},
+		{
+			"type": "node",
+			"name": "vscode-jest-tests",
+			"request": "launch",
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"disableOptimisticBPs": true,
+			"cwd": "${workspaceFolder}",
+			"runtimeExecutable": "npm",
+			"args": ["run", "nest:test:debug"]
 		}
 	]
 }
