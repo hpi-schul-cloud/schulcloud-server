@@ -55,6 +55,69 @@ describe("Course Service", (() => {
 });
 ```
 
+### Handling of function return values
+
+When assigning a value to an expect, separate the function call from the expectation to simplify debugging. This later helps when you not know about the return value type or if it's an promise or not. This is good style not only for tests.
+
+```TypeScript
+	// doSomethingCrazy : retValue
+	it('bad sample', () => {
+		expect(doSomethingCrazy(x,y,z)).to... 
+	})
+	it('good sample', () => {
+		const result = doSomethingCrazy(x,y,z)
+		expect(result).to... // here we can simply debug
+	})
+
+```
+
+### Promises and tests
+
+When using asynchronous functions and/opr promises, results must be awaited within of an async test function instead of using promise chains. While for expexting error conditions it might be helpful to use catch for extracting a value from an expected error, in every case avoid writing long promise chains. 
+
+ - Instead of using done callback, use async test functions. 
+ - Use await instead of (long) promise chains 
+
+```TypeScript
+	// doSomethingCrazy : Promise<retValue>
+	it('bad async sample', async (done) => {
+		return doSomethingCrazy(x,y,z).then(result=>{
+			expect(result).to...
+			done() // expected done
+		}).catch(()=>{
+			logger.info(`Could not ... ${error}`);
+			done() // unexpected done, test will always succeed which is wrong
+		})
+	})
+	it('good async sample', async () => {
+		const result = await doSomethingCrazy(x,y,z)
+		expect(result).to...
+	})
+``` 
+
+> Timeouts must not be used, when async handling is correctly defined!
+
+### Expecting errors in tests
+
+When expecting an error, you might take values from an error, test for the error type thrown and must care of promises.
+
+```TypeScript
+	// doSomethingCrazy : Promise<retValue>
+	it('bad async sample expecting an error', async () => {
+		expect(doSomethingCrazy(x,y,z)).to...
+	})
+	it('good async sample expecting an error value', async () => {
+		const code = await doSomethingCrazy(x,y,z).catch(err => err.code)
+		expect(code).to...
+	})
+	it('good sample expecting an error type', async () => {
+		expect(() => doSomethingCrazySync(wrong, param)).toThrow(BadRequestException);
+	})
+	it('good sample expecting an error type from an async function', async () => {
+		await expect(() => doSomethingCrazySync(wrong, param)).toThrow(BadRequestException);
+	})
+```
+
 ### Isolation
 
 Each test should be able to run alone, as well as together with any other tests. To ensure this, it is important that the test does not depend on any preexisting data.
