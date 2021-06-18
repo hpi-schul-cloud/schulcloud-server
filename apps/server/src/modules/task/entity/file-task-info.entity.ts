@@ -12,6 +12,6 @@ export class FileTaskInfo extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
 
-    @Property()
-    creator: UserTaskInfo
+	@Property()
+	creator: UserTaskInfo;
 }
