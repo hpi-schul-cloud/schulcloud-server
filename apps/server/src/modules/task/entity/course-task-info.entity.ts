@@ -15,8 +15,7 @@ export class CourseTaskInfo extends BaseEntityWithTimestamps {
 	@Property()
 	color: string;
 
-	// TODO: why not @Property({ fieldName: 'userIds'}) with fieldName and objectId as type ?
-	// we do not use any populate of it
+	// TODO: @Property() ?
 	@ManyToMany({ fieldName: 'userIds', type: UserTaskInfo })
 	students = new Collection<UserTaskInfo>(this);
 

@@ -22,45 +22,6 @@ describe('TaskService', () => {
 		await module.close();
 	});
 
-	describe('findAllAssignedByTeacher', () => {
-		describe('return value', () => {
-			it.skip('should return the expected properties', async () => {
-				/*
-				const service = module.get<TaskRepo>(TaskRepo);
-				const em = module.get<EntityManager>(EntityManager);
-
-				const user = em.create(UserTaskInfo, { firstName: 'firstName', lastName: 'lastName' });
-				const course = em.create(CourseTaskInfo, { name: 'testCourse', teachers: [user], color: '#ffffff' });
-				const task = em.create(Task, { name: 'roll some dice', course, dueDate: new Date() });
-				await em.persistAndFlush([user, course, task]);
-				const [result, total] = await service.findAllOpenByStudent(user.id);
-				expect(total).toEqual(1);
-				expect(result[0]).toHaveProperty('name');
-				expect(result[0]).toHaveProperty('dueDate');
-				expect(result[0].course).toHaveProperty('name');
-				expect(result[0].course).toHaveProperty('color');
-				expect(result[0]).toHaveProperty('name');
-				expect(result[0]).toHaveProperty('dueDate');
-
-
-				@Property()
-				submitted?: number;
-
-				@Property()
-				maxSubmissions?: number;
-
-				@Property()
-				graded?: number; */
-			});
-
-			// teacher
-
-			// substition teacher
-
-			// not student
-		});
-	});
-
 	describe('findAllOpenByStudent', () => {
 		describe('return value', () => {
 			it('should return the expected properties', async () => {
