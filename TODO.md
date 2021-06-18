@@ -34,7 +34,7 @@
 ## SELECTED
 
 - test shared / core module 
-- async test fixes
+- async test fixes (remove this.timeout and red promise chains)
 
 - db configuration
 
