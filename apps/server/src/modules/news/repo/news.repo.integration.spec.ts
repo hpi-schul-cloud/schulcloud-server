@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityId, SortOrder } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { NewsTargetFilter } from '@src/modules/news/repo/news-target-filter';
 import {
 	CourseInfo,
 	CourseNews,
@@ -84,6 +85,21 @@ describe('NewsRepo', () => {
 		return news;
 	};
 
+	const createMultipleTestNews = async (
+		schoolId: string,
+		targetModel: NewsTargetModel,
+		targetIds: EntityId[],
+		unpublished = false
+	) => {
+		const createdNews = targetIds.map((targetId) => {
+			const created = newTestNews(schoolId, targetModel, targetId, unpublished);
+			em.persist(created);
+			return created;
+		});
+		await em.flush();
+		return createdNews;
+	};
+
 	const schoolId = new ObjectId().toString();
 
 	describe('findAll', () => {
@@ -130,9 +146,7 @@ describe('NewsRepo', () => {
 
 		it('should return news in requested order', async () => {
 			const courseIds = Array.from(Array(5)).map(() => new ObjectId().toHexString());
-
-			const createdNews = courseIds.map((courseId) => newTestNews(schoolId, NewsTargetModel.Course, courseId));
-			await repo.saveAll(createdNews);
+			await createMultipleTestNews(schoolId, NewsTargetModel.Course, courseIds);
 			const target = {
 				targetModel: NewsTargetModel.Course,
 				targetIds: courseIds,
@@ -198,6 +212,21 @@ describe('NewsRepo', () => {
 
 			await repo.delete(news);
 			await expect(repo.findOneById(news.id)).rejects.toThrow(NotFoundError);
+		});
+	});
+
+	describe('deleteAll', () => {
+		it('should delete multiple news', async () => {
+			const ids = Array.from(Array(5)).map(() => new ObjectId().toHexString());
+			const targets: NewsTargetFilter = { targetModel: NewsTargetModel.Team, targetIds: ids };
+			const createdNews = await createMultipleTestNews(schoolId, NewsTargetModel.Team, ids);
+
+			let [result, count] = await repo.findAll([targets], false);
+			expect(count).toBe(ids.length);
+
+			await repo.deleteAll(createdNews);
+			[result, count] = await repo.findAll([targets], false);
+			expect(count).toBe(0);
 		});
 	});
 });

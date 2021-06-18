@@ -29,7 +29,7 @@ export class NewsRepo {
 	 * Find news
 	 * @param targets
 	 * @param unpublished
-	 * @param pagination
+	 * @param options
 	 */
 	async findAll(
 		targets: NewsTargetFilter[],
@@ -51,6 +51,11 @@ export class NewsRepo {
 
 	async delete(news: News): Promise<void> {
 		await this.em.removeAndFlush(news);
+	}
+
+	async deleteAll(news: News[]): Promise<void> {
+		news.map((n) => this.em.remove(n));
+		await this.em.flush();
 	}
 
 	private async findNewsAndCount(query: FilterQuery<News>, options?: IFindOptions<News>): Promise<Counted<News[]>> {
