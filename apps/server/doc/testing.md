@@ -71,16 +71,18 @@ When assigning a value to an expect, separate the function call from the expecta
 
 ```
 
-### Promises and tests
+### Promises and Timouts in tests
 
 When using asynchronous functions and/opr promises, results must be awaited within of an async test function instead of using promise chains. While for expexting error conditions it might be helpful to use catch for extracting a value from an expected error, in every case avoid writing long promise chains. 
 
  - Instead of using done callback, use async test functions. 
  - Use await instead of (long) promise chains 
+ - never manually set a timeout
 
 ```TypeScript
 	// doSomethingCrazy : Promise<retValue>
-	it('bad async sample', async (done) => {
+	it('bad async sample', async function (done) => {
+		this.timeout(10000);
 		return doSomethingCrazy(x,y,z).then(result=>{
 			expect(result).to...
 			done() // expected done
@@ -90,6 +92,7 @@ When using asynchronous functions and/opr promises, results must be awaited with
 		})
 	})
 	it('good async sample', async () => {
+		// no timeout set
 		const result = await doSomethingCrazy(x,y,z)
 		expect(result).to...
 	})
