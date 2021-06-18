@@ -11,6 +11,7 @@ export class Submission extends BaseEntityWithTimestamps {
 		Object.assign(this, partial);
 	}
 
+	// TODO: adding task entity is not possible import circle and typescript before defined, maybe we must add a new task entity
 	@Property()
 	homeworkId: ObjectId;
 
