@@ -24,8 +24,9 @@ export class TaskRepo {
 		const coursesOfStudent = await this.em.find(CourseTaskInfo, {
 			students: userId,
 		});
+		const $in = coursesOfStudent.map(({ _id }) => _id);
 		const lessonsOfStudent = await this.em.find(LessonTaskInfo, {
-			course: { $in: coursesOfStudent },
+			courseId: { $in },
 			hidden: false,
 		});
 
