@@ -5,15 +5,15 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityId, SortOrder } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import {
+	CourseInfo,
 	CourseNews,
 	News,
 	NewsTargetModel,
 	SchoolInfo,
 	SchoolNews,
+	TeamInfo,
 	TeamNews,
 	UserInfo,
-	CourseInfo,
-	TeamInfo,
 } from '../entity';
 import { NewsRepo } from './news.repo';
 
@@ -131,18 +131,8 @@ describe('NewsRepo', () => {
 		it('should return news in requested order', async () => {
 			const courseIds = Array.from(Array(5)).map(() => new ObjectId().toHexString());
 
-			// for (let i = 0; i < courseIds.length; i += 1) {
-			// 	// eslint-disable-next-line no-await-in-loop
-			// 	await createTestNews(schoolId, NewsTargetModel.Course, courseIds[i]);
-			// }
-			// await Promise.all([
-			// 	await createTestNews(schoolId, NewsTargetModel.Course, courseIds[0]),
-			// 	await createTestNews(schoolId, NewsTargetModel.Course, courseIds[1]),
-			// 	await createTestNews(schoolId, NewsTargetModel.Course, courseIds[2]),
-			// 	await createTestNews(schoolId, NewsTargetModel.Course, courseIds[3]),
-			// 	await createTestNews(schoolId, NewsTargetModel.Course, courseIds[4]),
-			// ]);
-			await Promise.all(courseIds.map((courseId) => createTestNews(schoolId, NewsTargetModel.Course, courseId)));
+			const createdNews = courseIds.map((courseId) => newTestNews(schoolId, NewsTargetModel.Course, courseId));
+			await repo.saveAll(createdNews);
 			const target = {
 				targetModel: NewsTargetModel.Course,
 				targetIds: courseIds,
@@ -156,7 +146,7 @@ describe('NewsRepo', () => {
 		});
 	});
 
-	describe('create', () => {
+	describe('save', () => {
 		it('should create and persist a news entity', async () => {
 			const courseId = new ObjectId().toString();
 			const news = newTestNews(schoolId, NewsTargetModel.Course, courseId);
@@ -164,6 +154,26 @@ describe('NewsRepo', () => {
 			expect(news.id).toBeDefined();
 			const expectedNews = await em.findOne(News, news.id);
 			expect(news).toStrictEqual(expectedNews);
+		});
+	});
+
+	describe('saveAll', () => {
+		it('should create multiple entities and save them', async () => {
+			const courseIds = Array.from(Array(5)).map(() => new ObjectId().toHexString());
+			const createdNews = courseIds.map((courseId) => newTestNews(schoolId, NewsTargetModel.Course, courseId));
+			await repo.saveAll(createdNews);
+
+			const newsIds = createdNews
+				.filter((n) => !!n)
+				.map((n) => n && n.id)
+				.sort();
+			expect(newsIds.length).toBe(courseIds.length);
+
+			const expected = await Promise.all(createdNews.map(async (createdNews1) => repo.findOneById(createdNews1.id)));
+			expect(expected.length).toBe(createdNews.length);
+
+			const expectedIds = expected.map((n) => n && n.id).sort();
+			expect(expectedIds).toStrictEqual(newsIds);
 		});
 	});
 

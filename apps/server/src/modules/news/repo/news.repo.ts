@@ -16,6 +16,15 @@ export class NewsRepo {
 		return news;
 	}
 
+	async saveAll(news: News[]): Promise<News[]> {
+		const persistedNews = news.map((n) => {
+			this.em.persist(n);
+			return n;
+		});
+		await this.em.flush();
+		return persistedNews;
+	}
+
 	/**
 	 * Find news
 	 * @param targets
