@@ -26,15 +26,18 @@ export class TaskUC {
 	async getTaskSubmissionMetadata(task: Task): Promise<TaskSubmissionsMetaData> {
 		const [taskSubmissions, count] = await this.submissionRepo.getSubmissionsByTask(task);
 		const submittedUsers = new Set();
+		const gradedUsers = new Set();
 
 		taskSubmissions.forEach((submission) => {
 			submittedUsers.add(submission.student.id);
+			if (submission.grade || submission.gradeComment || submission.gradeFileIds)
+				gradedUsers.add(submission.student.id);
 		});
 
 		return Promise.resolve({
 			submitted: submittedUsers.size,
 			maxSubmissions: -1,
-			graded: -1,
+			graded: gradedUsers.size,
 		});
 	}
 }

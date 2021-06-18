@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Submission, Task, UserTaskInfo } from '../entity';
+import { FileTaskInfo, Submission, Task, UserTaskInfo } from '../entity';
 import { SubmissionRepo } from '../repo/submission.repo';
 import { TaskRepo } from '../repo/task.repo';
 import { TaskUC } from './task.uc';
@@ -70,8 +70,37 @@ describe('TaskService', () => {
 			expect(result.submitted).toEqual(1);
 		});
 
-		it('should return the number of students that could submit');
+		it.todo('should return the number of students that could submit');
 
-		it('should return the number of submissions that have been graded');
+		it('should return the number of submissions that have been graded', async () => {
+			const task = new Task();
+			const spy = jest.spyOn(submissionRepo, 'getSubmissionsByTask').mockImplementation(() => {
+				return Promise.resolve([
+					[
+						new Submission({
+							student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'abc' }),
+							grade: 50,
+						}),
+						new Submission({
+							student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'def' }),
+							gradeComment: 'well done',
+						}),
+						// TODO: add grade file case
+						/* new Submission({
+							student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'def' }),
+							gradeFileIds: [new FileTaskInfo({})],
+						}), */
+						new Submission({
+							student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'def' }),
+						}),
+					],
+					3,
+				]);
+			});
+
+			const result = await service.getTaskSubmissionMetadata(task);
+			expect(spy).toHaveBeenCalledWith(task);
+			expect(result.graded).toEqual(2);
+		});
 	});
 });
