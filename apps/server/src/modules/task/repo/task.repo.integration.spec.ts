@@ -1,32 +1,44 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@src/modules/database';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { MikroORM } from '@mikro-orm/core';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 import { TaskRepo } from './task.repo';
 import { CourseTaskInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo } from '../entity';
 
 describe('TaskService', () => {
 	let module: TestingModule;
+	let mongodb: MongoMemoryServer;
+	let service: TaskRepo;
+	let em: EntityManager;
+	let orm: MikroORM;
 
 	beforeAll(async () => {
+		mongodb = new MongoMemoryServer();
+		const dbUrl = await mongodb.getUri();
 		module = await Test.createTestingModule({
 			imports: [
-				MongoMemoryDatabaseModule.forRoot({
-					entities: [Task, LessonTaskInfo, CourseTaskInfo, Submission, UserTaskInfo, FileTaskInfo],
+				MikroOrmModule.forRoot({
+					type: 'mongo',
+					clientUrl: dbUrl,
+					entities: [CourseTaskInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo],
 				}),
 			],
 			providers: [TaskRepo],
 		}).compile();
+		service = module.get<TaskRepo>(TaskRepo);
+		em = module.get<EntityManager>(EntityManager);
+		orm = module.get<MikroORM>(MikroORM);
 	});
 
 	afterAll(async () => {
+		await orm.close();
+		await mongodb.stop();
 		await module.close();
 	});
 
 	describe('findAllAssignedByTeacher', () => {
 		it('should return task of teachers course', async () => {
-			const service = module.get<TaskRepo>(TaskRepo);
-			const em = module.get<EntityManager>(EntityManager);
-
 			const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 			const course = em.create(CourseTaskInfo, { name: 'testCourse', teachers: [user] });
 			const task = em.create(Task, { name: 'find me', course });
@@ -37,9 +49,6 @@ describe('TaskService', () => {
 		});
 
 		it('should not return task of other course', async () => {
-			const service = module.get<TaskRepo>(TaskRepo);
-			const em = module.get<EntityManager>(EntityManager);
-
 			const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 			const course = em.create(CourseTaskInfo, { name: 'testCourse', teachers: [] });
 			const task = em.create(Task, { name: 'find me', course });
@@ -49,9 +58,6 @@ describe('TaskService', () => {
 		});
 
 		it('should not return private task of course', async () => {
-			const service = module.get<TaskRepo>(TaskRepo);
-			const em = module.get<EntityManager>(EntityManager);
-
 			const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 			const course = em.create(CourseTaskInfo, { name: 'testCourse', teachers: [user] });
 			const task = em.create(Task, { name: 'find me', course, private: true });
@@ -61,9 +67,6 @@ describe('TaskService', () => {
 		});
 
 		it('should return task in a visible lesson of the users course', async () => {
-			const service = module.get<TaskRepo>(TaskRepo);
-			const em = module.get<EntityManager>(EntityManager);
-
 			const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 			const course = em.create(CourseTaskInfo, { name: 'testCourse', teachers: [user] });
 			const lesson = em.create(LessonTaskInfo, { course, hidden: false });
@@ -74,9 +77,6 @@ describe('TaskService', () => {
 		});
 
 		it('should return task if lesson is null', async () => {
-			const service = module.get<TaskRepo>(TaskRepo);
-			const em = module.get<EntityManager>(EntityManager);
-
 			const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 			const course = em.create(CourseTaskInfo, { name: 'testCourse', teachers: [user] });
 			const task = em.create(Task, { name: 'roll some dice', lesson: null, course });
@@ -86,9 +86,6 @@ describe('TaskService', () => {
 		});
 
 		it('should not return task in a lesson of a different course', async () => {
-			const service = module.get<TaskRepo>(TaskRepo);
-			const em = module.get<EntityManager>(EntityManager);
-
 			const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 			const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [] });
 			const lesson = em.create(LessonTaskInfo, { course });
@@ -99,9 +96,6 @@ describe('TaskService', () => {
 		});
 
 		it('should not return task in a hidden lesson', async () => {
-			const service = module.get<TaskRepo>(TaskRepo);
-			const em = module.get<EntityManager>(EntityManager);
-
 			const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 			const course = em.create(CourseTaskInfo, { name: 'testCourse', teachers: [user] });
 			const lesson = em.create(LessonTaskInfo, { course, hidden: true });
@@ -112,9 +106,6 @@ describe('TaskService', () => {
 		});
 
 		it('should not return task in a lesson when hidden is null', async () => {
-			const service = module.get<TaskRepo>(TaskRepo);
-			const em = module.get<EntityManager>(EntityManager);
-
 			const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 			const course = em.create(CourseTaskInfo, { name: 'testCourse', teachers: [user] });
 			const lesson = em.create(LessonTaskInfo, { course });
@@ -128,9 +119,6 @@ describe('TaskService', () => {
 	describe('findAllOpenByStudent', () => {
 		describe('return value', () => {
 			it('should return the expected properties', async () => {
-				const service = module.get<TaskRepo>(TaskRepo);
-				const em = module.get<EntityManager>(EntityManager);
-
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user], color: '#ffffff' });
 				const task = em.create(Task, { name: 'roll some dice', course, dueDate: new Date() });
@@ -144,9 +132,6 @@ describe('TaskService', () => {
 			});
 
 			it('should return a paginated result', async () => {
-				const service = module.get<TaskRepo>(TaskRepo);
-				const em = module.get<EntityManager>(EntityManager);
-
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user], color: '#ffffff' });
 				const tasks = await Promise.all([
@@ -162,9 +147,6 @@ describe('TaskService', () => {
 			});
 
 			it('should be sorted with earlier duedates first', async () => {
-				const service = module.get<TaskRepo>(TaskRepo);
-				const em = module.get<EntityManager>(EntityManager);
-
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user], color: '#ffffff' });
 				const tasks = await Promise.all([
@@ -181,9 +163,6 @@ describe('TaskService', () => {
 
 		describe('open tasks in courses', () => {
 			it('should return task of students course', async () => {
-				const service = module.get<TaskRepo>(TaskRepo);
-				const em = module.get<EntityManager>(EntityManager);
-
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 				const task = em.create(Task, { name: 'roll some dice', course });
@@ -193,9 +172,6 @@ describe('TaskService', () => {
 			});
 
 			it('should not return task of other course', async () => {
-				const service = module.get<TaskRepo>(TaskRepo);
-				const em = module.get<EntityManager>(EntityManager);
-
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [] });
 				const task = em.create(Task, { name: 'secret task', course });
@@ -205,9 +181,6 @@ describe('TaskService', () => {
 			});
 
 			it('should not return private task of course', async () => {
-				const service = module.get<TaskRepo>(TaskRepo);
-				const em = module.get<EntityManager>(EntityManager);
-
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [] });
 				const task = em.create(Task, { name: 'secret task', course, private: true });
@@ -217,9 +190,6 @@ describe('TaskService', () => {
 			});
 
 			it('should not return task that has a submission by the user', async () => {
-				const service = module.get<TaskRepo>(TaskRepo);
-				const em = module.get<EntityManager>(EntityManager);
-
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 				const task = em.create(Task, { name: 'roll some dice', course });
@@ -230,9 +200,6 @@ describe('TaskService', () => {
 			});
 
 			it('should not return task that has a submission by different user', async () => {
-				const service = module.get<TaskRepo>(TaskRepo);
-				const em = module.get<EntityManager>(EntityManager);
-
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const otherUser = em.create(UserTaskInfo, { firstName: 'other', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
@@ -244,9 +211,6 @@ describe('TaskService', () => {
 			});
 
 			it('should filter tasks that are more than one week overdue', async () => {
-				const service = module.get<TaskRepo>(TaskRepo);
-				const em = module.get<EntityManager>(EntityManager);
-
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 
@@ -267,9 +231,6 @@ describe('TaskService', () => {
 
 		describe('open tasks in lessons', () => {
 			it('should return task in a visible lesson of the users course', async () => {
-				const service = module.get<TaskRepo>(TaskRepo);
-				const em = module.get<EntityManager>(EntityManager);
-
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 				const lesson = em.create(LessonTaskInfo, { course, hidden: false });
@@ -280,9 +241,6 @@ describe('TaskService', () => {
 			});
 
 			it('should return task if lesson is null', async () => {
-				const service = module.get<TaskRepo>(TaskRepo);
-				const em = module.get<EntityManager>(EntityManager);
-
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 				const task = em.create(Task, { name: 'roll some dice', lesson: null, course });
@@ -292,9 +250,6 @@ describe('TaskService', () => {
 			});
 
 			it('should not return task in a lesson of a different course', async () => {
-				const service = module.get<TaskRepo>(TaskRepo);
-				const em = module.get<EntityManager>(EntityManager);
-
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [] });
 				const lesson = em.create(LessonTaskInfo, { course });
@@ -305,9 +260,6 @@ describe('TaskService', () => {
 			});
 
 			it('should not return task in a hidden lesson', async () => {
-				const service = module.get<TaskRepo>(TaskRepo);
-				const em = module.get<EntityManager>(EntityManager);
-
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 				const lesson = em.create(LessonTaskInfo, { course, hidden: true });
@@ -318,9 +270,6 @@ describe('TaskService', () => {
 			});
 
 			it('should not return task in a lesson when hidden is null', async () => {
-				const service = module.get<TaskRepo>(TaskRepo);
-				const em = module.get<EntityManager>(EntityManager);
-
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 				const lesson = em.create(LessonTaskInfo, { course });
