@@ -159,7 +159,6 @@ describe('TaskService', () => {
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 				const task = em.create(Task, { name: 'roll some dice', course });
-				// TODO: we want to create in submissions the field homework not homeworkId and want to use the implicit id mapping from adding task to it?
 				const submission = em.create(Submission, { homework: task, student: user });
 				await em.persistAndFlush([user, course, submission, task]);
 				const [result, total] = await service.findAllOpenByStudent(user.id);
