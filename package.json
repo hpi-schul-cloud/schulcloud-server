@@ -58,7 +58,7 @@
 		"nest:test:all": "npm run nest:test:cov && npm run nest:lint",
 		"nest:test:watch": "jest --watch",
 		"nest:test:cov": "jest --coverage",
-		"nest:test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+		"nest:test:debug": "jest --runInBand",
 		"nest:lint": "eslint apps --ignore-path .gitignore",
 		"nest:lint:fix": "eslint apps --fix --ignore-path .gitignore",
 		"syncIndexes": "node ./scripts/syncIndexes.js"
@@ -167,7 +167,7 @@
 		"@types/express": "^4.17.11",
 		"@types/jest": "^26.0.22",
 		"@types/lodash": "^4.14.170",
-		"@types/node": "^14.14.31",
+		"@types/node": "^15.12.3",
 		"@types/passport-jwt": "^3.0.5",
 		"@types/passport-local": "^1.0.33",
 		"@types/source-map-support": "^0.5.3",
