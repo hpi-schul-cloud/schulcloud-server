@@ -2,8 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import { TaskRepo } from './task.repo';
-import { CourseTaskInfo, LessonInfo, Submission, Task } from '../entity';
-import { UserInfo } from '../../news/entity';
+import { CourseTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo } from '../entity';
 
 describe('TaskService', () => {
 	let module: TestingModule;
@@ -12,7 +11,7 @@ describe('TaskService', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [Task, LessonInfo, CourseTaskInfo, Submission, UserInfo],
+					entities: [Task, LessonTaskInfo, CourseTaskInfo, Submission, UserTaskInfo],
 				}),
 			],
 			providers: [TaskRepo],
@@ -29,7 +28,7 @@ describe('TaskService', () => {
 				const service = module.get<TaskRepo>(TaskRepo);
 				const em = module.get<EntityManager>(EntityManager);
 
-				const user = em.create(UserInfo, { firstName: 'test', lastName: 'student' });
+				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user], color: '#ffffff' });
 				const task = em.create(Task, { name: 'roll some dice', course, dueDate: new Date() });
 				await em.persistAndFlush([user, course, task]);
@@ -45,7 +44,7 @@ describe('TaskService', () => {
 				const service = module.get<TaskRepo>(TaskRepo);
 				const em = module.get<EntityManager>(EntityManager);
 
-				const user = em.create(UserInfo, { firstName: 'test', lastName: 'student' });
+				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user], color: '#ffffff' });
 				const tasks = await Promise.all([
 					em.create(Task, { name: 'warmup', course, dueDate: new Date() }),
@@ -63,7 +62,7 @@ describe('TaskService', () => {
 				const service = module.get<TaskRepo>(TaskRepo);
 				const em = module.get<EntityManager>(EntityManager);
 
-				const user = em.create(UserInfo, { firstName: 'test', lastName: 'student' });
+				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user], color: '#ffffff' });
 				const tasks = await Promise.all([
 					em.create(Task, { name: '2nd', course, dueDate: new Date(Date.now() + 500) }),
@@ -82,7 +81,7 @@ describe('TaskService', () => {
 				const service = module.get<TaskRepo>(TaskRepo);
 				const em = module.get<EntityManager>(EntityManager);
 
-				const user = em.create(UserInfo, { firstName: 'test', lastName: 'student' });
+				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 				const task = em.create(Task, { name: 'roll some dice', course });
 				await em.persistAndFlush([user, course, task]);
@@ -94,7 +93,7 @@ describe('TaskService', () => {
 				const service = module.get<TaskRepo>(TaskRepo);
 				const em = module.get<EntityManager>(EntityManager);
 
-				const user = em.create(UserInfo, { firstName: 'test', lastName: 'student' });
+				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [] });
 				const task = em.create(Task, { name: 'secret task', course });
 				await em.persistAndFlush([user, course, task]);
@@ -106,7 +105,7 @@ describe('TaskService', () => {
 				const service = module.get<TaskRepo>(TaskRepo);
 				const em = module.get<EntityManager>(EntityManager);
 
-				const user = em.create(UserInfo, { firstName: 'test', lastName: 'student' });
+				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [] });
 				const task = em.create(Task, { name: 'secret task', course, private: true });
 				await em.persistAndFlush([user, course, task]);
@@ -118,7 +117,7 @@ describe('TaskService', () => {
 				const service = module.get<TaskRepo>(TaskRepo);
 				const em = module.get<EntityManager>(EntityManager);
 
-				const user = em.create(UserInfo, { firstName: 'test', lastName: 'student' });
+				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 				const task = em.create(Task, { name: 'roll some dice', course });
 				const submission = em.create(Submission, { homework: task, student: user });
@@ -131,8 +130,8 @@ describe('TaskService', () => {
 				const service = module.get<TaskRepo>(TaskRepo);
 				const em = module.get<EntityManager>(EntityManager);
 
-				const user = em.create(UserInfo, { firstName: 'test', lastName: 'student' });
-				const otherUser = em.create(UserInfo, { firstName: 'other', lastName: 'student' });
+				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
+				const otherUser = em.create(UserTaskInfo, { firstName: 'other', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 				const task = em.create(Task, { name: 'roll some dice', course });
 				const submission = em.create(Submission, { homework: task, student: otherUser });
@@ -145,7 +144,7 @@ describe('TaskService', () => {
 				const service = module.get<TaskRepo>(TaskRepo);
 				const em = module.get<EntityManager>(EntityManager);
 
-				const user = em.create(UserInfo, { firstName: 'test', lastName: 'student' });
+				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 
 				const threeWeeksinMilliseconds = 1.814e9;
@@ -168,9 +167,9 @@ describe('TaskService', () => {
 				const service = module.get<TaskRepo>(TaskRepo);
 				const em = module.get<EntityManager>(EntityManager);
 
-				const user = em.create(UserInfo, { firstName: 'test', lastName: 'student' });
+				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
-				const lesson = em.create(LessonInfo, { course, hidden: false });
+				const lesson = em.create(LessonTaskInfo, { course, hidden: false });
 				const task = em.create(Task, { name: 'roll some dice', lesson, course });
 				await em.persistAndFlush([user, course, lesson, task]);
 				const [result, total] = await service.findAllOpenByStudent(user.id);
@@ -181,7 +180,7 @@ describe('TaskService', () => {
 				const service = module.get<TaskRepo>(TaskRepo);
 				const em = module.get<EntityManager>(EntityManager);
 
-				const user = em.create(UserInfo, { firstName: 'test', lastName: 'student' });
+				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 				const task = em.create(Task, { name: 'roll some dice', lesson: null, course });
 				await em.persistAndFlush([user, course, task]);
@@ -193,9 +192,9 @@ describe('TaskService', () => {
 				const service = module.get<TaskRepo>(TaskRepo);
 				const em = module.get<EntityManager>(EntityManager);
 
-				const user = em.create(UserInfo, { firstName: 'test', lastName: 'student' });
+				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [] });
-				const lesson = em.create(LessonInfo, { course });
+				const lesson = em.create(LessonTaskInfo, { course });
 				const task = em.create(Task, { name: 'roll some dice', lesson, course });
 				await em.persistAndFlush([user, course, lesson, task]);
 				const [result, total] = await service.findAllOpenByStudent(user.id);
@@ -206,9 +205,9 @@ describe('TaskService', () => {
 				const service = module.get<TaskRepo>(TaskRepo);
 				const em = module.get<EntityManager>(EntityManager);
 
-				const user = em.create(UserInfo, { firstName: 'test', lastName: 'student' });
+				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
-				const lesson = em.create(LessonInfo, { course });
+				const lesson = em.create(LessonTaskInfo, { course });
 				const task = em.create(Task, { name: 'roll some dice', lesson, course });
 				await em.persistAndFlush([user, course, lesson, task]);
 				const [result, total] = await service.findAllOpenByStudent(user.id);
@@ -219,9 +218,9 @@ describe('TaskService', () => {
 				const service = module.get<TaskRepo>(TaskRepo);
 				const em = module.get<EntityManager>(EntityManager);
 
-				const user = em.create(UserInfo, { firstName: 'test', lastName: 'student' });
+				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
-				const lesson = em.create(LessonInfo, { course });
+				const lesson = em.create(LessonTaskInfo, { course });
 				const task = em.create(Task, { name: 'roll some dice', lesson, course });
 				await em.persistAndFlush([user, course, lesson, task]);
 				const [result, total] = await service.findAllOpenByStudent(user.id);

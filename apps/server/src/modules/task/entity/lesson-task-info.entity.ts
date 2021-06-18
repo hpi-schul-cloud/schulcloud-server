@@ -3,7 +3,7 @@ import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { CourseTaskInfo } from './course-task-info.entity';
 
 @Entity({ tableName: 'lessons' })
-export class LessonInfo extends BaseEntityWithTimestamps {
+export class LessonTaskInfo extends BaseEntityWithTimestamps {
 	@Property()
 	hidden: boolean;
 

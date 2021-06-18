@@ -9,7 +9,7 @@ import { CoreModule } from './core/core.module';
 import { TaskModule } from './modules/task/task.module';
 
 import { CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo, CourseInfo, TeamInfo } from './modules/news/entity';
-import { Task, LessonInfo as LessonTaskInfo, CourseTaskInfo, Submission, FileTaskInfo, UserTaskInfo } from './modules/task/entity';
+import { Task, LessonTaskInfo, CourseTaskInfo, Submission, FileTaskInfo, UserTaskInfo } from './modules/task/entity';
 
 
 @Module({
