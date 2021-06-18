@@ -1,8 +1,8 @@
-import { ObjectId } from '@mikro-orm/mongodb';
 import { Entity, ManyToOne, Collection, Property, ManyToMany } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain';
 import { UserTaskInfo } from './user-task-info.entity';
 import { FileTaskInfo } from './file-task-info.entity';
+import { Task } from './task.entity';
 
 @Entity({ tableName: 'submissions' })
 export class Submission extends BaseEntityWithTimestamps {
@@ -11,8 +11,8 @@ export class Submission extends BaseEntityWithTimestamps {
 		Object.assign(this, partial);
 	}
 
-	@Property()
-	homeworkId: ObjectId;
+	@ManyToOne({ fieldName: 'homeworkId' })
+	homework: Task;
 
 	@ManyToOne({ fieldName: 'studentId' })
 	student: UserTaskInfo;
