@@ -55,6 +55,26 @@ describe("Course Service", (() => {
 });
 ```
 
+### Isolation
+
+Each test should be able to run alone, as well as together with any other tests. To ensure this, it is important that the test does not depend on any preexisting data.
+
+- Each test should generate the data it needs, and ensure that its data is deleted afterwards. (this is usually done via mocha's "afterEach" function.
+- When you create objects with fields that have to be globally unique, like the account username, you must ensure the name you choose is unique. This can be done by including a timestamp.
+- Never use seeddata.
+
+### Test Structure
+
+Your test should be structured in three seperate areas, each distinguished by at least an empty line:
+
+- Arrange - set up your testdata
+- Act - call the function you want to test
+- Assert - check the result
+
+this is known as the AAA-pattern.
+
+## Testing Samples
+
 ### Handling of function return values
 
 When assigning a value to an expect, separate the function call from the expectation to simplify debugging. This later helps when you not know about the return value type or if it's an promise or not. This is good style not only for tests.
@@ -62,7 +82,7 @@ When assigning a value to an expect, separate the function call from the expecta
 ```TypeScript
 	// doSomethingCrazy : retValue
 	it('bad sample', () => {
-		expect(doSomethingCrazy(x,y,z)).to... 
+		expect(doSomethingCrazy(x,y,z)).to...
 	})
 	it('good sample', () => {
 		const result = doSomethingCrazy(x,y,z)
@@ -73,11 +93,11 @@ When assigning a value to an expect, separate the function call from the expecta
 
 ### Promises and Timouts in tests
 
-When using asynchronous functions and/opr promises, results must be awaited within of an async test function instead of using promise chains. While for expexting error conditions it might be helpful to use catch for extracting a value from an expected error, in every case avoid writing long promise chains. 
+When using asynchronous functions and/opr promises, results must be awaited within of an async test function instead of using promise chains. While for expexting error conditions it might be helpful to use catch for extracting a value from an expected error, in every case avoid writing long promise chains.
 
- - Instead of using done callback, use async test functions. 
- - Use await instead of (long) promise chains 
- - never manually set a timeout
+- Instead of using done callback, use async test functions.
+- Use await instead of (long) promise chains
+- never manually set a timeout
 
 ```TypeScript
 	// doSomethingCrazy : Promise<retValue>
@@ -96,7 +116,7 @@ When using asynchronous functions and/opr promises, results must be awaited with
 		const result = await doSomethingCrazy(x,y,z)
 		expect(result).to...
 	})
-``` 
+```
 
 > Timeouts must not be used, when async handling is correctly defined!
 
@@ -106,7 +126,7 @@ When expecting an error, you might take values from an error, test for the error
 
 ```TypeScript
 	// doSomethingCrazy : Promise<retValue>
-	it('bad async sample expecting an error', async () => {
+	it('bad async sample expecting an error', () => {
 		expect(doSomethingCrazy(x,y,z)).to...
 	})
 	it('good async sample expecting an error value', async () => {
@@ -120,24 +140,6 @@ When expecting an error, you might take values from an error, test for the error
 		await expect(doSomethingCrazySync(wrong, param)).rejects.toThrow(BadRequestException);
 	})
 ```
-
-### Isolation
-
-Each test should be able to run alone, as well as together with any other tests. To ensure this, it is important that the test does not depend on any preexisting data.
-
-- Each test should generate the data it needs, and ensure that its data is deleted afterwards. (this is usually done via mocha's "afterEach" function.
-- When you create objects with fields that have to be globally unique, like the account username, you must ensure the name you choose is unique. This can be done by including a timestamp.
-- Never use seeddata.
-
-### Test Structure
-
-Your test should be structured in three seperate areas, each distinguished by at least an empty line:
-
-- Arrange - set up your testdata
-- Act - call the function you want to test
-- Assert - check the result
-
-this is known as the AAA-pattern.
 
 ## Testing Utilities
 
@@ -318,7 +320,7 @@ are correctly mounted and available at a specific path.
 
 > Do not test logic (from the business layer or repository) in e2e-tests, this must be done where the logic is defined within of a unit test. A e2e test should only ensure everything is correctly initialized.
 
-> Do not put logic (beside statements, transactions, mapping) inside a controller, use the logic layer instead. 
+> Do not put logic (beside statements, transactions, mapping) inside a controller, use the logic layer instead.
 
 > Mappers must be unit tested.
 
