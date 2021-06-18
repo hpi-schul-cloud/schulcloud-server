@@ -4,7 +4,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityId, SortOrder } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
-import { NewsTargetFilter } from '@src/modules/news/repo/news-target-filter';
 import {
 	CourseInfo,
 	CourseNews,
@@ -160,37 +159,6 @@ describe('NewsRepo', () => {
 		});
 	});
 
-	describe('save', () => {
-		it('should create and persist a news entity', async () => {
-			const courseId = new ObjectId().toString();
-			const news = newTestNews(schoolId, NewsTargetModel.Course, courseId);
-			await repo.save(news);
-			expect(news.id).toBeDefined();
-			const expectedNews = await em.findOne(News, news.id);
-			expect(news).toStrictEqual(expectedNews);
-		});
-	});
-
-	describe('saveAll', () => {
-		it('should create multiple entities and save them', async () => {
-			const courseIds = Array.from(Array(5)).map(() => new ObjectId().toHexString());
-			const createdNews = courseIds.map((courseId) => newTestNews(schoolId, NewsTargetModel.Course, courseId));
-			await repo.saveAll(createdNews);
-
-			const newsIds = createdNews
-				.filter((n) => !!n)
-				.map((n) => n && n.id)
-				.sort();
-			expect(newsIds.length).toBe(courseIds.length);
-
-			const expected = await Promise.all(createdNews.map(async (createdNews1) => repo.findOneById(createdNews1.id)));
-			expect(expected.length).toBe(createdNews.length);
-
-			const expectedIds = expected.map((n) => n && n.id).sort();
-			expect(expectedIds).toStrictEqual(newsIds);
-		});
-	});
-
 	describe('findOneById', () => {
 		it('should find a news entity by id', async () => {
 			const teamId = new ObjectId().toString();
@@ -202,31 +170,6 @@ describe('NewsRepo', () => {
 		it('should throw an exception if not found', async () => {
 			const failNewsId = new ObjectId().toString();
 			await expect(repo.findOneById(failNewsId)).rejects.toThrow(NotFoundError);
-		});
-	});
-
-	describe('delete', () => {
-		it('should delete news', async () => {
-			const teamId = new ObjectId().toString();
-			const news = await createTestNews(schoolId, NewsTargetModel.Team, teamId);
-
-			await repo.delete(news);
-			await expect(repo.findOneById(news.id)).rejects.toThrow(NotFoundError);
-		});
-	});
-
-	describe('deleteAll', () => {
-		it('should delete multiple news', async () => {
-			const ids = Array.from(Array(5)).map(() => new ObjectId().toHexString());
-			const targets: NewsTargetFilter = { targetModel: NewsTargetModel.Team, targetIds: ids };
-			const createdNews = await createMultipleTestNews(schoolId, NewsTargetModel.Team, ids);
-
-			let [result, count] = await repo.findAll([targets], false);
-			expect(count).toBe(ids.length);
-
-			await repo.deleteAll(createdNews);
-			[result, count] = await repo.findAll([targets], false);
-			expect(count).toBe(0);
 		});
 	});
 });
