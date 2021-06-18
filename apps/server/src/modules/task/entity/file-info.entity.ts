@@ -1,6 +1,6 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain';
-import { UserInfo } from '../../news/entity';
+import { UserInfo } from './user-info.entity';
 
 @Entity({ tableName: 'files' })
 export class FileInfo extends BaseEntityWithTimestamps {

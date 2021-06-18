@@ -1,7 +1,7 @@
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain';
 import { CourseInfo } from './course-info.entity';
-import { LessonInfo } from './';
+import { LessonInfo } from './lesson-info.entity';
 
 @Entity({ tableName: 'homeworks' })
 export class Task extends BaseEntityWithTimestamps {

@@ -1,7 +1,8 @@
 import { Entity, ManyToOne, Collection, Property, ManyToMany } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain';
-import { UserInfo } from '../../news/entity';
-import { Task, FileInfo } from './';
+import { UserInfo } from './user-info.entity';
+import { Task } from './task.entity';
+import { FileInfo } from './file-info.entity';
 
 @Entity({ tableName: 'submissions' })
 export class Submission extends BaseEntityWithTimestamps {

@@ -4,10 +4,13 @@ import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
-import { TaskModule } from './modules/task/task.module';
-import { CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo, CourseInfo as CourseNewsInfo, TeamInfo } from './modules/news/entity';
-import { Task, LessonInfo as LessonTaskInfo, CourseInfo as CourseTaskInfo, Submission, FileInfo as FileTaskInfo } from './modules/task/entity';
+
 import { CoreModule } from './core/core.module';
+import { TaskModule } from './modules/task/task.module';
+
+import { CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo, CourseInfo as CourseNewsInfo, TeamInfo } from './modules/news/entity';
+import { Task, LessonInfo as LessonTaskInfo, CourseInfo as CourseTaskInfo, Submission, FileInfo as FileTaskInfo, UserInfo as UserTaskInfo } from './modules/task/entity';
+
 
 @Module({
 	imports: [
@@ -32,6 +35,7 @@ import { CoreModule } from './core/core.module';
 				LessonTaskInfo,
 				CourseTaskInfo,
 				FileTaskInfo,
+				UserTaskInfo,
 				Submission,
 			],
 			findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) => {
