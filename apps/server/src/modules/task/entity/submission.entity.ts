@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Collection, Property, ManyToMany, OneToMany } from '@mikro-orm/core';
+import { Entity, ManyToOne, Collection, Property, ManyToMany } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain';
 import { UserTaskInfo } from './user-task-info.entity';
 import { Task } from './task.entity';
