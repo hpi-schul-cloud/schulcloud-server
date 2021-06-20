@@ -11,6 +11,7 @@ import { CoreModule } from './core/core.module';
 import { CourseInfo } from './modules/news/entity/course-info.entity';
 import { TeamInfo } from './modules/news/entity/team-info.entity';
 import { NewsModule } from './modules/news/news.module';
+import { MongoSharedDriver } from './modules/database/mongo-database';
 
 @Module({
 	imports: [
@@ -18,7 +19,7 @@ import { NewsModule } from './modules/news/news.module';
 		TaskModule,
 		NewsModule,
 		MikroOrmModule.forRoot({
-			type: 'mongo',
+			driver: MongoSharedDriver,
 			// TODO add mongoose options as mongo options (see database.js)
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
