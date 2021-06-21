@@ -75,7 +75,7 @@ export class TaskRepo {
 		return [usersTasks, total];
 	}
 
-	async findAllAssignedByTeacher(userId: EntityId): Promise<Counted<Task[]>> {
+	async findAllAssignedByTeacher(userId: EntityId, { limit, skip }: IPagination = {}): Promise<Counted<Task[]>> {
 		// TODO: merge overlaps with findAllOpenByStudent
 		// TODO: use Query Builder
 		const coursesOfUser = await this.getCourseOfUser(userId);
@@ -85,13 +85,17 @@ export class TaskRepo {
 			hidden: false,
 		});
 
-		const [usersTasks, count] = await this.em.findAndCount(Task, {
-			$and: [
-				{ course: { $in: coursesOfUser } },
-				{ private: { $ne: true } },
-				{ $or: [{ lesson: null }, { lesson: { $in: publishedLessons } }] },
-			],
-		});
+		const [usersTasks, count] = await this.em.findAndCount(
+			Task,
+			{
+				$and: [
+					{ course: { $in: coursesOfUser } },
+					{ private: { $ne: true } },
+					{ $or: [{ lesson: null }, { lesson: { $in: publishedLessons } }] },
+				],
+			},
+			{ populate: ['course'], limit, offset: skip, orderBy: { createdAt: QueryOrder.DESC } }
+		);
 		return [usersTasks, count];
 	}
 }

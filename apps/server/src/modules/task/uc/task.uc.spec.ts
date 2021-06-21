@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationQuery } from '@shared/controller/dto/pagination.query';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { FileTaskInfo, Submission, Task, UserTaskInfo, CourseTaskInfo } from '../entity';
 import { SubmissionRepo } from '../repo/submission.repo';
+import { Counted } from '../../../shared/domain';
 import { TaskRepo } from '../repo/task.repo';
 import { TaskUC, computeSubmissionMetadata } from './task.uc';
 
@@ -38,7 +40,7 @@ describe('TaskService', () => {
 		expect(service).toBeDefined();
 	});
 
-	describe('tempFindAllOpenByTeacher', () => {
+	/* describe('tempFindAllOpenByTeacher', () => {
 		it('should return task with statistics', async () => {
 			const course1 = new CourseTaskInfo({});
 			course1.teachers.add(new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'abc' }));
@@ -57,32 +59,54 @@ describe('TaskService', () => {
 		});
 
 		// teacher only --> should not needed
-	});
+	}); */
 
 	describe('getTaskSubmissionMetadata', () => {
 		it('should return the number of students that submitted', () => {
+			const task = new Task({ course: new CourseTaskInfo({}) });
 			const testdata = [
 				new Submission({ student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'abc' }) }),
 				new Submission({ student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'def' }) }),
 			];
 
-			const result = computeSubmissionMetadata(testdata);
+			const result = computeSubmissionMetadata(testdata, task);
 			expect(result.submitted).toEqual(2);
 		});
 
 		it('should count submissions by the same student only once', () => {
+			const task = new Task({ course: new CourseTaskInfo({}) });
 			const testdata = [
 				new Submission({ student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'abc' }) }),
 				new Submission({ student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'abc' }) }),
 			];
 
-			const result = computeSubmissionMetadata(testdata);
+			const result = computeSubmissionMetadata(testdata, task);
 			expect(result.submitted).toEqual(1);
 		});
 
-		it.todo('should return the number of students that could submit');
+		/* it.skip('should return the maximum number of students that could submit', () => {
+			const students = [
+				new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname' }),
+				new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname' }),
+			];
 
-		it('should return the number of submissions that have been graded', async () => {
+			const course = new CourseTaskInfo({
+				name: 'examplecourse',
+				color: '#000000',
+				_id: new ObjectId(),
+				id: 'ced',
+				createdAt: new Date(Date.now()),
+				students: new Collection(CourseTaskInfo),
+			});
+
+			const task = new Task({ course });
+
+			const result = computeSubmissionMetadata([], task);
+			expect(result.maxSubmissions).toEqual(2);
+		}); */
+
+		it('should return the number of submissions that have been graded', () => {
+			const task = new Task({ course: new CourseTaskInfo({}) });
 			const testdata = [
 				new Submission({
 					student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'abc' }),
@@ -102,8 +126,26 @@ describe('TaskService', () => {
 				}),
 			];
 
-			const result = computeSubmissionMetadata(testdata);
+			const result = computeSubmissionMetadata(testdata, task);
 			expect(result.graded).toEqual(2);
+		});
+
+		it('should consider only the newest submission per user for grading', () => {
+			const task = new Task({ course: new CourseTaskInfo({}) });
+			const testdata = [
+				new Submission({
+					student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'abc' }),
+					createdAt: new Date(Date.now()),
+				}),
+				new Submission({
+					student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'abc' }),
+					gradeComment: 'well done',
+					createdAt: new Date(Date.now() - 500),
+				}),
+			];
+
+			const result = computeSubmissionMetadata(testdata, task);
+			expect(result.graded).toEqual(1);
 		});
 	});
 });
