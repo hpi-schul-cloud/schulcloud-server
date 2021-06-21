@@ -9,7 +9,7 @@ const { trashBinResult } = require('../../helper/uc.helper');
 const getSchoolIdOfUser = async (userId) => {
 	const user = await userRepo.getUser(userId);
 	return user.schoolId;
-}
+};
 
 const userHaveSameSchool = async (userId, otherUserId) => {
 	if (userId && otherUserId) {
@@ -69,9 +69,7 @@ const deleteUserRelatedData = async (userId, schoolTombstoneUserId, deleteUserFa
 	}
 };
 
-const createUserTrashbin = async (id, data) => {
-	return trashbinRepo.createUserTrashbin(id, data);
-};
+const createUserTrashbin = async (id, data) => trashbinRepo.createUserTrashbin(id, data);
 
 const replaceUserWithTombstone = async (user) => {
 	const { _id, schoolId } = user;
@@ -161,13 +159,18 @@ const deleteUser = async (id, { user: loggedinUser }) => {
 	try {
 		const registrationPinFacade = facadeLocator.facade('/registrationPin/v2');
 		await registrationPinFacade.deleteRegistrationPinsByEmail(user.email);
+		if (user.parents) {
+			await Promise.all(
+				user.parents.map((parent) => registrationPinFacade.deleteRegistrationPinsByEmail(parent.email))
+			);
+		}
 	} catch (error) {
 		errorUtils.asyncErrorLog(error, `failed to delete registration pin for user ${user._id}`);
 	}
 
 	const schoolTombstoneUserId = await getOrCreateTombstoneUserId(user.schoolId, loggedinUser);
 	// this is an async function, but we don't need to wait for it, because we don't give any errors information back to the user
-	const facades = ['/pseudonym/v2', '/helpdesk/v2', '/fileStorage/v2', '/classes/v2', '/courses/v2'];
+	const facades = ['/pseudonym/v2', '/helpdesk/v2', '/fileStorage/v2', '/classes/v2', '/courses/v2', '/messenger/v2'];
 	deleteUserRelatedData(user._id, schoolTombstoneUserId, facades).catch((error) => {
 		errorUtils.asyncErrorLog(error, 'deleteUserRelatedData failed');
 	});

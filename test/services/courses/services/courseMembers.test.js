@@ -17,8 +17,8 @@ describe('course scope members service', () => {
 		server = app.listen(0);
 	});
 
-	after((done) => {
-		server.close(done);
+	after(async () => {
+		await server.close();
 	});
 
 	it('is properly registered', () => {
@@ -33,8 +33,7 @@ describe('course scope members service', () => {
 		let teacherParams;
 		let studentParams;
 
-		before(async function before() {
-			this.timeout(5000);
+		before(async () => {
 			teacher = await testObjects.createTestUser();
 			teacherParams = await generateRequestParamsFromUser(teacher);
 			student = await testObjects.createTestUser();
@@ -100,8 +99,7 @@ describe('course scope members service', () => {
 		const toId = (item) => item._id;
 		const toIdString = (item) => item._id.toString();
 
-		before(async function before() {
-			this.timeout(8000);
+		before(async () => {
 			teachers = [await testObjects.createTestUser(), await testObjects.createTestUser()];
 			substitutionTeachers = [await testObjects.createTestUser()];
 			students = [

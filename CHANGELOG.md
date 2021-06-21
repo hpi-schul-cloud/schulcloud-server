@@ -11,15 +11,92 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-9018; SC-9003 - created schoolsList public endpoint, and jwt secured /schools endpoint
+- SC-9093 - make configured default language and timezone available in config service
+- SC-9092 - delete S3 files after 7 days from user deletion
+- SC-8959 - Add messenger to deletion concept
+
+### Changed 
+
+- remove unneccesary timeout definitions from tests and avoid promise chains
+- SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
+
+## [26.4.4] - 2021-06-16
+
+### Change
+
+- rename permission TASK_DASHBOARD_VIEW_V3
+
+## [26.4.3] - 2021-06-16
+
+### Change
+
+- SC-9139 - Add a check if user roles should be updated or not to the repo
+
+## [26.4.2] - 2021-06-16
+
+### Fixed
+
+- npm run syncIndex work for not existing collections in the db
+
+## [26.4.1] - 2021-06-15
+
+### Change
+
+- SC-9029 - Change place of the channel creation for RabbitMQ
+
+## [26.4.0] - 2021-06-11
+
+- SC-9004 - Sync env variables between backend and frontend
+
+## [26.3.1] - 2021-06-14
+
+### Added
+
+- SC-9134 - Add missing mongo indexes for LDAP Sync
+
+## [26.3.0] - 2021-06-07
+
+### Changed
+
+- SC-8898 - parallelize LDAP sync using RabbitMQ
+
+## [26.2.2] - 2021-06-04
+
+### Fixed
+
+- Fixed dependencies issue
+
+## [26.2.1] - 2021-06-02
+
+### Added
+
+- SC-9103 - add logging for syncIndexes script
+
+## [26.2.0] - 2021-06-01
+
+### Added
+
+- OPS-2418 - Change buildpipelines (Server, Client, Nuxt) to execute E2E tests according QF decision
 - SC-8250 - add bulk deletion to user service v2
 - SC-8341 - add tombstone school to tombstone user
 - SC-8408 - added delete events by scope Id route
 - SC-7937 - Allow adding multiple materials to lesson
 - SC-7868 - Deletion concept for personal file connections
 - SC-8873 - Add prioritization for Matrix messenger tasks
+- SC-8982 - add inital service ressource messuring test setup
+- OPS-1499 - Add feature to CI Pipeline and provide manual deployments of branches and automatic deploy of release to staging
+- Add run script for sync indexes based on existing and registered schemas.
+- SC-9085 - add registration pin deletion for parent emails
+- SC-9004 - Sync env variables between backend and frontend
+- OPS-1499 - Add feature to CI Pipeline and provide manual deployments of branches
+- Add run script for sync indexes based on existing and registered schemas.
 
 ### Changed
 
+- SC-8440 - fixed open api validation for manual consent
+- SC-9055 - changed Edu-Sharing permissions for Brandenburg Sportinhalt content
+- SC-6950 - validation for officialSchoonNumber now allows 5 or 6 digits
 - SC-8599 - added helparea contact dropdown and send value
 - SC-7944 - use persistent ids for Lern-Store content items
 - OPS-1508 - added limits for cpu and ram to the docker compose files
@@ -31,9 +108,39 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-8933 - fix date format on first login
 - SC-8728 - fix configuration reset in tests
+- SC-8873 - fix addUser prioritization for full school Matrix messenger sync
+- SC-8982 - fix test setup for on the fly building test like routes jwt
 
 ## [26.1.0]
+
+### Added
+
+- SC-8910 - added an isExternal check to the adminUsers service remove method
+
+### Changed
+
+- SC-8732 - change search filter gate and weight of values in indexes. Will reduce amount of results
+- SC-8880 - changed the validation for search queries in NAT, now it allows empty
+
+## [26.0.16] - 2021-04-20
+
+### Removed
+
+- - SC-8748 - revert: bump feathers-mongoose from 6.3.0 to 8.3.1
+
+## [26.0.15] - 2021-04-19
+
+### Changed
+
+- SC-8909 - messenger: use user-based fixed device ids
+
+## [26.0.14] - 2021-04-16
+
+### Changed
+
+- SC-8934 - no more autosync for the migrations for the mongodb
 
 ## [26.0.13] - 2021-04-15
 
@@ -115,6 +222,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-6679 - fixed table styling in topic text-component
+- SC-8534 - fix registration link generation
 - SC-8682 - fix students are editable in externally managed schools
 - SC-8534 fix registration link generation
 - Allow sorting after search
@@ -336,6 +445,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-7763 - adds searchable feature flag for lernstore.
 - SC-8020 - adds collections filter to edu-sharing service
 - SC-8260 - new team indexes and migration to add this
+
+### Fixed
+
+- SC-8230 - fix deletion of teachers via new route
 
 ### Removed
 

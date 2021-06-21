@@ -2,7 +2,6 @@ const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise);
 
-
 describe('userRoles', () => {
 	let app;
 	let userRoles;
@@ -94,9 +93,9 @@ describe('userRoles', () => {
 		accountTestUserOther = await testObjects.createTestAccount(dataTestUserOther, null, otherUser);
 	});
 
-	after((done) => {
-		testObjects.cleanup();
-		server.close(done);
+	after(async () => {
+		await testObjects.cleanup();
+		await server.close();
 	});
 
 	it('registered the service', () => {

@@ -30,13 +30,4 @@ groups:
     reviewers:
       teams:
         - sc-admins
-
-  devops:
-    conditions:
-      - "'*deploy.sh' in files or '.build/*' in files" # only review specific, deployment relevant files
-    reviewers:
-      teams:
-        - devops
-    reviews:
-      required: 1 # number of approvals required from this group
-      author_value: 1 # if author of pr is in team, no additional review required
+        - CoreDevs

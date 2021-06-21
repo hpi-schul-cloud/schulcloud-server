@@ -14,7 +14,7 @@ const cleanup = () => {
 	}
 	const ids = createdRoles;
 	createdRoles = [];
-	return Role.deleteMany({ id: { $in: ids } });
+	return Role.deleteMany({ _id: { $in: ids } });
 };
 
 module.exports = {

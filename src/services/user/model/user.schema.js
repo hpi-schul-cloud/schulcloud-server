@@ -121,6 +121,8 @@ userSchema.index({ firstName: 1, lastName: 1 }); // ok = 5
 
 userSchema.index({ ldapDn: 1 }); // ?
 userSchema.index({ ldapId: 1 }); // ?
+userSchema.index({ ldapId: 1, schoolId: 1 }); // LDAP
+userSchema.index({ schoolId: 1, ldapDn: 1 }); // LDAP
 userSchema.index({ schoolId: 1 }); // ?
 
 userSchema.index({ schoolId: 1, roles: -1 }); // ?
@@ -135,12 +137,12 @@ userSchema.index(
 	},
 	{
 		weights: {
-			firstName: 10,
-			lastName: 10,
-			email: 10,
-			firstNameSearchValues: 2,
-			lastNameSearchValues: 2,
-			emailSearchValues: 1,
+			firstName: 15,
+			lastName: 15,
+			email: 15,
+			firstNameSearchValues: 3,
+			lastNameSearchValues: 3,
+			emailSearchValues: 2,
 		},
 		name: 'userSearchIndex',
 		default_language: 'none', // no stop words and no stemming,

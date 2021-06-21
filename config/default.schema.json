@@ -36,6 +36,36 @@
 			"default": false,
 			"description": "Send mails to notification service, also if not in production mode"
 		},
+		"I18N": {
+			"type": "object",
+			"description": "Configuration of I18N",
+			"properties": {
+				"DEFAULT_LANGUAGE": {
+					"type": "string",
+					"default": "de",
+					"enum": [
+						"de",
+						"en"
+					],
+					"description": "Value for the default language"
+				},
+				"DEFAULT_TIMEZONE": {
+					"type": "string",
+					"default": "Europe/Berlin",
+					"description": "Timezone"
+				},
+				"FALLBACK_LANGUAGE": {
+					"type": "string",
+					"default": "de",
+					"description": "Value for the fallback language if translation key is not found"
+				},
+				"AVAILABLE_LANGUAGES": {
+					"type": "string",
+					"default": "de,en,es",
+					"description": "Available languages"
+				}
+			}
+		},
 		"SYNC_API_KEY": {
 			"type": "string",
 			"default": "example",
@@ -319,6 +349,27 @@
 			"type": "string",
 			"description": "Password for the antivirus service"
 		},
+		"DOCUMENT_BASE_DIR": {
+			"type": "string",
+			"format": "uri",
+			"default": "https://s3.hidrive.strato.com/schul-cloud-hpi/",
+			"description": "Storage url for global documents."
+		},
+		"SC_THEME": {
+			"type": "string",
+			"default": "default",
+			"description": "The used theming."
+		},
+		"SC_TITLE": {
+			"type": "string",
+			"default": "HPI Schul-Cloud",
+			"description": "The used title."
+		},
+		"SC_SHORT_TITLE": {
+			"type": "string",
+			"default": "HPI Schul-Cloud",
+			"description": "Look to SC_TITLE, it is a possible short form of it."
+		},
 		"ADMIN_TOGGLE_STUDENT_VISIBILITY": {
 			"type": "string",
 			"default": "enabled",
@@ -486,6 +537,11 @@
 			"default": false,
 			"description": "enable the /versions route"
 		},
+		"FEATURE_MONGOOSE_LOGGING_ENABLED" : {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable logging for mongoose database calls."
+		},
 		"PROMETHEUS": {
 			"type": "object",
 			"description": "Prometheus metrics options used by prometheus-api-metrics",
@@ -514,6 +570,11 @@
 			"default": 8000,
 			"description": "Default timeout for external requests in milliseconds."
 		},
+		"FEATURE_SYNCER_CONSUMER_ENABLE": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable consumer for queued sync messages"
+		},
 		"LDAP_SYSTEM_SYNCER_POOL_SIZE": {
 			"type": "integer",
 			"minimum": 1,
@@ -525,6 +586,16 @@
 			"minimum": 1,
 			"default": 1,
 			"description": "Determines how many school syncers will be run in parallel (at most) during the LDAP sync."
+		},
+		"SYNC_LOG_LEVEL" : {
+			"type": "string",
+			"default": "error",
+			"description": "Log level for queue based syncers (e.g. LDAP)"
+		},
+		"SYNC_QUEUE_NAME" : {
+			"type": "string",
+			"default": "sync_ldap",
+			"description": "Queue name for sync"
 		},
 		"MEMORY_INTERVAL_TIME": {
 			"type": "integer",
@@ -555,6 +626,36 @@
 			"type": "string",
 			"default": "ticketsystem@schul-cloud.org",
 			"description": "Email address used for reporting a wish"
+		},
+		"ADMIN_TABLES_DISPLAY_CONSENT_COLUMN": {
+			"type": "boolean",
+			"default": true,
+			"description": "Display/Hide admin tables consent column"
+		},
+		"JWT_SHOW_TIMEOUT_WARNING_SECONDS": {
+			"type": "integer",
+			"default": 3600,
+			"description": "Determines the time in seconds to show the timeout warning in the client"
+		},
+		"FEATURE_EXTENSIONS_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables user's use of extensions in the client"
+		},
+		"FEATURE_TEAMS_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables user's use of the teams feature in the client"
+		},
+		"NOT_AUTHENTICATED_REDIRECT_URL": {
+			"type": "string",
+			"default": "/login",
+			"description": "Determines the url to be redirected to when the user is not authenticated"
+		},
+		"FEATURE_LEGACY_NOT_FOUND_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables 404 error handler in feathers app. WARNING: disables all nestjs routes."
 		}
 	},
 	"required": [

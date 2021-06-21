@@ -1,0 +1,51 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "nest:test:debug",
+			"runtimeExecutable": "npm",
+			"runtimeArgs": ["run-script", "nest:test:debug"],
+			"port": 9229,
+			"skipFiles": ["<node_internals>/**"]
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "nest:test:e2e",
+			"runtimeExecutable": "npm",
+			"runtimeArgs": ["run-script", "nest:test:e2e"],
+			"skipFiles": ["<node_internals>/**"]
+		},
+		{
+			"name": "nest:attach",
+			"port": 9229,
+			"request": "attach",
+			"skipFiles": ["<node_internals>/**"],
+			"type": "pwa-node",
+			"restart": true
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "nest:start:debug",
+			"runtimeExecutable": "npm",
+			"runtimeArgs": ["run-script", "nest:start:debug"],
+			"port": 9229,
+			"skipFiles": ["<node_internals>/**"],
+			"console": "integratedTerminal"
+		},
+		{
+			"type": "node",
+			"name": "vscode-jest-tests",
+			"request": "launch",
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"disableOptimisticBPs": true,
+			"cwd": "${workspaceFolder}",
+			"runtimeExecutable": "npm",
+			"args": ["run", "nest:test:debug"]
+		}
+	]
+}

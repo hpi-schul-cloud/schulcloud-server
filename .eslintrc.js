@@ -47,26 +47,84 @@ module.exports = {
 			},
 		],
 		'arrow-parens': ['error', 'always'],
+		'arrow-body-style': ['error', 'as-needed'],
 	},
 	plugins: ['import', 'prettier', 'promise'],
 	env: {
 		node: true,
 		mocha: true,
-		browser: true,
+	},
+	settings: {
+		'import/resolver': {
+			node: {
+				extensions: ['.js', '.ts'],
+			},
+		},
 	},
 	overrides: [
 		{
-			files: ['*.test.js', '*.test.ts'],
+			files: ['apps/**/*.ts'],
+			parser: '@typescript-eslint/parser',
+			plugins: ['@typescript-eslint'],
+			extends: [
+				'airbnb-typescript/base',
+				'plugin:@typescript-eslint/recommended',
+				'plugin:@typescript-eslint/recommended-requiring-type-checking',
+				'plugin:prettier/recommended',
+				'plugin:promise/recommended',
+			],
+			parserOptions: {
+				project: 'apps/server/tsconfig.lint.json',
+			},
+			env: {
+				node: true,
+				es6: true,
+			},
+			settings: {
+				'import/parsers': {
+					'@typescript-eslint/parser': ['.ts'],
+				},
+				'import/resolver': {
+					typescript: {
+						alwaysTryTypes: true,
+						project: ['tsconfig.json', 'apps/server/tsconfig.lint.json', 'apps/server/tsconfig.app.json'],
+					},
+				},
+			},
+			rules: {
+				'import/no-unresolved': 'off', // better handled by ts resolver
+				'import/no-extraneous-dependencies': 'off', // better handles by ts resolver
+				'import/extensions': ['error', 'always', { ts: 'never' }],
+				'import/prefer-default-export': 'off',
+				'no-void': ['error', { allowAsStatement: true }],
+				'max-classes-per-file': 'off',
+				'class-methods-use-this': 'off',
+				'no-param-reassign': 'off',
+				'no-underscore-dangle': 'off',
+			},
+			overrides: [
+				{
+					files: ['**/*spec.ts'],
+					env: {
+						jest: true,
+					},
+				},
+			],
+		},
+		{
+			// legacy test files js/ts
+			files: ['{test,src}/**/*.test.js', '{test,src}/**/*.test.ts'],
 			rules: {
 				'no-unused-expressions': 'off',
 				'global-require': 'warn',
 			},
 		},
 		{
-			files: ['*.ts'],
+			// legacy typescript
+			files: ['{test,src}/**/*.ts'],
 			parser: '@typescript-eslint/parser',
 			plugins: ['@typescript-eslint'],
-			extends: ['plugin:@typescript-eslint/recommended', 'prettier/@typescript-eslint', 'plugin:prettier/recommended'],
+			extends: ['plugin:@typescript-eslint/recommended', 'prettier', 'plugin:prettier/recommended'],
 		},
 	],
 };
