@@ -9,6 +9,24 @@ import { Task, Submission, CourseTaskInfo, LessonTaskInfo } from '../entity';
 export class TaskRepo {
 	constructor(private readonly em: EntityManager) {}
 
+	// TODO: move to seperate repo
+	async getCourseOfUser(userId: EntityId): Promise<CourseTaskInfo[]> {
+		const coursesOfUser = await this.em.find(CourseTaskInfo, {
+			$or: [
+				{
+					students: userId,
+				},
+				{
+					teachers: userId,
+				},
+				{
+					substitutionTeachers: userId,
+				},
+			],
+		});
+		return coursesOfUser;
+	}
+
 	// WARNING: this is used to deal with the current datamodel, and needs to be changed.
 	// DO NOT DO THIS AT HOME!!
 	async findAllOpenByStudent(userId: EntityId, { limit, skip }: IPagination = {}): Promise<Counted<Task[]>> {
@@ -21,13 +39,13 @@ export class TaskRepo {
 		// order by duedate
 		// pagination
 
-		const [coursesOfStudent, submissionsOfStudent] = await Promise.all([
-			this.em.find(CourseTaskInfo, { students: userId }),
+		const [coursesOfUser, submissionsOfStudent] = await Promise.all([
+			this.getCourseOfUser(userId),
 			this.em.find(Submission, { student: userId }),
 		]);
 
 		const lessonsOfStudent = await this.em.find(LessonTaskInfo, {
-			course: { $in: coursesOfStudent },
+			course: { $in: coursesOfUser },
 			hidden: false,
 		});
 
@@ -44,7 +62,7 @@ export class TaskRepo {
 					// TODO move into a logic group / director
 					{ id: { $nin: homeworksWithSubmissions } },
 					{ private: { $ne: true } },
-					{ course: { $in: coursesOfStudent } },
+					{ course: { $in: coursesOfUser } },
 					{ $or: [{ lesson: null }, { lesson: { $in: lessonsOfStudent } }] },
 					{ $or: [{ dueDate: { $gte: oneWeekAgo } }, { dueDate: null }] },
 				],
@@ -60,17 +78,16 @@ export class TaskRepo {
 	async findAllAssignedByTeacher(userId: EntityId): Promise<Counted<Task[]>> {
 		// TODO: merge overlaps with findAllOpenByStudent
 		// TODO: use Query Builder
-		const coursesOfTeacher = await this.em.find(CourseTaskInfo, {
-			teachers: userId,
-		});
+		const coursesOfUser = await this.getCourseOfUser(userId);
+
 		const publishedLessons = await this.em.find(LessonTaskInfo, {
-			course: { $in: coursesOfTeacher },
+			course: { $in: coursesOfUser },
 			hidden: false,
 		});
 
 		const [usersTasks, count] = await this.em.findAndCount(Task, {
 			$and: [
-				{ course: { $in: coursesOfTeacher } },
+				{ course: { $in: coursesOfUser } },
 				{ private: { $ne: true } },
 				{ $or: [{ lesson: null }, { lesson: { $in: publishedLessons } }] },
 			],
