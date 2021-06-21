@@ -44,7 +44,7 @@ describe('TaskService', () => {
 		expect(service).toBeDefined();
 	});
 
-	describe('tempFindAllOpenByTeacher', () => {
+	describe('findAllOpenByTeacher', () => {
 		it('should return task with statistics', async () => {
 			const findAllAssignedByTeacherSpy = jest.spyOn(taskRepo, 'findAllAssignedByTeacher').mockImplementation(() => {
 				const tasks = [{ name: 'task1' }, { name: 'task2' }] as Task[];
@@ -59,7 +59,7 @@ describe('TaskService', () => {
 				return { submitted: 0, maxSubmissions: 1, graded: 0 };
 			});
 
-			const [tasks, total] = await service.tempFindAllOpenByTeacher('abc', new PaginationQuery());
+			const [tasks, total] = await service.findAllOpenByTeacher('abc', new PaginationQuery());
 			expect(total).toEqual(2);
 			expect(tasks.length).toEqual(2);
 			expect(tasks[0].status).toHaveProperty('submitted');
@@ -85,7 +85,7 @@ describe('TaskService', () => {
 					return { submitted: submissions.length, maxSubmissions: 0, graded: 0 };
 				});
 
-			const [tasks, total] = await service.tempFindAllOpenByTeacher('abc', new PaginationQuery());
+			const [tasks, total] = await service.findAllOpenByTeacher('abc', new PaginationQuery());
 			expect(total).toEqual(2);
 			expect(tasks.length).toEqual(2);
 			expect(tasks[0].status?.submitted).toEqual(1);
