@@ -2,12 +2,28 @@ import { Injectable } from '@nestjs/common';
 import { EntityId, IPagination } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
 import { TaskRepo } from '../repo/task.repo';
-import { Task } from '../entity';
+import { Task, Submission } from '../entity';
 import { SubmissionRepo } from '../repo/submission.repo';
 
 // TODO move to different file
 export type TaskSubmissionsMetaData = { submitted: number; maxSubmissions: number; graded: number };
 
+export const computeSubmissionMetadata = (taskSubmissions: Submission[]): TaskSubmissionsMetaData => {
+	// const [taskSubmissions, count] = await this.submissionRepo.getSubmissionsByTask(task);
+	const submittedUsers = new Set();
+	const gradedUsers = new Set();
+
+	taskSubmissions.forEach((submission) => {
+		submittedUsers.add(submission.student.id);
+		if (submission.grade || submission.gradeComment || submission.gradeFileIds) gradedUsers.add(submission.student.id);
+	});
+
+	return {
+		submitted: submittedUsers.size,
+		maxSubmissions: -1,
+		graded: gradedUsers.size,
+	};
+};
 // filter tasks older than 3 weeks
 @Injectable()
 export class TaskUC {
@@ -22,22 +38,7 @@ export class TaskUC {
 		return [tasks, total];
 	}
 
+	// const [taskSubmissions, count] = await this.submissionRepo.getSubmissionsByTask(task);
 	// TODO move somewhere more private
-	async getTaskSubmissionMetadata(task: Task): Promise<TaskSubmissionsMetaData> {
-		const [taskSubmissions, count] = await this.submissionRepo.getSubmissionsByTask(task);
-		const submittedUsers = new Set();
-		const gradedUsers = new Set();
-
-		taskSubmissions.forEach((submission) => {
-			submittedUsers.add(submission.student.id);
-			if (submission.grade || submission.gradeComment || submission.gradeFileIds)
-				gradedUsers.add(submission.student.id);
-		});
-
-		return Promise.resolve({
-			submitted: submittedUsers.size,
-			maxSubmissions: -1,
-			graded: gradedUsers.size,
-		});
-	}
+	// computeSubmissionMetadata(taskSubmissions: Submission[]): TaskSubmissionsMetaData 
 }
