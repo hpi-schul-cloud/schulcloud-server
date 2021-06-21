@@ -1,1 +1,1 @@
-export * from './mongo-shared-driver';
+export * from './mongo-database.module';
