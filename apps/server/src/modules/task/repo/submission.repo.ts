@@ -9,7 +9,7 @@ export class SubmissionRepo {
 
 	async getSubmissionsByTask(task: Task): Promise<Counted<Submission[]>> {
 		const [submissions, count] = await this.em.findAndCount(Submission, {
-			homework: task,
+			task,
 		});
 		return [submissions, count];
 	}

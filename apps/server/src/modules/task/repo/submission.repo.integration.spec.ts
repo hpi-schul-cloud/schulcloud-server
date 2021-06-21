@@ -46,7 +46,7 @@ describe('submission repo', () => {
 			const course = em.create(CourseTaskInfo, { name: 'testCourse', students });
 			const task = em.create(Task, { name: 'find me', course });
 			const submissions = students.map((student) => {
-				return em.create(Submission, { homework: task, student });
+				return em.create(Submission, { task, student });
 			});
 			await em.persistAndFlush([course, task, ...submissions, ...students]);
 

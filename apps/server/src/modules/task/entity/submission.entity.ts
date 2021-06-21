@@ -12,7 +12,7 @@ export class Submission extends BaseEntityWithTimestamps {
 	}
 
 	@ManyToOne({ fieldName: 'homeworkId' })
-	homework: Task;
+	task: Task;
 
 	@ManyToOne({ fieldName: 'studentId' })
 	student: UserTaskInfo;

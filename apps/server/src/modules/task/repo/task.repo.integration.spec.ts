@@ -193,7 +193,7 @@ describe('TaskService', () => {
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 				const task = em.create(Task, { name: 'roll some dice', course });
-				const submission = em.create(Submission, { homework: task, student: user });
+				const submission = em.create(Submission, { task, student: user });
 				await em.persistAndFlush([user, course, submission, task]);
 				const [result, total] = await service.findAllOpenByStudent(user.id);
 				expect(total).toEqual(0);
@@ -204,7 +204,7 @@ describe('TaskService', () => {
 				const otherUser = em.create(UserTaskInfo, { firstName: 'other', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 				const task = em.create(Task, { name: 'roll some dice', course });
-				const submission = em.create(Submission, { homework: task, student: otherUser });
+				const submission = em.create(Submission, { task, student: otherUser });
 				await em.persistAndFlush([user, otherUser, course, submission, task]);
 				const [result, total] = await service.findAllOpenByStudent(user.id);
 				expect(total).toEqual(1);

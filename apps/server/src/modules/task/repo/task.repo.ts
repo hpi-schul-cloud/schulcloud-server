@@ -50,7 +50,7 @@ export class TaskRepo {
 		});
 
 		// TODO: filter via query ..exist not exist, orm return null ? Add test for it!
-		const homeworksWithSubmissions = submissionsOfStudent.map((submission) => submission.homework.id);
+		const homeworksWithSubmissions = submissionsOfStudent.map((submission) => submission.task.id);
 
 		const oneWeekAgo = new Date();
 		oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
