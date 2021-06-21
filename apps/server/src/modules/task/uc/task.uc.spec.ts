@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationQuery } from '@shared/controller/dto/pagination.query';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Collection, wrap } from '@mikro-orm/core';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { FileTaskInfo, Submission, Task, UserTaskInfo, CourseTaskInfo } from '../entity';
 import { SubmissionRepo } from '../repo/submission.repo';
 import { Counted } from '../../../shared/domain';
@@ -84,26 +86,12 @@ describe('TaskService', () => {
 			expect(result.submitted).toEqual(1);
 		});
 
-		/* it.skip('should return the maximum number of students that could submit', () => {
-			const students = [
-				new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname' }),
-				new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname' }),
-			];
+		it('should return the maximum number of students that could submit', () => {
+			const task = { name: 'name', course: { students: [{ id: 'abc' }, { id: 'def' }] } } as unknown;
 
-			const course = new CourseTaskInfo({
-				name: 'examplecourse',
-				color: '#000000',
-				_id: new ObjectId(),
-				id: 'ced',
-				createdAt: new Date(Date.now()),
-				students: new Collection(CourseTaskInfo),
-			});
-
-			const task = new Task({ course });
-
-			const result = computeSubmissionMetadata([], task);
+			const result = computeSubmissionMetadata([], task as Task);
 			expect(result.maxSubmissions).toEqual(2);
-		}); */
+		});
 
 		it('should return the number of submissions that have been graded', () => {
 			const task = new Task({ course: new CourseTaskInfo({}) });
