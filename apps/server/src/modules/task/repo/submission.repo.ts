@@ -13,4 +13,11 @@ export class SubmissionRepo {
 		});
 		return [submissions, count];
 	}
+
+	async getSubmissionsByTasksList(tasks: [Task]): Promise<Counted<Submission[]>> {
+		const [submissions, count] = await this.em.findAndCount(Submission, {
+			task: { $in: tasks },
+		});
+		return [submissions, count];
+	}
 }
