@@ -1,17 +1,10 @@
 /* istanbul ignore file */
 // TODO add spec, see news.mapper.spec
 import { TaskResponse } from '../controller/dto';
-import { Task, COURSE_DEFAULT_COLOR } from '../entity';
-
-// TODO: look to task.uc has the same interface
-export type ITaskSubmissionsMetaData = {
-	submitted: number;
-	maxSubmissions: number;
-	graded: number;
-};
+import { Task, COURSE_DEFAULT_COLOR, ISubmissionStatus } from '../entity';
 
 export class TaskMapper {
-	static mapToResponse(task: Task, status?: ITaskSubmissionsMetaData): TaskResponse {
+	static mapToResponse(task: Task, status?: ISubmissionStatus): TaskResponse {
 		const dto = new TaskResponse();
 		dto.id = task.id;
 		dto.name = task.name;

@@ -3,22 +3,18 @@ import { EntityId, IPagination } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
 import { ICurrentUser } from '../../authentication/interface/jwt-payload';
 import { TaskRepo } from '../repo/task.repo';
-import { Task, Submission } from '../entity';
+import { Task, Submission, ISubmissionStatus } from '../entity';
 import { SubmissionRepo } from '../repo/submission.repo';
 import { TaskMapper } from '../mapper/task.mapper';
-// TODO: define own type
 import { TaskResponse } from '../controller/dto';
 
-// TODO: move to different file and use it in mapper
-export type ITaskSubmissionsMetaData = { submitted: number; maxSubmissions: number; graded: number };
-
-// filter tasks older than 3 weeks
+// TODO: add time filter filter in uc
 @Injectable()
 export class TaskUC {
 	constructor(private taskRepo: TaskRepo, private submissionRepo: SubmissionRepo) {}
 
 	// TODO: move into seperate UC
-	computeSubmissionMetadata = (taskSubmissions: Submission[], task: Task): ITaskSubmissionsMetaData => {
+	computeSubmissionMetadata = (taskSubmissions: Submission[], task: Task): ISubmissionStatus => {
 		const submittedUsers = new Set();
 		const gradedUsers = new Set();
 
