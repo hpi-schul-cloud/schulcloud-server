@@ -97,13 +97,16 @@ const attachMerlinReferenceToLesson = (context) => {
 		context.data.contents.forEach((c) => {
 			if (c.content && c.content.resources && c.content.resources.length) {
 				c.content.resources.forEach((resource) => {
-					const merlinUrl = new URL(resource.url);
-					if (
-						`${merlinUrl.protocol}//${merlinUrl.hostname}${merlinUrl.pathname}` ===
+					if ( resource.merlinReference === '') {
+						const merlinUrl = new URL(resource.url);
+						if (`${merlinUrl.protocol}//${merlinUrl.hostname}${merlinUrl.pathname}` ===
 							Configuration.get('ES_MERLIN_AUTH_URL') &&
-						merlinUrl.searchParams.get('identifier').length
-					) {
-						resource.merlinReference = merlinUrl.searchParams.get('identifier');
+							merlinUrl.searchParams.get('identifier').length
+						) {
+							resource.merlinReference = merlinUrl.searchParams.get('identifier');
+						}
+					} else {
+						resource.url = `${Configuration.get('ES_MERLIN_AUTH_URL')}?identifier=${resource.merlinReference}`;
 					}
 				});
 			}
