@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 // TODO add spec, see news.mapper.spec
 import { TaskResponse } from '../controller/dto';
-import { Task } from '../entity';
+import { Task, COURSE_DEFAULT_COLOR } from '../entity';
 
 // TODO: look to task.uc has the same interface
 export type ITaskSubmissionsMetaData = {
@@ -17,7 +17,7 @@ export class TaskMapper {
 		dto.name = task.name;
 		dto.duedate = task.dueDate;
 		dto.courseName = task.course?.name;
-		dto.displayColor = task.course?.color;
+		dto.displayColor = task.course?.color || COURSE_DEFAULT_COLOR;
 		dto.createdAt = task.createdAt;
 		dto.updatedAt = task.updatedAt;
 		dto.status = status || {};
