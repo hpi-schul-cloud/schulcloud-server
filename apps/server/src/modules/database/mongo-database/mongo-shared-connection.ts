@@ -1,21 +1,29 @@
 import { MongoConnection } from '@mikro-orm/mongodb';
 import { MongoClient } from 'mongodb';
 
-let client: MongoClient | null = null;
+// the shared mongo client
+let sharedClient: MongoClient | undefined;
+
+// keep a list of references to all open mikro-orm mongo connections
+const connections: Array<MongoSharedConnection> = [];
 
 export class MongoSharedConnection extends MongoConnection {
 	async connect(): Promise<void> {
-		if (client == null) {
-			client = await MongoClient.connect(this.config.getClientUrl(), this.getConnectionOptions());
+		if (!sharedClient) {
+			sharedClient = await MongoClient.connect(this.config.getClientUrl(), this.getConnectionOptions());
 		}
-		this.client = client;
+		connections.push(this);
+		this.client = sharedClient;
 		this.db = this.client.db(this.config.get('dbName'));
 	}
 
 	async close(force?: boolean): Promise<void> {
-		if (client) {
-			await client?.close(force);
-			client = null;
+		// remove from list of references
+		connections.splice(connections.indexOf(this), 1);
+		if (connections.length === 0) {
+			// close client when there are no more references
+			await sharedClient?.close(force);
+			sharedClient = undefined;
 		}
 	}
 }
