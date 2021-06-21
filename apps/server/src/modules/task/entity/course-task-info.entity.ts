@@ -2,6 +2,8 @@ import { Collection, Entity, ManyToMany, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain';
 import { UserTaskInfo } from './user-task-info.entity';
 
+export const COURSE_DEFAULT_COLOR = '#ACACAC';
+
 @Entity({ tableName: 'courses' })
 export class CourseTaskInfo extends BaseEntityWithTimestamps {
 	constructor(partial: Partial<CourseTaskInfo>) {
@@ -13,7 +15,7 @@ export class CourseTaskInfo extends BaseEntityWithTimestamps {
 	name: string;
 
 	@Property()
-	color: string;
+	color: string = COURSE_DEFAULT_COLOR;
 
 	// TODO: @Property() ?
 	@ManyToMany({ fieldName: 'userIds', type: UserTaskInfo })
