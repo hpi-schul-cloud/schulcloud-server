@@ -1,6 +1,7 @@
 import { Module, NotFoundException } from '@nestjs/common';
 import { AuthModule } from './modules/authentication/auth.module';
 import { NewsModule } from './modules/news/news.module';
+import { MailModule } from './modules/mail/mail.module';
 import { ServerController } from './server.controller';
 import { ServerService } from './server.service';
 import { UsersModule } from './modules/user/users.module';
@@ -17,6 +18,7 @@ import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 		UsersModule,
 		NewsModule,
 		TaskModule,
+		MailModule,
 		MikroOrmModule.forRoot({
 			type: 'mongo',
 			clientUrl: DB_URL,
