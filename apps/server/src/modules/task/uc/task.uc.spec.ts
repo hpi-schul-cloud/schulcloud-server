@@ -1,16 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationQuery } from '@shared/controller/dto/pagination.query';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Collection, wrap } from '@mikro-orm/core';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { FileTaskInfo, Submission, Task, UserTaskInfo, CourseTaskInfo } from '../entity';
 import { SubmissionRepo } from '../repo/submission.repo';
 import { Counted } from '../../../shared/domain';
 import { TaskRepo } from '../repo/task.repo';
-import { TaskUC, computeSubmissionMetadata } from './task.uc';
+import { TaskUC } from './task.uc';
 
 describe('TaskService', () => {
 	let service: TaskUC;
 	let taskRepo: TaskRepo;
-	// let submissionRepo: SubmissionRepo;
+	let submissionRepo: SubmissionRepo;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -19,20 +21,22 @@ describe('TaskService', () => {
 				TaskRepo,
 				{
 					provide: TaskRepo,
-					useValue: {},
+					useValue: {
+						findAllAssignedByTeacher() {},
+					},
 				},
 				SubmissionRepo,
 				{
 					provide: SubmissionRepo,
 					useValue: {
-						getSubmissionsByTask() {},
+						getSubmissionsByTasksList() {},
 					},
 				},
 			],
 		}).compile();
 
 		service = module.get<TaskUC>(TaskUC);
-		// submissionRepo = module.get<SubmissionRepo>(SubmissionRepo);
+		submissionRepo = module.get<SubmissionRepo>(SubmissionRepo);
 		taskRepo = module.get<TaskRepo>(TaskRepo);
 	});
 
@@ -40,26 +44,56 @@ describe('TaskService', () => {
 		expect(service).toBeDefined();
 	});
 
-	/* describe('tempFindAllOpenByTeacher', () => {
+	describe('tempFindAllOpenByTeacher', () => {
 		it('should return task with statistics', async () => {
-			const course1 = new CourseTaskInfo({});
-			course1.teachers.add(new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'abc' }));
-
-			const course2 = new CourseTaskInfo({});
-			course1.teachers.add(new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'abc' }));
-
-			const spy = jest.spyOn(taskRepo, 'findAllAssignedByTeacher').mockImplementation(() => {
-				return Promise.resolve([[new Task({ course: course1 }), new Task({ course: course2 })], 2]);
+			const findAllAssignedByTeacherSpy = jest.spyOn(taskRepo, 'findAllAssignedByTeacher').mockImplementation(() => {
+				const tasks = [{ name: 'task1' }, { name: 'task2' }] as Task[];
+				return Promise.resolve([tasks, 2]);
+			});
+			const getSubmissionsByTasksListSpy = jest
+				.spyOn(submissionRepo, 'getSubmissionsByTasksList')
+				.mockImplementation(() => {
+					return Promise.resolve([[], 0] as Counted<Submission[]>);
+				});
+			const computeSubmissionMetadataSpy = jest.spyOn(service, 'computeSubmissionMetadata').mockImplementation(() => {
+				return { submitted: 0, maxSubmissions: 1, graded: 0 };
 			});
 
 			const [tasks, total] = await service.tempFindAllOpenByTeacher('abc', new PaginationQuery());
 			expect(total).toEqual(2);
 			expect(tasks.length).toEqual(2);
-			expect(Object.keys(tasks[0].status)).toEqual(['submitted', 'maxSubmissions', 'graded'].sort());
+			expect(tasks[0].status).toHaveProperty('submitted');
+			expect(tasks[0].status).toHaveProperty('maxSubmissions');
+			expect(tasks[0].status).toHaveProperty('graded');
+		});
+
+		it('should handle submissions of different tasks seperately', async () => {
+			const task1 = { name: 'task1' };
+			const task2 = { name: 'task2' };
+			const findAllAssignedByTeacherSpy = jest.spyOn(taskRepo, 'findAllAssignedByTeacher').mockImplementation(() => {
+				const tasks = [task1, task2] as Task[];
+				return Promise.resolve([tasks, 2]);
+			});
+			const getSubmissionsByTasksListSpy = jest
+				.spyOn(submissionRepo, 'getSubmissionsByTasksList')
+				.mockImplementation(() => {
+					return Promise.resolve([[{ task: task1 }, { task: task2 }], 0] as Counted<Submission[]>);
+				});
+			const computeSubmissionMetadataSpy = jest
+				.spyOn(service, 'computeSubmissionMetadata')
+				.mockImplementation((submissions: Submission[]) => {
+					return { submitted: submissions.length, maxSubmissions: 0, graded: 0 };
+				});
+
+			const [tasks, total] = await service.tempFindAllOpenByTeacher('abc', new PaginationQuery());
+			expect(total).toEqual(2);
+			expect(tasks.length).toEqual(2);
+			expect(tasks[0].status?.submitted).toEqual(1);
+			expect(tasks[1].status?.submitted).toEqual(1);
 		});
 
 		// teacher only --> should not needed
-	}); */
+	});
 
 	describe('getTaskSubmissionMetadata', () => {
 		it('should return the number of students that submitted', () => {
@@ -69,7 +103,7 @@ describe('TaskService', () => {
 				new Submission({ student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'def' }) }),
 			];
 
-			const result = computeSubmissionMetadata(testdata, task);
+			const result = service.computeSubmissionMetadata(testdata, task);
 			expect(result.submitted).toEqual(2);
 		});
 
@@ -80,30 +114,16 @@ describe('TaskService', () => {
 				new Submission({ student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'abc' }) }),
 			];
 
-			const result = computeSubmissionMetadata(testdata, task);
+			const result = service.computeSubmissionMetadata(testdata, task);
 			expect(result.submitted).toEqual(1);
 		});
 
-		/* it.skip('should return the maximum number of students that could submit', () => {
-			const students = [
-				new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname' }),
-				new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname' }),
-			];
+		it('should return the maximum number of students that could submit', () => {
+			const task = { name: 'name', course: { students: [{ id: 'abc' }, { id: 'def' }] } } as unknown;
 
-			const course = new CourseTaskInfo({
-				name: 'examplecourse',
-				color: '#000000',
-				_id: new ObjectId(),
-				id: 'ced',
-				createdAt: new Date(Date.now()),
-				students: new Collection(CourseTaskInfo),
-			});
-
-			const task = new Task({ course });
-
-			const result = computeSubmissionMetadata([], task);
+			const result = service.computeSubmissionMetadata([], task as Task);
 			expect(result.maxSubmissions).toEqual(2);
-		}); */
+		});
 
 		it('should return the number of submissions that have been graded', () => {
 			const task = new Task({ course: new CourseTaskInfo({}) });
@@ -126,7 +146,7 @@ describe('TaskService', () => {
 				}),
 			];
 
-			const result = computeSubmissionMetadata(testdata, task);
+			const result = service.computeSubmissionMetadata(testdata, task);
 			expect(result.graded).toEqual(2);
 		});
 
@@ -144,7 +164,7 @@ describe('TaskService', () => {
 				}),
 			];
 
-			const result = computeSubmissionMetadata(testdata, task);
+			const result = service.computeSubmissionMetadata(testdata, task);
 			expect(result.graded).toEqual(1);
 		});
 	});
