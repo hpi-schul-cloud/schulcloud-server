@@ -21,17 +21,17 @@ export class TaskRepo {
 		// order by duedate
 		// pagination
 
-		const coursesOfStudent = await this.em.find(CourseTaskInfo, {
-			students: userId,
-		});
+		const [coursesOfStudent, submissionsOfStudent] = await Promise.all([
+			this.em.find(CourseTaskInfo, { students: userId }),
+			this.em.find(Submission, { student: userId }),
+		]);
+
 		const lessonsOfStudent = await this.em.find(LessonTaskInfo, {
 			course: { $in: coursesOfStudent },
 			hidden: false,
 		});
 
-		const submissionsOfStudent = await this.em.find(Submission, {
-			student: userId,
-		});
+		// TODO: filter via query ..exist not exist, orm return null ? Add test for it!
 		const homeworksWithSubmissions = submissionsOfStudent.map((submission) => submission.homework.id);
 
 		const oneWeekAgo = new Date();
