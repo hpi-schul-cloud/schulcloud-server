@@ -57,9 +57,10 @@ class MerlinTokenGenerator {
 		};
 		try {
 			const merlinUrl = await request.post(options);
-			return merlinUrl;
+			const checkedUrl = new URL(merlinUrl);
+			return checkedUrl.href;
 		} catch (e) {
-			throw Error(`Failed to obtain merlin url. Error: ${e}`);
+			throw Error(`Failed to obtain Merlin url.`);
 		}
 	}
 }
