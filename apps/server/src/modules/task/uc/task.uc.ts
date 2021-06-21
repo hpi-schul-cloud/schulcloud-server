@@ -11,39 +11,41 @@ import { TaskResponse } from '../controller/dto';
 // TODO: move to different file and use it in mapper
 export type ITaskSubmissionsMetaData = { submitted: number; maxSubmissions: number; graded: number };
 
-export const computeSubmissionMetadata = (taskSubmissions: Submission[], task: Task): ITaskSubmissionsMetaData => {
-	const submittedUsers = new Set();
-	const gradedUsers = new Set();
-
-	const sortedSubmissions = [...taskSubmissions].sort((a: Submission, b: Submission) => {
-		if (a.createdAt > b.createdAt) {
-			return 1;
-		}
-		return -1;
-	});
-
-	sortedSubmissions.forEach((submission) => {
-		if (
-			!submittedUsers.has(submission.student.id) &&
-			(submission.grade || submission.gradeComment || submission.gradeFileIds)
-		) {
-			gradedUsers.add(submission.student.id);
-		}
-		submittedUsers.add(submission.student.id);
-	});
-	// TODO: consider coursegroups
-	const studentsInTasksCourse = task.course.students.length;
-
-	return {
-		submitted: submittedUsers.size,
-		maxSubmissions: studentsInTasksCourse,
-		graded: gradedUsers.size,
-	};
-};
 // filter tasks older than 3 weeks
 @Injectable()
 export class TaskUC {
 	constructor(private taskRepo: TaskRepo, private submissionRepo: SubmissionRepo) {}
+
+	// TODO: move into seperate UC
+	computeSubmissionMetadata = (taskSubmissions: Submission[], task: Task): ITaskSubmissionsMetaData => {
+		const submittedUsers = new Set();
+		const gradedUsers = new Set();
+
+		const sortedSubmissions = [...taskSubmissions].sort((a: Submission, b: Submission) => {
+			if (a.createdAt > b.createdAt) {
+				return 1;
+			}
+			return -1;
+		});
+
+		sortedSubmissions.forEach((submission) => {
+			if (
+				!submittedUsers.has(submission.student.id) &&
+				(submission.grade || submission.gradeComment || submission.gradeFileIds)
+			) {
+				gradedUsers.add(submission.student.id);
+			}
+			submittedUsers.add(submission.student.id);
+		});
+		// TODO: consider coursegroups
+		const studentsInTasksCourse = task.course.students.length;
+
+		return {
+			submitted: submittedUsers.size,
+			maxSubmissions: studentsInTasksCourse,
+			graded: gradedUsers.size,
+		};
+	};
 
 	async findAllOpenForUser(userId: EntityId, pagination: IPagination): Promise<Counted<Task[]>> {
 		// TODO authorization (user conditions -> permissions?)
@@ -60,7 +62,7 @@ export class TaskUC {
 
 		const computedTasks = tasks.map((task) => {
 			const taskSubmissions = submissions.filter((sub) => sub.task === task);
-			return TaskMapper.mapToResponse(task, computeSubmissionMetadata(taskSubmissions, task));
+			return TaskMapper.mapToResponse(task, this.computeSubmissionMetadata(taskSubmissions, task));
 		});
 		return [computedTasks, total];
 	}
