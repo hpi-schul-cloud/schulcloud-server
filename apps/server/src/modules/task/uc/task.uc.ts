@@ -4,11 +4,14 @@ import { Counted } from '@shared/domain/types';
 import { TaskRepo } from '../repo/task.repo';
 import { Task, Submission } from '../entity';
 import { SubmissionRepo } from '../repo/submission.repo';
+import { TaskMapper } from '../mapper/task.mapper';
+// TODO: define own type
+import { TaskResponse } from '../controller/dto';
 
-// TODO move to different file
-export type TaskSubmissionsMetaData = { submitted: number; maxSubmissions: number; graded: number };
+// TODO: move to different file and use it in mapper
+export type ITaskSubmissionsMetaData = { submitted: number; maxSubmissions: number; graded: number };
 
-export const computeSubmissionMetadata = (taskSubmissions: Submission[]): TaskSubmissionsMetaData => {
+export const computeSubmissionMetadata = (taskSubmissions: Submission[]): ITaskSubmissionsMetaData => {
 	// const [taskSubmissions, count] = await this.submissionRepo.getSubmissionsByTask(task);
 	const submittedUsers = new Set();
 	const gradedUsers = new Set();
@@ -38,7 +41,12 @@ export class TaskUC {
 		return [tasks, total];
 	}
 
-	// const [taskSubmissions, count] = await this.submissionRepo.getSubmissionsByTask(task);
-	// TODO move somewhere more private
-	// computeSubmissionMetadata(taskSubmissions: Submission[]): TaskSubmissionsMetaData 
+	async tempFindAllOpenByTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskResponse[]>> {
+		// TODO: pagination
+		const [tasks, total] = await this.taskRepo.findAllAssignedByTeacher(userId);
+		// TODO get submissions
+		const submissions = [];
+		const computedTasks = tasks.map((task) => TaskMapper.mapToResponse(task, computeSubmissionMetadata(submissions)));
+		return [computedTasks, total];
+	}
 }

@@ -5,6 +5,11 @@ import { LessonTaskInfo } from './lesson-task-info.entity';
 
 @Entity({ tableName: 'homeworks' })
 export class Task extends BaseEntityWithTimestamps {
+	constructor(partial: Partial<Task>) {
+		super();
+		Object.assign(this, partial);
+	}
+
 	@Property()
 	name: string;
 
