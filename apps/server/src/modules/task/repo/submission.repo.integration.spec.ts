@@ -55,7 +55,7 @@ describe('submission repo', () => {
 		});
 	});
 
-	describe('getSubmissionsByTasksList', () => {
+	describe.skip('getSubmissionsByTasksList', () => {
 		it('should return only the requested submissions of homeworks', async () => {
 			const students = [em.create(UserTaskInfo, { firstName: 'firstname', lastName: 'lastname' })];
 
