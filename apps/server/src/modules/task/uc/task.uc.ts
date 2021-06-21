@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import { EntityId, IPagination } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
 import { TaskRepo } from '../repo/task.repo';
@@ -54,7 +55,7 @@ export class TaskUC {
 		return [tasks, total];
 	}
 
-	async tempFindAllOpenByTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskResponse[]>> {
+	async findAllOpenByTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskResponse[]>> {
 		const [tasks, total] = await this.taskRepo.findAllAssignedByTeacher(userId, pagination);
 		const [submissions] = await this.submissionRepo.getSubmissionsByTasksList(tasks);
 
@@ -63,5 +64,25 @@ export class TaskUC {
 			return TaskMapper.mapToResponse(task, computeSubmissionMetadata(taskSubmissions, task));
 		});
 		return [computedTasks, total];
+	}
+
+	async findAllOpen(userId: EntityId, pagination: IPagination): Promise<Counted<TaskResponse[]>> {
+		// TODO: get permissions
+		const permissions = ['TASK_DASHBOARD_VIEW_V3'] as string[];
+		if (!permissions.includes('TASK_DASHBOARD_TEACHER_VIEW_V3') || !permissions.includes('TASK_DASHBOARD_VIEW_V3')) {
+			throw new UnauthorizedException();
+			// return [[], 0];
+		}
+
+		let response: Counted<TaskResponse[]>;
+		if (permissions.includes('TASK_DASHBOARD_TEACHER_VIEW_V3')) {
+			response = await this.findAllOpenByTeacher(userId, pagination);
+		} else {
+			const [tasks, total] = await this.findAllOpenForUser(userId, pagination);
+			const computedTasks = tasks.map((task) => TaskMapper.mapToResponse(task));
+			response = [computedTasks, total];
+		}
+
+		return response;
 	}
 }
