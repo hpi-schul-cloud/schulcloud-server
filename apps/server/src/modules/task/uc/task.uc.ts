@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityId, IPagination } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
+import { ICurrentUser } from '../../authentication/interface/jwt-payload';
 import { TaskRepo } from '../repo/task.repo';
 import { Task, Submission } from '../entity';
 import { SubmissionRepo } from '../repo/submission.repo';
@@ -47,6 +48,7 @@ export class TaskUC {
 		};
 	};
 
+	// TODO by Students
 	async findAllOpenForUser(userId: EntityId, pagination: IPagination): Promise<Counted<Task[]>> {
 		// TODO authorization (user conditions -> permissions?)
 		// TODO get permitted tasks...
@@ -67,10 +69,12 @@ export class TaskUC {
 		return [computedTasks, total];
 	}
 
-	async findAllOpen(userId: EntityId, pagination: IPagination): Promise<Counted<TaskResponse[]>> {
+	async findAllOpen(currentUser: ICurrentUser, pagination: IPagination): Promise<Counted<TaskResponse[]>> {
 		// TODO: get permissions
-		const permissions = ['TASK_DASHBOARD_VIEW_V3'] as string[];
-		if (!permissions.includes('TASK_DASHBOARD_TEACHER_VIEW_V3') || !permissions.includes('TASK_DASHBOARD_VIEW_V3')) {
+		const { roles } = currentUser;
+		const { userId } = currentUser;
+		const permissions = [''] as string[];
+		if (!permissions.includes('TASK_DASHBOARD_TEACHER_VIEW_V3') && !permissions.includes('TASK_DASHBOARD_VIEW_V3')) {
 			throw new UnauthorizedException();
 			// return [[], 0];
 		}
