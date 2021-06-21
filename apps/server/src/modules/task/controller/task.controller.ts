@@ -24,6 +24,7 @@ export class TaskController {
 		@Query() paginationQuery: PaginationQuery
 	): Promise<PaginationResponse<TaskResponse[]>> {
 		const [tasks, total] = await this.taskUc.findAllOpenForUser(currentUser.userId, paginationQuery);
+		// TODO: move to uc
 		const tasksResponse = tasks.map((task) => TaskMapper.mapToResponse(task));
 		const { skip, limit } = paginationQuery;
 		const result = new PaginationResponse(tasksResponse, total, skip, limit);
