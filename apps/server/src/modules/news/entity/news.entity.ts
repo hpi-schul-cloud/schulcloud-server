@@ -48,17 +48,17 @@ export abstract class News extends BaseEntityWithTimestamps {
 
 	/** id reference to a collection */
 	@ManyToOne()
-	target: BaseEntity;
+	target!: BaseEntity;
 
 	/** name of a collection which is referenced in target */
 	@Property()
 	targetModel: NewsTargetModelValue;
 
 	@ManyToOne({ fieldName: 'schoolId' })
-	school: SchoolInfo;
+	school!: SchoolInfo;
 
 	@ManyToOne({ fieldName: 'creatorId' })
-	creator: UserInfo;
+	creator!: UserInfo;
 
 	@ManyToOne({ fieldName: 'updaterId' })
 	updater?: UserInfo;
