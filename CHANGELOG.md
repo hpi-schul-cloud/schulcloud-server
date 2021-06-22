@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.4.5] - 2021-06-21
+
+### Added 
+
+- SC-9156 - Add maintenance mode for LDAP rewrite
+
 ## [26.4.4] - 2021-06-16
 
 ### Change
