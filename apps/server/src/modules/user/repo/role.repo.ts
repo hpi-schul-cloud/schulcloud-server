@@ -5,35 +5,43 @@ import { EntityId, IPagination } from '@shared/domain';
 // import { Counted } from '@shared/domain/types';
 import { Role } from '../entity';
 
-interface RoleMap {
-	[name: string]: Role;
+interface CacheEntry {
+	[name: string]: { value: Role; validUntil: number };
 }
 
-// TODO: time reset
+// TODO: no query handled at the moment
 class RoleCache {
-	cache: RoleMap;
+	cache: CacheEntry;
 
 	name: string;
+
+	clearInterval: 60000;
 
 	constructor(name = '') {
 		this.cache = {};
 		this.name = name;
 	}
 
-	get(selector: string): Role {
-		return this.cache[selector];
+	get(selector: string): Role | undefined {
+		const entry = this.cache[selector];
+		if (!entry || entry.validUntil < Date.now()) return undefined;
+		return entry.value;
 	}
 
+	/*
 	has(selector: string): boolean {
 		return Object.prototype.hasOwnProperty.call(this.cache, selector);
 	}
-
+	*/
 	add(selector: string, role: Role) {
-		this.cache[selector] = role;
+		this.cache[selector] = {
+			value: role,
+			validUntil: Date.now() + this.clearInterval, // TODO: test if it is work
+		};
 	}
 
 	// we do not registred changes by calling the old endpoint
-	cleanup() {
+	clear() {
 		this.cache = {};
 	}
 }
@@ -51,32 +59,30 @@ export class RoleRepo {
 	}
 
 	async findByName(name: string): Promise<Role> {
-		let role: Role;
-
-		if (this.cl1.has(name)) {
-			role = this.cl1.get(name);
-		} else {
-			role = await this.em.findOneOrFail(Role, { name });
-			this.cl1.add(name, role);
+		if (this.cl1.get(name)) {
+			return this.cl1.get(name) as Role;
 		}
+
+		const role = await this.em.findOneOrFail(Role, { name });
+		this.cl1.add(name, role);
+
 		return role;
 	}
 
 	async findById(id: EntityId): Promise<Role> {
-		let role: Role;
-
-		if (this.cl1.has(id)) {
-			role = this.cl1.get(id);
-		} else {
-			role = await this.em.findOneOrFail(Role, { id });
-			this.cl1.add(id, role);
+		if (this.cl1.get(id)) {
+			return this.cl1.get(id) as Role;
 		}
+
+		const role = await this.em.findOneOrFail(Role, { id });
+		this.cl1.add(id, role);
+
 		return role;
 	}
 
 	async resolvePermissionsByName(name: string): Promise<Role> {
-		if (this.cl2.has(name)) {
-			return this.cl2.get(name);
+		if (this.cl2.get(name)) {
+			return this.cl2.get(name) as Role;
 		}
 
 		const role = await this.findByName(name);

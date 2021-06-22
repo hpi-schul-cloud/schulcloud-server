@@ -29,7 +29,7 @@ describe('role repo', () => {
 
 	describe('findByName', () => {
 		afterEach(async () => {
-			repo.cl1.cleanup();
+			repo.cl1.clear();
 			await em.nativeDelete(Role, {});
 		});
 
@@ -70,27 +70,20 @@ describe('role repo', () => {
 
 		it('should select already cached roles instant of db call', async () => {
 			const roleA = em.create(Role, { name: 'a' });
-			let called = false;
-
-			// mock
-			const self = repo.cl1;
-			repo.cl1.get = (selector: string): Role => {
-				called = true;
-				return self.cache[selector];
-			};
+			const spy = jest.spyOn(repo.cl1, 'get');
 
 			await em.persistAndFlush([roleA]);
 
+			expect(spy).not.toHaveBeenCalled();
 			await repo.findByName('a');
-			expect(called).toEqual(false);
-			await repo.findByName('a');
-			expect(called).toEqual(true);
+			expect(spy).toHaveBeenCalled();
+			spy.mockRestore();
 		});
 	});
 
 	describe('findById', () => {
 		afterEach(async () => {
-			repo.cl1.cleanup();
+			repo.cl1.clear();
 			await em.nativeDelete(Role, {});
 		});
 
@@ -138,28 +131,21 @@ describe('role repo', () => {
 		it('should select already cached roles instant of db call', async () => {
 			const idA = new ObjectId().toHexString();
 			const roleA = em.create(Role, { id: idA });
-			let called = false;
-
-			// mock
-			const self = repo.cl1;
-			repo.cl1.get = (selector: string): Role => {
-				called = true;
-				return self.cache[selector];
-			};
+			const spy = jest.spyOn(repo.cl1, 'get');
 
 			await em.persistAndFlush([roleA]);
 
+			expect(spy).not.toHaveBeenCalled();
 			await repo.findById(idA);
-			expect(called).toEqual(false);
-			await repo.findById(idA);
-			expect(called).toEqual(true);
+			expect(spy).toHaveBeenCalled();
+			spy.mockRestore();
 		});
 	});
 
 	describe('resolvePermissionsByName', () => {
 		afterEach(async () => {
-			repo.cl1.cleanup();
-			repo.cl2.cleanup();
+			repo.cl1.clear();
+			repo.cl2.clear();
 			await em.nativeDelete(Role, {});
 		});
 
@@ -236,24 +222,15 @@ describe('role repo', () => {
 
 			const roleB = em.create(Role, { name: 'b', id: idB });
 			const roleA = em.create(Role, { name: 'a', roles: [idB], id: idA });
-			let called = 'null';
-
-			// mock
-			const self = repo.cl2;
-			repo.cl2.get = (selector: string): Role => {
-				called = selector;
-				return self.cache[selector];
-			};
+			const spy = jest.spyOn(repo.cl1, 'get');
 
 			await em.persistAndFlush([roleA, roleB]);
 
+			expect(spy).not.toHaveBeenCalled();
 			await repo.resolvePermissionsByName('a');
+			expect(spy).toHaveBeenCalled();
 
-			expect(called).toEqual('null');
-
-			await repo.resolvePermissionsByName('a');
-
-			expect(called).toEqual('a');
+			spy.mockRestore();
 		});
 	});
 });
