@@ -36,6 +36,8 @@ const createMikroOrmModule = (options: MikroOrmModuleSyncOptions): DynamicModule
 	return mikroOrmModule;
 };
 
+/** options we not allow to pass as they are internally replaced by using the in memory mongo  */
+type ForbiddenOptions = 'type' | 'driver' | 'clientUrl' | 'dbName' | 'user' | 'password';
 @Module({})
 export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 	constructor(
@@ -44,7 +46,7 @@ export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 		private readonly moduleRef: ModuleRef
 	) {}
 
-	static forRoot(options?: MikroOrmModuleSyncOptions): DynamicModule {
+	static forRoot(options?: Omit<MikroOrmModuleSyncOptions, ForbiddenOptions>): DynamicModule {
 		return {
 			module: MongoMemoryDatabaseModule,
 			imports: [createMikroOrmModule(options || {})],

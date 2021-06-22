@@ -1,40 +1,30 @@
-import { MikroORM, NotFoundError } from '@mikro-orm/core';
+import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoMemoryDatabaseModule } from '../../database';
 import { Role } from '../entity';
 import { RoleRepo } from './role.repo';
 
 describe('role repo', () => {
 	let module: TestingModule;
-	let mongodb: MongoMemoryServer;
 	let repo: RoleRepo;
-	let orm: MikroORM;
 	let em: EntityManager;
 
 	beforeAll(async () => {
-		mongodb = new MongoMemoryServer();
-		const dbUrl = await mongodb.getUri();
 		module = await Test.createTestingModule({
 			imports: [
-				MikroOrmModule.forRoot({
-					type: 'mongo',
-					clientUrl: dbUrl,
+				MongoMemoryDatabaseModule.forRoot({
 					entities: [Role],
 				}),
 			],
 			providers: [RoleRepo],
 		}).compile();
 		repo = module.get<RoleRepo>(RoleRepo);
-		orm = module.get<MikroORM>(MikroORM);
 		em = module.get<EntityManager>(EntityManager);
 	});
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
-		await mongodb.stop();
 	});
 
 	describe('findByName', () => {
