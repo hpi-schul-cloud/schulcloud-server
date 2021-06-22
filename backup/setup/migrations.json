@@ -1029,6 +1029,17 @@
 },
 {
 	"_id": {
+		"$oid": "60d1b9e80fb54b3e342e9b08"
+	},
+	"state": "up",
+	"name": "news_add_target_schools",
+	"createdAt": {
+		"$date": "2021-06-02T08:23:18.664Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "60c9f9023a7096cfc0da1235"
 	},
 	"state": "up",
