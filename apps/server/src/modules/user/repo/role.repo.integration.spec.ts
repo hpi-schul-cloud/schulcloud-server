@@ -1,5 +1,5 @@
 import { MikroORM, NotFoundError } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
@@ -77,7 +77,60 @@ describe('role repo', () => {
 			await em.persistAndFlush([roleA]);
 
 			await repo.findByName('a');
+			expect(called).toEqual(false);
 			await repo.findByName('a');
+			expect(called).toEqual(true);
+		});
+	});
+
+	describe('findById', () => {
+		it('should return one role that matched by id', async () => {
+			const idA = new ObjectId().toHexString();
+			const idB = new ObjectId().toHexString();
+			const roleA = em.create(Role, { id: idA });
+			const roleB = em.create(Role, { id: idA });
+
+			await em.persistAndFlush([roleA, roleB]);
+			const result = await repo.findById(idA);
+			expect(result).toEqual(roleA);
+		});
+
+		it('should throw an error if roles by id not exist', async () => {
+			const idA = new ObjectId().toHexString();
+			const idB = new ObjectId().toHexString();
+			const roleA = em.create(Role, { id: idA });
+
+			await em.persistAndFlush([roleA]);
+			await expect(repo.findById(idB)).rejects.toThrow(NotFoundError);
+		});
+
+		it('should cache requested roles by id', async () => {
+			const idA = new ObjectId().toHexString();
+			const roleA = em.create(Role, { id: idA });
+
+			await em.persistAndFlush([roleA]);
+			expect(repo.cl1.get(idA)).toEqual(undefined);
+			await repo.findById(idA);
+			expect(repo.cl1.get(idA)).toEqual(roleA);
+		});
+
+		it('should select already cached roles instant of db call', async () => {
+			const idA = new ObjectId().toHexString();
+			const roleA = em.create(Role, { id: idA });
+			let called = false;
+
+			// mock
+			const self = repo.cl1;
+			repo.cl1.get = (selector: string): Role => {
+				called = true;
+				return self.cache[selector];
+			};
+
+			await em.persistAndFlush([roleA]);
+
+			await repo.findById(idA);
+			expect(called).toEqual(false);
+			await repo.findById(idA);
 			expect(called).toEqual(true);
 		});
 	});
