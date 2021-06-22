@@ -10,7 +10,7 @@ describe('news hooks', () => {
 
 	before(async () => {
 		app = await appPromise;
-	})
+	});
 
 	describe('#preparePagination', () => {
 		it('should convert the $paginate query parameter from a string to boolean', () => {
