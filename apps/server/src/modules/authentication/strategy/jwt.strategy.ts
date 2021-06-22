@@ -16,8 +16,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 	}
 
 	validate(payload: JwtPayload): JwtPayload {
-		// TODO check jwt is whitelisted
-		// TODO check user exist/is active
+		// TODO: check jwt is whitelisted
+		// TODO: use user module for:
+		// TODO: --> check user exist/is active
+		// TODO: --> populate roles>permissions
 		return payload;
 	}
 }
