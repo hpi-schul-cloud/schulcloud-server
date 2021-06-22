@@ -1,2 +1,1 @@
-export * from './pagination.interface';
-export * from './sorting';
+export * from './find-options';

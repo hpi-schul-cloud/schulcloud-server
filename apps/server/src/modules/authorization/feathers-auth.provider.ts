@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseEntity, EntityId } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { NewsTargetModelValue } from '../news/entity';
+import { NewsTargetModel } from '../news/entity';
 import { FeathersServiceProvider } from '../feathers/feathers-service.provider';
 
 interface User {
@@ -26,7 +26,7 @@ export class FeathersAuthProvider {
 
 	async getUserTargetPermissions(
 		userId: EntityId,
-		targetModel: NewsTargetModelValue,
+		targetModel: NewsTargetModel,
 		targetId: EntityId
 	): Promise<string[]> {
 		const service = this.feathersServiceProvider.getService(`${targetModel}/:scopeId/userPermissions/`);
@@ -38,7 +38,7 @@ export class FeathersAuthProvider {
 
 	async getPermittedTargets(
 		userId: EntityId,
-		targetModel: NewsTargetModelValue,
+		targetModel: NewsTargetModel,
 		permissions: string[]
 	): Promise<EntityId[]> {
 		const service = this.feathersServiceProvider.getService(`/users/:scopeId/${targetModel}`);

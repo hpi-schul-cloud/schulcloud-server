@@ -2,23 +2,22 @@ import * as moment from 'moment';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundError } from '@mikro-orm/core';
-import { EntityId } from '@shared/domain';
+import { EntityId, SortOrder } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@src/modules/database';
 import {
+	CourseInfo,
 	CourseNews,
 	News,
 	NewsTargetModel,
-	NewsTargetModelValue,
 	SchoolInfo,
 	SchoolNews,
+	TeamInfo,
 	TeamNews,
 	UserInfo,
-	CourseInfo,
-	TeamInfo,
 } from '../entity';
 import { NewsRepo } from './news.repo';
 
-describe('NewsService', () => {
+describe('NewsRepo', () => {
 	let repo: NewsRepo;
 	let em: EntityManager;
 	let module: TestingModule;
@@ -57,7 +56,7 @@ describe('NewsService', () => {
 
 	const newTestNews = (
 		schoolId: EntityId,
-		targetModel: NewsTargetModelValue,
+		targetModel: NewsTargetModel,
 		targetId: EntityId,
 		unpublished = false
 	): News => {
@@ -76,13 +75,28 @@ describe('NewsService', () => {
 
 	const createTestNews = async (
 		schoolId: string,
-		targetModel: NewsTargetModelValue,
+		targetModel: NewsTargetModel,
 		targetId: EntityId,
 		unpublished = false
-	) => {
+	): Promise<News> => {
 		const news = newTestNews(schoolId, targetModel, targetId, unpublished);
 		await em.persistAndFlush(news);
 		return news;
+	};
+
+	const createMultipleTestNews = async (
+		schoolId: string,
+		targetModel: NewsTargetModel,
+		targetIds: EntityId[],
+		unpublished = false
+	) => {
+		const createdNews = targetIds.map((targetId) => {
+			const created = newTestNews(schoolId, targetModel, targetId, unpublished);
+			em.persist(created);
+			return created;
+		});
+		await em.flush();
+		return createdNews;
 	};
 
 	const schoolId = new ObjectId().toString();
@@ -96,7 +110,7 @@ describe('NewsService', () => {
 				targetIds: [courseId],
 			};
 			const pagination = { skip: 0, limit: 20 };
-			const [result, count] = await repo.findAll([target], false, pagination);
+			const [result, count] = await repo.findAll([target], false, { pagination });
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
@@ -109,7 +123,7 @@ describe('NewsService', () => {
 				targetModel: NewsTargetModel.School,
 				targetIds: [schoolId],
 			};
-			const [result, count] = await repo.findAll([target], false, pagination);
+			const [result, count] = await repo.findAll([target], false, { pagination });
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
@@ -123,21 +137,25 @@ describe('NewsService', () => {
 				targetIds: [courseId],
 			};
 			const pagination = { skip: 0, limit: 20 };
-			const [result, count] = await repo.findAll([target], false, pagination);
+			const [result, count] = await repo.findAll([target], false, { pagination });
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
 		});
-	});
 
-	describe('create', () => {
-		it('should create and persist a news entity', async () => {
-			const courseId = new ObjectId().toString();
-			const news = newTestNews(schoolId, NewsTargetModel.Course, courseId);
-			await repo.save(news);
-			expect(news.id).toBeDefined();
-			const expectedNews = await em.findOne(News, news.id);
-			expect(news).toStrictEqual(expectedNews);
+		it('should return news in requested order', async () => {
+			const courseIds = Array.from(Array(5)).map(() => new ObjectId().toHexString());
+			await createMultipleTestNews(schoolId, NewsTargetModel.Course, courseIds);
+			const target = {
+				targetModel: NewsTargetModel.Course,
+				targetIds: courseIds,
+			};
+			const [result, count] = await repo.findAll([target], false, { order: { target: SortOrder.desc } });
+			expect(count).toBeGreaterThanOrEqual(result.length);
+			expect(result.length).toEqual(courseIds.length);
+			const resultCourseIds = result.map((news) => news.target.id);
+			const reverseCourseIds = courseIds.sort((r1, r2) => (r1 > r2 ? -1 : 1));
+			expect(resultCourseIds).toEqual(reverseCourseIds);
 		});
 	});
 
@@ -152,16 +170,6 @@ describe('NewsService', () => {
 		it('should throw an exception if not found', async () => {
 			const failNewsId = new ObjectId().toString();
 			await expect(repo.findOneById(failNewsId)).rejects.toThrow(NotFoundError);
-		});
-	});
-
-	describe('delete', () => {
-		it('should delete news', async () => {
-			const teamId = new ObjectId().toString();
-			const news = await createTestNews(schoolId, NewsTargetModel.Team, teamId);
-
-			await repo.delete(news);
-			await expect(repo.findOneById(news.id)).rejects.toThrow(NotFoundError);
 		});
 	});
 });

@@ -1,7 +1,7 @@
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntity, BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 import { CourseInfo } from './course-info.entity';
-import { NewsTargetModel, NewsTargetModelValue } from './news.types';
+import { NewsTargetModel } from './news.types';
 import { SchoolInfo } from './school-info.entity';
 import { TeamInfo } from './team-info.entity';
 import { UserInfo } from './user-info.entity';
@@ -52,7 +52,7 @@ export abstract class News extends BaseEntityWithTimestamps {
 
 	/** name of a collection which is referenced in target */
 	@Property()
-	targetModel: NewsTargetModelValue;
+	targetModel: NewsTargetModel;
 
 	@ManyToOne({ fieldName: 'schoolId' })
 	school!: SchoolInfo;
@@ -73,7 +73,7 @@ export abstract class News extends BaseEntityWithTimestamps {
 		Object.assign(this, { school: props.school, creator: props.creator, target: props.target });
 	}
 
-	static createInstance(targetModel: NewsTargetModelValue, props: INewsProperties): News {
+	static createInstance(targetModel: NewsTargetModel, props: INewsProperties): News {
 		let news: News;
 		if (targetModel === NewsTargetModel.Course) {
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define

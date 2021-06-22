@@ -1,37 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager } from '@mikro-orm/mongodb';
-import { EntityId, IPagination } from '@shared/domain';
+import { EntityId, IFindOptions } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
+import { FilterQuery } from '@mikro-orm/core';
+import { BaseRepo } from '@shared/repo/base.repo';
+import { QueryOrderMap } from '@mikro-orm/core/enums';
 import { News } from '../entity';
 import { NewsScope } from './news-scope';
 import { NewsTargetFilter } from './news-target-filter';
 
 @Injectable()
-export class NewsRepo {
-	constructor(private readonly em: EntityManager) {}
-
-	async save(news: News): Promise<News> {
-		await this.em.persistAndFlush(news);
-		return news;
-	}
-
+export class NewsRepo extends BaseRepo<News> {
 	/**
 	 * Find news
 	 * @param targets
 	 * @param unpublished
-	 * @param pagination
+	 * @param options
 	 */
 	async findAll(
 		targets: NewsTargetFilter[],
 		unpublished: boolean,
-		pagination: IPagination = {}
+		options?: IFindOptions<News>
 	): Promise<Counted<News[]>> {
 		const scope = new NewsScope();
 		scope.byTargets(targets);
 		scope.byUnpublished(unpublished);
-		// TODO sort by publishedAt?
-		// scope.sortBy(...)
-		const countedNewsList = await this.findNewsAndCount(scope.query, pagination);
+		const countedNewsList = await this.findNewsAndCount(scope.query, options);
 		return countedNewsList;
 	}
 
@@ -41,13 +34,11 @@ export class NewsRepo {
 		return news;
 	}
 
-	async delete(news: News): Promise<void> {
-		await this.em.removeAndFlush(news);
-	}
-
-	private async findNewsAndCount(query, pagination: IPagination): Promise<Counted<News[]>> {
+	private async findNewsAndCount(query: FilterQuery<News>, options?: IFindOptions<News>): Promise<Counted<News[]>> {
+		const { pagination, order } = options || {};
 		const [obj, count] = await this.em.findAndCount(News, query, {
 			...pagination,
+			orderBy: order as QueryOrderMap,
 		});
 		const newsList = await this.em.populate(obj, ['school', 'creator', 'updater']);
 		return [newsList, count];
