@@ -1,5 +1,7 @@
 import { Module, NotFoundException } from '@nestjs/common';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { DB_URL, DB_USERNAME, DB_PASSWORD } from '@src/config';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
 import { TaskModule } from './modules/task/task.module';
@@ -9,7 +11,6 @@ import { CoreModule } from './core/core.module';
 import { CourseInfo } from './modules/news/entity/course-info.entity';
 import { TeamInfo } from './modules/news/entity/team-info.entity';
 import { NewsModule } from './modules/news/news.module';
-import { MongoSharedDriver } from './modules/database/mongo-database';
 
 @Module({
 	imports: [
@@ -17,7 +18,7 @@ import { MongoSharedDriver } from './modules/database/mongo-database';
 		TaskModule,
 		NewsModule,
 		MikroOrmModule.forRoot({
-			driver: MongoSharedDriver,
+			type: 'mongo',
 			// TODO add mongoose options as mongo options (see database.js)
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,

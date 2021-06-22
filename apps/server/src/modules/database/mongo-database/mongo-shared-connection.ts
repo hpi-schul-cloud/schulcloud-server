@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+// TODO add spec when this will be really used
 import { MongoConnection } from '@mikro-orm/mongodb';
 import { MongoClient } from 'mongodb';
 
