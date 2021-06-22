@@ -43,7 +43,7 @@ export class NewsUc {
 	}
 
 	/**
-	 *
+	 * Provides news for a user, by default odered by displayAt to show latest news first.
 	 * @param userId
 	 * @param scope
 	 * @param pagination
@@ -56,6 +56,7 @@ export class NewsUc {
 		const permissions: [Permission] = NewsUc.getRequiredPermissions(unpublished);
 
 		const targets = await this.getPermittedTargets(userId, scope, permissions);
+		// todo order by displayAt by default, most current first
 		const [newsList, newsCount] = await this.newsRepo.findAll(targets, unpublished, pagination);
 
 		await Promise.all(

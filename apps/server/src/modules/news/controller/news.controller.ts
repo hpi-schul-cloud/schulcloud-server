@@ -32,13 +32,22 @@ export class NewsController {
 		@Query() scope: NewsFilterQuery,
 		@Query() pagination: PaginationQuery
 	): Promise<PaginationResponse<NewsResponse[]>> {
-		const [newsList, count] = await this.newsUc.findAllForUser(
-			currentUser.userId,
-			NewsMapper.mapNewsScopeToDomain(scope),
-			pagination
-		);
-		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
-		return new PaginationResponse(dtoList, count);
+		const newsResponse = await this.find(currentUser, scope, pagination);
+		return newsResponse;
+	}
+
+	@Get('/news/team/:teamId')
+	async findAllForTeam(
+		@Param('teamId', ParseObjectIdPipe) teamId: string,
+		@CurrentUser() currentUser: ICurrentUser,
+		@Query() scope: NewsFilterQuery,
+		@Query() pagination: PaginationQuery
+	): Promise<PaginationResponse<NewsResponse[]>> {
+		// enforce filter by a given team, used in team tab
+		scope.targetId = teamId;
+		scope.targetModel = 'teams';
+		const newsResponse = await this.find(currentUser, scope, pagination);
+		return newsResponse;
 	}
 
 	/** Retrieve a specific news entry by id. A user may only read news of scopes he has the read permission. The news entity has school and user names populated. */
@@ -71,5 +80,16 @@ export class NewsController {
 	): Promise<string> {
 		const deletedId = await this.newsUc.delete(newsId, currentUser.userId);
 		return deletedId;
+	}
+
+	/** internal wrapper to be used in different controller actions taking care of use case mapping */
+	private async find(currentUser: ICurrentUser, scope: NewsFilterQuery, pagination: PaginationQuery) {
+		const [newsList, count] = await this.newsUc.findAllForUser(
+			currentUser.userId,
+			NewsMapper.mapNewsScopeToDomain(scope),
+			pagination
+		);
+		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
+		return new PaginationResponse(dtoList, count);
 	}
 }
