@@ -9,6 +9,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.4.6] - 2021-06-22
+
+### Added
+
+- SC-9148 - Add migration for change of school year on BRB
+
 ## [26.4.5] - 2021-06-21
 
 ### Added 
