@@ -5,6 +5,7 @@ import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 export class Role extends BaseEntityWithTimestamps {
 	constructor(partial: Partial<Role>) {
 		super();
+		// TODO not use partial see INewsProperties, use Object.assign for related entities only.
 		Object.assign(this, partial);
 	}
 
@@ -17,5 +18,6 @@ export class Role extends BaseEntityWithTimestamps {
 
 	@Property()
 	roles: EntityId[];
-	// TODO: enum
+	// TODO add meaning, parentRoles, roles to extend permissions from...?
+	// TODO: enum / Role self-reference
 }

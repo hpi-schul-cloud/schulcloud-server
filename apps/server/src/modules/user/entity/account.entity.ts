@@ -6,6 +6,7 @@ import { User } from './user.entity';
 export class Account extends BaseEntityWithTimestamps {
 	constructor(partial: Partial<Account>) {
 		super();
+		// TODO not use partial see INewsProperties, use Object.assign for related entities only.
 		Object.assign(this, partial);
 	}
 
