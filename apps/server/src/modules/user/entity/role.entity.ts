@@ -10,14 +10,14 @@ export class Role extends BaseEntityWithTimestamps {
 	}
 
 	@Property()
-	name: string;
+	name = '';
 
 	@Property()
-	permissions: string[];
+	permissions: string[] = [];
 	// TODO: enum
 
 	@Property()
-	roles: EntityId[];
+	roles: EntityId[] = [];
 	// TODO add meaning, parentRoles, roles to extend permissions from...?
 	// TODO: enum / Role self-reference
 }

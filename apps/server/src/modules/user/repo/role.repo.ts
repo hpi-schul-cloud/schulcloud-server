@@ -9,6 +9,7 @@ interface RoleMap {
 	[name: string]: Role;
 }
 
+// TODO: time reset
 class RoleCache {
 	cache: RoleMap;
 
@@ -31,6 +32,7 @@ class RoleCache {
 		this.cache[selector] = role;
 	}
 
+	// we do not registred changes by calling the old endpoint
 	cleanup() {
 		this.cache = {};
 	}

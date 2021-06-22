@@ -19,7 +19,7 @@ describe('role repo', () => {
 			],
 			providers: [RoleRepo],
 		}).compile();
-		repo = module.get<RoleRepo>(RoleRepo);
+		repo = module.get(RoleRepo);
 		em = module.get<EntityManager>(EntityManager);
 	});
 
@@ -28,12 +28,19 @@ describe('role repo', () => {
 	});
 
 	describe('findByName', () => {
+		afterEach(async () => {
+			repo.cl1.cleanup();
+			await em.nativeDelete(Role, {});
+		});
+
 		it('should return right keys', async () => {
 			const roleA = em.create(Role, { name: 'a' });
 
 			await em.persistAndFlush([roleA]);
 			const result = await repo.findByName('a');
-			expect(Object.keys(result)).toEqual(['name', 'permission', 'roles', 'id', 'createdAt', 'updatedAt'].sort());
+			expect(Object.keys(result).sort()).toEqual(
+				['createdAt', 'updatedAt', 'permissions', 'roles', 'name', '_id'].sort()
+			);
 		});
 
 		it('should return one role that matched by name', async () => {
@@ -82,13 +89,20 @@ describe('role repo', () => {
 	});
 
 	describe('findById', () => {
+		afterEach(async () => {
+			repo.cl1.cleanup();
+			await em.nativeDelete(Role, {});
+		});
+
 		it('should return right keys', async () => {
 			const idA = new ObjectId().toHexString();
 			const roleA = em.create(Role, { id: idA });
 
 			await em.persistAndFlush([roleA]);
 			const result = await repo.findById(idA);
-			expect(Object.keys(result)).toEqual(['name', 'permission', 'roles', 'id', 'createdAt', 'updatedAt'].sort());
+			expect(Object.keys(result).sort()).toEqual(
+				['createdAt', 'updatedAt', 'permissions', 'roles', 'name', '_id'].sort()
+			);
 		});
 
 		it('should return one role that matched by id', async () => {
@@ -143,12 +157,20 @@ describe('role repo', () => {
 	});
 
 	describe('resolvePermissionsByName', () => {
+		afterEach(async () => {
+			repo.cl1.cleanup();
+			repo.cl2.cleanup();
+			await em.nativeDelete(Role, {});
+		});
+
 		it('should return right keys', async () => {
 			const roleA = em.create(Role, { name: 'a' });
 
 			await em.persistAndFlush([roleA]);
 			const result = await repo.findByName('a');
-			expect(Object.keys(result)).toEqual(['name', 'permission', 'roles', 'id', 'createdAt', 'updatedAt'].sort());
+			expect(Object.keys(result).sort()).toEqual(
+				['createdAt', 'updatedAt', 'permissions', 'roles', 'name', '_id'].sort()
+			);
 		});
 
 		it('should return one role that matched by name', async () => {
@@ -168,50 +190,70 @@ describe('role repo', () => {
 		});
 
 		it('should resolve permissions of existing subroles', async () => {
-			const roleD1 = em.create(Role, { name: 'c1', permission: ['D'] });
-			const roleC1 = em.create(Role, { name: 'c1', permission: ['C', 'C1'], roles: [roleD1.id] });
-			const roleC2 = em.create(Role, { name: 'c2', permission: ['C', 'C2'] });
-			const roleB = em.create(Role, { name: 'b', permission: ['B', 'C'], roles: [roleC1.id, roleC2.id] });
-			const roleA = em.create(Role, { name: 'a', permission: ['A', 'B'], roles: [roleB.id] });
+			const idD1 = new ObjectId().toHexString();
+			const idC1 = new ObjectId().toHexString();
+			const idC2 = new ObjectId().toHexString();
+			const idB = new ObjectId().toHexString();
+			const idA = new ObjectId().toHexString();
+
+			const roleD1 = em.create(Role, { name: 'd1', permissions: ['D'], id: idD1 });
+			const roleC1 = em.create(Role, { name: 'c1', permissions: ['C', 'C1'], roles: [idD1], id: idC1 });
+			const roleC2 = em.create(Role, { name: 'c2', permissions: ['C', 'C2'], id: idC2 });
+			const roleB = em.create(Role, {
+				name: 'b',
+				permissions: ['B', 'C'],
+				roles: [idC1, idC2],
+				id: idB,
+			});
+			const roleA = em.create(Role, { name: 'a', permissions: ['A', 'B'], roles: [idB], id: idA });
 
 			await em.persistAndFlush([roleA, roleB, roleC1, roleC2, roleD1]);
 
 			const result = await repo.resolvePermissionsByName('a');
-			expect(result.permissions).toEqual(['A', 'B', 'C', 'C1', 'C2', 'D'].sort());
+			expect(result.permissions.sort()).toEqual(['A', 'B', 'C', 'C1', 'C2', 'D'].sort());
 		});
 
 		it('should cache requested roles and subroles by name', async () => {
-			const roleB = em.create(Role, { name: 'b' });
-			const roleA = em.create(Role, { name: 'a', roles: [roleB.id] });
+			const idA = new ObjectId().toHexString();
+			const idB = new ObjectId().toHexString();
 
-			await em.persistAndFlush([roleA]);
+			const roleB = em.create(Role, { name: 'b', id: idB });
+			const roleA = em.create(Role, { name: 'a', roles: [idB], id: idA });
+
+			await em.persistAndFlush([roleA, roleB]);
 			expect(repo.cl2.get('a')).toEqual(undefined);
 			expect(repo.cl2.get('b')).toEqual(undefined);
-			await repo.findByName('a');
-			expect(repo.cl2.get('a')).toEqual(roleA);
-			expect(repo.cl2.get('b')).toEqual(roleB);
+
+			await repo.resolvePermissionsByName('a');
+
+			expect(repo.cl2.get('a')).toBeInstanceOf(Role);
+			expect(repo.cl2.get('b')).toBeInstanceOf(Role);
 		});
 
 		it('should select already cached roles instant of db call', async () => {
-			const roleB = em.create(Role, { name: 'b' });
-			const roleA = em.create(Role, { name: 'a', roles: [roleB.id] });
-			const called: string[] = [];
+			const idA = new ObjectId().toHexString();
+			const idB = new ObjectId().toHexString();
+
+			const roleB = em.create(Role, { name: 'b', id: idB });
+			const roleA = em.create(Role, { name: 'a', roles: [idB], id: idA });
+			let called = 'null';
 
 			// mock
-			const self = repo.cl1;
-			repo.cl1.get = (selector: string): Role => {
-				called.push(selector);
+			const self = repo.cl2;
+			repo.cl2.get = (selector: string): Role => {
+				called = selector;
 				return self.cache[selector];
 			};
 
-			await em.persistAndFlush([roleA]);
+			await em.persistAndFlush([roleA, roleB]);
 
-			await repo.findByName('a');
-			expect(called[0]).toEqual(undefined);
-			expect(called[1]).toEqual(undefined);
-			await repo.findByName('a');
-			expect(called[0]).toEqual('b');
-			expect(called[1]).toEqual('a');
+			await repo.resolvePermissionsByName('a');
+
+			expect(called).toEqual('null');
+
+			await repo.resolvePermissionsByName('a');
+
+			expect(called).toEqual('a');
 		});
 	});
 });
