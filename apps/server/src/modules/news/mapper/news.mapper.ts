@@ -1,5 +1,5 @@
 import { CreateNewsParams, NewsFilterQuery, NewsResponse, UpdateNewsParams } from '../controller/dto';
-import { ICreateNews, INewsScope, IUpdateNews, News, NewsTargetModelValue } from '../entity';
+import { ICreateNews, INewsScope, IUpdateNews, News, NewsTargetModel } from '../entity';
 import { SchoolInfoMapper } from './school-info.mapper';
 import { UserInfoMapper } from './user-info.mapper';
 
@@ -29,7 +29,7 @@ export class NewsMapper {
 		const dto: INewsScope = {};
 		if (query.targetModel) {
 			dto.target = {
-				targetModel: query.targetModel as NewsTargetModelValue,
+				targetModel: query.targetModel as NewsTargetModel,
 				targetId: query.targetId,
 			};
 		}
@@ -45,7 +45,7 @@ export class NewsMapper {
 			content: params.content,
 			displayAt: params.displayAt,
 			target: {
-				targetModel: params.targetModel as NewsTargetModelValue,
+				targetModel: params.targetModel as NewsTargetModel,
 				targetId: params.targetId,
 			},
 		};

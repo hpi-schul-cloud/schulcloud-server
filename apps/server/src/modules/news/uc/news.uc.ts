@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, IPagination } from '@shared/domain';
+import { EntityId, IFindOptions } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
 import { Logger } from '@src/core/logger/logger.service';
 import { AuthorizationService } from '../../authorization/authorization.service';
-import { News, NewsTargetModel, NewsTargetModelValue, ICreateNews, INewsScope, IUpdateNews } from '../entity';
+import { News, NewsTargetModel, ICreateNews, INewsScope, IUpdateNews } from '../entity';
 import { NewsRepo } from '../repo/news.repo';
 import { NewsTargetFilter } from '../repo/news-target-filter';
 
@@ -49,7 +49,7 @@ export class NewsUc {
 	 * @param pagination
 	 * @returns
 	 */
-	async findAllForUser(userId: EntityId, scope?: INewsScope, pagination?: IPagination): Promise<Counted<News[]>> {
+	async findAllForUser(userId: EntityId, scope?: INewsScope, options?: IFindOptions<News>): Promise<Counted<News[]>> {
 		this.logger.log(`start find all news for user ${userId}`);
 
 		const unpublished = !!scope?.unpublished; // default is only published news
@@ -57,7 +57,7 @@ export class NewsUc {
 
 		const targets = await this.getPermittedTargets(userId, scope, permissions);
 		// todo order by displayAt by default, most current first
-		const [newsList, newsCount] = await this.newsRepo.findAll(targets, unpublished, pagination);
+		const [newsList, newsCount] = await this.newsRepo.findAll(targets, unpublished, options);
 
 		await Promise.all(
 			newsList.map(async (news: News) => {
@@ -157,7 +157,7 @@ export class NewsUc {
 
 	private async getTargetFilters(
 		userId: EntityId,
-		targetModels: NewsTargetModelValue[],
+		targetModels: NewsTargetModel[],
 		permissions: string[]
 	): Promise<NewsTargetFilter[]> {
 		const targets = await Promise.all(

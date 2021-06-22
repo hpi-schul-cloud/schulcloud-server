@@ -3,7 +3,6 @@ import { BaseEntity } from '@shared/domain';
 import {
 	CourseNews,
 	INewsProperties,
-	NewsTargetModel,
 	SchoolInfo,
 	CourseInfo,
 	SchoolNews,
@@ -11,7 +10,7 @@ import {
 	News,
 	TeamNews,
 	TeamInfo,
-	NewsTargetModelValue,
+	NewsTargetModel,
 	INewsScope,
 	ICreateNews,
 	IUpdateNews,
@@ -33,7 +32,7 @@ const createDataInfo = <T extends BaseEntity>(props, Type: { new (props): T }): 
 	return dataInfo;
 };
 
-const getTargetModel = (news: News): NewsTargetModelValue => {
+const getTargetModel = (news: News): NewsTargetModel => {
 	if (news instanceof SchoolNews) {
 		return NewsTargetModel.School;
 	}

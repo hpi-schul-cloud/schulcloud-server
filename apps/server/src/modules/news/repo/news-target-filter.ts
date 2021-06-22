@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain';
-import { NewsTargetModelValue } from '../entity';
+import { NewsTargetModel } from '../entity';
 
 export interface NewsTargetFilter {
-	targetModel: NewsTargetModelValue;
+	targetModel: NewsTargetModel;
 	targetIds: EntityId[];
 }

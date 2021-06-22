@@ -304,6 +304,21 @@ The database calls are mocked and spyied. So we can check how and with which par
 		});
 ```
 
+#### Testing expected error
+
+1. Execute the function with the expected exception in expect context than define how and with which exception
+   the function should be rejected
+
+> Don't forget to add 'await' before expect, otherwise the test will be executed successfully regardless assertions
+and throw an error in log after the test execution.
+
+```Typescript
+		it('should throw not found exception if news was not found', async () => {
+			const anotherNewsId = new ObjectId().toHexString();
+			await expect(service.findOneByIdForUser(anotherNewsId, userId)).rejects.toThrow(NotFoundException);  (1)
+		});
+```
+
 ## E2E Tests
 
 Unlike unit testing, which focuses on individual modules, end-to-end testing covers the interaction between classes and
@@ -412,3 +427,9 @@ The response can be verified by checking the response code or by applying some v
 ## References
 
 This guide is inspired by https://github.com/goldbergyoni/javascript-testing-best-practices/
+```Typescript
+		it('should throw not found error, if news doesnt exists', async () => {
+			const newsId = new ObjectId().toHexString();
+			await request(app.getHttpServer()).delete(`/news/${newsId}`).expect(404);
+		});
+```
