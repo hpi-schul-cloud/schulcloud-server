@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions } from '@shared/domain';
+import { EntityId, IFindOptions, SortOrder } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
 import { Logger } from '@src/core/logger/logger.service';
 import { AuthorizationService } from '../../authorization/authorization.service';
@@ -56,7 +56,11 @@ export class NewsUc {
 		const permissions: [Permission] = NewsUc.getRequiredPermissions(unpublished);
 
 		const targets = await this.getPermittedTargets(userId, scope, permissions);
-		// todo order by displayAt by default, most current first
+
+		if (options == null) options = {};
+		// by default show latest news first
+		if (options.order == null) options.order = { displayAt: SortOrder.desc };
+
 		const [newsList, newsCount] = await this.newsRepo.findAll(targets, unpublished, options);
 
 		await Promise.all(
