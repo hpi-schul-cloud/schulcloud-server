@@ -68,6 +68,21 @@
 			"port": 9229,
 			"skipFiles": ["<node_internals>/**"],
 			"console": "integratedTerminal"
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Test (unit) Current File",
+			"program": "${workspaceFolder}/node_modules/.bin/jest",
+			"args": ["/${fileBasename}", "--config", "jest.config.ts"],
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"disableOptimisticBPs": true,
+			"windows": {
+				"program": "${workspaceFolder}/node_modules/jest/bin/jest"
+			},
+			"skipFiles": ["<node_internals>/**"],
+			"sourceMaps": true
 		}
 	]
 }
