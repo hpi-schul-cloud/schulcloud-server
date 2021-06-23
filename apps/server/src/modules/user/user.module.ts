@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-// import { TaskController } from './controller/task.controller';
-// import { TaskUC } from './uc/task.uc';
-import { RoleRepo } from './repo/role.repo';
+import { UserController } from './controller';
+import { UserUC } from './uc';
+import { RoleRepo, UserRepo } from './repo';
 
 @Module({
-	controllers: [],
-	providers: [RoleRepo], // UC
+	controllers: [UserController],
+	providers: [RoleRepo, UserRepo, UserUC],
 })
 export class UserModule {}

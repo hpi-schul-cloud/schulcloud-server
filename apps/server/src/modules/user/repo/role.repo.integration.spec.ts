@@ -1,4 +1,4 @@
-import { NotFoundError } from '@mikro-orm/core';
+import { NotFoundError, ValidationError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '../../database';
@@ -27,6 +27,27 @@ describe('role repo', () => {
 		await module.close();
 	});
 
+	describe('entity', () => {
+		it.skip('should fail for double creating a uniuqe role name.', async () => {
+			const nameA = `a${Date.now()}`;
+			const roleA1 = em.create(Role, { name: nameA });
+			await em.persistAndFlush([roleA1]);
+			const roleA2 = em.create(Role, { name: nameA });
+
+			await expect(em.persistAndFlush([roleA2])).rejects.toThrow(ValidationError);
+		});
+
+		it.skip('should fail for double creating a uniuqe role name in same step', async () => {
+			const nameA = `a${Date.now()}`;
+			const roleA1 = em.create(Role, { name: nameA });
+			const roleA2 = em.create(Role, { name: nameA });
+
+			await expect(em.persistAndFlush([roleA1, roleA2])).rejects.toThrow(ValidationError);
+		});
+
+		it.todo('should fail if permission by creating is added, that not exist as enum.');
+	});
+
 	describe('findByName', () => {
 		afterEach(async () => {
 			repo.cl1.clear();
@@ -34,48 +55,55 @@ describe('role repo', () => {
 		});
 
 		it('should return right keys', async () => {
-			const roleA = em.create(Role, { name: 'a' });
+			const nameA = `a${Date.now()}`;
+			const roleA = em.create(Role, { name: nameA });
 
 			await em.persistAndFlush([roleA]);
-			const result = await repo.findByName('a');
+			const result = await repo.findByName(nameA);
 			expect(Object.keys(result).sort()).toEqual(
 				['createdAt', 'updatedAt', 'permissions', 'roles', 'name', '_id'].sort()
 			);
 		});
 
 		it('should return one role that matched by name', async () => {
-			const roleA = em.create(Role, { name: 'a' });
-			const roleB = em.create(Role, { name: 'b' });
+			const nameA = `a${Date.now()}`;
+			const nameB = `b${Date.now()}`;
+			const roleA = em.create(Role, { name: nameA });
+			const roleB = em.create(Role, { name: nameB });
 
 			await em.persistAndFlush([roleA, roleB]);
-			const result = await repo.findByName('a');
+			const result = await repo.findByName(nameA);
 			expect(result).toEqual(roleA);
 		});
 
 		it('should throw an error if roles by name not exist', async () => {
-			const roleA = em.create(Role, { name: 'a' });
+			const nameA = `a${Date.now()}`;
+			const nameB = `b${Date.now()}`;
+			const roleA = em.create(Role, { name: nameA });
 
 			await em.persistAndFlush([roleA]);
-			await expect(repo.findByName('b')).rejects.toThrow(NotFoundError);
+			await expect(repo.findByName(nameB)).rejects.toThrow(NotFoundError);
 		});
 
 		it('should cache requested roles by name', async () => {
-			const roleA = em.create(Role, { name: 'a' });
+			const nameA = `a${Date.now()}`;
+			const roleA = em.create(Role, { name: nameA });
 
 			await em.persistAndFlush([roleA]);
-			expect(repo.cl1.get('a')).toEqual(undefined);
-			await repo.findByName('a');
-			expect(repo.cl1.get('a')).toEqual(roleA);
+			expect(repo.cl1.get(nameA)).toEqual(undefined);
+			await repo.findByName(nameA);
+			expect(repo.cl1.get(nameA)).toEqual(roleA);
 		});
 
 		it('should select already cached roles instant of db call', async () => {
-			const roleA = em.create(Role, { name: 'a' });
+			const nameA = `a${Date.now()}`;
+			const roleA = em.create(Role, { name: nameA });
 			const spy = jest.spyOn(repo.cl1, 'get');
 
 			await em.persistAndFlush([roleA]);
 
 			expect(spy).not.toHaveBeenCalled();
-			await repo.findByName('a');
+			await repo.findByName(nameA);
 			expect(spy).toHaveBeenCalled();
 			spy.mockRestore();
 		});
@@ -142,7 +170,7 @@ describe('role repo', () => {
 		});
 	});
 
-	describe('resolvePermissionsByName', () => {
+	describe('resolvePermissionsById', () => {
 		afterEach(async () => {
 			repo.cl1.clear();
 			repo.cl2.clear();
@@ -150,29 +178,34 @@ describe('role repo', () => {
 		});
 
 		it('should return right keys', async () => {
-			const roleA = em.create(Role, { name: 'a' });
+			const idA = new ObjectId().toHexString();
+			const roleA = em.create(Role, { id: idA });
 
 			await em.persistAndFlush([roleA]);
-			const result = await repo.findByName('a');
+			const result = await repo.resolvePermissionsById(idA);
 			expect(Object.keys(result).sort()).toEqual(
 				['createdAt', 'updatedAt', 'permissions', 'roles', 'name', '_id'].sort()
 			);
 		});
 
 		it('should return one role that matched by name', async () => {
-			const roleA = em.create(Role, { name: 'a' });
-			const roleB = em.create(Role, { name: 'b' });
+			const idA = new ObjectId().toHexString();
+			const idB = new ObjectId().toHexString();
+			const roleA = em.create(Role, { id: idA });
+			const roleB = em.create(Role, { id: idB });
 
 			await em.persistAndFlush([roleA, roleB]);
-			const result = await repo.resolvePermissionsByName('a');
+			const result = await repo.resolvePermissionsById(idA);
 			expect(result).toEqual(roleA);
 		});
 
 		it('should throw an error if roles by name not exist', async () => {
-			const roleA = em.create(Role, { name: 'a' });
+			const idA = new ObjectId().toHexString();
+			const idB = new ObjectId().toHexString();
+			const roleA = em.create(Role, { id: idA });
 
 			await em.persistAndFlush([roleA]);
-			await expect(repo.resolvePermissionsByName('b')).rejects.toThrow(NotFoundError);
+			await expect(repo.resolvePermissionsById(idB)).rejects.toThrow(NotFoundError);
 		});
 
 		it('should resolve permissions of existing subroles', async () => {
@@ -182,20 +215,15 @@ describe('role repo', () => {
 			const idB = new ObjectId().toHexString();
 			const idA = new ObjectId().toHexString();
 
-			const roleD1 = em.create(Role, { name: 'd1', permissions: ['D'], id: idD1 });
-			const roleC1 = em.create(Role, { name: 'c1', permissions: ['C', 'C1'], roles: [idD1], id: idC1 });
-			const roleC2 = em.create(Role, { name: 'c2', permissions: ['C', 'C2'], id: idC2 });
-			const roleB = em.create(Role, {
-				name: 'b',
-				permissions: ['B', 'C'],
-				roles: [idC1, idC2],
-				id: idB,
-			});
-			const roleA = em.create(Role, { name: 'a', permissions: ['A', 'B'], roles: [idB], id: idA });
+			const roleD1 = em.create(Role, { permissions: ['D'], id: idD1 });
+			const roleC1 = em.create(Role, { permissions: ['C', 'C1'], roles: [idD1], id: idC1 });
+			const roleC2 = em.create(Role, { permissions: ['C', 'C2'], id: idC2 });
+			const roleB = em.create(Role, { permissions: ['B', 'C'], roles: [idC1, idC2], id: idB });
+			const roleA = em.create(Role, { permissions: ['A', 'B'], roles: [idB], id: idA });
 
 			await em.persistAndFlush([roleA, roleB, roleC1, roleC2, roleD1]);
 
-			const result = await repo.resolvePermissionsByName('a');
+			const result = await repo.resolvePermissionsById(idA);
 			expect(result.permissions.sort()).toEqual(['A', 'B', 'C', 'C1', 'C2', 'D'].sort());
 		});
 
@@ -203,34 +231,65 @@ describe('role repo', () => {
 			const idA = new ObjectId().toHexString();
 			const idB = new ObjectId().toHexString();
 
-			const roleB = em.create(Role, { name: 'b', id: idB });
-			const roleA = em.create(Role, { name: 'a', roles: [idB], id: idA });
+			const roleB = em.create(Role, { id: idB });
+			const roleA = em.create(Role, { roles: [idB], id: idA });
 
 			await em.persistAndFlush([roleA, roleB]);
-			expect(repo.cl2.get('a')).toEqual(undefined);
-			expect(repo.cl2.get('b')).toEqual(undefined);
+			expect(repo.cl2.get(idA)).toEqual(undefined);
+			expect(repo.cl2.get(idB)).toEqual(undefined);
 
-			await repo.resolvePermissionsByName('a');
+			await repo.resolvePermissionsById(idA);
 
-			expect(repo.cl2.get('a')).toBeInstanceOf(Role);
-			expect(repo.cl2.get('b')).toBeInstanceOf(Role);
+			expect(repo.cl2.get(idA)).toBeInstanceOf(Role);
+			expect(repo.cl2.get(idB)).toBeInstanceOf(Role);
 		});
 
 		it('should select already cached roles instant of db call', async () => {
 			const idA = new ObjectId().toHexString();
 			const idB = new ObjectId().toHexString();
 
-			const roleB = em.create(Role, { name: 'b', id: idB });
-			const roleA = em.create(Role, { name: 'a', roles: [idB], id: idA });
+			const roleB = em.create(Role, { id: idB });
+			const roleA = em.create(Role, { roles: [idB], id: idA });
 			const spy = jest.spyOn(repo.cl1, 'get');
 
 			await em.persistAndFlush([roleA, roleB]);
 
 			expect(spy).not.toHaveBeenCalled();
-			await repo.resolvePermissionsByName('a');
+			await repo.resolvePermissionsById(idA);
 			expect(spy).toHaveBeenCalled();
 
 			spy.mockRestore();
+		});
+	});
+
+	describe('resolvePermissionsByIdsList', () => {
+		afterEach(async () => {
+			await em.nativeDelete(Role, {});
+		});
+
+		it('should return right keys', async () => {
+			const idA = new ObjectId().toHexString();
+			const roleA = em.create(Role, { id: idA });
+			const idB = new ObjectId().toHexString();
+			const roleB = em.create(Role, { id: idB });
+
+			await em.persistAndFlush([roleA, roleB]);
+			const result = await repo.resolvePermissionsByIdList([idA, idB]);
+			expect(Object.keys(result).sort()).toEqual(['permissions', 'roles'].sort());
+		});
+
+		it('should return unqiue roles and resolved permissions', async () => {
+			const idA = new ObjectId().toHexString();
+			const idB = new ObjectId().toHexString();
+			const idC = new ObjectId().toHexString();
+			const roleC = em.create(Role, { id: idC, permissions: ['C'] });
+			const roleB = em.create(Role, { roles: [idC], id: idB, permissions: ['A', 'D'] });
+			const roleA = em.create(Role, { roles: [idB], id: idA, permissions: ['B', 'D'] });
+
+			await em.persistAndFlush([roleA, roleB, roleC]);
+			const result = await repo.resolvePermissionsByIdList([idA, idB]);
+			expect(result.permissions.sort()).toEqual(['A', 'B', 'C', 'D'].sort());
+			expect(result.roles.length).toEqual(2);
 		});
 	});
 });

@@ -23,6 +23,8 @@
 		"paths": {
 			"@shared/*": ["apps/server/src/shared/*"],
 			"@src/*": ["apps/server/src/*"]
-		}
+		},
+		// "inlineSourceMap": true,
+		// "inlineSources": true
 	}
 }
