@@ -2,8 +2,7 @@ const { expect } = require('chai');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise);
 
-describe('addMaterial Service', function test() {
-	this.timeout(5000);
+describe('addMaterial Service', () => {
 	let app;
 	let server;
 
@@ -86,11 +85,13 @@ describe('addMaterial Service', function test() {
 			],
 			params
 		);
+		const responseIds = response.map((id) => id._id.toString());
 		const result = await app.service('lessons').get(lesson._id);
 		expect(result).to.not.be.undefined;
 		expect(result).to.haveOwnProperty('materialIds');
-		expect(result.materialIds[0].toString()).to.equal(response[0]._id.toString());
-		expect(result.materialIds[1].toString()).to.equal(response[1]._id.toString());
+		const resultMaterialIds = result.materialIds.map((id) => id.toString());
+		expect(resultMaterialIds).to.be.an('array').of.length(2);
+		expect(responseIds).to.have.members(resultMaterialIds);
 	});
 
 	it('adds the material to the lesson in courseGroup', async () => {

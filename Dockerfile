@@ -3,4 +3,4 @@ FROM node:lts-alpine
 WORKDIR /schulcloud-server
 COPY . .
 ENV TZ=Europe/Berlin
-CMD ./startup.sh
+CMD npm start

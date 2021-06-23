@@ -99,6 +99,20 @@ class SilentError extends BusinessError {
 	}
 }
 
+// possible to bind allowedKeys and taskType
+class SyncError extends Error {
+	constructor(taskType, error, { syncId, data = {} } = {}) {
+		super(taskType);
+		this.name = this.constructor.name;
+		this.message = error.message;
+		this.syncId = syncId;
+		this.data = data;
+		this.error = error;
+
+		Error.captureStackTrace(this, this.constructor);
+	}
+}
+
 module.exports = {
 	ApplicationError,
 	TechnicalError,
@@ -109,4 +123,5 @@ module.exports = {
 	SilentError,
 	ValidationError,
 	ForbiddenError,
+	SyncError,
 };

@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const winstonLogger = require('../../../logger');
 
 /**
@@ -11,6 +12,7 @@ class Syncer {
 			errors: [],
 		});
 		this.logger = logger;
+		this.syncId = String(new mongoose.Types.ObjectId());
 	}
 
 	/**
@@ -52,19 +54,19 @@ class Syncer {
 	 * `stats.success` for result)
 	 */
 	async sync() {
-		this.logInfo('Started syncing');
+		this.logInfo('Started syncing', { syncId: this.syncId });
 		try {
 			await this.steps();
 		} catch (err) {
-			this.logError('Error while syncing', { error: err });
+			this.logError('Error while syncing', { error: err, syncId: this.syncId });
 			this.stats.errors.push(err);
 		}
 		this.stats.success = this.successful();
 		if (this.stats.success !== true) {
-			this.logError(`Sync failed with ${this.stats.errors.length} errors:`);
+			this.logError(`Sync failed with ${this.stats.errors.length} errors:`, { syncId: this.syncId });
 		}
 		const aggregated = Syncer.aggregateStats(this.stats);
-		this.logInfo('Finished syncing', aggregated);
+		this.logInfo('Finished syncing', { ...aggregated, syncId: this.syncId });
 		return this.stats;
 	}
 

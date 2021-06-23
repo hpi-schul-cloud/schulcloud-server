@@ -10,7 +10,66 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 AUTO DEPLOY
-## 26.2.0
+
+## [26.4.5] - 2021-06-21
+
+### Added 
+
+- SC-9156 - Add maintenance mode for LDAP rewrite
+
+## [26.4.4] - 2021-06-16
+
+### Change
+
+- rename permission TASK_DASHBOARD_VIEW_V3
+
+## [26.4.3] - 2021-06-16
+
+### Change
+
+- SC-9139 - Add a check if user roles should be updated or not to the repo
+
+## [26.4.2] - 2021-06-16
+
+### Fixed
+
+- npm run syncIndex work for not existing collections in the db
+
+## [26.4.1] - 2021-06-15
+
+### Change
+
+- SC-9029 - Change place of the channel creation for RabbitMQ
+
+## [26.4.0] - 2021-06-11
+
+- SC-9004 - Sync env variables between backend and frontend
+
+## [26.3.1] - 2021-06-14
+
+### Added
+
+- SC-9134 - Add missing mongo indexes for LDAP Sync
+
+## [26.3.0] - 2021-06-07
+
+### Changed
+
+- SC-8898 - parallelize LDAP sync using RabbitMQ
+
+## 26.2.2 - 2021-06-04
+
+### Fixed
+
+- Fixed dependencies issue
+
+## 26.2.1 - 2021-06-02
+
+### Added
+
+- SC-9103 - add logging for syncIndexes script
+
+## 26.2.0 - 2021-06-01
 
 ### Added
 
