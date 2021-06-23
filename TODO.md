@@ -26,6 +26,10 @@
 
 ## ACCEPTED
 
+- documentation
+  - entity constructor
+  - em to be used in repositories only (!!!)
+
 - load/perf test
 
 - disable legacy ts support (app, tests)
