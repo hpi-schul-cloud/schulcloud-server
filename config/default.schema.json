@@ -567,6 +567,11 @@
 			"default": "sync_ldap",
 			"description": "Queue name for sync"
 		},
+		"MAIL_SEND_QUEUE_NAME" : {
+			"type": "string",
+			"default": "mail_send",
+			"description": "Queue name for mail sending"
+		},
 		"MEMORY_INTERVAL_TIME": {
 			"type": "integer",
 			"default": 0,

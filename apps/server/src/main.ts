@@ -8,6 +8,8 @@ install(); // TODO register source-map-support to
 
 import legacyAppPromise = require('../../../src/app');
 
+import { NestAppHolder } from './legacyConnection/nestAppHolder';
+
 import { ServerModule } from './server.module';
 
 const ROUTE_PRAEFIX = 'v3';
@@ -81,6 +83,9 @@ async function bootstrap() {
 
 	await app.init();
 
+	NestAppHolder.setInstance(app);
+
 	adapter.listen(PORT);
 }
+
 bootstrap();
