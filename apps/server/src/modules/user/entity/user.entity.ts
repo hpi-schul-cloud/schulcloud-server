@@ -1,27 +1,45 @@
-import { Entity, ManyToMany, Property, Collection } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps } from '@shared/domain';
+import { Entity, Property, Index, Unique } from '@mikro-orm/core';
+import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
 import { Role } from './role.entity';
+
+export interface IUserProperties {
+	email: string;
+	firstName?: string;
+	lastName?: string;
+	roles: Role[];
+	school: EntityId;
+}
 
 @Entity({ tableName: 'users' })
 export class User extends BaseEntityWithTimestamps {
-	constructor(partial: Partial<User>) {
-		super();
-		// TODO not use partial see INewsProperties, use Object.assign for related entities only.
-		Object.assign(this, partial);
-	}
-
 	@Property()
+	@Index({ name: 'externalUserIdentifier' })
+	@Unique()
 	email: string;
 
 	@Property()
-	firstName: string;
+	firstName?: string;
 
 	@Property()
-	lastName: string;
+	lastName?: string;
 
-	// @ManyToOne({ fieldName: 'schoolId' }) // oneToMany?
-	// school: SchoolUserInfo;
+	@Index({ name: 'roleIdBasedSearches' })
+	// @ManyToMany({ fieldName: 'roles', type: Role })
+	// roles = new Collection<Role>(this);
+	@Property()
+	roles: EntityId[] = [];
 
-	@ManyToMany({ fieldName: 'roles', type: Role })
-	roles = new Collection<Role>(this);
+	// index
+	// collection
+	@Index({ name: 'searchUserForSchool' })
+	@Property({ fieldName: 'schoolId' })
+	school: EntityId;
+
+	constructor(props: IUserProperties) {
+		super();
+		this.firstName = props.firstName;
+		this.lastName = props.lastName;
+		this.email = props.email;
+		Object.assign(this, { roles: props.roles, school: props.school });
+	}
 }
