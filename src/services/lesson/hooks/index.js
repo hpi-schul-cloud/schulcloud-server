@@ -60,8 +60,10 @@ const convertMerlinUrl = async (context) => {
 					await Promise.all(
 						content.content.resources.map(async (resource) => {
 							if (resource && resource.merlinReference) {
-								context.params.query.merlinReference = resource.merlinReference;
-								resource.url = await context.app.service('edu-sharing/merlinToken').find(context.params);
+								resource.url = await context.app.service('edu-sharing/merlinToken').find({
+									...context.params,
+									query: { ...context.params.query, merlinReference: resource.merlinReference },
+								});
 							}
 						})
 					);
@@ -80,8 +82,13 @@ const convertMerlinUrl = async (context) => {
 		await Promise.all(
 			materialIds.map(async (material) => {
 				if (material.merlinReference) {
-					context.params.query.merlinReference = material.merlinReference;
-					material.url = await context.app.service('edu-sharing/merlinToken').find(context.params);
+					material.url = await context.app.service('edu-sharing/merlinToken').find({
+						...context.params,
+						query: {
+							...context.params.query,
+							merlinReference: material.merlinReference,
+						},
+					});
 				}
 			})
 		);
@@ -97,10 +104,11 @@ const attachMerlinReferenceToLesson = (context) => {
 		context.data.contents.forEach((c) => {
 			if (c.content && c.content.resources && c.content.resources.length) {
 				c.content.resources.forEach((resource) => {
-					if ( resource.merlinReference === '') {
+					if (resource.merlinReference === '') {
 						const merlinUrl = new URL(resource.url);
-						if (`${merlinUrl.protocol}//${merlinUrl.hostname}${merlinUrl.pathname}` ===
-							Configuration.get('ES_MERLIN_AUTH_URL') &&
+						if (
+							`${merlinUrl.protocol}//${merlinUrl.hostname}${merlinUrl.pathname}` ===
+								Configuration.get('ES_MERLIN_AUTH_URL') &&
 							merlinUrl.searchParams.get('identifier').length
 						) {
 							resource.merlinReference = merlinUrl.searchParams.get('identifier');

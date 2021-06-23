@@ -1,6 +1,6 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const request = require('request-promise-native');
-const { getCounty, decryptSecretMerlin } = require('../helpers');
+const { getCounty } = require('../helpers');
 
 class MerlinTokenGenerator {
 	setup(app) {
