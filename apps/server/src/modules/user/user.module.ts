@@ -6,5 +6,6 @@ import { RoleRepo, UserRepo } from './repo';
 @Module({
 	controllers: [UserController],
 	providers: [RoleRepo, UserRepo, UserUC],
+	exports: [UserUC],
 })
 export class UserModule {}
