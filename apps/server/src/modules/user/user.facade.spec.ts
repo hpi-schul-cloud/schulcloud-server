@@ -31,6 +31,7 @@ describe('UserFacade', () => {
 
 	it('should be defined', () => {
 		expect(facade).toBeDefined();
+		expect(typeof facade.resolveUser).toEqual('function');
 	});
 
 	describe('getUserWithPermissions', () => {
