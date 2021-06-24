@@ -202,7 +202,7 @@
 		"RABBITMQ_URI": {
 			"type": "string",
 			"format": "uri",
-			"default": "amqp://192.168.99.100",
+			"default": "amqp://guest:guest@192.168.99.100",
 			"description": "The URI of the RabbitMQ server."
 		},
 		"RABBITMQ_MATRIX_CONSUME_CONCURRENCY": {
