@@ -39,6 +39,7 @@ describe('UserUC', () => {
 
 	it('should be defined', () => {
 		expect(service).toBeDefined();
+		expect(typeof service.getUserWithPermissions).toEqual('function');
 	});
 
 	describe('getUserWithPermissions', () => {

@@ -27,6 +27,11 @@ describe('user repo', () => {
 		await module.close();
 	});
 
+	it('should be defined', () => {
+		expect(repo).toBeDefined();
+		expect(typeof repo.findById).toEqual('function');
+	});
+
 	describe('findById', () => {
 		afterEach(async () => {
 			await em.nativeDelete(User, {});

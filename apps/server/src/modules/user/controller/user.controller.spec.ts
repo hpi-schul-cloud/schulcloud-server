@@ -17,5 +17,6 @@ describe('UserController', () => {
 
 	it.skip('should be defined', () => {
 		expect(controller).toBeDefined();
+		expect(typeof controller.me).toEqual('function');
 	});
 });

@@ -27,9 +27,10 @@ describe('RoleUC', () => {
 
 	it('should be defined', () => {
 		expect(service).toBeDefined();
+		expect(typeof service.resolvePermissionsByIdList).toEqual('function');
 	});
 
-	describe('getUserWithPermissions', () => {
+	describe('resolvePermissionsByIdList', () => {
 		it('should return valid solved and mapped typ', async () => {
 			const nameA = `a${Date.now()}`;
 			const roleA = new Role({ name: nameA, permissions: ['A', 'C'] });

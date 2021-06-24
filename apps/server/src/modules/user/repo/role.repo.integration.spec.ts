@@ -27,6 +27,13 @@ describe('role repo', () => {
 		await module.close();
 	});
 
+	it('should be defined', () => {
+		expect(repo).toBeDefined();
+		expect(typeof repo.findById).toEqual('function');
+		expect(typeof repo.findByName).toEqual('function');
+		expect(typeof repo.resolvePermissionsFromSubRolesById).toEqual('function');
+	});
+
 	describe('entity', () => {
 		it.skip('should fail for double creating a unique role name.', async () => {
 			const nameA = `a${Date.now()}`;
