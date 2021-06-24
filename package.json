@@ -112,7 +112,7 @@
 		"file-type": "^16.2.0",
 		"freeport": "^1.0.5",
 		"html-entities": "^2.1.0",
-		"jose": "^1.28.1",
+		"jose": "^3.13.0",
 		"jsonwebtoken": "8.5.1",
 		"ldapjs": "git+https://github.com/hpi-schul-cloud/node-ldapjs.git",
 		"lodash": "^4.17.19",
