@@ -7,7 +7,7 @@ import { ResolvedUser } from './controller/dto';
 export class UserFacade {
 	constructor(private readonly userUC: UserUC) {}
 
-	async resolveUser(currentUser: ICurrentUser): Promise<ResolvedUser>{
+	async resolveUser(currentUser: ICurrentUser): Promise<ResolvedUser> {
 		const resolvedUser = await this.userUC.getUserWithPermissions(currentUser);
 		return resolvedUser;
 	}
