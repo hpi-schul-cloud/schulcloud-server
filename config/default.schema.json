@@ -567,10 +567,10 @@
 			"default": "sync_ldap",
 			"description": "Queue name for sync"
 		},
-		"MAIL_SEND_QUEUE_NAME" : {
+		"MAIL_SEND_EXCHANGE" : {
 			"type": "string",
-			"default": "mail_send",
-			"description": "Queue name for mail sending"
+			"default": "mail-drop",
+			"description": "Exchange name for mail sending"
 		},
 		"MEMORY_INTERVAL_TIME": {
 			"type": "integer",

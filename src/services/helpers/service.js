@@ -18,10 +18,11 @@ const checkForToken = (params, app) => {
 module.exports = function setup(app) {
 	class MailService {
 		encodeFiles(files = []) {
-			return files.map(({ content, filename }) => ({
+			return files.map(({ content, filename, mimetype }) => ({
+				mimeType: mimetype,
 				name: filename,
 				base64Content: content.toString('base64'),
-				contentDisposition: 'ATTACHMENT', // ToDo: support inline attachments
+				contentDisposition: 'ATTACHMENT',
 			}));
 		}
 
@@ -31,7 +32,7 @@ module.exports = function setup(app) {
 
 			const user = await checkForToken(params, app);
 
-			const { headers, email, replyEmail, subject, content, attachments } = data;
+			const { email, replyEmail, subject, content, attachments } = data;
 
 			const base64Attachments = this.encodeFiles(attachments);
 
@@ -44,13 +45,14 @@ module.exports = function setup(app) {
 				},
 				recipients: [user ? user.email : email],
 				from: SMTP_SENDER,
+				replyTo: [replyEmail],
 			};
 
 			// send mail with defined transport object in production mode
 			if (NODE_ENV === ENVIRONMENTS.PRODUCTION || FORCE_SEND_EMAIL) {
 				const nestApp = NestAppHolder.getInstance();
 				const mailService = nestApp.get(MailService);
-				mailService.send('testtest', mailContent);
+				mailService.send(mailContent);
 			}
 			// otherwise print email message object on console
 			return logger.debug('E-Mail Message not sent (not in production mode):', mailContent);

@@ -1,11 +1,15 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { Injectable } from '@nestjs/common';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+
+import { Configuration } from '@hpi-schul-cloud/commons';
+
+import { Mail } from './interfaces/mail';
 
 @Injectable()
 export class MailService {
-	constructor(@Inject('RABBITMQ_CLIENT') private readonly client: ClientProxy) {}
+	constructor(private readonly amqpConnection: AmqpConnection) {}
 
-	public send(pattern: string, data: any) {
-		return this.client.emit(pattern, data);
+	public async send(data: Mail) {
+		return this.amqpConnection.publish(Configuration.get('MAIL_SEND_EXCHANGE'), 'mail-drop', data);
 	}
 }

@@ -16,8 +16,4 @@ describe('MailService', () => {
 	it('should be defined', async () => {
 		expect(service).toBeDefined();
 	});
-
-	it('test', async () => {
-		await service.send('test', {hello: 'world'});
-	});
 });
