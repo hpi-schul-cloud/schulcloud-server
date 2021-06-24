@@ -54,13 +54,10 @@ describe('user repo', () => {
 			expect(result).toEqual(userA);
 		});
 
-		it('should throw an error if roles by id not exist', async () => {
+		it('should throw an error if roles by id doesnt exist', async () => {
 			const idA = new ObjectId().toHexString();
-			const idB = new ObjectId().toHexString();
-			const userA = em.create(User, { id: idA });
 
-			await em.persistAndFlush([userA]);
-			await expect(repo.findById(idB)).rejects.toThrow(NotFoundError);
+			await expect(repo.findById(idA)).rejects.toThrow(NotFoundError);
 		});
 	});
 });

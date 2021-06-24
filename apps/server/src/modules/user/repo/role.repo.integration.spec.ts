@@ -28,7 +28,7 @@ describe('role repo', () => {
 	});
 
 	describe('entity', () => {
-		it.skip('should fail for double creating a uniuqe role name.', async () => {
+		it.skip('should fail for double creating a unique role name.', async () => {
 			const nameA = `a${Date.now()}`;
 			const roleA1 = em.create(Role, { name: nameA });
 			await em.persistAndFlush([roleA1]);
@@ -37,7 +37,7 @@ describe('role repo', () => {
 			await expect(em.persistAndFlush([roleA2])).rejects.toThrow(ValidationError);
 		});
 
-		it.skip('should fail for double creating a uniuqe role name in same step', async () => {
+		it.skip('should fail for double creating a unique role name in same step', async () => {
 			const nameA = `a${Date.now()}`;
 			const roleA1 = em.create(Role, { name: nameA });
 			const roleA2 = em.create(Role, { name: nameA });
@@ -76,13 +76,10 @@ describe('role repo', () => {
 			expect(result).toEqual(roleA);
 		});
 
-		it('should throw an error if roles by name not exist', async () => {
+		it('should throw an error if roles by name doesnt exist', async () => {
 			const nameA = `a${Date.now()}`;
-			const nameB = `b${Date.now()}`;
-			const roleA = em.create(Role, { name: nameA });
 
-			await em.persistAndFlush([roleA]);
-			await expect(repo.findByName(nameB)).rejects.toThrow(NotFoundError);
+			await expect(repo.findByName(nameA)).rejects.toThrow(NotFoundError);
 		});
 
 		it('should cache requested roles by name', async () => {
@@ -95,7 +92,7 @@ describe('role repo', () => {
 			expect(repo.cl1.get(nameA)).toEqual(roleA);
 		});
 
-		it('should select already cached roles instant of db call', async () => {
+		it('should select already cached roles instead of db call', async () => {
 			const nameA = `a${Date.now()}`;
 			const roleA = em.create(Role, { name: nameA });
 			const spy = jest.spyOn(repo.cl1, 'get');
@@ -137,7 +134,7 @@ describe('role repo', () => {
 			expect(result).toEqual(roleA);
 		});
 
-		it('should throw an error if roles by id not exist', async () => {
+		it('should throw an error if roles by id doesnt exist', async () => {
 			const idA = new ObjectId().toHexString();
 			const idB = new ObjectId().toHexString();
 			const roleA = em.create(Role, { id: idA });
@@ -156,7 +153,7 @@ describe('role repo', () => {
 			expect(repo.cl1.get(idA)).toEqual(roleA);
 		});
 
-		it('should select already cached roles instant of db call', async () => {
+		it('should select already cached roles instead of db call', async () => {
 			const idA = new ObjectId().toHexString();
 			const roleA = em.create(Role, { id: idA });
 			const spy = jest.spyOn(repo.cl1, 'get');
@@ -199,13 +196,10 @@ describe('role repo', () => {
 			expect(result).toEqual(roleA);
 		});
 
-		it('should throw an error if roles by name not exist', async () => {
+		it('should throw an error if roles by name doesnt exist', async () => {
 			const idA = new ObjectId().toHexString();
-			const idB = new ObjectId().toHexString();
-			const roleA = em.create(Role, { id: idA });
 
-			await em.persistAndFlush([roleA]);
-			await expect(repo.resolvePermissionsById(idB)).rejects.toThrow(NotFoundError);
+			await expect(repo.resolvePermissionsById(idA)).rejects.toThrow(NotFoundError);
 		});
 
 		it('should resolve permissions of existing subroles', async () => {
@@ -244,7 +238,7 @@ describe('role repo', () => {
 			expect(repo.cl2.get(idB)).toBeInstanceOf(Role);
 		});
 
-		it('should select already cached roles instant of db call', async () => {
+		it('should select already cached roles instead of db call', async () => {
 			const idA = new ObjectId().toHexString();
 			const idB = new ObjectId().toHexString();
 
