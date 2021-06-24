@@ -3,7 +3,7 @@ import { Role } from '../entity';
 import { RoleRepo } from '../repo';
 import { RoleUC } from './role.uc';
 
-describe('TaskService', () => {
+describe('RoleUC', () => {
 	let service: RoleUC;
 	let repo: RoleRepo;
 

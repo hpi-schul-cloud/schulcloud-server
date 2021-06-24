@@ -30,7 +30,7 @@ const createCurrentTestUser = (
 	return { currentUser, user, roles };
 };
 
-describe('TaskService', () => {
+describe('UserUC', () => {
 	let service: UserUC;
 	let roleUC: RoleUC;
 	let repo: UserRepo;
