@@ -31,4 +31,6 @@ describe('TaskController', () => {
 	it('should be defined', () => {
 		expect(controller).toBeDefined();
 	});
+
+	// TODO: test autentication for each endpoint and method
 });
