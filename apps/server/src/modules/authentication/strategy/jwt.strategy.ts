@@ -3,11 +3,11 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { jwtConstants } from '../constants';
 import { JwtPayload } from '../interface/jwt-payload';
-import { UserUC } from '../../user/uc';
+import { UserFacade } from '../../user';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-	constructor(private readonly userUC: UserUC) {
+	constructor(private readonly userFacade: UserFacade) {
 		super({
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 			ignoreExpiration: false,
@@ -21,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		// TODO: use user module for:
 		// TODO: --> check user exist/is active
 		// TODO: --> populate roles>permissions
-		const resolvedUser = await this.userUC.getUserWithPermissions(payload);
+		const resolvedUser = await this.userFacade.resolveUser(payload);
 		payload.user = resolvedUser;
 		return payload;
 	}
