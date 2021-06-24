@@ -14,7 +14,6 @@ export class UserController {
 
 	@Get('me')
 	async get(@CurrentUser() currentUser: ICurrentUser): Promise<ResolvedUser> {
-		const resolvedUser = currentUser.user as ResolvedUser;
-		return Promise.resolve(resolvedUser);
+		return Promise.resolve(currentUser.user);
 	}
 }
