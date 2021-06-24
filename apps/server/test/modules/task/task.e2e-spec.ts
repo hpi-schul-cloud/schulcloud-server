@@ -5,7 +5,7 @@ import { Request } from 'express';
 import { MikroORM } from '@mikro-orm/core';
 import { ServerModule } from '../../../src/server.module';
 import { JwtAuthGuard } from '../../../src/modules/authentication/guard/jwt-auth.guard';
-import { ICurrentUser } from '../../../src/modules/authentication/interface/jwt-payload';
+import { createCurrentTestUser } from '../../../src/modules/user/utils';
 
 describe('Task Controller (e2e)', () => {
 	let app: INestApplication;
@@ -19,13 +19,8 @@ describe('Task Controller (e2e)', () => {
 			.useValue({
 				canActivate(context: ExecutionContext) {
 					const req: Request = context.switchToHttp().getRequest();
-					const user: ICurrentUser = {
-						userId: '0000d224816abba584714c9c',
-						roles: [],
-						schoolId: '5f2987e020834114b8efd6f8',
-						accountId: '0000d225816abba584714c9d',
-					};
-					req.user = user;
+					const { currentUser } = createCurrentTestUser();
+					req.user = currentUser;
 					return true;
 				},
 			})
