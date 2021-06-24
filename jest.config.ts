@@ -35,6 +35,6 @@ const config: Config.InitialOptions = {
 		// add ts-config path's here as regex
 		'^@shared/(.*)$': '<rootDir>/apps/server/src/shared/$1',
 		'^@src/(.*)$': '<rootDir>/apps/server/src/$1',
-	},
+	}
 };
 export default config;
