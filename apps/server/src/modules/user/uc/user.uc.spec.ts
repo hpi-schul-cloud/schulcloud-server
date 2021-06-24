@@ -33,7 +33,7 @@ const createCurrentTestUser = (
 describe('TaskService', () => {
 	let service: UserUC;
 	let roleUC: RoleUC;
-	let userRepo: UserRepo;
+	let repo: UserRepo;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -58,7 +58,7 @@ describe('TaskService', () => {
 
 		service = module.get(UserUC);
 		roleUC = module.get(RoleUC);
-		userRepo = module.get(UserRepo);
+		repo = module.get(UserRepo);
 	});
 
 	it('should be defined', () => {
@@ -66,7 +66,7 @@ describe('TaskService', () => {
 	});
 
 	describe('getUserWithPermissions', () => {
-		it('should return task with statistics', async () => {
+		it('should return valid solved and mapped typ', async () => {
 			const permissions = ['A', 'B'] as string[];
 			const { currentUser, user, roles } = createCurrentTestUser(permissions);
 
@@ -75,7 +75,7 @@ describe('TaskService', () => {
 				return Promise.resolve(result);
 			});
 
-			const userRepoSpy = jest.spyOn(userRepo, 'findById').mockImplementation(() => {
+			const userRepoSpy = jest.spyOn(repo, 'findById').mockImplementation(() => {
 				return Promise.resolve(user);
 			});
 

@@ -7,6 +7,11 @@ export interface IRoleProperties {
 	name: string;
 }
 
+export type IPermissionsAndRoles = {
+	permissions: string[];
+	roles: Role[];
+};
+
 @Entity({ tableName: 'roles' })
 export class Role extends BaseEntityWithTimestamps {
 	@Property()
@@ -36,8 +41,3 @@ export class Role extends BaseEntityWithTimestamps {
 		// Object.assign(this, { roles: props.roles });
 	}
 }
-
-export type IPermissionsAndRoles = {
-	permissions: string[];
-	roles: Role[];
-};
