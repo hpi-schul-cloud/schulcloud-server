@@ -1,9 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationQuery } from '@shared/controller/dto/pagination.query';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { Collection, wrap } from '@mikro-orm/core';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { FileTaskInfo, Submission, Task, UserTaskInfo, CourseTaskInfo } from '../entity';
+import { Submission, Task, UserTaskInfo, CourseTaskInfo } from '../entity';
 import { SubmissionRepo } from '../repo/submission.repo';
 import { Counted } from '../../../shared/domain';
 import { TaskRepo } from '../repo/task.repo';
