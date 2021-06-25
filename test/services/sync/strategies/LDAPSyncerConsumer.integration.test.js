@@ -228,16 +228,61 @@ describe('Ldap Syncer Consumer Integration', () => {
 			expect(foundUser.firstName).to.be.equal(updatedFirstName);
 			expect(foundUser.lastName).to.be.equal(updatedLastName);
 		});
+
+		it('should not create user if the school is in maintenance mode', async () => {
+			const system = await testObjects.createTestSystem();
+			const oneDayinMilliseconds = 24 * 60 * 60 * 1000;
+			const inMaintenanceSince = Date.now() - oneDayinMilliseconds;
+			const school = await testObjects.createTestSchool({
+				ldapSchoolIdentifier: ldapSchoolIDn,
+				systems: [system._id],
+				inMaintenanceSince,
+			});
+
+			const contentData = {
+				action: 'syncUser',
+				syncId: '6082d22395baca4f64ef0a1f',
+				data: {
+					user: {
+						firstName: 'test first',
+						lastName: 'test last',
+						systemId: system._id.toString(),
+						schoolDn: school.ldapSchoolIdentifier,
+						email: `test${Date.now()}@example.com`,
+						ldapDn: ldapUserDn,
+						ldapId: 'LDAP_USER_ID',
+						roles: ['student'],
+					},
+					account: {
+						ldapDn: ldapUserDn,
+						ldapId: 'LDAP_USER_ID',
+						username: accountUserName,
+						systemId: system._id.toString(),
+						schoolDn: school.ldapSchoolIdentifier,
+						activated: true,
+					},
+				},
+			};
+
+			const userData = {
+				content: JSON.stringify(contentData),
+			};
+			await ldapConsumer.executeMessage(userData);
+
+			const foundUser = await userModel.findOne({ ldapDn: ldapUserDn }).lean().exec();
+			expect(foundUser).to.be.null;
+		});
 	});
 
 	describe('class messages', () => {
 		let system;
-		let school;
+
 		beforeEach(async () => {
 			system = await testObjects.createTestSystem();
-			school = await testObjects.createTestSchool({ ldapSchoolIdentifier: ldapSchoolIDn, systems: [system._id] });
 		});
+
 		it('should create class by the data', async () => {
+			const school = await testObjects.createTestSchool({ ldapSchoolIdentifier: ldapSchoolIDn, systems: [system._id] });
 			const className = 'test class';
 
 			const contentData = {
@@ -266,6 +311,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 		});
 
 		it('should update existing class by the data', async () => {
+			const school = await testObjects.createTestSchool({ ldapSchoolIdentifier: ldapSchoolIDn, systems: [system._id] });
 			const initialClassName = 'initial test class';
 
 			await testObjects.createTestClass({
@@ -302,6 +348,7 @@ describe('Ldap Syncer Consumer Integration', () => {
 		});
 
 		it('should create class with users by the data', async () => {
+			const school = await testObjects.createTestSchool({ ldapSchoolIdentifier: ldapSchoolIDn, systems: [system._id] });
 			const className = 'test class';
 			const ldapDns = ['user1', 'user2'];
 			const contentData = {
@@ -368,6 +415,37 @@ describe('Ldap Syncer Consumer Integration', () => {
 				content: JSON.stringify(contentData),
 			};
 			await expect(ldapConsumer.executeMessage(classData)).to.be.rejectedWith(SyncError);
+		});
+
+		it('should not create class when school is in maintenance mode', async () => {
+			const oneDayinMilliseconds = 24 * 60 * 60 * 1000;
+			const inMaintenanceSince = Date.now() - oneDayinMilliseconds;
+			const school = await testObjects.createTestSchool({
+				ldapSchoolIdentifier: ldapSchoolIDn,
+				systems: [system._id],
+				inMaintenanceSince,
+			});
+
+			const contentData = {
+				action: LDAP_SYNC_ACTIONS.SYNC_CLASSES,
+				syncId: '6082c4f2ba4aef3c5c4473fd',
+				data: {
+					class: {
+						name: 'test class',
+						systemId: system._id.toString(),
+						schoolDn: school.ldapSchoolIdentifier,
+						nameFormat: 'static',
+						ldapDN: ldapClassDn,
+					},
+				},
+			};
+			const classData = {
+				content: JSON.stringify(contentData),
+			};
+			await ldapConsumer.executeMessage(classData);
+
+			const foundClass = await classModel.findOne({ ldapDN: ldapClassDn }).lean().exec();
+			expect(foundClass).to.be.null;
 		});
 	});
 });
