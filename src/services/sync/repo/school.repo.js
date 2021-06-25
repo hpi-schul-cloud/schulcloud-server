@@ -20,7 +20,7 @@ const findSchoolByLdapIdAndSystem = async (ldapSchoolIdentifier, systems) =>
 			ldapSchoolIdentifier,
 			systems: { $in: systems },
 		})
-		.lean()
+		.lean({ virtuals: true })
 		.exec();
 
 const getYears = async () => yearModel.find().lean().exec();

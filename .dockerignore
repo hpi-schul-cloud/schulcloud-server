@@ -9,6 +9,5 @@ Dockerfile
 README.md
 compose-server-test.dummy
 deploy.sh
-node_modules
 test
 travis*

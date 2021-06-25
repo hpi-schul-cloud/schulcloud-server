@@ -9,15 +9,28 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.5.0] - 2021-06-28
+
 ### Added
 
-- SC-9018; SC-9003 - created schoolsList public endpoint, and jwt secured /schools endpoint
-- SC-9092 - delete S3 files after 7 days from user deletion
-- SC-8959 - Add messenger to deletion concept
+- SC-9431 - add teacher view to task/open, solving permissions after authenticate and add v3/user/me route.
 
-### Changed 
+### Changed
 
+- OPS-2466 - changes build pipeline to github actions
 - SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
+
+## [26.4.6] - 2021-06-24
+
+### Changed
+
+- OPS-2466 - changes build pipeline to github actions
+
+## [26.4.5] - 2021-06-21
+
+### Added 
+
+- SC-9156 - Add maintenance mode for LDAP rewrite
 
 ## [26.4.4] - 2021-06-16
 
