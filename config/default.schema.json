@@ -6,11 +6,6 @@
 		"$schema": {
 			"type": "string"
 		},
-        "MAMUT_RULZ": {
-			"type": "string",
-			"default": "example",
-            "description": "Mamut Ruls"
-        },
 		"CLIENT_API_KEY": {
 			"type": "string",
 			"default": "example",
