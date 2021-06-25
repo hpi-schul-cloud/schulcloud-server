@@ -210,6 +210,16 @@
 					"default": false,
 					"description": "If enabled, school admins can allow students to create additional chat rooms"
 				},
+				"SCHOOL_SETTINGS_VISIBLE": {
+					"type": "boolean",
+					"default": false,
+					"description": "Only if enabled, school admins can activate the messenger in their school setting"
+				},
+				"SCHOOL_ROOM_ENABLED": {
+					"type": "boolean",
+					"default": false,
+					"description": "If enabled, school admins can choose to create a room for all students and teachers of the school"
+				},
 				"WELCOME_MESSAGE_ADMIN": {
 					"type": "string",
 					"description": "Greet new admin users with a personal message from the sync bot"
