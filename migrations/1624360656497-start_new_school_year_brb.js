@@ -34,20 +34,25 @@ const federalStateNames = ['Brandenburg'];
 
 module.exports = {
 	up: async function up() {
-		info('Setting up maintenance mode for schools');
+		if (process.env.SC_THEME !== 'brb') {
+			info('This migration will apply changes only if SC_THEME=brb');
+			Promise.resolve('this migration will apply changes only if SC_THEME=brb');
+			return;
+		}
+
 		await connect();
 
 		const nextSchoolYearId = await YearModel.findOne({ name: '2021/22' }).select('_id').lean().exec();
-		info('Fetch related federal states');
+
 		const federalStates = await federalStateModel
 			.find({ name: { $in: federalStateNames } })
 			.select('_id name')
 			.lean()
 			.exec();
 		const federalStateIds = federalStates.map((state) => state._id);
+		info(`Migrating schools in ${federalStateIds.length} federalstates (${federalStateNames.toString()})`);
 
-		info(`Migrating schools in ${federalStateIds.length}: ${federalStateIds}...`);
-
+		info('Setting up Maintenance mode for LDAP schools');
 		const resultLdapSchools = await School.updateMany(
 			{
 				federalState: { $in: federalStateIds },
@@ -55,7 +60,7 @@ module.exports = {
 			},
 			{ inMaintenanceSince: DATE_CLUSTER }
 		).exec();
-		info(`Migration result of LDAP Schools: ${resultLdapSchools.nModified} schools updated`);
+		info(`LDAP Schools set in Maintenance mode: ${resultLdapSchools.nModified} schools updated`);
 
 		const resultNonLdapSchools = await School.updateMany(
 			{
@@ -64,20 +69,28 @@ module.exports = {
 			},
 			{ currentYear: nextSchoolYearId._id }
 		).exec();
-		info(`Migration result of Non-LDAP Schools in: ${resultNonLdapSchools.nModified} schools updated`);
+		info(`Non-LDAP Schools changed year: ${resultNonLdapSchools.nModified} schools updated`);
 
 		await close();
 	},
 
 	down: async function down() {
+		if (process.env.SC_THEME !== 'brb') {
+			info('This migration will apply changes only if SC_THEME=brb');
+			Promise.resolve('This migration will apply changes only if SC_THEME=brb');
+			return;
+		}
+
 		await connect();
-		info('Disabling Maintenance mode for related schools');
+
 		const federalStates = await federalStateModel
 			.find({ name: { $in: federalStateNames } })
 			.select('_id')
 			.lean()
 			.exec();
 		const federalStateIds = federalStates.map((state) => state._id);
+
+		info('Disabling Maintenance mode for related LDAP schools');
 		const schools = await School.updateMany(
 			{
 				federalState: { $in: federalStateIds },
