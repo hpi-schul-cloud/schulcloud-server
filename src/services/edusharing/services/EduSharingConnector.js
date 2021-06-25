@@ -222,7 +222,10 @@ class EduSharingConnector {
 		}
 
 		// Private: from its own state, public: from all states
-		const groups = [...countyGroups, ...instancePermissions.privateGroups, ...instancePermissions.publicGroups];
+		const groups = [
+			...(countyGroups.length > 0 ? countyGroups : instancePermissions.privateGroups),
+			...instancePermissions.publicGroups,
+		];
 
 		const criterias = [];
 		if (groups.length) {
