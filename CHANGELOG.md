@@ -21,6 +21,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - remove unneccesary timeout definitions from tests and avoid promise chains
 - SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
 
+### Fixed
+
+- SC-9170 - let superhero delete other users
+
 ## [26.4.4] - 2021-06-16
 
 ### Change

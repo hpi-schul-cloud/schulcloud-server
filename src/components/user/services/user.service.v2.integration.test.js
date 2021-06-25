@@ -24,8 +24,8 @@ describe('user service v2', function test() {
 		await server.close();
 	});
 
-	const getAdminToken = async (schoolId = undefined) => {
-		const adminUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+	const getAuthToken = async (schoolId = undefined, role = 'administrator') => {
+		const adminUser = await testObjects.createTestUser({ roles: [role], schoolId });
 		const credentials = { username: adminUser.email, password: `${Date.now()}` };
 		await testObjects.createTestAccount(credentials, 'local', adminUser);
 		const token = await testObjects.generateJWT(credentials);
@@ -55,7 +55,55 @@ describe('user service v2', function test() {
 				it('When an admin deletes a student, then it succeeds', async () => {
 					const { _id: schoolId } = await testObjects.createTestSchool();
 					const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
-					const token = await getAdminToken(schoolId);
+					const token = await getAuthToken(schoolId);
+					const request = chai
+						.request(app)
+						.delete(`/users/v2/admin/student/${user._id.toString()}`)
+						.set('Accept', 'application/json')
+						.set('Authorization', token)
+						.set('Content-type', 'application/json');
+					const response = await request.send();
+					expect(response.status).to.equal(204);
+				});
+
+				it('When a superhero deletes a student, then it succeeds', async () => {
+					const { _id: schoolId } = await testObjects.createTestSchool();
+					const { _id: schoolId2 } = await testObjects.createTestSchool();
+
+					const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
+					const token = await getAuthToken(schoolId2, 'superhero');
+					const request = chai
+						.request(app)
+						.delete(`/users/v2/admin/student/${user._id.toString()}`)
+						.set('Accept', 'application/json')
+						.set('Authorization', token)
+						.set('Content-type', 'application/json');
+					const response = await request.send();
+					expect(response.status).to.equal(204);
+				});
+
+				it('When a superhero deletes a teacher, then it succeeds', async () => {
+					const { _id: schoolId } = await testObjects.createTestSchool();
+					const { _id: schoolId2 } = await testObjects.createTestSchool();
+
+					const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+					const token = await getAuthToken(schoolId2, 'superhero');
+					const request = chai
+						.request(app)
+						.delete(`/users/v2/admin/student/${user._id.toString()}`)
+						.set('Accept', 'application/json')
+						.set('Authorization', token)
+						.set('Content-type', 'application/json');
+					const response = await request.send();
+					expect(response.status).to.equal(204);
+				});
+
+				it('When a superhero deletes an admin, then it succeeds', async () => {
+					const { _id: schoolId } = await testObjects.createTestSchool();
+					const { _id: schoolId2 } = await testObjects.createTestSchool();
+
+					const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+					const token = await getAuthToken(schoolId2, 'superhero');
 					const request = chai
 						.request(app)
 						.delete(`/users/v2/admin/student/${user._id.toString()}`)
@@ -69,7 +117,7 @@ describe('user service v2', function test() {
 				it('When an admin deletes a teacher, then it succeeds', async () => {
 					const { _id: schoolId } = await testObjects.createTestSchool();
 					const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-					const token = await getAdminToken(schoolId);
+					const token = await getAuthToken(schoolId);
 					const request = chai
 						.request(app)
 						.delete(`/users/v2/admin/teacher/${user._id.toString()}`)
@@ -78,6 +126,22 @@ describe('user service v2', function test() {
 						.set('Content-type', 'application/json');
 					const response = await request.send();
 					expect(response.status).to.equal(204);
+				});
+
+				it('when an admin deletes another admin, then it throws Forbidden', async () => {
+					const { _id: schoolId } = await testObjects.createTestSchool();
+					// const params = await testObjects.generateRequestParamsFromUser(admin);
+					const admin1 = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+					const admin2 = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+					const token = await testObjects.generateJWTFromUser(admin1);
+					const request = chai
+						.request(app)
+						.delete(`/users/v2/admin/student/${admin2._id.toString()}`)
+						.set('Accept', 'application/json')
+						.set('Authorization', token)
+						.set('Content-type', 'application/json');
+					const response = await request.send();
+					expect(response.status).to.equal(403);
 				});
 
 				it('when a teacher deletes a student, then it throws Forbidden', async () => {
@@ -99,7 +163,7 @@ describe('user service v2', function test() {
 				it('when an admin deletes a non-existing user, then it throws Not-Found', async () => {
 					const { _id: schoolId } = await testObjects.createTestSchool();
 					const notFoundId = ObjectId();
-					const token = await getAdminToken(schoolId);
+					const token = await getAuthToken(schoolId);
 					const request = chai
 						.request(app)
 						.delete(`/users/v2/admin/student/${notFoundId.toString()}`)
@@ -114,7 +178,7 @@ describe('user service v2', function test() {
 					const { _id: schoolId } = await testObjects.createTestSchool();
 					const { _id: otherSchoolId } = await testObjects.createTestSchool();
 					const user = await testObjects.createTestUser({ roles: ['student'], schoolId });
-					const token = await getAdminToken(otherSchoolId);
+					const token = await getAuthToken(otherSchoolId);
 					const request = chai
 						.request(app)
 						.delete(`/users/v2/admin/student/${user._id.toString()}`)
@@ -177,7 +241,7 @@ describe('user service v2', function test() {
 					const user1 = await testObjects.createTestUser({ roles: ['student'], schoolId });
 					const user2 = await testObjects.createTestUser({ roles: ['student'], schoolId });
 					const user3 = await testObjects.createTestUser({ roles: ['student'], schoolId });
-					const token = await getAdminToken(schoolId);
+					const token = await getAuthToken(schoolId);
 					const request = chai
 						.request(app)
 						.delete(`/users/v2/admin/student`)
@@ -194,7 +258,7 @@ describe('user service v2', function test() {
 					const user1 = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 					const user2 = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 					const user3 = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-					const token = await getAdminToken(schoolId);
+					const token = await getAuthToken(schoolId);
 					const request = chai
 						.request(app)
 						.delete(`/users/v2/admin/teacher`)
@@ -229,7 +293,7 @@ describe('user service v2', function test() {
 					const notFoundId = ObjectId();
 					const user1 = await testObjects.createTestUser({ roles: ['student'], schoolId });
 					const user2 = await testObjects.createTestUser({ roles: ['student'], schoolId });
-					const token = await getAdminToken(schoolId);
+					const token = await getAuthToken(schoolId);
 					const request = chai
 						.request(app)
 						.delete(`/users/v2/admin/student`)
@@ -247,7 +311,7 @@ describe('user service v2', function test() {
 					const user1 = await testObjects.createTestUser({ roles: ['student'], schoolId });
 					const user2 = await testObjects.createTestUser({ roles: ['student'], otherSchoolId });
 					const user3 = await testObjects.createTestUser({ roles: ['student'], schoolId });
-					const token = await getAdminToken(schoolId);
+					const token = await getAuthToken(schoolId);
 					const request = chai
 						.request(app)
 						.delete(`/users/v2/admin/student`)
@@ -303,7 +367,7 @@ describe('user service v2', function test() {
 
 				it('When an admin deletes an empty list of students, then it throws Invalid', async () => {
 					const { _id: schoolId } = await testObjects.createTestSchool();
-					const token = await getAdminToken(schoolId);
+					const token = await getAuthToken(schoolId);
 					const request = chai
 						.request(app)
 						.delete(`/users/v2/admin/student`)
@@ -317,7 +381,7 @@ describe('user service v2', function test() {
 
 				it('When an admin deletes an empty list of teachers, then it throws Invalid', async () => {
 					const { _id: schoolId } = await testObjects.createTestSchool();
-					const token = await getAdminToken(schoolId);
+					const token = await getAuthToken(schoolId);
 					const request = chai
 						.request(app)
 						.delete(`/users/v2/admin/teacher`)
@@ -334,7 +398,7 @@ describe('user service v2', function test() {
 					const users = await Promise.all(
 						[...Array(110)].map(() => testObjects.createTestUser({ roles: ['student'], schoolId }))
 					);
-					const token = await getAdminToken(schoolId);
+					const token = await getAuthToken(schoolId);
 					const request = chai
 						.request(app)
 						.delete(`/users/v2/admin/student`)
@@ -351,7 +415,7 @@ describe('user service v2', function test() {
 					const users = await Promise.all(
 						[...Array(110)].map(() => testObjects.createTestUser({ roles: ['teacher'], schoolId }))
 					);
-					const token = await getAdminToken(schoolId);
+					const token = await getAuthToken(schoolId);
 					const request = chai
 						.request(app)
 						.delete(`/users/v2/admin/teacher`)
@@ -368,7 +432,7 @@ describe('user service v2', function test() {
 					const user1 = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 					const user2 = await testObjects.createTestUser({ roles: ['student'], schoolId });
 					const user3 = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-					const token = await getAdminToken(schoolId);
+					const token = await getAuthToken(schoolId);
 					const request = chai
 						.request(app)
 						.delete(`/users/v2/admin/teacher`)
@@ -385,7 +449,7 @@ describe('user service v2', function test() {
 					const user1 = await testObjects.createTestUser({ roles: ['student'], schoolId });
 					const user2 = await testObjects.createTestUser({ roles: ['student'], schoolId });
 					const user3 = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-					const token = await getAdminToken(schoolId);
+					const token = await getAuthToken(schoolId);
 					const request = chai
 						.request(app)
 						.delete(`/users/v2/admin/student`)

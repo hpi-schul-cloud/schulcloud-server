@@ -85,12 +85,15 @@ const replaceUserWithTombstone = async (user) => {
 	return { success: true };
 };
 
+const isSuperhero = (currentUser) => currentUser.roles.some((role) => role.name === 'superhero');
+
 const checkPermissionsInternal = (affectedUser, roleName, permissionAction, currentUser) => {
 	let grantPermission = true;
 	// the effected user's role fits the rolename for the route
 	grantPermission = grantPermission && affectedUser.roles.some((role) => role.name.toUpperCase() === roleName);
 	// users must be on same school
-	grantPermission = grantPermission && equalIds(affectedUser.schoolId, currentUser.schoolId);
+	grantPermission =
+		grantPermission && (equalIds(affectedUser.schoolId, currentUser.schoolId) || isSuperhero(currentUser));
 
 	// current user must have the permission
 	affectedUser.roles.forEach((userRoleToBeAffected) => {
@@ -109,7 +112,7 @@ const checkPermissionsInternal = (affectedUser, roleName, permissionAction, curr
 				);
 		}
 		if (userRoleToBeAffected.name === 'administrator') {
-			grantPermission = grantPermission && currentUser.roles.some((role) => role.name === 'superhero');
+			grantPermission = grantPermission && isSuperhero(currentUser);
 		}
 	});
 
