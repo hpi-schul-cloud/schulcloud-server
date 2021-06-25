@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-db-init-file
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: rocketchat
+data:
+  update.sh: |
+    #!/bin/bash
+    git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
+    cd /schulcloud-server
+    for file in /schulcloud-server/backup/setup/*
+    do
+        mongoimport --uri "$DATABASE__URL" ${file} --jsonArray --drop
+    done
