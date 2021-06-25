@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 const chai = require('chai');
-const { checkPermissions } = require('./uc.helper');
+const { ObjectId } = require('mongoose').Types;
+const { checkPermissions, grantPermissionsForSchool } = require('./uc.helper');
 
 const { expect } = chai;
 
@@ -102,9 +103,7 @@ describe('uc.helper', () => {
 					},
 				],
 			};
-			expect(() => checkPermissions(user, schoolId, permissionToCheck, 'XOR')).to.throw(
-				`ASSERTION_ERROR`
-			);
+			expect(() => checkPermissions(user, schoolId, permissionToCheck, 'XOR')).to.throw(`ASSERTION_ERROR`);
 		});
 		it('should return true for valid multiple need permissions in one role', () => {
 			const schoolId = 'dummySchoolId123';
@@ -171,6 +170,44 @@ describe('uc.helper', () => {
 				],
 			};
 			expect(() => checkPermissions(user, schoolId, permissionToCheck, 'OR')).to.not.throw;
+		});
+	});
+
+	describe('grantPermissionsForSchool', () => {
+		it('should grant permissions for school if current user has the same school as affected user', async () => {
+			const schoolId = new ObjectId();
+			const user = {
+				schoolId,
+			};
+			expect(grantPermissionsForSchool(user, schoolId)).to.be.true;
+		});
+
+		it('should grant permissions for school if current user has the role superhero', async () => {
+			const schoolId = new ObjectId();
+			const user = {
+				schoolId,
+				roles: [
+					{
+						name: 'superhero',
+					},
+				],
+			};
+			expect(grantPermissionsForSchool(user, schoolId)).to.be.true;
+		});
+
+		it('should grant permissions for school if current user has the role superhero', async () => {
+			const schoolId = new ObjectId();
+			const anotherSchool = new ObjectId();
+
+			const user = {
+				schoolId,
+				roles: [
+					{
+						name: 'administrator',
+					},
+				],
+			};
+			expect(grantPermissionsForSchool(user, anotherSchool)).to.be.false;
 		});
 	});
 });

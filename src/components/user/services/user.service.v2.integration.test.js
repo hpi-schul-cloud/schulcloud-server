@@ -7,7 +7,7 @@ const testObjects = require('../../../../test/services/helpers/testObjects')(app
 chai.use(chaiHttp);
 const { expect } = chai;
 
-describe('user service v2', function test() {
+describe('user service v2', () => {
 	let app;
 	let server;
 	let accountModelService;
@@ -90,23 +90,7 @@ describe('user service v2', function test() {
 					const token = await getAuthToken(schoolId2, 'superhero');
 					const request = chai
 						.request(app)
-						.delete(`/users/v2/admin/student/${user._id.toString()}`)
-						.set('Accept', 'application/json')
-						.set('Authorization', token)
-						.set('Content-type', 'application/json');
-					const response = await request.send();
-					expect(response.status).to.equal(204);
-				});
-
-				it('When a superhero deletes an admin, then it succeeds', async () => {
-					const { _id: schoolId } = await testObjects.createTestSchool();
-					const { _id: schoolId2 } = await testObjects.createTestSchool();
-
-					const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
-					const token = await getAuthToken(schoolId2, 'superhero');
-					const request = chai
-						.request(app)
-						.delete(`/users/v2/admin/student/${user._id.toString()}`)
+						.delete(`/users/v2/admin/teacher/${user._id.toString()}`)
 						.set('Accept', 'application/json')
 						.set('Authorization', token)
 						.set('Content-type', 'application/json');
