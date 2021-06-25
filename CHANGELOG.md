@@ -13,11 +13,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
-- SC-9431 - add teacher view to task/open, solving permissions after authenticate and add v3/user/me route.
+- SC-9431 - add teacher view to task/open over permission TASK_DASHBOARD_VIEW_V3, solving permissions after authenticate and add v3/user/me route.
 
 ### Changed
 
-- OPS-2466 - changes build pipeline to github actions
 - SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
 
 ## [26.4.6] - 2021-06-24
