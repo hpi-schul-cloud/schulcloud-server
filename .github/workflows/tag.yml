@@ -63,4 +63,5 @@ jobs:
         uses: akhilerm/tag-push-action@v1.0.0
         with:
           src: ghcr.io/${{ github.repository }}:${{ github.sha }}
-          dst: ${{ steps.docker_meta_img_hub.outputs.tags }}
+          dst: |
+            ${{ steps.docker_meta_img_hub.outputs.tags }}
