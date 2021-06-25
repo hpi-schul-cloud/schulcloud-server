@@ -34,9 +34,9 @@ const federalStateNames = ['Brandenburg'];
 
 module.exports = {
 	up: async function up() {
+		// eslint-disable-next-line no-process-env
 		if (process.env.SC_THEME !== 'brb') {
 			info('This migration will apply changes only if SC_THEME=brb');
-			Promise.resolve('this migration will apply changes only if SC_THEME=brb');
 			return;
 		}
 
@@ -75,9 +75,9 @@ module.exports = {
 	},
 
 	down: async function down() {
+		// eslint-disable-next-line no-process-env
 		if (process.env.SC_THEME !== 'brb') {
 			info('This migration will apply changes only if SC_THEME=brb');
-			Promise.resolve('This migration will apply changes only if SC_THEME=brb');
 			return;
 		}
 
