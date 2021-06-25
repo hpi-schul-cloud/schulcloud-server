@@ -11,6 +11,11 @@ import { TaskResponse } from '../controller/dto';
 // TODO: add time filter filter in uc
 @Injectable()
 export class TaskUC {
+	permissions = {
+		teacherDashboard: 'TASK_DASHBOARD_TEACHER_VIEW_V3',
+		studentDashboard: 'TASK_DASHBOARD_VIEW_V3',
+	};
+
 	constructor(private taskRepo: TaskRepo, private submissionRepo: SubmissionRepo) {}
 
 	// TODO: move into seperate UC
@@ -45,13 +50,14 @@ export class TaskUC {
 	};
 
 	// TODO by Students
-	async findAllOpenForUser(userId: EntityId, pagination: IPagination): Promise<Counted<Task[]>> {
+	async findAllOpenForUser(userId: EntityId, pagination: IPagination): Promise<Counted<TaskResponse[]>> {
 		// TODO authorization (user conditions -> permissions?)
 		// TODO get permitted tasks...
 		// TODO have BL from repo here
 
 		const [tasks, total] = await this.taskRepo.findAllOpenByStudent(userId, pagination);
-		return [tasks, total];
+		const computedTasks = tasks.map((task) => TaskMapper.mapToResponse(task));
+		return [computedTasks, total];
 	}
 
 	async findAllOpenByTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskResponse[]>> {
@@ -66,22 +72,17 @@ export class TaskUC {
 	}
 
 	async findAllOpen(currentUser: ICurrentUser, pagination: IPagination): Promise<Counted<TaskResponse[]>> {
-		// TODO: get permissions
-		const { roles } = currentUser;
-		const { userId } = currentUser;
-		const permissions = [''] as string[];
-		if (!permissions.includes('TASK_DASHBOARD_TEACHER_VIEW_V3') && !permissions.includes('TASK_DASHBOARD_VIEW_V3')) {
-			throw new UnauthorizedException();
-			// return [[], 0];
-		}
+		const {
+			user: { id, permissions },
+		} = currentUser;
 
 		let response: Counted<TaskResponse[]>;
-		if (permissions.includes('TASK_DASHBOARD_TEACHER_VIEW_V3')) {
-			response = await this.findAllOpenByTeacher(userId, pagination);
+		if (permissions.includes(this.permissions.teacherDashboard)) {
+			response = await this.findAllOpenByTeacher(id, pagination);
+		} else if (permissions.includes(this.permissions.studentDashboard)) {
+			response = await this.findAllOpenForUser(id, pagination);
 		} else {
-			const [tasks, total] = await this.findAllOpenForUser(userId, pagination);
-			const computedTasks = tasks.map((task) => TaskMapper.mapToResponse(task));
-			response = [computedTasks, total];
+			throw new UnauthorizedException();
 		}
 
 		return response;

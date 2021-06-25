@@ -6,7 +6,6 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { ICurrentUser } from '../../authentication/interface/jwt-payload';
 import { TaskUC } from '../uc/task.uc';
-import { TaskMapper } from '../mapper/task.mapper';
 
 import { TaskResponse } from './dto';
 
@@ -24,10 +23,9 @@ export class TaskController {
 		@Query() paginationQuery: PaginationQuery
 	): Promise<PaginationResponse<TaskResponse[]>> {
 		// const [tasks, total] = await this.taskUc.findAllOpen(currentUser, paginationQuery);
-		const [tasks, total] = await this.taskUc.findAllOpenForUser(currentUser.userId, paginationQuery);
-		const tasksResponse = tasks.map((task) => TaskMapper.mapToResponse(task));
+		const [tasks, total] = await this.taskUc.findAllOpen(currentUser, paginationQuery);
 		const { skip, limit } = paginationQuery;
-		const result = new PaginationResponse(tasksResponse, total, skip, limit);
+		const result = new PaginationResponse(tasks, total, skip, limit);
 		return result;
 	}
 }
