@@ -6,6 +6,7 @@ on:
     branches-ignore:
       - main
       - master
+      - dependabot/*
 
 jobs:
   build_and_push:
