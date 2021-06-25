@@ -7,7 +7,7 @@ import { ServerModule } from '../../../src/server.module';
 import { JwtAuthGuard } from '../../../src/modules/authentication/guard/jwt-auth.guard';
 import { createCurrentTestUser } from '../../../src/modules/user/utils';
 
-describe('Task Controller (e2e)', () => {
+describe('User Controller (e2e)', () => {
 	let app: INestApplication;
 	let orm: MikroORM;
 
@@ -36,10 +36,10 @@ describe('Task Controller (e2e)', () => {
 		await orm.close();
 	});
 
-	it('[FIND] /task/dashboard', async () => {
-		const response = await request(app.getHttpServer()).get('/task/dashboard');
+	it('[GET] user/me', async () => {
+		const response = await request(app.getHttpServer()).get('/user/me');
 		expect(response.status === 200);
 	});
 
-	it.todo('more /task/dashboard test missing');
+	it.todo('more user/me test missing');
 });
