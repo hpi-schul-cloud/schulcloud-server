@@ -195,7 +195,7 @@ describe('uc.helper', () => {
 			expect(grantPermissionsForSchool(user, schoolId)).to.be.true;
 		});
 
-		it('should grant permissions for school if current user has the role superhero', async () => {
+		it('should not grant permissions for school current user and affected user are from different schools and the current user is not superhero', async () => {
 			const schoolId = new ObjectId();
 			const anotherSchool = new ObjectId();
 
