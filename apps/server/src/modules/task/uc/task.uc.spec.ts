@@ -41,6 +41,11 @@ describe('TaskService', () => {
 		expect(service).toBeDefined();
 	});
 
+	// TODO: make it sense to write test for it if we want combine student, teacher and open?
+	describe('findAllOpenForStudent', () => {});
+
+	describe('findAllOpen', () => {});
+
 	describe('findAllOpenByTeacher', () => {
 		it('should return task with statistics', async () => {
 			const findAllAssignedByTeacherSpy = jest.spyOn(taskRepo, 'findAllAssignedByTeacher').mockImplementation(() => {

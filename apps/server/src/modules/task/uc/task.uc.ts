@@ -18,7 +18,7 @@ export class TaskUC {
 
 	constructor(private taskRepo: TaskRepo, private submissionRepo: SubmissionRepo) {}
 
-	// TODO: move into seperate UC
+	// TODO: must move to other location, it is more a private methode but a part that must be tested seperatly
 	computeSubmissionMetadata = (taskSubmissions: Submission[], task: Task): ISubmissionStatus => {
 		const submittedUsers = new Set();
 		const gradedUsers = new Set();
@@ -49,8 +49,10 @@ export class TaskUC {
 		};
 	};
 
-	// TODO by Students
-	async findAllOpenForUser(userId: EntityId, pagination: IPagination): Promise<Counted<TaskResponse[]>> {
+	// TODO: Combine student and teacher logic if it is possible in next iterations
+	// TODO: Add for students in status -> student has finished, teacher has answered
+	// TODO: After it, the permission check can removed
+	async findAllOpenForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskResponse[]>> {
 		// TODO authorization (user conditions -> permissions?)
 		// TODO get permitted tasks...
 		// TODO have BL from repo here
@@ -80,7 +82,7 @@ export class TaskUC {
 		if (permissions.includes(this.permissions.teacherDashboard)) {
 			response = await this.findAllOpenByTeacher(id, pagination);
 		} else if (permissions.includes(this.permissions.studentDashboard)) {
-			response = await this.findAllOpenForUser(id, pagination);
+			response = await this.findAllOpenForStudent(id, pagination);
 		} else {
 			throw new UnauthorizedException();
 		}
