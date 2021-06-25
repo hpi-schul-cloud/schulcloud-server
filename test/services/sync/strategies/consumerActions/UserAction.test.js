@@ -104,5 +104,56 @@ describe('User Actions', () => {
 			findSchoolByLdapIdAndSystemStub.returns(null);
 			await expect(userAction.action({ class: { schoolDn: 'SCHOOL_DN', systemId: '' } })).to.be.rejectedWith(NotFound);
 		});
+
+		it('should not create user and account when school is in maintenance mode', async () => {
+			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test Schhol', inMaintenance: true });
+
+			const createUserSpy = sinon.spy(UserRepo, 'createUserAndAccount');
+
+			sinon.stub(UserRepo, 'findByLdapIdAndSchool').returns(null);
+
+			const testUserInput = {
+				_id: 1,
+				firstName: 'New fname',
+				lastName: 'New lname',
+				email: 'New email',
+				ldapDn: 'new ldapdn',
+				roles: [new ObjectId()],
+			};
+			const testAccountInput = { _id: 2 };
+			await userAction.action({ user: testUserInput, account: testAccountInput });
+
+			expect(createUserSpy.notCalled).to.be.true;
+		});
+
+		it('should not update user and account when school is in maintenance mode', async () => {
+			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			findSchoolByLdapIdAndSystemStub.returns({ name: 'Test School', inMaintenance: true });
+
+			const existingUser = {
+				_id: 1,
+				firstName: 'Old fname',
+				lastName: 'Old lname',
+				email: 'Old email',
+				ldapDn: 'Old ldapdn',
+			};
+			sinon.stub(UserRepo, 'findByLdapIdAndSchool').returns(existingUser);
+
+			const updateUserSpy = sinon.spy(UserRepo, 'updateUserAndAccount');
+
+			const testUserInput = {
+				_id: 1,
+				firstName: 'New fname',
+				lastName: 'New lname',
+				email: 'New email',
+				ldapDn: 'new ldapdn',
+				roles: [new ObjectId()],
+			};
+			const testAccountInput = { _id: 2 };
+			await userAction.action({ user: testUserInput, account: testAccountInput });
+
+			expect(updateUserSpy.notCalled).to.be.true;
+		});
 	});
 });
