@@ -391,6 +391,16 @@
 			"default": true,
 			"description": "Allows school admin to toggle student's LERNSTORE_VIEW permission."
 		},
+		"FEATURE_ADMIN_TOGGLE_STUDENT_VISIBILITY_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Allows school admin to toggle teacher's STUDENT_LIST permission."
+		},
+		"FEATURE_SCHOOL_POLICY_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Custom School Policy can be uploaded by the school admin "
+		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
 			"description": "Synchronous encryption key used to secure search user passwords",
