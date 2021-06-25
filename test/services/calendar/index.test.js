@@ -6,9 +6,7 @@ const mockery = require('mockery');
 
 const requestMock = require('./mock/mockResponses');
 
-describe('calendar service', function () {
-	this.timeout(20000); // for slow require(app) call
-
+describe('calendar service', () => {
 	let app = null;
 	let calendarService = null;
 
@@ -35,23 +33,22 @@ describe('calendar service', function () {
 		assert.ok(calendarService);
 	});
 
-	it('GET /calendar', () =>
-		calendarService
-			.find({
-				query: { all: true },
-				payload: { userId: '0000d231816abba584714c9e' },
-			})
-			.then((result) => {
-				expect(result.length).to.be.above(0);
-				expect(result[0].title).to.not.be.undefined;
-				expect(result[0].title).to.equal('tttttt');
-				expect(result[0].start).to.not.be.undefined;
-				expect(result[0].start).to.equal(1495224000000);
-				expect(result[0].end).to.not.be.undefined;
-				expect(result[0].end).to.equal(1495224000000);
-			}));
+	it('GET /calendar', async () => {
+		const result = await calendarService.find({
+			query: { all: true },
+			payload: { userId: '0000d231816abba584714c9e' },
+		});
 
-	it('POST /calendar', () => {
+		expect(result.length).to.be.above(0);
+		expect(result[0].title).to.not.be.undefined;
+		expect(result[0].title).to.equal('tttttt');
+		expect(result[0].start).to.not.be.undefined;
+		expect(result[0].start).to.equal(1495224000000);
+		expect(result[0].end).to.not.be.undefined;
+		expect(result[0].end).to.equal(1495224000000);
+	});
+
+	it('POST /calendar', async () => {
 		const postBody = {
 			summary: 'ttt',
 			location: 'Paul-Gerhardt-Gymnasium',
@@ -61,12 +58,11 @@ describe('calendar service', function () {
 			scopeId: '0000d231816abba584714c9e',
 		};
 
-		return calendarService.create(postBody, { payload: { userId: '0000d231816abba584714c9e' } }).then((result) => {
-			expect(result.length).to.be.above(0);
-		});
+		const result = await calendarService.create(postBody, { payload: { userId: '0000d231816abba584714c9e' } });
+		expect(result.length).to.be.above(0);
 	});
 
-	it('PUT /calendar', () => {
+	it('PUT /calendar', async () => {
 		const putBody = {
 			summary: 'ttt',
 			location: 'Paul-Gerhardt-Gymnasium',
@@ -76,15 +72,15 @@ describe('calendar service', function () {
 			scopeId: '0000d231816abba584714c9e',
 		};
 
-		return calendarService
-			.update('exampleId', putBody, { payload: { userId: '0000d231816abba584714c9e' } })
-			.then((result) => {
-				expect(result.length).to.be.above(0);
-			});
+		const result = await calendarService.update('exampleId', putBody, {
+			payload: { userId: '0000d231816abba584714c9e' },
+		});
+
+		expect(result.length).to.be.above(0);
 	});
 
-	it('DELETE /calendar', () =>
-		calendarService.remove('exampleId', { payload: { userId: '0000d231816abba584714c9e' } }).then((result) => {
-			expect(result).to.not.be.undefined;
-		}));
+	it('DELETE /calendar', async () => {
+		const result = await calendarService.remove('exampleId', { payload: { userId: '0000d231816abba584714c9e' } });
+		expect(result).to.not.be.undefined;
+	});
 });

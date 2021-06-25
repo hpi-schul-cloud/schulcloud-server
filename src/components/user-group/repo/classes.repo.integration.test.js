@@ -122,9 +122,8 @@ describe('class repo', () => {
 			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 			await testObjects.createTestClass({ teacherIds: [teacher._id], schoolId });
 
-			expect(classesRepo.removeUserFromClasses())
-				.to.eventually.throw(new AssertionError())
-				.with.property({ assertion_errors: { param: 'userId', code: 'REQUIRED_PARAMENTER_MISSING' } });
+			const res = await expect(classesRepo.removeUserFromClasses()).to.be.rejectedWith(AssertionError);
+			expect(res.params).to.eql([{ param: 'userId', error: 'REQUIRED_PARAMETER_MISSING' }]);
 		});
 
 		it('should not modify anything if called for user with no class assigned', async () => {

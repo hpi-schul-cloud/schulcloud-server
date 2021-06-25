@@ -3,7 +3,7 @@ const { ObjectId } = require('mongoose').Types;
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const pseudonymUC = require('./pseudonym.uc');
-const { ValidationError } = require('../../../errors');
+const { AssertionError } = require('../../../errors');
 
 const { pseudonymRepo } = require('../repo');
 
@@ -69,7 +69,7 @@ describe('pseudonym usecase', () => {
 		});
 
 		it('when the function is called with an invalid id, then it fails', async () => {
-			expect(getPseudonymDeletionResult('invalid')).to.eventually.be.rejectedWith(ValidationError);
+			await expect(getPseudonymDeletionResult('invalid')).to.be.rejectedWith(AssertionError);
 		});
 	});
 });

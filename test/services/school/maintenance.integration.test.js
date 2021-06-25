@@ -138,7 +138,7 @@ describe('school maintenance mode', () => {
 				params.route = { schoolId: school._id.toString() };
 				params.query = {};
 
-				await expect(maintenanceService.find(params)).to.eventually.be.rejectedWith(Forbidden);
+				await expect(maintenanceService.find(params)).to.be.rejectedWith(Forbidden);
 			});
 		});
 
@@ -209,9 +209,7 @@ describe('school maintenance mode', () => {
 				adminParams.route = { schoolId: school._id.toString() };
 				adminParams.query = {};
 
-				await expect(maintenanceService.create({ maintenance: true }, teacherParams)).to.eventually.be.rejectedWith(
-					Forbidden
-				);
+				await expect(maintenanceService.create({ maintenance: true }, teacherParams)).to.be.rejectedWith(Forbidden);
 
 				await expect(maintenanceService.create({ maintenance: true }, adminParams)).to.eventually.be.fulfilled;
 			}).timeout(5000);

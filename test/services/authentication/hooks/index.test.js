@@ -5,8 +5,7 @@ const commons = require('@hpi-schul-cloud/commons');
 const { Configuration } = commons;
 const redisMock = require('../../../utils/redis/redisMock');
 
-describe('authentication hooks', function test() {
-	this.timeout(20000);
+describe('authentication hooks', () => {
 	let redisHelper;
 	let addJwtToWhitelist;
 	let removeJwtFromWhitelist;

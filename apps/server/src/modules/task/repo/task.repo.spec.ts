@@ -10,7 +10,7 @@ describe('TaskService', () => {
 				{
 					provide: EntityManager,
 					useValue: {
-						find: (entity: any, query: any) => {
+						find: (/* entity: any, query: any */) => {
 							return [{ _id: new ObjectId(), name: 'testtask' }];
 						},
 					},

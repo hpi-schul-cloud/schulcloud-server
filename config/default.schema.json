@@ -36,6 +36,36 @@
 			"default": false,
 			"description": "Send mails to notification service, also if not in production mode"
 		},
+		"I18N": {
+			"type": "object",
+			"description": "Configuration of I18N",
+			"properties": {
+				"DEFAULT_LANGUAGE": {
+					"type": "string",
+					"default": "de",
+					"enum": [
+						"de",
+						"en"
+					],
+					"description": "Value for the default language"
+				},
+				"DEFAULT_TIMEZONE": {
+					"type": "string",
+					"default": "Europe/Berlin",
+					"description": "Timezone"
+				},
+				"FALLBACK_LANGUAGE": {
+					"type": "string",
+					"default": "de",
+					"description": "Value for the fallback language if translation key is not found"
+				},
+				"AVAILABLE_LANGUAGES": {
+					"type": "string",
+					"default": "de,en,es",
+					"description": "Available languages"
+				}
+			}
+		},
 		"SYNC_API_KEY": {
 			"type": "string",
 			"default": "example",

@@ -15,7 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		});
 	}
 
-	async validate(payload: JwtPayload) {
+	validate(payload: JwtPayload): JwtPayload {
 		// TODO check jwt is whitelisted
 		// TODO check user exist/is active
 		return payload;

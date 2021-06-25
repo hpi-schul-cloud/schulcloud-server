@@ -5,9 +5,7 @@ const redisMock = require('./utils/redis/redisMock');
 
 const { Configuration } = commons; // separated from require, mocked in tests
 
-describe('handleAutoLogout hook', function test() {
-	this.timeout(20000);
-
+describe('handleAutoLogout hook', () => {
 	let fut;
 	let redisHelper;
 	let configBefore;

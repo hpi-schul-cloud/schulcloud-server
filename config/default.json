@@ -10,6 +10,12 @@
 		"hydra": "http://localhost:9001",
 		"web": "http://localhost:3100"
 	},
+	"I18N": {
+		"AVAILABLE_LANGUAGES": "de,en,es",
+		"DEFAULT_LANGUAGE": "de",
+		"DEFAULT_TIMEZONE": "Europe/Berlin",
+		"FALLBACK_LANGUAGE": "de"
+	},
 	"HOST": "http://localhost:3100",
 	"FORCE_SEND_EMAIL": false,
 	"NOTIFICATION_PLATFORM": false,

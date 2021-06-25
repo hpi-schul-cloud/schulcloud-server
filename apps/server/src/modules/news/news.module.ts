@@ -3,12 +3,17 @@ import { NewsUc } from './uc/news.uc';
 import { NewsRepo } from './repo/news.repo';
 import { NewsController } from './controller/news.controller';
 import { AuthorizationModule } from '../authorization/authorization.module';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { News, SchoolInfo, UserInfo } from './entity';
+import { LoggerModule } from '../../core/logger/logger.module';
 
+/* NewsController
+ * to enable:
+ * - unskip e2e tests
+ * - execute migration news_add_target_schools (in migrations/scheduled)
+ * - update backup/setup/news.json from db after migration has been executed
+ */
 @Module({
-	imports: [AuthorizationModule],
-	controllers: [/* NewsController */],
+	imports: [AuthorizationModule, LoggerModule],
+	controllers: [NewsController],
 	providers: [NewsUc, NewsRepo],
 	exports: [NewsUc],
 })
