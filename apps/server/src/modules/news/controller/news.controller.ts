@@ -17,6 +17,12 @@ import { News } from '../entity';
 export class NewsController {
 	constructor(private readonly newsUc: NewsUc) {}
 
+	/**
+	 * Create a news by a user in a given scope (school or team).
+	 * @param currentUser
+	 * @param params
+	 * @returns
+	 */
 	@Post()
 	async create(@CurrentUser() currentUser: ICurrentUser, @Body() params: CreateNewsParams): Promise<NewsResponse> {
 		const news = await this.newsUc.create(
@@ -28,6 +34,7 @@ export class NewsController {
 		return dto;
 	}
 
+	/** Rsponds with all news for a user. */
 	@Get()
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -38,7 +45,15 @@ export class NewsController {
 		return newsResponse;
 	}
 
-	@Get('/news/team/:teamId')
+	/**
+	 * Responds with news of a given team for a user.
+	 * @param teamId
+	 * @param currentUser
+	 * @param scope
+	 * @param pagination
+	 * @returns
+	 */
+	@Get('/team/:teamId')
 	async findAllForTeam(
 		@Param('teamId', ParseObjectIdPipe) teamId: string,
 		@CurrentUser() currentUser: ICurrentUser,
@@ -84,7 +99,7 @@ export class NewsController {
 		return deletedId;
 	}
 
-	/** internal wrapper to be used in different controller actions taking care of use case mapping */
+	/** internal wrapper to be used in different controller find actions taking care of dto mapping */
 	private async find(currentUser: ICurrentUser, scope: NewsFilterQuery, options: IFindOptions<News>) {
 		const [newsList, count] = await this.newsUc.findAllForUser(
 			currentUser.userId,
