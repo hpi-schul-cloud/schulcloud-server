@@ -57,7 +57,6 @@ describe('role repo', () => {
 
 	describe('findByName', () => {
 		afterEach(async () => {
-			repo.cl1.clear();
 			await em.nativeDelete(Role, {});
 		});
 
@@ -88,34 +87,10 @@ describe('role repo', () => {
 
 			await expect(repo.findByName(nameA)).rejects.toThrow(NotFoundError);
 		});
-
-		it('should cache requested roles by name', async () => {
-			const nameA = `a${Date.now()}`;
-			const roleA = em.create(Role, { name: nameA });
-
-			await em.persistAndFlush([roleA]);
-			expect(repo.cl1.get(nameA)).toEqual(undefined);
-			await repo.findByName(nameA);
-			expect(repo.cl1.get(nameA)).toEqual(roleA);
-		});
-
-		it('should select already cached roles instead of db call', async () => {
-			const nameA = `a${Date.now()}`;
-			const roleA = em.create(Role, { name: nameA });
-			const spy = jest.spyOn(repo.cl1, 'get');
-
-			await em.persistAndFlush([roleA]);
-
-			expect(spy).not.toHaveBeenCalled();
-			await repo.findByName(nameA);
-			expect(spy).toHaveBeenCalled();
-			spy.mockRestore();
-		});
 	});
 
 	describe('findById', () => {
 		afterEach(async () => {
-			repo.cl1.clear();
 			await em.nativeDelete(Role, {});
 		});
 
@@ -149,35 +124,10 @@ describe('role repo', () => {
 			await em.persistAndFlush([roleA]);
 			await expect(repo.findById(idB)).rejects.toThrow(NotFoundError);
 		});
-
-		it('should cache requested roles by id', async () => {
-			const idA = new ObjectId().toHexString();
-			const roleA = em.create(Role, { id: idA });
-
-			await em.persistAndFlush([roleA]);
-			expect(repo.cl1.get(idA)).toEqual(undefined);
-			await repo.findById(idA);
-			expect(repo.cl1.get(idA)).toEqual(roleA);
-		});
-
-		it('should select already cached roles instead of db call', async () => {
-			const idA = new ObjectId().toHexString();
-			const roleA = em.create(Role, { id: idA });
-			const spy = jest.spyOn(repo.cl1, 'get');
-
-			await em.persistAndFlush([roleA]);
-
-			expect(spy).not.toHaveBeenCalled();
-			await repo.findById(idA);
-			expect(spy).toHaveBeenCalled();
-			spy.mockRestore();
-		});
 	});
 
 	describe('resolvePermissionsFromSubRolesById', () => {
 		afterEach(async () => {
-			repo.cl1.clear();
-			repo.cl2.clear();
 			await em.nativeDelete(Role, {});
 		});
 
@@ -227,70 +177,5 @@ describe('role repo', () => {
 			const result = await repo.resolvePermissionsFromSubRolesById(idA);
 			expect(result.permissions.sort()).toEqual(['A', 'B', 'C', 'C1', 'C2', 'D'].sort());
 		});
-
-		it('should cache requested roles and subroles by name', async () => {
-			const idA = new ObjectId().toHexString();
-			const idB = new ObjectId().toHexString();
-
-			const roleB = em.create(Role, { id: idB });
-			const roleA = em.create(Role, { roles: [idB], id: idA });
-
-			await em.persistAndFlush([roleA, roleB]);
-			expect(repo.cl2.get(idA)).toEqual(undefined);
-			expect(repo.cl2.get(idB)).toEqual(undefined);
-
-			await repo.resolvePermissionsFromSubRolesById(idA);
-
-			expect(repo.cl2.get(idA)).toBeInstanceOf(Role);
-			expect(repo.cl2.get(idB)).toBeInstanceOf(Role);
-		});
-
-		it('should select already cached roles instead of db call', async () => {
-			const idA = new ObjectId().toHexString();
-			const idB = new ObjectId().toHexString();
-
-			const roleB = em.create(Role, { id: idB });
-			const roleA = em.create(Role, { roles: [idB], id: idA });
-			const spy = jest.spyOn(repo.cl1, 'get');
-
-			await em.persistAndFlush([roleA, roleB]);
-
-			expect(spy).not.toHaveBeenCalled();
-			await repo.resolvePermissionsFromSubRolesById(idA);
-			expect(spy).toHaveBeenCalled();
-
-			spy.mockRestore();
-		});
 	});
-	/* remove later
-	describe('resolvePermissionsFromSubRolesByIdsList', () => {
-		afterEach(async () => {
-			await em.nativeDelete(Role, {});
-		});
-
-		it('should return right keys', async () => {
-			const idA = new ObjectId().toHexString();
-			const roleA = em.create(Role, { id: idA });
-			const idB = new ObjectId().toHexString();
-			const roleB = em.create(Role, { id: idB });
-
-			await em.persistAndFlush([roleA, roleB]);
-			const result = await repo.resolvePermissionsFromSubRolesByIdList([idA, idB]);
-			expect(Object.keys(result).sort()).toEqual(['permissions', 'roles'].sort());
-		});
-
-		it('should return unqiue roles and resolved permissions', async () => {
-			const idA = new ObjectId().toHexString();
-			const idB = new ObjectId().toHexString();
-			const idC = new ObjectId().toHexString();
-			const roleC = em.create(Role, { id: idC, permissions: ['C'] });
-			const roleB = em.create(Role, { roles: [idC], id: idB, permissions: ['A', 'D'] });
-			const roleA = em.create(Role, { roles: [idB], id: idA, permissions: ['B', 'D'] });
-
-			await em.persistAndFlush([roleA, roleB, roleC]);
-			const result = await repo.resolvePermissionsFromSubRolesByIdList([idA, idB]);
-			expect(result.permissions.sort()).toEqual(['A', 'B', 'C', 'D'].sort());
-			expect(result.roles.length).toEqual(2);
-		});
-	}); */
 });
