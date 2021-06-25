@@ -3,6 +3,8 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const logger = require('../../logger');
 
 const { NestAppHolder } = require('../../../dist/apps/server/legacyConnection/nestAppHolder');
+const { MailAttachment, Mail } = require('../../../dist/apps/server/modules/mail/entity/mail.entity');
+const { MailDisposition } = require('../../../dist/apps/server/modules/mail/constants');
 
 const { SMTP_SENDER, NODE_ENV, ENVIRONMENTS } = require('../../../config/globals');
 
@@ -18,12 +20,7 @@ const checkForToken = (params, app) => {
 module.exports = function setup(app) {
 	class MailService {
 		encodeFiles(files = []) {
-			return files.map(({ content, filename, mimetype }) => ({
-				mimeType: mimetype,
-				name: filename,
-				base64Content: content.toString('base64'),
-				contentDisposition: 'ATTACHMENT',
-			}));
+			return files.map(({ content, filename, mimetype }) => MailAttachment.createInstance(content, mimetype, filename, MailDisposition.Attachment));
 		}
 
 		// POST
@@ -36,26 +33,26 @@ module.exports = function setup(app) {
 
 			const base64Attachments = this.encodeFiles(attachments);
 
-			const mailContent = {
-				mail: {
-					subject,
-					htmlContent: content.html,
-					plainTextContent: content.text,
-					attachments: base64Attachments,
-				},
-				recipients: [user ? user.email : email],
-				from: SMTP_SENDER,
-				replyTo: [replyEmail],
-			};
+			const mail = new Mail(
+				subject,
+				[user ? user.email : email],
+				base64Attachments,
+				content.html,
+				content.text,
+				SMTP_SENDER,
+				null,
+				null,
+				[replyEmail],
+			);
 
 			// send mail with defined transport object in production mode
 			if (NODE_ENV === ENVIRONMENTS.PRODUCTION || FORCE_SEND_EMAIL) {
 				const nestApp = NestAppHolder.getInstance();
 				const mailService = nestApp.get(MailService);
-				mailService.send(mailContent);
+				mailService.send(mail);
 			}
 			// otherwise print email message object on console
-			return logger.debug('E-Mail Message not sent (not in production mode):', mailContent);
+			return logger.debug('E-Mail Message not sent (not in production mode):', mail);
 		}
 	}
 
