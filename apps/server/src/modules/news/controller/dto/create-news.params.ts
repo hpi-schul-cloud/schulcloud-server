@@ -23,10 +23,10 @@ export class CreateNewsParams {
 	@IsDate()
 	@IsOptional()
 	@ApiProperty({
-		default: 'The current date at 00:00:00 UTC',
+		default: 'The current date time, that the given news is published.',
 		description: 'The point in time from when the News entity schould be displayed',
 	})
-	displayAt: Date;
+	displayAt?: Date;
 
 	@IsString()
 	@ApiProperty({
