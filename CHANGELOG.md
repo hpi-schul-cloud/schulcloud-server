@@ -18,12 +18,37 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed 
 
-- remove unneccesary timeout definitions from tests and avoid promise chains
+- SC-8448 - Not storing temporary Merlin links and fixed concurrency bug
+- remove unnecessary timeout definitions from tests and avoid promise chains
 - SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
 
 ### Removed
 
 - SC-9159 removed news from feathers except remove team event, which already is replaced by v3/news
+
+## [26.4.8] - 2021-06-29
+
+### Fixed
+
+- route forwarding
+
+## [26.4.7] - 2021-06-22
+
+### Added
+
+- SC-9148 - Add migration for change of school year on BRB
+
+## [26.4.6] - 2021-06-24
+
+### Changed
+
+- OPS-2466 - changes build pipeline to github actions
+
+## [26.4.5] - 2021-06-21
+
+### Added
+
+- SC-9156 - Add maintenance mode for LDAP rewrite
 
 ## [26.4.4] - 2021-06-16
 
