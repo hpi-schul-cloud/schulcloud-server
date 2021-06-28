@@ -15,20 +15,11 @@ jobs:
       - run: npm ci
       - run: npm run build
         
-      - name: Docker meta Service Name
-        id: docker_meta_img
-        uses: docker/metadata-action@v3
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=ref,event=branch,enable=false,priority=600
-            type=sha,enable=true,priority=600,prefix=
-        
       - name: Docker meta Service Name for docker hub
         id: docker_meta_img_hub
         uses: docker/metadata-action@v3
         with:
-          images: docker.io/schulcloud/schulcloud-server
+          images: schulcloud/schulcloud-server
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
@@ -38,13 +29,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-
-      - name: Log into registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ secrets.GHCR_DOCKER_USERNAME }}
-          password: ${{ secrets.GHCR_DOCKER_TOKEN }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -56,12 +40,5 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
+          tags: ${{ steps.docker_meta_img_hub.outputs.tags }}
           labels: ${{ steps.docker_meta_img.outputs.labels }}
-
-      - name: Push Image to multiple registries
-        uses: akhilerm/tag-push-action@v1.0.0
-        with:
-          src: ghcr.io/${{ github.repository }}:${{ github.sha }}
-          dst: |
-            ${{ steps.docker_meta_img_hub.outputs.tags }}
