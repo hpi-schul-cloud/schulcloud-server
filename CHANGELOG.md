@@ -19,6 +19,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
 
+## [26.4.8] - 2021-06-29
+
+### Fixed
+
+- route forwarding
+
+## [26.4.7] - 2021-06-22
+
+### Added
+
+- SC-9148 - Add migration for change of school year on BRB
+
 ## [26.4.6] - 2021-06-24
 
 ### Changed
@@ -27,7 +39,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [26.4.5] - 2021-06-21
 
-### Added 
+### Added
 
 - SC-9156 - Add maintenance mode for LDAP rewrite
 
