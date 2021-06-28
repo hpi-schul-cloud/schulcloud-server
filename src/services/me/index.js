@@ -56,9 +56,9 @@ class Service {
 }
 
 module.exports = (app) => {
-	app.use('/me/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
-	app.use('/me', new Service());
+	app.use('/legacy/v1/me/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
+	app.use('/legacy/v1/me', new Service());
 
-	const me = app.service('/me');
+	const me = app.service('/legacy/v1/me');
 	me.hooks(hooks);
 };

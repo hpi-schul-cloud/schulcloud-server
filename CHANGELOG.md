@@ -13,7 +13,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
-- me route forwarding
+- route forwarding
 
 ## [26.4.7] - 2021-06-22
 
