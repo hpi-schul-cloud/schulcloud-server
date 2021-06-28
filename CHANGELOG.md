@@ -9,15 +9,21 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.4.7] - 2021-06-29
+
+### Fixed
+
+- /me route forwarding
+
 ## [26.4.6] - 2021-06-24
 
 ### Changed
 
-- OPS-2466 - changes build pipeline to github actions 
+- OPS-2466 - changes build pipeline to github actions
 
 ## [26.4.5] - 2021-06-21
 
-### Added 
+### Added
 
 - SC-9156 - Add maintenance mode for LDAP rewrite
 
