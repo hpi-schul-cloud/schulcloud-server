@@ -11,7 +11,7 @@ const publicAppConfigServiceHooks = {
 	},
 };
 
-const exposedVars = [
+const populateVars = [
 	'ADMIN_TABLES_DISPLAY_CONSENT_COLUMN',
 	'FEATURE_ES_COLLECTIONS_ENABLED',
 	'FEATURE_EXTENSIONS_ENABLED',
@@ -25,6 +25,9 @@ const exposedVars = [
 	'SC_SHORT_TITLE',
 ];
 
+const hasCheckVars = ['REDIS_URI'];
+const exposedVars = [...populateVars, ...hasCheckVars];
+
 /**
  * This service is for the env variables to sync between server and client.
  * These env variables must be public and there must be no secret values.
@@ -35,10 +38,13 @@ class PublicAppConfigService {
 	}
 
 	find() {
-		// TODO: add true/false for getRedisClient() as check for this.$axios.$post("/accounts/jwtTimer");
 		const envs = {};
-		exposedVars.forEach((varName) => {
+		populateVars.forEach((varName) => {
 			envs[varName] = Configuration.get(varName);
+		});
+
+		hasCheckVars.forEach((varName) => {
+			envs[`HAS_${varName}`] = Configuration.has(varName);
 		});
 
 		return Promise.resolve(envs);
