@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsString } from 'class-validator';
+import { IsDate, IsOptional, IsString } from 'class-validator';
 import { NewsTargetModel } from '../../entity';
 
 const TARGET_MODEL_VALUES = Object.values(NewsTargetModel);
@@ -21,7 +21,9 @@ export class CreateNewsParams {
 	content: string;
 
 	@IsDate()
+	@IsOptional()
 	@ApiProperty({
+		default: 'The current date at 00:00:00 UTC',
 		description: 'The point in time from when the News entity schould be displayed',
 	})
 	displayAt: Date;

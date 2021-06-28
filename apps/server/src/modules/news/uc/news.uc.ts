@@ -28,9 +28,12 @@ export class NewsUc {
 		const { targetModel, targetId } = params.target;
 		await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, ['NEWS_CREATE']);
 
-		const { target, ...props } = params;
+		const { target, displayAt: paramDisplayAt, ...props } = params;
+		// set news as published by default
+		const displayAt = paramDisplayAt || new Date();
 		const news = News.createInstance(targetModel, {
 			...props,
+			displayAt,
 			school: schoolId,
 			creator: userId,
 			target: targetId,

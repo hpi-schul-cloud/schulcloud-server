@@ -10,7 +10,7 @@ export enum NewsTargetModel {
 export interface ICreateNews {
 	title: string;
 	content: string;
-	displayAt: Date;
+	displayAt?: Date;
 	target: { targetModel: NewsTargetModel; targetId: EntityId };
 }
 
