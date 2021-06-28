@@ -19,9 +19,6 @@ export class NewsController {
 
 	/**
 	 * Create a news by a user in a given scope (school or team).
-	 * @param currentUser
-	 * @param params
-	 * @returns
 	 */
 	@Post()
 	async create(@CurrentUser() currentUser: ICurrentUser, @Body() params: CreateNewsParams): Promise<NewsResponse> {
@@ -34,7 +31,9 @@ export class NewsController {
 		return dto;
 	}
 
-	/** Rsponds with all news for a user. */
+	/**
+	 * Responds with all news for a user.
+	 */
 	@Get()
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -47,11 +46,6 @@ export class NewsController {
 
 	/**
 	 * Responds with news of a given team for a user.
-	 * @param teamId
-	 * @param currentUser
-	 * @param scope
-	 * @param pagination
-	 * @returns
 	 */
 	@Get('/team/:teamId')
 	async findAllForTeam(
@@ -67,7 +61,11 @@ export class NewsController {
 		return newsResponse;
 	}
 
-	/** Retrieve a specific news entry by id. A user may only read news of scopes he has the read permission. The news entity has school and user names populated. */
+	/**
+	 * Retrieve a specific news entry by id.
+	 * A user may only read news of scopes he has the read permission.
+	 * The news entity has school and user names populated.
+	 */
 	@Get(':id')
 	async findOne(
 		// A parameter pipe like ParseObjectIdPipe gives us the guarantee of typesafety for @Param
@@ -79,6 +77,9 @@ export class NewsController {
 		return dto;
 	}
 
+	/**
+	 * Update properties of a news.
+	 */
 	@Patch(':id')
 	async update(
 		@Param('id', ParseObjectIdPipe) newsId: string,
@@ -90,6 +91,9 @@ export class NewsController {
 		return dto;
 	}
 
+	/**
+	 * Delete a news.
+	 */
 	@Delete(':id')
 	async delete(
 		@Param('id', ParseObjectIdPipe) newsId: string,
