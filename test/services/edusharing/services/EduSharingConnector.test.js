@@ -131,7 +131,7 @@ describe('EduSharing FIND', () => {
 			chai
 				.expect(postStub.getCalls()[0].args[0].body)
 				.contains(
-					`{"property":"ccm:ph_invited","values":["GROUP_county-12051","GROUP_HPIBossCloud","GROUP_public","GROUP_LowerSaxony-public","GROUP_Brandenburg-public","GROUP_Thuringia-public"]}`
+					`{"property":"ccm:ph_invited","values":["GROUP_county-12051","GROUP_public","GROUP_LowerSaxony-public","GROUP_Brandenburg-public","GROUP_Thuringia-public"]}`
 				);
 		} catch (err) {
 			throw new Error(err);

@@ -18,12 +18,19 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed 
 
-- remove unneccesary timeout definitions from tests and avoid promise chains
+- SC-8448 - Not storing temporary Merlin links and fixed concurrency bug
+- remove unnecessary timeout definitions from tests and avoid promise chains
 - SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
 
 ### Fixed
 
 - SC-9170 - let superhero delete other users
+
+## [26.4.6] - 2021-06-24
+
+### Changed
+
+- OPS-2466 - changes build pipeline to github actions
 
 ## [26.4.5] - 2021-06-21
 
