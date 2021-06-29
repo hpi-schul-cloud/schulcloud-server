@@ -3,7 +3,7 @@ name: Test
 on: [push]
 
 jobs:
-  feathers_unit_tests:
+  feathers_tests_cov:
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -22,6 +22,16 @@ jobs:
         run: npm ci --prefer-offline --no-audit
       - name: feathers:Test - test with coverage
         run: npm run feathers:test
+  end_2_end_tests:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+        name: checkout
+      - name: setup and execute e2e tests
+        run: sh scripts/e2eTest.sh
   nest_tests_cov:
     strategy:
       matrix:
