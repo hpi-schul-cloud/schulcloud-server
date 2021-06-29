@@ -39,6 +39,8 @@ describe('News Controller (e2e)', () => {
 			targetIds: [teamTargetId],
 		},
 	];
+	const emptyPaginationResponse: PaginationResponse<NewsResponse[]> = { data: [], total: 0 };
+
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			// TODO move NewsModule into ServerModule
@@ -157,9 +159,9 @@ describe('News Controller (e2e)', () => {
 			expect(body.data.map((newsResponse) => newsResponse.id)).toContain(news.id);
 		});
 
-		it('should throw not found if team-news was not found', async () => {
+		it('should not throw if a team was not found', async () => {
 			const randomId = new ObjectId().toHexString();
-			await request(app.getHttpServer()).get(`/news/team/${randomId}`).expect(404);
+			await request(app.getHttpServer()).get(`/news/team/${randomId}`).expect(200).expect(emptyPaginationResponse);
 		});
 	});
 
