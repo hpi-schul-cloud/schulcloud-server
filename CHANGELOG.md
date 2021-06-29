@@ -9,6 +9,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## [26.4.9] - 2021-06-29
+
+### Fixed
+
+- api route forwarding
+
+
 ## [26.4.8] - 2021-06-29
 
 ### Fixed
