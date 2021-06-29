@@ -12,10 +12,9 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
+import { NewsModule } from '@src/modules/news/news.module';
 import { News, NewsTargetModel } from '../../../src/modules/news/entity';
 import { CreateNewsParams, NewsResponse, UpdateNewsParams } from '../../../src/modules/news/controller/dto';
-
-import { NewsModule } from '@src/modules/news/news.module';
 
 describe('News Controller (e2e)', () => {
 	let app: INestApplication;
@@ -150,24 +149,38 @@ describe('News Controller (e2e)', () => {
 		});
 	});
 
+	describe('GET /news/team/{teamId}', () => {
+		it('should get team-news by id', async () => {
+			const news = await createTestNews(NewsTargetModel.Team, teamTargetId);
+			const response = await request(app.getHttpServer()).get(`/news/team/${teamTargetId}`).expect(200);
+			const body = response.body as PaginationResponse<NewsResponse[]>;
+			expect(body.data.map((newsResponse) => newsResponse.id)).toContain(news.id);
+		});
+
+		it('should throw not found if team-news was not found', async () => {
+			const randomId = new ObjectId().toHexString();
+			await request(app.getHttpServer()).get(`/news/team/${randomId}`).expect(404);
+		});
+	});
+
 	describe('POST /news/{id}', () => {
 		it('should create news by input params', async () => {
 			const courseId = new ObjectId().toString();
 
-			const params = {
+			const params: CreateNewsParams = {
 				title: 'test course news',
 				content: 'content',
 				targetModel: NewsTargetModel.Course,
 				targetId: courseId,
 				displayAt: new Date(),
-			} as CreateNewsParams;
+			};
 
 			const response = await request(app.getHttpServer()).post(`/news`).send(params).expect(201);
 			const body = response.body as NewsResponse;
 			expect(body.id).toBeDefined();
 			expect(body.title).toBe(params.title);
 			expect(body.targetId).toBe(params.targetId);
-			expect(body.displayAt).toBe(params.displayAt.toISOString());
+			expect(body.displayAt).toBe(params.displayAt?.toISOString());
 		});
 		it('should throw ApiValidationError if input parameters dont match the required schema', async () => {
 			const params = new CreateNewsParams();
