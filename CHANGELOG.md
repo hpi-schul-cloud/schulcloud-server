@@ -19,6 +19,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
 
+## [26.4.9] - 2021-06-29
+
+### Fixed
+
+- api route forwarding
+
+
 ## [26.4.8] - 2021-06-29
 
 ### Fixed
