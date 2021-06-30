@@ -42,6 +42,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-9148 - Add migration for change of school year on BRB
 
+### Fixed
+
+- SC-9170 - let superhero delete other users
+
 ## [26.4.6] - 2021-06-24
 
 ### Changed
