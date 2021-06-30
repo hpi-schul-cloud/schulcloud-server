@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- execute unit tests via github action instead of using travis
+
 ## [26.5.0] - 2021-06-28
 
 ### Added

@@ -58,7 +58,7 @@
 		"nest:test:all": "npm run nest:test:cov && npm run nest:lint",
 		"nest:test:watch": "jest --watch",
 		"nest:test:cov": "jest --coverage",
-		"nest:test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+		"nest:test:debug": "jest --runInBand",
 		"nest:lint": "eslint apps --ignore-path .gitignore",
 		"nest:lint:fix": "eslint apps --fix --ignore-path .gitignore",
 		"syncIndexes": "node ./scripts/syncIndexes.js"
