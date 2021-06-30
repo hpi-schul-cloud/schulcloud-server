@@ -36,7 +36,7 @@ else
   curl -f -O -s -S "$urlMaster"
 fi
 
-# echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
 chmod 700 $fileName
 echo "------------------ loaded $fileName -------------------"
