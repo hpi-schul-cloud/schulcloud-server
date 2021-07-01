@@ -14,4 +14,4 @@ const apiPath = (req, res, next) => {
 
 module.exports = (app) => {
 	app.use(apiPath);
-}
+};
