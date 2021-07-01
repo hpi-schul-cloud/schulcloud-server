@@ -401,6 +401,11 @@
 			"default": false,
 			"description": "Custom School Policy can be uploaded by the school admin "
 		},
+		"ROCKETCHAT_SERVICE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables chat function for the school."
+		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
 			"description": "Synchronous encryption key used to secure search user passwords",
