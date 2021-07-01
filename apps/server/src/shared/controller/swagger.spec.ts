@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as request from 'supertest';
-import { API_PATH, ROUTE_PRAEFIX } from '../../constants';
+import { API_DOCS_PATH, ROUTE_PRAEFIX } from '../../constants';
 import { ServerModule } from '../../server.module';
 import { enableOpenApiDocs } from './swagger';
 
@@ -12,7 +12,7 @@ describe('swagger setup', () => {
 		beforeAll(async () => {
 			app = await NestFactory.create(ServerModule);
 
-			const apiDocsPath = `${ROUTE_PRAEFIX}/${API_PATH}`;
+			const apiDocsPath = `${ROUTE_PRAEFIX}/${API_DOCS_PATH}`;
 			enableOpenApiDocs(app, apiDocsPath);
 
 			await app.init();
