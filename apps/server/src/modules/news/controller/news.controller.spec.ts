@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NewsController } from './news.controller';
 import { NewsRepo } from '../repo/news.repo';
-import { AuthorizationService } from '../../authorization/authorization.service';
-import { FeathersServiceProvider } from '../../authorization/feathers-service.provider';
 import { NewsUc } from '../uc';
+import { LoggerModule } from '../../../core/logger/logger.module';
+import { AuthorizationModule } from '../../authorization/authorization.module';
 
 describe('NewsController', () => {
 	let controller: NewsController;
@@ -11,14 +11,13 @@ describe('NewsController', () => {
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [NewsController],
+			imports: [LoggerModule, AuthorizationModule],
 			providers: [
 				NewsUc,
 				{
 					provide: NewsRepo,
 					useValue: {},
 				},
-				AuthorizationService,
-				FeathersServiceProvider,
 			],
 		}).compile();
 

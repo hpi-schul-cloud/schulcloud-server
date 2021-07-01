@@ -1,12 +1,36 @@
-import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { UserInfo } from '../../news/entity';
+import { Entity, ManyToOne, Collection, Property, ManyToMany } from '@mikro-orm/core';
+import { BaseEntityWithTimestamps } from '@shared/domain';
+import { UserTaskInfo } from './user-task-info.entity';
+import { FileTaskInfo } from './file-task-info.entity';
 import { Task } from './task.entity';
-import { BaseEntityWithTimestamps } from '../../../shared/domain';
 
 @Entity({ tableName: 'submissions' })
 export class Submission extends BaseEntityWithTimestamps {
+	constructor(partial: Partial<Submission>) {
+		super();
+		Object.assign(this, partial);
+	}
+
 	@ManyToOne({ fieldName: 'homeworkId' })
-	homework: Task;
+	task: Task;
+
 	@ManyToOne({ fieldName: 'studentId' })
-	student: UserInfo;
+	student: UserTaskInfo;
+
+	/* ***** student uploads ***** */
+	@Property()
+	comment: string;
+
+	@ManyToMany({ fieldName: 'fileIds', type: FileTaskInfo })
+	studentFiles = new Collection<FileTaskInfo>(this);
+
+	/* ***** teacher uploads ***** */
+	@Property()
+	grade: number;
+
+	@Property()
+	gradeComment: string;
+
+	@ManyToMany({ fieldName: 'gradeFileIds', type: FileTaskInfo })
+	gradeFileIds = new Collection<FileTaskInfo>(this);
 }

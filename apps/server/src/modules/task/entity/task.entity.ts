@@ -1,33 +1,27 @@
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps } from '../../../shared/domain';
-import { Course } from './course.entity';
-import { Lesson } from './lesson.entity';
+import { BaseEntityWithTimestamps } from '@shared/domain';
+import { CourseTaskInfo } from './course-task-info.entity';
+import { LessonTaskInfo } from './lesson-task-info.entity';
 
 @Entity({ tableName: 'homeworks' })
 export class Task extends BaseEntityWithTimestamps {
+	constructor(partial: Partial<Task>) {
+		super();
+		Object.assign(this, partial);
+	}
+
 	@Property()
 	name: string;
+
 	@Property()
 	dueDate?: Date;
+
 	@Property()
 	private?: boolean;
 
 	@ManyToOne({ fieldName: 'courseId' })
-	course: Course;
+	course: CourseTaskInfo;
+
 	@ManyToOne({ fieldName: 'lessonId' })
-	lesson?: Lesson;
-
-	constructor() {
-		super();
-	}
-}
-
-export class ITaskMetadata extends BaseEntityWithTimestamps {
-	name: string;
-
-	duedate: Date;
-
-	courseName: string;
-
-	displayColor: string;
+	lesson?: LessonTaskInfo;
 }

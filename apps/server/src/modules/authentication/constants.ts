@@ -1,6 +1,20 @@
-import { authConfig } from '../../../../../src/services/authentication/configuration';
-const { secret, jwtOptions } = authConfig;
+import externalAuthConfig = require('../../../../../src/services/authentication/configuration');
 
+const { authConfig } = externalAuthConfig;
+
+/*
+	TODO: look at existing keys, vs implemented keys
+	support: true,
+	supportUserId,
+	accountId,
+	userId,
+	iat,
+	exp,
+	aud: this.aud,
+	iss: 'feathers',
+	sub: accountId,
+	jti: `support_${ObjectId()}`,
+*/
 export interface JwtConstants {
 	secret: string;
 	jwtOptions: {
@@ -13,6 +27,6 @@ export interface JwtConstants {
 }
 
 export const jwtConstants: JwtConstants = {
-	secret,
-	jwtOptions,
+	secret: authConfig.secret as string,
+	jwtOptions: authConfig.jwtOptions,
 };

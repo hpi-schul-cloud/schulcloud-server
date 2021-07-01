@@ -1,68 +1,101 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, Task, ITaskMetadata, Submission, Course, Lesson } from '../entity';
-import { PaginationModel } from '../../../shared/core/repo/index';
+import { EntityId, IPagination } from '@shared/domain';
 import { QueryOrder } from '@mikro-orm/core';
-import { Paginated } from '../../../shared/core/types/paginated';
+import { Counted } from '@shared/domain/types';
+import { Task, Submission, CourseTaskInfo, LessonTaskInfo } from '../entity';
 
 @Injectable()
 export class TaskRepo {
 	constructor(private readonly em: EntityManager) {}
 
+	// TODO: move to seperate repo
+	async getCourseOfUser(userId: EntityId): Promise<CourseTaskInfo[]> {
+		const coursesOfUser = await this.em.find(CourseTaskInfo, {
+			$or: [
+				{
+					students: userId,
+				},
+				{
+					teachers: userId,
+				},
+				{
+					substitutionTeachers: userId,
+				},
+			],
+		});
+		return coursesOfUser;
+	}
+
 	// WARNING: this is used to deal with the current datamodel, and needs to be changed.
 	// DO NOT DO THIS AT HOME!!
-	async findAllOpenByStudent(
-		userId: EntityId,
-		{ limit, skip }: PaginationModel = {}
-	): Promise<Paginated<ITaskMetadata[]>> {
+	async findAllOpenByStudent(userId: EntityId, { limit, skip }: IPagination = {}): Promise<Counted<Task[]>> {
 		// todo: handle coursegroups
-		const coursesOfStudent = await this.em.find(Course, {
-			students: userId,
-		});
-		const lessonsOfStudent = await this.em.find(Lesson, {
-			course: { $in: coursesOfStudent },
+
+		// TODO move BL to UC
+		// we have following logical groups:
+		// filter for all news a user might read
+		// filter by tasks not yet done
+		// order by duedate
+		// pagination
+
+		const [coursesOfUser, submissionsOfStudent] = await Promise.all([
+			this.getCourseOfUser(userId),
+			this.em.find(Submission, { student: userId }),
+		]);
+
+		const lessonsOfStudent = await this.em.find(LessonTaskInfo, {
+			course: { $in: coursesOfUser },
 			hidden: false,
 		});
 
-		const submissionsOfStudent = await this.em.find(Submission, {
-			student: userId,
-		});
-		const homeworksWithSubmissions = submissionsOfStudent.map((submission) => submission.homework.id);
+		// TODO: filter via query ..exist not exist, orm return null ? Add test for it!
+		const homeworksWithSubmissions = submissionsOfStudent.map((submission) => submission.task.id);
 
 		const oneWeekAgo = new Date();
 		oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 		const [usersTasks, total] = await this.em.findAndCount(
 			Task,
 			{
+				// TODO task query builder, see NewsScope
 				$and: [
+					// TODO move into a logic group / director
 					{ id: { $nin: homeworksWithSubmissions } },
 					{ private: { $ne: true } },
-					{ course: { $in: coursesOfStudent } },
+					{ course: { $in: coursesOfUser } },
 					{ $or: [{ lesson: null }, { lesson: { $in: lessonsOfStudent } }] },
 					{ $or: [{ dueDate: { $gte: oneWeekAgo } }, { dueDate: null }] },
 				],
 			},
+			// TODO Populate in separate step
+			// TODO extract pagination, oderby
 			{ populate: ['course'], limit, offset: skip, orderBy: { dueDate: QueryOrder.ASC } }
 		);
 
-		const mappedTasks = usersTasks.map((task) => {
-			return {
-				id: task.id,
-				_id: task._id,
-				name: task.name,
-				duedate: task.dueDate,
-				courseName: task.course?.name,
-				displayColor: task.course?.color,
-				createdAt: task.createdAt,
-				updatedAt: task.updatedAt,
-			};
+		return [usersTasks, total];
+	}
+
+	async findAllAssignedByTeacher(userId: EntityId, { limit, skip }: IPagination = {}): Promise<Counted<Task[]>> {
+		// TODO: merge overlaps with findAllOpenByStudent
+		// TODO: use Query Builder
+		const coursesOfUser = await this.getCourseOfUser(userId);
+
+		const publishedLessons = await this.em.find(LessonTaskInfo, {
+			course: { $in: coursesOfUser },
+			hidden: false,
 		});
 
-		return {
-			data: mappedTasks,
-			total,
-			limit,
-			skip,
-		};
+		const [usersTasks, count] = await this.em.findAndCount(
+			Task,
+			{
+				$and: [
+					{ course: { $in: coursesOfUser } },
+					{ private: { $ne: true } },
+					{ $or: [{ lesson: null }, { lesson: { $in: publishedLessons } }] },
+				],
+			},
+			{ populate: ['course'], limit, offset: skip, orderBy: { createdAt: QueryOrder.DESC } }
+		);
+		return [usersTasks, count];
 	}
 }

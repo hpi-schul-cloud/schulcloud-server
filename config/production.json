@@ -9,6 +9,5 @@
 		"content": "CONTENT_URI",
 		"hydra": "HYDRA_URI",
 		"web": "HOST"
-	},
-	"FEATURE_SHOW_VERSION_ENABLED": true
+	}
 }
