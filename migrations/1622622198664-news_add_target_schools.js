@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const { newsSchema } = require('../../src/services/news/model');
+const { newsSchema } = require('../src/services/news/model');
 
-const { connect, close } = require('../../src/utils/database');
+const { connect, close } = require('../src/utils/database');
 
 const News = mongoose.model('news34838583553', newsSchema, 'news');
 

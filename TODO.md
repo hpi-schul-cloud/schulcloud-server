@@ -22,8 +22,13 @@
 - remove sentry from code
 - remove mongoose history (keep one)
 - remove custom npm packages (ldap, ...)
+- e2e default tests to extend: auth required, fails without/succeeds with  
 
 ## ACCEPTED
+
+- documentation
+  - entity constructor
+  - em to be used in repositories only (!!!)
 
 - load/perf test
 

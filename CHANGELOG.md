@@ -30,6 +30,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - api route forwarding
 
 
+### Removed
+
+- SC-9159 removed news from feathers except remove team event, which already is replaced by v3/news
+
 ## [26.4.8] - 2021-06-29
 
 ### Fixed

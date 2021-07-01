@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { NewsTargetModel, NewsTargetModelValue } from '@src/modules/news/entity';
+import { NewsTargetModel } from '@src/modules/news/entity';
 import { EntityId } from '@shared/domain';
 import { UnauthorizedException } from '@nestjs/common';
 import { FeathersModule } from '../feathers/feathers.module';
@@ -27,7 +27,7 @@ describe('AuthorizationService', () => {
 						getUserSchoolPermissions(user: EntityId, school: EntityId) {
 							return schoolPermissions;
 						},
-						getUserTargetPermissions(user: EntityId, targetModel: NewsTargetModelValue, targetId: EntityId) {
+						getUserTargetPermissions(user: EntityId, targetModel: NewsTargetModel, targetId: EntityId) {
 							return targetModel === NewsTargetModel.Course ? coursePermissions : teamPermissions;
 						},
 						getPermittedSchools(user) {

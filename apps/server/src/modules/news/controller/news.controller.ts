@@ -15,6 +15,9 @@ import { NewsMapper } from '../mapper/news.mapper';
 export class NewsController {
 	constructor(private readonly newsUc: NewsUc) {}
 
+	/**
+	 * Create a news by a user in a given scope (school or team).
+	 */
 	@Post()
 	async create(@CurrentUser() currentUser: ICurrentUser, @Body() params: CreateNewsParams): Promise<NewsResponse> {
 		const news = await this.newsUc.create(
@@ -26,6 +29,9 @@ export class NewsController {
 		return dto;
 	}
 
+	/**
+	 * Responds with all news for a user.
+	 */
 	@Get()
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -35,13 +41,18 @@ export class NewsController {
 		const [newsList, count] = await this.newsUc.findAllForUser(
 			currentUser.userId,
 			NewsMapper.mapNewsScopeToDomain(scope),
-			pagination
+			{ pagination }
 		);
 		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
-		return new PaginationResponse(dtoList, count);
+		const response = new PaginationResponse(dtoList, count);
+		return response;
 	}
 
-	/** Retrieve a specific news entry by id. A user may only read news of scopes he has the read permission. The news entity has school and user names populated. */
+	/**
+	 * Retrieve a specific news entry by id.
+	 * A user may only read news of scopes he has the read permission.
+	 * The news entity has school and user names populated.
+	 */
 	@Get(':id')
 	async findOne(
 		// A parameter pipe like ParseObjectIdPipe gives us the guarantee of typesafety for @Param
@@ -53,6 +64,9 @@ export class NewsController {
 		return dto;
 	}
 
+	/**
+	 * Update properties of a news.
+	 */
 	@Patch(':id')
 	async update(
 		@Param('id', ParseObjectIdPipe) newsId: string,
@@ -64,6 +78,9 @@ export class NewsController {
 		return dto;
 	}
 
+	/**
+	 * Delete a news.
+	 */
 	@Delete(':id')
 	async delete(
 		@Param('id', ParseObjectIdPipe) newsId: string,
