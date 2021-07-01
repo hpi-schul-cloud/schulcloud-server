@@ -83,7 +83,7 @@
 		"@nestjs/swagger": "^4.8.0",
 		"@sentry/node": "^6.2.0",
 		"ajv": "^6.10.2",
-		"amqplib": "^0.7.0",
+		"amqplib": "^0.8.0",
 		"arg": "^5.0.0",
 		"async": "^2.6.0",
 		"aws-sdk": "^2.306.0",
