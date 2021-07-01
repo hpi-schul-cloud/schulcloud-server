@@ -602,6 +602,11 @@
 			"default": "mail-drop",
 			"description": "Exchange name for mail sending"
 		},
+		"MAIL_SEND_ROUTING_KEY" : {
+			"type": "string",
+			"default": "mail-drop",
+			"description": "Routing key name for mail sending"
+		},
 		"MEMORY_INTERVAL_TIME": {
 			"type": "integer",
 			"default": 0,
