@@ -9,6 +9,6 @@ export class MailService {
 	constructor(private readonly amqpConnection: AmqpConnection) {}
 
 	public async send(mail: Mail) {
-		return this.amqpConnection.publish(exchange, routingKey, JSON.stringify(mail));
+		return this.amqpConnection.publish(exchange, routingKey, mail);
 	}
 }

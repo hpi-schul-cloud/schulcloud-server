@@ -65,4 +65,7 @@ export class Mail {
         this.mail = new MailContent(subject, attachments, htmlContent, plainTextContent);
     };
 
+    toJSON() {
+        return JSON.stringify(this);
+    }
 }
