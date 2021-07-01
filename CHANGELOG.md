@@ -16,11 +16,19 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-9092 - delete S3 files after 7 days from user deletion
 - SC-8959 - Add messenger to deletion concept
 
-### Changed 
+### Changed
 
 - SC-8448 - Not storing temporary Merlin links and fixed concurrency bug
 - remove unnecessary timeout definitions from tests and avoid promise chains
 - SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
+- execute unit tests via github action instead of using travis
+
+## [26.4.9] - 2021-06-29
+
+### Fixed
+
+- api route forwarding
+
 
 ### Removed
 
@@ -37,6 +45,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - SC-9148 - Add migration for change of school year on BRB
+
+### Fixed
+
+- SC-9170 - let superhero delete other users
 
 ## [26.4.6] - 2021-06-24
 

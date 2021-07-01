@@ -1,0 +1,69 @@
+name: Test
+
+on: [push]
+
+jobs:
+  feathers_tests_cov:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        mongodb-version: [4.2]
+        node: ['14']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.6.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+      - name: environment setup
+        run: | 
+          sh scripts/unitTestFeathers.sh
+      - name: npm ci
+        run: npm ci --prefer-offline --no-audit
+      - name: feathers:Test - test with coverage
+        run: npm run feathers:test
+  nest_tests_cov:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        mongodb-version: [4.2]
+        node: ['14']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.6.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+      - name: npm ci
+        run: npm ci --prefer-offline --no-audit
+      - name: nest:test:cov - test all with coverage
+        run: npm run nest:test:cov
+  nest_lint:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: ['14']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+      - name: npm ci
+        run: npm ci --prefer-offline --no-audit
+      - name: nest:lint
+        run: npm run nest:lint
