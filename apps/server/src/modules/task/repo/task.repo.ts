@@ -1,14 +1,12 @@
-import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId, IPagination } from '@shared/domain';
 import { QueryOrder } from '@mikro-orm/core';
 import { Counted } from '@shared/domain/types';
+import { BaseRepo } from '@shared/repo/base.repo';
 import { Task, Submission, Course, Lesson } from '../entity';
 
 @Injectable()
-export class TaskRepo {
-	constructor(private readonly em: EntityManager) {}
-
+export class TaskRepo extends BaseRepo<Task> {
 	// WARNING: this is used to deal with the current datamodel, and needs to be changed.
 	// DO NOT DO THIS AT HOME!!
 	async findAllOpenByStudent(userId: EntityId, { limit, skip }: IPagination = {}): Promise<Counted<Task[]>> {

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, IPagination } from '@shared/domain';
+import { EntityId, IFindOptions, SortOrder } from '@shared/domain';
 import { Counted } from '@shared/domain/types';
 import { Logger } from '@src/core/logger/logger.service';
 import { AuthorizationService } from '../../authorization/authorization.service';
-import { News, NewsTargetModel, NewsTargetModelValue, ICreateNews, INewsScope, IUpdateNews } from '../entity';
+import { News, NewsTargetModel, ICreateNews, INewsScope, IUpdateNews } from '../entity';
 import { NewsRepo } from '../repo/news.repo';
 import { NewsTargetFilter } from '../repo/news-target-filter';
 
@@ -28,9 +28,12 @@ export class NewsUc {
 		const { targetModel, targetId } = params.target;
 		await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, ['NEWS_CREATE']);
 
-		const { target, ...props } = params;
+		const { target, displayAt: paramDisplayAt, ...props } = params;
+		// set news as published by default
+		const displayAt = paramDisplayAt || new Date();
 		const news = News.createInstance(targetModel, {
 			...props,
+			displayAt,
 			school: schoolId,
 			creator: userId,
 			target: targetId,
@@ -43,20 +46,25 @@ export class NewsUc {
 	}
 
 	/**
-	 *
+	 * Provides news for a user, by default odered by displayAt to show latest news first.
 	 * @param userId
 	 * @param scope
 	 * @param pagination
 	 * @returns
 	 */
-	async findAllForUser(userId: EntityId, scope?: INewsScope, pagination?: IPagination): Promise<Counted<News[]>> {
+	async findAllForUser(userId: EntityId, scope?: INewsScope, options?: IFindOptions<News>): Promise<Counted<News[]>> {
 		this.logger.log(`start find all news for user ${userId}`);
 
 		const unpublished = !!scope?.unpublished; // default is only published news
 		const permissions: [Permission] = NewsUc.getRequiredPermissions(unpublished);
 
 		const targets = await this.getPermittedTargets(userId, scope, permissions);
-		const [newsList, newsCount] = await this.newsRepo.findAll(targets, unpublished, pagination);
+
+		if (options == null) options = {};
+		// by default show latest news first
+		if (options.order == null) options.order = { displayAt: SortOrder.desc };
+
+		const [newsList, newsCount] = await this.newsRepo.findAll(targets, unpublished, options);
 
 		await Promise.all(
 			newsList.map(async (news: News) => {
@@ -156,7 +164,7 @@ export class NewsUc {
 
 	private async getTargetFilters(
 		userId: EntityId,
-		targetModels: NewsTargetModelValue[],
+		targetModels: NewsTargetModel[],
 		permissions: string[]
 	): Promise<NewsTargetFilter[]> {
 		const targets = await Promise.all(

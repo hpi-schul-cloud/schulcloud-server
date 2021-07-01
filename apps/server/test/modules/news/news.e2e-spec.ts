@@ -12,10 +12,8 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
-import { News, NewsTargetModel, NewsTargetModelValue } from '../../../src/modules/news/entity';
+import { News, NewsTargetModel } from '../../../src/modules/news/entity';
 import { CreateNewsParams, NewsResponse, UpdateNewsParams } from '../../../src/modules/news/controller/dto';
-
-import { NewsModule } from '../../../src/modules/news/news.module';
 
 describe('News Controller (e2e)', () => {
 	let app: INestApplication;
@@ -40,10 +38,11 @@ describe('News Controller (e2e)', () => {
 			targetIds: [teamTargetId],
 		},
 	];
+	const emptyPaginationResponse: PaginationResponse<NewsResponse[]> = { data: [], total: 0 };
+
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			// TODO move NewsModule into ServerModule
-			imports: [ServerModule, NewsModule],
+			imports: [ServerModule],
 		})
 			.overrideGuard(JwtAuthGuard)
 			.useValue({
@@ -80,7 +79,7 @@ describe('News Controller (e2e)', () => {
 		await orm.close();
 	});
 
-	const newTestNews = (targetModel: NewsTargetModelValue, targetId: EntityId, unpublished = false): News => {
+	const newTestNews = (targetModel: NewsTargetModel, targetId: EntityId, unpublished = false): News => {
 		const displayAt = unpublished ? moment().add(1, 'days').toDate() : moment().subtract(1, 'days').toDate();
 		const news = News.createInstance(targetModel, {
 			school: user.schoolId,
@@ -94,7 +93,7 @@ describe('News Controller (e2e)', () => {
 		return news;
 	};
 
-	const createTestNews = async (targetModel: NewsTargetModelValue, targetId: EntityId, unpublished = false) => {
+	const createTestNews = async (targetModel: NewsTargetModel, targetId: EntityId, unpublished = false) => {
 		const news = newTestNews(targetModel, targetId, unpublished);
 		await em.persistAndFlush(news);
 		return news;
@@ -150,24 +149,38 @@ describe('News Controller (e2e)', () => {
 		});
 	});
 
+	describe('GET /team/{teamId}/news', () => {
+		it('should get team-news by id', async () => {
+			const news = await createTestNews(NewsTargetModel.Team, teamTargetId);
+			const response = await request(app.getHttpServer()).get(`/team/${teamTargetId}/news`).expect(200);
+			const body = response.body as PaginationResponse<NewsResponse[]>;
+			expect(body.data.map((newsResponse) => newsResponse.id)).toContain(news.id);
+		});
+
+		it('should not throw if a team was not found', async () => {
+			const randomId = new ObjectId().toHexString();
+			await request(app.getHttpServer()).get(`/team/${randomId}/news`).expect(200).expect(emptyPaginationResponse);
+		});
+	});
+
 	describe('POST /news/{id}', () => {
 		it('should create news by input params', async () => {
 			const courseId = new ObjectId().toString();
 
-			const params = {
+			const params: CreateNewsParams = {
 				title: 'test course news',
 				content: 'content',
 				targetModel: NewsTargetModel.Course,
 				targetId: courseId,
 				displayAt: new Date(),
-			} as CreateNewsParams;
+			};
 
 			const response = await request(app.getHttpServer()).post(`/news`).send(params).expect(201);
 			const body = response.body as NewsResponse;
 			expect(body.id).toBeDefined();
 			expect(body.title).toBe(params.title);
 			expect(body.targetId).toBe(params.targetId);
-			expect(body.displayAt).toBe(params.displayAt.toISOString());
+			expect(body.displayAt).toBe(params.displayAt?.toISOString());
 		});
 		it('should throw ApiValidationError if input parameters dont match the required schema', async () => {
 			const params = new CreateNewsParams();

@@ -31,6 +31,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - api route forwarding
 
 
+### Removed
+
+- SC-9159 removed news from feathers except remove team event, which already is replaced by v3/news
+
 ## [26.4.8] - 2021-06-29
 
 ### Fixed
@@ -42,6 +46,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Added
 
 - SC-9148 - Add migration for change of school year on BRB
+
+### Fixed
+
+- SC-9170 - let superhero delete other users
 
 ## [26.4.6] - 2021-06-24
 
