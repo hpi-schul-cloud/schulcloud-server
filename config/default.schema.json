@@ -502,11 +502,6 @@
 			"default": false,
 			"description": "Enable prometheus api metrics, if enabled, PROMETHEUS must be defined."
 		},
-		"FEATURE_SHOW_VERSION_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "enable the /versions route"
-		},
 		"FEATURE_MONGOOSE_LOGGING_ENABLED" : {
 			"type": "boolean",
 			"default": false,
@@ -634,8 +629,7 @@
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
 		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
-		"LERNSTORE_MODE",
-		"FEATURE_SHOW_VERSION_ENABLED"
+		"LERNSTORE_MODE"
 	],
 	"allOf": [
 		{
