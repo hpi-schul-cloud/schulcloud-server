@@ -23,17 +23,17 @@ describe('swagger setup', () => {
 		});
 
 		it('should redirect', async () => {
-			const response = await request(app.getHttpServer()).get('/v3/api').redirects(1);
+			const response = await request(app.getHttpServer()).get('/v3/docs').redirects(1);
 			expect(response.text).toContain('Swagger UI');
 		});
 
 		it('should serve open api documentation at given path', async () => {
-			const response = await request(app.getHttpServer()).get('/v3/api/');
+			const response = await request(app.getHttpServer()).get('/v3/docs/');
 			expect(response.text).toContain('Swagger UI');
 		});
 
 		it('should serve a json api version', async () => {
-			const response = await request(app.getHttpServer()).get('/v3/api-json').expect(200);
+			const response = await request(app.getHttpServer()).get('/v3/docs-json').expect(200);
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			expect(response.body.info).toEqual({
 				contact: {},
