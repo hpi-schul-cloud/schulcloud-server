@@ -151,17 +151,17 @@ describe('News Controller (e2e)', () => {
 		});
 	});
 
-	describe('GET /news/team/{teamId}', () => {
+	describe('GET /team/{teamId}/news', () => {
 		it('should get team-news by id', async () => {
 			const news = await createTestNews(NewsTargetModel.Team, teamTargetId);
-			const response = await request(app.getHttpServer()).get(`/news/team/${teamTargetId}`).expect(200);
+			const response = await request(app.getHttpServer()).get(`/team/${teamTargetId}/news`).expect(200);
 			const body = response.body as PaginationResponse<NewsResponse[]>;
 			expect(body.data.map((newsResponse) => newsResponse.id)).toContain(news.id);
 		});
 
 		it('should not throw if a team was not found', async () => {
 			const randomId = new ObjectId().toHexString();
-			await request(app.getHttpServer()).get(`/news/team/${randomId}`).expect(200).expect(emptyPaginationResponse);
+			await request(app.getHttpServer()).get(`/team/${randomId}/news`).expect(200).expect(emptyPaginationResponse);
 		});
 	});
 

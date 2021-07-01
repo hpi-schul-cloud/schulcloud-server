@@ -3,13 +3,11 @@ import { ApiTags } from '@nestjs/swagger';
 import { ParseObjectIdPipe } from '@shared/controller/pipe';
 import { PaginationQuery } from '@shared/controller';
 import { PaginationResponse } from '@shared/controller/dto/pagination.response';
-import { IFindOptions } from '@shared/domain';
 import { NewsUc } from '../uc/news.uc';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { ICurrentUser } from '../../authentication/interface/jwt-payload';
 import { CreateNewsParams, NewsFilterQuery, NewsResponse, UpdateNewsParams } from './dto';
 import { NewsMapper } from '../mapper/news.mapper';
-import { News } from '../entity';
 
 @ApiTags('News')
 @Authenticate('jwt')
@@ -40,25 +38,14 @@ export class NewsController {
 		@Query() scope: NewsFilterQuery,
 		@Query() pagination: PaginationQuery
 	): Promise<PaginationResponse<NewsResponse[]>> {
-		const newsResponse = await this.find(currentUser, scope, { pagination });
-		return newsResponse;
-	}
-
-	/**
-	 * Responds with news of a given team for a user.
-	 */
-	@Get('/team/:teamId')
-	async findAllForTeam(
-		@Param('teamId', ParseObjectIdPipe) teamId: string,
-		@CurrentUser() currentUser: ICurrentUser,
-		@Query() scope: NewsFilterQuery,
-		@Query() pagination: PaginationQuery
-	): Promise<PaginationResponse<NewsResponse[]>> {
-		// enforce filter by a given team, used in team tab
-		scope.targetId = teamId;
-		scope.targetModel = 'teams';
-		const newsResponse = await this.find(currentUser, scope, { pagination });
-		return newsResponse;
+		const [newsList, count] = await this.newsUc.findAllForUser(
+			currentUser.userId,
+			NewsMapper.mapNewsScopeToDomain(scope),
+			{ pagination }
+		);
+		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
+		const response = new PaginationResponse(dtoList, count);
+		return response;
 	}
 
 	/**
@@ -101,16 +88,5 @@ export class NewsController {
 	): Promise<string> {
 		const deletedId = await this.newsUc.delete(newsId, currentUser.userId);
 		return deletedId;
-	}
-
-	/** internal wrapper to be used in different controller find actions taking care of dto mapping */
-	private async find(currentUser: ICurrentUser, scope: NewsFilterQuery, options: IFindOptions<News>) {
-		const [newsList, count] = await this.newsUc.findAllForUser(
-			currentUser.userId,
-			NewsMapper.mapNewsScopeToDomain(scope),
-			options
-		);
-		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
-		return new PaginationResponse(dtoList, count);
 	}
 }
