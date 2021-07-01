@@ -4,7 +4,7 @@ export class NestAppHolder {
   private static instance: INestApplication;
 
   private constructor() {
-    // singelton
+    // singleton
   }
 
   public static getInstance(): INestApplication {

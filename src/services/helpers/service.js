@@ -2,7 +2,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const logger = require('../../logger');
 
-const { NestAppHolder } = require('../../../dist/apps/server/legacyConnection/nestAppHolder');
+const { NestAppHolder } = require('../../../dist/apps/server/legacy/nest-app-holder');
 
 const { SMTP_SENDER, NODE_ENV, ENVIRONMENTS } = require('../../../config/globals');
 
