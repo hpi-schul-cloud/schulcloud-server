@@ -232,7 +232,7 @@
 		"RABBITMQ_URI": {
 			"type": "string",
 			"format": "uri",
-			"default": "amqp://192.168.99.100",
+			"default": "amqp://guest:guest@192.168.99.100",
 			"description": "The URI of the RabbitMQ server."
 		},
 		"RABBITMQ_MATRIX_CONSUME_CONCURRENCY": {
@@ -596,6 +596,16 @@
 			"type": "string",
 			"default": "sync_ldap",
 			"description": "Queue name for sync"
+		},
+		"MAIL_SEND_EXCHANGE" : {
+			"type": "string",
+			"default": "mail-drop",
+			"description": "Exchange name for mail sending"
+		},
+		"MAIL_SEND_ROUTING_KEY" : {
+			"type": "string",
+			"default": "mail-drop",
+			"description": "Routing key name for mail sending"
 		},
 		"MEMORY_INTERVAL_TIME": {
 			"type": "integer",

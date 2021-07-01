@@ -3,6 +3,8 @@ import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from '@src/config';
 import { AuthModule } from './modules/authentication/auth.module';
+import { NewsModule } from './modules/news/news.module';
+import { MailModule } from './modules/mail/mail.module';
 import { ServerController } from './server.controller';
 import { TaskModule } from './modules/task/task.module';
 import { CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo } from './modules/news/entity';
@@ -10,13 +12,13 @@ import { Task, Submission, Lesson, Course } from './modules/task/entity';
 import { CoreModule } from './core/core.module';
 import { CourseInfo } from './modules/news/entity/course-info.entity';
 import { TeamInfo } from './modules/news/entity/team-info.entity';
-import { NewsModule } from './modules/news/news.module';
 
 @Module({
 	imports: [
 		AuthModule,
 		TaskModule,
 		NewsModule,
+		MailModule,
 		MikroOrmModule.forRoot({
 			type: 'mongo',
 			// TODO add mongoose options as mongo options (see database.js)

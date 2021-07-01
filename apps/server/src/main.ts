@@ -4,6 +4,8 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
 
+import { NestAppHolder } from './legacy/nest-app-holder';
+
 // application imports
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
@@ -21,7 +23,7 @@ async function bootstrap() {
 	// create the NestJS application adapting the legacy  server
 	const app = await NestFactory.create(ServerModule, adapter, {});
 
-	// for all NestJS controller routes, prepend ROUTE_PRAEFIX
+	// for all NestJS controller routes, prepend ROUTE_PREFIX
 	app.setGlobalPrefix(ROUTE_PRAEFIX);
 
 	const apiDocsPath = `${ROUTE_PRAEFIX}/${API_DOCS_PATH}`;
@@ -29,6 +31,9 @@ async function bootstrap() {
 
 	await app.init();
 
+	NestAppHolder.setInstance(app);
+
 	adapter.listen(PORT);
 }
+
 void bootstrap();
