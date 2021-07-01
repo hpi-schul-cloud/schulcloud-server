@@ -7,7 +7,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 // application imports
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
-import { API_PATH, PORT, ROUTE_PRAEFIX } from './constants';
+import { API_DOCS_PATH, PORT, ROUTE_PRAEFIX } from './constants';
 import { enableOpenApiDocs } from './shared/controller/swagger';
 
 async function bootstrap() {
@@ -24,7 +24,7 @@ async function bootstrap() {
 	// for all NestJS controller routes, prepend ROUTE_PRAEFIX
 	app.setGlobalPrefix(ROUTE_PRAEFIX);
 
-	const apiDocsPath = `${ROUTE_PRAEFIX}/${API_PATH}`;
+	const apiDocsPath = `${ROUTE_PRAEFIX}/${API_DOCS_PATH}`;
 	enableOpenApiDocs(app, apiDocsPath);
 
 	await app.init();
