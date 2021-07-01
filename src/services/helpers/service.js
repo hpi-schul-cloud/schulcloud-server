@@ -4,7 +4,7 @@ const logger = require('../../logger');
 
 const { NestAppHolder } = require('../../../dist/apps/server/legacyConnection/nestAppHolder');
 const { MailAttachment, Mail } = require('../../../dist/apps/server/modules/mail/entity/mail.entity');
-const { ContentDisposition } = require('../../../dist/apps/server/modules/mail/constants');
+const { MailDisposition } = require('../../../dist/apps/server/modules/mail/constants');
 
 const { SMTP_SENDER, NODE_ENV, ENVIRONMENTS } = require('../../../config/globals');
 
@@ -20,7 +20,7 @@ const checkForToken = (params, app) => {
 module.exports = function setup(app) {
 	class MailService {
 		encodeFiles(files = []) {
-			return files.map(({ content, filename, mimetype }) => MailAttachment.createInstance(content, mimetype, filename, ContentDisposition.Attachment));
+			return files.map(({ content, filename, mimetype }) => MailAttachment.createInstance(content, mimetype, filename, MailDisposition.Attachment));
 		}
 
 		// POST
