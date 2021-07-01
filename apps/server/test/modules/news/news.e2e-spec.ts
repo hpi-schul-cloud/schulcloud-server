@@ -12,7 +12,6 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 
 import { AuthorizationService } from '@src/modules/authorization/authorization.service';
 import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
-import { NewsModule } from '@src/modules/news/news.module';
 import { News, NewsTargetModel } from '../../../src/modules/news/entity';
 import { CreateNewsParams, NewsResponse, UpdateNewsParams } from '../../../src/modules/news/controller/dto';
 
@@ -43,8 +42,7 @@ describe('News Controller (e2e)', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			// TODO move NewsModule into ServerModule
-			imports: [ServerModule, NewsModule],
+			imports: [ServerModule],
 		})
 			.overrideGuard(JwtAuthGuard)
 			.useValue({
