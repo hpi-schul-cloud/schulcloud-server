@@ -1,22 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MailService } from './mail.service';
 
-import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
-
-import { exchange, rabbitMqUri } from './constants';
+import { rabbitMqClient } from './rabbitMqClient';
 
 @Module({
-	imports: [
-		RabbitMQModule.forRoot(RabbitMQModule, {
-			exchanges: [
-				{
-					name: exchange,
-					type: 'direct',
-				},
-			],
-			uri: rabbitMqUri,
-		}),
-	],
+	imports: [rabbitMqClient],
 	providers: [MailService],
 	exports: [MailService],
 })

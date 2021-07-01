@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
-import { Mail } from './entity/mail.entity';
-import { exchange, routingKey } from './constants';
+import { Configuration } from '@hpi-schul-cloud/commons';
+
+import { Mail } from './interfaces/mail';
 
 @Injectable()
 export class MailService {
 	constructor(private readonly amqpConnection: AmqpConnection) {}
 
-	public async send(mail: Mail) {
-		return this.amqpConnection.publish(exchange, routingKey, mail);
+	public async send(data: Mail) {
+		return this.amqpConnection.publish(Configuration.get('MAIL_SEND_EXCHANGE'), 'mail-drop', data);
 	}
 }
