@@ -1,3 +1,6 @@
+// TODO: should not get from this place over path
+import { ResolvedUser } from '../../user/controller/dto';
+
 export interface ICurrentUser {
 	/** authenticated users id */
 	userId: string;
@@ -7,6 +10,8 @@ export interface ICurrentUser {
 	schoolId: string;
 	/** account id as string */
 	accountId: string;
+
+	user: ResolvedUser;
 }
 
 export interface JwtPayload extends ICurrentUser {

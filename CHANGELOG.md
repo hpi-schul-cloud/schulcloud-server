@@ -23,6 +23,17 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - remove unnecessary timeout definitions from tests and avoid promise chains
 - SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
 - execute unit tests via github action instead of using travis
+- execute unit tests via github action instead of using travis
+
+## [26.5.0] - 2021-06-28
+
+### Added
+
+- SC-9431 - add teacher view to task/open over permission TASK_DASHBOARD_VIEW_V3, solving permissions after authenticate and add v3/user/me route.
+
+### Changed
+
+- SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
 
 ## [26.4.9] - 2021-06-29
 

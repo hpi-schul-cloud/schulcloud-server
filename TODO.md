@@ -36,6 +36,15 @@
 
 - fix .env/config for windows
 
+## MERGE 
+
+- api path prefix cleanup: remove middleware and multiple path mounts, sync with nest
+- user module stucture
+- single domain: shared entity (main.ts), shared repository 
+- request.user.user in jwt strategy
+- remove outdated sorting.ts 
+
+
 ## SELECTED
 
 - test shared / core module 

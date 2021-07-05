@@ -5,6 +5,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { MongoSharedDriver } from './mongo-shared-driver';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from '../../../config';
 
+// todo duplicates  mongo memory database ForbiddenOptions
 // the options we want to be fixed
 type NoOptions = 'type' | 'driver' | 'clientUrl' | 'dbName' | 'user' | 'password';
 

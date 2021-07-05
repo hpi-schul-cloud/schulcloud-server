@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Docker login
+echo "$MY_DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+
 # Envirments
 ROCKET_CHAT_URI=http://localhost:5000
 echo "ROCKET_CHAT_URI" $ROCKET_CHAT_URI

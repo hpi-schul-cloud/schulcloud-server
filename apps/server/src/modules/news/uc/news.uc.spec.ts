@@ -8,6 +8,7 @@ import { NewsTargetModel, ICreateNews } from '../entity/news.types';
 import { AuthorizationService } from '../../authorization/authorization.service';
 import { NewsRepo } from '../repo/news.repo';
 import { NewsUc } from './news.uc';
+import { NewsTargetModel } from '../entity';
 
 describe('NewsUc', () => {
 	let service: NewsUc;
