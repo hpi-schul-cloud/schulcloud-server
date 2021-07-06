@@ -3,6 +3,7 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoDatabaseModuleOptions } from '../types';
 
 const createMikroOrmModule = (options: MikroOrmModuleSyncOptions): DynamicModule => {
 	const mikroOrmModule = MikroOrmModule.forRootAsync({
@@ -44,7 +45,7 @@ export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 		private readonly moduleRef: ModuleRef
 	) {}
 
-	static forRoot(options?: MikroOrmModuleSyncOptions): DynamicModule {
+	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
 			module: MongoMemoryDatabaseModule,
 			imports: [createMikroOrmModule(options || {})],

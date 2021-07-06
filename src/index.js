@@ -8,6 +8,7 @@ Configuration.printHierarchy();
 appPromise
 	.then((api) => {
 		const port = api.get('port');
+		// TODO remove this and the apiPath middleware
         const app = express().use('/api', api);
         app.use('/', api);
 		const server = app.listen(port);

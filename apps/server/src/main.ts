@@ -23,6 +23,7 @@ async function bootstrap() {
 	// create the NestJS application adapting the legacy  server
 	const app = await NestFactory.create(ServerModule, adapter, {});
 
+	// TODO cleanup /api prefix
 	// for all NestJS controller routes, prepend ROUTE_PREFIX
 	app.setGlobalPrefix(ROUTE_PRAEFIX);
 
@@ -31,9 +32,8 @@ async function bootstrap() {
 
 	await app.init();
 
-	NestAppHolder.setInstance(app);
+	NestAppHolder.setInstance(app); // TODO auto inject app within NestFactory.create
 
 	adapter.listen(PORT);
 }
-
 void bootstrap();

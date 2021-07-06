@@ -22,6 +22,7 @@ Swagger UI documentation when running the server locally, it is served at [http:
 
 * Node.js (see `.nvmrc` for version)
 * MongoDB (`4.x`)
+* RabbitMQ (configure using `RABBITMQ_URL`, see `default.schema.json`)
 
 ## Setup
 
@@ -29,10 +30,16 @@ You will need the [client](https://github.com/hpi-schul-cloud/schulcloud-client)
 
 ## Run
 
+### Preconditions 
+
+1. Run `mongod` 
+2. Run `docker run -d -p 5672:5672 -p 15672:15672 --name rabbitmq rabbitmq:3.8.9-management`. This starts RabbitMQ on port 5672 and a web admin console at localhost:15672 (use guest:guest to login). 
+
+### Application startup
+
 1. Go into project folder
-2. Run `mongod`
-3. Run `npm start`
-4. Run `npm run setup`
+2. Run `npm start`
+3. Run `npm run setup`
 
 ## Debugger Configuration in Visual Studio Code
 
