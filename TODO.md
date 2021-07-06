@@ -43,6 +43,7 @@
 - single domain: shared entity (main.ts), shared repository 
 - request.user.user in jwt strategy
 - remove outdated sorting.ts 
+- remove default launch/settings json files, apply them
 
 
 ## SELECTED
