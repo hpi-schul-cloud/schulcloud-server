@@ -3,6 +3,7 @@ import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoDatabaseModuleOptions } from '../types';
 
 const createMikroOrmModule = (options: MikroOrmModuleSyncOptions): DynamicModule => {
 	const mikroOrmModule = MikroOrmModule.forRootAsync({
@@ -36,9 +37,6 @@ const createMikroOrmModule = (options: MikroOrmModuleSyncOptions): DynamicModule
 	return mikroOrmModule;
 };
 
-// TODO defined in multiple places?
-/** options we not allow to pass as they are internally replaced by using the in memory mongo  */
-type ForbiddenOptions = 'type' | 'driver' | 'clientUrl' | 'dbName' | 'user' | 'password';
 @Module({})
 export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 	constructor(
@@ -47,7 +45,7 @@ export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 		private readonly moduleRef: ModuleRef
 	) {}
 
-	static forRoot(options?: Omit<MikroOrmModuleSyncOptions, ForbiddenOptions>): DynamicModule {
+	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
 			module: MongoMemoryDatabaseModule,
 			imports: [createMikroOrmModule(options || {})],
