@@ -33,7 +33,7 @@ const userEntities = [User, Role, Account];
 		AuthModule,
 		TaskModule,
 		NewsModule,
-		MailModule,
+		// MailModule, // TODO enable
 		UserModule,
 		MikroOrmModule.forRoot({
 			type: 'mongo',

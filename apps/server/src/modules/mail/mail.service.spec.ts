@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MailService } from './mail.service';
 import { MailModule } from './mail.module';
 
-describe('MailService', () => {
+describe.skip('MailService', () => {
 	let service: MailService;
 
 	beforeEach(async () => {

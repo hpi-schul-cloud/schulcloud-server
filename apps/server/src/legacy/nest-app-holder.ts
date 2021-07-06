@@ -1,3 +1,5 @@
+// TODO add spec when this will be really used or remove this file
+
 import { INestApplication } from '@nestjs/common';
 
 export class NestAppHolder {

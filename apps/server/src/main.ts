@@ -32,7 +32,7 @@ async function bootstrap() {
 
 	await app.init();
 
-	NestAppHolder.setInstance(app);
+	NestAppHolder.setInstance(app); // TODO auto inject app within NestFactory.create
 
 	adapter.listen(PORT);
 }
