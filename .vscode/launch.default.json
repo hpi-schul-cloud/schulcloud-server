@@ -2,21 +2,17 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-            "request": "launch",
-            "internalConsoleOptions": "openOnSessionStart",
-            "name": "Mocha Tests",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": [
-                "run-script", "mocha-inspect"
-            ],
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "type": "pwa-node",
-            "env": {
-                "NODE_ENV": "test"
-            }
-        },
+			"request": "launch",
+			"internalConsoleOptions": "openOnSessionStart",
+			"name": "Mocha Tests",
+			"runtimeExecutable": "npm",
+			"runtimeArgs": ["run-script", "mocha-inspect"],
+			"skipFiles": ["<node_internals>/**"],
+			"type": "pwa-node",
+			"env": {
+				"NODE_ENV": "test"
+			}
+		},
 		{
 			"name": "vscode-jest-tests",
 			"type": "pwa-node",
@@ -29,11 +25,9 @@
 			"trace": true,
 			"env": {
 				"NODE_ENV": "test"
-            },
-			"skipFiles": [
-				"<node_internals>/**"
-			]
-	  	},
+			},
+			"skipFiles": ["<node_internals>/**"]
+		},
 		{
 			"type": "node",
 			"request": "launch",
@@ -81,7 +75,7 @@
 			"args": ["run", "nest:test:debug"]
 		},
 		{
-			"type": "node",			
+			"type": "node",
 			"request": "launch",
 			"name": "Test (unit) Current File",
 			"program": "${workspaceFolder}/node_modules/.bin/jest",
