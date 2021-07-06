@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsDate, IsOptional, IsString } from 'class-validator';
 import { NewsTargetModel } from '../../entity';
 
-const TARGET_MODEL_VALUES = Object.values(NewsTargetModel); // Todo does this work?
+const TARGET_MODEL_VALUES = Object.values(NewsTargetModel);
 
 /**
  * DTO for creating a news document.
