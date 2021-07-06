@@ -42,11 +42,11 @@ describe.only('filePathHelper', () => {
 			// url: slash and double-point with minus
 			const urlResult = whitelistFileName('https://youtube.com:1234/watch.exe');
 			expect(urlResult).to.be.equal('https-youtube.com-1234-watch.exe');
-			// todo all others?
+			// funny chars
 			const allReplacedSample =
 				'🴋🪭🔆🀚🮿🇍🅣🨚📟🻣🸴🇟📲🇧🇛🹨🞺😲🬦🌸🧖🅋🁍🔋📿🲣😿🳥🤞🶄🎙🺳🏶🌧🭤🯙🵉🍭🯌🍏🟋🍴🙈🬆🊥🕾🥁🙇🟿🊅🣑🦑🔩🯭🊳🀷🏮🞱🡆🧮🭹🅋🢣🚉🡓🣬🲥🚯🥳🡄🣒🝵🁜🻫🔿🨤🰎🏾🔠🖒🬦🆾🂻🥿🣜🧀🞞🜹🝲🵆🹸🈨🵩🢎🢀🳬🬡🻖🕘🃷🋢🔆🟠🀵🴴🂛🻪🕒🞠🫊🡃🭗🊫🫯💱🌟🋐🮽🥼🗑🔻😧🰳🡴🵊🇝🏎🶀🯠🫓🟀🹱🞊🅰🷅🋉🭊🶙🌟🸺🩊🏚🤻🹜🺡🌸🕇🔰🚑🦂🠒🇛🔢👌🁴🧖😔🷏🱻🇥😪🋱🡢🴘🞟🚂🅅🙸🟄🋵💓🍜🨒🲎🌌🰳🋙🱗🣋🏰🏂🖶🆤🙙🊳🩭🡑🞊🦼🛈🟕🛺🴵👠🟆🆾🺧🐌🇻🴻🼀🏔🫉🗀🸗🱐🛼🢔🦔😀🍍🶆🩴🨗🩼🹚🹯🤋😇🚾🐘🕝🨬🩞🉖📉🖢🡏🢡🴈🔰📁🸺🃐🪝🀘🨄🌜🺍🋽🱵🬪🖑🜐🮴🍕🐞😄🐒🜪🏉🕞🧽🚆🙲🸸🲈🁩🠜😜🣬🤪🏛🻮🤽🄴🻦🉳🯪🝜🥸🊚🦞🲫🟀🃄🇙🰗🃧👳🕧🋣🁬🮅🣅🪱🶡🦾🦕🚸💴🅊🢅🻃🮨🦦🯨🜖👁🞌';
 			const allReplacedResult = whitelistFileName(allReplacedSample);
-			// TODO expect - only
+			expect(allReplacedResult).to.equal('-');
 		});
 	});
 
@@ -55,7 +55,7 @@ describe.only('filePathHelper', () => {
 			const suffixedFileName = generateFileNameSuffix('sampleFileName.ext');
 			const now = Date.now();
 			const fileDateSuffix = suffixedFileName.split('-')[0]; // extract timestamp suffix
-			const timestamp = Number.parseInt(fileDateSuffix);
+			const timestamp = Number.parseInt(fileDateSuffix, 10);
 			expect(timestamp).to.be.a('number');
 			const timespan = now - timestamp;
 			expect(timespan, 'expect a small value, when filename generation just happened').to.be.a('number').lessThan(100);
