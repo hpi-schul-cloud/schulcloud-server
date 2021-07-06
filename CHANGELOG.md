@@ -23,7 +23,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - remove unnecessary timeout definitions from tests and avoid promise chains
 - SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
 - execute unit tests via github action instead of using travis
-- execute unit tests via github action instead of using travis
 
 ## [26.5.0] - 2021-06-28
 
@@ -40,7 +39,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 - api route forwarding
-
 
 ### Removed
 
