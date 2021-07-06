@@ -32,7 +32,7 @@ describe('Task Controller (e2e)', () => {
 	});
 
 	beforeEach(async () => {
-		//TODO await em.nativeDelete(CollectionName, {});
+		// TODO await em.nativeDelete(CollectionName, {});
 	});
 
 	afterAll(async () => {

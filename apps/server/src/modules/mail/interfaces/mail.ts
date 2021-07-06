@@ -1,51 +1,49 @@
 interface MailAttachment {
-    base64Content: string;
+	base64Content: string;
 
-    mimeType: string;
+	mimeType: string;
 
-    name: string;
+	name: string;
 }
 
 interface InlineAttachment extends MailAttachment {
-    contentDisposition: 'INLINE';
+	contentDisposition: 'INLINE';
 
-    contentId: string;
+	contentId: string;
 }
 
 interface AppendedAttachment extends MailAttachment {
-    contentDisposition: 'ATTACHMENT';
+	contentDisposition: 'ATTACHMENT';
 }
 
-
 interface MailContent {
-    subject: string;
+	subject: string;
 
-    attachments?: (InlineAttachment | AppendedAttachment)[];
-};
+	attachments?: (InlineAttachment | AppendedAttachment)[];
+}
 
 interface PlainTextMailContent extends MailContent {
-    htmlContent?: string;
+	htmlContent?: string;
 
-    plainTextContent: string;
+	plainTextContent: string;
 }
 
 interface HtmlMailContent extends MailContent {
-    htmlContent: string;
+	htmlContent: string;
 
-    plainTextContent?: string;
+	plainTextContent?: string;
 }
 
-
 export interface Mail {
-    mail: PlainTextMailContent | HtmlMailContent;
+	mail: PlainTextMailContent | HtmlMailContent;
 
-    recipients: string[];
+	recipients: string[];
 
-    from?: string;
+	from?: string;
 
-    cc?: string[];
+	cc?: string[];
 
-    bcc?: string[];
+	bcc?: string[];
 
-    replyTo?: string[];
+	replyTo?: string[];
 }
