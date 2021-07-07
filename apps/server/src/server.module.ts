@@ -36,9 +36,9 @@ const userEntities = [User, Role, Account];
 		NewsModule,
 		UserModule,
 		MailModule.forRoot({
-			uri: Configuration.get('RABBITMQ_URI'),
-			exchange: Configuration.get('MAIL_SEND_EXCHANGE'),
-			routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY'),
+			uri: Configuration.get('RABBITMQ_URI') as string,
+			exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
+			routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
 		}),
 		MikroOrmModule.forRoot({
 			type: 'mongo',

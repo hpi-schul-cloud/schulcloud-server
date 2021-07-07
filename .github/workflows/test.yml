@@ -39,7 +39,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     services:
       rabbitmq:
-        image: rabbitmq:3-management
+        image: rabbitmq:3
         ports:
           - 5672:5672
     steps:
@@ -65,7 +65,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     services:
       rabbitmq:
-        image: rabbitmq:3-management
+        image: rabbitmq:3
         ports:
           - 5672:5672
     steps:
