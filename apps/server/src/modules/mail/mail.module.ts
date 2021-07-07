@@ -1,13 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Module, DynamicModule } from '@nestjs/common';
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { MailService } from './mail.service';
 
-import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
-import { DynamicModule } from '@nestjs/common';
-
 interface MailModuleOptions {
-    uri: string,
-    exchange: string,
-    routingKey: string,
+	uri: string;
+	exchange: string;
+	routingKey: string;
 }
 
 type RabbitMqModuleOptions = Omit<MailModuleOptions, 'routingKey'>;
