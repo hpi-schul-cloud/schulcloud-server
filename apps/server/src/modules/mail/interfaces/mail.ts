@@ -1,3 +1,7 @@
+enum ContentDisposition {
+    Inline = 'INLINE',
+    Attachment = 'ATTACHMENT'
+};
 interface MailAttachment {
 	base64Content: string;
 
