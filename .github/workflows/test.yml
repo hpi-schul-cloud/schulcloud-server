@@ -37,6 +37,11 @@ jobs:
         mongodb-version: [4.2]
         node: ['14']
     runs-on: ${{ matrix.os }}
+    services:
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - 5672:5672
     steps:
       - name: checkout
         uses: actions/checkout@v2
@@ -58,6 +63,11 @@ jobs:
         os: [ubuntu-latest]
         node: ['14']
     runs-on: ${{ matrix.os }}
+    services:
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - 5672:5672
     steps:
       - name: checkout
         uses: actions/checkout@v2
