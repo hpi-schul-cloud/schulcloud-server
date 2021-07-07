@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 enum ContentDisposition {
     Inline = 'INLINE',
     Attachment = 'ATTACHMENT'

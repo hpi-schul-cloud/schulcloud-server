@@ -10,7 +10,9 @@ interface MailModuleOptions {
     routingKey: string,
 }
 
-const createRabbitMqModule = (options: { uri: string; exchange: string }) => {
+type RabbitMqModuleOptions = Omit<MailModuleOptions, 'routingKey'>;
+
+const createRabbitMqModule = (options: RabbitMqModuleOptions) => {
 	const rabbitMqModule = RabbitMQModule.forRoot(RabbitMQModule, {
 		exchanges: [
 			{

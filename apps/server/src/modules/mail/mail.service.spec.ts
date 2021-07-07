@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MailService } from './mail.service';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Mail } from './interfaces/mail';
+import { Mail } from './mail.interface';
 
 describe('MailService', () => {
 	let service: MailService;
