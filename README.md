@@ -24,7 +24,8 @@ Swagger UI documentation when running the server locally, it is served at [http:
 
 ## Setup
 
-You will need the [client](https://github.com/hpi-schul-cloud/schulcloud-client) as well. For more detailed setup instructions, take a look [here](https://docs.hpi-schul-cloud.org/display/SCDOK/Setup). It is written for Windows but the procedure is similar for other OS. 
+For more detailed setup instructions, take a look at [setup](https://docs.hpi-schul-cloud.org/display/SCDOK/Setup).
+The whole application setup with all dependencies can be found in [System Architecture](https://docs.hpi-schul-cloud.org/display/TSC/System+Architecture). It contains information about how different application components are connected to each other.
 
 ## Debugger Configuration in Visual Studio Code
 
