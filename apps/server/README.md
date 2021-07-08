@@ -46,6 +46,16 @@ To test a subset, use
 - `nest:lint` run eslint to report linter issues and apply formatting
 - `nest:lint:fix` run eslint to report and auto-fix fixable linter issues and apply formatting 
 
+# Quality gates
+
+With coverage on tests and static code analysis we ensure some quality gates which are all handled by running `nest:test`:
+
+- ESLint with prettier ensures formatting and static code analysis to pass, see `.eslintrc.js` for details.
+- Tests ensure functional requirements via unit & e2e tests.
+- Coverage on tests ensures a coverage of 80% on NestJS code, see `jest.config.ts` for details. 
+
+Gates are part of pull request checks.
+
 # Legacy (feathers) testing with mocha
 
 - `npm run test`
