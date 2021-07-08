@@ -22,12 +22,6 @@ Swagger UI documentation when running the server locally, it is served at [http:
 - starting the application
 - testing
 
-# Requirements
-
-* Node.js (see `.nvmrc` for version)
-* MongoDB (`4.x`)
-* RabbitMQ (configure using `RABBITMQ_URL`, see `default.schema.json`)
-
 ## Setup
 
 You will need the [client](https://github.com/hpi-schul-cloud/schulcloud-client) as well. For more detailed setup instructions, take a look [here](https://docs.hpi-schul-cloud.org/display/SCDOK/Setup). It is written for Windows but the procedure is similar for other OS. 

@@ -4,7 +4,14 @@ This application extends the existing server-application based on feathers and e
 
 You find the whole [documentation published as GitHub Page](https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application.html)
 
-## Application preconditions
+# Requirements
+
+* Node.js (see `.nvmrc` for version)
+* MongoDB (`4.x`)
+* RabbitMQ (configure using `RABBITMQ_URL`, see `default.schema.json`)
+
+## preconditions
+
 
 1. Have a MongoDB started, run `mongod` 
 2. Have some seed data in datase, use `npm run setup` to reset the db and apply seed data
