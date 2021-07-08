@@ -17,7 +17,7 @@ Beside existing [scripts](/), for the nestJS application the following scripts h
 - `nest:prebuild` remove existing data from previous build
 - `nest:build` compile the applications typescript ressources from apps/server to dist folder, keeps legacy js-code where it is
 - `nest:build:all` currently executes `nest:build`, could additionaly build static assets
-- `nest:start` starts the nest application
+- `nest:start` starts the nest application on `localhost:3030`
 - `nest:start:dev` run application without build from sources in dev-mode with hot-reload
 - `nest:start:debug` run application in dev-mode with hot-reload and debug port opened on port :9229
 - `nest:start:prod` start applicaiton in production mode, requires `nest:build` to be executed beforehand
