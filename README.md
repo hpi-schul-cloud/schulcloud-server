@@ -21,6 +21,8 @@ Swagger UI documentation when running the server locally, it is served at [http:
 - setup & preconditions
 - starting the application
 - testing
+- tools setup (VSCode, Git)
+- architecture
 
 ## Setup
 
