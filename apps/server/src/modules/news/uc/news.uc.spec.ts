@@ -49,7 +49,7 @@ describe('NewsUc', () => {
 				{
 					provide: NewsRepo,
 					useValue: {
-						save() {
+						saveAndFlush() {
 							return {};
 						},
 						findAll() {
@@ -61,7 +61,7 @@ describe('NewsUc', () => {
 							}
 							throw new NotFoundException();
 						},
-						delete(id) {},
+						deleteAndFlush() {},
 					},
 				},
 				{
@@ -149,7 +149,7 @@ describe('NewsUc', () => {
 	});
 	describe('create', () => {
 		it('should assign all required properties to news object', async () => {
-			const createSpy = jest.spyOn(repo, 'save');
+			const createSpy = jest.spyOn(repo, 'saveAndFlush');
 			const params = {
 				title: 'title',
 				content: 'content',
@@ -165,7 +165,7 @@ describe('NewsUc', () => {
 
 		it('should assign target to news object', async () => {
 			const courseId = new ObjectId().toString();
-			const createSpy = jest.spyOn(repo, 'save');
+			const createSpy = jest.spyOn(repo, 'saveAndFlush');
 			const params = {
 				title: 'title',
 				content: 'content',

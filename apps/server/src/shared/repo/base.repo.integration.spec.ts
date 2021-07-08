@@ -50,20 +50,38 @@ describe('BaseRepo', () => {
 	});
 
 	describe('save', () => {
-		it('should create and persist an entity', async () => {
+		it('should persist an entity', () => {
 			const testEntity = new TestEntity();
 
-			await repo.save(testEntity);
-			expect(testEntity.id).toBeDefined();
+			repo.save(testEntity);
+			expect(em.getUnitOfWork().getPersistStack().size).toBe(1);
+		});
+	});
+
+	describe('saveAndFlush', () => {
+		it('should persist and flush an entity', async () => {
+			const testEntity = new TestEntity();
+
+			repo.save(testEntity);
+			expect(testEntity.id).toBeNull();
+			await repo.flush();
 			const expectedResult = await em.findOne(TestEntity, testEntity.id);
 			expect(testEntity).toStrictEqual(expectedResult);
 		});
 	});
 
 	describe('saveAll', () => {
-		it('should create multiple entities and save them', async () => {
+		it('should persist multiple entities', () => {
 			const testEntities = Array.from(Array(5)).map(() => new TestEntity());
-			await repo.saveAll(testEntities);
+			repo.saveAll(testEntities);
+			expect(em.getUnitOfWork().getPersistStack().size).toBe(testEntities.length);
+		});
+	});
+
+	describe('saveAllAndFlush', () => {
+		it('should persist and flush multiple entities', async () => {
+			const testEntities = Array.from(Array(5)).map(() => new TestEntity());
+			await repo.saveAllAndFlush(testEntities);
 
 			const testEntityIds = testEntities.map((n) => n.id);
 
@@ -78,9 +96,19 @@ describe('BaseRepo', () => {
 	describe('delete', () => {
 		it('should delete entity', async () => {
 			const testEntity = new TestEntity();
-			const persisted = await repo.save(testEntity);
+			const persisted = await repo.saveAndFlush(testEntity);
 
-			await repo.delete(persisted);
+			repo.delete(persisted);
+			expect(em.getUnitOfWork().getRemoveStack().size).toBe(1);
+		});
+	});
+
+	describe('deleteAndFlush', () => {
+		it('should delete and flush entity', async () => {
+			const testEntity = new TestEntity();
+			const persisted = await repo.saveAndFlush(testEntity);
+
+			await repo.deleteAndFlush(persisted);
 
 			expect(await em.findOne(TestEntity, persisted.id)).toBeNull();
 		});
@@ -95,13 +123,40 @@ describe('BaseRepo', () => {
 			});
 			await em.flush();
 
-			await repo.deleteAll(testEntities);
+			repo.deleteAll(testEntities);
+			expect(em.getUnitOfWork().getRemoveStack().size).toBe(testEntities.length);
+		});
+	});
+
+	describe('deleteAllAndFlush', () => {
+		it('should delete and flush multiple entities', async () => {
+			const testEntities = Array.from(Array(5)).map(() => {
+				const testEntity = new TestEntity();
+				em.persist(testEntity);
+				return testEntity;
+			});
+			await em.flush();
+
+			await repo.deleteAllAndFlush(testEntities);
 
 			await Promise.all(
 				testEntities.map(async (testEntity) => {
 					expect(await em.findOne(TestEntity, testEntity.id)).toBeNull();
 				})
 			);
+		});
+	});
+
+	describe('flush', () => {
+		it('should flush after save', async () => {
+			const testEntity = new TestEntity();
+			repo.save(testEntity);
+
+			expect(testEntity.id).toBeNull();
+
+			await repo.flush();
+
+			expect(testEntity.id).not.toBeNull();
 		});
 	});
 });

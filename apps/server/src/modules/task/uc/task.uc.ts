@@ -1,3 +1,6 @@
+/* istanbul ignore file */
+// TODO add tests to improve coverage
+
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityId, IPagination } from '@shared/domain';
 import { Counted } from '@shared/domain/types';

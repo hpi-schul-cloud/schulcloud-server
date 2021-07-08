@@ -6,48 +6,51 @@ import { EntityManager } from '@mikro-orm/mongodb';
 export class BaseRepo<T extends BaseEntity> {
 	constructor(protected readonly em: EntityManager) {}
 
-	/**
-	 * In order to save multiple entities use {@code saveAll}
-	 * Due to multiple transactions consistency
-	 * @param obj
-	 * @param autoFlush
-	 */
-	async save(obj: T, autoFlush = true): Promise<T> {
-		this.em.persist(obj);
-		if (autoFlush) {
-			await this.flush();
-		}
-		return obj;
+	save(entity: T): T {
+		this.em.persist(entity);
+		return entity;
 	}
 
-	async saveAll(objs: T[], autoFlush = true): Promise<T[]> {
-		const persisted = objs.map((n) => {
+	async saveAndFlush(entity: T): Promise<T> {
+		await this.em.persistAndFlush(entity);
+		return entity;
+	}
+
+	saveAll(entities: T[]): T[] {
+		const persisted = entities.map((n) => {
 			this.em.persist(n);
 			return n;
 		});
-		if (autoFlush) {
-			await this.em.flush();
-		}
 		return persisted;
+	}
+
+	async saveAllAndFlush(entities: T[]): Promise<T[]> {
+		const persisted = entities.map((n) => {
+			this.em.persist(n);
+			return n;
+		});
+		await this.em.flush();
+		return persisted;
+	}
+
+	delete(entity: T): void {
+		this.em.remove(entity);
+	}
+
+	async deleteAndFlush(entity: T): Promise<void> {
+		await this.em.removeAndFlush(entity);
+	}
+
+	deleteAll(entities: T[]): void {
+		entities.forEach((entity) => this.em.remove(entity));
+	}
+
+	async deleteAllAndFlush(entities: T[]): Promise<void> {
+		entities.forEach((entity) => this.em.remove(entity));
+		await this.em.flush();
 	}
 
 	async flush(): Promise<void> {
 		await this.em.flush();
-	}
-
-	/**
-	 * In order to delete multiple entities use {@code deleteAll}
-	 * Due to multiple transactions consistency
-	 * @param objs
-	 */
-	async delete(objs: T): Promise<void> {
-		await this.em.removeAndFlush(objs);
-	}
-
-	async deleteAll(objs: T[], autoFlush = true): Promise<void> {
-		objs.map((n) => this.em.remove(n));
-		if (autoFlush) {
-			await this.flush();
-		}
 	}
 }
