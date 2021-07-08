@@ -1,7 +1,5 @@
 # HPI Schul-Cloud Server
 
-Based on [Node.js](https://nodejs.org/en/) and [Feathers](https://feathersjs.com/)
-
 Develop: [![Build Status](https://travis-ci.com/hpi-schul-cloud/schulcloud-server.svg?branch=develop)](https://travis-ci.com/hpi-schul-cloud/schulcloud-server) 
 Master: [![Build Status](https://travis-ci.com/hpi-schul-cloud/schulcloud-server.svg?branch=master)](https://travis-ci.com/hpi-schul-cloud/schulcloud-server)
 
@@ -12,8 +10,6 @@ Codacy: [![Codacy Badge](https://app.codacy.com/project/badge/Grade/c1d53a69d043
 
 [![Version](https://img.shields.io/github/release/hpi-schul-cloud/schulcloud-server.svg)](https://github.com/schulcloud/hpi-schul-cloud/releases)
 
-Swagger UI documentation when running the server locally, it is served at [http://localhost:3030/docs/](http://localhost:3030/docs/).
-
 # NestJS application 
 
 > Find the [NestJS applications documentation](https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application.html) of this repository at GitHub pages. It contains information about
@@ -23,6 +19,14 @@ Swagger UI documentation when running the server locally, it is served at [http:
 - testing
 - tools setup (VSCode, Git)
 - architecture
+
+Based on [NestJS](https://docs.nestjs.com/)
+
+# Feathers application
+
+This is legacy part of the application!
+
+Based on [Node.js](https://nodejs.org/en/) and [Feathers](https://feathersjs.com/)
 
 ## Setup
 
