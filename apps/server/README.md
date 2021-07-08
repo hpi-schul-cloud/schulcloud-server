@@ -4,6 +4,12 @@ This application extends the existing server-application based on feathers and e
 
 You find the whole [documentation published as GitHub Page](https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application.html)
 
+## Application preconditions
+
+1. Have a MongoDB started, run `mongod` 
+2. Have some seed data in datase, use `npm run setup` to reset the db and apply seed data
+3. Have RabbitMQ started, run `docker run -d -p 5672:5672 -p 15672:15672 --name rabbitmq rabbitmq:3.8.9-management`. This starts RabbitMQ on port 5672 and a web admin console at localhost:15672 (use guest:guest to login). 
+
 ## How to start the application
 
 Beside existing [scripts](/), for the nestJS application the following scripts have been added. Try not changing the scripts as they should match what NestJS defines by default. Execute `npm run ...`
@@ -11,29 +17,39 @@ Beside existing [scripts](/), for the nestJS application the following scripts h
 - `nest:prebuild` remove existing data from previous build
 - `nest:build` compile the applications typescript ressources from apps/server to dist folder, keeps legacy js-code where it is
 - `nest:build:all` currently executes `nest:build`, could additionaly build static assets
-- `nest:doc:serve` builds code documentation and module relations into /documentation folder and serves it on port :8080
-- `nest:start` starts the nest application // TODO how?
+- `nest:start` starts the nest application
 - `nest:start:dev` run application without build from sources in dev-mode with hot-reload
 - `nest:start:debug` run application in dev-mode with hot-reload and debug port opened on port :9229
 - `nest:start:prod` start applicaiton in production mode, requires `nest:build` to be executed beforehand
+- `nest:docs:build` builds code documentation and module relations into /documentation folder
+- `nest:docs:serve` builds code documentation and module relations into /documentation folder and serves it on port :8080 with hot reload on changes
 
-# How to statically check the code
+# How to test the nest-application with jest
+
+ NestJS must not use _.test.[ts|js] as filename but instead either \*.spec.ts for unit-tests beside tested files or \*.e2e-spec.ts in test folder for end-to-end tests. This ensures legacy/feathers/mocha tests can be separated from jest test suites.
+
+The application must pass the following statement which executes separate checks:
+
+- `nest:test` executes all jest (NestJS) tests with coverage and eslint
+
+To test a subset, use
+
+- `nest:test:all` execute unit and e2e tests 
+- `nest:test:e2e` execute e2e tests only
+- `nest:test:spec` execute unit tests (without e2e) only
+
+- `nest:test:cov` executes all jest tests with coverage check
+
+- `nest:test:watch` executes changed tests again on save
+- `nest:test:debug` executes tests with debugging
 
 - `nest:lint` run eslint to report linter issues and apply formatting
 - `nest:lint:fix` run eslint to report and auto-fix fixable linter issues and apply formatting 
 
-# How to test the application?
+# Legacy (feathers) testing with mocha
 
-- `nest:test` executes all jest  (NestJS) tests, to separate them from existing tests, not use _.test.[ts|js] as filename but instead either \*.spec.ts beside tested files or \*.e2e-spec.ts in test folder
-- `nest:test:watch` executes changed tests again on save
-- `nest:test:cov` reports coverage results
-- `nest:test:debug` executes tests for debugging
-- `nest:test:e2e` execute e2e tests only
-- `nest:test:spec` execute spec tests (without e2e) only
-
-## Static Code Analysis
-
-Based on `npm run nest:test:all` you can ensure the code is accepted to be merged. This executes all tests, checks for linter issues and code coverage. 
+- `npm run test`
+- To run a single test, use `npm run mocha-single -- <path/to/unit.test.js>`.
 
 ## How to get full documentation
 
@@ -66,3 +82,5 @@ Feel free to find related documentation:
 - https://nestjs.com/
 - https://jestjs.io/
 - https://mikro-orm.io/
+- https://min.io/
+- https://www.rabbitmq.com/ 
