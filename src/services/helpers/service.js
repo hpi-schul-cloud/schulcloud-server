@@ -2,8 +2,6 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const logger = require('../../logger');
 
-const { NestAppHolder } = require('../../../dist/apps/server/legacy/nest-app-holder');
-
 const { SMTP_SENDER, NODE_ENV, ENVIRONMENTS } = require('../../../config/globals');
 
 const checkForToken = (params, app) => {
@@ -50,8 +48,7 @@ module.exports = function setup(app) {
 
 			// send mail with defined transport object in production mode
 			if (NODE_ENV === ENVIRONMENTS.PRODUCTION || FORCE_SEND_EMAIL) {
-				const nestApp = NestAppHolder.getInstance();
-				const mailService = nestApp.get(MailService);
+				const mailService = app.service('/nest-mail');
 				mailService.send(mailContent);
 			}
 			// otherwise print email message object on console
