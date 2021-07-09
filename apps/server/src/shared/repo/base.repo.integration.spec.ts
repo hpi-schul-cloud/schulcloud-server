@@ -49,20 +49,20 @@ describe('BaseRepo', () => {
 		});
 	});
 
-	describe('save', () => {
+	describe('persist', () => {
 		it('should persist an entity', () => {
 			const testEntity = new TestEntity();
 
-			repo.save(testEntity);
+			repo.persist(testEntity);
 			expect(em.getUnitOfWork().getPersistStack().size).toBe(1);
 		});
 	});
 
-	describe('saveAndFlush', () => {
+	describe('persistAndFlush', () => {
 		it('should persist and flush an entity', async () => {
 			const testEntity = new TestEntity();
 
-			repo.save(testEntity);
+			repo.persist(testEntity);
 			expect(testEntity.id).toBeNull();
 			await repo.flush();
 			const expectedResult = await em.findOne(TestEntity, testEntity.id);
@@ -70,18 +70,18 @@ describe('BaseRepo', () => {
 		});
 	});
 
-	describe('saveAll', () => {
+	describe('persistAll', () => {
 		it('should persist multiple entities', () => {
 			const testEntities = Array.from(Array(5)).map(() => new TestEntity());
-			repo.saveAll(testEntities);
+			repo.persistAll(testEntities);
 			expect(em.getUnitOfWork().getPersistStack().size).toBe(testEntities.length);
 		});
 	});
 
-	describe('saveAllAndFlush', () => {
+	describe('persistAllAndFlush', () => {
 		it('should persist and flush multiple entities', async () => {
 			const testEntities = Array.from(Array(5)).map(() => new TestEntity());
-			await repo.saveAllAndFlush(testEntities);
+			await repo.persistAllAndFlush(testEntities);
 
 			const testEntityIds = testEntities.map((n) => n.id);
 
@@ -93,29 +93,29 @@ describe('BaseRepo', () => {
 		});
 	});
 
-	describe('delete', () => {
-		it('should delete entity', async () => {
+	describe('remove', () => {
+		it('should remove entity', async () => {
 			const testEntity = new TestEntity();
-			const persisted = await repo.saveAndFlush(testEntity);
+			const persisted = await repo.persistAndFlush(testEntity);
 
-			repo.delete(persisted);
+			repo.remove(persisted);
 			expect(em.getUnitOfWork().getRemoveStack().size).toBe(1);
 		});
 	});
 
-	describe('deleteAndFlush', () => {
-		it('should delete and flush entity', async () => {
+	describe('removeAndFlush', () => {
+		it('should remove and flush entity', async () => {
 			const testEntity = new TestEntity();
-			const persisted = await repo.saveAndFlush(testEntity);
+			const persisted = await repo.persistAndFlush(testEntity);
 
-			await repo.deleteAndFlush(persisted);
+			await repo.removeAndFlush(persisted);
 
 			expect(await em.findOne(TestEntity, persisted.id)).toBeNull();
 		});
 	});
 
-	describe('deleteAll', () => {
-		it('should delete multiple entities', async () => {
+	describe('removeAll', () => {
+		it('should remove multiple entities', async () => {
 			const testEntities = Array.from(Array(5)).map(() => {
 				const testEntity = new TestEntity();
 				em.persist(testEntity);
@@ -123,13 +123,13 @@ describe('BaseRepo', () => {
 			});
 			await em.flush();
 
-			repo.deleteAll(testEntities);
+			repo.removeAll(testEntities);
 			expect(em.getUnitOfWork().getRemoveStack().size).toBe(testEntities.length);
 		});
 	});
 
-	describe('deleteAllAndFlush', () => {
-		it('should delete and flush multiple entities', async () => {
+	describe('removeAllAndFlush', () => {
+		it('should remove and flush multiple entities', async () => {
 			const testEntities = Array.from(Array(5)).map(() => {
 				const testEntity = new TestEntity();
 				em.persist(testEntity);
@@ -137,7 +137,7 @@ describe('BaseRepo', () => {
 			});
 			await em.flush();
 
-			await repo.deleteAllAndFlush(testEntities);
+			await repo.removeAllAndFlush(testEntities);
 
 			await Promise.all(
 				testEntities.map(async (testEntity) => {
@@ -150,7 +150,7 @@ describe('BaseRepo', () => {
 	describe('flush', () => {
 		it('should flush after save', async () => {
 			const testEntity = new TestEntity();
-			repo.save(testEntity);
+			repo.persist(testEntity);
 
 			expect(testEntity.id).toBeNull();
 

@@ -6,17 +6,17 @@ import { EntityManager } from '@mikro-orm/mongodb';
 export class BaseRepo<T extends BaseEntity> {
 	constructor(protected readonly em: EntityManager) {}
 
-	save(entity: T): T {
+	persist(entity: T): T {
 		this.em.persist(entity);
 		return entity;
 	}
 
-	async saveAndFlush(entity: T): Promise<T> {
+	async persistAndFlush(entity: T): Promise<T> {
 		await this.em.persistAndFlush(entity);
 		return entity;
 	}
 
-	saveAll(entities: T[]): T[] {
+	persistAll(entities: T[]): T[] {
 		const persisted = entities.map((n) => {
 			this.em.persist(n);
 			return n;
@@ -24,7 +24,7 @@ export class BaseRepo<T extends BaseEntity> {
 		return persisted;
 	}
 
-	async saveAllAndFlush(entities: T[]): Promise<T[]> {
+	async persistAllAndFlush(entities: T[]): Promise<T[]> {
 		const persisted = entities.map((n) => {
 			this.em.persist(n);
 			return n;
@@ -33,19 +33,19 @@ export class BaseRepo<T extends BaseEntity> {
 		return persisted;
 	}
 
-	delete(entity: T): void {
+	remove(entity: T): void {
 		this.em.remove(entity);
 	}
 
-	async deleteAndFlush(entity: T): Promise<void> {
+	async removeAndFlush(entity: T): Promise<void> {
 		await this.em.removeAndFlush(entity);
 	}
 
-	deleteAll(entities: T[]): void {
+	removeAll(entities: T[]): void {
 		entities.forEach((entity) => this.em.remove(entity));
 	}
 
-	async deleteAllAndFlush(entities: T[]): Promise<void> {
+	async removeAllAndFlush(entities: T[]): Promise<void> {
 		entities.forEach((entity) => this.em.remove(entity));
 		await this.em.flush();
 	}
