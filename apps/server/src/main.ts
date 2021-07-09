@@ -4,13 +4,13 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
 
-import { NestAppHolder } from './legacy/nest-app-holder';
-
 // application imports
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
 import { API_DOCS_PATH, PORT, ROUTE_PRAEFIX } from './constants';
 import { enableOpenApiDocs } from './shared/controller/swagger';
+import { Mail } from './modules/mail/mail.interface';
+import { MailService } from './modules/mail/mail.service';
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -32,7 +32,13 @@ async function bootstrap() {
 
 	await app.init();
 
-	NestAppHolder.setInstance(app); // TODO auto inject app within NestFactory.create
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+	legacyApp.services['nest-mail'] = {
+		async send(data: Mail): Promise<void> {
+			const mailService = app.get(MailService);
+			await mailService.send(data);
+		},
+	};
 
 	adapter.listen(PORT);
 }
