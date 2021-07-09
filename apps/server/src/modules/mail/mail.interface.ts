@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 interface MailAttachment {
 	base64Content: string;
 

@@ -26,6 +26,8 @@ jobs:
           sh scripts/unitTestFeathers.sh
       - name: npm ci
         run: npm ci --prefer-offline --no-audit
+      - name: nest build
+        run: npm run nest:build
       - name: feathers:Test - test with coverage
         run: npm run feathers:test
   nest_tests_cov:
@@ -35,6 +37,11 @@ jobs:
         mongodb-version: [4.2]
         node: ['14']
     runs-on: ${{ matrix.os }}
+    services:
+      rabbitmq:
+        image: rabbitmq:3
+        ports:
+          - 5672:5672
     steps:
       - name: checkout
         uses: actions/checkout@v2
@@ -56,6 +63,11 @@ jobs:
         os: [ubuntu-latest]
         node: ['14']
     runs-on: ${{ matrix.os }}
+    services:
+      rabbitmq:
+        image: rabbitmq:3
+        ports:
+          - 5672:5672
     steps:
       - name: checkout
         uses: actions/checkout@v2

@@ -1,6 +1,7 @@
 import { Module, NotFoundException } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { AuthModule } from './modules/authentication/auth.module';
 import { ServerController } from './server.controller';
 import { DB_URL, DB_USERNAME, DB_PASSWORD } from './config';
@@ -33,8 +34,12 @@ const userEntities = [User, Role, Account];
 		AuthModule,
 		TaskModule,
 		NewsModule,
-		// MailModule, // TODO enable
 		UserModule,
+		MailModule.forRoot({
+			uri: Configuration.get('RABBITMQ_URI') as string,
+			exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
+			routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
+		}),
 		MikroOrmModule.forRoot({
 			type: 'mongo',
 			// TODO add mongoose options as mongo options (see database.js)
