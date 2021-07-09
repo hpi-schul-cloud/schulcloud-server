@@ -1,3 +1,6 @@
+/* istanbul ignore file */
+// TODO add tests to improve coverage
+
 import { Injectable } from '@nestjs/common';
 import { UserUC } from './uc/user.uc';
 import { ICurrentUser } from '../authentication/interface/jwt-payload';
