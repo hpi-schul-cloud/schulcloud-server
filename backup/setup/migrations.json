@@ -1051,12 +1051,23 @@
 },
 {
 	"_id": {
-		"$oid": "60d1c6d0b2616a2aedc4bfd7"
+		"$oid": "60e8280d587593fe66d5d522"
 	},
 	"state": "up",
 	"name": "start_new_school_year_brb",
 	"createdAt": {
 		"$date": "2021-06-22T11:17:36.497Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "60e826d66ca4e7f968d1bae0"
+	},
+	"state": "up",
+	"name": "start_new_school_year_21_22",
+	"createdAt": {
+		"$date": "2021-07-09T09:53:24.523Z"
 	},
 	"__v": 0
 }]

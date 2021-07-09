@@ -1,95 +1,21 @@
 [{
 	"_id": {
-		"$oid": "5f2987e020834114b8efd6f7"
-	},
-	"name": "Schiller-Oberschule",
-	"fileStorageType": "awsS3",
-	"systems": [
-		{
-			"$oid": "0000d186816abba584714c90"
-		}
-	],
-	"updatedAt": {
-		"$date": "2020-08-04T07:21:33.616Z"
-	},
-	"createdAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
-	},
-	"__v": 0,
-	"currentYear": {
-		"$oid": "5d44297075e1502c27e405e2"
-	},
-	"purpose": "demo",
-	"permissions" : {
-        "teacher" : {
-            "STUDENT_LIST" : true
-        }
-    }
-},
-{
-	"_id": {
-		"$oid": "5f2987e020834114b8efd6f8"
-	},
-	"name": "Paul-Gerhardt-Gymnasium",
-	"fileStorageType": "awsS3",
-	"federalState": {
-		"$oid": "0000b186816abba584714c53"
-	},
-	"county":{
-		"antaresKey" : "BRB",
-		"_id" : {"$oid":"5fa55eb53f472a2d986c8812"},
-		"countyId" : 12051,
-		"name" : "Brandenburg an der Havel"
-	},
-	"systems": [
-		{
-			"$oid": "0000d186816abba584714c91"
-		},
-		{
-			"$oid": "0000d186816abba584714c92"
-		},
-		{
-			"$oid": "0000d186816abba584714c90"
-		}
-	],
-	"updatedAt": {
-		"$date": "2020-07-27T08:21:14.719Z"
-	},
-	"createdAt": {
-		"$date": "2017-01-01T00:06:37.148Z"
-	},
-	"__v": 0,
-	"currentYear": {
-		"$oid": "5d44297075e1502c27e405e2"
-	},
-	"purpose": "demo",
-	"features": [
-		"rocketChat",
-		"messenger"
-	],
-	"enableStudentTeamCreation": false,
-	"permissions" : {
-        "teacher" : {
-            "STUDENT_LIST" : true
-        }
-    }
-},
-{
-	"_id": {
 		"$oid": "5f2987e020834114b8efd6f9"
 	},
 	"updatedAt": {
-		"$date": "2020-07-27T08:21:14.719Z"
+		"$date": "2021-07-09T10:42:21.776Z"
 	},
 	"name": "Expertenschule",
 	"federalState": {
 		"$oid": "0000b186816abba584714c53"
 	},
-	"county":{
-		"antaresKey" : "CB",
-		"_id" : {"$oid":"5fa55eb53f472a2d986c8813"},
-		"countyId" : 12052,
-		"name" : "Cottbus"
+	"county": {
+		"antaresKey": "CB",
+		"_id": {
+			"$oid": "5fa55eb53f472a2d986c8813"
+		},
+		"countyId": 12052,
+		"name": "Cottbus"
 	},
 	"createdAt": {
 		"$date": "2018-11-09T10:04:11.721Z"
@@ -98,7 +24,7 @@
 	"__v": 0,
 	"fileStorageType": "awsS3",
 	"currentYear": {
-		"$oid": "5d44297075e1502c27e405e2"
+		"$oid": "5ebd6dc14a431f75ec9a3e77"
 	},
 	"purpose": "expert"
 },
@@ -107,18 +33,20 @@
 		"$oid": "5f2987e020834114b8efd6f6"
 	},
 	"updatedAt": {
-		"$date": "2020-07-27T08:21:14.719Z"
+		"$date": "2021-07-09T10:42:21.776Z"
 	},
 	"name": "Demo Schule",
 	"federalState": {
 		"$oid": "0000b186816abba584714c53"
 	},
-	"county":{
-            "antaresKey" : "CB",
-            "_id" : {"$oid":"5fa55eb53f472a2d986c8813"},
-            "countyId" : 12052,
-            "name" : "Cottbus"
-        },
+	"county": {
+		"antaresKey": "CB",
+		"_id": {
+			"$oid": "5fa55eb53f472a2d986c8813"
+		},
+		"countyId": 12052,
+		"name": "Cottbus"
+	},
 	"createdAt": {
 		"$date": "2017-08-24T12:04:11.721Z"
 	},
@@ -126,179 +54,14 @@
 	"__v": 0,
 	"fileStorageType": "awsS3",
 	"currentYear": {
-		"$oid": "5d44297075e1502c27e405e2"
+		"$oid": "5ebd6dc14a431f75ec9a3e77"
 	},
-	"purpose": "demo",
-	"permissions" : {
-        "teacher" : {
-            "STUDENT_LIST" : true
-        }
-    }
-},
-{
-	"_id": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
-	},
-	"documentBaseDirType": "",
-	"systems": [],
-	"experimental": false,
-	"pilot": false,
-	"features": [
-		"rocketChat",
-		"messenger",
-		"studentVisibility"
-	],
-	"name": "Felix Mendelssohn-Gymnasium",
-	"federalState": {
-		"$oid": "0000b186816abba584714c53"
-	},
-	"county":{
-		"antaresKey" : "CB",
-		"_id" : {"$oid":"5fa55eb53f472a2d986c8813"},
-		"countyId" : 12052,
-		"name" : "Cottbus"
-	},
-	"fileStorageType": "awsS3",
-	"currentYear": {
-		"$oid": "5d44297075e1502c27e405e2"
-	},
-	"createdAt": {
-		"$date": "2020-11-04T15:16:28.827Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-04T21:58:25.254Z"
-	},
-	"customYears": [],
-	"rssFeeds": [],
-	"__v": 0,
 	"purpose": "demo",
 	"permissions": {
-		"student": {
-			"LERNSTORE_VIEW": true
+		"teacher": {
+			"STUDENT_LIST": true
 		}
-	},
-	"language": "de",
-	"logo_dataUrl": "",
-	"officialSchoolNumber": ""
-},
-{
-	"_id": {
-		"$oid": "5fa318f2b229544f2c697a56"
-	},
-	"documentBaseDirType": "",
-	"systems": [],
-	"experimental": false,
-	"pilot": false,
-	"features": [
-		"rocketChat",
-		"messenger"
-	],
-	"name": "Ludwig van Beethoven-Liceum",
-	"federalState": {
-		"$oid": "0000b186816abba584714c53"
-	},
-	"county":{
-		"antaresKey" : "CB",
-		"_id" : {"$oid":"5fa55eb53f472a2d986c8813"},
-		"countyId" : 12052,
-		"name" : "Cottbus"
-	},
-	"fileStorageType": "awsS3",
-	"currentYear": {
-		"$oid": "5d44297075e1502c27e405e2"
-	},
-	"createdAt": {
-		"$date": "2020-11-04T21:11:14.312Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-04T21:59:44.255Z"
-	},
-	"customYears": [],
-	"rssFeeds": [],
-	"__v": 0,
-	"purpose": "demo",
-	"permissions": {
-		"student": {
-			"LERNSTORE_VIEW": true
-		}
-	},
-	"language": "de",
-	"logo_dataUrl": "",
-	"officialSchoolNumber": ""
-},
-{
-	"_id": {
-		"$oid": "5fa31f3db229544f2c697e3e"
-	},
-	"documentBaseDirType": "",
-	"systems": [],
-	"experimental": false,
-	"pilot": false,
-	"features": [
-		"rocketChat",
-		"messenger",
-		"studentVisibility"
-	],
-	"name": "Brasilien Schule",
-	"federalState": {
-		"$oid": "5f058f43174c832714864f96"
-	},
-	"fileStorageType": "awsS3",
-	"timezone": "America/Belem",
-	"currentYear": {
-		"$oid": "5d44297075e1502c27e405e2"
-	},
-	"createdAt": {
-		"$date": "2020-11-04T21:38:05.11Z"
-	},
-	"updatedAt": {
-		"$date": "2020-11-04T21:54:10.847Z"
-	},
-	"customYears": [],
-	"rssFeeds": [],
-	"__v": 0,
-	"purpose": "demo",
-	"permissions": {
-		"student": {
-			"LERNSTORE_VIEW": true
-		}
-	},
-	"language": "en",
-	"logo_dataUrl": "",
-	"officialSchoolNumber": ""
-},
-{
-	"_id": {
-		"$oid": "5fcfb0bc685b9af4d4abf899"
-	},
-	"documentBaseDirType": "",
-	"systems": [],
-	"experimental": false,
-	"pilot": false,
-	"features": [],
-	"name": "school in Ni",
-	"federalState": {
-		"$oid": "0000b186816abba584714c58"
-	},
-	"county":{
-		"antaresKey" : "NI",
-		"_id": {"$oid":"5fa55eb53f472a2d986c8812"},
-		"countyId": 3256,
-		"name": "Nienburg/Weser"
-	},
-	"fileStorageType": "awsS3",
-	"currentYear": {
-		"$oid": "5d44297075e1502c27e405e2"
-	},
-	"createdAt": {
-		"$date": "2020-12-08T16:58:36.527Z"
-	},
-	"updatedAt": {
-		"$date": "2020-12-08T16:58:36.527Z"
-	},
-	"customYears": [],
-	"rssFeeds": [],
-	"__v": 0
+	}
 },
 {
 	"_id": {
@@ -320,5 +83,254 @@
 	"rssFeeds": [],
 	"__v": 0,
 	"purpose": "tombstone"
+},
+{
+	"_id": {
+		"$oid": "5fcfb0bc685b9af4d4abf899"
+	},
+	"documentBaseDirType": "",
+	"systems": [],
+	"experimental": false,
+	"pilot": false,
+	"features": [],
+	"name": "school in Ni",
+	"federalState": {
+		"$oid": "0000b186816abba584714c58"
+	},
+	"county": {
+		"antaresKey": "NI",
+		"_id": {
+			"$oid": "5fa55eb53f472a2d986c8812"
+		},
+		"countyId": 3256,
+		"name": "Nienburg/Weser"
+	},
+	"fileStorageType": "awsS3",
+	"currentYear": {
+		"$oid": "5ebd6dc14a431f75ec9a3e77"
+	},
+	"createdAt": {
+		"$date": "2020-12-08T16:58:36.527Z"
+	},
+	"updatedAt": {
+		"$date": "2021-07-09T10:37:10.666Z"
+	},
+	"customYears": [],
+	"rssFeeds": [],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
+	},
+	"documentBaseDirType": "",
+	"systems": [],
+	"experimental": false,
+	"pilot": false,
+	"features": [
+		"rocketChat",
+		"messenger",
+		"studentVisibility"
+	],
+	"name": "Felix Mendelssohn-Gymnasium",
+	"federalState": {
+		"$oid": "0000b186816abba584714c53"
+	},
+	"county": {
+		"antaresKey": "CB",
+		"_id": {
+			"$oid": "5fa55eb53f472a2d986c8813"
+		},
+		"countyId": 12052,
+		"name": "Cottbus"
+	},
+	"fileStorageType": "awsS3",
+	"currentYear": {
+		"$oid": "5ebd6dc14a431f75ec9a3e77"
+	},
+	"createdAt": {
+		"$date": "2020-11-04T15:16:28.827Z"
+	},
+	"updatedAt": {
+		"$date": "2021-07-09T10:42:21.776Z"
+	},
+	"customYears": [],
+	"rssFeeds": [],
+	"__v": 0,
+	"purpose": "demo",
+	"permissions": {
+		"student": {
+			"LERNSTORE_VIEW": true
+		}
+	},
+	"language": "de",
+	"logo_dataUrl": "",
+	"officialSchoolNumber": ""
+},
+{
+	"_id": {
+		"$oid": "5f2987e020834114b8efd6f7"
+	},
+	"name": "Schiller-Oberschule",
+	"fileStorageType": "awsS3",
+	"systems": [
+		{
+			"$oid": "0000d186816abba584714c90"
+		}
+	],
+	"updatedAt": {
+		"$date": "2020-08-04T07:21:33.616Z"
+	},
+	"createdAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
+	},
+	"__v": 0,
+	"currentYear": {
+		"$oid": "5d44297075e1502c27e405e2"
+	},
+	"purpose": "demo",
+	"permissions": {
+		"teacher": {
+			"STUDENT_LIST": true
+		}
+	}
+},
+{
+	"_id": {
+		"$oid": "5fa318f2b229544f2c697a56"
+	},
+	"documentBaseDirType": "",
+	"systems": [],
+	"experimental": false,
+	"pilot": false,
+	"features": [
+		"rocketChat",
+		"messenger"
+	],
+	"name": "Ludwig van Beethoven-Liceum",
+	"federalState": {
+		"$oid": "0000b186816abba584714c53"
+	},
+	"county": {
+		"antaresKey": "CB",
+		"_id": {
+			"$oid": "5fa55eb53f472a2d986c8813"
+		},
+		"countyId": 12052,
+		"name": "Cottbus"
+	},
+	"fileStorageType": "awsS3",
+	"currentYear": {
+		"$oid": "5ebd6dc14a431f75ec9a3e77"
+	},
+	"createdAt": {
+		"$date": "2020-11-04T21:11:14.312Z"
+	},
+	"updatedAt": {
+		"$date": "2021-07-09T10:42:21.776Z"
+	},
+	"customYears": [],
+	"rssFeeds": [],
+	"__v": 0,
+	"purpose": "demo",
+	"permissions": {
+		"student": {
+			"LERNSTORE_VIEW": true
+		}
+	},
+	"language": "de",
+	"logo_dataUrl": "",
+	"officialSchoolNumber": ""
+},
+{
+	"_id": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"name": "Paul-Gerhardt-Gymnasium",
+	"fileStorageType": "awsS3",
+	"federalState": {
+		"$oid": "0000b186816abba584714c53"
+	},
+	"county": {
+		"antaresKey": "BRB",
+		"_id": {
+			"$oid": "5fa55eb53f472a2d986c8812"
+		},
+		"countyId": 12051,
+		"name": "Brandenburg an der Havel"
+	},
+	"systems": [
+		{
+			"$oid": "0000d186816abba584714c91"
+		},
+		{
+			"$oid": "0000d186816abba584714c92"
+		},
+		{
+			"$oid": "0000d186816abba584714c90"
+		}
+	],
+	"updatedAt": {
+		"$date": "2021-07-09T10:42:21.776Z"
+	},
+	"createdAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
+	},
+	"__v": 0,
+	"currentYear": {
+		"$oid": "5ebd6dc14a431f75ec9a3e77"
+	},
+	"purpose": "demo",
+	"features": [
+		"rocketChat",
+		"messenger"
+	],
+	"enableStudentTeamCreation": false,
+	"permissions": {
+		"teacher": {
+			"STUDENT_LIST": true
+		}
+	}
+},
+{
+	"_id": {
+		"$oid": "5fa31f3db229544f2c697e3e"
+	},
+	"documentBaseDirType": "",
+	"systems": [],
+	"experimental": false,
+	"pilot": false,
+	"features": [
+		"rocketChat",
+		"messenger",
+		"studentVisibility"
+	],
+	"name": "Brasilien Schule",
+	"federalState": {
+		"$oid": "5f058f43174c832714864f96"
+	},
+	"fileStorageType": "awsS3",
+	"timezone": "America/Belem",
+	"currentYear": {
+		"$oid": "5ebd6dc14a431f75ec9a3e77"
+	},
+	"createdAt": {
+		"$date": "2020-11-04T21:38:05.11Z"
+	},
+	"updatedAt": {
+		"$date": "2021-07-09T10:37:10.666Z"
+	},
+	"customYears": [],
+	"rssFeeds": [],
+	"__v": 0,
+	"purpose": "demo",
+	"permissions": {
+		"student": {
+			"LERNSTORE_VIEW": true
+		}
+	},
+	"language": "en",
+	"logo_dataUrl": "",
+	"officialSchoolNumber": ""
 }]
 

@@ -11,6 +11,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-9150 - add migration to change school year (except BRB)
 - SC-9018; SC-9003 - created schoolsList public endpoint, and jwt secured /schools endpoint
 - SC-9093 - make configured default language and timezone available in config service
 - SC-9092 - delete S3 files after 7 days from user deletion
