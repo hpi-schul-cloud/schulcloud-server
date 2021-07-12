@@ -8,16 +8,10 @@ jobs:
     if: github.event.ref_type == 'branch'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Extract branch name
-        shell: bash
-        run: |
-          git_ref_name='$(echo ${GITHUB_REF#refs/heads/})'
-          echo "git_ref_name=$git_ref_name" >> $GITHUB_ENV
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v1
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           repository: hpi-schul-cloud/dof_app_deploy
           event-type: dev-clean
-          client-payload: '{"branch": "${{ env.git_ref_name }}" }'
+          client-payload: '{"branch": "${{ github.event.ref }}" }'
