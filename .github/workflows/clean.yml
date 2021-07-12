@@ -4,7 +4,7 @@ name: Clean Deployment
 on: delete
 
 jobs:
-  dispatch:
+  dispatch-clean:
     if: github.event.ref_type == 'branch'
     runs-on: ubuntu-latest
     steps:
@@ -13,7 +13,7 @@ jobs:
         shell: bash
         run: |
           git_ref_name='$(echo ${GITHUB_REF#refs/heads/})'
-          echo "git_ref_name=$git_ref_name" >> $GITHUB_ENV        
+          echo "git_ref_name=$git_ref_name" >> $GITHUB_ENV
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v1
         with:
