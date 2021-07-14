@@ -2,6 +2,7 @@
 .git
 .gitignore
 .gitattributes
+node_modules
 .idea
 .build
 .travis.yml
