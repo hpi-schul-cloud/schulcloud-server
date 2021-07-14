@@ -54,7 +54,7 @@ jobs:
       - name: npm ci
         run: npm ci --prefer-offline --no-audit
       - name: nest:test:cov - test all with coverage
-        run: npm run nest:test:cov
+        run: npm run nest:test:cov --maxWorkers=2
   nest_lint:
     strategy:
       matrix:
@@ -76,4 +76,4 @@ jobs:
       - name: npm ci
         run: npm ci --prefer-offline --no-audit
       - name: nest:lint
-        run: npm run nest:lint
+        run: npm run nest:lint --maxWorkers=2
