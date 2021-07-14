@@ -53,7 +53,7 @@
 		"nest:start:debug": "nest start --debug --watch",
 		"nest:start:prod": "node dist/apps/server/main",
 		"nest:test": "npm run nest:test:cov && npm run nest:lint",
-		"nest:test:all": "jest ",
+		"nest:test:all": "jest",
 		"nest:test:spec": "jest \"\\.spec\\.ts$\"",
 		"nest:test:e2e": "jest \"\\.e2e-spec\\.ts$\"",
 		"nest:test:watch": "jest --watch",
