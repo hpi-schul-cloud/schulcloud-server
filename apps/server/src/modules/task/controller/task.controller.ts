@@ -1,3 +1,6 @@
+/* istanbul ignore file */
+// TODO add tests to improve coverage
+
 import { ApiTags } from '@nestjs/swagger';
 
 import { PaginationResponse } from '@shared/controller/dto/pagination.response';

@@ -16,6 +16,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-9092 - delete S3 files after 7 days from user deletion
 - SC-8959 - Add messenger to deletion concept
 - SC-9157 - Add RabbitMQ connection to new mail service
+- SC-9157 - Improve config handling for RabbitMQ
+- OPS-2574 - Removeing autodeployed branches for developers if branch deleted
 
 ### Changed
 

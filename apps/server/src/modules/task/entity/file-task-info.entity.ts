@@ -1,3 +1,6 @@
+/* istanbul ignore file */
+// TODO add tests to improve coverage
+
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain';
 import { UserTaskInfo } from './user-task-info.entity';
