@@ -22,14 +22,30 @@
 - remove sentry from code
 - remove mongoose history (keep one)
 - remove custom npm packages (ldap, ...)
+- e2e default tests to extend: auth required, fails without/succeeds with  
 
 ## ACCEPTED
+
+- documentation
+  - entity constructor
+  - em to be used in repositories only (!!!)
 
 - load/perf test
 
 - disable legacy ts support (app, tests)
 
 - fix .env/config for windows
+
+## MERGE 
+
+- api path prefix cleanup: remove middleware and multiple path mounts, sync with nest
+- user module stucture
+- single domain: shared entity (main.ts), shared repository 
+- request.user.user in jwt strategy
+- remove outdated sorting.ts 
+- remove default launch/settings json files, apply them
+- fix https://github.com/hpi-schul-cloud/schulcloud-server/pull/2729#pullrequestreview-699615164
+
 
 ## SELECTED
 

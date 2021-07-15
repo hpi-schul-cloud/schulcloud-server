@@ -49,6 +49,7 @@ class PublicAppConfigService {
 	}
 
 	find() {
+		// TODO: add true/false for getRedisClient() as check for this.$axios.$post("/accounts/jwtTimer");
 		const envs = {};
 		exposedVars.forEach((varName) => {
 			if (Configuration.has(varName)) {

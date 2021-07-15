@@ -1,46 +1,283 @@
-[
-{
-	"_id" : { "$oid": "59df0e03caee3e1158ee2f77" },
-	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6" },
-	"title" : "Willkommen in der Schul-Cloud!",
-	"content" : "<p>Liebe Schu&uuml;lerinnen und Sch&uuml;ler,</p>\r\n\r\n<p>um auch im n&auml;chsten Jahrzehnt des 21. Jahrhunderts bildungsm&auml;&szlig;ig spitze aufgestellt zu sein, nutzen wir ab sofort die Schul-Cloud. Mit Hilfe der Schul-Cloud k&ouml;nnen wir uns unter anderem mit den bereits bestehenden Moodle-Accounts anmelden, viele Tools nutzen und auf Bildungsinhalte zugreifen. Weiterhin k&ouml;nnen wir auch die Stundenpl&auml;ne online aktualisieren und Aufgaben erstellen.</p>\r\n",
-	"creatorId" : { "$oid": "59ad4c412b442b7f81810285" },
-	"history" : [],
-	"createdAt" : { "$date": "2017-10-12T06:38:59.755Z" },
-	"displayAt" : { "$date": "2017-10-12T06:00:00.000Z" },
-	"__v" : 0
+[{
+	"_id": {
+		"$oid": "59df0e03caee3e1158ee2f77"
+	},
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f6"
+	},
+	"title": "Willkommen in der Schul-Cloud!",
+	"content": "<p>Liebe Schu&uuml;lerinnen und Sch&uuml;ler,</p>\r\n\r\n<p>um auch im n&auml;chsten Jahrzehnt des 21. Jahrhunderts bildungsm&auml;&szlig;ig spitze aufgestellt zu sein, nutzen wir ab sofort die Schul-Cloud. Mit Hilfe der Schul-Cloud k&ouml;nnen wir uns unter anderem mit den bereits bestehenden Moodle-Accounts anmelden, viele Tools nutzen und auf Bildungsinhalte zugreifen. Weiterhin k&ouml;nnen wir auch die Stundenpl&auml;ne online aktualisieren und Aufgaben erstellen.</p>\r\n",
+	"creatorId": {
+		"$oid": "59ad4c412b442b7f81810285"
+	},
+	"history": [],
+	"createdAt": {
+		"$date": "2017-10-12T06:38:59.755Z"
+	},
+	"displayAt": {
+		"$date": "2017-10-12T06:00:00Z"
+	},
+	"__v": 0,
+	"target": {
+		"$oid": "5f2987e020834114b8efd6f6"
+	},
+	"targetModel": "schools"
 },
 {
-	"_id" : { "$oid": "59df0f48caee3e1158ee2f78" },
-	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6" },
-	"title" : "Willkommen im Schuljahr 2017/18!",
-	"content" : "<p>Die Schulleitung hei&szlig;t alle (neuen) Sch&uuml;ler im neuen Schuljahr herzlich willkommen!</p>\r\n\r\n<p>Wir freuen uns auf ein neues spannendes Schuljahr mit vielen interessanten Highlights: Unter anderem ist ein Besuch der 12. Klassen bei der UNESCO sowie ein Sch&uuml;leraustausch mit einer Schule im Silicon Valley der Klassenstufe 10 geplant.</p>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<p>Einen guten Start und viel Erfolg w&uuml;nscht Euch die Schulleitung sowie das Lehrerkolleg!</p>\r\n",
-	"creatorId" : { "$oid": "59ad4c412b442b7f81810285" },
-	"history" : [],
-	"createdAt" : { "$date": "2017-10-12T06:44:24.134Z" },
-	"displayAt" : { "$date": "2017-10-12T06:00:00.000Z" },
-	"__v" : 0
+	"_id": {
+		"$oid": "59df0f48caee3e1158ee2f78"
+	},
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f6"
+	},
+	"title": "Willkommen im Schuljahr 2017/18!",
+	"content": "<p>Die Schulleitung hei&szlig;t alle (neuen) Sch&uuml;ler im neuen Schuljahr herzlich willkommen!</p>\r\n\r\n<p>Wir freuen uns auf ein neues spannendes Schuljahr mit vielen interessanten Highlights: Unter anderem ist ein Besuch der 12. Klassen bei der UNESCO sowie ein Sch&uuml;leraustausch mit einer Schule im Silicon Valley der Klassenstufe 10 geplant.</p>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<p>Einen guten Start und viel Erfolg w&uuml;nscht Euch die Schulleitung sowie das Lehrerkolleg!</p>\r\n",
+	"creatorId": {
+		"$oid": "59ad4c412b442b7f81810285"
+	},
+	"history": [],
+	"createdAt": {
+		"$date": "2017-10-12T06:44:24.134Z"
+	},
+	"displayAt": {
+		"$date": "2017-10-12T06:00:00Z"
+	},
+	"__v": 0,
+	"target": {
+		"$oid": "5f2987e020834114b8efd6f6"
+	},
+	"targetModel": "schools"
 },
 {
-	"_id" : { "$oid": "59df1285caee3e1158ee2f79" },
-	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6" },
-	"title" : "Gesunde Schule 2017",
-	"content" : "<p>Liebe Sch&uuml;lerinnen und Sch&uuml;ler,</p>\r\n\r\n<p>schon seit einigen Jahren sind wir eine &quot;Gesunde Schule&quot;. Um dieses Motto nun noch verst&auml;rkter umzusetzen, haben wir seit dem Beginn des neuen Schuljahres einen neuen Mensa-Anbieter! So wird eure Mittagspause mit regionalen und gesunden Produkten noch besser!</p>\r\n\r\n<p>Einen guten Appetit w&uuml;nscht euch die Schulleitung und das Lehrerkolleg!</p>\r\n",
-	"creatorId" : { "$oid": "59ad4c412b442b7f81810285" },
-	"history" : [],
-	"createdAt" : { "$date": "2017-10-12T06:58:13.541Z" },
-	"displayAt" : { "$date": "2017-10-12T06:00:00.000Z" },
-	"__v" : 0
+	"_id": {
+		"$oid": "59df1285caee3e1158ee2f79"
+	},
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f6"
+	},
+	"title": "Gesunde Schule 2017",
+	"content": "<p>Liebe Sch&uuml;lerinnen und Sch&uuml;ler,</p>\r\n\r\n<p>schon seit einigen Jahren sind wir eine &quot;Gesunde Schule&quot;. Um dieses Motto nun noch verst&auml;rkter umzusetzen, haben wir seit dem Beginn des neuen Schuljahres einen neuen Mensa-Anbieter! So wird eure Mittagspause mit regionalen und gesunden Produkten noch besser!</p>\r\n\r\n<p>Einen guten Appetit w&uuml;nscht euch die Schulleitung und das Lehrerkolleg!</p>\r\n",
+	"creatorId": {
+		"$oid": "59ad4c412b442b7f81810285"
+	},
+	"history": [],
+	"createdAt": {
+		"$date": "2017-10-12T06:58:13.541Z"
+	},
+	"displayAt": {
+		"$date": "2017-10-12T06:00:00Z"
+	},
+	"__v": 0,
+	"target": {
+		"$oid": "5f2987e020834114b8efd6f6"
+	},
+	"targetModel": "schools"
 },
 {
-	"_id" : { "$oid": "59e46072caee3e1158ee2fa4" },
-	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6" },
-	"title" : "Weekly-Challenge 8",
-	"content" : "<p>Ab jetzt k&ouml;nnen schulinterne News unter Neuigkeiten erstellt werden!</p>\r\n",
-	"creatorId" : { "$oid": "59ad4c412b442b7f81810285" },
-	"history" : [],
-	"createdAt" : { "$date": "2017-10-16T07:32:02.818Z"},
-	"displayAt" : { "$date": "2017-10-16T07:00:00.000Z"},
-	"__v" : 0
-}
-]
+	"_id": {
+		"$oid": "59e46072caee3e1158ee2fa4"
+	},
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f6"
+	},
+	"title": "Weekly-Challenge 8",
+	"content": "<p>Ab jetzt k&ouml;nnen schulinterne News unter Neuigkeiten erstellt werden!</p>\r\n",
+	"creatorId": {
+		"$oid": "59ad4c412b442b7f81810285"
+	},
+	"history": [],
+	"createdAt": {
+		"$date": "2017-10-16T07:32:02.818Z"
+	},
+	"displayAt": {
+		"$date": "2017-10-16T07:00:00Z"
+	},
+	"__v": 0,
+	"target": {
+		"$oid": "5f2987e020834114b8efd6f6"
+	},
+	"targetModel": "schools"
+},
+{
+	"_id": {
+		"$oid": "60d1b1041eb564c53ea0e76a"
+	},
+	"source": "internal",
+	"title": "wefwef",
+	"content": "<p>fas fdas fdsa </p>",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"creatorId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"updaterId": null,
+	"displayAt": {
+		"$date": "2021-06-22T09:44:36.128Z"
+	},
+	"createdAt": {
+		"$date": "2021-06-22T09:44:36.128Z"
+	},
+	"__v": 0,
+	"target": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"targetModel": "schools"
+},
+{
+	"_id": {
+		"$oid": "60d1b1061eb564c53ea0e76c"
+	},
+	"source": "internal",
+	"title": "wefwef",
+	"content": "<p>fas fdas fdsa </p>",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"creatorId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"updaterId": null,
+	"displayAt": {
+		"$date": "2021-06-22T09:44:38.563Z"
+	},
+	"createdAt": {
+		"$date": "2021-06-22T09:44:38.563Z"
+	},
+	"__v": 0,
+	"target": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"targetModel": "schools"
+},
+{
+	"_id": {
+		"$oid": "60d1b1071eb564c53ea0e76e"
+	},
+	"source": "internal",
+	"title": "wefwef",
+	"content": "<p>fas fdas fdsa </p>",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"creatorId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"updaterId": null,
+	"displayAt": {
+		"$date": "2021-06-22T09:44:39.154Z"
+	},
+	"createdAt": {
+		"$date": "2021-06-22T09:44:39.154Z"
+	},
+	"__v": 0,
+	"target": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"targetModel": "schools"
+},
+{
+	"_id": {
+		"$oid": "60d1b1071eb564c53ea0e770"
+	},
+	"source": "internal",
+	"title": "wefwef",
+	"content": "<p>fas fdas fdsa </p>",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"creatorId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"updaterId": null,
+	"displayAt": {
+		"$date": "2021-06-22T09:44:39.311Z"
+	},
+	"createdAt": {
+		"$date": "2021-06-22T09:44:39.311Z"
+	},
+	"__v": 0,
+	"target": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"targetModel": "schools"
+},
+{
+	"_id": {
+		"$oid": "60d1b1071eb564c53ea0e772"
+	},
+	"source": "internal",
+	"title": "wefwef",
+	"content": "<p>fas fdas fdsa </p>",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"creatorId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"updaterId": null,
+	"displayAt": {
+		"$date": "2021-06-22T09:44:39.46Z"
+	},
+	"createdAt": {
+		"$date": "2021-06-22T09:44:39.46Z"
+	},
+	"__v": 0,
+	"target": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"targetModel": "schools"
+},
+{
+	"_id": {
+		"$oid": "60d1b1071eb564c53ea0e774"
+	},
+	"source": "internal",
+	"title": "wefwef",
+	"content": "<p>fas fdas fdsa </p>",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"creatorId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"updaterId": null,
+	"displayAt": {
+		"$date": "2021-06-22T09:44:39.628Z"
+	},
+	"createdAt": {
+		"$date": "2021-06-22T09:44:39.628Z"
+	},
+	"__v": 0,
+	"target": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"targetModel": "schools"
+},
+{
+	"_id": {
+		"$oid": "60d1b1131eb564c53ea0e776"
+	},
+	"source": "internal",
+	"title": "wefwef",
+	"content": "<p>fas fdas fdsa </p>",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"creatorId": {
+		"$oid": "0000d231816abba584714c9e"
+	},
+	"updaterId": null,
+	"displayAt": {
+		"$date": "2021-06-22T09:44:51.216Z"
+	},
+	"createdAt": {
+		"$date": "2021-06-22T09:44:51.216Z"
+	},
+	"__v": 0,
+	"target": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"targetModel": "schools"
+}]
+

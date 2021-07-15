@@ -5,6 +5,7 @@ import { BusinessError, ApiValidationError } from '@shared/common';
 import { Logger } from '../../logger/logger.service';
 import { ErrorResponse } from '../dto/error.response';
 import { FeathersError } from '../interface';
+import { ApiValidationErrorResponse } from '../dto/api-validation-error.response';
 
 const isFeathersError = (error: Error): error is FeathersError => {
 	if (!(error && 'type' in error)) return false;
@@ -39,6 +40,10 @@ const createErrorResponseForHttpException = (exception: HttpException): ErrorRes
 };
 
 function createErrorResponseForBusinessError(error: BusinessError): ErrorResponse {
+	if (error instanceof ApiValidationError) {
+		const response = new ApiValidationErrorResponse(error);
+		return response;
+	}
 	const response = error.getResponse();
 	return response;
 }

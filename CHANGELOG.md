@@ -15,11 +15,67 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-9093 - make configured default language and timezone available in config service
 - SC-9092 - delete S3 files after 7 days from user deletion
 - SC-8959 - Add messenger to deletion concept
+- SC-9157 - Add RabbitMQ connection to new mail service
+- SC-9157 - Improve config handling for RabbitMQ
+- OPS-2574 - Removeing autodeployed branches for developers if branch deleted
 
-### Changed 
+### Changed
 
-- remove unneccesary timeout definitions from tests and avoid promise chains
+- SC-8448 - Not storing temporary Merlin links and fixed concurrency bug
+- remove unnecessary timeout definitions from tests and avoid promise chains
 - SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
+- execute unit tests via github action instead of using travis
+
+### Fixed
+ - SC-9197 - Limiting the max workers for jest to 2 workers, if the default mechanism runs it's go up to infinity workers and if one die the test never stop
+
+## [26.5.0] - 2021-06-28
+
+### Added
+
+- SC-9431 - add teacher view to task/open over permission TASK_DASHBOARD_VIEW_V3, solving permissions after authenticate and add v3/user/me route.
+
+### Changed
+
+- SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
+
+## [26.4.9] - 2021-06-29
+
+### Fixed
+
+- api route forwarding
+
+### Removed
+
+- SC-9159 removed news from feathers except remove team event, which already is replaced by v3/news
+
+## [26.4.8] - 2021-06-29
+
+### Fixed
+
+- route forwarding
+
+## [26.4.7] - 2021-06-22
+
+### Added
+
+- SC-9148 - Add migration for change of school year on BRB
+
+### Fixed
+
+- SC-9170 - let superhero delete other users
+
+## [26.4.6] - 2021-06-24
+
+### Changed
+
+- OPS-2466 - changes build pipeline to github actions
+
+## [26.4.5] - 2021-06-21
+
+### Added
+
+- SC-9156 - Add maintenance mode for LDAP rewrite
 
 ## [26.4.4] - 2021-06-16
 

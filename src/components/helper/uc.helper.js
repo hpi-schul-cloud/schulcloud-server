@@ -1,13 +1,19 @@
 const { Forbidden, AssertionError } = require('../../errors');
+const { equal: equalIds } = require('../../helper/compare').ObjectId;
 
 const trashBinResult = ({ scope, data, complete }) => ({ trashBinData: { scope, data }, complete });
 
 const validPermissionOperators = ['AND', 'OR'];
 
+const isSuperhero = (currentUser) => currentUser.roles.some((role) => role.name === 'superhero');
+
+const grantPermissionsForSchool = (currentUser, schoolId) =>
+	equalIds(currentUser.schoolId, schoolId) || isSuperhero(currentUser);
+
 const checkPermissions = (user, schoolId, permissionsToCheck, permissionOperator = 'AND') => {
 	let grantPermission = true;
 	// same school?
-	grantPermission = grantPermission && user.schoolId.toString() === schoolId.toString();
+	grantPermission = grantPermission && grantPermissionsForSchool(user, schoolId);
 
 	if (!validPermissionOperators.includes(permissionOperator)) {
 		throw new AssertionError('no such permission operator');
@@ -31,4 +37,4 @@ const checkPermissions = (user, schoolId, permissionsToCheck, permissionOperator
 	}
 };
 
-module.exports = { checkPermissions, trashBinResult };
+module.exports = { checkPermissions, trashBinResult, grantPermissionsForSchool };

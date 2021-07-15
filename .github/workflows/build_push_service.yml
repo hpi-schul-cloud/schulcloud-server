@@ -1,0 +1,59 @@
+---
+name: Build and push Docker Image
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - master
+      - dependabot/*
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Docker meta Service Name
+        id: docker_meta_img
+        uses: crazy-max/ghaction-docker-meta@v2
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=ref,event=branch,enable=false,priority=600
+            type=sha,enable=true,priority=600,prefix=
+
+      - name: Log into registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_DOCKER_USERNAME }}
+          password: ${{ secrets.GHCR_DOCKER_TOKEN }}
+
+      - name: Build and push ${{ github.repository }}
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
+          labels: ${{ steps.docker_meta_img.outputs.labels }}
+
+  dispatch:
+    runs-on: ubuntu-latest
+    needs:
+      - build_and_push
+    steps:
+      - uses: actions/checkout@v2
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          repository: hpi-schul-cloud/dof_app_deploy
+          event-type: dev-deploy
+          client-payload: '{"branch": "${{ steps.extract_branch.outputs.branch}}" }'

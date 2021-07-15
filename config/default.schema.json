@@ -43,10 +43,7 @@
 				"DEFAULT_LANGUAGE": {
 					"type": "string",
 					"default": "de",
-					"enum": [
-						"de",
-						"en"
-					],
+					"enum": ["de", "en"],
 					"description": "Value for the default language"
 				},
 				"DEFAULT_TIMEZONE": {
@@ -242,7 +239,7 @@
 		"RABBITMQ_URI": {
 			"type": "string",
 			"format": "uri",
-			"default": "amqp://192.168.99.100",
+			"default": "amqp://guest:guest@localhost:5672",
 			"description": "The URI of the RabbitMQ server."
 		},
 		"RABBITMQ_MATRIX_CONSUME_CONCURRENCY": {
@@ -557,12 +554,7 @@
 			"default": false,
 			"description": "Enable prometheus api metrics, if enabled, PROMETHEUS must be defined."
 		},
-		"FEATURE_SHOW_VERSION_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "enable the /versions route"
-		},
-		"FEATURE_MONGOOSE_LOGGING_ENABLED" : {
+		"FEATURE_MONGOOSE_LOGGING_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Enable logging for mongoose database calls."
@@ -612,15 +604,25 @@
 			"default": 1,
 			"description": "Determines how many school syncers will be run in parallel (at most) during the LDAP sync."
 		},
-		"SYNC_LOG_LEVEL" : {
+		"SYNC_LOG_LEVEL": {
 			"type": "string",
 			"default": "error",
 			"description": "Log level for queue based syncers (e.g. LDAP)"
 		},
-		"SYNC_QUEUE_NAME" : {
+		"SYNC_QUEUE_NAME": {
 			"type": "string",
 			"default": "sync_ldap",
 			"description": "Queue name for sync"
+		},
+		"MAIL_SEND_EXCHANGE": {
+			"type": "string",
+			"default": "mail-drop",
+			"description": "Exchange name for mail sending"
+		},
+		"MAIL_SEND_ROUTING_KEY": {
+			"type": "string",
+			"default": "mail-drop",
+			"description": "Routing key name for mail sending"
 		},
 		"MEMORY_INTERVAL_TIME": {
 			"type": "integer",
@@ -689,8 +691,7 @@
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
 		"HOST",
 		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
-		"LERNSTORE_MODE",
-		"FEATURE_SHOW_VERSION_ENABLED"
+		"LERNSTORE_MODE"
 	],
 	"allOf": [
 		{

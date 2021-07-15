@@ -21,7 +21,7 @@
 	"FEATURE_ES_COLLECTIONS_ENABLED": true,
 	"LERNSTORE_MODE": "EDUSHARING",
 	"FEATURE_RABBITMQ_ENABLED": true,
-	"RABBITMQ_URI": "amqp://localhost",
+	"RABBITMQ_URI": "amqp://guest:guest@localhost",
 	"FEATURE_SYNCER_CONSUMER_ENABLE": true,
 	"SYNC_LOG_LEVEL": "info",
 	"SYNC_QUEUE_NAME": "test_ldap_queue"

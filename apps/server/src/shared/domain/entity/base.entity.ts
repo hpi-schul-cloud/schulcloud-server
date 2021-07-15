@@ -14,7 +14,7 @@ export class BaseEntity {
 // that can be cumbersome e.g. in tests. that's why we define it as a root class here.
 // TODO check if we can use EntitySchema to prevent code duplication (decorators don't work for defining properties btw.)
 @Entity()
-export class BaseEntityWithTimestamps extends BaseEntity {
+export class BaseEntityWithTimestamps {
 	@PrimaryKey()
 	_id!: ObjectId;
 

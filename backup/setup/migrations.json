@@ -1029,12 +1029,34 @@
 },
 {
 	"_id": {
+		"$oid": "60d1b9e80fb54b3e342e9b08"
+	},
+	"state": "up",
+	"name": "news_add_target_schools",
+	"createdAt": {
+		"$date": "2021-06-02T08:23:18.664Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
 		"$oid": "60c9f9023a7096cfc0da1235"
 	},
 	"state": "up",
 	"name": "rename-task-permission",
 	"createdAt": {
 		"$date": "2021-06-16T13:13:38.703Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "60d1c6d0b2616a2aedc4bfd7"
+	},
+	"state": "up",
+	"name": "start_new_school_year_brb",
+	"createdAt": {
+		"$date": "2021-06-22T11:17:36.497Z"
 	},
 	"__v": 0
 }]

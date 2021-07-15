@@ -1,6 +1,4 @@
-const urlContainsVersion = (url) => {
-	return url.search(/\/v\d\//) > -1;
-};
+const urlContainsVersion = (url) => url.search(/\/v\d\//) > -1;
 
 module.exports = (req, res, next) => {
 	if (!urlContainsVersion(req.url)) {
