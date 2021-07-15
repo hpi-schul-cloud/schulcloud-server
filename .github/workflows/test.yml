@@ -22,12 +22,10 @@ jobs:
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
       - name: environment setup
-        run: | 
+        run: |
           sh scripts/unitTestFeathers.sh
       - name: npm ci
         run: npm ci --prefer-offline --no-audit
-      - name: nest build
-        run: npm run nest:build
       - name: feathers:Test - test with coverage
         run: npm run feathers:test
   nest_tests_cov:
@@ -56,7 +54,7 @@ jobs:
       - name: npm ci
         run: npm ci --prefer-offline --no-audit
       - name: nest:test:cov - test all with coverage
-        run: npm run nest:test:cov
+        run: npm run nest:test:cov:ci
   nest_lint:
     strategy:
       matrix:
