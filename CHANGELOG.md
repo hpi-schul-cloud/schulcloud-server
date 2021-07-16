@@ -18,6 +18,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-9157 - Add RabbitMQ connection to new mail service
 - SC-9157 - Improve config handling for RabbitMQ
 - OPS-2574 - Removeing autodeployed branches for developers if branch deleted
+- OPS-2579 - Add Ansible task and templates for adding storage
 
 ### Changed
 
