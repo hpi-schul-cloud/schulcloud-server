@@ -16,7 +16,7 @@ spec:
         - secretRef:
             name: api-secret
         volumeMounts:
-        - name: configjson
+        - name: script
           mountPath: /update.js
           subPath: update.js
           readOnly: true
