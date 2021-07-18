@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ResolvedUser } from '@shared/domain/entity';
 import { ResolvedUserMapper } from './ResolvedUser.mapper';
-import { ResolvedUser } from '../controller/dto';
 import { User, Role } from '../entity';
 
 describe('ResolvedUserMapper', () => {

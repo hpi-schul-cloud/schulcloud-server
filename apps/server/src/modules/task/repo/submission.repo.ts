@@ -3,16 +3,10 @@ import { Injectable } from '@nestjs/common';
 import { Counted } from '../../../shared/domain';
 import { Submission, Task } from '../entity';
 
+// TODO: add schoolId as filter vs shd operations?
 @Injectable()
 export class SubmissionRepo {
 	constructor(private readonly em: EntityManager) {}
-
-	async getSubmissionsByTask(task: Task): Promise<Counted<Submission[]>> {
-		const [submissions, count] = await this.em.findAndCount(Submission, {
-			task,
-		});
-		return [submissions, count];
-	}
 
 	async getSubmissionsByTasksList(tasks: Task[]): Promise<Counted<Submission[]>> {
 		const [submissions, count] = await this.em.findAndCount(Submission, {

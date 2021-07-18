@@ -19,12 +19,12 @@ import {
 	CourseInfo,
 	TeamInfo,
 } from './modules/news/entity';
-import { Task, LessonTaskInfo, CourseTaskInfo, Submission, FileTaskInfo, UserTaskInfo } from './modules/task/entity';
-import { User, Role, Account } from './modules/user/entity';
+import { Task, LessonTaskInfo, Submission, FileTaskInfo, UserTaskInfo } from './modules/task/entity';
+import { User, Role, Account, GroupEntity } from './modules/user/entity';
 
 const courseEntities = [CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo, CourseInfo, TeamInfo];
-const taskEntities = [Task, LessonTaskInfo, CourseTaskInfo, Submission, FileTaskInfo, UserTaskInfo];
-const userEntities = [User, Role, Account];
+const taskEntities = [Task, LessonTaskInfo, Submission, FileTaskInfo, UserTaskInfo];
+const userEntities = [User, Role, Account, GroupEntity];
 
 @Module({
 	imports: [

@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UserUC } from './uc';
+import { ResolvedUser } from '@shared/domain/entity';
+import { UserUC, GroupUC } from './uc';
 import { UserFacade } from './user.facade';
 import { Role, User } from './entity';
 import { ResolvedUserMapper } from './mapper';
 import { createCurrentTestUser } from './utils';
-import { ResolvedUser } from './controller/dto';
 
 describe('UserFacade', () => {
 	let facade: UserFacade;
@@ -22,6 +22,13 @@ describe('UserFacade', () => {
 						getUserWithPermissions() {},
 					},
 				},
+				GroupUC,
+				{
+					provide: GroupUC,
+					useValue: {
+						getGroupsByUserAndType() {},
+					},
+				},
 			],
 		}).compile();
 
@@ -32,7 +39,10 @@ describe('UserFacade', () => {
 	it('should be defined', () => {
 		expect(facade).toBeDefined();
 		expect(typeof facade.resolveUser).toEqual('function');
+		expect(typeof facade.getCourseGroupsByUserId).toEqual('function');
 	});
+
+	describe('getCourseGroupsByUserId', () => {});
 
 	describe('getUserWithPermissions', () => {
 		it('should return valid solved and mapped typ', async () => {

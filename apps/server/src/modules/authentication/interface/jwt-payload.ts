@@ -1,5 +1,5 @@
 // TODO: should not get from this place over path
-import { ResolvedUser } from '../../user/controller/dto';
+import { ResolvedUser } from '@shared/domain/entity';
 
 export interface ICurrentUser {
 	/** authenticated users id */

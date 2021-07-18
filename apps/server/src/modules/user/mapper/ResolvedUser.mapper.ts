@@ -1,18 +1,18 @@
-import { ResolvedUser } from '../controller/dto';
+import { ResolvedUser } from '@shared/domain/entity';
 import { User, Role } from '../entity';
 
 export class ResolvedUserMapper {
 	static mapToResponse(user: User, permissions: string[] = [], roles: Role[] = []): ResolvedUser {
-		const dto = new ResolvedUser();
+		const dto = new ResolvedUser({
+			firstName: user.firstName || '',
+			lastName: user.lastName || '',
+			schoolId: user.school.toString(),
+			roles: roles.map((role) => ({ name: role.name, id: role.id })),
+			permissions,
+		});
 		dto.id = user.id;
-		dto.firstName = user.firstName || '';
-		dto.lastName = user.lastName || '';
 		dto.createdAt = user.createdAt;
 		dto.updatedAt = user.updatedAt;
-		dto.schoolId = user.school.toString();
-		dto.roles = roles.map((role) => ({ name: role.name, id: role.id }));
-
-		dto.permissions = permissions;
 
 		return dto;
 	}

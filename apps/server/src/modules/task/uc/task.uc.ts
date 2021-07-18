@@ -1,92 +1,51 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination } from '@shared/domain';
-import { Counted } from '@shared/domain/types';
-import { ICurrentUser } from '../../authentication/interface/jwt-payload';
-import { TaskRepo } from '../repo/task.repo';
-import { Task, Submission, ISubmissionStatus } from '../entity';
-import { SubmissionRepo } from '../repo/submission.repo';
-import { TaskMapper } from '../mapper/task.mapper';
+import { Injectable } from '@nestjs/common';
+import { IPagination, ResolvedUser, Counted, EntityId, PermissionsTypes } from '@shared/domain';
+import { UserFacade } from '../../user';
+import { TaskRepo, SubmissionRepo, LessonRepo, FilterOptions } from '../repo';
 import { TaskResponse } from '../controller/dto';
+import { TaskHelper } from './taskHelper';
 
-// TODO: add time filter filter in uc
 @Injectable()
 export class TaskUC {
-	permissions = {
-		teacherDashboard: 'TASK_DASHBOARD_TEACHER_VIEW_V3',
-		studentDashboard: 'TASK_DASHBOARD_VIEW_V3',
-	};
-
-	constructor(private taskRepo: TaskRepo, private submissionRepo: SubmissionRepo) {}
-
-	// TODO: must move to other location, it is more a private methode but a part that must be tested seperatly
-	computeSubmissionMetadata = (taskSubmissions: Submission[], task: Task): ISubmissionStatus => {
-		const submittedUsers = new Set();
-		const gradedUsers = new Set();
-
-		const sortedSubmissions = [...taskSubmissions].sort((a: Submission, b: Submission) => {
-			if (a.createdAt > b.createdAt) {
-				return 1;
-			}
-			return -1;
-		});
-
-		sortedSubmissions.forEach((submission) => {
-			if (
-				!submittedUsers.has(submission.student.id) &&
-				(submission.grade || submission.gradeComment || submission.gradeFileIds)
-			) {
-				gradedUsers.add(submission.student.id);
-			}
-			submittedUsers.add(submission.student.id);
-		});
-		// TODO: consider coursegroups
-		const studentsInTasksCourse = task.course.students.length;
-
-		return {
-			submitted: submittedUsers.size,
-			maxSubmissions: studentsInTasksCourse,
-			graded: gradedUsers.size,
-		};
-	};
+	constructor(
+		private readonly taskRepo: TaskRepo,
+		private readonly submissionRepo: SubmissionRepo,
+		private readonly lessonRepo: LessonRepo,
+		private readonly userFacade: UserFacade
+	) {}
 
 	// TODO: Combine student and teacher logic if it is possible in next iterations
 	// TODO: Add for students in status -> student has finished, teacher has answered
-	// TODO: After it, the permission check can removed
-	async findAllOpenForStudent(userId: EntityId, pagination: IPagination): Promise<Counted<TaskResponse[]>> {
-		// TODO authorization (user conditions -> permissions?)
-		// TODO get permitted tasks...
-		// TODO have BL from repo here
+	async findAllOpen(user: ResolvedUser, pagination: IPagination): Promise<Counted<TaskResponse[]>> {
+		const { id: userId, schoolId } = user;
 
-		const [tasks, total] = await this.taskRepo.findAllOpenByStudent(userId, pagination);
-		const computedTasks = tasks.map((task) => TaskMapper.mapToResponse(task));
-		return [computedTasks, total];
-	}
+		const filteredCourseGroups = await this.userFacade.getCourseGroupsByUserId(userId);
+		const courseIds = filteredCourseGroups['course-teachers'].getExistingParentIds();
 
-	async findAllOpenByTeacher(userId: EntityId, pagination: IPagination): Promise<Counted<TaskResponse[]>> {
-		const [tasks, total] = await this.taskRepo.findAllAssignedByTeacher(userId, pagination);
+		// !!!date is set for student and teacher now!!!
+		const dueDateGreaterThen = TaskHelper.calculateDateFilterForOpenTask();
+
+		const publishedLessonsIds = await this.lessonRepo.getPublishedLessonsIdsByCourseIds(courseIds);
+
+		// TODO: !!!  If it is really needed that we passed publisedLessons? As OR? If couseId also set by lessons homeworks it should find it without passing !!!
+		// To many parameter and schoolId need also passed... -.-
+		// But the dateFilter is part of uc not of the repo method
+		const ressourceIds = [...courseIds, ...publishedLessonsIds] as EntityId[];
+		const filterOptions = new FilterOptions(pagination, dueDateGreaterThen, schoolId);
+		const [tasks, counted] = await this.taskRepo.getOpenTaskByCourseListAndLessonList(ressourceIds, filterOptions);
+		// TODO: !!! find submissions by task it is different between teacher and student !!!
+		// group.permission hold write and read permission PermissionsTypes.Read / PermissionsTypes.Write
+		// const groups = filteredCourseGroups.getGroupsByParentId(taskId);
+		// helper > filter all that has no write permission AND userId is not in submission ==
+		// read should only get his own, write should get all
+		// both only want the newest by createdAt
 		const [submissions] = await this.submissionRepo.getSubmissionsByTasksList(tasks);
 
-		const computedTasks = tasks.map((task) => {
-			const taskSubmissions = submissions.filter((sub) => sub.task === task);
-			return TaskMapper.mapToResponse(task, this.computeSubmissionMetadata(taskSubmissions, task));
-		});
-		return [computedTasks, total];
-	}
+		const computedTasks = TaskHelper.computedTasksBySubmissions(tasks, submissions, filteredCourseGroups);
+		// !!! In this workflow course color and course name is not passed for now,
+		// because we do not know anything about the course. !!!
 
-	async findAllOpen(currentUser: ICurrentUser, pagination: IPagination): Promise<Counted<TaskResponse[]>> {
-		const {
-			user: { id, permissions },
-		} = currentUser;
-
-		let response: Counted<TaskResponse[]>;
-		if (permissions.includes(this.permissions.teacherDashboard)) {
-			response = await this.findAllOpenByTeacher(id, pagination);
-		} else if (permissions.includes(this.permissions.studentDashboard)) {
-			response = await this.findAllOpenForStudent(id, pagination);
-		} else {
-			throw new UnauthorizedException();
-		}
-
-		return response;
+		// TODO: Add substitution teacher flag
+		return [computedTasks, counted];
 	}
 }

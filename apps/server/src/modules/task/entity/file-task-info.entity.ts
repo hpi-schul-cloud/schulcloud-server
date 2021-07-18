@@ -15,3 +15,5 @@ export class FileTaskInfo extends BaseEntityWithTimestamps {
 	@Property()
 	creator: UserTaskInfo;
 }
+
+// TODO: should remove from this place ..it is not part of task

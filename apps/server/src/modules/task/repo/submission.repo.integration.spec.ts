@@ -1,82 +1,67 @@
-import { MikroORM } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import { CourseTaskInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo } from '../entity';
+import { MongoMemoryDatabaseModule } from '../../database';
 import { SubmissionRepo } from './submission.repo';
+import { Submission, Task, UserTaskInfo, FileTaskInfo, LessonTaskInfo } from '../entity';
 
-describe('submission repo', () => {
+const getHex = () => new ObjectId().toHexString();
+
+describe('SubmissionRepo', () => {
 	let module: TestingModule;
-	let mongodb: MongoMemoryServer;
 	let repo: SubmissionRepo;
-	let orm: MikroORM;
 	let em: EntityManager;
 
 	beforeAll(async () => {
-		mongodb = new MongoMemoryServer();
-		const dbUrl = await mongodb.getUri();
 		module = await Test.createTestingModule({
 			imports: [
-				MikroOrmModule.forRoot({
-					type: 'mongo',
-					clientUrl: dbUrl,
-					entities: [CourseTaskInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo],
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [Submission, Task, UserTaskInfo, FileTaskInfo, LessonTaskInfo],
 				}),
 			],
 			providers: [SubmissionRepo],
 		}).compile();
-		repo = module.get<SubmissionRepo>(SubmissionRepo);
-		orm = module.get<MikroORM>(MikroORM);
-		em = module.get<EntityManager>(EntityManager);
+		repo = module.get(SubmissionRepo);
+		em = module.get(EntityManager);
 	});
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
-		await mongodb.stop();
 	});
 
-	describe('getSubmissionsByTask', () => {
-		it('should return the amount of submissions', async () => {
-			const students = [
-				em.create(UserTaskInfo, { firstName: 'firstname', lastName: 'lastname' }),
-				em.create(UserTaskInfo, { firstName: 'firstname', lastName: 'lastname' }),
-			];
-			const course = em.create(CourseTaskInfo, { name: 'testCourse', students });
-			const task = em.create(Task, { name: 'find me', course });
-			const submissions = students.map((student) => {
-				return em.create(Submission, { task, student });
-			});
-			await em.persistAndFlush([course, task, ...submissions, ...students]);
+	afterEach(async () => {
+		await em.nativeDelete(Submission, {});
+	});
 
-			const [result, count] = await repo.getSubmissionsByTask(task);
-			expect(count).toEqual(students.length);
-		});
+	it('should be defined', () => {
+		expect(repo).toBeDefined();
+		expect(typeof repo.getSubmissionsByTasksList).toBe('function');
 	});
 
 	describe('getSubmissionsByTasksList', () => {
-		it('should return only the requested submissions of homeworks', async () => {
-			const students = [em.create(UserTaskInfo, { firstName: 'firstname', lastName: 'lastname' })];
+		it('should return submissions of passed task', async () => {
+			const courseIds = [getHex(), getHex, getHex];
+			const schoolId = getHex();
 
-			const course = em.create(CourseTaskInfo, { name: 'testCourse1', students });
 			const tasks = [
-				em.create(Task, { name: 'find me11', course }),
-				em.create(Task, { name: 'find me12', course }),
-				em.create(Task, { name: 'find me12', course }),
+				em.create(Task, { schoolId, courseId: courseIds[0], private: false }),
+				em.create(Task, { schoolId, courseId: courseIds[1], private: false }),
+				em.create(Task, { schoolId, courseId: courseIds[2], private: true }),
 			];
 
 			const submissions = [
-				em.create(Submission, { task: tasks[0], student: students[0] }),
-				em.create(Submission, { task: tasks[1], student: students[0] }),
-				em.create(Submission, { task: tasks[2], student: students[0] }),
+				em.create(Submission, { task: tasks[0] }),
+				em.create(Submission, { task: tasks[0] }),
+				em.create(Submission, { task: tasks[1] }),
+				em.create(Submission, { task: tasks[1] }),
+				em.create(Submission, { task: tasks[2] }),
+				em.create(Submission, { task: tasks[2] }),
 			];
 
-			await em.persistAndFlush([...students, ...tasks, ...submissions, course]);
-
-			const requestedTasks = [tasks[0], tasks[1]];
-			const [result, count] = await repo.getSubmissionsByTasksList(requestedTasks);
-			expect(count).toEqual(2);
+			await em.persistAndFlush([...tasks, ...submissions]);
+			const [result, total] = await repo.getSubmissionsByTasksList(tasks);
+			expect(total).toEqual(6);
 		});
+
+		it.todo('should return right keys');
 	});
 });

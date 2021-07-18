@@ -8,7 +8,7 @@ export class TaskResponse {
 	name: string;
 
 	@ApiProperty()
-	duedate?: Date;
+	duedate?: Date | null;
 
 	@ApiProperty()
 	courseName?: string;

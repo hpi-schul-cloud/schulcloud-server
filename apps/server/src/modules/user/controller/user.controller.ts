@@ -4,7 +4,7 @@ import { Controller, Get } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
 import { ICurrentUser } from '../../authentication/interface/jwt-payload';
 import { UserUC } from '../uc';
-import { ResolvedUser } from './dto/ResolvedUser.dto';
+import { ResolvedUser } from '@shared/domain/entity';
 
 @ApiTags('User')
 @Authenticate('jwt')

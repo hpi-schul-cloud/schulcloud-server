@@ -4,6 +4,7 @@ import { UserTaskInfo } from './user-task-info.entity';
 
 export const COURSE_DEFAULT_COLOR = '#ACACAC';
 
+// TODO: This file is not used and should remove/move behind the learn room facade to get informations
 @Entity({ tableName: 'courses' })
 export class CourseTaskInfo extends BaseEntityWithTimestamps {
 	constructor(partial: Partial<CourseTaskInfo>) {

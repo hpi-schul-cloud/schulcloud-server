@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ResolvedUser } from '@shared/domain/entity';
 import { createCurrentTestUser } from '../utils';
 import { UserRepo } from '../repo';
 import { UserUC } from './user.uc';
 import { RoleUC } from './role.uc';
-import { ResolvedUser } from '../controller/dto';
 import { IPermissionsAndRoles } from '../entity';
 
 describe('UserUC', () => {

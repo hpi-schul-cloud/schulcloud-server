@@ -1,12 +1,13 @@
-import { BaseEntityWithTimestamps } from '@shared/domain';
-import { Entity, ManyToOne, Property } from '@mikro-orm/core';
-import { CourseTaskInfo } from './course-task-info.entity';
+import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
+import { Entity, Property } from '@mikro-orm/core';
 
 @Entity({ tableName: 'lessons' })
 export class LessonTaskInfo extends BaseEntityWithTimestamps {
 	@Property()
 	hidden: boolean;
 
-	@ManyToOne({ fieldName: 'courseId' })
-	course: CourseTaskInfo;
+	@Property()
+	courseId: EntityId;
 }
+
+// TODO: should remove from this place ..it is not part of task
