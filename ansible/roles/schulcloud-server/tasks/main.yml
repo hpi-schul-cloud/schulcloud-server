@@ -35,6 +35,18 @@
       kubeconfig: ~/.kube/config 
       namespace: "{{ NAMESPACE }}"
       template: job_init_db.yml.j2
+    
+  - name: DB Storage Init Configmap File
+    community.kubernetes.k8s:
+      kubeconfig: ~/.kube/config 
+      namespace: "{{ NAMESPACE }}"
+      template: configmap_storage_init.yml.j2
+    
+  - name: DB Storage Init Job
+    community.kubernetes.k8s:
+      kubeconfig: ~/.kube/config 
+      namespace: "{{ NAMESPACE }}"
+      template: storage_init.yml.j2
 
       
   - name: Deployment
