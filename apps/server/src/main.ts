@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import * as express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
 
 // register source-map-support for debugging
@@ -16,30 +17,37 @@ async function bootstrap() {
 	sourceMapInstall();
 
 	// load the legacy feathers/express server
-	const legacyApp = await legacyAppPromise;
-	const adapter = new ExpressAdapter(legacyApp);
-	legacyApp.setup();
+	const legacyExpress = await legacyAppPromise;
+	// const adapter = new ExpressAdapter(legacyExpress);
+	legacyExpress.setup();
 
-	// create the NestJS application adapting the legacy  server
-	const app = await NestFactory.create(ServerModule, adapter, {});
+	// create the NestJS application on a seperate express instance
+	const appExpress = express();
+	const appAdapter = new ExpressAdapter(appExpress);
+	const app = await NestFactory.create(ServerModule, appAdapter);
 
-	// TODO cleanup /api prefix
-	// for all NestJS controller routes, prepend ROUTE_PREFIX
-	app.setGlobalPrefix(ROUTE_PRAEFIX);
-
-	const apiDocsPath = `${ROUTE_PRAEFIX}/${API_DOCS_PATH}`;
-	enableOpenApiDocs(app, apiDocsPath);
+	enableOpenApiDocs(app, API_DOCS_PATH);
 
 	await app.init();
 
+	// provide NestJS mail service to feathers app
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-	legacyApp.services['nest-mail'] = {
+	legacyExpress.services['nest-mail'] = {
 		async send(data: Mail): Promise<void> {
 			const mailService = app.get(MailService);
 			await mailService.send(data);
 		},
 	};
 
-	adapter.listen(PORT);
+	// mount instances
+	const rootExpress = express();
+	rootExpress.use('/', legacyExpress);
+	rootExpress.use(`/${ROUTE_PRAEFIX}`, appExpress);
+
+	// additional alias mounts
+	rootExpress.use('/api', legacyExpress);
+	rootExpress.use(`/api/${ROUTE_PRAEFIX}`, appExpress);
+
+	rootExpress.listen(PORT);
 }
 void bootstrap();
