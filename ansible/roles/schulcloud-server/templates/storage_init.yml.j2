@@ -21,7 +21,7 @@ spec:
           subPath: update.js
           readOnly: true
         command: ['/bin/sh','-c']
-        args: ['envsubst < update.js > update.sub.js mongo "$DATABASE__URL" update.sub.js']
+        args: ['envsubst < update.js > update.sub.js ; mongo "$DATABASE__URL" update.sub.js']
       volumes:
       - name: script
         configMap:
