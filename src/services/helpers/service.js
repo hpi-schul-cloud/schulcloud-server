@@ -43,7 +43,7 @@ module.exports = function setup(app) {
 				},
 				recipients: [user ? user.email : email],
 				from: SMTP_SENDER,
-				replyTo: [replyEmail],
+				replyTo: replyEmail ? [replyEmail] : null,
 			};
 
 			// send mail with defined transport object in production mode
