@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: api-storage-init-job
+  labels:
+    app: api
+spec:
+  template:
+    spec:
+      containers:
+      - name: api-storage-init
+        image: schulcloud/infra-tools:latest
+        envFrom:
+        - configMapRef:
+            name: api-configmap
+        - secretRef:
+            name: api-secret
+        volumeMounts:
+        - name: script
+          mountPath: /update.js
+          subPath: update.js
+          readOnly: true
+        command: ['/bin/sh','-c']
+        args: ['envsubst < update.js > update.sub.js ; mongo "$DATABASE__URL" update.sub.js']
+      volumes:
+      - name: script
+        configMap:
+          name: api-storage-init-file
+          items:
+          - key: update.js
+            path: update.js
+      restartPolicy: Never
+  backoffLimit: 4
