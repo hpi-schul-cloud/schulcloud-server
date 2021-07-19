@@ -17,7 +17,7 @@ const ConsentVersionServiceHooks = {
 		all: [],
 		find: [],
 		get: [authenticate('jwt')],
-		create: [iff(isProvider('external'), [hasPermission('SCHOOL_EDIT'), restrictToCurrentSchool])],
+		create: [iff(isProvider('external'), [authenticate('jwt'), hasPermission('SCHOOL_EDIT'), restrictToCurrentSchool])],
 		update: [disallow()],
 		patch: [disallow()],
 		remove: [disallow()],
