@@ -111,7 +111,7 @@
 		"eslint-plugin-react": "^7.24.0",
 		"eslint-plugin-react-hooks": "^4.2.0",
 		"express": "^4.14.0",
-		"express-openapi-validator": "4.7.1",
+		"express-openapi-validator": "4.12.14",
 		"feathers-hooks-common": "^5.0.3",
 		"feathers-mongoose": "^6.3.0",
 		"feathers-swagger": "^1.1.0",
