@@ -8,7 +8,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 // application imports
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
-import { API_DOCS_PATH, PORT, ROUTE_PRAEFIX } from './constants';
+import { API_DOCS_PATH, PORT, ROUTE_PREFIX } from './constants';
 import { enableOpenApiDocs } from './shared/controller/swagger';
 import { Mail } from './modules/mail/mail.interface';
 import { MailService } from './modules/mail/mail.service';
@@ -41,12 +41,12 @@ async function bootstrap() {
 
 	// mount instances
 	const rootExpress = express();
+	rootExpress.use(`/${ROUTE_PREFIX}`, appExpress);
 	rootExpress.use('/', legacyExpress);
-	rootExpress.use(`/${ROUTE_PRAEFIX}`, appExpress);
 
 	// additional alias mounts
+	rootExpress.use(`/api/${ROUTE_PREFIX}`, appExpress);
 	rootExpress.use('/api', legacyExpress);
-	rootExpress.use(`/api/${ROUTE_PRAEFIX}`, appExpress);
 
 	rootExpress.listen(PORT);
 }
