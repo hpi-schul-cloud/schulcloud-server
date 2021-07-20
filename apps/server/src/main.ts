@@ -8,7 +8,6 @@ import { install as sourceMapInstall } from 'source-map-support';
 // application imports
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
-import { API_DOCS_PATH, PORT, ROUTE_PREFIX } from './constants';
 import { enableOpenApiDocs } from './shared/controller/swagger';
 import { Mail } from './modules/mail/mail.interface';
 import { MailService } from './modules/mail/mail.service';
@@ -32,7 +31,7 @@ async function bootstrap() {
 	const appAdapter = new ExpressAdapter(appExpress);
 	const app = await NestFactory.create(ServerModule, appAdapter);
 
-	enableOpenApiDocs(app, API_DOCS_PATH);
+	enableOpenApiDocs(app, 'docs');
 
 	await app.init();
 
@@ -47,13 +46,15 @@ async function bootstrap() {
 
 	// mount instances
 	const rootExpress = express();
-	rootExpress.use(`/${ROUTE_PREFIX}`, appExpress);
-	rootExpress.use('/', legacyExpress);
 
-	// additional alias mounts
-	rootExpress.use(`/api/${ROUTE_PREFIX}`, appExpress);
-	rootExpress.use('/api', legacyExpress);
+	// internal mounts
+	rootExpress.use('/v1', legacyExpress);
+	rootExpress.use('/v3', appExpress);
 
-	rootExpress.listen(PORT);
+	// exposed alias mounts
+	rootExpress.use('/api/v1', legacyExpress);
+	rootExpress.use('/api/v3', appExpress);
+
+	rootExpress.listen(3030);
 }
 void bootstrap();
