@@ -23,6 +23,12 @@ async function bootstrap() {
 
 	// create the NestJS application on a seperate express instance
 	const appExpress = express();
+
+	// set reference to legacy app as an express setting so we can
+	// access it over the current request within FeathersServiceProvider
+	// TODO remove if not needed anymore
+	appExpress.set('feathersApp', legacyExpress);
+
 	const appAdapter = new ExpressAdapter(appExpress);
 	const app = await NestFactory.create(ServerModule, appAdapter);
 

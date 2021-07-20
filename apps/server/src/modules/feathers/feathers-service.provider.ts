@@ -35,7 +35,8 @@ export class FeathersServiceProvider {
 	constructor(@Inject(REQUEST) private request: Request) {}
 
 	getService(path: string): FeathersService {
-		const service = (this.request.app as Application).service(path) as FeathersService;
+		const feathersApp = this.request.app.get('feathersApp') as Application;
+		const service = feathersApp.service(path) as FeathersService;
 		return service;
 	}
 }

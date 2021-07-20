@@ -14,8 +14,12 @@ describe('FeathersServiceProvider', () => {
 					provide: REQUEST,
 					useValue: {
 						app: {
-							service: () => {
-								return {};
+							get: () => {
+								return {
+									service: () => {
+										return {};
+									},
+								};
 							},
 						},
 					},
