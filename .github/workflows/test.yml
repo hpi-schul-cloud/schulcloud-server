@@ -3,13 +3,12 @@ name: Test
 on: [push]
 
 env:
-  OS_VERSION: ubuntu-latest
   MONGODB_VERSION: 4.2
   NODE_VERSION: '14'
         
 jobs:
   feathers_tests_cov:
-    runs-on: ${{ env.OS_VERSION }}
+    runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v2
@@ -29,7 +28,7 @@ jobs:
       - name: feathers:Test - test with coverage
         run: npm run feathers:test
   nest_tests_cov:
-    runs-on: ${{ env.OS_VERSION }}
+    runs-on: ubuntu-latest
     services:
       rabbitmq:
         image: rabbitmq:3
@@ -51,7 +50,7 @@ jobs:
       - name: nest:test:cov - test all with coverage
         run: npm run nest:test:cov:ci
   nest_lint:
-    runs-on: ${{ env.OS_VERSION }}
+    runs-on: ubuntu-latest
     services:
       rabbitmq:
         image: rabbitmq:3
