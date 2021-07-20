@@ -3,24 +3,24 @@ name: Test
 on: [push]
 
 env:
-  os: ubuntu-latest
-  mongodb-version: 4.2
-  node: '14'
+  OS_VERSION: ubuntu-latest
+  MONGODB_VERSION: 4.2
+  NODE_VERSION: '14'
         
 jobs:
   feathers_tests_cov:
-    runs-on: ${{ env.os }}
+    runs-on: ${{ env.OS_VERSION }}
     steps:
       - name: checkout
         uses: actions/checkout@v2
       - name: Setup node
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ env.node }}
+          node-version: ${{ env.NODE_VERSION }}
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.6.0
         with:
-          mongodb-version: ${{ env.mongodb-version }}
+          mongodb-version: ${{ env.MONGODB_VERSION }}
       - name: environment setup
         run: |
           sh scripts/unitTestFeathers.sh
@@ -29,7 +29,7 @@ jobs:
       - name: feathers:Test - test with coverage
         run: npm run feathers:test
   nest_tests_cov:
-    runs-on: ${{ env.os }}
+    runs-on: ${{ env.OS_VERSION }}
     services:
       rabbitmq:
         image: rabbitmq:3
@@ -41,17 +41,17 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ env.node }}
+          node-version: ${{ env.NODE_VERSION }}
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.6.0
         with:
-          mongodb-version: ${{ env.mongodb-version }}
+          mongodb-version: ${{ env.MONGODB_VERSION }}
       - name: npm ci
         run: npm ci --prefer-offline --no-audit
       - name: nest:test:cov - test all with coverage
         run: npm run nest:test:cov:ci
   nest_lint:
-    runs-on: ${{ env.os }}
+    runs-on: ${{ env.OS_VERSION }}
     services:
       rabbitmq:
         image: rabbitmq:3
@@ -63,7 +63,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ env.node }}
+          node-version: ${{ env.NODE_VERSION }}
       - name: npm ci
         run: npm ci --prefer-offline --no-audit
       - name: nest:lint
