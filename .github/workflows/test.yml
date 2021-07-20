@@ -9,6 +9,7 @@ env:
 jobs:
   feathers_tests_cov:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: checkout
         uses: actions/checkout@v2
@@ -29,6 +30,7 @@ jobs:
         run: npm run feathers:test
   nest_tests_cov:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     services:
       rabbitmq:
         image: rabbitmq:3
@@ -51,6 +53,7 @@ jobs:
         run: npm run nest:test:cov:ci
   nest_lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     services:
       rabbitmq:
         image: rabbitmq:3
