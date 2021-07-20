@@ -152,7 +152,7 @@ data:
   FEATURE_LERNSTORE_ENABLED: "{{ FEATURE_LERNSTORE_ENABLED|default("false", true) }}"
 {% if FEATURE_LERNSTORE_ENABLED == "true" %}
   # LERNSTORE_MODE: Valid values for LERNSTORE_MODE are: LEGACY, EDUSHARING and DISABLED
-  LERNSTORE_MODE: "{{ LERNSTORE_MODE|default("LEGACY", true) }}"
+  LERNSTORE_MODE: "{{ LERNSTORE_MODE|default("EDUSHARING", true) }}"
 {% if LERNSTORE_MODE is defined and LERNSTORE_MODE == "EDUSHARING" %}
   ES_DOMAIN: "{{ ES_DOMAIN|default("https://mv-repo.schul-cloud.org", true) }}"
 {% if FEATURE_ES_MERLIN_ENABLED is defined and FEATURE_ES_MERLIN_ENABLED == "true" %}
