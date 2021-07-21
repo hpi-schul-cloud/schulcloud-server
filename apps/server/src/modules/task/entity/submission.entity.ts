@@ -33,4 +33,7 @@ export class Submission extends BaseEntityWithTimestamps {
 
 	@ManyToMany({ fieldName: 'gradeFileIds', type: FileTaskInfo })
 	gradeFileIds = new Collection<FileTaskInfo>(this);
+
+	@ManyToMany({ fieldName: 'teamMembers', type: UserTaskInfo })
+	teamMembers = new Collection<UserTaskInfo>(this);
 }

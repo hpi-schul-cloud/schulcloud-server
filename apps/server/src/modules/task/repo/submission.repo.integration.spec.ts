@@ -79,4 +79,38 @@ describe('submission repo', () => {
 			expect(count).toEqual(2);
 		});
 	});
+
+	describe('getAllSubmissionsByUser', () => {
+		it('should return submissions that have the user as userId', async () => {
+			const student = em.create(UserTaskInfo, { firstName: Date.now(), lastName: 'lastname' });
+			const course = em.create(CourseTaskInfo, { name: 'testCourse1', student: [student] });
+			const task = em.create(Task, { name: 'find me11', course });
+			const submission = em.create(Submission, { task, student });
+
+			await em.persistAndFlush([student, task, submission, course]);
+
+			const [result, count] = await repo.getAllSubmissionsByUser(student.id);
+
+			expect(count).toEqual(1);
+			expect(result[0].student.firstName).toEqual(student.firstName);
+		});
+
+		it.todo('should return submissions where the user is a team member', async () => {
+			const student = em.create(UserTaskInfo, { firstName: Date.now(), lastName: 'lastname' });
+			const student2 = em.create(UserTaskInfo, { firstName: 'First name', lastName: 'lastname' });
+			const course = em.create(CourseTaskInfo, { name: 'testCourse1', student: [student] });
+			const task = em.create(Task, { name: 'find me11', course });
+			const submission = em.create(Submission, {
+				task,
+				student: student2.firstName,
+				teamMembers: [student.id, student2.id],
+			});
+
+			await em.persistAndFlush([student, student2, task, submission, course]);
+
+			const [result, count] = await repo.getAllSubmissionsByUser(student.id);
+			expect(count).toEqual(1);
+		});
+		it.todo('should return submissions where the user is in the course group');
+	});
 });
