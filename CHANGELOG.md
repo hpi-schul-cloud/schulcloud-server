@@ -15,6 +15,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+## [26.6.2] - 2021-07-21
+
+### Changed
+
+- use edusharing lernstore mode on production 
+
 ## [26.6.1] - 2021-07-21
 
 ### Changed
