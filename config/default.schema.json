@@ -452,7 +452,7 @@
 		"LERNSTORE_MODE": {
 			"type": "string",
 			"enum": ["DISABLED", "LEGACY", "EDUSHARING"],
-			"default": "DISABLED",
+			"default": "EDUSHARING",
 			"description": "Defines the backend for the lernstore, the client just may be enabled or disabled only, if this is not disabled in the server."
 		},
 		"ES_DOMAIN": {
