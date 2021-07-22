@@ -13,6 +13,7 @@ import {
 	Task,
 	UserTaskInfo,
 } from '../entity';
+import { SubmissionRepo } from './submission.repo';
 
 describe('TaskService', () => {
 	let module: TestingModule;
@@ -32,7 +33,8 @@ describe('TaskService', () => {
 					entities: [CourseTaskInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo, CourseGroupInfo],
 				}),
 			],
-			providers: [TaskRepo],
+			// TODO: do we want to mock the Submissions here?
+			providers: [TaskRepo, { provide: 'ITaskSubmission', useClass: SubmissionRepo }],
 		}).compile();
 		service = module.get<TaskRepo>(TaskRepo);
 		em = module.get<EntityManager>(EntityManager);

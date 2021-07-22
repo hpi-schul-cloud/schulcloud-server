@@ -1,12 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { EntityId, IPagination } from '@shared/domain';
 import { EntityManager, QueryOrder } from '@mikro-orm/core';
 import { Counted } from '@shared/domain/types';
 import { Task, Submission, CourseTaskInfo, LessonTaskInfo } from '../entity';
 
+export interface ITaskSubmission {
+	getAllSubmissionsByUser(userId: EntityId): Promise<Counted<Submission[]>>;
+}
+
 @Injectable()
 export class TaskRepo {
-	constructor(private readonly em: EntityManager) {}
+	constructor(private readonly em: EntityManager, @Inject('ITaskSubmission') private taskSubmission: ITaskSubmission) {}
 
 	// TODO: move to seperate repo
 	async getCourseOfUser(userId: EntityId): Promise<CourseTaskInfo[]> {
@@ -38,9 +42,9 @@ export class TaskRepo {
 		// order by duedate
 		// pagination
 
-		const [coursesOfUser, submissionsOfStudent] = await Promise.all([
+		const [coursesOfUser, [submissionsOfStudent, submissionCount]] = await Promise.all([
 			this.getCourseOfUser(userId),
-			this.em.find(Submission, { student: userId }),
+			this.taskSubmission.getAllSubmissionsByUser(userId),
 		]);
 
 		const lessonsOfStudent = await this.em.find(LessonTaskInfo, {
