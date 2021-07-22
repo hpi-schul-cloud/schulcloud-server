@@ -14,6 +14,7 @@ import {
 	INewsScope,
 	ICreateNews,
 	IUpdateNews,
+	NewsTargetInfo,
 } from '../entity';
 import { NewsMapper } from './news.mapper';
 import {
@@ -24,6 +25,7 @@ import {
 	UpdateNewsParams,
 	UserInfoResponse,
 } from '../controller/dto';
+import { TargetInfoResponse } from '../controller/dto/target-info.response';
 
 const createDataInfo = <T extends BaseEntity>(props, Type: { new (props): T }): T => {
 	const id = new ObjectId().toHexString();
@@ -51,7 +53,7 @@ const createNews = <T extends News>(
 	NewsType: { new (props: INewsProperties): T },
 	schoolInfo: SchoolInfo,
 	creatorInfo: UserInfo,
-	target: BaseEntity
+	target: NewsTargetInfo
 ): T => {
 	const newsId = new ObjectId().toHexString();
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -80,7 +82,7 @@ const getExpectedNewsResponse = (
 	creatorInfo: UserInfo,
 	news: News,
 	newsProps: { title: string; content: string },
-	target: BaseEntity
+	target: NewsTargetInfo
 ): NewsResponse => {
 	const schoolInfoResponse: SchoolInfoResponse = new SchoolInfoResponse();
 	Object.assign(schoolInfoResponse, schoolInfo);
@@ -88,12 +90,16 @@ const getExpectedNewsResponse = (
 	const creatorResponse: UserInfoResponse = new UserInfoResponse();
 	Object.assign(creatorResponse, creatorInfo);
 	const expected: NewsResponse = new NewsResponse();
+	const targetResponse = new TargetInfoResponse();
+	targetResponse.id = target.id;
+	targetResponse.name = target.name;
 	Object.assign(expected, {
 		id: news.id,
 		source: undefined,
 		sourceDescription: undefined,
 		targetId: target.id,
 		targetModel: getTargetModel(news),
+		target: targetResponse,
 		title: newsProps.title,
 		content: newsProps.content,
 		displayAt: date,
