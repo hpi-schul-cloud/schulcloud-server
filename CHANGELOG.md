@@ -22,6 +22,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-9190 - publish news target names
 - SC-8887 - allow public access to consentVersion service 
 - SC-8448 - Not storing temporary Merlin links and fixed concurrency bug
 - remove unnecessary timeout definitions from tests and avoid promise chains
