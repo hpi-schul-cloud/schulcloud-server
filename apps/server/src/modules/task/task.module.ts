@@ -6,6 +6,6 @@ import { SubmissionRepo } from './repo/submission.repo';
 
 @Module({
 	controllers: [TaskController],
-	providers: [TaskUC, TaskRepo, SubmissionRepo, { provide: 'ITaskSubmission', useClass: SubmissionRepo }],
+	providers: [TaskUC, TaskRepo, SubmissionRepo],
 })
 export class TaskModule {}

@@ -2,10 +2,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Counted, EntityId } from '../../../shared/domain';
 import { CourseGroupInfo, Submission, Task } from '../entity';
-import { ITaskSubmission } from './task.repo';
 
 @Injectable()
-export class SubmissionRepo implements ITaskSubmission {
+export class SubmissionRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	async getSubmissionsByTask(task: Task): Promise<Counted<Submission[]>> {
