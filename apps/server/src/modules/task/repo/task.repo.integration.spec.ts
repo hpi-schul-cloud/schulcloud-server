@@ -4,7 +4,15 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MikroORM } from '@mikro-orm/core';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { TaskRepo } from './task.repo';
-import { CourseTaskInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo } from '../entity';
+import {
+	CourseGroupInfo,
+	CourseTaskInfo,
+	FileTaskInfo,
+	LessonTaskInfo,
+	Submission,
+	Task,
+	UserTaskInfo,
+} from '../entity';
 
 describe('TaskService', () => {
 	let module: TestingModule;
@@ -21,7 +29,7 @@ describe('TaskService', () => {
 				MikroOrmModule.forRoot({
 					type: 'mongo',
 					clientUrl: dbUrl,
-					entities: [CourseTaskInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo],
+					entities: [CourseTaskInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo, CourseGroupInfo],
 				}),
 			],
 			providers: [TaskRepo],

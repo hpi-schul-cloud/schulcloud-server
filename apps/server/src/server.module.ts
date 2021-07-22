@@ -20,13 +20,21 @@ import {
 	CourseInfo,
 	TeamInfo,
 } from './modules/news/entity';
-import { Task, LessonTaskInfo, CourseTaskInfo, Submission, FileTaskInfo, UserTaskInfo } from './modules/task/entity';
+import {
+	Task,
+	LessonTaskInfo,
+	CourseTaskInfo,
+	Submission,
+	FileTaskInfo,
+	UserTaskInfo,
+	CourseGroupInfo,
+} from './modules/task/entity';
 import { User, Role, Account } from './modules/user/entity';
 import { NewsModule } from './modules/news/news.module';
 import { MailModule } from './modules/mail/mail.module';
 
 const courseEntities = [CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo, CourseInfo, TeamInfo];
-const taskEntities = [Task, LessonTaskInfo, CourseTaskInfo, Submission, FileTaskInfo, UserTaskInfo];
+const taskEntities = [Task, LessonTaskInfo, CourseTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGroupInfo];
 const userEntities = [User, Role, Account];
 
 @Module({
