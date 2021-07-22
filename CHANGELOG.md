@@ -19,7 +19,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed 
 
-- SC-9092 - add missing S3 key encryption in migration
+- SC-9092 - add missing S3 key decryption in migration
 
 ## [26.6.2] - 2021-07-21
 
