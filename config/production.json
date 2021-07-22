@@ -9,5 +9,6 @@
 		"content": "CONTENT_URI",
 		"hydra": "HYDRA_URI",
 		"web": "HOST"
-	}
+	},
+	"LERNSTORE_MODE": "EDUSHARING"
 }

@@ -11,6 +11,32 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [26.6.3] - 2021-07-21
+
+### Fixed 
+
+- SC-9092 - add missing S3 key decryption in migration
+
+## [26.6.2] - 2021-07-21
+
+### Changed
+
+- use edusharing lernstore mode on production 
+
+## [26.6.1] - 2021-07-21
+
+### Changed
+
+- change default lernstore mode to edusharing
+
+## [26.6.0] - 2021-07-20
+
+### Added
+
 - SC-9018; SC-9003 - created schoolsList public endpoint, and jwt secured /schools endpoint
 - SC-9093 - make configured default language and timezone available in config service
 - SC-9092 - delete S3 files after 7 days from user deletion
