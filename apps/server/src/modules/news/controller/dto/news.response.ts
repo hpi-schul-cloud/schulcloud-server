@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { NewsTargetModel } from '../../entity';
 import { SchoolInfoResponse } from './school-info.response';
+import { TargetInfoResponse } from './target-info.response';
 import { UserInfoResponse } from './user-info.response';
 
 const NEWS_SOURCES = ['internal', 'rss'] as const;
@@ -53,6 +54,11 @@ export class NewsResponse {
 		description: 'Specific target id to which the News entity is related',
 	})
 	targetId: string;
+
+	@ApiProperty({
+		description: 'The target object with id and name, could be the school, team, or course name',
+	})
+	target: TargetInfoResponse;
 
 	@ApiProperty({
 		description: 'The School ownership',

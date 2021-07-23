@@ -11,6 +11,38 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [26.6.4] - 2021-07-23
+
+### Changed 
+
+- move S3 expiration migration to the end 
+
+## [26.6.3] - 2021-07-21
+
+### Fixed 
+
+- SC-9092 - add missing S3 key decryption in migration
+
+## [26.6.2] - 2021-07-21
+
+### Changed
+
+- use edusharing lernstore mode on production 
+
+## [26.6.1] - 2021-07-21
+
+### Changed
+
+- change default lernstore mode to edusharing
+
+## [26.6.0] - 2021-07-20
+
+### Added
+
 - SC-9018; SC-9003 - created schoolsList public endpoint, and jwt secured /schools endpoint
 - SC-9093 - make configured default language and timezone available in config service
 - SC-9092 - delete S3 files after 7 days from user deletion
@@ -23,12 +55,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-9190 - publish news target names
 - SC-8887 - allow public access to consentVersion service 
 - SC-8448 - Not storing temporary Merlin links and fixed concurrency bug
 - remove unnecessary timeout definitions from tests and avoid promise chains
 - SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
 - execute unit tests via github action instead of using travis
-- change default lernstore mode to edusharing
 
 ### Fixed
 

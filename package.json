@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "26.5.0",
+	"version": "26.6.4",
 	"homepage": "https://hpi-schul-cloud.de/",
 	"main": "src/",
 	"keywords": [
