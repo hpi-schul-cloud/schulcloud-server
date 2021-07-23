@@ -61,9 +61,9 @@ export class TaskUC {
 		// TODO have BL from repo here
 
 		const [submissionsOfStudent, submissionCount] = await this.submissionRepo.getAllSubmissionsByUser(userId);
-		const homeworksWithSubmissions = submissionsOfStudent.map((submission) => submission.task.id);
+		const tasksWithSubmissions = submissionsOfStudent.map((submission) => submission.task.id);
 
-		const [tasks, total] = await this.taskRepo.findAllByStudent(userId, pagination, homeworksWithSubmissions);
+		const [tasks, total] = await this.taskRepo.findAllByStudent(userId, pagination, tasksWithSubmissions);
 		const computedTasks = tasks.map((task) => TaskMapper.mapToResponse(task));
 		return [computedTasks, total];
 	}
