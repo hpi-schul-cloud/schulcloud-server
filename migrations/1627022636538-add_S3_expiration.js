@@ -1,9 +1,17 @@
+const CryptoJS = require('crypto-js');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+
 const { alert } = require('../src/logger');
 
 const { connect, close } = require('../src/utils/database');
 
 const { StorageProviderModel } = require('../src/components/fileStorage/repo/db');
 const fileStorageProviderRepo = require('../src/components/fileStorage/repo/fileStorageProvider.repo');
+
+const decryptAccessKey = (secretAccessKey) => {
+	const S3_KEY = Configuration.get('S3_KEY');
+	return CryptoJS.AES.decrypt(secretAccessKey, S3_KEY).toString(CryptoJS.enc.Utf8);
+};
 
 const setBucketLifecycleConfiguration = (storageProvider, bucketName) =>
 	storageProvider
@@ -37,6 +45,7 @@ module.exports = {
 		const storageProviderInfos = await StorageProviderModel.find({}).lean().exec();
 		alert(`${storageProviderInfos.length} storage providers found`);
 		for (const storageProviderInfo of storageProviderInfos) {
+			storageProviderInfo.secretAccessKey = decryptAccessKey(storageProviderInfo.secretAccessKey);
 			const storageProvider = fileStorageProviderRepo.private.createStorageProviderInstance(storageProviderInfo);
 			// eslint-disable-next-line no-await-in-loop
 			const buckets = await storageProvider.listBuckets().promise();
@@ -54,6 +63,7 @@ module.exports = {
 		const storageProviderInfos = await StorageProviderModel.find({}).lean().exec();
 		alert(`${storageProviderInfos.length} storage providers found`);
 		for (const storageProviderInfo of storageProviderInfos) {
+			storageProviderInfo.secretAccessKey = decryptAccessKey(storageProviderInfo.secretAccessKey);
 			const storageProvider = fileStorageProviderRepo.private.createStorageProviderInstance(storageProviderInfo);
 			// eslint-disable-next-line no-await-in-loop
 			const buckets = await storageProvider.listBuckets().promise();

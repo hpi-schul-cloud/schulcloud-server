@@ -39,7 +39,7 @@ data:
   STUDENT_TEAM_CREATION: "{{ STUDENT_TEAM_CREATION }}"
 {% endif %}
   # Storage
-  AWS_ENDPOINT_URL: "{{ AWS_ENDPOINT_URL }}"
+  AWS_ENDPOINT_URL: "https://storage-{{ DOMAIN }}"
   AWS_REGION: "{{ AWS_REGION }}"
 {% if STORAGE_SIGNED_URL_EXPIRE is defined %}
   STORAGE_SIGNED_URL_EXPIRE: "{{ STORAGE_SIGNED_URL_EXPIRE }}"
@@ -150,24 +150,14 @@ data:
   # Lernstore
 {% if FEATURE_LERNSTORE_ENABLED is defined %}
   FEATURE_LERNSTORE_ENABLED: "{{ FEATURE_LERNSTORE_ENABLED|default("false", true) }}"
-{% if FEATURE_LERNSTORE_ENABLED == "true" %}
-  # LERNSTORE_MODE: Valid values for LERNSTORE_MODE are: LEGACY, EDUSHARING and DISABLED
-  LERNSTORE_MODE: "{{ LERNSTORE_MODE|default("LEGACY", true) }}"
-{% if LERNSTORE_MODE is defined and LERNSTORE_MODE == "EDUSHARING" %}
-  ES_DOMAIN: "{{ ES_DOMAIN|default("https://mv-repo.schul-cloud.org", true) }}"
 {% if FEATURE_ES_MERLIN_ENABLED is defined and FEATURE_ES_MERLIN_ENABLED == "true" %}
   FEATURE_ES_MERLIN_ENABLED: "{{ FEATURE_ES_MERLIN_ENABLED }}"
   ES_MERLIN_AUTH_URL: "{{ ES_MERLIN_AUTH_URL|default("http://merlin.nibis.de/auth.php", true) }}"
 {% else %}
   FEATURE_ES_MERLIN_ENABLED: "false"
 {% endif %}
-{% endif %}
-{% else %}
-  LERNSTORE_MODE: "DISABLED"
-{% endif %}
 {% else %}
   FEATURE_LERNSTORE_ENABLED: "false"
-  LERNSTORE_MODE: "DISABLED"
 {% endif %}
 {% if FEATURE_SKIP_FIRST_LOGIN_ENABLED is defined %}
   FEATURE_SKIP_FIRST_LOGIN_ENABLED : "{{ FEATURE_SKIP_FIRST_LOGIN_ENABLED }}"

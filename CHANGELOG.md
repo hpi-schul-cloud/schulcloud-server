@@ -9,6 +9,40 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- SC-9213 - Consider group submissions when deciding what open tasks a student has
+
+### Added
+
+### Changed
+
+### Fixed
+
+## [26.6.4] - 2021-07-23
+
+### Changed 
+
+- move S3 expiration migration to the end 
+
+## [26.6.3] - 2021-07-21
+
+### Fixed 
+
+- SC-9092 - add missing S3 key decryption in migration
+
+## [26.6.2] - 2021-07-21
+
+### Changed
+
+- use edusharing lernstore mode on production 
+
+## [26.6.1] - 2021-07-21
+
+### Changed
+
+- change default lernstore mode to edusharing
+
+## [26.6.0] - 2021-07-20
+
 ### Added
 
 - SC-9150 - add migration to change school year (except BRB)
@@ -18,17 +52,23 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8959 - Add messenger to deletion concept
 - SC-9157 - Add RabbitMQ connection to new mail service
 - SC-9157 - Improve config handling for RabbitMQ
+- SC-9213 - Consider group submissions when deciding what open tasks a student has
 - OPS-2574 - Removeing autodeployed branches for developers if branch deleted
+- OPS-2579 - Add Ansible task and templates for adding storage
 
 ### Changed
 
+- SC-9190 - publish news target names
+- SC-8887 - allow public access to consentVersion service 
 - SC-8448 - Not storing temporary Merlin links and fixed concurrency bug
 - remove unnecessary timeout definitions from tests and avoid promise chains
 - SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
 - execute unit tests via github action instead of using travis
 
 ### Fixed
- - SC-9197 - Limiting the max workers for jest to 2 workers, if the default mechanism runs it's go up to infinity workers and if one die the test never stop
+
+- SC-9197 - Limiting the max workers for jest to 2 workers, if the default mechanism runs it's go up to infinity workers and if one die the test never stop
+- SC-9202 - fix sending of registration link mails 
 
 ## [26.5.0] - 2021-06-28
 

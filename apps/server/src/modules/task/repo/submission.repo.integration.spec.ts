@@ -4,6 +4,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { CourseTaskInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo } from '../entity';
+import { CourseGroupInfo } from '../entity/course-group-info.entity';
 import { SubmissionRepo } from './submission.repo';
 
 describe('submission repo', () => {
@@ -21,7 +22,7 @@ describe('submission repo', () => {
 				MikroOrmModule.forRoot({
 					type: 'mongo',
 					clientUrl: dbUrl,
-					entities: [CourseTaskInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo],
+					entities: [CourseTaskInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo, CourseGroupInfo],
 				}),
 			],
 			providers: [SubmissionRepo],
@@ -77,6 +78,60 @@ describe('submission repo', () => {
 			const requestedTasks = [tasks[0], tasks[1]];
 			const [result, count] = await repo.getSubmissionsByTasksList(requestedTasks);
 			expect(count).toEqual(2);
+		});
+	});
+
+	describe('getAllSubmissionsByUser', () => {
+		it('should return submissions that have the user as userId', async () => {
+			const student = em.create(UserTaskInfo, { firstName: Date.now(), lastName: 'lastname' });
+			const course = em.create(CourseTaskInfo, { name: 'testCourse1', students: [student] });
+			const task = em.create(Task, { name: 'find me11', course });
+			const submission = em.create(Submission, { task, student });
+
+			await em.persistAndFlush([student, task, submission, course]);
+
+			const [result, count] = await repo.getAllSubmissionsByUser(student.id);
+
+			expect(count).toEqual(1);
+			expect(result.length).toEqual(1);
+			expect(result[0].student.firstName).toEqual(student.firstName);
+		});
+
+		it('should return submissions where the user is a team member', async () => {
+			const student = em.create(UserTaskInfo, { firstName: Date.now(), lastName: 'lastname' });
+			const student2 = em.create(UserTaskInfo, { firstName: 'First name', lastName: 'lastname' });
+			const course = em.create(CourseTaskInfo, { name: 'testCourse1', students: [student] });
+			const task = em.create(Task, { name: 'find me11', course });
+			await em.persistAndFlush([student, student2, task, course]);
+			const submission = em.create(Submission, {
+				task,
+				student: student2,
+				teamMembers: [student.id, student2.id],
+			});
+			await em.persistAndFlush([submission]);
+
+			const [result, count] = await repo.getAllSubmissionsByUser(student.id);
+			expect(count).toEqual(1);
+			expect(result[0].teamMembers[0].firstName).toEqual(student.firstName);
+		});
+
+		it('should return submissions where the user is in the course group', async () => {
+			const student = em.create(UserTaskInfo, { firstName: Date.now(), lastName: 'lastname' });
+			const student2 = em.create(UserTaskInfo, { firstName: 'First name', lastName: 'lastname' });
+			const course = em.create(CourseTaskInfo, { name: 'testCourse1', students: [student] });
+			const courseGroup = em.create(CourseGroupInfo, { course, students: [student, student2] });
+			const task = em.create(Task, { name: 'find me11', course });
+			const submission = em.create(Submission, {
+				task,
+				student: student2,
+				courseGroup,
+			});
+			await em.persistAndFlush([student, student2, task, submission, course, courseGroup]);
+
+			const [result, count] = await repo.getAllSubmissionsByUser(student.id);
+
+			expect(count).toEqual(1);
+			expect(result[0].courseGroup.students[0].firstName).toEqual(student.firstName);
 		});
 	});
 });

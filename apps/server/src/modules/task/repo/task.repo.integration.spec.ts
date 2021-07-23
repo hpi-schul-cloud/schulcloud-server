@@ -4,7 +4,15 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { MikroORM } from '@mikro-orm/core';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { TaskRepo } from './task.repo';
-import { CourseTaskInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo } from '../entity';
+import {
+	CourseGroupInfo,
+	CourseTaskInfo,
+	FileTaskInfo,
+	LessonTaskInfo,
+	Submission,
+	Task,
+	UserTaskInfo,
+} from '../entity';
 
 describe('TaskService', () => {
 	let module: TestingModule;
@@ -21,9 +29,10 @@ describe('TaskService', () => {
 				MikroOrmModule.forRoot({
 					type: 'mongo',
 					clientUrl: dbUrl,
-					entities: [CourseTaskInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo],
+					entities: [CourseTaskInfo, FileTaskInfo, LessonTaskInfo, Submission, Task, UserTaskInfo, CourseGroupInfo],
 				}),
 			],
+			// TODO: do we want to mock the Submissions here?
 			providers: [TaskRepo],
 		}).compile();
 		service = module.get<TaskRepo>(TaskRepo);
@@ -116,14 +125,14 @@ describe('TaskService', () => {
 		});
 	});
 
-	describe('findAllOpenByStudent', () => {
+	describe('findAllByStudent', () => {
 		describe('return value', () => {
 			it('should return the expected properties', async () => {
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user], color: '#ffffff' });
 				const task = em.create(Task, { name: 'roll some dice', course, dueDate: new Date() });
 				await em.persistAndFlush([user, course, task]);
-				const [result, total] = await service.findAllOpenByStudent(user.id);
+				const [result, total] = await service.findAllByStudent(user.id);
 				expect(total).toEqual(1);
 				expect(result[0]).toHaveProperty('name');
 				expect(result[0]).toHaveProperty('dueDate');
@@ -141,7 +150,7 @@ describe('TaskService', () => {
 					em.create(Task, { name: '100 pushups', course, dueDate: new Date() }),
 				]);
 				await em.persistAndFlush([user, course, ...tasks]);
-				const [result, total] = await service.findAllOpenByStudent(user.id, { limit: 2, skip: 0 });
+				const [result, total] = await service.findAllByStudent(user.id, { limit: 2, skip: 0 });
 				expect(result.length).toEqual(2);
 				expect(total).toEqual(4);
 			});
@@ -154,7 +163,7 @@ describe('TaskService', () => {
 					em.create(Task, { name: '1st', course, dueDate: new Date(Date.now() - 500) }),
 				]);
 				await em.persistAndFlush([user, course, ...tasks]);
-				const [result, total] = await service.findAllOpenByStudent(user.id);
+				const [result, total] = await service.findAllByStudent(user.id);
 				expect(total).toEqual(2);
 				expect(result[0].name).toEqual('1st');
 				expect(result[1].name).toEqual('2nd');
@@ -167,7 +176,7 @@ describe('TaskService', () => {
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 				const task = em.create(Task, { name: 'roll some dice', course });
 				await em.persistAndFlush([user, course, task]);
-				const [result, total] = await service.findAllOpenByStudent(user.id);
+				const [result, total] = await service.findAllByStudent(user.id);
 				expect(total).toEqual(1);
 			});
 
@@ -176,7 +185,7 @@ describe('TaskService', () => {
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [] });
 				const task = em.create(Task, { name: 'secret task', course });
 				await em.persistAndFlush([user, course, task]);
-				const [result, total] = await service.findAllOpenByStudent(user.id);
+				const [result, total] = await service.findAllByStudent(user.id);
 				expect(total).toEqual(0);
 			});
 
@@ -185,29 +194,17 @@ describe('TaskService', () => {
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [] });
 				const task = em.create(Task, { name: 'secret task', course, private: true });
 				await em.persistAndFlush([user, course, task]);
-				const [result, total] = await service.findAllOpenByStudent(user.id);
+				const [result, total] = await service.findAllByStudent(user.id);
 				expect(total).toEqual(0);
 			});
 
-			it('should not return task that has a submission by the user', async () => {
+			it('should not return task that is on the ignore list', async () => {
 				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 				const task = em.create(Task, { name: 'roll some dice', course });
-				const submission = em.create(Submission, { task, student: user });
-				await em.persistAndFlush([user, course, submission, task]);
-				const [result, total] = await service.findAllOpenByStudent(user.id);
+				await em.persistAndFlush([user, course, task]);
+				const [result, total] = await service.findAllByStudent(user.id, {}, [task.id]);
 				expect(total).toEqual(0);
-			});
-
-			it('should not return task that has a submission by different user', async () => {
-				const user = em.create(UserTaskInfo, { firstName: 'test', lastName: 'student' });
-				const otherUser = em.create(UserTaskInfo, { firstName: 'other', lastName: 'student' });
-				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
-				const task = em.create(Task, { name: 'roll some dice', course });
-				const submission = em.create(Submission, { task, student: otherUser });
-				await em.persistAndFlush([user, otherUser, course, submission, task]);
-				const [result, total] = await service.findAllOpenByStudent(user.id);
-				expect(total).toEqual(1);
 			});
 
 			it('should filter tasks that are more than one week overdue', async () => {
@@ -224,7 +221,7 @@ describe('TaskService', () => {
 					em.create(Task, { name: 'should have done this recently', course }),
 				]);
 				await em.persistAndFlush([user, course, ...tasks]);
-				const [result, total] = await service.findAllOpenByStudent(user.id);
+				const [result, total] = await service.findAllByStudent(user.id);
 				expect(total).toEqual(1);
 			});
 		});
@@ -236,7 +233,7 @@ describe('TaskService', () => {
 				const lesson = em.create(LessonTaskInfo, { course, hidden: false });
 				const task = em.create(Task, { name: 'roll some dice', lesson, course });
 				await em.persistAndFlush([user, course, lesson, task]);
-				const [result, total] = await service.findAllOpenByStudent(user.id);
+				const [result, total] = await service.findAllByStudent(user.id);
 				expect(total).toEqual(1);
 			});
 
@@ -245,7 +242,7 @@ describe('TaskService', () => {
 				const course = em.create(CourseTaskInfo, { name: 'testCourse', students: [user] });
 				const task = em.create(Task, { name: 'roll some dice', lesson: null, course });
 				await em.persistAndFlush([user, course, task]);
-				const [result, total] = await service.findAllOpenByStudent(user.id);
+				const [result, total] = await service.findAllByStudent(user.id);
 				expect(total).toEqual(1);
 			});
 
@@ -255,7 +252,7 @@ describe('TaskService', () => {
 				const lesson = em.create(LessonTaskInfo, { course });
 				const task = em.create(Task, { name: 'roll some dice', lesson, course });
 				await em.persistAndFlush([user, course, lesson, task]);
-				const [result, total] = await service.findAllOpenByStudent(user.id);
+				const [result, total] = await service.findAllByStudent(user.id);
 				expect(total).toEqual(0);
 			});
 
@@ -265,7 +262,7 @@ describe('TaskService', () => {
 				const lesson = em.create(LessonTaskInfo, { course, hidden: true });
 				const task = em.create(Task, { name: 'roll some dice', lesson, course });
 				await em.persistAndFlush([user, course, lesson, task]);
-				const [result, total] = await service.findAllOpenByStudent(user.id);
+				const [result, total] = await service.findAllByStudent(user.id);
 				expect(total).toEqual(0);
 			});
 
@@ -275,7 +272,7 @@ describe('TaskService', () => {
 				const lesson = em.create(LessonTaskInfo, { course });
 				const task = em.create(Task, { name: 'roll some dice', lesson, course });
 				await em.persistAndFlush([user, course, lesson, task]);
-				const [result, total] = await service.findAllOpenByStudent(user.id);
+				const [result, total] = await service.findAllByStudent(user.id);
 				expect(total).toEqual(0);
 			});
 		});

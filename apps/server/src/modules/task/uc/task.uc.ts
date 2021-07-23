@@ -60,7 +60,10 @@ export class TaskUC {
 		// TODO get permitted tasks...
 		// TODO have BL from repo here
 
-		const [tasks, total] = await this.taskRepo.findAllOpenByStudent(userId, pagination);
+		const [submissionsOfStudent, submissionCount] = await this.submissionRepo.getAllSubmissionsByUser(userId);
+		const tasksWithSubmissions = submissionsOfStudent.map((submission) => submission.task.id);
+
+		const [tasks, total] = await this.taskRepo.findAllByStudent(userId, pagination, tasksWithSubmissions);
 		const computedTasks = tasks.map((task) => TaskMapper.mapToResponse(task));
 		return [computedTasks, total];
 	}

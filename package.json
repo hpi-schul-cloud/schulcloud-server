@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "26.5.0",
+	"version": "26.6.4",
 	"homepage": "https://hpi-schul-cloud.de/",
 	"main": "src/",
 	"keywords": [
@@ -62,7 +62,9 @@
 		"nest:test:debug": "jest --runInBand",
 		"nest:lint": "eslint apps --ignore-path .gitignore",
 		"nest:lint:fix": "eslint apps --fix --ignore-path .gitignore",
-		"syncIndexes": "node ./scripts/syncIndexes.js"
+		"syncIndexes": "node ./scripts/syncIndexes.js",
+		"schoolExport": "node ./scripts/schoolExport.js",
+		"schoolImport": "node ./scripts/schoolImport.js"
 	},
 	"dependencies": {
 		"@feathersjs/authentication": "^4.5.11",
