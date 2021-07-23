@@ -15,7 +15,7 @@ jobs:
       - name: conditional
       # if: contains( toJson(github.event.pull_request.labels), 'WIP' )
         run: |
-          echo ${{  toJson(github.event.pull_request.labels) }}
+          echo ${{ github.event.pull_request.labels.*.name }}
           exit 1
       - uses: actions/checkout@v2
       - name: run git change
