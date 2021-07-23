@@ -17,6 +17,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 - SC-8959 - Add messenger to deletion concept
 - SC-9157 - Add RabbitMQ connection to new mail service
 - SC-9157 - Improve config handling for RabbitMQ
+- SC-9213 - Consider group submissions when deciding what open tasks a student has
 - OPS-2574 - Removeing autodeployed branches for developers if branch deleted
 - OPS-2579 - Add Ansible task and templates for adding storage
 
