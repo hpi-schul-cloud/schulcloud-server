@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: conditional
-      # if: contains(${{github.event.pull_request.labels.*.name}}, 'WIP') != true
+      # if: contains( toJson(github.event.pull_request.labels), 'WIP' )
         run: |
-          echo ${{ github.event.label.name }}
-          echo github.event.label.name == 'WIP'
+          echo ${{  toJson(github.event.pull_request.labels) }}
+          exit 1
       - uses: actions/checkout@v2
       - name: run git change
         run: |
