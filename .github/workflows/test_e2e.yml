@@ -10,9 +10,13 @@ on:
 jobs:
 
   end-to-end-tests:
-    if: contains(${{github.event.pull_request.labels.*.name}}, 'WIP') != true
     runs-on: ubuntu-latest
     steps:
+      - name: conditional
+      # if: contains(${{github.event.pull_request.labels.*.name}}, 'WIP') != true
+        run: |
+          echo ${{ github.event.label.name }}
+          echo github.event.label.name == 'WIP'
       - uses: actions/checkout@v2
       - name: run git change
         run: |
