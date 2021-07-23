@@ -6,6 +6,7 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
+import { Logger } from '@nestjs/common';
 import { ServerModule } from './server.module';
 import legacyAppPromise = require('../../../src/app');
 import { enableOpenApiDocs } from './shared/controller/swagger';
@@ -54,6 +55,18 @@ async function bootstrap() {
 	// exposed alias mounts
 	rootExpress.use('/api/v1', legacyExpress);
 	rootExpress.use('/api/v3', appExpress);
+
+	// logger middleware for deprecated paths
+	// TODO remove when all calls to the server are migrated
+	const logDeprecatedPaths = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+		Logger.error(`DEPRECATED-PATH: ${req.path}`);
+		next();
+	};
+
+	// safety net for deprecated paths not beginning with version prefix
+	// TODO remove when all calls to the server are migrated
+	rootExpress.use('/api', logDeprecatedPaths, legacyExpress);
+	rootExpress.use('/', logDeprecatedPaths, legacyExpress);
 
 	rootExpress.listen(3030);
 }
