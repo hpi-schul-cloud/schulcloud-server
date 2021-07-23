@@ -13,9 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: conditional
-      # if: contains( toJson(github.event.pull_request.labels), 'WIP' )
+        if: contains( github.event.pull_request.labels.*.name , 'OTTO' )
         run: |
-          echo ${{ github.event.pull_request.labels.*.name }}
+          echo "remove OTTO label to execute e2e tests"
+          exit 1
+      - name: conditional
+        if: contains( github.event.pull_request.labels.*.name , 'WIP' )
+        run: |
+          echo "remove WIP label to execute e2e tests"
           exit 1
       - uses: actions/checkout@v2
       - name: run git change
