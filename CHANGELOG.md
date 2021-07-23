@@ -15,6 +15,12 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+## [26.6.4] - 2021-07-23
+
+### Changed 
+
+- move S3 expiration migration to the end 
+
 ## [26.6.3] - 2021-07-21
 
 ### Fixed 
