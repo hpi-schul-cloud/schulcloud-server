@@ -20,6 +20,7 @@ describe('TaskService', () => {
 					provide: TaskRepo,
 					useValue: {
 						findAllAssignedByTeacher() {},
+						findAllByStudent() {},
 					},
 				},
 				SubmissionRepo,
@@ -27,6 +28,7 @@ describe('TaskService', () => {
 					provide: SubmissionRepo,
 					useValue: {
 						getSubmissionsByTasksList() {},
+						getAllSubmissionsByUser() {},
 					},
 				},
 			],
@@ -42,7 +44,25 @@ describe('TaskService', () => {
 	});
 
 	// TODO: make it sense to write test for it if we want combine student, teacher and open?
-	describe('findAllOpenForStudent', () => {});
+	describe('findAllOpenForStudent', () => {
+		it('should ignore tasks with submissions', async () => {
+			const getAllSubmissionsByUserSpy = jest
+				.spyOn(submissionRepo, 'getAllSubmissionsByUser')
+				.mockImplementation(() => {
+					const submissions = [{ task: { name: 'atask', id: '123' } }] as Submission[];
+					return Promise.resolve([submissions, 1]);
+				});
+			const findAllByStudentMock = jest.spyOn(taskRepo, 'findAllByStudent').mockImplementation(() => {
+				const tasks = [{ name: 'task1' }, { name: 'task2' }] as Task[];
+				return Promise.resolve([tasks, 2]);
+			});
+
+			const paginationQuery = new PaginationQuery();
+			await service.findAllOpenForStudent('someId', paginationQuery);
+
+			expect(findAllByStudentMock).toHaveBeenCalledWith('someId', paginationQuery, ['123']);
+		});
+	});
 
 	describe('findAllOpen', () => {});
 

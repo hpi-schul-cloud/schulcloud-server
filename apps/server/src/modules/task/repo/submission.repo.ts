@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Counted } from '../../../shared/domain';
-import { Submission, Task } from '../entity';
+import { Counted, EntityId } from '../../../shared/domain';
+import { CourseGroupInfo, Submission, Task } from '../entity';
 
 @Injectable()
 export class SubmissionRepo {
@@ -20,5 +20,13 @@ export class SubmissionRepo {
 		});
 
 		return [submissions, count];
+	}
+
+	async getAllSubmissionsByUser(userId: EntityId): Promise<Counted<Submission[]>> {
+		const courseGroupsOfUser = await this.em.find(CourseGroupInfo, { students: userId });
+		const result = await this.em.findAndCount(Submission, {
+			$or: [{ student: userId }, { teamMembers: userId }, { courseGroup: { $in: courseGroupsOfUser } }],
+		});
+		return result;
 	}
 }
