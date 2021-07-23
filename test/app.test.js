@@ -29,8 +29,6 @@ describe('Feathers application tests', () => {
 		let configBefore;
 		before('enable 404 handler', () => {
 			configBefore = Configuration.toObject({ plainSecrets: true });
-			// skipped now, NestJS handles 404 after feathers
-			Configuration.set('FEATURE_LEGACY_NOT_FOUND_ENABLED', true);
 		});
 		after('reset config', () => {
 			Configuration.reset(configBefore);

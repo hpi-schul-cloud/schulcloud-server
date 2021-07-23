@@ -653,11 +653,6 @@
 			"type": "string",
 			"default": "/login",
 			"description": "Determines the url to be redirected to when the user is not authenticated"
-		},
-		"FEATURE_LEGACY_NOT_FOUND_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables 404 error handler in feathers app. WARNING: disables all nestjs routes."
 		}
 	},
 	"required": [
