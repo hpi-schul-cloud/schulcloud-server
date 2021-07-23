@@ -4,17 +4,13 @@ on:
   pull_request:
     branches:
       - main
+    types: [ labeled ] 
 
 jobs:
-
   end-to-end-tests:
     runs-on: ubuntu-latest
+    if: contains( github.event.pull_request.labels.*.name , 'run tests' )
     steps:
-      - name: ready to execute e2e test
-        if: "!contains( github.event.pull_request.labels.*.name , 'run e2e tests' )"
-        run: |
-          echo "::error add label 'ensure e2e tests' to execute e2e tests, after adding the label execute this job again"
-          exit 1
       - uses: actions/checkout@v2
       - name: run git change
         run: |
