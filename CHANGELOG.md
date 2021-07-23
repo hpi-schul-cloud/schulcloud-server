@@ -9,9 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-- SC-9213 - Consider group submissions when deciding what open tasks a student has
-
 ### Added
+
+- SC-9213 - Consider group submissions when deciding what open tasks a student has
+- SC-9150 - add script to change school year 
 
 ### Changed
 
@@ -45,7 +46,6 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
-- SC-9150 - add migration to change school year (except BRB)
 - SC-9018; SC-9003 - created schoolsList public endpoint, and jwt secured /schools endpoint
 - SC-9093 - make configured default language and timezone available in config service
 - SC-9092 - delete S3 files after 7 days from user deletion
