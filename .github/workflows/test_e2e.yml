@@ -4,8 +4,6 @@ on:
   pull_request:
     branches:
       - main
-  label:
-    types: [created, deleted]
 
 jobs:
   end-to-end-tests:
