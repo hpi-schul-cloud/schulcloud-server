@@ -12,15 +12,15 @@ jobs:
   end-to-end-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: conditional
-        if: "!contains( github.event.pull_request.labels.*.name , 'OTTO' )"
+      # - name: PR no more in WIP state
+      #   if: contains( github.event.pull_request.labels.*.name , 'WIP' )
+      #   run: |
+      #     echo "::error e2e tests are required to merge into main branch but will be executed only if WIP label is not present"
+      #     exit 1
+      - name: ready to execute e2e test
+        if: "!contains( github.event.pull_request.labels.*.name , 'ensure e2e tests' )"
         run: |
-          echo "add OTTO label to execute e2e tests"
-          exit 1
-      - name: conditional
-        if: contains( github.event.pull_request.labels.*.name , 'WIP' )
-        run: |
-          echo "::error e2e tests are required on merge in main but will be executed only if WIP label is not present"
+          echo "::error add label 'ensure e2e tests' to execute e2e tests"
           exit 1
       - uses: actions/checkout@v2
       - name: run git change
