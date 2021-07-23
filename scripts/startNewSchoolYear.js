@@ -21,6 +21,7 @@ appPromise
 			.exec();
 		const federalStateIds = federalStates.map((state) => state._id);
 		const federalStateNames = federalStates.map((state) => state.name);
+		federalStateIds.push(null);
 		info(`Migrating schools in ${federalStateIds.length} federalstates (${federalStateNames.toString()})`);
 
 		info('Setting up Maintenance mode for LDAP schools');
