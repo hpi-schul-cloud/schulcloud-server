@@ -4,11 +4,13 @@ on:
   pull_request:
     branches:
       - main
+  # label:
+  #   types: [created, deleted]
 
 jobs:
 
   end-to-end-tests:
-    if: ${{ !contains(github.event.pull_request.labels.*.name, 'WIP') }}
+    if: ! contains(${{github.event.pull_request.labels.*.name}}, 'WIP') 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
