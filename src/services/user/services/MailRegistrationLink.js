@@ -1,10 +1,10 @@
+/* eslint-disable no-await-in-loop */
 const { authenticate } = require('@feathersjs/authentication').hooks;
 
 const { Forbidden, BadRequest } = require('../../../errors');
 const { hasPermission } = require('../../../hooks');
 
 const { SC_SHORT_TITLE, SC_TITLE } = require('../../../../config/globals');
-const logger = require('../../../logger');
 
 const mailContent = (firstName, lastName, registrationLink) => {
 	const mail = {
@@ -40,48 +40,48 @@ class SendRegistrationLinkService {
 		let totalMailsSend = 0;
 
 		try {
-			const { userIds } = data;
+			const { userIds = [], users = [] } = data;
 			let accounts = await this.app.service('/accounts').find({
 				query: {
-					userId: userIds,
+					userId: userIds.concat(users.map((u) => u._id)),
 				},
 			});
 			accounts = accounts.map((account) => String(account.userId));
 
-			for (const userId of userIds) {
-				// dont't send mail if user has account
-				if (!accounts.includes(userId)) {
-					// get user info from id in userIds
-					const user = await getCurrentUserInfo(userId, this.app);
+			const userIdsWithoutAccount = userIds.filter((id) => !accounts.includes(id));
+			const usersWithoutAccount = users.filter((u) => !accounts.includes(u._id));
 
-					// get registrationLink
-					if (user) {
-						const { shortLink } = await this.app.service('/registrationlink').create({
-							role: user.roles[0],
-							save: true,
-							patchUser: true,
-							schoolId: user.schoolId,
-							toHash: user.email,
-						});
+			const mailUsers = (
+				await Promise.all(userIdsWithoutAccount.map((userId) => getCurrentUserInfo(userId, this.app)))
+			).concat(usersWithoutAccount);
 
-						// send mail
-						const { subject, content } = mailContent(user.firstName, user.lastName, shortLink);
-						await this.app.service('/mails').create({
-							email: user.email,
-							subject,
-							content,
-						});
+			for (const mailUser of mailUsers) {
+				const mailUserRole = !mailUser.roles[0].name
+					? await this.app.service('/roles').get(mailUser.roles[0])
+					: mailUser.roles[0];
 
-						if (!(user.preferences || {}).registrationMailSend) {
-							const updatedPreferences = user.preferences || {};
-							updatedPreferences.registrationMailSend = true;
-							await this.app.service('users').patch(user._id, { preferences: updatedPreferences }, params);
-						}
-						totalMailsSend += 1;
-					} else {
-						logger.warning('no user found; registration mail was not sent');
-					}
+				const { shortLink } = await this.app.service('/registrationlink').create({
+					role: mailUserRole,
+					save: true,
+					patchUser: true,
+					schoolId: mailUser.schoolId,
+					toHash: mailUser.email,
+				});
+
+				// send mail
+				const { subject, content } = mailContent(mailUser.firstName, mailUser.lastName, shortLink);
+				await this.app.service('/mails').create({
+					email: mailUser.email,
+					subject,
+					content,
+				});
+
+				if (!(mailUser.preferences || {}).registrationMailSend) {
+					const updatedPreferences = mailUser.preferences || {};
+					updatedPreferences.registrationMailSend = true;
+					await this.app.service('users').patch(mailUser._id, { preferences: updatedPreferences }, params);
 				}
+				totalMailsSend += 1;
 			}
 
 			return {
