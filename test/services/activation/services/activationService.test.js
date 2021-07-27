@@ -2,23 +2,19 @@
 /* eslint-disable max-len */
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const nock = require('nock');
+const sinon = require('sinon');
 
 const { expect } = chai;
 chai.use(chaiAsPromised);
 
 const appPromise = require('../../../../src/app');
-const { createTestUser, createTestAccount, createTestActivation, cleanup } = require('../../helpers/testObjects')(
-	appPromise
-);
+const { createTestUser, createTestAccount, createTestActivation, cleanup } =
+	require('../../helpers/testObjects')(appPromise);
 
 const util = require('../../../../src/services/activation/utils/generalUtils');
 const customUtils = require('../../../../src/services/activation/utils/customStrategyUtils');
 
 const { customErrorMessages } = util;
-
-// eslint-disable-next-line import/no-dynamic-require
-const config = require('../../../../config/test.json');
 
 const mockData = {
 	keyword: customUtils.KEYWORDS.E_MAIL_ADDRESS,
@@ -31,19 +27,6 @@ const createEntry = async () => {
 	return { entry, user };
 };
 
-const getNotificationMock = (expectedData = {}) =>
-	new Promise((resolve) => {
-		nock(config.NOTIFICATION_URI)
-			.post('/mails')
-			.reply(200, (uri, requestBody) => {
-				Object.entries(expectedData).forEach(([key, value]) => {
-					expect(requestBody[key]).to.eql(value);
-				});
-				resolve(true);
-				return 'Message queued';
-			});
-	});
-
 describe('activation/services activationService', () => {
 	let app;
 	let server;
@@ -53,10 +36,6 @@ describe('activation/services activationService', () => {
 		app = await appPromise;
 		server = await app.listen(0);
 		activationService = app.service('activation');
-	});
-
-	afterEach(() => {
-		nock.cleanAll();
 	});
 
 	after(async () => {
@@ -91,9 +70,11 @@ describe('activation/services activationService', () => {
 		const credentials = { username: user.email, password: user.email };
 		const account = await createTestAccount(credentials, 'local', user);
 
-		const cb = getNotificationMock();
+		const nestMailService = { send: sinon.spy() };
+		app.services['nest-mail'] = nestMailService;
+
 		const res = await activationService.update(entry.activationCode, {}, { account: { userId: user._id } });
-		expect(await cb).to.equal(true);
+		expect(nestMailService.send.calledOnce).to.eql(true);
 		expect(res.success).to.be.true;
 
 		const changedUser = await util.getUser(app, user._id);
