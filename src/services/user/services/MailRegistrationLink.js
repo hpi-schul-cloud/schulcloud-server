@@ -5,6 +5,7 @@ const { Forbidden, BadRequest } = require('../../../errors');
 const { hasPermission } = require('../../../hooks');
 
 const { SC_SHORT_TITLE, SC_TITLE } = require('../../../../config/globals');
+const logger = require('../../../logger');
 
 const mailContent = (firstName, lastName, registrationLink) => {
 	const mail = {
@@ -34,28 +35,32 @@ const getCurrentUserInfo = async (id, app) => {
 	return null;
 };
 
-// TODO: remove the awaits inside the loop
 class SendRegistrationLinkService {
 	async create(data, params) {
 		let totalMailsSend = 0;
+		const { userIds = [], users = [] } = data;
 
-		try {
-			const { userIds = [], users = [] } = data;
-			let accounts = await this.app.service('/accounts').find({
-				query: {
-					userId: userIds.concat(users.map((u) => u._id)),
-				},
-			});
-			accounts = accounts.map((account) => String(account.userId));
+		let mailUsers = [];
+		if (userIds.length > 0 && users.length > 0) {
+			throw new BadRequest('user and userIds cannot be passed at the same time to the SendRegistrationLinkService');
+		} else if (userIds.length > 0) {
+			mailUsers = await Promise.all(userIds.map((userId) => getCurrentUserInfo(userId, this.app)));
+		} else {
+			mailUsers = users;
+		}
 
-			const userIdsWithoutAccount = userIds.filter((id) => !accounts.includes(id));
-			const usersWithoutAccount = users.filter((u) => !accounts.includes(u._id));
+		let accounts = await this.app.service('/accounts').find({
+			query: {
+				userId: mailUsers.map((u) => u._id),
+			},
+		});
+		accounts = accounts.map((account) => String(account.userId));
 
-			const mailUsers = (
-				await Promise.all(userIdsWithoutAccount.map((userId) => getCurrentUserInfo(userId, this.app)))
-			).concat(usersWithoutAccount);
+		// dont't send mail if user has account
+		mailUsers = mailUsers.filter((u) => !accounts.includes(u._id.toString()));
 
-			for (const mailUser of mailUsers) {
+		for (const mailUser of mailUsers) {
+			try {
 				const mailUserRole = !mailUser.roles[0].name
 					? await this.app.service('/roles').get(mailUser.roles[0])
 					: mailUser.roles[0];
@@ -82,19 +87,16 @@ class SendRegistrationLinkService {
 					await this.app.service('users').patch(mailUser._id, { preferences: updatedPreferences }, params);
 				}
 				totalMailsSend += 1;
+			} catch (err) {
+				logger.warning(`registration link mail for user ${mailUser._id.toString()} could not be sent`, err);
 			}
-
-			return {
-				totalReceivedIds: userIds.length,
-				totalMailsSend,
-				alreadyRegisteredUsers: userIds.length - totalMailsSend,
-			};
-		} catch (err) {
-			if ((err || {}).code === 403) {
-				throw new Forbidden('You have not the permission to execute this!', err);
-			}
-			throw new BadRequest('Can not send mail(s) with registration link', err);
 		}
+
+		return {
+			totalReceivedIds: userIds.length + users.length,
+			totalMailsSend,
+			alreadyRegisteredUsers: userIds.length + users.length - totalMailsSend,
+		};
 	}
 
 	setup(app) {
