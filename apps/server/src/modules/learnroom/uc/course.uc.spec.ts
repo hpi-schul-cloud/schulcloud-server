@@ -15,8 +15,8 @@ describe('CourseUC', () => {
 				{
 					provide: 'CourseRepo',
 					useValue: {
-						async getCourseOfUser(userId: EntityId) {
-							return Promise.resolve([[], 0]);
+						getCourseOfUser() {
+							throw new Error('Please write a mock');
 						},
 					},
 				},
@@ -27,7 +27,7 @@ describe('CourseUC', () => {
 	});
 
 	describe('getCourseOfUser', () => {
-		it('should work if no course for user exist', async () => {
+		it('should work if no course for user exist.', async () => {
 			const userId = new ObjectId().toHexString();
 
 			const expectedResult = [[], 0] as Counted<Course[]>;
@@ -43,7 +43,7 @@ describe('CourseUC', () => {
 			getCourseOfUserSpy.mockRestore();
 		});
 
-		it('should return all existing courses of existing user by userId', async () => {
+		it('should return all existing courses of existing user by userId.', async () => {
 			const userId = new ObjectId().toHexString();
 			const schoolId = new ObjectId().toHexString();
 
@@ -64,12 +64,25 @@ describe('CourseUC', () => {
 			getCourseOfUserSpy.mockRestore();
 		});
 
-		it('should throw an error by passing invalid userId', async () => {
+		it('should throw an error by passing invalid userId.', async () => {
 			const userId = '';
 
-			const expectedResult = new ValidationError(service.err.invalidUserId);
+			const expectedResult = new ValidationError(service.err.invalidUserId, { userId });
 			await expect(service.findAllCoursesFromUserByUserId(userId)).rejects.toThrow(expectedResult);
-			// expect(error.details).toEqual({ userId });
 		});
+
+		/* do no work..
+		it('should pass the userId in the error details.', async () => {
+			const userId = '';
+			try {
+				await service.findAllCoursesFromUserByUserId(userId);
+				throw new Error('should throw an error');
+			} catch (err) {
+				const error = err as ValidationError;
+				expect(error.getDetails()).toEqual({ userId });
+			}
+			// expect(error.details).toEqual({ userId });
+			// check details as well, is not tested because it is not in the declared super class
+		}); */
 	});
 });

@@ -15,6 +15,7 @@ export abstract class BusinessError extends HttpException {
 
 	readonly message: string;
 
+	// Is not matched by type validation because HttpException is already declared
 	readonly details: Record<string, unknown>;
 
 	constructor(
@@ -28,6 +29,10 @@ export abstract class BusinessError extends HttpException {
 		this.title = title;
 		this.message = defaultMessage;
 		this.details = details || {};
+	}
+
+	getDetails(): Record<string, unknown> {
+		return this.details;
 	}
 
 	getResponse(): ErrorResponse {
