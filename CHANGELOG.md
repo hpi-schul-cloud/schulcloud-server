@@ -13,6 +13,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Added
 
+- SC-9211 - enable maildrop and mailcatcher for e2e tests (see docker-compose)
+
 ### Changed
 
 - SC-9219 - limited jest workers for not taking all workers within of a single github action
