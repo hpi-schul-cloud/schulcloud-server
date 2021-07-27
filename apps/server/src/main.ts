@@ -48,10 +48,6 @@ async function bootstrap() {
 	// mount instances
 	const rootExpress = express();
 
-	// internal mounts
-	rootExpress.use('/v1', legacyExpress);
-	rootExpress.use('/v3', appExpress);
-
 	// exposed alias mounts
 	rootExpress.use('/api/v1', legacyExpress);
 	rootExpress.use('/api/v3', appExpress);
