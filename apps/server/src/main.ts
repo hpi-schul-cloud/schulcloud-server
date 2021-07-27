@@ -59,7 +59,7 @@ async function bootstrap() {
 	// logger middleware for deprecated paths
 	// TODO remove when all calls to the server are migrated
 	const logDeprecatedPaths = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-		Logger.error(`DEPRECATED-PATH: ${req.path}`);
+		Logger.error(req.path, undefined, 'DEPRECATED-PATH');
 		next();
 	};
 
