@@ -13,6 +13,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-9213 - Consider group submissions when deciding what open tasks a student has
 - SC-9150 - add script to change school year 
+- SC-9211 - enable maildrop and mailcatcher for e2e tests (see docker-compose)
 
 ### Changed
 
