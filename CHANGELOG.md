@@ -19,6 +19,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-9212 - fix changing classes via CSV import
+
 ## [26.6.4] - 2021-07-23
 
 ### Changed 
