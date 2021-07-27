@@ -21,6 +21,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-9053 - fix sending registration link via checkbox for student/teacher creation
+
 ## [26.6.4] - 2021-07-23
 
 ### Changed 
