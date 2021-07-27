@@ -16,6 +16,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
+- SC-9219 - limited jest workers for not taking all workers within of a single github action
+
 ### Fixed
 
 ## [26.6.4] - 2021-07-23
