@@ -1,7 +1,7 @@
 {
 	"name": "schulcloud-server",
 	"description": "hpi schulcloud server",
-	"version": "26.6.4",
+	"version": "26.7.0",
 	"homepage": "https://hpi-schul-cloud.de/",
 	"main": "src/",
 	"keywords": [
@@ -172,7 +172,7 @@
 		"@types/express": "^4.17.11",
 		"@types/jest": "^26.0.22",
 		"@types/lodash": "^4.14.170",
-		"@types/node": "^14.14.31",
+		"@types/node": "^16.4.5",
 		"@types/passport-jwt": "^3.0.5",
 		"@types/passport-local": "^1.0.33",
 		"@types/source-map-support": "^0.5.3",
