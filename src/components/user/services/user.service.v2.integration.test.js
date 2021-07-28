@@ -106,7 +106,7 @@ describe('user service v2', () => {
 					const token = await getAuthToken(schoolId2, 'superhero');
 					const request = chai
 						.request(app)
-						.delete(`/users/v2/admin/admin/${user._id.toString()}`)
+						.delete(`/users/v2/admin/administrator/${user._id.toString()}`)
 						.set('Accept', 'application/json')
 						.set('Authorization', token)
 						.set('Content-type', 'application/json');
@@ -136,7 +136,7 @@ describe('user service v2', () => {
 					const token = await testObjects.generateJWTFromUser(admin1);
 					const request = chai
 						.request(app)
-						.delete(`/users/v2/admin/admin/${admin2._id.toString()}`)
+						.delete(`/users/v2/admin/administrator/${admin2._id.toString()}`)
 						.set('Accept', 'application/json')
 						.set('Authorization', token)
 						.set('Content-type', 'application/json');

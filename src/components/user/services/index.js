@@ -9,7 +9,7 @@ module.exports = (app) => {
 	app.use(adminTeachersRoute, new UserServiceV2('TEACHER'));
 	app.service(adminTeachersRoute).hooks(adminHookGenerator('TEACHER'));
 
-	const adminAdminsRoute = '/users/v2/admin/admin';
+	const adminAdminsRoute = '/users/v2/admin/administrator';
 	app.use(adminAdminsRoute, new UserServiceV2('ADMINISTRATOR'));
 	app.service(adminAdminsRoute).hooks(adminHookGenerator());
 };
