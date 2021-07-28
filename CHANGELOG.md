@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## 26.7.0 
+
 ### Added
 
 - SC-9213 - Consider group submissions when deciding what open tasks a student has
