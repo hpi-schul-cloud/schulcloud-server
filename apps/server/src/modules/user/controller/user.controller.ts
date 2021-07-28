@@ -13,7 +13,6 @@ export class UserController {
 	constructor(private readonly userUc: UserUC) {}
 
 	@Get('me')
-	@HasPermission('FOO_BAR')
 	async me(@CurrentUser() currentUser: ICurrentUser): Promise<ResolvedUser> {
 		return Promise.resolve(currentUser.user);
 	}
