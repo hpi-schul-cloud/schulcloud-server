@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityId, Counted } from '@shared/domain';
+import { Counted } from '@shared/domain';
 import { ValidationError } from '@shared/common';
 import { CourseUC } from './course.uc';
 import { Course } from '../entity';
@@ -47,9 +47,13 @@ describe('CourseUC', () => {
 			const userId = new ObjectId().toHexString();
 			const schoolId = new ObjectId().toHexString();
 
-			const courseUser = new Course({ name: 'user', schoolId, userIds: [userId] });
+			const courseUser = new Course({ name: 'user', schoolId, studentIds: [userId] });
 			const courseTeacher = new Course({ name: 'teacher', schoolId, teacherIds: [userId] });
-			const courseSubstitionTeacher = new Course({ name: 'substition teacher', schoolId, substitutionIds: [userId] });
+			const courseSubstitionTeacher = new Course({
+				name: 'substition teacher',
+				schoolId,
+				substitutionTeacherIds: [userId],
+			});
 
 			const expectedResult = [[courseUser, courseTeacher, courseSubstitionTeacher], 3] as Counted<Course[]>;
 
@@ -63,26 +67,5 @@ describe('CourseUC', () => {
 
 			getCourseOfUserSpy.mockRestore();
 		});
-
-		it('should throw an error by passing invalid userId.', async () => {
-			const userId = '';
-
-			const expectedResult = new ValidationError(service.err.invalidUserId, { userId });
-			await expect(service.findAllCoursesFromUserByUserId(userId)).rejects.toThrow(expectedResult);
-		});
-
-		/* do no work..
-		it('should pass the userId in the error details.', async () => {
-			const userId = '';
-			try {
-				await service.findAllCoursesFromUserByUserId(userId);
-				throw new Error('should throw an error');
-			} catch (err) {
-				const error = err as ValidationError;
-				expect(error.getDetails()).toEqual({ userId });
-			}
-			// expect(error.details).toEqual({ userId });
-			// check details as well, is not tested because it is not in the declared super class
-		}); */
 	});
 });

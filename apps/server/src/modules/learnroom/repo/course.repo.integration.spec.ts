@@ -1,11 +1,10 @@
-import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '../../database';
 import { Course } from '../entity';
 import { CourseRepo } from './course.repo';
 
-describe('user repo', () => {
+describe('course repo', () => {
 	let module: TestingModule;
 	let repo: CourseRepo;
 	let em: EntityManager;
@@ -44,11 +43,11 @@ describe('user repo', () => {
 
 			const expectedResult = [
 				'_id',
-				'classIds',
+				// 'classIds',
 				'color',
 				'createdAt',
 				'description',
-				'features',
+				// 'features',
 				'name',
 				'schoolId',
 				'substitutionTeacherIds',
