@@ -9,9 +9,11 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-- SC-9213 - Consider group submissions when deciding what open tasks a student has
-
 ### Added
+
+- SC-9213 - Consider group submissions when deciding what open tasks a student has
+- SC-9150 - add script to change school year 
+- SC-9211 - enable maildrop and mailcatcher for e2e tests (see docker-compose)
 
 ### Changed
 
@@ -20,6 +22,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 - SC-9212 - fix changing classes via CSV import
+- SC-9053 - fix sending registration link via checkbox for student/teacher creation
 
 ## [26.6.4] - 2021-07-23
 
