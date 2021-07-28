@@ -4,10 +4,12 @@ on:
   pull_request:
     branches:
       - main
+    types: [opened, labeled, unlabeled, synchronize]
 
 jobs:
   end-to-end-tests:
     runs-on: ubuntu-latest
+    # skip the action, when label 'run tests' has not been set on the pull request
     if: contains( github.event.pull_request.labels.*.name , 'run tests' )
     steps:
       - uses: actions/checkout@v2
