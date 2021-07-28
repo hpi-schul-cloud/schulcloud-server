@@ -13,8 +13,8 @@ export interface ICourseProperties {
 	schoolId: EntityId;
 	classIds?: EntityId[];
 	teacherIds?: EntityId[];
-	substitutionIds?: EntityId[];
-	userIds?: EntityId[];
+	substitutionTeacherIds?: EntityId[];
+	studentIds?: EntityId[];
 	// TODO: color format
 	color?: string;
 	features?: CourseFeatures[];
@@ -37,16 +37,16 @@ export class Course extends BaseEntityWithTimestamps {
 	classIds: EntityId[];
 
 	@Index()
-	@Property()
-	userIds: EntityId[];
+	@Property({ fieldName: 'userIds' })
+	studentIds: EntityId[];
 
 	@Index()
 	@Property()
 	teacherIds: EntityId[];
 
 	@Index()
-	@Property()
-	substitutionIds?: EntityId[];
+	@Property({ fieldName: 'substitutionIds' })
+	substitutionTeacherIds?: EntityId[];
 
 	// TODO: string color format
 	@Property()
@@ -61,9 +61,9 @@ export class Course extends BaseEntityWithTimestamps {
 		this.description = props.description || '';
 		this.schoolId = props.schoolId;
 		this.classIds = props.classIds || [];
-		this.userIds = props.userIds || [];
+		this.studentIds = props.studentIds || [];
 		this.teacherIds = props.teacherIds || [];
-		this.substitutionIds = props.substitutionIds || [];
+		this.substitutionTeacherIds = props.substitutionTeacherIds || [];
 		this.color = props.color || DEFAULT_COLOR;
 		this.features = props.features || [];
 		Object.assign(this, {});

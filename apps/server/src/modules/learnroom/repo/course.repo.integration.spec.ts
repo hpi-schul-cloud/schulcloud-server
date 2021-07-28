@@ -40,7 +40,7 @@ describe('user repo', () => {
 		it('should return right keys', async () => {
 			const userId = new ObjectId().toHexString();
 			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ userIds: [userId], schoolId, name: '' });
+			const course = new Course({ studentIds: [userId], schoolId, name: '' });
 
 			const expectedResult = [
 				'_id',
@@ -51,10 +51,10 @@ describe('user repo', () => {
 				'features',
 				'name',
 				'schoolId',
-				'substitutionIds',
+				'substitutionTeacherIds',
 				'teacherIds',
 				'updatedAt',
-				'userIds',
+				'studentIds',
 			].sort();
 
 			await em.persistAndFlush([course]);
@@ -63,6 +63,72 @@ describe('user repo', () => {
 			const keysOfFirstElements = Object.keys(result[0]).sort();
 
 			expect(keysOfFirstElements).toEqual(expectedResult);
+		});
+
+		it('should return course of teachers', async () => {
+			const userId = new ObjectId().toHexString();
+			const schoolId = new ObjectId().toHexString();
+			const course = new Course({ teacherIds: [userId], schoolId, name: '' });
+			const courses = [course];
+
+			const expectedResult = [courses, 1];
+
+			await em.persistAndFlush(courses);
+			const result = await repo.getCourseOfUser(userId);
+
+			expect(result).toEqual(expectedResult);
+		});
+
+		it('should return course of students', async () => {
+			const userId = new ObjectId().toHexString();
+			const schoolId = new ObjectId().toHexString();
+			const course = new Course({ studentIds: [userId], schoolId, name: '' });
+			const courses = [course];
+
+			const expectedResult = [courses, 1];
+
+			await em.persistAndFlush(courses);
+			const result = await repo.getCourseOfUser(userId);
+
+			expect(result).toEqual(expectedResult);
+		});
+
+		it('should return course of substitution teachers', async () => {
+			const userId = new ObjectId().toHexString();
+			const schoolId = new ObjectId().toHexString();
+			const course = new Course({ substitutionTeacherIds: [userId], schoolId, name: '' });
+			const courses = [course];
+
+			const expectedResult = [courses, 1];
+
+			await em.persistAndFlush(courses);
+			const result = await repo.getCourseOfUser(userId);
+
+			expect(result).toEqual(expectedResult);
+		});
+
+		it('should only return courses where the user is a member of it', async () => {
+			const userId = new ObjectId().toHexString();
+			const otherUserId = new ObjectId().toHexString();
+			const schoolId = new ObjectId().toHexString();
+
+			const courseSubstitionTeacher = new Course({ substitutionTeacherIds: [userId], schoolId, name: '' });
+			const courseTeacher = new Course({ teacherIds: [userId], schoolId, name: '' });
+			const courseStudent = new Course({ studentIds: [userId], schoolId, name: '' });
+
+			const otherCourseSubstitionTeacher = new Course({ substitutionTeacherIds: [otherUserId], schoolId, name: '' });
+			const otherCourseTeacher = new Course({ teacherIds: [otherUserId], schoolId, name: '' });
+			const otherCourseStudent = new Course({ studentIds: [otherUserId], schoolId, name: '' });
+
+			const courses = [courseSubstitionTeacher, courseTeacher, courseStudent];
+			const otherCourses = [otherCourseSubstitionTeacher, otherCourseTeacher, otherCourseStudent];
+
+			const expectedResult = [courses, 3];
+
+			await em.persistAndFlush([...courses, ...otherCourses]);
+			const result = await repo.getCourseOfUser(userId);
+
+			expect(result).toEqual(expectedResult);
 		});
 	});
 });

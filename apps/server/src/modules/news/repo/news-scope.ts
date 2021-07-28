@@ -1,19 +1,9 @@
 import { FilterQuery } from '@mikro-orm/core';
-import { EmptyResultQuery } from '@shared/repo';
+import { EmptyResultQuery, Scope } from '@shared/repo';
 import { News } from '../entity';
 import { NewsTargetFilter } from './news-target-filter';
 
-export class NewsScope {
-	private _queries: FilterQuery<News>[] = [];
-
-	get query(): FilterQuery<News> {
-		if (this._queries.length === 0) {
-			return EmptyResultQuery;
-		}
-		const query = this._queries.length > 1 ? { $and: this._queries } : this._queries[0];
-		return query;
-	}
-
+export class NewsScope extends Scope<News> {
 	byTargets(targets: NewsTargetFilter[]): NewsScope {
 		const queries: FilterQuery<News>[] = targets.map((target) => {
 			return { $and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }] };
@@ -33,9 +23,5 @@ export class NewsScope {
 		const now = new Date();
 		this.addQuery({ displayAt: unpublished ? { $gt: now } : { $lte: now } });
 		return this;
-	}
-
-	private addQuery(query: FilterQuery<News>) {
-		this._queries.push(query);
 	}
 }
