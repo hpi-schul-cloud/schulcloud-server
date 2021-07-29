@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## 26.7.0 
+
 ### Added
 
 - SC-9213 - Consider group submissions when deciding what open tasks a student has
@@ -22,6 +24,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-9212 - fix changing classes via CSV import
 - SC-9053 - fix sending registration link via checkbox for student/teacher creation
 
 ## [26.6.4] - 2021-07-23
