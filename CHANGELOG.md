@@ -9,12 +9,14 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-## 26.7.0 
+- New task relevant seed data.
+
+## [26.7.0] - 2021-07-28
 
 ### Added
 
 - SC-9213 - Consider group submissions when deciding what open tasks a student has
-- SC-9150 - add script to change school year 
+- SC-9150 - add script to change school year
 - SC-9211 - enable maildrop and mailcatcher for e2e tests (see docker-compose)
 
 ### Changed

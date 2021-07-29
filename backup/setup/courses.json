@@ -1,330 +1,42 @@
 [{
-	"_id" : {
-		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	"_id": {
+		"$oid": "5fa3a2f3a9c31a26f4d1d309"
 	},
-	"name" : "Mathe",
-	"schoolId" : {
-		"$oid": "5f2987e020834114b8efd6f8"
+	"userIds": [
+		{
+			"$oid": "5fa30079b229544f2c6969ff"
+		}
+	],
+	"classIds": [],
+	"teacherIds": [
+		{
+			"$oid": "5fa2c71bb229544f2c6966d9"
+		}
+	],
+	"substitutionIds": [],
+	"ltiToolIds": [],
+	"color": "#FF4081",
+	"isCopyFrom": null,
+	"features": [],
+	"schoolId": {
+		"$oid": "5fa2c5ccb229544f2c69666c"
 	},
-	"teacherIds" : [
-		{
-			"$oid": "0000d231816abba584714c9e"
-		}
-	],
-	"userIds" : [
-		{
-			"$oid": "0000d213816abba584714c0a"
-		},{
-			"$oid": "0000d224816abba584714c9c"
-		}
-	],
-	"updatedAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"createdAt" : { "$date": "2017-01-01T00:06:37.148Z" },
-	"classIds" : [],
-	"__v" : 0
-},
-{
-	"_id" : { "$oid": "59a3c657a2049554a93fec3a"},
-	"updatedAt" : { "$date": "2017-11-17T09:03:04.404Z"},
-	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6"},
-	"name" : "Biologie 9b",
-	"description" : "Dieser Kurs wurde als Beispiel für den Demo-Zugang erstellt und enthält verschiedene Themen und Inhalte aus dem Fach Biologie! Wir wollen Ihnen dadurch die Breite der Einsatzmöglichkeit der Schul-Cloud im Unterricht aufzeigen! Schauen Sie doch selbst!",
-	"gradeSystem" : false,
-	"startDate" : { "$date": "2017-10-26T22:00:00.000Z"},
-	"untilDate" : { "$date": "2018-04-29T22:00:00.000Z"},
-	"times" : [
-		{
-			"_id" : { "$oid": "5a0ea5c88620d77b4c87e77f"},
-			"room" : "1.6",
-			"duration" : 5400000,
-			"startTime" : 36000000,
-			"weekday" : 2,
-			"eventId" : "0fc1c965-bcc8-4263-a294-6de20b31968f"
-		},
-		{
-			"_id" : { "$oid": "5a0ea5c88620d77b4c87e77e"},
-			"room" : "1.6",
-			"duration" : 5400000,
-			"startTime" : 36000000,
-			"weekday" : 1,
-			"eventId" : "fb241b3a-c8ae-4166-90f1-6f3e1d61c85d"
-		},
-		{
-			"_id" : { "$oid": "5a0ea5c88620d77b4c87e77d"},
-			"room" : "1.6",
-			"duration" : 5400000,
-			"startTime" : 28800000,
-			"weekday" : 0,
-			"eventId" : "6d13bcb9-dbf6-4b04-8c48-aa4562dad5b6"
-		},
-		{
-			"_id" : { "$oid": "5a0ea5c88620d77b4c87e77c"},
-			"room" : "1.6",
-			"duration" : 5400000,
-			"startTime" : 43200000,
-			"weekday" : 4,
-			"eventId" : "457b4a47-c72a-4553-95e4-62351aed493c"
-		}
-	],
-	"color" : "#ffb9b9",
-	"ltiToolIds" : [
-		{ "$oid": "59a55f39a2049554a93fed16" }
-	],
-	"substitutionIds" : [],
-	"teacherIds" : [
-		{ "$oid": "599ec1688e4e364ec18ff46e"},
-		{ "$oid": "59ad4c412b442b7f81810285"}
-	],
-	"classIds" : [
-		{ "$oid": "59a3c81ca2049554a93fec58"}
-	],
-	"createdAt" : { "$date": "2017-08-28T07:29:27.334Z"},
-	"userIds" : [
-		{ "$oid": "599ec14d8e4e364ec18ff46d"},
-		{ "$oid": "59ae89b71f513506904e1cc9"}
-	],
-	"__v" : 0
-},
-{
-	"_id" : { "$oid": "59a3cabaa2049554a93fec60"},
-	"updatedAt" : { "$date": "2017-09-27T20:14:51.573Z"},
-	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6"},
-	"name" : "Mathe 9b",
-	"description" : "Dieser Kurs wurde als Beispiel für den Demo-Zugang erstellt und enthält verschiedene Themen und Inhalte aus dem Fach Mathematik! Wir wollen Ihnen dadurch die Breite der Einsatzmöglichkeit der Schul-Cloud im Unterricht aufzeigen! Schauen Sie doch selbst!\r\n\r\n",
-	"gradeSystem" : false,
-	"startDate" : { "$date": "2017-08-27T22:00:00.000Z"},
-	"untilDate" : { "$date": "2018-05-30T22:00:00.000Z"},
-	"times" : [
-		{
-			"_id" : { "$oid": "59c3caa9d69d413e2ff0bced"},
-			"room" : "1.3",
-			"duration" : 5400000,
-			"startTime" : 36000000,
-			"weekday" : 0,
-			"eventId" : "a59023a3-119f-475c-b606-8075d3171ea2"
-		},
-		{
-			"_id" : { "$oid": "59c3caa9d69d413e2ff0bcec"},
-			"room" : "1.3",
-			"duration" : 5400000,
-			"startTime" : 43200000,
-			"weekday" : 2,
-			"eventId" : "f56f92a7-e97d-4c41-9be1-8017aa890b46"
-		},
-		{
-			"_id" : { "$oid": "59c3caa9d69d413e2ff0bceb"},
-			"room" : "1.3",
-			"duration" : 5400000,
-			"startTime" : 50400000,
-			"weekday" : 3,
-			"eventId" : "9782bef9-3f95-4349-97c3-24a984d30d50"
-		},
-		{
-			"_id" : { "$oid": "59c3caa9d69d413e2ff0bcea"},
-			"room" : "1.3",
-			"duration" : 5400000,
-			"startTime" : 28800000,
-			"weekday" : 1,
-			"eventId" : "5bbc5c75-e39c-4067-b163-9b67b3102e6b"
-		}
-	],
-	"color" : "#aee1bd",
-	"ltiToolIds" : [
-		{ "$oid": "59a403bfa2049554a93feca9"},
-		{ "$oid": "59b6c0225c9ec20c6f08365b"}
-	],
-	"substitutionIds" : [],
-	"teacherIds" : [
-		{ "$oid": "599ec1688e4e364ec18ff46e"},
-		{ "$oid": "59ad4c412b442b7f81810285"}
-	],
-	"classIds" : [
-		{ "$oid": "59a3c81ca2049554a93fec58"}
-	],
-	"createdAt" : { "$date": "2017-08-28T07:48:10.420Z"},
-	"userIds" : [
-		{ "$oid": "599ec14d8e4e364ec18ff46d"},
-		{ "$oid": "59ae89b71f513506904e1cc9"}
-	],
-	"__v" : 0
-},
-{
-"_id" : { "$oid": "59a3c948a2049554a93fec5f"},
-"updatedAt" : { "$date": "2017-10-11T15:56:10.087Z"},
-"schoolId" : { "$oid": "5f2987e020834114b8efd6f6"},
-"name" : "Physik 9b",
-"description" : "Dieser Kurs wurde als Beispiel für den Demo-Zugang erstellt und enthält verschiedene Themen und Inhalte aus dem Fach Physik! Wir wollen Ihnen dadurch die Breite der Einsatzmöglichkeit der Schul-Cloud im Unterricht aufzeigen! Schauen Sie doch selbst!",
-"gradeSystem" : false,
-"times" : [
-	{
-		"_id" : { "$oid": "59afe56e1f513506904e1d59"},
-		"room" : "2.1",
-		"duration" : 5400000,
-		"startTime" : 50400000,
-		"weekday" : 0,
-		"eventId" : "4e20867d-4c76-4566-81a3-d0501b0fe1fe"
+	"name": "German",
+	"startDate": {
+		"$date": "2020-07-31T22:00:00Z"
 	},
-	{
-		"_id" : { "$oid": "59afe56e1f513506904e1d58"},
-		"room" : "2.1",
-		"duration" : 5400000,
-		"startTime" : 50400000,
-		"weekday" : 1,
-		"eventId" : "ffdfdf99-6b99-465f-956f-7a8695b47197"
+	"untilDate": {
+		"$date": "2023-07-12T22:00:00Z"
 	},
-	{
-		"_id" : { "$oid": "59afe56e1f513506904e1d57"},
-		"room" : "2.1",
-		"duration" : 5400000,
-		"startTime" : 28800000,
-		"weekday" : 2,
-		"eventId" : "47abde71-e2d6-463d-bf2d-f17a87bdb4d0"
+	"createdAt": {
+		"$date": "2020-11-05T07:00:03.92Z"
 	},
-	{
-		"_id" : { "$oid": "59afe56e1f513506904e1d56"},
-		"room" : "2.1",
-		"duration" : 5400000,
-		"startTime" : 43200000,
-		"weekday" : 3,
-		"eventId" : "2b53fe07-4e6b-468b-a848-f3d1717d7811"
-	}
-],
-"color" : "#a5d6fa",
-"ltiToolIds" : [
-	{ "$oid": "59a55f4ba2049554a93fed18"}
-],
-"substitutionIds" : [],
-"teacherIds" : [
-	{ "$oid": "599ec1688e4e364ec18ff46e"},
-	{ "$oid": "59ad4c412b442b7f81810285"}
-],
-"classIds" : [
-	{ "$oid": "59a3c81ca2049554a93fec58"}
-],
-"createdAt" : { "$date": "2017-08-28T07:42:00.487Z" },
-"userIds" : [
-	{ "$oid": "599ec14d8e4e364ec18ff46d"},
-	{ "$oid": "59ae89b71f513506904e1cc9"}
-],
-"__v" : 0,
-"untilDate" : { "$date": "2018-05-30T22:00:00.000Z" },
-"startDate" : { "$date": "2017-08-27T22:00:00.000Z" }
-},
-{
-	"_id" : { "$oid": "59a3ce58a2049554a93fec6e"},
-	"updatedAt" : { "$date": "2017-09-18T07:47:11.449Z" },
-	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6"},
-	"name" : "Erdkunde 9b",
-	"description" : "Dieser Kurs wurde als Beispiel für den Demo-Zugang erstellt und enthält verschiedene Themen und Inhalte aus dem Fach Erdkunde! Wir wollen Ihnen dadurch die Breite der Einsatzmöglichkeit der Schul-Cloud im Unterricht aufzeigen! Schauen Sie doch selbst!",
-	"gradeSystem" : false,
-	"startDate" : { "$date": "2017-08-27T22:00:00.000Z" },
-	"untilDate" : { "$date": "2018-05-30T22:00:00.000Z" },
-	"times" : [
-		{
-			"_id" : { "$oid": "59bf79ff899d66316cf4948f"},
-			"room" : "1.6",
-			"duration" : 5400000,
-			"startTime" : 36000000,
-			"weekday" : 4,
-			"eventId" : "864baae0-0e65-43bf-946b-566c616860db"
-		},
-		{
-			"_id" : { "$oid": "59bf79ff899d66316cf4948e"},
-			"room" : "1.6",
-			"duration" : 5400000,
-			"startTime" : 57600000,
-			"weekday" : 2,
-			"eventId" : "f4027d1f-f0e7-42e0-a12b-af39509ff694"
-		},
-		{
-			"_id" : { "$oid": "59bf79ff899d66316cf4948d"},
-			"room" : "1.6",
-			"duration" : 5400000,
-			"startTime" : 28800000,
-			"weekday" : 3,
-			"eventId" : "127fcbc0-c9b6-414c-bdf6-a5fbcd297bce"
-		},
-		{
-			"_id" : { "$oid":  "59bf79ff899d66316cf4948c"},
-			"room" : "1.6",
-			"duration" : 5400000,
-			"startTime" : 43200000,
-			"weekday" : 0,
-			"eventId" : "f2271331-12ab-467c-8eaa-67c7a302a3d5"
-		}
-	],
-	"color" : "#ffc5a8",
-	"ltiToolIds" : [
-		{ "$oid": "59a55f54a2049554a93fed19" }
-	],
-	"substitutionIds" : [],
-	"teacherIds" : [
-		{ "$oid": "599ec1688e4e364ec18ff46e" },
-		{ "$oid": "59ad4c412b442b7f81810285" }
-	],
-	"classIds" : [
-		{ "$oid": "59a3c81ca2049554a93fec58" }
-	],
-	"createdAt" : { "$date": "2017-08-28T08:03:36.091Z" },
-	"userIds" : [
-		{ "$oid": "599ec14d8e4e364ec18ff46d" },
-		{ "$oid": "59ae89b71f513506904e1cc9" }
-	],
-	"__v" : 0
-},
-{
-	"_id" : { "$oid": "59a3cd61a2049554a93fec68"},
-	"updatedAt" : { "$date": "2017-09-06T12:10:38.954Z" },
-	"schoolId" : { "$oid": "5f2987e020834114b8efd6f6"},
-	"name" : "Deutsch 9b",
-	"description" : "Dieser Kurs wurde als Beispiel für den Demo-Zugang erstellt und enthält verschiedene Themen und Inhalte aus dem Fach Deutsch! Wir wollen Ihnen dadurch die Breite der Einsatzmöglichkeit der Schul-Cloud im Unterricht aufzeigen! Schauen Sie doch selbst!",
-	"gradeSystem" : false,
-	"times" : [
-		{
-			"_id" : { "$oid": "59afe5be1f513506904e1d60"},
-			"room" : "3.3",
-			"duration" : 5400000,
-			"startTime" : 57600000,
-			"weekday" : 1,
-			"eventId" : "79643418-9cd7-43d1-bf1c-80209cf34098"
-		},
-		{
-			"_id" : { "$oid": "59afe5be1f513506904e1d5f"},
-			"room" : "3.3",
-			"duration" : 5400000,
-			"startTime" : 36000000,
-			"weekday" : 3,
-			"eventId" : "85b56c9c-cbd9-4494-a4b9-fc20c83c8e4b"
-		},
-		{
-			"_id" : { "$oid": "59afe5be1f513506904e1d5e"},
-			"room" : "3.3",
-			"duration" : 5400000,
-			"startTime" : 50400000,
-			"weekday" : 4,
-			"eventId" : "2a094383-b6c5-472c-b6df-241aeaecb772"
-		}
-	],
-	"color" : "#b0b0d9",
-	"ltiToolIds" : [
-		{ "$oid": "59a55f6ca2049554a93fed1b"}
-	],
-	"substitutionIds" : [],
-	"teacherIds" : [
-		{ "$oid": "599ec1688e4e364ec18ff46e"},
-		{ "$oid": "59ad4c412b442b7f81810285"}
-	],
-	"classIds" : [
-		{ "$oid": "59a3c81ca2049554a93fec58"}
-	],
-	"createdAt" : { "$date": "2017-08-28T07:59:29.063Z" },
-	"userIds" : [
-		{ "$oid": "599ec14d8e4e364ec18ff46d"},
-		{ "$oid": "59ae89b71f513506904e1cc9"}
-	],
-	"__v" : 0,
-	"untilDate" : { "$date": "2018-05-30T22:00:00.000Z" },
-	"startDate" : { "$date": "2017-08-27T22:00:00.000Z" }
+	"updatedAt": {
+		"$date": "2020-11-05T07:42:13.994Z"
+	},
+	"times": [],
+	"__v": 0,
+	"description": ""
 },
 {
 	"_id": {
@@ -364,11 +76,46 @@
 },
 {
 	"_id": {
-		"$oid": "5fa3a2f3a9c31a26f4d1d309"
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"name": "Mathe",
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"teacherIds": [
+		{
+			"$oid": "0000d231816abba584714c9e"
+		}
+	],
+	"userIds": [
+		{
+			"$oid": "0000d224816abba584714c9c"
+		},
+		{
+			"$oid": "61026d89f66648001d29f168"
+		}
+	],
+	"updatedAt": {
+		"$date": "2021-07-29T09:00:08.011Z"
+	},
+	"createdAt": {
+		"$date": "2017-01-01T00:06:37.148Z"
+	},
+	"classIds": [],
+	"__v": 0,
+	"color": "#ACACAC",
+	"description": "",
+	"features": [],
+	"substitutionIds": [],
+	"times": []
+},
+{
+	"_id": {
+		"$oid": "5fa3a5e5a9c31a26f4d1d47e"
 	},
 	"userIds": [
 		{
-			"$oid": "5fa30079b229544f2c6969ff"
+			"$oid": "5fa3010eb229544f2c696a6a"
 		}
 	],
 	"classIds": [],
@@ -379,24 +126,24 @@
 	],
 	"substitutionIds": [],
 	"ltiToolIds": [],
-	"color": "#FF4081",
+	"color": "#1DE9B6",
 	"isCopyFrom": null,
 	"features": [],
 	"schoolId": {
 		"$oid": "5fa2c5ccb229544f2c69666c"
 	},
-	"name": "German",
+	"name": "Physik",
 	"startDate": {
 		"$date": "2020-07-31T22:00:00Z"
 	},
 	"untilDate": {
-		"$date": "2023-07-12T22:00:00Z"
+		"$date": "2023-07-19T22:00:00Z"
 	},
 	"createdAt": {
-		"$date": "2020-11-05T07:00:03.92Z"
+		"$date": "2020-11-05T07:12:37.355Z"
 	},
 	"updatedAt": {
-		"$date": "2020-11-05T07:42:13.994Z"
+		"$date": "2020-11-05T07:44:18.457Z"
 	},
 	"times": [],
 	"__v": 0,
@@ -440,13 +187,9 @@
 },
 {
 	"_id": {
-		"$oid": "5fa3a5e5a9c31a26f4d1d47e"
+		"$oid": "5fa3deb9a9c31a26f4d1dbd2"
 	},
-	"userIds": [
-		{
-			"$oid": "5fa3010eb229544f2c696a6a"
-		}
-	],
+	"userIds": [],
 	"classIds": [],
 	"teacherIds": [
 		{
@@ -455,24 +198,24 @@
 	],
 	"substitutionIds": [],
 	"ltiToolIds": [],
-	"color": "#1DE9B6",
+	"color": "#D4AF37",
 	"isCopyFrom": null,
 	"features": [],
 	"schoolId": {
 		"$oid": "5fa2c5ccb229544f2c69666c"
 	},
-	"name": "Physik",
+	"name": "English",
 	"startDate": {
 		"$date": "2020-07-31T22:00:00Z"
 	},
 	"untilDate": {
-		"$date": "2023-07-19T22:00:00Z"
+		"$date": "2023-07-12T22:00:00Z"
 	},
 	"createdAt": {
-		"$date": "2020-11-05T07:12:37.355Z"
+		"$date": "2020-11-05T11:15:05.278Z"
 	},
 	"updatedAt": {
-		"$date": "2020-11-05T07:44:18.457Z"
+		"$date": "2020-11-05T11:15:21.899Z"
 	},
 	"times": [],
 	"__v": 0,
@@ -523,13 +266,625 @@
 },
 {
 	"_id": {
-		"$oid": "5fa3deb9a9c31a26f4d1dbd2"
+		"$oid": "59a3cd61a2049554a93fec68"
 	},
-	"userIds": [],
-	"classIds": [],
+	"updatedAt": {
+		"$date": "2017-09-06T12:10:38.954Z"
+	},
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f6"
+	},
+	"name": "Deutsch 9b",
+	"description": "Dieser Kurs wurde als Beispiel für den Demo-Zugang erstellt und enthält verschiedene Themen und Inhalte aus dem Fach Deutsch! Wir wollen Ihnen dadurch die Breite der Einsatzmöglichkeit der Schul-Cloud im Unterricht aufzeigen! Schauen Sie doch selbst!",
+	"gradeSystem": false,
+	"times": [
+		{
+			"_id": {
+				"$oid": "59afe5be1f513506904e1d60"
+			},
+			"room": "3.3",
+			"duration": 5400000,
+			"startTime": 57600000,
+			"weekday": 1,
+			"eventId": "79643418-9cd7-43d1-bf1c-80209cf34098"
+		},
+		{
+			"_id": {
+				"$oid": "59afe5be1f513506904e1d5f"
+			},
+			"room": "3.3",
+			"duration": 5400000,
+			"startTime": 36000000,
+			"weekday": 3,
+			"eventId": "85b56c9c-cbd9-4494-a4b9-fc20c83c8e4b"
+		},
+		{
+			"_id": {
+				"$oid": "59afe5be1f513506904e1d5e"
+			},
+			"room": "3.3",
+			"duration": 5400000,
+			"startTime": 50400000,
+			"weekday": 4,
+			"eventId": "2a094383-b6c5-472c-b6df-241aeaecb772"
+		}
+	],
+	"color": "#b0b0d9",
+	"ltiToolIds": [
+		{
+			"$oid": "59a55f6ca2049554a93fed1b"
+		}
+	],
+	"substitutionIds": [],
 	"teacherIds": [
 		{
-			"$oid": "5fa2c71bb229544f2c6966d9"
+			"$oid": "599ec1688e4e364ec18ff46e"
+		},
+		{
+			"$oid": "59ad4c412b442b7f81810285"
+		}
+	],
+	"classIds": [
+		{
+			"$oid": "59a3c81ca2049554a93fec58"
+		}
+	],
+	"createdAt": {
+		"$date": "2017-08-28T07:59:29.063Z"
+	},
+	"userIds": [
+		{
+			"$oid": "599ec14d8e4e364ec18ff46d"
+		},
+		{
+			"$oid": "59ae89b71f513506904e1cc9"
+		}
+	],
+	"__v": 0,
+	"untilDate": {
+		"$date": "2018-05-30T22:00:00Z"
+	},
+	"startDate": {
+		"$date": "2017-08-27T22:00:00Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "59a3c657a2049554a93fec3a"
+	},
+	"updatedAt": {
+		"$date": "2017-11-17T09:03:04.404Z"
+	},
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f6"
+	},
+	"name": "Biologie 9b",
+	"description": "Dieser Kurs wurde als Beispiel für den Demo-Zugang erstellt und enthält verschiedene Themen und Inhalte aus dem Fach Biologie! Wir wollen Ihnen dadurch die Breite der Einsatzmöglichkeit der Schul-Cloud im Unterricht aufzeigen! Schauen Sie doch selbst!",
+	"gradeSystem": false,
+	"startDate": {
+		"$date": "2017-10-26T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2018-04-29T22:00:00Z"
+	},
+	"times": [
+		{
+			"_id": {
+				"$oid": "5a0ea5c88620d77b4c87e77f"
+			},
+			"room": "1.6",
+			"duration": 5400000,
+			"startTime": 36000000,
+			"weekday": 2,
+			"eventId": "0fc1c965-bcc8-4263-a294-6de20b31968f"
+		},
+		{
+			"_id": {
+				"$oid": "5a0ea5c88620d77b4c87e77e"
+			},
+			"room": "1.6",
+			"duration": 5400000,
+			"startTime": 36000000,
+			"weekday": 1,
+			"eventId": "fb241b3a-c8ae-4166-90f1-6f3e1d61c85d"
+		},
+		{
+			"_id": {
+				"$oid": "5a0ea5c88620d77b4c87e77d"
+			},
+			"room": "1.6",
+			"duration": 5400000,
+			"startTime": 28800000,
+			"weekday": 0,
+			"eventId": "6d13bcb9-dbf6-4b04-8c48-aa4562dad5b6"
+		},
+		{
+			"_id": {
+				"$oid": "5a0ea5c88620d77b4c87e77c"
+			},
+			"room": "1.6",
+			"duration": 5400000,
+			"startTime": 43200000,
+			"weekday": 4,
+			"eventId": "457b4a47-c72a-4553-95e4-62351aed493c"
+		}
+	],
+	"color": "#ffb9b9",
+	"ltiToolIds": [
+		{
+			"$oid": "59a55f39a2049554a93fed16"
+		}
+	],
+	"substitutionIds": [],
+	"teacherIds": [
+		{
+			"$oid": "599ec1688e4e364ec18ff46e"
+		},
+		{
+			"$oid": "59ad4c412b442b7f81810285"
+		}
+	],
+	"classIds": [
+		{
+			"$oid": "59a3c81ca2049554a93fec58"
+		}
+	],
+	"createdAt": {
+		"$date": "2017-08-28T07:29:27.334Z"
+	},
+	"userIds": [
+		{
+			"$oid": "599ec14d8e4e364ec18ff46d"
+		},
+		{
+			"$oid": "59ae89b71f513506904e1cc9"
+		}
+	],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "59a3ce58a2049554a93fec6e"
+	},
+	"updatedAt": {
+		"$date": "2017-09-18T07:47:11.449Z"
+	},
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f6"
+	},
+	"name": "Erdkunde 9b",
+	"description": "Dieser Kurs wurde als Beispiel für den Demo-Zugang erstellt und enthält verschiedene Themen und Inhalte aus dem Fach Erdkunde! Wir wollen Ihnen dadurch die Breite der Einsatzmöglichkeit der Schul-Cloud im Unterricht aufzeigen! Schauen Sie doch selbst!",
+	"gradeSystem": false,
+	"startDate": {
+		"$date": "2017-08-27T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2018-05-30T22:00:00Z"
+	},
+	"times": [
+		{
+			"_id": {
+				"$oid": "59bf79ff899d66316cf4948f"
+			},
+			"room": "1.6",
+			"duration": 5400000,
+			"startTime": 36000000,
+			"weekday": 4,
+			"eventId": "864baae0-0e65-43bf-946b-566c616860db"
+		},
+		{
+			"_id": {
+				"$oid": "59bf79ff899d66316cf4948e"
+			},
+			"room": "1.6",
+			"duration": 5400000,
+			"startTime": 57600000,
+			"weekday": 2,
+			"eventId": "f4027d1f-f0e7-42e0-a12b-af39509ff694"
+		},
+		{
+			"_id": {
+				"$oid": "59bf79ff899d66316cf4948d"
+			},
+			"room": "1.6",
+			"duration": 5400000,
+			"startTime": 28800000,
+			"weekday": 3,
+			"eventId": "127fcbc0-c9b6-414c-bdf6-a5fbcd297bce"
+		},
+		{
+			"_id": {
+				"$oid": "59bf79ff899d66316cf4948c"
+			},
+			"room": "1.6",
+			"duration": 5400000,
+			"startTime": 43200000,
+			"weekday": 0,
+			"eventId": "f2271331-12ab-467c-8eaa-67c7a302a3d5"
+		}
+	],
+	"color": "#ffc5a8",
+	"ltiToolIds": [
+		{
+			"$oid": "59a55f54a2049554a93fed19"
+		}
+	],
+	"substitutionIds": [],
+	"teacherIds": [
+		{
+			"$oid": "599ec1688e4e364ec18ff46e"
+		},
+		{
+			"$oid": "59ad4c412b442b7f81810285"
+		}
+	],
+	"classIds": [
+		{
+			"$oid": "59a3c81ca2049554a93fec58"
+		}
+	],
+	"createdAt": {
+		"$date": "2017-08-28T08:03:36.091Z"
+	},
+	"userIds": [
+		{
+			"$oid": "599ec14d8e4e364ec18ff46d"
+		},
+		{
+			"$oid": "59ae89b71f513506904e1cc9"
+		}
+	],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "59a3c948a2049554a93fec5f"
+	},
+	"updatedAt": {
+		"$date": "2017-10-11T15:56:10.087Z"
+	},
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f6"
+	},
+	"name": "Physik 9b",
+	"description": "Dieser Kurs wurde als Beispiel für den Demo-Zugang erstellt und enthält verschiedene Themen und Inhalte aus dem Fach Physik! Wir wollen Ihnen dadurch die Breite der Einsatzmöglichkeit der Schul-Cloud im Unterricht aufzeigen! Schauen Sie doch selbst!",
+	"gradeSystem": false,
+	"times": [
+		{
+			"_id": {
+				"$oid": "59afe56e1f513506904e1d59"
+			},
+			"room": "2.1",
+			"duration": 5400000,
+			"startTime": 50400000,
+			"weekday": 0,
+			"eventId": "4e20867d-4c76-4566-81a3-d0501b0fe1fe"
+		},
+		{
+			"_id": {
+				"$oid": "59afe56e1f513506904e1d58"
+			},
+			"room": "2.1",
+			"duration": 5400000,
+			"startTime": 50400000,
+			"weekday": 1,
+			"eventId": "ffdfdf99-6b99-465f-956f-7a8695b47197"
+		},
+		{
+			"_id": {
+				"$oid": "59afe56e1f513506904e1d57"
+			},
+			"room": "2.1",
+			"duration": 5400000,
+			"startTime": 28800000,
+			"weekday": 2,
+			"eventId": "47abde71-e2d6-463d-bf2d-f17a87bdb4d0"
+		},
+		{
+			"_id": {
+				"$oid": "59afe56e1f513506904e1d56"
+			},
+			"room": "2.1",
+			"duration": 5400000,
+			"startTime": 43200000,
+			"weekday": 3,
+			"eventId": "2b53fe07-4e6b-468b-a848-f3d1717d7811"
+		}
+	],
+	"color": "#a5d6fa",
+	"ltiToolIds": [
+		{
+			"$oid": "59a55f4ba2049554a93fed18"
+		}
+	],
+	"substitutionIds": [],
+	"teacherIds": [
+		{
+			"$oid": "599ec1688e4e364ec18ff46e"
+		},
+		{
+			"$oid": "59ad4c412b442b7f81810285"
+		}
+	],
+	"classIds": [
+		{
+			"$oid": "59a3c81ca2049554a93fec58"
+		}
+	],
+	"createdAt": {
+		"$date": "2017-08-28T07:42:00.487Z"
+	},
+	"userIds": [
+		{
+			"$oid": "599ec14d8e4e364ec18ff46d"
+		},
+		{
+			"$oid": "59ae89b71f513506904e1cc9"
+		}
+	],
+	"__v": 0,
+	"untilDate": {
+		"$date": "2018-05-30T22:00:00Z"
+	},
+	"startDate": {
+		"$date": "2017-08-27T22:00:00Z"
+	}
+},
+{
+	"_id": {
+		"$oid": "59a3cabaa2049554a93fec60"
+	},
+	"updatedAt": {
+		"$date": "2017-09-27T20:14:51.573Z"
+	},
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f6"
+	},
+	"name": "Mathe 9b",
+	"description": "Dieser Kurs wurde als Beispiel für den Demo-Zugang erstellt und enthält verschiedene Themen und Inhalte aus dem Fach Mathematik! Wir wollen Ihnen dadurch die Breite der Einsatzmöglichkeit der Schul-Cloud im Unterricht aufzeigen! Schauen Sie doch selbst!\r\n\r\n",
+	"gradeSystem": false,
+	"startDate": {
+		"$date": "2017-08-27T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2018-05-30T22:00:00Z"
+	},
+	"times": [
+		{
+			"_id": {
+				"$oid": "59c3caa9d69d413e2ff0bced"
+			},
+			"room": "1.3",
+			"duration": 5400000,
+			"startTime": 36000000,
+			"weekday": 0,
+			"eventId": "a59023a3-119f-475c-b606-8075d3171ea2"
+		},
+		{
+			"_id": {
+				"$oid": "59c3caa9d69d413e2ff0bcec"
+			},
+			"room": "1.3",
+			"duration": 5400000,
+			"startTime": 43200000,
+			"weekday": 2,
+			"eventId": "f56f92a7-e97d-4c41-9be1-8017aa890b46"
+		},
+		{
+			"_id": {
+				"$oid": "59c3caa9d69d413e2ff0bceb"
+			},
+			"room": "1.3",
+			"duration": 5400000,
+			"startTime": 50400000,
+			"weekday": 3,
+			"eventId": "9782bef9-3f95-4349-97c3-24a984d30d50"
+		},
+		{
+			"_id": {
+				"$oid": "59c3caa9d69d413e2ff0bcea"
+			},
+			"room": "1.3",
+			"duration": 5400000,
+			"startTime": 28800000,
+			"weekday": 1,
+			"eventId": "5bbc5c75-e39c-4067-b163-9b67b3102e6b"
+		}
+	],
+	"color": "#aee1bd",
+	"ltiToolIds": [
+		{
+			"$oid": "59a403bfa2049554a93feca9"
+		},
+		{
+			"$oid": "59b6c0225c9ec20c6f08365b"
+		}
+	],
+	"substitutionIds": [],
+	"teacherIds": [
+		{
+			"$oid": "599ec1688e4e364ec18ff46e"
+		},
+		{
+			"$oid": "59ad4c412b442b7f81810285"
+		}
+	],
+	"classIds": [
+		{
+			"$oid": "59a3c81ca2049554a93fec58"
+		}
+	],
+	"createdAt": {
+		"$date": "2017-08-28T07:48:10.42Z"
+	},
+	"userIds": [
+		{
+			"$oid": "599ec14d8e4e364ec18ff46d"
+		},
+		{
+			"$oid": "59ae89b71f513506904e1cc9"
+		}
+	],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "60feb85dc1daaf001dc619f8"
+	},
+	"userIds": [
+		{
+			"$oid": "0000d224816abba584714c9c"
+		}
+	],
+	"classIds": [
+		{
+			"$oid": "60fe8c9bc1daaf001dc60c3d"
+		},
+		{
+			"$oid": "60fe8c9bc1daaf001dc60c40"
+		}
+	],
+	"teacherIds": [
+		{
+			"$oid": "0000d231816abba584714c9e"
+		}
+	],
+	"substitutionIds": [],
+	"ltiToolIds": [],
+	"color": "#00E5FF",
+	"isCopyFrom": null,
+	"features": [],
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"name": "Englisch",
+	"startDate": {
+		"$date": "2021-07-31T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2022-07-30T22:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-07-26T13:27:57.181Z"
+	},
+	"updatedAt": {
+		"$date": "2021-07-27T14:32:11.187Z"
+	},
+	"times": [],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "60feb87bc1daaf001dc61a13"
+	},
+	"userIds": [
+		{
+			"$oid": "0000d224816abba584714c9c"
+		}
+	],
+	"classIds": [
+		{
+			"$oid": "60fe8c9bc1daaf001dc60c3d"
+		},
+		{
+			"$oid": "60fe8c9bc1daaf001dc60c40"
+		}
+	],
+	"teacherIds": [
+		{
+			"$oid": "0000d231816abba584714c9e"
+		}
+	],
+	"substitutionIds": [],
+	"ltiToolIds": [],
+	"color": "#ACACAC",
+	"isCopyFrom": null,
+	"features": [],
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"name": "Deutsch",
+	"startDate": {
+		"$date": "2021-07-31T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2022-07-30T22:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-07-26T13:28:27.962Z"
+	},
+	"updatedAt": {
+		"$date": "2021-07-27T14:32:11.187Z"
+	},
+	"times": [],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "60feb89dc1daaf001dc61a31"
+	},
+	"userIds": [
+		{
+			"$oid": "0000d224816abba584714c9c"
+		}
+	],
+	"classIds": [
+		{
+			"$oid": "60fe8c9bc1daaf001dc60c3d"
+		},
+		{
+			"$oid": "60fe8c9bc1daaf001dc60c40"
+		}
+	],
+	"teacherIds": [
+		{
+			"$oid": "0000d231816abba584714c9e"
+		}
+	],
+	"substitutionIds": [],
+	"ltiToolIds": [],
+	"color": "#FFC400",
+	"isCopyFrom": null,
+	"features": [],
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"name": "Biologie",
+	"startDate": {
+		"$date": "2021-07-31T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2022-07-30T22:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-07-26T13:29:01.992Z"
+	},
+	"updatedAt": {
+		"$date": "2021-07-27T14:32:11.187Z"
+	},
+	"times": [],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "61000aa7c1daaf001dc6815b"
+	},
+	"userIds": [
+		{
+			"$oid": "0000d224816abba584714c9c"
+		}
+	],
+	"classIds": [
+		{
+			"$oid": "60fffdbac1daaf001dc67c36"
+		}
+	],
+	"teacherIds": [
+		{
+			"$oid": "0000d231816abba584714c9e"
+		},
+		{
+			"$oid": "60fe8c9bc1daaf001dc60c43"
 		}
 	],
 	"substitutionIds": [],
@@ -538,23 +893,326 @@
 	"isCopyFrom": null,
 	"features": [],
 	"schoolId": {
-		"$oid": "5fa2c5ccb229544f2c69666c"
+		"$oid": "5f2987e020834114b8efd6f8"
 	},
-	"name": "English",
+	"name": "Sprache Urdu",
+	"times": [
+		{
+			"_id": {
+				"$oid": "61011c36f2f8cd001db96144"
+			},
+			"weekday": 0,
+			"startTime": 50400000,
+			"duration": 3600000,
+			"room": ""
+		},
+		{
+			"_id": {
+				"$oid": "61011c36f2f8cd001db96145"
+			},
+			"weekday": 1,
+			"startTime": 50400000,
+			"duration": 3600000,
+			"room": ""
+		},
+		{
+			"_id": {
+				"$oid": "61011c36f2f8cd001db96146"
+			},
+			"weekday": 2,
+			"startTime": 50400000,
+			"duration": 3600000,
+			"room": ""
+		},
+		{
+			"_id": {
+				"$oid": "61011c36f2f8cd001db96147"
+			},
+			"weekday": 3,
+			"startTime": 50400000,
+			"duration": 3600000,
+			"room": ""
+		},
+		{
+			"_id": {
+				"$oid": "61011c36f2f8cd001db96148"
+			},
+			"weekday": 4,
+			"startTime": 50400000,
+			"duration": 3600000,
+			"room": ""
+		}
+	],
 	"startDate": {
 		"$date": "2020-07-31T22:00:00Z"
 	},
 	"untilDate": {
-		"$date": "2023-07-12T22:00:00Z"
+		"$date": "2026-07-30T22:00:00Z"
 	},
 	"createdAt": {
-		"$date": "2020-11-05T11:15:05.278Z"
+		"$date": "2021-07-27T13:31:19.749Z"
 	},
 	"updatedAt": {
-		"$date": "2020-11-05T11:15:21.899Z"
+		"$date": "2021-07-28T08:58:30.251Z"
 	},
-	"times": [],
 	"__v": 0,
 	"description": ""
-}
-]
+},
+{
+	"_id": {
+		"$oid": "61011ce9388ad7001d187753"
+	},
+	"userIds": [
+		{
+			"$oid": "0000d224816abba584714c9c"
+		},
+		{
+			"$oid": "61010c93c7b0e2001e3b4a79"
+		}
+	],
+	"classIds": [
+		{
+			"$oid": "60fffdbac1daaf001dc67c36"
+		},
+		{
+			"$oid": "60fe8c9bc1daaf001dc60c3d"
+		},
+		{
+			"$oid": "60fe8c9bc1daaf001dc60c40"
+		}
+	],
+	"teacherIds": [
+		{
+			"$oid": "60fe8c9cc1daaf001dc60c4b"
+		}
+	],
+	"substitutionIds": [],
+	"ltiToolIds": [],
+	"color": "#ACACAC",
+	"isCopyFrom": null,
+	"features": [],
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"name": "test1",
+	"startDate": {
+		"$date": "2020-07-31T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2021-07-30T22:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-07-28T09:01:29.646Z"
+	},
+	"updatedAt": {
+		"$date": "2021-07-28T09:01:29.659Z"
+	},
+	"times": [],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "61011d06f2f8cd001db961e4"
+	},
+	"userIds": [
+		{
+			"$oid": "0000d224816abba584714c9c"
+		},
+		{
+			"$oid": "61010c93c7b0e2001e3b4a79"
+		}
+	],
+	"classIds": [
+		{
+			"$oid": "60fe8c9bc1daaf001dc60c3d"
+		}
+	],
+	"teacherIds": [
+		{
+			"$oid": "60fe8c9bc1daaf001dc60c47"
+		}
+	],
+	"substitutionIds": [],
+	"ltiToolIds": [],
+	"color": "#ACACAC",
+	"isCopyFrom": null,
+	"features": [],
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"name": "test2",
+	"startDate": {
+		"$date": "2020-07-31T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2021-07-30T22:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-07-28T09:01:58.284Z"
+	},
+	"updatedAt": {
+		"$date": "2021-07-28T09:01:58.294Z"
+	},
+	"times": [],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "61011d1df2f8cd001db961f3"
+	},
+	"userIds": [],
+	"classIds": [
+		{
+			"$oid": "610019a4c25406001db26e54"
+		}
+	],
+	"teacherIds": [
+		{
+			"$oid": "60fe8c9bc1daaf001dc60c49"
+		}
+	],
+	"substitutionIds": [],
+	"ltiToolIds": [],
+	"color": "#ACACAC",
+	"isCopyFrom": null,
+	"features": [],
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"name": "test3",
+	"startDate": {
+		"$date": "2020-07-31T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2021-07-30T22:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-07-28T09:02:21.097Z"
+	},
+	"updatedAt": {
+		"$date": "2021-07-28T09:02:21.102Z"
+	},
+	"times": [],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "61011d30f2f8cd001db96204"
+	},
+	"userIds": [],
+	"classIds": [
+		{
+			"$oid": "610019a4c25406001db26e54"
+		}
+	],
+	"teacherIds": [
+		{
+			"$oid": "60fe8c9cc1daaf001dc60c4d"
+		}
+	],
+	"substitutionIds": [],
+	"ltiToolIds": [],
+	"color": "#ACACAC",
+	"isCopyFrom": null,
+	"features": [],
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"name": "test4",
+	"startDate": {
+		"$date": "2020-07-31T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2021-07-30T22:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-07-28T09:02:40.344Z"
+	},
+	"updatedAt": {
+		"$date": "2021-07-28T09:02:40.349Z"
+	},
+	"times": [],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "61011d45f2f8cd001db9621a"
+	},
+	"userIds": [],
+	"classIds": [
+		{
+			"$oid": "610019a4c25406001db26e54"
+		}
+	],
+	"teacherIds": [
+		{
+			"$oid": "60fe8c9bc1daaf001dc60c43"
+		}
+	],
+	"substitutionIds": [],
+	"ltiToolIds": [],
+	"color": "#ACACAC",
+	"isCopyFrom": null,
+	"features": [],
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"name": "test5",
+	"startDate": {
+		"$date": "2020-07-31T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2021-07-30T22:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-07-28T09:03:01.327Z"
+	},
+	"updatedAt": {
+		"$date": "2021-07-28T09:03:01.332Z"
+	},
+	"times": [],
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "61011d60f2f8cd001db9622f"
+	},
+	"userIds": [],
+	"classIds": [
+		{
+			"$oid": "610019a4c25406001db26e54"
+		},
+		{
+			"$oid": "60fffdbac1daaf001dc67c36"
+		}
+	],
+	"teacherIds": [
+		{
+			"$oid": "0000d231816abba584714c9e"
+		}
+	],
+	"substitutionIds": [],
+	"ltiToolIds": [],
+	"color": "#ACACAC",
+	"isCopyFrom": null,
+	"features": [],
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"name": "test6",
+	"startDate": {
+		"$date": "2020-07-31T22:00:00Z"
+	},
+	"untilDate": {
+		"$date": "2021-07-30T22:00:00Z"
+	},
+	"createdAt": {
+		"$date": "2021-07-28T09:03:28.352Z"
+	},
+	"updatedAt": {
+		"$date": "2021-07-28T09:03:28.357Z"
+	},
+	"times": [],
+	"__v": 0
+}]
+

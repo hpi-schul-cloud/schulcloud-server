@@ -2,4 +2,56 @@
 	"_id": {
 		"$oid": "5fa2c589550cdec021a1c5a2"
 	}
+},
+{
+	"_id": {
+		"$oid": "60ffca4726f248001d7ef0f9"
+	},
+	"userIds": [
+		{
+			"$oid": "0000d224816abba584714c9c"
+		},
+		{
+			"$oid": "61026d89f66648001d29f168"
+		}
+	],
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"courseId": {
+		"$oid": "0000dcfbfb5c7a3f00bf21ab"
+	},
+	"name": "Gruppe 1",
+	"createdAt": {
+		"$date": "2021-07-27T08:56:39.55Z"
+	},
+	"updatedAt": {
+		"$date": "2021-07-29T09:01:11.013Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "61000b55c1daaf001dc681dd"
+	},
+	"userIds": [
+		{
+			"$oid": "0000d224816abba584714c9c"
+		}
+	],
+	"schoolId": {
+		"$oid": "5f2987e020834114b8efd6f8"
+	},
+	"courseId": {
+		"$oid": "61000aa7c1daaf001dc6815b"
+	},
+	"name": "g1",
+	"createdAt": {
+		"$date": "2021-07-27T13:34:13.061Z"
+	},
+	"updatedAt": {
+		"$date": "2021-07-27T14:32:11.199Z"
+	},
+	"__v": 0
 }]
+
