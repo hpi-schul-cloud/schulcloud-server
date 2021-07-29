@@ -66,4 +66,10 @@ describe('CourseEntity', () => {
 			expect(test).toThrow(ValidationError);
 		});
 	});
+
+	// describe('getCourse', () => {});
+	// describe('getCoursegroup', () => {});
+	// describe('getParent', () => {});
+	// describe('isVisible', () => {});
+	// describe('changeVisiblility', () => {})
 });

@@ -17,4 +17,6 @@ describe('CourseEntity', () => {
 			expect(coursegroup instanceof Coursegroup).toEqual(true);
 		});
 	});
+
+	// describe('isStudent', () => { });
 });

@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Counted } from '@shared/domain';
-import { ValidationError } from '@shared/common';
 import { CourseUC } from './course.uc';
 import { Course } from '../entity';
 
