@@ -1,6 +1,8 @@
-import { BaseEntityWithTimestamps } from '@shared/domain';
-// import { ValidationError } from '@shared/common';
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+
+import { BaseEntityWithTimestamps } from '@shared/domain';
+import { ValidationError } from '@shared/common';
+
 import { Course } from './course.entity';
 import { Coursegroup } from './coursegroup.entity';
 
@@ -23,9 +25,8 @@ export class Lesson extends BaseEntityWithTimestamps {
 	@Property()
 	hidden: boolean;
 
-	// TODO: must bundled in one parent field with target referenz
 	@ManyToOne({ fieldName: 'courseId' })
-	course: Course | null;
+	course: Course;
 
 	@ManyToOne({ fieldName: 'coursegroupId' })
 	coursegroup: Coursegroup | null;
@@ -36,30 +37,31 @@ export class Lesson extends BaseEntityWithTimestamps {
 		this.description = props.description || '';
 		this.hidden = props.hidden || true;
 
-		const course = props.course || null;
+		let course = props.course || null;
 		const coursegroup = props.coursegroup || null;
+
+		if (course === null && coursegroup !== null) {
+			course = coursegroup.course;
+		}
 
 		Object.assign(this, { course, coursegroup });
 
-		// this.validateParents();
+		this.validateCourse();
 	}
 
-	/*
-	validateParents(): void | ValidationError {
-		const course = this.getCourse();
-		const coursegroup = this.getCoursegroup();
-		const noParent = !course && !coursegroup;
-		const toManyParents = course && coursegroup;
-		if (noParent || toManyParents) {
-			throw new ValidationError('No parent or to many parents in lesson are defined.', { course, coursegroup });
+	validateCourse(): void | ValidationError {
+		const { course, coursegroup } = this;
+		if (course === null) {
+			throw new ValidationError('Course in lesson must exist.');
 		}
-	} */
 
-	// To eleminate handling with null.
-	@Property({ persist: false })
-	get parent(): Course | Coursegroup {
-		const parent = (this.getCourse() || this.getCoursegroup()) as Course | Coursegroup;
-		return parent;
+		if (coursegroup !== null && !(typeof coursegroup.course === 'object')) {
+			throw new ValidationError('The added coursegroup in lesson do not include valid course.', { coursegroup });
+		}
+
+		if (coursegroup !== null && coursegroup.course.id !== course.id) {
+			throw new ValidationError('Coursegroup must be a part of course in lesson.', { course, coursegroup });
+		}
 	}
 
 	getCourse(): Course | null {
@@ -68,6 +70,12 @@ export class Lesson extends BaseEntityWithTimestamps {
 
 	getCoursegroup(): Coursegroup | null {
 		return this.coursegroup;
+	}
+
+	@Property({ persist: false })
+	get parent(): Course | Coursegroup {
+		const parent = this.getCoursegroup() !== null ? this.getCoursegroup() : this.getCourse();
+		return parent as Course | Coursegroup;
 	}
 
 	getParent(): Course | Coursegroup {
