@@ -1,12 +1,14 @@
 import { BaseEntityWithTimestamps } from '@shared/domain';
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { Course } from './course.entity';
+import { Coursegroup } from './coursegroup.entity';
 
 export interface ILessonProperties {
 	name: string;
 	description?: string;
 	hidden?: boolean;
-	course: Course;
+	course?: Course;
+	coursegroup?: Coursegroup;
 }
 
 @Entity({ tableName: 'lessons' })
@@ -21,9 +23,10 @@ export class Lesson extends BaseEntityWithTimestamps {
 	hidden: boolean;
 
 	@ManyToOne({ fieldName: 'courseId' })
-	course: Course; // check null
+	course: Course | null;
 
-	// courseGroupId
+	@ManyToOne({ fieldName: 'coursegroupId' })
+	coursegroup: Coursegroup | null;
 
 	constructor(props: ILessonProperties) {
 		super();
@@ -31,6 +34,22 @@ export class Lesson extends BaseEntityWithTimestamps {
 		this.description = props.description || '';
 		this.hidden = props.hidden || true;
 
-		Object.assign(this, { course: props.course });
+		const course = props.course || null;
+		const coursegroup = props.coursegroup || null;
+
+		Object.assign(this, { course, coursegroup });
+	}
+
+	getCourse(): Course | null {
+		return this.course;
+	}
+
+	getCoursegroup(): Coursegroup | null {
+		return this.coursegroup;
+	}
+
+	isVisible(): boolean {
+		const isVisible = !this.hidden;
+		return isVisible;
 	}
 }

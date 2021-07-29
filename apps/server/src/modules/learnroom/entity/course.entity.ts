@@ -1,12 +1,10 @@
-import { Entity, Property, Index, EntitySchema } from '@mikro-orm/core';
+import { Entity, Property, Index } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
-
+/*
 enum CourseFeatures {
 	MESSENGER = 'messenger',
 }
-
-const DEFAULT_COLOR = '#ACACAC';
-
+*/
 export interface ICourseProperties {
 	name: string;
 	description?: string;
@@ -20,13 +18,19 @@ export interface ICourseProperties {
 	// features?: CourseFeatures[];
 }
 
+const DEFAULT = {
+	color: '#ACACAC',
+	name: 'Kurse',
+	description: '',
+};
+
 @Entity({ tableName: 'courses' })
 export class Course extends BaseEntityWithTimestamps {
 	@Property()
-	name: string;
+	name = DEFAULT.name;
 
 	@Property()
-	description: string;
+	description = DEFAULT.description;
 
 	@Index()
 	@Property()
@@ -50,38 +54,46 @@ export class Course extends BaseEntityWithTimestamps {
 
 	// TODO: string color format
 	@Property()
-	color: string;
+	color: string = DEFAULT.color;
 
 	// @Property()
 	// features: CourseFeatures[];
 
 	constructor(props: ICourseProperties) {
 		super();
-		this.name = props.name || 'Kurse';
-		this.description = props.description || '';
+		this.name = props.name || DEFAULT.name;
+		this.description = props.description || DEFAULT.description;
 		this.schoolId = props.schoolId;
 		// this.classIds = props.classIds || [];
 		this.studentIds = props.studentIds || [];
 		this.teacherIds = props.teacherIds || [];
 		this.substitutionTeacherIds = props.substitutionTeacherIds || [];
-		this.color = props.color || DEFAULT_COLOR;
+		this.color = props.color || DEFAULT.color;
 		// this.features = props.features || [];
 		Object.assign(this, {});
 	}
 
 	getDescription(): string {
-		return this.description || '';
+		return this.description || DEFAULT.description;
+	}
+
+	changeDescription(description: string): void {
+		this.description = description;
 	}
 
 	getName(): string {
-		return this.name || 'Kurse';
+		return this.name || DEFAULT.name;
+	}
+
+	changeName(name: string): void {
+		this.name = name;
 	}
 
 	getColor(): string {
-		return this.color || DEFAULT_COLOR;
+		return this.color || DEFAULT.color;
 	}
 
-	changeColor(color: string = DEFAULT_COLOR): void {
+	changeColor(color: string): void {
 		this.color = color;
 	}
 
@@ -99,15 +111,14 @@ export class Course extends BaseEntityWithTimestamps {
 		const isSubstitutionTeacher = this.substitutionTeacherIds.includes(userId);
 		return isSubstitutionTeacher;
 	}
-	/*
+
 	hasReadPermission(userId: EntityId): boolean {
 		const hasReadPermission = this.isStudent(userId) || this.isTeacher(userId) || this.isSubstitutionTeacher(userId);
 		return hasReadPermission;
 	}
-	*/
+
 	hasWritePermission(userId: EntityId): boolean {
 		const hasWritePermission = this.isTeacher(userId) || this.isSubstitutionTeacher(userId);
 		return hasWritePermission;
 	}
-	*/
 }
