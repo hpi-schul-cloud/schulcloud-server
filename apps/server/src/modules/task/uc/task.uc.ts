@@ -2,9 +2,8 @@
 // TODO add tests to improve coverage
 
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, IPagination } from '@shared/domain';
-import { Counted } from '@shared/domain/types';
-import { ICurrentUser } from '../../authentication/interface/jwt-payload';
+// import { LearnroomFacade } from '@modules/learnroom';
+import { EntityId, IPagination, Counted, ICurrentUser } from '@shared/domain';
 import { TaskRepo, SubmissionRepo } from '../repo';
 import { TaskSubmissionMetadataService } from '../domain/task-submission-metadata.service';
 import { ISubmissionStatus, Task } from '../entity';

@@ -3,11 +3,11 @@
 
 import { ApiTags } from '@nestjs/swagger';
 
-import { PaginationResponse } from '@shared/controller/dto/pagination.response';
-import { PaginationQuery } from '@shared/controller/dto/pagination.query';
+import { ICurrentUser } from '@shared/domain';
+import { PaginationResponse, PaginationQuery } from '@shared/controller/';
 import { Controller, Get, Query } from '@nestjs/common';
 import { Authenticate, CurrentUser } from '../../authentication/decorator/auth.decorator';
-import { ICurrentUser } from '../../authentication/interface/jwt-payload';
+
 import { TaskUC } from '../uc/task.uc';
 import { TaskResponse } from './dto';
 import { TaskMapper } from '../mapper/task.mapper';
