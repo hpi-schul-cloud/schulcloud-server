@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PaginationQuery } from '@shared/controller/dto/pagination.query';
+import { PaginationQuery } from '@shared/controller';
+import { Counted } from '@shared/domain';
+// import { LearnroomFacade } from '@modules/learnroom'; do not work atm
+
+import { LearnroomFacade } from '../../learnroom';
 import { Submission, Task } from '../entity';
-import { SubmissionRepo } from '../repo/submission.repo';
-import { Counted } from '../../../shared/domain';
-import { TaskRepo } from '../repo/task.repo';
+import { SubmissionRepo, TaskRepo } from '../repo';
 import { TaskUC } from './task.uc';
 import { TaskSubmissionMetadataService } from '../domain/task-submission-metadata.service';
 
@@ -17,6 +19,11 @@ describe('TaskService', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				TaskUC,
+				LearnroomFacade,
+				{
+					provide: LearnroomFacade,
+					useValue: {},
+				},
 				TaskRepo,
 				{
 					provide: TaskRepo,
@@ -70,6 +77,8 @@ describe('TaskService', () => {
 			await service.findAllOpenForStudent('someId', paginationQuery);
 
 			expect(findAllByStudentMock).toHaveBeenCalledWith('someId', paginationQuery, ['123']);
+
+			getAllSubmissionsByUserSpy.mockRestore();
 		});
 	});
 
@@ -98,6 +107,10 @@ describe('TaskService', () => {
 			expect(tasks[0].status).toHaveProperty('submitted');
 			expect(tasks[0].status).toHaveProperty('maxSubmissions');
 			expect(tasks[0].status).toHaveProperty('graded');
+
+			findAllAssignedByTeacherSpy.mockRestore();
+			getSubmissionsByTasksListSpy.mockRestore();
+			computeSubmissionMetadataSpy.mockRestore();
 		});
 
 		it('should handle submissions of different tasks seperately', async () => {
@@ -123,6 +136,10 @@ describe('TaskService', () => {
 			expect(tasks.length).toEqual(2);
 			expect(tasks[0].status?.submitted).toEqual(1);
 			expect(tasks[1].status?.submitted).toEqual(1);
+
+			findAllAssignedByTeacherSpy.mockRestore();
+			getSubmissionsByTasksListSpy.mockRestore();
+			computeSubmissionMetadataSpy.mockRestore();
 		});
 
 		// teacher only --> should not needed

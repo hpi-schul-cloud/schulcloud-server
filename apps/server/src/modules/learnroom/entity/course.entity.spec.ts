@@ -2,6 +2,20 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Course } from './course.entity';
 
 describe('CourseEntity', () => {
+	describe('constructor', () => {
+		it('should throw an error by empty constructor', () => {
+			// @ts-expect-error: Test case
+			const test = () => new Course();
+			expect(test).toThrow();
+		});
+
+		it('should create a course by passing right properties', () => {
+			const schoolId = new ObjectId().toHexString();
+			const course = new Course({ name: '', schoolId });
+			expect(course instanceof Course).toEqual(true);
+		});
+	});
+
 	describe('getDescription', () => {
 		const DEFAULT_VALUE = '';
 
@@ -226,13 +240,13 @@ describe('CourseEntity', () => {
 		});
 	});
 
-	describe('hasReadPermission', () => {
+	describe('isMember', () => {
 		it('should return false for user is not member of course', () => {
 			const userId = new ObjectId().toHexString();
 			const schoolId = new ObjectId().toHexString();
 			const course = new Course({ name: '', schoolId });
 
-			const result = course.hasReadPermission(userId);
+			const result = course.isMember(userId);
 
 			expect(result).toEqual(false);
 		});
@@ -242,7 +256,7 @@ describe('CourseEntity', () => {
 			const schoolId = new ObjectId().toHexString();
 			const course = new Course({ name: '', schoolId, studentIds: [userId] });
 
-			const result = course.hasReadPermission(userId);
+			const result = course.isMember(userId);
 
 			expect(result).toEqual(true);
 		});
@@ -252,7 +266,7 @@ describe('CourseEntity', () => {
 			const schoolId = new ObjectId().toHexString();
 			const course = new Course({ name: '', schoolId, teacherIds: [userId] });
 
-			const result = course.hasReadPermission(userId);
+			const result = course.isMember(userId);
 
 			expect(result).toEqual(true);
 		});
@@ -262,19 +276,19 @@ describe('CourseEntity', () => {
 			const schoolId = new ObjectId().toHexString();
 			const course = new Course({ name: '', schoolId, substitutionTeacherIds: [userId] });
 
-			const result = course.hasReadPermission(userId);
+			const result = course.isMember(userId);
 
 			expect(result).toEqual(true);
 		});
 	});
 
-	describe('hasWritePermission', () => {
+	describe('isPrivilegedMember', () => {
 		it('should return false for user is not member of course', () => {
 			const userId = new ObjectId().toHexString();
 			const schoolId = new ObjectId().toHexString();
 			const course = new Course({ name: '', schoolId });
 
-			const result = course.hasWritePermission(userId);
+			const result = course.isPrivilegedMember(userId);
 
 			expect(result).toEqual(false);
 		});
@@ -284,7 +298,7 @@ describe('CourseEntity', () => {
 			const schoolId = new ObjectId().toHexString();
 			const course = new Course({ name: '', schoolId, studentIds: [userId] });
 
-			const result = course.hasWritePermission(userId);
+			const result = course.isPrivilegedMember(userId);
 
 			expect(result).toEqual(false);
 		});
@@ -294,7 +308,7 @@ describe('CourseEntity', () => {
 			const schoolId = new ObjectId().toHexString();
 			const course = new Course({ name: '', schoolId, teacherIds: [userId] });
 
-			const result = course.hasWritePermission(userId);
+			const result = course.isPrivilegedMember(userId);
 
 			expect(result).toEqual(true);
 		});
@@ -304,7 +318,7 @@ describe('CourseEntity', () => {
 			const schoolId = new ObjectId().toHexString();
 			const course = new Course({ name: '', schoolId, substitutionTeacherIds: [userId] });
 
-			const result = course.hasWritePermission(userId);
+			const result = course.isPrivilegedMember(userId);
 
 			expect(result).toEqual(true);
 		});

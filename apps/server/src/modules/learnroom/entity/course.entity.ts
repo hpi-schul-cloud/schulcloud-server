@@ -26,11 +26,11 @@ const DEFAULT = {
 
 @Entity({ tableName: 'courses' })
 export class Course extends BaseEntityWithTimestamps {
-	@Property()
-	name = DEFAULT.name;
+	@Property({ default: DEFAULT.name })
+	name!: string;
 
-	@Property()
-	description = DEFAULT.description;
+	@Property({ default: DEFAULT.description })
+	description!: string;
 
 	@Index()
 	@Property()
@@ -53,8 +53,8 @@ export class Course extends BaseEntityWithTimestamps {
 	substitutionTeacherIds: EntityId[];
 
 	// TODO: string color format
-	@Property()
-	color: string = DEFAULT.color;
+	@Property({ default: DEFAULT.color })
+	color!: string;
 
 	// @Property()
 	// features: CourseFeatures[];
@@ -112,13 +112,13 @@ export class Course extends BaseEntityWithTimestamps {
 		return isSubstitutionTeacher;
 	}
 
-	hasReadPermission(userId: EntityId): boolean {
-		const hasReadPermission = this.isStudent(userId) || this.isTeacher(userId) || this.isSubstitutionTeacher(userId);
-		return hasReadPermission;
+	isMember(userId: EntityId): boolean {
+		const isMember = this.isStudent(userId) || this.isTeacher(userId) || this.isSubstitutionTeacher(userId);
+		return isMember;
 	}
 
-	hasWritePermission(userId: EntityId): boolean {
-		const hasWritePermission = this.isTeacher(userId) || this.isSubstitutionTeacher(userId);
-		return hasWritePermission;
+	isPrivilegedMember(userId: EntityId): boolean {
+		const isPrivilegedMember = this.isTeacher(userId) || this.isSubstitutionTeacher(userId);
+		return isPrivilegedMember;
 	}
 }
