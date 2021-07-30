@@ -36,7 +36,7 @@ describe('TaskService', () => {
 				{
 					provide: TaskSubmissionMetadataService,
 					useValue: {
-						computeSubmissionMetadata() {},
+						submissionStatusForTask() {},
 					},
 				},
 			],
@@ -87,7 +87,7 @@ describe('TaskService', () => {
 					return Promise.resolve([[], 0] as Counted<Submission[]>);
 				});
 			const computeSubmissionMetadataSpy = jest
-				.spyOn(taskSubmissionMetadata, 'computeSubmissionMetadata')
+				.spyOn(taskSubmissionMetadata, 'submissionStatusForTask')
 				.mockImplementation(() => {
 					return { submitted: 0, maxSubmissions: 1, graded: 0 };
 				});
@@ -113,7 +113,7 @@ describe('TaskService', () => {
 					return Promise.resolve([[{ task: task1 }, { task: task2 }], 0] as Counted<Submission[]>);
 				});
 			const computeSubmissionMetadataSpy = jest
-				.spyOn(taskSubmissionMetadata, 'computeSubmissionMetadata')
+				.spyOn(taskSubmissionMetadata, 'submissionStatusForTask')
 				.mockImplementation((submissions: Submission[]) => {
 					return { submitted: submissions.length, maxSubmissions: 0, graded: 0 };
 				});
