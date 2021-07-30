@@ -32,10 +32,10 @@ describe('course repo', () => {
 
 	it('should be defined', () => {
 		expect(repo).toBeDefined();
-		expect(typeof repo.getCourseOfUser).toEqual('function');
+		expect(typeof repo.findAllByUserId).toEqual('function');
 	});
 
-	describe('getCourseOfUser', () => {
+	describe('findAllByUserId', () => {
 		it('should return right keys', async () => {
 			const userId = new ObjectId().toHexString();
 			const schoolId = new ObjectId().toHexString();
@@ -57,7 +57,7 @@ describe('course repo', () => {
 			].sort();
 
 			await em.persistAndFlush([course]);
-			const [result] = await repo.getCourseOfUser(userId);
+			const [result] = await repo.findAllByUserId(userId);
 
 			const keysOfFirstElements = Object.keys(result[0]).sort();
 
@@ -73,7 +73,7 @@ describe('course repo', () => {
 			const expectedResult = [courses, 1];
 
 			await em.persistAndFlush(courses);
-			const result = await repo.getCourseOfUser(userId);
+			const result = await repo.findAllByUserId(userId);
 
 			expect(result).toEqual(expectedResult);
 		});
@@ -87,7 +87,7 @@ describe('course repo', () => {
 			const expectedResult = [courses, 1];
 
 			await em.persistAndFlush(courses);
-			const result = await repo.getCourseOfUser(userId);
+			const result = await repo.findAllByUserId(userId);
 
 			expect(result).toEqual(expectedResult);
 		});
@@ -101,7 +101,7 @@ describe('course repo', () => {
 			const expectedResult = [courses, 1];
 
 			await em.persistAndFlush(courses);
-			const result = await repo.getCourseOfUser(userId);
+			const result = await repo.findAllByUserId(userId);
 
 			expect(result).toEqual(expectedResult);
 		});
@@ -125,7 +125,7 @@ describe('course repo', () => {
 			const expectedResult = [courses, 3];
 
 			await em.persistAndFlush([...courses, ...otherCourses]);
-			const result = await repo.getCourseOfUser(userId);
+			const result = await repo.findAllByUserId(userId);
 
 			expect(result).toEqual(expectedResult);
 		});

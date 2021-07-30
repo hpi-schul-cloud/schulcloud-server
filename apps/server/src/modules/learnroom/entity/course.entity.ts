@@ -97,26 +97,32 @@ export class Course extends BaseEntityWithTimestamps {
 		this.color = color;
 	}
 
-	isStudent(userId: EntityId): boolean {
+	// TODO: the part from this point should handle in a group collection that include an array of user[]
+
+	// isStudent, isTeacher, isSubstitutionTeacher sound like exposing knowlege that should not needed
+	// is should not nessasary if the group collection know the details
+	private isStudent(userId: EntityId): boolean {
 		const isStudent = this.studentIds.includes(userId);
 		return isStudent;
 	}
 
-	isTeacher(userId: EntityId): boolean {
+	private isTeacher(userId: EntityId): boolean {
 		const isTeacher = this.teacherIds.includes(userId);
 		return isTeacher;
 	}
 
-	isSubstitutionTeacher(userId: EntityId): boolean {
+	private isSubstitutionTeacher(userId: EntityId): boolean {
 		const isSubstitutionTeacher = this.substitutionTeacherIds.includes(userId);
 		return isSubstitutionTeacher;
 	}
+
 
 	isMember(userId: EntityId): boolean {
 		const isMember = this.isStudent(userId) || this.isTeacher(userId) || this.isSubstitutionTeacher(userId);
 		return isMember;
 	}
 
+	// TODO: temp solution we have nothing that can solve it at the moment
 	isPrivilegedMember(userId: EntityId): boolean {
 		const isPrivilegedMember = this.isTeacher(userId) || this.isSubstitutionTeacher(userId);
 		return isPrivilegedMember;

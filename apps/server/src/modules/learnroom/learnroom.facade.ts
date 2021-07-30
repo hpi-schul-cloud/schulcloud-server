@@ -11,8 +11,8 @@ export class LearnroomFacade {
 	// and course groups?
 	// and lessons ?
 	// in context of all releated for xyz?
-	async findAllCoursesFromUserByUserId(userId: EntityId): Promise<Counted<Course[]>> {
-		const [courses, count] = await this.courseUC.findAllCoursesFromUserByUserId(userId);
+	async findCoursesWithGroupsByUserId(userId: EntityId): Promise<Counted<Course[]>> {
+		const [courses, count] = await this.courseUC.findCoursesWithGroupsByUserId(userId);
 		return [courses, count];
 	}
 }

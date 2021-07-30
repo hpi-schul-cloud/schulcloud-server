@@ -27,7 +27,7 @@ class CourseScope extends Scope<Course> {
 export class CourseRepo implements ICourseRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async getCourseOfUser(userId: EntityId): Promise<Counted<Course[]>> {
+	async findAllByUserId(userId: EntityId): Promise<Counted<Course[]>> {
 		const scope = new CourseScope();
 		scope.forAllRoles(userId);
 		const [courses, count] = await this.em.findAndCount(Course, scope.query);
