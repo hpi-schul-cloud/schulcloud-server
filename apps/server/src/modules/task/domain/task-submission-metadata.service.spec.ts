@@ -72,10 +72,6 @@ describe('taskSubmissionMetadataService', () => {
 							student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'def' }),
 							gradeFileIds: [new FileTaskInfo({})],
 						}), */
-				new Submission({
-					task,
-					student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'def' }),
-				}),
 			];
 
 			const result = service.submissionStatusForTask(testdata, task);
@@ -88,18 +84,24 @@ describe('taskSubmissionMetadataService', () => {
 				new Submission({
 					task,
 					student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'abc' }),
+					gradeComment: 'better, please try again',
+					createdAt: new Date(Date.now() - 1800000),
+				}),
+				new Submission({
+					task,
+					student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'abc' }),
 					createdAt: new Date(Date.now()),
 				}),
 				new Submission({
 					task,
 					student: new UserTaskInfo({ firstName: 'firstname', lastName: 'lastname', id: 'abc' }),
-					gradeComment: 'well done',
-					createdAt: new Date(Date.now() - 500),
+					gradeComment: 'topic missed',
+					createdAt: new Date(Date.now() - 3600000),
 				}),
 			];
 
 			const result = service.submissionStatusForTask(testdata, task);
-			expect(result.graded).toEqual(1);
+			expect(result.graded).toEqual(0);
 		});
 
 		it('should only consider submissions of the actual task', () => {

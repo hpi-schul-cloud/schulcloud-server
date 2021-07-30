@@ -8,7 +8,7 @@ export class TaskSubmissionMetadataService {
 		const gradedUsers = new Set();
 
 		const sortedSubmissions = [...submissions].sort((a: Submission, b: Submission) => {
-			if (a.createdAt > b.createdAt) {
+			if (a.createdAt < b.createdAt) {
 				return 1;
 			}
 			return -1;
@@ -18,7 +18,7 @@ export class TaskSubmissionMetadataService {
 			if (submission.task.id === task.id) {
 				if (
 					!submittedUsers.has(submission.student.id) &&
-					(submission.grade || submission.gradeComment || submission.gradeFileIds)
+					(submission.grade || submission.gradeComment || submission.gradeFileIds.length)
 				) {
 					gradedUsers.add(submission.student.id);
 				}
