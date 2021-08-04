@@ -24,6 +24,7 @@ const DEFAULT = {
 	color: '#ACACAC',
 	name: 'Kurse',
 	description: '',
+	groups: [],
 };
 
 @Entity({ tableName: 'courses' })
@@ -58,7 +59,7 @@ export class Course extends BaseEntityWithTimestamps {
 	@Property({ default: DEFAULT.color })
 	color!: string;
 
-	@Property({ persist: false })
+	@Property({ persist: false, default: DEFAULT.groups })
 	private groups: Coursegroup[];
 
 	// @Property()
@@ -76,7 +77,7 @@ export class Course extends BaseEntityWithTimestamps {
 		this.color = props.color || DEFAULT.color;
 		// this.features = props.features || [];
 
-		this.groups = [];
+		this.groups = DEFAULT.groups;
 
 		Object.assign(this, {});
 	}

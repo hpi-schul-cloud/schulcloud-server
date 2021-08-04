@@ -21,7 +21,7 @@ describe('course repo', () => {
 			providers: [CourseRepo],
 		}).compile();
 		repo = module.get(CourseRepo);
-		em = module.get<EntityManager>(EntityManager);
+		em = module.get(EntityManager);
 	});
 
 	afterAll(async () => {
@@ -52,6 +52,7 @@ describe('course repo', () => {
 				'color',
 				'createdAt',
 				'description',
+				'groups', // TODO: i can not validate from test if groups are persistet to db or not
 				// 'features',
 				'name',
 				'schoolId',
@@ -93,6 +94,17 @@ describe('course repo', () => {
 			const result = await repo.findAllByUserId(helper.userId);
 
 			const expectedResult = [courses, 2];
+			expect(result).toEqual(expectedResult);
+		});
+
+		it('should handle mixed roles in courses', async () => {
+			const helper = new LearnroomTestHelper();
+			const courses = [helper.createStudentCourse(), helper.createTeacherCourse(), helper.createSubstitutionCourse()];
+
+			await em.persistAndFlush(courses);
+			const result = await repo.findAllByUserId(helper.userId);
+
+			const expectedResult = [courses, 3];
 			expect(result).toEqual(expectedResult);
 		});
 

@@ -7,7 +7,7 @@ import { Course, Coursegroup } from '../entity';
 enum CourseTyps {
 	teacher = 'teacherIds',
 	student = 'studentIds',
-	subsitutionTeacher = 'subsitutionTeacherIds',
+	subsitutionTeacher = 'substitutionTeacherIds',
 }
 
 export class LearnroomTestHelper {
