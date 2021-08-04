@@ -1,8 +1,10 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '../../database';
 import { Course } from '../entity';
 import { CourseRepo } from './course.repo';
+
+import { LearnroomTestHelper } from '../testHelper';
 
 describe('course repo', () => {
 	let module: TestingModule;
@@ -37,10 +39,13 @@ describe('course repo', () => {
 
 	describe('findAllByUserId', () => {
 		it('should return right keys', async () => {
-			const userId = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ studentIds: [userId], schoolId, name: '' });
+			const helper = new LearnroomTestHelper();
+			const course = helper.createStudentCourse();
 
+			await em.persistAndFlush([course]);
+			const [result] = await repo.findAllByUserId(helper.userId);
+
+			const keysOfFirstElements = Object.keys(result[0]).sort();
 			const expectedResult = [
 				'_id',
 				// 'classIds',
@@ -55,78 +60,57 @@ describe('course repo', () => {
 				'updatedAt',
 				'studentIds',
 			].sort();
-
-			await em.persistAndFlush([course]);
-			const [result] = await repo.findAllByUserId(userId);
-
-			const keysOfFirstElements = Object.keys(result[0]).sort();
-
 			expect(keysOfFirstElements).toEqual(expectedResult);
 		});
 
 		it('should return course of teachers', async () => {
-			const userId = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ teacherIds: [userId], schoolId, name: '' });
-			const courses = [course];
-
-			const expectedResult = [courses, 1];
+			const helper = new LearnroomTestHelper();
+			const courses = [helper.createTeacherCourse(), helper.createTeacherCourse()];
 
 			await em.persistAndFlush(courses);
-			const result = await repo.findAllByUserId(userId);
+			const result = await repo.findAllByUserId(helper.userId);
 
+			const expectedResult = [courses, 2];
 			expect(result).toEqual(expectedResult);
 		});
 
 		it('should return course of students', async () => {
-			const userId = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ studentIds: [userId], schoolId, name: '' });
-			const courses = [course];
-
-			const expectedResult = [courses, 1];
+			const helper = new LearnroomTestHelper();
+			const courses = [helper.createStudentCourse(), helper.createStudentCourse()];
 
 			await em.persistAndFlush(courses);
-			const result = await repo.findAllByUserId(userId);
+			const result = await repo.findAllByUserId(helper.userId);
 
+			const expectedResult = [courses, 2];
 			expect(result).toEqual(expectedResult);
 		});
 
 		it('should return course of substitution teachers', async () => {
-			const userId = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ substitutionTeacherIds: [userId], schoolId, name: '' });
-			const courses = [course];
-
-			const expectedResult = [courses, 1];
+			const helper = new LearnroomTestHelper();
+			const courses = [helper.createTeacherCourse(), helper.createTeacherCourse()];
 
 			await em.persistAndFlush(courses);
-			const result = await repo.findAllByUserId(userId);
+			const result = await repo.findAllByUserId(helper.userId);
 
+			const expectedResult = [courses, 2];
 			expect(result).toEqual(expectedResult);
 		});
 
 		it('should only return courses where the user is a member of it', async () => {
-			const userId = new ObjectId().toHexString();
-			const otherUserId = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
+			const helper = new LearnroomTestHelper();
+			const courses = [helper.createStudentCourse(), helper.createTeacherCourse(), helper.createSubstitutionCourse()];
 
-			const courseSubstitionTeacher = new Course({ substitutionTeacherIds: [userId], schoolId, name: '' });
-			const courseTeacher = new Course({ teacherIds: [userId], schoolId, name: '' });
-			const courseStudent = new Course({ studentIds: [userId], schoolId, name: '' });
-
-			const otherCourseSubstitionTeacher = new Course({ substitutionTeacherIds: [otherUserId], schoolId, name: '' });
-			const otherCourseTeacher = new Course({ teacherIds: [otherUserId], schoolId, name: '' });
-			const otherCourseStudent = new Course({ studentIds: [otherUserId], schoolId, name: '' });
-
-			const courses = [courseSubstitionTeacher, courseTeacher, courseStudent];
-			const otherCourses = [otherCourseSubstitionTeacher, otherCourseTeacher, otherCourseStudent];
-
-			const expectedResult = [courses, 3];
+			const helperOther = new LearnroomTestHelper();
+			const otherCourses = [
+				helperOther.createStudentCourse(),
+				helperOther.createTeacherCourse(),
+				helperOther.createSubstitutionCourse(),
+			];
 
 			await em.persistAndFlush([...courses, ...otherCourses]);
-			const result = await repo.findAllByUserId(userId);
+			const result = await repo.findAllByUserId(helper.userId);
 
+			const expectedResult = [courses, 3];
 			expect(result).toEqual(expectedResult);
 		});
 	});

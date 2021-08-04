@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
 import { EntityId, Counted } from '@shared/domain';
@@ -8,7 +8,7 @@ import { Coursegroup, Course } from '../entity';
 import { ICoursegroupRepo } from '../uc';
 
 const isDefined = (input) => input !== null && input !== undefined;
-type EntityIdQuery = { id: EntityId };
+type EntityIdQuery = Record<string, ObjectId>;
 
 class CoursegroupScope extends Scope<Coursegroup> {
 	isMember(userId: EntityId): CoursegroupScope {
@@ -21,7 +21,7 @@ class CoursegroupScope extends Scope<Coursegroup> {
 
 	findByCourses(courses: Course[]): CoursegroupScope {
 		const list = Array.isArray(courses) ? courses : [];
-		const $or = list.map((course: Course): EntityIdQuery => ({ id: course.id }));
+		const $or = list.map((course): EntityIdQuery => ({ courseId: course._id }));
 		const query = { $or };
 		this.addQuery(query);
 
@@ -37,7 +37,6 @@ export class CoursegroupRepo implements ICoursegroupRepo {
 		const scope = new CoursegroupScope();
 		scope.findByCourses(courses);
 		const [coursegroups, count] = await this.em.findAndCount(Coursegroup, scope.query);
-
 		return [coursegroups, count];
 	}
 }

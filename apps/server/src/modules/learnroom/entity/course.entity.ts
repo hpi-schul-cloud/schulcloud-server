@@ -59,7 +59,7 @@ export class Course extends BaseEntityWithTimestamps {
 	color!: string;
 
 	@Property({ persist: false })
-	private coursegroups: Coursegroup[];
+	private groups: Coursegroup[];
 
 	// @Property()
 	// features: CourseFeatures[];
@@ -76,7 +76,7 @@ export class Course extends BaseEntityWithTimestamps {
 		this.color = props.color || DEFAULT.color;
 		// this.features = props.features || [];
 
-		this.coursegroups = [];
+		this.groups = [];
 
 		Object.assign(this, {});
 	}
@@ -139,8 +139,13 @@ export class Course extends BaseEntityWithTimestamps {
 	addGroupsThatMatchCourse(coursegroups: Coursegroup[]): void {
 		coursegroups.forEach((coursegroup) => {
 			if (this.id === coursegroup.getParentId()) {
-				this.coursegroups.push(coursegroup);
+				this.groups.push(coursegroup);
 			}
 		});
+	}
+
+	getGroups(): Coursegroup[] {
+		// TODO: if it is already execute addGroupsThatMatchCourse
+		return this.groups;
 	}
 }
