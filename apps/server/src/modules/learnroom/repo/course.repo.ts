@@ -2,12 +2,10 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
 import { EntityId, Counted } from '@shared/domain';
-import { Scope, EmptyResultQuery } from '@shared/repo';
+import { Scope } from '@shared/repo';
 
 import { Course } from '../entity';
 import { ICourseRepo } from '../uc';
-
-const isDefined = (input) => input !== null && input !== undefined;
 
 class CourseScope extends Scope<Course> {
 	forAllRoles(userId: EntityId): CourseScope {
@@ -15,7 +13,7 @@ class CourseScope extends Scope<Course> {
 		const teacher = { teacherIds: userId };
 		const substitutionTeacher = { substitutionTeacherIds: userId };
 		const $or = [student, teacher, substitutionTeacher];
-		const query = isDefined(userId) ? { $or } : EmptyResultQuery;
+		const query = this.saveSelect(userId, { $or });
 		this.addQuery(query);
 
 		return this;

@@ -7,7 +7,7 @@ import { CourseRepo, CoursegroupRepo } from './repo';
 import { CourseUC } from './uc';
 import { LearnroomFacade } from './learnroom.facade';
 
-import { LearnroomTestHelper } from './testHelper';
+import { LearnroomTestHelper } from './utils/testHelper';
 
 describe('course repo', () => {
 	let module: TestingModule;

@@ -4,7 +4,7 @@ import { MongoMemoryDatabaseModule } from '../../database';
 import { Course } from '../entity';
 import { CourseRepo } from './course.repo';
 
-import { LearnroomTestHelper } from '../testHelper';
+import { LearnroomTestHelper } from '../utils/testHelper';
 
 describe('course repo', () => {
 	let module: TestingModule;

@@ -4,7 +4,7 @@ import { MongoMemoryDatabaseModule } from '../../database';
 import { Coursegroup, Course } from '../entity';
 import { CoursegroupRepo } from './coursegroup.repo';
 
-import { LearnroomTestHelper } from '../testHelper';
+import { LearnroomTestHelper } from '../utils/testHelper';
 
 describe('coursegroup repo', () => {
 	let module: TestingModule;
@@ -15,7 +15,7 @@ describe('coursegroup repo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [Coursegroup, Course],
+					entities: [Course, Coursegroup],
 				}),
 			],
 			providers: [CoursegroupRepo],
@@ -39,7 +39,7 @@ describe('coursegroup repo', () => {
 	});
 
 	describe('findByCourses', () => {
-		it('should return the right type', async () => {
+		it('should return the right types', async () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createStudentCourse();
 

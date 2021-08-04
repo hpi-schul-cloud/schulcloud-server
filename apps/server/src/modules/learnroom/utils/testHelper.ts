@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 
 import { EntityId } from '@shared/domain';
 
-import { Course, Coursegroup } from './entity';
+import { Course, Coursegroup } from '../entity';
 
 enum CourseTyps {
 	teacher = 'teacherIds',
