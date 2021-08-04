@@ -162,7 +162,8 @@
 		"uuid": "^8.3.0",
 		"wait-on": "^5.0.1",
 		"winston": "^3.2.0",
-		"xml2js-es6-promise": "^1.1.1"
+		"xml2js-es6-promise": "^1.1.1",
+		"args": "^5.0.1"
 	},
 	"devDependencies": {
 		"@compodoc/compodoc": "^1.1.11",
