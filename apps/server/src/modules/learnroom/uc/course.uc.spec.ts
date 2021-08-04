@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Counted } from '@shared/domain';
 import { CourseUC } from './course.uc';
-import { Course } from '../entity';
+import { Course, Coursegroup } from '../entity';
 
 describe('CourseUC', () => {
 	let service: CourseUC;
@@ -14,7 +14,15 @@ describe('CourseUC', () => {
 				{
 					provide: 'CourseRepo',
 					useValue: {
-						getCourseOfUser() {
+						findAllByUserId() {
+							throw new Error('Please write a mock');
+						},
+					},
+				},
+				{
+					provide: 'CoursegroupRepo',
+					useValue: {
+						findByCourses() {
 							throw new Error('Please write a mock');
 						},
 					},
@@ -31,15 +39,21 @@ describe('CourseUC', () => {
 
 			const expectedResult = [[], 0] as Counted<Course[]>;
 
-			const getCourseOfUserSpy = jest.spyOn(service.repo, 'getCourseOfUser').mockImplementation(() => {
+			const findAllByUserIdSpy = jest.spyOn(service.courseRepo, 'findAllByUserId').mockImplementation(() => {
 				return Promise.resolve(expectedResult);
 			});
 
-			const result = await service.findAllCoursesFromUserByUserId(userId);
+			const findByCourseIdsSpy = jest.spyOn(service.coursegroupRepo, 'findByCourses').mockImplementation(() => {
+				const result = [[], 0] as Counted<Coursegroup[]>;
+				return Promise.resolve(result);
+			});
+
+			const result = await service.findCoursesWithGroupsByUserId(userId);
 
 			expect(result).toEqual(expectedResult);
 
-			getCourseOfUserSpy.mockRestore();
+			findAllByUserIdSpy.mockRestore();
+			findByCourseIdsSpy.mockRestore();
 		});
 
 		it('should return all existing courses of existing user by userId.', async () => {
@@ -56,15 +70,23 @@ describe('CourseUC', () => {
 
 			const expectedResult = [[courseUser, courseTeacher, courseSubstitionTeacher], 3] as Counted<Course[]>;
 
-			const getCourseOfUserSpy = jest.spyOn(service.repo, 'getCourseOfUser').mockImplementation(() => {
+			const getCourseOfUserSpy = jest.spyOn(service.courseRepo, 'findAllByUserId').mockImplementation(() => {
 				return Promise.resolve(expectedResult);
 			});
 
-			const result = await service.findAllCoursesFromUserByUserId(userId);
+			const findByCourseIdsSpy = jest.spyOn(service.coursegroupRepo, 'findByCourses').mockImplementation(() => {
+				const result = [[], 0] as Counted<Coursegroup[]>;
+				return Promise.resolve(result);
+			});
+
+			const result = await service.findCoursesWithGroupsByUserId(userId);
 
 			expect(result).toEqual(expectedResult);
 
 			getCourseOfUserSpy.mockRestore();
+			findByCourseIdsSpy.mockRestore();
 		});
+
+		it.todo('add coursgroups to matching courses');
 	});
 });

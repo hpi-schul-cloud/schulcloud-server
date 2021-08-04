@@ -8,9 +8,7 @@ export class LearnroomFacade {
 	constructor(private readonly courseUC: CourseUC) {}
 
 	// TODO: i do not like to expose the Entity only the data + interface for it
-	// and course groups?
-	// and lessons ?
-	// in context of all releated for xyz?
+	// add lessons
 	async findCoursesWithGroupsByUserId(userId: EntityId): Promise<Counted<Course[]>> {
 		const [courses, count] = await this.courseUC.findCoursesWithGroupsByUserId(userId);
 		return [courses, count];

@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Coursegroup } from './coursegroup.entity';
-import { Course } from './course.entity';
+// import { Course } from './course.entity';
 
 describe('CourseEntity', () => {
 	describe('constructor', () => {
@@ -11,12 +11,16 @@ describe('CourseEntity', () => {
 		});
 
 		it('should create a course by passing right properties', () => {
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ name: '', schoolId });
-			const coursegroup = new Coursegroup({ course });
+			// const schoolId = new ObjectId().toHexString();
+			// const course = new Course({ name: '', schoolId });
+			const courseId = new ObjectId().toHexString();
+			const coursegroup = new Coursegroup({ courseId });
 			expect(coursegroup instanceof Coursegroup).toEqual(true);
 		});
 	});
 
-	// describe('isStudent', () => { });
+	describe('isMember', () => {
+		it.todo('should true if userId is member of studentIds');
+		it.todo('should false if userId is not member of studentIds');
+	});
 });

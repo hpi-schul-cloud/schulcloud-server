@@ -1,21 +1,27 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { EntityId, Counted } from '@shared/domain';
-import { Course } from '../entity';
+import { Course, Coursegroup } from '../entity';
 
 export interface ICourseRepo {
-	getCourseOfUser(userId: EntityId): Promise<Counted<Course[]>>;
+	findAllByUserId(userId: EntityId): Promise<Counted<Course[]>>;
+}
+
+export interface ICoursegroupRepo {
+	findByCourses(courses: Course[]): Promise<Counted<Coursegroup[]>>;
 }
 
 @Injectable()
 export class CourseUC {
-	err = {
-		invalidUserId: 'An invalid userId is passing as parameter.',
-	};
+	constructor(
+		@Inject('CourseRepo') readonly courseRepo: ICourseRepo,
+		@Inject('CoursegroupRepo') readonly coursegroupRepo: ICoursegroupRepo
+	) {}
 
-	constructor(@Inject('CourseRepo') readonly repo: ICourseRepo) {}
-
-	async findAllCoursesFromUserByUserId(userId: EntityId): Promise<Counted<Course[]>> {
-		const [courses, count] = await this.repo.getCourseOfUser(userId);
+	async findCoursesWithGroupsByUserId(userId: EntityId): Promise<Counted<Course[]>> {
+		const [courses, count] = await this.courseRepo.findAllByUserId(userId);
+		const [coursesgroups] = await this.coursegroupRepo.findByCourses(courses);
+		// TODO: design break in uc "courses.forEach((course) =>" is a conret implementation detail
+		courses.forEach((course) => course.addGroupsThatMatchCourse(coursesgroups));
 		return [courses, count];
 	}
 }

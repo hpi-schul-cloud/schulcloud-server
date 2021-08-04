@@ -1,9 +1,8 @@
-import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
-import { Course } from './course.entity';
 
 export interface ICoursegroupProperties {
-	course: Course;
+	courseId: EntityId;
 	studentIds?: EntityId[];
 }
 
@@ -12,18 +11,26 @@ export class Coursegroup extends BaseEntityWithTimestamps {
 	@Property({ fieldName: 'userIds' })
 	studentIds: EntityId[];
 
-	@ManyToOne({ fieldName: 'courseId' })
-	course: Course;
+	// TODO: only id is needed at the moment
+	// @ManyToOne({ fieldName: 'courseId' })
+	// course: Course;
+	@Property()
+	courseId: EntityId;
 
 	constructor(props: ICoursegroupProperties) {
 		super();
 		this.studentIds = props.studentIds || [];
-		Object.assign(this, { course: props.course });
+		this.courseId = props.courseId;
+		Object.assign(this, {});
 	}
 
-	// isMember vs isStudent
-	isStudent(userId: EntityId): boolean {
+	// TODO: isMember vs isStudent
+	isMember(userId: EntityId): boolean {
 		const isStudent = this.studentIds.includes(userId);
 		return isStudent;
+	}
+
+	getParentId(): EntityId {
+		return this.courseId;
 	}
 }

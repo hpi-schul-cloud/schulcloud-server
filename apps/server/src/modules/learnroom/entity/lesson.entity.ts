@@ -6,7 +6,7 @@ import { ValidationError } from '@shared/common';
 import { Course } from './course.entity';
 import { Coursegroup } from './coursegroup.entity';
 
-export interface ILessonProperties {
+interface ILessonProperties {
 	name: string;
 	description?: string;
 	hidden?: boolean;
@@ -37,18 +37,18 @@ export class Lesson extends BaseEntityWithTimestamps {
 		this.description = props.description || '';
 		this.hidden = props.hidden || true;
 
-		let course = props.course || null;
+		//	let course = props.course || null;
 		const coursegroup = props.coursegroup || null;
 
-		if (course === null && coursegroup !== null) {
+		/*	if (course === null && coursegroup !== null) {
 			course = coursegroup.course;
 		}
+*/
+		// Object.assign(this, { course, coursegroup });
 
-		Object.assign(this, { course, coursegroup });
-
-		this.validateCourse();
+		//	this.validateCourse();
 	}
-
+	/*
 	validateCourse(): void | ValidationError {
 		const { course, coursegroup } = this;
 		if (course === null) {
@@ -62,7 +62,7 @@ export class Lesson extends BaseEntityWithTimestamps {
 		if (coursegroup !== null && coursegroup.course.id !== course.id) {
 			throw new ValidationError('Coursegroup must be a part of course in lesson.', { course, coursegroup });
 		}
-	}
+	} */
 
 	getCourse(): Course | null {
 		return this.course;

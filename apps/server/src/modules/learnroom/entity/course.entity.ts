@@ -1,11 +1,13 @@
 import { Entity, Property, Index } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
+import { Coursegroup } from './coursegroup.entity';
+
 /*
 enum CourseFeatures {
 	MESSENGER = 'messenger',
 }
 */
-export interface ICourseProperties {
+interface ICourseProperties {
 	name: string;
 	description?: string;
 	schoolId: EntityId;
@@ -56,6 +58,9 @@ export class Course extends BaseEntityWithTimestamps {
 	@Property({ default: DEFAULT.color })
 	color!: string;
 
+	@Property({ persist: false })
+	private coursegroups: Coursegroup[];
+
 	// @Property()
 	// features: CourseFeatures[];
 
@@ -70,6 +75,9 @@ export class Course extends BaseEntityWithTimestamps {
 		this.substitutionTeacherIds = props.substitutionTeacherIds || [];
 		this.color = props.color || DEFAULT.color;
 		// this.features = props.features || [];
+
+		this.coursegroups = [];
+
 		Object.assign(this, {});
 	}
 
@@ -116,15 +124,23 @@ export class Course extends BaseEntityWithTimestamps {
 		return isSubstitutionTeacher;
 	}
 
-
 	isMember(userId: EntityId): boolean {
 		const isMember = this.isStudent(userId) || this.isTeacher(userId) || this.isSubstitutionTeacher(userId);
 		return isMember;
 	}
 
 	// TODO: temp solution we have nothing that can solve it at the moment
-	isPrivilegedMember(userId: EntityId): boolean {
+	hasWritePermission(userId: EntityId): boolean {
 		const isPrivilegedMember = this.isTeacher(userId) || this.isSubstitutionTeacher(userId);
 		return isPrivilegedMember;
+	}
+
+	// TODO: populate groups by request course are better for use case, i should look later into it.
+	addGroupsThatMatchCourse(coursegroups: Coursegroup[]): void {
+		coursegroups.forEach((coursegroup) => {
+			if (this.id === coursegroup.getParentId()) {
+				this.coursegroups.push(coursegroup);
+			}
+		});
 	}
 }

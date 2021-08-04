@@ -36,12 +36,12 @@ import {
 
 import { User, Role, Account } from './modules/user/entity';
 
-import { Course } from './modules/learnroom/entity';
+import { Course, Coursegroup } from './modules/learnroom/entity';
 
 const courseEntities = [CourseNews, News, SchoolInfo, SchoolNews, TeamNews, UserInfo, CourseInfo, TeamInfo];
 const taskEntities = [Task, LessonTaskInfo, CourseTaskInfo, Submission, FileTaskInfo, UserTaskInfo, CourseGroupInfo];
 const userEntities = [User, Role, Account];
-const learnroomEntities = [Course];
+const learnroomEntities = [Course, Coursegroup];
 
 @Module({
 	imports: [

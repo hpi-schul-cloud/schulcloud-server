@@ -143,7 +143,7 @@ describe('CourseEntity', () => {
 			expect(course.name).toEqual(newValue);
 		});
 	});
-
+	/*
 	describe('isStudent', () => {
 		it('should return false for user is not member of course', () => {
 			const userId = new ObjectId().toHexString();
@@ -239,7 +239,7 @@ describe('CourseEntity', () => {
 			expect(result).toEqual(false);
 		});
 	});
-
+	*/
 	describe('isMember', () => {
 		it('should return false for user is not member of course', () => {
 			const userId = new ObjectId().toHexString();
@@ -282,13 +282,13 @@ describe('CourseEntity', () => {
 		});
 	});
 
-	describe('isPrivilegedMember', () => {
+	describe('hasWritePermission', () => {
 		it('should return false for user is not member of course', () => {
 			const userId = new ObjectId().toHexString();
 			const schoolId = new ObjectId().toHexString();
 			const course = new Course({ name: '', schoolId });
 
-			const result = course.isPrivilegedMember(userId);
+			const result = course.hasWritePermission(userId);
 
 			expect(result).toEqual(false);
 		});
@@ -298,7 +298,7 @@ describe('CourseEntity', () => {
 			const schoolId = new ObjectId().toHexString();
 			const course = new Course({ name: '', schoolId, studentIds: [userId] });
 
-			const result = course.isPrivilegedMember(userId);
+			const result = course.hasWritePermission(userId);
 
 			expect(result).toEqual(false);
 		});
@@ -308,7 +308,7 @@ describe('CourseEntity', () => {
 			const schoolId = new ObjectId().toHexString();
 			const course = new Course({ name: '', schoolId, teacherIds: [userId] });
 
-			const result = course.isPrivilegedMember(userId);
+			const result = course.hasWritePermission(userId);
 
 			expect(result).toEqual(true);
 		});
@@ -318,9 +318,13 @@ describe('CourseEntity', () => {
 			const schoolId = new ObjectId().toHexString();
 			const course = new Course({ name: '', schoolId, substitutionTeacherIds: [userId] });
 
-			const result = course.isPrivilegedMember(userId);
+			const result = course.hasWritePermission(userId);
 
 			expect(result).toEqual(true);
 		});
+	});
+
+	describe('addGroupsThatMatchCourse', () => {
+		it.todo('should add matching coursegroups to course');
 	});
 });
