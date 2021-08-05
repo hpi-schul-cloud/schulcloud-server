@@ -54,4 +54,9 @@
       kubeconfig: ~/.kube/config 
       namespace: "{{ NAMESPACE }}"
       template: deployment.yml.j2
-      
+    
+  - name: Ldap Sync CronJob
+    community.kubernetes.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-ldap-sync-full-cronjob.yml.j2
