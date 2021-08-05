@@ -1,13 +1,29 @@
 import { FilterQuery } from '@mikro-orm/core';
 import { EmptyResultQuery } from './query/empty-result.query';
 
-const isDefined = (input) => input !== null && input !== undefined;
-
-export function saveSelect<TT, ST>(testedDefinedvalue: TT, selectedValue: ST): ST | typeof EmptyResultQuery {
-	return isDefined(testedDefinedvalue) ? selectedValue : EmptyResultQuery;
+export function isDefined<T>(input: T): boolean {
+	return input !== null && input !== undefined;
 }
 
-function forceArray<T>(input: Array<T>): Array<T> {
+export function isDefinedQuery<T>(input: T): boolean {
+	return isDefined(input) && typeof input === 'object' && Object.keys(input).length > 0;
+}
+
+export function useQueryIfValueIsDefined<TT, ST>(testedDefinedvalue: TT, query: ST): ST | typeof EmptyResultQuery {
+	let result: ST | typeof EmptyResultQuery = query;
+
+	if (!isDefined(testedDefinedvalue)) {
+		result = EmptyResultQuery;
+	}
+
+	if (!isDefinedQuery(query)) {
+		result = EmptyResultQuery;
+	}
+
+	return result;
+}
+
+export function forceArray<T>(input: Array<T>): Array<T> {
 	return Array.isArray(input) ? input : [];
 }
 
@@ -40,7 +56,9 @@ export class Scope<T> {
 		this._queries.push(query);
 	}
 
-	saveSelect = saveSelect;
+	useQueryIfValueIsDefined = useQueryIfValueIsDefined;
 
 	createOrQueryFromList = createOrQueryFromList;
+
+	isDefinedQuery = isDefinedQuery;
 }

@@ -43,11 +43,9 @@ describe('coursegroup repo', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createStudentCourse();
 
-			await em.persistAndFlush([course]);
-
 			const coursegroup = helper.createCoursegroup(course);
 
-			await em.persistAndFlush([coursegroup]);
+			await em.persistAndFlush([course, coursegroup]);
 
 			const [result, count] = await repo.findByCourses([course]);
 
@@ -60,7 +58,7 @@ describe('coursegroup repo', () => {
 			const helper = new LearnroomTestHelper();
 			const course = helper.createStudentCourse();
 
-			await em.persistAndFlush([course]);
+			em.persist([course]);
 
 			const coursegroup = helper.createCoursegroup(course);
 
@@ -80,7 +78,7 @@ describe('coursegroup repo', () => {
 			const course3 = helper.createStudentCourse();
 			const courses = [course1, course2, course3];
 
-			await em.persistAndFlush(courses);
+			em.persist(courses);
 
 			const groups = [
 				helper.createCoursegroup(course1),
@@ -91,7 +89,7 @@ describe('coursegroup repo', () => {
 			await em.persistAndFlush(groups);
 
 			const result = await repo.findByCourses(courses);
-			const expectedResult = [groups, 2];
+			const expectedResult = [groups, 3];
 			expect(result).toEqual(expectedResult);
 		});
 

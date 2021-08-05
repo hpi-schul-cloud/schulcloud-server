@@ -13,7 +13,7 @@ class CourseScope extends Scope<Course> {
 		const teacher = { teacherIds: userId };
 		const substitutionTeacher = { substitutionTeacherIds: userId };
 		const $or = [student, teacher, substitutionTeacher];
-		const query = this.saveSelect(userId, { $or });
+		const query = this.useQueryIfValueIsDefined(userId, { $or });
 		this.addQuery(query);
 
 		return this;

@@ -20,8 +20,15 @@ export class LearnroomTestHelper {
 		this.schoolId = new ObjectId().toHexString();
 	}
 
+	private addId(entity: Course | Coursegroup) {
+		const id = new ObjectId();
+		entity.id = id.toHexString();
+		entity._id = id;
+	}
+
 	private createCourse(type: CourseTyps): Course {
 		const course = new Course({ [type]: [this.userId], schoolId: this.schoolId, name: '' });
+		this.addId(course);
 		return course;
 	}
 
@@ -39,6 +46,7 @@ export class LearnroomTestHelper {
 
 	createCoursegroup(course: Course): Coursegroup {
 		const coursegroup = new Coursegroup({ studentIds: [this.userId], courseId: course.id });
+		this.addId(coursegroup);
 		return coursegroup;
 	}
 }

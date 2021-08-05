@@ -10,14 +10,14 @@ import { ICoursegroupRepo } from '../uc';
 class CoursegroupScope extends Scope<Coursegroup> {
 	isMember(userId: EntityId): CoursegroupScope {
 		const isStudent = { studentIds: userId };
-		const query = this.saveSelect(userId, isStudent);
+		const query = this.useQueryIfValueIsDefined(userId, isStudent);
 		this.addQuery(query);
 
 		return this;
 	}
 
 	findByCourses(courses: Course[]): CoursegroupScope {
-		const query = this.createOrQueryFromList(courses, '_id', 'courseId');
+		const query = this.createOrQueryFromList(courses, 'id', 'courseId');
 		this.addQuery(query);
 
 		return this;
