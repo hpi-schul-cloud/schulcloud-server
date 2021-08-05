@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+    seeder:
+        build:
+            context: .
+            dockerfile: Seeder.Dockerfile
+        environment:
+            - DB=schulcloud # the database name
+            - DB_HOST=mongodb # the database hostname
+            # - USERNAME=db_user_name
+            # - PASSWORD=db_user_password
+        depends_on: 
+            - mongodb
+        ports:
+            - 80:80
+
+    mongodb:
+        image: mongo:4.2
+        ports:
+            - 27017:27017
+        volumes:
+            - data-server-mongodb:/data/db
+        restart: always
+
+volumes:
+    data-server-mongodb:
