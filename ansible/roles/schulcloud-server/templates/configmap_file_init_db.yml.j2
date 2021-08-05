@@ -14,3 +14,25 @@ data:
     do
         mongoimport --uri "$DATABASE__URL" ${file} --jsonArray --drop
     done
+    mongo $DATABASE__URL --eval 'db.systems.insert({
+      "alias" : "Zentrales IServ",
+      "ldapConfig" : {
+        "active" : true,
+        "url" : "ldap://sc-openldap-svc.sc-common.svc.cluster.local:389",
+        "rootPath" : "dc=de,dc=example,dc=org",
+        "searchUser" : "cn=admin,dc=example,dc=org",
+        "searchUserPassword" : "U2FsdGVkX19uLOl3m3tGhs8Ep/YxhNmSi0gefMP8SIw=",
+        "provider" : "iserv-idm",
+        "importUser" : null,
+        "importUserPassword" : null,
+        "importUrl" : null,
+        "providerOptions" : {
+          "userAttributeNameMapping" : {},
+          "roleAttributeNameMapping" : {},
+          "classAttributeNameMapping" : {}
+      }
+    },
+    "type" : "ldap"
+    });'
+    npm install
+    npm run syncIndexes

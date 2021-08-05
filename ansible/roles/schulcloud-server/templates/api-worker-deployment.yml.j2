@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-worker-deployment
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-worker
+spec:
+  replicas: {{ API_REPLICAS|default("2", true) }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      #maxUnavailable: 1
+  revisionHistoryLimit: 4
+  paused: false
+  selector:
+    matchLabels:
+      app: api-worker
+  template:
+    metadata:
+      labels:
+        app: api-worker
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+      containers:
+      - name: api-worker
+        image: {{ SERVER_IMAGE_NAME }}:{{ APP_IMAGE_TAG }}
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: FEATURE_SYNCER_CONSUMER_ENABLE
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: api-configmap
+        - secretRef:
+            name: api-secret
+        readinessProbe:
+          httpGet:
+            path: /version
+            port: 3030
+          timeoutSeconds: 4
+          failureThreshold: 3
+          periodSeconds: 5
+        # liveless if unsatisfactory reply
+        livenessProbe:
+          httpGet:
+            path: /version
+            port: 3030
+          timeoutSeconds: 4
+          failureThreshold: 3
+          periodSeconds: 15
+        startupProbe:
+          httpGet:
+            path: /version
+            port: 3030
+          timeoutSeconds: 4
+          failureThreshold:  36
+          periodSeconds: 5
+        resources:
+          limits:
+            cpu: "2000m"
+            memory: "1Gi"
+          requests:
+            cpu: "100m"
+            memory: "1Gi"
