@@ -1,24 +1,15 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 
-import { EntityId, Counted } from '@shared/domain';
+import { Counted } from '@shared/domain';
 import { Scope } from '@shared/repo';
 
 import { Coursegroup, Course } from '../entity';
 import { ICoursegroupRepo } from '../uc';
 
 class CoursegroupScope extends Scope<Coursegroup> {
-	isMember(userId: EntityId): CoursegroupScope {
-		const isStudent = { studentIds: userId };
-		const query = this.useQueryIfValueIsDefined(userId, isStudent);
-		this.addQuery(query);
-
-		return this;
-	}
-
 	findByCourses(courses: Course[]): CoursegroupScope {
-		const query = this.createOrQueryFromList(courses, 'id', 'courseId');
-		this.addQuery(query);
+		this.addQrQuery(courses, 'id', 'courseId');
 
 		return this;
 	}

@@ -61,7 +61,7 @@ export class Course extends BaseEntityWithTimestamps {
 
 	// @Property({ persist: false, default: DEFAULT.groups, hidden: true })
 	// private groups: Coursegroup[];
-	private groups: Coursegroup[];
+	private groups: Coursegroup[] | undefined = undefined;
 
 	// @Property()
 	// features: CourseFeatures[];
@@ -77,8 +77,6 @@ export class Course extends BaseEntityWithTimestamps {
 		this.substitutionTeacherIds = props.substitutionTeacherIds || [];
 		this.color = props.color || DEFAULT.color;
 		// this.features = props.features || [];
-
-		this.groups = DEFAULT.groups;
 
 		Object.assign(this, {});
 	}
@@ -144,7 +142,7 @@ export class Course extends BaseEntityWithTimestamps {
 		this.groups = groupsOfCourse;
 	}
 
-	getGroups(): Coursegroup[] {
+	getGroups(): Coursegroup[] | undefined {
 		// TODO: if it is already execute addGroupsThatMatchCourse
 		return this.groups;
 	}

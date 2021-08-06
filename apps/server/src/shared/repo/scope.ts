@@ -54,7 +54,7 @@ export function createOrQueryFromList<T>(arrayOfObjects: Array<T>, selectedKey: 
 }
 
 export class Scope<T> {
-	private _queries: FilterQuery<T>[] = [];
+	private _queries: FilterQuery<T | EmptyResultQueryType>[] = [];
 
 	get query(): FilterQuery<T> {
 		if (this._queries.length === 0) {
@@ -64,8 +64,18 @@ export class Scope<T> {
 		return query as FilterQuery<T>;
 	}
 
-	addQuery(query: FilterQuery<T>): void {
+	addQuery(query: FilterQuery<T> | EmptyResultQueryType): void {
 		this._queries.push(query);
+	}
+
+	addQueryIfValueIsDefined<TT>(testedValue: TT, query: FilterQuery<T>): void {
+		const saveQuery = useQueryIfValueIsDefined(testedValue, query);
+		this.addQuery(saveQuery);
+	}
+
+	addQrQuery<TT>(arrayOfObjects: TT[], selectedKey: string, targetKey: string): void {
+		const orQuery = createOrQueryFromList(arrayOfObjects, selectedKey, targetKey) as FilterQuery<T>;
+		this.addQuery(orQuery);
 	}
 
 	useQueryIfValueIsDefined = useQueryIfValueIsDefined;

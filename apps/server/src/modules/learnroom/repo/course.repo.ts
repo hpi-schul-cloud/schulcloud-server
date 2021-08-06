@@ -8,13 +8,12 @@ import { Course } from '../entity';
 import { ICourseRepo } from '../uc';
 
 class CourseScope extends Scope<Course> {
-	forAllRoles(userId: EntityId): CourseScope {
-		const student = { studentIds: userId };
-		const teacher = { teacherIds: userId };
-		const substitutionTeacher = { substitutionTeacherIds: userId };
-		const $or = [student, teacher, substitutionTeacher];
-		const query = this.useQueryIfValueIsDefined(userId, { $or });
-		this.addQuery(query);
+	forAllGroupTypes(userId: EntityId): CourseScope {
+		const isStudent = { studentIds: userId };
+		const isTeacher = { teacherIds: userId };
+		const isSubstitutionTeacher = { substitutionTeacherIds: userId };
+		const $or = [isStudent, isTeacher, isSubstitutionTeacher];
+		this.addQueryIfValueIsDefined(userId, { $or });
 
 		return this;
 	}
@@ -26,7 +25,7 @@ export class CourseRepo implements ICourseRepo {
 
 	async findAllByUserId(userId: EntityId): Promise<Counted<Course[]>> {
 		const scope = new CourseScope();
-		scope.forAllRoles(userId);
+		scope.forAllGroupTypes(userId);
 		const [courses, count] = await this.em.findAndCount(Course, scope.query);
 		return [courses, count];
 	}

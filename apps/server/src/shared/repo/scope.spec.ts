@@ -49,6 +49,16 @@ describe('scope.ts', () => {
 			expect(scope.query).toEqual({ $and: [query1, query2] });
 		});
 
+		it('should support shorthand helper addQrQuery.', () => {
+			const scope = new Scope<TestEntity>();
+			expect(typeof scope.addQrQuery).toEqual('function');
+		});
+
+		it('should support shorthand helper addQueryIfValueIsDefined.', () => {
+			const scope = new Scope<TestEntity>();
+			expect(typeof scope.addQueryIfValueIsDefined).toEqual('function');
+		});
+
 		it('should support shorthand helper useQueryIfValueIsDefined.', () => {
 			const scope = new Scope<TestEntity>();
 			expect(typeof scope.useQueryIfValueIsDefined).toEqual('function');

@@ -22,8 +22,8 @@ describe('CourseEntity', () => {
 		const DEFAULT_VALUE = '';
 
 		it('should work with empty value', () => {
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ name: '', schoolId });
+			const helper = new LearnroomTestHelper();
+			const course = helper.createStudentCourse();
 
 			const result = course.getDescription();
 
@@ -41,8 +41,8 @@ describe('CourseEntity', () => {
 		});
 
 		it('should work with invalid db result value', () => {
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ name: '', schoolId });
+			const helper = new LearnroomTestHelper();
+			const course = helper.createStudentCourse();
 			// @ts-expect-error: Test case
 			course.description = undefined;
 
@@ -54,8 +54,8 @@ describe('CourseEntity', () => {
 
 	describe('changeDescription', () => {
 		it('should change value', () => {
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ name: '', schoolId });
+			const helper = new LearnroomTestHelper();
+			const course = helper.createStudentCourse();
 
 			const newValue = '234';
 			course.changeDescription(newValue);
@@ -68,8 +68,8 @@ describe('CourseEntity', () => {
 		const DEFAULT_VALUE = '#ACACAC';
 
 		it('should work with empty value', () => {
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ name: '', schoolId });
+			const helper = new LearnroomTestHelper();
+			const course = helper.createStudentCourse();
 
 			const result = course.getColor();
 
@@ -87,8 +87,8 @@ describe('CourseEntity', () => {
 		});
 
 		it('should work with invalid db result value', () => {
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ name: '', schoolId });
+			const helper = new LearnroomTestHelper();
+			const course = helper.createStudentCourse();
 			// @ts-expect-error: Test case
 			course.color = undefined;
 
@@ -100,8 +100,8 @@ describe('CourseEntity', () => {
 
 	describe('changeColor', () => {
 		it('should change value', () => {
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ name: '', schoolId });
+			const helper = new LearnroomTestHelper();
+			const course = helper.createStudentCourse();
 
 			const newValue = '234';
 			course.changeColor(newValue);
@@ -122,8 +122,8 @@ describe('CourseEntity', () => {
 		});
 
 		it('should work with invalid db result value', () => {
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ name: '', schoolId });
+			const helper = new LearnroomTestHelper();
+			const course = helper.createStudentCourse();
 			// @ts-expect-error: Test case
 			course.name = undefined;
 
@@ -136,8 +136,8 @@ describe('CourseEntity', () => {
 
 	describe('changeName', () => {
 		it('should change value', () => {
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ name: '', schoolId });
+			const helper = new LearnroomTestHelper();
+			const course = helper.createStudentCourse();
 
 			const newValue = '234';
 			course.changeName(newValue);
@@ -244,41 +244,37 @@ describe('CourseEntity', () => {
 	*/
 	describe('isMember', () => {
 		it('should return false for user is not member of course', () => {
-			const userId = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ name: '', schoolId });
+			const helper = new LearnroomTestHelper();
+			const course = helper.createStudentCourse();
 
-			const result = course.isMember(userId);
+			const result = course.isMember(helper.otherUserId);
 
 			expect(result).toEqual(false);
 		});
 
 		it('should return true for existing student', () => {
-			const userId = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ name: '', schoolId, studentIds: [userId] });
+			const helper = new LearnroomTestHelper();
+			const course = helper.createStudentCourse();
 
-			const result = course.isMember(userId);
+			const result = course.isMember(helper.userId);
 
 			expect(result).toEqual(true);
 		});
 
 		it('should return true for existing teacher', () => {
-			const userId = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ name: '', schoolId, teacherIds: [userId] });
+			const helper = new LearnroomTestHelper();
+			const course = helper.createTeacherCourse();
 
-			const result = course.isMember(userId);
+			const result = course.isMember(helper.userId);
 
 			expect(result).toEqual(true);
 		});
 
 		it('should return true for existing substitution teacher', () => {
-			const userId = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ name: '', schoolId, substitutionTeacherIds: [userId] });
+			const helper = new LearnroomTestHelper();
+			const course = helper.createSubstitutionCourse();
 
-			const result = course.isMember(userId);
+			const result = course.isMember(helper.userId);
 
 			expect(result).toEqual(true);
 		});
@@ -286,43 +282,48 @@ describe('CourseEntity', () => {
 
 	describe('hasWritePermission', () => {
 		it('should return false for user is not member of course', () => {
-			const userId = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ name: '', schoolId });
+			const helper = new LearnroomTestHelper();
+			const course = helper.createStudentCourse();
 
-			const result = course.hasWritePermission(userId);
+			const result = course.hasWritePermission(helper.otherUserId);
 
 			expect(result).toEqual(false);
 		});
 
 		it('should return false for existing student', () => {
-			const userId = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ name: '', schoolId, studentIds: [userId] });
+			const helper = new LearnroomTestHelper();
+			const course = helper.createStudentCourse();
 
-			const result = course.hasWritePermission(userId);
+			const result = course.hasWritePermission(helper.userId);
 
 			expect(result).toEqual(false);
 		});
 
 		it('should return true for existing teacher', () => {
-			const userId = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ name: '', schoolId, teacherIds: [userId] });
+			const helper = new LearnroomTestHelper();
+			const course = helper.createTeacherCourse();
 
-			const result = course.hasWritePermission(userId);
+			const result = course.hasWritePermission(helper.userId);
 
 			expect(result).toEqual(true);
 		});
 
 		it('should return true for existing substitution teacher', () => {
-			const userId = new ObjectId().toHexString();
-			const schoolId = new ObjectId().toHexString();
-			const course = new Course({ name: '', schoolId, substitutionTeacherIds: [userId] });
+			const helper = new LearnroomTestHelper();
+			const course = helper.createSubstitutionCourse();
 
-			const result = course.hasWritePermission(userId);
+			const result = course.hasWritePermission(helper.userId);
 
 			expect(result).toEqual(true);
+		});
+	});
+
+	describe('getGroups', () => {
+		it('should return undefined is groups are not set over setGroupsThatMatchCourse', () => {
+			const helper = new LearnroomTestHelper();
+			const course = helper.createStudentCourse();
+			const result = course.getGroups();
+			expect(result).toBeUndefined();
 		});
 	});
 

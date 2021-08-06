@@ -13,10 +13,13 @@ enum CourseTyps {
 export class LearnroomTestHelper {
 	userId: EntityId;
 
+	otherUserId: EntityId;
+
 	schoolId: EntityId;
 
 	constructor() {
 		this.userId = new ObjectId().toHexString();
+		this.otherUserId = new ObjectId().toHexString();
 		this.schoolId = new ObjectId().toHexString();
 	}
 
