@@ -10,7 +10,27 @@ data:
     #!/bin/bash
     git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
     cd /schulcloud-server
-    for file in /schulcloud-server/backup/setup/*
-    do
-        mongoimport --uri "$DATABASE__URL" ${file} --jsonArray --drop
-    done
+    seed_database()
+    {
+      for file in /schulcloud-server/backup/setup/*
+      do
+          mongoimport --uri "$DATABASE__URL" ${file} --jsonArray --drop
+      done
+      envsubst < /update.js > update.sub.js 
+      mongo "$DATABASE__URL" update.sub.js
+    }
+    seed_database
+    while true; do { nc -l 8080 }; | { seed_database; echo -e 'HTTP/1.1 200 OK\r\n'; }; done
+  update.js: |
+    db.storageproviders.insert( {
+      "isShared" : true,
+      "region" : "eu-central-1",
+      "type" : "S3",
+      "endpointUrl" : "https://storage-{{ DOMAIN }}",
+      "accessKeyId" : "$AWS_ACCESS_KEY",
+      "secretAccessKey" : "$AWS_SECRET_ACCESS_KEY_AES",
+      "maxBuckets" : 999999,
+      "freeBuckets" : 999999,
+      "createdAt" : ISODate("2021-07-16T09:03:18.536Z"),
+      "updatedAt" : ISODate("2021-07-16T09:03:18.536Z")
+    } );
