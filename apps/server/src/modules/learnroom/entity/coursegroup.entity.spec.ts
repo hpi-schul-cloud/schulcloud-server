@@ -11,8 +11,6 @@ describe('CourseEntity', () => {
 		});
 
 		it('should create a course by passing right properties', () => {
-			// const schoolId = new ObjectId().toHexString();
-			// const course = new Course({ name: '', schoolId });
 			const courseId = new ObjectId().toHexString();
 			const coursegroup = new Coursegroup({ courseId });
 			expect(coursegroup instanceof Coursegroup).toEqual(true);
