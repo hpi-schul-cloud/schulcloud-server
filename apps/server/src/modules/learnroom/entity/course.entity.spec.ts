@@ -1,5 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Course } from './course.entity';
+import { Coursegroup } from './coursegroup.entity';
+
+import { LearnroomTestHelper } from '../utils/testHelper';
 
 describe('CourseEntity', () => {
 	describe('constructor', () => {
@@ -324,7 +327,51 @@ describe('CourseEntity', () => {
 		});
 	});
 
-	describe('addGroupsThatMatchCourse', () => {
-		it.todo('should add matching coursegroups to course');
+	describe('setGroupsThatMatchCourse', () => {
+		it('should add coursegroups to course', () => {
+			const helper = new LearnroomTestHelper();
+			const course1 = helper.createStudentCourse();
+
+			const coursegroup1 = helper.createCoursegroup(course1);
+			const coursegroup2 = helper.createCoursegroup(course1);
+
+			course1.setGroupsThatMatchCourse([coursegroup1, coursegroup2]);
+
+			expect(course1.getGroups()).toHaveLength(2);
+		});
+
+		it('should add only coursegroups to course where the courseId is matched', () => {
+			const helper = new LearnroomTestHelper();
+			const course1 = helper.createStudentCourse();
+			const course2 = helper.createStudentCourse();
+
+			const coursegroup1 = helper.createCoursegroup(course2);
+			const coursegroup2 = helper.createCoursegroup(course2);
+
+			course1.setGroupsThatMatchCourse([coursegroup1, coursegroup2]);
+
+			expect(course1.getGroups()).toHaveLength(0);
+		});
+
+		it('should add mixing coursegroups to courses where the courseId is matched', () => {
+			const helper = new LearnroomTestHelper();
+			const course1 = helper.createStudentCourse();
+			const course2 = helper.createStudentCourse();
+			const course3 = helper.createStudentCourse();
+
+			const coursegroup1 = helper.createCoursegroup(course1);
+			const coursegroup2 = helper.createCoursegroup(course1);
+			const coursegroup3 = helper.createCoursegroup(course2);
+
+			const coursegroups = [coursegroup1, coursegroup2, coursegroup3];
+
+			course1.setGroupsThatMatchCourse(coursegroups);
+			course2.setGroupsThatMatchCourse(coursegroups);
+			course3.setGroupsThatMatchCourse(coursegroups);
+
+			expect(course1.getGroups()).toHaveLength(2);
+			expect(course2.getGroups()).toHaveLength(1);
+			expect(course3.getGroups()).toHaveLength(0);
+		});
 	});
 });

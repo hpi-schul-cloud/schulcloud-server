@@ -21,7 +21,7 @@ export class CourseUC {
 		const [courses, count] = await this.courseRepo.findAllByUserId(userId);
 		const [coursesgroups] = await this.coursegroupRepo.findByCourses(courses);
 		// TODO: design break in uc "courses.forEach((course) =>" is a conret implementation detail
-		courses.forEach((course) => course.addGroupsThatMatchCourse(coursesgroups));
+		courses.forEach((course) => course.setGroupsThatMatchCourse(coursesgroups));
 		return [courses, count];
 	}
 }

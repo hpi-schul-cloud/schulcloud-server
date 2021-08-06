@@ -59,7 +59,8 @@ export class Course extends BaseEntityWithTimestamps {
 	@Property({ default: DEFAULT.color })
 	color!: string;
 
-	@Property({ persist: false, default: DEFAULT.groups })
+	// @Property({ persist: false, default: DEFAULT.groups, hidden: true })
+	// private groups: Coursegroup[];
 	private groups: Coursegroup[];
 
 	// @Property()
@@ -137,12 +138,10 @@ export class Course extends BaseEntityWithTimestamps {
 	}
 
 	// TODO: populate groups by request course are better for use case, i should look later into it.
-	addGroupsThatMatchCourse(coursegroups: Coursegroup[]): void {
-		coursegroups.forEach((coursegroup) => {
-			if (this.id === coursegroup.getParentId()) {
-				this.groups.push(coursegroup);
-			}
-		});
+	setGroupsThatMatchCourse(coursegroups: Coursegroup[]): void {
+		const { id } = this;
+		const groupsOfCourse = coursegroups.filter((group) => id === group.getParentId());
+		this.groups = groupsOfCourse;
 	}
 
 	getGroups(): Coursegroup[] {

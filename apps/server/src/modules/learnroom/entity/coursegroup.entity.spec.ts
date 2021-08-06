@@ -20,7 +20,42 @@ describe('CourseEntity', () => {
 	});
 
 	describe('isMember', () => {
-		it.todo('should true if userId is member of studentIds');
-		it.todo('should false if userId is not member of studentIds');
+		it('should return false for empty members', () => {
+			const courseId = new ObjectId().toHexString();
+			const userId = new ObjectId().toHexString();
+			const coursegroup = new Coursegroup({ courseId, studentIds: [] });
+
+			const result = coursegroup.isMember(userId);
+			expect(result).toBeFalsy();
+		});
+
+		it('should true if userId is member', () => {
+			const courseId = new ObjectId().toHexString();
+			const userId = new ObjectId().toHexString();
+			const coursegroup = new Coursegroup({ courseId, studentIds: [userId] });
+
+			const result = coursegroup.isMember(userId);
+			expect(result).toBeTruthy();
+		});
+
+		it('should false if userId is not member of studentIds', () => {
+			const courseId = new ObjectId().toHexString();
+			const otherUserId = new ObjectId().toHexString();
+			const userId = new ObjectId().toHexString();
+			const coursegroup = new Coursegroup({ courseId, studentIds: [otherUserId] });
+
+			const result = coursegroup.isMember(userId);
+			expect(result).toBeFalsy();
+		});
+	});
+
+	describe('getParent', () => {
+		it('should return the right id.', () => {
+			const courseId = new ObjectId().toHexString();
+			const coursegroup = new Coursegroup({ courseId });
+
+			const result = coursegroup.getParentId();
+			expect(result).toEqual(courseId);
+		});
 	});
 });
