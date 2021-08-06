@@ -9,16 +9,18 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
-### 26.7.1
+- add inital learnroom module with support of course and coursegroups for preparing the next refactoring iteration in tasks module
+
+## [26.7.1] - 2021-08-03
 
 - SC-9233 - fix Lern-Store on THR to load also WLO content
 
-## 26.7.0 
+## [26.7.0] - 2021-07-28
 
 ### Added
 
 - SC-9213 - Consider group submissions when deciding what open tasks a student has
-- SC-9150 - add script to change school year 
+- SC-9150 - add script to change school year
 - SC-9211 - enable maildrop and mailcatcher for e2e tests (see docker-compose)
 - SC-9177 - allow superheros to delete admins
 
@@ -33,13 +35,13 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## [26.6.4] - 2021-07-23
 
-### Changed 
+### Changed
 
-- move S3 expiration migration to the end 
+- move S3 expiration migration to the end
 
 ## [26.6.3] - 2021-07-21
 
-### Fixed 
+### Fixed
 
 - SC-9092 - add missing S3 key decryption in migration
 
@@ -47,7 +49,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Changed
 
-- use edusharing lernstore mode on production 
+- use edusharing lernstore mode on production
 
 ## [26.6.1] - 2021-07-21
 
@@ -72,7 +74,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Changed
 
 - SC-9190 - publish news target names
-- SC-8887 - allow public access to consentVersion service 
+- SC-8887 - allow public access to consentVersion service
 - SC-8448 - Not storing temporary Merlin links and fixed concurrency bug
 - remove unnecessary timeout definitions from tests and avoid promise chains
 - SC-6294 Restructure NestJS Sources: Testing, Core Module, Entities, Shared. See details in https://hpi-schul-cloud.github.io/schulcloud-server/
@@ -81,7 +83,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ### Fixed
 
 - SC-9197 - Limiting the max workers for jest to 2 workers, if the default mechanism runs it's go up to infinity workers and if one die the test never stop
-- SC-9202 - fix sending of registration link mails 
+- SC-9202 - fix sending of registration link mails
 
 ## [26.5.0] - 2021-06-28
 
