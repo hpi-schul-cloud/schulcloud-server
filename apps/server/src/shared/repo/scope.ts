@@ -1,6 +1,10 @@
 import { FilterQuery } from '@mikro-orm/core';
 import { EmptyResultQuery } from './query/empty-result.query';
 
+type EmptyResultQueryType = typeof EmptyResultQuery;
+type QueryObject<T> = Record<string, Partial<T>>;
+type OrQuery<T> = { $or: QueryObject<T>[] };
+
 export function isDefined<T>(input: T): boolean {
 	return input !== null && input !== undefined;
 }
@@ -9,8 +13,9 @@ export function isDefinedQuery<T>(input: T): boolean {
 	return isDefined(input) && typeof input === 'object' && Object.keys(input).length > 0;
 }
 
-export function useQueryIfValueIsDefined<TT, ST>(testedDefinedvalue: TT, query: ST): ST | typeof EmptyResultQuery {
-	let result: ST | typeof EmptyResultQuery = query;
+// TODO: EmptyResultQuery only include _id maybe undefined is better in this case
+export function useQueryIfValueIsDefined<TT, ST>(testedDefinedvalue: TT, query: ST): ST | EmptyResultQueryType {
+	let result: ST | EmptyResultQueryType = query;
 
 	if (!isDefined(testedDefinedvalue)) {
 		result = EmptyResultQuery;
@@ -27,18 +32,25 @@ export function forceArray<T>(input: Array<T>): Array<T> {
 	return Array.isArray(input) ? input : [];
 }
 
-export function createOrQueryFromList<T>(
-	list: Array<T>,
-	selectedKey: string,
-	targetKey: string
-): { $or: Array<Record<string, Partial<T>>> } {
-	function executeMapping(element: T): Record<string, Partial<T>> {
-		const value = element[selectedKey] as T;
+function isDefinedObjectValue<T>(object: T, key: string): boolean {
+	return isDefined(object) && isDefined(key) && isDefined(object[key]);
+}
 
-		return { [targetKey]: value };
+export function createOrQueryFromList<T>(arrayOfObjects: Array<T>, selectedKey: string, targetKey: string): OrQuery<T> {
+	const reducer = (accumulator: QueryObject<T>[], currentValue: T) => {
+		if (isDefinedObjectValue(currentValue, selectedKey)) {
+			const value = currentValue[selectedKey] as Partial<T>;
+			const queryElement = { [targetKey]: value };
+			accumulator.push(queryElement);
+		}
+		return accumulator;
+	};
+
+	if (isDefined(selectedKey) && isDefined(targetKey)) {
+		const arrayOfQuerys = forceArray(arrayOfObjects).reduce(reducer, []);
+		return { $or: arrayOfQuerys };
 	}
-	const $or = forceArray(list).map(executeMapping);
-	return { $or };
+	return { $or: [] };
 }
 
 export class Scope<T> {
