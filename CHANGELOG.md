@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- SC-9231 - add permissions to SuperHero to edit admin role 
+
 ### 26.7.1
 
 - SC-9233 - fix Lern-Store on THR to load also WLO content
