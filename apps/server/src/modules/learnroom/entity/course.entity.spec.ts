@@ -1,6 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Course } from './course.entity';
-import { Coursegroup } from './coursegroup.entity';
 
 import { LearnroomTestHelper } from '../utils/testHelper';
 

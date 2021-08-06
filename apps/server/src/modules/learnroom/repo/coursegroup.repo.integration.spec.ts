@@ -71,14 +71,12 @@ describe('coursegroup repo', () => {
 			expect(keysOfFirstElements).toEqual(expectedResult);
 		});
 
-		it('should return coursegroups if user is a member.', async () => {
+		it('should return coursegroups of requested courses.', async () => {
 			const helper = new LearnroomTestHelper();
 			const course1 = helper.createStudentCourse();
 			const course2 = helper.createStudentCourse();
 			const course3 = helper.createStudentCourse();
 			const courses = [course1, course2, course3];
-
-			em.persist(courses);
 
 			const groups = [
 				helper.createCoursegroup(course1),
@@ -86,13 +84,29 @@ describe('coursegroup repo', () => {
 				helper.createCoursegroup(course2),
 			];
 
-			await em.persistAndFlush(groups);
+			await em.persistAndFlush([...courses, ...groups]);
 
 			const result = await repo.findByCourses(courses);
 			const expectedResult = [groups, 3];
 			expect(result).toEqual(expectedResult);
 		});
 
-		it.todo('should only return coursegroups where the user is a member of it');
+		it('should only return coursegroups where the user is a member of it', async () => {
+			const helper = new LearnroomTestHelper();
+			const course1 = helper.createStudentCourse();
+			const course2 = helper.createStudentCourse();
+
+			const groups = [
+				helper.createCoursegroup(course2),
+				helper.createCoursegroup(course2),
+				helper.createCoursegroup(course2),
+			];
+
+			await em.persistAndFlush([course1, course2, ...groups]);
+
+			const result = await repo.findByCourses([course1]);
+			const expectedResult = [[], 0];
+			expect(result).toEqual(expectedResult);
+		});
 	});
 });
