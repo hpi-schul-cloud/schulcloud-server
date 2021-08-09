@@ -9,6 +9,8 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+## 26.8.0
+
 ### 26.7.1
 
 - SC-9233 - fix Lern-Store on THR to load also WLO content
