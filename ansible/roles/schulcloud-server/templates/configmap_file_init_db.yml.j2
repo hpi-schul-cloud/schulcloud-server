@@ -14,3 +14,26 @@ data:
     do
         mongoimport --uri "$DATABASE__URL" ${file} --jsonArray --drop
     done
+    npm install
+    SEARCH_USER_PASSWORD=$(node scripts/secret.js -s $LDAP_PASSWORD_ENCRYPTION_KEY -e $SC_COMMON_LDAP_PASSWORD)
+    mongo $DATABASE__URL --eval 'db.systems.insert({
+      "alias" : "Zentrales IServ",
+      "ldapConfig" : {
+        "active" : true,
+        "url" : "ldap://sc-openldap-svc.sc-common.svc.cluster.local:389",
+        "rootPath" : "dc=de,dc=example,dc=org",
+        "searchUser" : "cn=admin,dc=example,dc=org",
+        "searchUserPassword" : "'$SEARCH_USER_PASSWORD'",
+        "provider" : "iserv-idm",
+        "importUser" : null,
+        "importUserPassword" : null,
+        "importUrl" : null,
+        "providerOptions" : {
+          "userAttributeNameMapping" : {},
+          "roleAttributeNameMapping" : {},
+          "classAttributeNameMapping" : {}
+      }
+    },
+    "type" : "ldap"
+    });'
+    npm run syncIndexes
