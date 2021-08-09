@@ -9,7 +9,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- SC-9231 - add permissions to SuperHero to edit admin role 
+
 ## 26.8.0
+
 
 ### 26.7.1
 
