@@ -7,8 +7,9 @@ import { CourseUC } from './uc';
 export class LearnroomFacade {
 	constructor(private readonly courseUC: CourseUC) {}
 
-	// TODO: i do not like to expose the Entity only the data + interface for it
-	// add lessons
+	/**
+	 * Important the facade stategue is only a temporary solution until we established a better way for resolving the dependency graph
+	 */
 	async findCoursesWithGroupsByUserId(userId: EntityId): Promise<Counted<Course[]>> {
 		const [courses, count] = await this.courseUC.findCoursesWithGroupsByUserId(userId);
 		return [courses, count];

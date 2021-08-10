@@ -59,10 +59,11 @@ export class Course extends BaseEntityWithTimestamps {
 	@Property({ default: DEFAULT.color })
 	color!: string;
 
-	// @Property({ persist: false, default: DEFAULT.groups, hidden: true })
+	@Property({ persist: false, default: DEFAULT.groups, hidden: true })
 	// private groups: Coursegroup[];
 	private groups: Coursegroup[] | undefined = undefined;
 
+	// OneToMany()
 	// @Property()
 	// features: CourseFeatures[];
 
@@ -105,10 +106,9 @@ export class Course extends BaseEntityWithTimestamps {
 		this.color = color;
 	}
 
-	// TODO: the part from this point should handle in a group collection that include an array of user[]
-
-	// isStudent, isTeacher, isSubstitutionTeacher sound like exposing knowlege that should not needed
-	// is should not nessasary if the group collection know the details
+	/**
+	 * Important user group operations are only a temporary solution until we have established groups
+	 */
 	private isStudent(userId: EntityId): boolean {
 		const isStudent = this.studentIds.includes(userId);
 		return isStudent;
@@ -129,13 +129,18 @@ export class Course extends BaseEntityWithTimestamps {
 		return isMember;
 	}
 
-	// TODO: temp solution we have nothing that can solve it at the moment
+	/**
+	 * Important using hasWritePermissions and isMember as read and write permission interpretation,
+	 * is only a temporary solution until we have implement an authorization interface that can used.
+	 */
 	hasWritePermission(userId: EntityId): boolean {
 		const isPrivilegedMember = this.isTeacher(userId) || this.isSubstitutionTeacher(userId);
 		return isPrivilegedMember;
 	}
 
-	// TODO: populate groups by request course are better for use case, i should look later into it.
+	/**
+	 * Important it is a bad hack for the moment please do not do it in the same way.
+	 */
 	setGroupsThatMatchCourse(coursegroups: Coursegroup[]): void {
 		const { id } = this;
 		const groupsOfCourse = coursegroups.filter((group) => id === group.getParentId());
