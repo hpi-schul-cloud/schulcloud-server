@@ -11,6 +11,10 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 - SC-9231 - add permissions to SuperHero to edit admin role 
 
+### Changed
+
+- OPS-2491 - Change the hydra service url
+
 ## 26.8.0
 
 
