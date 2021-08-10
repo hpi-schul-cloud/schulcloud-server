@@ -9,11 +9,23 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+- SC-9231 - add permissions to SuperHero to edit admin role 
+
+## 26.8.0
+
+
+### 26.7.1
+
+- SC-9233 - fix Lern-Store on THR to load also WLO content
+
+## 26.7.0 
+
 ### Added
 
 - SC-9213 - Consider group submissions when deciding what open tasks a student has
 - SC-9150 - add script to change school year 
 - SC-9211 - enable maildrop and mailcatcher for e2e tests (see docker-compose)
+- SC-9177 - allow superheros to delete admins
 
 ### Changed
 
@@ -21,6 +33,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ### Fixed
 
+- SC-9212 - fix changing classes via CSV import
 - SC-9053 - fix sending registration link via checkbox for student/teacher creation
 
 ## [26.6.4] - 2021-07-23
