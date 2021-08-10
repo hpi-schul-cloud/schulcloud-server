@@ -31,11 +31,12 @@ Based on [Node.js](https://nodejs.org/en/) and [Feathers](https://feathersjs.com
 ## Application seperation
 
 In order to seperate NestJS and Feathers each application runs in its own express instance. These express instances are then mounted on seperate paths under a common root express instance.
-<p>
-<img src="assets/path-prefix.png" alt="Application seperation">
-<br>
-<br>
-</p>
+
+```
+Root-Express-App 
+├─ api/v1/       --> Feathers-App
+├─ api/v3/       --> NestJS-App
+```
 
 This ensures that each application can run its own middleware stack for authentication, error handling, logging etc.
 
