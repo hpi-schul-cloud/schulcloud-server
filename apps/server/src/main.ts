@@ -17,30 +17,30 @@ async function bootstrap() {
 	sourceMapInstall();
 
 	// load the legacy feathers/express server
-	const legacyExpress = await legacyAppPromise;
+	const feathersExpress = await legacyAppPromise;
 	// const adapter = new ExpressAdapter(legacyExpress);
-	legacyExpress.setup();
+	feathersExpress.setup();
 
 	// create the NestJS application on a seperate express instance
-	const appExpress = express();
+	const nestExpress = express();
 
 	// set reference to legacy app as an express setting so we can
 	// access it over the current request within FeathersServiceProvider
 	// TODO remove if not needed anymore
-	appExpress.set('feathersApp', legacyExpress);
+	nestExpress.set('feathersApp', feathersExpress);
 
-	const appAdapter = new ExpressAdapter(appExpress);
-	const app = await NestFactory.create(ServerModule, appAdapter);
+	const nestExpressAdapter = new ExpressAdapter(nestExpress);
+	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 
-	enableOpenApiDocs(app, 'docs');
+	enableOpenApiDocs(nestApp, 'docs');
 
-	await app.init();
+	await nestApp.init();
 
 	// provide NestJS mail service to feathers app
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-	legacyExpress.services['nest-mail'] = {
+	feathersExpress.services['nest-mail'] = {
 		async send(data: Mail): Promise<void> {
-			const mailService = app.get(MailService);
+			const mailService = nestApp.get(MailService);
 			await mailService.send(data);
 		},
 	};
@@ -49,8 +49,8 @@ async function bootstrap() {
 	const rootExpress = express();
 
 	// exposed alias mounts
-	rootExpress.use('/api/v1', legacyExpress);
-	rootExpress.use('/api/v3', appExpress);
+	rootExpress.use('/api/v1', feathersExpress);
+	rootExpress.use('/api/v3', nestExpress);
 
 	// logger middleware for deprecated paths
 	// TODO remove when all calls to the server are migrated
@@ -61,8 +61,8 @@ async function bootstrap() {
 
 	// safety net for deprecated paths not beginning with version prefix
 	// TODO remove when all calls to the server are migrated
-	rootExpress.use('/api', logDeprecatedPaths, legacyExpress);
-	rootExpress.use('/', logDeprecatedPaths, legacyExpress);
+	rootExpress.use('/api', logDeprecatedPaths, feathersExpress);
+	rootExpress.use('/', logDeprecatedPaths, feathersExpress);
 
 	rootExpress.listen(3030);
 }
