@@ -33,7 +33,7 @@ describe('MailService', () => {
 		const data: Mail = { mail: { plainTextContent: 'content', subject: 'Test' }, recipients: ['test@example.com'] };
 		const amqpConnectionSpy = jest.spyOn(amqpConnection, 'publish');
 		await service.send(data);
-		const expectedParams = [mailServiceOptions.exchange, mailServiceOptions.routingKey, data];
+		const expectedParams = [mailServiceOptions.exchange, mailServiceOptions.routingKey, data, { persistent : true }];
 		expect(amqpConnectionSpy).toHaveBeenCalledWith(...expectedParams);
 	});
 });
