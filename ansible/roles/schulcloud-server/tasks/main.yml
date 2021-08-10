@@ -10,14 +10,14 @@
       namespace: "{{ NAMESPACE }}"
       template: configmap.yml.j2
       
-  - name: Secred
+  - name: Secret
     community.kubernetes.k8s:
       kubeconfig: ~/.kube/config 
       namespace: "{{ NAMESPACE }}"
       template: secret.yml.j2
     when: ONEPASSWORD is undefined or ONEPASSWORD is defined and not ONEPASSWORD
       
-  - name: Secred by 1Password
+  - name: Secret by 1Password
     community.kubernetes.k8s:
       kubeconfig: ~/.kube/config 
       namespace: "{{ NAMESPACE }}"
@@ -54,4 +54,15 @@
       kubeconfig: ~/.kube/config 
       namespace: "{{ NAMESPACE }}"
       template: deployment.yml.j2
-      
+    
+  - name: Ldap Sync CronJob
+    community.kubernetes.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-ldap-sync-full-cronjob.yml.j2
+
+  - name: Ldap Worker Deployment
+    community.kubernetes.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-worker-deployment.yml.j2
