@@ -4,11 +4,16 @@ on:
   pull_request:
     branches:
       - main
+    types: [labeled, synchronize]
+  workflow_dispatch:
+    label:
+      name: 'run tests'
 
 jobs:
   end-to-end-tests:
     runs-on: ubuntu-latest
-    if: contains( github.event.pull_request.labels.*.name , 'run tests' )
+    # run the action, when label 'run tests' has been set or is present at the commit time 
+    if: "contains( github.event.label.name , 'run tests' ) || contains( github.event.pull_request.labels.*.name , 'run tests' )"
     steps:
       - uses: actions/checkout@v2
       - name: run git change
