@@ -16,6 +16,6 @@ export class MailService {
 	) {}
 
 	public async send(data: Mail): Promise<void> {
-		await this.amqpConnection.publish(this.options.exchange, this.options.routingKey, data, { persistent : true });
+		await this.amqpConnection.publish(this.options.exchange, this.options.routingKey, data, { persistent: true });
 	}
 }
