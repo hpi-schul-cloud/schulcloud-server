@@ -10,6 +10,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 ## Unreleased
 
 - SC-9231 - add permissions to SuperHero to edit admin role 
+- SC-9269 - let eslint ensure no tests with .only exist anymore
 
 ## 26.8.0
 
